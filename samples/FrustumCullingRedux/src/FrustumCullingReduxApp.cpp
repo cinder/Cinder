@@ -29,6 +29,7 @@
 #include "cinder/ObjLoader.h"
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
+#include "cinder/Timeline.h"
 
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Batch.h"
@@ -47,6 +48,9 @@ class FrustumCullingReduxApp : public AppBasic
 	void setup();
 	void update();
 	void draw();
+	
+	void toggleCullableFov();
+	void drawCullableFov();
 
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
@@ -74,6 +78,8 @@ class FrustumCullingReduxApp : public AppBasic
 	bool			bDrawEstimatedBoundingBoxes;
 	bool			bDrawPreciseBoundingBoxes;
 	bool			bShowHelp;
+	
+	float			mViewableFov, mCullableFov;
 
 	ci::TriMeshRef		mTriMesh;
 	gl::BatchRef		mBatch;
@@ -113,6 +119,12 @@ void FrustumCullingReduxApp::setup()
 	bDrawEstimatedBoundingBoxes = false;
 	bDrawPreciseBoundingBoxes = false;
 	bShowHelp = true;
+	
+	mViewableFov = 60.0f;
+	// This variable shows our cullable area.
+	// Throught we'll change it to see what
+	// happens when we cull objects.
+	mCullableFov = 61.0f;
 
 	//! render help texture
 	renderHelpToTexture();
@@ -165,8 +177,8 @@ void FrustumCullingReduxApp::update()
 	mCurrentSeconds += elapsed;
 
 	//! perform frustum culling **********************************************************************************
-	// Set the frustum to a lower field of view angle to show the culling
-	mRenderCam.setFov( 30.0f );
+	// Set the current culling field of view.
+	mRenderCam.setFov( mCullableFov );
 	Frustumf visibleWorld( mRenderCam );
 
 	for( auto & obj : mObjects ) {
@@ -186,8 +198,8 @@ void FrustumCullingReduxApp::update()
 			obj->setCulled( false );
 		}
 	}
-	// Must reset the culling window so that we can see the effect.
-	mRenderCam.setFov( 60.0f );
+	// Must reset this to the render fov to see the effects of culling.
+	mRenderCam.setFov( mViewableFov );
 	//! **********************************************************************************************************
 }
 
@@ -238,14 +250,9 @@ void FrustumCullingReduxApp::draw()
 			}
 		}
 		
-		// Reset the field of view once again to visualize
-		// the actual window we're using to cull with.
-		gl::color( Color(1, 1, 1) );
-		mRenderCam.setFov( 30.0f );
-		gl::drawFrustum( mRenderCam );
-		mRenderCam.setFov( 60.0f );
-		
 		drawGrid(2000.0f, 25.0f);
+
+		drawCullableFov();
 		
 		// disable 3D rendering
 		gl::disableDepthWrite();
@@ -299,10 +306,37 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_v:
 			toggleVerticalSync();
 		break;
+		case KeyEvent::KEY_SPACE:
+			toggleCullableFov();
+		break;
 	}
 	
 	// update info
 	renderHelpToTexture();
+}
+
+void FrustumCullingReduxApp::toggleCullableFov()
+{
+	static bool forward = true;
+	timeline().applyPtr( &mCullableFov, forward ? 35.0f : 62.0f, 1.0f, EaseInOutCubic() );
+	forward = !forward;
+}
+
+void FrustumCullingReduxApp::drawCullableFov()
+{
+	// Reset the field of view once again to visualize
+	// the actual window we're using to cull with.
+	gl::color( Color(1, 1, 1) );
+	gl::clear( GL_DEPTH_BUFFER_BIT );
+	
+	// This visualizes the camera's viewport change for the culling field of view.
+	float cullable = mCullableFov / 60.0f;
+	
+	gl::ScopedMatrices scopeMat;
+	gl::setMatricesWindow( getWindowSize() );
+	gl::translate( getWindowCenter() );
+	gl::scale( vec3( cullable * getWindowCenter().x, cullable * getWindowCenter().y, 1.0 ) );
+	gl::drawStrokedRect( Rectf( -1, -1, 1, 1 ));
 }
 
 void FrustumCullingReduxApp::loadObject()
