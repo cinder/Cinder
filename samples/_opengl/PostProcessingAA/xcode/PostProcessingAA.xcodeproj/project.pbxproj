@@ -18,10 +18,10 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		AB10A4F471B14CC7ABC7456A /* PostProcessingAAApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */; };
+		AC4EA0E019B5396C008DC602 /* SMAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4EA0DE19B5396C008DC602 /* SMAA.cpp */; };
+		AC4EA0E319B53979008DC602 /* FXAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4EA0E119B53979008DC602 /* FXAA.cpp */; };
 		ACE6014B19AE1CA3003965A3 /* Pistons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6014919AE1CA3003965A3 /* Pistons.cpp */; };
 		ACE6014C19AE1CA3003965A3 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6014A19AE1CA3003965A3 /* Shader.cpp */; };
-		ACE6015119AE1CB5003965A3 /* fxaa in Resources */ = {isa = PBXBuildFile; fileRef = ACE6014D19AE1CB5003965A3 /* fxaa */; };
-		ACE6015219AE1CB5003965A3 /* smaa in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015019AE1CB5003965A3 /* smaa */; };
 		ACE6015E19AE1CF0003965A3 /* fxaa.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015419AE1CF0003965A3 /* fxaa.frag */; };
 		ACE6015F19AE1CF0003965A3 /* fxaa.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015519AE1CF0003965A3 /* fxaa.vert */; };
 		ACE6016019AE1CF0003965A3 /* smaa1.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015819AE1CF0003965A3 /* smaa1.frag */; };
@@ -30,8 +30,6 @@
 		ACE6016319AE1CF0003965A3 /* smaa2.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015B19AE1CF0003965A3 /* smaa2.vert */; };
 		ACE6016419AE1CF0003965A3 /* smaa3.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015C19AE1CF0003965A3 /* smaa3.frag */; };
 		ACE6016519AE1CF0003965A3 /* smaa3.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015D19AE1CF0003965A3 /* smaa3.vert */; };
-		ACE6016919AE1E35003965A3 /* FXAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6016819AE1E35003965A3 /* FXAA.cpp */; };
-		ACE6016B19AE1E3F003965A3 /* SMAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6016A19AE1E3F003965A3 /* SMAA.cpp */; };
 		C7CCFF26421A4AC289A0742F /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = F1A8A31170B245B88850050A /* CinderApp.icns */; };
 /* End PBXBuildFile section */
 
@@ -50,12 +48,16 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* PostProcessingAA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PostProcessingAA.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		AC4EA0DC19B5396C008DC602 /* AreaTex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AreaTex.h; path = ../src/smaa/AreaTex.h; sourceTree = "<group>"; };
+		AC4EA0DD19B5396C008DC602 /* SearchTex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SearchTex.h; path = ../src/smaa/SearchTex.h; sourceTree = "<group>"; };
+		AC4EA0DE19B5396C008DC602 /* SMAA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMAA.cpp; path = ../src/smaa/SMAA.cpp; sourceTree = "<group>"; };
+		AC4EA0DF19B5396C008DC602 /* SMAA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SMAA.h; path = ../src/smaa/SMAA.h; sourceTree = "<group>"; };
+		AC4EA0E119B53979008DC602 /* FXAA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FXAA.cpp; path = ../src/fxaa/FXAA.cpp; sourceTree = "<group>"; };
+		AC4EA0E219B53979008DC602 /* FXAA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FXAA.h; path = ../src/fxaa/FXAA.h; sourceTree = "<group>"; };
 		ACE6014919AE1CA3003965A3 /* Pistons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pistons.cpp; path = ../src/Pistons.cpp; sourceTree = "<group>"; };
 		ACE6014A19AE1CA3003965A3 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = ../src/Shader.cpp; sourceTree = "<group>"; };
-		ACE6014D19AE1CB5003965A3 /* fxaa */ = {isa = PBXFileReference; lastKnownFileType = folder; name = fxaa; path = ../include/fxaa; sourceTree = "<group>"; };
 		ACE6014E19AE1CB5003965A3 /* Pistons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pistons.h; path = ../include/Pistons.h; sourceTree = "<group>"; };
 		ACE6014F19AE1CB5003965A3 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../include/Shader.h; sourceTree = "<group>"; };
-		ACE6015019AE1CB5003965A3 /* smaa */ = {isa = PBXFileReference; lastKnownFileType = folder; name = smaa; path = ../include/smaa; sourceTree = "<group>"; };
 		ACE6015419AE1CF0003965A3 /* fxaa.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fxaa.frag; path = ../assets/fxaa.frag; sourceTree = "<group>"; };
 		ACE6015519AE1CF0003965A3 /* fxaa.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fxaa.vert; path = ../assets/fxaa.vert; sourceTree = "<group>"; };
 		ACE6015619AE1CF0003965A3 /* FXAA3_11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FXAA3_11.h; path = ../assets/FXAA3_11.h; sourceTree = "<group>"; };
@@ -66,8 +68,6 @@
 		ACE6015B19AE1CF0003965A3 /* smaa2.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa2.vert; path = ../assets/smaa2.vert; sourceTree = "<group>"; };
 		ACE6015C19AE1CF0003965A3 /* smaa3.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa3.frag; path = ../assets/smaa3.frag; sourceTree = "<group>"; };
 		ACE6015D19AE1CF0003965A3 /* smaa3.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = smaa3.vert; path = ../assets/smaa3.vert; sourceTree = "<group>"; };
-		ACE6016819AE1E35003965A3 /* FXAA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FXAA.cpp; path = ../include/fxaa/FXAA.cpp; sourceTree = "<group>"; };
-		ACE6016A19AE1E3F003965A3 /* SMAA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SMAA.cpp; path = ../include/smaa/SMAA.cpp; sourceTree = "<group>"; };
 		B2EB576F724D473ABEEEEF32 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B41539A3E51D44279F98677F /* PostProcessingAA_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PostProcessingAA_Prefix.pch; sourceTree = "<group>"; };
 		DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = PostProcessingAAApp.cpp; path = ../src/PostProcessingAAApp.cpp; sourceTree = "<group>"; };
@@ -105,8 +105,8 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				ACE6016719AE1E27003965A3 /* smaa */,
-				ACE6016619AE1E20003965A3 /* fxaa */,
+				AC4EA0D919B53935008DC602 /* SMAA */,
+				AC4EA0D819B5392E008DC602 /* FXAA */,
 				ACE6014919AE1CA3003965A3 /* Pistons.cpp */,
 				ACE6014A19AE1CA3003965A3 /* Shader.cpp */,
 				DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */,
@@ -165,10 +165,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				ACE6014D19AE1CB5003965A3 /* fxaa */,
 				ACE6014E19AE1CB5003965A3 /* Pistons.h */,
 				ACE6014F19AE1CB5003965A3 /* Shader.h */,
-				ACE6015019AE1CB5003965A3 /* smaa */,
 				5262D2D0785F4B528D237FA0 /* Resources.h */,
 				B41539A3E51D44279F98677F /* PostProcessingAA_Prefix.pch */,
 			);
@@ -193,12 +191,19 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		ACE6015319AE1CCF003965A3 /* Shaders */ = {
+		AC4EA0D019B4FED0008DC602 /* FXAA */ = {
 			isa = PBXGroup;
 			children = (
 				ACE6015419AE1CF0003965A3 /* fxaa.frag */,
 				ACE6015519AE1CF0003965A3 /* fxaa.vert */,
 				ACE6015619AE1CF0003965A3 /* FXAA3_11.h */,
+			);
+			name = FXAA;
+			sourceTree = "<group>";
+		};
+		AC4EA0D119B4FED6008DC602 /* SMAA */ = {
+			isa = PBXGroup;
+			children = (
 				ACE6015719AE1CF0003965A3 /* SMAA.h */,
 				ACE6015819AE1CF0003965A3 /* smaa1.frag */,
 				ACE6015919AE1CF0003965A3 /* smaa1.vert */,
@@ -207,23 +212,36 @@
 				ACE6015C19AE1CF0003965A3 /* smaa3.frag */,
 				ACE6015D19AE1CF0003965A3 /* smaa3.vert */,
 			);
+			name = SMAA;
+			sourceTree = "<group>";
+		};
+		AC4EA0D819B5392E008DC602 /* FXAA */ = {
+			isa = PBXGroup;
+			children = (
+				AC4EA0E119B53979008DC602 /* FXAA.cpp */,
+				AC4EA0E219B53979008DC602 /* FXAA.h */,
+			);
+			name = FXAA;
+			sourceTree = "<group>";
+		};
+		AC4EA0D919B53935008DC602 /* SMAA */ = {
+			isa = PBXGroup;
+			children = (
+				AC4EA0DC19B5396C008DC602 /* AreaTex.h */,
+				AC4EA0DD19B5396C008DC602 /* SearchTex.h */,
+				AC4EA0DE19B5396C008DC602 /* SMAA.cpp */,
+				AC4EA0DF19B5396C008DC602 /* SMAA.h */,
+			);
+			name = SMAA;
+			sourceTree = "<group>";
+		};
+		ACE6015319AE1CCF003965A3 /* Shaders */ = {
+			isa = PBXGroup;
+			children = (
+				AC4EA0D119B4FED6008DC602 /* SMAA */,
+				AC4EA0D019B4FED0008DC602 /* FXAA */,
+			);
 			name = Shaders;
-			sourceTree = "<group>";
-		};
-		ACE6016619AE1E20003965A3 /* fxaa */ = {
-			isa = PBXGroup;
-			children = (
-				ACE6016819AE1E35003965A3 /* FXAA.cpp */,
-			);
-			name = fxaa;
-			sourceTree = "<group>";
-		};
-		ACE6016719AE1E27003965A3 /* smaa */ = {
-			isa = PBXGroup;
-			children = (
-				ACE6016A19AE1E3F003965A3 /* SMAA.cpp */,
-			);
-			name = smaa;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -280,8 +298,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACE6016119AE1CF0003965A3 /* smaa1.vert in Resources */,
-				ACE6015219AE1CB5003965A3 /* smaa in Resources */,
-				ACE6015119AE1CB5003965A3 /* fxaa in Resources */,
 				ACE6015F19AE1CF0003965A3 /* fxaa.vert in Resources */,
 				ACE6016219AE1CF0003965A3 /* smaa2.frag in Resources */,
 				ACE6016019AE1CF0003965A3 /* smaa1.frag in Resources */,
@@ -301,10 +317,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACE6014B19AE1CA3003965A3 /* Pistons.cpp in Sources */,
-				ACE6016919AE1E35003965A3 /* FXAA.cpp in Sources */,
 				ACE6014C19AE1CA3003965A3 /* Shader.cpp in Sources */,
 				AB10A4F471B14CC7ABC7456A /* PostProcessingAAApp.cpp in Sources */,
-				ACE6016B19AE1E3F003965A3 /* SMAA.cpp in Sources */,
+				AC4EA0E019B5396C008DC602 /* SMAA.cpp in Sources */,
+				AC4EA0E319B53979008DC602 /* FXAA.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -376,7 +392,7 @@
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../src";
 			};
 			name = Debug;
 		};
@@ -392,7 +408,7 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				SDKROOT = macosx;
-				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
+				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include ../src";
 			};
 			name = Release;
 		};
