@@ -44,22 +44,22 @@ class Item {
 	
   private:
 	// title
-	std::string			mTitle;
-	ci::gl::Texture		mTitleTex, mTitleBigTex;
-	ci::Anim<ci::vec2>	mTitlePos;
-	ci::vec2			mTitleStart, mTitleDest1, mTitleDest2, mTitleFinish;
-	ci::vec2			mMouseOverDest;
-	ci::Anim<ci::Color> mTitleColor;
-	ci::Anim<float>		mTitleAlpha;
-	ci::Area			mTitleArea;
-	float				mTitleWidth, mTitleHeight;
+	std::string				mTitle;
+	ci::gl::Texture2dRef		mTitleTex, mTitleBigTex;
+	ci::Anim<ci::vec2>		mTitlePos;
+	ci::vec2				mTitleStart, mTitleDest1, mTitleDest2, mTitleFinish;
+	ci::vec2				mMouseOverDest;
+	ci::Anim<ci::Color>		mTitleColor;
+	ci::Anim<float>			mTitleAlpha;
+	ci::Area				mTitleArea;
+	float					mTitleWidth, mTitleHeight;
 	
 	// desc
-	std::string			mDesc;
-	ci::gl::Texture		mDescTex;
-	ci::Anim<ci::vec2> mDescPos;
-	ci::vec2			mDescStart, mDescDest;
-	ci::Anim<float>		mDescAlpha;
+	std::string				mDesc;
+	ci::gl::Texture2dRef	mDescTex;
+	ci::Anim<ci::vec2>		mDescPos;
+	ci::vec2				mDescStart, mDescDest;
+	ci::Anim<float>			mDescAlpha;
 	
 	// swatches
 	ci::Surface			mPalette;	

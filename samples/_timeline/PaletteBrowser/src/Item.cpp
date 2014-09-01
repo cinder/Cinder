@@ -24,14 +24,14 @@ Item::Item( int index, vec2 pos, const string &title, const string &desc, Surfac
 	layout.setFont( sSmallFont );
 	layout.setColor( Color::white() );
 	layout.addLine( mTitle );
-	mTitleTex = gl::Texture( layout.render( true ) );
+	mTitleTex = gl::Texture::create( layout.render( true ) );
 	
 	TextLayout bigLayout;
 	bigLayout.clear( ColorA( 1, 1, 1, 0 ) );
 	bigLayout.setFont( sBigFont );
 	bigLayout.setColor( Color::white() );
 	bigLayout.addLine( mTitle );
-	mTitleBigTex = gl::Texture( bigLayout.render( true ) );
+	mTitleBigTex = gl::Texture::create( bigLayout.render( true ) );
 	
 	// title
 	mTitleStart		= pos;
@@ -42,16 +42,16 @@ Item::Item( int index, vec2 pos, const string &title, const string &desc, Surfac
 	mTitlePos		= mTitleStart;
 	mTitleColor		= Color( 0.7f, 0.7f, 0.7f );
 	mTitleAlpha		= 1.0f;
-	mTitleWidth		= mTitleTex.getWidth();
-	mTitleHeight	= mTitleTex.getHeight();
+	mTitleWidth		= mTitleTex->getWidth();
+	mTitleHeight	= mTitleTex->getHeight();
 	
 	// desc
-	mDescStart		= vec2( mTitleStart.x + 25.0f, mTitleFinish.y + mTitleBigTex.getHeight() + 5.0f );
+	mDescStart		= vec2( mTitleStart.x + 25.0f, mTitleFinish.y + mTitleBigTex->getHeight() + 5.0f );
 	mDescDest		= vec2( mTitleStart.x + 35.0f, mDescStart.y );
 	mDescPos		= mDescStart;
 	mDescAlpha		= 0.0f;
 	TextBox tbox	= TextBox().alignment( TextBox::LEFT ).font( sSmallFont ).size( ivec2( 650.0f, TextBox::GROW ) ).text( mDesc );
-	mDescTex		= gl::Texture( tbox.render() );
+	mDescTex		= gl::Texture::create( tbox.render() );
 	
 	// bar
 	mBarPos			= pos - vec2( 4.0f, 1.0f );
@@ -163,7 +163,7 @@ void Item::select( Timeline &timeline, float leftBorder )
 		timeline.apply( &mBarWidth, 0.0f, dur1, EaseInOutAtan( 10 ) );
 
 		for( std::vector<Swatch>::iterator swatchIt = mSwatches.begin(); swatchIt != mSwatches.end(); ++swatchIt ) {
-			swatchIt->scatter( timeline, math<float>::max( mTitleBigTex.getWidth(), 500.0f ), mTitleFinish.y + 50.0f );
+			swatchIt->scatter( timeline, math<float>::max( mTitleBigTex->getWidth(), 500.0f ), mTitleFinish.y + 50.0f );
 		}
 	}
 }

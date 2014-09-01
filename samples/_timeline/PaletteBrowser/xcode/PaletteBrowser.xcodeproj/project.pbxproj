@@ -78,9 +78,9 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				00BAE6590E7ED9C10018A608 /* PaletteBrowserApp.cpp */,
 				E1035CD81468AD7100AD808C /* Item.cpp */,
 				E125AB151469D7B000114235 /* Swatch.cpp */,
+				00BAE6590E7ED9C10018A608 /* PaletteBrowserApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
