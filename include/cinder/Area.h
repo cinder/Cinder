@@ -77,7 +77,7 @@ class Area {
 
 	bool			contains( const ivec2 &offset ) const;
 	template<typename T>
-	bool			contains( const glm::detail::tvec2<T, defaultp> &offset ) const { return contains( glm::detail::tvec2<T, defaultp>( (int32_t)math<T>::ceil( offset. x ), (int32_t)math<T>::ceil( offset.y ) ) ); }
+	bool			contains( const glm::detail::tvec2<T, defaultp> &offset ) const { return contains( ivec2( (int32_t)math<T>::ceil( offset. x ), (int32_t)math<T>::ceil( offset.y ) ) ); }
 	bool			intersects( const Area &area ) const;
 
 	//! Expands the Area to include \a point in its interior
