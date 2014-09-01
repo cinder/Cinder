@@ -1,5 +1,5 @@
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Base64.h"
 
 using namespace ci;
