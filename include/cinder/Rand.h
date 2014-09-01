@@ -33,12 +33,12 @@ class Rand {
 		: mBase( 214u ), mHaveNextNextGaussian( false )
 	{}
 	
-	Rand( unsigned long seed )
+	Rand( uint32_t seed )
 		: mBase( seed ), mHaveNextNextGaussian( false )
 	{}
 
 	//! Re-seeds the random generator
-	void seed( unsigned long seedValue );
+	void seed( uint32_t seedValue );
 	
 	//! returns a random boolean value
 	bool nextBool()
@@ -157,7 +157,7 @@ class Rand {
 	static void randomize();
 	
 	//! Resets the static random generator to the specific seed \a seedValue
-	static void	randSeed( unsigned long seedValue );
+	static void	randSeed( uint32_t seedValue );
 	
 	//! returns a random boolean value
 	static bool randBool()
@@ -285,7 +285,7 @@ class Rand {
 };
 
 //! Resets the static random generator to the specific seed \a seedValue
-inline void randSeed( unsigned long seedValue ) { Rand::randSeed( seedValue ); }
+inline void randSeed( uint32_t seedValue ) { Rand::randSeed( seedValue ); }
 
 //! returns a random boolean value
 inline bool randBool() { return Rand::randBool(); }
