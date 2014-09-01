@@ -110,7 +110,10 @@ void PostProcessingAAApp::setup()
 		mInfoSMAA = gl::Texture::create( loadImage( loadAsset( "smaa.png" ) ) );
 		mInfoOriginal = gl::Texture::create( loadImage( loadAsset( "original.png" ) ) );
 	}
-	catch( const std::exception& ) {}
+	catch( const std::exception& e ) {
+		console() << "Failed to load textures: " << e.what() << std::endl;
+		quit();
+	}
 
 	mPistons.setup();
 	mFXAA.setup();
