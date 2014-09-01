@@ -13,12 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
     </Filter>
-    <Filter Include="Header Files\FXAA">
-      <UniqueIdentifier>{40fa0af7-5ab4-4566-8a82-a9ce5e2c9b2a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Header Files\SMAA">
-      <UniqueIdentifier>{44563c26-6453-44d4-9aa3-eaaef79346b7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\FXAA">
       <UniqueIdentifier>{fff3aedb-e54e-4330-b289-89eea63f3991}</UniqueIdentifier>
     </Filter>
@@ -51,10 +45,10 @@
     <ClCompile Include="..\src\Pistons.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\fxaa\FXAA.cpp">
+    <ClCompile Include="..\src\fxaa\FXAA.cpp">
       <Filter>Source Files\FXAA</Filter>
     </ClCompile>
-    <ClCompile Include="..\include\smaa\SMAA.cpp">
+    <ClCompile Include="..\src\smaa\SMAA.cpp">
       <Filter>Source Files\SMAA</Filter>
     </ClCompile>
   </ItemGroup>
@@ -68,23 +62,23 @@
     <ClInclude Include="..\include\Pistons.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\smaa\AreaTex.h">
-      <Filter>Header Files\SMAA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\smaa\SearchTex.h">
-      <Filter>Header Files\SMAA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\smaa\SMAA.h">
-      <Filter>Header Files\SMAA</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\fxaa\FXAA.h">
-      <Filter>Header Files\FXAA</Filter>
-    </ClInclude>
     <ClInclude Include="..\assets\FXAA3_11.h">
       <Filter>Shader Files\FXAA</Filter>
     </ClInclude>
     <ClInclude Include="..\assets\SMAA.h">
       <Filter>Shader Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\fxaa\FXAA.h">
+      <Filter>Source Files\FXAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\smaa\AreaTex.h">
+      <Filter>Source Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\smaa\SearchTex.h">
+      <Filter>Source Files\SMAA</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\smaa\SMAA.h">
+      <Filter>Source Files\SMAA</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

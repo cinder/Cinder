@@ -107,22 +107,22 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\include\fxaa\FXAA.cpp" />
-    <ClCompile Include="..\include\smaa\SMAA.cpp" />
+    <ClCompile Include="..\src\fxaa\FXAA.cpp" />
     <ClCompile Include="..\src\Pistons.cpp" />
     <ClCompile Include="..\src\PostProcessingAAApp.cpp" />
     <ClCompile Include="..\src\Shader.cpp" />
+    <ClCompile Include="..\src\smaa\SMAA.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\assets\FXAA3_11.h" />
     <ClInclude Include="..\assets\SMAA.h" />
-    <ClInclude Include="..\include\fxaa\FXAA.h" />
     <ClInclude Include="..\include\Pistons.h" />
     <ClInclude Include="..\include\Resources.h" />
     <ClInclude Include="..\include\Shader.h" />
-    <ClInclude Include="..\include\smaa\AreaTex.h" />
-    <ClInclude Include="..\include\smaa\SearchTex.h" />
-    <ClInclude Include="..\include\smaa\SMAA.h" />
+    <ClInclude Include="..\src\fxaa\FXAA.h" />
+    <ClInclude Include="..\src\smaa\AreaTex.h" />
+    <ClInclude Include="..\src\smaa\SearchTex.h" />
+    <ClInclude Include="..\src\smaa\SMAA.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\fxaa.frag" />
