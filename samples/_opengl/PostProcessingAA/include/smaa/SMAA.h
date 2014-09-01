@@ -54,7 +54,7 @@ public:
 	ci::gl::Texture2dRef  mAreaTex;
 	ci::gl::Texture2dRef  mSearchTex;
 
-	//
+	// Size of our buffers, to be passed to the shaders.
 	ci::vec4              mMetrics;
 private:
 	void                  createBuffers( int width, int height );

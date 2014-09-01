@@ -44,8 +44,6 @@ public:
 	static ShaderRef     create();
 	static ShaderRef     create( const std::string& name );
 
-	//Shader&              enableLiveEdit( bool enabled = true ) { mIsLiveEditable = enabled; return *this; }
-
 	ci::gl::GlslProgRef  program() { return mGlslProg; }
 
 	template<typename T>
@@ -66,7 +64,6 @@ private:
 	std::string          mGeometryFile;
 
 	bool                 mHasGeometryShader;
-	bool                 mIsLiveEditable;
 
 	mutable ci::fs::path mPath;
 

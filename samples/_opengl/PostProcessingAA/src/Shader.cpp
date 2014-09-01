@@ -37,20 +37,20 @@
 using namespace ci;
 
 Shader::Shader( void )
-	: mHasGeometryShader( false ), mIsLiveEditable( false ), mGlslVersion( 0 )
+	: mHasGeometryShader( false ), mGlslVersion( 0 )
 {
 }
 
 Shader::Shader( const std::string& name )
 	: mName( name ), mVertexFile( name + ".vert" ), mFragmentFile( name + ".frag" ), mGeometryFile( name + ".geom" )
-	, mHasGeometryShader( false ), mIsLiveEditable( false ), mGlslVersion( 0 )
+	, mHasGeometryShader( false ), mGlslVersion( 0 )
 {
 	load();
 }
 
 Shader::Shader( const std::string& name, const std::string& vert, const std::string& frag, const std::string& geom )
 	: mName( name ), mVertexFile( vert ), mFragmentFile( frag ), mGeometryFile( geom )
-	, mHasGeometryShader( false ), mIsLiveEditable( false ), mGlslVersion( 0 )
+	, mHasGeometryShader( false ), mGlslVersion( 0 )
 {
 	load();
 }
@@ -144,9 +144,6 @@ std::string Shader::parseShader( const fs::path& path, bool optional, int level 
 	}
 
 	static const std::regex includeRegexp( "^[ ]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
-	static const std::regex commentRegexp( "(.*?)/\\*(.*?)\\*/(.*?)" );
-	static const std::regex commentBeginRegexp( "(.*?)/\\*(.*?)" );
-	static const std::regex commentEndRegexp( "(.*?)\\*/(.*?)" );
 
 	std::ifstream input( path.c_str() );
 	if( !input.is_open() ) {
@@ -169,32 +166,13 @@ std::string Shader::parseShader( const fs::path& path, bool optional, int level 
 	std::string line;
 	std::smatch	matches;
 
-	//bool isInsideComment = false;
 	while( std::getline( input, line ) ) {
-		/*
-		if( isInsideComment ) {
-		if( std::regex_search( line, matches, commentEndRegexp ) ) {
-		isInsideComment = false;
-		output << matches[2].str() << std::endl;
-		}
-		}
-		else {
-		// Remove single line comments.
-		line = std::regex_replace( line, commentRegexp, "" );
-		// Handle multi line comments.
-		if( std::regex_search( line, matches, commentBeginRegexp ) ) {
-		isInsideComment = true;
-		output << matches[1].str();
-		}
-		else
-		*/
 		if( std::regex_search( line, matches, includeRegexp ) )
 			output << parseShader( path.parent_path() / matches[1].str(), false, level + 1 );
 		else
 			output << line;
 
 		output << std::endl;
-		//}
 	}
 
 	input.close();

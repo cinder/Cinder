@@ -88,12 +88,12 @@ private:
 	gl::TextureRef      mInfoSMAA;       // Info texture.
 	gl::TextureRef      mInfoOriginal;   // Info texture.
 
-	glm::vec2           mDivider;        // Determines which part of our scene is anti-aliased.
+	vec2                mDivider;        // Determines which part of our scene is anti-aliased.
 	DividerMode         mDividerMode;    // Allows us to see each of the modes (Original, FXAA, SMAA) full screen.
 	int                 mDividerWidth;
 	int                 mPixelSize;      // Allows us to zoom in on the scene.
 
-	glm::vec2           mMouse;
+	vec2                mMouse;          // Keep track of the mouse cursor.
 };
 
 void PostProcessingAAApp::prepareSettings( Settings* settings )
@@ -150,8 +150,8 @@ void PostProcessingAAApp::update()
 	float y = 150.0f * math<float>::sin( theta );
 	float z = 150.0f * math<float>::sin( phi ) * math<float>::cos( theta );
 
-	mCamera.setEyePoint( glm::vec3( x, y, z ) );
-	mCamera.setCenterOfInterestPoint( glm::vec3( 1, 50, 0 ) );
+	mCamera.setEyePoint( vec3( x, y, z ) );
+	mCamera.setCenterOfInterestPoint( vec3( 1, 50, 0 ) );
 	mCamera.setFov( 40.0f );
 
 	// Update the pistons.
@@ -182,7 +182,7 @@ void PostProcessingAAApp::draw()
 			gl::pushMatrices();
 			gl::setMatricesWindow( mDividerWidth, getWindowHeight() );
 			gl::pushViewport( (int) mDivider.x - mDividerWidth, 0, mDividerWidth, getWindowHeight() );
-			gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( glm::vec2( -( mDivider.x - mDividerWidth ), 0 ) ) );
+			gl::draw( mFboFinal->getColorTexture(), getWindowBounds().getMoveULTo( vec2( -( mDivider.x - mDividerWidth ), 0 ) ) );
 			gl::popViewport();
 			gl::popMatrices();
 		}
@@ -206,7 +206,7 @@ void PostProcessingAAApp::draw()
 			gl::pushMatrices();
 			gl::setMatricesWindow( mDividerWidth, getWindowHeight());
 			gl::pushViewport( (int) mDivider.x, 0, mDividerWidth, getWindowHeight() );
-			gl::draw( tex, getWindowBounds().getMoveULTo( glm::vec2( -mDivider.x, 0 ) ) );
+			gl::draw( tex, getWindowBounds().getMoveULTo( vec2( -mDivider.x, 0 ) ) );
 			gl::popViewport();
 			gl::popMatrices();
 		}
@@ -220,36 +220,34 @@ void PostProcessingAAApp::draw()
 
 	// Draw divider.
 	if( mDividerMode == MODE_COMPARISON ) {
-		gl::drawLine( glm::vec2( (float) mDivider.x, 0 ), glm::vec2( (float) mDivider.x, (float) getWindowHeight() ) );
-		gl::drawLine( glm::vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
-		gl::drawLine( glm::vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), glm::vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
+		gl::drawLine( vec2( (float) mDivider.x, 0 ), vec2( (float) mDivider.x, (float) getWindowHeight() ) );
+		gl::drawLine( vec2( (float) ( mDivider.x - mDividerWidth ), 0 ), vec2( (float) ( mDivider.x - mDividerWidth ), (float) getWindowHeight() ) );
+		gl::drawLine( vec2( (float) ( mDivider.x + mDividerWidth ), 0 ), vec2( (float) ( mDivider.x + mDividerWidth ), (float) getWindowHeight() ) );
 	}
 
 	// Draw info.
 	gl::enableAlphaBlending();
 	switch( mDividerMode ) {
 	case MODE_COMPARISON:
-		gl::draw( mInfoOriginal, glm::vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
-		gl::draw( mInfoFXAA, glm::vec2( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
-		gl::draw( mInfoSMAA, glm::vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
-		gl::draw( mInfoOriginal, glm::vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
+		gl::draw( mInfoOriginal, vec2( mDivider.x - mDividerWidth * 3 / 2 - 128, 32 ) );
+		gl::draw( mInfoFXAA, vec2( mDivider.x - mDividerWidth * 1 / 2 - 128, 32 ) );
+		gl::draw( mInfoSMAA, vec2( mDivider.x + mDividerWidth * 1 / 2 - 128, 32 ) );
+		gl::draw( mInfoOriginal, vec2( mDivider.x + mDividerWidth * 3 / 2 - 128, 32 ) );
 		break;
 	case MODE_ORIGINAL1:
 	case MODE_ORIGINAL2:
-		gl::draw( mInfoOriginal, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		gl::draw( mInfoOriginal, vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
 	case MODE_FXAA:
-		gl::draw( mInfoFXAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		gl::draw( mInfoFXAA, vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
 	case MODE_SMAA:
-		gl::draw( mInfoSMAA, glm::vec2( getWindowWidth() / 2 - 128, 32 ) );
+		gl::draw( mInfoSMAA, vec2( getWindowWidth() / 2 - 128, 32 ) );
 		break;
     default:
         break;
 	}
 	gl::disableAlphaBlending();
-
-	//gl::draw( mSMAA.mAreaTex );
 }
 
 void PostProcessingAAApp::render()
@@ -283,7 +281,7 @@ void PostProcessingAAApp::resize()
 	// Update the camera's aspect ratio.
 	mCamera.setAspectRatio( getWindowAspectRatio() );
 
-	//
+	// Resize the divider.
 	mDividerWidth = getWindowWidth() / 4;
 }
 
@@ -294,7 +292,7 @@ void PostProcessingAAApp::mouseMove( MouseEvent event )
 	if( mMouse.x < 100 ) 
 		mMouse.x = 0;
 	else if( mMouse.x > getWindowWidth() - 100 ) 
-		mMouse.x = getWindowWidth();
+		mMouse.x = (float) getWindowWidth();
 }
 
 void PostProcessingAAApp::mouseDrag( MouseEvent event )
@@ -304,7 +302,7 @@ void PostProcessingAAApp::mouseDrag( MouseEvent event )
 	if( mMouse.x < 50 )
 		mMouse.x = 0;
 	else if( mMouse.x > getWindowWidth() - 50 )
-		mMouse.x = getWindowWidth();
+		mMouse.x = (float) getWindowWidth();
 }
 
 void PostProcessingAAApp::keyDown( KeyEvent event )

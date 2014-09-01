@@ -69,7 +69,7 @@ void FXAA::draw( gl::TextureRef source, const Area& bounds )
 	const int h = bounds.getHeight();
 
 	gl::ScopedGlslProg shader( mFXAA->program() );
-	mFXAA->uniform( "uExtends", glm::vec4( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
+	mFXAA->uniform( "uExtends", vec4( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
 
 	gl::ScopedTextureBind tex0( source );
 

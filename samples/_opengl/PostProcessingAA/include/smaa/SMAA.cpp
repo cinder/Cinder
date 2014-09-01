@@ -146,7 +146,7 @@ void SMAA::createBuffers( int width, int height )
 		mFboBlendPass = gl::Fbo::create( width, height, mFboFormat );
 	}
 
-	mMetrics = glm::vec4( 1.0f / width, 1.0f / height, (float) width, (float) height );
+	mMetrics = vec4( 1.0f / width, 1.0f / height, (float) width, (float) height );
 }
 
 void SMAA::doEdgePass( gl::Texture2dRef source )
