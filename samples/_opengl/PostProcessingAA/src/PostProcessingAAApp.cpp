@@ -3,9 +3,11 @@ Copyright (c) 2014, Paul Houx - All rights reserved.
 This code is intended for use with the Cinder C++ library: http://libcinder.org
 
 FXAA:
+http://developer.download.nvidia.com/assets/gamedev/files/sdk/11/FXAA_WhitePaper.pdf
 Copyright (c) 2010, 2011 NVIDIA CORPORATION. ALL RIGHTS RESERVED.
 
 SMAA:
+http://www.iryoku.com/smaa/
 Copyright (c) 2013 Jorge Jimenez (jorge@iryoku.com)
 Copyright (c) 2013 Jose I. Echevarria (joseignacioechevarria@gmail.com)
 Copyright (c) 2013 Belen Masia (bmasia@unizar.es)
