@@ -61,7 +61,7 @@ class FrustumCullingReduxApp : public AppBasic
 	//! load the heart shaped mesh 
 	void			loadObject();
 	//! draws a grid to visualize the ground plane
-	void			drawGrid(float size=100.0f, float step=10.0f);
+	void			drawGrid( float size = 100.0f, float step = 10.0f );
 	//! toggles vertical sync on both Windows and Macs
 	void			toggleVerticalSync();
 	//! renders the help text
@@ -104,12 +104,12 @@ class FrustumCullingReduxApp : public AppBasic
 void FrustumCullingReduxApp::prepareSettings(Settings *settings)
 {
 	//! setup our window
-	settings->setWindowSize(1200, 675);
-	settings->setTitle("Frustum Culling Redux");
+	settings->setWindowSize( 1200, 675 );
+	settings->setTitle( "Frustum Culling Redux" );
 	//! set the frame rate to something very high, so we can
 	//! easily see the effect frustum culling has on performance.
 	//! Disable vertical sync to achieve the actual frame rate.
-	settings->setFrameRate(300);
+	settings->setFrameRate( 300 );
 }
 
 void FrustumCullingReduxApp::setup()
@@ -140,9 +140,9 @@ void FrustumCullingReduxApp::setup()
 	//! setup material
 	//  we set it up once because all of our objects will
 	//  share the same values
-	mShader->uniform( "cAmbient", Color(0.1f, 0.1f, 0.1f) );
-	mShader->uniform( "cDiffuse", Color(1.0f, 0.0f, 0.0f) );
-	mShader->uniform( "cSpecular", Color(1.0f, 1.0f, 1.0f) );
+	mShader->uniform( "cAmbient", Color( 0.1f, 0.1f, 0.1f ) );
+	mShader->uniform( "cDiffuse", Color( 1.0f, 0.0f, 0.0f ) );
+	mShader->uniform( "cSpecular", Color( 1.0f, 1.0f, 1.0f ) );
 	mShader->uniform( "shininess", 50.0f );
 
 	//! load assets
@@ -152,8 +152,8 @@ void FrustumCullingReduxApp::setup()
 	Rand::randomize();
 	mObjects.resize( NUM_OBJECTS );
 	for( auto & obj : mObjects ) {
-		vec3 p( Rand::randFloat(-2000.0f, 2000.0f), 0.0f, Rand::randFloat(-2000.0f, 2000.0f) );
-		vec3 r( 0.0f, Rand::randFloat(-360.0f, 360.0f), 0.0f );
+		vec3 p( Rand::randFloat( -2000.0f, 2000.0f ), 0.0f, Rand::randFloat( -2000.0f, 2000.0f ) );
+		vec3 r( 0.0f, Rand::randFloat( -360.0f, 360.0f ), 0.0f );
 		vec3 s( 50.10f, 50.10f, 50.10f );
 
 		obj = CullableObjectRef( new CullableObject( mBatch ) );
@@ -161,7 +161,7 @@ void FrustumCullingReduxApp::setup()
 	}
 
 	//! setup cameras
-	mRenderCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 10000.0f );
+	mRenderCam.setPerspective( mViewableFov, getWindowAspectRatio(), .01f, 10000.0f );
 	mRenderCam.lookAt( vec3( 200.0f ), vec3( 0.0f ) );
 	
 	mMayaCam.setCurrentCam( mRenderCam );
@@ -234,9 +234,9 @@ void FrustumCullingReduxApp::draw()
 				worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 				
 				if( ! obj->isCulled() )
-					gl::color( Color(0, 1, 1) );
+					gl::color( Color( 0, 1, 1 ) );
 				else
-					gl::color( Color(1, 0.5f, 0) );
+					gl::color( Color( 1, 0.5f, 0 ) );
 				
 				gl::drawStrokedCube( worldBoundingBox );
 			}
@@ -318,7 +318,7 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 void FrustumCullingReduxApp::toggleCullableFov()
 {
 	static bool forward = true;
-	timeline().applyPtr( &mCullableFov, forward ? 35.0f : 62.0f, 1.0f, EaseInOutCubic() );
+	timeline().applyPtr( &mCullableFov, forward ? 40.0f : 62.0f, 1.0f, EaseInOutCubic() );
 	forward = !forward;
 }
 
@@ -352,13 +352,13 @@ void FrustumCullingReduxApp::loadObject()
 
 void FrustumCullingReduxApp::drawGrid(float size, float step)
 {
-	gl::color( Colorf(0.2f, 0.2f, 0.2f) );
+	gl::color( Colorf( 0.2f, 0.2f, 0.2f ) );
 	gl::begin( GL_LINES );
 	for(float i=-size;i<=size;i+=step) {
-		gl::vertex( vec3(i, 0.0f, -size) );
-		gl::vertex( vec3(i, 0.0f,  size) );
-		gl::vertex( vec3(-size, 0.0f, i) );
-		gl::vertex( vec3( size, 0.0f, i) );
+		gl::vertex( vec3( i, 0.0f, -size ) );
+		gl::vertex( vec3( i, 0.0f,  size ) );
+		gl::vertex( vec3( -size, 0.0f, i ) );
+		gl::vertex( vec3(  size, 0.0f, i ) );
 	}
 	gl::end();
 }
@@ -372,26 +372,26 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 {
 	TextLayout layout;
 	layout.setFont( Font("Arial", 18) );
-	layout.setColor( ColorA(1.0f, 1.0f, 1.0f, 1.0f) );
-	layout.setLeadingOffset(3.0f);
+	layout.setColor( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	layout.setLeadingOffset( 3.0f );
 
-	layout.clear( ColorA(0.25f, 0.25f, 0.25f, 0.5f) );
+	layout.clear( ColorA( 0.25f, 0.25f, 0.25f, 0.5f ) );
 
-	if(bPerformCulling) layout.addLine("(C) Toggle culling (currently ON)");
-	else  layout.addLine("(C) Toggle culling (currently OFF)");
+	if( bPerformCulling ) layout.addLine( "(C) Toggle culling (currently ON)" );
+	else  layout.addLine( "(C) Toggle culling (currently OFF)" );
 
-	if(bDrawEstimatedBoundingBoxes) layout.addLine("(B) Toggle estimated bounding boxes (currently ON)");
-	else  layout.addLine("(B) Toggle estimated bounding boxes (currently OFF)");
+	if( bDrawEstimatedBoundingBoxes ) layout.addLine( "(B) Toggle estimated bounding boxes (currently ON)" );
+	else  layout.addLine( "(B) Toggle estimated bounding boxes (currently OFF)" );
 
-	if(bDrawPreciseBoundingBoxes) layout.addLine("(B)+(Shift) Toggle precise bounding boxes (currently ON)");
-	else  layout.addLine("(B)+(Shift) Toggle precise bounding boxes (currently OFF)");
+	if( bDrawPreciseBoundingBoxes ) layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently ON)" );
+	else  layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently OFF)" );
 
-	if(gl::isVerticalSyncEnabled()) layout.addLine("(V) Toggle vertical sync (currently ON)");
-	else  layout.addLine("(V) Toggle vertical sync (currently OFF)");
+	if( gl::isVerticalSyncEnabled() ) layout.addLine( "(V) Toggle vertical sync (currently ON)" );
+	else  layout.addLine( "(V) Toggle vertical sync (currently OFF)" );
 
-	layout.addLine("(H) Toggle this help panel");
+	layout.addLine( "(H) Toggle this help panel" );
 
-	mHelp = gl::Texture::create( layout.render(true, false) );
+	mHelp = gl::Texture::create( layout.render( true, false ) );
 }
 
 CINDER_APP_BASIC( FrustumCullingReduxApp, RendererGl )

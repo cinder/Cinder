@@ -26,12 +26,12 @@ using namespace ci;
 using namespace ci::gl;
 
 CullableObject::CullableObject( const BatchRef &batch )
-	: mBatch( batch ), bIsCulled(false)
+	: mBatch( batch ), bIsCulled( false )
 {
 	setTransform( vec3( 0.0f ), vec3( 0.0f ), vec3( 0.1f ) );
 }
 
-CullableObject::~CullableObject(void)
+CullableObject::~CullableObject()
 {
 }
 
@@ -53,7 +53,7 @@ void CullableObject::draw()
 
 		//! draw the mesh 
 		gl::ScopedModelMatrix scopeModel;
-			gl::multModelMatrix(mTransform);
+			gl::multModelMatrix( mTransform );
 			mBatch->draw();
 	}
 }

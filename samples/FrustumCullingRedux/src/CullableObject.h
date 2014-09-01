@@ -35,18 +35,18 @@ public:
 	CullableObject( const ci::gl::BatchRef &batch );
 	~CullableObject();
 	
-	void update(double elapsed);
+	void update( double elapsed );
 	void draw();
 
-	void setCulled(bool culled = true){ bIsCulled = culled; }
-	bool isCulled(){ return bIsCulled; }
+	void setCulled( bool culled = true ) { bIsCulled = culled; }
+	bool isCulled() { return bIsCulled; }
 
 	const ci::mat4& getTransform() const { return mTransform; }
 	
 	//! For sorting purposes
 	const ci::vec3& getPosition() const { return mPosition; }
 	
-	void setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale);
+	void setTransform( const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale );
 protected:
 	//! keep track of culling state
 	bool			bIsCulled;
@@ -63,7 +63,7 @@ protected:
 	//!		gl::BatchRef is a shared pointer, so when passing them from
 	//		FrustumCullingReduxApp to this CullableObject class, we are not
 	//		making a copy, but simply keep a reference to the same batch.
-	const ci::gl::BatchRef		mBatch;
+	ci::gl::BatchRef		mBatch;
 	
 	
 };
