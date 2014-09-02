@@ -243,13 +243,15 @@ void FrustumCullingReduxApp::draw()
 				gl::drawStrokedCube( worldBoundingBox );
 			}
 		}
-		
-		drawGrid( 2000, 25 );
 
+		// disable writing to depth buffer before drawing lines so they don't flicker with geometry
+		gl::disableDepthWrite();
+
+		drawGrid( 2000, 25 );
+		gl::drawCoordinateFrame( 100, 8, 3 );
 		drawCullableFov();
 
-		// disable 3D rendering
-		gl::disableDepthWrite();
+		// disable depth testing
 		gl::disableDepthRead();
 	}
 	
