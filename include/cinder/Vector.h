@@ -65,6 +65,30 @@ glm::detail::tvec3<T, P> orthogonal( const glm::detail::tvec3<T, P> &vec )
 		return glm::detail::tvec3<T, P>( 0, vec.z, -vec.y ); // cross( this, X )
 }
 
+template<typename T, precision P>
+glm::detail::tvec3<T, P> slerp( const glm::detail::tvec3<T, P> &a, const glm::detail::tvec3<T, P> &b, T t )
+{
+	T cosAlpha, alpha, sinAlpha;
+	T t1, t2;
+	glm::detail::tvec3<T, P> result;
+
+	// get cosine of angle between vectors (-1 -> 1)
+	cosAlpha = glm::dot( a, b );
+
+	// get angle (0 -> pi)
+	alpha = math<T>::acos( cosAlpha );
+
+	// get sine of angle between vectors (0 -> 1)
+	sinAlpha = math<T>::sin( alpha );
+
+	// this breaks down when sinAlpha = 0, i.e. alpha = 0 or pi
+	t1 = math<T>::sin( ((T)1 - t) * alpha) / sinAlpha;
+	t2 = math<T>::sin( t * alpha ) / sinAlpha;
+
+	// interpolate src vectors
+	return a * t1 + b * t2;
+}
+
 template<uint8_t DIM,typename T> struct VECDIM { };
 
 template<> struct VECDIM<2,float>	{ typedef vec2	TYPE; };
