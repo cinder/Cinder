@@ -161,7 +161,7 @@ void FrustumCullingReduxApp::setup()
 	}
 
 	//! setup cameras
-	mRenderCam.setPerspective( mViewableFov, getWindowAspectRatio(), .01f, 10000.0f );
+	mRenderCam.setPerspective( mViewableFov, getWindowAspectRatio(), 10.0f, 10000.0f );
 	mRenderCam.lookAt( vec3( 200.0f ), vec3( 0.0f ) );
 	
 	mMayaCam.setCurrentCam( mRenderCam );
