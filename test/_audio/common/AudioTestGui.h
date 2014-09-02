@@ -116,7 +116,7 @@ struct Button : public TestWidget {
 			gl::color( lerp( mNormalColor, mEnabledColor, (float)mFadeFrames / (float)mTimeout ) );
 		}
 
-		gl::drawSolidRoundedRect( mBounds, 4 );
+		gl::drawSolidRect( mBounds );
 
 		std::string& title = mEnabled ? mTitleEnabled : mTitleNormal;
 
@@ -182,7 +182,8 @@ struct HSlider : public TestWidget {
 		float offset = mBounds.x1 + mBounds.getWidth() * mValue;
 		float w = 2.0f;
 		Rectf valRect( offset - w, mBounds.y1, offset + w, mBounds.y2 );
-		gl::drawSolidRoundedRect( valRect, w );
+
+		gl::drawSolidRect( valRect );
 	}
 
 	float mValue, mValueScaled, mMin, mMax;

@@ -507,7 +507,7 @@ void SamplePlayerNodeTestApp::draw()
 
 		float readPos = (float)getWindowWidth() * mSamplePlayerNode->getReadPosition() / mSamplePlayerNode->getNumFrames();
 		gl::color( ColorA( 0, 1, 0, 0.7f ) );
-		gl::drawSolidRoundedRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ), 2 );
+		gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ) );
 	}
 
 	if( mUnderrunFade > 0.0001f ) {
