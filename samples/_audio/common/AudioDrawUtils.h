@@ -27,7 +27,7 @@
 
 #include "cinder/Vector.h"
 #include "cinder/PolyLine.h"
-#include "cinder/TriMesh.h"
+#include "cinder/gl/VboMesh.h"
 
 #include <vector>
 
@@ -42,14 +42,14 @@ class Waveform {
 
 	void load( const float *samples, size_t numSamples, const ci::ivec2 &waveSize, size_t pixelsPerVertex = 2, CalcMode mode = MIN_MAX );
 
-    const ci::PolyLine2f& getOutline() const	{ return mOutline; }
-	const ci::TriMesh2d& getMesh() const		{ return mMesh; };
+    const ci::PolyLine2f&	getOutline() const	{ return mOutline; }
+	ci::gl::VboMeshRef		getMesh() const		{ return mMesh; };
 
     bool loaded() { return mOutline.getPoints().size() > 0; }
     
   private:
-    ci::PolyLine2f mOutline;
-	ci::TriMesh2d mMesh;
+    ci::PolyLine2f		mOutline;
+	ci::gl::VboMeshRef	mMesh;
 };
 
 class WaveformPlot {

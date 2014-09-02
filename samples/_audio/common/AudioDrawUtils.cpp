@@ -117,7 +117,7 @@ void Waveform::load( const float *samples, size_t numSamples, const ci::ivec2 &w
     }
 	mOutline.setClosed();
 
-	mMesh = Triangulator( mOutline ).calcMesh();
+	mMesh = gl::VboMesh::create( Triangulator( mOutline ).calcMesh() );
 }
 
 
