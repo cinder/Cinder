@@ -377,7 +377,7 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	layout.setColor( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
 	layout.setLeadingOffset( 3.0f );
 
-	layout.clear( ColorA( 0.25f, 0.25f, 0.25f, 0.5f ) );
+	layout.clear( ColorA::gray( 0.2f, 0.5f ) );
 
 	if( bPerformCulling ) layout.addLine( "(C) Toggle culling (currently ON)" );
 	else  layout.addLine( "(C) Toggle culling (currently OFF)" );
