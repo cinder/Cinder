@@ -7,13 +7,12 @@ uniform mat3	ciNormalMatrix;
 in vec4		ciPosition;
 in vec3		ciNormal;
 
-out VertexData {
-	vec4 position;
-	vec3 normal;
-} vVertexOut;
+out vec3 PositionEyeSpace;
+out vec3 Normal;
 
-void main(void) {
-	vVertexOut.position = ciModelView * ciPosition;
-	vVertexOut.normal = ciNormalMatrix * ciNormal;
+void main()
+{
+	PositionEyeSpace = vec3( ciModelView * ciPosition );
+	Normal = normalize( ciNormalMatrix * ciNormal );
 	gl_Position = ciModelViewProjection * ciPosition;
 }

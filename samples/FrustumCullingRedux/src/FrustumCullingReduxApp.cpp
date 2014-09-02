@@ -140,10 +140,9 @@ void FrustumCullingReduxApp::setup()
 	//! setup material
 	//  we set it up once because all of our objects will
 	//  share the same values
-	mShader->uniform( "cAmbient", Color( 0.1f, 0.1f, 0.1f ) );
-	mShader->uniform( "cDiffuse", Color( 1.0f, 0.0f, 0.0f ) );
-	mShader->uniform( "cSpecular", Color( 1.0f, 1.0f, 1.0f ) );
-	mShader->uniform( "shininess", 50.0f );
+	mShader->uniform( "uDiffuse", Color( 1.0f, 0.0f, 0.0f ) );
+	mShader->uniform( "uSpecular", Color( 1.0f, 1.0f, 1.0f ) );
+	mShader->uniform( "uShininess", 50.0f );
 
 	//! load assets
 	loadObject();
