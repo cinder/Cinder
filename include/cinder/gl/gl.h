@@ -58,7 +58,7 @@
 #include "cinder/Color.h"
 #include "cinder/Camera.h"
 #include "cinder/Matrix44.h"
-#include "cinder/geomIo.h"
+#include "cinder/GeomIo.h"
 #include "cinder/PolyLine.h"
 #include "cinder/Font.h"
 
