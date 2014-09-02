@@ -1,7 +1,8 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/Source.h"
 #include "cinder/audio/Target.h"
@@ -10,7 +11,6 @@
 #include "cinder/audio/SampleRecorderNode.h"
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/MonitorNode.h"
-#include "cinder/audio/Debug.h"
 
 #include "Resources.h"
 

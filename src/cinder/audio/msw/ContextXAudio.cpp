@@ -31,7 +31,7 @@
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"

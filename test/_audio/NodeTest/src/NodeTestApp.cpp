@@ -1,5 +1,6 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
@@ -7,7 +8,6 @@
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/Debug.h"
 
 #include "InterleavedPassThruNode.h"
 #include "../../common/AudioTestGui.h"

@@ -1,10 +1,10 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/Voice.h"
 #include "cinder/audio/MonitorNode.h"
-#include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "Resources.h"
 #include "../../common/AudioTestGui.h"
