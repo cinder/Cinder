@@ -223,9 +223,6 @@ void FrustumCullingReduxApp::draw()
 				obj->draw();
 		}
 		
-		// draw helper objects
-		gl::drawCoordinateFrame(100.0f, 5.0f, 2.0f);
-		
 		AxisAlignedBox3f worldBoundingBox;
 		for( auto & obj : mObjects ) {
 			if(bDrawEstimatedBoundingBoxes) {
