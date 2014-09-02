@@ -78,8 +78,10 @@ class FrustumCullingReduxApp : public AppBasic
 	bool			bDrawEstimatedBoundingBoxes;
 	bool			bDrawPreciseBoundingBoxes;
 	bool			bShowHelp;
+
+	bool			mShowRevealingFov;
 	
-	float			mViewableFov, mCullableFov;
+	Anim<float>		mCullingFov;
 
 	ci::TriMeshRef		mTriMesh;
 	gl::BatchRef		mBatch;
@@ -118,13 +120,8 @@ void FrustumCullingReduxApp::setup()
 	bPerformCulling = true;
 	bDrawEstimatedBoundingBoxes = false;
 	bDrawPreciseBoundingBoxes = false;
+	mShowRevealingFov = false;
 	bShowHelp = true;
-	
-	mViewableFov = 60.0f;
-	// This variable shows our cullable area.
-	// Throught we'll change it to see what
-	// happens when we cull objects.
-	mCullableFov = 61.0f;
 
 	//! render help texture
 	renderHelpToTexture();
@@ -160,7 +157,8 @@ void FrustumCullingReduxApp::setup()
 	}
 
 	//! setup cameras
-	mRenderCam.setPerspective( mViewableFov, getWindowAspectRatio(), 10.0f, 10000.0f );
+	mCullingFov = 60;
+	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10.0f, 10000.0f );
 	mRenderCam.lookAt( vec3( 200.0f ), vec3( 0.0f ) );
 	
 	mMayaCam.setCurrentCam( mRenderCam );
@@ -177,7 +175,10 @@ void FrustumCullingReduxApp::update()
 
 	//! perform frustum culling **********************************************************************************
 	// Set the current culling field of view.
-	mRenderCam.setFov( mCullableFov );
+	float originalFov = mRenderCam.getFov();
+
+	// If mShowRevealingFov = true, this will narrow the cam's FOV so that you can see the culling effect
+	mRenderCam.setFov( mCullingFov );
 	Frustumf visibleWorld( mRenderCam );
 
 	for( auto & obj : mObjects ) {
@@ -197,9 +198,9 @@ void FrustumCullingReduxApp::update()
 			obj->setCulled( false );
 		}
 	}
-	// Must reset this to the render fov to see the effects of culling.
-	mRenderCam.setFov( mViewableFov );
-	//! **********************************************************************************************************
+
+	// Set FOV to original
+	mRenderCam.setFov( originalFov );
 }
 
 void FrustumCullingReduxApp::draw()
@@ -316,9 +317,11 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 
 void FrustumCullingReduxApp::toggleCullableFov()
 {
-	static bool forward = true;
-	timeline().applyPtr( &mCullableFov, forward ? 40.0f : 62.0f, 1.0f, EaseInOutCubic() );
-	forward = !forward;
+	// when this is on, it reduces the field of view for culling only, so that you can see the culling in action.
+	mShowRevealingFov = ! mShowRevealingFov;
+	float fov = mShowRevealingFov ? 40 : 60;
+
+	timeline().apply( &mCullingFov, fov, 0.6f, EaseInOutCubic() );
 }
 
 void FrustumCullingReduxApp::drawCullableFov()
@@ -329,7 +332,7 @@ void FrustumCullingReduxApp::drawCullableFov()
 	gl::clear( GL_DEPTH_BUFFER_BIT );
 	
 	// This visualizes the camera's viewport change for the culling field of view.
-	float cullable = mCullableFov / 60.0f;
+	float cullable = mCullingFov / 60.0f;
 	
 	gl::ScopedMatrices scopeMat;
 	gl::setMatricesWindow( getWindowSize() );
