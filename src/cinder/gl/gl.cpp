@@ -1245,6 +1245,14 @@ void draw( const TriMesh &mesh )
 
 	draw( VboMesh::create( mesh ) );
 }
+	
+void draw( const geom::Source &source )
+{
+	if( source.getNumVertices() <= 0 )
+		return;
+	
+	draw( VboMesh::create( source ) );
+}
 
 void drawSolid( const Path2d &path, float approximationScale )
 {
@@ -1696,7 +1704,25 @@ void drawFrustum( const Camera &cam )
 	ctx->drawElements( GL_LINES, 32, GL_UNSIGNED_BYTE, 0 );
 	ctx->popVao();
 }
-
+	
+void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
+{
+	gl::color( 1.0f, 0.0f, 0.0f, 1.0f );
+	drawVector( vec3( 0.0f ), vec3( 1.0f, 0.0f, 0.0f ) * axisLength, headLength, headRadius );
+	gl::color( 0.0f, 1.0f, 0.0f, 1.0f );
+	drawVector( vec3( 0.0f ), vec3( 0.0f, 1.0f, 0.0f ) * axisLength, headLength, headRadius );
+	gl::color( 0.0f, 0.0f, 1.0f, 1.0f );
+	drawVector( vec3( 0.0f ), vec3( 0.0f, 0.0f, 1.0f ) * axisLength, headLength, headRadius );
+}
+	
+void drawVector( const vec3& start, const vec3& end, float headLength, float headRadius )
+{
+	gl::drawLine( start, end );
+	vec3 dir = end - start;
+	vec3 ori = end - normalize( dir ) * headLength;
+	gl::draw( geom::Cone().base( headRadius ).height( headLength ).origin( ori ).direction( dir ) );
+}
+	
 namespace {
 void drawStringHelper( const std::string &str, const vec2 &pos, const ColorA &color, Font font, int justification )
 {

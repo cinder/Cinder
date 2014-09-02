@@ -313,6 +313,8 @@ void draw( const Path2d &path, float approximationScale = 1.0f );
 void draw( const Shape2d &shape, float approximationScale = 1.0f );
 //! Draws a TriMesh \a mesh at the origin. Currently only uses position and index information.
 void draw( const TriMesh &mesh );
+//! Draws a geom::Source \a source at the origin.
+void draw( const geom::Source &source );
 
 //! Draws a solid (filled) Path2d \a path using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const Path2d &path2d, float approximationScale = 1.0f );
@@ -334,6 +336,9 @@ void drawSphere( const vec3 &center, float radius, int segments );
 void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
 //! Renders a stroked representation of \a cam
 void drawFrustum( const Camera &cam );
+void drawCoordinateFrame( float axisLength = 1.0f, float headLength = 0.2f, float headRadius = 0.05f );
+//! Draws a vector starting at \a start and ending at \a end. An arrowhead is drawn at the end of radius \a headRadius and length \a headLength.
+void drawVector( const vec3 &start, const vec3 &end, float headLength = 0.2f, float headRadius = 0.05f );
 
 //! Draws a line between points a and b
 void drawLine( const vec3 &a, const vec3 &b );

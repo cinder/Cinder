@@ -25,25 +25,28 @@
 #include "cinder/Matrix.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/gl/Vbo.h"
+#include "cinder/gl/Batch.h"
 
 typedef std::shared_ptr<class CullableObject> CullableObjectRef;
 
 class CullableObject
 {
 public:
-	CullableObject(ci::gl::VboMesh mesh, ci::gl::Texture diffuse, ci::gl::Texture normal, ci::gl::Texture specular);
-	virtual ~CullableObject(void);
-
-	void setup();
-	void update(double elapsed);
+	CullableObject( const ci::gl::BatchRef &batch );
+	~CullableObject();
+	
+	void update( double elapsed );
 	void draw();
 
-	void setCulled(bool culled = true){ bIsCulled = culled; };
-	bool isCulled(){ return bIsCulled; };
+	void setCulled( bool culled = true ) { bIsCulled = culled; }
+	bool isCulled() { return bIsCulled; }
 
-	const ci::mat4& getTransform() const { return mTransform; };
-	void setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale);
+	const ci::mat4& getTransform() const { return mTransform; }
+	
+	//! For sorting purposes
+	const ci::vec3& getPosition() const { return mPosition; }
+	
+	void setTransform( const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale );
 protected:
 	//! keep track of culling state
 	bool			bIsCulled;
@@ -55,15 +58,12 @@ protected:
 
 	//! this matrix combines all translations, rotations and scaling
 	//! and can be used to easily calculate the world space bounding box
-	ci::mat4	mTransform;
+	ci::mat4		mTransform;
 
-	//! gl::Texture and gl::VboMesh both are implicitly shared pointers,
-	//		so when passing them from FrustumCullingReduxApp to this CullableObject class,
-	//		we are not making a copy, but simply keep a reference to the same mesh
-	//		and textures. In the near future, Texture may be renamed to TextureRef and
-	//		VboMesh may become VboMeshRef for clarity.
-	const ci::gl::Texture	mDiffuse;
-	const ci::gl::Texture	mNormal;
-	const ci::gl::Texture	mSpecular;
-	const ci::gl::VboMesh	mVboMesh;
+	//!		gl::BatchRef is a shared pointer, so when passing them from
+	//		FrustumCullingReduxApp to this CullableObject class, we are not
+	//		making a copy, but simply keep a reference to the same batch.
+	ci::gl::BatchRef		mBatch;
+	
+	
 };
