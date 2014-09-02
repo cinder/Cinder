@@ -36,6 +36,7 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtx/transform.hpp"
 #include "glm/gtx/io.hpp"
+#include "glm/gtc/matrix_access.hpp"
 
 namespace cinder {
 
@@ -51,78 +52,38 @@ glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 //  
 //  A typical usage would be :
 //
-//      m[0] = Imath::firstFrame( p[0], p[1], p[2] );
+//      m[0] = firstFrame( p[0], p[1], p[2] );
 //      for( int i = 1; i < n - 1; i++ )
 //      {
-//          m[i] = Imath::nextFrame( m[i-1], p[i-1], p[i], t[i-1], t[i] );
+//          m[i] = nextFrame( m[i-1], p[i-1], p[i], t[i-1], t[i] );
 //      }
-//      m[n-1] = Imath::lastFrame( m[n-2], p[n-2], p[n-1] );
+//      m[n-1] = lastFrame( m[n-2], p[n-2], p[n-1] );
 //
 //  See Graphics Gems I for the underlying algorithm.
 //  These are also called Parallel Transport Frames
 //    see Game Programming Gems 2, Section 2.5
 
-#if 0
-
-// Vec3
-template< typename T >
-Matrix44<T> firstFrame( 
-	const Vec3<T> &firstPoint,
-	const Vec3<T> &secondPoint, 
-	const Vec3<T> &thirdPoint
+template<typename T>
+glm::detail::tmat4x4<T,glm::defaultp> firstFrame(
+	const glm::detail::tvec3<T,glm::defaultp> &firstPoint,
+	const glm::detail::tvec3<T,glm::defaultp> &secondPoint, 
+	const glm::detail::tvec3<T,glm::defaultp> &thirdPoint
 );
 
-template< typename T >
-Matrix44<T> nextFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec3<T> &prevPoint,
-	const Vec3<T> &curPoint,
-	Vec3<T> &prevTangent, 
-	Vec3<T> &curTangent 
+template<typename T>
+glm::detail::tmat4x4<T,glm::defaultp> nextFrame( 
+	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::detail::tvec3<T,glm::defaultp> &prevPoint,
+	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
+	glm::detail::tvec3<T,glm::defaultp> &prevTangent, 
+	glm::detail::tvec3<T,glm::defaultp> &curTangent 
 );
 			
-template< typename T >
-Matrix44<T> lastFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec3<T> &prevPoint, 
-	const Vec3<T> &lastPoint 
+template<typename T>
+glm::detail::tmat4x4<T,glm::defaultp> lastFrame( 
+	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::detail::tvec3<T,glm::defaultp> &lastPoint 
 );
-
-// Vec4
-template< typename T >
-Matrix44<T> firstFrame( 
-	const Vec4<T> &firstPoint,
-	const Vec4<T> &secondPoint, 
-	const Vec4<T> &thirdPoint
-)
-{
-	return firstFrame( firstPoint.xyz(), secondPoint.xyz(), thirdPoint.xyz() );
-}
-
-template< typename T >
-Matrix44<T> nextFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec4<T> &prevPoint,
-	const Vec4<T> &curPoint,
-	Vec4<T> &prevTangent, 
-	Vec4<T> &curTangent 
-)
-{
-	Vec3<T> aPrevTangent = prevTangent.xyz();
-	Vec3<T> aCurTangent = curTangent.xyz();
-	return nextFrame( prevMatrix, prevPoint.xyz(), curPoint.xyz(), aPrevTangent, aCurTangent );
-}
-			
-template< typename T >
-Matrix44<T> lastFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec4<T> &prevPoint, 
-	const Vec4<T> &lastPoint 
-)
-{
-	return lastFrame( prevMatrix, prevPoint.xyz(), lastPoint.xyz() );
-}
-
-#endif
 
 } // namespace cinder

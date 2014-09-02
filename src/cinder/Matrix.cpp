@@ -24,6 +24,7 @@
 
 #include "glm/gtx/matrix_operation.hpp"
 #include "glm/gtc/matrix_inverse.hpp"
+#include "glm/gtc/matrix_access.hpp"
 
 namespace cinder {
 
@@ -34,39 +35,31 @@ namespace cinder {
 //  defined by the three points 'firstPoint', 'secondPoint' and 'thirdPoint'. Note that if the two
 //  vectors <firstPoint,secondPoint> and <firstPoint,thirdPoint> are co-linears, an arbitrary twist value will
 //  be chosen.
-//
-//  Throw 'NullVecExc' if 'firstPoint' and 'secondPoint' are equals.
-#if 0
 template<typename T>
-Matrix44<T> firstFrame( 
-	const Vec3<T> &firstPoint, 
-	const Vec3<T> &secondPoint,
-	const Vec3<T> &thirdPoint 
+glm::detail::tmat4x4<T,glm::defaultp> firstFrame( 
+	const glm::detail::tvec3<T,glm::defaultp> &firstPoint, 
+	const glm::detail::tvec3<T,glm::defaultp> &secondPoint,
+	const glm::detail::tvec3<T,glm::defaultp> &thirdPoint 
 )
 {
-    Vec3<T> t = ( secondPoint - firstPoint ).normalized();
+    glm::detail::tvec3<T,glm::defaultp> t = normalize( secondPoint - firstPoint );
 
-    Vec3<T> n = t.cross( thirdPoint - firstPoint ).normalized();
-    if( n.length() == 0.0f ) {
+    glm::detail::tvec3<T,glm::defaultp> n = normalize( cross( t, thirdPoint - firstPoint ) );
+    if( length( n ) == 0.0f ) {
         int i = fabs( t[0] ) < fabs( t[1] ) ? 0 : 1;
         if( fabs( t[2] ) < fabs( t[i] ) ) i = 2;
 
-        Vec3<T> v( (T)0.0, (T)0.0, (T)0.0 ); v[i] = (T)1.0;
-        n = t.cross( v ).normalized();
+        glm::detail::tvec3<T,glm::defaultp> v( (T)0.0, (T)0.0, (T)0.0 ); v[i] = (T)1.0;
+        n = normalize( cross( t, v ) );
     }
 
-    Vec3<T> b = t.cross( n );
+    glm::detail::tvec3<T,glm::defaultp> b = cross( t, n );
 
-    Matrix44<T> M;
-
-    M.m[0] =  b[0]; M.m[1] =  b[1]; M.m[2]  =  b[2]; M.m[3]  = (T)0.0,
-    M.m[4] =  n[0]; M.m[5] =  n[1]; M.m[6]  =  n[2]; M.m[7]  = (T)0.0,
-    M.m[8] =  t[0]; M.m[9] =  t[1]; M.m[10] =  t[2]; M.m[11] = (T)0.0,
-    M.m[12] = firstPoint[0]; M.m[13] = firstPoint[1]; M.m[14] = firstPoint[2]; M.m[15] = (T)1.0;
-    //M.m[0] =  t[0]; M.m[1] =  t[1]; M.m[2] =  t[2]; M.m[3] = (T)0.0,
-    //M.m[4] =  n[0]; M.m[5] =  n[1]; M.m[6] =  n[2]; M.m[7] = (T)0.0,
-    //M.m[8] =  b[0]; M.m[9] =  b[1]; M.m[10] =  b[2]; M.m[11] = (T)0.0,
-    //M.m[12] = firstPoint[0]; M.m[13] = firstPoint[1]; M.m[14] = firstPoint[2]; M.m[15] = (T)1.0;
+    glm::detail::tmat4x4<T,glm::defaultp> M;
+	M[0] = glm::detail::tvec4<T,glm::defaultp>( b, 0 );
+	M[1] = glm::detail::tvec4<T,glm::defaultp>( n, 0 );
+	M[2] = glm::detail::tvec4<T,glm::defaultp>( t, 0 );
+	M[3] = glm::detail::tvec4<T,glm::defaultp>( firstPoint, 1 );
 
     return M;
 
@@ -78,47 +71,40 @@ Matrix44<T> firstFrame(
 //  frame defined by the previously computed transformation matrix and the
 //  new point and tangent vector along the curve.
 template<typename T>
-Matrix44<T> nextFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec3<T> &prevPoint, 
-	const Vec3<T> &curPoint,
-	Vec3<T> &prevTangent, 
-	Vec3<T> &curTangent 
+glm::detail::tmat4x4<T,glm::defaultp> nextFrame( 
+	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
+	glm::detail::tvec3<T,glm::defaultp> &prevTangent, 
+	glm::detail::tvec3<T,glm::defaultp> &curTangent 
 )
 {
-    Vec3<T> a = vec3( 0 );	// Rotation axis.
-    T r = 0;						// Rotation angle.
+    glm::detail::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
+    T r = 0;										// Rotation angle.
 
-    if( ( prevTangent.length() != 0.0 ) && ( curTangent.length() != 0.0 ) ) {
-        prevTangent.normalize();
-        curTangent.normalize();
-        T dot = prevTangent.dot( curTangent ); 
+    if( ( prevTangent.length() != 0 ) && ( curTangent.length() != 0 ) ) {
+		normalize( prevTangent );
+		normalize( curTangent );
+		T dot = glm::dot( prevTangent, curTangent );
 
-        if( dot > (T)1.0 ) dot = (T)1.0; 
-        else if( dot < (T)-1.0 ) dot = (T)-1.0;
+        if( dot > 1 ) dot = 1;
+        else if( dot < -1 ) dot = -1;
 
         r = math<T>::acos( dot );
-        a = prevTangent.cross( curTangent );
+        axis = cross( prevTangent, curTangent );
     }
 
-    if( ( a.length() != 0.0 ) && ( r != 0.0 ) ) {
-        Matrix44<T> R  = Matrix44<T>::createRotation( a, r );		
-        Matrix44<T> Tj = Matrix44<T>::createTranslation( curPoint );
-        Matrix44<T> Ti = Matrix44<T>::createTranslation( -prevPoint );
+    if( ( axis.length() != 0 ) && ( r != 0 ) ) {
+        glm::detail::tmat4x4<T,glm::defaultp> R  = glm::rotate( r, axis );
+        glm::detail::tmat4x4<T,glm::defaultp> Tj = glm::translate( curPoint );
+        glm::detail::tmat4x4<T,glm::defaultp> Ti = glm::translate( -prevPoint );
 
-		// Original order of operation:
-        //return prevMatrix * Ti * R * Tj;
-		//
-		// Cinder's order of operation
-        return Tj*R*Ti*prevMatrix;
+        return Tj * R * Ti * prevMatrix;
     }
     else {
-        Matrix44<T> Tr = Matrix44<T>::createTranslation( curPoint - prevPoint );
-		// Original order of operation:
-        //return prevMatrix*Tr;
-		//
-		// Cinder's order of operation
-        return Tr*prevMatrix;
+        glm::detail::tmat4x4<T,glm::defaultp> Tr = glm::translate( curPoint - prevPoint );
+
+        return Tr * prevMatrix;
     }
 }
 
@@ -128,17 +114,13 @@ Matrix44<T> nextFrame(
 //  frame defined by the previously computed transformation matrix and the
 //  last point along the curve.
 template<typename T>
-Matrix44<T> lastFrame( 
-	const Matrix44<T> &prevMatrix, 
-	const Vec3<T> &prevPoint, 
-	const Vec3<T> &lastPoint 
+glm::detail::tmat4x4<T,glm::defaultp> lastFrame( 
+	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::detail::tvec3<T,glm::defaultp> &lastPoint 
 )
 {
-	// Original order of operation:
-	//return prevMatrix * Matrix44<T>::createTranslation( lastPoint - prevPoint );
-	//
-	// Cinder's order of operation
-    return Matrix44<T>::createTranslation( lastPoint - prevPoint )*prevMatrix;
+    return glm::translate( lastPoint - prevPoint ) * prevMatrix;
 }
 
 // Explicitly declare the functions
@@ -148,8 +130,6 @@ template mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, 	const v
 template dmat4 firstFrame( const dvec3 &firstPoint, const dvec3 &secondPoint, const dvec3 &thirdPoint );
 template dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 &prevTangent, dvec3 &curTangent );
 template dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, 	const dvec3 &lastPoint );
-
-#endif
 
 glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
 {
