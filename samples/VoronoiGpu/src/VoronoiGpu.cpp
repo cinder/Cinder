@@ -14,147 +14,149 @@
 using namespace std;
 using namespace ci;
 
-const char *vertexShaderGlsl = 
-	"void main()\n"
-	"{\n"
-		"gl_Position = ftransform();\n"
-		"gl_TexCoord[0] = gl_MultiTexCoord0;\n"
-	"}\n";
+const char *vertexShaderGlsl = CI_GLSL( 150,
+	uniform mat4 ciModelViewProjection;
+	in vec4 ciPosition;
+	in vec2 ciTexCoord0;
+	out vec2 TexCoord0;
+	
+	void main()
+	{
+		gl_Position = ciModelViewProjection * ciPosition;
+		TexCoord0 = ciTexCoord0;
+	}
+);
 
-const char *voronoiShaderGlsl =
-	"#version 120\n"
-	"#extension GL_ARB_texture_rectangle: enable\n" 
-	"uniform sampler2DRect tex0;\n"
-	"uniform vec2 sampleScale;\n"
-	"void main() {\n"
-	"	vec2 pos[9];\n"
-	"	pos[0] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(-1.0,-1.0) * sampleScale ).rg;\n"
-	"	pos[1] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(0.0,-1.0) * sampleScale ).rg;\n"
-	"	pos[2] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(1.0,-1.0) * sampleScale ).rg;\n"
-	"	pos[3] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(-1.0,0.0) * sampleScale ).rg;\n"
-	"	pos[4] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(0.0,0.0) * sampleScale ).rg;\n"
-	"	pos[5] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(1.0,0.0) * sampleScale ).rg;\n"
-	"	pos[6] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(-1.0,1.0) * sampleScale ).rg;\n"
-	"	pos[7] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(0.0,1.0) * sampleScale ).rg;\n"
-	"	pos[8] = texture2DRect( tex0, gl_TexCoord[0].st + vec2(1.0,1.0) * sampleScale ).rg;\n"
-	"	\n"
-	"	vec2 smallest = vec2( -1, -1 );\n"
-	"	float smallestDistance = 65535.0 * 65535.0;//distance( gl_TexCoord[0].st, pos[0] );\n"
-	"	for( int s = 0; s < 9; ++s ) {\n"
+const char *voronoiShaderGlsl = CI_GLSL( 150,
+	uniform sampler2DRect	uTex0;
+	uniform vec2			uSampleScale;
+	in vec2 TexCoord0;
+	out vec2 oColor;
+	void main() {
+		vec2 pos[9];
+		pos[0] = texture( uTex0, TexCoord0.st + vec2(-1.0,-1.0) * uSampleScale ).rg;
+		pos[1] = texture( uTex0, TexCoord0.st + vec2(0.0,-1.0) * uSampleScale ).rg;
+		pos[2] = texture( uTex0, TexCoord0.st + vec2(1.0,-1.0) * uSampleScale ).rg;
+		pos[3] = texture( uTex0, TexCoord0.st + vec2(-1.0,0.0) * uSampleScale ).rg;
+		pos[4] = texture( uTex0, TexCoord0.st + vec2(0.0,0.0) * uSampleScale ).rg;
+		pos[5] = texture( uTex0, TexCoord0.st + vec2(1.0,0.0) * uSampleScale ).rg;
+		pos[6] = texture( uTex0, TexCoord0.st + vec2(-1.0,1.0) * uSampleScale ).rg;
+		pos[7] = texture( uTex0, TexCoord0.st + vec2(0.0,1.0) * uSampleScale ).rg;
+		pos[8] = texture( uTex0, TexCoord0.st + vec2(1.0,1.0) * uSampleScale ).rg;
+
+		vec2 smallest = vec2( -1, -1 );
+		float smallestDistance = 65535.0 * 65535.0;
+		for( int s = 0; s < 9; ++s ) {
 // This test seems to blow up the 8800 under Mac OS X 10.5.8 quite handily, but it's not necessary if we seed the field w/ large negative closest sites	
 //	"		if( pos[s].x < 0 ) continue;\n
-	"		float distance = distance( gl_TexCoord[0].st, pos[s] );\n"
-	"		if( distance < smallestDistance ) {\n"
-	"			smallestDistance = distance;\n"
-	"			smallest = pos[s];\n"
-	"		}\n"
-	"	}\n"
-	"\n"
-	"	gl_FragColor.rg = smallest;\n"
-	"}\n";
+			float dist = distance( TexCoord0.st, pos[s] );
+			if( dist < smallestDistance ) {
+				smallestDistance = dist;
+				smallest = pos[s];
+			}
+		}
 	
-const char *distanceShaderGlsl =
-	"uniform sampler2DRect tex0;\n"
-	"void main() {\n"
-	"	gl_FragColor.rgb = vec3( distance( texture2DRect( tex0, gl_TexCoord[0].st ).rg, gl_TexCoord[0].st ) );\n"
-	"}\n";
+//		oColor.rg = smallest;
+		oColor.rg = TexCoord0.st;
+	}
+);
+	
+const char *distanceShaderGlsl = CI_GLSL( 150,
+	uniform sampler2DRect uTex0;
+	in vec2 TexCoord0;
+	out vec3 oColor;
+	
+	void main() {
+		oColor.rgb = vec3( distance( texture( uTex0, TexCoord0.st ).rg, TexCoord0.st ) );
+	}
+);
 
-gl::Texture encodePoints( const vector<ivec2> &points, int width, int height )
+gl::TextureRef encodePoints( const vector<ivec2> &points, int width, int height )
 {
 	Surface32f result( width, height, false );
 	ip::fill( &result, Colorf( -65535.0f, -65535.0f, 0 ) ); // seed the result with a huge distance that will easily be "beaten" by any given site
 	for( vector<ivec2>::const_iterator ptIt = points.begin(); ptIt != points.end(); ++ptIt )
 		result.setPixel( *ptIt, Color( (float)app::toPixels( ptIt->x ), (float)app::toPixels( ptIt->y ), 0 ) );
 	
-	return gl::Texture( result );
+	return gl::Texture::create( result, gl::Texture::Format().target( GL_TEXTURE_RECTANGLE_ARB ) );
 }
 
 ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::ivec2> &points, int width, int height )
 {
-	static gl::GlslProg voronoiShader( vertexShaderGlsl, voronoiShaderGlsl );
+	static gl::GlslProgRef voronoiShader = gl::GlslProg::create( vertexShaderGlsl, voronoiShaderGlsl );
 	
 	// allocate the FBOs
 	gl::Fbo::Format format;
-	format.setTarget( GL_TEXTURE_RECTANGLE_ARB );
-	format.setColorInternalFormat( GL_RGB32F_ARB );
-	format.enableDepthBuffer( false );
-	format.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-	format.setMinFilter( GL_NEAREST );
-	format.setMagFilter( GL_NEAREST );
-	gl::Fbo fbo[2];
-	fbo[0] = gl::Fbo( width, height, format );
-	fbo[1] = gl::Fbo( width, height, format );
+	format.setColorTextureFormat( gl::Texture::Format().target( GL_TEXTURE_RECTANGLE_ARB ).minFilter( GL_NEAREST ).
+		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F_ARB ).wrap( GL_CLAMP_TO_EDGE ) );
+	gl::FboRef fbo[2];
+	fbo[0] = gl::Fbo::create( width, height, format );
+	fbo[1] = gl::Fbo::create( width, height, format );
 	
 	// draw the encoded points into FBO 1
-	fbo[0].bindFramebuffer();
-	gl::setMatricesWindow( fbo[0].getSize(), false );
+	fbo[0]->bindFramebuffer();
+	gl::setMatricesWindow( fbo[0]->getSize() );
 	gl::draw( encodePoints( points, width, height ) );
 	
 	// ping-pong between the two FBOs
-	voronoiShader.bind();
-	voronoiShader.uniform( "tex0", 0 );
+	gl::ScopedGlslProg scpGlsl( voronoiShader );
+	voronoiShader->uniform( "tex0", 0 );
 	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
-		voronoiShader.uniform( "sampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
+		voronoiShader->uniform( "uSampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
 		curFbo = pass % 2;
-		fbo[curFbo].bindFramebuffer();
-		fbo[(curFbo+1)%2].bindTexture();
-		gl::drawSolidRect( fbo[0].getBounds(), true );
+		fbo[curFbo]->bindFramebuffer();
+		fbo[(curFbo+1)%2]->bindTexture();
+		gl::drawSolidRect( fbo[0]->getBounds() );
 	}
 	
-	fbo[curFbo].unbindFramebuffer();
-	voronoiShader.unbind();
+	fbo[curFbo]->unbindFramebuffer();
 
 	// now curFbo contains the last pass of the voronoi diagram
-	return Surface32f( fbo[curFbo].getTexture() );
+	return Surface32f( fbo[curFbo]->getColorTexture()->createSource() );
 }
 
 ci::Channel32f calcDistanceMapGpu( const vector<ivec2> &points, int width, int height )
 {
-	static gl::GlslProg voronoiShader( vertexShaderGlsl, voronoiShaderGlsl );
-	static gl::GlslProg distanceShader( vertexShaderGlsl, distanceShaderGlsl );
+	static gl::GlslProgRef voronoiShader = gl::GlslProg::create( vertexShaderGlsl, voronoiShaderGlsl );
+	static gl::GlslProgRef distanceShader = gl::GlslProg::create( vertexShaderGlsl, distanceShaderGlsl );
 	
 	// allocate the FBOs
 	gl::Fbo::Format format;
-	format.setTarget( GL_TEXTURE_RECTANGLE_ARB );
-	format.setColorInternalFormat( GL_RGB32F_ARB );
-	format.enableDepthBuffer( false );
-	format.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-	format.setMinFilter( GL_NEAREST );
-	format.setMagFilter( GL_NEAREST );
-	gl::Fbo fbo[2];
-	fbo[0] = gl::Fbo( width, height, format );
-	fbo[1] = gl::Fbo( width, height, format );
+	format.setColorTextureFormat( gl::Texture::Format().target( GL_TEXTURE_RECTANGLE_ARB ).minFilter( GL_NEAREST ).
+		magFilter( GL_NEAREST ).internalFormat( GL_RGB32F_ARB ).wrap( GL_CLAMP_TO_EDGE ) );
+	gl::FboRef fbo[2];
+	fbo[0] = gl::Fbo::create( width, height, format );
+	fbo[1] = gl::Fbo::create( width, height, format );
 	
 	// draw the encoded points into FBO 1
-	fbo[0].bindFramebuffer();
-	gl::setMatricesWindow( fbo[0].getSize(), false );
+	fbo[0]->bindFramebuffer();
+	gl::setMatricesWindow( fbo[0]->getSize() );
 	gl::draw( encodePoints( points, width, height ) );
 	
 	// ping-pong between the two FBOs
-	voronoiShader.bind();
-	voronoiShader.uniform( "tex0", 0 );
+	gl::ScopedGlslProg vorGlslScp( voronoiShader );
+	voronoiShader->uniform( "uTex0", 0 );
 	int curFbo = 0;
 	int numPasses = log2ceil( std::max( width, height ) );
 	for( int pass = 1; pass <= numPasses; ++pass ) {
-		voronoiShader.uniform( "sampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
+		voronoiShader->uniform( "uSampleScale", vec2( 1, 1 ) * (float)( 1 << ( numPasses - pass ) ) );
 		curFbo = pass % 2;
-		fbo[curFbo].bindFramebuffer();
-		fbo[(curFbo+1)%2].bindTexture();
-		gl::drawSolidRect( fbo[0].getBounds(), true );
+		fbo[curFbo]->bindFramebuffer();
+		fbo[(curFbo+1)%2]->bindTexture();
+		gl::drawSolidRect( fbo[0]->getBounds() );
 	}
 
 	// now curFbo contains the last pass of the voronoi diagram; bind that as the texture
 	// and render a quad using the distance shader
-	distanceShader.bind();
-	distanceShader.uniform( "tex0", 0 );
+	gl::ScopedGlslProg scpGlsl( distanceShader );
+	distanceShader->uniform( "uTex0", 0 );
 	
-	fbo[(curFbo+1)%2].bindFramebuffer();
-	fbo[curFbo].bindTexture();
-	gl::drawSolidRect( fbo[0].getBounds(), true );
-	fbo[(curFbo+1)%2].unbindFramebuffer();
-	distanceShader.unbind();
+	fbo[(curFbo+1)%2]->bindFramebuffer();
+	fbo[curFbo]->bindTexture();
+	gl::drawSolidRect( fbo[0]->getBounds() );
+	fbo[(curFbo+1)%2]->unbindFramebuffer();
 	
-	return Channel32f( fbo[(curFbo+1)%2].getTexture() );
+	return Channel32f( fbo[(curFbo+1)%2]->getColorTexture()->createSource() );
 }

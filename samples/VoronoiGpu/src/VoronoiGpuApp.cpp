@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ip/Hdr.h"
 #include "cinder/gl/Texture.h"
 #include "VoronoiGpu.h"
@@ -20,14 +21,14 @@ class VoronoiGpuApp : public AppBasic {
 	
 	void draw();
 
-	vector<ivec2>	mPoints;
-	gl::Texture		mTexture;
-	bool			mShowDistance;
+	vector<ivec2>		mPoints;
+	gl::Texture2dRef	mTexture;
+	bool				mShowDistance;
 };
 
 void VoronoiGpuApp::setup()
 {
-	mShowDistance = true;
+	mShowDistance = false;
 	// register window changed display callback
 	getWindow()->getSignalDisplayChange().connect( [this] { calculateVoronoiTexture(); } );
 	
@@ -43,13 +44,13 @@ void VoronoiGpuApp::calculateVoronoiTexture()
 		Channel32f rawDistanceMap = calcDistanceMapGpu( mPoints, toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) );
 		// we need to convert the raw distances into a normalized range of 0-1 so we can show them sensibly
 		ip::hdrNormalize( &rawDistanceMap );
-		mTexture = gl::Texture( rawDistanceMap );
+		mTexture = gl::Texture2d::create( rawDistanceMap );
 	}
 	else {
 		Surface32f rawDistanceMap = calcDiscreteVoronoiGpu( mPoints, toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) );
 		// we need to convert the site locations into a normalized range of 0-1 so we can show them sensibly
 		ip::hdrNormalize( &rawDistanceMap );
-		mTexture = gl::Texture( rawDistanceMap );
+		mTexture = gl::Texture2d::create( rawDistanceMap );
 	}
 }
 
@@ -78,8 +79,7 @@ void VoronoiGpuApp::draw()
 	
 	gl::color( Color( 1, 1, 1 ) );
 	if( mTexture ) {
-		gl::draw( mTexture, toPoints( mTexture.getBounds() ) );
-		mTexture.disable();
+		gl::draw( mTexture, toPoints( mTexture->getBounds() ) );
 	}
 	
 	// draw the voronoi sites in yellow
