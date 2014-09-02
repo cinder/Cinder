@@ -388,6 +388,9 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	if( bDrawPreciseBoundingBoxes ) layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently ON)" );
 	else  layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently OFF)" );
 
+	if( mShowRevealingFov ) layout.addLine("(Space) Toggle reveal culling (currently ON)");
+	else  layout.addLine("(Space) Toggle reveal culling (currently OFF)");
+
 	if( gl::isVerticalSyncEnabled() ) layout.addLine( "(V) Toggle vertical sync (currently ON)" );
 	else  layout.addLine( "(V) Toggle vertical sync (currently OFF)" );
 
