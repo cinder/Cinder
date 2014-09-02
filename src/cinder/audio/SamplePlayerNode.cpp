@@ -113,7 +113,8 @@ BufferPlayerNode::BufferPlayerNode( const Format &format )
 BufferPlayerNode::BufferPlayerNode( const BufferRef &buffer, const Format &format )
 	: SamplePlayerNode( format ), mBuffer( buffer )
 {
-	mNumFrames = mLoopEnd = mBuffer->getNumFrames();
+	size_t numFrames = mBuffer ? mBuffer->getNumFrames() : 0;
+	mNumFrames = mLoopEnd = numFrames;
 
 	// force channel mode to match buffer
 	setChannelMode( ChannelMode::SPECIFIED );
@@ -144,13 +145,18 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 	if( wasEnabled )
 		disable();
 
-	if( getNumChannels() != buffer->getNumChannels() ) {
-		setNumChannels( buffer->getNumChannels() );
-		configureConnections();
+	if( buffer ) {
+		if( getNumChannels() != buffer->getNumChannels() ) {
+			setNumChannels( buffer->getNumChannels() );
+			configureConnections();
+		}
+		
+		mNumFrames = buffer->getNumFrames();
 	}
+	else
+		mNumFrames = 0;
 
 	mBuffer = buffer;
-	mNumFrames = buffer->getNumFrames();
 
 	if( ! mLoopEnd || mLoopEnd > mNumFrames )
 		mLoopEnd = mNumFrames;
