@@ -3,9 +3,9 @@
 in vec3		PositionEyeSpace;
 in vec3		Normal;
 
-uniform vec3 uDiffuse;
-uniform vec3 uSpecular;
-uniform float uShininess;
+uniform vec3	uDiffuse;
+uniform vec3	uSpecular;
+uniform float	uShininess;
 
 out vec4 oColor;
 

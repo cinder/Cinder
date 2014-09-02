@@ -37,6 +37,8 @@
 
 #include "CullableObject.h"
 
+const int NUM_OBJECTS = 1500;
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -61,123 +63,118 @@ class FrustumCullingReduxApp : public AppBasic
 	//! load the heart shaped mesh 
 	void			loadObject();
 	//! draws a grid to visualize the ground plane
-	void			drawGrid( float size = 100.0f, float step = 10.0f );
+	void			drawGrid( float size = 100, float step = 10 );
 	//! toggles vertical sync on both Windows and Macs
 	void			toggleVerticalSync();
 	//! renders the help text
 	void			renderHelpToTexture();
   
   protected:
-	static const int NUM_OBJECTS = 1500;
 
-	//! keep track of time
+	// keep track of time
 	double			mCurrentSeconds;
 
-	//! flags
-	bool			bPerformCulling;
-	bool			bDrawEstimatedBoundingBoxes;
-	bool			bDrawPreciseBoundingBoxes;
-	bool			bShowHelp;
-
+	// flags
+	bool			mPerformCulling;
+	bool			mDrawEstimatedBoundingBoxes;
+	bool			mDrawPreciseBoundingBoxes;
 	bool			mShowRevealingFov;
-	
+	bool			mShowHelp;
+
 	Anim<float>		mCullingFov;
 
 	ci::TriMeshRef		mTriMesh;
 	gl::BatchRef		mBatch;
 
-	//! caches the heart's bounding box in object space coordinates
+	// caches the heart's bounding box in object space coordinates
 	AxisAlignedBox3f	mObjectBoundingBox;
 
-	//! render assets
+	// render assets
 	gl::GlslProgRef		mShader;
 
-	//! objects
+	// objects
 	std::list<CullableObjectRef>	mObjects;
 
-	//! camera
+	// camera
 	MayaCamUI		mMayaCam;
 	CameraPersp		mRenderCam;
 
-	//! help text
+	// help text
 	gl::Texture2dRef	mHelp;
 };
 
 void FrustumCullingReduxApp::prepareSettings(Settings *settings)
 {
-	//! setup our window
+	// setup our window
 	settings->setWindowSize( 1200, 675 );
 	settings->setTitle( "Frustum Culling Redux" );
-	//! set the frame rate to something very high, so we can
-	//! easily see the effect frustum culling has on performance.
-	//! Disable vertical sync to achieve the actual frame rate.
+	// set the frame rate to something very high, so we can easily see the effect frustum culling has on performance.
+	// Disable vertical sync to achieve the actual frame rate.
 	settings->setFrameRate( 300 );
 }
 
 void FrustumCullingReduxApp::setup()
 {
-	//! intialize settings
-	bPerformCulling = true;
-	bDrawEstimatedBoundingBoxes = false;
-	bDrawPreciseBoundingBoxes = false;
+	// Intialize settings
+	mPerformCulling = true;
+	mDrawEstimatedBoundingBoxes = false;
+	mDrawPreciseBoundingBoxes = false;
 	mShowRevealingFov = false;
-	bShowHelp = true;
+	mShowHelp = true;
 
-	//! render help texture
+	//! Render help texture
 	renderHelpToTexture();
-	
-	//! load and compile shader
+
+	//! Load and compile shader
 	try {
-		mShader = gl::GlslProg::create( loadAsset("shaders/phong.vert"), loadAsset("shaders/phong.frag") );
+		mShader = gl::GlslProg::create( loadAsset( "shaders/phong.vert" ), loadAsset( "shaders/phong.frag" ) );
 	}
 	catch( const std::exception &e ) {
 		app::console() << "Could not load and compile shader:" << e.what() << std::endl;
 	}
-	
-	//! setup material
-	//  we set it up once because all of our objects will
-	//  share the same values
-	mShader->uniform( "uDiffuse", Color( 1.0f, 0.0f, 0.0f ) );
-	mShader->uniform( "uSpecular", Color( 1.0f, 1.0f, 1.0f ) );
+
+	// Setup material uniforms
+	// We set it up once because all of our objects will share the same values.
+	mShader->uniform( "uDiffuse", Color( 1, 0, 0 ) );
+	mShader->uniform( "uSpecular", Color( 1, 1, 1 ) );
 	mShader->uniform( "uShininess", 50.0f );
 
-	//! load assets
+	// load assets
 	loadObject();
 
-	//! create a few hearts
+	// create a few hearts
 	Rand::randomize();
 	mObjects.resize( NUM_OBJECTS );
 	for( auto & obj : mObjects ) {
-		vec3 p( Rand::randFloat( -2000.0f, 2000.0f ), 0.0f, Rand::randFloat( -2000.0f, 2000.0f ) );
-		vec3 r( 0.0f, Rand::randFloat( -360.0f, 360.0f ), 0.0f );
-		vec3 s( 50.10f, 50.10f, 50.10f );
+		vec3 pos( Rand::randFloat( -2000, 2000 ), 0, Rand::randFloat( -2000, 2000 ) );
+		vec3 rot( 0, Rand::randFloat( -360, 360 ), 0 );
+		vec3 scale( 50 );
 
 		obj = CullableObjectRef( new CullableObject( mBatch ) );
-		obj->setTransform( p, r, s );
+		obj->setTransform( pos, rot, scale );
 	}
 
-	//! setup cameras
+	// setup cameras
 	mCullingFov = 60;
-	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10.0f, 10000.0f );
-	mRenderCam.lookAt( vec3( 200.0f ), vec3( 0.0f ) );
+	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
+	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
 	
 	mMayaCam.setCurrentCam( mRenderCam );
 
-	//! track current time so we can calculate elapsed time
+	// track current time so we can calculate elapsed time
 	mCurrentSeconds = getElapsedSeconds();
 }
 
 void FrustumCullingReduxApp::update()
 {
-	//! calculate elapsed time
+	// calculate elapsed time
 	double elapsed = getElapsedSeconds() - mCurrentSeconds;
 	mCurrentSeconds += elapsed;
 
-	//! perform frustum culling **********************************************************************************
-	// Set the current culling field of view.
-	float originalFov = mRenderCam.getFov();
+	// perform frustum culling **********************************************************************************
 
-	// If mShowRevealingFov = true, this will narrow the cam's FOV so that you can see the culling effect
+	// Save the current culling field of view. If mShowRevealingFov = true, this will narrow the cam's FOV so that you can see the culling effect
+	float originalFov = mRenderCam.getFov();
 	mRenderCam.setFov( mCullingFov );
 	Frustumf visibleWorld( mRenderCam );
 
@@ -185,7 +182,7 @@ void FrustumCullingReduxApp::update()
 		// update object (so it rotates slowly around its axis)
 		obj->update(elapsed);
 
-		if(bPerformCulling) {
+		if( mPerformCulling ) {
 			// create a fast approximation of the world space bounding box by transforming the
 			// eight corners of the object space bounding box and using them to create a new axis aligned bounding box 
 			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
@@ -206,7 +203,7 @@ void FrustumCullingReduxApp::update()
 void FrustumCullingReduxApp::draw()
 {
 	// clear the window
-	gl::clear( Color(0.25f, 0.25f, 0.25f) );
+	gl::clear( Color::gray( 0.25f ) );
 	
 	{
 		// setup camera
@@ -216,7 +213,7 @@ void FrustumCullingReduxApp::draw()
 		gl::ScopedState scopeState( GL_CULL_FACE, true );
 		gl::enableDepthRead();
 		gl::enableDepthWrite();
-		
+
 		{
 			gl::ScopedGlslProg scopeGlsl( mShader );
 			for( auto & obj : mObjects )
@@ -225,7 +222,7 @@ void FrustumCullingReduxApp::draw()
 		
 		AxisAlignedBox3f worldBoundingBox;
 		for( auto & obj : mObjects ) {
-			if(bDrawEstimatedBoundingBoxes) {
+			if( mDrawEstimatedBoundingBoxes ) {
 				// create a fast approximation of the world space bounding box by transforming the
 				// eight corners and using them to create a new axis aligned bounding box
 				worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
@@ -238,7 +235,7 @@ void FrustumCullingReduxApp::draw()
 				gl::drawStrokedCube( worldBoundingBox );
 			}
 			
-			if(bDrawPreciseBoundingBoxes && ! obj->isCulled()) {
+			if( mDrawPreciseBoundingBoxes && ! obj->isCulled() ) {
 				// you can see how much the approximated bounding boxes differ
 				// from the precise ones by enabling this code
 				worldBoundingBox = mTriMesh->calcBoundingBox( obj->getTransform() );
@@ -247,17 +244,17 @@ void FrustumCullingReduxApp::draw()
 			}
 		}
 		
-		drawGrid(2000.0f, 25.0f);
+		drawGrid( 2000, 25 );
 
 		drawCullableFov();
-		
+
 		// disable 3D rendering
 		gl::disableDepthWrite();
 		gl::disableDepthRead();
 	}
 	
 	// render help
-	if(bShowHelp && mHelp) {
+	if( mShowHelp && mHelp ) {
 		gl::enableAlphaBlending();
 		gl::color( Color::white() );
 		gl::draw( mHelp );
@@ -284,12 +281,12 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		break;
 		case KeyEvent::KEY_b:
 			if(event.isShiftDown())
-				bDrawPreciseBoundingBoxes = ! bDrawPreciseBoundingBoxes;
+				mDrawPreciseBoundingBoxes = ! mDrawPreciseBoundingBoxes;
 			else
-				bDrawEstimatedBoundingBoxes = ! bDrawEstimatedBoundingBoxes;
+				mDrawEstimatedBoundingBoxes = ! mDrawEstimatedBoundingBoxes;
 		break;
 		case KeyEvent::KEY_c:
-			bPerformCulling = !bPerformCulling;
+			mPerformCulling = !mPerformCulling;
 		break;
 		case KeyEvent::KEY_f: {
 			bool verticalSyncEnabled = gl::isVerticalSyncEnabled();
@@ -298,7 +295,7 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		}
 		break;
 		case KeyEvent::KEY_h:
-			bShowHelp = !bShowHelp;
+			mShowHelp = !mShowHelp;
 		break;
 		case KeyEvent::KEY_v:
 			toggleVerticalSync();
@@ -325,7 +322,7 @@ void FrustumCullingReduxApp::drawCullableFov()
 {
 	// Reset the field of view once again to visualize
 	// the actual window we're using to cull with.
-	gl::color( Color(1, 1, 1) );
+	gl::color( Color( 1, 1, 1 ) );
 	gl::clear( GL_DEPTH_BUFFER_BIT );
 	
 	// This visualizes the camera's viewport change for the culling field of view.
@@ -334,30 +331,40 @@ void FrustumCullingReduxApp::drawCullableFov()
 	gl::ScopedMatrices scopeMat;
 	gl::setMatricesWindow( getWindowSize() );
 	gl::translate( getWindowCenter() );
-	gl::scale( vec3( cullable * getWindowCenter().x, cullable * getWindowCenter().y, 1.0 ) );
+	gl::scale( vec3( cullable * getWindowCenter().x, cullable * getWindowCenter().y, 1 ) );
 	gl::drawStrokedRect( Rectf( -1, -1, 1, 1 ));
 }
 
 void FrustumCullingReduxApp::loadObject()
 {
+	CI_CHECK_GL();
+
 	// We first convert our obj to a trimesh
-	mTriMesh = TriMesh::create( ObjLoader( loadAsset("models/heart.obj") ) );
+	mTriMesh = TriMesh::create( ObjLoader( loadAsset( "models/heart.obj" ) ) );
+
+	CI_CHECK_GL();
+
 	// Then use our trimesh and our shader to create a batch
 	mBatch = gl::Batch::create( *mTriMesh, mShader );
 
+	CI_CHECK_GL();
+
 	// We then use trimesh to calculate the Bounding Box
 	mObjectBoundingBox = mTriMesh->calcBoundingBox();
+
+	CI_CHECK_GL();
+
 }
 
 void FrustumCullingReduxApp::drawGrid(float size, float step)
 {
 	gl::color( Colorf( 0.2f, 0.2f, 0.2f ) );
 	gl::begin( GL_LINES );
-	for(float i=-size;i<=size;i+=step) {
-		gl::vertex( vec3( i, 0.0f, -size ) );
-		gl::vertex( vec3( i, 0.0f,  size ) );
-		gl::vertex( vec3( -size, 0.0f, i ) );
-		gl::vertex( vec3(  size, 0.0f, i ) );
+	for( float i = -size; i <= size; i += step ) {
+		gl::vertex( vec3( i, 0, -size ) );
+		gl::vertex( vec3( i, 0,  size ) );
+		gl::vertex( vec3( -size, 0, i ) );
+		gl::vertex( vec3(  size, 0, i ) );
 	}
 	gl::end();
 }
@@ -370,26 +377,36 @@ void FrustumCullingReduxApp::toggleVerticalSync()
 void FrustumCullingReduxApp::renderHelpToTexture()
 {
 	TextLayout layout;
-	layout.setFont( Font("Arial", 18) );
-	layout.setColor( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-	layout.setLeadingOffset( 3.0f );
+	layout.setFont( Font( "Arial", 18 ) );
+	layout.setColor( ColorA( 1, 1, 1, 1 ) );
+	layout.setLeadingOffset( 3 );
 
 	layout.clear( ColorA::gray( 0.2f, 0.5f ) );
 
-	if( bPerformCulling ) layout.addLine( "(C) Toggle culling (currently ON)" );
-	else  layout.addLine( "(C) Toggle culling (currently OFF)" );
+	if( mPerformCulling )
+		layout.addLine( "(C) Toggle culling (currently ON)" );
+	else
+		layout.addLine( "(C) Toggle culling (currently OFF)" );
 
-	if( bDrawEstimatedBoundingBoxes ) layout.addLine( "(B) Toggle estimated bounding boxes (currently ON)" );
-	else  layout.addLine( "(B) Toggle estimated bounding boxes (currently OFF)" );
+	if( mDrawEstimatedBoundingBoxes )
+		layout.addLine( "(B) Toggle estimated bounding boxes (currently ON)" );
+	else
+		layout.addLine( "(B) Toggle estimated bounding boxes (currently OFF)" );
 
-	if( bDrawPreciseBoundingBoxes ) layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently ON)" );
-	else  layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently OFF)" );
+	if( mDrawPreciseBoundingBoxes )
+		layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently ON)" );
+	else
+		layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently OFF)" );
 
-	if( mShowRevealingFov ) layout.addLine("(Space) Toggle reveal culling (currently ON)");
-	else  layout.addLine("(Space) Toggle reveal culling (currently OFF)");
+	if( mShowRevealingFov )
+		layout.addLine("(Space) Toggle reveal culling (currently ON)");
+	else
+		layout.addLine("(Space) Toggle reveal culling (currently OFF)");
 
-	if( gl::isVerticalSyncEnabled() ) layout.addLine( "(V) Toggle vertical sync (currently ON)" );
-	else  layout.addLine( "(V) Toggle vertical sync (currently OFF)" );
+	if( gl::isVerticalSyncEnabled() )
+		layout.addLine( "(V) Toggle vertical sync (currently ON)" );
+	else
+		layout.addLine( "(V) Toggle vertical sync (currently OFF)" );
 
 	layout.addLine( "(H) Toggle this help panel" );
 
