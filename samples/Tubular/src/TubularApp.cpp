@@ -1,9 +1,6 @@
-/* 
-
+/*
 This sample shows how to use firstFrame, nextFrame, and lastFrame
 from cinder/Matrix.h to build a parallel transport frame.
-
-It's really easy! I promise!
 
 If you look in Tube.cpp - you will see this function:
 
@@ -47,14 +44,10 @@ Check out these functions:
 	- drawFrames()
 	- drawFrameSlices()
 	
-They each illustrate an example of how to use the frame for different scenarios.
+They each illustrate an example of how to use the frame for different scenarios. */
 
-Any other questions - go to the forums! 
-http://http://forum.libcinder.org
-
-*/
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Arcball.h"
 #include "cinder/Camera.h"
 #include "cinder/Text.h"
@@ -85,7 +78,7 @@ class TubularApp : public AppBasic {
 	std::vector<vec3>		mBasePoints;
 	std::vector<vec3>		mCurPoints;	
 	BSpline3f				mBSpline;
-	TriMesh					mTubeMesh;
+	TriMeshRef				mTubeMesh;
 	
 	CameraPersp				mCam;
 	
@@ -113,7 +106,7 @@ void TubularApp::setup()
 	setWindowSize( 800, 850 );
 
 	// Camera
-	mCam.lookAt( vec3( 0, 0, 8 ), vec3::zero() );
+	mCam.lookAt( vec3( 0, 0, 8 ), vec3( 0 ) );
 
 	// BSpline
 	mBasePoints.push_back( vec3( -3,  4, 0 ) );
@@ -147,6 +140,8 @@ void TubularApp::setup()
 	mArcball.setWindowSize( getWindowSize() );
 	mArcball.setCenter( getWindowCenter() );
 	mArcball.setRadius( 150 );		
+
+	mTubeMesh = TriMesh::create( TriMesh::Format().positions() );
 
 	mParams = params::InterfaceGl::create( getWindow(), "Parameters", ivec2( 200, 200 ) );
 	mParams->addParam( "Parallel Transport", &mParallelTransport, "keyIncr=f" );
@@ -242,7 +237,7 @@ void TubularApp::update()
 	else {
 		mTube.buildFrenet();
 	}
-	mTube.buildMesh( &mTubeMesh );	
+	mTube.buildMesh( mTubeMesh.get() );
 }
 
 void TubularApp::draw()
@@ -253,17 +248,17 @@ void TubularApp::draw()
 	gl::rotate( mArcball.getQuat() );
 
 	gl::disableAlphaBlending();
-	if( mWireframe && mTubeMesh.getNumTriangles() ) {
+	if( mWireframe && mTubeMesh->getNumTriangles() ) {
 		gl::enableWireframe();
 		gl::color( Color( 0.2f, 0.2f, 0.5f ) );
-		gl::draw( mTubeMesh );			
+		gl::draw( *mTubeMesh );
 		gl::disableWireframe();
 	}
 	
 	gl::enableAdditiveBlending();
-	if( mDrawMesh && mTubeMesh.getNumTriangles() ) {
+	if( mDrawMesh && mTubeMesh->getNumTriangles() ) {
 		gl::color( ColorA( 1, 1, 1, 0.25f ) );
-		gl::draw( mTubeMesh );
+		gl::draw( *mTubeMesh );
 	}
 	
 	if( mDrawSlices ) {
