@@ -17,6 +17,8 @@
 		111A613D1921CC66005C3166 /* tone440L220R.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A613B1921CC66005C3166 /* tone440L220R.wav */; };
 		111A613F1921CE8F005C3166 /* tone440L220R.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 111A613E1921CE8F005C3166 /* tone440L220R.mp3 */; };
 		111A628E192DCBE10024BE66 /* libcinder_d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A6287192DCBA90024BE66 /* libcinder_d.a */; };
+		1120DAAE19B63DD800522276 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAAC19B63DD800522276 /* AVFoundation.framework */; };
+		1120DAAF19B63DD800522276 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAAD19B63DD800522276 /* CoreMedia.framework */; };
 		114E54D71894F180005BFC20 /* SpectralTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 114E54D61894F180005BFC20 /* SpectralTestApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -68,6 +70,8 @@
 		111A613B1921CC66005C3166 /* tone440L220R.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440L220R.wav; path = ../../data/tone440L220R.wav; sourceTree = "<group>"; };
 		111A613E1921CE8F005C3166 /* tone440L220R.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = tone440L220R.mp3; path = ../../data/tone440L220R.mp3; sourceTree = "<group>"; };
 		111A6280192DCBA90024BE66 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
+		1120DAAC19B63DD800522276 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		1120DAAD19B63DD800522276 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		114E54D61894F180005BFC20 /* SpectralTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SpectralTestApp.cpp; path = ../src/SpectralTestApp.cpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -84,6 +88,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				111A628E192DCBE10024BE66 /* libcinder_d.a in Frameworks */,
+				1120DAAE19B63DD800522276 /* AVFoundation.framework in Frameworks */,
+				1120DAAF19B63DD800522276 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -186,6 +192,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1120DAAC19B63DD800522276 /* AVFoundation.framework */,
+				1120DAAD19B63DD800522276 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -356,7 +364,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -373,7 +381,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_32_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
