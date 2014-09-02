@@ -32,10 +32,10 @@ void VoronoiGpuApp::setup()
 	// register window changed display callback
 	getWindow()->getSignalDisplayChange().connect( [this] { calculateVoronoiTexture(); } );
 	
-	mPoints.push_back( ivec2( 100, 100 ) );
-	mPoints.push_back( ivec2( 200, 120 ) );
-	mPoints.push_back( ivec2( 130, 140 ) );	
-	mPoints.push_back( ivec2( 200, 200 ) );
+	mPoints.push_back( toPixels( ivec2( 100, 100 ) ) );
+	mPoints.push_back( toPixels( ivec2( 200, 120 ) ) );
+	mPoints.push_back( toPixels( ivec2( 130, 140 ) ) );
+	mPoints.push_back( toPixels( ivec2( 200, 200 ) ) );
 }
 
 void VoronoiGpuApp::calculateVoronoiTexture()
@@ -56,7 +56,7 @@ void VoronoiGpuApp::calculateVoronoiTexture()
 
 void VoronoiGpuApp::mouseDown( MouseEvent event )
 {
-	mPoints.push_back( event.getPos() );
+	mPoints.push_back( toPixels( event.getPos() ) );
 	calculateVoronoiTexture();
 }
 
@@ -85,7 +85,7 @@ void VoronoiGpuApp::draw()
 	// draw the voronoi sites in yellow
 	gl::color( Color( 1.0f, 1.0f, 0.0f ) );	
 	for( vector<ivec2>::const_iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
-		gl::drawSolidCircle( vec2( *ptIt ), 2.0f );
+		gl::drawSolidCircle( toPoints( vec2( *ptIt ) ), 2.0f );
 	
 	gl::enableAlphaBlending();
 	gl::drawStringRight( "Click to add a point", vec2( getWindowWidth() - toPixels( 10 ), getWindowHeight() - toPixels( 20 ) ), Color( 1, 0.3, 0 ), Font( "Arial", toPixels( 12 ) ) );
