@@ -66,13 +66,9 @@ void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, c
 	mRotation = rotation;
 	mScale = scale;
 
-	CI_CHECK_GL();
-
 	// by creating a single transformation matrix, it will be very easy to construct a world space bounding box for this object
 	mTransform = mat4();
 	mTransform *= glm::translate( position );
 	mTransform *= toMat4( quat( rotation ) );
 	mTransform *= glm::scale( scale );
-
-	CI_CHECK_GL();
 }

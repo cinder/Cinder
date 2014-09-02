@@ -337,23 +337,14 @@ void FrustumCullingReduxApp::drawCullableFov()
 
 void FrustumCullingReduxApp::loadObject()
 {
-	CI_CHECK_GL();
-
 	// We first convert our obj to a trimesh
 	mTriMesh = TriMesh::create( ObjLoader( loadAsset( "models/heart.obj" ) ) );
-
-	CI_CHECK_GL();
 
 	// Then use our trimesh and our shader to create a batch
 	mBatch = gl::Batch::create( *mTriMesh, mShader );
 
-	CI_CHECK_GL();
-
 	// We then use trimesh to calculate the Bounding Box
 	mObjectBoundingBox = mTriMesh->calcBoundingBox();
-
-	CI_CHECK_GL();
-
 }
 
 void FrustumCullingReduxApp::drawGrid(float size, float step)
