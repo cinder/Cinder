@@ -28,12 +28,15 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Triangulate.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Shader.h"
 
 using namespace std;
 using namespace ci;
 
 void drawAudioBuffer( const audio::Buffer &buffer, const Rectf &bounds, bool drawFrame, const ci::ColorA &color )
 {
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
+
 	gl::color( color );
 
 	const float waveHeight = bounds.getHeight() / (float)buffer.getNumChannels();
@@ -152,6 +155,8 @@ void WaveformPlot::draw()
 		return;
 	}
 
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
+
 	gl::color( mColorMinMax );
 	gl::draw( waveforms[0].getMesh() );
 
@@ -177,7 +182,7 @@ void WaveformPlot::draw()
 // ----------------------------------------------------------------------------------------------------
 
 SpectrumPlot::SpectrumPlot()
-: mScaleDecibels( true ), mBorderEnabled( true ), mBorderColor( 0.5f, 0.5f, 0.5f, 1 )
+	: mScaleDecibels( true ), mBorderEnabled( true ), mBorderColor( 0.5f, 0.5f, 0.5f, 1 )
 {
 }
 
@@ -185,6 +190,8 @@ void SpectrumPlot::draw( const vector<float> &magSpectrum )
 {
 	if( magSpectrum.empty() )
 		return;
+
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
 
 	ColorA bottomColor( 0, 0, 0.7f, 1 );
 
