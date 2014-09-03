@@ -315,7 +315,7 @@ void FrustumCullingReduxApp::toggleCullableFov()
 {
 	// when this is on, it reduces the field of view for culling only, so that you can see the culling in action.
 	mShowRevealingFov = ! mShowRevealingFov;
-	float fov = mShowRevealingFov ? 40 : 60;
+	float fov = mShowRevealingFov ? 45 : 60;
 
 	timeline().apply( &mCullingFov, fov, 0.6f, EaseInOutCubic() );
 }
