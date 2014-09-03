@@ -171,17 +171,13 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 
 		//! Enables a color texture at \c GL_COLOR_ATTACHMENT0 with a Texture::Format of \a textureFormat, which defaults to 8-bit RGBA with no mipmapping. Disables a color buffer.
 		Format&	colorTexture( const Texture::Format &textureFormat = getDefaultColorTextureFormat( true ) ) { mColorTexture = true; mColorTextureFormat = textureFormat; return *this; }
-		//! Enables a color buffer at \c GL_COLOR_ATTACHMENT0 with an internal format of \a internalFormat, which defaults to 8-bit RGBA. Disables a color texture.
-		Format&	colorBuffer( GLenum internalFormat = getDefaultColorInternalFormat( true ) ) { mColorTexture = false; mColorBuffer = true; mColorBufferInternalFormat = internalFormat; return *this; }
 		//! Disables both a color Texture and a color Buffer
-		Format&	disableColor() { mColorTexture = mColorBuffer = false; return *this; }
+		Format&	disableColor() { mColorTexture = false; return *this; }
 		
-		//! Enables a depth texture with a Texture::Format of \a textureFormat, which defaults to 24-bit. Disables a depth buffer.
-		Format&	depthTexture( const Texture::Format &textureFormat = getDefaultDepthTextureFormat() ) { mDepthTexture = true; mDepthBuffer = false; mDepthTextureFormat = textureFormat; return *this; }
 		//! Enables a depth buffer with an internal format of \a internalFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth texture.
-		Format&	depthBuffer( GLenum internalFormat = getDefaultDepthInternalFormat() ) { mDepthTexture = false; mDepthBuffer = true; mDepthBufferInternalFormat = internalFormat; return *this; }
+		Format&	depthBuffer( GLenum internalFormat = getDefaultDepthInternalFormat() ) { mDepthBuffer = true; mDepthBufferInternalFormat = internalFormat; return *this; }
 		//! Disables both a depth Texture and a depth Buffer
-		Format&	disableDepth() { mDepthTexture = mDepthBuffer = false; return *this; }
+		Format&	disableDepth() { mDepthBuffer = false; return *this; }
 		
 		//! Sets the number of MSAA samples. Defaults to none.
 		Format& samples( int samples ) { mSamples = samples; return *this; }
@@ -195,49 +191,33 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 		//! Adds a Texture attachment \a texture at \a attachmentPoint (such as \c GL_COLOR_ATTACHMENT0). Replaces any existing attachment at the same attachment point.
 		Format&	attachment( GLenum attachmentPoint, const TextureBaseRef &texture, RenderbufferRef multisampleBuffer = RenderbufferRef() );
 		
-		//! Sets the internal format for the color buffer. Defaults to \c GL_RGBA8. Common options also include \c GL_RGB8, \c GL_RGBA16F and \c GL_RGBA32F
-		void	setColorBufferInternalFormat( GLint colorInternalFormat ) { mColorBufferInternalFormat = colorInternalFormat; }
 		//! Sets the internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24. Common options also include \c GL_DEPTH_COMPONENT16 and \c GL_DEPTH_COMPONENT32
 		void	setDepthBufferInternalFormat( GLint depthInternalFormat ) { mDepthBufferInternalFormat = depthInternalFormat; }
 		//! Sets the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling. Note that not all implementations support multisampling.
 		void	setSamples( int samples ) { mSamples = samples; }
 		//! Sets the number of coverage samples used in CSAA-style antialiasing. Defaults to none. Note that not all implementations support CSAA, and is currenlty Windows-only Nvidia. Ignored on OpenGL ES.
 		void	setCoverageSamples( int coverageSamples ) { mCoverageSamples = coverageSamples; }
-		//! Enables or disables the creation of a color buffer. Disables a color texture if true.
-		void	enableColorBuffer( bool colorBuffer = true ) { mColorBuffer = colorBuffer; if( colorBuffer ) mColorTexture = false; }
 		//! Sets the Color Texture::Format for use in the creation of the color texture.
 		void	setColorTextureFormat( const Texture::Format &format ) { mColorTextureFormat = format; }
-		//! Enables or disables the creation of a depth buffer for the FBO. If \a asTexture the depth buffer is created as a gl::Texture, obtainable via getDepthTexture(). Not supported on OpenGL ES. Disables depthTexture if set to true.
-		void	enableDepthBuffer( bool depthBuffer = true ) { mDepthBuffer = depthBuffer; if( depthBuffer ) mDepthTexture = false; }
-		//! Enables or disables the creation of a depth buffer as a Texture. \a It is obtainable via getDepthTexture(). Not supported on OpenGL ES. Disables depthBuffer if true.
-		void	enableDepthTexture( bool depthBufferAsTexture = true ) { mDepthTexture = depthBufferAsTexture; if( depthBufferAsTexture ) mDepthBuffer = false; }
-		//! Sets the Texture::Format for use in the creation of the depth texture.
-		void	setDepthTextureFormat( const Texture::Format &format ) { mDepthTextureFormat = format; mDepthBufferInternalFormat = format.getInternalFormat(); }
+		//! Enables or disables the creation of a depth buffer for the FBO.
+		void	enableDepthBuffer( bool depthBuffer = true ) { mDepthBuffer = depthBuffer; }
 		//! Enables or disables the creation of a stencil buffer.
 		void	enableStencilBuffer( bool stencilBuffer = true ) { mStencilBuffer = stencilBuffer; }
 		//! Removes a buffer or texture attached at \a attachmentPoint
 		void	removeAttachment( GLenum attachmentPoint );
 
-		//! Returns the GL internal format for the default color buffer at GL_COLOR_ATTACHMENT0. Defaults to \c GL_RGBA8.
-		GLint	getColorBufferInternalFormat() const { return mColorBufferInternalFormat; }
 		//! Returns the GL internal format for the depth buffer. Defaults to \c GL_DEPTH_COMPONENT24.
 		GLint	getDepthBufferInternalFormat() const { return mDepthBufferInternalFormat; }
 		//! Returns the Texture::Format for the default color texture at GL_COLOR_ATTACHMENT0.
 		const Texture::Format&	getColorTextureFormat() const { return mColorTextureFormat; }
-		//! Returns the Texture::Format for the depth texture.
-		const Texture::Format&	getDepthTextureFormat() const { return mDepthTextureFormat; }
 		//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling.
 		int		getSamples() const { return mSamples; }
 		//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none. MSW only.
 		int		getCoverageSamples() const { return mCoverageSamples; }
 		//! Returns whether the FBO contains a Texture at GL_COLOR_ATTACHMENT0
 		bool	hasColorTexture() const { return mColorTexture; }
-		//! Returns whether the FBO contains a Renderbuffer at GL_COLOR_ATTACHMENT0
-		bool	hasColorBuffer() const { return mColorBuffer; }
 		//! Returns whether the FBO has a Renderbuffer as a depth attachment.
 		bool	hasDepthBuffer() const { return mDepthBuffer; }
-		//! Returns whether the FBO has a Texture as a depth attachment.
-		bool	hasDepthTexture() const { return mDepthTexture; }
 		//! Returns whether the FBO has a Renderbuffer as a stencil attachment.
 		bool	hasStencilBuffer() const { return mStencilBuffer; }
 		
@@ -260,12 +240,12 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
-		GLint			mColorBufferInternalFormat, mDepthBufferInternalFormat;
+		GLenum			mDepthBufferInternalFormat;
 		int				mSamples, mCoverageSamples;
-		bool			mColorBuffer, mColorTexture;
-		bool			mDepthBuffer, mDepthTexture;
+		bool			mColorTexture;
+		bool			mDepthBuffer;
 		bool			mStencilBuffer;
-		Texture::Format	mColorTextureFormat, mDepthTextureFormat;		
+		Texture::Format	mColorTextureFormat;
 		std::string		mLabel; // debug label
 		
 		std::map<GLenum,RenderbufferRef>	mAttachmentsBuffer;
@@ -318,8 +298,8 @@ class FboCubeMap : public Fbo {
 		//! Returns the TextureCubeMap format for the default CubeMap.
 		const TextureCubeMap::Format&	getTextureCubeMapFormat() const { return mTextureCubeMapFormat; }
 		
-		//! Disables both a depth Texture and a depth Buffer
-		Format&	disableDepth() { mDepthTexture = mDepthBuffer = false; return *this; }
+		//! Disables a depth Buffer
+		Format&	disableDepth() { mDepthBuffer = false; return *this; }
 
 		//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
