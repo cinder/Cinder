@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/NodeEffects.h"
@@ -100,7 +100,7 @@ void BufferPlayerNodeApp::draw()
 	// draw the current play position
 	float readPos = (float)getWindowWidth() * mBufferPlayerNode->getReadPosition() / mBufferPlayerNode->getNumFrames();
 	gl::color( ColorA( 0, 1, 0, 0.7f ) );
-	gl::drawSolidRoundedRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ), 2 );
+	gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ) );
 }
 
 CINDER_APP_NATIVE( BufferPlayerNodeApp, RendererGl )
