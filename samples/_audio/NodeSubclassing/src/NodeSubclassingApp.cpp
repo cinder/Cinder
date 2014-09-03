@@ -2,11 +2,12 @@
 // See comments in CustomTremoloNode.h.
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
+
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/GainNode.h"
-#include "cinder/gl/gl.h"
 
 #include "../../common/AudioDrawUtils.h"
 
