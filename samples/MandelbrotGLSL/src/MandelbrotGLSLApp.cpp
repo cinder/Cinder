@@ -1,7 +1,7 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 
 #include "Resources.h"
@@ -14,15 +14,14 @@ class MandelbrotGLSLApp : public AppBasic {
   public:
 	void			prepareSettings( Settings *settings );
 	virtual void	setup();
-	virtual void	update();
 	virtual void	draw();
 	
-	gl::GlslProg	mBrotShader;
-	gl::Texture		mColorsTexture;
+	gl::GlslProgRef		mBrotShader;
+	gl::Texture2dRef	mColorsTexture;
 	
-	vec2			mCenter;
-	float			mScale;
-	int				mIter;
+	vec2				mCenter;
+	float				mScale;
+	int					mIter;
 };
 
 void MandelbrotGLSLApp::prepareSettings( Settings *settings )
@@ -34,9 +33,8 @@ void MandelbrotGLSLApp::prepareSettings( Settings *settings )
 
 void MandelbrotGLSLApp::setup()
 {
-	mBrotShader		= gl::GlslProg( loadResource( RES_VERT_GLSL ), loadResource( RES_FRAG_GLSL ) );
-	mColorsTexture	= gl::Texture( loadImage( loadResource( RES_COLORS_PNG ) ) );
-	mColorsTexture.enableAndBind();
+	mBrotShader		= gl::GlslProg::create( loadResource( RES_VERT_GLSL ), loadResource( RES_FRAG_GLSL ) );
+	mColorsTexture	= gl::Texture::create( loadImage( loadResource( RES_COLORS_PNG ) ) );
 	
 	mCenter			= vec2( 0.7f, 0.0f );
 	mScale			= 2.2f;
@@ -47,10 +45,7 @@ void MandelbrotGLSLApp::setup()
 	// After five minutes of blowing air into my laptop, I gave up and shut
 	// it down. Even 10000 will cause a noticeable pause.
 	mIter			= 1500;
-}
 
-void MandelbrotGLSLApp::update()
-{
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 }
@@ -60,13 +55,13 @@ void MandelbrotGLSLApp::draw()
 	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );	
 	gl::setMatricesWindow( getWindowSize() );
 	
-	mBrotShader.bind();
-	mBrotShader.uniform( "tex", 0 );
-	mBrotShader.uniform( "center", mCenter );
-	mBrotShader.uniform( "scale", mScale );
-	mBrotShader.uniform( "iter", mIter );
+	gl::ScopedGlslProg glslScp( mBrotShader );
+	gl::ScopedTextureBind texScp( mColorsTexture );
+	mBrotShader->uniform( "uTex0", 0 );
+	mBrotShader->uniform( "uCenter", mCenter );
+	mBrotShader->uniform( "uScale", mScale );
+	mBrotShader->uniform( "uIter", mIter );
 	gl::drawSolidRect( getWindowBounds() );
-	mBrotShader.unbind();
 }
 
 CINDER_APP_BASIC( MandelbrotGLSLApp, RendererGl )
