@@ -95,6 +95,4 @@ class SpectrumPlot {
 	ci::Rectf				mBounds;
 	bool					mScaleDecibels, mBorderEnabled;
 	ci::ColorA				mBorderColor;
-	std::vector<ci::vec2>	mVerts;
-	std::vector<ci::ColorA>	mColors;
 };
