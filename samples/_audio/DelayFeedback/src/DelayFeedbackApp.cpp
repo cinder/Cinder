@@ -6,7 +6,7 @@
  */
 
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
 #include "cinder/gl/GlslProg.h"
@@ -18,7 +18,7 @@
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/Utilities.h"
 
-#include "cinder/gl/Vbo.h"
+#include "cinder/gl/VboMesh.h"
 
 #include "Resources.h"
 
@@ -138,7 +138,7 @@ void DelayFeedback::addSplash( const vec2 &pos )
 	timeline().apply( &splash.mRadius, endRadius, 7, EaseOutExpo() );
 	timeline().apply( &splash.mAlpha, 0.0f, 7 );
 
-	float h = math<float>::min( 1,  mPerlin.fBm( pos.normalized() ) * 7.0f );
+	float h = math<float>::min( 1,  mPerlin.fBm( normalize( pos ) ) * 7 );
 	splash.mColorHsv = vec3( fabsf( h ), 1, 1 );
 }
 
@@ -209,7 +209,7 @@ void DelayFeedback::draw()
 	if( ! mGlsl || ! mMesh )
 		return;
 
-	mGlsl->bind();
+	gl::ScopedGlslProg glslScope( mGlsl );
 
 	for( const auto &splash : mSplashes ) {
 		float radiusNormalized = splash.mRadius / MAX_RADIUS;
@@ -223,15 +223,13 @@ void DelayFeedback::draw()
 			gl::draw( mMesh );
 		gl::popModelView();
 	}
-
-	mGlsl->unbind();
 }
 
 void DelayFeedback::loadMesh()
 {
 	Rectf boundingBox( - MAX_RADIUS, - MAX_RADIUS, MAX_RADIUS, MAX_RADIUS );
 
-	TriMesh2d mesh;
+	TriMesh mesh( TriMesh::Format().positions( 2 ).texCoords( 2 ) );
 
 	mesh.appendVertex( boundingBox.getUpperLeft() );
 	mesh.appendTexCoord( vec2( -1, -1 ) );
@@ -255,8 +253,6 @@ void DelayFeedback::loadGlsl()
 {
 	try {		
 		mGlsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
-
-		CI_LOG_V( "loaded glsl" );
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "failed to load shader, what: " << exc.what() );
