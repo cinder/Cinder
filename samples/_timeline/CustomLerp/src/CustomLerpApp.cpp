@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
@@ -54,7 +55,7 @@ Box	CustomLerpApp::randomBox( vec2 center )
 {
 	Color color( CM_HSV, Rand::randFloat(), 1, 1 );
 	float size( Rand::randFloat( 20, 40 ) );
-	vec2 pos = center - vec2( size, size ) / 2;
+	vec2 pos = center - vec2( size, size ) / 2.0f;
 	return Box( color, pos, vec2( size, size ) );
 }
 
