@@ -547,7 +547,7 @@ void Fbo::resolveTextures() const
 
 		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
 		ctx->bindFramebuffer( GL_FRAMEBUFFER, mMultisampleFramebufferId );
-		glDrawBuffers( drawBuffers.size(), &drawBuffers[0] );
+		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 		
 		ctx->popFramebuffer( GL_DRAW_FRAMEBUFFER );
 		ctx->popFramebuffer( GL_READ_FRAMEBUFFER );		
