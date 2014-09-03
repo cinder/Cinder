@@ -121,6 +121,9 @@ class Param {
 	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded.
 	//! \note Forces \a node to be mono.
 	void setProcessor( const NodeRef &node );
+	void	setProcessor( const NodeRef &node );
+	//! Returns this Param's processing Node, or an empty NodeRef if none is set.
+	NodeRef	getProcessor() const	{ return mProcessor; }
 
 	//! Resets Param, blowing away any Event's or processing Node. \note Must be called from a non-audio thread.
 	void reset();
