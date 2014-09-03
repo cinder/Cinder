@@ -29,8 +29,7 @@
 
 typedef std::shared_ptr<class CullableObject> CullableObjectRef;
 
-class CullableObject
-{
+class CullableObject {
 public:
 	CullableObject( const ci::gl::BatchRef &batch );
 	~CullableObject();
@@ -38,8 +37,8 @@ public:
 	void update( double elapsed );
 	void draw();
 
-	void setCulled( bool culled = true ) { bIsCulled = culled; }
-	bool isCulled() { return bIsCulled; }
+	void setCulled( bool culled = true ) { mIsCulled = culled; }
+	bool isCulled() { return mIsCulled; }
 
 	const ci::mat4& getTransform() const { return mTransform; }
 	
@@ -49,21 +48,16 @@ public:
 	void setTransform( const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale );
 protected:
 	//! keep track of culling state
-	bool			bIsCulled;
+	bool			mIsCulled;
 
 	//! keep track of position, rotation and scale
 	ci::vec3		mPosition;
 	ci::vec3		mRotation;
 	ci::vec3		mScale;
 
-	//! this matrix combines all translations, rotations and scaling
-	//! and can be used to easily calculate the world space bounding box
-	ci::mat4		mTransform;
+	//! This is the combined transformation that is used to transform the model matrix
+	ci::mat4			mTransform;
 
-	//!		gl::BatchRef is a shared pointer, so when passing them from
-	//		FrustumCullingReduxApp to this CullableObject class, we are not
-	//		making a copy, but simply keep a reference to the same batch.
-	ci::gl::BatchRef		mBatch;
-	
-	
+	//! This is our handle the gpu-side geometry data.
+	ci::gl::BatchRef	mBatch;
 };

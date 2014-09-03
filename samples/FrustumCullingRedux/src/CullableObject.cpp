@@ -26,48 +26,49 @@ using namespace ci;
 using namespace ci::gl;
 
 CullableObject::CullableObject( const BatchRef &batch )
-	: mBatch( batch ), bIsCulled( false )
+	: mBatch( batch ), mIsCulled( false )
 {
-	setTransform( vec3( 0.0f ), vec3( 0.0f ), vec3( 0.1f ) );
+	setTransform( vec3( 0 ), vec3( 0 ), vec3( 0.1f ) );
 }
 
 CullableObject::~CullableObject()
 {
 }
 
-void CullableObject::update(double elapsed)
+void CullableObject::update( double elapsed )
 {
-	//! rotate slowly around the y-axis (independent of frame rate)
+	// rotate slowly around the y-axis (independent of frame rate)
 	mRotation.y += (float) elapsed;
 	setTransform( mPosition, mRotation, mScale );
 }
 
 void CullableObject::draw()
 {
-	//! don't draw if culled
-	if( bIsCulled ) return;
+	// don't draw if culled
+	if( mIsCulled )
+		return;
 
-	//! only draw if mesh is valid
+	// only draw if mesh is valid
 	if( mBatch ) {
 		gl::color( Color::white() );
 
-		//! draw the mesh 
+		// draw the mesh
 		gl::ScopedModelMatrix scopeModel;
-			gl::multModelMatrix( mTransform );
-			mBatch->draw();
+
+		gl::multModelMatrix( mTransform );
+		mBatch->draw();
 	}
 }
 
-void CullableObject::setTransform(const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale)
+void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, const vec3 &scale )
 {
 	mPosition = position;
 	mRotation = rotation;
 	mScale = scale;
 
-	//! by creating a single transformation matrix, it will be very easy
-	//! to construct a world space bounding box for this object
-	mTransform = ci::mat4();
-	mTransform *= ci::translate( position );
-	mTransform *= ci::toMat4( ci::quat( rotation ) );
+	// by creating a single transformation matrix, it will be very easy to construct a world space bounding box for this object
+	mTransform = mat4();
+	mTransform *= glm::translate( position );
+	mTransform *= toMat4( quat( rotation ) );
 	mTransform *= glm::scale( scale );
 }
