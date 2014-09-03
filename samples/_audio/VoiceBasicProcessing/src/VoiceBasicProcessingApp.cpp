@@ -1,4 +1,6 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
+
 #include "cinder/audio/Voice.h"
 
 #include <atomic>

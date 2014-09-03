@@ -6,19 +6,19 @@
  */
 
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Timeline.h"
 #include "cinder/Log.h"
+#include "cinder/TriMesh.h"
+#include "cinder/gl/Batch.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/Utilities.h"
-
-#include "cinder/gl/Vbo.h"
 
 #include "Resources.h"
 
@@ -51,8 +51,7 @@ public:
 	void	setVariableDelayMod();
 	void	addSplash( const vec2 &pos );
 	float	quantizePitch( const vec2 &pos );
-	void	loadMesh();
-	void	loadGlsl();
+	void	loadBatch();
 
 	audio::GenOscNodeRef	mOsc;
 	audio::DelayNodeRef		mDelay;
@@ -61,8 +60,7 @@ public:
 	std::list<Splash>		mSplashes;
 	Perlin					mPerlin;
 
-	gl::GlslProgRef			mGlsl;
-	gl::VboMeshRef			mMesh;
+	gl::BatchRef			mBatch;
 };
 
 void DelayFeedback::prepareSettings( Settings *settings )
@@ -73,8 +71,7 @@ void DelayFeedback::prepareSettings( Settings *settings )
 
 void DelayFeedback::setup()
 {
-	loadGlsl();
-	loadMesh();
+	loadBatch();
 	gl::enableAlphaBlending();
 
 	// The basic audio::Node's used here are an oscillator with a triangle waveform, a gain, and a delay.
@@ -138,7 +135,7 @@ void DelayFeedback::addSplash( const vec2 &pos )
 	timeline().apply( &splash.mRadius, endRadius, 7, EaseOutExpo() );
 	timeline().apply( &splash.mAlpha, 0.0f, 7 );
 
-	float h = math<float>::min( 1,  mPerlin.fBm( pos.normalized() ) * 7.0f );
+	float h = math<float>::min( 1,  mPerlin.fBm( normalize( pos ) ) * 7 );
 	splash.mColorHsv = vec3( fabsf( h ), 1, 1 );
 }
 
@@ -186,8 +183,6 @@ void DelayFeedback::mouseUp( MouseEvent event )
 
 void DelayFeedback::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 's' )
-		loadGlsl();
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
 }
@@ -206,32 +201,39 @@ void DelayFeedback::draw()
 {
 	gl::clear();
 
-	if( ! mGlsl || ! mMesh )
+	if( ! mBatch )
 		return;
 
-	mGlsl->bind();
+	gl::ScopedGlslProg glslScope( mBatch->getGlslProg() );
 
 	for( const auto &splash : mSplashes ) {
 		float radiusNormalized = splash.mRadius / MAX_RADIUS;
-		mGlsl->uniform( "uRadius", radiusNormalized );
+		mBatch->getGlslProg()->uniform( "uRadius", radiusNormalized );
+
+		gl::ScopedModelMatrix matrixScope;
+		gl::translate( splash.mCenter );
 
 		Color splashColor( CM_HSV, splash.mColorHsv );
 		gl::color( splashColor.r, splashColor.g, splashColor.b, splash.mAlpha() );
 
-		gl::pushModelView();
-			gl::translate( splash.mCenter );
-			gl::draw( mMesh );
-		gl::popModelView();
+		mBatch->draw();
 	}
-
-	mGlsl->unbind();
 }
 
-void DelayFeedback::loadMesh()
+void DelayFeedback::loadBatch()
 {
+	gl::GlslProgRef glsl;
+	try {
+		glsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "failed to load shader, what: " << exc.what() );
+		return;
+	}
+
 	Rectf boundingBox( - MAX_RADIUS, - MAX_RADIUS, MAX_RADIUS, MAX_RADIUS );
 
-	TriMesh2d mesh;
+	TriMesh mesh( TriMesh::Format().positions( 2 ).texCoords( 2 ) );
 
 	mesh.appendVertex( boundingBox.getUpperLeft() );
 	mesh.appendTexCoord( vec2( -1, -1 ) );
@@ -248,19 +250,7 @@ void DelayFeedback::loadMesh()
 	mesh.appendTriangle( 0, 1, 2 );
 	mesh.appendTriangle( 2, 1, 3 );
 
-	mMesh = gl::VboMesh::create( mesh );
-}
-
-void DelayFeedback::loadGlsl()
-{
-	try {		
-		mGlsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
-
-		CI_LOG_V( "loaded glsl" );
-	}
-	catch( std::exception &exc ) {
-		CI_LOG_E( "failed to load shader, what: " << exc.what() );
-	}
+	mBatch = gl::Batch::create( mesh, glsl );
 }
 
 CINDER_APP_NATIVE( DelayFeedback, RendererGl )

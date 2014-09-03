@@ -28,12 +28,16 @@
 #include "cinder/CinderMath.h"
 #include "cinder/Triangulate.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Shader.h"
 
 using namespace std;
 using namespace ci;
 
 void drawAudioBuffer( const audio::Buffer &buffer, const Rectf &bounds, bool drawFrame, const ci::ColorA &color )
 {
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
+
 	gl::color( color );
 
 	const float waveHeight = bounds.getHeight() / (float)buffer.getNumChannels();
@@ -117,7 +121,7 @@ void Waveform::load( const float *samples, size_t numSamples, const ci::ivec2 &w
     }
 	mOutline.setClosed();
 
-	mMesh = Triangulator( mOutline ).calcMesh();
+	mMesh = gl::VboMesh::create( Triangulator( mOutline ).calcMesh() );
 }
 
 
@@ -152,6 +156,8 @@ void WaveformPlot::draw()
 		return;
 	}
 
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
+
 	gl::color( mColorMinMax );
 	gl::draw( waveforms[0].getMesh() );
 
@@ -177,7 +183,7 @@ void WaveformPlot::draw()
 // ----------------------------------------------------------------------------------------------------
 
 SpectrumPlot::SpectrumPlot()
-: mScaleDecibels( true ), mBorderEnabled( true ), mBorderColor( 0.5f, 0.5f, 0.5f, 1 )
+	: mScaleDecibels( true ), mBorderEnabled( true ), mBorderColor( 0.5f, 0.5f, 0.5f, 1 )
 {
 }
 
@@ -185,6 +191,8 @@ void SpectrumPlot::draw( const vector<float> &magSpectrum )
 {
 	if( magSpectrum.empty() )
 		return;
+
+	gl::ScopedGlslProg glslScope( getStockShader( gl::ShaderDef().color() ) );
 
 	ColorA bottomColor( 0, 0, 0.7f, 1 );
 
@@ -194,44 +202,35 @@ void SpectrumPlot::draw( const vector<float> &magSpectrum )
 	float padding = 0;
 	float binWidth = ( width - padding * ( numBins - 1 ) ) / (float)numBins;
 
-	size_t numVerts = magSpectrum.size() * 2 + 2;
-	if( mVerts.size() < numVerts ) {
-		mVerts.resize( numVerts );
-		mColors.resize( numVerts );
-	}
+	gl::VertBatch batch( GL_TRIANGLE_STRIP );
 
 	size_t currVertex = 0;
+	float m;
 	Rectf bin( mBounds.x1, mBounds.y1, mBounds.x1 + binWidth, mBounds.y2 );
 	for( size_t i = 0; i < numBins; i++ ) {
-		float m = magSpectrum[i];
+		m = magSpectrum[i];
 		if( mScaleDecibels )
 			m = audio::linearToDecibel( m ) / 100;
 
 		bin.y1 = bin.y2 - m * height;
 
-		mVerts[currVertex] = bin.getLowerLeft();
-		mColors[currVertex] = bottomColor;
-		mVerts[currVertex + 1] = bin.getUpperLeft();
-		mColors[currVertex + 1] = ColorA( 0, m, 0.7f, 1 );
+		batch.color( bottomColor );
+		batch.vertex( bin.getLowerLeft() );
+		batch.color( 0, m, 0.7f );
+		batch.vertex( bin.getUpperLeft() );
 
 		bin += vec2( binWidth + padding, 0 );
 		currVertex += 2;
 	}
 
-	mVerts[currVertex] = bin.getLowerLeft();
-	mColors[currVertex] = bottomColor;
-	mVerts[currVertex + 1] = bin.getUpperLeft();
-	mColors[currVertex + 1] = mColors[currVertex - 1];
+	batch.color( bottomColor );
+	batch.vertex( bin.getLowerLeft() );
+	batch.color( 0, m, 0.7f );
+	batch.vertex( bin.getUpperLeft() );
 
 	gl::color( 0, 0.9f, 0 );
 
-	glEnableClientState( GL_VERTEX_ARRAY );
-	glEnableClientState( GL_COLOR_ARRAY );
-	glVertexPointer( 2, GL_FLOAT, 0, mVerts.data() );
-	glColorPointer( 4, GL_FLOAT, 0, mColors.data() );  // note: on OpenGL ES v1.1, the 'size' param to glColorPointer can only be 4
-	glDrawArrays( GL_TRIANGLE_STRIP, 0, (GLsizei)mVerts.size() );
-	glDisableClientState( GL_VERTEX_ARRAY );
-	glDisableClientState( GL_COLOR_ARRAY );
+	batch.draw();
 
 	if( mBorderEnabled ) {
 		gl::color( mBorderColor );
