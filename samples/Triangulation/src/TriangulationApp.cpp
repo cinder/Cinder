@@ -1,8 +1,9 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
-#include "cinder/gl/Vbo.h"
+#include "cinder/gl/VboMesh.h"
 #include "cinder/params/Params.h"
 
 using namespace ci;
@@ -24,7 +25,7 @@ class TriangulationApp : public AppBasic {
 	Font				mFont;
 	Shape2d				mShape;
 	vector<string>		mFontNames;
-	gl::VboMesh			mVboMesh;
+	gl::VboMeshRef		mVboMesh;
 	params::InterfaceGl	mParams;
 	bool				mDrawWireframe;
 	int					mFontSize;
@@ -58,9 +59,9 @@ void TriangulationApp::setup()
 
 void TriangulationApp::recalcMesh()
 {
-	TriMesh2d mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
+	TriMesh mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
 	mNumPoints = mesh.getNumIndices();
-	mVboMesh = gl::VboMesh( mesh ); 
+	mVboMesh = gl::VboMesh::create( mesh ); 
 	mOldPrecision = mPrecision;
 }
 

@@ -104,7 +104,6 @@
 				00D716FE1021336B00894269 /* PBXTargetDependency */,
 				00F0B3611039F869003AB416 /* PBXTargetDependency */,
 				00F0B3651039F869003AB416 /* PBXTargetDependency */,
-				00F0B3671039F869003AB416 /* PBXTargetDependency */,
 				00F0B3691039F869003AB416 /* PBXTargetDependency */,
 				00F0B36B1039F869003AB416 /* PBXTargetDependency */,
 				000B6788103CB3E4003D463F /* PBXTargetDependency */,
@@ -1414,13 +1413,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = QuickTimeIteration;
 		};
-		00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = GLSLLighting;
-		};
 		00F0B3601039F869003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */;
@@ -1434,13 +1426,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ParamsBasic;
-		};
-		00F0B3661039F869003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = GLSLLighting;
 		};
 		00F0B3681039F869003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1707,7 +1692,6 @@
 		00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ListenerBasic.xcodeproj; path = ../../ListenerBasic/xcode/ListenerBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
-		00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLSLLighting.xcodeproj; path = ../../GLSLLighting/xcode/GLSLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		11754405193594480075AF60 /* TextureFont.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextureFont.xcodeproj; path = ../../TextureFont/xcode/TextureFont.xcodeproj; sourceTree = "<group>"; };
 		1175440B1935946C0075AF60 /* TextBox.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextBox.xcodeproj; path = ../../TextBox/xcode/TextBox.xcodeproj; sourceTree = "<group>"; };
 		11754416193596610075AF60 /* BufferPlayer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BufferPlayer.xcodeproj; path = ../../_audio/BufferPlayer/xcode/BufferPlayer.xcodeproj; sourceTree = "<group>"; };
@@ -1753,7 +1737,6 @@
 				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
 				00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */,
 				006D72BE1995325D008149E2 /* Geometry.xcodeproj */,
-				00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */,
 				0005C9D9100681F2004D82BC /* HodginParticles.xcodeproj */,
 				0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */,
 				009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */,
@@ -2603,14 +2586,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00F0B3581039F84C003AB416 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00F0B35F1039F84C003AB416 /* GLSLLighting.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		11754406193594480075AF60 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2886,10 +2861,6 @@
 				{
 					ProductGroup = 006D7158199528D5008149E2 /* Products */;
 					ProjectRef = 006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */;
-				},
-				{
-					ProductGroup = 00F0B3581039F84C003AB416 /* Products */;
-					ProjectRef = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
 				},
 				{
 					ProductGroup = 002932B11530F57D0022B1BF /* Products */;
@@ -3826,13 +3797,6 @@
 			remoteRef = 00F0B3551039F830003AB416 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00F0B35F1039F84C003AB416 /* GLSLLighting.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = GLSLLighting.app;
-			remoteRef = 00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		1175440A193594480075AF60 /* TextureFont.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -4372,11 +4336,6 @@
 			isa = PBXTargetDependency;
 			name = ParamsBasic;
 			targetProxy = 00F0B3641039F869003AB416 /* PBXContainerItemProxy */;
-		};
-		00F0B3671039F869003AB416 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GLSLLighting;
-			targetProxy = 00F0B3661039F869003AB416 /* PBXContainerItemProxy */;
 		};
 		00F0B3691039F869003AB416 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

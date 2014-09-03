@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
 #include "cinder/gl/gl.h"
@@ -10,8 +11,8 @@ using namespace std;
 
 class PolygonBooleanApp : public AppBasic {
   public:
-	void setup();
-	void draw();
+	void setup() override;
+	void draw() override;
 
 	void				doUnion();
 	void				doIntersection();
@@ -23,7 +24,7 @@ class PolygonBooleanApp : public AppBasic {
 	vector<PolyLine2f>	makeLetterA() const;
 	
 	vector<PolyLine2f> 	mPolyA, mPolyB, mPolyResult;
-	TriMesh2d			mPolyAMesh, mPolyBMesh;
+	TriMeshRef			mPolyAMesh, mPolyBMesh;
 	
 	params::InterfaceGl	mParams;
 };
@@ -72,13 +73,13 @@ vector<PolyLine2f> PolygonBooleanApp::makeLetterA() const
 }
 
 
-TriMesh2d makeMesh( const vector<PolyLine2f> &polys )
+TriMeshRef makeMesh( const vector<PolyLine2f> &polys )
 {
 	Triangulator triangulator;
 	for( vector<PolyLine2f>::const_iterator polyIt = polys.begin(); polyIt != polys.end(); ++polyIt )
 		triangulator.addPolyLine( *polyIt );
 	
-	return triangulator.calcMesh();
+	return make_shared<TriMesh>( triangulator.calcMesh() );
 }
 
 void PolygonBooleanApp::doIntersection()
@@ -122,10 +123,10 @@ void PolygonBooleanApp::draw()
 	gl::clear( Color( 0.24f, 0.24f, 0.24f ) );
 	
 	gl::color( ColorA( 0.25f, 0.5f, 1.0f, 0.15f ) );
-	gl::draw( mPolyAMesh );
+	gl::draw( *mPolyAMesh );
 
 	gl::color( ColorA( 0.25f, 1.0f, 0.5f, 0.15f ) );
-	gl::draw( mPolyBMesh );
+	gl::draw( *mPolyBMesh );
 	
 	glLineWidth( 2.0f );
 	gl::color( ColorA( 1.0f, 0.5f, 0.25f, 1.0f ) );

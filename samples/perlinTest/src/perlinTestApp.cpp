@@ -148,8 +148,10 @@ void perlinTestApp::draw()
 			for( int x = 0; x < getWindowWidth(); x += 20 ) {
 				ctx.moveTo( vec2( x, y ) );
 				vec3 norm = mPerlin.dfBm( vec3( x, y, mTime ) * mFrequency ) * 20.0f;
-				if( mDrawNormalized )
-					ctx.lineTo( vec2( x, y ) + vec2( norm.x, norm.y ).safeNormalized() * 20.0f );
+				if( mDrawNormalized ) {
+					if( length2( vec2( norm.x, norm.y ) ) > 0 )
+						ctx.lineTo( vec2( x, y ) + normalize( vec2( norm.x, norm.y ) ) * 20.0f );
+				}
 				else
 					ctx.lineTo( vec2( x, y ) + vec2( norm.x, norm.y ) );
 				/*float thisVal = mPerlin.fBm( vec3( x, y, mTime ) * mFrequency );
