@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
 #include "cinder/Timeline.h"
@@ -67,7 +68,7 @@ void DragTweenApp::mouseDown( MouseEvent event )
 	// see if the mouse is in any of the circles
 	vector<Circle>::iterator circleIt = mCircles.end();
 	for( circleIt = mCircles.begin(); circleIt != mCircles.end(); ++circleIt )
-		if( circleIt->mPos.value().distance( event.getPos() ) <= circleIt->mRadius )
+		if( distance( circleIt->mPos(), (vec2)event.getPos() ) <= circleIt->mRadius )
 			break;
 
 	// if we hit one, tell it to startDrag()
