@@ -1,19 +1,15 @@
-#include "cinder/Cinder.h"
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
-
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/gl/Fbo.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// This sample shows a very basic use case for FBOs - it renders a spinning torus
-// into an FBO, and uses that as a Texture onto the sides of a cube.
+// This sample shows a very basic use case for FBOs - it renders a spinning colored cube
+// into an FBO, and uses that as a Texture onto the sides of a blue cube.
 class FBOBasicApp : public AppNative {
   public:
 	virtual void	setup();
@@ -23,21 +19,21 @@ class FBOBasicApp : public AppNative {
 	void			renderSceneToFbo();
 	
 	gl::FboRef			mFbo;
-	mat4			mTorusRotation;
+	mat4				mRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
 };
 
 void FBOBasicApp::setup()
 {
 	gl::Fbo::Format format;
-	format.setSamples( 4 ); // uncomment this to enable 4x antialiasing, though it will break the depth texture on iOS
-	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthTexture() );
+	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
+	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthBuffer() );
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 }
 
-// Render the torus into the FBO
+// Render the color cube into the FBO
 void FBOBasicApp::renderSceneToFbo()
 {
 	// this will restore the old framebuffer binding when we leave this function
@@ -57,20 +53,19 @@ void FBOBasicApp::renderSceneToFbo()
 	gl::setMatrices( cam );
 
 	// set the modelview matrix to reflect our current rotation
-	gl::setModelMatrix( mTorusRotation );
+	gl::setModelMatrix( mRotation );
 	
 	// render an orange torus, with no textures
 	gl::ScopedGlslProg shaderScp( gl::getStockShader( gl::ShaderDef().color() ) );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
-//	gl::drawTorus( 1.4f, 0.3f, 32, 64 );
-	gl::drawCube( vec3( 0 ), vec3( 2.2f ) );
+	gl::drawColorCube( vec3( 0 ), vec3( 2.2f ) );
 	gl::color( Color::white() );
 }
 
 void FBOBasicApp::update()
 {
 	// Rotate the torus by .06 radians around an arbitrary axis
-	mTorusRotation *= rotate( 0.06f, normalize( vec3( 0.16666f, 0.333333f, 0.666666f ) ) );
+	mRotation *= rotate( 0.06f, normalize( vec3( 0.16666f, 0.333333f, 0.666666f ) ) );
 	
 	// render into our FBO
 	renderSceneToFbo();
@@ -102,10 +97,6 @@ void FBOBasicApp::draw()
 	// show the FBO texture in the upper left corner
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
 	gl::draw( mFbo->getColorTexture(), Rectf( 0, 0, 128, 128 ) );
-	
-	if( mFbo->getDepthTexture() ) // NULL if we have multisampling
-		gl::draw( mFbo->getDepthTexture(), Rectf( 128, 0, 128 + 128, 128 ) );
 }
 
-auto renderOptions = RendererGl::Options().coreProfile( false ).version( 4, 1 );
-CINDER_APP_NATIVE( FBOBasicApp, RendererGl( renderOptions ) )
+CINDER_APP_NATIVE( FBOBasicApp, RendererGl )
