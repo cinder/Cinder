@@ -1,11 +1,8 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/Timeline.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Voice.h"
 #include "cinder/audio/Source.h"
-
-#include "cinder/audio/Context.h"
 
 #include "Resources.h"
 
