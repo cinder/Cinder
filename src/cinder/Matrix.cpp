@@ -82,7 +82,7 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
     glm::detail::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
     T r = 0;										// Rotation angle.
 
-    if( ( prevTangent.length() != 0 ) && ( curTangent.length() != 0 ) ) {
+    if( ( length( prevTangent ) != 0 ) && ( length( curTangent ) != 0 ) ) {
 		normalize( prevTangent );
 		normalize( curTangent );
 		T dot = glm::dot( prevTangent, curTangent );
@@ -94,7 +94,7 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
         axis = cross( prevTangent, curTangent );
     }
 
-    if( ( axis.length() != 0 ) && ( r != 0 ) ) {
+    if( ( length( axis ) != 0 ) && ( r != 0 ) ) {
         glm::detail::tmat4x4<T,glm::defaultp> R  = glm::rotate( r, axis );
         glm::detail::tmat4x4<T,glm::defaultp> Tj = glm::translate( curPoint );
         glm::detail::tmat4x4<T,glm::defaultp> Ti = glm::translate( -prevPoint );
