@@ -948,7 +948,7 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 			if( hasNormals )
 				*normIt++ = vec3( x, y, z );
 			if( hasTexCoords )
-				*texIt++ = vec2( u, 1.0f - v );
+				*texIt++ = vec2( u, v );
 			if( hasColors )
 				*colorIt++ = vec3( x * 0.5f + 0.5f, y * 0.5f + 0.5f, z * 0.5f + 0.5f );
 		}
