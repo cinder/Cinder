@@ -1,7 +1,9 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/Light.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Shader.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Shape2d.h"
 #include "cinder/Utilities.h"
@@ -29,10 +31,10 @@ class LocationApp : public AppNative {
 	float			mHeading;
 	vec3			mLocation;
 	
-	Anim<float>		mDotRadius;
+	Anim<float>			mDotRadius;
 	
-	gl::Light*		mLight;
-	gl::Texture		mTexture;
+	gl::BatchRef		mEarthBatch;
+	gl::Texture2dRef	mTexture;
 };
 
 void LocationApp::setup()
@@ -50,21 +52,11 @@ void LocationApp::setup()
 		std::bind( &LocationApp::headingChanged, this, std::placeholders::_1 ) );
 #endif
 
-	// Load globe texture,
-	setFrameRate( 60.0f );
-	mTexture = gl::Texture( loadImage( loadResource( RES_EARTH_JPG ) ) );
-	mTexture.setFlipped( true );
+	// Load globe texture
+	mTexture = gl::Texture2d::create( loadImage( loadResource( RES_EARTH_JPG ) ) );
 
 	// Set up view
-	gl::enable( GL_TEXTURE_2D );
 	gl::enableAlphaBlending();
-
-	// Set up light
-	mLight = new gl::Light( gl::Light::DIRECTIONAL, 0 );
-	mLight->setDirection( vec3( 0.0f, 0.1f, 0.3f ).normalized() );
-	mLight->setAmbient( ColorAf::gray( 0.843f ) );
-	mLight->setDiffuse( ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ) );
-	mLight->enable();
 
 	// Build the heading arrow
 	float size = 80.0f;
@@ -73,6 +65,8 @@ void LocationApp::setup()
 	mArrow.lineTo( vec2(         0.0f,  size * 0.25f ) );
 	mArrow.lineTo( vec2( -size * 0.5f,  size * 0.5f  ) );
 	mArrow.close();
+	
+	mEarthBatch = gl::Batch::create( geom::Sphere(), gl::getStockShader( gl::ShaderDef().texture() ) );
 }
 
 void LocationApp::draw()
@@ -84,24 +78,21 @@ void LocationApp::draw()
 	
 	CameraPersp camera;
 	camera.setPerspective( 60.0f, getWindowAspectRatio(), 0.01f, 10.0f );
-	camera.lookAt( vec3( 0.0f, 0.0f, 3.0f ), vec3::zero() );
+	camera.lookAt( vec3( 0.0f, 0.0f, 3.0f ), vec3( 0 ) );
 	gl::setMatrices( camera );
-	mLight->update( camera );
 
 	// Rotate the globe
-	gl::multModelView( quat(vec3::yAxis(), mRotationAngle ).normalized() );
+	gl::multModelMatrix( mat4_cast( angleAxis( mRotationAngle(), vec3(0,1,0) ) ) );
 	
 	// Draw the globe with shading. Rotate it 90 degrees on 
 	// its Y axis to line up the texture with the location
 	gl::color( ColorAf::white() );
-	gl::enable( GL_LIGHTING );
-	mTexture.bind( 0 );
+	mTexture->bind( 0 );
 	gl::pushMatrices();
-		gl::rotate( vec3( 0.0f, 90.0f, 0.0f ) );
-		gl::drawSphere( vec3::zero(), 1.0f, 32 );
+		gl::rotate( angleAxis( (float)(M_PI), vec3(0,1,0) ) );
+		mEarthBatch->draw();
 	gl::popMatrices();
-	mTexture.unbind();
-	gl::disable( GL_LIGHTING );
+	mTexture->unbind();
 	
 	// Draw location
 	gl::color( ColorAf( 1.0f, 0.2f, 0.18f, 0.667f ) );
@@ -121,7 +112,7 @@ void LocationApp::draw()
 	vec2 position = getWindowCenter() + vec2( x, y ) * radius;
 	
 	gl::translate( position );
-	gl::rotate( vec3( 0.0f, 0.0f, -mHeading ) );
+	gl::rotate( angleAxis( -mHeading, vec3( 0, 0, 1 ) ) );
 	gl::translate( position * -1.0f );
 	gl::translate( position );
 	
