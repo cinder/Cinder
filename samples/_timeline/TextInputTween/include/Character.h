@@ -22,24 +22,21 @@ class Character {
 	
 	void	draw() const;
 	
-	ci::Rectf		getKernBounds() const;
+	ci::Rectf	getKernBounds() const;
 	bool		isDead() const;
 	ci::mat4	getDestMatrix() const;
 	
   protected:
 	void	onAnimOut();
 	
-	ci::Anim<ci::ColorAf>			mColorCur;
+	ci::Anim<ci::ColorAf>		mColorCur;
 	ci::Anim<ci::mat4>			mMatrix;
 	
 	ci::ColorAf					mColorStart, mColorDest;
-	
-	ci::mat4				mDestMatrix;
-	
+	ci::mat4					mDestMatrix;
 	std::string					mChar;
-	
+	bool						mIsDead;
+
 	ci::gl::TextureFontRef		mTextureFont;
 	ci::Rectf					mKernBounds;
-	
-	bool					mIsDead;
 };

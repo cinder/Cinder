@@ -151,11 +151,11 @@ void TextInputTweenApp::draw()
 	gl::setMatrices( mCam );
 	gl::multModelMatrix( inverse( mSceneMatrix() ) );
 
-	for( vector<Character>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it )
-		it->draw();
+	for( auto &c : mCharacters )
+		c.draw();
 
-	for( list<Character>::iterator it = mDyingCharacters.begin(); it != mDyingCharacters.end(); ++it )
-		it->draw();
+	for( auto &c : mCharacters )
+		c.draw();
 
 	if( ( ! mDyingCharacters.empty() ) && mDyingCharacters.front().isDead() )
 		mDyingCharacters.pop_front();
