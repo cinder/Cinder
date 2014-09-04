@@ -399,7 +399,7 @@ void WindowImplMsw::createWindow( const Vec2i &windowSize, const std::string &ti
 	else {
 		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
 		mWindowStyle = ( mResizable ) ? WS_OVERLAPPEDWINDOW
-			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME );							// Windows Style
+			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MINIMIZEBOX & ~WS_MAXIMIZEBOX );	// Windows Style
 	}
 
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
