@@ -38,11 +38,9 @@ class Bubble
 {
   public:
 	Bubble( const vec3 &origin )
-		:	age( 0.0 ),
-			lifespan( 3.0 ),
-			position( origin ),
-			speed( vec3( 0 ) )
-		{ };
+	  : age( 0.0 ), lifespan( 3.0 ), position( origin ), speed( vec3( 0 ) )
+	{
+	};
 
 	void update( double elapsed ) {
 		age += elapsed;
