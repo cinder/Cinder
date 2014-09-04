@@ -798,7 +798,7 @@ vec3 Teapot::evaluateNormal( int gridU, int gridV, const float *B, const float *
 ///////////////////////////////////////////////////////////////////////////////////////
 // Circle
 Circle::Circle()
-	: mRequestedSegments( -1 ), mCenter( 0, 0 ), mRadius( 1.0f )
+	: mRequestedSubdivisions( -1 ), mCenter( 0, 0 ), mRadius( 1.0f )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::TEX_COORD_0 );
@@ -806,9 +806,9 @@ Circle::Circle()
 	updateVertexCounts();
 }
 
-Circle&	Circle::segments( int segments )
+Circle&	Circle::subdivisions( int subdivs )
 {
-	mRequestedSegments = segments;
+	mRequestedSubdivisions = subdivs;
 	updateVertexCounts();
 	return *this;
 }
@@ -823,13 +823,13 @@ Circle&	Circle::radius( float radius )
 // If numSegments<0, calculate based on radius
 void Circle::updateVertexCounts()
 {
-	if( mRequestedSegments <= 0 )
-		mNumSegments = (int)math<double>::floor( mRadius * float(M_PI * 2) );
+	if( mRequestedSubdivisions <= 0 )
+		mNumSubdivisions = (int)math<double>::floor( mRadius * float(M_PI * 2) );
 	else
-		mNumSegments = mRequestedSegments;
+		mNumSubdivisions = mRequestedSubdivisions;
 
-	if( mNumSegments < 3 ) mNumSegments = 3;
-	mNumVertices = mNumSegments + 1 + 1;
+	if( mNumSubdivisions < 3 ) mNumSubdivisions = 3;
+	mNumVertices = mNumSubdivisions + 1 + 1;
 }
 
 void Circle::calculate() const
@@ -848,9 +848,9 @@ void Circle::calculate() const
 		mNormals[0] = vec3( 0, 0, 1 );
 
 	// iterate the segments
-	const float tDelta = 1 / (float)mNumSegments * 2.0f * 3.14159f;
+	const float tDelta = 1 / (float)mNumSubdivisions * 2.0f * 3.14159f;
 	float t = 0;
-	for( int s = 0; s <= mNumSegments; s++ ) {
+	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		mPositions[s+1] = mCenter + unit * mRadius;
 		if( isEnabled( Attrib::TEX_COORD_0 ) )
@@ -892,7 +892,7 @@ uint8_t	Circle::getAttribDims( Attrib attr ) const
 // Sphere
 
 Sphere::Sphere()
-	: mNumSegments( 18 ), mNumSlices( 0 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mCalculationsCached( false )
+	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mCalculationsCached( false )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -904,7 +904,7 @@ void Sphere::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	int numSegments = mNumSegments;
+	int numSegments = mSubdivisions;
 	if( numSegments < 4 )
 		numSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
 
@@ -1180,7 +1180,7 @@ Capsule::Capsule()
 	: mDirection( 0, 1, 0 ), mLength( 1.0f )
 {
 	radius( 0.5f );
-	slices( 6 );
+	subdivisionsHeight( 6 );
 
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -1202,20 +1202,17 @@ void Capsule::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	int numSegments = mNumSegments;
+	int numSegments = mSubdivisionsAxis;
 	if( numSegments < 4 )
 		numSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
 
-	// numRings = numSegments / 2 and should always be an even number
-	int numRings = ( numSegments >> 2 ) << 1;
-
-	calculateImplUV( numSegments + 1, numRings + 1 );
+	calculateImplUV( numSegments, std::max( mSubdivisionsHeight, 2 ) );
 	mCalculationsCached = true;
 }
 
 void Capsule::calculateImplUV( size_t segments, size_t rings ) const
 {
-	size_t ringsBody = mNumSlices + 1;
+	size_t ringsBody = mSubdivisionsHeight + 1;
 	size_t ringsTotal = rings + ringsBody;
 
 	mPositions.clear();
@@ -1288,12 +1285,52 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) 
 	}
 }
 
+size_t Capsule::getNumVertices() const
+{
+	calculate();
+	return mPositions.size();
+}
+
+size_t Capsule::getNumIndices() const
+{
+	calculate();
+	return mIndices.size();
+}
+
+uint8_t Capsule::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+	case Attrib::POSITION: return 3;
+	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
+	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+	default:
+		return 0;
+	}
+}
+
+void Capsule::loadInto( Target *target ) const
+{
+	calculate();
+	if( isEnabled( Attrib::POSITION ) )
+		target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	if( isEnabled( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Torus
 
 Torus::Torus()
 	: mCenter( 0, 0, 0), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mCoils( 1 ), mHeight( 0 )
-	, mNumSegmentsAxis( 18 ), mNumSegmentsRing( 18 ), mTwist( 0 ), mTwistOffset( 0 )
+	, mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mTwist( 0 ), mTwistOffset( 0 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -1305,11 +1342,11 @@ void Torus::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	int numAxis = (int) math<float>::ceil( mNumSegmentsAxis * mCoils );
+	int numAxis = (int) math<float>::ceil( mSubdivisionsAxis * mCoils );
 	if( numAxis < 4 )
 		numAxis = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) );
 
-	int numRing = mNumSegmentsRing;
+	int numRing = mSubdivisionsHeight;
 	if( numRing < 3 )
 		numRing = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) );
 
@@ -1409,7 +1446,7 @@ void Torus::loadInto( Target *target ) const
 // Cylinder
 
 Cylinder::Cylinder()
-	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mNumSegments( 18 ), mNumSlices( 1 )
+	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -1431,12 +1468,12 @@ void Cylinder::calculate() const
 	if( mCalculationsCached )
 		return;
 
-	int numSegments = mNumSegments;
+	int numSegments = mSubdivisionsAxis;
 	if( numSegments < 4 ) {
 		float radius = math<float>::max( mRadiusBase, mRadiusApex );
 		numSegments = std::max( 12, (int)math<double>::floor( radius * float(M_PI * 2) ) );
 	}
-	int numSlices = math<int>::max( mNumSlices, 1 );
+	int numSlices = math<int>::max( mSubdivisionsHeight, 1 );
 
 	calculateImplUV( numSegments + 1, numSlices + 1 );
 	mCalculationsCached = true;

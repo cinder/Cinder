@@ -273,7 +273,7 @@ protected:
 };
 
 class Circle : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Circle();
 
@@ -281,7 +281,7 @@ public:
 	virtual Circle&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
 	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
 	Circle&		radius( float radius );
-	Circle&		segments( int segments );
+	Circle&		subdivisions( int subdivs );
 
 	virtual void		loadInto( Target *target ) const override;
 	virtual size_t		getNumVertices() const override;
@@ -289,13 +289,13 @@ public:
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 
-private:
+  private:
 	void	updateVertexCounts();
 	void	calculate() const;
 
 	vec2		mCenter;
 	float		mRadius;
-	int			mRequestedSegments, mNumSegments;
+	int			mRequestedSubdivisions, mNumSubdivisions;
 
 	size_t						mNumVertices;
 	mutable std::vector<vec2>	mPositions;
@@ -304,7 +304,7 @@ private:
 };
 
 class Sphere : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Sphere();
 	virtual ~Sphere() {}
@@ -314,7 +314,7 @@ public:
 	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
-	Sphere&		segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
+	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; mCalculationsCached = false; return *this; }
 
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override;
@@ -322,14 +322,13 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void		calculate() const;
 	virtual void		calculateImplUV( size_t segments, size_t rings ) const;
 
 	vec3		mCenter;
 	float		mRadius;
-	int			mNumSegments;
-	int			mNumSlices;
+	int			mSubdivisions;
 
 	mutable bool						mCalculationsCached;
 	mutable std::vector<vec3>			mPositions;
@@ -346,7 +345,7 @@ public:
 
 	virtual Icosphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Icosphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Icosphere&			subdivision( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
+	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
@@ -362,35 +361,50 @@ protected:
 	mutable std::vector<vec2>			mTexCoords;
 };
 
-class Capsule : public Sphere {
-public:
+class Capsule : public Source {
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Capsule();
 
 	virtual Capsule&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Capsule&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Capsule&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	//! Specifies the number of segments, which determines the roundness of the capsule.
-	Capsule&		segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
-	//! Specifies the number of slices between the caps. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the capsule.
-	Capsule&		slices( int slices ) { mNumSlices = slices > 1 ? slices : 1; mCalculationsCached = false; return *this; }
-	Capsule&		radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
-	Capsule&		length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
-	Capsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
+	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule.
+	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
+	Capsule&			subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; mCalculationsCached = false; return *this; }
+	Capsule&			radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
+	Capsule&			length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
+	Capsule&			direction( const vec3 &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
 	//! Conveniently sets center, length and direction
-	Capsule&		set( const vec3 &from, const vec3 &to );
+	Capsule&			set( const vec3 &from, const vec3 &to );
 
-private:
-	virtual void	calculate() const override;
-	virtual void	calculateImplUV( size_t segments, size_t rings ) const override;
-	void			calculateRing( size_t segments, float radius, float y, float dy ) const;
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
 
-	vec3		mDirection;
-	float		mLength;
+  private:
+	void	calculate() const;
+	void	calculateImplUV( size_t segments, size_t rings ) const;
+	void	calculateRing( size_t segments, float radius, float y, float dy ) const;
+
+	vec3		mDirection, mCenter;
+	float		mLength, mRadius;
+	int			mSubdivisionsHeight, mSubdivisionsAxis;
+
+	mutable bool						mCalculationsCached;
+	mutable std::vector<vec3>			mPositions;
+	mutable std::vector<vec2>			mTexCoords;
+	mutable std::vector<vec3>			mNormals;
+	mutable std::vector<vec3>			mColors;
+	mutable std::vector<uint32_t>		mIndices;
+
 };
 
 class Torus : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Torus();
 	virtual ~Torus() {}
@@ -398,23 +412,16 @@ public:
 	virtual Torus&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Torus&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	virtual Torus&	segmentsAxis( int value ) { mNumSegmentsAxis = value; mCalculationsCached = false; return *this; }
-	virtual Torus&	segmentsRing( int value ) { mNumSegmentsRing = value; mCalculationsCached = false; return *this; }
+	virtual Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	virtual Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
 	//! Allows you to twist the torus along the ring.
 	virtual Torus&	twist( unsigned twist ) { mTwist = twist; mCalculationsCached = false; return *this; }
 	//! Allows you to twist the torus along the ring. The \a offset is in radians.
 	virtual Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; mCalculationsCached = false; return *this; }
 	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
-	virtual Torus&	ratio( float ratio ) {
-		ratio = math<float>::clamp( ratio );
-		mRadiusMajor = 1.f;
-		mRadiusMinor = 1.f - ratio;
-		mCalculationsCached = false; return *this; }
+	virtual Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; mCalculationsCached = false; return *this; }
 	//! Specifies the major and minor radius separately.
-	virtual Torus&	radius( float major, float minor ) { 
-		mRadiusMajor = math<float>::max(0.f, major); 
-		mRadiusMinor = math<float>::max(0.f, minor); 
-		mCalculationsCached = false; return *this; }
+	virtual Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); mCalculationsCached = false; return *this; }
 
 	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
@@ -422,15 +429,15 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	void			calculate() const;
 	void			calculateImplUV( size_t segments, size_t rings ) const;
 
 	vec3		mCenter;
 	float		mRadiusMajor;
 	float		mRadiusMinor;
-	int			mNumSegmentsAxis;
-	int			mNumSegmentsRing;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
 	float		mHeight;
 	float		mCoils;
 	unsigned	mTwist;
@@ -445,7 +452,7 @@ protected:
 };
 
 class Helix : public Torus {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Helix()
 	{
@@ -456,8 +463,8 @@ public:
 	virtual Helix&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Helix&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
-	virtual Helix&	segmentsAxis( int value ) override { Torus::segmentsAxis( value ); return *this; }
-	virtual Helix&	segmentsRing( int value ) override { Torus::segmentsRing( value ); return *this; }
+	virtual Helix&	subdivisionsAxis( int subdiv ) override { Torus::subdivisionsAxis( subdiv ); return *this; }
+	virtual Helix&	subdivisionsHeight( int subdiv ) override { Torus::subdivisionsHeight( subdiv ); return *this; }
 	//! Specifies the height, measured from center to center.
 	Helix&			height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
 	//! Specifies the number of coils.
@@ -469,7 +476,7 @@ public:
 };
 
 class Cylinder : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cylinder();
 	virtual ~Cylinder() {}
@@ -477,10 +484,10 @@ public:
 	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
-	//! Specifies the number of segments, which determines the roundness of the cylinder.
-	virtual Cylinder&	segments( int segments ) { mNumSegments = segments; mCalculationsCached = false; return *this; }
-	//! Specifies the number of slices. Defaults to 1. Add more slices to improve texture mapping and lighting, or if you intend to bend the cylinder.
-	virtual Cylinder&	slices( int slices ) { mNumSlices = slices; mCalculationsCached = false; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
+	virtual Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
+	virtual Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; mCalculationsCached = false; return *this; }
 	//! Specifies the height of the cylinder.
 	virtual Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
 	//! Specifies the base and apex radius.
@@ -496,7 +503,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void	calculate() const;
 	virtual void	calculateImplUV( size_t segments, size_t rings ) const;
 	virtual void	calculateCap( bool flip, float height, float radius, size_t segments ) const;
@@ -506,8 +513,8 @@ protected:
 	vec3		mDirection;
 	float		mRadiusBase;
 	float		mRadiusApex;
-	int			mNumSegments;
-	int			mNumSlices;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
 
 	mutable bool						mCalculationsCached;
 	mutable std::vector<vec3>			mPositions;
@@ -518,7 +525,7 @@ protected:
 };
 
 class Cone : public Cylinder {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cone() { radius( 1.0f, 0.0f ); }
 	virtual ~Cone() {}
@@ -526,10 +533,10 @@ public:
 	virtual Cone&	enable( Attrib attrib ) override { Cylinder::enable( attrib ); return *this; }
 	virtual Cone&	disable( Attrib attrib ) override { Cylinder::disable( attrib ); return *this; }
 	virtual Cone&	origin( const vec3 &origin ) override { Cylinder::origin( origin ); return *this; }
-	//! Specifies the number of segments, which determines the roundness of the cone.
-	virtual Cone&	segments( int segments ) override { Cylinder::segments( segments ); return *this; }
-	//! Specifies the number of slices. Defaults to 6. Add more slices to improve texture mapping and lighting, or if you intend to bend the cone.
-	virtual Cone&	slices( int slices ) override { Cylinder::slices( slices ); return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
+	virtual Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	//! Specifies the number of subdivisions along the Cone's height. Defaults to \c 1.
+	virtual Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
 	virtual Cone&	height( float height ) override { Cylinder::height( height ); return *this; }
 	//! Specifies the base and apex radius.
 	virtual Cone&	radius( float radius ) override {  Cylinder::radius( radius ); return *this; }
@@ -592,7 +599,7 @@ class Plane : public Source {
 
 #if 0
 class SplineExtrusion : public Source {
-public:
+  public:
 	SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
 
 	SplineExtrusion&		texCoords() { mHasTexCoord0 = true; return *this; }
@@ -610,7 +617,7 @@ public:
 	virtual void		copyIndices( uint16_t *dest ) const override;
 	virtual void		copyIndices( uint32_t *dest ) const override;	
 
-protected:
+  protected:
 	vec2		mPos, mScale;
 	bool		mHasTexCoord0;
 	bool		mHasNormals;

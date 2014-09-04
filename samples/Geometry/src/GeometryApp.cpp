@@ -84,6 +84,7 @@ class GeometryApp : public AppNative {
 void GeometryApp::prepareSettings( Settings* settings )
 {
 	settings->setWindowSize(1024, 768);
+	settings->enableHighDensityDisplay();
 }
 
 void GeometryApp::setup()
@@ -336,15 +337,15 @@ void GeometryApp::createPrimitive(void)
 	case CAPSULE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments( 6 ).slices( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().segments( 60 ).slices( 20 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ) ); break;
 		}
 		break;
 	case CONE:
 		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Cone( geom::Cone() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments( 6 ).slices( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cone( geom::Cone().segments( 60 ).slices( 60 ) ) ); break;
+			case DEFAULT: primitive = geom::SourceRef( new geom::Cone() ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Cone( geom::Cone().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Cone( geom::Cone().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
 		}
 		break;
 	case CUBE:
@@ -353,15 +354,15 @@ void GeometryApp::createPrimitive(void)
 	case CYLINDER:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().segments( 60 ).slices( 20 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().subdivisionsAxis( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ) ); break;
 		}
 		break;
 	case HELIX:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Helix( geom::Helix() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis( 12 ).segmentsRing( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().segmentsAxis( 60 ).segmentsRing( 60 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 12 ).subdivisionsHeight( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 60 ).subdivisionsHeight( 60 ) ) ); break;
 		}
 		break;
 	case ICOSAHEDRON:
@@ -370,15 +371,15 @@ void GeometryApp::createPrimitive(void)
 	case ICOSPHERE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivision( 5 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivisions( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivisions( 5 ) ) ); break;
 		}
 		break;
 	case SPHERE:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().segments( 60 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().subdivisions( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().subdivisions( 60 ) ) ); break;
 		}
 		break;
 	case TEAPOT:
@@ -391,8 +392,8 @@ void GeometryApp::createPrimitive(void)
 	case TORUS:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Torus( geom::Torus() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis( 12 ).segmentsRing( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().segmentsAxis( 60 ).segmentsRing( 60 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Torus( geom::Torus().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
 		}
 		break;
 	case PLANE:

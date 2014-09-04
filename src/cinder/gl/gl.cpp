@@ -1583,7 +1583,7 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 	ctx->popVao();
 }
 
-void drawSphere( const vec3 &center, float radius, int segments )
+void drawSphere( const vec3 &center, float radius, int subdivisions )
 {
 	auto ctx = gl::context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1594,10 +1594,9 @@ void drawSphere( const vec3 &center, float radius, int segments )
 	//auto batch = gl::Batch::create( geom::Sphere().center( center ).radius( radius ).segments( segments ).normals().texCoords(), glslProg );
 	//batch->draw();
 
-
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
-	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).segments( segments ).enable( geom::Attrib::NORMAL ).enable( geom::Attrib::TEX_COORD_0 ), ctx->getDefaultArrayVbo(), ctx->getDefaultElementVbo() );
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ).enable( geom::Attrib::NORMAL ).enable( geom::Attrib::TEX_COORD_0 ), ctx->getDefaultArrayVbo(), ctx->getDefaultElementVbo() );
 	mesh->buildVao( curGlslProg );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
