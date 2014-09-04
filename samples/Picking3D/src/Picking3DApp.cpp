@@ -32,7 +32,7 @@ using namespace ci::app;
 using namespace std;
 
 // our bubbles
-typedef boost::shared_ptr<class Bubble> BubbleRef;
+typedef shared_ptr<class Bubble> BubbleRef;
 
 class Bubble
 {
@@ -78,7 +78,7 @@ class Picking3DApp : public AppBasic
 	void mouseDrag( MouseEvent event ) override;
 	void resize() override;
   protected:
-	void drawGrid(float size=100.0f, float step=10.0f);
+	void drawGrid( float size=100.0f, float step=10.0f );
 	bool performPicking( vec3 *pickedPoint, vec3 *pickedNormal );
 	
 	
@@ -152,7 +152,7 @@ void Picking3DApp::update()
 void Picking3DApp::draw()
 {
 	// gray background
-	gl::clear( Colorf(0.5f, 0.5f, 0.5f) );
+	gl::clear( Colorf( 0.5f, 0.5f, 0.5f ) );
 
 	// set up the camera 
 	gl::ScopedMatrices push;
@@ -220,7 +220,7 @@ bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 	Ray ray = cam.generateRay(u , 1.0f - v, cam.getAspectRatio() );
 
 	// draw the object space bounding box in yellow
-	gl::color( Color(1, 1, 0) );
+	gl::color( Color( 1, 1, 0 ) );
 	gl::drawStrokedCube( mObjectBounds );
 
 	// the coordinates of the bounding box are in object space, not world space,
