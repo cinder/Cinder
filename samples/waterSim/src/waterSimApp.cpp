@@ -178,7 +178,7 @@ void WaterSimApp::mouseDown( MouseEvent event )
 
 void WaterSimApp::mouseDrag( MouseEvent event )
 {
-	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
+	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - vec2(event.getPos());
 	if( delta.lengthSquared() > 5 ) {
 		mGravityVector = delta.normalized() * 9.8f;
 		mGravityVector.y = -mGravityVector.y;
@@ -187,7 +187,7 @@ void WaterSimApp::mouseDrag( MouseEvent event )
 
 void WaterSimApp::mouseMove( MouseEvent event )
 {
-	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - event.getPos();
+	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - vec2(event.getPos());
 	if( delta.lengthSquared() > 5 ) {
 		mGravityVector = delta.normalized() * 9.8f;
 		mGravityVector.y = -mGravityVector.y;

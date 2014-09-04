@@ -44,7 +44,7 @@ class Frustum {
   public:
 	enum { NEAR, FAR, LEFT, RIGHT, TOP, BOTTOM };
 
-	typedef glm::detail::tvec3<T, defaultp> Vec3T;
+	typedef glm::detail::tvec3<T, glm::defaultp> Vec3T;
 
   public:
 	Frustum() {}

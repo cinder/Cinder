@@ -56,7 +56,7 @@ template<>
 inline quat tweenLerp( const quat &start, const quat &end, float time )
 {
 	quat val = glm::slerp( start, end, time );
-	vec3 axis = glm::axis( val );
+	glm::vec3 axis = glm::axis( val );
 	if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
 		return val;
 	else

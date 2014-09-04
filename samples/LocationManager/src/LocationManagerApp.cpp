@@ -82,7 +82,7 @@ void LocationApp::draw()
 	gl::setMatrices( camera );
 
 	// Rotate the globe
-	gl::multModelMatrix( mat4_cast( angleAxis( mRotationAngle(), vec3(0,1,0) ) ) );
+	gl::rotate( angleAxis( mRotationAngle(), vec3(0, 1, 0) ) );
 	
 	// Draw the globe with shading. Rotate it 90 degrees on 
 	// its Y axis to line up the texture with the location

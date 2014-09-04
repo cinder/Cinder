@@ -594,7 +594,7 @@ BSpline<D, T> fitBSpline( const vector<typename BSpline<D, T>::VecT> &samples, i
 	for( int c = 0; c < fit.getControlQuantity(); ++c ) {
 		const T *vp = &fit.getControlData()[c * D];
 		VecType vec;
-		for( length_t i = 0; i < D; ++i )
+		for( glm::length_t i = 0; i < D; ++i )
 			vec[i] = vp[i];
 
 		points.push_back( vec );

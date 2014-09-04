@@ -199,6 +199,7 @@
 		00241ABB0E830DC7004D34EB /* MouseEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241ABA0E830DC7004D34EB /* MouseEvent.h */; };
 		00241ABF0E830DD5004D34EB /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABC0E830DD5004D34EB /* Camera.cpp */; };
 		00241AC00E830DD5004D34EB /* Matrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00241ABD0E830DD5004D34EB /* Matrix.cpp */; };
+		002991B719B92C080002BC2D /* CinderGlm.h in Headers */ = {isa = PBXBuildFile; fileRef = 002991B619B92C080002BC2D /* CinderGlm.h */; };
 		002DFC060FA50D0200E45AE0 /* TriMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFC050FA50D0200E45AE0 /* TriMesh.h */; };
 		002DFC080FA50D1600E45AE0 /* TriMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002DFC070FA50D1600E45AE0 /* TriMesh.cpp */; };
 		002DFD510FA5600900E45AE0 /* ObjLoader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002DFD500FA5600900E45AE0 /* ObjLoader.cpp */; };
@@ -1191,6 +1192,7 @@
 		00241ABA0E830DC7004D34EB /* MouseEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MouseEvent.h; path = app/MouseEvent.h; sourceTree = "<group>"; };
 		00241ABC0E830DD5004D34EB /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		00241ABD0E830DD5004D34EB /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
+		002991B619B92C080002BC2D /* CinderGlm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderGlm.h; sourceTree = "<group>"; };
 		002DFC050FA50D0200E45AE0 /* TriMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriMesh.h; sourceTree = "<group>"; };
 		002DFC070FA50D1600E45AE0 /* TriMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriMesh.cpp; sourceTree = "<group>"; };
 		002DFD500FA5600900E45AE0 /* ObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjLoader.cpp; sourceTree = "<group>"; };
@@ -1935,6 +1937,7 @@
 				008CE8360E9466F300644A05 /* Channel.h */,
 				008CE84A0E9467C200644A05 /* ChanTraits.h */,
 				00241A0C0E80375A004D34EB /* Cinder.h */,
+				002991B619B92C080002BC2D /* CinderGlm.h */,
 				111A5EF2191F7251005C3166 /* CinderAssert.h */,
 				00241AAF0E830DBA004D34EB /* CinderMath.h */,
 				0076581B11226084005547DF /* CinderResources.h */,
@@ -3011,6 +3014,7 @@
 				00419C8011057CDB007EC9AD /* EdgeDetect.h in Headers */,
 				00419C8111057CDB007EC9AD /* Fill.h in Headers */,
 				111A5EEA191F703D005C3166 /* CDSPResampler.h in Headers */,
+				002991B719B92C080002BC2D /* CinderGlm.h in Headers */,
 				111A5ECD191F703D005C3166 /* residue_8.h in Headers */,
 				00419C8211057CDB007EC9AD /* Flip.h in Headers */,
 				00419C8311057CDB007EC9AD /* Grayscale.h in Headers */,

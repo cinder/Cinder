@@ -34,7 +34,7 @@ template<typename T> class MatrixAffine2;
 template<typename T>
 class RectT {
  public:
-	typedef glm::detail::tvec2<T, defaultp> Vec2T;
+	typedef glm::detail::tvec2<T, glm::defaultp> Vec2T;
 
 	RectT() {}
 	//! Initializes the rectangle to be the bounding box of \a points
@@ -75,7 +75,7 @@ class RectT {
 
 	//! Is a point \a pt inside the rectangle
 	template<typename Y>
-	bool		contains( const glm::detail::tvec2<Y, defaultp> &pt ) const		{ return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
+	bool		contains( const glm::detail::tvec2<Y, glm::defaultp> &pt ) const		{ return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
 	bool		contains( const Vec2T &pt ) const								{ return ( pt.x >= x1 ) && ( pt.x <= x2 ) && ( pt.y >= y1 ) && ( pt.y <= y2 ); }
 	//! Returns whether \a rect intersects with this
 	bool		intersects( const RectT &rect ) const;

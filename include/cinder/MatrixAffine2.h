@@ -40,8 +40,8 @@ class MatrixAffine2
   public:
 	typedef T	TYPE;
 	typedef T	value_type;
-	typedef glm::detail::tvec2<T, defaultp> Vec2T;
-	typedef glm::detail::tvec3<T, defaultp> Vec3T;
+	typedef glm::detail::tvec2<T, glm::defaultp> Vec2T;
+	typedef glm::detail::tvec3<T, glm::defaultp> Vec3T;
 
 	static const size_t MEM_LEN	= sizeof(T)*6;
 

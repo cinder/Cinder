@@ -92,7 +92,7 @@ void FrustumCullingApp::setup()
 	auto glsl = gl::getStockShader( gl::ShaderDef().color() );
 	
 	mSphere = gl::Batch::create( geom::Sphere()
-										.segments( 60 )
+										.subdivisions( 60 )
 										.disable( geom::NORMAL )
 										.disable( geom::COLOR ), glsl );
 	mCube = gl::Batch::create( geom::Cube()

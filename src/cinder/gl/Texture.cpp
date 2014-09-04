@@ -411,8 +411,8 @@ void TextureBase::SurfaceChannelOrderToDataFormatAndType( const SurfaceChannelOr
 
 ivec2 TextureBase::calcMipLevelSize( int mipLevel, GLint width, GLint height )
 {
-	width = std::max<int>( 1, (int)floor<float>( width >> mipLevel ) );
-	height = std::max<int>( 1, (int)floor<float>( height >> mipLevel ) );
+	width = std::max<int>( 1, (int)glm::floor<float>( width >> mipLevel ) );
+	height = std::max<int>( 1, (int)glm::floor<float>( height >> mipLevel ) );
 	
 	return ivec2( width, height );
 }

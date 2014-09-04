@@ -33,7 +33,7 @@ namespace cinder {
 template<typename T>
 class Plane {
   public:
-	typedef glm::detail::tvec3<T, defaultp> Vec3T;
+	typedef glm::detail::tvec3<T, glm::defaultp> Vec3T;
 
 	Plane() {}
 	Plane( const Vec3T &v1, const Vec3T &v2, const Vec3T &v3 );

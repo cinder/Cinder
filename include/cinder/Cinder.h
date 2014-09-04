@@ -28,12 +28,10 @@
 	#endif
 #endif
 
+#include "cinder/CinderGlm.h"
+
 #include <cstdint>
 #include <boost/version.hpp>
-
-#define GLM_FORCE_RADIANS
-#include "glm/fwd.hpp"
-
 #if BOOST_VERSION < 105500
 	#error "Cinder requires Boost version 1.55 or later"
 #endif
@@ -53,8 +51,6 @@ using std::int32_t;
 using std::uint32_t;
 using std::int64_t;
 using std::uint64_t;
-
-using namespace glm;
 
 #define CINDER_CINDER
 

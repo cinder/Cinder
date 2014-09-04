@@ -71,14 +71,14 @@ void PolyLine<T>::offset( const T &offsetBy )
 }
 
 template<typename T>
-T linearYatX( const glm::detail::tvec2<T, defaultp> p[2], T x )
+T linearYatX( const glm::detail::tvec2<T, glm::defaultp> p[2], T x )
 {
 	if( p[0].x == p[1].x ) 	return p[0].y;
 	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
 }
 
 template<typename T>
-size_t linearCrossings( const glm::detail::tvec2<T, defaultp> p[2], const vec2 &pt )
+size_t linearCrossings( const glm::detail::tvec2<T, glm::defaultp> p[2], const vec2 &pt )
 {
 	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
 		(p[1].x < pt.x && pt.x <= p[0].x )) {

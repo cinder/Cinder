@@ -56,7 +56,7 @@ using glm::dvec3;
 using glm::dvec4;
 
 //! Returns a vector which is orthogonal to \a vec
-template<typename T, precision P>
+template<typename T, glm::precision P>
 glm::detail::tvec3<T, P> orthogonal( const glm::detail::tvec3<T, P> &vec )
 {
 	if( math<T>::abs( vec.y ) < (T)0.99 ) // abs(dot(u, Y)), somewhat arbitrary epsilon
@@ -65,7 +65,7 @@ glm::detail::tvec3<T, P> orthogonal( const glm::detail::tvec3<T, P> &vec )
 		return glm::detail::tvec3<T, P>( 0, vec.z, -vec.y ); // cross( this, X )
 }
 
-template<typename T, precision P>
+template<typename T, glm::precision P>
 glm::detail::tvec3<T, P> slerp( const glm::detail::tvec3<T, P> &a, const glm::detail::tvec3<T, P> &b, T t )
 {
 	T cosAlpha, alpha, sinAlpha;

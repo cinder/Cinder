@@ -240,7 +240,7 @@ void ShadowMappingApp::setup()
 		mat4 m{};
 		m *= translate( v );
 		m *= scale( vec3( 6 * ( randFloat() + 1.1f ) ) );
-		m *= rotate( 2 * pi<float>() * randFloat(), randVec3f() );
+		m *= rotate( 2 * glm::pi<float>() * randFloat(), randVec3f() );
 		mTransforms.emplace_back( m, randVec3f() );
 	}
 	
