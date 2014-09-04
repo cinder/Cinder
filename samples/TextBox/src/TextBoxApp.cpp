@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
@@ -17,9 +18,9 @@ class TextBoxApp : public AppNative {
 
 	void render();
 	
-	gl::Texture		mTextTexture;
-	vec2			mSize;
-	Font			mFont;
+	gl::TextureRef		mTextTexture;
+	vec2				mSize;
+	Font				mFont;
 };
 
 void TextBoxApp::setup()
@@ -47,7 +48,7 @@ void TextBoxApp::render()
 	tbox.setBackgroundColor( ColorA( 0.5, 0, 0, 1 ) );
 	ivec2 sz = tbox.measure();
 	console() << "Height: " << sz.y << endl;
-	mTextTexture = gl::Texture( tbox.render() );
+	mTextTexture = gl::Texture2d::create( tbox.render() );
 }
 
 void TextBoxApp::update()
