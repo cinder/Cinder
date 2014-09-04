@@ -98,13 +98,14 @@ void TextInputTweenApp::addChar( char c )
 	int count = mCharacters.size();
 
 	if( count > 0 )
-		mSceneDestMatrix = translate( mSceneDestMatrix, vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
+		mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
-	mat4 randStartMatrix = translate( mSceneDestMatrix, randVec3f() * randFloat( 100.0f, 600.0f ) );
-	randStartMatrix = rotate( randStartMatrix, randFloat( 2.0f, 6.0f ), randVec3f() );
+	mat4 randStartMatrix = mSceneDestMatrix;
+	randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
+	randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
 	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 
-	mSceneDestMatrix = translate( mSceneDestMatrix, vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
+	mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
 	// make the scene meander
 	float t = ( count + 281 ) / 50.0f;
@@ -126,8 +127,9 @@ void TextInputTweenApp::removeChar()
 		else
 			mSceneDestMatrix = mat4();
 
-		mat4 randStartMatrix = translate( mSceneDestMatrix, randVec3f() * randFloat( 100.0f, 600.0f ) );
-		randStartMatrix = rotate( randStartMatrix, randFloat( 2.0f, 6.0f ), randVec3f() );
+		mat4 randStartMatrix = mSceneDestMatrix;
+		randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
+		randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
 
 		mDyingCharacters.back().animOut( timeline(), randStartMatrix );
 

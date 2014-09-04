@@ -71,7 +71,7 @@ void Character::draw() const
 
 	gl::ScopedModelMatrix matScope;
 
-	mat4 m = scale( mMatrix(), vec3( 1.0f, -1.0f, 1.0 ) );
+	mat4 m = mMatrix() * scale( vec3( 1, -1, 1 ) );
 	gl::multModelMatrix( m );
 
 	mTextureFont->drawString( mChar, mKernBounds.getCenter() - vec2( mKernBounds.getWidth(), 0.0f ) );
