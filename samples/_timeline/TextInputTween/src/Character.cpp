@@ -1,7 +1,6 @@
 /*
  * Code Copyright 2011 Chris McKenzie ( http://chrismckenzie.com )
  * Used with permission for the Cinder Project ( http://libcinder.org )
- * Updated for v0.9.0 by David Wicks ( http://sansumbrella.com )
 */
 
 #include "cinder/Timeline.h"
@@ -69,8 +68,11 @@ mat4 Character::getDestMatrix() const
 void Character::draw() const
 {
 	gl::color( mColorCur );
-  gl::ScopedModelMatrix matScope;
-		mat4 m = scale( mMatrix(), vec3( 1.0f, -1.0f, 1.0 ) );
-    gl::multModelMatrix( m );
-		mTextureFont->drawString( mChar, mKernBounds.getCenter() - vec2( mKernBounds.getWidth(), 0.0f ) );
+
+	gl::ScopedModelMatrix matScope;
+
+	mat4 m = mMatrix() * scale( vec3( 1, -1, 1 ) );
+	gl::multModelMatrix( m );
+
+	mTextureFont->drawString( mChar, mKernBounds.getCenter() - vec2( mKernBounds.getWidth(), 0.0f ) );
 }

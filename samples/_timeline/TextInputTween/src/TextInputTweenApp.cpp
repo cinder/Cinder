@@ -1,7 +1,6 @@
 /*
  * Code Copyright 2011 Chris McKenzie ( http://chrismckenzie.com )
  * Used with permission for the Cinder Project ( http://libcinder.org )
- * Updated for v0.9.0 by David Wicks ( http://sansumbrella.com )
  *
  * Alfphabet-IV.ttf Copyright (C) 2007-2010 OSP (Pierre Huyghebaert and Ludivine Loiseau)
  * SIL OPEN FONT LICENSE Version 1.1
@@ -98,20 +97,19 @@ void TextInputTweenApp::addChar( char c )
 	c = tolower( c ); // Alphabet-IV.tff seems to be missing some capital letters (strange, since it's an all-caps font)
 	int count = mCharacters.size();
 
-	if( count > 0 ) {
-    mSceneDestMatrix = translate( mSceneDestMatrix, vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
-  }
+	if( count > 0 )
+		mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
-  mat4 randStartMatrix = translate( mSceneDestMatrix, randVec3f() * randFloat( 100.0f, 600.0f ) );
-  randStartMatrix = rotate( randStartMatrix, randFloat( 2.0f, 6.0f ), randVec3f() );
-  mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
+	mat4 randStartMatrix = mSceneDestMatrix;
+	randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
+	randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
+	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 
-  mSceneDestMatrix = translate( mSceneDestMatrix, vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
+	mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
-	float t = (count + 281)/50.0f;
-	mSceneDestMatrix = rotate( mSceneDestMatrix, sin(t)*0.1f, vec3( 1, 0, 0 ) ); // makes the scene meander
-  mSceneDestMatrix = rotate( mSceneDestMatrix, cos(t)*0.2f, vec3( 0, 1, 0 ) ); // makes the scene meander
-  mSceneDestMatrix = rotate( mSceneDestMatrix, cos(t)*0.5f, vec3( 0, 0, 1 ) ); // makes the scene meander
+	// make the scene meander
+	float t = ( count + 281 ) / 50.0f;
+	mSceneDestMatrix *= glm::eulerAngleYXZ( cosf( t ) * 0.2f, sinf( t ) * 0.1f, cosf( t ) * 0.05f );
 
 	mCharacters.back().animIn( timeline(), mSceneDestMatrix );
 
@@ -129,8 +127,9 @@ void TextInputTweenApp::removeChar()
 		else
 			mSceneDestMatrix = mat4();
 
-    mat4 randStartMatrix = translate( mSceneDestMatrix, randVec3f() * randFloat( 100.0f, 600.0f ) );
-    randStartMatrix = rotate( randStartMatrix, randFloat( 2.0f, 6.0f ), randVec3f() );
+		mat4 randStartMatrix = mSceneDestMatrix;
+		randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
+		randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
 
 		mDyingCharacters.back().animOut( timeline(), randStartMatrix );
 
@@ -150,13 +149,13 @@ void TextInputTweenApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
-  gl::multModelMatrix( inverse( mSceneMatrix() ) );
+	gl::multModelMatrix( inverse( mSceneMatrix() ) );
 
-	for( vector<Character>::iterator it = mCharacters.begin(); it != mCharacters.end(); ++it )
-		it->draw();
+	for( auto &c : mCharacters )
+		c.draw();
 
-	for( list<Character>::iterator it = mDyingCharacters.begin(); it != mDyingCharacters.end(); ++it )
-		it->draw();
+	for( auto &c : mCharacters )
+		c.draw();
 
 	if( ( ! mDyingCharacters.empty() ) && mDyingCharacters.front().isDead() )
 		mDyingCharacters.pop_front();
