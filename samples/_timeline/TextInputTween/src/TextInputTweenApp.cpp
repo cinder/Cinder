@@ -106,10 +106,9 @@ void TextInputTweenApp::addChar( char c )
 
 	mSceneDestMatrix = translate( mSceneDestMatrix, vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
-	float t = (count + 281)/50.0f;
-	mSceneDestMatrix = rotate( mSceneDestMatrix, sin(t)*0.1f, vec3( 1, 0, 0 ) ); // makes the scene meander
-	mSceneDestMatrix = rotate( mSceneDestMatrix, cos(t)*0.2f, vec3( 0, 1, 0 ) ); // makes the scene meander
-	mSceneDestMatrix = rotate( mSceneDestMatrix, cos(t)*0.5f, vec3( 0, 0, 1 ) ); // makes the scene meander
+	// make the scene meander
+	float t = ( count + 281 ) / 50.0f;
+	mSceneDestMatrix *= glm::eulerAngleYXZ( cosf( t ) * 0.2f, sinf( t ) * 0.1f, cosf( t ) * 0.05f );
 
 	mCharacters.back().animIn( timeline(), mSceneDestMatrix );
 
