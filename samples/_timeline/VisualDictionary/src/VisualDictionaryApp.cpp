@@ -4,6 +4,7 @@
  */
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
@@ -47,9 +48,9 @@ class VisualDictionaryApp : public AppBasic {
 	
 	CenterState					mCenterState;
 
-	gl::Texture					mBgTex;
-	gl::Texture					mCircleTex;
-	gl::Texture					mSmallCircleTex;
+	gl::TextureRef				mBgTex;
+	gl::TextureRef				mCircleTex;
+	gl::TextureRef				mSmallCircleTex;
 	
 	bool						mEnableSelections;
 	WordNode					mCurrentNode;
@@ -91,11 +92,11 @@ void VisualDictionaryApp::setup()
 	mCenterState = CenterState( 140.0f );
 	
 	// load textures
-	mBgTex = gl::Texture( loadImage( loadResource( RES_BACKGROUND_IMAGE ) ) );
+	mBgTex = gl::Texture::create( loadImage( loadResource( RES_BACKGROUND_IMAGE ) ) );
 	gl::Texture::Format fmt;
 	fmt.enableMipmapping();
-	mCircleTex = gl::Texture( loadImage( loadResource( RES_CIRCLE_IMAGE ) ), fmt );
-	mSmallCircleTex = gl::Texture( loadImage( loadResource( RES_SMALL_CIRCLE_IMAGE ) ), fmt );
+	mCircleTex = gl::Texture::create( loadImage( loadResource( RES_CIRCLE_IMAGE ) ), fmt );
+	mSmallCircleTex = gl::Texture::create( loadImage( loadResource( RES_SMALL_CIRCLE_IMAGE ) ), fmt );
 	
 	// load the dictionary
 	mDictionary = shared_ptr<Dictionary>( new Dictionary( loadResource( RES_DICTIONARY ) ) );
@@ -167,7 +168,7 @@ void VisualDictionaryApp::mouseDown( MouseEvent event )
 	if( clickedNode != mNodes.end() ){
 		selectNode( clickedNode );
 	} else {
-		if( ( event.getPos() - getWindowCenter() ).length() < 180.0f )
+		if( length( (vec2)event.getPos() - getWindowCenter() ) < 180.0f )
 			initialize();
 	}
 }
@@ -250,17 +251,16 @@ void VisualDictionaryApp::draw()
 	
 	// draw background image
 	gl::color( Color::white() );
-	mBgTex.enableAndBind();
-	gl::drawSolidRect( getWindowBounds() );
+	gl::draw( mBgTex, getWindowBounds() );
 	
+	{ 	// draw the center circles
+		gl::ScopedTextureBind tex0( mCircleTex, 0 );
+		mCenterState.draw();
+	}
 	
-	mCircleTex.bind();
-	
-	// draw the center circles
-	mCenterState.draw();
-	
+	gl::ScopedTextureBind tex0( mSmallCircleTex, 0 );
+
 	// draw the dying nodes
-	mSmallCircleTex.bind();
 	for( list<WordNode>::const_iterator nodeIt = mDyingNodes.begin(); nodeIt != mDyingNodes.end(); ++nodeIt )
 		nodeIt->draw();
 	
@@ -277,8 +277,6 @@ void VisualDictionaryApp::draw()
 	// if there is a currentNode (previously selected), draw it
 	if( ! mCurrentNode.getWord().empty() )
 		mCurrentNode.draw();
-	
-	mSmallCircleTex.disable();
 }
 
 

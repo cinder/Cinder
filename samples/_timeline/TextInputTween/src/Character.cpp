@@ -1,6 +1,7 @@
 /*
  * Code Copyright 2011 Chris McKenzie ( http://chrismckenzie.com )
  * Used with permission for the Cinder Project ( http://libcinder.org )
+ * Updated for v0.9.0 by David Wicks ( http://sansumbrella.com )
 */
 
 #include "cinder/Timeline.h"
@@ -17,17 +18,17 @@ Character::Character( gl::TextureFontRef textureFont, string character, mat4 mat
 {
 	mTextureFont = textureFont;
 	mChar = character;
-	
+
 	mColorStart = ColorAf( 1.0f, 0.5f, 0.0f, 0.0f );
 	mColorCur	= mColorStart;
-	
+
 	float hue = Rand::randFloat( 0.55f, 0.6f );
 	float sat = Rand::randFloat( 0.5f, 1.0f );
 	mColorDest	= ColorAf( CM_HSV, hue, sat, 1.0f, 1.0f );
 	mMatrix = mDestMatrix = matrix;
-	
+
 	mKernBounds = Rectf( 0.0f, 0.0f, mTextureFont->measureString( mChar ).x, mTextureFont->getAscent() );
-	
+
 	mIsDead = false;
 }
 
@@ -68,10 +69,8 @@ mat4 Character::getDestMatrix() const
 void Character::draw() const
 {
 	gl::color( mColorCur );
-	gl::pushMatrices();
-		mat4 m = mMatrix;
-		m.scale( vec3( 1.0f, -1.0f, 1.0 ) );
-		gl::multModelView( m );
+  gl::ScopedModelMatrix matScope;
+		mat4 m = scale( mMatrix(), vec3( 1.0f, -1.0f, 1.0 ) );
+    gl::multModelMatrix( m );
 		mTextureFont->drawString( mChar, mKernBounds.getCenter() - vec2( mKernBounds.getWidth(), 0.0f ) );
-	gl::popMatrices();
 }

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 
 using namespace std;
@@ -22,7 +23,7 @@ void BasicTweenApp::setup()
 void BasicTweenApp::mouseDown( MouseEvent event )
 {
 	// the call to apply() replaces any existing tweens on mBlackPos with this new one
-	timeline().apply( &mBlackPos, (vec2)event.getPos(), 2.0f, EaseInCubic() );
+	timeline().apply( &mBlackPos, (vec2)event.getPos(), 1.5f, EaseInCubic() );
 	// the call to appendTo causes the white circle to start when the black one finishes
 	timeline().apply( &mWhitePos, (vec2)event.getPos(), 0.35f, EaseOutQuint() ).appendTo( &mBlackPos );
 }

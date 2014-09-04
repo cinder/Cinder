@@ -21,7 +21,7 @@ WordNode::WordNode( const string &word )
 
 bool WordNode::isPointInside( const vec2 &pt ) const
 {
-	return pt.distance( mPos ) < mRadius;
+	return distance( pt, mPos() ) < mRadius;
 }
 
 void WordNode::setShouldBeDeleted()

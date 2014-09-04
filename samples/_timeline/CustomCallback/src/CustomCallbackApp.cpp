@@ -4,8 +4,8 @@
 // * The update callback makes the radius of the circle the distance to the nearest edge using a member function
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
-#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
