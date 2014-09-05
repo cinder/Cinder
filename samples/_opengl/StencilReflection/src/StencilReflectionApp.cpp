@@ -36,9 +36,9 @@ void StencilReflectionApp::setup()
 	// Look at the bottom to see how to turn stencil buffers on for the system
 	// FBO
 #if defined( CINDER_GLES )
-    mFormat.colorTexture().depthTexture().stencilBuffer().samples( 4 );
+    mFormat.colorTexture().depthBuffer().stencilBuffer().samples( 4 );
 #else
-    mFormat.colorTexture().depthTexture().stencilBuffer().samples( 16 );
+    mFormat.colorTexture().depthBuffer().stencilBuffer().samples( 16 );
 #endif
     mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ), mFormat );
 	

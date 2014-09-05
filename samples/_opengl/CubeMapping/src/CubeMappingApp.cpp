@@ -68,6 +68,7 @@ void CubeMappingApp::draw()
 	mCubeMap->bind();
 	gl::pushMatrices();
 		gl::multModelMatrix( mObjectRotation );
+		gl::scale( vec3( 4 ) );
 		mTeapotBatch->draw();
 	gl::popMatrices();
 	
