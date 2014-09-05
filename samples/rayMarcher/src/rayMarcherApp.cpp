@@ -11,8 +11,6 @@
 
 #include "RayMarcher.h"
 
-#define GLSL(VERSION,CODE) "#version " #VERSION "\n" #CODE
-
 using namespace ci;
 using namespace ci::app;
 
@@ -58,28 +56,27 @@ void RayMarcherApp::setup()
 	mMayaCam.setCurrentCam( cam );
 	
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
-								 .vertex(	GLSL( 150,
-												 uniform mat4 ciModelViewProjection;
-												 uniform mat3 ciNormalMatrix;
-												 in vec4 ciPosition;
-												 in vec3 ciNormal;
-												 
-												 out vec3 vNormal;
-												 
-												 void main( void ) {
-													 vNormal = ciNormalMatrix * ciNormal;
-													 gl_Position = ciModelViewProjection * ciPosition;
-												 }
-												 ) )
-								 .fragment( GLSL( 150,
-												 uniform vec3 uLightDir;
-												 in vec3 vNormal;
-												 out vec3 oColor;
-												 
-												 void main( void ) {
-													 oColor = vec3( clamp( dot( vNormal, uLightDir ), 0.0, 1.0 ) );
-												 }
-												 ) ) );
+								 .vertex( CI_GLSL( 150,
+												  uniform mat4 ciModelViewProjection;
+												  uniform mat3 ciNormalMatrix;
+												  in vec4 ciPosition;
+												  in vec3 ciNormal;
+												  
+												  out vec3 vNormal;
+												  
+												  void main( void ) {
+													  vNormal = ciNormalMatrix * ciNormal;
+													  gl_Position = ciModelViewProjection * ciPosition;
+												  }
+												  ) )
+								 .fragment( CI_GLSL( 150,
+													uniform vec3 uLightDir;
+													in vec3 vNormal;
+													out vec3 oColor;
+													void main( void ) {
+														oColor = vec3( clamp( dot( vNormal, uLightDir ), 0.0, 1.0 ) );
+													}
+													) ) );
 }
 
 void RayMarcherApp::mouseDown( MouseEvent event )
