@@ -24,9 +24,6 @@
 
 #pragma once
 
-#define GLM_FORCE_RADIANS
-#include "glm/fwd.hpp"
-
 #include "glm/gtc/type_ptr.hpp"
 
 #include "glm/gtx/io.hpp"

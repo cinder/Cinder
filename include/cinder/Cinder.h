@@ -28,7 +28,8 @@
 	#endif
 #endif
 
-#include "cinder/CinderGlm.h"
+#define GLM_FORCE_RADIANS
+#include "glm/fwd.hpp"
 
 #include <cstdint>
 #include <boost/version.hpp>
