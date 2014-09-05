@@ -101,7 +101,6 @@
 				0049C66C1011366C0015B4B9 /* PBXTargetDependency */,
 				00B1021D101A5CDC0078D775 /* PBXTargetDependency */,
 				00B1021F101A5CE40078D775 /* PBXTargetDependency */,
-				00D716FE1021336B00894269 /* PBXTargetDependency */,
 				00F0B3611039F869003AB416 /* PBXTargetDependency */,
 				00F0B3651039F869003AB416 /* PBXTargetDependency */,
 				00F0B3691039F869003AB416 /* PBXTargetDependency */,
@@ -1371,20 +1370,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = slerpBasic;
 		};
-		00D716FA1021335A00894269 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = OpenGLLighting;
-		};
-		00D716FD1021336B00894269 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = OpenGLLighting;
-		};
 		00F0B3311039DFFD003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
@@ -1687,7 +1672,6 @@
 		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
 		00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RetinaSample.xcodeproj; path = ../../RetinaSample/xcode/RetinaSample.xcodeproj; sourceTree = "<group>"; };
 		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
-		00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLLighting.xcodeproj; path = ../../OpenGLLighting/xcode/OpenGLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ListenerBasic.xcodeproj; path = ../../ListenerBasic/xcode/ListenerBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1748,7 +1732,6 @@
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
 				00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */,
 				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
-				00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */,
 				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
@@ -2546,14 +2529,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00D716F71021335A00894269 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00D716FB1021335A00894269 /* OpenGLLighting.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		00F0B32B1039DFFD003AB416 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2961,10 +2936,6 @@
 				{
 					ProductGroup = 006D7182199528FC008149E2 /* Products */;
 					ProjectRef = 006D7181199528FC008149E2 /* ObjLoader.xcodeproj */;
-				},
-				{
-					ProductGroup = 00D716F71021335A00894269 /* Products */;
-					ProjectRef = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E4C14C0FE430036C292 /* Products */;
@@ -3762,13 +3733,6 @@
 			remoteRef = 00D494B91988A22800A44E4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00D716FB1021335A00894269 /* OpenGLLighting.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = OpenGLLighting.app;
-			remoteRef = 00D716FA1021335A00894269 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		00F0B3321039DFFD003AB416 /* ParamsBasic.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -4321,11 +4285,6 @@
 			isa = PBXTargetDependency;
 			name = slerpBasic;
 			targetProxy = 00D494C51988A24F00A44E4C /* PBXContainerItemProxy */;
-		};
-		00D716FE1021336B00894269 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OpenGLLighting;
-			targetProxy = 00D716FD1021336B00894269 /* PBXContainerItemProxy */;
 		};
 		00F0B3611039F869003AB416 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
