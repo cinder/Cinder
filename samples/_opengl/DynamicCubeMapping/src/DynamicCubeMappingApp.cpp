@@ -140,6 +140,7 @@ void DynamicCubeMappingApp::draw()
 	mDynamicCubeMapFbo->bindTexture( 0 );
 	gl::pushMatrices();
 		gl::multModelMatrix( mObjectRotation );
+		gl::scale( vec3( 4 ) );
 		mTeapotBatch->draw();
 	gl::popMatrices();
 }

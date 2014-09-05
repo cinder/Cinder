@@ -170,7 +170,7 @@ void ShadowMappingApp::setup()
 	mShadowMapSize			= 2048;
 	
 	mLight.distanceRadius	= 100.0f;
-	mLight.viewpoint		= vec3( 1 ) * mLight.distanceRadius;
+	mLight.viewpoint		= vec3( mLight.distanceRadius );
 	mLight.fov				= 10.0f;
 	mLight.target			= vec3( 0 );
 	mLight.toggleViewpoint	= false;
@@ -347,8 +347,8 @@ void ShadowMappingApp::draw()
 	gl::disable( GL_POLYGON_OFFSET_FILL );
 	
 	// Render light direction vector
-	gl::drawLine( mLight.viewpoint, vec3( 0 ) );
-		
+	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
+	
 	mParams->draw();
 	CI_CHECK_GL();
 }
