@@ -415,17 +415,17 @@ void Fbo::updateMipmaps( bool bindFirst, int attachment ) const
 void Fbo::bindFramebuffer()
 {
 	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), mObj->mId );
+}
+
+void Fbo::unbindFramebuffer()
+{
+	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 	if( mObj->mResolveFramebufferId ) {
 		mObj->mNeedsResolve = true;
 	}
 	if( mObj->mFormat.hasMipMapping() ) {
 		mObj->mNeedsMipmapUpdate = true;
 	}
-}
-
-void Fbo::unbindFramebuffer()
-{
-	GL_SUFFIX(glBindFramebuffer)( GL_SUFFIX(GL_FRAMEBUFFER_), 0 );
 }
 
 bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
