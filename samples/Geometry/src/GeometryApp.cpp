@@ -385,8 +385,8 @@ void GeometryApp::createPrimitive(void)
 	case TEAPOT:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivision( 2 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivision( 12 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivisions( 2 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivisions( 12 ) ) ); break;
 		}
 		break;
 	case TORUS:

@@ -52,7 +52,7 @@ void DynamicCubeMappingApp::setup()
 	auto skyBoxGlsl = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
 #endif
 
-	mTeapotBatch = gl::Batch::create( geom::Teapot().subdivision( 7 ), envMapGlsl );
+	mTeapotBatch = gl::Batch::create( geom::Teapot().subdivisions( 7 ), envMapGlsl );
 	mTeapotBatch->getGlslProg()->uniform( "uCubeMapTex", 0 );
 
 	mSkyBoxBatch = gl::Batch::create( geom::Cube(), skyBoxGlsl );

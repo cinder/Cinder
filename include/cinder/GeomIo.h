@@ -236,7 +236,7 @@ public:
 
 	virtual Teapot&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Teapot&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Teapot&				subdivision( int sub );
+	Teapot&				subdivisions( int sub );
 
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override;

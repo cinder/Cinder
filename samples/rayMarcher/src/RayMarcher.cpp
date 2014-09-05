@@ -76,7 +76,7 @@ float RayMarcher::sampleDensity( const vec3 &v )
 		float rSquared = sphIt->getRadius() * sphIt->getRadius();
 		float dSquared = distance2( v, sphIt->getCenter() );
 		if( dSquared < rSquared ) {
-			d = std::max( d, 1.0f - sqrt( dSquared / rSquared ) );
+			d = std::max<float>( d, 1.0f - sqrt( dSquared / rSquared ) );
 //			d += 1.0f - sqrt( dSquared / rSquared );
 		}
 	}

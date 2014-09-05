@@ -224,7 +224,7 @@ void ShadowMappingApp::setup()
 									  .enable( geom::Attrib::POSITION )
 									  .enable( geom::Attrib::TEX_COORD_0 )
 									  .enable( geom::Attrib::NORMAL )
-									  .subdivision(5) );
+									  .subdivisions(5) );
 	mTeapot = gl::Batch::create( teapot, positionGlsl );
 	mTeapotShadowed = gl::Batch::create( teapot, mShadowShader );
 	

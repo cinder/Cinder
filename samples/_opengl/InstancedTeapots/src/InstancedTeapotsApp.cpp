@@ -38,7 +38,7 @@ void InstancedTeapotsApp::setup()
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 
-	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivision( 4 ) );
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
 
 	// create an array of initial per-instance positions laid out in a 2D grid
 	std::vector<vec3> positions;

@@ -559,7 +559,7 @@ Teapot::Teapot()
 	updateVertexCounts();
 }
 
-Teapot&	Teapot::subdivision( int sub )
+Teapot&	Teapot::subdivisions( int sub )
 {
 	mSubdivision = sub;
 	updateVertexCounts();
