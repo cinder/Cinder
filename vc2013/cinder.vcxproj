@@ -451,6 +451,7 @@
     <ClInclude Include="..\include\cinder\Base64.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\CinderAssert.h" />
+    <ClInclude Include="..\include\cinder\CinderGlm.h" />
     <ClInclude Include="..\include\cinder\Clipboard.h" />
     <ClInclude Include="..\include\cinder\CurrentFunction.h" />
     <ClInclude Include="..\include\cinder\dx\DDS.h" />
