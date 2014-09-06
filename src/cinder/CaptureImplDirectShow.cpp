@@ -75,7 +75,7 @@ class SurfaceCache {
 		: mWidth( width ), mHeight( height ), mSCO( sco )
 	{
 		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
+			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], std::default_delete<uint8_t[]>() ) );
 			mDeallocatorRefcon.push_back( make_pair( this, i ) );
 			mSurfaceUsed.push_back( false );
 		}

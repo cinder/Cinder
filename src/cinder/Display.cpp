@@ -58,7 +58,7 @@ const vector<DisplayRef>&	Display::getDisplays()
 	return sDisplays;
 }
 
-DisplayRef Display::getDisplayForPoint( const Vec2i &pt )
+DisplayRef Display::getDisplayForPoint( const ivec2 &pt )
 {
 	const vector<DisplayRef>& displays = getDisplays();
 	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt ) {
@@ -134,7 +134,7 @@ void Display::enumerateDisplays()
 		}
 		else {
 			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
-			newDisplay->mArea.offset( Vec2i( 0, heightDelta ) );
+			newDisplay->mArea.offset( ivec2( 0, heightDelta ) );
 		}
 		
 		sDisplays.push_back( newDisplay );
@@ -170,7 +170,7 @@ void Display::enumerateDisplays()
 		NSArray *resolutions = [screen availableModes];
 		for( int i = 0; i < [resolutions count]; ++i ) {
 			::UIScreenMode *mode = [resolutions objectAtIndex:i];
-			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+			newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 		}
 		
 		sDisplays.push_back( newDisplay );
@@ -192,7 +192,7 @@ void Display::enumerateDisplays()
 		NSArray *resolutions = [screen availableModes];
 		for( int i = 0; i < [resolutions count]; ++i ) {
 			::UIScreenMode *mode = [resolutions objectAtIndex:i];
-			newDisplay->mSupportedResolutions.push_back( Vec2i( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+			newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 		}
 		
 		sDisplays.push_back( newDisplay );
@@ -204,16 +204,16 @@ void Display::enumerateDisplays()
 }
 
 //! Sets the resolution of the Display. Rounds to the nearest supported resolution.
-void Display::setResolution( const Vec2i &resolution )
+void Display::setResolution( const ivec2 &resolution )
 {
 	NSArray *modes = [mUiScreen availableModes];
 	int closestIndex = 0;
 	float closestDistance = 1000000.0f; // big distance
 	for( int i = 0; i < [modes count]; ++i ) {
 		::UIScreenMode *mode = [modes objectAtIndex:i];
-		Vec2i thisModeRes = Vec2f( mode.size.width, mode.size.height );
-		if( thisModeRes.distance( resolution ) < closestDistance ) {
-			closestDistance = thisModeRes.distance( resolution );
+		ivec2 thisModeRes = vec2( mode.size.width, mode.size.height );
+		if( distance( vec2(resolution), vec2(thisModeRes) ) < closestDistance ) {
+			closestDistance = distance( vec2(resolution), vec2(thisModeRes) );
 			closestIndex = i;
 		}
 	}
@@ -294,7 +294,7 @@ void Display::enumerateDisplays()
 }
 #endif // defined( CINDER_MSW )
 
-Vec2i Display::getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const
+ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const
 {
 	return mArea.getUL() + displayRelativeCoordinate;
 }

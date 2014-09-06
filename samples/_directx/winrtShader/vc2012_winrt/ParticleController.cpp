@@ -8,7 +8,7 @@ using std::list;
 
 ParticleController::ParticleController() {}
 
-void ParticleController::update( const Perlin &perlin, const Channel32f &channel, const Vec2i &mouseLoc)
+void ParticleController::update( const Perlin &perlin, const Channel32f &channel, const ivec2 &mouseLoc)
 {
 	for ( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); )
 	{
@@ -29,13 +29,13 @@ void ParticleController::draw()
 	}
 }
 
-void ParticleController::addParticles( int amt, const ci::Vec2i &mouseLoc, const ci::Vec2f &mouseVel )
+void ParticleController::addParticles( int amt, const ci::ivec2 &mouseLoc, const ci::vec2 &mouseVel )
 {
 	for ( int i = 0; i < amt; i++) 
 	{
-		Vec2f loc = mouseLoc + Rand::randVec2f() * 10.0f;
-		Vec2f velOffset = Rand::randVec2f()*Rand::randFloat( 1.0f, 5.0f );
-		Vec2f vel = mouseVel * 0.375f + velOffset;
+		vec2 loc = mouseLoc + Rand::randVec2f() * 10.0f;
+		vec2 velOffset = Rand::randVec2f()*Rand::randFloat( 1.0f, 5.0f );
+		vec2 vel = mouseVel * 0.375f + velOffset;
 		mParticles.push_back( Particle(loc, vel) );
 	}
 }

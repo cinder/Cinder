@@ -63,7 +63,7 @@
 	float						mContentScaleFactor;
 
 	NSMutableDictionary					*mTouchIdMap;
-	std::map<uint32_t,cinder::Vec2f>	mTouchPrevPointMap;
+	std::map<uint32_t,cinder::vec2>	mTouchPrevPointMap;
 	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
 	id<CinderViewDelegate>				mDelegate;
 }
@@ -88,9 +88,9 @@
 
 - (cinder::app::RendererRef)getRenderer;
 
-- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(cinder::Vec2f)point;
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(cinder::vec2)point;
 - (void)removeTouchFromMap:(NSTouch *)touch;
-- (std::pair<uint32_t,cinder::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(cinder::Vec2f)point;
+- (std::pair<uint32_t,cinder::vec2>)updateTouch:(NSTouch *)touch withPoint:(cinder::vec2)point;
 - (void)updateActiveTouches:(NSEvent *)event;
 - (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
 

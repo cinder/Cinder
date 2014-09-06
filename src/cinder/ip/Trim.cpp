@@ -30,7 +30,7 @@ namespace cinder { namespace ip {
 template<typename T>
 bool transparentHorizontalScanline( const SurfaceT<T> &surface, int32_t row, int32_t x1, int32_t x2 )
 {
-	const T *dstPtr = surface.getDataAlpha( Vec2i( x1, row ) );
+	const T *dstPtr = surface.getDataAlpha( ivec2( x1, row ) );
 	uint8_t inc = surface.getPixelInc();
 	for( int32_t x = x1; x < x2; ++x ) {
 		if( *dstPtr ) return false;
@@ -42,7 +42,7 @@ bool transparentHorizontalScanline( const SurfaceT<T> &surface, int32_t row, int
 template<typename T>
 bool transparentVerticalScanline( const SurfaceT<T> &surface, int32_t column, int32_t y1, int32_t y2 )
 {
-	const T *dstPtr = surface.getDataAlpha( Vec2i( column, y1 ) );
+	const T *dstPtr = surface.getDataAlpha( ivec2( column, y1 ) );
 	int32_t rowBytes = surface.getRowBytes();
 	for( int32_t y = y1; y < y2; ++y ) {
 		if( *dstPtr ) return false;

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
@@ -22,7 +23,7 @@ class AnimatedRevealApp : public AppBasic {
 	void load( const fs::path &path );
 	
 	svg::DocRef		mDoc;
-	gl::Texture		mTex;
+	gl::TextureRef	mTex;
 	int				mMinRenderElement;
 	bool			mDone;
 	
@@ -134,7 +135,7 @@ void AnimatedRevealApp::update()
 		mMovie.finish();
 	}
 #endif
-	mTex = frame;
+	mTex = gl::Texture::create( frame );
 }
 
 void AnimatedRevealApp::draw()

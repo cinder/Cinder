@@ -12,7 +12,7 @@
 using namespace ci;
 using namespace std;
 
-Swatch::Swatch( Color color, Vec2f pos, Rectf rect )
+Swatch::Swatch( Color color, vec2 pos, Rectf rect )
   : mColor( color ), mPos( pos ), mAnchorPos( pos ), mRect( rect ), mScale( 1.0f )
 {
 	mAlpha = 1.0f;
@@ -31,9 +31,9 @@ void Swatch::mouseOff( Timeline &timeline )
 
 void Swatch::scatter( Timeline &timeline, float width, float height )
 {
-	Vec2f pos1( 0.0f, mPos().y );
-	Vec2f pos2( 0.0f, height );
-	Vec2f pos3 = Vec2f( Rand::randFloat( width ), Rand::randFloat( height - 50.0f, height + 50.0f ) );//pos2 + rVec;
+	vec2 pos1( 0.0f, mPos().y );
+	vec2 pos2( 0.0f, height );
+	vec2 pos3 = vec2( Rand::randFloat( width ), Rand::randFloat( height - 50.0f, height + 50.0f ) );//pos2 + rVec;
 	
 	float dur = Rand::randFloat( 0.25f, 0.5f );
 	
@@ -55,7 +55,7 @@ void Swatch::scatter( Timeline &timeline, float width, float height )
 void Swatch::assemble( Timeline &timeline )
 {
 	float dur = 0.2f;
-//	mPos = mAnchorPos + Vec2f( 15.0f, 0.0f );
+//	mPos = mAnchorPos + vec2( 15.0f, 0.0f );
 	timeline.apply( &mPos, mAnchorPos, dur, EaseOutAtan( 10 ) ).finishFn( bind( &Swatch::setDeselected, this ) );
 	timeline.apply( &mScale, 1.0f, dur, EaseOutAtan( 10 ) );
 }
@@ -65,7 +65,7 @@ void Swatch::draw() const
 	Rectf scaledRect = mRect * mScale;
 	if( !mIsSelected ){
 		gl::color( ColorA( Color::black(), mAlpha ) );
-		gl::drawSolidRect( scaledRect.inflated( Vec2f( 1.0f, 1.0f ) ) + mPos );
+		gl::drawSolidRect( scaledRect.inflated( vec2( 1.0f, 1.0f ) ) + mPos );
 	}
 	gl::color( ColorA( mColor, mAlpha ) );
 	gl::drawSolidRect( scaledRect + mPos );

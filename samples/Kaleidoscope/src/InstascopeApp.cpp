@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
@@ -51,7 +51,7 @@ class InstascopeApp : public AppNative {
 	gl::TextureRef				mMirrorTexture;			// texture for the mirror
 	
 	vector<TrianglePiece>		mTriPieces;				// stores alll of the kaleidoscope mirror pieces
-	Anim<Vec2f>					mSamplePt;				// location of the piece of the image that is being sampled for the kaleidoscope
+	Anim<vec2>					mSamplePt;				// location of the piece of the image that is being sampled for the kaleidoscope
 	int							mPhase;					// current phase of the app (0 or 1)
 	Instagram					mCurInstagram;			// current instagram info
 	
@@ -90,7 +90,7 @@ void InstascopeApp::setup()
 	// Image stream of a particular tag
 	// mInstaStream = make_shared<InstagramStream>( TAG, CLIENT_ID );
 	// Image stream in a particular area
-	// mInstaStream = make_shared<InstagramStream>( Vec2f(40.720467,-74.00603), 5000, CLIENT_ID );
+	// mInstaStream = make_shared<InstagramStream>( vec2(40.720467,-74.00603), 5000, CLIENT_ID );
 
 	continueCycle();
 }
@@ -116,12 +116,12 @@ void InstascopeApp::defineMirrorGrid()
 	// delete any previous pieces and clear the old vector
 	mTriPieces.clear();
 	
-	Vec2f pt1(0.0, 0.0);
-	Vec2f pt2(r, 0.0);
-	Vec2f pt3((cos(M_PI/3) * r), (sin(M_PI/3) * r));
+	vec2 pt1(0.0, 0.0);
+	vec2 pt2(r, 0.0);
+	vec2 pt3((cos(M_PI/3) * r), (sin(M_PI/3) * r));
     
-	const float tri_width = pt1.distance(pt2) * tri_scale;
-	const float tri_height = sqrt((tri_width*tri_width) - ((tri_width/2) * (tri_width/2)));
+	const float tri_width = distance( pt1, pt2 ) * tri_scale;
+	const float tri_height = std::sqrt((tri_width*tri_width) - ((tri_width/2) * (tri_width/2)));
     
 	const int amtX = ceil((((getWindowWidth()*2) - .5) / (1.5*(tri_width))) + 0.5f );
 	const float w = ((amtX*1.5) + .5) * tri_width;
@@ -141,11 +141,11 @@ void InstascopeApp::defineMirrorGrid()
 			for( int k = 0; k < 6; k++ ) {
 				// because every other pieces is a mirror of the one next to it, every other has to be reversed on the x scale
 				int scaleX = (k%2==0) ? 1 : -1;
-				Vec2f scale( scaleX * tri_scale, tri_scale );
+				vec2 scale( scaleX * tri_scale, tri_scale );
 				
-				Vec2f start( startX, startY );
+				vec2 start( startX, startY );
 				
-				TrianglePiece tri = TrianglePiece(Vec2f(startX, startY), pt1, pt2, pt3, 60*k, scale);
+				TrianglePiece tri = TrianglePiece(vec2(startX, startY), pt1, pt2, pt3, 60*k, scale);
 				mTriPieces.push_back(tri);
 			}
 		}
@@ -204,11 +204,6 @@ void InstascopeApp::checkImageLoaded()
 
 void InstascopeApp::transitionMirrorIn( vector<TrianglePiece> *vec )
 {
-	// define a random starting point
-	Vec2f sortPt = Vec2f(randInt(-(getWindowWidth()/2), (getWindowWidth()/2)), 
-						 randInt(-(getWindowHeight()/2), (getWindowHeight()/2)));
-	
-	// from sortPt, define the delay for each pieces so that they stagger it from that point
 	for( int i = 0; i < vec->size(); i++ ) {
 		float delay = randFloat( 0.1f, 0.5f );
 		(*vec)[i].reset( delay, mMirrorTexture );
@@ -239,7 +234,7 @@ void InstascopeApp::resetSample()
 	mSamplePt.value().y = randFloat(0, getWindowWidth() - mSampleSize);
 	mSamplePt.value().x = randFloat(0, getWindowHeight() - mSampleSize);
 	
-	Vec2f newPos;
+	vec2 newPos;
 	int count = 0;
 	// Try to find a good sample location thats within the window's frame.
 	// Give up if we try and settle after a bunch of times, no big deal.
@@ -277,9 +272,9 @@ void InstascopeApp::updateMirrors( vector<TrianglePiece> *vec )
 	if( ! mMirrorTexture )
 		return;
 	
-	Vec2f mSamplePt1( -0.5, -(sin(M_PI/3)/3) );
-	Vec2f mSamplePt2( mSamplePt1.x + 1, mSamplePt1.y);
-	Vec2f mSamplePt3( mSamplePt1.x + (cos(M_PI/3)), mSamplePt1.y + (sin(M_PI/3)));
+	vec2 mSamplePt1( -0.5, -(sin(M_PI/3)/3) );
+	vec2 mSamplePt2( mSamplePt1.x + 1, mSamplePt1.y);
+	vec2 mSamplePt3( mSamplePt1.x + (cos(M_PI/3)), mSamplePt1.y + (sin(M_PI/3)));
 	
 	// translate the points via an affine matrix
 	MatrixAffine2f mtrx = MatrixAffine2f::identity();
@@ -325,13 +320,12 @@ void InstascopeApp::mirrorIn()
 {
 	// redefine the bg texture
 	mBgTexture = mNewTex;
-	mBgTexture->setFlipped( false );
 	mTextRibbon->update( TAG, mCurInstagram.getUser() );
 }
 
 void InstascopeApp::draw()
 {	 
-	glPushMatrix();
+	gl::pushModelMatrix();
 	
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::enableAlphaBlending( PREMULT );
@@ -341,18 +335,18 @@ void InstascopeApp::draw()
 	
 	drawMirrors( &mTriPieces );
 	mTextRibbon->draw();
-	glPopMatrix();
+	gl::popModelMatrix();
 }
 
 void InstascopeApp::drawMirrors( vector<TrianglePiece> *vec ) 
 {
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate( getWindowCenter() );
 	gl::rotate( mMirrorRot );
 	for( int i = 0; i < vec->size(); i++ ) {
 		(*vec)[i].draw();
 	}
-	glPopMatrix();
+	gl::popModelMatrix();
 }
 
 CINDER_APP_NATIVE( InstascopeApp, RendererGl )

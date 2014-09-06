@@ -54,11 +54,11 @@ class PolyLine {
 	T			getPosition( float t ) const;
 	T			getDerivative( float t ) const;
 
-	void		scale( const T &scaleFactor, T scaleCenter = T::zero() );
+	void		scale( const T &scaleFactor, T scaleCenter = T() );
 	void		offset( const T &offsetBy );
 
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
-	bool	contains( const Vec2f &pt ) const;
+	bool	contains( const vec2 &pt ) const;
 
 	//! Calculates the boolean union of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
 	static std::vector<PolyLine> 	calcUnion( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
@@ -74,7 +74,7 @@ class PolyLine {
 	bool					mClosed;
 };
 
-typedef PolyLine<Vec2f> PolyLine2f;
-typedef PolyLine<Vec2d> PolyLine2d;
+typedef PolyLine<vec2> PolyLine2f;
+typedef PolyLine<dvec2> PolyLine2d;
 
 } // namespace cinder

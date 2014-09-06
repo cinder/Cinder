@@ -23,7 +23,6 @@
 
 #include "cinder/audio/DelayNode.h"
 #include "cinder/audio/Utilities.h" // currently for lroundf TODO: remove once this is moved to CinderMath
-#include "cinder/audio/Debug.h"
 
 #include "cinder/CinderMath.h"
 

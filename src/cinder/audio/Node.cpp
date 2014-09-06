@@ -27,7 +27,6 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/System.h"
 

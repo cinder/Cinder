@@ -31,9 +31,9 @@
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include <Audioclient.h>
 #include <mmdeviceapi.h>

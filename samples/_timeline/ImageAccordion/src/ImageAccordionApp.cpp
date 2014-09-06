@@ -12,6 +12,7 @@
  */
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIO.h"
 #include "cinder/Rand.h"
@@ -67,7 +68,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_1 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_1 ) ) ),
 									string("Disney World at Sunset"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -77,7 +78,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_2 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_2 ) ) ),
 									string("Lost Hindu Temple in the Jungle Mist"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -87,7 +88,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_3 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_3 ) ) ),
 									string("Icelandic Horse in the Wild"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -97,7 +98,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_4 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_4 ) ) ),
 									string("Taj Mahal"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -107,7 +108,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_5 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_5 ) ) ),
 									string("The Li River"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -117,7 +118,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_6 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_6 ) ) ),
 									string("The End of the World"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -127,7 +128,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_7 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_7 ) ) ),
 									string("Fourth on Lake Austin"),
 									string("© Trey Ratcliff") ) );
 	xPos += mItemRelaxedWidth;
@@ -137,7 +138,7 @@ void ImageAccordionApp::setup()
 									mItemHeight, 
 									mItemRelaxedWidth,
 									mItemExpandedWidth, 
-									gl::Texture( loadImage( loadResource( IMAGE_8 ) ) ),
+									gl::Texture::create( loadImage( loadResource( IMAGE_8 ) ) ),
 									string("The Open Road"),
 									string("© Trey Ratcliff") ) );
 	

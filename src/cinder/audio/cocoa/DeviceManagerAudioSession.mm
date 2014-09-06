@@ -24,7 +24,6 @@
 #include "cinder/audio/cocoa/DeviceManagerAudioSession.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/cocoa/CinderCocoa.h"
 
@@ -44,6 +43,8 @@
 @end
 
 #else
+
+#import <Foundation/NSNotification.h>
 
 @interface AudioSessionInterruptionHandlerImpl : NSObject
 

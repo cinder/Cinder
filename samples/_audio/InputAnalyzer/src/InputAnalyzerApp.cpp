@@ -11,7 +11,7 @@
  */
 
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/TextureFont.h"
 
 #include "cinder/audio/Context.h"
@@ -95,21 +95,21 @@ void InputAnalyzer::drawLabels()
 
 	// draw x-axis label
 	string freqLabel = "Frequency (hertz)";
-	mTextureFont->drawString( freqLabel, Vec2f( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
+	mTextureFont->drawString( freqLabel, vec2( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
 
 	// draw y-axis label
 	string dbLabel = "Magnitude (decibels, linear)";
 	gl::pushModelView();
 		gl::translate( 30, getWindowCenter().y + mTextureFont->measureString( dbLabel ).x / 2 );
 		gl::rotate( -90 );
-		mTextureFont->drawString( dbLabel, Vec2f::zero() );
+		mTextureFont->drawString( dbLabel, vec2( 0 ) );
 	gl::popModelView();
 }
 
 void InputAnalyzer::printBinInfo( int mouseX )
 {
 	size_t numBins = mMonitorSpectralNode->getFftSize() / 2;
-	size_t bin = min( numBins - 1, size_t( ( numBins * ( mouseX - mSpectrumPlot.getBounds().x1 ) ) / mSpectrumPlot.getBounds().getWidth() ) );
+	size_t bin = std::min( numBins - 1, size_t( ( numBins * ( mouseX - mSpectrumPlot.getBounds().x1 ) ) / mSpectrumPlot.getBounds().getWidth() ) );
 
 	float binFreqWidth = mMonitorSpectralNode->getFreqForBin( 1 ) - mMonitorSpectralNode->getFreqForBin( 0 );
 	float freq = mMonitorSpectralNode->getFreqForBin( bin );

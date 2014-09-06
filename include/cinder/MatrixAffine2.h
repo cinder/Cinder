@@ -40,7 +40,9 @@ class MatrixAffine2
   public:
 	typedef T	TYPE;
 	typedef T	value_type;
-	//
+	typedef glm::detail::tvec2<T, glm::defaultp> Vec2T;
+	typedef glm::detail::tvec3<T, glm::defaultp> Vec3T;
+
 	static const size_t MEM_LEN	= sizeof(T)*6;
 
 	//
@@ -77,7 +79,7 @@ class MatrixAffine2
 	// m[0]=d0, m[1]=d1, m[2]=d2 ... m[5]=d5
 	MatrixAffine2( T d0, T d1, T d2, T d3, T d4, T d5 );
 	// Creates matrix with column vectors vx, vy and z
-	MatrixAffine2( const Vec2<T> &vx, const Vec2<T> &vy, const Vec2<T> &vz ); 
+	MatrixAffine2( const Vec2T &vx, const Vec2T &vy, const Vec2T &vz ); 
 
 	template<typename FromT>
 	MatrixAffine2( const MatrixAffine2<FromT> &src );
@@ -107,11 +109,11 @@ class MatrixAffine2
 	const MatrixAffine2<T>	operator-( const MatrixAffine2<T> &rhs ) const;
 
 	//! post-multiplies column vector [rhs.x rhs.y 1]
-	Vec2<T>				transformPoint( const Vec2<T> &rhs ) const;
+	Vec2T				transformPoint( const Vec2T &rhs ) const;
 	//! post-multiplies column vector [rhs.x rhs.y 1]
-	const Vec2<T>		operator*( const Vec2<T> &rhs ) const;
+	const Vec2T		operator*( const Vec2T &rhs ) const;
 	//! post-multiplies column vector [rhs.x rhs.y 0]
-	Vec2<T>				transformVec( const Vec2<T> &v ) const;
+	Vec2T				transformVec( const Vec2T &v ) const;
 
 	const MatrixAffine2<T>	operator*( T rhs ) const;
 	const MatrixAffine2<T>	operator/( T rhs ) const;
@@ -130,17 +132,17 @@ class MatrixAffine2
 	// m[0]=d0, m[1]=d1, m[2]=d2 ... m[5]=d5
 	void				set( T d0, T d1, T d2, T d3, T d4, T d5 );
 
-	Vec2<T>				getColumn( int col ) const;
-	void				setColumn( int col, const Vec2<T> &v );
+	Vec2T				getColumn( int col ) const;
+	void				setColumn( int col, const Vec2T &v );
 
-	Vec3<T>				getRow( int row ) const;
-	void				setRow( int row, const Vec3<T> &v );
+	Vec3T				getRow( int row ) const;
+	void				setRow( int row, const Vec3T &v );
 
-	void				getColumns( Vec2<T> *c0, Vec2<T> *c1, Vec2<T> *c2 ) const;
-	void				setColumns( const Vec2<T> &c0, const Vec2<T> &c1, const Vec2<T> &c2 );
+	void				getColumns( Vec2T *c0, Vec2T *c1, Vec2T *c2 ) const;
+	void				setColumns( const Vec2T &c0, const Vec2T &c1, const Vec2T &c2 );
 
-	void				getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const;
-	void				setRows( const Vec3<T> &r0, const Vec3<T> &r1, const Vec3<T> &r2 );
+	void				getRows( Vec3T *r0, Vec3T *r1, Vec3T *r2 ) const;
+	void				setRows( const Vec3T &r0, const Vec3T &r1, const Vec3T &r2 );
 
 	//! Sets the matrix to all zeros
 	void				setToNull();
@@ -156,27 +158,27 @@ class MatrixAffine2
 	MatrixAffine2<T>	invertCopy( T epsilon = EPSILON ) const;
 
 	//! concatenate translation by \a v (conceptually, translate is before 'this')
-	void 				translate( const Vec2<T> &v );
+	void 				translate( const Vec2T &v );
 	//! Returns a copy of the matrix translated by \a v
-	MatrixAffine2 		translateCopy( const Vec2<T> &v ) const { MatrixAffine2 result = *this; result.translate( v ); return result; }
+	MatrixAffine2 		translateCopy( const Vec2T &v ) const { MatrixAffine2 result = *this; result.translate( v ); return result; }
 
 	//! concatenate rotation by \a radians (conceptually, rotate is before 'this')
 	void				rotate( T radians ) { *this *= MatrixAffine2<T>::makeRotate( radians ); }
 	//! concatenate rotation by \a radians around the point \a pt (conceptually, rotate is before 'this')
-	void				rotate( T radians, const Vec2<T> &pt ) { *this *= MatrixAffine2<T>::makeRotate( radians, pt ); }
+	void				rotate( T radians, const Vec2T &pt ) { *this *= MatrixAffine2<T>::makeRotate( radians, pt ); }
 	//! Returns a copy of the matrix rotate by \a radians 
 	MatrixAffine2 		rotateCopy( T radians ) const { MatrixAffine2 result = *this; result.rotate( radians ); return result; }
 	//! Returns a copy of the matrix rotate by \a radians around the point \a pt
-	MatrixAffine2 		rotateCopy( T radians, const Vec2<T> &pt ) const { MatrixAffine2 result = *this; result.rotate( radians, pt ); return result; }
+	MatrixAffine2 		rotateCopy( T radians, const Vec2T &pt ) const { MatrixAffine2 result = *this; result.rotate( radians, pt ); return result; }
 
 	//! concatenate scale (conceptually, scale is before 'this')
 	void				scale( T s );
 	//! concatenate scale (conceptually, scale is before 'this')
-	void				scale( const Vec2<T> &v );
+	void				scale( const Vec2T &v );
 	//! Returns a copy of the matrix scaled by \a s
 	MatrixAffine2		scaleCopy( T s ) const { MatrixAffine2 result = *this; result.scale( s ); return result; }
 	//! Returns a copy of the matrix scaled by \a v
-	MatrixAffine2		scaleCopy( const Vec2<T> &v ) const { MatrixAffine2 result = *this; result.scale( v ); return result; }
+	MatrixAffine2		scaleCopy( const Vec2T &v ) const { MatrixAffine2 result = *this; result.scale( v ); return result; }
 
 	// returns an identity matrix
 	static MatrixAffine2<T>	identity() { return MatrixAffine2( 1, 0, 0, 1, 0, 0 ); }
@@ -186,16 +188,16 @@ class MatrixAffine2
 	static MatrixAffine2<T>  zero() { return MatrixAffine2( (T)0 ); }
 
 	// creates translation matrix
-	static MatrixAffine2<T>	makeTranslate( const Vec2<T> &v );
+	static MatrixAffine2<T>	makeTranslate( const Vec2T &v );
 
 	// creates rotation matrix by \a radians
 	static MatrixAffine2<T>	makeRotate( T radians );
 	// creates rotation matrix by \a radians around the point \a pt
-	static MatrixAffine2<T>	makeRotate( T radians, const Vec2<T> &pt );
+	static MatrixAffine2<T>	makeRotate( T radians, const Vec2T &pt );
 
 	// creates scale matrix
 	static MatrixAffine2<T>	makeScale( T s );
-	static MatrixAffine2<T>	makeScale( const Vec2<T> &v );
+	static MatrixAffine2<T>	makeScale( const Vec2T &v );
 
 	static MatrixAffine2<T>	makeSkewX( T radians );
 	static MatrixAffine2<T>	makeSkewY( T radians );
@@ -240,7 +242,7 @@ MatrixAffine2<T>::MatrixAffine2( T d0, T d1, T d2, T d3, T d4, T d5 )
 }
 
 template<typename T>
-MatrixAffine2<T>::MatrixAffine2( const Vec2<T> &vx, const Vec2<T> &vy, const Vec2<T> &vz )
+MatrixAffine2<T>::MatrixAffine2( const Vec2T &vx, const Vec2T &vy, const Vec2T &vz )
 {
 	m00 = vx.x; m01 = vy.x; m02 = vz.x;
 	m10 = vx.y; m11 = vy.y; m12 = vz.y;
@@ -400,21 +402,21 @@ const MatrixAffine2<T> MatrixAffine2<T>::operator-( const MatrixAffine2<T> &rhs 
 }
 
 template<typename T>
-Vec2<T> MatrixAffine2<T>::transformPoint( const Vec2<T> &rhs ) const
+typename MatrixAffine2<T>::Vec2T MatrixAffine2<T>::transformPoint( const Vec2T &rhs ) const
 {
-	return Vec2<T>( rhs.x * m[0] + rhs.y * m[2] + m[4], rhs.x * m[1] + rhs.y * m[3] + m[5] );
+	return Vec2T( rhs.x * m[0] + rhs.y * m[2] + m[4], rhs.x * m[1] + rhs.y * m[3] + m[5] );
 }
 
 template<typename T>
-const Vec2<T> MatrixAffine2<T>::operator*( const Vec2<T> &rhs ) const
+const typename MatrixAffine2<T>::Vec2T MatrixAffine2<T>::operator*( const Vec2T &rhs ) const
 {
-	return Vec2<T>( rhs.x * m[0] + rhs.y * m[2] + m[4], rhs.x * m[1] + rhs.y * m[3] + m[5] );
+	return Vec2T( rhs.x * m[0] + rhs.y * m[2] + m[4], rhs.x * m[1] + rhs.y * m[3] + m[5] );
 }
 
 template<typename T>
-Vec2<T> MatrixAffine2<T>::transformVec( const Vec2<T> &v ) const
+typename MatrixAffine2<T>::Vec2T MatrixAffine2<T>::transformVec( const Vec2T &v ) const
 {
-	return Vec2<T>( v.x * m[0] + v.y * m[2], v.x * m[1] + v.y * m[3] );
+	return Vec2T( v.x * m[0] + v.y * m[2], v.x * m[1] + v.y * m[3] );
 }
 
 template<typename T>
@@ -487,17 +489,17 @@ void MatrixAffine2<T>::set( T d0, T d1, T d2, T d3, T d4, T d5 )
 }
 
 template<typename T>
-Vec2<T> MatrixAffine2<T>::getColumn( int col ) const
+typename MatrixAffine2<T>::Vec2T MatrixAffine2<T>::getColumn( int col ) const
 {
 	size_t i = col*2;
-	return Vec2<T>( 
+	return Vec2T( 
 		m[i + 0], 
 		m[i + 1]
 	);
 }
 
 template<typename T>
-void MatrixAffine2<T>::setColumn( int col, const Vec2<T> &v )
+void MatrixAffine2<T>::setColumn( int col, const Vec2T &v )
 {
 	size_t i = col*2;
 	m[i + 0] = v.x;
@@ -505,9 +507,9 @@ void MatrixAffine2<T>::setColumn( int col, const Vec2<T> &v )
 }
 
 template<typename T>
-Vec3<T> MatrixAffine2<T>::getRow( int row ) const 
+typename MatrixAffine2<T>::Vec3T MatrixAffine2<T>::getRow( int row ) const
 { 
-	return Vec3<T>( 
+	return Vec3T(
 		m[row +  0],
 		m[row +  3],
 		m[row +  6]
@@ -515,7 +517,7 @@ Vec3<T> MatrixAffine2<T>::getRow( int row ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::setRow( int row, const Vec3<T> &v ) 
+void MatrixAffine2<T>::setRow( int row, const Vec3T &v )
 { 
 	m[row +  0] = v.x; 
 	m[row +  3] = v.y; 
@@ -523,7 +525,7 @@ void MatrixAffine2<T>::setRow( int row, const Vec3<T> &v )
 }
 
 template<typename T>
-void MatrixAffine2<T>::getColumns( Vec2<T> *c0, Vec2<T> *c1, Vec2<T> *c2 ) const
+void MatrixAffine2<T>::getColumns( Vec2T *c0, Vec2T *c1, Vec2T *c2 ) const
 {
 	*c0 = getColumn( 0 );
 	*c1 = getColumn( 1 );
@@ -531,7 +533,7 @@ void MatrixAffine2<T>::getColumns( Vec2<T> *c0, Vec2<T> *c1, Vec2<T> *c2 ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::setColumns( const Vec2<T> &c0, const Vec2<T> &c1, const Vec2<T> &c2 )
+void MatrixAffine2<T>::setColumns( const Vec2T &c0, const Vec2T &c1, const Vec2T &c2 )
 {
 	setColumn( 0, c0 );
 	setColumn( 1, c1 );
@@ -539,7 +541,7 @@ void MatrixAffine2<T>::setColumns( const Vec2<T> &c0, const Vec2<T> &c1, const V
 }
 
 template<typename T>
-void MatrixAffine2<T>::getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const
+void MatrixAffine2<T>::getRows( Vec3T *r0, Vec3T *r1, Vec3T *r2 ) const
 {
 	*r0 = getRow( 0 );
 	*r1 = getRow( 1 );
@@ -547,7 +549,7 @@ void MatrixAffine2<T>::getRows( Vec3<T> *r0, Vec3<T> *r1, Vec3<T> *r2 ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::setRows( const Vec3<T> &r0, const Vec3<T> &r1, const Vec3<T> &r2 )
+void MatrixAffine2<T>::setRows( const Vec3T &r0, const Vec3T &r1, const Vec3T &r2 )
 {
 	setRow( 0, r0 );
 	setRow( 1, r1 );
@@ -601,7 +603,7 @@ MatrixAffine2<T> MatrixAffine2<T>::invertCopy( T epsilon ) const
 }
 
 template<typename T>
-void MatrixAffine2<T>::translate( const Vec2<T> &v )
+void MatrixAffine2<T>::translate( const Vec2T &v )
 {
 	m[4] += m[0]*v.x + m[2]*v.y;
 	m[5] += m[1]*v.x + m[3]*v.y;
@@ -618,7 +620,7 @@ void MatrixAffine2<T>::scale( T s )
 }
 	
 template<typename T>
-void MatrixAffine2<T>::scale( const Vec2<T> &s )
+void MatrixAffine2<T>::scale( const Vec2T &s )
 {
 	m[0] *= s.x;
 	m[1] *= s.x;
@@ -628,7 +630,7 @@ void MatrixAffine2<T>::scale( const Vec2<T> &s )
 }
 
 template<typename T>
-MatrixAffine2<T>	MatrixAffine2<T>::makeTranslate( const Vec2<T> &v )
+MatrixAffine2<T>	MatrixAffine2<T>::makeTranslate( const Vec2T &v )
 {
 	MatrixAffine2<T> ret;
 
@@ -665,7 +667,7 @@ MatrixAffine2<T> MatrixAffine2<T>::makeRotate( T radians )
 }
 
 template<typename T>
-MatrixAffine2<T> MatrixAffine2<T>::makeRotate( T radians, const Vec2<T> &pt )
+MatrixAffine2<T> MatrixAffine2<T>::makeRotate( T radians, const Vec2T &pt )
 {
 	T sine   = math<T>::sin( radians );
 	T cosine = math<T>::cos( radians );
@@ -702,7 +704,7 @@ MatrixAffine2<T> MatrixAffine2<T>::makeScale( T s )
 }
 
 template<typename T>
-MatrixAffine2<T> MatrixAffine2<T>::makeScale( const Vec2<T> &s )
+MatrixAffine2<T> MatrixAffine2<T>::makeScale( const Vec2T &s )
 {
 	MatrixAffine2<T> ret;
 

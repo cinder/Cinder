@@ -112,6 +112,8 @@ class ImageSource : public ImageIo {
 	float		getPixelAspectRatio() const;
 	//! Returns whether the ImageSource's color data has been premultiplied by its alpha channel
 	bool		isPremultiplied() const;
+	//! Returns the number of bytes necessary to represent a row of the ImageSource
+	size_t		getRowBytes() const;	
 
 	virtual void	load( ImageTargetRef target ) = 0;
 

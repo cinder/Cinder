@@ -32,8 +32,8 @@ namespace cinder {
 template<typename T>
 T PolyLine<T>::getPosition( float t ) const
 {
-	typedef typename T::TYPE R;
-	if( mPoints.size() <= 1 ) return T::zero();
+	typedef typename T::value_type R;
+	if( mPoints.size() <= 1 ) return T();
 	if( t >= 1 ) return mPoints.back();
 	if( t <= 0 ) return mPoints[0];
 	
@@ -46,8 +46,8 @@ T PolyLine<T>::getPosition( float t ) const
 template<typename T>
 T PolyLine<T>::getDerivative( float t ) const
 {
-	typedef typename T::TYPE R;
-	if( mPoints.size() <= 1 ) return T::zero();
+	typedef typename T::value_type R;
+	if( mPoints.size() <= 1 ) return T();
 	if( t >= 1 ) return mPoints.back() - mPoints[mPoints.size()-2];
 	if( t <= 0 ) return mPoints[1] - mPoints[0];
 	
@@ -71,14 +71,14 @@ void PolyLine<T>::offset( const T &offsetBy )
 }
 
 template<typename T>
-T linearYatX( const Vec2<T> p[2], T x )
+T linearYatX( const glm::detail::tvec2<T, glm::defaultp> p[2], T x )
 {
 	if( p[0].x == p[1].x ) 	return p[0].y;
 	return p[0].y + (p[1].y - p[0].y) * (x - p[0].x) / (p[1].x - p[0].x);
 }
 
 template<typename T>
-size_t linearCrossings( const Vec2<T> p[2], const Vec2f &pt )
+size_t linearCrossings( const glm::detail::tvec2<T, glm::defaultp> p[2], const vec2 &pt )
 {
 	if( (p[0].x < pt.x && pt.x <= p[1].x ) ||
 		(p[1].x < pt.x && pt.x <= p[0].x )) {
@@ -89,7 +89,7 @@ size_t linearCrossings( const Vec2<T> p[2], const Vec2f &pt )
 }
 
 template<typename T>
-bool PolyLine<T>::contains( const Vec2f &pt ) const
+bool PolyLine<T>::contains( const vec2 &pt ) const
 {
 	if( mPoints.size() <= 2 )
 		return false;
@@ -99,7 +99,7 @@ bool PolyLine<T>::contains( const Vec2f &pt ) const
 		crossings += linearCrossings( &(mPoints[s]), pt );
 	}
 
-	Vec2f temp[2];
+	vec2 temp[2];
 	temp[0] = mPoints[mPoints.size()-1];
 	temp[1] = mPoints[0];
 	crossings += linearCrossings( &(temp[0]), pt );
@@ -230,7 +230,7 @@ std::vector<PolyLine<T> > PolyLine<T>::calcDifference( const std::vector<PolyLin
 	return convertBoostGeometryPolygons<T>( output );
 }
 
-template class PolyLine<Vec2f>;
-template class PolyLine<Vec2d>;
+template class PolyLine<vec2>;
+template class PolyLine<dvec2>;
 
 } // namespace cinder

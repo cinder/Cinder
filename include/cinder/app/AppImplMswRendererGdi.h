@@ -54,7 +54,7 @@ class AppImplMswRendererGdi : public AppImplMswRenderer {
 	bool			mDoubleBuffer;
 	::HDC			mDoubleBufferDc;
 	::HBITMAP		mDoubleBufferBitmap, mDoubleBufferOldBitmap;
-	Vec2i			mDoubleBufferBitmapSize;
+	ivec2			mDoubleBufferBitmapSize;
 };
 
 } } // namespace cinder::app

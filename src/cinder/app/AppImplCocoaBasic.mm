@@ -413,15 +413,15 @@
 	}
 }
 
-- (cinder::Vec2i)getSize
+- (cinder::ivec2)getSize
 {
 	return mSize;
 }
 
-- (void)setSize:(cinder::Vec2i)size
+- (void)setSize:(cinder::ivec2)size
 {
 	// this compensates for the Mac wanting to resize from the lower-left corner
-	ci::Vec2i sizeDelta = size - mSize;
+	ci::ivec2 sizeDelta = size - mSize;
 	NSRect r = [mWin frame];
 	r.size.width += sizeDelta.x;
 	r.size.height += sizeDelta.y;
@@ -432,7 +432,7 @@
 	mSize.y = (int)mCinderView.frame.size.height;
 }
 
-- (cinder::Vec2i)getPos
+- (cinder::ivec2)getPos
 {
 	return mPos;
 }
@@ -442,7 +442,7 @@
 	return [mCinderView contentScaleFactor];
 }
 
-- (void)setPos:(cinder::Vec2i)pos
+- (void)setPos:(cinder::ivec2)pos
 {
 	NSPoint p;
 	p.x = pos.x;
@@ -551,7 +551,7 @@
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ci::Vec2i( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
+	mPos = ci::ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
 
 	[mAppImpl setActiveWindow:self];
 
@@ -583,7 +583,7 @@
 - (void)resize
 {
 	NSSize nsSize = [mCinderView frame].size;
-	mSize = cinder::Vec2i( nsSize.width, nsSize.height );
+	mSize = cinder::ivec2( nsSize.width, nsSize.height );
 	
 	[mAppImpl setActiveWindow:self];
 	
@@ -721,7 +721,7 @@
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;
 	winImpl->mSize.y = (int)contentRect.size.height;
-	winImpl->mPos = ci::Vec2i( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
+	winImpl->mPos = ci::ivec2( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
 
 	[winImpl->mWin setLevel:(winImpl->mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
 

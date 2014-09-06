@@ -23,7 +23,7 @@ class FBOMultipleTargetsApp : public AppBasic {
 	
 	gl::Fbo				mFbo;
 	gl::GlslProg		mShaderMultipleOuts;
-	Matrix44f			mTorusRotation;
+	mat4			mTorusRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
 };
 
@@ -54,7 +54,7 @@ void FBOMultipleTargetsApp::renderSceneToFbo()
 	// setup our camera to render the torus scene
 	CameraPersp cam( mFbo.getWidth(), mFbo.getHeight(), 60.0f );
 	cam.setPerspective( 60, mFbo.getAspectRatio(), 1, 1000 );
-	cam.lookAt( Vec3f( 2.8f, 1.8f, -2.8f ), Vec3f::zero() );
+	cam.lookAt( vec3( 2.8f, 1.8f, -2.8f ), vec3::zero() );
 	gl::setMatrices( cam );
 
 	// set the modelview matrix to reflect our current rotation
@@ -75,7 +75,7 @@ void FBOMultipleTargetsApp::renderSceneToFbo()
 void FBOMultipleTargetsApp::update()
 {
 	// Rotate the torus by .06 radians around an arbitrary axis
-	mTorusRotation.rotate( Vec3f( 0.16666f, 0.333333f, 0.666666f ).normalized(), 0.06f );
+	mTorusRotation.rotate( vec3( 0.16666f, 0.333333f, 0.666666f ).normalized(), 0.06f );
 	
 	// render into our FBO
 	renderSceneToFbo();
@@ -92,7 +92,7 @@ void FBOMultipleTargetsApp::draw()
 	// draw the two textures we've created side-by-side
 	gl::setMatricesWindow( getWindowSize() );
 	gl::draw( mFbo.getTexture(0), mFbo.getTexture(0).getBounds() );
-	gl::draw( mFbo.getTexture(1), mFbo.getTexture(1).getBounds() + Vec2f(mFbo.getTexture(0).getWidth(),0) );
+	gl::draw( mFbo.getTexture(1), mFbo.getTexture(1).getBounds() + vec2(mFbo.getTexture(0).getWidth(),0) );
 }
 
 CINDER_APP_BASIC( FBOMultipleTargetsApp, RendererGl )

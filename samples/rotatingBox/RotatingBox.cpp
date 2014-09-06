@@ -1,4 +1,6 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
@@ -10,15 +12,15 @@ using namespace ci::app;
 
 class RotatingCubeApp : public AppBasic {
   public:	
-	void setup();
-	void resize();
-	void update();
-	void draw();
+	void	setup() override;
+	void	resize() override;
+	void	update() override;
+	void	draw() override;
 	
 	CameraPersp			mCam;
 	Capture				mCapture;
-	gl::Texture			mTexture;
-	Matrix44f			mCubeRotation;
+	gl::Texture2dRef	mTexture;
+	mat4				mCubeRotation;
 };
 
 void RotatingCubeApp::setup()
@@ -37,49 +39,43 @@ void RotatingCubeApp::setup()
 		layout.setFont( Font( "Arial", 96 ) );
 		layout.addCenteredLine( "No Webcam" );
 		layout.addCenteredLine( "Detected" );
-		mTexture = gl::Texture( layout.render() );
+		mTexture = gl::Texture2d::create( layout.render() );
 	}
 	
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
-	mCubeRotation.setToIdentity();
-	
-	glEnable( GL_TEXTURE_2D );
+	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	gl::enableDepthRead();
-	gl::enableDepthWrite();	
+	gl::enableDepthWrite();
 }
 
 void RotatingCubeApp::resize()
 {
-	// now tell our Camera that the window aspect ratio has changed
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	
-	// and in turn, let OpenGL know we have a new camera
 	gl::setMatrices( mCam );
 }
 
 void RotatingCubeApp::update()
 {
-	if( mCapture && mCapture.checkNewFrame() ) {
-		mTexture = gl::Texture( mCapture.getSurface() );
-	}
+	if( mCapture && mCapture.checkNewFrame() )
+		mTexture = gl::Texture2d::create( mCapture.getSurface() );
 	
 	// Rotate the cube by .03 radians around an arbitrary axis
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation *= rotate( 0.03f, vec3( 1 ) );
 }
 
 void RotatingCubeApp::draw()
 {
+	gl::clear( Color::black() );
+
 	// if we haven't gotten a texture from the Capture yet, don't draw anything
 	if( ! mTexture )
 		return;
 
-	gl::clear( Color::black() );
-	mTexture.bind();
-	glPushMatrix();
-		gl::multModelView( mCubeRotation );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
-	glPopMatrix();
+	gl::bindStockShader( gl::ShaderDef().texture() );
+	gl::ScopedTextureBind scpTex( mTexture );
+	gl::pushModelMatrix();
+		gl::multModelMatrix( mCubeRotation );
+		gl::drawCube( vec3( 0 ), vec3( 2, 2, 2 ) );
+	gl::popModelMatrix();
 }
-
 
 CINDER_APP_BASIC( RotatingCubeApp, RendererGl )

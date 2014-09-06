@@ -1,15 +1,15 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/FilterNode.h"
 #include "cinder/audio/Target.h"
-#include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "../../common/AudioTestGui.h"
 
@@ -29,8 +29,8 @@ class ParamTestApp : public AppNative {
 	void setupFilter();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	void testApply();
 	void testApply0();
@@ -182,32 +182,32 @@ void ParamTestApp::setupUI()
 	mApplyButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mApplyButton );
 
-	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
 	mApply0Button = Button( false, "apply0" );
 	mApply0Button.mBounds = paramButtonRect;
 	mWidgets.push_back( &mApply0Button );
 
-	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
 	mApplyAppendButton = Button( false, "apply 2" );
 	mApplyAppendButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mApplyAppendButton );
 
-	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
 	mAppendButton = Button( false, "append" );
 	mAppendButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mAppendButton );
 
-	paramButtonRect = mApplyButton.mBounds + Vec2f( 0, mApplyButton.mBounds.getHeight() + padding );
+	paramButtonRect = mApplyButton.mBounds + vec2( 0, mApplyButton.mBounds.getHeight() + padding );
 	mDelayButton = Button( false, "delay" );
 	mDelayButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mDelayButton );
 
-	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
 	mProcessorButton = Button( false, "processor" );
 	mProcessorButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mProcessorButton );
 
-	paramButtonRect += Vec2f( paramButtonRect.getWidth() + padding, 0 );
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
 	mAppendCancelButton = Button( false, "cancel" );
 	mAppendCancelButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mAppendCancelButton );
@@ -224,13 +224,13 @@ void ParamTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
-	sliderRect += Vec2f( 0.0f, sliderRect.getHeight() + 10.0f );
+	sliderRect += vec2( 0.0f, sliderRect.getHeight() + 10.0f );
 	mPanSlider.mBounds = sliderRect;
 	mPanSlider.mTitle = "Pan";
 	mPanSlider.set( mPan->getPos() );
 	mWidgets.push_back( &mPanSlider );
 
-	sliderRect += Vec2f( 0.0f, sliderRect.getHeight() + 10.0f );
+	sliderRect += vec2( 0.0f, sliderRect.getHeight() + 10.0f );
 	mGenFreqSlider.mBounds = sliderRect;
 	mGenFreqSlider.mTitle = "Gen Freq";
 	mGenFreqSlider.mMin = -200.0f;
@@ -238,7 +238,7 @@ void ParamTestApp::setupUI()
 	mGenFreqSlider.set( mGen->getFreq() );
 	mWidgets.push_back( &mGenFreqSlider );
 
-	sliderRect += Vec2f( 0.0f, sliderRect.getHeight() + 10.0f );
+	sliderRect += vec2( 0.0f, sliderRect.getHeight() + 10.0f );
 	mLowPassFreqSlider.mBounds = sliderRect;
 	mLowPassFreqSlider.mTitle = "LowPass Freq";
 	mLowPassFreqSlider.mMax = 1000.0f;
@@ -256,7 +256,7 @@ void ParamTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void ParamTestApp::processDrag( Vec2i pos )
+void ParamTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) ) {
 //		mGain->setValue( mGainSlider.mValueScaled );
@@ -275,7 +275,7 @@ void ParamTestApp::processDrag( Vec2i pos )
 		mLowPass->setCutoffFreq( mLowPassFreqSlider.mValueScaled );
 }
 
-void ParamTestApp::processTap( Vec2i pos )
+void ParamTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 	size_t selectorIndex = mTestSelector.mCurrentSectionIndex;

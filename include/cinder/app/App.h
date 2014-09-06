@@ -132,18 +132,18 @@ class App {
 		bool	isPrepared() const { return ! mShouldQuit; }
 
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( Vec2i( windowSizeX, windowSizeY ) ); }
+		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( const Vec2i &size ) { mDefaultWindowFormat.setSize( size ); }
+		void	setWindowSize( const ivec2 &size ) { mDefaultWindowFormat.setSize( size ); }
 		//! Gets the size of the default window measured in pixels
-		Vec2i	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
+		ivec2	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
 		
 		//! Returns the position of the default window in screen coordinates measured in pixels
-		Vec2i	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
+		ivec2	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( Vec2i( windowPosX, windowPosY ) ); }
+		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( ivec2( windowPosX, windowPosY ) ); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( const Vec2i &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
+		void    setWindowPos( const ivec2 &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
 		//! Returns whether a non-default window position has been requested
 		bool	isWindowPosSpecified() const { return mDefaultWindowFormat.isPosSpecified(); }
 		//! Marks the window position setting as unspecified, effectively requesting the default
@@ -317,14 +317,14 @@ class App {
 	//! Returns the height of the App's current window measured in points
 	int					getWindowHeight() const { return getWindow()->getHeight(); }
 	//! Sets the size of the App's current window measured in points. Ignored in full-screen mode.
-	void				setWindowSize( int windowWidth, int windowHeight ) { setWindowSize( Vec2i( windowWidth, windowHeight ) ); }
+	void				setWindowSize( int windowWidth, int windowHeight ) { setWindowSize( ivec2( windowWidth, windowHeight ) ); }
 	//! Sets the size of the App's window measured in points. Ignored in full-screen mode.
-	void				setWindowSize( const Vec2i &size ) { getWindow()->setSize( size ); }
+	void				setWindowSize( const ivec2 &size ) { getWindow()->setSize( size ); }
 	//! Returns the center of the App's window measured in points
-	/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
-	Vec2f				getWindowCenter() const { return Vec2f( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
+	/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
+	vec2				getWindowCenter() const { return vec2( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
 	//! Returns the size of the App's current window measured in points
-	Vec2i				getWindowSize() const { return Vec2i( getWindowWidth(), getWindowHeight() ); }
+	ivec2				getWindowSize() const { return ivec2( getWindowWidth(), getWindowHeight() ); }
 	//! Returns the aspect ratio of the App's current window
 	float				getWindowAspectRatio() const { return getWindowWidth() / (float)getWindowHeight(); }
 	//! Returns the bounding area of the App's current window measured in points.
@@ -334,15 +334,15 @@ class App {
 	float				getWindowContentScale() const { return getWindow()->getContentScale(); }
 	
 	//! Returns tcoordinates of the top-left corner of the current window measured in points
-	Vec2i				getWindowPos() const { return getWindow()->getPos(); }
+	ivec2				getWindowPos() const { return getWindow()->getPos(); }
 	//! Returns the X coordinate of the top-left corner of the current window measured in points
 	int         		getWindowPosX() const { return getWindow()->getPos().x; }
 	//! Returns the Y coordinate of the top-left corner of the current window contents measured in points
 	int         		getWindowPosY() const { return getWindow()->getPos().y; }
 	//! Sets the coordinates of the top-left corner of the current window measured in points
-	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	void        		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) ); }
 	//! Sets the coordinates of the top-left corner of the current window measured points
-	virtual void        setWindowPos( const Vec2i &windowPos ) { getWindow()->setPos( windowPos ); }
+	virtual void        setWindowPos( const ivec2 &windowPos ) { getWindow()->setPos( windowPos ); }
     
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
@@ -366,7 +366,7 @@ class App {
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 
 	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
-	static Vec2i		getMousePos();
+	static ivec2		getMousePos();
 	
 	// utilities
 	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
@@ -576,20 +576,20 @@ inline WindowRef	getWindowIndex( size_t index ) { return App::get()->getWindowIn
 //! Returns the width of the active App's window measured in points, or of the screen when in full-screen mode
 inline int	getWindowWidth() { return App::get()->getWindowWidth(); }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
-inline void		setWindowPos( const Vec2i &windowPos ) { App::get()->setWindowPos( windowPos);  }
+inline void		setWindowPos( const ivec2 &windowPos ) { App::get()->setWindowPos( windowPos);  }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
-inline void		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) );  }
+inline void		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) );  }
 //! Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
 inline int	getWindowHeight() { return App::get()->getWindowHeight(); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( int windowWidth, int windowHeight ) { App::get()->setWindowSize( windowWidth, windowHeight ); }
 //! Returns the center of the active App's window in pixels or of the screen in full-screen mode.
-/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
-inline Vec2f	getWindowCenter() { return App::get()->getWindowCenter(); }
+/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
+inline vec2	getWindowCenter() { return App::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode measured in points
-inline Vec2i	getWindowSize() { return App::get()->getWindowSize(); }
+inline ivec2	getWindowSize() { return App::get()->getWindowSize(); }
 //! Returns the position of the active App's window measured in points
-inline Vec2i	getWindowPos() { return App::get()->getWindowPos(); }
+inline ivec2	getWindowPos() { return App::get()->getWindowPos(); }
 //! Returns the aspect ratio of the active App's window or the screen in full-screen mode
 inline float	getWindowAspectRatio() { return App::get()->getWindowAspectRatio(); }
 //! Returns the bounding area of the active App's window or the screen in full-screen mode measured in points
@@ -608,20 +608,20 @@ inline void		setFullScreen( bool fullScreen = true ) { App::get()->setFullScreen
 
 //! Returns a scalar mapped from points to pixels for the current Window
 inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
-//! Returns a Vec2f mapped from points to pixels for the current Window
-inline Vec2f	toPixels( Vec2f s ) { return getWindow()->toPixels( s ); }
-//! Returns a Vec2i mapped from points to pixels for the current Window
-inline	Vec2i	toPixels( Vec2i s ) { return app::getWindow()->toPixels( s ); }
+//! Returns a vec2 mapped from points to pixels for the current Window
+inline vec2	toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
+//! Returns a ivec2 mapped from points to pixels for the current Window
+inline	ivec2	toPixels( ivec2 s ) { return app::getWindow()->toPixels( s ); }
 //! Returns an Area mapped from points to pixels for the current Window
 inline	Area	toPixels( const Area &a ) { return getWindow()->toPixels( a ); }
 //! Returns a Rectf mapped from points to pixels for the current Window
 inline	Rectf	toPixels( const Rectf &a ) { return getWindow()->toPixels( a ); }
 //! Returns a scalar mapped from pixels to points for the current Window
 inline	float	toPoints( float s ) { return getWindow()->toPoints( s ); }
-//! Returns a Vec2f mapped from pixels to points for the current Window
-inline	Vec2f	toPoints( Vec2f s ) { return getWindow()->toPoints( s ); }
-//! Returns a Vec2i mapped from pixels to points for the current Window
-inline	Vec2i	toPoints( Vec2i s ) { return getWindow()->toPoints( s ); }
+//! Returns a vec2 mapped from pixels to points for the current Window
+inline	vec2	toPoints( vec2 s ) { return getWindow()->toPoints( s ); }
+//! Returns a ivec2 mapped from pixels to points for the current Window
+inline	ivec2	toPoints( ivec2 s ) { return getWindow()->toPoints( s ); }
 //! Returns an Area mapped from pixels to points for the current Window
 inline	Area	toPoints( const Area &a ) { return getWindow()->toPoints( a ); }
 //! Returns a Rectf mapped from pixels to points for the current Window

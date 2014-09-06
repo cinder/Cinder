@@ -63,7 +63,7 @@ void AppImplMswRendererGdi::makeCurrentContext()
 	if( mDoubleBuffer ) {
 		::RECT clientRect;
 		::GetClientRect( mWnd, &clientRect );
-		Vec2i windowSize( clientRect.right - clientRect.left, clientRect.bottom - clientRect.top );
+		ivec2 windowSize( clientRect.right - clientRect.left, clientRect.bottom - clientRect.top );
 
 		mDoubleBufferDc = ::CreateCompatibleDC( mPaintDc );
 		if(( mDoubleBufferBitmap == 0 ) || ( mDoubleBufferBitmapSize != windowSize )) {

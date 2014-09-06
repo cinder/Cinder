@@ -41,7 +41,7 @@ namespace cinder {
 //! Represents a location event
 class LocationEvent {
   public:
-	LocationEvent( const ci::Vec2f & coord = Vec2f::zero(), float speed = 0.0f, float altitude = 0.0f, 
+	LocationEvent( const cinder::vec2 & coord = cinder::vec2(0), float speed = 0.0f, float altitude = 0.0f,
 				   float horizontalAccuracy = 0.0f, float verticalAccuracy = 0.0f ) 
 		: mAltitude( altitude ), mCoordinate( coord ), mHorizontalAccuracy( horizontalAccuracy ),
 		  mSpeed( speed ), mVerticalAccuracy( verticalAccuracy )
@@ -49,26 +49,26 @@ class LocationEvent {
 	}
 	
 	//! Returns the altitude in meters of the location event
-	float		getAltitude() const { return mAltitude; }
+	float			getAltitude() const { return mAltitude; }
 	//! Returns the coordinate of the location event as a Vec2f where x is latitude and y is longitude
-	ci::Vec2f	getCoordinate() const { return mCoordinate; }
+	cinder::vec2	getCoordinate() const { return mCoordinate; }
 	//! Returns the latitude coordinate of the location event
-	float		getLatitude() const { return mCoordinate.x; }
+	float			getLatitude() const { return mCoordinate.x; }
 	//! Returns the latitude coordinate of the location event
-	float		getLongitude() const { return mCoordinate.y; }
+	float			getLongitude() const { return mCoordinate.y; }
 	//! Returns speed in meters of location event
-	float		getSpeed() const { return mSpeed; }
+	float			getSpeed() const { return mSpeed; }
 	//! Returns the horizontal accuracy of location event -- invalid when negative
-	float		getHorizontalAccuracy() const { return mHorizontalAccuracy; }
+	float			getHorizontalAccuracy() const { return mHorizontalAccuracy; }
 	//! Returns the vertical accuracy of location event -- invalid when negative
-	float		getVerticalAccuracy() const { return mVerticalAccuracy; }
+	float			getVerticalAccuracy() const { return mVerticalAccuracy; }
 	
   private:	
-	float		mAltitude;
-	ci::Vec2f	mCoordinate;
-	float		mSpeed;
-	float		mVerticalAccuracy;
-	float		mHorizontalAccuracy;
+	float			mAltitude;
+	cinder::vec2	mCoordinate;
+	float			mSpeed;
+	float			mVerticalAccuracy;
+	float			mHorizontalAccuracy;
 };
 
 typedef signals::signal<void (const LocationEvent&)>	EventSignalLocation;
@@ -79,28 +79,28 @@ typedef signals::signal<void (const LocationEvent&)>	EventSignalLocation;
 class HeadingEvent {
   public:	
 	HeadingEvent( float magneticHeading = 0.0f, float trueHeading = 0.0f, float headingAccuracy = 0.0f, 
-				 const std::string &description = "", const Vec3f & data = Vec3f::zero() ) 
+				 const std::string &description = "", const cinder::vec3 &data = vec3( 0 ) )
 		: mData( data ), mDescription( description ), mHeadingAccuracy( headingAccuracy ), 
 		  mMagneticHeading( magneticHeading ), mTrueHeading( trueHeading )
 	{}
 	
 	//! Returns raw geo magnetism vector from heading event
-	ci::Vec3f   getData() const { return mData; }
+	cinder::vec3   getData() const { return mData; }
 	//! Returns description of heading event
-	std::string getDescription() const { return mDescription; }
+	std::string		getDescription() const { return mDescription; }
 	//! Returns heading accuracy of heading event
-	float       getHeadingAccuracy() const { return mHeadingAccuracy; }
+	float			getHeadingAccuracy() const { return mHeadingAccuracy; }
 	//! Returns magnetic heading in degrees of the heading event
-	float       getMagneticHeading() const { return mMagneticHeading; }
+	float			getMagneticHeading() const { return mMagneticHeading; }
 	//! Returns true heading in degrees of heading event
-	float       getTrueHeading() const { return mTrueHeading; }
+	float			getTrueHeading() const { return mTrueHeading; }
 	
   private:	
-	ci::Vec3f   mData;
-	std::string mDescription;
-	float       mHeadingAccuracy;
-	float       mMagneticHeading;
-	float       mTrueHeading;
+	cinder::vec3	mData;
+	std::string		mDescription;
+	float			mHeadingAccuracy;
+	float			mMagneticHeading;
+	float			mTrueHeading;
 	
 };
 

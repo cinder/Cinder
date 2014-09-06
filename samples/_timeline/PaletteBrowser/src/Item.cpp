@@ -14,7 +14,7 @@ using namespace std;
 Font Item::sSmallFont;
 Font Item::sBigFont;
 
-Item::Item( int index, Vec2f pos, const string &title, const string &desc, Surface palette )
+Item::Item( int index, vec2 pos, const string &title, const string &desc, Surface palette )
 	: mIndex(index), mTitle( title ), mDesc( desc ), mPalette(palette)
 {
 	// TODO: can you reuse layouts? If so, how do you clear the text?
@@ -24,37 +24,37 @@ Item::Item( int index, Vec2f pos, const string &title, const string &desc, Surfa
 	layout.setFont( sSmallFont );
 	layout.setColor( Color::white() );
 	layout.addLine( mTitle );
-	mTitleTex = gl::Texture( layout.render( true ) );
+	mTitleTex = gl::Texture::create( layout.render( true ) );
 	
 	TextLayout bigLayout;
 	bigLayout.clear( ColorA( 1, 1, 1, 0 ) );
 	bigLayout.setFont( sBigFont );
 	bigLayout.setColor( Color::white() );
 	bigLayout.addLine( mTitle );
-	mTitleBigTex = gl::Texture( bigLayout.render( true ) );
+	mTitleBigTex = gl::Texture::create( bigLayout.render( true ) );
 	
 	// title
 	mTitleStart		= pos;
-	mTitleDest1		= Vec2f( pos.x - 25.0f, pos.y );
-	mTitleFinish	= Vec2f( pos.x - 4.0f, 120.0f );
-	mTitleDest2		= Vec2f( mTitleFinish.x - 25.0f, mTitleFinish.y );
-	mMouseOverDest	= mTitleStart + Vec2f( 7.0f, 0.0f );
+	mTitleDest1		= vec2( pos.x - 25.0f, pos.y );
+	mTitleFinish	= vec2( pos.x - 4.0f, 120.0f );
+	mTitleDest2		= vec2( mTitleFinish.x - 25.0f, mTitleFinish.y );
+	mMouseOverDest	= mTitleStart + vec2( 7.0f, 0.0f );
 	mTitlePos		= mTitleStart;
 	mTitleColor		= Color( 0.7f, 0.7f, 0.7f );
 	mTitleAlpha		= 1.0f;
-	mTitleWidth		= mTitleTex.getWidth();
-	mTitleHeight	= mTitleTex.getHeight();
+	mTitleWidth		= mTitleTex->getWidth();
+	mTitleHeight	= mTitleTex->getHeight();
 	
 	// desc
-	mDescStart		= Vec2f( mTitleStart.x + 25.0f, mTitleFinish.y + mTitleBigTex.getHeight() + 5.0f );
-	mDescDest		= Vec2f( mTitleStart.x + 35.0f, mDescStart.y );
+	mDescStart		= vec2( mTitleStart.x + 25.0f, mTitleFinish.y + mTitleBigTex->getHeight() + 5.0f );
+	mDescDest		= vec2( mTitleStart.x + 35.0f, mDescStart.y );
 	mDescPos		= mDescStart;
 	mDescAlpha		= 0.0f;
-	TextBox tbox	= TextBox().alignment( TextBox::LEFT ).font( sSmallFont ).size( Vec2i( 650.0f, TextBox::GROW ) ).text( mDesc );
-	mDescTex		= gl::Texture( tbox.render() );
+	TextBox tbox	= TextBox().alignment( TextBox::LEFT ).font( sSmallFont ).size( ivec2( 650.0f, TextBox::GROW ) ).text( mDesc );
+	mDescTex		= gl::Texture::create( tbox.render() );
 	
 	// bar
-	mBarPos			= pos - Vec2f( 4.0f, 1.0f );
+	mBarPos			= pos - vec2( 4.0f, 1.0f );
 	mBarWidth		= 0.0f;
 	mBarHeight		= mTitleHeight + 2.0f;
 	mMaxBarWidth	= mTitleWidth + 22.0f;
@@ -75,15 +75,15 @@ void Item::setColors()
 		while( iter.pixel() ) {
 			int index = iter.x();
 			Color col( iter.r()/255.0f, iter.g()/255.0f, iter.b()/255.0f );
-			Vec2f pos = Vec2f( index%4, floor(index/4.0f) ) * 5.0f - Vec2f( 12.0f, 8.0f );
+			vec2 pos = vec2( index%4, floor(index/4.0f) ) * 5.0f - vec2( 12.0f, 8.0f );
 			Rectf rect( -2.0f, -2.0f, 2.0f, 2.0f );
-			Swatch swatch( col, mTitleStart + pos + Vec2f( -10.0f, 10.0f ), rect );
+			Swatch swatch( col, mTitleStart + pos + vec2( -10.0f, 10.0f ), rect );
 			mSwatches.push_back( swatch );
 		}
 	}
 }
 
-bool Item::isPointIn( const Vec2f &pt ) const
+bool Item::isPointIn( const vec2 &pt ) const
 {
 	return mTitleArea.contains( pt );
 }
@@ -141,7 +141,7 @@ void Item::select( Timeline &timeline, float leftBorder )
 		// title position
 		// set selected after initial animation
 		timeline.apply( &mTitlePos, mTitleDest1, dur1, EaseInAtan( 10 ) ).finishFn( bind( &Item::setSelected, this ) );
-		timeline.appendTo( &mTitlePos, mTitleDest2 - Vec2f( 25.0f, 0.0f ), 0.0001f, EaseNone() );
+		timeline.appendTo( &mTitlePos, mTitleDest2 - vec2( 25.0f, 0.0f ), 0.0001f, EaseNone() );
 		timeline.appendTo( &mTitlePos, mTitleFinish, dur2, EaseOutAtan( 10 ) );
 		// title color
 		timeline.apply( &mTitleColor, Color( 1, 1, 1 ), dur1, EaseInQuad() );
@@ -163,7 +163,7 @@ void Item::select( Timeline &timeline, float leftBorder )
 		timeline.apply( &mBarWidth, 0.0f, dur1, EaseInOutAtan( 10 ) );
 
 		for( std::vector<Swatch>::iterator swatchIt = mSwatches.begin(); swatchIt != mSwatches.end(); ++swatchIt ) {
-			swatchIt->scatter( timeline, math<float>::max( mTitleBigTex.getWidth(), 500.0f ), mTitleFinish.y + 50.0f );
+			swatchIt->scatter( timeline, math<float>::max( mTitleBigTex->getWidth(), 500.0f ), mTitleFinish.y + 50.0f );
 		}
 	}
 }
@@ -230,11 +230,11 @@ void Item::drawText() const
 	if( isBelowTextThreshold() ){
 		// title shadow
 		gl::color( ColorA( 0, 0, 0, mTitleAlpha() * 0.1f ) );
-		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * Vec2f( -3.5f, 3.5f ) );
+		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * vec2( -3.5f, 3.5f ) );
 		gl::color( ColorA( 0, 0, 0, mTitleAlpha() * 0.2f ) );
-		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * Vec2f( -2.5f, 2.5f ) );
+		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * vec2( -2.5f, 2.5f ) );
 		gl::color( ColorA( 0, 0, 0, mTitleAlpha() * 0.6f ) );
-		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * Vec2f( -1.0f, 1.0f ) );
+		gl::draw( mTitleBigTex, mTitlePos() + mFadeFloat() * vec2( -1.0f, 1.0f ) );
 		
 		// title text
 		gl::color( ColorA( mTitleColor(), mTitleAlpha() ) );
@@ -242,7 +242,7 @@ void Item::drawText() const
 		
 		// desc shadow
 		gl::color( ColorA( 0, 0, 0, mDescAlpha() ) );
-		gl::draw( mDescTex, mDescPos() + Vec2f( -1.0f, 1.0f ) );
+		gl::draw( mDescTex, mDescPos() + vec2( -1.0f, 1.0f ) );
 
 		// desc text
 		gl::color( ColorA( 1, 1, 1, mDescAlpha() ) );
@@ -250,7 +250,7 @@ void Item::drawText() const
 	} else {
 		// drop shadow
 		gl::color( ColorA( 0, 0, 0, mTitleAlpha() ) );
-		gl::draw( mTitleTex, mTitlePos() + Vec2f( -1.0f, 1.0f ) );
+		gl::draw( mTitleTex, mTitlePos() + vec2( -1.0f, 1.0f ) );
 		
 		// white text
 		gl::color( ColorA( mTitleColor(), mTitleAlpha() ) );

@@ -1,8 +1,7 @@
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/svg/Svg.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/Text.h"
 #include "cinder/Timeline.h"
@@ -24,19 +23,19 @@ class GoodNightMorningApp : public AppBasic {
 	void draw();
 	void drawTweets();
 
-	gl::Texture renderTweet( const Tweet &tweet, float width, const Color &textColor, float backgroundAlpha );
-	void		newMorningTweet();
-	void		newNightTweet();
+	gl::TextureRef	renderTweet( const Tweet &tweet, float width, const Color &textColor, float backgroundAlpha );
+	void			newMorningTweet();
+	void			newNightTweet();
 
 	
-	gl::Texture		mForegroundTex, mBackgroundTex;
+	gl::TextureRef	mForegroundTex, mBackgroundTex;
 	Rectf			mDrawBounds;
 	svg::DocRef		mCityscapeSvg;
 	Font			mHeaderFont, mFont;
 	
 	Anim<float>		mMorningTweetPos, mNightTweetPos;
 	Anim<float>		mMorningTweetAlpha, mNightTweetAlpha;
-	gl::Texture		mMorningTweetTex, mNightTweetTex;
+	gl::TextureRef	mMorningTweetTex, mNightTweetTex;
 	TweenRef<float>	mMorningTween, mNightTween;
 	
 	shared_ptr<TweetStream>		mMorningTweets, mNightTweets;
@@ -63,19 +62,19 @@ void GoodNightMorningApp::setup()
 }
 
 // Renders the tweet into a gl::Texture, using TextBox for type rendering
-gl::Texture GoodNightMorningApp::renderTweet( const Tweet &tweet, float width, const Color &textColor, float backgroundAlpha )
+gl::TextureRef GoodNightMorningApp::renderTweet( const Tweet &tweet, float width, const Color &textColor, float backgroundAlpha )
 {
 	TextBox header = TextBox().font( mHeaderFont ).color( textColor ).text( "@" + tweet.getUser() );
 	Surface headerSurface = header.render();
-	TextBox phrase = TextBox().size( Vec2f( width - 48 - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( tweet.getPhrase() );
+	TextBox phrase = TextBox().size( vec2( width - 48 - 4, TextBox::GROW ) ).font( mFont ).color( textColor ).text( tweet.getPhrase() );
 	Surface textSurface = phrase.render();
 	Surface result( textSurface.getWidth() + 56, std::max( headerSurface.getHeight() + textSurface.getHeight() + 10, 56 ), true );
 	ip::fill( &result, ColorA( 1, 1, 1, backgroundAlpha ) );
 	if( tweet.getIcon() )
-		result.copyFrom( tweet.getIcon(), tweet.getIcon().getBounds(), Vec2i( 4, 4 ) );
-	ip::blend( &result, headerSurface, headerSurface.getBounds(), Vec2i( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
-	ip::blend( &result, textSurface, textSurface.getBounds(), Vec2i( 56, 4 ) );
-	return result;
+		result.copyFrom( tweet.getIcon(), tweet.getIcon().getBounds(), ivec2( 4, 4 ) );
+	ip::blend( &result, headerSurface, headerSurface.getBounds(), ivec2( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
+	ip::blend( &result, textSurface, textSurface.getBounds(), ivec2( 56, 4 ) );
+	return gl::Texture::create( result );
 }
 
 void GoodNightMorningApp::newMorningTweet()
@@ -119,13 +118,13 @@ void GoodNightMorningApp::update()
 }
 
 // Renders a given SVG group 'groupName' into a new gl::Texture
-gl::Texture renderSvgGroupToTexture( const svg::Doc &doc, const std::string &groupName, const Rectf &rect, bool alpha )
+gl::TextureRef renderSvgGroupToTexture( const svg::Doc &doc, const std::string &groupName, const Rectf &rect, bool alpha )
 {
 	cairo::SurfaceImage srfImg( rect.getWidth(), rect.getHeight(), alpha );
 	cairo::Context ctx( srfImg );
 	ctx.scale( rect.getWidth() / doc.getWidth(), rect.getHeight() / doc.getHeight() );
 	ctx.render( doc / groupName );
-	return gl::Texture( srfImg.getSurface() );
+	return gl::Texture::create( srfImg.getSurface() );
 }
 
 void GoodNightMorningApp::resize()
@@ -144,10 +143,10 @@ void GoodNightMorningApp::drawTweets()
 {
 	gl::color( ColorA( 1, 1, 1, mMorningTweetAlpha ) );
 	if( mMorningTweetTex )
-		gl::draw( mMorningTweetTex, Vec2f( 0.1f, mMorningTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
+		gl::draw( mMorningTweetTex, vec2( 0.1f, mMorningTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
 	gl::color( ColorA( 1, 1, 1, mNightTweetAlpha ) );
 	if( mNightTweetTex )
-		gl::draw( mNightTweetTex, Vec2f( 0.6f, mNightTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
+		gl::draw( mNightTweetTex, vec2( 0.6f, mNightTweetPos ) * mDrawBounds.getSize() + mDrawBounds.getUpperLeft() );
 	gl::color( Color::white() ); // restore for future drawing
 }
 
@@ -163,4 +162,4 @@ void GoodNightMorningApp::draw()
 		gl::draw( mForegroundTex, mDrawBounds );
 }
 
-CINDER_APP_BASIC( GoodNightMorningApp, RendererGl(0) )
+CINDER_APP_BASIC( GoodNightMorningApp, RendererGl )

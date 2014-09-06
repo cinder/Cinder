@@ -54,7 +54,7 @@ class Triangulator {
 	void		addPolyLine( const PolyLine2f &polyLine );
 
 	//! Performs the tesselation, returning a TriMesh2d
-	TriMesh2d		calcMesh( Winding winding = WINDING_ODD );
+	TriMesh		calcMesh( Winding winding = WINDING_ODD );
 	
 	class Exception : public cinder::Exception {
 	};

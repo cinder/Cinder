@@ -10,7 +10,7 @@
 #define SOLIDCELL 2
 
 struct Grid{
-	ci::Vec2f gravity;
+	ci::vec2 gravity;
 	float lx, ly;
 	float h, overh;
 
@@ -29,10 +29,10 @@ struct Grid{
 	Grid(void)
 	{}
 
-	Grid( ci::Vec2f gravity_, int cell_nx, int cell_ny, float lx_)
+	Grid( ci::vec2 gravity_, int cell_nx, int cell_ny, float lx_)
 	{ init( gravity_, cell_nx, cell_ny, lx_); }
 
-	void init( ci::Vec2f gravity_, int cell_nx, int cell_ny, float lx_);
+	void init( ci::vec2 gravity_, int cell_nx, int cell_ny, float lx_);
 	float CFL(void);
 	void save_velocities(void);
 	void add_gravity(float dt);
@@ -42,7 +42,7 @@ struct Grid{
 	void make_incompressible(void);
 	void get_velocity_update(void);
 
-	void set_gravity( const ci::Vec2f &gravity_ ) { gravity = gravity_; }
+	void set_gravity( const ci::vec2 &gravity_ ) { gravity = gravity_; }
 
 	void bary_x(float x, int &i, float &fx)
 	{

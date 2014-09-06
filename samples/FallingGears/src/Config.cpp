@@ -2,7 +2,7 @@
 #include "Config.h"
 
 #include "cinder/app/App.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 #include "cinder/ImageIo.h"
 #include "cinder/System.h"
 
@@ -13,9 +13,9 @@ using namespace ci;
 
 namespace {
 
-inline Vec2f parseVec2f( const JsonTree &json )
+inline vec2 parsevec2( const JsonTree &json )
 {
-	return Vec2f( json.getValueAtIndex<float>( 0 ), json.getValueAtIndex<float>( 1 ) );
+	return vec2( json.getValueAtIndex<float>( 0 ), json.getValueAtIndex<float>( 1 ) );
 }
 
 }

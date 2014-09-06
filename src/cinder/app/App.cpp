@@ -22,6 +22,11 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if ! defined ( CINDER_WINRT )
+	#define BOOST_REGEX_NO_LIB
+	#include <boost/asio.hpp>
+#endif
+
 #include "cinder/app/App.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
@@ -42,11 +47,6 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
 	#include "cinder/app/AppImplMsw.h"
-#endif
-
-#if !defined ( CINDER_WINRT )
-#define BOOST_REGEX_NO_LIB
-#include <boost/asio.hpp>
 #endif
 
 using namespace std;
@@ -561,17 +561,17 @@ void App::cleanupLaunch()
 #endif
 }
 
-Vec2i App::getMousePos()
+ivec2 App::getMousePos()
 {
 #if defined( CINDER_MAC )
 	NSPoint loc = [NSEvent mouseLocation];
-	return Vec2i( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
+	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
 #elif defined( CINDER_MSW )
 	POINT point;
 	::GetCursorPos( &point );
-	return Vec2i( point.x, point.y );
+	return ivec2( point.x, point.y );
 #else
-	return Vec2i( -1, -1 );
+	return ivec2( -1, -1 );
 #endif
 }
 

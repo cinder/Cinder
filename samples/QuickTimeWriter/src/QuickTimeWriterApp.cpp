@@ -17,7 +17,7 @@ class QuickTimeWriterApp : public AppBasic {
 	void draw();
 	
 	// This will maintain a list of points which we will draw line segments between
-	list<Vec2f>				mPoints;
+	list<vec2>				mPoints;
 	qtime::MovieWriterRef	mMovieWriter;
 };
 
@@ -52,7 +52,7 @@ void QuickTimeWriterApp::draw()
 	// now tell OpenGL we've got a series of points it should draw lines between
 	gl::begin( GL_LINE_STRIP );
 	// iterate across our list of points, and pass each one to OpenGL
-	for( list<Vec2f>::iterator pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
+	for( list<vec2>::iterator pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
 		gl::vertex( pointIter->x, pointIter->y );
 	}
 	// tell OpenGL to actually draw the lines now

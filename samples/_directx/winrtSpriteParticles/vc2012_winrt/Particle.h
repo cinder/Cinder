@@ -10,13 +10,13 @@ public:
 
 	void Update(float width, float height);
 
-	void Reset(cinder::Vec2f _position, cinder::Vec2f _velocity);
+	void Reset(cinder::vec2 _position, cinder::vec2 _velocity);
 
 	int						textureID;
 
-	cinder::Vec2f 			position;
+	cinder::vec2 			position;
 
-	cinder::Vec2f 			velocity;
+	cinder::vec2 			velocity;
 
 };
 

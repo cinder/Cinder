@@ -29,36 +29,36 @@ namespace cinder {
 class Ray {
  public:
 	Ray() {}
-	Ray( const Vec3f &aOrigin, const Vec3f &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }
+	Ray( const vec3 &aOrigin, const vec3 &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }
 
-	void			setOrigin( const Vec3f &aOrigin ) { mOrigin = aOrigin; }
-	const Vec3f&	getOrigin() const { return mOrigin; }
+	void			setOrigin( const vec3 &aOrigin ) { mOrigin = aOrigin; }
+	const vec3&	getOrigin() const { return mOrigin; }
 	
-	void setDirection( const Vec3f &aDirection ) {
+	void setDirection( const vec3 &aDirection ) {
 		mDirection = aDirection;
-        mInvDirection = Vec3f( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
+        mInvDirection = vec3( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
         mSignX = ( mDirection.x < 0.0f ) ? 1 : 0;
         mSignY = ( mDirection.y < 0.0f ) ? 1 : 0;
         mSignZ = ( mDirection.z < 0.0f ) ? 1 : 0;		
 	}
-	const Vec3f&	getDirection() const { return mDirection; }
-	const Vec3f&	getInverseDirection() const { return mInvDirection; }
+	const vec3&	getDirection() const { return mDirection; }
+	const vec3&	getInverseDirection() const { return mInvDirection; }
 	
 	char	getSignX() const { return mSignX; }
 	char	getSignY() const { return mSignY; }
 	char	getSignZ() const { return mSignZ; }		
 	
-	Vec3f calcPosition( float t ) const { return mOrigin + mDirection * t; }
+	vec3 calcPosition( float t ) const { return mOrigin + mDirection * t; }
 
-	bool calcTriangleIntersection( const Vec3f &vert0, const Vec3f &vert1, const Vec3f &vert2, float *result ) const;
-	bool calcPlaneIntersection( const Vec3f &origin, const Vec3f &normal, float *result ) const;
+	bool calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result ) const;
+	bool calcPlaneIntersection( const vec3 &origin, const vec3 &normal, float *result ) const;
 
  protected:
-	Vec3f	mOrigin;
-	Vec3f	mDirection;
+	vec3	mOrigin;
+	vec3	mDirection;
 	// these are helpful to certain ray intersection algorithms
 	char	mSignX, mSignY, mSignZ;
-	Vec3f	mInvDirection;
+	vec3	mInvDirection;
 };
 
 } // namespace cinder

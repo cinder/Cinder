@@ -35,22 +35,22 @@ namespace cinder {
 class Path2d {
  public:
 	Path2d() {}
-	explicit Path2d( const BSpline<Vec2f> &spline, float subdivisionStep = 0.01f );
+	explicit Path2d( const BSpline2f &spline, float subdivisionStep = 0.01f );
 
 	//! Sets the start point of the path to \a p. This is the only legal first command, and only legal as the first command.
-	void	moveTo( const Vec2f &p );
+	void	moveTo( const vec2 &p );
 	//! Sets the start point of the path to (\a x, \a y ). This is the only legal first command, and only legal as the first command.
-	void	moveTo( float x, float y ) { moveTo( Vec2f( x, y ) ); }
-	void	lineTo( const Vec2f &p );
-	void	lineTo( float x, float y ) { lineTo( Vec2f( x, y ) ); }
-	void	quadTo( const Vec2f &p1, const Vec2f &p2 );
-	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ) ); }
-	void	curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 );
-	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ), Vec2f( x3, y3 ) ); }
-	void	arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward = true );
-	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( Vec2f( centerX, centerY ), radius, startRadians, endRadians, forward ); }
-	void	arcTo( const Vec2f &p, const Vec2f &t, float radius );
-	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( Vec2f( x, y ), Vec2f( tanX, tanY ), radius ); }
+	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }
+	void	lineTo( const vec2 &p );
+	void	lineTo( float x, float y ) { lineTo( vec2( x, y ) ); }
+	void	quadTo( const vec2 &p1, const vec2 &p2 );
+	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
+	void	curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 );
+	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( vec2( x1, y1 ), vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward = true );
+	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( vec2( centerX, centerY ), radius, startRadians, endRadians, forward ); }
+	void	arcTo( const vec2 &p, const vec2 &t, float radius );
+	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
 	
 	//! Closes the path, by drawing a straight line from the first to the last point. This is only legal as the last command.
 	void	close() { mSegments.push_back( CLOSE ); }
@@ -65,33 +65,33 @@ class Path2d {
 	size_t	getNumPoints() const { return mPoints.size(); }
 
 	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
-	Vec2f	getPosition( float t ) const;
+	vec2	getPosition( float t ) const;
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
-	Vec2f	getSegmentPosition( size_t segment, float t ) const;
+	vec2	getSegmentPosition( size_t segment, float t ) const;
 	//! Returns the tangent on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
-	Vec2f	getTangent( float t ) const;
+	vec2	getTangent( float t ) const;
 	//! Returns the point in segment # \a segment in the range <tt>[0,getNumSegments())</tt> at parameter \a t in the range <tt>[0,1]</tt>
-	Vec2f	getSegmentTangent( size_t segment, float t ) const;
+	vec2	getSegmentTangent( size_t segment, float t ) const;
 
 	//! Stores into \a segment the segment # associated with \a t, and if \a relativeT is not NULL, the t relative to its segment, in the range <tt>[0,1]</tt>
 	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
 	
-	std::vector<Vec2f>	subdivide( float approximationScale = 1.0f ) const;
+	std::vector<vec2>	subdivide( float approximationScale = 1.0f ) const;
 	
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
-	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 	//! Transforms the Path2d by \a matrix.
 	void		transform( const MatrixAffine2f &matrix );
 	//! Returns a copy transformed by \a matrix.
 	Path2d		transformCopy( const MatrixAffine2f &matrix ) const;
 
 
-	const std::vector<Vec2f>&	getPoints() const { return mPoints; }
-	std::vector<Vec2f>&			getPoints() { return mPoints; }
-	const Vec2f&				getPoint( size_t point ) const { return mPoints[point]; }
-	Vec2f&						getPoint( size_t point ) { return mPoints[point]; }
-	const Vec2f&				getCurrentPoint() const { return mPoints.back(); }
-	void						setPoint( size_t index, const Vec2f &p ) { mPoints[index] = p; }
+	const std::vector<vec2>&	getPoints() const { return mPoints; }
+	std::vector<vec2>&			getPoints() { return mPoints; }
+	const vec2&				getPoint( size_t point ) const { return mPoints[point]; }
+	vec2&						getPoint( size_t point ) { return mPoints[point]; }
+	const vec2&				getCurrentPoint() const { return mPoints.back(); }
+	void						setPoint( size_t index, const vec2 &p ) { mPoints[index] = p; }
 
 	enum SegmentType { MOVETO, LINETO, QUADTO, CUBICTO, CLOSE };
 	static const int sSegmentTypePointCounts[];
@@ -108,7 +108,7 @@ class Path2d {
 	Rectf	calcPreciseBoundingBox() const;	
 
 	//! Returns whether the point \a pt is contained within the boundaries of the path
-	bool	contains( const Vec2f &pt ) const;
+	bool	contains( const vec2 &pt ) const;
 
 	//! Calculates the length of the Path2d
 	float	calcLength() const;
@@ -121,12 +121,12 @@ class Path2d {
 	float	calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 
 
-	static int		calcQuadraticBezierMonotoneRegions( const Vec2f p[3], float resultT[2] );
-	static Vec2f	calcQuadraticBezierPos( const Vec2f p[3], float t );
-	static Vec2f	calcQuadraticBezierDerivative( const Vec2f p[3], float t );
-	static int		calcCubicBezierMonotoneRegions( const Vec2f p[4], float resultT[4] );
-	static Vec2f	calcCubicBezierPos( const Vec2f p[4], float t );
-	static Vec2f	calcCubicBezierDerivative( const Vec2f p[4], float t );
+	static int		calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2] );
+	static vec2	calcQuadraticBezierPos( const vec2 p[3], float t );
+	static vec2	calcQuadraticBezierDerivative( const vec2 p[3], float t );
+	static int		calcCubicBezierMonotoneRegions( const vec2 p[4], float resultT[4] );
+	static vec2	calcCubicBezierPos( const vec2 p[4], float t );
+	static vec2	calcCubicBezierDerivative( const vec2 p[4], float t );
 
 	//! Solves the time corresponding to \a segmentRelativeDistance (a measure of arc length). Generally you should use calcNormalizedTime() or calcTimeForDistance() instead.
 	float	segmentSolveTimeForDistance( size_t segment, float segmentLength, float segmentRelativeDistance, float tolerance, int maxIterations ) const;
@@ -136,12 +136,12 @@ class Path2d {
 	
 	friend std::ostream& operator<<( std::ostream &out, const Path2d &p );
   private:
-	void	arcHelper( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward );
-	void	arcSegmentAsCubicBezier( const Vec2f &center, float radius, float startRadians, float endRadians );
-	void	subdivideQuadratic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, int level, std::vector<Vec2f> *result ) const;
-	void	subdivideCubic( float distanceToleranceSqr, const Vec2f &p1, const Vec2f &p2, const Vec2f &p3, const Vec2f &p4, int level, std::vector<Vec2f> *result ) const;
+	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
+	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
+	void	subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, int level, std::vector<vec2> *result ) const;
+	void	subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, const vec2 &p4, int level, std::vector<vec2> *result ) const;
 
-	std::vector<Vec2f>			mPoints;
+	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };
 
@@ -188,7 +188,7 @@ class Path2dCalcCache {
 	//! Calculates a t-value corresponding to arc length \a distance. If \a wrap then the t-value loops inside the 0-1 range as \a distance exceeds the arc length.
 	float			calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 	//! Returns the point on the curve at parameter \a t, which lies in the range <tt>[0,1]</tt>
-	Vec2f			getPosition( float t ) const { return mPath.getPosition( t ); }
+	vec2			getPosition( float t ) const { return mPath.getPosition( t ); }
 
   private:
 	Path2d				mPath;

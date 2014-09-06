@@ -8,7 +8,7 @@
 
 class Particle {
  public:
-	Particle( ci::Vec3f aLoc, ci::Vec3f aVel );
+	Particle( ci::vec3 aLoc, ci::vec3 aVel );
 	void move();
 	void update();
 	void render( float heat );
@@ -18,9 +18,9 @@ class Particle {
 	
 	int			mLen;
 	float		mInvLen;
-	std::vector<ci::Vec3f> mLoc;
-	ci::Vec3f	mVel;
-	ci::Vec3f	mAcc;
+	std::vector<ci::vec3> mLoc;
+	ci::vec3	mVel;
+	ci::vec3	mAcc;
 
 	float		mRadius;
 	float		mMass;

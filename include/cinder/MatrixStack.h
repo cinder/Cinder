@@ -11,12 +11,12 @@ class MatrixStack
    public:
 	MatrixStack();
 	void push();
-	void push(const Matrix44f &matrix);
+	void push(const mat4 &matrix);
 	void pop();
-	Matrix44f &top();
+	mat4 &top();
 
   //private:
-	std::vector<Matrix44f> mStack;
+	std::vector<mat4> mStack;
 };
 
 }

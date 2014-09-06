@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
@@ -19,13 +20,13 @@ class RetinaSampleApp : public AppNative {
 	// This will maintain a list of points which we will draw line segments between
 	PolyLine2f		mPoints;
 	
-	gl::Texture			mLogo;
+	gl::Texture2dRef	mLogo;
 	gl::TextureFontRef	mFont;
 };
 
 void RetinaSampleApp::prepareSettings( Settings *settings )
 {
-	settings->enableHighDensityDisplay();
+	settings->enableHighDensityDisplay(); // try removing this line
 	settings->enableMultiTouch( false );
 	
 	// on iOS we want to make a Window per monitor
@@ -39,7 +40,7 @@ void RetinaSampleApp::setup()
 {
 	// this should have mipmapping enabled in a real app but leaving it disabled
 	// since helps us see the change in going from Retina to non-Retina
-	mLogo = loadImage( loadResource( "CinderAppIcon.png" ) );
+	mLogo = gl::Texture2d::create( loadImage( loadResource( "CinderAppIcon.png" ) ) );
 
 	// A font suitable for 24points at both Retina and non-Retina
 	mFont = gl::TextureFont::create( Font( "Helvetica", 24 * 2 ), gl::TextureFont::Format().enableMipmapping() );
@@ -63,20 +64,20 @@ void RetinaSampleApp::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 	gl::enableAlphaBlending();
-	
-	gl::pushMatrices();
+
+	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.5f, 0.25f );
 		gl::lineWidth( toPixels( 1.0f ) );
 		gl::draw( mPoints );
-	gl::popMatrices();
+	gl::popModelMatrix();
 	
 	// rotate a 200x200pt square at the center of the window
-	gl::pushMatrices();
+	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
 		gl::rotate( getElapsedSeconds() * 5 );
 		gl::drawSolidRect( Rectf( Area( -100, -100, 100, 100 ) ) );
-	gl::popMatrices();
+	gl::popModelMatrix();
 
 	// draw the logo in the lower-left corner at 64x64 points
 	gl::color( Color::white() );
@@ -86,8 +87,8 @@ void RetinaSampleApp::draw()
 	// another strategy would be to use two different TextureFonts
 	std::string s = ( getWindowContentScale() > 1 ) ? "Retina" : "Non-Retina";
 	float stringWidth = mFont->measureString( s ).x * 0.5f;
-	mFont->drawString( s, Vec2f( getWindowWidth() - stringWidth - 12, getWindowHeight() - 12 ),
+	mFont->drawString( s, vec2( getWindowWidth() - stringWidth - 12, getWindowHeight() - 12 ),
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP_NATIVE( RetinaSampleApp, RendererGl(0) )
+CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )

@@ -45,10 +45,10 @@ class Light {
 	void setDiffuse( const Color &aDiffuse );
 	void setSpecular( const Color &aSpecular );
 
-	void	lookAt( const Vec3f &eye, const Vec3f &target );
-	void	setDirection( const Vec3f &aDirection );
-	Vec3f	getPosition() const { return mPosition; }
-	void	setPosition( const Vec3f &aPosition );	
+	void	lookAt( const vec3 &eye, const vec3 &target );
+	void	setDirection( const vec3 &aDirection );
+	vec3	getPosition() const { return mPosition; }
+	void	setPosition( const vec3 &aPosition );	
 	
 	void setAttenuation( float aConstantAttenuation, float aLinearAttenuation = 1.0f, float aQuadraticAttenuation = 1.0f );
 	void setConstantAttenuation( float aConstantAttenuation );
@@ -64,8 +64,8 @@ class Light {
 	const Color &getAmbient() const { return mAmbient; }
 	const Color &getDiffuse() const { return mDiffuse; }
 	const Color &getSpecular() const { return mSpecular; }
-	const Vec3f &getRelativePosition() const { return mRelativePos; }
-	const Vec3f &getRelativeDirection() const { return mRelativeDir; }
+	const vec3 &getRelativePosition() const { return mRelativePos; }
+	const vec3 &getRelativeDirection() const { return mRelativeDir; }
 	float getSpotExponent() const { return mSpotExponent; }
 	float getSpotCutoff() const { return mSpotCutoff; }
 	float getConstantAtt() const { return mConstantAttenuation; }
@@ -78,7 +78,7 @@ class Light {
 
 	void setShadowParams( float aShadowFOV, float aShadowNear, float aShadowFar );
 	void setShadowRenderMatrices() const;
-	Matrix44f getShadowTransformationMatrix( const Camera &camera ) const;
+	mat4 getShadowTransformationMatrix( const Camera &camera ) const;
 	const CameraPersp&	getShadowCamera() const { return mShadowCam; }
 	
 	enum Type { POINT, DIRECTIONAL, SPOTLIGHT };
@@ -90,8 +90,8 @@ class Light {
 	int		mID;
 	bool	mEnabled;
 	Color	mAmbient, mDiffuse, mSpecular;
-	Vec3f	mPosition, mDirection;
-	Vec3f	mRelativePos, mRelativeDir;
+	vec3	mPosition, mDirection;
+	vec3	mRelativePos, mRelativeDir;
 	float	mSpotExponent, mSpotCutoff;
 	float	mConstantAttenuation, mLinearAttenuation, mQuadraticAttenuation;
 	

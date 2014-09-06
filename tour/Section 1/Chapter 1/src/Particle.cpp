@@ -9,7 +9,7 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc )
+Particle::Particle( vec2 loc )
 {
 	mLoc	= loc;
 	mDir	= Rand::randVec2f();

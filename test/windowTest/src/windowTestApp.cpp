@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
 
@@ -11,7 +12,7 @@ using namespace std;
 class WindowData {
   public:
   	~WindowData() { std::cout << "Destroying Window Data" << std::endl; };
-	vector<Vec2f> 	mPoints;
+	vector<vec2> 	mPoints;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
@@ -46,9 +47,9 @@ void displayChange();
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
-	Vec2f v = event.getPos();
+	vec2 v = event.getPos();
 	WindowRef w = event.getWindow();
-	vector<Vec2f> &points = w->getUserData<WindowData>()->mPoints;
+	vector<vec2> &points = w->getUserData<WindowData>()->mPoints;
 	points.push_back( v );
 }
 
@@ -212,7 +213,7 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->spanAllDisplays();
 		console() << "Spanning Area: " << Display::getSpanningArea() << std::endl;
 		console() << "Bounds: " << getWindow()->getBounds() << std::endl;
-		//getWindow()->setPos( Vec2i( -1680 + 1, 0 + 1 ) );
+		//getWindow()->setPos( ivec2( -1680 + 1, 0 + 1 ) );
 //		getWindow()->setSize( 1440, 900 );
 //		getWindow()->setPos( 0, 0 );
 	}
@@ -238,22 +239,22 @@ void BasicApp::windowDraw()
 		gl::clear( Color( 0.3f, 0.1f, 0.1f ) );
 
 	// We'll set the color to an orange color
-	glColor3f( 1.0f, 0.5f, 0.25f );
+	gl::color( 1.0f, 0.5f, 0.25f );
 
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	
-	glBegin( GL_LINE_STRIP );
-	const vector<Vec2f> &points = getWindow()->getUserData<WindowData>()->mPoints;
+	gl::begin( GL_LINE_STRIP );
+	const vector<vec2> &points = getWindow()->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
-		gl::vertex( *pointIter /*+ Vec2f( 0, getElapsedSeconds() )*/ );
+		gl::vertex( *pointIter /*+ vec2( 0, getElapsedSeconds() )*/ );
 	}
-	glEnd();
+	gl::end();
 	
 	//if( window == mSecondWindow )
-		gl::drawLine( Vec2f( 50, 50 ), Vec2f( 250, 250 ) );
+		gl::drawLine( vec2( 50, 50 ), vec2( 250, 250 ) );
 	gl::pushMatrices();
-		glColor3f( 1.0f, 0.2f, 0.15f );
+		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
 		gl::rotate( getElapsedSeconds() * 5 );
 		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
@@ -261,4 +262,4 @@ void BasicApp::windowDraw()
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererGl(RendererGl::AA_MSAA_16) )
+CINDER_APP_BASIC( BasicApp, RendererGl )

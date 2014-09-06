@@ -28,9 +28,11 @@
 	#endif
 #endif
 
+#define GLM_FORCE_RADIANS
+#include "glm/fwd.hpp"
+
 #include <cstdint>
 #include <boost/version.hpp>
-
 #if BOOST_VERSION < 105500
 	#error "Cinder requires Boost version 1.55 or later"
 #endif
@@ -38,8 +40,8 @@
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
-#define CINDER_VERSION		806
-#define CINDER_VERSION_STR	"0.8.6"
+#define CINDER_VERSION		900
+#define CINDER_VERSION_STR	"9.0.0.dev"
 
 namespace cinder {
 using std::int8_t;
@@ -70,7 +72,8 @@ using std::uint64_t;
 	#define CINDER_LINUX
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 	#define CINDER_COCOA
-	#include "TargetConditionals.h"
+	#include <TargetConditionals.h>
+	#include <AvailabilityMacros.h>
 	#if TARGET_OS_IPHONE
 		#define CINDER_COCOA_TOUCH
 		#if TARGET_IPHONE_SIMULATOR
@@ -101,24 +104,13 @@ using std::uint64_t;
 	#endif
 #elif defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
 	#include <memory>
-	#include <vector>
-	#include <functional>
-	#if _MSC_VER >= 1700
-		#include <chrono>
-	#else
-		#include <boost/chrono.hpp>
-	#endif
 #elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
-	#include <chrono>
 	#include <memory>
 #elif defined( CINDER_COCOA ) // libstdc++
 	#error "Cinder requires libc++ on Mac OS X and iOS"
 #else
 	#error "Unkown platform configuration"
 #endif
-
-#include <boost/checked_delete.hpp> // necessary for checked_array_deleter
-using boost::checked_array_deleter;
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

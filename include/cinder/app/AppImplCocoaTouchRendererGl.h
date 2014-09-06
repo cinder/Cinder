@@ -23,7 +23,7 @@
 #import <UIKit/UIKit.h>
 
 #import "cinder/app/App.h"
-#import "cinder/app/Renderer.h"
+#import "cinder/app/RendererGl.h"
 
 @interface AppImplCocoaTouchRendererGl : NSObject
 {
@@ -31,6 +31,7 @@
 	cinder::app::App				*mApp;
 	UIView							*mCinderView;
 	EAGLContext						*mContext;
+	cinder::gl::ContextRef			mCinderContext;
 
 	// The pixel dimensions of the CAEAGLLayer
 	GLint 			mBackingWidth, mBackingHeight;
@@ -42,6 +43,8 @@
 	GLuint 			mViewFramebuffer, mViewRenderBuffer, mDepthRenderBuffer;
 	GLuint			mMsaaFramebuffer, mMsaaRenderBuffer;
 	BOOL			mUsingMsaa;
+    BOOL            mUsingStencil;
+	BOOL			mObjectTracking;
 	int				mMsaaSamples;
 }
 

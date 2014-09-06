@@ -381,7 +381,7 @@ Font::Glyph Font::getGlyphIndex( size_t idx ) const
 vector<Font::Glyph> Font::getGlyphs( const string &utf8String ) const
 {
 	std::u16string wideString = toUtf16( utf8String );
-	std::shared_ptr<WORD> buffer( new WORD[wideString.length()], checked_array_deleter<WORD>() );
+	std::unique_ptr<WORD[]> buffer( new WORD[wideString.length()] );
 	::SelectObject( FontManager::instance()->getFontDc(), mObj->mHfont );
 	DWORD numGlyphs = ::GetGlyphIndices( FontManager::instance()->getFontDc(), (wchar_t*)&wideString[0], (int)wideString.length(), buffer.get(), GGI_MARK_NONEXISTING_GLYPHS );
 	if( numGlyphs == GDI_ERROR )
@@ -405,7 +405,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
     if( bytesGlyph == GDI_ERROR )
 		throw FontGlyphFailureExc();
 
-	std::shared_ptr<uint8_t> buffer( new uint8_t[bytesGlyph], checked_array_deleter<uint8_t>() );
+	std::unique_ptr<uint8_t[]> buffer( new uint8_t[bytesGlyph] );
 	uint8_t *ptr = buffer.get();
     if( ! buffer ) {
 		throw FontGlyphFailureExc();
@@ -424,26 +424,26 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 
 		ptr += sizeof( TTPOLYGONHEADER );
 
-		resultShape.moveTo( msw::toVec2f( header->pfxStart ) ); 
+		resultShape.moveTo( msw::toVec2( header->pfxStart ) ); 
 		while( ptr < endPoly ) {
 			TTPOLYCURVE *curve = reinterpret_cast<TTPOLYCURVE*>( ptr );
 			POINTFX *points = curve->apfx;
 			switch( curve->wType ) {
 				case TT_PRIM_LINE:
 					for( int i = 0; i < curve->cpfx; i++ ) {
-						resultShape.lineTo( msw::toVec2f( points[i] ) );
+						resultShape.lineTo( msw::toVec2( points[i] ) );
 					}
 				break;
 				case TT_PRIM_QSPLINE:
 					for( int i = 0; i < curve->cpfx - 1; i++ ) {
-						Vec2f p1 = resultShape.getCurrentPoint(), p2;
-						Vec2f c = msw::toVec2f( points[i] ), c1, c2;
+						vec2 p1 = resultShape.getCurrentPoint(), p2;
+						vec2 c = msw::toVec2( points[i] ), c1, c2;
 						if( i + 1 == curve->cpfx - 1 ) {
-							p2 = msw::toVec2f( points[i + 1] );
+							p2 = msw::toVec2( points[i + 1] );
 						}
 						else {
 							// records with more than one curve use interpolation for control points, per http://support.microsoft.com/kb/q87115/
-							p2 = ( c + msw::toVec2f( points[i + 1] ) ) / 2.0f;
+							p2 = ( c + msw::toVec2( points[i + 1] ) ) / 2.0f;
 						}
 	
 						c1 = 2.0f * c / 3.0f + p1 / 3.0f;
@@ -453,8 +453,8 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 				break;
 				case TT_PRIM_CSPLINE:
 					for( int i = 0; i < curve->cpfx - 2; i += 2 ) {
-						resultShape.curveTo( msw::toVec2f( points[i] ), msw::toVec2f( points[i + 1] ),
-								msw::toVec2f( points[i + 2] ) );
+						resultShape.curveTo( msw::toVec2( points[i] ), msw::toVec2( points[i + 1] ),
+								msw::toVec2( points[i + 2] ) );
 					}
 				break;
 			}
@@ -587,7 +587,7 @@ Shape2d Font::getGlyphShape( Glyph glyphIndex ) const
 	Shape2d resultShape;
 	FT_Outline_Decompose(&outline, &funcs, &resultShape);
 	resultShape.close();
-	resultShape.scale(Vec2f(1, -1));
+	resultShape.scale(vec2(1, -1));
 	return resultShape;
 }
 

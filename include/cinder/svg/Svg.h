@@ -103,7 +103,7 @@ class Renderer {
 	virtual void	popLineCap() {}	
 	virtual void	pushLineJoin( LineJoin lineJoin ) {}
 	virtual void	popLineJoin() {}
-	virtual void	pushTextPen( const Vec2f &penPos ) {}
+	virtual void	pushTextPen( const vec2 &penPos ) {}
 	virtual void	popTextPen() {}
 	virtual void	pushTextRotation( float rotation ) {}
 	virtual void	popTextRotation() {}
@@ -162,8 +162,8 @@ class Paint {
 	size_t			getNumColors() const { return mStops.size(); }
 	
 	// only apply to gradients
-	Vec2f			getCoords0() const { return mCoords0; } // (x1,y1) on linear, (cx,cy) on radial
-	Vec2f			getCoords1() const { return mCoords1; } // (x2,y2) on linear, (fx,fy) on radial
+	vec2			getCoords0() const { return mCoords0; } // (x1,y1) on linear, (cx,cy) on radial
+	vec2			getCoords1() const { return mCoords1; } // (x2,y2) on linear, (fx,fy) on radial
 	float			getRadius() const { return mRadius; } // radial-only
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
@@ -172,7 +172,7 @@ class Paint {
 	uint8_t									mType;
 	std::vector<std::pair<float,ColorA8u> >	mStops;
 	
-	Vec2f				mCoords0, mCoords1;
+	vec2				mCoords0, mCoords1;
 	float				mRadius;
 	bool				mUseObjectBoundingBox;
 	MatrixAffine2f		mTransform;
@@ -331,7 +331,7 @@ class Node {
 	Style				calcInheritedStyle() const;
 
 	//! Returns whether the point \a pt is inside of the Node's shape.
-	virtual bool	containsPoint( const Vec2f &pt ) const { return false; }
+	virtual bool	containsPoint( const vec2 &pt ) const { return false; }
 	
 	//! Renders the node and its descendants.
 	void			render( Renderer &renderer ) const;
@@ -454,7 +454,7 @@ class Gradient : public Node {
 	Paint		asPaint() const;
 
   	std::vector<Stop>	mStops;
-	Vec2f				mCoords0, mCoords1;
+	vec2				mCoords0, mCoords1;
 	bool				mUseObjectBoundingBox;
 	bool				mSpecifiesTransform;
 	MatrixAffine2f		mTransform;
@@ -493,10 +493,10 @@ class Circle : public Node {
 	Circle( const Node *parent ) : Node( parent ) {}
 	Circle( const Node *parent, const XmlTree &xml );
 	
-	Vec2f		getCenter() const { return mCenter; }
+	vec2		getCenter() const { return mCenter; }
 	float		getRadius() const { return mRadius; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return pt.distanceSquared( mCenter ) < mRadius * mRadius; }
+	virtual bool	containsPoint( const vec2 &pt ) const { return distance2( pt, mCenter ) < mRadius * mRadius; }
 
 	virtual Shape2d	getShape() const;
 
@@ -504,7 +504,7 @@ class Circle : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadius, mCenter.y - mRadius, mCenter.x + mRadius, mCenter.y + mRadius ); }
 
-	Vec2f		mCenter;
+	vec2		mCenter;
 	float		mRadius;	
 };
 
@@ -514,11 +514,11 @@ class Ellipse : public Node {
 	Ellipse( const Node *parent ) : Node( parent ) {}
 	Ellipse( const Node *parent, const XmlTree &xml );
 	
-	Vec2f		getCenter() const { return mCenter; }
+	vec2		getCenter() const { return mCenter; }
 	float		getRadiusX() const { return mRadiusX; }
 	float		getRadiusY() const { return mRadiusY; }
 
-	bool 			containsPoint( const Vec2f &pt ) const;
+	bool 			containsPoint( const vec2 &pt ) const;
 
 	virtual Shape2d	getShape() const;
 
@@ -526,7 +526,7 @@ class Ellipse : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadiusX, mCenter.y - mRadiusY, mCenter.x + mRadiusX, mCenter.y + mRadiusY ); }
   
-	Vec2f		mCenter;
+	vec2		mCenter;
 	float		mRadiusX, mRadiusY;
 };
 
@@ -539,7 +539,7 @@ class Path : public Node {
 	const Shape2d&		getShape2d() const { return mPath; }
 	void				appendShape2d( Shape2d *appendTo ) const;
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPath.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPath.contains( pt ); }
 
 	virtual Shape2d	getShape() const { return mPath; }
 
@@ -556,8 +556,8 @@ class Line : public Node {
 	Line( const Node *parent ) : Node( parent ) {}
 	Line( const Node *parent, const XmlTree &xml );
 	
-	const Vec2f&	getPoint1() const { return mPoint1; }
-	const Vec2f&	getPoint2() const { return mPoint2; }
+	const vec2&	getPoint1() const { return mPoint1; }
+	const vec2&	getPoint2() const { return mPoint2; }
 
 	virtual Shape2d	getShape() const;
 	
@@ -565,7 +565,7 @@ class Line : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;  
 	virtual Rectf	calcBoundingBox() const { return Rectf( mPoint1, mPoint2 ); }	
 	
-	Vec2f		mPoint1, mPoint2;
+	vec2		mPoint1, mPoint2;
 };
 
 //! SVG Rect element: http://www.w3.org/TR/SVG/shapes.html#RectElement
@@ -576,7 +576,7 @@ class Rect : public Node {
 	
 	const Rectf&	getRect() const { return mRect; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mRect.contains( pt ); }	
+	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }	
 
 	virtual Shape2d	getShape() const;
 
@@ -596,7 +596,7 @@ class Polygon : public Node {
 	const PolyLine2f&	getPolyLine() const { return mPolyLine; }
 	PolyLine2f&			getPolyLine() { return mPolyLine; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPolyLine.contains( pt ); }		
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }		
 
 	virtual Shape2d	getShape() const;
 		
@@ -616,7 +616,7 @@ class Polyline : public Node {
 	const PolyLine2f&	getPolyLine() const { return mPolyLine; }
 	PolyLine2f&			getPolyLine() { return mPolyLine; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPolyLine.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }
 
 	virtual Shape2d	getShape() const;
 
@@ -653,7 +653,7 @@ class Image : public Node {
 	const Rectf&						getRect() const { return mRect; }
 	const std::shared_ptr<Surface8u>	getSurface() const { return mImage; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mRect.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }
 
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -692,8 +692,8 @@ class TextSpan : public Node {
 	const std::string&							getString() const { return mString; }
 	const std::shared_ptr<Font>					getFont() const;
 	//! Returns a vector of glyph IDs and positions for the string, ignoring rotation. Cached and lazily calculated.
-	std::vector<std::pair<uint16_t,Vec2f> > 	getGlyphMeasures() const;
-	Vec2f										getTextPen() const;
+	std::vector<std::pair<uint16_t,vec2> > 	getGlyphMeasures() const;
+	vec2										getTextPen() const;
 	float						getRotation() const;
 	
   protected:
@@ -703,7 +703,7 @@ class TextSpan : public Node {
 	Attributes						mAttributes;
 	std::string						mString;
 	mutable std::shared_ptr<Font>	mFont;
-	mutable std::shared_ptr<std::vector<std::pair<uint16_t,Vec2f> > > mGlyphMeasures;
+	mutable std::shared_ptr<std::vector<std::pair<uint16_t,vec2> > > mGlyphMeasures;
 	mutable std::shared_ptr<Shape2d>	mShape;
 	
 	std::vector<TextSpanRef>		mSpans;
@@ -716,7 +716,7 @@ class Text : public Node {
   public:
   	Text( const Node *parent, const XmlTree &xml );
 
-	Vec2f 	getTextPen() const;
+	vec2 	getTextPen() const;
 	float	getRotation() const;
 	
   protected:
@@ -762,7 +762,7 @@ class Group : public Node, private boost::noncopyable {
 	std::list<Node*>&		getChildren() { return mChildren; }
 
   protected:
-	Node*		nodeUnderPoint( const Vec2f &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const;
+	Node*		nodeUnderPoint( const vec2 &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const;
 	Shape2d		getMergedShape2d() const;
 
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -793,7 +793,7 @@ class Doc : public Group {
 	//! Returns the height of the document in pixels
 	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the document in pixels
-	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! Returns the aspect ratio of the Doc (width / height)
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounds of the Doc (0,0,width,height)
@@ -803,7 +803,7 @@ class Doc : public Group {
 	float		getDpi() const { return 72.0f; }
 	
 	//! Returns the top-most Node which contains \a pt. Returns NULL if no Node contains the point.
-	Node*		nodeUnderPoint( const Vec2f &pt );
+	Node*		nodeUnderPoint( const vec2 &pt );
 	
 	//! Utility function to load an image relative to the document. Caches results.
 	std::shared_ptr<Surface8u>	loadImage( fs::path relativePath );

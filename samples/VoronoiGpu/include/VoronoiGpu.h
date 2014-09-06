@@ -4,5 +4,5 @@
 
 #include <vector>
 
-ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::Vec2i> &points, int width, int height );
-ci::Channel32f calcDistanceMapGpu( const std::vector<ci::Vec2i> &points, int width, int height );
+ci::Surface32f calcDiscreteVoronoiGpu( const std::vector<ci::ivec2> &points, int width, int height );
+ci::Channel32f calcDistanceMapGpu( const std::vector<ci::ivec2> &points, int width, int height );

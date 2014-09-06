@@ -1,8 +1,10 @@
 #include "Resources.h"
 
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Shader.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Bspline.h"
 #include "cinder/Rand.h"
@@ -17,10 +19,10 @@ const float BALL_RADIUS = 1.0f;
 
 class QuaternionAccumApp : public AppBasic {
   public:
-	void setup();
-	void update();
-	void resize();
-	void mouseDown( MouseEvent event );
+	void setup() override;
+	void update() override;
+	void resize() override;
+	void mouseDown( MouseEvent event ) override;
 	
 	void createRandomBspline();
 	
@@ -32,11 +34,13 @@ class QuaternionAccumApp : public AppBasic {
 	CameraPersp		mCam;
 	BSpline3f		mSpline;
 	float			mSplineValue;
-	gl::Texture		mPlaneTexture;
-	gl::Texture		mBallTexture;
-	Quatf			mQuat;
-	Vec3f			mLastPos;
+	gl::TextureRef	mPlaneTexture;
+	gl::TextureRef	mBallTexture;
+	quat			mQuat;
+	vec3			mLastPos;
 	double			mLastTime;
+	
+	gl::BatchRef	mPlaneBatch, mBallBatch;
 };
 
 void QuaternionAccumApp::setup()
@@ -45,8 +49,11 @@ void QuaternionAccumApp::setup()
 	gl::enableDepthWrite();
 	gl::enableAlphaBlending();
 	
-	mPlaneTexture = loadImage( loadResource( RES_PLANE_TEXTURE ) );
-	mBallTexture = loadImage( loadResource( RES_BALL_TEXTURE ) );
+	mPlaneTexture = gl::Texture::create( loadImage( loadResource( RES_PLANE_TEXTURE ) ) );
+	mBallTexture = gl::Texture::create( loadImage( loadResource( RES_BALL_TEXTURE ) ) );
+
+	mPlaneBatch = gl::Batch::create( geom::Plane().size( vec2( 25, 25 ) ), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mBallBatch = gl::Batch::create( geom::Sphere().radius( BALL_RADIUS ), gl::getStockShader( gl::ShaderDef().texture() ) );
 	
 	createRandomBspline();
 	mLastTime = getElapsedSeconds();
@@ -56,7 +63,7 @@ void QuaternionAccumApp::resize()
 {
 	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 40.0f );
 	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.1f, 100.0f );
-	mCam.lookAt( Vec3f( 15, 15, 15 ), Vec3f( 0, 0, 0 ) );
+	mCam.lookAt( vec3( 15, 15, 15 ), vec3( 0, 0, 0 ) );
 }
 
 void QuaternionAccumApp::update()
@@ -74,72 +81,58 @@ void QuaternionAccumApp::mouseDown( MouseEvent event )
 
 void QuaternionAccumApp::createRandomBspline()
 {
-	vector<Vec3f> points;
+	vector<vec3> points;
 	int numPoints = 4 + ( Rand::randInt(8) );
 	for( int p = 0; p < numPoints; ++p )
-		points.push_back( Vec3f( Rand::randFloat(-10, 10), 0.0f, Rand::randFloat(-10, 10) ) );
+		points.push_back( vec3( Rand::randFloat(-10, 10), 0.0f, Rand::randFloat(-10, 10) ) );
 	mSpline = BSpline3f( points, 3, true, true );
 
 	mSplineValue = 0.0f;
-	mQuat = Quatf::identity();
+	mQuat = quat();
 	mLastPos = mSpline.getPosition( 0 );
 }
 
 void QuaternionAccumApp::drawPlane()
 {
-	// draw the plane
-	gl::color( Color( 1, 1, 1 ) );
-	mPlaneTexture.enableAndBind();
-	gl::begin( GL_QUADS );
-		gl::texCoord( 0, 0 );
-		gl::vertex( -10.0f, 0.0f, -10.0f );
-		gl::texCoord( 1, 0 );
-		gl::vertex( 10.0f, 0.0f, -10.0f );
-		gl::texCoord( 1, 1 );
-		gl::vertex( 10.0f, 0.0f, 10.0f );
-		gl::texCoord( 0, 1 );
-		gl::vertex( -10.0f, 0.0f, 10.0f );
-	gl::end();
-	mPlaneTexture.disable();
+	// draw the ground plane
+	gl::ScopedTextureBind scpTex( mPlaneTexture );
+	mPlaneBatch->draw();
 }
 
 void QuaternionAccumApp::drawSpline()
 {
 	const int numSegments = 100;
-	gl::color( ColorA( 0.8f, 0.2f, 0.8f, 0.5f ) );
-	glLineWidth( 2.0f );
+	gl::color( ColorA( 0.8f, 0.2f, 0.8f, 0.8f ) );
+	gl::lineWidth( 2.0f );
 	gl::begin( GL_LINE_STRIP );
 	for( int s = 0; s <= numSegments; ++s ) {
 		float t = s / (float)numSegments;
-		gl::vertex( mSpline.getPosition( t ) + Vec3f( 0.0f, 0.5f, 0.0f ) );
+		gl::vertex( mSpline.getPosition( t ) + vec3( 0, 0.5f, 0 ) );
 	}
 	gl::end();
 }
 
 void QuaternionAccumApp::drawBall()
 {
-	Vec3f pos = mSpline.getPosition( mSplineValue );
-	Vec3f delta = pos - mLastPos;
+	vec3 pos = mSpline.getPosition( mSplineValue );
+	vec3 delta = pos - mLastPos;
 	// our axis of rotation is the normal to the spline at this point
-	Vec3f normal = Vec3f( delta.z, 0, -delta.x );
+	vec3 normal = vec3( delta.z, 0, -delta.x );
 	
 	// rotation amount (in radians) is the distance we've traveled divided by the radius of the ball
-	float rotation = delta.length() / BALL_RADIUS;
+	float rotation = length( delta ) / BALL_RADIUS;
 	if( rotation ) {
 		// increment our quaternion by a new quaternion representing how much rotating we did since the last frame
-		Quatf incQuat( normal, rotation );
-		mQuat *= incQuat;
-		mQuat.normalize();
+		quat incQuat = angleAxis( rotation, normalize( normal ) );
+		mQuat = incQuat * mQuat;
 	}
 	
-	gl::translate( Vec3f( 0.0f, BALL_RADIUS, 0.0f ) + pos );
-	gl::scale( Vec3f( BALL_RADIUS, BALL_RADIUS, BALL_RADIUS ) );
+	gl::ScopedModelMatrix scpMtx;
+	gl::translate( vec3( 0.0f, BALL_RADIUS, 0.0f ) + pos );
 	gl::rotate( mQuat );
 	
-	gl::color( Color( 1, 1, 1 ) );
-	mBallTexture.enableAndBind();
-	gl::drawSphere( Vec3f::zero(), 1.0f, 60 );
-	mBallTexture.disable();
+	gl::ScopedTextureBind scpTex( mBallTexture );
+	mBallBatch->draw();
 	
 	mLastPos = pos;
 }

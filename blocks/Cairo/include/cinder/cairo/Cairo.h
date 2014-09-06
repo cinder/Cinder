@@ -103,7 +103,7 @@ class SurfaceBase {
 	int32_t getHeight() const { return mHeight; }
 	float	getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	Area	getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
-	Vec2i	getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2	getSize() const { return ivec2( getWidth(), getHeight() ); }
 	
 	void	flush();
 	
@@ -279,9 +279,9 @@ class Matrix
 	int32_t		invert();
 
 	//! Transforms the point \a v by the matrix.
-	Vec2f	transformPoint( const Vec2f &v ) const;
+	vec2	transformPoint( const vec2 &v ) const;
 	//! Transforms the distance vector \a v by the matrix. This is similar to cairo_matrix_transform_point() except that the translation components of the transformation are ignored
-	Vec2f	transformDistance( const Vec2f &v ) const;
+	vec2	transformDistance( const vec2 &v ) const;
 
 	const Matrix& 	operator*=( const Matrix &rhs );
 
@@ -361,13 +361,13 @@ class Gradient : public Pattern {
 class GradientRadial : public Gradient {
   public:
 	GradientRadial( double x0, double y0, double radius0, double x1, double y1, double radius1 );
-	GradientRadial( const Vec2f &center0, float radius0, const Vec2f &center1, float radius1 );	
+	GradientRadial( const vec2 &center0, float radius0, const vec2 &center1, float radius1 );	
 };
 
 class GradientLinear : public Gradient {
   public:
 	GradientLinear( double x0, double y0, double x1, double y1 );
-	GradientLinear( Vec2f point0, Vec2f point1 );
+	GradientLinear( vec2 point0, vec2 point1 );
 };
 
 class FontOptions 
@@ -558,7 +558,7 @@ class Context
 	void		setSourceSurface( SurfaceBase &surface, double x, double y );
 	Pattern*	getSource();
 
-	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Vec2i &dstOffset = Vec2i::zero() );
+	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const ivec2 &dstOffset = ivec2( 0 ) );
 	void		copySurface( const SurfaceBase &surface, const Area &srcArea, const Rectf &dstRect );	
 
 	void		setAntiAlias( int32_t antialias );
@@ -624,26 +624,26 @@ class Context
 	void		appendPath( const class Path *path );
 	*/
 	void		getCurrentPoint( double *x, double *y ) const;
-	Vec2f		getCurrentPoint() const;
+	vec2		getCurrentPoint() const;
 	void		newPath();
 	void		newSubPath();
 	void		closePath();
 	void        arc( double xc, double yc, double radius, double angle1, double angle2 );
-	void        arc( const Vec2f &center, double radius, double angle1, double angle2 ) { arc( center.x, center.y, radius, angle1, angle2 ); }
+	void        arc( const vec2 &center, double radius, double angle1, double angle2 ) { arc( center.x, center.y, radius, angle1, angle2 ); }
 	void        arcNegative( double xc, double yc, double radius, double angle1, double angle2 );
-	void        arcNegative( const Vec2f &center, double radius, double angle1, double angle2 ) { arcNegative( center.x, center.y, radius, angle1, angle2 ); }
+	void        arcNegative( const vec2 &center, double radius, double angle1, double angle2 ) { arcNegative( center.x, center.y, radius, angle1, angle2 ); }
 	void        quadTo( double x1, double y1, double x2, double y2 );
-	void        quadTo( const Vec2f &v1, const Vec2f &v2 ) { quadTo( (double)v1.x, (double)v1.y, (double)v2.x, (double)v2.y ); }
+	void        quadTo( const vec2 &v1, const vec2 &v2 ) { quadTo( (double)v1.x, (double)v1.y, (double)v2.x, (double)v2.y ); }
 	void        curveTo( double x1, double y1, double x2, double y2, double x3, double y3 );
-	void        curveTo( const Vec2f &v1, const Vec2f &v2, const Vec2f &v3 ) { curveTo( (double)v1.x, (double)v1.y, (double)v2.x, (double)v2.y, (double)v3.x, (double)v3.y ); }
-	void		line( const Vec2f &v1, const Vec2f &v2 ) { moveTo( v1 ); lineTo( v2 ); }
+	void        curveTo( const vec2 &v1, const vec2 &v2, const vec2 &v3 ) { curveTo( (double)v1.x, (double)v1.y, (double)v2.x, (double)v2.y, (double)v3.x, (double)v3.y ); }
+	void		line( const vec2 &v1, const vec2 &v2 ) { moveTo( v1 ); lineTo( v2 ); }
 	void        lineTo( double x, double y );
-	void        lineTo( const Vec2f &v ) { lineTo( (double)v.x, (double)v.y ); }
+	void        lineTo( const vec2 &v ) { lineTo( (double)v.x, (double)v.y ); }
 	void        moveTo( double x, double y );
-	void        moveTo( const Vec2f &v ) { moveTo( (double)v.x, (double)v.y ); }
+	void        moveTo( const vec2 &v ) { moveTo( (double)v.x, (double)v.y ); }
 	void        rectangle( double x, double y, double width, double height );
 	void        rectangle( const Rectf &r ) { rectangle( r.x1, r.y1, r.getWidth(), r.getHeight() ); }
-	void        rectangle( const Vec2f &upperLeft, const Vec2f &lowerRight );
+	void        rectangle( const vec2 &upperLeft, const vec2 &lowerRight );
 	void		roundedRectangle( const Rectf &r, float cornerRadius );
 	//void        glyphPath( const cairo_glyph_t *glyphs, int num_glyphs );
 	void        textPath( const char *utf8 );
@@ -653,14 +653,14 @@ class Context
 	void		appendPath( const cinder::Shape2d &path );
 	void		appendPath( const cinder::Path2d &path );
 	void		circle( double dx, double dy, double radius );
-	void		circle( const Vec2f &v, double radius ) { circle( (double)v.x, (double)v.y, radius ); }
+	void		circle( const vec2 &v, double radius ) { circle( (double)v.x, (double)v.y, radius ); }
 
 	//! Renders an svg::Node, with an optional visitor function to modify the style per-node.
 	void		render( const svg::Node &node, const std::function<bool(const svg::Node&, svg::Style *)> &visitor = std::function<bool(const svg::Node&, svg::Style *)>() );
 
 // Transformation functions
 	void        translate( double tx, double ty );
-	void        translate( const Vec2f &v ) { translate( (double)v.x, (double)v.y ); }
+	void        translate( const vec2 &v ) { translate( (double)v.x, (double)v.y ); }
 	void        scale( double sx, double sy );
 	void        rotate( double radians );
 	void        transform( const Matrix &aMatrix );
@@ -690,8 +690,8 @@ class Context
 	void        showText( const std::string &s );
 	void		textPath( const std::string &s );
 	//! Renders glyphs as returned by TextBox::measureGlyphs()
-	void		glyphPath( const std::vector<std::pair<uint16_t,Vec2f> > &glyphs );
-	void		glyphPath( uint16_t index, const Vec2f &offset );
+	void		glyphPath( const std::vector<std::pair<uint16_t,vec2> > &glyphs );
+	void		glyphPath( uint16_t index, const vec2 &offset );
 	//void        showGlyphs( const Glyph *glyphs, int num_glyphs );							// glyphs is an array of cairo_glyph_t
 	//void		showGlyphs( const GlyphArray &glyphs );
 	FontExtents	fontExtents();

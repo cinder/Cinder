@@ -37,7 +37,7 @@
 	CinderViewCocoaTouch						*mCinderView;
 	cinder::app::WindowRef						mWindowRef;
 	cinder::DisplayRef							mDisplay;
-	cinder::Vec2i								mSize, mPos;
+	cinder::ivec2								mSize, mPos;
 	float										mContentScale;
 	BOOL										mResizeHasFired;
 	BOOL										mHidden;
@@ -66,10 +66,10 @@
 // WindowImplCocoa Protocol Methods
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options;
-- (cinder::Vec2i)getSize;
-- (void)setSize:(cinder::Vec2i)size;
-- (cinder::Vec2i)getPos;
-- (void)setPos:(cinder::Vec2i)pos;
+- (cinder::ivec2)getSize;
+- (void)setSize:(cinder::ivec2)size;
+- (cinder::ivec2)getPos;
+- (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
 - (NSString*)getTitle;
@@ -438,7 +438,13 @@ AppCocoaTouch::AppCocoaTouch()
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
-	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
+	try {
+		::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
+	}
+	catch( std::exception &e ) {
+		std::cout << "Uncaught Exception: " << e.what() << std::endl;
+		throw e;
+	}
 }
 
 WindowRef AppCocoaTouch::createWindow( const Window::Format &format )
@@ -724,8 +730,8 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	
 	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer contentScale:mContentScale];
 	[mCinderView setDelegate:self];
-	mSize = cinder::Vec2i( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
-	mPos = cinder::Vec2i::zero();
+	mSize = cinder::ivec2( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
+	mPos = cinder::ivec2( 0, 0 );
 	mUiWindow.rootViewController = format.getRootViewController() ? format.getRootViewController() : self;
 	mWindowRef = cinder::app::Window::privateCreate__( self, mAppImpl->mApp );
 
@@ -975,21 +981,21 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 { // NO-OP
 }
 
-- (cinder::Vec2i)getSize;
+- (cinder::ivec2)getSize;
 {
 	return mSize;
 }
 
-- (void)setSize:(cinder::Vec2i)size
+- (void)setSize:(cinder::ivec2)size
 { // NO-OP
 }
 
-- (cinder::Vec2i)getPos;
+- (cinder::ivec2)getPos;
 {
 	return mPos;
 }
 
-- (void)setPos:(cinder::Vec2i)pos;
+- (void)setPos:(cinder::ivec2)pos;
 { // NO-OP
 }
 

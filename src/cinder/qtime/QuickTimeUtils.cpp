@@ -20,7 +20,10 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if ! defined( _WIN64 )
+#include "cinder/Cinder.h"
+
+// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
+#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
 
 #include "cinder/gl/gl.h"
 #include "cinder/qtime/QuickTime.h"
@@ -266,7 +269,7 @@ OSStatus ptrDataRefAddFileNameExtension( ComponentInstance dataRefHandler, const
 	if( fileName.empty() )
 		osErr = ::PtrToHand( &myChar, &fileNameHandle, sizeof(myChar) );
 	else {
-		shared_ptr<char> tempStr( new char[fileName.size()+1], checked_array_deleter<char>() );
+		unique_ptr<char[]> tempStr( new char[fileName.size()+1] );
 		memcpy( &tempStr.get()[1], &fileName[0], fileName.size() );
 		tempStr.get()[0] = fileName.size();
 		osErr = ::PtrToHand( &tempStr.get()[0], &fileNameHandle, tempStr.get()[0] + 1 );
@@ -294,7 +297,7 @@ OSStatus ptrDataRefAddMIMETypeExtension( ComponentInstance dataRefHandler, const
     if( mimeType.empty() )
         return paramErr;
 
-	shared_ptr<char> tempStr( new char[mimeType.size()+1], checked_array_deleter<char>() );
+	unique_ptr<char[]> tempStr( new char[mimeType.size()+1] );
 	memcpy( &tempStr.get()[1], &mimeType[0], mimeType.size() );
 	tempStr.get()[0] = mimeType.size();
     osErr = ::PtrToHand( &tempStr.get()[0], &mimeTypeHndl, tempStr.get()[0] + 1 );
@@ -443,7 +446,7 @@ ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef 
 ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
-	setSize( imageSource->getWidth(), imageSource->getHeight() );
+	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
 	
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
 	

@@ -4,8 +4,8 @@
 // * The update callback makes the radius of the circle the distance to the nearest edge using a member function
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
-#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -27,7 +27,7 @@ struct Circle {
 		gl::drawSolidCircle( mPos, mRadius );
 	}
 	
-	Anim<Vec2f>	mPos;
+	Anim<vec2>	mPos;
 	float		mRadius;
 };
 
@@ -63,13 +63,13 @@ void CustomCallbackApp::setup()
 {
 	setBackgroundToBlue();
 
-	mCircle.mPos = Vec2f( 50, 50 );
+	mCircle.mPos = vec2( 50, 50 );
 	mCircle.mRadius = 50;
 }
 
 void CustomCallbackApp::mouseDown( MouseEvent event )
 {
-	timeline().apply( &mCircle.mPos, Vec2f( event.getPos() ), 2.0f, EaseInOutCubic() )
+	timeline().apply( &mCircle.mPos, vec2( event.getPos() ), 2.0f, EaseInOutCubic() )
 			.startFn( ColorToGreenFunctor( &gBackgroundColor ) )
 			.updateFn( std::bind( &Circle::posUpdate, &mCircle ) )
 			.finishFn( setBackgroundToBlue );

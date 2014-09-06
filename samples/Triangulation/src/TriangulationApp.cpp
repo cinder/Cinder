@@ -1,8 +1,9 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
-#include "cinder/gl/Vbo.h"
+#include "cinder/gl/VboMesh.h"
 #include "cinder/params/Params.h"
 
 using namespace ci;
@@ -24,7 +25,7 @@ class TriangulationApp : public AppBasic {
 	Font				mFont;
 	Shape2d				mShape;
 	vector<string>		mFontNames;
-	gl::VboMesh			mVboMesh;
+	gl::VboMeshRef		mVboMesh;
 	params::InterfaceGl	mParams;
 	bool				mDrawWireframe;
 	int					mFontSize;
@@ -35,7 +36,7 @@ class TriangulationApp : public AppBasic {
 
 void TriangulationApp::setup()
 {
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
+	mParams = params::InterfaceGl( "Parameters", ivec2( 220, 170 ) );
 	mFontSize = 256;
 	mDrawWireframe = true;
 	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "key=w" );
@@ -58,9 +59,9 @@ void TriangulationApp::setup()
 
 void TriangulationApp::recalcMesh()
 {
-	TriMesh2d mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
+	TriMesh mesh = Triangulator( mShape, mPrecision ).calcMesh( Triangulator::WINDING_ODD );
 	mNumPoints = mesh.getNumIndices();
-	mVboMesh = gl::VboMesh( mesh ); 
+	mVboMesh = gl::VboMesh::create( mesh ); 
 	mOldPrecision = mPrecision;
 }
 
@@ -90,8 +91,8 @@ void TriangulationApp::draw()
 
 	gl::clear();
 	gl::pushModelView();
-		gl::translate( getWindowCenter() * Vec2f( 0.8f, 1.2f ) );
-		gl::scale( Vec3f( mZoom, mZoom, mZoom ) );
+		gl::translate( getWindowCenter() * vec2( 0.8f, 1.2f ) );
+		gl::scale( vec3( mZoom, mZoom, mZoom ) );
 		gl::color( Color( 0.8f, 0.4f, 0.0f ) );
 		gl::draw( mVboMesh );
 		if( mDrawWireframe ) {
