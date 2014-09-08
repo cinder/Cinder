@@ -117,6 +117,43 @@ GlslProg::Format& GlslProg::Format::geometry( const char *geometryShader )
 
 	return *this;
 }
+	
+GlslProg::Format& GlslProg::Format::tessellation( const DataSourceRef &controlDataSource, const DataSourceRef &evaluationDataSource )
+{
+	if( controlDataSource && evaluationDataSource ) {
+		Buffer controlBuffer( controlDataSource );
+		mTessellationControlShader.resize( controlBuffer.getDataSize() + 1 );
+		memcpy( (void*)mTessellationControlShader.data(), controlBuffer.getData(), controlBuffer.getDataSize() );
+		mTessellationControlShader[controlBuffer.getDataSize()] = 0;
+		
+		Buffer evaluationBuffer( evaluationDataSource );
+		mTessellationEvaluationShader.resize( evaluationBuffer.getDataSize() + 1 );
+		memcpy( (void*)mTessellationEvaluationShader.data(), evaluationBuffer.getData(), evaluationBuffer.getDataSize() );
+		mTessellationEvaluationShader[evaluationBuffer.getDataSize()] = 0;
+	}
+	else {
+		mTessellationControlShader.clear();
+		mTessellationEvaluationShader.clear();
+	}
+	
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::tessellation( const char *controlShader, const char* evaluationShader )
+{
+	if( controlShader && evaluationShader ) {
+		mTessellationControlShader		= string( controlShader );
+		mTessellationEvaluationShader	= string( evaluationShader );
+	}
+	else {
+		mTessellationControlShader.clear();
+		mTessellationEvaluationShader.clear();
+	}
+	
+	return *this;
+}
+	
+	
 #endif // ! defined( CINDER_GL_ES )
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
@@ -189,6 +226,10 @@ GlslProg::GlslProg( const Format &format )
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
 		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
+	if( ! format.getTessellationControl().empty() )
+		loadShader( format.getTessellationControl(), GL_TESS_CONTROL_SHADER );
+	if( ! format.getTessellationEvaluation().empty() )
+		loadShader( format.getTessellationEvaluation(), GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map
