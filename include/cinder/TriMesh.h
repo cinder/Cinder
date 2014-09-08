@@ -229,22 +229,38 @@ class TriMesh : public geom::Source {
 	std::vector<vec3>&				getBitangents() { return mBitangents; }
 	//! Returns all the bitangents for a mesh in a std::vector as vec3 objects. There will be one of these for each vertex in the mesh
 	const std::vector<vec3>&		getBitangents() const { return mBitangents; }
-	/*//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each vertex in the mesh
-	std::vector<Color>&				getColorsRgb() { return mColorsRGB; }
-	//! Returns a std::vector of RGB colors of the triangles faces. There will be one of these for each vertex in the mesh
-	const std::vector<Color>&		getColorsRgb() const { return mColorsRGB; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each vertex in the mesh
-	std::vector<ColorA>&			getColorsRgba() { return mColorsRGBA; }
-	//! Returns a std::vector of RGBA colors of the triangles faces. There will be one of these for each vertex in the mesh
-	const std::vector<ColorA>&		getColorsRgba() const { return mColorsRGBA; }
-	//! Returns a std::vector of Texture coordinates as vec2s. There will be one texture coord for each vertex in the TriMesh
-	std::vector<vec2>&				getTexCoords() { return mTexCoords; }	
-	//! Returns a std::vector of Texture coordinates as vec2s. There will be one texture coord for each vertex in the TriMesh
-	const std::vector<vec2>&		getTexCoords() const { return mTexCoords; }	*/
+	//! Returns all the colors for a mesh in a std::vector as Color<DIM>f. For example, to get RGB colors, call getColors<3>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getColors() { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	//! Returns a std::vector of TexCoord0 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord0<2>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getTexCoords0() { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
+	//! Returns a std::vector of TexCoord1 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord1<2>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getTexCoords1() { assert(mTexCoords1Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords1.data(); }
+	//! Returns a std::vector of TexCoord2 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord2<2>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getTexCoords2() { assert(mTexCoords2Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords2.data(); }
+	//! Returns a std::vector of TexCoord3 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord3<2>().
+	template<uint8_t DIM>
+	typename VECDIM<DIM,float>::TYPE*		getTexCoords3() { assert(mTexCoords3Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords3.data(); }
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	std::vector<uint32_t>&			getIndices() { return mIndices; }		
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	const std::vector<uint32_t>&	getIndices() const { return mIndices; }		
+	const std::vector<uint32_t>&	getIndices() const { return mIndices; }
+
+	//! Returns a reference to the position buffer.
+	std::vector<float>& getBufferPositions() { return mPositions; }
+	//! Returns a reference to the colors buffer.
+	std::vector<float>& getBufferColors() { return mColors; }
+	//! Returns a reference to the texCoords0 buffer.
+	std::vector<float>& getBufferTexCoords0() { return mTexCoords0; }
+	//! Returns a reference to the texCoords1 buffer.
+	std::vector<float>& getBufferTexCoords1() { return mTexCoords1; }
+	//! Returns a reference to the texCoords2 buffer.
+	std::vector<float>& getBufferTexCoords2() { return mTexCoords2; }
+	//! Returns a reference to the texCoords3 buffer.
+	std::vector<float>& getBufferTexCoords3() { return mTexCoords3; }
 
 	//! Calculates the bounding box of all vertices. Fails if the positions are not 3D.
 	AxisAlignedBox3f	calcBoundingBox() const;
