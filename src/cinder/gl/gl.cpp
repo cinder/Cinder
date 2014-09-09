@@ -810,17 +810,13 @@ void bindBuffer( const BufferObjRef &buffer )
 GLenum toGl( geom::Primitive prim )
 {
 	switch( prim ) {
-		case geom::Primitive::LINES:
-			return GL_LINES;
-		break;
-		case geom::Primitive::TRIANGLES:
-			return GL_TRIANGLES;
-		break;
-		case geom::Primitive::TRIANGLE_STRIP:
-			return GL_TRIANGLE_STRIP;
-		break;
-		case geom::Primitive::TRIANGLE_FAN:
-			return GL_TRIANGLE_FAN;
+		case geom::Primitive::LINES: return GL_LINES;
+		case geom::Primitive::TRIANGLES: return GL_TRIANGLES;
+		case geom::Primitive::TRIANGLE_STRIP: return GL_TRIANGLE_STRIP;
+		case geom::Primitive::TRIANGLE_FAN: return GL_TRIANGLE_FAN;
+#if ! defined( CINDER_GL_ES )
+		case geom::Primitive::PATCHES: return GL_PATCHES;
+#endif
 		default:
 			return 0; // no clear right choice here
 	}
@@ -829,17 +825,13 @@ GLenum toGl( geom::Primitive prim )
 geom::Primitive toGeomPrimitive( GLenum prim )
 {
 	switch( prim ) {
-		case GL_LINES:
-			return geom::Primitive::LINES;
-		break;
-		case GL_TRIANGLES:
-			return geom::Primitive::TRIANGLES;
-		break;
-		case GL_TRIANGLE_STRIP:
-			return geom::Primitive::TRIANGLE_STRIP;
-		break;
-		case GL_TRIANGLE_FAN:
-			return geom::Primitive::TRIANGLE_FAN;
+		case GL_LINES: return geom::Primitive::LINES;
+		case GL_TRIANGLES: return geom::Primitive::TRIANGLES;
+		case GL_TRIANGLE_STRIP: return geom::Primitive::TRIANGLE_STRIP;
+		case GL_TRIANGLE_FAN: return geom::Primitive::TRIANGLE_FAN;
+#if ! defined( CINDER_GL_ES )
+		case GL_PATCHES: return geom::Primitive::PATCHES;
+#endif
 		default:
 			return geom::Primitive( 65535 ); // no clear right choice here
 	}

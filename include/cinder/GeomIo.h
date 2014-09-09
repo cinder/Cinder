@@ -42,7 +42,7 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
 	NUM_ATTRIBS };
 extern std::string sAttribNames[(int)Attrib::NUM_ATTRIBS];
-enum Primitive { LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN }; 
+enum Primitive { LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, PATCHES };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
 //! Debug utility which returns the name of \a attrib as a std::string
