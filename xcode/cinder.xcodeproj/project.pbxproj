@@ -1086,6 +1086,12 @@
 		43F78EF81516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		5391FD680E957646002A13D5 /* KeyEvent.h in Headers */ = {isa = PBXBuildFile; fileRef = 5391FD670E957646002A13D5 /* KeyEvent.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
+		B0245F5919BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
+		B0245F5A19BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
+		B0245F5B19BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
+		B0245F5D19BEDF6000BC878D /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0245F5C19BEDF6000BC878D /* Query.cpp */; };
+		B0245F5E19BEDF6000BC878D /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0245F5C19BEDF6000BC878D /* Query.cpp */; };
+		B0245F5F19BEDF6000BC878D /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B0245F5C19BEDF6000BC878D /* Query.cpp */; };
 		C70E19FF106AA38700E63577 /* Buffer.h in Headers */ = {isa = PBXBuildFile; fileRef = C70E19FE106AA38700E63577 /* Buffer.h */; };
 		C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C70E1A01106AA39D00E63577 /* Buffer.cpp */; };
 		C727BFE5121B3AE600192073 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
@@ -1583,6 +1589,8 @@
 		43F78EF11516DAB700EB63B5 /* Json.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Json.cpp; sourceTree = "<group>"; };
 		43F78EF51516DAE200EB63B5 /* Json.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Json.h; sourceTree = "<group>"; };
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
+		B0245F5819BEDF3200BC878D /* Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Query.h; path = gl/Query.h; sourceTree = "<group>"; };
+		B0245F5C19BEDF6000BC878D /* Query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Query.cpp; path = ../../../cinder_next_tess/src/cinder/gl/Query.cpp; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
 		C70E1A01106AA39D00E63577 /* Buffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Buffer.cpp; sourceTree = "<group>"; };
 		C7B92EF5121C828400093AFE /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -2124,6 +2132,7 @@
 				0003F42D1992D67300647C8B /* gl.h */,
 				0003F42E1992D67300647C8B /* GlslProg.h */,
 				0003F42F1992D67300647C8B /* Pbo.h */,
+				B0245F5819BEDF3200BC878D /* Query.h */,
 				0003F4301992D67300647C8B /* Shader.h */,
 				0003F4311992D67300647C8B /* Sync.h */,
 				0003F4321992D67300647C8B /* Texture.h */,
@@ -2152,6 +2161,7 @@
 				0003F3C71992D64100647C8B /* gl.cpp */,
 				0003F3C81992D64100647C8B /* GlslProg.cpp */,
 				0003F3C91992D64100647C8B /* Pbo.cpp */,
+				B0245F5C19BEDF6000BC878D /* Query.cpp */,
 				0003F3CA1992D64100647C8B /* Shader.cpp */,
 				0003F3CB1992D64100647C8B /* Sync.cpp */,
 				0003F3CC1992D64100647C8B /* Texture.cpp */,
@@ -2572,6 +2582,7 @@
 				00704FCD1114F93F003FCAE4 /* App.h in Headers */,
 				00704FCE1114F93F003FCAE4 /* AppImplCocoaBasic.h in Headers */,
 				00704FCF1114F93F003FCAE4 /* AppImplCocoaRendererGl.h in Headers */,
+				B0245F5A19BEDF3200BC878D /* Query.h in Headers */,
 				0003F4641992D67300647C8B /* TextureFormatParsers.h in Headers */,
 				00704FD01114F93F003FCAE4 /* Cinder.h in Headers */,
 				00704FD11114F93F003FCAE4 /* Camera.h in Headers */,
@@ -2810,6 +2821,7 @@
 				00CFD9891135C3520091E310 /* System.h in Headers */,
 				00CFD98A1135C3520091E310 /* Buffer.h in Headers */,
 				00CFD98B1135C3520091E310 /* Exception.h in Headers */,
+				B0245F5B19BEDF3200BC878D /* Query.h in Headers */,
 				00CFD98C1135C3520091E310 /* DataSource.h in Headers */,
 				0003F4791992D6C100647C8B /* GeomIo.h in Headers */,
 				0003F4471992D67300647C8B /* Context.h in Headers */,
@@ -2949,6 +2961,7 @@
 				111A5ED6191F703D005C3166 /* setup_X.h in Headers */,
 				00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */,
 				009987160F79CFE20042F211 /* CinderCocoa.h in Headers */,
+				B0245F5919BEDF3200BC878D /* Query.h in Headers */,
 				111A5EE0191F703D005C3166 /* smallft.h in Headers */,
 				006D707819942C31008149E2 /* QuickTimeGlImplLegacy.h in Headers */,
 				009EE46E0F7A9F6700F17CB1 /* PolyLine.h in Headers */,
@@ -3316,6 +3329,7 @@
 				43ED0FDE12209488003AEB0B /* UrlImplCocoa.mm in Sources */,
 				111A5F56191F7286005C3166 /* block.c in Sources */,
 				006D705719942BF5008149E2 /* QuickTimeImplAvf.mm in Sources */,
+				B0245F5E19BEDF6000BC878D /* Query.cpp in Sources */,
 				111A5F65191F7286005C3166 /* lsp.c in Sources */,
 				111A5F77191F7286005C3166 /* vorbisenc.c in Sources */,
 				43ED0FE5122094AB003AEB0B /* Url.cpp in Sources */,
@@ -3494,6 +3508,7 @@
 				0012529512344FAA00080A0D /* Ray.cpp in Sources */,
 				111A5F2D191F7285005C3166 /* block.c in Sources */,
 				006D705819942BF5008149E2 /* QuickTimeImplAvf.mm in Sources */,
+				B0245F5F19BEDF6000BC878D /* Query.cpp in Sources */,
 				111A5F3C191F7285005C3166 /* lsp.c in Sources */,
 				111A5F4E191F7285005C3166 /* vorbisenc.c in Sources */,
 				434708DB1267EE4300AA7349 /* Blend.cpp in Sources */,
@@ -3614,6 +3629,7 @@
 				0003F4111992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */,
 				0003F48A1992EA5900647C8B /* gl_load.c in Sources */,
 				009EE56F0F803F5600F17CB1 /* BSpline.cpp in Sources */,
+				B0245F5D19BEDF6000BC878D /* Query.cpp in Sources */,
 				00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */,
 				111A5EA6191F703D005C3166 /* analysis.c in Sources */,
 				00D2F1860F8D8ACD00A7189A /* Perlin.cpp in Sources */,
