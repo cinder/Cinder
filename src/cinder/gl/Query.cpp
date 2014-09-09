@@ -102,20 +102,20 @@ QueryRef Query::create( GLenum target )
 }
 
 /////////////////////////////////////////////////////////////////////////////////
-// QueryTimeElapsed
-QueryTimeElapsedRef QueryTimeElapsed::create()
+// QueryTimeSwapped
+QueryTimeSwappedRef QueryTimeSwapped::create()
 {
-	return QueryTimeElapsedRef( new QueryTimeElapsed );
+	return QueryTimeSwappedRef( new QueryTimeSwapped );
 }
 	
-QueryTimeElapsed::QueryTimeElapsed()
+QueryTimeSwapped::QueryTimeSwapped()
 	: mSwapIndex( 0 ), mIsStopped( true )
 {
 	mQueryBuffers[0] = Query::create( GL_TIME_ELAPSED );
 	mQueryBuffers[1] = Query::create( GL_TIME_ELAPSED );
 }
 
-void QueryTimeElapsed::begin()
+void QueryTimeSwapped::begin()
 {
 	if( mIsStopped ) {
 		mQueryBuffers[mSwapIndex]->begin();
@@ -123,7 +123,7 @@ void QueryTimeElapsed::begin()
 	}
 }
 
-void QueryTimeElapsed::end()
+void QueryTimeSwapped::end()
 {
 	if( ! mIsStopped ) {
 		mQueryBuffers[mSwapIndex]->end();
@@ -132,12 +132,12 @@ void QueryTimeElapsed::end()
 	}
 }
 
-void QueryTimeElapsed::swap()
+void QueryTimeSwapped::swap()
 {
 	mSwapIndex = static_cast<short>( ! mSwapIndex );
 }
 	
-uint64_t QueryTimeElapsed::getElapsedNanoseconds() const
+uint64_t QueryTimeSwapped::getElapsedNanoseconds() const
 {
 	if( ! mIsStopped ) {
 		throw std::logic_error( "Stop must be called before querying the result." );
@@ -146,12 +146,12 @@ uint64_t QueryTimeElapsed::getElapsedNanoseconds() const
 	return ( query->isValid() ) ? query->getValueUInt64() : 0;
 }
 
-double QueryTimeElapsed::getElapsedMilliseconds() const
+double QueryTimeSwapped::getElapsedMilliseconds() const
 {
 	return static_cast<double>( getElapsedNanoseconds() ) * 0.000001;
 }
 
-double QueryTimeElapsed::getElapsedSeconds() const
+double QueryTimeSwapped::getElapsedSeconds() const
 {
 	return static_cast<double>( getElapsedNanoseconds() ) * 0.000000001;
 }

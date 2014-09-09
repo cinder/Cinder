@@ -30,7 +30,7 @@ typedef std::shared_ptr<class Query> QueryRef;
 
 //! Base class for OpenGL Query objects.
 class Query {
-public:
+  public:
 	static QueryRef create( GLenum target );
 
 	virtual ~Query();
@@ -58,12 +58,12 @@ public:
 	bool		isReady() const;
 	//! Returns whether the query's id is valid (corresponds to an actual query object).
 	bool		isValid() const;
-protected:
+  protected:
 	Query( GLuint target );
 	
 	GLuint mId;
 	GLenum mTarget;
-private:
+  private:
 	Query( const Query& );
 	const Query& operator=( const Query& );
 };
@@ -72,7 +72,7 @@ typedef std::shared_ptr<class QueryTimeSwapped> QueryTimeSwappedRef;
 
 //! Represents a pair of GL_TIME_ELAPSED Query objects, swapped on each end() call.
 class QueryTimeSwapped {
-public:
+  public:
 	//! Constructs a swap buffer of GL_TIME_ELAPSED queries.
 	static QueryTimeSwappedRef create();
 
@@ -88,7 +88,7 @@ public:
 	//! Returns the elapsed seconds from the previous frame query. Converts from what gl returns, which is nano seconds. Throws logic_error if not stopped.
 	double		getElapsedSeconds() const;
 	
-private:
+  private:
 	QueryTimeSwapped();
 	//! Swap the currently active query buffer.
 	inline void swap();
