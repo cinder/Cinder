@@ -73,19 +73,19 @@ void SourceFileCoreAudio::initImpl()
 
 	::AudioStreamBasicDescription fileFormat;
 	UInt32 propSize = sizeof( fileFormat );
-    status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileDataFormat, &propSize, &fileFormat );
+	status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileDataFormat, &propSize, &fileFormat );
 	CI_VERIFY( status == noErr );
 
-    mNumChannels = fileFormat.mChannelsPerFrame;
+	mNumChannels = fileFormat.mChannelsPerFrame;
 	mSampleRateNative = fileFormat.mSampleRate;
 
 	size_t outputSampleRate = getSampleRate(); // may be 0 at init
 	if( ! outputSampleRate )
 		outputSampleRate = mSampleRateNative;
 
-    SInt64 numFrames;
-    propSize = sizeof( numFrames );
-    status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileLengthFrames, &propSize, &numFrames );
+	SInt64 numFrames;
+	propSize = sizeof( numFrames );
+	status = ::ExtAudioFileGetProperty( audioFile, kExtAudioFileProperty_FileLengthFrames, &propSize, &numFrames );
 	CI_VERIFY( status == noErr );
 	mNumFrames = mFileNumFrames = static_cast<size_t>( numFrames );
 
