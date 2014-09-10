@@ -52,7 +52,10 @@ SourceFileCoreAudio::SourceFileCoreAudio( const DataSourceRef &dataSource, size_
 
 SourceFileRef SourceFileCoreAudio::cloneWithSampleRate( size_t sampleRate ) const
 {
-	return shared_ptr<SourceFileCoreAudio>( new SourceFileCoreAudio( mDataSource, sampleRate ) );
+	shared_ptr<SourceFileCoreAudio> result( new SourceFileCoreAudio( mDataSource, sampleRate ) );
+	result->setupSampleRateConversion();
+
+	return result;
 }
 
 SourceFileCoreAudio::~SourceFileCoreAudio()
