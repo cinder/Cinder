@@ -1098,11 +1098,10 @@
 		C7BA40890FA8C13A00AADC07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		C7BA408B0FA8C13A00AADC07 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
 		C7BA408D0FA8C13A00AADC07 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
-		C7FA5FC212124A8F0065683B /* CaptureImplQtKit.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */; };
 		C7FA5FC312124A960065683B /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
 		C7FA5FC712124B230065683B /* CaptureImplAvFoundation.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */; };
-		C7FA5FC912124B2C0065683B /* CaptureImplQtKit.h in Headers */ = {isa = PBXBuildFile; fileRef = C7FA5FC612124B1C0065683B /* CaptureImplQtKit.h */; };
 		D2AAC088055469A000DB518D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
+		D8A5A81A19BFDE8700811132 /* CaptureImplAvFoundation.mm in Sources */ = {isa = PBXBuildFile; fileRef = C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */; };
 		EAC3D1A91011F2E700FFBC9E /* Serial.h in Headers */ = {isa = PBXBuildFile; fileRef = EAC3D1A81011F2E700FFBC9E /* Serial.h */; };
 		EAC3D1AD1011F3AC00FFBC9E /* Serial.cpp in Sources */ = {isa = PBXBuildFile; fileRef = EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */; };
 /* End PBXBuildFile section */
@@ -1590,10 +1589,8 @@
 		C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
-		C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplQtKit.mm; sourceTree = "<group>"; };
 		C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplAvFoundation.mm; sourceTree = "<group>"; };
 		C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplAvFoundation.h; sourceTree = "<group>"; };
-		C7FA5FC612124B1C0065683B /* CaptureImplQtKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplQtKit.h; sourceTree = "<group>"; };
 		D2AAC07E0554694100DB518D /* libcinder_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libcinder_d.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D2F7E8BE07B2D77200F64583 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		EAC3D1A81011F2E700FFBC9E /* Serial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Serial.h; sourceTree = "<group>"; };
@@ -1933,7 +1930,6 @@
 				007438DE0EA7975A005DD3E6 /* Capture.h */,
 				C7FA5FC512124B1C0065683B /* CaptureImplAvFoundation.h */,
 				00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */,
-				C7FA5FC612124B1C0065683B /* CaptureImplQtKit.h */,
 				008CE8360E9466F300644A05 /* Channel.h */,
 				008CE84A0E9467C200644A05 /* ChanTraits.h */,
 				00241A0C0E80375A004D34EB /* Cinder.h */,
@@ -2026,7 +2022,6 @@
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
 				C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */,
 				00E5A41D163F5AC500AACB3A /* CaptureImplCocoaDummy.mm */,
-				C7FA5FC012124A790065683B /* CaptureImplQtKit.mm */,
 				008CE83C0E94672E00644A05 /* Channel.cpp */,
 				111A5EF0191F722E005C3166 /* CinderAssert.cpp */,
 				43C4323F1450A8DA0095B260 /* CinderMath.cpp */,
@@ -3038,7 +3033,6 @@
 				111A5ED2191F703D005C3166 /* setup_44.h in Headers */,
 				43D8B2F211B0C87800B61EB6 /* TouchEvent.h in Headers */,
 				111A5EE9191F703D005C3166 /* CDSPRealFFT.h in Headers */,
-				C7FA5FC912124B2C0065683B /* CaptureImplQtKit.h in Headers */,
 				43ED0FE31220949A003AEB0B /* UrlImplCocoa.h in Headers */,
 				0062484F122F607500039A7A /* Filesystem.h in Headers */,
 				00624850122F607500039A7A /* Function.h in Headers */,
@@ -3564,6 +3558,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D8A5A81A19BFDE8700811132 /* CaptureImplAvFoundation.mm in Sources */,
 				111A5EBB191F703D005C3166 /* lpc.c in Sources */,
 				002419D60E8035E1004D34EB /* App.cpp in Sources */,
 				002419D70E8035E1004D34EB /* AppImplCocoaBasic.mm in Sources */,
@@ -3689,7 +3684,6 @@
 				0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				0003F47F1992DA9A00647C8B /* Log.cpp in Sources */,
 				111A5EB4191F703D005C3166 /* floor0.c in Sources */,
-				C7FA5FC212124A8F0065683B /* CaptureImplQtKit.mm in Sources */,
 				111A5FB3191F72AE005C3166 /* DeviceManagerCoreAudio.cpp in Sources */,
 				43ED0FDF12209488003AEB0B /* UrlImplCocoa.mm in Sources */,
 				006D705C19942BF5008149E2 /* QuickTimeUtils.cpp in Sources */,
