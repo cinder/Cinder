@@ -14,7 +14,6 @@
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
-		494D3BF3D94E46A5B17A6B91 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = B97CA3A1E1C042628A042FE3 /* CinderApp_ios.png */; };
 		ACB470CF2F8D4210AD5168BC /* StencilReflectionApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 82E2091C4CA846A6A83A79A5 /* StencilReflectionApp.cpp */; };
 		AF884E03CD00448CABB86D18 /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A5CE865F81044948AEDFFB0C /* Default-568h@2x.png */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -39,7 +38,6 @@
 		82E2091C4CA846A6A83A79A5 /* StencilReflectionApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = StencilReflectionApp.cpp; path = ../src/StencilReflectionApp.cpp; sourceTree = "<group>"; };
 		A5CE865F81044948AEDFFB0C /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		B579D080AF3C4074A23CF42A /* StencilReflection_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = StencilReflection_Prefix.pch; sourceTree = "<group>"; };
-		B97CA3A1E1C042628A042FE3 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderApp_ios.png; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; };
 		C3A7D032DD1B4D18A3CA6138 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		C725E000121DAC8F00FA186B /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C727C02B121B400300192073 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
@@ -122,7 +120,6 @@
 			isa = PBXGroup;
 			children = (
 				00748057165D41390024B57A /* assets */,
-				B97CA3A1E1C042628A042FE3 /* CinderApp_ios.png */,
 				A5CE865F81044948AEDFFB0C /* Default-568h@2x.png */,
 				357E632EAD844628A976E60F /* Info.plist */,
 			);
@@ -195,7 +192,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				00748058165D41390024B57A /* assets in Resources */,
-				494D3BF3D94E46A5B17A6B91 /* CinderApp_ios.png in Resources */,
 				AF884E03CD00448CABB86D18 /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

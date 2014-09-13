@@ -202,13 +202,16 @@ void Fbo::Format::getDepthStencilFormats( GLint depthInternalFormat, GLint *resu
 	switch( depthInternalFormat ) {
 #if defined( CINDER_GL_ES )
 		case GL_DEPTH24_STENCIL8_OES:
-			*resultInternalFormat = GL_DEPTH_STENCIL_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
+			*resultInternalFormat = GL_DEPTH24_STENCIL8_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
 		break;
 		case GL_DEPTH_STENCIL_OES:
-			*resultInternalFormat = GL_DEPTH_STENCIL_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
+			*resultInternalFormat = GL_DEPTH24_STENCIL8_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
 		break;
 		case GL_DEPTH_COMPONENT:
-			*resultInternalFormat = GL_DEPTH_STENCIL_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
+			*resultInternalFormat = GL_DEPTH24_STENCIL8_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
+		break;
+		case GL_DEPTH_COMPONENT24_OES:
+			*resultInternalFormat = GL_DEPTH24_STENCIL8_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
 		break;
 #else
 		case GL_DEPTH24_STENCIL8:
