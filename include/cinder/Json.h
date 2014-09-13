@@ -220,7 +220,7 @@ class JsonTree {
 	std::string						getPath( char separator = '.' ) const;
 	
 	/**! \brief Returns the value of the node cast to T using ci::fromString().
-		<br><tt>float value = myNode.getValue<float>( "key" );</tt> **/
+		<br><tt>float value = myNode.getValue<float>();</tt> **/
 	template <typename T> 
 	inline T						getValue() const
 	{
