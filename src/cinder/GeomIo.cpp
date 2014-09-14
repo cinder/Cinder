@@ -24,6 +24,7 @@
 #include "cinder/App/App.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
+#include "cinder/Log.h"
 #include <algorithm>
 
 using namespace std;
@@ -154,30 +155,30 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 	}
 	else {
 		switch( srcDimensions ) {
-		case 2:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<2,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<2,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<2,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
-		case 3:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<3,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<3,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<3,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
+			case 2:
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<2,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<2,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<2,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
+			case 3:
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<3,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<3,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<3,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
 		case 4:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<4,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<4,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<4,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<4,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<4,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<4,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
 		default:
 			throw ExcIllegalSourceDimensions();
 		}
@@ -1745,6 +1746,105 @@ void Plane::loadInto( Target *target ) const
 		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 	
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Transform
+uint8_t Transform::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return std::max<uint8_t>( 3, mSource.getAttribDims( Attrib::POSITION ) );
+		default:
+			return mSource.getAttribDims( attr );
+	}
+}
+
+void Transform::loadInto( Target *target ) const
+{
+	class TransformTarget : public geom::Target {
+	  public:
+		TransformTarget( const geom::Source &source, geom::Target *target )
+			: mSource( source ), mTarget( target )
+		{}
+
+		Primitive	getPrimitive() const override { return mTarget->getPrimitive(); }
+		uint8_t		getAttribDims( Attrib attr ) const override
+		{
+			if( attr == Attrib::POSITION )
+				return std::max<uint8_t>( 3, mTarget->getAttribDims( Attrib::POSITION ) );
+			else
+				return mTarget->getAttribDims( attr );
+		}
+
+		void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
+		{
+			if( attr == Attrib::POSITION ) {
+				mPositionDims = std::max<uint8_t>( 3, dims );
+				mPositions = unique_ptr<float[]>( new float[mPositionDims * count] );
+				copyData( dims, srcData, count, mPositionDims, mPositionDims * sizeof(float), mPositions.get() );
+			}
+			else if( attr == Attrib::NORMAL ) {
+				if( dims != 3 ) {
+					CI_LOG_W( "geom::Transform can only handle 3D normals. Ignoring normals." );
+					mNormalsDims = 0;
+					mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+				}
+				else {
+					mNormalsDims = 3;
+					mNormals = unique_ptr<vec3[]>( new vec3[count] );
+					copyData( dims, srcData, count, 3, 0, (float*)mNormals.get() );
+				}
+			}
+			else
+				mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+		}
+		
+		void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+		{
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		}
+		
+		const geom::Source		&mSource;
+		geom::Target			*mTarget;
+		unique_ptr<float[]>		mPositions;
+		uint8_t					mPositionDims;
+		unique_ptr<vec3[]>		mNormals;
+		uint8_t					mNormalsDims;
+	};
+	
+	// first instantiate our custom 'TransformTarget' and have our source loadInto that.
+	// It will pass all attributes and indices through to 'target' except for positions, which it captures
+	TransformTarget transformTarget( mSource, target );
+	mSource.loadInto( &transformTarget );
+	
+	const size_t numVertices = mSource.getNumVertices();
+	
+	// now we'll transform our captured positions and call copyAttrib against 'target' with them
+	// note: this might be optimized if we avoided the default construction of vec3/vec4
+	const float *inPositions = transformTarget.mPositions.get();
+	if( transformTarget.mPositionDims == 3 ) {
+		unique_ptr<vec3[]> transformedPositions( new vec3[numVertices] );
+		for( size_t v = 0; v < numVertices; ++v )
+			transformedPositions[v] = vec3( mTransform * vec4( glm::make_vec3( &inPositions[v*3] ), 1 ) );
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)transformedPositions.get(), numVertices );
+	}
+	else { // positionDims == 4
+		unique_ptr<vec4[]> transformedPositions( new vec4[numVertices] );
+		for( size_t v = 0; v < numVertices; ++v )
+			transformedPositions[v] = mTransform * vec4( glm::make_vec4( &inPositions[v*4] ) );
+		target->copyAttrib( Attrib::POSITION, 4, 0, (const float*)transformedPositions.get(), numVertices );
+	}
+	
+	// and finally, we'll make the sort of modification to our normals (if they're present)
+	// using the inverse transpose of 'mTransform'
+	if( transformTarget.mNormalsDims == 3 ) {
+		const vec3 *inNormals = transformTarget.mNormals.get();
+		mat3 normalsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
+		unique_ptr<vec3[]> transformedNormals( new vec3[numVertices] );
+		for( size_t v = 0; v < numVertices; ++v )
+			transformedNormals[v] = normalsTransform * inNormals[v];
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)transformedNormals.get(), numVertices );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
