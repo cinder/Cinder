@@ -616,6 +616,30 @@ class Transform : public Source {
 	mat4					mTransform;
 };
 
+class Twist : public Source {
+  public:
+	Twist( const geom::Source &source )
+		: mSource( source ), mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ),
+			mStartAngle( -3.14159f ), mEndAngle( 3.14159f )
+	{}
+
+	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
+	Twist&		axisEnd( const vec3 &end ) { mAxisEnd = end; return *this; }
+	Twist&		axis( const vec3 &start, const vec3 &end ) { mAxisStart = start; mAxisEnd = end; return *this; }
+	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
+	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
+  
+  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+	const geom::Source&		mSource;
+	vec3					mAxisStart, mAxisEnd;
+	float					mStartAngle, mEndAngle;
+};
+
 #if 0
 class SplineExtrusion : public Source {
   public:

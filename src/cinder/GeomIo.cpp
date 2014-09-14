@@ -1848,6 +1848,104 @@ void Transform::loadInto( Target *target ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Twist
+uint8_t Twist::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return std::max<uint8_t>( 3, mSource.getAttribDims( Attrib::POSITION ) );
+		default:
+			return mSource.getAttribDims( attr );
+	}
+}
+
+void Twist::loadInto( Target *target ) const
+{
+	class TransformTarget : public geom::Target {
+	  public:
+		TransformTarget( const geom::Source &source, geom::Target *target )
+			: mSource( source ), mTarget( target )
+		{}
+
+		Primitive	getPrimitive() const override { return mTarget->getPrimitive(); }
+		uint8_t		getAttribDims( Attrib attr ) const override
+		{
+			if( attr == Attrib::POSITION )
+				return 3;
+			else
+				return mTarget->getAttribDims( attr );
+		}
+
+		void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
+		{
+			if( attr == Attrib::POSITION ) {
+				if( dims > 3 )
+					CI_LOG_W( "geom::Twist can only handle 3D positions. Stripping 4th dimension." );
+				mPositionDims = 3;
+				mPositions = unique_ptr<vec3[]>( new vec3[count] );
+				copyData( dims, srcData, count, 3, 0, (float*)mPositions.get() );
+			}
+			else if( attr == Attrib::NORMAL ) {
+				if( dims != 3 ) {
+					CI_LOG_W( "geom::Twist can only handle 3D normals. Ignoring normals." );
+					mNormalsDims = 0;
+					mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+				}
+				else {
+					mNormalsDims = 3;
+					mNormals = unique_ptr<vec3[]>( new vec3[count] );
+					copyData( dims, srcData, count, 3, 0, (float*)mNormals.get() );
+				}
+			}
+			else
+				mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+		}
+		
+		void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+		{
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		}
+		
+		const geom::Source		&mSource;
+		geom::Target			*mTarget;
+		unique_ptr<vec3[]>		mPositions;
+		uint8_t					mPositionDims;
+		unique_ptr<vec3[]>		mNormals;
+		uint8_t					mNormalsDims;
+	};
+	
+	// first instantiate our custom 'TransformTarget' and have our source loadInto that.
+	// It will pass all attributes and indices through to 'target' except for positions, which it captures
+	TransformTarget transformTarget( mSource, target );
+	mSource.loadInto( &transformTarget );
+	
+	const size_t numVertices = mSource.getNumVertices();
+	
+	// now we'll transform our captured positions and call copyAttrib against 'target' with them
+	// note: this might be optimized if we avoided the default construction of vec3/vec4
+	const float invAxisLength = 1.0f / distance( mAxisStart, mAxisEnd );
+	const vec3 axisDir = ( mAxisEnd - mAxisStart ) * vec3( invAxisLength );
+	if( transformTarget.mPositionDims == 3 ) {
+		unique_ptr<vec3[]> transformedPositions( new vec3[numVertices] );
+		for( size_t v = 0; v < numVertices; ++v ) {
+			vec3 inPosition = transformTarget.mPositions[v];
+			float closestDist = dot( inPosition - mAxisStart, axisDir );
+			float tVal = glm::clamp<float>( closestDist * invAxisLength, 0, 1 );
+			vec3 pointOnAxis = mAxisStart + axisDir * closestDist;
+			mat4 rotation = rotate( glm::mix( mStartAngle, mEndAngle, tVal ), axisDir );
+			mat4 transform = translate( pointOnAxis ) * rotation * translate( -pointOnAxis );
+			vec3 outPos = vec3( transform * vec4( inPosition, 1 ) );
+			transformedPositions[v] = outPos;
+			if( transformTarget.mNormalsDims == 3 ) {
+				transformTarget.mNormals[v] = vec3( rotation * vec4( transformTarget.mNormals[v], 0 ) );
+			}
+		}
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)transformedPositions.get(), numVertices );
+		if( transformTarget.mNormalsDims == 3 )
+			target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)transformTarget.mNormals.get(), numVertices );
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // SplineExtrusion
 #if 0
 SplineExtrusion::SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments )
