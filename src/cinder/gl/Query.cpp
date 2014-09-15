@@ -134,7 +134,7 @@ void QueryTimeSwapped::end()
 
 void QueryTimeSwapped::swap()
 {
-	mSwapIndex = static_cast<short>( ! mSwapIndex );
+	mSwapIndex = 1 - mSwapIndex;
 }
 	
 uint64_t QueryTimeSwapped::getElapsedNanoseconds() const

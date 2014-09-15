@@ -98,7 +98,7 @@ class QueryTimeSwapped {
 
 	std::array<QueryRef, 2>	mQueryBuffers;
 	bool					mIsStopped;
-	short					mSwapIndex;
+	size_t					mSwapIndex;
 };
 
 } } // namespace cinder::gl
