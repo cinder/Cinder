@@ -26,6 +26,8 @@
 
 namespace cinder { namespace gl {
 
+#if ! defined( CINDER_GL_ES )
+
 typedef std::shared_ptr<class Query> QueryRef;
 
 //! Base class for OpenGL Query objects.
@@ -100,5 +102,7 @@ class QueryTimeSwapped {
 	bool					mIsStopped;
 	size_t					mSwapIndex;
 };
+
+#endif // ! defined( CINDER_GL_ES )
 
 } } // namespace cinder::gl

@@ -27,7 +27,7 @@
 
 namespace cinder { namespace gl {
 	
-	
+#if ! defined( CINDER_GL_ES )
 /////////////////////////////////////////////////////////////////////////////////
 // Query
 
@@ -155,5 +155,7 @@ double QueryTimeSwapped::getElapsedSeconds() const
 {
 	return static_cast<double>( getElapsedNanoseconds() ) * 0.000000001;
 }
+
+#endif // ! defined( CINDER_GL_ES )
 
 } } // namespace cinder::gl
