@@ -775,6 +775,7 @@ void MovieBase::playerItemEnded()
 	}
 	else if( mLoop ) {
 		this->seekToStart();
+		this->play();
 	}
 	
 	mSignalEnded();
