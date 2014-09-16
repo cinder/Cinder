@@ -140,7 +140,7 @@ void QueryTimeSwapped::swap()
 uint64_t QueryTimeSwapped::getElapsedNanoseconds() const
 {
 	if( ! mIsStopped ) {
-		throw std::logic_error( "Stop must be called before querying the result." );
+		throw QueryException( "end() must be called before querying the result." );
 	}
 	const auto& query = mQueryBuffers[mSwapIndex];
 	return ( query->isValid() ) ? query->getValueUInt64() : 0;

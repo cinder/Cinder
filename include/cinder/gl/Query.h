@@ -23,6 +23,7 @@
 */
 
 #include "cinder/gl/gl.h"
+#include "cinder/Exception.h"
 
 namespace cinder { namespace gl {
 
@@ -101,6 +102,14 @@ class QueryTimeSwapped {
 	std::array<QueryRef, 2>	mQueryBuffers;
 	bool					mIsStopped;
 	size_t					mSwapIndex;
+};
+	
+class QueryException : public Exception {
+  public:
+	QueryException( const std::string &description = "" ) : mDescription( description ) { }
+	virtual const char* what() const throw() { return mDescription.c_str(); }
+  protected:
+	std::string mDescription;
 };
 
 #endif // ! defined( CINDER_GL_ES )
