@@ -136,6 +136,17 @@ class Context {
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the scissor box
 	std::pair<ivec2, ivec2>	getScissor();
 
+	//! Analagous to glCullFace( \a face ). Valid arguments are GL_FRONT and GL_BACK.
+	void					cullFace( GLenum face );
+	//! Pushes the cull face \a face. Valid arguments are GL_FRONT and GL_BACK.
+	void					pushCullFace( GLenum face );
+	//! Duplicates and pushes the top of the Cull Face stack.
+	void					pushCullFace();
+	//! Pops the top of the Cull Face stack.
+	void					popCullFace();
+	//! Returns a GLenum representing the current cull face. Either GL_FRONT or GL_BACK.
+	GLenum					getCullFace();
+
 	//! Analogous to glBindBuffer( \a target, \a id )
 	void		bindBuffer( GLenum target, GLuint id );
 	//! Pushes and binds buffer object \a id for the target \a target
@@ -385,6 +396,9 @@ class Context {
 #else
 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
 #endif
+
+	// Face culling stack.
+	std::vector<GLenum>			mCullFaceStack;
 	
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>

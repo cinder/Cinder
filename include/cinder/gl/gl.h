@@ -548,6 +548,15 @@ struct ScopedMatrices : public boost::noncopyable {
 	~ScopedMatrices()	{ gl::popMatrices(); }
 };
 
+//! Scopes state of face culling.
+struct ScopedCulling : public boost::noncopyable
+{
+	ScopedCulling( GLenum cullFace, bool cull = true );
+	~ScopedCulling();
+private:
+	Context		*mCtx;
+};
+
 class Exception : public cinder::Exception {
 };
 

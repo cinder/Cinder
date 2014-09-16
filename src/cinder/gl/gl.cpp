@@ -2007,6 +2007,21 @@ ScopedScissor::~ScopedScissor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedCulling
+ScopedCulling::ScopedCulling( GLenum face, bool cull )
+	: mCtx( gl::context() )
+{
+	mCtx->pushBoolState( GL_CULL_FACE, cull );
+	mCtx->pushCullFace( face );
+}
+
+ScopedCulling::~ScopedCulling()
+{
+	mCtx->popBoolState( GL_CULL_FACE );
+	mCtx->popCullFace();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedViewport
 ScopedViewport::ScopedViewport( const ivec2 &lowerLeftPostion, const ivec2 &dimension )
 	: mCtx( gl::context() )

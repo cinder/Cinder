@@ -371,6 +371,44 @@ std::pair<ivec2, ivec2> Context::getScissor()
 }
 
 //////////////////////////////////////////////////////////////////
+// Face Culling
+
+void Context::cullFace( GLenum face )
+{
+	if( setStackState( mCullFaceStack, face ) ) {
+		glCullFace( face );
+	}
+}
+
+void Context::pushCullFace( GLenum face )
+{
+	if( pushStackState( mCullFaceStack, face ) ) {
+		glCullFace( face );
+	}
+}
+
+void Context::pushCullFace()
+{
+	mCullFaceStack.push_back( getCullFace() );
+}
+
+void Context::popCullFace()
+{
+	if( mCullFaceStack.empty() || popStackState( mCullFaceStack ) ) {
+		glCullFace( getCullFace() );
+	}
+}
+
+GLenum Context::getCullFace()
+{
+	if( mCullFaceStack.empty() ) {
+		mCullFaceStack.push_back( GL_BACK );
+	}
+
+	return mCullFaceStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
 // Buffer
 void Context::bindBuffer( GLenum target, GLuint id )
 {
