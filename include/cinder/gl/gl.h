@@ -549,10 +549,10 @@ struct ScopedMatrices : public boost::noncopyable {
 };
 
 //! Scopes state of face culling.
-struct ScopedCulling : public boost::noncopyable
+struct ScopedFaceCulling : public boost::noncopyable
 {
-	ScopedCulling( GLenum cullFace, bool cull = true );
-	~ScopedCulling();
+	ScopedFaceCulling( GLenum cullFace, bool cull = true );
+	~ScopedFaceCulling();
 private:
 	Context		*mCtx;
 };

@@ -2007,15 +2007,15 @@ ScopedScissor::~ScopedScissor()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
-// ScopedCulling
-ScopedCulling::ScopedCulling( GLenum face, bool cull )
+// ScopedFaceCulling
+ScopedFaceCulling::ScopedFaceCulling( GLenum face, bool cull )
 	: mCtx( gl::context() )
 {
 	mCtx->pushBoolState( GL_CULL_FACE, cull );
 	mCtx->pushCullFace( face );
 }
 
-ScopedCulling::~ScopedCulling()
+ScopedFaceCulling::~ScopedFaceCulling()
 {
 	mCtx->popBoolState( GL_CULL_FACE );
 	mCtx->popCullFace();
