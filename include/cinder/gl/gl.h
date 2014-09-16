@@ -169,8 +169,11 @@ void enableAlphaBlending( bool premultiplied = false );
 void disableAlphaBlending();
 void enableAdditiveBlending();
 
-void enableAlphaTest( float value = 0.5f, int func = GL_GREATER );
-void disableAlphaTest();
+//! Specifies whether polygons are culled. Equivalent to calling enable( \c GL_CULL_FACE, \a enable ). Specify front or back faces with gl::cullFace().
+void enableFaceFulling( bool enable = true );
+//! Specifies whether front or back-facing polygons are culled (as specified by \a face) when polygon culling is enabled. Valid values are \c GL_BACK and \c GL_FRONT.
+void cullFace( GLenum face );
+
 
 void disableDepthRead();
 void disableDepthWrite();
@@ -551,10 +554,15 @@ struct ScopedMatrices : public boost::noncopyable {
 //! Scopes state of face culling.
 struct ScopedFaceCulling : public boost::noncopyable
 {
-	ScopedFaceCulling( GLenum cullFace, bool cull = true );
+	//! Enables or disables polygon culling based on \a cull
+	ScopedFaceCulling( bool cull );
+	//! Enables or disables polygon culling based on \a cull and specifies a mode, either \c GL_BACK or GL_FRONT
+	ScopedFaceCulling( bool cull, GLenum cullFace );
 	~ScopedFaceCulling();
-private:
+	
+  private:
 	Context		*mCtx;
+	bool		mSaveFace;
 };
 
 class Exception : public cinder::Exception {

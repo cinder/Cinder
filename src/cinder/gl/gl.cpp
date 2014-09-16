@@ -270,6 +270,16 @@ void enableAdditiveBlending()
 	ctx->blendFunc( GL_SRC_ALPHA, GL_ONE );
 }
 
+void enableFaceCulling( bool enable )
+{
+	gl::context()->setBoolState( GL_CULL_FACE, enable );
+}
+
+void cullFace( GLenum face )
+{
+	gl::context()->cullFace( face );
+}
+
 void disableDepthRead()
 {
 	gl::disable( GL_DEPTH_TEST );
@@ -2008,8 +2018,14 @@ ScopedScissor::~ScopedScissor()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedFaceCulling
-ScopedFaceCulling::ScopedFaceCulling( GLenum face, bool cull )
-	: mCtx( gl::context() )
+ScopedFaceCulling::ScopedFaceCulling( bool cull )
+	: mCtx( gl::context() ), mSaveFace( false )
+{
+	mCtx->pushBoolState( GL_CULL_FACE, cull );
+}
+
+ScopedFaceCulling::ScopedFaceCulling( bool cull, GLenum face )
+	: mCtx( gl::context() ), mSaveFace( true )
 {
 	mCtx->pushBoolState( GL_CULL_FACE, cull );
 	mCtx->pushCullFace( face );
@@ -2018,7 +2034,8 @@ ScopedFaceCulling::ScopedFaceCulling( GLenum face, bool cull )
 ScopedFaceCulling::~ScopedFaceCulling()
 {
 	mCtx->popBoolState( GL_CULL_FACE );
-	mCtx->popCullFace();
+	if( mSaveFace )
+		mCtx->popCullFace();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

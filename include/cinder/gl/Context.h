@@ -136,15 +136,15 @@ class Context {
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the scissor box
 	std::pair<ivec2, ivec2>	getScissor();
 
-	//! Analagous to glCullFace( \a face ). Valid arguments are GL_FRONT and GL_BACK.
+	//! Analogous to glCullFace( \a face ). Valid arguments are \c GL_FRONT and \c GL_BACK.
 	void					cullFace( GLenum face );
-	//! Pushes the cull face \a face. Valid arguments are GL_FRONT and GL_BACK.
+	//! Pushes the cull face \a face. Valid arguments are \c GL_FRONT and \c GL_BACK.
 	void					pushCullFace( GLenum face );
 	//! Duplicates and pushes the top of the Cull Face stack.
 	void					pushCullFace();
 	//! Pops the top of the Cull Face stack.
 	void					popCullFace();
-	//! Returns a GLenum representing the current cull face. Either GL_FRONT or GL_BACK.
+	//! Returns a GLenum representing the current cull face. Either \c GL_FRONT or \c GL_BACK.
 	GLenum					getCullFace();
 
 	//! Analogous to glBindBuffer( \a target, \a id )
