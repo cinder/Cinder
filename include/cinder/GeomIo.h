@@ -178,26 +178,28 @@ public:
 };
 
 class Cube : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
 
 	virtual Cube&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual Cube&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	Cube&			subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	Cube&			subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
+	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	virtual size_t		getNumVertices() const override { return 24; }
-	virtual size_t		getNumIndices() const override { return 36; }
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
-	static float	sPositions[24*3];
-	static float	sColors[24*3];
-	static float	sTexCoords[24*2];
-	static float	sNormals[24*3];
-
-	static uint32_t	sIndices[36];
+  protected:
+	ivec3		mSubdivisions;
+	vec3		mSize;	
 };
 
 class Icosahedron : public Source {

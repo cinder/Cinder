@@ -281,6 +281,16 @@ void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint16_t 
 		target[v] = source[v];
 }
 
+uint8_t calcIndicesRequiredBytes( size_t numIndices )
+{
+	if( numIndices < 256 )
+		return 1;
+	else if( numIndices < 65536 )
+		return 2;
+	else
+		return 4;
+}
+
 void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices )
 {
 	unique_ptr<uint32_t[]> indices( new uint32_t[sourceNumIndices] );
@@ -288,12 +298,7 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 	uint32_t count = 0;
 	std::generate( indices.get(), indices.get() + sourceNumIndices, [&] { return count++; } );
 
-	uint8_t requiredBytesPerIndex = 4;
-	if( sourceNumIndices < 256 )
-		requiredBytesPerIndex = 1;
-	else if( sourceNumIndices < 65536 )
-		requiredBytesPerIndex = 2;
-	// now have the target copy these indices
+	uint8_t requiredBytesPerIndex = calcIndicesRequiredBytes( sourceNumIndices );
 	copyIndices( sourcePrimitive, indices.get(), sourceNumIndices, requiredBytesPerIndex );
 }
 
@@ -340,72 +345,139 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cube
-float Cube::sPositions[24*3] = {  1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	 1.0f,-1.0f,-1.0f,   1.0f, 1.0f,-1.0f,	// +X
-	1.0f, 1.0f, 1.0f,   1.0f, 1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,	// +Y
-	1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	// +Z
-	-1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,	// -X
-	-1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,   1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,	// -Y
-	1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f }; // -Z
-
-uint32_t Cube::sIndices[6*6] ={	0, 1, 2, 0, 2, 3,
-	4, 5, 6, 4, 6, 7,
-	8, 9,10, 8, 10,11,
-	12,13,14,12,14,15,
-	16,17,18,16,18,19,
-	20,21,22,20,22,23 };
-
-float Cube::sColors[24*3]	={  1,0,0,	1,0,0,	1,0,0,	1,0,0,		// +X = red
-	0,1,0,	0,1,0,	0,1,0,	0,1,0,		// +Y = green
-	0,0,1,	0,0,1,	0,0,1,	0,0,1,		// +Z = blue
-	0,1,1,	0,1,1,	0,1,1,	0,1,1,		// -X = cyan
-	1,0,1,	1,0,1,	1,0,1,	1,0,1,		// -Y = purple
-	1,1,0,	1,1,0,	1,1,0,	1,1,0 };	// -Z = yellow
-
-float Cube::sTexCoords[24*2]={	0,0,	1,0,	1,1,	0,1,
-	1,0,	1,1,	0,1,	0,0,
-	0,0,	1,0,	1,1,	0,1,
-	1,0,	1,1,	0,1,	0,0,
-	1,1,	0,1,	0,0,	1,0,
-	1,1,	0,1,	0,0,	1,0 };
-
-float Cube::sNormals[24*3]=	{	1,0,0,	1,0,0,	1,0,0,	1,0,0,
-	0,1,0,	0,1,0,	0,1,0,	0,1,0,
-	0,0,1,	0,0,1,	0,0,1,	0,0,1,
-	-1,0,0,	-1,0,0,	-1,0,0,	-1,0,0,
-	0,-1,0,	0,-1,0,  0,-1,0,0,-1,0,
-	0,0,-1,	0,0,-1,	0,0,-1,	0,0,-1 };
-
-
 Cube::Cube()
+	: mSubdivisions( 1 ), mSize( 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::TEX_COORD_0 );
 	enable( Attrib::NORMAL );
 }
 
+size_t Cube::getNumVertices() const
+{
+	return 2 * ( (mSubdivisions.x+1) * (mSubdivisions.y+1) ) // +-Z
+			+ 2 * ( (mSubdivisions.y+1) * (mSubdivisions.z+1) ) // +-X
+			+ 2 * ( (mSubdivisions.x+1) * (mSubdivisions.z+1) ); // +-Y
+}
+
+size_t Cube::getNumIndices() const
+{
+	return 2 * 6 * ( mSubdivisions.x * mSubdivisions.y ) // +-Z
+			+ 2 * 6 * ( mSubdivisions.y * mSubdivisions.z ) // +-X
+			+ 2 * 6 * ( mSubdivisions.x * mSubdivisions.z ); // +-Y
+}
+
 uint8_t	Cube::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
 	}	
+}
+
+void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
+					vector<vec3> *positions, vector<vec3> *normals,
+					const Color &color, vector<Color> *colors, vector<vec2> *texCoords,
+					vector<uint32_t> *indices )
+{
+	const vec3 normal = normalize( faceCenter );
+
+	// fill vertex data
+	for( size_t vi = 0; vi <= subdivV; vi++ ) {
+		const float v = vi / float(subdivV);
+		for( size_t ui = 0; ui <= subdivU; ui++ ) {
+			const float u = ui / float(subdivU);
+
+			positions->emplace_back( faceCenter + ( u - 0.5f ) * 2.0f * uAxis + ( v - 0.5f ) * 2.0f * vAxis );
+
+			if( normals )
+				normals->emplace_back( normal );
+			if( colors )
+				colors->emplace_back( color );
+			if( texCoords )
+				texCoords->emplace_back( u, v );
+		}
+	}
+
+	// 'baseIdx' will correspond to the index of the first vertex we created in this call to generateFace()
+	const uint32_t baseIdx = indices->empty() ? 0 : ( indices->back() + 1 );
+	for( uint32_t u = 0; u < subdivU; u++ ) {
+		for( uint32_t v = 0; v < subdivV; v++ ) {
+			const uint32_t i = u + v * ( subdivV + 1 );
+
+			indices->push_back( baseIdx + i );
+			indices->push_back( baseIdx + i + subdivV + 1 );
+			indices->push_back( baseIdx + i + 1 );
+
+			indices->push_back( baseIdx + i + 1 );
+			indices->push_back( baseIdx + i + subdivV + 1 );
+			indices->push_back( baseIdx + i + subdivV + 2 );
+			// important the last is the highest idx due to determination of next face's baseIdx
+		}
+	}
 }
 
 void Cube::loadInto( Target *target ) const
 {
-	target->copyAttrib( Attrib::POSITION, 3, 0, sPositions, 24 );
-	if( isEnabled( Attrib::COLOR ) )
-		target->copyAttrib( Attrib::COLOR, 3, 0, sColors, 24 );
-	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, sTexCoords, 24 );
-	if( isEnabled( Attrib::NORMAL ) )
-		target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 24 );
+	vector<vec3> positions;
+	vector<uint32_t> indices;
+	vector<vec3> normals;
+	vector<Color> colors;
+	vector<vec2> texCoords;
+	vector<vec3> *normalsPtr = nullptr;
+	vector<Color> *colorsPtr = nullptr;
+	vector<vec2> *texCoordsPtr = nullptr;
+	
+	const size_t numVertices = getNumVertices();
+	
+	// reserve room in vectors and set pointers to non-null for normals, texcoords and colors as appropriate
+	positions.reserve( numVertices );
+	indices.reserve( getNumIndices() );
+	if( isEnabled( Attrib::NORMAL ) ) {
+		normals.reserve( numVertices );
+		normalsPtr = &normals;
+	}
+	if( isEnabled( Attrib::COLOR ) ) {
+		colors.reserve( numVertices );
+		colorsPtr = &colors;
+	}
+	if( isEnabled( Attrib::TEX_COORD_0 ) ) {
+		texCoords.reserve( numVertices );
+		texCoordsPtr = &texCoords;
+	}
+	
+	// +X
+	generateFace( vec3(mSize.x,0,0), vec3(0,0,mSize.z), vec3(0,mSize.y,0), mSubdivisions.z, mSubdivisions.y, &positions,
+		normalsPtr, Color(1,0,0), colorsPtr, texCoordsPtr, &indices );
+	// +Y
+	generateFace( vec3(0,mSize.y,0), vec3(mSize.x,0,0), vec3(0,0,mSize.z), mSubdivisions.x, mSubdivisions.z, &positions,
+		normalsPtr, Color(0,1,0), colorsPtr, texCoordsPtr, &indices );
+	// +Z
+	generateFace( vec3(0,0,mSize.z), vec3(0,mSize.y,0), vec3(mSize.x,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
+		normalsPtr, Color(0,0,1), colorsPtr, texCoordsPtr, &indices );
+	// -X
+	generateFace( vec3(-mSize.x,0,0), vec3(0,mSize.y,0), vec3(0,0,mSize.z), mSubdivisions.y, mSubdivisions.z, &positions,
+		normalsPtr, Color(0,1,1), colorsPtr, texCoordsPtr, &indices );
+	// -Y
+	generateFace( vec3(0,-mSize.y,0), vec3(0,0,mSize.z), vec3(mSize.x,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
+		normalsPtr, Color(1,0,1), colorsPtr, texCoordsPtr, &indices );
+	// -Z
+	generateFace( vec3(0,0,-mSize.z), vec3(mSize.x,0,0), vec3(0,mSize.y,0), mSubdivisions.x, mSubdivisions.y, &positions,
+		normalsPtr, Color(1,1,0), colorsPtr, texCoordsPtr, &indices );
 
-	target->copyIndices( Primitive::TRIANGLES, sIndices, 36, 1 );
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
+	if( isEnabled( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
