@@ -122,9 +122,6 @@ public:
 	virtual bool		isEnabled( Attrib attrib ) const;
 
 protected:  
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add );
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add );
-
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
 	void	copyIndicesNonIndexed( uint16_t *dest ) const;
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries

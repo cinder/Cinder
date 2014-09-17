@@ -168,51 +168,6 @@ void copyDataImpl( const float *srcData, size_t numElements, size_t dstStrideByt
 		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
 	}
 }
-
-template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
-{
-	static const float sFillerData[4] = { 0, 0, 0, 1 };
-	const uint8_t MINDIM = (2 < DSTDIM) ? 2 : DSTDIM;
-
-	if( dstStrideBytes == 0 )
-		dstStrideBytes = DSTDIM * sizeof(float);
-
-	for( size_t v = 0; v < numElements; ++v ) {
-		uint8_t d;
-		for( d = 0; d < MINDIM; ++d ) {
-			dstData[d] = srcData[d] * mult[d] + add[d];
-		}
-		for( ; d < DSTDIM; ++d ) {
-			dstData[d] = sFillerData[d];
-		}
-		srcData += 2;
-		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
-	}
-}
-
-template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
-{
-	static const float sFillerData[4] = { 0, 0, 0, 1 };
-	const uint8_t MINDIM = (3 < DSTDIM) ? 3 : DSTDIM;
-
-	if( dstStrideBytes == 0 )
-		dstStrideBytes = DSTDIM * sizeof(float);
-
-	for( size_t v = 0; v < numElements; ++v ) {
-		uint8_t d;
-		for( d = 0; d < MINDIM; ++d ) {
-			dstData[d] = srcData[d] * mult[d] + add[d];
-		}
-		for( ; d < DSTDIM; ++d ) {
-			dstData[d] = sFillerData[d];
-		}
-		srcData += 3;
-		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
-	}
-}
-
 } // anonymous namespace
 
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData )
@@ -250,28 +205,6 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 		default:
 			throw ExcIllegalSourceDimensions();
 		}
-	}
-}
-
-void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
-{
-	switch( dstDimensions) {
-	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 3: copyDataMultAddImpl<3>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 4: copyDataMultAddImpl<4>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	default: throw ExcIllegalDestDimensions();
-	}
-}
-
-void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
-{
-	switch( dstDimensions) {
-	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 3: copyDataMultAddImpl<3>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 4: copyDataMultAddImpl<4>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	default: throw ExcIllegalDestDimensions();
 	}
 }
 
