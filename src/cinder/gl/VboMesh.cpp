@@ -61,7 +61,7 @@ class VboMeshGeomTarget : public geom::Target {
 		mVboMesh->mNumIndices = 0; // this may be replaced later with a copyIndices call
 	}
 	
-	virtual geom::Primitive	getPrimitive() const override;
+	virtual geom::Primitive	getPrimitive() const;
 	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
 	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;

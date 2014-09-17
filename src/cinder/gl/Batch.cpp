@@ -40,7 +40,6 @@ class BatchGeomTarget : public geom::Target {
 		mBatch->mNumIndices = 0; // this may be replaced later with a copyIndices call
 	}
 	
-	virtual geom::Primitive	getPrimitive() const override;
 	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
 	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
@@ -51,11 +50,6 @@ class BatchGeomTarget : public geom::Target {
 	uint8_t						*mData;
 	Batch						*mBatch;
 };
-
-geom::Primitive	BatchGeomTarget::getPrimitive() const
-{
-	return mPrimitive;
-}
 
 uint8_t	BatchGeomTarget::getAttribDims( geom::Attrib attr ) const
 {

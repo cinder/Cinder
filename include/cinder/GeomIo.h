@@ -30,6 +30,7 @@
 
 #include <set>
 #include <vector>
+#include <map>
 
 namespace cinder { namespace geom {
 
@@ -136,7 +137,6 @@ protected:
 
 class Target {
   public:
-	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;	
 
 	virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
@@ -485,6 +485,7 @@ class Cylinder : public Source {
 
 	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	//! Specifices the center of the Cylinder.
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
 	virtual Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
@@ -496,7 +497,7 @@ class Cylinder : public Source {
 	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	//! Specifies the axis of the cylinder.
 	virtual Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
-	//! Conveniently sets origin, height and direction.
+	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
 
 	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
@@ -599,8 +600,42 @@ class Plane : public Source {
 	mutable std::vector<uint32_t>		mIndices;
 };
 
+// By default, attributes pass through the Modifier from the input source -> target
+// READ attributes values are captured from mSource, typically to derive other attributes from, and then are passed through
+// WRITE attributes prevent the passing of the attribute data from source -> target, to allow the owner of the Modifier to write it later
+// READ_WRITE attributes are captured but not passed through to the target
+class Modifier : public geom::Target {
+  public:
+	typedef enum { READ, WRITE, READ_WRITE, IGNORE } Access;
+
+	Modifier( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
+		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
+	{}
+
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getReadAttribDims( Attrib attr ) const;
+	// not const because consumer is allowed to overwrite this data
+	float* getReadAttribData( Attrib attr ) const;
+	
+  protected:
+	const geom::Source		&mSource;
+	geom::Target			*mTarget;
+	
+	std::map<Attrib,Access>						mAttribs;
+	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,uint8_t>					mAttribDims;
+	
+	Access									mIndicesAccess;
+	std::unique_ptr<uint32_t[]>				mIndices;
+	size_t									mNumIndices;
+	geom::Primitive							mPrimitive;
+};
+
 class Transform : public Source {
   public:
+	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
 	Transform( const geom::Source &source, const mat4 &transform )
 		: mSource( source ), mTransform( transform )
 	{}
@@ -637,9 +672,25 @@ class Twist : public Source {
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 	
+  protected:
 	const geom::Source&		mSource;
 	vec3					mAxisStart, mAxisEnd;
 	float					mStartAngle, mEndAngle;
+};
+
+//! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
+class Wireframe : public Source {
+  public:
+	Wireframe( const geom::Source &source );
+
+  	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&		mSource;
 };
 
 #if 0

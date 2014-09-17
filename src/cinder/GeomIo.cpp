@@ -46,6 +46,74 @@ std::string attribToString( Attrib attrib )
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Modifier
+uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
+{
+	auto attrIt = mAttribs.find( attr );
+	if( attrIt == mAttribs.end() || attrIt->second == IGNORE ) { // not an attribute we're interested in; pass through and ask the target
+		return mTarget->getAttribDims( attr );
+	}
+	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want whatever the source has got
+		return mSource.getAttribDims( attr );
+	}
+	else // WRITE means our consumer will be writing this value later so we don't need the source to supply it
+		return 0;
+}
+
+void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
+{
+	auto attrIt = mAttribs.find( attr );
+	if( attrIt == mAttribs.end() || attrIt->second == IGNORE ) { // not an attribute we're interested in; pass through to the target
+		mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want to capture the values; for READ, we pass them to target
+		// make some room for our own copy of this data
+		mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
+		mAttribDims[attr] = dims;
+		copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+		if( attrIt->second == READ ) // pass through to target when READ but not READ_WRITE
+			mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	// WRITE means our consumer will be writing this value later
+}
+
+void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+{
+	mNumIndices = numIndices;
+	mPrimitive = primitive;
+	switch( mIndicesAccess ) {
+		case IGNORE: // we just pass the indices through to the target
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		case READ: // capture, and pass through to target
+		case READ_WRITE: // capture but don't pass through
+			mIndices = unique_ptr<uint32[]>( new uint32[numIndices] );
+			memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		default: // for WRITE we will supply our own indices later so do nothing but record the count
+		break;
+	}
+}
+
+uint8_t	Modifier::getReadAttribDims( Attrib attr ) const
+{
+	if( mAttribDims.find( attr ) == mAttribDims.end() )
+		return 0;
+	else
+		return mAttribDims.at( attr );
+}
+
+// not const because consumer is allowed to overwrite this data
+float* Modifier::getReadAttribData( Attrib attr ) const
+{
+	if( mAttribData.find( attr ) == mAttribData.end() )
+		return nullptr;
+	else
+		return mAttribData.at( attr ).get();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // BufferLayout
 AttribInfo BufferLayout::getAttribInfo( Attrib attrib ) const
 {
@@ -1833,187 +1901,133 @@ uint8_t Transform::getAttribDims( Attrib attr ) const
 
 void Transform::loadInto( Target *target ) const
 {
-	class TransformTarget : public geom::Target {
-	  public:
-		TransformTarget( const geom::Source &source, geom::Target *target )
-			: mSource( source ), mTarget( target )
-		{}
-
-		Primitive	getPrimitive() const override { return mTarget->getPrimitive(); }
-		uint8_t		getAttribDims( Attrib attr ) const override
-		{
-			if( attr == Attrib::POSITION )
-				return std::max<uint8_t>( 3, mTarget->getAttribDims( Attrib::POSITION ) );
-			else
-				return mTarget->getAttribDims( attr );
-		}
-
-		void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
-		{
-			if( attr == Attrib::POSITION ) {
-				mPositionDims = std::max<uint8_t>( 3, dims );
-				mPositions = unique_ptr<float[]>( new float[mPositionDims * count] );
-				copyData( dims, srcData, count, mPositionDims, mPositionDims * sizeof(float), mPositions.get() );
-			}
-			else if( attr == Attrib::NORMAL ) {
-				if( dims != 3 ) {
-					CI_LOG_W( "geom::Transform can only handle 3D normals. Ignoring normals." );
-					mNormalsDims = 0;
-					mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
-				}
-				else {
-					mNormalsDims = 3;
-					mNormals = unique_ptr<vec3[]>( new vec3[count] );
-					copyData( dims, srcData, count, 3, 0, (float*)mNormals.get() );
-				}
-			}
-			else
-				mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
-		}
-		
-		void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
-		{
-			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
-		}
-		
-		const geom::Source		&mSource;
-		geom::Target			*mTarget;
-		unique_ptr<float[]>		mPositions;
-		uint8_t					mPositionDims;
-		unique_ptr<vec3[]>		mNormals;
-		uint8_t					mNormalsDims;
-	};
-	
-	// first instantiate our custom 'TransformTarget' and have our source loadInto that.
-	// It will pass all attributes and indices through to 'target' except for positions, which it captures
-	TransformTarget transformTarget( mSource, target );
-	mSource.loadInto( &transformTarget );
+	// we want to capture and then modify both positions and normals
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[POSITION] = Modifier::READ_WRITE;
+	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
 	
 	const size_t numVertices = mSource.getNumVertices();
-	
-	// now we'll transform our captured positions and call copyAttrib against 'target' with them
-	// note: this might be optimized if we avoided the default construction of vec3/vec4
-	const float *inPositions = transformTarget.mPositions.get();
-	if( transformTarget.mPositionDims == 3 ) {
-		unique_ptr<vec3[]> transformedPositions( new vec3[numVertices] );
+
+	if( modifier.getReadAttribDims( POSITION ) == 2 ) {
+		vec2* positions = reinterpret_cast<vec2*>( modifier.getReadAttribData( POSITION ) );
 		for( size_t v = 0; v < numVertices; ++v )
-			transformedPositions[v] = vec3( mTransform * vec4( glm::make_vec3( &inPositions[v*3] ), 1 ) );
-		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)transformedPositions.get(), numVertices );
+			positions[v] = vec2( mTransform * vec4( positions[v], 0, 1 ) );
+		target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions, numVertices );
 	}
-	else { // positionDims == 4
-		unique_ptr<vec4[]> transformedPositions( new vec4[numVertices] );
+	else if( modifier.getReadAttribDims( POSITION ) == 3 ) {
+		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
 		for( size_t v = 0; v < numVertices; ++v )
-			transformedPositions[v] = mTransform * vec4( glm::make_vec4( &inPositions[v*4] ) );
-		target->copyAttrib( Attrib::POSITION, 4, 0, (const float*)transformedPositions.get(), numVertices );
+			positions[v] = vec3( mTransform * vec4( positions[v], 1 ) );
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
 	}
+	else if( modifier.getReadAttribDims( POSITION ) == 4 ) {
+		vec4* positions = reinterpret_cast<vec4*>( modifier.getReadAttribData( POSITION ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			positions[v] = mTransform * positions[v];
+		target->copyAttrib( Attrib::POSITION, 4, 0, (const float*)positions, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
 	
 	// and finally, we'll make the sort of modification to our normals (if they're present)
 	// using the inverse transpose of 'mTransform'
-	if( transformTarget.mNormalsDims == 3 ) {
-		const vec3 *inNormals = transformTarget.mNormals.get();
+	if( modifier.getReadAttribDims( NORMAL ) == 3 ) {
+		vec3* normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
 		mat3 normalsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
-		unique_ptr<vec3[]> transformedNormals( new vec3[numVertices] );
 		for( size_t v = 0; v < numVertices; ++v )
-			transformedNormals[v] = normalsTransform * inNormals[v];
-		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)transformedNormals.get(), numVertices );
+			normals[v] = normalsTransform * normals[v];
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
 	}
+	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Twist
 uint8_t Twist::getAttribDims( Attrib attr ) const
 {
-	switch( attr ) {
-		case Attrib::POSITION: return std::max<uint8_t>( 3, mSource.getAttribDims( Attrib::POSITION ) );
-		default:
-			return mSource.getAttribDims( attr );
-	}
+	return mSource.getAttribDims( attr );
 }
 
 void Twist::loadInto( Target *target ) const
 {
-	class TransformTarget : public geom::Target {
-	  public:
-		TransformTarget( const geom::Source &source, geom::Target *target )
-			: mSource( source ), mTarget( target )
-		{}
-
-		Primitive	getPrimitive() const override { return mTarget->getPrimitive(); }
-		uint8_t		getAttribDims( Attrib attr ) const override
-		{
-			if( attr == Attrib::POSITION )
-				return 3;
-			else
-				return mTarget->getAttribDims( attr );
-		}
-
-		void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
-		{
-			if( attr == Attrib::POSITION ) {
-				if( dims > 3 )
-					CI_LOG_W( "geom::Twist can only handle 3D positions. Stripping 4th dimension." );
-				mPositionDims = 3;
-				mPositions = unique_ptr<vec3[]>( new vec3[count] );
-				copyData( dims, srcData, count, 3, 0, (float*)mPositions.get() );
-			}
-			else if( attr == Attrib::NORMAL ) {
-				if( dims != 3 ) {
-					CI_LOG_W( "geom::Twist can only handle 3D normals. Ignoring normals." );
-					mNormalsDims = 0;
-					mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
-				}
-				else {
-					mNormalsDims = 3;
-					mNormals = unique_ptr<vec3[]>( new vec3[count] );
-					copyData( dims, srcData, count, 3, 0, (float*)mNormals.get() );
-				}
-			}
-			else
-				mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
-		}
-		
-		void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
-		{
-			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
-		}
-		
-		const geom::Source		&mSource;
-		geom::Target			*mTarget;
-		unique_ptr<vec3[]>		mPositions;
-		uint8_t					mPositionDims;
-		unique_ptr<vec3[]>		mNormals;
-		uint8_t					mNormalsDims;
-	};
-	
-	// first instantiate our custom 'TransformTarget' and have our source loadInto that.
-	// It will pass all attributes and indices through to 'target' except for positions, which it captures
-	TransformTarget transformTarget( mSource, target );
-	mSource.loadInto( &transformTarget );
+	// we want to capture and then modify both positions and normals
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[POSITION] = Modifier::READ_WRITE;
+	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
 	
 	const size_t numVertices = mSource.getNumVertices();
-	
-	// now we'll transform our captured positions and call copyAttrib against 'target' with them
-	// note: this might be optimized if we avoided the default construction of vec3/vec4
 	const float invAxisLength = 1.0f / distance( mAxisStart, mAxisEnd );
 	const vec3 axisDir = ( mAxisEnd - mAxisStart ) * vec3( invAxisLength );
-	if( transformTarget.mPositionDims == 3 ) {
-		unique_ptr<vec3[]> transformedPositions( new vec3[numVertices] );
+
+	if( modifier.getReadAttribDims( POSITION ) == 3 ) {
+		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
+		vec3* normals = nullptr;
+		if( modifier.getReadAttribDims( NORMAL ) == 3 )
+			normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
+		
 		for( size_t v = 0; v < numVertices; ++v ) {
-			vec3 inPosition = transformTarget.mPositions[v];
-			float closestDist = dot( inPosition - mAxisStart, axisDir );
+			// find the 't' value of the point on the axis that inPosition is closest to
+			float closestDist = dot( positions[v] - mAxisStart, axisDir );
 			float tVal = glm::clamp<float>( closestDist * invAxisLength, 0, 1 );
+			// 'pointOnAxis' is the actual point on the axis inPosition is closest to
 			vec3 pointOnAxis = mAxisStart + axisDir * closestDist;
+			// our rotation is around the axis, and the angle is a lerp between 'mStartAngle' and 'mEndAngle' based on 't'
 			mat4 rotation = rotate( glm::mix( mStartAngle, mEndAngle, tVal ), axisDir );
+			// now transform the point by rotating around 'pointOnAxis'
 			mat4 transform = translate( pointOnAxis ) * rotation * translate( -pointOnAxis );
-			vec3 outPos = vec3( transform * vec4( inPosition, 1 ) );
-			transformedPositions[v] = outPos;
-			if( transformTarget.mNormalsDims == 3 ) {
-				transformTarget.mNormals[v] = vec3( rotation * vec4( transformTarget.mNormals[v], 0 ) );
+			vec3 outPos = vec3( transform * vec4( positions[v], 1 ) );
+			positions[v] = outPos;
+			// we need to transform the normal by rotating it by the same angle (but not around the point) we did the position
+			if( normals ) {
+				normals[v] = vec3( rotation * vec4( normals[v], 0 ) );
 			}
 		}
-		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)transformedPositions.get(), numVertices );
-		if( transformTarget.mNormalsDims == 3 )
-			target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)transformTarget.mNormals.get(), numVertices );
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
+		if( normals )
+			target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Twist" );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Wireframe
+size_t Wireframe::getNumIndices() const
+{
+	switch( mSource.getPrimitive() ) {
+		case LINES:
+			return mSource.getNumIndices();
+		break;
+		case TRIANGLES:
+			return mSource.getNumIndices() ? (mSource.getNumIndices() * 2) : (mSource.getNumVertices() * 2);
+		break;
+		case TRIANGLE_STRIP:
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)(3 + (mSource.getNumIndices() - 3) * 2 )
+				: (int)(3 + (mSource.getNumVertices()-3) * 2) );
+		break;
+		case TRIANGLE_FAN:
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)((mSource.getNumIndices() - 1) * 2 )
+				: (int)((mSource.getNumVertices()-1) * 2 ) );
+		break;
+	}
+	return mSource.getNumIndices();
+}
+
+void Wireframe::loadInto( Target *target ) const
+{
+
+	switch( mSource.getPrimitive() ) {
+		case Primitive::LINES: // pass-through
+			mSource.loadInto( target );
+		break;
+		case Primitive::TRIANGLE_FAN:
+			
+		break;
 	}
 }
 
