@@ -609,13 +609,17 @@ class Modifier : public geom::Target {
 		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
 	{}
 
-	uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	virtual void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	virtual void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	
 	uint8_t	getReadAttribDims( Attrib attr ) const;
 	// not const because consumer is allowed to overwrite this data
 	float* getReadAttribData( Attrib attr ) const;
-	
+
+	size_t			getNumIndices() const { return mNumIndices; }
+	const uint32_t*	getIndicesData() const { return mIndices.get(); }
+		
   protected:
 	const geom::Source		&mSource;
 	geom::Target			*mTarget;
@@ -676,11 +680,13 @@ class Twist : public Source {
 };
 
 //! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
-class Wireframe : public Source {
+class Lines : public Source {
   public:
-	Wireframe( const geom::Source &source );
+	Lines( const geom::Source &source )
+		: mSource( source )
+	{}
 
-  	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }

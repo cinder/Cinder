@@ -63,7 +63,7 @@ uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
 void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
 	auto attrIt = mAttribs.find( attr );
-	if( attrIt == mAttribs.end() || attrIt->second == IGNORE ) { // not an attribute we're interested in; pass through to the target
+	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORE) ) { // not an attribute we're interested in; pass through to the target
 		mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
 	}
 	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want to capture the values; for READ, we pass them to target
@@ -89,7 +89,8 @@ void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t 
 		case READ_WRITE: // capture but don't pass through
 			mIndices = unique_ptr<uint32[]>( new uint32[numIndices] );
 			memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
-			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+			if( mIndicesAccess == READ )
+				mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
 		break;
 		default: // for WRITE we will supply our own indices later so do nothing but record the count
 		break;
@@ -1929,8 +1930,8 @@ void Twist::loadInto( Target *target ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Wireframe
-size_t Wireframe::getNumIndices() const
+// Lines
+size_t Lines::getNumIndices() const
 {
 	switch( mSource.getPrimitive() ) {
 		case LINES:
@@ -1951,15 +1952,41 @@ size_t Wireframe::getNumIndices() const
 	return mSource.getNumIndices();
 }
 
-void Wireframe::loadInto( Target *target ) const
+void Lines::loadInto( Target *target ) const
 {
+	// we are only interested in changing indices
+	Modifier modifier( mSource, target, map<Attrib,Modifier::Access>(), Modifier::READ_WRITE );
+	mSource.loadInto( &modifier );
+
+	const size_t numInIndices = modifier.getNumIndices();
+	const size_t numInVertices = mSource.getNumVertices();
 
 	switch( mSource.getPrimitive() ) {
 		case Primitive::LINES: // pass-through
-			mSource.loadInto( target );
 		break;
 		case Primitive::TRIANGLE_FAN:
+		break;
+		case Primitive::TRIANGLES: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 0; i < numInIndices; i += 3 ) {
+					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
+					outIndices.push_back( indices[i + 1] ); outIndices.push_back( indices[i + 2] );
+					outIndices.push_back( indices[i + 2] ); outIndices.push_back( indices[i + 0] );
+				}
+			}
+			else {
+				for( uint32_t i = 0; i < numInVertices; i += 3 ) {
+					outIndices.push_back( i + 0 ); outIndices.push_back( i + 1 );
+					outIndices.push_back( i + 1 ); outIndices.push_back( i + 2 );
+					outIndices.push_back( i + 2 ); outIndices.push_back( i + 0 );
+				}
+			}
 			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+		}
 		break;
 	}
 }
