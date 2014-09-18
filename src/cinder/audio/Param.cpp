@@ -66,7 +66,7 @@ Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, 
 }
 
 Param::Param( Node *parentNode, float initialValue )
-	: mParentNode( parentNode ), mValue( initialValue )
+	: mParentNode( parentNode ), mValue( initialValue ), mIsVaryingThisBlock( false )
 {
 }
 
@@ -134,6 +134,7 @@ void Param::setProcessor( const NodeRef &node )
 	node->initializeImpl();
 
 	mProcessor = node;
+	mIsVaryingThisBlock = true; // stays true until there is no more processor and eval() sets this to false.
 }
 
 void Param::reset()
@@ -175,9 +176,12 @@ pair<float, float> Param::findEndTimeAndValue() const
 	}
 }
 
-const float* Param::getValueArray() const
+const float* Param::getValueArray()
 {
-	CI_ASSERT( ! mInternalBuffer.isEmpty() );
+	if( ! mIsVaryingThisBlock ) {
+		initInternalBuffer();
+		dsp::fill( mValue, mInternalBuffer.getData(), mInternalBuffer.getSize() );
+	}
 
 	return mInternalBuffer.getData();
 }
@@ -191,7 +195,8 @@ bool Param::eval()
 	}
 	else {
 		auto ctx = getContext();
-		return eval( (float)ctx->getNumProcessedSeconds(), mInternalBuffer.getData(), mInternalBuffer.getSize(), ctx->getSampleRate() );
+		mIsVaryingThisBlock = eval( (float)ctx->getNumProcessedSeconds(), mInternalBuffer.getData(), mInternalBuffer.getSize(), ctx->getSampleRate() );
+		return mIsVaryingThisBlock;
 	}
 }
 
@@ -204,9 +209,10 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 		EventRef &event = *eventIt;
 
 		// first remove dead events
-		if( event->mTimeEnd <= timeBegin || event->mIsCanceled ) {
-			// if this is the last event, record its end value before erasing.
-			if( mEvents.size() == 1 )
+		const bool cancelled = event->mIsCanceled;
+		if( event->mTimeEnd <= timeBegin || cancelled ) {
+			// if we skipped over the last event, record its end value before erasing.
+			if( mEvents.size() == 1 && ! cancelled )
 				mValue = event->mValueEnd;
 			
 			eventIt = mEvents.erase( eventIt );
