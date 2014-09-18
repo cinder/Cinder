@@ -312,6 +312,7 @@ float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
 float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
+	: mScale( 1 )
 {
 	enable( Attrib::POSITION );	
 	enable( Attrib::TEX_COORD_0 );
@@ -1941,12 +1942,12 @@ size_t Lines::getNumIndices() const
 			return mSource.getNumIndices() ? (mSource.getNumIndices() * 2) : (mSource.getNumVertices() * 2);
 		break;
 		case TRIANGLE_STRIP:
-			return std::max<int>( 0, mSource.getNumIndices() ? (int)(3 + (mSource.getNumIndices() - 3) * 2 )
-				: (int)(3 + (mSource.getNumVertices()-3) * 2) );
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)((mSource.getNumIndices() - 2) * 6 )
+				: (int)(mSource.getNumVertices() - 2) * 6 );
 		break;
 		case TRIANGLE_FAN:
-			return std::max<int>( 0, mSource.getNumIndices() ? (int)((mSource.getNumIndices() - 1) * 2 )
-				: (int)((mSource.getNumVertices()-1) * 2 ) );
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)(mSource.getNumIndices() * 4 - 2 )
+				: (int)(mSource.getNumVertices() * 4 - 2 ) );
 		break;
 	}
 	return mSource.getNumIndices();
@@ -1960,11 +1961,41 @@ void Lines::loadInto( Target *target ) const
 
 	const size_t numInIndices = modifier.getNumIndices();
 	const size_t numInVertices = mSource.getNumVertices();
+auto bonk = getNumIndices();
+std::cout << bonk << std::endl;
+	if( getNumIndices() < 2 ) { // early exit
+		target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
+		return;
+	}
 
 	switch( mSource.getPrimitive() ) {
 		case Primitive::LINES: // pass-through
+			target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
 		break;
-		case Primitive::TRIANGLE_FAN:
+		case Primitive::TRIANGLE_FAN: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 1; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
+					outIndices.push_back( indices[0] ); outIndices.push_back( indices[i] );
+				}
+				for( size_t j = numInIndices-1, i = 0; i < numInIndices; j = i++ ) {// lines connecting adjacent vertices
+					outIndices.push_back( indices[j] ); outIndices.push_back( indices[i] );
+				}
+			}
+			else {
+				for( size_t i = 1; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
+					outIndices.push_back( 0 ); outIndices.push_back( (uint32_t)i );
+				}
+				for( size_t j = numInVertices-1, i = 0; i < numInVertices; j = i++ ) {// lines connecting adjacent vertices
+					outIndices.push_back( (uint32_t)j ); outIndices.push_back( (uint32_t)i );
+				}
+			}
+			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+CI_ASSERT( outIndices.size() == getNumIndices() );
+		}
 		break;
 		case Primitive::TRIANGLES: {
 			vector<uint32_t> outIndices;
@@ -1986,6 +2017,29 @@ void Lines::loadInto( Target *target ) const
 			}
 			
 			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+		}
+		break;
+		case Primitive::TRIANGLE_STRIP: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 0; i < numInIndices - 2; i++ ) {
+					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
+					outIndices.push_back( indices[i + 1] ); outIndices.push_back( indices[i + 2] );
+					outIndices.push_back( indices[i + 2] ); outIndices.push_back( indices[i + 0] );
+				}
+			}
+			else {
+				for( uint32_t i = 0; i < numInVertices - 2; i++ ) {
+					outIndices.push_back( i + 0 ); outIndices.push_back( i + 1 );
+					outIndices.push_back( i + 1 ); outIndices.push_back( i + 2 );
+					outIndices.push_back( i + 2 ); outIndices.push_back( i + 0 );
+				}
+			}
+			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+CI_ASSERT( outIndices.size() == getNumIndices() );
 		}
 		break;
 	}
