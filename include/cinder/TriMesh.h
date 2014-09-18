@@ -232,33 +232,60 @@ class TriMesh : public geom::Source {
 	//! Returns all the colors for a mesh in a std::vector as Color<DIM>f. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getColors() { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	//! Returns all the colors for a mesh in a std::vector as Color<DIM>f. For example, to get RGB colors, call getColors<3>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*		getColors() const { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a std::vector of TexCoord0 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord0<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords0() { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
+	//! Returns a std::vector of TexCoord0 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord0<2>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*		getTexCoords0() const { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
 	//! Returns a std::vector of TexCoord1 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord1<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords1() { assert(mTexCoords1Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords1.data(); }
+	//! Returns a std::vector of TexCoord1 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord1<2>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*		getTexCoords1() const { assert(mTexCoords1Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords1.data(); }
 	//! Returns a std::vector of TexCoord2 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord2<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords2() { assert(mTexCoords2Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords2.data(); }
+	//! Returns a std::vector of TexCoord2 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord2<2>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*		getTexCoords2() const { assert(mTexCoords2Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords2.data(); }
 	//! Returns a std::vector of TexCoord3 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord3<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords3() { assert(mTexCoords3Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords3.data(); }
+	//! Returns a std::vector of TexCoord3 as as Vec<DIM>f. For example, to get UV texCoords, call getTexCoord3<2>().
+	template<uint8_t DIM>
+	const typename VECDIM<DIM,float>::TYPE*		getTexCoords3() const { assert(mTexCoords3Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords3.data(); }
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
-	std::vector<uint32_t>&			getIndices() { return mIndices; }		
+	std::vector<uint32_t>&			getIndices() { return mIndices; }
 	//! Trimesh indices are ordered such that the indices of triangle T are { indices[T*3+0], indices[T*3+1], indices[T*3+2] }
 	const std::vector<uint32_t>&	getIndices() const { return mIndices; }
 
+	//! Returns a const reference to the position buffer.
+	const std::vector<float>& getBufferPositions() const { return mPositions; }
 	//! Returns a reference to the position buffer.
 	std::vector<float>& getBufferPositions() { return mPositions; }
+	//! Returns a const reference to the colors buffer.
+	const std::vector<float>& getBufferColors() const { return mColors; }
 	//! Returns a reference to the colors buffer.
 	std::vector<float>& getBufferColors() { return mColors; }
+	//! Returns a const reference to the texCoords0 buffer.
+	const std::vector<float>& getBufferTexCoords0() const { return mTexCoords0; }
 	//! Returns a reference to the texCoords0 buffer.
 	std::vector<float>& getBufferTexCoords0() { return mTexCoords0; }
+	//! Returns a const reference to the texCoords1 buffer.
+	const std::vector<float>& getBufferTexCoords1() const { return mTexCoords1; }
 	//! Returns a reference to the texCoords1 buffer.
 	std::vector<float>& getBufferTexCoords1() { return mTexCoords1; }
+	//! Returns a const reference to the texCoords2 buffer.
+	const std::vector<float>& getBufferTexCoords2() const { return mTexCoords2; }
 	//! Returns a reference to the texCoords2 buffer.
 	std::vector<float>& getBufferTexCoords2() { return mTexCoords2; }
+	//! Returns a const reference to the texCoords3 buffer.
+	const std::vector<float>& getBufferTexCoords3() const { return mTexCoords3; }
 	//! Returns a reference to the texCoords3 buffer.
 	std::vector<float>& getBufferTexCoords3() { return mTexCoords3; }
 
