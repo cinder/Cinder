@@ -597,6 +597,9 @@ class Plane : public Source {
 	mutable std::vector<uint32_t>		mIndices;
 };
 
+//////////////////////////////////////////////////////////////////////////////////////
+// Modifiers
+
 // By default, attributes pass through the Modifier from the input source -> target
 // READ attributes values are captured from mSource, typically to derive other attributes from, and then are passed through
 // WRITE attributes prevent the passing of the attribute data from source -> target, to allow the owner of the Modifier to write it later
@@ -634,6 +637,7 @@ class Modifier : public geom::Target {
 	geom::Primitive							mPrimitive;
 };
 
+//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
 class Transform : public Source {
   public:
 	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
@@ -654,6 +658,7 @@ class Transform : public Source {
 	mat4					mTransform;
 };
 
+//! Twists a geom::Source around a given axis
 class Twist : public Source {
   public:
 	Twist( const geom::Source &source )
@@ -694,6 +699,32 @@ class Lines : public Source {
 	
   protected:
 	const geom::Source&		mSource;
+};
+
+//! Modifiers the color of a geom::Source as a function of a 2D or 3D input attribute
+class ColorFromAttrib : public Source {
+  public:
+	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec2)> &fn )
+		: mSource( source ), mAttrib( attrib ), mFnColor2( fn )
+	{}
+	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec3)> &fn )
+		: mSource( source ), mAttrib( attrib ), mFnColor3( fn )
+	{}
+	
+	Attrib				getAttrib() const { return mAttrib; }
+	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
+
+	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	virtual Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&				mSource;
+	Attrib							mAttrib;
+	std::function<Colorf(vec2)>		mFnColor2;
+	std::function<Colorf(vec3)>		mFnColor3;
 };
 
 #if 0

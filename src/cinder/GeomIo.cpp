@@ -1961,8 +1961,7 @@ void Lines::loadInto( Target *target ) const
 
 	const size_t numInIndices = modifier.getNumIndices();
 	const size_t numInVertices = mSource.getNumVertices();
-auto bonk = getNumIndices();
-std::cout << bonk << std::endl;
+
 	if( getNumIndices() < 2 ) { // early exit
 		target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
 		return;
@@ -1994,7 +1993,6 @@ std::cout << bonk << std::endl;
 			}
 			
 			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
-CI_ASSERT( outIndices.size() == getNumIndices() );
 		}
 		break;
 		case Primitive::TRIANGLES: {
@@ -2039,10 +2037,86 @@ CI_ASSERT( outIndices.size() == getNumIndices() );
 			}
 			
 			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
-CI_ASSERT( outIndices.size() == getNumIndices() );
 		}
 		break;
 	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// ColorFromAttrib
+uint8_t ColorFromAttrib::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::COLOR: return 3;
+		default:
+			return mSource.getAttribDims( attr );
+	}
+}
+
+namespace {
+template<typename I, typename IFD, typename O>
+void processColorAttrib( const I* inputData, O *outputData, const std::function<O(IFD)> &fn, size_t numVertices )
+{
+	for( size_t v = 0; v < numVertices; ++v ) {
+		IFD in( (IFD)inputData[v] );
+		outputData[v] = fn( in );
+	}
+}
+
+template<typename O>
+void processColorAttrib2d( const vec2* inputData, O *outputData, const std::function<O(vec3)> &fn, size_t numVertices )
+{
+	for( size_t v = 0; v < numVertices; ++v ) {
+		vec3 in( inputData[v], 0 );
+		outputData[v] = fn( in );
+	}
+}
+}
+
+void ColorFromAttrib::loadInto( Target *target ) const
+{
+	if( (! mFnColor2) && (! mFnColor3) ) {
+		mSource.loadInto( target );
+		return;
+	}
+
+	// we want to capture 'mAttrib' and we want to write COLOR
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[mAttrib] = Modifier::READ;
+	attribAccess[COLOR] = Modifier::WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
+
+	if( modifier.getAttribDims( mAttrib ) == 0 ) {
+		CI_LOG_W( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
+		mSource.loadInto( target );
+		return;
+	}
+
+	const auto numVertices = mSource.getNumVertices();
+	unique_ptr<float[]> mColorData( new float[numVertices * 3] );
+	uint8_t inputAttribDims = modifier.getReadAttribDims( mAttrib );
+	const float* inputAttribData = modifier.getReadAttribData( mAttrib );
+	
+	if( mFnColor2 ) {
+		if( inputAttribDims == 2 )
+			processColorAttrib( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+		else if( inputAttribDims == 3 )
+			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+		else
+			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+	}
+	else if( mFnColor3 ) {
+		if( inputAttribDims == 2 )
+			processColorAttrib2d( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+		if( inputAttribDims == 3 )
+			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+		else
+			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+	}
+
+
+	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
