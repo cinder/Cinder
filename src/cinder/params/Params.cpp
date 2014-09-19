@@ -213,6 +213,15 @@ void TW_CALL getterCallback( void *value, void *clientData )
 	*(T *)value = twc->mGetter();
 }
 
+// specialization of getterCallback for string (string must be copied using TwCopyStdStringToLibrary)
+template <>
+void TW_CALL getterCallback<string>(void *value, void *clientData)
+{
+	Accessors<string> *twc = reinterpret_cast<Accessors<string>*>(clientData);
+	std::string *destPtr = static_cast<std::string *>(value);
+	TwCopyStdStringToLibrary(*destPtr, twc->mGetter());
+}
+
 } // anonymous namespace
 
 int initAntGl( weak_ptr<app::Window> winWeak )
