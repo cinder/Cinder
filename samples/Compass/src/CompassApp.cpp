@@ -34,7 +34,7 @@ class CompassApp : public AppNative {
 	void renderDirection( char d, const vec2 &offset, const Font &font, const Color &color );
 
 	// draw the tex area corresponding to \a d at the specified \a location
-	void drawCardinalTex( char d, const vec3 &location, const vec3 &rotation );
+	void drawCardinalTex( char d, const vec3 &location, const vec3 &degrees );
 
 	void drawFps();
 
@@ -95,7 +95,7 @@ void CompassApp::draw()
 	drawFps();
 }
 
-void CompassApp::drawCardinalTex( char d, const vec3 &location, const vec3 &rotation )
+void CompassApp::drawCardinalTex( char d, const vec3 &location, const vec3 &degrees )
 {
 	const float kRectHalfWidth = kTargetSize / 2.0f;
 	Rectf destRect( kRectHalfWidth, kRectHalfWidth, -kRectHalfWidth, -kRectHalfWidth );
@@ -107,7 +107,7 @@ void CompassApp::drawCardinalTex( char d, const vec3 &location, const vec3 &rota
 	gl::translate( location );
 
 #if 1
-	gl::rotate( rotation );
+	gl::rotate( vec3( toRadians(degrees.x), toRadians(degrees.y), toRadians(degrees.z) ) );
 #else
 	// draw billboarded, flip to face eye point
 	gl::rotate( mCam.getOrientation() );

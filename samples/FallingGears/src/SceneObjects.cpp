@@ -39,7 +39,7 @@ void Gear::draw()
 	Rectf imageDest( - mRadius, - mRadius, mRadius, mRadius );
 
 	vec2 pos = vec2( mBody->GetPosition().x, mBody->GetPosition().y ) * pointsPerMeter;
-	float t = toDegrees( mBody->GetAngle() );
+	float t = mBody->GetAngle();
 
 	gl::pushModelMatrix();
 		gl::translate( pos );

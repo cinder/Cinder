@@ -539,14 +539,14 @@ void rotate( const quat &quat )
 	vec3 axis = glm::axis( quat );
 	float angle = glm::angle( quat );
 
-	rotate( toDegrees( angle ), axis );
+	rotate( angle, axis );
 }
 
-void rotate( float angleDegrees, const vec3 &axis )
+void rotate( float angleRadians, const vec3 &axis )
 {
-	if( math<float>::abs( angleDegrees ) > EPSILON_VALUE ) {
+	if( math<float>::abs( angleRadians ) > EPSILON_VALUE ) {
 		auto ctx = gl::context();
-		ctx->getModelMatrixStack().back() *= glm::rotate( toRadians( angleDegrees ), axis );
+		ctx->getModelMatrixStack().back() *= glm::rotate( angleRadians, axis );
 	}
 }
 

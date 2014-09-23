@@ -179,8 +179,8 @@ void WaterSimApp::mouseDown( MouseEvent event )
 void WaterSimApp::mouseDrag( MouseEvent event )
 {
 	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - vec2(event.getPos());
-	if( delta.lengthSquared() > 5 ) {
-		mGravityVector = delta.normalized() * 9.8f;
+	if( length2( delta ) > 5 ) {
+		mGravityVector = normalize( delta ) * 9.8f;
 		mGravityVector.y = -mGravityVector.y;
 	}
 }
@@ -188,8 +188,8 @@ void WaterSimApp::mouseDrag( MouseEvent event )
 void WaterSimApp::mouseMove( MouseEvent event )
 {
 	vec2 delta = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f - vec2(event.getPos());
-	if( delta.lengthSquared() > 5 ) {
-		mGravityVector = delta.normalized() * 9.8f;
+	if( length2( delta ) > 5 ) {
+		mGravityVector = normalize( delta ) * 9.8f;
 		mGravityVector.y = -mGravityVector.y;
 	}
 }
@@ -241,11 +241,11 @@ void WaterSimApp::drawLogo()
 
 void WaterSimApp::drawArrow()
 {
-	gl::ScopedModelMatrix mtx();
+	gl::ScopedModelMatrix mtx;
 	vec2 center( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f );
 	gl::color( 1, 0, 0, 1 );
 	gl::translate( center );
-	gl::rotate( toDegrees( math<float>::atan2( -mGravityVector.y, mGravityVector.x ) ) + 90.0f );
+	gl::rotate( math<float>::atan2( -mGravityVector.y, mGravityVector.x ) + M_PI / 2 );
 	gl::draw( mArrow );
 }
 

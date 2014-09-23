@@ -224,12 +224,12 @@ void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft 
 void setMatricesWindow( const ci::ivec2 &screenSize, bool originUpperLeft = true );
 
 void rotate( const quat &quat );
-//! Rotates the Model matrix by \a angleDegrees around the \a axis
-void rotate( float angleDegrees, const ci::vec3 &axis );
-//! Rotates the Model matrix by \a angleDegrees around the axis (\a x,\a y,\a z)
-inline void rotate( float angleDegrees, float xAxis, float yAxis, float zAxis ) { rotate( angleDegrees, ci::vec3(xAxis, yAxis, zAxis) ); }
-//! Rotates the Model matrix by \a zDegrees around the z-axis
-inline void rotate( float zDegrees ) { rotate( zDegrees, vec3( 0, 0, 1 ) ); }
+//! Rotates the Model matrix by \a angleRadians around the \a axis
+void rotate( float angleRadians, const ci::vec3 &axis );
+//! Rotates the Model matrix by \a angleRadians around the axis (\a x,\a y,\a z)
+inline void rotate( float angleRadians, float xAxis, float yAxis, float zAxis ) { rotate( angleRadians, ci::vec3(xAxis, yAxis, zAxis) ); }
+//! Rotates the Model matrix by \a zRadians around the z-axis
+inline void rotate( float zRadians ) { rotate( zRadians, vec3( 0, 0, 1 ) ); }
 
 //! Scales the Model matrix by \a v
 void scale( const ci::vec3 &v );

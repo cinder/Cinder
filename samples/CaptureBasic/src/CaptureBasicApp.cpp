@@ -65,7 +65,7 @@ void CaptureBasicApp::draw()
     gl::pushModelMatrix();
 #if defined( CINDER_COCOA_TOUCH )
 		//change iphone to landscape orientation
-		gl::rotate( 90.0f );
+		gl::rotate( M_PI / 2 );
 		gl::translate( 0.0f, -getWindowWidth() );
 
 		Rectf flippedBounds( 0.0f, 0.0f, getWindowHeight(), getWindowWidth() );

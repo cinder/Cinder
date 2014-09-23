@@ -161,7 +161,7 @@ void GeometryApp::draw()
 
 		// Rotate it slowly around the y-axis.
 		gl::pushModelView();
-		gl::rotate( 20.0f* float( getElapsedSeconds() ), 0.0f, 1.0f, 0.0f );
+		gl::rotate( float( getElapsedSeconds() / 5 ), 0.0f, 1.0f, 0.0f );
 
 		// Draw the normals.
 		if( mShowNormals && mNormals )
