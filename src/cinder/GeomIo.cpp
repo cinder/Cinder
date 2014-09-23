@@ -25,6 +25,8 @@
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"
+#include "cinder/TriMesh.h"
+#include "cinder/Triangulate.h"
 #include <algorithm>
 
 using namespace std;
@@ -2117,6 +2119,137 @@ void ColorFromAttrib::loadInto( Target *target ) const
 
 
 	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Extrude
+Extrude::Extrude( const Shape2d &shape, float distance, float approximationScale )
+	: mCalculationsCached( false ), mDistance( distance ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true )
+{
+	enable( Attrib::POSITION );
+	enable( Attrib::NORMAL );
+	
+	for( const auto &contour : shape.getContours() )
+		mPaths.push_back( contour );
+}
+
+void Extrude::calculate() const
+{
+	if( mCalculationsCached )
+		return;
+	
+	mPathSubdivisionPositions.clear();
+	mPathSubdivisionTangents.clear();
+	mPositions.clear();
+	mNormals.clear();
+	mIndices.clear();
+	
+	// iterate all the paths of the shape and subdivide, calculating both positions and tangents
+	for( const auto &path : mPaths ) {
+		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
+		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
+		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
+	}
+
+	// Each of the subdivided paths' positions constitute a new contour on our triangulation
+	Triangulator triangulator;
+	for( const auto &subdivision : mPathSubdivisionPositions )
+		triangulator.addPolyLine( subdivision );
+	
+	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
+
+	// CAP POSITIONS
+	const vec2* capPositions = mCap->getVertices<2>();
+	// front cap
+	if( mFrontCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
+	// back cap
+	if( mBackCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
+	
+	// CAP NORMALS
+	// front cap
+	if( mFrontCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( vec3( 0, 0, -1 ) );
+	// back cap
+	if( mBackCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( vec3( 0, 0, 1 ) );
+		
+	// CAP INDICES
+	auto capIndices = mCap->getIndices();
+	// front cap
+	if( mFrontCap )
+		for( size_t i = 0; i < capIndices.size(); ++i )
+			mIndices.push_back( capIndices[i] );
+	// back cap
+	if( mBackCap )
+		for( size_t i = 0; i < capIndices.size(); ++i )
+			mIndices.push_back( capIndices[i] + (uint32_t)mCap->getNumVertices() );
+	
+	// EXTRUSION
+	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
+		const auto &pathPositions = mPathSubdivisionPositions[p];
+		const auto &pathTangents = mPathSubdivisionTangents[p];
+		// add all the positions & normals
+		uint32_t baseIndex = (uint32_t)mPositions.size();
+		for( size_t v = 0; v < pathPositions.size(); ++v ) {
+			mPositions.push_back( vec3( pathPositions[v], -mDistance * 0.5f ) );
+			mNormals.push_back( vec3( normalize( vec2( -pathTangents[v].y, pathTangents[v].x ) ), 0 ) );
+		}
+		for( size_t v = 0; v < pathPositions.size(); ++v ) {
+			mPositions.push_back( vec3( pathPositions[v], mDistance * 0.5f ) );
+			mNormals.push_back( vec3( normalize( vec2( -pathTangents[v].y, pathTangents[v].x ) ), 0 ) );
+		}
+		// add the indices
+		size_t numSubdivVerts = pathPositions.size();
+		for( size_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
+			mIndices.push_back( baseIndex + i );
+			mIndices.push_back( baseIndex + j );
+			mIndices.push_back( baseIndex + numSubdivVerts + j );
+			mIndices.push_back( baseIndex + i );
+			mIndices.push_back( baseIndex + numSubdivVerts + j );
+			mIndices.push_back( baseIndex + numSubdivVerts + i );
+		}
+	}
+CI_ASSERT( mPositions.size() == mNormals.size() );
+	mCalculationsCached = true;
+}
+	
+size_t Extrude::getNumVertices() const
+{
+	calculate();
+	return mPositions.size();
+}
+
+size_t Extrude::getNumIndices() const
+{
+	calculate();
+	return mIndices.size();
+}
+
+uint8_t	Extrude::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
+	}
+}
+
+void Extrude::loadInto( Target *target ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mPositions.size() );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

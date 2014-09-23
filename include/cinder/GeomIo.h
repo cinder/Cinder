@@ -27,10 +27,16 @@
 #include "cinder/Exception.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
+#include "cinder/Shape2d.h"
 
 #include <set>
 #include <vector>
 #include <map>
+
+// Forward declarations in cinder::
+namespace cinder {
+	class TriMesh;
+}
 
 namespace cinder { namespace geom {
 
@@ -725,6 +731,44 @@ class ColorFromAttrib : public Source {
 	Attrib							mAttrib;
 	std::function<Colorf(vec2)>		mFnColor2;
 	std::function<Colorf(vec3)>		mFnColor3;
+};
+
+class Extrude : public Source {
+  public:
+	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
+	
+	virtual Extrude&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
+	virtual Extrude&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+
+	//! Sets the distance of extrusion along the axis.
+	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
+	//! Enables or disables front and back caps. Enabled by default.
+	Extrude&			caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	//! Enables or disables front cap. Enabled by default.
+	Extrude&			frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	//! Enables or disables back cap. Enabled by default.
+	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	
+
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	void calculate() const;
+  
+	std::vector<Path2d>				mPaths;
+	float							mApproximationScale;
+	float							mDistance;
+	bool							mFrontCap, mBackCap;
+	
+	mutable bool							mCalculationsCached;
+	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	mutable std::unique_ptr<TriMesh>		mCap;
+	mutable std::vector<vec3>				mPositions, mNormals;
+	mutable std::vector<uint32_t>			mIndices;
 };
 
 #if 0
