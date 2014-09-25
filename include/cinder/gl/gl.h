@@ -306,6 +306,7 @@ std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 
 void draw( const VboMeshRef &mesh );
 void draw( const Texture2dRef &texture, const Rectf &dstRect );
+//! Draws a subregion \a srcArea of a Texture (expressed as upper-left origin pixels).
 void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
 void draw( const Texture2dRef &texture, const vec2 &dstOffset = vec2() );
 void draw( const class PolyLine<vec2> &polyLine );

@@ -536,10 +536,8 @@ void setMatricesWindow( const ci::ivec2& screenSize, bool originUpperLeft )
 
 void rotate( const quat &quat )
 {
-	vec3 axis = glm::axis( quat );
-	float angle = glm::angle( quat );
-
-	rotate( angle, axis );
+	auto ctx = gl::context();
+	ctx->getModelMatrixStack().back() *= toMat4( quat );
 }
 
 void rotate( float angleRadians, const vec3 &axis )
