@@ -748,7 +748,8 @@ class Extrude : public Source {
 	Extrude&			frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
 	//! Enables or disables back cap. Enabled by default.
 	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
-	
+	//! Sets the number of subdivisions along the axis of extrusion
+	Extrude&			subdivisions( int sub ) { mSubdivisions = sub; mCalculationsCached = false; return *this; }
 
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override;
@@ -763,12 +764,33 @@ class Extrude : public Source {
 	float							mApproximationScale;
 	float							mDistance;
 	bool							mFrontCap, mBackCap;
+	int								mSubdivisions;
 	
 	mutable bool							mCalculationsCached;
 	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 	mutable std::unique_ptr<TriMesh>		mCap;
 	mutable std::vector<vec3>				mPositions, mNormals;
 	mutable std::vector<uint32_t>			mIndices;
+};
+
+//! Draws lines representing the Attrib::NORMALs for a geom::Source
+class VertexNormalLines : public Source {
+  public:
+	VertexNormalLines( const geom::Source &source, float length )
+		: mSource( source ), mLength( length )
+	{}
+
+	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
+
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override				{ return 0; }
+	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&		mSource;
+	float					mLength;
 };
 
 #if 0

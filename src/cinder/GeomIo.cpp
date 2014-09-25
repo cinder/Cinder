@@ -89,7 +89,7 @@ void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t 
 		break;
 		case READ: // capture, and pass through to target
 		case READ_WRITE: // capture but don't pass through
-			mIndices = unique_ptr<uint32[]>( new uint32[numIndices] );
+			mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
 			memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
 			if( mIndicesAccess == READ )
 				mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
@@ -2124,7 +2124,7 @@ void ColorFromAttrib::loadInto( Target *target ) const
 ///////////////////////////////////////////////////////////////////////////////////////
 // Extrude
 Extrude::Extrude( const Shape2d &shape, float distance, float approximationScale )
-	: mCalculationsCached( false ), mDistance( distance ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true )
+	: mCalculationsCached( false ), mDistance( distance ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -2163,11 +2163,11 @@ void Extrude::calculate() const
 	// front cap
 	if( mFrontCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
+			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
 	// back cap
 	if( mBackCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
+			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
 	
 	// CAP NORMALS
 	// front cap
@@ -2198,15 +2198,15 @@ void Extrude::calculate() const
 		uint32_t baseIndex = (uint32_t)mPositions.size();
 		for( size_t v = 0; v < pathPositions.size(); ++v ) {
 			mPositions.push_back( vec3( pathPositions[v], -mDistance * 0.5f ) );
-			mNormals.push_back( vec3( normalize( vec2( -pathTangents[v].y, pathTangents[v].x ) ), 0 ) );
+			mNormals.push_back( vec3( normalize( vec2( pathTangents[v].y, -pathTangents[v].x ) ), 0 ) );
 		}
 		for( size_t v = 0; v < pathPositions.size(); ++v ) {
 			mPositions.push_back( vec3( pathPositions[v], mDistance * 0.5f ) );
-			mNormals.push_back( vec3( normalize( vec2( -pathTangents[v].y, pathTangents[v].x ) ), 0 ) );
+			mNormals.push_back( vec3( normalize( vec2( pathTangents[v].y, -pathTangents[v].x ) ), 0 ) );
 		}
 		// add the indices
-		size_t numSubdivVerts = pathPositions.size();
-		for( size_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
+		uint32_t numSubdivVerts = (uint32_t)pathPositions.size();
+		for( uint32_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
 			mIndices.push_back( baseIndex + i );
 			mIndices.push_back( baseIndex + j );
 			mIndices.push_back( baseIndex + numSubdivVerts + j );
@@ -2215,7 +2215,7 @@ void Extrude::calculate() const
 			mIndices.push_back( baseIndex + numSubdivVerts + i );
 		}
 	}
-CI_ASSERT( mPositions.size() == mNormals.size() );
+
 	mCalculationsCached = true;
 }
 	
@@ -2250,6 +2250,70 @@ void Extrude::loadInto( Target *target ) const
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Normals
+size_t VertexNormalLines::getNumVertices() const
+{
+	if( mSource.getNumIndices() > 0 )
+		return mSource.getNumIndices() * 2;
+	else
+		return mSource.getNumVertices() * 2;
+}
+
+uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
+{
+	if( attr == Attrib::POSITION )
+		return 3;
+	else
+		return 0;
+}
+
+void VertexNormalLines::loadInto( Target *target ) const
+{
+	// we are interested in removing normals and colors and outputting positions
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[Attrib::POSITION] = Modifier::READ_WRITE;
+	attribAccess[Attrib::NORMAL] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
+	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
+	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
+	mSource.loadInto( &modifier );
+
+	const size_t numInIndices = modifier.getNumIndices();
+	const size_t numInVertices = mSource.getNumVertices();
+
+	if( modifier.getReadAttribDims( Attrib::POSITION ) != 3 ) {
+		CI_LOG_W( "VertexNormalLines only works for 3D positions" );
+		return;
+	}
+	if( modifier.getReadAttribDims( Attrib::NORMAL ) != 3 ) {
+		if( modifier.getReadAttribDims( Attrib::NORMAL ) > 0 )
+			CI_LOG_W( "VertexNormalLines requires 3D normals" );
+		else
+			CI_LOG_W( "VertexNormalLines requires normals" );
+		return;
+	}
+
+	const uint32_t *indices = modifier.getIndicesData();
+	const vec3 *positions = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::POSITION ) );
+	const vec3 *normals = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::NORMAL ) );
+
+	vector<vec3> outPositions;
+	outPositions.reserve( getNumVertices() );
+
+	if( indices ) {
+		for( size_t i = 0; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
+			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + normals[indices[i]] * mLength );
+		}
+	}
+	else {
+		for( size_t i = 0; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
+			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + normals[i] * mLength );
+		}
+	}
+	
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)outPositions.data(), getNumVertices() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
