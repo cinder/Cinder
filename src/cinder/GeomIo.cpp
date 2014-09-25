@@ -2149,6 +2149,9 @@ void Extrude::calculate() const
 		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
 		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
 		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
+		// normalize the tangents
+		for( auto& tan : mPathSubdivisionTangents.back() )
+			tan = normalize( tan );
 	}
 
 	// Each of the subdivided paths' positions constitute a new contour on our triangulation
@@ -2192,27 +2195,28 @@ void Extrude::calculate() const
 	
 	// EXTRUSION
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
-		const auto &pathPositions = mPathSubdivisionPositions[p];
-		const auto &pathTangents = mPathSubdivisionTangents[p];
-		// add all the positions & normals
-		uint32_t baseIndex = (uint32_t)mPositions.size();
-		for( size_t v = 0; v < pathPositions.size(); ++v ) {
-			mPositions.push_back( vec3( pathPositions[v], -mDistance * 0.5f ) );
-			mNormals.push_back( vec3( normalize( vec2( pathTangents[v].y, -pathTangents[v].x ) ), 0 ) );
-		}
-		for( size_t v = 0; v < pathPositions.size(); ++v ) {
-			mPositions.push_back( vec3( pathPositions[v], mDistance * 0.5f ) );
-			mNormals.push_back( vec3( normalize( vec2( pathTangents[v].y, -pathTangents[v].x ) ), 0 ) );
-		}
-		// add the indices
-		uint32_t numSubdivVerts = (uint32_t)pathPositions.size();
-		for( uint32_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
-			mIndices.push_back( baseIndex + i );
-			mIndices.push_back( baseIndex + j );
-			mIndices.push_back( baseIndex + numSubdivVerts + j );
-			mIndices.push_back( baseIndex + i );
-			mIndices.push_back( baseIndex + numSubdivVerts + j );
-			mIndices.push_back( baseIndex + numSubdivVerts + i );
+		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
+			float distance = ( sub / (float)mSubdivisions - 0.5f ) * mDistance;
+			const auto &pathPositions = mPathSubdivisionPositions[p];
+			const auto &pathTangents = mPathSubdivisionTangents[p];
+			// add all the positions & normals
+			uint32_t baseIndex = (uint32_t)mPositions.size();
+			for( size_t v = 0; v < pathPositions.size(); ++v ) {
+				mPositions.push_back( vec3( pathPositions[v], distance ) );
+				mNormals.push_back( vec3( vec2( pathTangents[v].y, -pathTangents[v].x ), 0 ) );
+			}
+			// add the indices
+			if( sub != mSubdivisions ) {
+				uint32_t numSubdivVerts = (uint32_t)pathPositions.size();
+				for( uint32_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + i );
+				}
+			}
 		}
 	}
 

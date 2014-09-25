@@ -749,7 +749,7 @@ class Extrude : public Source {
 	//! Enables or disables back cap. Enabled by default.
 	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
-	Extrude&			subdivisions( int sub ) { mSubdivisions = sub; mCalculationsCached = false; return *this; }
+	Extrude&			subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
 
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override;

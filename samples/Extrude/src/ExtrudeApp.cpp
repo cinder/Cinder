@@ -56,8 +56,8 @@ void ExtrudeApp::setup()
 	
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 	
-	mFont = Font( "Arial", 64 );
-	mCurrentChar = '{';
+	mFont = Font( "Georgia", 64 );
+	mCurrentChar = '&';
 	makeGeom();
 	
 	mGlsl->bind();
