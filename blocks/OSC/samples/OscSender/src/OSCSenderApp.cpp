@@ -33,6 +33,7 @@
  */
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "OscSender.h"
 
@@ -92,7 +93,7 @@ void OSCSenderApp::draw()
 {
 	gl::clear();
 	gl::color( Color::gray( 0.5f ) );
-	gl::drawSolidRect(Rectf(Vec2f(0, 0), Vec2f(positionX * getWindowWidth(), getWindowHeight())));
+	gl::drawSolidRect(Rectf(vec2(0), vec2(positionX * getWindowWidth(), getWindowHeight())));
 }
 
 CINDER_APP_NATIVE( OSCSenderApp, RendererGl )
