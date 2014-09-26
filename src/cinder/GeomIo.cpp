@@ -391,6 +391,8 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 {
 	const vec3 normal = normalize( faceCenter );
 
+	const uint32_t baseIdx = positions->size();
+
 	// fill vertex data
 	for( size_t vi = 0; vi <= subdivV; vi++ ) {
 		const float v = vi / float(subdivV);
@@ -409,18 +411,18 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 	}
 
 	// 'baseIdx' will correspond to the index of the first vertex we created in this call to generateFace()
-	const uint32_t baseIdx = indices->empty() ? 0 : ( indices->back() + 1 );
+//	const uint32_t baseIdx = indices->empty() ? 0 : ( indices->back() + 1 );
 	for( uint32_t u = 0; u < subdivU; u++ ) {
 		for( uint32_t v = 0; v < subdivV; v++ ) {
-			const uint32_t i = u + v * ( subdivV + 1 );
+			const uint32_t i = u + v * ( subdivU + 1 );
 
 			indices->push_back( baseIdx + i );
-			indices->push_back( baseIdx + i + subdivV + 1 );
+			indices->push_back( baseIdx + i + subdivU + 1 );
 			indices->push_back( baseIdx + i + 1 );
 
 			indices->push_back( baseIdx + i + 1 );
-			indices->push_back( baseIdx + i + subdivV + 1 );
-			indices->push_back( baseIdx + i + subdivV + 2 );
+			indices->push_back( baseIdx + i + subdivU + 1 );
+			indices->push_back( baseIdx + i + subdivU + 2 );
 			// important the last is the highest idx due to determination of next face's baseIdx
 		}
 	}
