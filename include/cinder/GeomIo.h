@@ -75,7 +75,7 @@ struct AttribInfo {
 
 	uint8_t		getByteSize() const { if( mDataType == geom::DataType::DOUBLE ) return mDims * 8; else return mDims * 4; }
 
-protected:
+  protected:
 	Attrib		mAttrib;
 	DataType	mDataType;
 	int32_t		mDims;
@@ -86,7 +86,7 @@ protected:
 
 
 class BufferLayout {
-public:
+  public:
 	BufferLayout() {}
 	BufferLayout( const std::vector<AttribInfo> &attribs )
 		: mAttribs( attribs )
@@ -107,14 +107,14 @@ public:
 	uint8_t			getAttribDims( Attrib attrib ) const;
 	//! Returns a vector of all present Attribs
 	const std::vector<AttribInfo>&	getAttribs() const { return mAttribs; }
-protected:
+  protected:
 	std::vector<AttribInfo>		mAttribs;
 };
 
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 
 class Source {
-public:
+  public:
 	virtual size_t		getNumVertices() const = 0;
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
@@ -127,7 +127,7 @@ public:
 	virtual Source&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
 	virtual bool		isEnabled( Attrib attrib ) const;
 
-protected:  
+  protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
 	void	copyIndicesNonIndexed( uint16_t *dest ) const;
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -156,7 +156,7 @@ class Target {
 };
 
 class Rect : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Rect();
 
@@ -206,7 +206,7 @@ class Cube : public Source {
 };
 
 class Icosahedron : public Source {
-public:
+  public:
 	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
 	virtual ~Icosahedron() {}
@@ -220,7 +220,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void		calculate() const;
 
 	mutable bool						mCalculationsCached;
@@ -235,7 +235,7 @@ protected:
 };
 
 class Teapot : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
@@ -249,7 +249,7 @@ public:
 	virtual void		loadInto( Target *target ) const override;
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 
-protected:
+  protected:
 	void			calculate() const;
 	void			updateVertexCounts() const;
 
@@ -344,7 +344,7 @@ class Sphere : public Source {
 };
 
 class Icosphere : public Icosahedron {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Icosphere();
 
@@ -355,7 +355,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void		calculate() const;
 	virtual void		calculateImplUV() const;
 	virtual void		subdivide() const;

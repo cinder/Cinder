@@ -391,7 +391,7 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 {
 	const vec3 normal = normalize( faceCenter );
 
-	const uint32_t baseIdx = positions->size();
+	const uint32_t baseIdx = (uint32_t)positions->size();
 
 	// fill vertex data
 	for( size_t vi = 0; vi <= subdivV; vi++ ) {
