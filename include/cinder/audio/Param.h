@@ -70,7 +70,7 @@ class Event {
 	friend class Param;
 };
 
-//! \brief Allows an audio parameter to be controlled over time with sample accuracate curves.
+//! \brief Allows an audio parameter to be controlled over time with sample accurate curves.
 
 //! The Param class enables expressive control over variables that control audio::Node's with a Timeline-esque API.
 //! It supports appending 'ramps' (audio animations) and maintains these in an internal timeline that is evaluated from the audio thread.
@@ -83,20 +83,24 @@ class Param {
 
 	//! Optional parameters when applying or appending ramps. \see applyRamp() \see appendRamp()
 	struct Options {
-		Options() : mDelay( 0 ), mRampFn( rampLinear ) {}
+		Options() : mDelay( 0 ), mBeginTime( -1 ), mRampFn( rampLinear ) {}
 
 		//! Specifies a delay of \a delay in seconds.
 		Options& delay( float delay )				{ mDelay = delay; return *this; }
+		//! Specifies the begin time in seconds. If this is value is greater or equal to zero, delay() is ignored.
+		Options& beginTime( float time )			{ mBeginTime = time; return *this; }
 		//! Specifies the ramping function used during evaluation.
 		Options& rampFn( const RampFn &rampFn )		{ mRampFn = rampFn; return *this; }
 
 		//! Returns the delay specified in seconds.
 		float getDelay() const				{ return mDelay; }
+		//! Returns the begin time specified in seconds.
+		float getBeginTime() const			{ return mBeginTime; }
 		//! Returns the ramping function that will be used during evaluation.
 		const RampFn&	getRampFn() const	{ return mRampFn; }
 
 	  private:
-		float mDelay;
+		float	mDelay, mBeginTime;
 		RampFn	mRampFn;
 	};
 
