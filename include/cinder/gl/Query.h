@@ -22,6 +22,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#pragma once
+
 #include "cinder/gl/gl.h"
 #include "cinder/Exception.h"
 
