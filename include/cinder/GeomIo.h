@@ -27,9 +27,16 @@
 #include "cinder/Exception.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
+#include "cinder/Shape2d.h"
 
 #include <set>
 #include <vector>
+#include <map>
+
+// Forward declarations in cinder::
+namespace cinder {
+	class TriMesh;
+}
 
 namespace cinder { namespace geom {
 
@@ -68,7 +75,7 @@ struct AttribInfo {
 
 	uint8_t		getByteSize() const { if( mDataType == geom::DataType::DOUBLE ) return mDims * 8; else return mDims * 4; }
 
-protected:
+  protected:
 	Attrib		mAttrib;
 	DataType	mDataType;
 	int32_t		mDims;
@@ -79,7 +86,7 @@ protected:
 
 
 class BufferLayout {
-public:
+  public:
 	BufferLayout() {}
 	BufferLayout( const std::vector<AttribInfo> &attribs )
 		: mAttribs( attribs )
@@ -100,14 +107,14 @@ public:
 	uint8_t			getAttribDims( Attrib attrib ) const;
 	//! Returns a vector of all present Attribs
 	const std::vector<AttribInfo>&	getAttribs() const { return mAttribs; }
-protected:
+  protected:
 	std::vector<AttribInfo>		mAttribs;
 };
 
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 
 class Source {
-public:
+  public:
 	virtual size_t		getNumVertices() const = 0;
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
@@ -120,10 +127,7 @@ public:
 	virtual Source&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
 	virtual bool		isEnabled( Attrib attrib ) const;
 
-protected:  
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add );
-	static void	copyDataMultAdd( const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add );
-
+  protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
 	void	copyIndicesNonIndexed( uint16_t *dest ) const;
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -135,8 +139,7 @@ protected:
 };
 
 class Target {
-public:
-	virtual Primitive	getPrimitive() const = 0;
+  public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;	
 
 	virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
@@ -145,7 +148,7 @@ public:
 	//! For non-indexed geometry, this generates appropriate indices and then calls the copyIndices() virtual method.
 	void	generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices );
 
-protected:
+  protected:
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint32_t *target );
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target );
 	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t *target );
@@ -153,7 +156,7 @@ protected:
 };
 
 class Rect : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Rect();
 
@@ -178,30 +181,32 @@ public:
 };
 
 class Cube : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
 
 	virtual Cube&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual Cube&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	Cube&			subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	Cube&			subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
+	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	virtual size_t		getNumVertices() const override { return 24; }
-	virtual size_t		getNumIndices() const override { return 36; }
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
-	static float	sPositions[24*3];
-	static float	sColors[24*3];
-	static float	sTexCoords[24*2];
-	static float	sNormals[24*3];
-
-	static uint32_t	sIndices[36];
+  protected:
+	ivec3		mSubdivisions;
+	vec3		mSize;	
 };
 
 class Icosahedron : public Source {
-public:
+  public:
 	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
 	virtual ~Icosahedron() {}
@@ -215,7 +220,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void		calculate() const;
 
 	mutable bool						mCalculationsCached;
@@ -230,7 +235,7 @@ protected:
 };
 
 class Teapot : public Source {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
@@ -244,7 +249,7 @@ public:
 	virtual void		loadInto( Target *target ) const override;
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 
-protected:
+  protected:
 	void			calculate() const;
 	void			updateVertexCounts() const;
 
@@ -339,7 +344,7 @@ class Sphere : public Source {
 };
 
 class Icosphere : public Icosahedron {
-public:
+  public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Icosphere();
 
@@ -350,7 +355,7 @@ public:
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-protected:
+  protected:
 	virtual void		calculate() const;
 	virtual void		calculateImplUV() const;
 	virtual void		subdivide() const;
@@ -483,6 +488,7 @@ class Cylinder : public Source {
 
 	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	//! Specifices the base of the Cylinder.
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
 	virtual Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
@@ -494,7 +500,7 @@ class Cylinder : public Source {
 	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	//! Specifies the axis of the cylinder.
 	virtual Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
-	//! Conveniently sets origin, height and direction.
+	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
 
 	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
@@ -595,6 +601,196 @@ class Plane : public Source {
 	mutable std::vector<vec3>			mNormals;
 	mutable std::vector<vec3>			mColors;
 	mutable std::vector<uint32_t>		mIndices;
+};
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Modifiers
+
+// By default, attributes pass through the Modifier from the input source -> target
+// READ attributes values are captured from mSource, typically to derive other attributes from, and then are passed through
+// WRITE attributes prevent the passing of the attribute data from source -> target, to allow the owner of the Modifier to write it later
+// READ_WRITE attributes are captured but not passed through to the target
+class Modifier : public geom::Target {
+  public:
+	typedef enum { READ, WRITE, READ_WRITE, IGNORE } Access;
+
+	Modifier( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
+		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
+	{}
+
+	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	virtual void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	virtual void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	
+	uint8_t	getReadAttribDims( Attrib attr ) const;
+	// not const because consumer is allowed to overwrite this data
+	float* getReadAttribData( Attrib attr ) const;
+
+	size_t			getNumIndices() const { return mNumIndices; }
+	const uint32_t*	getIndicesData() const { return mIndices.get(); }
+		
+  protected:
+	const geom::Source		&mSource;
+	geom::Target			*mTarget;
+	
+	std::map<Attrib,Access>						mAttribs;
+	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,uint8_t>					mAttribDims;
+	
+	Access									mIndicesAccess;
+	std::unique_ptr<uint32_t[]>				mIndices;
+	size_t									mNumIndices;
+	geom::Primitive							mPrimitive;
+};
+
+//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
+class Transform : public Source {
+  public:
+	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
+	Transform( const geom::Source &source, const mat4 &transform )
+		: mSource( source ), mTransform( transform )
+	{}
+
+	const mat4&			getMatrix() const { return mTransform; }
+	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
+  
+  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+	const geom::Source&		mSource;
+	mat4					mTransform;
+};
+
+//! Twists a geom::Source around a given axis
+class Twist : public Source {
+  public:
+	Twist( const geom::Source &source )
+		: mSource( source ), mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ),
+			mStartAngle( -3.14159f ), mEndAngle( 3.14159f )
+	{}
+
+	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
+	Twist&		axisEnd( const vec3 &end ) { mAxisEnd = end; return *this; }
+	Twist&		axis( const vec3 &start, const vec3 &end ) { mAxisStart = start; mAxisEnd = end; return *this; }
+	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
+	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
+  
+  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&		mSource;
+	vec3					mAxisStart, mAxisEnd;
+	float					mStartAngle, mEndAngle;
+};
+
+//! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
+class Lines : public Source {
+  public:
+	Lines( const geom::Source &source )
+		: mSource( source )
+	{}
+
+	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&		mSource;
+};
+
+//! Modifiers the color of a geom::Source as a function of a 2D or 3D input attribute
+class ColorFromAttrib : public Source {
+  public:
+	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec2)> &fn )
+		: mSource( source ), mAttrib( attrib ), mFnColor2( fn )
+	{}
+	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec3)> &fn )
+		: mSource( source ), mAttrib( attrib ), mFnColor3( fn )
+	{}
+	
+	Attrib				getAttrib() const { return mAttrib; }
+	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
+
+	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	virtual size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	virtual Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&				mSource;
+	Attrib							mAttrib;
+	std::function<Colorf(vec2)>		mFnColor2;
+	std::function<Colorf(vec3)>		mFnColor3;
+};
+
+class Extrude : public Source {
+  public:
+	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
+	
+	virtual Extrude&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
+	virtual Extrude&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+
+	//! Sets the distance of extrusion along the axis.
+	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
+	//! Enables or disables front and back caps. Enabled by default.
+	Extrude&			caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	//! Enables or disables front cap. Enabled by default.
+	Extrude&			frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	//! Enables or disables back cap. Enabled by default.
+	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	//! Sets the number of subdivisions along the axis of extrusion
+	Extrude&			subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	void calculate() const;
+  
+	std::vector<Path2d>				mPaths;
+	float							mApproximationScale;
+	float							mDistance;
+	bool							mFrontCap, mBackCap;
+	int								mSubdivisions;
+	
+	mutable bool							mCalculationsCached;
+	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	mutable std::unique_ptr<TriMesh>		mCap;
+	mutable std::vector<vec3>				mPositions, mNormals;
+	mutable std::vector<uint32_t>			mIndices;
+};
+
+//! Draws lines representing the Attrib::NORMALs for a geom::Source
+class VertexNormalLines : public Source {
+  public:
+	VertexNormalLines( const geom::Source &source, float length )
+		: mSource( source ), mLength( length )
+	{}
+
+	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
+
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override				{ return 0; }
+	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	const geom::Source&		mSource;
+	float					mLength;
 };
 
 #if 0

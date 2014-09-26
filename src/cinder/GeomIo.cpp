@@ -24,6 +24,9 @@
 #include "cinder/App/App.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
+#include "cinder/Log.h"
+#include "cinder/TriMesh.h"
+#include "cinder/Triangulate.h"
 #include <algorithm>
 
 using namespace std;
@@ -42,6 +45,75 @@ std::string attribToString( Attrib attrib )
 		return sAttribNames[(int)attrib];
 	else
 		return "";
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Modifier
+uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
+{
+	auto attrIt = mAttribs.find( attr );
+	if( attrIt == mAttribs.end() || attrIt->second == IGNORE ) { // not an attribute we're interested in; pass through and ask the target
+		return mTarget->getAttribDims( attr );
+	}
+	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want whatever the source has got
+		return mSource.getAttribDims( attr );
+	}
+	else // WRITE means our consumer will be writing this value later so we don't need the source to supply it
+		return 0;
+}
+
+void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
+{
+	auto attrIt = mAttribs.find( attr );
+	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORE) ) { // not an attribute we're interested in; pass through to the target
+		mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want to capture the values; for READ, we pass them to target
+		// make some room for our own copy of this data
+		mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
+		mAttribDims[attr] = dims;
+		copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+		if( attrIt->second == READ ) // pass through to target when READ but not READ_WRITE
+			mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	// WRITE means our consumer will be writing this value later
+}
+
+void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+{
+	mNumIndices = numIndices;
+	mPrimitive = primitive;
+	switch( mIndicesAccess ) {
+		case IGNORE: // we just pass the indices through to the target
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		case READ: // capture, and pass through to target
+		case READ_WRITE: // capture but don't pass through
+			mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
+			memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
+			if( mIndicesAccess == READ )
+				mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		default: // for WRITE we will supply our own indices later so do nothing but record the count
+		break;
+	}
+}
+
+uint8_t	Modifier::getReadAttribDims( Attrib attr ) const
+{
+	if( mAttribDims.find( attr ) == mAttribDims.end() )
+		return 0;
+	else
+		return mAttribDims.at( attr );
+}
+
+// not const because consumer is allowed to overwrite this data
+float* Modifier::getReadAttribData( Attrib attr ) const
+{
+	if( mAttribData.find( attr ) == mAttribData.end() )
+		return nullptr;
+	else
+		return mAttribData.at( attr ).get();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -99,51 +171,6 @@ void copyDataImpl( const float *srcData, size_t numElements, size_t dstStrideByt
 		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
 	}
 }
-
-template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
-{
-	static const float sFillerData[4] = { 0, 0, 0, 1 };
-	const uint8_t MINDIM = (2 < DSTDIM) ? 2 : DSTDIM;
-
-	if( dstStrideBytes == 0 )
-		dstStrideBytes = DSTDIM * sizeof(float);
-
-	for( size_t v = 0; v < numElements; ++v ) {
-		uint8_t d;
-		for( d = 0; d < MINDIM; ++d ) {
-			dstData[d] = srcData[d] * mult[d] + add[d];
-		}
-		for( ; d < DSTDIM; ++d ) {
-			dstData[d] = sFillerData[d];
-		}
-		srcData += 2;
-		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
-	}
-}
-
-template<uint8_t DSTDIM>
-void copyDataMultAddImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
-{
-	static const float sFillerData[4] = { 0, 0, 0, 1 };
-	const uint8_t MINDIM = (3 < DSTDIM) ? 3 : DSTDIM;
-
-	if( dstStrideBytes == 0 )
-		dstStrideBytes = DSTDIM * sizeof(float);
-
-	for( size_t v = 0; v < numElements; ++v ) {
-		uint8_t d;
-		for( d = 0; d < MINDIM; ++d ) {
-			dstData[d] = srcData[d] * mult[d] + add[d];
-		}
-		for( ; d < DSTDIM; ++d ) {
-			dstData[d] = sFillerData[d];
-		}
-		srcData += 3;
-		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
-	}
-}
-
 } // anonymous namespace
 
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData )
@@ -154,55 +181,33 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 	}
 	else {
 		switch( srcDimensions ) {
-		case 2:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<2,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<2,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<2,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
-		case 3:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<3,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<3,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<3,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
+			case 2:
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<2,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<2,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<2,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
+			case 3:
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<3,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<3,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<3,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
 		case 4:
-			switch( dstDimensions ) {
-			case 2: copyDataImpl<4,2>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 3: copyDataImpl<4,3>( srcData, numElements, dstStrideBytes, dstData ); break;
-			case 4: copyDataImpl<4,4>( srcData, numElements, dstStrideBytes, dstData ); break;
-			default: throw ExcIllegalDestDimensions();
-			}
-			break;
+				switch( dstDimensions ) {
+					case 2: copyDataImpl<4,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<4,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<4,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+				break;
 		default:
 			throw ExcIllegalSourceDimensions();
 		}
-	}
-}
-
-void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec3 &mult, const vec3 &add )
-{
-	switch( dstDimensions) {
-	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 3: copyDataMultAddImpl<3>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 4: copyDataMultAddImpl<4>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	default: throw ExcIllegalDestDimensions();
-	}
-}
-
-void Source::copyDataMultAdd( const float *srcData, size_t numElements,
-	uint8_t dstDimensions, size_t dstStrideBytes, float *dstData, const vec2 &mult, const vec2 &add )
-{
-	switch( dstDimensions) {
-	case 2: copyDataMultAddImpl<2>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 3: copyDataMultAddImpl<3>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	case 4: copyDataMultAddImpl<4>( srcData, numElements, dstStrideBytes, dstData, mult, add ); break;
-	default: throw ExcIllegalDestDimensions();
 	}
 }
 
@@ -280,6 +285,16 @@ void Target::copyIndexData( const uint32_t *source, size_t numIndices, uint16_t 
 		target[v] = source[v];
 }
 
+uint8_t calcIndicesRequiredBytes( size_t numIndices )
+{
+	if( numIndices < 256 )
+		return 1;
+	else if( numIndices < 65536 )
+		return 2;
+	else
+		return 4;
+}
+
 void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices )
 {
 	unique_ptr<uint32_t[]> indices( new uint32_t[sourceNumIndices] );
@@ -287,12 +302,7 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 	uint32_t count = 0;
 	std::generate( indices.get(), indices.get() + sourceNumIndices, [&] { return count++; } );
 
-	uint8_t requiredBytesPerIndex = 4;
-	if( sourceNumIndices < 256 )
-		requiredBytesPerIndex = 1;
-	else if( sourceNumIndices < 65536 )
-		requiredBytesPerIndex = 2;
-	// now have the target copy these indices
+	uint8_t requiredBytesPerIndex = calcIndicesRequiredBytes( sourceNumIndices );
 	copyIndices( sourcePrimitive, indices.get(), sourceNumIndices, requiredBytesPerIndex );
 }
 
@@ -304,6 +314,7 @@ float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
 float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
+	: mScale( 1 )
 {
 	enable( Attrib::POSITION );	
 	enable( Attrib::TEX_COORD_0 );
@@ -339,72 +350,141 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cube
-float Cube::sPositions[24*3] = {  1.0f, 1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	 1.0f,-1.0f,-1.0f,   1.0f, 1.0f,-1.0f,	// +X
-	1.0f, 1.0f, 1.0f,   1.0f, 1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f, 1.0f, 1.0f,	// +Y
-	1.0f, 1.0f, 1.0f,  -1.0f, 1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,   1.0f,-1.0f, 1.0f,	// +Z
-	-1.0f, 1.0f, 1.0f,  -1.0f, 1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f,-1.0f, 1.0f,	// -X
-	-1.0f,-1.0f,-1.0f,   1.0f,-1.0f,-1.0f,   1.0f,-1.0f, 1.0f,  -1.0f,-1.0f, 1.0f,	// -Y
-	1.0f,-1.0f,-1.0f,  -1.0f,-1.0f,-1.0f,  -1.0f, 1.0f,-1.0f,   1.0f, 1.0f,-1.0f }; // -Z
-
-uint32_t Cube::sIndices[6*6] ={	0, 1, 2, 0, 2, 3,
-	4, 5, 6, 4, 6, 7,
-	8, 9,10, 8, 10,11,
-	12,13,14,12,14,15,
-	16,17,18,16,18,19,
-	20,21,22,20,22,23 };
-
-float Cube::sColors[24*3]	={  1,0,0,	1,0,0,	1,0,0,	1,0,0,		// +X = red
-	0,1,0,	0,1,0,	0,1,0,	0,1,0,		// +Y = green
-	0,0,1,	0,0,1,	0,0,1,	0,0,1,		// +Z = blue
-	0,1,1,	0,1,1,	0,1,1,	0,1,1,		// -X = cyan
-	1,0,1,	1,0,1,	1,0,1,	1,0,1,		// -Y = purple
-	1,1,0,	1,1,0,	1,1,0,	1,1,0 };	// -Z = yellow
-
-float Cube::sTexCoords[24*2]={	0,0,	1,0,	1,1,	0,1,
-	1,0,	1,1,	0,1,	0,0,
-	0,0,	1,0,	1,1,	0,1,
-	1,0,	1,1,	0,1,	0,0,
-	1,1,	0,1,	0,0,	1,0,
-	1,1,	0,1,	0,0,	1,0 };
-
-float Cube::sNormals[24*3]=	{	1,0,0,	1,0,0,	1,0,0,	1,0,0,
-	0,1,0,	0,1,0,	0,1,0,	0,1,0,
-	0,0,1,	0,0,1,	0,0,1,	0,0,1,
-	-1,0,0,	-1,0,0,	-1,0,0,	-1,0,0,
-	0,-1,0,	0,-1,0,  0,-1,0,0,-1,0,
-	0,0,-1,	0,0,-1,	0,0,-1,	0,0,-1 };
-
-
 Cube::Cube()
+	: mSubdivisions( 1 ), mSize( 1 )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::TEX_COORD_0 );
 	enable( Attrib::NORMAL );
 }
 
+size_t Cube::getNumVertices() const
+{
+	return 2 * ( (mSubdivisions.x+1) * (mSubdivisions.y+1) ) // +-Z
+			+ 2 * ( (mSubdivisions.y+1) * (mSubdivisions.z+1) ) // +-X
+			+ 2 * ( (mSubdivisions.x+1) * (mSubdivisions.z+1) ); // +-Y
+}
+
+size_t Cube::getNumIndices() const
+{
+	return 2 * 6 * ( mSubdivisions.x * mSubdivisions.y ) // +-Z
+			+ 2 * 6 * ( mSubdivisions.y * mSubdivisions.z ) // +-X
+			+ 2 * 6 * ( mSubdivisions.x * mSubdivisions.z ); // +-Y
+}
+
 uint8_t	Cube::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
 	}	
+}
+
+void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
+					vector<vec3> *positions, vector<vec3> *normals,
+					const Color &color, vector<Color> *colors, vector<vec2> *texCoords,
+					vector<uint32_t> *indices )
+{
+	const vec3 normal = normalize( faceCenter );
+
+	const uint32_t baseIdx = (uint32_t)positions->size();
+
+	// fill vertex data
+	for( size_t vi = 0; vi <= subdivV; vi++ ) {
+		const float v = vi / float(subdivV);
+		for( size_t ui = 0; ui <= subdivU; ui++ ) {
+			const float u = ui / float(subdivU);
+
+			positions->emplace_back( faceCenter + ( u - 0.5f ) * 2.0f * uAxis + ( v - 0.5f ) * 2.0f * vAxis );
+
+			if( normals )
+				normals->emplace_back( normal );
+			if( colors )
+				colors->emplace_back( color );
+			if( texCoords )
+				texCoords->emplace_back( u, v );
+		}
+	}
+
+	// 'baseIdx' will correspond to the index of the first vertex we created in this call to generateFace()
+//	const uint32_t baseIdx = indices->empty() ? 0 : ( indices->back() + 1 );
+	for( uint32_t u = 0; u < subdivU; u++ ) {
+		for( uint32_t v = 0; v < subdivV; v++ ) {
+			const uint32_t i = u + v * ( subdivU + 1 );
+
+			indices->push_back( baseIdx + i );
+			indices->push_back( baseIdx + i + subdivU + 1 );
+			indices->push_back( baseIdx + i + 1 );
+
+			indices->push_back( baseIdx + i + 1 );
+			indices->push_back( baseIdx + i + subdivU + 1 );
+			indices->push_back( baseIdx + i + subdivU + 2 );
+			// important the last is the highest idx due to determination of next face's baseIdx
+		}
+	}
 }
 
 void Cube::loadInto( Target *target ) const
 {
-	target->copyAttrib( Attrib::POSITION, 3, 0, sPositions, 24 );
-	if( isEnabled( Attrib::COLOR ) )
-		target->copyAttrib( Attrib::COLOR, 3, 0, sColors, 24 );
-	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, sTexCoords, 24 );
-	if( isEnabled( Attrib::NORMAL ) )
-		target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 24 );
+	vector<vec3> positions;
+	vector<uint32_t> indices;
+	vector<vec3> normals;
+	vector<Color> colors;
+	vector<vec2> texCoords;
+	vector<vec3> *normalsPtr = nullptr;
+	vector<Color> *colorsPtr = nullptr;
+	vector<vec2> *texCoordsPtr = nullptr;
+	
+	const size_t numVertices = getNumVertices();
+	
+	// reserve room in vectors and set pointers to non-null for normals, texcoords and colors as appropriate
+	positions.reserve( numVertices );
+	indices.reserve( getNumIndices() );
+	if( isEnabled( Attrib::NORMAL ) ) {
+		normals.reserve( numVertices );
+		normalsPtr = &normals;
+	}
+	if( isEnabled( Attrib::COLOR ) ) {
+		colors.reserve( numVertices );
+		colorsPtr = &colors;
+	}
+	if( isEnabled( Attrib::TEX_COORD_0 ) ) {
+		texCoords.reserve( numVertices );
+		texCoordsPtr = &texCoords;
+	}
+	
+	// +X
+	generateFace( vec3(mSize.x,0,0), vec3(0,0,mSize.z), vec3(0,mSize.y,0), mSubdivisions.z, mSubdivisions.y, &positions,
+		normalsPtr, Color(1,0,0), colorsPtr, texCoordsPtr, &indices );
+	// +Y
+	generateFace( vec3(0,mSize.y,0), vec3(mSize.x,0,0), vec3(0,0,mSize.z), mSubdivisions.x, mSubdivisions.z, &positions,
+		normalsPtr, Color(0,1,0), colorsPtr, texCoordsPtr, &indices );
+	// +Z
+	generateFace( vec3(0,0,mSize.z), vec3(0,mSize.y,0), vec3(mSize.x,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
+		normalsPtr, Color(0,0,1), colorsPtr, texCoordsPtr, &indices );
+	// -X
+	generateFace( vec3(-mSize.x,0,0), vec3(0,mSize.y,0), vec3(0,0,mSize.z), mSubdivisions.y, mSubdivisions.z, &positions,
+		normalsPtr, Color(0,1,1), colorsPtr, texCoordsPtr, &indices );
+	// -Y
+	generateFace( vec3(0,-mSize.y,0), vec3(0,0,mSize.z), vec3(mSize.x,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
+		normalsPtr, Color(1,0,1), colorsPtr, texCoordsPtr, &indices );
+	// -Z
+	generateFace( vec3(0,0,-mSize.z), vec3(mSize.x,0,0), vec3(0,mSize.y,0), mSubdivisions.x, mSubdivisions.y, &positions,
+		normalsPtr, Color(1,1,0), colorsPtr, texCoordsPtr, &indices );
 
-	target->copyIndices( Primitive::TRIANGLES, sIndices, 36, 1 );
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
+	if( isEnabled( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1745,6 +1825,501 @@ void Plane::loadInto( Target *target ) const
 		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 	
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Transform
+uint8_t Transform::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return std::max<uint8_t>( 3, mSource.getAttribDims( Attrib::POSITION ) );
+		default:
+			return mSource.getAttribDims( attr );
+	}
+}
+
+void Transform::loadInto( Target *target ) const
+{
+	// we want to capture and then modify both positions and normals
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[POSITION] = Modifier::READ_WRITE;
+	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
+	
+	const size_t numVertices = mSource.getNumVertices();
+
+	if( modifier.getReadAttribDims( POSITION ) == 2 ) {
+		vec2* positions = reinterpret_cast<vec2*>( modifier.getReadAttribData( POSITION ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			positions[v] = vec2( mTransform * vec4( positions[v], 0, 1 ) );
+		target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) == 3 ) {
+		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			positions[v] = vec3( mTransform * vec4( positions[v], 1 ) );
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) == 4 ) {
+		vec4* positions = reinterpret_cast<vec4*>( modifier.getReadAttribData( POSITION ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			positions[v] = mTransform * positions[v];
+		target->copyAttrib( Attrib::POSITION, 4, 0, (const float*)positions, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
+	
+	// and finally, we'll make the sort of modification to our normals (if they're present)
+	// using the inverse transpose of 'mTransform'
+	if( modifier.getReadAttribDims( NORMAL ) == 3 ) {
+		vec3* normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
+		mat3 normalsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			normals[v] = normalsTransform * normals[v];
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
+	}
+	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Twist
+uint8_t Twist::getAttribDims( Attrib attr ) const
+{
+	return mSource.getAttribDims( attr );
+}
+
+void Twist::loadInto( Target *target ) const
+{
+	// we want to capture and then modify both positions and normals
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[POSITION] = Modifier::READ_WRITE;
+	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
+	
+	const size_t numVertices = mSource.getNumVertices();
+	const float invAxisLength = 1.0f / distance( mAxisStart, mAxisEnd );
+	const vec3 axisDir = ( mAxisEnd - mAxisStart ) * vec3( invAxisLength );
+
+	if( modifier.getReadAttribDims( POSITION ) == 3 ) {
+		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
+		vec3* normals = nullptr;
+		if( modifier.getReadAttribDims( NORMAL ) == 3 )
+			normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
+		
+		for( size_t v = 0; v < numVertices; ++v ) {
+			// find the 't' value of the point on the axis that inPosition is closest to
+			float closestDist = dot( positions[v] - mAxisStart, axisDir );
+			float tVal = glm::clamp<float>( closestDist * invAxisLength, 0, 1 );
+			// 'pointOnAxis' is the actual point on the axis inPosition is closest to
+			vec3 pointOnAxis = mAxisStart + axisDir * closestDist;
+			// our rotation is around the axis, and the angle is a lerp between 'mStartAngle' and 'mEndAngle' based on 't'
+			mat4 rotation = rotate( glm::mix( mStartAngle, mEndAngle, tVal ), axisDir );
+			// now transform the point by rotating around 'pointOnAxis'
+			mat4 transform = translate( pointOnAxis ) * rotation * translate( -pointOnAxis );
+			vec3 outPos = vec3( transform * vec4( positions[v], 1 ) );
+			positions[v] = outPos;
+			// we need to transform the normal by rotating it by the same angle (but not around the point) we did the position
+			if( normals ) {
+				normals[v] = vec3( rotation * vec4( normals[v], 0 ) );
+			}
+		}
+		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
+		if( normals )
+			target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
+	}
+	else if( modifier.getReadAttribDims( POSITION ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Twist" );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Lines
+size_t Lines::getNumIndices() const
+{
+	switch( mSource.getPrimitive() ) {
+		case LINES:
+			return mSource.getNumIndices();
+		break;
+		case TRIANGLES:
+			return mSource.getNumIndices() ? (mSource.getNumIndices() * 2) : (mSource.getNumVertices() * 2);
+		break;
+		case TRIANGLE_STRIP:
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)((mSource.getNumIndices() - 2) * 6 )
+				: (int)(mSource.getNumVertices() - 2) * 6 );
+		break;
+		case TRIANGLE_FAN:
+			return std::max<int>( 0, mSource.getNumIndices() ? (int)(mSource.getNumIndices() * 4 - 2 )
+				: (int)(mSource.getNumVertices() * 4 - 2 ) );
+		break;
+	}
+	return mSource.getNumIndices();
+}
+
+void Lines::loadInto( Target *target ) const
+{
+	// we are only interested in changing indices
+	Modifier modifier( mSource, target, map<Attrib,Modifier::Access>(), Modifier::READ_WRITE );
+	mSource.loadInto( &modifier );
+
+	const size_t numInIndices = modifier.getNumIndices();
+	const size_t numInVertices = mSource.getNumVertices();
+
+	if( getNumIndices() < 2 ) { // early exit
+		target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
+		return;
+	}
+
+	switch( mSource.getPrimitive() ) {
+		case Primitive::LINES: // pass-through
+			target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
+		break;
+		case Primitive::TRIANGLE_FAN: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 1; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
+					outIndices.push_back( indices[0] ); outIndices.push_back( indices[i] );
+				}
+				for( size_t j = numInIndices-1, i = 0; i < numInIndices; j = i++ ) {// lines connecting adjacent vertices
+					outIndices.push_back( indices[j] ); outIndices.push_back( indices[i] );
+				}
+			}
+			else {
+				for( size_t i = 1; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
+					outIndices.push_back( 0 ); outIndices.push_back( (uint32_t)i );
+				}
+				for( size_t j = numInVertices-1, i = 0; i < numInVertices; j = i++ ) {// lines connecting adjacent vertices
+					outIndices.push_back( (uint32_t)j ); outIndices.push_back( (uint32_t)i );
+				}
+			}
+			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+		}
+		break;
+		case Primitive::TRIANGLES: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 0; i < numInIndices; i += 3 ) {
+					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
+					outIndices.push_back( indices[i + 1] ); outIndices.push_back( indices[i + 2] );
+					outIndices.push_back( indices[i + 2] ); outIndices.push_back( indices[i + 0] );
+				}
+			}
+			else {
+				for( uint32_t i = 0; i < numInVertices; i += 3 ) {
+					outIndices.push_back( i + 0 ); outIndices.push_back( i + 1 );
+					outIndices.push_back( i + 1 ); outIndices.push_back( i + 2 );
+					outIndices.push_back( i + 2 ); outIndices.push_back( i + 0 );
+				}
+			}
+			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+		}
+		break;
+		case Primitive::TRIANGLE_STRIP: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 0; i < numInIndices - 2; i++ ) {
+					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
+					outIndices.push_back( indices[i + 1] ); outIndices.push_back( indices[i + 2] );
+					outIndices.push_back( indices[i + 2] ); outIndices.push_back( indices[i + 0] );
+				}
+			}
+			else {
+				for( uint32_t i = 0; i < numInVertices - 2; i++ ) {
+					outIndices.push_back( i + 0 ); outIndices.push_back( i + 1 );
+					outIndices.push_back( i + 1 ); outIndices.push_back( i + 2 );
+					outIndices.push_back( i + 2 ); outIndices.push_back( i + 0 );
+				}
+			}
+			
+			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+		}
+		break;
+	}
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// ColorFromAttrib
+uint8_t ColorFromAttrib::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::COLOR: return 3;
+		default:
+			return mSource.getAttribDims( attr );
+	}
+}
+
+namespace {
+template<typename I, typename IFD, typename O>
+void processColorAttrib( const I* inputData, O *outputData, const std::function<O(IFD)> &fn, size_t numVertices )
+{
+	for( size_t v = 0; v < numVertices; ++v ) {
+		IFD in( (IFD)inputData[v] );
+		outputData[v] = fn( in );
+	}
+}
+
+template<typename O>
+void processColorAttrib2d( const vec2* inputData, O *outputData, const std::function<O(vec3)> &fn, size_t numVertices )
+{
+	for( size_t v = 0; v < numVertices; ++v ) {
+		vec3 in( inputData[v], 0 );
+		outputData[v] = fn( in );
+	}
+}
+}
+
+void ColorFromAttrib::loadInto( Target *target ) const
+{
+	if( (! mFnColor2) && (! mFnColor3) ) {
+		mSource.loadInto( target );
+		return;
+	}
+
+	// we want to capture 'mAttrib' and we want to write COLOR
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[mAttrib] = Modifier::READ;
+	attribAccess[COLOR] = Modifier::WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	mSource.loadInto( &modifier );
+
+	if( modifier.getAttribDims( mAttrib ) == 0 ) {
+		CI_LOG_W( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
+		mSource.loadInto( target );
+		return;
+	}
+
+	const auto numVertices = mSource.getNumVertices();
+	unique_ptr<float[]> mColorData( new float[numVertices * 3] );
+	uint8_t inputAttribDims = modifier.getReadAttribDims( mAttrib );
+	const float* inputAttribData = modifier.getReadAttribData( mAttrib );
+	
+	if( mFnColor2 ) {
+		if( inputAttribDims == 2 )
+			processColorAttrib( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+		else if( inputAttribDims == 3 )
+			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+		else
+			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
+	}
+	else if( mFnColor3 ) {
+		if( inputAttribDims == 2 )
+			processColorAttrib2d( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+		if( inputAttribDims == 3 )
+			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+		else
+			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
+	}
+
+
+	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Extrude
+Extrude::Extrude( const Shape2d &shape, float distance, float approximationScale )
+	: mCalculationsCached( false ), mDistance( distance ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( 1 )
+{
+	enable( Attrib::POSITION );
+	enable( Attrib::NORMAL );
+	
+	for( const auto &contour : shape.getContours() )
+		mPaths.push_back( contour );
+}
+
+void Extrude::calculate() const
+{
+	if( mCalculationsCached )
+		return;
+	
+	mPathSubdivisionPositions.clear();
+	mPathSubdivisionTangents.clear();
+	mPositions.clear();
+	mNormals.clear();
+	mIndices.clear();
+	
+	// iterate all the paths of the shape and subdivide, calculating both positions and tangents
+	for( const auto &path : mPaths ) {
+		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
+		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
+		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
+		// normalize the tangents
+		for( auto& tan : mPathSubdivisionTangents.back() )
+			tan = normalize( tan );
+	}
+
+	// Each of the subdivided paths' positions constitute a new contour on our triangulation
+	Triangulator triangulator;
+	for( const auto &subdivision : mPathSubdivisionPositions )
+		triangulator.addPolyLine( subdivision );
+	
+	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
+
+	// CAP POSITIONS
+	const vec2* capPositions = mCap->getVertices<2>();
+	// front cap
+	if( mFrontCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
+	// back cap
+	if( mBackCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
+	
+	// CAP NORMALS
+	// front cap
+	if( mFrontCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( vec3( 0, 0, -1 ) );
+	// back cap
+	if( mBackCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( vec3( 0, 0, 1 ) );
+		
+	// CAP INDICES
+	auto capIndices = mCap->getIndices();
+	// front cap
+	if( mFrontCap )
+		for( size_t i = 0; i < capIndices.size(); ++i )
+			mIndices.push_back( capIndices[i] );
+	// back cap
+	if( mBackCap )
+		for( size_t i = 0; i < capIndices.size(); ++i )
+			mIndices.push_back( capIndices[i] + (uint32_t)mCap->getNumVertices() );
+	
+	// EXTRUSION
+	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
+		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
+			float distance = ( sub / (float)mSubdivisions - 0.5f ) * mDistance;
+			const auto &pathPositions = mPathSubdivisionPositions[p];
+			const auto &pathTangents = mPathSubdivisionTangents[p];
+			// add all the positions & normals
+			uint32_t baseIndex = (uint32_t)mPositions.size();
+			for( size_t v = 0; v < pathPositions.size(); ++v ) {
+				mPositions.push_back( vec3( pathPositions[v], distance ) );
+				mNormals.push_back( vec3( vec2( pathTangents[v].y, -pathTangents[v].x ), 0 ) );
+			}
+			// add the indices
+			if( sub != mSubdivisions ) {
+				uint32_t numSubdivVerts = (uint32_t)pathPositions.size();
+				for( uint32_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + i );
+				}
+			}
+		}
+	}
+
+	mCalculationsCached = true;
+}
+	
+size_t Extrude::getNumVertices() const
+{
+	calculate();
+	return mPositions.size();
+}
+
+size_t Extrude::getNumIndices() const
+{
+	calculate();
+	return mIndices.size();
+}
+
+uint8_t	Extrude::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
+	}
+}
+
+void Extrude::loadInto( Target *target ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mPositions.size() );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Normals
+size_t VertexNormalLines::getNumVertices() const
+{
+	if( mSource.getNumIndices() > 0 )
+		return mSource.getNumIndices() * 2;
+	else
+		return mSource.getNumVertices() * 2;
+}
+
+uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
+{
+	if( attr == Attrib::POSITION )
+		return 3;
+	else
+		return 0;
+}
+
+void VertexNormalLines::loadInto( Target *target ) const
+{
+	// we are interested in removing normals and colors and outputting positions
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[Attrib::POSITION] = Modifier::READ_WRITE;
+	attribAccess[Attrib::NORMAL] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
+	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
+	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
+	mSource.loadInto( &modifier );
+
+	const size_t numInIndices = modifier.getNumIndices();
+	const size_t numInVertices = mSource.getNumVertices();
+
+	if( modifier.getReadAttribDims( Attrib::POSITION ) != 3 ) {
+		CI_LOG_W( "VertexNormalLines only works for 3D positions" );
+		return;
+	}
+	if( modifier.getReadAttribDims( Attrib::NORMAL ) != 3 ) {
+		if( modifier.getReadAttribDims( Attrib::NORMAL ) > 0 )
+			CI_LOG_W( "VertexNormalLines requires 3D normals" );
+		else
+			CI_LOG_W( "VertexNormalLines requires normals" );
+		return;
+	}
+
+	const uint32_t *indices = modifier.getIndicesData();
+	const vec3 *positions = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::POSITION ) );
+	const vec3 *normals = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::NORMAL ) );
+
+	vector<vec3> outPositions;
+	outPositions.reserve( getNumVertices() );
+
+	if( indices ) {
+		for( size_t i = 0; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
+			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + normals[indices[i]] * mLength );
+		}
+	}
+	else {
+		for( size_t i = 0; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
+			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + normals[i] * mLength );
+		}
+	}
+	
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)outPositions.data(), getNumVertices() );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

@@ -75,8 +75,8 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
 	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
 	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
 	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
-	glm::detail::tvec3<T,glm::defaultp> &prevTangent, 
-	glm::detail::tvec3<T,glm::defaultp> &curTangent 
+	glm::detail::tvec3<T,glm::defaultp> prevTangent,
+	glm::detail::tvec3<T,glm::defaultp> curTangent 
 )
 {
     glm::detail::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
@@ -125,11 +125,11 @@ glm::detail::tmat4x4<T,glm::defaultp> lastFrame(
 
 // Explicitly declare the functions
 template mat4 firstFrame( const vec3 &firstPoint, const vec3 &secondPoint, const vec3 &thirdPoint );
-template mat4 nextFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &curPoint, vec3 &prevTangent, vec3 &curTangent );
-template mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, 	const vec3 &lastPoint );
+template mat4 nextFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &curPoint, vec3 prevTangent, vec3 curTangent );
+template mat4 lastFrame( const mat4 &prevMatrix, const vec3 &prevPoint, const vec3 &lastPoint );
 template dmat4 firstFrame( const dvec3 &firstPoint, const dvec3 &secondPoint, const dvec3 &thirdPoint );
-template dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 &prevTangent, dvec3 &curTangent );
-template dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, 	const dvec3 &lastPoint );
+template dmat4 nextFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &curPoint, dvec3 prevTangent, dvec3 curTangent );
+template dmat4 lastFrame( const dmat4 &prevMatrix, const dvec3 &prevPoint, const dvec3 &lastPoint );
 
 glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir )
 {
