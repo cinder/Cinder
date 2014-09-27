@@ -369,7 +369,7 @@ class Capsule : public Source {
 	virtual Capsule&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
 	virtual Capsule&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule.
+	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
 	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
 	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
 	Capsule&			subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; mCalculationsCached = false; return *this; }

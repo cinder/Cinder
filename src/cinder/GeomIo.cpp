@@ -1177,7 +1177,7 @@ void Icosphere::loadInto( Target *target ) const
 // Capsule
 
 Capsule::Capsule()
-	: mDirection( 0, 1, 0 ), mLength( 1.0f )
+	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 )
 {
 	radius( 0.5f );
 	subdivisionsHeight( 6 );
