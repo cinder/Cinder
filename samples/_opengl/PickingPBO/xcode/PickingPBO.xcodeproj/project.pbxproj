@@ -19,6 +19,9 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		D479EDE4BFCE4A1BB0D5F043 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = C676D72B5BB44C9D92E11B31 /* CinderApp.icns */; };
+		F497A69219D70EDB00343BD0 /* not_pickable.vs.glsl in Resources */ = {isa = PBXBuildFile; fileRef = F497A68F19D70EDB00343BD0 /* not_pickable.vs.glsl */; };
+		F497A69319D70EDB00343BD0 /* pickable.fs.glsl in Resources */ = {isa = PBXBuildFile; fileRef = F497A69019D70EDB00343BD0 /* pickable.fs.glsl */; };
+		F497A69419D70EDB00343BD0 /* pickable.vs.glsl in Resources */ = {isa = PBXBuildFile; fileRef = F497A69119D70EDB00343BD0 /* pickable.vs.glsl */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -40,6 +43,9 @@
 		BF93A70A4037411AA49AB13F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C676D72B5BB44C9D92E11B31 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 		F464C9331E324688A1A824E3 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
+		F497A68F19D70EDB00343BD0 /* not_pickable.vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = not_pickable.vs.glsl; path = ../assets/not_pickable.vs.glsl; sourceTree = "<group>"; };
+		F497A69019D70EDB00343BD0 /* pickable.fs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pickable.fs.glsl; path = ../assets/pickable.fs.glsl; sourceTree = "<group>"; };
+		F497A69119D70EDB00343BD0 /* pickable.vs.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = pickable.vs.glsl; path = ../assets/pickable.vs.glsl; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -113,6 +119,7 @@
 		29B97314FDCFA39411CA2CEA /* PickingPBO */ = {
 			isa = PBXGroup;
 			children = (
+				F497A68719D70EA200343BD0 /* Assets */,
 				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
@@ -150,6 +157,16 @@
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		F497A68719D70EA200343BD0 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				F497A68F19D70EDB00343BD0 /* not_pickable.vs.glsl */,
+				F497A69019D70EDB00343BD0 /* pickable.fs.glsl */,
+				F497A69119D70EDB00343BD0 /* pickable.vs.glsl */,
+			);
+			name = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -204,7 +221,10 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F497A69219D70EDB00343BD0 /* not_pickable.vs.glsl in Resources */,
 				D479EDE4BFCE4A1BB0D5F043 /* CinderApp.icns in Resources */,
+				F497A69419D70EDB00343BD0 /* pickable.vs.glsl in Resources */,
+				F497A69319D70EDB00343BD0 /* pickable.fs.glsl in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
