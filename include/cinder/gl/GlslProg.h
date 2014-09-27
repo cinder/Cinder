@@ -70,6 +70,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Sets the TransformFeedback format
 		Format&		feedbackFormat( GLenum format ) { mTransformFormat = format; return *this; }
 #endif
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const DataSourceRef &dataSource );
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const char *geometryShader );
+#endif
 		
 		//! Specifies an attribute name to map to a specific semantic
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
@@ -92,7 +98,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Returns the TransFormFeedback format
 		GLenum			getTransformFormat() const { return mTransformFormat; }
 #endif
-
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+		const std::string&	getCompute() const { return mComputeShader; }
+#endif
 		//! Returns the map between uniform semantics and uniform names
 		const std::map<std::string,UniformSemantic>&	getUniformSemantics() const { return mUniformSemanticMap; }
 		//! Returns the map between attribute semantics and attribute names
@@ -111,12 +119,19 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
+		//! Sets up a shader source.
+		Format& setupSource( const DataSourceRef &dataSource, std::string *shader );
+		//! Sets up a shader source.
+		Format& setupSource( const char *source, std::string *shader );
 		std::string					mVertexShader;
 		std::string					mFragmentShader;
 #if ! defined( CINDER_GL_ES )
 		std::string								mGeometryShader;
 		GLenum									mTransformFormat;
 		std::vector<std::string>				mTransformVaryings;
+#endif
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+		std::string								mComputeShader;
 #endif
 		std::map<std::string,GLint>				mAttribNameLocMap;
 		std::map<geom::Attrib,GLint>			mAttribSemanticLocMap;

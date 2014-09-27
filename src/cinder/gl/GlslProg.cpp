@@ -47,77 +47,74 @@ GlslProg::Format::Format()
 
 GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mVertexShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mVertexShader.data(), buffer.getData(), buffer.getDataSize() );
-		mVertexShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mVertexShader.clear();
-
-	return *this;
+	return setupSource( dataSource, &mVertexShader );
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const char *vertexShader )
 {
-	if( vertexShader )
-		mVertexShader = string( vertexShader );
-	else
-		mVertexShader.clear();
-
-	return *this;
+	return setupSource( vertexShader, &mVertexShader );
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mFragmentShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mFragmentShader.data(), buffer.getData(), buffer.getDataSize() );
-		mFragmentShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mFragmentShader.clear();
-		
-	return *this;
+	return setupSource( dataSource, &mFragmentShader );
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const char *fragmentShader )
 {
-	if( fragmentShader )
-		mFragmentShader = string( fragmentShader );
-	else
-		mFragmentShader.clear();
-
-	return *this;
+	return setupSource( fragmentShader, &mFragmentShader );
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mGeometryShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mGeometryShader.data(), buffer.getData(), buffer.getDataSize() );
-		mGeometryShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mGeometryShader.clear();
-		
-	return *this;
+	return setupSource( dataSource, &mGeometryShader );
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const char *geometryShader )
 {
-	if( geometryShader ) {
-		mGeometryShader = string( geometryShader );	}
-	else
-		mGeometryShader.clear();
-
-	return *this;
+	return setupSource( geometryShader, &mGeometryShader );
 }
 #endif // ! defined( CINDER_GL_ES )
+
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+GlslProg::Format& GlslProg::Format::compute( const DataSourceRef &dataSource )
+{
+	return setupSource( dataSource, &mComputeShader );
+}
+
+GlslProg::Format& GlslProg::Format::compute( const char *computeShader )
+{
+	return setupSource( computeShader, &mComputeShader );
+}
+#endif
+
+GlslProg::Format& GlslProg::Format::setupSource( const DataSourceRef &dataSource, std::string *shader )
+{
+	CI_ASSERT( shader != nullptr );
+	if( dataSource ) {
+		Buffer buffer( dataSource );
+		shader->resize( buffer.getDataSize() + 1 );
+		memcpy( (void*)shader->data(), buffer.getData(), buffer.getDataSize() );
+		( *shader )[buffer.getDataSize()] = 0;
+	}
+	else {
+		shader->clear();
+	}
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::setupSource( const char *source, std::string *shader )
+{
+	CI_ASSERT( shader != nullptr );
+	if( source ) {
+		*shader = string( source );
+	}
+	else {
+		shader->clear();
+	}
+	return *this;
+}
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
@@ -189,6 +186,10 @@ GlslProg::GlslProg( const Format &format )
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
 		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
+#endif
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+	if( !format.getCompute().empty() )
+		loadShader( format.getCompute(), GL_COMPUTE_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map

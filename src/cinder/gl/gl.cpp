@@ -1778,6 +1778,36 @@ void drawStringRight( const std::string &str, const vec2 &pos, const ColorA &col
 	drawStringHelper( str, pos, color, font, 1 );
 }
 
+#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
+void dispatchCompute( GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ )
+{
+	glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ );
+}
+
+void memoryBarrier( GLbitfield  barriers )
+{
+	glMemoryBarrier( barriers );
+}
+
+ivec3 getMaxComputeWorkGroupCount()
+{
+	ivec3 count;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &count.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &count.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &count.z );
+	return count;
+}
+
+ivec3 getMaxComputeWorkGroupSize()
+{
+	ivec3 size;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &size.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &size.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &size.z );
+	return size;
+}
+#endif
+
 GLenum getError()
 {
 	return glGetError();
