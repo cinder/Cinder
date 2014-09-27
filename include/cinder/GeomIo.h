@@ -669,7 +669,7 @@ class Twist : public Source {
   public:
 	Twist( const geom::Source &source )
 		: mSource( source ), mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ),
-			mStartAngle( -3.14159f ), mEndAngle( 3.14159f )
+			mStartAngle( -M_PI ), mEndAngle( M_PI )
 	{}
 
 	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
