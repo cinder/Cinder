@@ -69,7 +69,7 @@ public:
 	vec4				mSelectedEdgeColor;
 	mat4				mBoxTransform;
 	gl::TextureRef		mDebugTexture;
-	float               mDebugDisplaySize;
+	float				mDebugDisplaySize;
 	gl::Texture2dRef	mPickingTexture;
 	bool				mNeedsRedraw;
 	bool				mParamSelectVertices;
