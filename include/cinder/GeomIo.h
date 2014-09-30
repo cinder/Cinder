@@ -777,7 +777,7 @@ class Extrude : public Source {
 
 class ExtrudeSpline : public Source {
   public:
-	ExtrudeSpline( const Shape2d &shape, const BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
+	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
 	
 	virtual ExtrudeSpline&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual ExtrudeSpline&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
@@ -833,10 +833,10 @@ class VertexNormalLines : public Source {
 	float					mLength;
 };
 
-class SourceBSpline : public Source {
+class BSpline : public Source {
   public:
 	template<int D, typename T>
-	SourceBSpline( const BSpline<D,T> &spline, int subdivisions );
+	BSpline( const ci::BSpline<D,T> &spline, int subdivisions );
 
 	virtual size_t		getNumVertices() const override				{ return mNumVertices; }
 	virtual size_t		getNumIndices() const override				{ return 0; }
@@ -846,11 +846,11 @@ class SourceBSpline : public Source {
 	
   protected:
 	template<typename T>
-	void init( const BSpline<2,T> &spline, int subdivisions );
+	void init( const ci::BSpline<2,T> &spline, int subdivisions );
 	template<typename T>
-	void init( const BSpline<3,T> &spline, int subdivisions );
+	void init( const ci::BSpline<3,T> &spline, int subdivisions );
 	template<typename T>
-	void init( const BSpline<4,T> &spline, int subdivisions );
+	void init( const ci::BSpline<4,T> &spline, int subdivisions );
 
 	int						mPositionDims;
 	size_t					mNumVertices;
@@ -858,8 +858,8 @@ class SourceBSpline : public Source {
 	std::vector<vec3>		mNormals;
 };
 
-SourceBSpline toSource( const BSpline2f &spline, int subdivisions );
-SourceBSpline toSource( const BSpline3f &spline, int subdivisions );
+BSpline toSource( const BSpline2f &spline, int subdivisions );
+BSpline toSource( const BSpline3f &spline, int subdivisions );
 
 class Exc : public Exception {
 };

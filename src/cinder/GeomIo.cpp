@@ -2288,7 +2288,7 @@ void Extrude::loadInto( Target *target ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Extrude
-ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const BSpline<3,float> &spline, int splineSubdivisions, float approximationScale )
+ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions, float approximationScale )
 	: mCalculationsCached( false ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( splineSubdivisions )
 {
 	enable( Attrib::POSITION );
@@ -2507,9 +2507,9 @@ void VertexNormalLines::loadInto( Target *target ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// SourceBSpline
+// BSpline
 template<int D, typename T>
-SourceBSpline::SourceBSpline( const BSpline<D,T> &spline, int subdivisions )
+BSpline::BSpline( const ci::BSpline<D,T> &spline, int subdivisions )
 	: mPositionDims( D )
 {
 	CI_ASSERT( D >= 2 && D <= 4 );
@@ -2524,7 +2524,7 @@ SourceBSpline::SourceBSpline( const BSpline<D,T> &spline, int subdivisions )
 }
 
 template<typename T>
-void SourceBSpline::init( const BSpline<2,T> &spline, int subdivisions )
+void BSpline::init( const ci::BSpline<2,T> &spline, int subdivisions )
 {
 	const float tInc = 1.0f / ( subdivisions - 1 );
 
@@ -2537,7 +2537,7 @@ void SourceBSpline::init( const BSpline<2,T> &spline, int subdivisions )
 }
 
 template<typename T>
-void SourceBSpline::init( const BSpline<3,T> &spline, int subdivisions )
+void BSpline::init( const ci::BSpline<3,T> &spline, int subdivisions )
 {
 	const float tInc = 1.0f / ( subdivisions - 1 );
 
@@ -2550,7 +2550,7 @@ void SourceBSpline::init( const BSpline<3,T> &spline, int subdivisions )
 }
 
 template<typename T>
-void SourceBSpline::init( const BSpline<4,T> &spline, int subdivisions )
+void BSpline::init( const ci::BSpline<4,T> &spline, int subdivisions )
 {
 	const float tInc = 1.0f / ( subdivisions - 1 );
 
@@ -2562,7 +2562,7 @@ void SourceBSpline::init( const BSpline<4,T> &spline, int subdivisions )
 	}
 }
 
-uint8_t	SourceBSpline::getAttribDims( Attrib attr ) const
+uint8_t	BSpline::getAttribDims( Attrib attr ) const
 {
 	if( attr == Attrib::POSITION )
 		return mPositionDims;
@@ -2572,21 +2572,21 @@ uint8_t	SourceBSpline::getAttribDims( Attrib attr ) const
 		return 0;
 }
 
-void SourceBSpline::loadInto( Target *target ) const
+void BSpline::loadInto( Target *target ) const
 {
 	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
 }
 
-SourceBSpline toSource( const BSpline2f &spline, int subdivisions )
+BSpline toSource( const ci::BSpline2f &spline, int subdivisions )
 {
-	return SourceBSpline( spline, subdivisions );
+	return BSpline( spline, subdivisions );
 }
 
-SourceBSpline toSource( const BSpline3f &spline, int subdivisions )
+BSpline toSource( const ci::BSpline3f &spline, int subdivisions )
 {
-	return SourceBSpline( spline, subdivisions );
+	return BSpline( spline, subdivisions );
 }
 
 } } // namespace cinder::geom
