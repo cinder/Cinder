@@ -7,6 +7,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/Font.h"
 #include "cinder/params/Params.h"
+#include "cinder/Rand.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -19,17 +20,21 @@ class ExtrudeApp : public AppNative {
 	void	update() override;
 	void	draw() override;
 	
+	void	randomSpline();
 	void	makeGeom();
 	
 	CameraPersp				mCam;
-	bool					mDrawNormals, mDrawWireframe, mCaps;
+	bool					mDrawNormals, mDrawWireframe, mCaps, mUseSpline;
 	gl::BatchRef			mBatch, mNormalsBatch;
+	gl::BatchRef			mSplineBatch;
 	gl::GlslProgRef			mGlsl;
 	Font					mFont;
 	mat4					mRotation;
 	char					mCurrentChar;
 	float					mApproximation, mDepth;
 	int						mSubdivisions;
+	BSpline3f				mSpline;
+	
 	params::InterfaceGlRef	mParams;
 };
 
@@ -37,17 +42,20 @@ void ExtrudeApp::setup()
 {
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
+	gl::enableFaceCulling();
 
 	mDrawNormals = false;
 	mDrawWireframe = false;
+	mUseSpline = true;
 	mCaps = true;
 	mApproximation = 2.5f;
 	mDepth = 2.2f;
-	mSubdivisions = 1;
+	mSubdivisions = 30;
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
 	mParams->addParam( "Approximation", &mApproximation ).min( 0.1f ).max( 20.0f ).step( 0.1f ).updateFn( [=] { makeGeom(); } );
 	mParams->addParam( "Depth", &mDepth ).min( 0.01f ).max( 7.0f ).step( 0.25f ).updateFn( [=] { makeGeom(); } );
-	mParams->addParam( "Subdivisions", &mSubdivisions ).min( 1 ).max( 12 ).updateFn( [=] { makeGeom(); } );
+	mParams->addParam( "Subdivisions", &mSubdivisions ).min( 1 ).max( 30 ).updateFn( [=] { makeGeom(); } );
+	mParams->addParam( "Spline", &mUseSpline ).updateFn( [=] { makeGeom(); } );
 	mParams->addParam( "Caps", &mCaps ).updateFn( [=] { makeGeom(); } );
 	mParams->addParam( "Wireframe", &mDrawWireframe ).updateFn( [=] { makeGeom(); } );
 	mParams->addParam( "Draw Normals", &mDrawNormals ).updateFn( [=] { makeGeom(); } );
@@ -56,8 +64,9 @@ void ExtrudeApp::setup()
 	
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 	
-	mFont = Font( "Georgia", 64 );
+	mFont = Font( "Georgia", 32 );
 	mCurrentChar = '&';
+	randomSpline();
 	makeGeom();
 	
 	mGlsl->bind();
@@ -66,7 +75,21 @@ void ExtrudeApp::setup()
 void ExtrudeApp::keyDown( KeyEvent event )
 {
 	mCurrentChar = event.getChar();
+	randomSpline();
 	makeGeom();
+}
+
+void ExtrudeApp::randomSpline()
+{
+	// make a random B-Spline
+	std::vector<vec3> points;
+	float len = 10;
+	float offset = 3;
+	points.push_back( vec3( randFloat( -20, 20 ), 0, offset + -1 * len) );
+	points.push_back( vec3( randFloat( -20, 20 ), randFloat( -30, 30 ), offset + 0 * len) );
+	points.push_back( vec3( randFloat( -20, 20 ), 0, offset + 1 * len) );
+	points.push_back( vec3( randFloat( -20, 20 ), randFloat( -30, 30 ), offset + 2 * len ) );
+	mSpline = BSpline3f( points, 3, false, true );
 }
 
 void ExtrudeApp::makeGeom()
@@ -76,10 +99,17 @@ void ExtrudeApp::makeGeom()
 	auto bounds = shape.calcPreciseBoundingBox();
 	shape.transform( MatrixAffine2f::makeTranslate( -bounds.getCenter() ) );
 	
-	// and extrude it
-	auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions );
-	mBatch = gl::Batch::create( extrudeSource, mGlsl );
-	mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( extrudeSource, 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
+	if( mUseSpline ) {
+		auto extrudeSource = geom::ExtrudeSpline( shape, mSpline, mSubdivisions, mApproximation ).caps( mCaps );
+		mBatch = gl::Batch::create( extrudeSource, mGlsl );
+		mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( extrudeSource, 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
+		mSplineBatch = gl::Batch::create( geom::toSource( mSpline, 100 ), gl::getStockShader( gl::ShaderDef().color() ) );
+	}
+	else {
+		auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions );
+		mBatch = gl::Batch::create( extrudeSource, mGlsl );
+		mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( extrudeSource, 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
+	}
 }
 
 void ExtrudeApp::resize()
@@ -109,6 +139,11 @@ void ExtrudeApp::draw()
 		gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 		if( mDrawNormals && mNormalsBatch )
 			mNormalsBatch->draw();
+		if( mUseSpline && mSplineBatch ) {
+			gl::disableDepthRead();
+			mSplineBatch->draw();
+			gl::enableDepthRead();
+		}
 	gl::popMatrices();
 	
 	mParams->draw();
