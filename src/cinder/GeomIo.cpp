@@ -2129,7 +2129,7 @@ void ColorFromAttrib::loadInto( Target *target ) const
 			processColorAttrib( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
 		else if( inputAttribDims == 3 )
 			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
-		else
+		else if( inputAttribDims == 4 )
 			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
 	}
 	else if( mFnColor3 ) {
@@ -2137,10 +2137,9 @@ void ColorFromAttrib::loadInto( Target *target ) const
 			processColorAttrib2d( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
 		if( inputAttribDims == 3 )
 			processColorAttrib( reinterpret_cast<const vec3*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
-		else
+		else if( inputAttribDims == 4 )
 			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
 	}
-
 
 	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
 }
@@ -2152,6 +2151,7 @@ Extrude::Extrude( const Shape2d &shape, float distance, float approximationScale
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
+	enable( Attrib::TEX_COORD_0 );
 	
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
@@ -2166,15 +2166,26 @@ void Extrude::calculate() const
 	mPathSubdivisionTangents.clear();
 	mPositions.clear();
 	mNormals.clear();
+	mTexCoords.clear();
 	mIndices.clear();
+	
+	// necessary for texcoord calculation
+	bool capBoundsEmpty = true;
+	Rectf capBounds;
 	
 	// iterate all the paths of the shape and subdivide, calculating both positions and tangents
 	for( const auto &path : mPaths ) {
+		if( capBoundsEmpty ) {
+			capBounds = path.calcPreciseBoundingBox();
+			capBoundsEmpty = false;
+		}
+		else
+			capBounds.include( path.calcPreciseBoundingBox() );
 		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
 		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
 		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
 		// normalize the tangents
-		for( auto& tan : mPathSubdivisionTangents.back() )
+		for( auto &tan : mPathSubdivisionTangents.back() )
 			tan = normalize( tan );
 	}
 
@@ -2185,27 +2196,27 @@ void Extrude::calculate() const
 	
 	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
 
-	// CAP POSITIONS
+	// CAPS VERTICES
 	const vec2* capPositions = mCap->getVertices<2>();
 	// front cap
 	if( mFrontCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
 			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
-	// back cap
-	if( mBackCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
-	
-	// CAP NORMALS
-	// front cap
-	if( mFrontCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
 			mNormals.emplace_back( vec3( 0, 0, 1 ) );
+			mTexCoords.emplace_back( vec3( ( mPositions.back().x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( mPositions.back().y - capBounds.y1 ) / capBounds.getHeight(),
+											0 ) );
+		}
 	// back cap
 	if( mBackCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
 			mNormals.emplace_back( vec3( 0, 0, -1 ) );
-		
+			mTexCoords.emplace_back( vec3( ( mPositions.back().x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( mPositions.back().y - capBounds.y1 ) / capBounds.getHeight(),
+											1 ) );
+		}
+	
 	// CAP INDICES
 	auto capIndices = mCap->getIndices();
 	// front cap
@@ -2226,7 +2237,8 @@ void Extrude::calculate() const
 	// so we'll need to create verts unique to the extrusion
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
 		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
-			float distance = ( 0.5f - sub / (float)mSubdivisions ) * mDistance;
+			const float t = sub / (float)mSubdivisions;
+			const float distance = ( 0.5f - t ) * mDistance;
 			const auto &pathPositions = mPathSubdivisionPositions[p];
 			const auto &pathTangents = mPathSubdivisionTangents[p];
 			// add all the positions & normals
@@ -2234,6 +2246,9 @@ void Extrude::calculate() const
 			for( size_t v = 0; v < pathPositions.size(); ++v ) {
 				mPositions.push_back( vec3( pathPositions[v], distance ) );
 				mNormals.push_back( vec3( vec2( pathTangents[v].y, -pathTangents[v].x ), 0 ) );
+				mTexCoords.emplace_back( vec3( ( mPositions.back().x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( mPositions.back().y - capBounds.y1 ) / capBounds.getHeight(),
+											t ) );
 			}
 			// add the indices
 			if( sub != mSubdivisions ) {
@@ -2270,6 +2285,7 @@ uint8_t	Extrude::getAttribDims( Attrib attr ) const
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -2282,6 +2298,8 @@ void Extrude::loadInto( Target *target ) const
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mPositions.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 3, 0, (const float*)mTexCoords.data(), mTexCoords.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
 }
@@ -2293,6 +2311,7 @@ ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
+	enable( Attrib::TEX_COORD_0 );
 	
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
@@ -2301,11 +2320,13 @@ ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &
 	vec3 prevPos = spline.getPosition( 0 );
 	vec3 prevTangent = spline.getDerivative( 0 );
 	mSplineFrames.emplace_back( firstFrame( prevPos, spline.getPosition( 0.1f ), spline.getPosition( 0.2f ) ) );
+	mSplineTimes.push_back( 0 );
 	for( int sub = 1; sub <= mSubdivisions; ++sub ) {
 		const float t = spline.getTime( sub / (float)mSubdivisions * splineLength );
 		const vec3 curPos = spline.getPosition( t );
 		const vec3 curTangent = normalize( spline.getDerivative( t ) );
 		mSplineFrames.emplace_back( nextFrame( mSplineFrames.back(), prevPos, curPos, prevTangent, curTangent ) );
+		mSplineTimes.push_back( t );
 		prevPos = curPos;
 		prevTangent = curTangent;
 	}
@@ -2320,10 +2341,21 @@ void ExtrudeSpline::calculate() const
 	mPathSubdivisionTangents.clear();
 	mPositions.clear();
 	mNormals.clear();
+	mTexCoords.clear();
 	mIndices.clear();
+
+	// necessary for texcoord calculation
+	bool capBoundsEmpty = true;
+	Rectf capBounds;
 	
 	// iterate all the paths of the shape and subdivide, calculating both positions and tangents
 	for( const auto &path : mPaths ) {
+		if( capBoundsEmpty ) {
+			capBounds = path.calcPreciseBoundingBox();
+			capBoundsEmpty = false;
+		}
+		else
+			capBounds.include( path.calcPreciseBoundingBox() );
 		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
 		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
 		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
@@ -2339,29 +2371,29 @@ void ExtrudeSpline::calculate() const
 	
 	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
 
-	// CAP POSITIONS
+	// CAP VERTICES
 	const vec2* capPositions = mCap->getVertices<2>();
 	// front cap
-	if( mFrontCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( mSplineFrames.front() * vec4( capPositions[v], 0, 1 ) ) );
-	// back cap
-	if( mBackCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( mSplineFrames.back() * vec4( capPositions[v], 0, 1 ) ) );
-	
-	// CAP NORMALS
-	// front cap
 	if( mFrontCap ) {
-		vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+		const vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+			mPositions.emplace_back( vec3( mSplineFrames.front() * vec4( capPositions[v], 0, 1 ) ) );
 			mNormals.emplace_back( frontNormal );
+			mTexCoords.emplace_back( vec3( ( capPositions[v].x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( capPositions[v].y - capBounds.y1 ) / capBounds.getHeight(),
+											0 ) );
+		}
 	}
 	// back cap
 	if( mBackCap ) {
-		vec3 backNormal = vec3( mSplineFrames.back() * vec4( 0, 0, 1, 0 ) );
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+		const vec3 backNormal = vec3( mSplineFrames.back() * vec4( 0, 0, 1, 0 ) );
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+			mPositions.emplace_back( vec3( mSplineFrames.back() * vec4( capPositions[v], 0, 1 ) ) );
 			mNormals.emplace_back( backNormal );
+			mTexCoords.emplace_back( vec3( ( capPositions[v].x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( capPositions[v].y - capBounds.y1 ) / capBounds.getHeight(),
+											1 ) );
+		}
 	}
 	
 	// CAP INDICES
@@ -2390,6 +2422,9 @@ void ExtrudeSpline::calculate() const
 			for( size_t v = 0; v < pathPositions.size(); ++v ) {
 				mPositions.push_back( vec3( transform * vec4( pathPositions[v], 0, 1 ) ) );
 				mNormals.push_back( vec3( transform * vec4( vec2( pathTangents[v].y, -pathTangents[v].x ), 0, 0 ) ) );
+				mTexCoords.emplace_back( vec3( ( pathPositions[v].x - capBounds.x1 ) / capBounds.getWidth(),
+											1.0f - ( pathPositions[v].y - capBounds.y1 ) / capBounds.getHeight(),
+											mSplineTimes[sub] ) );
 			}
 			// add the indices
 			if( sub != mSubdivisions ) {
@@ -2426,6 +2461,7 @@ uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 3 : 0;		
 		default:
 			return 0;
 	}
@@ -2438,6 +2474,8 @@ void ExtrudeSpline::loadInto( Target *target ) const
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mPositions.size() );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
+	if( isEnabled( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 3, 0, (const float*)mTexCoords.data(), mTexCoords.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
 }
@@ -2579,14 +2617,7 @@ void BSpline::loadInto( Target *target ) const
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
 }
 
-BSpline toSource( const ci::BSpline2f &spline, int subdivisions )
-{
-	return BSpline( spline, subdivisions );
-}
-
-BSpline toSource( const ci::BSpline3f &spline, int subdivisions )
-{
-	return BSpline( spline, subdivisions );
-}
+template BSpline::BSpline( const ci::BSpline<2,float>&, int );
+template BSpline::BSpline( const ci::BSpline<3,float>&, int );
 
 } } // namespace cinder::geom

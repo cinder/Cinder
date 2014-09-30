@@ -771,7 +771,7 @@ class Extrude : public Source {
 	mutable bool							mCalculationsCached;
 	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 	mutable std::unique_ptr<TriMesh>		mCap;
-	mutable std::vector<vec3>				mPositions, mNormals;
+	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
 	mutable std::vector<uint32_t>			mIndices;
 };
 
@@ -802,6 +802,7 @@ class ExtrudeSpline : public Source {
   
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
+	std::vector<float>				mSplineTimes;
 	float							mApproximationScale;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
@@ -809,7 +810,7 @@ class ExtrudeSpline : public Source {
 	mutable bool							mCalculationsCached;
 	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 	mutable std::unique_ptr<TriMesh>		mCap;
-	mutable std::vector<vec3>				mPositions, mNormals;
+	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
 	mutable std::vector<uint32_t>			mIndices;
 };
 
@@ -857,9 +858,6 @@ class BSpline : public Source {
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
 };
-
-BSpline toSource( const BSpline2f &spline, int subdivisions );
-BSpline toSource( const BSpline3f &spline, int subdivisions );
 
 class Exc : public Exception {
 };
