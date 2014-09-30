@@ -283,31 +283,40 @@ void FilePlayerNode::disableProcessing()
 
 void FilePlayerNode::stop()
 {
-	disable();
-
-	{
-		mutex &m = mIsReadAsync ? mAsyncReadMutex : getContext()->getMutex();
-		lock_guard<mutex> lock( m );
-
-		for( auto &ringBuffer : mRingBuffers )
-			ringBuffer.clear();
+	if( mIsReadAsync ) {
+		lock_guard<mutex> lock( mAsyncReadMutex );
+		stopImpl();
 	}
-
-	seek( 0 );
+	else {
+		auto ctx = getContext();
+		if( ! ctx->isAudioThread() ) {
+			lock_guard<mutex> lock( ctx->getMutex() );
+			stopImpl();
+		}
+		else {
+			// called from audio thread, lock is already held for the duration of this block
+			stopImpl();
+		}
+	}
 }
 
 void FilePlayerNode::seek( size_t readPositionFrames )
 {
-	if( ! mSourceFile )
-		return;
-
-	// Synchronize with the mutex that protects the read thread, which is different depending on if
-	// read is async or sync (done on audio thread)
-	mutex &m = mIsReadAsync ? mAsyncReadMutex : getContext()->getMutex();
-	lock_guard<mutex> lock( m );
-
-	mIsEof = false;
-	seekImpl( readPositionFrames );
+	if( mIsReadAsync ) {
+		lock_guard<mutex> lock( mAsyncReadMutex );
+		seekImpl( readPositionFrames );
+	}
+	else {
+		auto ctx = getContext();
+		if( ! ctx->isAudioThread() ) {
+			lock_guard<mutex> lock( ctx->getMutex() );
+			seekImpl( readPositionFrames );
+		}
+		else {
+			// called from audio thread, lock is already held for the duration of this block
+			seekImpl( readPositionFrames );
+		}
+	}
 }
 
 void FilePlayerNode::setSourceFile( const SourceFileRef &sourceFile )
@@ -438,11 +447,25 @@ void FilePlayerNode::readImpl()
 
 void FilePlayerNode::seekImpl( size_t readPos )
 {
+	if( ! mSourceFile )
+		return;
+
+	mIsEof = false;
 	mReadPos = math<size_t>::clamp( readPos, 0, mNumFrames );
 
 	// if async mode, readAsyncImpl() will notice mReadPos was updated and do the seek there.
 	if( ! mIsReadAsync )
 		mSourceFile->seek( mReadPos );
+}
+
+void FilePlayerNode::stopImpl()
+{
+	disable();
+
+	for( auto &ringBuffer : mRingBuffers )
+		ringBuffer.clear();
+
+	seekImpl( 0 );
 }
 
 void FilePlayerNode::destroyReadThreadImpl()

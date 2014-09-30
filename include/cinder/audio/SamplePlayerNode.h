@@ -154,6 +154,7 @@ class FilePlayerNode : public SamplePlayerNode {
 	void readAsyncImpl();
 	void readImpl();
 	void seekImpl( size_t readPos );
+	void stopImpl();
 	void destroyReadThreadImpl();
 
 	std::vector<dsp::RingBuffer>				mRingBuffers;	// used to transfer samples from io to audio thread, one ring buffer per channel
