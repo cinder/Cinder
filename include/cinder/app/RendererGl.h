@@ -187,9 +187,9 @@ public:
 	virtual Surface	copyWindowSurface( const Area &area );
 
 	//!
-	virtual void overrideStartDraw( const std::function<void( Renderer* )>& function ) override { mStartDrawFunction = function; }
+	virtual void setStartDrawFn( const std::function<void( Renderer* )>& function ) override { mStartDrawFn = function; }
 	//!
-	virtual void overrideFinishDraw( const std::function<void( Renderer* )>& function ) override { mFinishDrawFunction = function; }
+	virtual void setFinishDrawFn( const std::function<void( Renderer* )>& function ) override { mFinishDrawFn = function; }
 
 protected:
 	RendererGl( const RendererGl &renderer );

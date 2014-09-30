@@ -127,9 +127,9 @@ public:
 	virtual void defaultResize() {}
 
 	//!
-	virtual void overrideStartDraw( const std::function<void( Renderer* )>& function ) {}
+	virtual void setStartDrawFn( const std::function<void( Renderer* )>& function ) {}
 	//!
-	virtual void overrideFinishDraw( const std::function<void( Renderer* )>& function ) {}
+	virtual void setFinishDrawFn( const std::function<void( Renderer* )>& function ) {}
 
 protected:
 	Renderer() : mApp( 0 ) {}
@@ -137,8 +137,8 @@ protected:
 
 	App			*mApp;
 
-	std::function<void( Renderer* )> mStartDrawFunction;
-	std::function<void( Renderer* )> mFinishDrawFunction;
+	std::function<void( Renderer* )> mStartDrawFn;
+	std::function<void( Renderer* )> mFinishDrawFn;
 };
 
 typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;

@@ -226,8 +226,8 @@ void RendererGl::finishToggleFullScreen()
 
 void RendererGl::startDraw()
 {
-	if( mStartDrawFunction )
-		mStartDrawFunction(this);
+	if( mStartDrawFn )
+		mStartDrawFn(this);
 	else
 		mImpl->makeCurrentContext();
 }
@@ -244,8 +244,8 @@ void RendererGl::swapBuffers()
 
 void RendererGl::finishDraw()
 {
-	if( mFinishDrawFunction )
-		mFinishDrawFunction(this);
+	if( mFinishDrawFn )
+		mFinishDrawFn(this);
 	else
 		mImpl->swapBuffers();
 }
