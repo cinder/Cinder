@@ -54,7 +54,7 @@ std::string attribToString( Attrib attrib )
 uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
 {
 	auto attrIt = mAttribs.find( attr );
-	if( attrIt == mAttribs.end() || attrIt->second == IGNORE ) { // not an attribute we're interested in; pass through and ask the target
+	if( attrIt == mAttribs.end() || attrIt->second == IGNORED ) { // not an attribute we're interested in; pass through and ask the target
 		return mTarget->getAttribDims( attr );
 	}
 	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want whatever the source has got
@@ -67,7 +67,7 @@ uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
 void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
 	auto attrIt = mAttribs.find( attr );
-	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORE) ) { // not an attribute we're interested in; pass through to the target
+	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORED) ) { // not an attribute we're interested in; pass through to the target
 		mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
 	}
 	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want to capture the values; for READ, we pass them to target
@@ -86,7 +86,7 @@ void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t 
 	mNumIndices = numIndices;
 	mPrimitive = primitive;
 	switch( mIndicesAccess ) {
-		case IGNORE: // we just pass the indices through to the target
+		case IGNORED: // we just pass the indices through to the target
 			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
 		break;
 		case READ: // capture, and pass through to target
@@ -397,9 +397,9 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 	const uint32_t baseIdx = (uint32_t)positions->size();
 
 	// fill vertex data
-	for( size_t vi = 0; vi <= subdivV; vi++ ) {
+	for( int vi = 0; vi <= subdivV; vi++ ) {
 		const float v = vi / float(subdivV);
-		for( size_t ui = 0; ui <= subdivU; ui++ ) {
+		for( int ui = 0; ui <= subdivU; ui++ ) {
 			const float u = ui / float(subdivU);
 
 			positions->emplace_back( faceCenter + ( u - 0.5f ) * 2.0f * uAxis + ( v - 0.5f ) * 2.0f * vAxis );
@@ -415,9 +415,9 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 
 	// 'baseIdx' will correspond to the index of the first vertex we created in this call to generateFace()
 //	const uint32_t baseIdx = indices->empty() ? 0 : ( indices->back() + 1 );
-	for( uint32_t u = 0; u < subdivU; u++ ) {
-		for( uint32_t v = 0; v < subdivV; v++ ) {
-			const uint32_t i = u + v * ( subdivU + 1 );
+	for( int u = 0; u < subdivU; u++ ) {
+		for( int v = 0; v < subdivV; v++ ) {
+			const int i = u + v * ( subdivU + 1 );
 
 			indices->push_back( baseIdx + i );
 			indices->push_back( baseIdx + i + subdivU + 1 );
@@ -1191,7 +1191,7 @@ void Icosphere::subdivide() const
 		mIndices.reserve( mIndices.size() * 4 );
 
 		const size_t numTriangles = mIndices.size() / 3;
-		for( int i = 0; i < numTriangles; ++i ) {
+		for( uint32_t i = 0; i < numTriangles; ++i ) {
 			uint32_t index0 = mIndices[i * 3 + 0];
 			uint32_t index1 = mIndices[i * 3 + 1];
 			uint32_t index2 = mIndices[i * 3 + 2];
@@ -1767,8 +1767,8 @@ void Plane::calculate() const
 	const vec3 normal = cross( mAxisV, mAxisU );
 
 	// fill vertex data
-	for( size_t x = 0; x <= mSubdivisions.x; x++ ) {
-		for( size_t y = 0; y <= mSubdivisions.y; y++ ) {
+	for( int x = 0; x <= mSubdivisions.x; x++ ) {
+		for( int y = 0; y <= mSubdivisions.y; y++ ) {
 			float u = x * stepIncr.x;
 			float v = y * stepIncr.y;
 
@@ -1786,8 +1786,8 @@ void Plane::calculate() const
 
 	// fill indices. TODO: this could be optimized by moving it to above loop, though last row of vertices would need to be done outside of loop
 	mIndices.clear();
-	for( uint32_t x = 0; x < mSubdivisions.x; x++ ) {
-		for( uint32_t y = 0; y < mSubdivisions.y; y++ ) {
+	for( int x = 0; x < mSubdivisions.x; x++ ) {
+		for( int y = 0; y < mSubdivisions.y; y++ ) {
 			uint32_t i = x * ( mSubdivisions.y + 1 ) + y;
 
 			mIndices.push_back( i );
@@ -1847,7 +1847,7 @@ void Transform::loadInto( Target *target ) const
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[POSITION] = Modifier::READ_WRITE;
 	attribAccess[NORMAL] = Modifier::READ_WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
 	mSource.loadInto( &modifier );
 	
 	const size_t numVertices = mSource.getNumVertices();
@@ -1899,7 +1899,7 @@ void Twist::loadInto( Target *target ) const
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[POSITION] = Modifier::READ_WRITE;
 	attribAccess[NORMAL] = Modifier::READ_WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
 	mSource.loadInto( &modifier );
 	
 	const size_t numVertices = mSource.getNumVertices();
@@ -2110,7 +2110,7 @@ void ColorFromAttrib::loadInto( Target *target ) const
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[mAttrib] = Modifier::READ;
 	attribAccess[COLOR] = Modifier::WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORE );
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
 	mSource.loadInto( &modifier );
 
 	if( modifier.getAttribDims( mAttrib ) == 0 ) {
@@ -2194,13 +2194,13 @@ void Extrude::calculate() const
 	for( const auto &subdivision : mPathSubdivisionPositions )
 		triangulator.addPolyLine( subdivision );
 	
-	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
+	TriMesh cap = triangulator.calcMesh();
 
 	// CAPS VERTICES
-	const vec2* capPositions = mCap->getVertices<2>();
+	const vec2* capPositions = cap.getVertices<2>();
 	// front cap
 	if( mFrontCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+		for( size_t v = 0; v < cap.getNumVertices(); ++v ) {
 			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
 			mNormals.emplace_back( vec3( 0, 0, 1 ) );
 			mTexCoords.emplace_back( vec3( ( mPositions.back().x - capBounds.x1 ) / capBounds.getWidth(),
@@ -2209,7 +2209,7 @@ void Extrude::calculate() const
 		}
 	// back cap
 	if( mBackCap )
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+		for( size_t v = 0; v < cap.getNumVertices(); ++v ) {
 			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
 			mNormals.emplace_back( vec3( 0, 0, -1 ) );
 			mTexCoords.emplace_back( vec3( ( mPositions.back().x - capBounds.x1 ) / capBounds.getWidth(),
@@ -2218,7 +2218,7 @@ void Extrude::calculate() const
 		}
 	
 	// CAP INDICES
-	auto capIndices = mCap->getIndices();
+	auto capIndices = cap.getIndices();
 	// front cap
 	if( mFrontCap )
 		for( size_t i = 0; i < capIndices.size(); ++i )
@@ -2226,9 +2226,9 @@ void Extrude::calculate() const
 	// back cap
 	if( mBackCap ) {
 		for( size_t i = 0; i < capIndices.size(); i += 3 ) { // we need to reverse the winding order for the back cap
-			mIndices.push_back( capIndices[i+2] + (uint32_t)mCap->getNumVertices() );
-			mIndices.push_back( capIndices[i+1] + (uint32_t)mCap->getNumVertices() );
-			mIndices.push_back( capIndices[i+0] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+2] + (uint32_t)cap.getNumVertices() );
+			mIndices.push_back( capIndices[i+1] + (uint32_t)cap.getNumVertices() );
+			mIndices.push_back( capIndices[i+0] + (uint32_t)cap.getNumVertices() );
 		}
 	}
 	
@@ -2236,7 +2236,7 @@ void Extrude::calculate() const
 	// we don't make use of the caps' vertices because their normals are wrong,
 	// so we'll need to create verts unique to the extrusion
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
-		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
+		for( int sub = 0; sub <= mSubdivisions; ++sub ) {
 			const float t = sub / (float)mSubdivisions;
 			const float distance = ( 0.5f - t ) * mDistance;
 			const auto &pathPositions = mPathSubdivisionPositions[p];
@@ -2369,14 +2369,14 @@ void ExtrudeSpline::calculate() const
 	for( const auto &subdivision : mPathSubdivisionPositions )
 		triangulator.addPolyLine( subdivision );
 	
-	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
+	TriMesh cap = triangulator.calcMesh();
 
 	// CAP VERTICES
-	const vec2* capPositions = mCap->getVertices<2>();
+	const vec2* capPositions = cap.getVertices<2>();
 	// front cap
 	if( mFrontCap ) {
 		const vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+		for( size_t v = 0; v < cap.getNumVertices(); ++v ) {
 			mPositions.emplace_back( vec3( mSplineFrames.front() * vec4( capPositions[v], 0, 1 ) ) );
 			mNormals.emplace_back( frontNormal );
 			mTexCoords.emplace_back( vec3( ( capPositions[v].x - capBounds.x1 ) / capBounds.getWidth(),
@@ -2387,7 +2387,7 @@ void ExtrudeSpline::calculate() const
 	// back cap
 	if( mBackCap ) {
 		const vec3 backNormal = vec3( mSplineFrames.back() * vec4( 0, 0, 1, 0 ) );
-		for( size_t v = 0; v < mCap->getNumVertices(); ++v ) {
+		for( size_t v = 0; v < cap.getNumVertices(); ++v ) {
 			mPositions.emplace_back( vec3( mSplineFrames.back() * vec4( capPositions[v], 0, 1 ) ) );
 			mNormals.emplace_back( backNormal );
 			mTexCoords.emplace_back( vec3( ( capPositions[v].x - capBounds.x1 ) / capBounds.getWidth(),
@@ -2397,7 +2397,7 @@ void ExtrudeSpline::calculate() const
 	}
 	
 	// CAP INDICES
-	auto capIndices = mCap->getIndices();
+	auto capIndices = cap.getIndices();
 	// front cap
 	if( mFrontCap )
 		for( size_t i = 0; i < capIndices.size(); ++i )
@@ -2405,15 +2405,15 @@ void ExtrudeSpline::calculate() const
 	// back cap
 	if( mBackCap ) {
 		for( size_t i = 0; i < capIndices.size(); i += 3 ) { // we need to reverse the winding order for the back cap
-			mIndices.push_back( capIndices[i+2] + (uint32_t)mCap->getNumVertices() );
-			mIndices.push_back( capIndices[i+1] + (uint32_t)mCap->getNumVertices() );
-			mIndices.push_back( capIndices[i+0] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+2] + (uint32_t)cap.getNumVertices() );
+			mIndices.push_back( capIndices[i+1] + (uint32_t)cap.getNumVertices() );
+			mIndices.push_back( capIndices[i+0] + (uint32_t)cap.getNumVertices() );
 		}
 	}
 
 	// EXTRUSION
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
-		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
+		for( int sub = 0; sub <= mSubdivisions; ++sub ) {
 			const mat4 &transform = mSplineFrames[sub];
 			const auto &pathPositions = mPathSubdivisionPositions[p];
 			const auto &pathTangents = mPathSubdivisionTangents[p];

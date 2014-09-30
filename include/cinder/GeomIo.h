@@ -32,6 +32,7 @@
 #include <set>
 #include <vector>
 #include <map>
+#include <algorithm>
 
 // Forward declarations in cinder::
 namespace cinder {
@@ -614,7 +615,7 @@ class Plane : public Source {
 // READ_WRITE attributes are captured but not passed through to the target
 class Modifier : public geom::Target {
   public:
-	typedef enum { READ, WRITE, READ_WRITE, IGNORE } Access;
+	typedef enum { READ, WRITE, READ_WRITE, IGNORED } Access;
 
 	Modifier( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
 		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
@@ -671,7 +672,7 @@ class Twist : public Source {
   public:
 	Twist( const geom::Source &source )
 		: mSource( source ), mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ),
-			mStartAngle( -M_PI ), mEndAngle( M_PI )
+			mStartAngle( (float)-M_PI ), mEndAngle( (float)M_PI )
 	{}
 
 	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
@@ -770,7 +771,6 @@ class Extrude : public Source {
 	
 	mutable bool							mCalculationsCached;
 	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::unique_ptr<TriMesh>		mCap;
 	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
 	mutable std::vector<uint32_t>			mIndices;
 };
@@ -809,7 +809,6 @@ class ExtrudeSpline : public Source {
 	
 	mutable bool							mCalculationsCached;
 	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::unique_ptr<TriMesh>		mCap;
 	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
 	mutable std::vector<uint32_t>			mIndices;
 };
