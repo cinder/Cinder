@@ -85,7 +85,7 @@ void ExtrudeApp::randomSpline()
 	std::vector<vec3> points;
 	float len = 10;
 	float offset = 3;
-	points.push_back( vec3( randFloat( -20, 20 ), 0, offset + -1 * len) );
+	points.push_back( vec3( randFloat( -20, 20 ), randFloat( -30, 30 ), offset + -1 * len) );
 	points.push_back( vec3( randFloat( -20, 20 ), randFloat( -30, 30 ), offset + 0 * len) );
 	points.push_back( vec3( randFloat( -20, 20 ), 0, offset + 1 * len) );
 	points.push_back( vec3( randFloat( -20, 20 ), randFloat( -30, 30 ), offset + 2 * len ) );
@@ -101,13 +101,19 @@ void ExtrudeApp::makeGeom()
 	
 	if( mUseSpline ) {
 		auto extrudeSource = geom::ExtrudeSpline( shape, mSpline, mSubdivisions, mApproximation ).caps( mCaps );
-		mBatch = gl::Batch::create( extrudeSource, mGlsl );
+		// this remaps the TEX_COORD_0s to color
+		mBatch = gl::Batch::create( geom::ColorFromAttrib( extrudeSource, geom::TEX_COORD_0,
+											[=]( vec3 v ) { return Colorf( v.x, v.y, v.z ); } ), mGlsl );
+
 		mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( extrudeSource, 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
-		mSplineBatch = gl::Batch::create( geom::toSource( mSpline, 100 ), gl::getStockShader( gl::ShaderDef().color() ) );
+		mSplineBatch = gl::Batch::create( geom::BSpline( mSpline, 100 ), gl::getStockShader( gl::ShaderDef().color() ) );
 	}
 	else {
-		auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions );
-		mBatch = gl::Batch::create( extrudeSource, mGlsl );
+		auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions ).enable( geom::TEX_COORD_0 );
+		// this remaps the TEX_COORD_0s to color
+		mBatch = gl::Batch::create( geom::ColorFromAttrib( extrudeSource, geom::TEX_COORD_0,
+											[=]( vec3 v ) { return Colorf( v.x, v.y, v.z ); } ), mGlsl );
+		
 		mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( extrudeSource, 3.0f ), gl::getStockShader( gl::ShaderDef().color() ) );
 	}
 }
