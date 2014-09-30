@@ -27,6 +27,8 @@
 #include "cinder/Log.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
+#include "cinder/BSpline.h"
+#include "cinder/Matrix.h"
 #include <algorithm>
 
 using namespace std;
@@ -218,6 +220,7 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 {
 	switch( primitive ) {
 	case Primitive::LINES:
+	case Primitive::LINE_STRIP:
 	case Primitive::TRIANGLES:
 		memcpy( target, source, sizeof(uint32_t) * numIndices );
 		break;
@@ -1942,6 +1945,9 @@ size_t Lines::getNumIndices() const
 		case LINES:
 			return mSource.getNumIndices();
 		break;
+		case LINE_STRIP:
+			return mSource.getNumIndices() ? ((mSource.getNumIndices() - 1) * 2 ) : ((mSource.getNumVertices() - 1) * 2 );
+		break;
 		case TRIANGLES:
 			return mSource.getNumIndices() ? (mSource.getNumIndices() * 2) : (mSource.getNumVertices() * 2);
 		break;
@@ -1974,6 +1980,22 @@ void Lines::loadInto( Target *target ) const
 	switch( mSource.getPrimitive() ) {
 		case Primitive::LINES: // pass-through
 			target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
+		break;
+		case Primitive::LINE_STRIP: {
+			vector<uint32_t> outIndices;
+			outIndices.reserve( getNumIndices() );
+			const uint32_t *indices = modifier.getIndicesData();
+			if( indices ) {
+				for( size_t i = 0; i < numInIndices - 1; i++ ) {
+					outIndices.push_back( indices[i] ); outIndices.push_back( indices[i + 1] );
+				}
+			}
+			else {
+				for( size_t i = 0; i < numInVertices - 1; i++ ) {
+					outIndices.push_back( (uint32_t)i ); outIndices.push_back( (uint32_t)(i + 1) );
+				}
+			}
+		}
 		break;
 		case Primitive::TRIANGLE_FAN: {
 			vector<uint32_t> outIndices;
@@ -2168,21 +2190,21 @@ void Extrude::calculate() const
 	// front cap
 	if( mFrontCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
+			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
 	// back cap
 	if( mBackCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mPositions.emplace_back( vec3( capPositions[v], mDistance * 0.5f ) );
+			mPositions.emplace_back( vec3( capPositions[v], -mDistance * 0.5f ) );
 	
 	// CAP NORMALS
 	// front cap
 	if( mFrontCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mNormals.emplace_back( vec3( 0, 0, -1 ) );
+			mNormals.emplace_back( vec3( 0, 0, 1 ) );
 	// back cap
 	if( mBackCap )
 		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
-			mNormals.emplace_back( vec3( 0, 0, 1 ) );
+			mNormals.emplace_back( vec3( 0, 0, -1 ) );
 		
 	// CAP INDICES
 	auto capIndices = mCap->getIndices();
@@ -2191,14 +2213,20 @@ void Extrude::calculate() const
 		for( size_t i = 0; i < capIndices.size(); ++i )
 			mIndices.push_back( capIndices[i] );
 	// back cap
-	if( mBackCap )
-		for( size_t i = 0; i < capIndices.size(); ++i )
-			mIndices.push_back( capIndices[i] + (uint32_t)mCap->getNumVertices() );
+	if( mBackCap ) {
+		for( size_t i = 0; i < capIndices.size(); i += 3 ) { // we need to reverse the winding order for the back cap
+			mIndices.push_back( capIndices[i+2] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+1] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+0] + (uint32_t)mCap->getNumVertices() );
+		}
+	}
 	
 	// EXTRUSION
+	// we don't make use of the caps' vertices because their normals are wrong,
+	// so we'll need to create verts unique to the extrusion
 	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
 		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
-			float distance = ( sub / (float)mSubdivisions - 0.5f ) * mDistance;
+			float distance = ( 0.5f - sub / (float)mSubdivisions ) * mDistance;
 			const auto &pathPositions = mPathSubdivisionPositions[p];
 			const auto &pathTangents = mPathSubdivisionTangents[p];
 			// add all the positions & normals
@@ -2259,7 +2287,163 @@ void Extrude::loadInto( Target *target ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Normals
+// Extrude
+ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const BSpline<3,float> &spline, int splineSubdivisions, float approximationScale )
+	: mCalculationsCached( false ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( splineSubdivisions )
+{
+	enable( Attrib::POSITION );
+	enable( Attrib::NORMAL );
+	
+	for( const auto &contour : shape.getContours() )
+		mPaths.push_back( contour );
+
+	const float splineLength = spline.getLength( 0, 1 );
+	vec3 prevPos = spline.getPosition( 0 );
+	vec3 prevTangent = spline.getDerivative( 0 );
+	mSplineFrames.emplace_back( firstFrame( prevPos, spline.getPosition( 0.1f ), spline.getPosition( 0.2f ) ) );
+	for( int sub = 1; sub <= mSubdivisions; ++sub ) {
+		const float t = spline.getTime( sub / (float)mSubdivisions * splineLength );
+		const vec3 curPos = spline.getPosition( t );
+		const vec3 curTangent = normalize( spline.getDerivative( t ) );
+		mSplineFrames.emplace_back( nextFrame( mSplineFrames.back(), prevPos, curPos, prevTangent, curTangent ) );
+		prevPos = curPos;
+		prevTangent = curTangent;
+	}
+}
+
+void ExtrudeSpline::calculate() const
+{
+	if( mCalculationsCached )
+		return;
+	
+	mPathSubdivisionPositions.clear();
+	mPathSubdivisionTangents.clear();
+	mPositions.clear();
+	mNormals.clear();
+	mIndices.clear();
+	
+	// iterate all the paths of the shape and subdivide, calculating both positions and tangents
+	for( const auto &path : mPaths ) {
+		mPathSubdivisionPositions.emplace_back( vector<vec2>() );
+		mPathSubdivisionTangents.emplace_back( vector<vec2>() );
+		path.subdivide( &mPathSubdivisionPositions.back(), &mPathSubdivisionTangents.back(), mApproximationScale );
+		// normalize the tangents
+		for( auto& tan : mPathSubdivisionTangents.back() )
+			tan = normalize( tan );
+	}
+
+	// Each of the subdivided paths' positions constitute a new contour on our triangulation
+	Triangulator triangulator;
+	for( const auto &subdivision : mPathSubdivisionPositions )
+		triangulator.addPolyLine( subdivision );
+	
+	mCap = std::unique_ptr<TriMesh>( new TriMesh( triangulator.calcMesh() ) );
+
+	// CAP POSITIONS
+	const vec2* capPositions = mCap->getVertices<2>();
+	// front cap
+	if( mFrontCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( mSplineFrames.front() * vec4( capPositions[v], 0, 1 ) ) );
+	// back cap
+	if( mBackCap )
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mPositions.emplace_back( vec3( mSplineFrames.back() * vec4( capPositions[v], 0, 1 ) ) );
+	
+	// CAP NORMALS
+	// front cap
+	if( mFrontCap ) {
+		vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( frontNormal );
+	}
+	// back cap
+	if( mBackCap ) {
+		vec3 backNormal = vec3( mSplineFrames.back() * vec4( 0, 0, 1, 0 ) );
+		for( size_t v = 0; v < mCap->getNumVertices(); ++v )
+			mNormals.emplace_back( backNormal );
+	}
+	
+	// CAP INDICES
+	auto capIndices = mCap->getIndices();
+	// front cap
+	if( mFrontCap )
+		for( size_t i = 0; i < capIndices.size(); ++i )
+			mIndices.push_back( capIndices[i] );
+	// back cap
+	if( mBackCap ) {
+		for( size_t i = 0; i < capIndices.size(); i += 3 ) { // we need to reverse the winding order for the back cap
+			mIndices.push_back( capIndices[i+2] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+1] + (uint32_t)mCap->getNumVertices() );
+			mIndices.push_back( capIndices[i+0] + (uint32_t)mCap->getNumVertices() );
+		}
+	}
+
+	// EXTRUSION
+	for( size_t p = 0; p < mPathSubdivisionPositions.size(); ++p ) {
+		for( size_t sub = 0; sub <= mSubdivisions; ++sub ) {
+			const mat4 &transform = mSplineFrames[sub];
+			const auto &pathPositions = mPathSubdivisionPositions[p];
+			const auto &pathTangents = mPathSubdivisionTangents[p];
+			// add all the positions & normals
+			uint32_t baseIndex = (uint32_t)mPositions.size();
+			for( size_t v = 0; v < pathPositions.size(); ++v ) {
+				mPositions.push_back( vec3( transform * vec4( pathPositions[v], 0, 1 ) ) );
+				mNormals.push_back( vec3( transform * vec4( vec2( pathTangents[v].y, -pathTangents[v].x ), 0, 0 ) ) );
+			}
+			// add the indices
+			if( sub != mSubdivisions ) {
+				uint32_t numSubdivVerts = (uint32_t)pathPositions.size();
+				for( uint32_t j = numSubdivVerts-1, i = 0; i < numSubdivVerts; j = i++ ) {
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + i );
+					mIndices.push_back( baseIndex + numSubdivVerts + j );
+					mIndices.push_back( baseIndex + numSubdivVerts + i );
+				}
+			}
+		}
+	}
+
+	mCalculationsCached = true;
+}
+	
+size_t ExtrudeSpline::getNumVertices() const
+{
+	calculate();
+	return mPositions.size();
+}
+
+size_t ExtrudeSpline::getNumIndices() const
+{
+	calculate();
+	return mIndices.size();
+}
+
+uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
+	}
+}
+
+void ExtrudeSpline::loadInto( Target *target ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mPositions.size() );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNormals.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), calcIndicesRequiredBytes( mIndices.size() ) );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// VertexNormalLines
 size_t VertexNormalLines::getNumVertices() const
 {
 	if( mSource.getNumIndices() > 0 )
@@ -2323,134 +2507,86 @@ void VertexNormalLines::loadInto( Target *target ) const
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// SplineExtrusion
-#if 0
-SplineExtrusion::SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments )
-	: mCalculationsCached( false ), mScale( 1 , 1, 1 ), mPos( vec3( 0 ) )
+// SourceBSpline
+template<int D, typename T>
+SourceBSpline::SourceBSpline( const BSpline<D,T> &spline, int subdivisions )
+	: mPositionDims( D )
 {
-	calculateCurve( pathCurve, pathSegments, radius, radiusSegments );
+	CI_ASSERT( D >= 2 && D <= 4 );
+	
+	subdivisions = std::max( 2, subdivisions );
+	mNumVertices = subdivisions;
+	
+	mPositions.reserve( mNumVertices * D );
+	mNormals.reserve( mNumVertices );
+
+	init( spline, subdivisions );
 }
 
-void SplineExtrusion::calculateCurve( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments ) const
+template<typename T>
+void SourceBSpline::init( const BSpline<2,T> &spline, int subdivisions )
 {
-	mNumVertices = pathSegments * radiusSegments;
-	int numTriangles = ( pathSegments - 1 ) * radiusSegments * 2;
-	mNumIndices = numTriangles * 3;
+	const float tInc = 1.0f / ( subdivisions - 1 );
 
-	mPositions = unique_ptr<float[]>( new float[mNumVertices * 3] );
-	mTexCoords = unique_ptr<float[]>( new float[mNumVertices * 2] );	
-	mNormals = unique_ptr<float[]>( new float[mNumVertices * 3] );
-	mIndices = unique_ptr<uint32_t[]>( new uint32_t[mNumIndices] );
-
-	for( int pathSeg = 0; pathSeg < pathSegments; ++pathSeg ) {
-
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y );
+		mNormals.emplace_back( vec3( normalize( vec2( deriv.y, -deriv.x ) ), 0 ) );
 	}
 }
 
-void SplineExtrusion::calculate() const
+template<typename T>
+void SourceBSpline::init( const BSpline<3,T> &spline, int subdivisions )
 {
-	if( mCalculationsCached )
-		return;
+	const float tInc = 1.0f / ( subdivisions - 1 );
 
-	mNumVertices = 32 * (mSubdivision + 1) * (mSubdivision + 1);
-	int numFaces = mSubdivision * mSubdivision * 32;
-	mNumIndices = numFaces * 6;
-	mPositions = unique_ptr<float[]>( new float[mNumVertices * 3] );
-	mTexCoords = unique_ptr<float[]>( new float[mNumVertices * 2] );	
-	mNormals = unique_ptr<float[]>( new float[mNumVertices * 3] );
-	mIndices = unique_ptr<uint32_t[]>( new uint32_t[mNumIndices] );
-
-	generatePatches( mPositions.get(), mNormals.get(), mTexCoords.get(), mIndices.get(), mSubdivision );
-
-	mCalculationsCached = true;
-}
-
-
-size_t SplineExtrusion::getNumVertices() const
-{
-	calculate();
-
-	return mNumVertices;
-}
-
-bool SplineExtrusion::hasAttrib( Attrib attr ) const
-{
-	switch( attr ) {
-	case Attrib::POSITION: return true;
-	case Attrib::TEX_COORD_0: return mHasTexCoord0;
-	case Attrib::NORMAL: return mHasNormals;
-	default:
-		return false;
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z );
+		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
 	}
 }
 
-bool SplineExtrusion::canProvideAttrib( Attrib attr ) const
+template<typename T>
+void SourceBSpline::init( const BSpline<4,T> &spline, int subdivisions )
 {
-	switch( attr ) {
-	case Attrib::POSITION:
-	case Attrib::TEX_COORD_0:
-	case Attrib::NORMAL:
-		return true;
-	default:
-		return false;
+	const float tInc = 1.0f / ( subdivisions - 1 );
+
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z ); mPositions.push_back( pos.w );
+		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
 	}
 }
 
-uint8_t	SplineExtrusion::getAttribDims( Attrib attr ) const
+uint8_t	SourceBSpline::getAttribDims( Attrib attr ) const
 {
-	if( ! canProvideAttrib( attr ) )
+	if( attr == Attrib::POSITION )
+		return mPositionDims;
+	else if( attr == Attrib::NORMAL )
+		return 3;
+	else
 		return 0;
-
-	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return 2;
-	case Attrib::NORMAL: return 3;
-	default:
-		return 0;
-	}
 }
 
-void SplineExtrusion::copyAttrib( Attrib attr, uint8_t dimensions, size_t stride, float *dest ) const
+void SourceBSpline::loadInto( Target *target ) const
 {
-	calculate();
-
-	switch( attr ) {
-	case Attrib::POSITION:
-		copyDataMultAdd( mPositions.get(), mNumVertices, dimensions, stride, dest, mScale, mPos );
-		break;
-	case Attrib::TEX_COORD_0:
-		copyData( 2, mTexCoords.get(), mNumVertices, dimensions, stride, dest );
-		break;
-	case Attrib::NORMAL:
-		copyData( 3, mNormals.get(), mNumVertices, dimensions, stride, dest );
-		break;
-	default:
-		throw ExcMissingAttrib();
-	}
+	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
+	if( isEnabled( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
 }
 
-size_t SplineExtrusion::getNumIndices() const
+SourceBSpline toSource( const BSpline2f &spline, int subdivisions )
 {
-	calculate();
-
-	return mNumIndices;
+	return SourceBSpline( spline, subdivisions );
 }
 
-void SplineExtrusion::copyIndices( uint16_t *dest ) const
+SourceBSpline toSource( const BSpline3f &spline, int subdivisions )
 {
-	calculate();
-
-	for( int i = 0; i < mNumIndices; ++i )
-		dest[i] = mIndices.get()[i];
+	return SourceBSpline( spline, subdivisions );
 }
-
-void SplineExtrusion::copyIndices( uint32_t *dest ) const
-{
-	calculate();
-
-	memcpy( dest, mIndices.get(), mNumIndices * sizeof(uint32_t) );		
-}
-
-#endif
 
 } } // namespace cinder::geom

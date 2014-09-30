@@ -36,6 +36,8 @@
 // Forward declarations in cinder::
 namespace cinder {
 	class TriMesh;
+	template<int D, typename T>
+	class BSpline;
 }
 
 namespace cinder { namespace geom {
@@ -49,7 +51,7 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
 	NUM_ATTRIBS };
 extern std::string sAttribNames[(int)Attrib::NUM_ATTRIBS];
-enum Primitive { LINES, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN }; 
+enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
 //! Debug utility which returns the name of \a attrib as a std::string
@@ -773,6 +775,44 @@ class Extrude : public Source {
 	mutable std::vector<uint32_t>			mIndices;
 };
 
+class ExtrudeSpline : public Source {
+  public:
+	ExtrudeSpline( const Shape2d &shape, const BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
+	
+	virtual ExtrudeSpline&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
+	virtual ExtrudeSpline&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+
+	//! Enables or disables front and back caps. Enabled by default.
+	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	//! Enables or disables front cap. Enabled by default.
+	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	//! Enables or disables back cap. Enabled by default.
+	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	//! Sets the number of subdivisions along the axis of extrusion
+	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+
+	virtual size_t		getNumVertices() const override;
+	virtual size_t		getNumIndices() const override;
+	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	virtual void		loadInto( Target *target ) const override;
+	
+  protected:
+	void calculate() const;
+  
+	std::vector<Path2d>				mPaths;
+	std::vector<mat4>				mSplineFrames;
+	float							mApproximationScale;
+	bool							mFrontCap, mBackCap;
+	int								mSubdivisions;
+	
+	mutable bool							mCalculationsCached;
+	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+	mutable std::unique_ptr<TriMesh>		mCap;
+	mutable std::vector<vec3>				mPositions, mNormals;
+	mutable std::vector<uint32_t>			mIndices;
+};
+
 //! Draws lines representing the Attrib::NORMALs for a geom::Source
 class VertexNormalLines : public Source {
   public:
@@ -793,43 +833,33 @@ class VertexNormalLines : public Source {
 	float					mLength;
 };
 
-#if 0
-class SplineExtrusion : public Source {
+class SourceBSpline : public Source {
   public:
-	SplineExtrusion( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
+	template<int D, typename T>
+	SourceBSpline( const BSpline<D,T> &spline, int subdivisions );
 
-	SplineExtrusion&		texCoords() { mHasTexCoord0 = true; return *this; }
-	SplineExtrusion&		normals() { mHasNormals = true; return *this; }
-
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-
-	virtual bool		hasAttrib( Attrib attr ) const override;
-	virtual bool		canProvideAttrib( Attrib attr ) const override;
+	virtual size_t		getNumVertices() const override				{ return mNumVertices; }
+	virtual size_t		getNumIndices() const override				{ return 0; }
+	virtual Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		copyAttrib( Attrib attr, uint8_t dims, size_t stride, float *dest ) const override;
-
-	virtual void		copyIndices( uint16_t *dest ) const override;
-	virtual void		copyIndices( uint32_t *dest ) const override;	
-
+	virtual void		loadInto( Target *target ) const override;
+	
   protected:
-	vec2		mPos, mScale;
-	bool		mHasTexCoord0;
-	bool		mHasNormals;
+	template<typename T>
+	void init( const BSpline<2,T> &spline, int subdivisions );
+	template<typename T>
+	void init( const BSpline<3,T> &spline, int subdivisions );
+	template<typename T>
+	void init( const BSpline<4,T> &spline, int subdivisions );
 
-	void		calculateCurve( const std::function<vec3(float)> &pathCurve, int pathSegments, float radius, int radiusSegments );
-	void		calculate();
-
-	mutable bool						mCalculationsCached;
-	mutable	int32_t						mNumVertices;
-	mutable int32_t						mNumIndices;
-	mutable std::unique_ptr<float[]>	mPositions;
-	mutable std::unique_ptr<float[]>	mTexCoords;
-	mutable std::unique_ptr<float[]>	mNormals;	
-	mutable std::unique_ptr<uint32_t[]>	mIndices;
+	int						mPositionDims;
+	size_t					mNumVertices;
+	std::vector<float>		mPositions;
+	std::vector<vec3>		mNormals;
 };
-#endif
+
+SourceBSpline toSource( const BSpline2f &spline, int subdivisions );
+SourceBSpline toSource( const BSpline3f &spline, int subdivisions );
 
 class Exc : public Exception {
 };
