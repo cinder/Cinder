@@ -32,21 +32,7 @@ namespace cinder {
 bool CaptureImplDirectShow::sDevicesEnumerated = false;
 vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
 
-class CaptureMgr : private boost::noncopyable
-{
- public:
-	CaptureMgr();
-	~CaptureMgr();
 
-	static std::shared_ptr<CaptureMgr>	instance();
-	static videoInput*	instanceVI() { return instance()->mVideoInput; }
-
-	static std::shared_ptr<CaptureMgr>	sInstance;
-	static int						sTotalDevices;
-	
- private:	
-	videoInput			*mVideoInput;
-};
 std::shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
 int							CaptureMgr::sTotalDevices = 0;
 
@@ -69,47 +55,6 @@ std::shared_ptr<CaptureMgr> CaptureMgr::instance()
 	return sInstance;
 }
 
-class SurfaceCache {
- public:
-	SurfaceCache( int32_t width, int32_t height, SurfaceChannelOrder sco, int numSurfaces )
-		: mWidth( width ), mHeight( height ), mSCO( sco )
-	{
-		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
-			mDeallocatorRefcon.push_back( make_pair( this, i ) );
-			mSurfaceUsed.push_back( false );
-		}
-	}
-	
-	Surface8u getNewSurface()
-	{
-		// try to find an available block of pixel data to wrap a surface around	
-		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
-			if( ! mSurfaceUsed[i] ) {
-				mSurfaceUsed[i] = true;
-				Surface8u result( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				result.setDeallocator( surfaceDeallocator, &mDeallocatorRefcon[i] );
-				return result;
-			}
-		}
-
-		// we couldn't find an available surface, so we'll need to allocate one
-		return Surface8u( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
-	}
-	
-	static void surfaceDeallocator( void *refcon )
-	{
-		pair<SurfaceCache*,int> *info = reinterpret_cast<pair<SurfaceCache*,int>*>( refcon );
-		info->first->mSurfaceUsed[info->second] = false;
-	}
-
- private:
-	vector<std::shared_ptr<uint8_t> >	mSurfaceData;
-	vector<bool>					mSurfaceUsed;
-	vector<pair<SurfaceCache*,int> >	mDeallocatorRefcon;
-	int32_t				mWidth, mHeight;
-	SurfaceChannelOrder	mSCO;
-};
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CaptureImplDirectShow
