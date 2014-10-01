@@ -741,6 +741,9 @@
     <ClCompile Include="..\src\cinder\gl\Query.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1576,6 +1579,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\Query.h">
       <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
