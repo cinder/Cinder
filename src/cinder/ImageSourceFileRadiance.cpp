@@ -111,11 +111,11 @@ void ImageSourceFileRadiance::loadStream( IStreamRef stream )
 
 	// convert image
 	float *cols = mRgbData.get();
-	for( int y = h - 1; y >= 0; y-- ) {
-		if( ! decrunchScanline( scanline.get(), w, stream.get() ) )
+	for( int y = height - 1; y >= 0; y-- ) {
+		if( ! decrunchScanline( scanline.get(), width, stream.get() ) )
 			break;
-		workOnRgbeScanline( scanline.get(), w, cols );
-		cols += w * 3;
+		workOnRgbeScanline( scanline.get(), width, cols );
+		cols += width * 3;
 	}
 }
 
