@@ -64,6 +64,21 @@ glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 //  These are also called Parallel Transport Frames
 //    see Game Programming Gems 2, Section 2.5
 
+class ParallelTransport {
+  public:
+	ParallelTransport( const vec3 &firstPoint, const vec3 &secondPoint );
+
+	mat4 nextFrame( const vec3 &point, const vec3 &tangent );
+	mat4 lastFrame();
+	
+  protected:
+	bool	mFirstFrame;
+	vec3	mFirstFrameFirstPoint, mFirstFrameSecondPoint;
+	
+	mat4	mPrevMatrix;
+	vec3	mPrevPoint, mPrevTangent;
+};
+
 template<typename T>
 glm::detail::tmat4x4<T,glm::defaultp> firstFrame(
 	const glm::detail::tvec3<T,glm::defaultp> &firstPoint,
@@ -76,8 +91,8 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
 	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
 	const glm::detail::tvec3<T,glm::defaultp> &prevPoint,
 	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
-	glm::detail::tvec3<T,glm::defaultp> &prevTangent, 
-	glm::detail::tvec3<T,glm::defaultp> &curTangent 
+	glm::detail::tvec3<T,glm::defaultp> prevTangent,
+	glm::detail::tvec3<T,glm::defaultp> curTangent 
 );
 			
 template<typename T>
