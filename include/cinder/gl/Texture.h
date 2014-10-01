@@ -599,7 +599,11 @@ class TextureCubeMap : public TextureBase
 	
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );
-	TextureCubeMap( const Surface8u images[6], Format format );
+	template<typename T>
+	TextureCubeMap( const SurfaceT<T> images[6], Format format );
+
+	template<typename T>
+	static TextureCubeMapRef createHorizontalCrossImpl( const ImageSourceRef &imageSource, const Format &format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 	
