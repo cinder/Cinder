@@ -101,7 +101,7 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 	//! Disables this Node for processing. Same as `setEnabled( false )`.
 	void disable();
 	//! Sets whether this Node is enabled for processing or not.
-	void setEnabled( bool b = true );
+	void setEnabled( bool b );
 	//! Returns whether this Node is enabled for processing or not.
 	bool isEnabled() const						{ return mEnabled; }
 

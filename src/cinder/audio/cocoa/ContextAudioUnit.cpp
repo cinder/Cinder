@@ -216,7 +216,7 @@ void InputDeviceNodeAudioUnit::initialize()
 			lineOutAu->initialize();
 
 		if( lineOutWasEnabled )
-			lineOutAu->setEnabled();
+			lineOutAu->enable();
 	}
 	else {
 		if( device->getSampleRate() != sampleRate || device->getFramesPerBlock() != framesPerBlock )

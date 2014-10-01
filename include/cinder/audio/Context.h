@@ -73,7 +73,7 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Enables audio processing. Effectively the same as calling getOutput()->disable()
 	virtual void disable();
 	//! start / stop audio processing via boolean
-	void setEnabled( bool enable = true );
+	void setEnabled( bool enable );
 	//! Returns whether or not this \a Context is current enabled and processing audio.
 	bool isEnabled() const		{ return mEnabled; }
 
