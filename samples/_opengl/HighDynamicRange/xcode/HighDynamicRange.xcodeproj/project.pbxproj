@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		006D71F819952CE0008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D71F619952CE0008149E2 /* AVFoundation.framework */; };
 		006D71F919952CE0008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D71F719952CE0008149E2 /* CoreMedia.framework */; };
-		0087344417B1F7EB00BC2063 /* hdrloader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0087344217B1F7EB00BC2063 /* hdrloader.cpp */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
@@ -26,7 +25,6 @@
 		001858671874875F00E2D5DD /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		006D71F619952CE0008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D71F719952CE0008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
-		0087344217B1F7EB00BC2063 /* hdrloader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = hdrloader.cpp; path = ../src/hdrloader.cpp; sourceTree = "<group>"; };
 		0087344317B1F7EB00BC2063 /* hdrloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = hdrloader.h; path = ../src/hdrloader.h; sourceTree = "<group>"; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
 		00B784AF0FF439BC000DE1D7 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
@@ -77,7 +75,6 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				0087344217B1F7EB00BC2063 /* hdrloader.cpp */,
 				5625AB65D5AE4990B98DC412 /* HighDynamicRangeApp.cpp */,
 			);
 			name = Source;
@@ -223,7 +220,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C4EBCB5005E14608B3403414 /* HighDynamicRangeApp.cpp in Sources */,
-				0087344417B1F7EB00BC2063 /* hdrloader.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
