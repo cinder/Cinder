@@ -146,6 +146,8 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	auto wfx = interleavedFloatWaveFormat( sampleRate, numChannels );
 	::WAVEFORMATEX *closestMatch;
 	hr = mAudioClient->IsFormatSupported( ::AUDCLNT_SHAREMODE_SHARED, wfx.get(), &closestMatch );
+	// only handle S_FALSE, which indicates that a closest match was provided. AUDCLNT_E_UNSUPPORTED_FORMAT seems to be unreliable,
+	// so otherwise we just carry on and try to Initialize() optimistically.
 	if( hr == S_FALSE ) {
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
 
@@ -164,16 +166,15 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 
 		::CoTaskMemFree( closestMatch );
 	}
-	else if( hr != S_OK )
-		throw AudioFormatExc( "Could not find a suitable format for IAudioClient" );
 
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
 
 	::REFERENCE_TIME requestedDuration = samplesToReferenceTime( mAudioClientNumFrames, sampleRate );
 	DWORD streamFlags = eventHandle ? AUDCLNT_STREAMFLAGS_EVENTCALLBACK : 0;
 
-	hr = mAudioClient->Initialize( ::AUDCLNT_SHAREMODE_SHARED, streamFlags, requestedDuration, 0, wfx.get(), NULL ); 
-	CI_ASSERT( hr == S_OK );
+	hr = mAudioClient->Initialize( ::AUDCLNT_SHAREMODE_SHARED, streamFlags, requestedDuration, 0, wfx.get(), NULL );
+	if( hr != S_OK )
+		throw AudioExc( "Could not initialize IAudioClient", (int32_t)hr );
 
 	if( eventHandle ) {
 		// enable event driven rendering.
