@@ -2197,7 +2197,7 @@ void Extrude::calculate() const
 	TriMesh cap = triangulator.calcMesh();
 
 	// CAPS VERTICES
-	const vec2* capPositions = cap.getVertices<2>();
+	const vec2* capPositions = cap.getPositions<2>();
 	// front cap
 	if( mFrontCap )
 		for( size_t v = 0; v < cap.getNumVertices(); ++v ) {
@@ -2372,7 +2372,7 @@ void ExtrudeSpline::calculate() const
 	TriMesh cap = triangulator.calcMesh();
 
 	// CAP VERTICES
-	const vec2* capPositions = cap.getVertices<2>();
+	const vec2* capPositions = cap.getPositions<2>();
 	// front cap
 	if( mFrontCap ) {
 		const vec3 frontNormal = vec3( mSplineFrames.front() * vec4( 0, 0, -1, 0 ) );
