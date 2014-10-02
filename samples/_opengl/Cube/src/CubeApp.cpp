@@ -34,30 +34,10 @@ void RotatingCubeApp::setup()
 #else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
-// Transform
-//	mat4 stretchM = scale( vec3( 1, 3, 1  ) );// * glm::rotate( 1.0f, vec3( 1, 1, 1 ) );
-//	mBatch = gl::Batch::create( geom::Transform( geom::Teapot().subdivisions( 4 ), stretchM ), mGlsl );
-
-// Twist
-	mBatch = gl::Batch::create( geom::Twist( geom::Teapot().subdivisions( 8 ) ).axis( vec3( -1, 0, 0 ), vec3( 1, 0, 0 ) ),
-			gl::getStockShader( gl::ShaderDef().color().texture() ) );
-
-// UV Color
-/*	auto uvRampColor = []( vec3 uv ) { return Colorf( uv.x, uv.y, uv.z ); };
-	mBatch = gl::Batch::create( geom::ColorFromAttrib( geom::Teapot().subdivisions( 11 ), geom::NORMAL, uvRampColor ),
-									gl::getStockShader( gl::ShaderDef().color() ) );*/
-
-//mBatch = gl::Batch::create( geom::Cube().subdivisions( 12 ), gl::getStockShader( gl::ShaderDef().color() ) );
-		
-//mBatch = gl::Batch::create( geom::Transform( geom::Cube().subdivisions( 12 ), m ),
-//								gl::getStockShader( gl::ShaderDef().color().texture() ) );
-//	mBatch = gl::Batch::create( geom::Cube().enable( geom::COLOR ), mGlsl ); // per-vertex (face) coloring
-//	mBatch = gl::Batch::create( geom::Teapot().enable( geom::TEX_COORD_0 ).enable( geom::NORMAL ).subdivision( 5 ), mGlsl ); // teapot
+	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
-	
-	mGlsl->bind();
 }
 
 void RotatingCubeApp::resize()
