@@ -398,7 +398,7 @@ void	bindBuffer( const BufferObjRef &buffer );
 
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-
+	
 GLenum getError();
 std::string getErrorString( GLenum err );
 void checkError();
