@@ -52,9 +52,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
 		Format();
 		
-		//! Supplies the GLSL source for the vertex shader
+		//! Supplies the GLSL source for the shader
 		Format&		shaderStage( const DataSourceRef &dataSource, GLint shaderType );
-		//! Supplies the GLSL source for the vertex shader
+		//! Supplies the GLSL source for the shader
 		Format&		shaderStage( const char *source, GLint shaderType );
 
 		//! Supplies the GLSL source for the vertex shader
@@ -64,7 +64,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Supplies the GLSL source for the fragment shader
 		Format&		fragment( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the fragment shader
-		Format&		fragment( const char *vertexShader );
+		Format&		fragment( const char *fragmentShader );
 #if ! defined( CINDER_GL_ES )
 		//! Supplies the GLSL source for the geometry shader
 		Format&		geometry( const DataSourceRef &dataSource );
@@ -86,18 +86,18 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Specifies a location for a semantic
 		Format&		attribLocation( geom::Attrib attr, GLint location );
 
-		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
+		//! Returns the GLSL source for the vertex shader. Returns nullptr if it isn't present.
 		const char*	getVertex() const;
-		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
+		//! Returns the GLSL source for the fragment shader. Returns nullptr if it isn't present.
 		const char*	getFragment() const;
 #if ! defined( CINDER_GL_ES )
-		//! Returns the GLSL source for the geometry shader
+		//! Returns the GLSL source for the geometry shader. Returns nullptr if it isn't present.
 		const char*	getGeometry() const;
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransFormFeedback format
 		GLenum			getTransformFormat() const { return mTransformFormat; }
 #endif
-		//! 
+		//! Returns the map between shader type (e.g. GL_VERTEX_SHADER) and shader source.
 		const std::map<GLint, std::string>&	getShaderStages() const { return mShaderStageMap; }
 		//! Returns the map between uniform semantics and uniform names
 		const std::map<std::string,UniformSemantic>&	getUniformSemantics() const { return mUniformSemanticMap; }
