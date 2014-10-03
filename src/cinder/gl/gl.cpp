@@ -1673,8 +1673,15 @@ void drawFrustum( const Camera &cam )
 	
 	vec3 farTopLeft, farTopRight, farBottomLeft, farBottomRight;
 	cam.getFarClipCoordinates( &farTopLeft, &farTopRight, &farBottomLeft, &farBottomRight );
-	
-	vec3 eye = cam.getEyePoint();
+
+	// extract camera position from modelview matrix, so that it will work with any camera	
+	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
+	mat4 view = cam.getViewMatrix();
+	vec3 eye;
+	eye.x = -( view[0][0] * view[3][0] + view[0][1] * view[3][1] + view[0][2] * view[3][2] );
+	eye.y = -( view[1][0] * view[3][0] + view[1][1] * view[3][1] + view[1][2] * view[3][2] );
+	eye.z = -( view[2][0] * view[3][0] + view[2][1] * view[3][1] + view[2][2] * view[3][2] );
+
 														// indices
 	std::array<vec3, 9> vertices = { eye,				// 0
 									nearTopLeft,		// 1
