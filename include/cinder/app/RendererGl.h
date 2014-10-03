@@ -182,10 +182,10 @@ class RendererGl : public Renderer {
 	virtual void	swapBuffers();
 	virtual Surface	copyWindowSurface( const Area &area );
 
-	//!
-	virtual void setStartDrawFn( const std::function<void( Renderer* )>& function ) override { mStartDrawFn = function; }
-	//!
-	virtual void setFinishDrawFn( const std::function<void( Renderer* )>& function ) override { mFinishDrawFn = function; }
+	//! Overrides Renderer's start draw implementation for custom hooks. Only useful in advanced use cases.
+	void setStartDrawFn( const std::function<void( Renderer* )>& function ) { mStartDrawFn = function; }
+	//! Overrides Renderer's finish draw implementation for custom hooks. Only useful in advanced use cases.
+	void setFinishDrawFn( const std::function<void( Renderer* )>& function ) { mFinishDrawFn = function; }
 
 protected:
 	RendererGl( const RendererGl &renderer );
@@ -205,6 +205,9 @@ protected:
 	#endif
 	HWND						mWnd;
 #endif
+
+	std::function<void( Renderer* )> mStartDrawFn;
+	std::function<void( Renderer* )> mFinishDrawFn;
 };
 
 } } // namespace cinder::app

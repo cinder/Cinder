@@ -130,6 +130,11 @@ void RendererGl::makeCurrentContext()
 	[mImpl makeCurrentContext];
 }
 
+void RendererGl::swapBuffers()
+{
+	[mImpl flushBuffer];
+}
+
 #elif defined( CINDER_COCOA_TOUCH ) 
 RendererGl::~RendererGl()
 {
@@ -171,6 +176,11 @@ void RendererGl::defaultResize()
 void RendererGl::makeCurrentContext()
 {
 	[mImpl makeCurrentContext];
+}
+
+void RendererGl::swapBuffers()
+{
+	[mImpl flushBuffer];
 }
 
 Surface	RendererGl::copyWindowSurface( const Area &area )
@@ -225,7 +235,7 @@ void RendererGl::finishToggleFullScreen()
 void RendererGl::startDraw()
 {
 	if( mStartDrawFn )
-		mStartDrawFn(this);
+		mStartDrawFn( this );
 	else
 		mImpl->makeCurrentContext();
 }
@@ -243,7 +253,7 @@ void RendererGl::swapBuffers()
 void RendererGl::finishDraw()
 {
 	if( mFinishDrawFn )
-		mFinishDrawFn(this);
+		mFinishDrawFn( this );
 	else
 		mImpl->swapBuffers();
 }
