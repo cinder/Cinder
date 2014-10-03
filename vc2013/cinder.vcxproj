@@ -284,6 +284,7 @@
     <ClCompile Include="..\src\cinder\gl\Vbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\VboMesh.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourcePng.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
@@ -490,6 +491,7 @@
     <ClInclude Include="..\include\cinder\gl\Vao.h" />
     <ClInclude Include="..\include\cinder\gl\Vbo.h" />
     <ClInclude Include="..\include\cinder\gl\VboMesh.h" />
+    <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\Json.h" />
     <ClInclude Include="..\include\cinder\Log.h" />

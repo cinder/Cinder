@@ -821,6 +821,9 @@ GLenum toGl( geom::Primitive prim )
 		case geom::Primitive::LINES:
 			return GL_LINES;
 		break;
+		case geom::Primitive::LINE_STRIP:
+			return GL_LINE_STRIP;
+		break;
 		case geom::Primitive::TRIANGLES:
 			return GL_TRIANGLES;
 		break;
@@ -839,6 +842,9 @@ geom::Primitive toGeomPrimitive( GLenum prim )
 	switch( prim ) {
 		case GL_LINES:
 			return geom::Primitive::LINES;
+		break;
+		case GL_LINE_STRIP:
+			return geom::Primitive::LINE_STRIP;
 		break;
 		case GL_TRIANGLES:
 			return geom::Primitive::TRIANGLES;

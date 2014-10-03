@@ -59,6 +59,7 @@ class GeometryApp : public AppNative {
 	bool				mShowColors;
 	bool				mShowNormals;
 	bool				mShowGrid;
+	bool				mEnableFaceFulling;
 
 	CameraPersp			mCamera;
 	MayaCamUI			mMayaCam;
@@ -97,6 +98,7 @@ void GeometryApp::setup()
 	mShowColors = false;
 	mShowNormals = false;
 	mShowGrid = false;
+	mEnableFaceFulling = false;
 
 	mSubdivision = 1;
 	
@@ -268,7 +270,7 @@ void GeometryApp::createParams()
 	std::string qualities[] = { "Low", "Default", "High" };
 	std::string viewmodes[] = { "Shaded", "Wireframe" };
 
-	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", ivec2( 340, 200 ) );
+	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 340, 200 ) ) );
 	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
 
 	mParams->addParam( "Primitive", vector<string>(primitives,primitives+11), (int*) &mPrimitiveSelected );
@@ -292,6 +294,7 @@ void GeometryApp::createParams()
 		std::function<bool()> getter		= std::bind( &GeometryApp::isColorsEnabled, this );
 		mParams->addParam( "Show Colors", setter, getter );
 	}
+	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [&] { gl::enableFaceCulling( mEnableFaceFulling ); } );
 #endif
 }
 
@@ -349,7 +352,11 @@ void GeometryApp::createPrimitive(void)
 		}
 		break;
 	case CUBE:
-		primitive = geom::SourceRef( new geom::Cube( geom::Cube() ) );
+		switch(mQualityCurrent) {
+			case DEFAULT: primitive = geom::SourceRef( new geom::Cube( geom::Cube() ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Cube( geom::Cube().subdivisions( 1 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Cube( geom::Cube().subdivisions( 10 ) ) ); break;
+		}
 		break;
 	case CYLINDER:
 		switch(mQualityCurrent) {
@@ -418,7 +425,7 @@ void GeometryApp::createPrimitive(void)
 	if( mShowColors )
 		primitive->enable( geom::Attrib::COLOR );
 	
-	TriMesh mesh( *primitive );
+	TriMesh mesh( (geom::Twist( (*primitive) )) );
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 

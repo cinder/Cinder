@@ -1333,15 +1333,24 @@ TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const F
 
 TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &imageSource, const Format &format )
 {
+	if( imageSource->getDataType() == ImageIo::UINT8 )
+		return createHorizontalCrossImpl<uint8_t>( imageSource, format );
+	else
+		return createHorizontalCrossImpl<float>( imageSource, format );
+}
+
+template<typename T>
+TextureCubeMapRef TextureCubeMap::createHorizontalCrossImpl( const ImageSourceRef &imageSource, const Format &format )
+{
 	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
 	
-	Surface8u masterSurface( imageSource, SurfaceConstraintsDefault() );
+	SurfaceT<T> masterSurface( imageSource, SurfaceConstraintsDefault() );
 	
 	// allocate the individual face's Surfaces, ensuring rowbytes == faceSize.x * 3 through default SurfaceConstraints
-	Surface8u images[6];
+	SurfaceT<T> images[6];
 	for( uint8_t f = 0; f < 6; ++f )
-		images[f] = Surface8u( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
+		images[f] = SurfaceT<T>( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
 
 	// copy out each individual face
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
@@ -1362,11 +1371,20 @@ TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &i
 
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const Format &format )
 {
-	Surface8u surfaces[6];
-	for( size_t i = 0; i < 6; ++i )
-		surfaces[i] = Surface8u( images[i] );
-	
-	return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
+	if( images[0]->getDataType() == ImageIo::UINT8 ) {
+		Surface8u surfaces[6];
+		for( size_t i = 0; i < 6; ++i )
+			surfaces[i] = Surface8u( images[i] );
+		
+		return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
+	}
+	else {
+		Surface32f surfaces[6];
+		for( size_t i = 0; i < 6; ++i )
+			surfaces[i] = Surface32f( images[i] );
+		
+		return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
+	}
 }
 
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
@@ -1381,7 +1399,8 @@ TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + target, 0, mInternalFormat, mWidth, mHeight, 0, format.mPixelDataFormat, format.mPixelDataType, NULL );
 }
 
-TextureCubeMap::TextureCubeMap( const Surface8u images[6], Format format )
+template<typename T>
+TextureCubeMap::TextureCubeMap( const SurfaceT<T> images[6], Format format )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -1391,9 +1410,13 @@ TextureCubeMap::TextureCubeMap( const Surface8u images[6], Format format )
 	mWidth = images[0].getWidth();
 	mHeight = images[0].getHeight();
 
+	GLenum dataType = GL_UNSIGNED_BYTE;
+	if( std::is_same<T,float>::value )
+		dataType = GL_FLOAT;
+
 	for( GLenum target = 0; target < 6; ++target )
 		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + target, 0, mInternalFormat, images[target].getWidth(), images[target].getHeight(), 0,
-			( images[target].hasAlpha() ) ? GL_RGBA : GL_RGB, GL_UNSIGNED_BYTE, images[target].getData() );
+			( images[target].hasAlpha() ) ? GL_RGBA : GL_RGB, dataType, images[target].getData() );
 			
 	if( format.mMipmapping ) {
 #if ! defined( CINDER_GL_ES )

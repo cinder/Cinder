@@ -335,6 +335,24 @@ void GlslProg::loadShader( const std::string &shaderSource, GLint shaderType )
 void GlslProg::link()
 {
 	glLinkProgram( mHandle );
+	
+	// test for a GLSL link error and throw it if we have one
+	GLint status;
+	glGetProgramiv( mHandle, GL_LINK_STATUS, &status );
+	if( status != GL_TRUE ) {
+		string log;
+		GLint logLength = 0;
+		GLint charsWritten = 0;
+		glGetProgramiv( mHandle, GL_INFO_LOG_LENGTH, &logLength );
+		
+		if( logLength > 0 ) {
+			unique_ptr<GLchar[]> debugLog( new GLchar[logLength+1] );
+			glGetProgramInfoLog( mHandle, logLength, &charsWritten, debugLog.get() );
+			log.append( debugLog.get(), 0, logLength );
+		}
+		
+		throw GlslProgLinkExc( log );
+	}
 }
 
 void GlslProg::bind() const
@@ -927,15 +945,14 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 //////////////////////////////////////////////////////////////////////////
 // GlslProgCompileExc
 GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw()
-: mShaderType( aShaderType )
+	: mShaderType( aShaderType )
 {
 	if( mShaderType == GL_VERTEX_SHADER )
-		strncpy( mMessage, "VERTEX: ", 1000 );
+		mMessage = "VERTEX: " + log;
 	else if( mShaderType == GL_FRAGMENT_SHADER )
-		strncpy( mMessage, "FRAGMENT: ", 1000 );
+		mMessage = "FRAGMENT: " + log;
 	else
-		strncpy( mMessage, "UNKNOWN: ", 1000 );
-	strncat( mMessage, log.c_str(), 15000 );
+		mMessage = "UNKNOWN: " + log;
 }
 	
 } } // namespace cinder::gl

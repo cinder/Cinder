@@ -88,7 +88,7 @@ void ObjLoaderApp::loadObjFile( const fs::path &filePath )
 
 void ObjLoaderApp::frameCurrentObject()
 {
-	Sphere boundingSphere = Sphere::calculateBoundingSphere( mMesh->getVertices<3>(), mMesh->getNumVertices() );
+	Sphere boundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
 	
 	mMayaCam.setCurrentCam( mMayaCam.getCamera().getFrameSphere( boundingSphere, 100 ) );
 }

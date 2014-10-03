@@ -35,13 +35,9 @@ void RotatingCubeApp::setup()
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
 	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
-//	mBatch = gl::Batch::create( geom::Cube().enable( geom::COLOR ), mGlsl ); // per-vertex (face) coloring
-//	mBatch = gl::Batch::create( geom::Teapot().enable( geom::TEX_COORD_0 ).enable( geom::NORMAL ).subdivision( 5 ), mGlsl ); // teapot
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
-	
-	mGlsl->bind();
 }
 
 void RotatingCubeApp::resize()
@@ -53,7 +49,7 @@ void RotatingCubeApp::resize()
 void RotatingCubeApp::update()
 {
 	// Rotate the cube by 2 degrees around an arbitrary axis
-	mCubeRotation *= rotate( toRadians( 2.0f ), normalize( vec3( 1, 1.3, 0.5 ) ) );
+	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
 }
 
 void RotatingCubeApp::draw()
