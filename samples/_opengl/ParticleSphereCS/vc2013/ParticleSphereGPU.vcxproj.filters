@@ -24,6 +24,12 @@
     <ClCompile Include="..\src\ParticleSphereCSApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClInclude Include="..\include\Ssbo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\ScopedBufferBase.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h">

@@ -398,14 +398,6 @@ void	bindBuffer( const BufferObjRef &buffer );
 
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-	
-#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
-// Compute Shaders
-void dispatchCompute( GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ );
-void memoryBarrier( GLbitfield  barriers );
-ivec3 getMaxComputeWorkGroupCount();
-ivec3 getMaxComputeWorkGroupSize();
-#endif
 
 GLenum getError();
 std::string getErrorString( GLenum err );

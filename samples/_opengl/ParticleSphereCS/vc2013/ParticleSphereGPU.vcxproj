@@ -112,6 +112,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
+    <ClInclude Include="..\include\ScopedBufferBase.h" />
+    <ClInclude Include="..\include\Ssbo.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\particleRender.vs.glsl" />

@@ -53,6 +53,11 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format();
 		
 		//! Supplies the GLSL source for the vertex shader
+		Format&		shaderStage( const DataSourceRef &dataSource, GLint shaderType );
+		//! Supplies the GLSL source for the vertex shader
+		Format&		shaderStage( const char *source, GLint shaderType );
+
+		//! Supplies the GLSL source for the vertex shader
 		Format&		vertex( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the vertex shader
 		Format&		vertex( const char *vertexShader );
@@ -70,12 +75,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Sets the TransformFeedback format
 		Format&		feedbackFormat( GLenum format ) { mTransformFormat = format; return *this; }
 #endif
-#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
-		//! Supplies the GLSL source for the compute shader
-		Format&		compute( const DataSourceRef &dataSource );
-		//! Supplies the GLSL source for the compute shader
-		Format&		compute( const char *geometryShader );
-#endif
 		
 		//! Specifies an attribute name to map to a specific semantic
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
@@ -88,19 +87,18 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&		attribLocation( geom::Attrib attr, GLint location );
 
 		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
-		const std::string&	getVertex() const { return mVertexShader; }
+		const char*	getVertex() const;
 		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
-		const std::string&	getFragment() const { return mFragmentShader; }
+		const char*	getFragment() const;
 #if ! defined( CINDER_GL_ES )
 		//! Returns the GLSL source for the geometry shader
-		const std::string&	getGeometry() const { return mGeometryShader; }
+		const char*	getGeometry() const;
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransFormFeedback format
 		GLenum			getTransformFormat() const { return mTransformFormat; }
 #endif
-#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
-		const std::string&	getCompute() const { return mComputeShader; }
-#endif
+		//! 
+		const std::map<GLint, std::string>&	getShaderStages() const { return mShaderStageMap; }
 		//! Returns the map between uniform semantics and uniform names
 		const std::map<std::string,UniformSemantic>&	getUniformSemantics() const { return mUniformSemanticMap; }
 		//! Returns the map between attribute semantics and attribute names
@@ -119,20 +117,14 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
-		//! Sets up a shader source.
-		Format& setupSource( const DataSourceRef &dataSource, std::string *shader );
-		//! Sets up a shader source.
-		Format& setupSource( const char *source, std::string *shader );
-		std::string					mVertexShader;
-		std::string					mFragmentShader;
+		//! Get a shader source.
+		const char*	getShaderSource( GLint shaderType ) const;
+	
 #if ! defined( CINDER_GL_ES )
-		std::string								mGeometryShader;
 		GLenum									mTransformFormat;
 		std::vector<std::string>				mTransformVaryings;
 #endif
-#if defined ( CINDER_MSW ) || defined ( CINDER_LINUX )
-		std::string								mComputeShader;
-#endif
+		std::map<GLint, std::string>			mShaderStageMap;
 		std::map<std::string,GLint>				mAttribNameLocMap;
 		std::map<geom::Attrib,GLint>			mAttribSemanticLocMap;
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
