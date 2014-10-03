@@ -179,9 +179,15 @@ class RendererGl : public Renderer {
 	virtual void	finishDraw();
 	virtual void	defaultResize();
 	virtual void	makeCurrentContext();
+	virtual void	swapBuffers();
 	virtual Surface	copyWindowSurface( const Area &area );
-	
- protected:
+
+	//!
+	virtual void setStartDrawFn( const std::function<void( Renderer* )>& function ) override { mStartDrawFn = function; }
+	//!
+	virtual void setFinishDrawFn( const std::function<void( Renderer* )>& function ) override { mFinishDrawFn = function; }
+
+protected:
 	RendererGl( const RendererGl &renderer );
 
 	Options		mOptions;

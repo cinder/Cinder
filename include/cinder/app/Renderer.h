@@ -120,15 +120,24 @@ class Renderer {
 	virtual Surface	copyWindowSurface( const Area &area ) = 0;
 
 	virtual void startDraw() {}
-	virtual void finishDraw() {}		
+	virtual void finishDraw() {}
 	virtual void makeCurrentContext() {}
+	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
+
+	//!
+	virtual void setStartDrawFn( const std::function<void( Renderer* )>& function ) {}
+	//!
+	virtual void setFinishDrawFn( const std::function<void( Renderer* )>& function ) {}
 
  protected:
  	Renderer() : mApp( 0 ) {}
 	Renderer( const Renderer &renderer );
 
 	App			*mApp;
+
+	std::function<void( Renderer* )> mStartDrawFn;
+	std::function<void( Renderer* )> mFinishDrawFn;
 };
 
 typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;
