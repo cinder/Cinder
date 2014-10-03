@@ -21,7 +21,6 @@ layout( std140, binding = 2 ) buffer Part
 };
 
 //layout( local_size_variable ) in;
-//layout (local_size_x = 16, local_size_y = 16) in; // or do something like this.
 layout( local_size_x = 128, local_size_y = 1, local_size_z = 1 ) in;
 
 const float dt2 = 1.0 / (60.0 * 60.0);
