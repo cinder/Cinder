@@ -1,4 +1,4 @@
-#version 420
+#version 330
 
 in vec4		Color;
 in vec4		PickingColor;
