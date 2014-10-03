@@ -1,9 +1,6 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
-
-#include "HdrLoader.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -27,11 +24,7 @@ class HighDynamicRangeApp : public AppNative {
 
 void HighDynamicRangeApp::loadHdr( const fs::path &path )
 {
-	HDRLoaderResult result;
-	if( ! HDRLoader::load( path.string().c_str(), result ) )
-		return;
-	
-	Surface32f s( result.cols, result.width, result.height, result.width * 3 * sizeof(float), SurfaceChannelOrder::RGB );	
+	Surface32f s( loadImage( path ) );
 	mHdrTexture = gl::Texture::create( s, gl::Texture::Format().internalFormat( GL_RGB32F ) );
 	
 	mExposure = 1.0f;

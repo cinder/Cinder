@@ -20,6 +20,10 @@ A modular API is advantagous because it is proven to be very flexible and allows
 
 For those looking for raw dsp functionality, the `ci::audio::dsp` namespace contains a range of high performance tools for most audio processing tasks. They are used by the available `Node`s and provide building blocks for custom `Node` classes or any other audio processing purposes.
 
+### Note on code snippets
+
+For the sake of trying to keep the code snippets short, it is assumed that the code is in a .cpp file and there is a `using namespace ci;` within scope, so the `ci::` qualifier has been dropped.
+
 \section voice Voice - simple audio file or callback player
 
 For those who need only to play back a sound file or want a simple processing function, you may not need to look further than what is provided in the `Voice` API. `Voice`s are high level objects that sit above the modular system, managing a small chain of `audio::Node`s that perform the necessary processing.  They are meant to require little work on the user's part, so you don't need to worry about things like what the playback samplerate is or to what hardware device audio is sent, at the cost of less flexibility. 
@@ -27,13 +31,20 @@ For those who need only to play back a sound file or want a simple processing fu
 The following is an example of how to play a sound file with an `audio::Voice` (Details about how to load sound files will be explained in the section on \ref read_audio):
 
 \code{.cpp}
-auto sourceFile = audio::load( app::loadResource( "soundfile.wav" ) );
-mVoice = audio::Voice::create( sourceFile );
-mVoice->start();
+// declare somewhere in your class interface:
+audio::VoiceRef mVoice;
 
-// later when you want to stop playing the Voice:
-mVoice->stop();
+void MyApp::setup()
+{
+    audio::SourceFileRef sourceFile = audio::load( app::loadAsset( "soundfile.wav" ) );
+    mVoice = audio::Voice::create( sourceFile );
+
+    // Start playing audio from the voice:
+    mVoice->start();
+}
 \endcode
+
+Later, you can call `mVoice->stop()` when you want to quit playing audio.
 
 The \ref cinder::audio::Voice::create() "audio::Voice::create()" method returns a shared_ptr to a Voice sub-class (ex, in the case of playing an audio file, returns `VoiceSamplePlayerRef`, but the user will generally only need to maintain this by storing it in a VoiceRef instance variable. It is necessary to store the returned VoiceRef because once it goes out of scope, it will be disconnected from the audio graph and destroyed.  This is fairly cheap, however (much cheaper than creating the `SourceFile` via `audio::load()`, for example), so if you need to later play a different file, you can safely call `Voice::create()` again and assign it to your `mVoice` instance variable.
 

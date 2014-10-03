@@ -252,12 +252,24 @@ class GlslProgCompileExc : public std::exception {
 	GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw();
 	virtual const char* what() const throw()
 	{
-		return mMessage;
+		return mMessage.c_str();
 	}
 	
   private:
-	char	mMessage[ 16001 ];
-	GLint	mShaderType;
+	std::string		mMessage;
+	GLint			mShaderType;
+};
+
+class GlslProgLinkExc : public std::exception {
+  public:
+	GlslProgLinkExc( const std::string &log ) throw() : mMessage( log ) {}
+	virtual const char* what() const throw()
+	{
+		return mMessage.c_str();
+	}
+	
+  private:
+	std::string		mMessage;
 };
 
 class GlslNullProgramExc : public std::exception {

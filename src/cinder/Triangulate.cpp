@@ -99,6 +99,12 @@ void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 		tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
 }
 
+void Triangulator::addPolyLine( const vec2 *points, size_t numPoints )
+{
+	if( numPoints > 0 )
+		tessAddContour( mTess.get(), 2, &points, sizeof(vec2), (int)numPoints );
+}
+
 TriMesh Triangulator::calcMesh( Winding winding )
 {
 	TriMesh result( TriMesh::Format().positions( 2 ) );

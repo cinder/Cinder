@@ -465,49 +465,9 @@ vec2 Path2d::getSegmentTangent( size_t segment, float t ) const
 	}
 }
 
-vector<vec2> Path2d::subdivide( float approximationScale ) const
-{
-	if( mSegments.empty() )
-		return vector<vec2>();
-
-	float distanceToleranceSqr = 0.5f / approximationScale;
-	distanceToleranceSqr *= distanceToleranceSqr;
-	
-	size_t firstPoint = 0;
-	vector<vec2> result;
-	result.push_back( mPoints[0] );
-	for( size_t s = 0; s < mSegments.size(); ++s ) {
-		switch( mSegments[s] ) {
-			case CUBICTO:
-				result.push_back( mPoints[firstPoint] );
-				subdivideCubic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], mPoints[firstPoint+3], 0, &result );
-				result.push_back( mPoints[firstPoint+3] );
-			break;
-			case QUADTO:
-				result.push_back( mPoints[firstPoint] );
-				subdivideQuadratic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], 0, &result );
-				result.push_back( mPoints[firstPoint+2] );
-			break;
-			case LINETO:
-				result.push_back( mPoints[firstPoint] );
-				result.push_back( mPoints[firstPoint+1] );
-			break;
-			case CLOSE:
-				result.push_back( mPoints[firstPoint] );
-				result.push_back( mPoints[0] );
-			break;
-			default:
-				throw Path2dExc();
-		}
-		
-		firstPoint += sSegmentTypePointCounts[mSegments[s]];
-	}
-	
-	return result;
-}
-
+namespace {
 // This technique is due to Maxim Shemanarev but removes his tangent error estimates
-void Path2d::subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, int level, vector<vec2> *result ) const
+void subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, int level, vector<vec2> *resultPositions, vector<vec2> *resultTangents )
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
@@ -525,7 +485,9 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, con
 
 	if( d > collinearEpsilon ) { 
 		if( d * d <= distanceToleranceSqr * (dx*dx + dy*dy) ) {
-			result->push_back( p123 );
+			resultPositions->emplace_back( p123 );
+			if( resultTangents )
+				resultTangents->emplace_back( p3 - p1 );
 			return;
 		}
 	}
@@ -549,18 +511,20 @@ void Path2d::subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, con
 				d = distance2( p2, vec2( p1.x + d * dx, p1.y + d * dy ) );
 		}
 		if( d < distanceToleranceSqr ) {
-			result->push_back( p2 );
+			resultPositions->emplace_back( p2 );
+			if( resultTangents )
+				resultTangents->emplace_back( p3 - p1 );
 			return;
 		}
 	}
 
 	// Continue subdivision
-	subdivideQuadratic( distanceToleranceSqr, p1, p12, p123, level + 1, result ); 
-	subdivideQuadratic( distanceToleranceSqr, p123, p23, p3, level + 1, result );
+	subdivideQuadratic( distanceToleranceSqr, p1, p12, p123, level + 1, resultPositions, resultTangents );
+	subdivideQuadratic( distanceToleranceSqr, p123, p23, p3, level + 1, resultPositions, resultTangents );
 }
 
 // This technique is due to Maxim Shemanarev but removes his tangent error estimates
-void Path2d::subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, const vec2 &p4, int level, vector<vec2> *result ) const
+void subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, const vec2 &p4, int level, vector<vec2> *resultPositions, vector<vec2> *resultTangents )
 {
 	const int recursionLimit = 17;
 	const float collinearEpsilon = 0.0000001f;
@@ -619,13 +583,17 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const v
 			}
 			if(d2 > d3) {
 				if( d2 < distanceToleranceSqr ) {
-					result->push_back( p2 );
+					resultPositions->emplace_back( p2 );
+					if( resultTangents )
+						resultTangents->emplace_back( p3 - p1 );
 					return;
 				}
 			}
 			else {
 				if( d3 < distanceToleranceSqr ) {
-					result->push_back( p3 );
+					resultPositions->emplace_back( p3 );
+					if( resultTangents )
+						resultTangents->emplace_back( p4 - p2 );
 					return;
 				}
 			}
@@ -633,29 +601,100 @@ void Path2d::subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const v
 		case 1:
 			// p1,p2,p4 are collinear, p3 is significant
 			if( d3 * d3 <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
-				result->push_back( p23 );
+				resultPositions->emplace_back( p23 );
+				if( resultTangents )
+					resultTangents->emplace_back( p3 - p2 );
 				return;
 			}
 		break;
 		case 2:
 			// p1,p3,p4 are collinear, p2 is significant
 			if( d2 * d2 <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
-				result->push_back( p23 );
+				resultPositions->emplace_back( p23 );
+				if( resultTangents )
+					resultTangents->emplace_back( p3 - p2 );
 				return;
 			}
 		break;
 		case 3: 
 			// Regular case
 			if( (d2 + d3)*(d2 + d3) <= distanceToleranceSqr * ( dx*dx + dy*dy ) ) {
-				result->push_back( p23 );
+				resultPositions->emplace_back( p23 );
+				if( resultTangents )
+					resultTangents->emplace_back( p3 - p2 );
 				return;
 			}
 		break;
 	}
 
 	// Continue subdivision
-	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, result ); 
-	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, result ); 
+	subdivideCubic( distanceToleranceSqr, p1, p12, p123, p1234, level + 1, resultPositions, resultTangents );
+	subdivideCubic( distanceToleranceSqr, p1234, p234, p34, p4, level + 1, resultPositions, resultTangents );
+}
+} // anonymous namespace
+
+std::vector<vec2> Path2d::subdivide( float approximationScale ) const
+{
+	std::vector<vec2> result;
+	subdivide( &result, nullptr, approximationScale );
+	
+	return result;
+}
+
+void Path2d::subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *resultTangents, float approximationScale ) const
+{
+	if( mSegments.empty() )
+		return;
+
+	float distanceToleranceSqr = 0.5f / approximationScale;
+	distanceToleranceSqr *= distanceToleranceSqr;
+	
+	size_t firstPoint = 0;
+	resultPositions->emplace_back( mPoints[0] );
+	if( resultTangents )
+		resultTangents->emplace_back( mPoints[1] - mPoints[0] );
+	for( size_t s = 0; s < mSegments.size(); ++s ) {
+		switch( mSegments[s] ) {
+			case CUBICTO:
+				resultPositions->emplace_back( mPoints[firstPoint] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+1] - mPoints[firstPoint] );
+				subdivideCubic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], mPoints[firstPoint+3], 0, resultPositions, resultTangents );
+				resultPositions->emplace_back( mPoints[firstPoint+3] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+3] - mPoints[firstPoint+2] );
+			break;
+			case QUADTO:
+				resultPositions->emplace_back( mPoints[firstPoint] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+1] - mPoints[firstPoint] );
+				subdivideQuadratic( distanceToleranceSqr, mPoints[firstPoint], mPoints[firstPoint+1], mPoints[firstPoint+2], 0, resultPositions, resultTangents );
+				resultPositions->emplace_back( mPoints[firstPoint+2] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+2] - mPoints[firstPoint+1] );
+			break;
+			case LINETO:
+				resultPositions->emplace_back( mPoints[firstPoint] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+1] - mPoints[firstPoint] );
+				resultPositions->emplace_back( mPoints[firstPoint+1] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[firstPoint+1] - mPoints[firstPoint] );
+			break;
+			case CLOSE:
+				resultPositions->emplace_back( mPoints[firstPoint] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[0] - mPoints[firstPoint] );
+				resultPositions->emplace_back( mPoints[0] );
+				if( resultTangents )
+					resultTangents->emplace_back( mPoints[0] - mPoints[firstPoint] );
+			break;
+			default:
+				throw Path2dExc();
+		}
+		
+		firstPoint += sSegmentTypePointCounts[mSegments[s]];
+	}
 }
 
 void Path2d::scale( const vec2 &amount, vec2 scaleCenter )

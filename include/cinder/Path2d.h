@@ -77,6 +77,8 @@ class Path2d {
 	void	getSegmentRelativeT( float t, size_t *segment, float *relativeT ) const;
 	
 	std::vector<vec2>	subdivide( float approximationScale = 1.0f ) const;
+	//! if \a resultTangents aren't null then un-normalized tangents corresponding to \a resultPositions are calculated.
+	void				subdivide( std::vector<vec2> *resultPositions, std::vector<vec2> *resultTangents, float approximationScale = 1.0f ) const;
 	
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
@@ -121,10 +123,10 @@ class Path2d {
 	float	calcTimeForDistance( float distance, bool wrap = true, float tolerance = 1.0e-03f, int maxIterations = 16 ) const;
 
 
-	static int		calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2] );
+	static int	calcQuadraticBezierMonotoneRegions( const vec2 p[3], float resultT[2] );
 	static vec2	calcQuadraticBezierPos( const vec2 p[3], float t );
 	static vec2	calcQuadraticBezierDerivative( const vec2 p[3], float t );
-	static int		calcCubicBezierMonotoneRegions( const vec2 p[4], float resultT[4] );
+	static int	calcCubicBezierMonotoneRegions( const vec2 p[4], float resultT[4] );
 	static vec2	calcCubicBezierPos( const vec2 p[4], float t );
 	static vec2	calcCubicBezierDerivative( const vec2 p[4], float t );
 
@@ -138,9 +140,7 @@ class Path2d {
   private:
 	void	arcHelper( const vec2 &center, float radius, float startRadians, float endRadians, bool forward );
 	void	arcSegmentAsCubicBezier( const vec2 &center, float radius, float startRadians, float endRadians );
-	void	subdivideQuadratic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, int level, std::vector<vec2> *result ) const;
-	void	subdivideCubic( float distanceToleranceSqr, const vec2 &p1, const vec2 &p2, const vec2 &p3, const vec2 &p4, int level, std::vector<vec2> *result ) const;
-
+	
 	std::vector<vec2>			mPoints;
 	std::vector<SegmentType>	mSegments;
 };

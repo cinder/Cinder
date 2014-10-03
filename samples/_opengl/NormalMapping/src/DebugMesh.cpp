@@ -83,8 +83,8 @@ void DebugMesh::setMesh( const TriMesh& mesh )
 	for( size_t i = 0; i < numVertices; ++i ) {
 		uint32_t idx = mVertices.size();
 
-		mVertices.push_back( mesh.getVertices<3>()[i] );
-		mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getNormals()[i] );
+		mVertices.push_back( mesh.getPositions<3>()[i] );
+		mVertices.push_back( mesh.getPositions<3>()[i] + scale * mesh.getNormals()[i] );
 		
 		mColors.push_back( Color( 0, 0, 0 ) );
 		mColors.push_back( Color( 0, 0, 1 ) );
@@ -93,8 +93,8 @@ void DebugMesh::setMesh( const TriMesh& mesh )
 		mIndices.push_back( idx + 1 );
 
 		if( hasTangents ) {
-			mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getTangents()[i] );
-			mVertices.push_back( mesh.getVertices<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
+			mVertices.push_back( mesh.getPositions<3>()[i] + scale * mesh.getTangents()[i] );
+			mVertices.push_back( mesh.getPositions<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
 
 			mColors.push_back( Color( 1, 0, 0 ) );
 			mColors.push_back( Color( 0, 1, 0 ) );
