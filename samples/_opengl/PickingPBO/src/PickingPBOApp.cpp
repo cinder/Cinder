@@ -22,7 +22,6 @@ class PickingPBOApp : public AppNative {
 	virtual void setup() override;
 	virtual void resize() override;
 	virtual void draw() override;
-	virtual void update() override;
 	virtual void mouseDown( MouseEvent event ) override;
 	virtual void mouseDrag( MouseEvent event ) override;
 
@@ -70,8 +69,6 @@ class PickingPBOApp : public AppNative {
 	float				mDebugDisplaySize;
 	gl::Texture2dRef	mPickingTexture;
 	bool				mNeedsRedraw;
-	bool				mParamSelectVertices;
-	bool				mParamSelectEdges;
 	bool				mSelectVertices;
 	bool				mSelectEdges;
 	params::InterfaceGlRef		mParams;
@@ -84,8 +81,6 @@ void PickingPBOApp::setup()
 	mSelectedVertexColor = vec4( 0.7f, 0.7f, 0.3f, 1.0f );
 	mSelectedEdgeColor = vec4( 0.9f, 0.7f, 0.3f, 1.0f );
 
-	mParamSelectVertices = true;
-	mParamSelectEdges = true;
 	mSelectVertices = true;
 	mSelectEdges = true;
 
@@ -123,22 +118,10 @@ void PickingPBOApp::resize()
 	mNeedsRedraw = true;
 }
 
-void PickingPBOApp::update()
-{
-	if( (mParamSelectVertices != mSelectVertices) || (mParamSelectEdges != mSelectEdges) ) {
-		mSelectVertices = mParamSelectVertices;
-		mSelectEdges = mParamSelectEdges;
-		setPickingColors( mSelectVertices, mSelectEdges );
-		renderScene();
-		mNeedsRedraw = false;
-	}
-}
-
 void PickingPBOApp::draw()
 {
 	if( mNeedsRedraw ) {
 		renderScene();
-		mNeedsRedraw = false;
 	}
 
 	gl::clear();
@@ -179,6 +162,8 @@ void PickingPBOApp::renderScene()
 		gl::draw( mDebugTexture, ci::Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
 	}
 #endif
+
+	mNeedsRedraw = false;
 }
 
 void PickingPBOApp::mouseDown( MouseEvent event )
@@ -269,8 +254,8 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 void PickingPBOApp::setupParams()
 {
 	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 60 ) );
-	mParams->addParam( "Select Vertices", &mParamSelectVertices );
-	mParams->addParam( "Select Edges", &mParamSelectEdges );
+	mParams->addParam( "Select Vertices", &mSelectVertices ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
+	mParams->addParam( "Select Edges", &mSelectEdges ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
 }
 
 void PickingPBOApp::setupGeometry()
