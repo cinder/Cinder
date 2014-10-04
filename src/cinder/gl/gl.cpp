@@ -822,10 +822,12 @@ void bindBuffer( const BufferObjRef &buffer )
 	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
 }
 
+#if ! defined( CINDER_GL_ES_2 )
 void readBuffer( GLenum src )
 {
 	glReadBuffer( src );
 }
+#endif
 
 void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )
 {
