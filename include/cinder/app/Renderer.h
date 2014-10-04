@@ -120,8 +120,9 @@ class Renderer {
 	virtual Surface	copyWindowSurface( const Area &area ) = 0;
 
 	virtual void startDraw() {}
-	virtual void finishDraw() {}		
+	virtual void finishDraw() {}
 	virtual void makeCurrentContext() {}
+	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
  protected:
