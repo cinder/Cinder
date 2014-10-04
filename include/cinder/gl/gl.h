@@ -296,6 +296,10 @@ inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWiref
 
 //! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
 void	lineWidth( float width );
+#if ! defined( CINDER_GL_ES )
+//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize.
+void	pointSize( float size );
+#endif
 
 //! Converts a geom::Primitive to an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc )
 GLenum toGl( geom::Primitive prim );

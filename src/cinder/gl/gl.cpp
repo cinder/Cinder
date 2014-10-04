@@ -742,12 +742,21 @@ bool isWireframeEnabled()
 	return ctx->getPolygonMode( GL_FRONT_AND_BACK ) == GL_LINE;
 }
 
-#endif
+#endif // ! defined( CINDER_GL_ES )
 
 void lineWidth( float width )
 {
 	glLineWidth( width );
 }
+
+#if ! defined( CINDER_GL_ES )
+
+void pointSize( float size )
+{
+	glPointSize( size );
+}
+
+#endif // ! defined( CINDER_GL_ES )
 
 void draw( const VboMeshRef& mesh )
 {
