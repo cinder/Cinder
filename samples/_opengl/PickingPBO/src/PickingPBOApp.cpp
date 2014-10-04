@@ -1,5 +1,3 @@
-
-#include <memory>
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/VboMesh.h"
@@ -20,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 
 class PickingPBOApp : public AppNative {
-public:
+  public:
 	virtual void setup() override;
 	virtual void resize() override;
 	virtual void draw() override;
@@ -45,7 +43,7 @@ public:
 	void restoreDefaultColors();
 	void setSelectedColors( int selected );
 
-	enum { CHANNEL_COUNT = 4, };
+	enum { CHANNEL_COUNT = 4 };
 
 	gl::TextureRef		mTexture;
 	gl::GlslProgRef		mGlsl;
@@ -166,7 +164,7 @@ void PickingPBOApp::renderScene()
 	gl::enableDepthWrite();
 
 	// Draw scene.
-	glPointSize( 6.0f );
+	gl::pointSize( 6.0f );
 	gl::pushMatrices();
 	gl::setMatrices( mMayaCam.getCamera() );
 	gl::draw( mGridMesh );
@@ -200,8 +198,7 @@ void PickingPBOApp::mouseDown( MouseEvent event )
 	if( selection != -1 ) {
 		setSelectedColors( selection );
 	}
-	else
-	{
+	else {
 		mMayaCam.mouseDown( mPickPos );
 	}
 	mNeedsRedraw = true;
@@ -216,13 +213,13 @@ void PickingPBOApp::mouseDrag( MouseEvent event )
 int PickingPBOApp::pick( const ivec2 &mousePos )
 {
 	gl::ScopedFramebuffer scopedFbo( mFbo );
-	glReadBuffer( GL_COLOR_ATTACHMENT1 );
+	gl::readBuffer( GL_COLOR_ATTACHMENT1 );
 	// Read the pbo containting the selection square.
 	int selectedIndex = -1;
 	int halfPickPixelSize = static_cast<int>(mPickPixelSize / 2);
 	int numPixels = mPickPixelSize * mPickPixelSize;
 	gl::ScopedBuffer pboScope( mPbo );
-	glReadPixels( mousePos.x - halfPickPixelSize, getWindowHeight() - mousePos.y - halfPickPixelSize, mPickPixelSize, mPickPixelSize, GL_BGRA, GL_UNSIGNED_BYTE, 0 );
+	gl::readPixels( mousePos.x - halfPickPixelSize, getWindowHeight() - mousePos.y - halfPickPixelSize, mPickPixelSize, mPickPixelSize, GL_BGRA, GL_UNSIGNED_BYTE, 0 );
 
 	// Count the votes for color number in the square to determine the winner.
 	GLubyte *pixelBuffer = static_cast<GLubyte *>(mPbo->map( GL_READ_ONLY ));
@@ -504,7 +501,7 @@ void PickingPBOApp::setPickingColors( bool selectVertices, bool selectEdges )
 	}
 	edgeColorIter.unmap();
 
-	if( !selectEdges ) {
+	if( ! selectEdges ) {
 		colorIdx = 1;
 	}
 
