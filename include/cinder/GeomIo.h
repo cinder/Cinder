@@ -33,6 +33,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <array>
 
 // Forward declarations in cinder::
 namespace cinder {
@@ -160,14 +161,17 @@ class Target {
 
 class Rect : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
+	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
 	Rect();
+	Rect( const Rectf &r );
 
 	virtual Rect&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
 	virtual Rect&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }	
-	Rect&		position( const vec2 &pos ) { mPos = pos; return *this; }
-	Rect&		scale( const vec2 &scale ) { mScale = scale; return *this; }
-	Rect&		scale( float s ) { mScale = vec2( s, s ); return *this; }
+	Rect&				rect( const Rectf &r );
+	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
+	Rect&				colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
+	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
+	Rect&				texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
 	virtual size_t		getNumVertices() const override { return 4; }
 	virtual size_t		getNumIndices() const override { return 0; }
@@ -175,11 +179,10 @@ class Rect : public Source {
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 	virtual void		loadInto( Target *target ) const override;
 
-	vec2		mPos, mScale;
+  protected:
+	std::array<vec2,4>		mPositions, mTexCoords;
+	std::array<ColorAf,4>	mColors;
 
-	static float	sPositions[4*2];
-	static float	sColors[4*3];
-	static float	sTexCoords[4*2];
 	static float	sNormals[4*3];
 };
 
