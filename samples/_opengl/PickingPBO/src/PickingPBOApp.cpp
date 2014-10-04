@@ -49,7 +49,7 @@ class PickingPBOApp : public AppNative {
 	gl::GlslProgRef		mGlsl;
 	gl::VboMeshRef		mVerticesMesh;
 	gl::VboMeshRef		mEdgesMesh;
-	gl::VboMeshRef		mGridMesh;
+	gl::VertBatchRef	mGridMesh;
 	gl::VboMeshRef		mGradientMesh;
 	gl::BatchRef		mVerticesBatch;
 	gl::BatchRef		mEdgesBatch;
@@ -167,7 +167,7 @@ void PickingPBOApp::renderScene()
 	gl::pointSize( 6.0f );
 	gl::pushMatrices();
 	gl::setMatrices( mMayaCam.getCamera() );
-	gl::draw( mGridMesh );
+	mGridMesh->draw();
 	gl::multModelMatrix( mBoxTransform );
 	mEdgesBatch->draw();
 	mVerticesBatch->draw();
@@ -334,56 +334,31 @@ void PickingPBOApp::setupGrid( int xSize, int zSize, int spacing )
 
 	const int xMax = xSize + spacing;
 	const int zMax = zSize + spacing;
+	const Colorf defaultColor( 0.75f, 0.75f, 0.75f );
+	const Colorf black( 0, 0, 0 );
 
-	size_t xLineCount = ( ( xMax + xSize ) / spacing );
-	size_t zLineCount = ( ( zMax + zSize ) / spacing );
-	// Mult 2 for two points per line.
-	size_t numVertices = ( ( xLineCount + zLineCount ) * 2 );
-
-	std::vector<vec3> positions;
-	std::vector<vec3> colors;
-	positions.reserve( numVertices );
-	colors.reserve( numVertices );
-
-	const vec3 defaultColor( 0.75f, 0.75f, 0.75f );
-	const vec3 black( 0.0f );
+	mGridMesh = gl::VertBatch::create( GL_LINES );
 
 	// Add x lines.
 	for( int xVal = -xSize; xVal < xMax; xVal += spacing ) {
-		if( xVal == 0 ) {
-			// Center line.
-			colors.push_back( black );
-			colors.push_back( black );
-		}
-		else {
-			colors.push_back( defaultColor );
-			colors.push_back( defaultColor );
-		}
-		positions.push_back( vec3( static_cast<float>( xVal ), 0.0f, static_cast<float>( -zSize ) ) );
-		positions.push_back( vec3( static_cast<float>( xVal ), 0.0f, static_cast<float>( zSize ) ) );
+		if( xVal == 0 ) // Center line.
+			mGridMesh->color( black );
+		else
+			mGridMesh->color( defaultColor );
+		mGridMesh->vertex( (float)xVal, 0, (float)-zSize );
+		mGridMesh->vertex( (float)xVal, 0, (float)zSize );
 	}// end for each x dir line
 
 	// Add z lines.
 	for( int zVal = -zSize; zVal < zMax; zVal += spacing ) {
-		if( zVal == 0 ) {
-			// Center line.
-			colors.push_back( black );
-			colors.push_back( black );
-		}
-		else {
-			colors.push_back( defaultColor );
-			colors.push_back( defaultColor );
-		}
-		positions.push_back( vec3( static_cast<float>( xSize ), 0.0f, static_cast<float>( zVal ) ) );
-		positions.push_back( vec3( static_cast<float>( -xSize ), 0.0f, static_cast<float>( zVal ) ) );
+		if( zVal == 0 ) // Center line.
+			mGridMesh->color( black );
+		else 
+			mGridMesh->color( defaultColor );
+		
+		mGridMesh->vertex( (float)xSize, 0, (float)zVal );
+		mGridMesh->vertex( (float)-xSize, 0, (float)zVal );
 	}// end for each z dir line
-
-	gl::VboMesh::Layout layout;
-	layout.usage( GL_STATIC_DRAW ).attrib( geom::POSITION, 3 ).attrib( geom::COLOR, 3 );
-
-	mGridMesh = gl::VboMesh::create( positions.size(), GL_LINES, { layout } );
-	mGridMesh->bufferAttrib( geom::POSITION, positions );
-	mGridMesh->bufferAttrib( geom::COLOR, colors );
 }
 
 void PickingPBOApp::setupGradient()
