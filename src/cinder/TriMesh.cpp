@@ -191,7 +191,7 @@ void TriMesh::appendIndices( const uint32_t *indices, size_t num )
 void TriMesh::appendNormals( const vec3 *normals, size_t num )
 {
 	assert( mNormalsDims == 3 );
-	mNormals.insert( mNormals.end(), normals, normals + num * 3 );
+	mNormals.insert( mNormals.end(), normals, normals + num );
 }
 
 void TriMesh::appendTangents( const vec3 *tangents, size_t num )
