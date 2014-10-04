@@ -822,6 +822,16 @@ void bindBuffer( const BufferObjRef &buffer )
 	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
 }
 
+void readBuffer( GLenum src )
+{
+	glReadBuffer( src );
+}
+
+void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )
+{
+	glReadPixels( x, y, width, height, format, type, data );
+}
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // toGL conversion functions
 GLenum toGl( geom::Primitive prim )

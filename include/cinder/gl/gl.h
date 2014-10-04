@@ -399,6 +399,11 @@ inline void	vertexAttrib( GLuint index, float v0, float v1, float v2, float v3 )
 
 // Buffers
 void	bindBuffer( const BufferObjRef &buffer );
+//! Specifies a color buffer as the source for subsequent glReadPixels(), glCopyTexImage2D(), glCopyTexSubImage2D(), and glCopyTexSubImage3D() commands. Analogous to glReadBuffer().
+void	readBuffer( GLenum src );
+
+//! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
+void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
 
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
