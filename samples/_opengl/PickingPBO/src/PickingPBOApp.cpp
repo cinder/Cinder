@@ -50,7 +50,7 @@ class PickingPBOApp : public AppNative {
 	gl::VboMeshRef		mVerticesMesh;
 	gl::VboMeshRef		mEdgesMesh;
 	gl::VertBatchRef	mGridMesh;
-	gl::VboMeshRef		mGradientMesh;
+	gl::BatchRef		mGradientMesh;
 	gl::BatchRef		mVerticesBatch;
 	gl::BatchRef		mEdgesBatch;
 
@@ -158,8 +158,8 @@ void PickingPBOApp::renderScene()
 	// Draw gradient.
 	gl::disableDepthWrite();
 	gl::pushMatrices();
-	gl::setMatricesWindow( 1, 1, false );
-	gl::draw( mGradientMesh );
+	gl::setMatricesWindow( 1, 1 );
+	mGradientMesh->draw();
 	gl::popMatrices();
 	gl::enableDepthWrite();
 
@@ -363,28 +363,11 @@ void PickingPBOApp::setupGrid( int xSize, int zSize, int spacing )
 
 void PickingPBOApp::setupGradient()
 {
-	std::array<vec3, 4> positions = {
-		vec3( -1.0f, -1.0f, 0.0f ),
-		vec3( 1.0f, -1.0f, 0.0f ),
-		vec3( 1.0f, 1.0f, 0.0f ),
-		vec3( -1.0f, 1.0f, 0.0f )
-	};
+	const Colorf topColor( 0.50f, 0.50f, 0.50f );
+	const Colorf bottomColor( 0.25f, 0.25f, 0.25f );
 
-	const vec3 topColor( 0.50f, 0.50f, 0.50f );
-	const vec3 bottomColor( 0.015f, 0.015f, 0.015f );
-	std::array<vec3, 4> colors = {
-		bottomColor,
-		bottomColor,
-		topColor,
-		topColor
-	};
-
-	gl::VboMesh::Layout layout;
-	layout.usage( GL_STATIC_DRAW ).attrib( geom::POSITION, 3 ).attrib( geom::COLOR, 3 );
-
-	mGradientMesh = gl::VboMesh::create( positions.size(), GL_TRIANGLE_STRIP, { layout } );
-	mGradientMesh->bufferAttrib( geom::POSITION, positions.size() * sizeof( vec3 ), positions.data() );
-	mGradientMesh->bufferAttrib( geom::COLOR, colors.size() * sizeof( vec3 ), colors.data() );
+	auto rectSource = geom::Rect( Rectf( 0, 0, 1, 1 ) ).colors( topColor, topColor, bottomColor, bottomColor );
+	mGradientMesh = gl::Batch::create( rectSource, mNotPickableProg );
 }
 
 void PickingPBOApp::setupFbo()
