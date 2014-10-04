@@ -81,6 +81,11 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Specifies a location for a semantic
 		Format&		attribLocation( geom::Attrib attr, GLint location );
 
+#if ! defined( CINDER_GL_ES )
+		//! Specifies a binding for a user-defined varying out variable to a fragment shader color number. Analogous to glBindFragDataLocation.
+		Format&		fragDataLocation( GLuint colorNumber, const std::string &name );
+#endif
+
 		//! Returns the GLSL source for the vertex shader. Returns an empty string if it isn't present.
 		const std::string&	getVertex() const { return mVertexShader; }
 		//! Returns the GLSL source for the fragment shader. Returns an empty string if it isn't present.
@@ -91,6 +96,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransFormFeedback format
 		GLenum			getTransformFormat() const { return mTransformFormat; }
+		//! Returns the map between output variable names and their bound color numbers
+		const std::map<std::string,GLuint>&	getFragDataLocations() const { return mFragDataLocations; }
 #endif
 
 		//! Returns the map between uniform semantics and uniform names
@@ -117,6 +124,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::string								mGeometryShader;
 		GLenum									mTransformFormat;
 		std::vector<std::string>				mTransformVaryings;
+		std::map<std::string,GLuint>			mFragDataLocations;
 #endif
 		std::map<std::string,GLint>				mAttribNameLocMap;
 		std::map<geom::Attrib,GLint>			mAttribSemanticLocMap;

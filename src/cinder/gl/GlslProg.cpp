@@ -143,6 +143,14 @@ GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attrib, GLint l
 	return *this;
 }
 
+#if ! defined( CINDER_GL_ES )
+GlslProg::Format& GlslProg::Format::fragDataLocation( GLuint colorNumber, const std::string &name )
+{
+	mFragDataLocations[name] = colorNumber;
+	return *this;
+}
+#endif
+
 //////////////////////////////////////////////////////////////////////////
 // GlslProg statics
 
@@ -242,6 +250,10 @@ GlslProg::GlslProg( const Format &format )
 		}
 		glTransformFeedbackVaryings( mHandle, format.getVaryings().size(), mTransformFeedbackVaryingsCharStarts->data(), format.getTransformFormat() );
 	}
+
+	// setup fragment data locations
+	for( const auto &fragDataLocation : format.getFragDataLocations() )
+		glBindFragDataLocation( mHandle, fragDataLocation.second, fragDataLocation.first.c_str() );
 #endif
 	
 	link();
