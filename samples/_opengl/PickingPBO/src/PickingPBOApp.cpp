@@ -379,7 +379,7 @@ void PickingPBOApp::setupShader()
 	try
 	{
 		mPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "pickable.vs.glsl" ) )
-			.fragment( loadAsset( "pickable.fs.glsl" ) ) );
+			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
 	}
 	catch( ci::gl::GlslProgCompileExc &exc )
 	{
@@ -395,7 +395,7 @@ void PickingPBOApp::setupShader()
 	try
 	{
 		mNotPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "not_pickable.vs.glsl" ) )
-			.fragment( loadAsset( "pickable.fs.glsl" ) ) );
+			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
 	}
 	catch( ci::gl::GlslProgCompileExc &exc )
 	{
