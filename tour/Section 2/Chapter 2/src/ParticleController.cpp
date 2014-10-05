@@ -18,11 +18,11 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd )
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			vec3 dir = p1->mPos - p2->mPos;
-			float distSqrd = glm::length2(dir);
+			float distSqrd = glm::length2( dir );
 					
 			if( distSqrd <= zoneRadiusSqrd ){	// SEPARATION
 				float F = ( zoneRadiusSqrd/distSqrd - 1.0f ) * 0.01f;
-				dir = glm::normalize(dir);
+				dir = glm::normalize( dir );
 				dir *= F;
 			
 				p1->mAcc += dir;
@@ -53,7 +53,7 @@ void ParticleController::draw()
 		p->draw();
 	}
 	
-    gl::VertBatch batch( GL_LINES );
+	gl::VertBatch batch( GL_LINES );
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
 		p->drawTail( batch );
 	}

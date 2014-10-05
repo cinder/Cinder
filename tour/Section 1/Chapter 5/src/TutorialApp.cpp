@@ -32,7 +32,7 @@ class TutorialApp : public AppBasic {
 	Perlin mPerlin;
 
 	Channel32f mChannel;
-	gl::Texture2dRef mTexture;
+	gl::TextureRef mTexture;
 	
 	ivec2 mMouseLoc;
 	vec2 mMouseVel;
@@ -61,10 +61,10 @@ void TutorialApp::setup()
 	
 	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
-	mTexture = gl::Texture2d::create ( mChannel );
+	mTexture = gl::Texture::create ( mChannel );
 
 	mMouseLoc = ivec2( 0, 0 );
-	mMouseVel = vec2(0);
+	mMouseVel = vec2( 0 );
 	
 	mDrawParticles	= true;
 	mDrawImage		= false;

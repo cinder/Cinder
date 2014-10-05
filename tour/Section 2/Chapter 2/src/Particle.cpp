@@ -31,11 +31,11 @@ Particle::Particle( vec3 pos, vec3 vel )
 void Particle::pullToCenter( const vec3 &center )
 {
 	vec3 dirToCenter = mPos - center;
-	float distToCenter = dirToCenter.length();
+	float distToCenter = glm::length( dirToCenter );
 	float maxDistance = 300.0f;
 	
 	if( distToCenter > maxDistance ){
-		dirToCenter = glm::normalize(dirToCenter);
+		dirToCenter = glm::normalize( dirToCenter );
 		float pullStrength = 0.0001f;
 		mVel -= dirToCenter * ( ( distToCenter - maxDistance ) * pullStrength );
 	}
@@ -45,7 +45,7 @@ void Particle::update( bool flatten )
 {	
 	if( flatten ) mAcc.z = 0.0f;
 	mVel += mAcc;
-	mVelNormal = glm::normalize(mVel);
+	mVelNormal = glm::normalize( mVel );
 	limitSpeed();
 	
 	mPos += mVel;
@@ -59,7 +59,7 @@ void Particle::update( bool flatten )
 
 void Particle::limitSpeed()
 {
-	float vLengthSqrd = glm::length2(mVel);
+	float vLengthSqrd = glm::length2( mVel );
 	if( vLengthSqrd > mMaxSpeedSqrd ){
 		mVel = mVelNormal * mMaxSpeed;
 		

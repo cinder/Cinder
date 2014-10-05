@@ -48,15 +48,15 @@ void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 
 	float maxVel = mRadius + 0.0025f;
 	
-	float velLength = glm::length2(mVel) + 0.1f;
+	float velLength = glm::length2( mVel ) + 0.1f;
 	if( velLength > maxVel*maxVel ){
-		mVel = glm::normalize(mVel);
+		mVel = glm::normalize( mVel );
 		mVel *= maxVel;
 	}
 	
 	mLoc += mVel;
 	mVel *= mDecay;
-	mAcc = {0, 0};
+	mAcc = vec2(0);
 	
 	if( mLoc.x >= 0.0f && mLoc.x <= (float)app::getWindowWidth() - 1 &&
 		mLoc.y >= 0.0f && mLoc.y <= (float)app::getWindowHeight() - 1 ){

@@ -14,7 +14,7 @@ class TutorialApp : public AppBasic {
 	void update();
 	void draw();
 	
-	gl::Texture2dRef mImage;
+	gl::TextureRef mImage;
 	
 	ParticleController mParticleController;
 };
@@ -28,7 +28,7 @@ void TutorialApp::prepareSettings( Settings *settings )
 void TutorialApp::setup()
 {
 	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
-	mImage = gl::Texture2d::create( loadImage( loadUrl( url ) ) );
+	mImage = gl::Texture::create( loadImage( loadUrl( url ) ) );
 
 	mParticleController.addParticles( 250 );
 }
@@ -44,8 +44,8 @@ void TutorialApp::draw()
 	
 	gl::draw( mImage, getWindowBounds() );
 	
-    gl::disable( GL_TEXTURE_2D );
-    gl::ScopedColor color( ColorAf::white() );
+	gl::disable( GL_TEXTURE_2D );
+	gl::ScopedColor color( ColorAf::white() );
 	mParticleController.draw();
 }
 

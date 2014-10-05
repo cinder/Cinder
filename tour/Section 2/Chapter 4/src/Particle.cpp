@@ -15,12 +15,12 @@ Particle::Particle( vec3 pos, vec3 vel )
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= vec3(0, 1, 0);
-	mAcc			= vec3(0);
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
 	mColor			= ColorA( 1.0f, 1.0f, 1.0f, 1.0f );
 	
-	mNeighborPos	= vec3(0);
+	mNeighborPos	= vec3( 0 );
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 2.5f, 3.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -36,11 +36,11 @@ Particle::Particle( vec3 pos, vec3 vel )
 void Particle::pullToCenter( const vec3 &center )
 {
 	vec3 dirToCenter = mPos - center;
-	float distToCenter = dirToCenter.length();
+	float distToCenter = glm::length( dirToCenter );
 	float maxDistance = 300.0f;
 	
 	if( distToCenter > maxDistance ){
-		dirToCenter = glm::normalize(dirToCenter);
+		dirToCenter = glm::normalize( dirToCenter );
 		float pullStrength = 0.0001f;
 		mVel -= dirToCenter * ( ( distToCenter - maxDistance ) * pullStrength );
 	}
@@ -56,7 +56,7 @@ void Particle::update( bool flatten )
 	
 	
 	mVel += mAcc;
-	mVelNormal = glm::normalize(mVel);
+	mVelNormal = glm::normalize( mVel );
 	
 	limitSpeed();
 	
@@ -71,13 +71,13 @@ void Particle::update( bool flatten )
 	float c = mNumNeighbors/50.0f;
 	mColor = ColorA( CM_HSV, math<float>::max( 1.0f - c, 0.0f ), c, c + 0.5f, 1.0f );
 	
-	mNeighborPos = vec3(0);
+	mNeighborPos = vec3( 0 );
 	mNumNeighbors = 0;
 }
 
 void Particle::limitSpeed()
 {
-	float vLengthSqrd = glm::length2(mVel);
+	float vLengthSqrd = glm::length2( mVel );
 	if( vLengthSqrd > mMaxSpeedSqrd ){
 		mVel = mVelNormal * mMaxSpeed;
 		

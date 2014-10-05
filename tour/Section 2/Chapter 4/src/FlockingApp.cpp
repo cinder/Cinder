@@ -65,8 +65,8 @@ void FlockingApp::setup()
 	// SETUP CAMERA
 	mCameraDistance = 500.0f;
 	mEye			= vec3( 0.0f, 0.0f, mCameraDistance );
-	mCenter			= vec3(0);
-	mUp				= vec3(0, 1, 0);
+	mCenter			= vec3( 0 );
+	mUp				= vec3( 0, 1, 0 );
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 2000.0f );
 
 	// SETUP PARAMS
@@ -140,16 +140,16 @@ void FlockingApp::draw()
 		gl::translate( vec3( 117.0f, getWindowHeight() - 117.0f, 0.0f ) );
 		
 		gl::color( ColorA( 1.0f, 0.25f, 0.25f, 1.0f ) );
-		gl::drawSolidCircle( vec2(0), mZoneRadius );
+		gl::drawSolidCircle( vec2( 0 ), mZoneRadius );
 
 		gl::color( ColorA( 0.25f, 1.0f, 0.25f, 1.0f ) );
-		gl::drawSolidCircle( vec2(0), mZoneRadius * mHigherThresh );
+		gl::drawSolidCircle( vec2( 0 ), mZoneRadius * mHigherThresh );
 		
 		gl::color( ColorA( 0.25f, 0.25f, 1.0f, 1.0f ) );
-		gl::drawSolidCircle( vec2(0), mZoneRadius * mLowerThresh );
+		gl::drawSolidCircle( vec2( 0 ), mZoneRadius * mLowerThresh );
 		
 		gl::color( ColorA( 1.0f, 1.0f, 1.0f, 0.25f ) );
-		gl::drawStrokedCircle( vec2(0), 100.0f );
+		gl::drawStrokedCircle( vec2( 0 ), 100.0f );
 	gl::popModelView();
 }
 

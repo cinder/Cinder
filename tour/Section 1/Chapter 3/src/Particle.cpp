@@ -23,15 +23,15 @@ void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 {
 	mDirToCursor		= vec2(mouseLoc) - mLoc;
 
-	float distToCursor	= mDirToCursor.length();
+	float distToCursor	= glm::length( mDirToCursor );
 	float time			= app::getElapsedSeconds();
 	float dist			= distToCursor * 0.025f;
 	float sinOffset		= sin( dist - time ) + 1.0f;
 	
-    mDirToCursor        = glm::normalize( mDirToCursor );
+	mDirToCursor		= glm::normalize( mDirToCursor );
 	mDirToCursor		*= sinOffset * 100.0f;
 	
-	vec2 newLoc         = mLoc + mDirToCursor;
+	vec2 newLoc			= mLoc + mDirToCursor;
 	newLoc.x			= constrain( newLoc.x, 0.0f, channel.getWidth() - 1.0f );
 	newLoc.y			= constrain( newLoc.y, 0.0f, channel.getHeight() - 1.0f );
 	

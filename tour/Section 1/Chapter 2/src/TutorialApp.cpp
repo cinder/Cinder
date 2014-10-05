@@ -20,7 +20,7 @@ class TutorialApp : public AppBasic {
 	void draw();
 	
 	Channel32f mChannel;
-	gl::Texture2dRef mTexture;
+	gl::TextureRef mTexture;
 	
 	ParticleController mParticleController;
 	
@@ -38,7 +38,7 @@ void TutorialApp::setup()
 {
 	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
-	mTexture = gl::Texture2d::create( mChannel );
+	mTexture = gl::Texture::create( mChannel );
 
 	mParticleController = ParticleController( RESOLUTION );
 	

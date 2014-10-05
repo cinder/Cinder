@@ -22,7 +22,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			vec3 dir = p1->mPos - p2->mPos;
-			float distSqrd = glm::length2(dir);
+			float distSqrd = glm::length2( dir );
 			float zoneRadiusSqrd = zoneRadius * zoneRadius;
 			
 			if( distSqrd < zoneRadiusSqrd ){			// Neighbor is in the zone
@@ -30,7 +30,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 	
 				if( percent < lowerThresh ){			// Separation
 					float F = ( lowerThresh/percent - 1.0f ) * repelStrength;
-					dir = glm::normalize(dir) * F;
+					dir = glm::normalize( dir ) * F;
 			
 					p1->mAcc += dir;
 					p2->mAcc -= dir;
@@ -47,7 +47,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 					float adjustedPercent	= ( percent - higherThresh )/threshDelta;
 					float F					= ( 1.0f - ( cos( adjustedPercent * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
 										
-					dir = glm::normalize(dir);
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					p1->mAcc -= dir;
@@ -77,21 +77,21 @@ void ParticleController::update( bool flatten )
 
 void ParticleController::draw()
 {
-    {
-        gl::ScopedColor color( ColorAf::white() );
-        for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
-            p->draw();
-        }
-    }
+	{
+		gl::ScopedColor color( ColorAf::white() );
+		for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
+			p->draw();
+		}
+	}
 	
-    {
-        gl::ScopedColor color( ColorAf::white() );
-        gl::VertBatch batch(GL_LINES);
-        for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
-            p->drawTail(batch);
-        }
-        batch.draw();
-    }
+	{
+		gl::ScopedColor color( ColorAf::white() );
+		gl::VertBatch batch( GL_LINES );
+		for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
+			p->drawTail( batch );
+		}
+		batch.draw();
+	}
 }
 
 void ParticleController::addParticles( int amt )
