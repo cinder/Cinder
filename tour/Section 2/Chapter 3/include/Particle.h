@@ -1,6 +1,7 @@
 #pragma once
 #include "cinder/Vector.h"
 #include "cinder/Color.h"
+#include "cinder/gl/Batch.h"
 #include <vector>
 
 class Particle {
@@ -11,7 +12,7 @@ class Particle {
 	void update( bool flatten );
 	void limitSpeed();
 	void draw();
-	void drawTail();
+	void drawTail( ci::gl::VertBatch& batch );
 	
 	ci::vec3	mPos;
 	ci::vec3	mTailPos;
