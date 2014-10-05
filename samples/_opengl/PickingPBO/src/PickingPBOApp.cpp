@@ -41,8 +41,6 @@ class PickingPBOApp : public AppNative {
 	void restoreDefaultColors();
 	void setSelectedColors( int selected );
 
-	gl::TextureRef		mTexture;
-	gl::GlslProgRef		mGlsl;
 	gl::VboMeshRef		mVerticesMesh;
 	gl::VboMeshRef		mEdgesMesh;
 	gl::VertBatchRef	mGridMesh;
@@ -168,7 +166,7 @@ void PickingPBOApp::mouseDown( MouseEvent event )
 #if DEBUG_PICKING
 	// Avoid selecting debug texture.
 	float sqDisplaySize = mDebugDisplaySize * mDebugDisplaySize;
-	if( glm::distance( static_cast<vec2>( mPickPos ), static_cast<vec2>( event.getPos() ) ) <= glm::sqrt( sqDisplaySize + sqDisplaySize ) ) {
+	if( glm::distance( vec2( mPickPos ), vec2( event.getPos() ) ) <= abs( sqDisplaySize + sqDisplaySize ) ) {
 		return;
 	}
 #endif
@@ -328,45 +326,26 @@ void PickingPBOApp::setupGradient()
 void PickingPBOApp::setupFbo()
 {
 	gl::Fbo::Format fmt;
-	int width = getWindowWidth();
-	int height = getWindowHeight();
-	gl::Texture::Format texFmt;
-	texFmt.internalFormat( GL_RGBA ).pixelDataFormat( GL_RGBA ).pixelDataType( GL_UNSIGNED_BYTE );
-	mPickingTexture = gl::Texture2d::create( width, height, texFmt );
-	fmt.attachment( GL_COLOR_ATTACHMENT1, mPickingTexture );
-	mFbo = gl::Fbo::create( width, height, fmt );
+	fmt.attachment( GL_COLOR_ATTACHMENT1, gl::Renderbuffer::create( getWindowWidth(), getWindowHeight() ) );
+	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), fmt );
 }
 
 void PickingPBOApp::setupShader()
 {
-	try
-	{
+	try {
 		mPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "pickable.vs.glsl" ) )
 			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
 	}
-	catch( ci::gl::GlslProgCompileExc &exc )
-	{
-		CI_LOG_E( "Shader load error: " << exc.what() );
-		shutdown();
-	}
-	catch( ci::Exception &exc )
-	{
+	catch( ci::Exception &exc ) {
 		CI_LOG_E( "Shader load error: " << exc.what() );
 		shutdown();
 	}
 
-	try
-	{
+	try {
 		mNotPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "not_pickable.vs.glsl" ) )
 			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
 	}
-	catch( ci::gl::GlslProgCompileExc &exc )
-	{
-		CI_LOG_E( "Shader load error: " << exc.what() );
-		shutdown();
-	}
-	catch( ci::Exception &exc )
-	{
+	catch( ci::Exception &exc ) {
 		CI_LOG_E( "Shader load error: " << exc.what() );
 		shutdown();
 	}
@@ -407,9 +386,8 @@ void PickingPBOApp::setPickingColors( bool selectVertices, bool selectEdges )
 	}
 	edgeColorIter.unmap();
 
-	if( ! selectEdges ) {
+	if( ! selectEdges )
 		colorIdx = 1;
-	}
 
 	if( selectVertices ) {
 		// Handle vertices.
@@ -444,9 +422,8 @@ void PickingPBOApp::restoreDefaultColors()
 
 void PickingPBOApp::setSelectedColors( int selected )
 {
-	if( selected < 0 ) {
+	if( selected < 0 )
 		return;
-	}
 
 	uint32_t numEdgeVertices = mEdgesMesh->getNumVertices();
 	CI_ASSERT( ( numEdgeVertices % 2 ) == 0 );
