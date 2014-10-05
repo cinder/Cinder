@@ -114,14 +114,19 @@ void PickingPBOApp::resize()
 
 void PickingPBOApp::draw()
 {
-	if( mNeedsRedraw ) {
+	if( mNeedsRedraw )
 		renderScene();
-	}
 
 	gl::clear();
+	gl::disableDepthRead();
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
 	gl::draw( mFbo->getColorTexture(), getWindowBounds() );
+	if( mDebugTexture ) {
+		gl::color( Color::white() );
+		gl::draw( mDebugTexture, Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
+	}
 	mParams->draw();
+	gl::enableDepthRead();
 }
 
 void PickingPBOApp::renderScene()
@@ -150,26 +155,12 @@ void PickingPBOApp::renderScene()
 	mVerticesBatch->draw();
 	gl::popMatrices();
 
-#if DEBUG_PICKING
-	if( mDebugTexture ) {
-		gl::ScopedTextureBind scopeTexture( mDebugTexture );
-		gl::draw( mDebugTexture, ci::Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
-	}
-#endif
-
 	mNeedsRedraw = false;
 }
 
 void PickingPBOApp::mouseDown( MouseEvent event )
 {
 	restoreDefaultColors();
-#if DEBUG_PICKING
-	// Avoid selecting debug texture.
-	float sqDisplaySize = mDebugDisplaySize * mDebugDisplaySize;
-	if( glm::distance( vec2( mPickPos ), vec2( event.getPos() ) ) <= abs( sqDisplaySize + sqDisplaySize ) ) {
-		return;
-	}
-#endif
 
 	mPickPos = event.getPos();
 
@@ -205,6 +196,8 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 	int selectedIndex = -1;
 	if( ! voteCount.empty() )
 		selectedIndex = std::max_element( voteCount.begin(), voteCount.end(), voteCount.value_comp() )->first;
+
+CI_ASSERT( selectedIndex < 1000 );
 
 #if DEBUG_PICKING
 	// turn all background pixels white
