@@ -197,8 +197,6 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 	if( ! voteCount.empty() )
 		selectedIndex = std::max_element( voteCount.begin(), voteCount.end(), voteCount.value_comp() )->first;
 
-CI_ASSERT( selectedIndex < 1000 );
-
 #if DEBUG_PICKING
 	// turn all background pixels white
 	for( int32_t y = 0; y < pixels.getHeight(); ++y )
