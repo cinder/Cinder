@@ -54,6 +54,7 @@ class Fbo;
 typedef std::shared_ptr<Fbo>			FboRef;
 class VertBatch;
 typedef std::shared_ptr<VertBatch>		VertBatchRef;
+class Renderbuffer;
 
 class Context {
   public:
@@ -167,6 +168,19 @@ class Context {
 	void		invalidateBufferBindingCache( GLenum target );
 	//! Restores a buffer binding when code that is not caching aware has invalidated it. Not typically necessary.
 	void		restoreInvalidatedBufferBinding( GLenum target );
+
+	//! Analogous to glBindRenderbuffer( \a target, \a id )
+	void		bindRenderbuffer( GLenum target, GLuint id );
+	//! Pushes and binds renderbuffer object \a id for the target \a target
+	void		pushRenderbufferBinding( GLenum target, GLuint id );
+	//! Duplicates and pushes the renderbuffer binding for the target \a target
+	void		pushRenderbufferBinding( GLenum target );
+	//! Pops the renderbuffer binding for the target \a target
+	void		popRenderbufferBinding( GLenum target );
+	//! Returns the current renderbuffer binding for \a target. If not cached, queries the GL for the current value (and caches it).
+	GLuint		getRenderbufferBinding( GLenum target );
+	//! No-op if Renderbuffer wasn't bound, otherwise reflects the binding as 0 (in accordance with what GL has done automatically).
+	void		renderbufferDeleted( const Renderbuffer *buffer );
 
 	//! Binds GLSL program \a prog. Analogous to glUseProgram()
 	void			bindGlslProg( const GlslProgRef &prog );
@@ -380,6 +394,7 @@ class Context {
 	std::map<ShaderDef,GlslProgRef>		mStockShaders;
 	
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
+	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
 	std::vector<GlslProgRef>			mGlslProgStack;
 	std::vector<VaoRef>					mVaoStack;
 	

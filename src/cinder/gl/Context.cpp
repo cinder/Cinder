@@ -78,11 +78,14 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	mVaoStack.push_back( mDefaultVao );
 	mDefaultVao->setContext( this );
 	mDefaultVao->bindImpl( NULL );
-	
+
 	mBufferBindingStack[GL_ARRAY_BUFFER] = vector<int>();
 	mBufferBindingStack[GL_ARRAY_BUFFER].push_back( 0 );
 	mBufferBindingStack[GL_ELEMENT_ARRAY_BUFFER] = vector<int>();
 	mBufferBindingStack[GL_ELEMENT_ARRAY_BUFFER].push_back( 0 );
+
+	mRenderbufferBindingStack[GL_RENDERBUFFER] = vector<int>();
+	mRenderbufferBindingStack[GL_RENDERBUFFER].push_back( 0 );
 	 
 	mReadFramebufferStack.push_back( 0 );
 	mDrawFramebufferStack.push_back( 0 );	
@@ -562,7 +565,76 @@ void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buff
 		break;
 	}
 }
+//////////////////////////////////////////////////////////////////
+// Renderbuffer
+void Context::bindRenderbuffer( GLenum target, GLuint id )
+{
+	GLuint prevValue = getRenderbufferBinding( target );
+	if( prevValue != id ) {
+		mRenderbufferBindingStack[target].back() = id;
+		glBindRenderbuffer( target, id );
+	}
+}
+
+void Context::pushRenderbufferBinding( GLenum target, GLuint id )
+{
+	pushRenderbufferBinding( target );
+	bindRenderbuffer( target, id );
+}
+
+void Context::pushRenderbufferBinding( GLenum target )
+{
+	GLuint curValue = getRenderbufferBinding( target );
+	mRenderbufferBindingStack[target].push_back( curValue );
+}
+
+void Context::popRenderbufferBinding( GLenum target )
+{
+	GLuint prevValue = getRenderbufferBinding( target );
+	auto cachedIt = mRenderbufferBindingStack.find( target );
+	cachedIt->second.pop_back();
+	if( ! cachedIt->second.empty() && cachedIt->second.back() != prevValue ) {
+		glBindRenderbuffer( target, cachedIt->second.back() );
+	}
+}
+
+GLuint Context::getRenderbufferBinding( GLenum target )
+{
+	// currently only GL_RENDERBUFFER is legal in GL
+	CI_ASSERT( target == GL_RENDERBUFFER );
 	
+	auto cachedIt = mRenderbufferBindingStack.find( target );
+	if( (cachedIt == mRenderbufferBindingStack.end()) || ( cachedIt->second.empty() ) || ( cachedIt->second.back() == -1 ) ) {
+		GLint queriedInt = 0;
+		glGetIntegerv( GL_RENDERBUFFER_BINDING, &queriedInt );
+		
+		if( mRenderbufferBindingStack[target].empty() ) { // bad - empty stack; push twice to allow for the pop later and not lead to an empty stack
+			mRenderbufferBindingStack[target] = vector<GLint>();
+			mRenderbufferBindingStack[target].push_back( queriedInt );
+			mRenderbufferBindingStack[target].push_back( queriedInt );			
+		}
+		else
+			mRenderbufferBindingStack[target].back() = queriedInt;
+		return (GLuint)queriedInt;
+	}
+	else
+		return (GLuint)cachedIt->second.back();
+}
+
+void Context::renderbufferDeleted( const Renderbuffer *buffer )
+{
+	GLenum target = GL_RENDERBUFFER;
+
+	// if 'id' was bound to 'target', mark 'target's binding as 0
+	auto existingIt = mRenderbufferBindingStack.find( target );
+	if( existingIt != mRenderbufferBindingStack.end() ) {
+		if( mRenderbufferBindingStack[target].back() == buffer->getId() )
+			mRenderbufferBindingStack[target].back() = 0;
+	}
+	else
+		mRenderbufferBindingStack[target].push_back( 0 );
+}
+
 //////////////////////////////////////////////////////////////////
 // TransformFeedbackObj
 void Context::bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj )

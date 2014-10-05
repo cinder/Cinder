@@ -7,6 +7,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/Fbo.h"
 
 #include "cinder/Utilities.h"
 #include "cinder/Text.h"
@@ -2068,6 +2069,27 @@ ScopedFaceCulling::~ScopedFaceCulling()
 	mCtx->popBoolState( GL_CULL_FACE );
 	if( mSaveFace )
 		mCtx->popCullFace();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedRenderbuffer
+ScopedRenderbuffer::ScopedRenderbuffer( const RenderbufferRef &rb )
+	: mCtx( gl::context() )
+{
+	mCtx->pushRenderbufferBinding( GL_RENDERBUFFER, rb->getId() );
+}
+
+ScopedRenderbuffer::ScopedRenderbuffer( GLenum target, GLuint id )
+	: mCtx( gl::context() )
+{
+	// this is the only legal value currently
+	CI_ASSERT( target == GL_RENDERBUFFER );
+	mCtx->pushRenderbufferBinding( target, id );
+}
+
+ScopedRenderbuffer::~ScopedRenderbuffer()
+{
+	mCtx->popRenderbufferBinding( GL_RENDERBUFFER );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

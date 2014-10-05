@@ -95,7 +95,7 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 	if( ! csaaSupported )
 		mCoverageSamples = 0;
 
-	glBindRenderbuffer( GL_RENDERBUFFER, mId );
+	gl::ScopedRenderbuffer rbb( GL_RENDERBUFFER, mId );
 
 #if defined( SUPPORTS_MULTISAMPLE )
   #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
@@ -125,6 +125,8 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 
 Renderbuffer::~Renderbuffer()
 {
+	context()->renderbufferDeleted( this );
+	
 	if( mId )
 		glDeleteRenderbuffers( 1, &mId );
 }

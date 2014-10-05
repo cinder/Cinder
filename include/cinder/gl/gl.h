@@ -114,6 +114,8 @@ class Vao;
 typedef std::shared_ptr<Vao>			VaoRef;
 class Fbo;
 typedef std::shared_ptr<Fbo>			FboRef;
+class Renderbuffer;
+typedef std::shared_ptr<Renderbuffer>	RenderbufferRef;
 
 class Context* context();
 class Environment* env();
@@ -575,6 +577,17 @@ struct ScopedFaceCulling : public boost::noncopyable
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
+};
+
+//! Scopes state of Renderbuffer binding
+struct ScopedRenderbuffer : public boost::noncopyable
+{
+	ScopedRenderbuffer( const RenderbufferRef &rb );
+	ScopedRenderbuffer( GLenum target, GLuint id );
+	~ScopedRenderbuffer();
+	
+  private:
+	Context		*mCtx;
 };
 
 class Exception : public cinder::Exception {
