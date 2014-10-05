@@ -164,7 +164,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	//! Sets the debugging label associated with the Fbo. Calls glObjectLabel() when available.
 	void				setLabel( const std::string &label );
 	
-	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as an 8-bit per channel Surface
+	//! Returns a copy of the pixels in \a attachment within \a area (cropped to the bounding rectangle of the attachment) as an 8-bit per channel Surface. \a attachment ignored on ES 2.
 	Surface8u		readPixels8u( const Area &area, GLenum attachment = GL_COLOR_ATTACHMENT0 ) const;
 	
 	struct Format {

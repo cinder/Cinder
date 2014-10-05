@@ -540,16 +540,16 @@ void Fbo::resolveTextures() const
 
 		ctx->pushFramebuffer( GL_DRAW_FRAMEBUFFER, mId );
 		ctx->pushFramebuffer( GL_READ_FRAMEBUFFER, mMultisampleFramebufferId );
-		
-        vector<GLenum> drawBuffers;
+
+		vector<GLenum> drawBuffers;
 		for( GLenum c = GL_COLOR_ATTACHMENT0; c <= MAX_COLOR_ATTACHMENT; ++c ) {
-            auto colorAttachmentIt = mAttachmentsTexture.find( c );
-            if( colorAttachmentIt != mAttachmentsTexture.end() ) {
-                glDrawBuffer( colorAttachmentIt->first );
-                glReadBuffer( colorAttachmentIt->first );
+			auto colorAttachmentIt = mAttachmentsTexture.find( c );
+			if( colorAttachmentIt != mAttachmentsTexture.end() ) {
+				glDrawBuffer( colorAttachmentIt->first );
+				glReadBuffer( colorAttachmentIt->first );
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
-                drawBuffers.push_back( colorAttachmentIt->first );
-            }
+				drawBuffers.push_back( colorAttachmentIt->first );
+			}
 		}
 
 		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
@@ -707,8 +707,10 @@ Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
 	}
 	
 	Area clippedArea = area.getClipBy( attachmentBounds );
-	
+
+#if ! defined( CINDER_GL_ES_2 )	
 	glReadBuffer( attachment );
+#endif
 	Surface8u result( clippedArea.getWidth(), clippedArea.getHeight(), true );
 	glReadPixels( clippedArea.x1, attachmentBounds.getHeight() - clippedArea.y2, clippedArea.getWidth(), clippedArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
 	
