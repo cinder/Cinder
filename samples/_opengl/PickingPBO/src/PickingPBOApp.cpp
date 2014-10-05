@@ -32,7 +32,6 @@ class PickingPBOApp : public AppNative {
 	void setupGrid( int xSize, int zSize, int spacing );
 	void setupGradient();
 	void setupFbo();
-	void setupPbo();
 
 	void renderScene();
 	uint32_t colorToIndex( const ColorA8u &color );
@@ -41,8 +40,6 @@ class PickingPBOApp : public AppNative {
 	void setPickingColors( bool selectVertices, bool selectEdges );
 	void restoreDefaultColors();
 	void setSelectedColors( int selected );
-
-	enum { CHANNEL_COUNT = 4 };
 
 	gl::TextureRef		mTexture;
 	gl::GlslProgRef		mGlsl;
@@ -54,7 +51,6 @@ class PickingPBOApp : public AppNative {
 	gl::BatchRef		mEdgesBatch;
 
 	gl::FboRef			mFbo;
-	gl::PboRef			mPbo;
 	gl::GlslProgRef		mPickableProg;
 	gl::GlslProgRef		mNotPickableProg;
 	int					mPickPixelSize;
@@ -81,6 +77,7 @@ void PickingPBOApp::setup()
 	mSelectedVertexColor = vec4( 0.7f, 0.7f, 0.3f, 1.0f );
 	mSelectedEdgeColor = vec4( 0.9f, 0.7f, 0.3f, 1.0f );
 
+	mPickPixelSize = 6;
 	mSelectVertices = true;
 	mSelectEdges = true;
 
@@ -89,7 +86,6 @@ void PickingPBOApp::setup()
 	setupGradient();
 	setupGrid( 200, 200, 10 );
 	setupGeometry();
-	setupPbo();
 	setupFbo();
 
 	CameraPersp cam( mMayaCam.getCamera() );
@@ -197,24 +193,15 @@ void PickingPBOApp::mouseDrag( MouseEvent event )
 
 int PickingPBOApp::pick( const ivec2 &mousePos )
 {
-	gl::ScopedFramebuffer scopedFbo( mFbo );
-	gl::readBuffer( GL_COLOR_ATTACHMENT1 );
-	// Read the pbo containting the selection square.
-	int halfPickPixelSize = static_cast<int>(mPickPixelSize / 2);
-	int numPixels = mPickPixelSize * mPickPixelSize;
-	gl::ScopedBuffer pboScope( mPbo );
-	gl::readPixels( mousePos.x - halfPickPixelSize, getWindowHeight() - mousePos.y - halfPickPixelSize, mPickPixelSize, mPickPixelSize, GL_BGRA, GL_UNSIGNED_BYTE, 0 );
-
-	// Count the votes for color number in the square to determine the winner.
-	GLubyte *pixelBuffer = static_cast<GLubyte *>(mPbo->map( GL_READ_ONLY ));
-	CI_ASSERT( pixelBuffer != nullptr );
-	int numBytes = numPixels * CHANNEL_COUNT;
+	// read the surrounding region where the user has clicked and iterate the pixels, counting the most common index
+	Surface8u pixels = mFbo->readPixels8u( Area( mousePos - ivec2( mPickPixelSize / 2 ), mousePos + ivec2( mPickPixelSize / 2 ) ), GL_COLOR_ATTACHMENT1 );
 	std::map<int, int> voteCount;
-	for( int byteIdx = 0; byteIdx < numBytes; byteIdx += CHANNEL_COUNT ) {
-		ci::ColorA8u color( pixelBuffer[byteIdx + 2], pixelBuffer[byteIdx + 1], pixelBuffer[byteIdx], 0 );
-		int colorNumber = colorToIndex( color );
-		if( colorNumber != 0 )
-			voteCount[colorNumber - 1]++; // std::map value-initializes with 0 for scalars 
+	for( int32_t y = 0; y < pixels.getHeight(); ++y ) {
+		for( int32_t x = 0; x < pixels.getWidth(); ++x ) {
+			int colorNumber = colorToIndex( pixels.getPixel( ivec2( x, y ) ) );
+			if( colorNumber != 0 )
+				voteCount[colorNumber - 1]++; // std::map value-initializes with 0 for scalars
+		}
 	}
 
 	int selectedIndex = -1;
@@ -222,18 +209,14 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 		selectedIndex = std::max_element( voteCount.begin(), voteCount.end(), voteCount.value_comp() )->first;
 
 #if DEBUG_PICKING
-	for( int byteIdx = 0; byteIdx < numBytes; byteIdx += CHANNEL_COUNT ) {
-		int colorNumber = colorToIndex(
-			ci::ColorA8u( pixelBuffer[byteIdx + 2], pixelBuffer[byteIdx + 1], pixelBuffer[byteIdx], 0 ) );
-		if( colorNumber == 0 ) {
-			for( unsigned int chanIdx = 0; chanIdx < CHANNEL_COUNT; ++chanIdx ) {
-				pixelBuffer[byteIdx + chanIdx] = 0xFF;
-			}
-		}
-	}// end for
-	mDebugTexture = gl::Texture::create( pixelBuffer, GL_BGRA, mPickPixelSize, mPickPixelSize );
+	// turn all background pixels white
+	for( int32_t y = 0; y < pixels.getHeight(); ++y )
+		for( int32_t x = 0; x < pixels.getWidth(); ++x )
+			if( colorToIndex( pixels.getPixel( ivec2( x, y ) ) ) == 0 )
+				pixels.setPixel( ivec2( x, y ), ColorA8u( 255, 255, 255, 255 ) );
+	
+	mDebugTexture = gl::Texture::create( pixels );
 #endif
-	mPbo->unmap();
 
 	return selectedIndex;
 }
@@ -352,13 +335,6 @@ void PickingPBOApp::setupFbo()
 	mPickingTexture = gl::Texture2d::create( width, height, texFmt );
 	fmt.attachment( GL_COLOR_ATTACHMENT1, mPickingTexture );
 	mFbo = gl::Fbo::create( width, height, fmt );
-}
-
-void PickingPBOApp::setupPbo()
-{
-	mPickPixelSize = 6;
-	int pboSize = mPickPixelSize * mPickPixelSize * CHANNEL_COUNT;
-	mPbo = gl::Pbo::create( GL_PIXEL_PACK_BUFFER, pboSize );
 }
 
 void PickingPBOApp::setupShader()
