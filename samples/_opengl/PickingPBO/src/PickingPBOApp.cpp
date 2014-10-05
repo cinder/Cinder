@@ -200,7 +200,6 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 	gl::ScopedFramebuffer scopedFbo( mFbo );
 	gl::readBuffer( GL_COLOR_ATTACHMENT1 );
 	// Read the pbo containting the selection square.
-	int selectedIndex = -1;
 	int halfPickPixelSize = static_cast<int>(mPickPixelSize / 2);
 	int numPixels = mPickPixelSize * mPickPixelSize;
 	gl::ScopedBuffer pboScope( mPbo );
@@ -211,28 +210,16 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 	CI_ASSERT( pixelBuffer != nullptr );
 	int numBytes = numPixels * CHANNEL_COUNT;
 	std::map<int, int> voteCount;
-	int winner = 0;
-	int winningCount = -1;
 	for( int byteIdx = 0; byteIdx < numBytes; byteIdx += CHANNEL_COUNT ) {
 		ci::ColorA8u color( pixelBuffer[byteIdx + 2], pixelBuffer[byteIdx + 1], pixelBuffer[byteIdx], 0 );
 		int colorNumber = colorToIndex( color );
-		if( colorNumber != 0 ) {
-			if( voteCount.find( colorNumber ) == voteCount.end() ) {
-				voteCount[colorNumber] = 1;
-			}
-			else {
-				voteCount[colorNumber]++;
-			}
-			if( voteCount[colorNumber] > winningCount ) {
-				winningCount = voteCount[colorNumber];
-				winner = colorNumber;
-			}
-		}// end if
-	}// end for
-
-	if( winner != 0 ) {
-		selectedIndex = winner - 1;
+		if( colorNumber != 0 )
+			voteCount[colorNumber - 1]++; // std::map value-initializes with 0 for scalars 
 	}
+
+	int selectedIndex = -1;
+	if( ! voteCount.empty() )
+		selectedIndex = std::max_element( voteCount.begin(), voteCount.end(), voteCount.value_comp() )->first;
 
 #if DEBUG_PICKING
 	for( int byteIdx = 0; byteIdx < numBytes; byteIdx += CHANNEL_COUNT ) {
