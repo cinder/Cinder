@@ -66,7 +66,7 @@ void Particle::update( bool flatten )
 	
 	mTailPos = mPos - ( mVelNormal * mLength );
 	mVel *= mDecay;
-	mAcc = vec3(0);
+	mAcc = vec3( 0 );
 	
 	float c = mNumNeighbors/50.0f;
 	mColor = ColorA( CM_HSV, math<float>::max( 1.0f - c, 0.0f ), c, c + 0.5f, 1.0f );

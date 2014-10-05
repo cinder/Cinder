@@ -14,8 +14,8 @@ Particle::Particle( vec3 pos, vec3 vel )
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= vec3(0, 1, 0);
-	mAcc			= vec3(0);
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
 	mMaxSpeed		= Rand::randFloat( 2.5f, 3.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;

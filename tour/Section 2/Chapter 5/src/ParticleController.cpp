@@ -15,7 +15,7 @@ ParticleController::ParticleController()
 void ParticleController::applyForceToParticles( float zoneRadius, float lowerThresh, float higherThresh, float attractStrength, float repelStrength, float alignStrength  )
 {
 	float twoPI = M_PI * 2.0f;
-	mParticleCentroid = vec3(0);
+	mParticleCentroid = vec3( 0 );
 	mNumParticles = mParticles.size();
 	
 	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ){

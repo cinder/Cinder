@@ -15,10 +15,10 @@ Particle::Particle( vec3 pos, vec3 vel, bool followed )
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= vec3(0, 1, 0);
-	mAcc			= vec3(0);
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
-	mNeighborPos	= vec3(0);
+	mNeighborPos	= vec3( 0 );
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 2.5f, 4.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;

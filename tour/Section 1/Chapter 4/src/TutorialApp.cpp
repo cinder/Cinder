@@ -57,7 +57,7 @@ void TutorialApp::setup()
 	mTexture = gl::Texture::create ( mChannel );
 
 	mMouseLoc = ivec2( 0, 0 );
-	mMouseVel = vec2(0);
+	mMouseVel = vec2( 0 );
 	mDrawParticles = true;
 	mDrawImage = false;
 	mIsPressed = false;

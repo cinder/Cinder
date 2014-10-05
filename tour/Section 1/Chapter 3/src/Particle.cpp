@@ -13,7 +13,7 @@ Particle::Particle( vec2 loc )
 {
 	mLoc			= loc;
 	mDir			= Rand::randVec2f();
-	mDirToCursor	= vec2(0);
+	mDirToCursor	= vec2( 0 );
 	mVel			= 0.0f;
 	mRadius			= 0.0f;
 	mScale			= 3.0f;
@@ -21,7 +21,7 @@ Particle::Particle( vec2 loc )
 
 void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 {
-	mDirToCursor		= vec2(mouseLoc) - mLoc;
+	mDirToCursor		= vec2( mouseLoc ) - mLoc;
 
 	float distToCursor	= glm::length( mDirToCursor );
 	float time			= app::getElapsedSeconds();

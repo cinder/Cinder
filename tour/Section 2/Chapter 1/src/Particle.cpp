@@ -13,7 +13,7 @@ Particle::Particle( vec3 pos, vec3 vel )
 {
 	mPos			= pos;
 	mVel			= vel;
-	mAcc			= vec3(0);
+	mAcc			= vec3( 0 );
 
 	mRadius			= 2.0f;
 	mDecay			= 0.99f;

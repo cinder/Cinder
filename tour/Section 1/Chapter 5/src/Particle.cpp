@@ -13,7 +13,7 @@ Particle::Particle( vec2 loc, vec2 vel )
 {
 	mLoc			= loc;
 	mVel			= vel;
-	mAcc			= vec2(0);
+	mAcc			= vec2( 0 );
 	
 	mDecay			= Rand::randFloat( 0.95f, 0.951f );
 	mRadius			= 3.0f + Rand::randFloat( 0.1 );
@@ -56,7 +56,7 @@ void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 	
 	mLoc += mVel;
 	mVel *= mDecay;
-	mAcc = vec2(0);
+	mAcc = vec2( 0 );
 	
 	if( mLoc.x >= 0.0f && mLoc.x <= (float)app::getWindowWidth() - 1 &&
 		mLoc.y >= 0.0f && mLoc.y <= (float)app::getWindowHeight() - 1 ){

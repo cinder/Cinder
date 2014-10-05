@@ -19,10 +19,10 @@ Predator::Predator( vec3 pos, vec3 vel )
 	}
 	
 	mVel			= vel;
-	mVelNormal		= vec3(0, 1, 0);
-	mAcc			= vec3(0);
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
-	mNeighborPos	= vec3(0);
+	mNeighborPos	= vec3( 0 );
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 4.0f, 4.5f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;

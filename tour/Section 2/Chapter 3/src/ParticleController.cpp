@@ -75,7 +75,7 @@ void ParticleController::draw()
 	
 	gl::VertBatch batch( GL_LINES );
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
-		p->drawTail(batch);
+		p->drawTail( batch );
 	}
 	batch.draw();
 }
