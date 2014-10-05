@@ -361,8 +361,10 @@ void Fbo::setAllDrawBuffers()
 		if( textureAttachment.first >= GL_COLOR_ATTACHMENT0 && textureAttachment.first <= MAX_COLOR_ATTACHMENT )
 			drawBuffers.push_back( textureAttachment.first );
 
-	if( ! drawBuffers.empty() )
+	if( ! drawBuffers.empty() ) {
+		std::sort( drawBuffers.begin(), drawBuffers.end() );
 		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
+	}
 	else
 		glDrawBuffer( GL_NONE );
 #endif
