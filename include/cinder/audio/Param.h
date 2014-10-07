@@ -109,7 +109,9 @@ class Param {
 	float	getValue() const	{ return mValue; }
 	//! Returns a pointer to the buffer used when evaluating a Param that is varying over the current processing block, of equal size to the owning Context's frames per block.
 	//! \note If not varying (eval() returns false), the returned pointer will be invalid.
-	const float*	getValueArray() const;
+
+	//! Returns an array of values, time varying if `Event`s were processed, or filled with the a constant value if there were no `Event`s this block. \note Must call eval() once per block before using this method.
+	const float*	getValueArray();
 
 	//! Replaces any existing Event's with a Event from the current value to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
@@ -118,9 +120,10 @@ class Param {
 	//! Appends a Event from the end of the last scheduled Param (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
 
-	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded.
-	//! \note Forces \a node to be mono.
-	void setProcessor( const NodeRef &node );
+	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded. \note Forces \a node to be mono.
+	void	setProcessor( const NodeRef &node );
+	//! Returns this Param's processing Node, or an empty NodeRef if none is set.
+	NodeRef	getProcessor() const	{ return mProcessor; }
 
 	//! Resets Param, blowing away any Event's or processing Node. \note Must be called from a non-audio thread.
 	void reset();
@@ -150,6 +153,7 @@ class Param {
 
 	std::list<EventRef>	mEvents;
 	std::atomic<float>	mValue;
+	bool				mIsVaryingThisBlock;
 	Node*				mParentNode;
 	NodeRef				mProcessor;
 	BufferDynamic		mInternalBuffer;

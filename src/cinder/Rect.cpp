@@ -314,6 +314,28 @@ RectT<T> RectT<T>::getCenteredFit( const RectT<T> &other, bool expand ) const
 	
 	return result;
 }
+	
+template<typename T>
+RectT<T> RectT<T>::getCenteredFill( const RectT<T> &other, bool contract ) const
+{
+	RectT<T> result = *this;
+	result.offset( other.getCenter() - result.getCenter() );
+	
+	bool otherIsInside = ( ( result.getWidth() > other.getWidth() ) && ( result.getHeight() > other.getHeight() ) );
+	if( contract || ( ! otherIsInside ) ) { // need to do some scaling
+		T aspectAspect = result.getAspectRatio() / other.getAspectRatio();
+		if( aspectAspect <= 1.0f ) { // result is proportionally wider so we need to fit its x-axis
+			T scaleBy = other.getWidth() / result.getWidth();
+			result.scaleCentered( scaleBy );
+		}
+		else { // result is proportionally wider so we need to fit its y-axis
+			T scaleBy = other.getHeight() / result.getHeight();
+			result.scaleCentered( scaleBy );
+		}
+	}
+	
+	return result;
+}
 
 RectMapping::RectMapping( const Rectf &aSrcRect, const Rectf &aDstRect, bool preserveSrcAspect )
 	: mSrcRect( aSrcRect ), mDstRect( aDstRect )

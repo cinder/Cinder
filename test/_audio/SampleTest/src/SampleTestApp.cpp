@@ -465,7 +465,7 @@ void SamplePlayerNodeTestApp::update()
 	if( mSamplePlayerNodeEnabledState != mSamplePlayerNode->isEnabled() ) {
 		mSamplePlayerNodeEnabledState = mSamplePlayerNode->isEnabled();
 		string stateStr = mSamplePlayerNodeEnabledState ? "started" : "stopped";
-		CI_LOG_V( "mSamplePlayerNode " << stateStr << " at " << to_string( getElapsedSeconds() ) );
+		CI_LOG_V( "mSamplePlayerNode " << stateStr << " at " << to_string( getElapsedSeconds() ) << ", isEof: " << boolalpha << mSamplePlayerNode->isEof() << dec );
 	}
 
 	bool testIsRecorder = ( mTestSelector.currentSection() == "recorder" );

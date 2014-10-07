@@ -55,7 +55,6 @@ class SourceFileOggVorbis : public SourceFile {
 
   private:
 	void init();
-	void setupConversionImpl();
 
 	// ov_callbacks
 	static size_t	readFn( void *ptr, size_t size, size_t count, void *datasource );
