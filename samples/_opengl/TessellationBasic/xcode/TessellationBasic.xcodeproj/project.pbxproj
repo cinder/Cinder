@@ -12,7 +12,7 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
-		6D39C752E0D647CAA2D9A84F /* TessellationShaderApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9010AA5E818349198AFBE54A /* TessellationShaderApp.cpp */; };
+		6D39C752E0D647CAA2D9A84F /* TessellationBasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9010AA5E818349198AFBE54A /* TessellationBasicApp.cpp */; };
 		79DC121993C14837A63C7E54 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B88B347126554EB1955F2CFE /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B0245F4319BECEC000BC878D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0245F4219BECEC000BC878D /* CoreMedia.framework */; };
@@ -30,10 +30,10 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		5478DB5060F8471587E3C26F /* TessellationShader_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TessellationShader_Prefix.pch; sourceTree = "<group>"; };
+		5478DB5060F8471587E3C26F /* TessellationBasic_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TessellationBasic_Prefix.pch; sourceTree = "<group>"; };
 		7E412E2F44DE4070BBB9A9E8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		8D1107320486CEB800E47090 /* TessellationShader.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TessellationShader.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		9010AA5E818349198AFBE54A /* TessellationShaderApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TessellationShaderApp.cpp; path = ../src/TessellationShaderApp.cpp; sourceTree = "<group>"; };
+		8D1107320486CEB800E47090 /* TessellationBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TessellationBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		9010AA5E818349198AFBE54A /* TessellationBasicApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TessellationBasicApp.cpp; path = ../src/TessellationBasicApp.cpp; sourceTree = "<group>"; };
 		B0245F4219BECEC000BC878D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		B0245F4419BECEC500BC878D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B0245F4619BECEF900BC878D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
@@ -74,7 +74,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				9010AA5E818349198AFBE54A /* TessellationShaderApp.cpp */,
+				9010AA5E818349198AFBE54A /* TessellationBasicApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -108,12 +108,12 @@
 		19C28FACFE9D520D11CA2CBB /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				8D1107320486CEB800E47090 /* TessellationShader.app */,
+				8D1107320486CEB800E47090 /* TessellationBasic.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
 		};
-		29B97314FDCFA39411CA2CEA /* TessellationShader */ = {
+		29B97314FDCFA39411CA2CEA /* TessellationBasic */ = {
 			isa = PBXGroup;
 			children = (
 				B04F6E5C1917D60800AC256E /* assets */,
@@ -124,14 +124,14 @@
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
 			);
-			name = TessellationShader;
+			name = TessellationBasic;
 			sourceTree = "<group>";
 		};
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
 				E6B348259DC44ED195ED4784 /* Resources.h */,
-				5478DB5060F8471587E3C26F /* TessellationShader_Prefix.pch */,
+				5478DB5060F8471587E3C26F /* TessellationBasic_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -157,9 +157,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		8D1107260486CEB800E47090 /* TessellationShader */ = {
+		8D1107260486CEB800E47090 /* TessellationBasic */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TessellationShader" */;
+			buildConfigurationList = C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TessellationBasic" */;
 			buildPhases = (
 				8D1107290486CEB800E47090 /* Resources */,
 				8D11072C0486CEB800E47090 /* Sources */,
@@ -169,10 +169,10 @@
 			);
 			dependencies = (
 			);
-			name = TessellationShader;
+			name = TessellationBasic;
 			productInstallPath = "$(HOME)/Applications";
-			productName = TessellationShader;
-			productReference = 8D1107320486CEB800E47090 /* TessellationShader.app */;
+			productName = TessellationBasic;
+			productReference = 8D1107320486CEB800E47090 /* TessellationBasic.app */;
 			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
@@ -183,7 +183,7 @@
 			attributes = {
 				LastUpgradeCheck = 0510;
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TessellationShader" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TessellationBasic" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -193,11 +193,11 @@
 				French,
 				German,
 			);
-			mainGroup = 29B97314FDCFA39411CA2CEA /* TessellationShader */;
+			mainGroup = 29B97314FDCFA39411CA2CEA /* TessellationBasic */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				8D1107260486CEB800E47090 /* TessellationShader */,
+				8D1107260486CEB800E47090 /* TessellationBasic */,
 			);
 		};
 /* End PBXProject section */
@@ -218,7 +218,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6D39C752E0D647CAA2D9A84F /* TessellationShaderApp.cpp in Sources */,
+				6D39C752E0D647CAA2D9A84F /* TessellationBasicApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -235,7 +235,7 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = TessellationShader_Prefix.pch;
+				GCC_PREFIX_HEADER = TessellationBasic_Prefix.pch;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -244,7 +244,7 @@
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
-				PRODUCT_NAME = TessellationShader;
+				PRODUCT_NAME = TessellationBasic;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
 			};
@@ -261,12 +261,12 @@
 				GCC_INLINES_ARE_PRIVATE_EXTERN = YES;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
-				GCC_PREFIX_HEADER = TessellationShader_Prefix.pch;
+				GCC_PREFIX_HEADER = TessellationBasic_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
-				PRODUCT_NAME = TessellationShader;
+				PRODUCT_NAME = TessellationBasic;
 				STRIP_INSTALLED_PRODUCT = YES;
 				SYMROOT = ./build;
 				WRAPPER_EXTENSION = app;
@@ -309,7 +309,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TessellationShader" */ = {
+		C01FCF4A08A954540054247B /* Build configuration list for PBXNativeTarget "TessellationBasic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4B08A954540054247B /* Debug */,
@@ -318,7 +318,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TessellationShader" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "TessellationBasic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,

@@ -14,10 +14,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TessellationShaderApp.cpp">
+    <ClCompile Include="..\src\TessellationBasicApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\TessellationShaderApp.cpp">
+    <ClCompile Include="..\src\TessellationBasicApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClInclude Include="..\include\Resources.h">

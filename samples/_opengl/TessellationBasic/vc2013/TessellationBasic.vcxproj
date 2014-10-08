@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{54ECA109-BCCF-4559-A825-4CC867BE7F46}</ProjectGuid>
-    <RootNamespace>TessellationShader</RootNamespace>
+    <RootNamespace>TessellationBasic</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -194,7 +194,7 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\TessellationShaderApp.cpp" />
+    <ClCompile Include="..\src\TessellationBasicApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />
