@@ -45,77 +45,78 @@ GlslProg::Format::Format()
 	mAttribSemanticLocMap[geom::Attrib::POSITION] = 0;
 }
 
-GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
+GlslProg::Format& GlslProg::Format::shaderStage( const DataSourceRef &dataSource, GLint shaderType )
 {
 	if( dataSource ) {
 		Buffer buffer( dataSource );
-		mVertexShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mVertexShader.data(), buffer.getData(), buffer.getDataSize() );
-		mVertexShader[buffer.getDataSize()] = 0;
+		std::string shader;
+		shader.resize( buffer.getDataSize() + 1 );
+		memcpy( (void*)shader.data(), buffer.getData(), buffer.getDataSize() );
+		shader[buffer.getDataSize()] = 0;
+		auto shaderIter = mShaderStageMap.find( shaderType );
+		if( shaderIter == mShaderStageMap.end() ) {
+			mShaderStageMap.emplace( shaderType, shader );
+		}
+		else {
+			shaderIter->second = shader;
+		}
 	}
-	else
-		mVertexShader.clear();
-
+	else {
+		if( mShaderStageMap.find( shaderType ) != mShaderStageMap.end() ) {
+			mShaderStageMap.erase( shaderType );
+		}
+	}
 	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::shaderStage( const char *source, GLint shaderType )
+{
+	if( source ) {
+		auto shaderIter = mShaderStageMap.find( shaderType );
+		if( shaderIter == mShaderStageMap.end() ) {
+			mShaderStageMap.emplace( shaderType, std::string( source ) );
+		}
+		else {
+			shaderIter->second = std::string( source );
+		}
+	}
+	else {
+		if( mShaderStageMap.find( shaderType ) != mShaderStageMap.end() ) {
+			mShaderStageMap.erase( shaderType );
+		}
+	}
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
+{
+	return shaderStage( dataSource, GL_VERTEX_SHADER );
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const char *vertexShader )
 {
-	if( vertexShader )
-		mVertexShader = string( vertexShader );
-	else
-		mVertexShader.clear();
-
-	return *this;
+	return shaderStage( vertexShader, GL_VERTEX_SHADER );
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mFragmentShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mFragmentShader.data(), buffer.getData(), buffer.getDataSize() );
-		mFragmentShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mFragmentShader.clear();
-		
-	return *this;
+	return shaderStage( dataSource, GL_FRAGMENT_SHADER );
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const char *fragmentShader )
 {
-	if( fragmentShader )
-		mFragmentShader = string( fragmentShader );
-	else
-		mFragmentShader.clear();
-
-	return *this;
+	return shaderStage( fragmentShader, GL_FRAGMENT_SHADER );
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mGeometryShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mGeometryShader.data(), buffer.getData(), buffer.getDataSize() );
-		mGeometryShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mGeometryShader.clear();
-		
-	return *this;
+	return shaderStage( dataSource, GL_GEOMETRY_SHADER );
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const char *geometryShader )
 {
-	if( geometryShader ) {
-		mGeometryShader = string( geometryShader );	}
-	else
-		mGeometryShader.clear();
-
-	return *this;
+	return shaderStage( geometryShader, GL_GEOMETRY_SHADER );
 }
 #endif // ! defined( CINDER_GL_ES )
 
@@ -141,6 +142,29 @@ GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attrib, GLint l
 {
 	mAttribSemanticLocMap[attrib] = location;
 	return *this;
+}
+
+const char*	GlslProg::Format::getShaderSource( GLint shaderType ) const
+{
+	auto iter = mShaderStageMap.find( shaderType );
+	if( iter != mShaderStageMap.end() ) {
+		return iter->second.c_str();
+	}
+	return nullptr;
+}
+
+const char*	GlslProg::Format::getVertex() const
+{
+	return getShaderSource( GL_VERTEX_SHADER );
+}
+const char*	GlslProg::Format::getFragment() const
+{
+	return getShaderSource( GL_FRAGMENT_SHADER );
+}
+
+const char*	GlslProg::Format::getGeometry() const
+{
+	return getShaderSource( GL_GEOMETRY_SHADER );
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -182,14 +206,9 @@ GlslProg::GlslProg( const Format &format )
 {
 	mHandle = glCreateProgram();
 	
-	if( ! format.getVertex().empty() )
-		loadShader( format.getVertex(), GL_VERTEX_SHADER );
-	if( ! format.getFragment().empty() )
-		loadShader( format.getFragment(), GL_FRAGMENT_SHADER );
-#if ! defined( CINDER_GL_ES )
-	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
-#endif
+	auto const &shaderStageMap = format.getShaderStages();
+	for( auto const &shaderStagePair : shaderStageMap )
+		loadShader( shaderStagePair.second, shaderStagePair.first );
 
 	// copy the Format's attribute-semantic map
 	for( auto &attribSemantic : format.getAttribSemantics() )
