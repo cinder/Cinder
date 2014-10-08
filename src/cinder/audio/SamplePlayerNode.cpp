@@ -39,6 +39,7 @@ SamplePlayerNode::SamplePlayerNode( const Format &format )
 	: InputNode( format ), mNumFrames( 0 ), mReadPos( 0 ), mLoop( false ),
 		mLoopBegin( 0 ), mLoopEnd( 0 )
 {
+	setChannelMode( ChannelMode::SPECIFIED );
 }
 
 void SamplePlayerNode::start()
@@ -117,7 +118,6 @@ BufferPlayerNode::BufferPlayerNode( const BufferRef &buffer, const Format &forma
 	mNumFrames = mLoopEnd = numFrames;
 
 	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( mBuffer->getNumChannels() );
 }
 
@@ -213,20 +213,18 @@ void BufferPlayerNode::process( Buffer *buffer )
 FilePlayerNode::FilePlayerNode( const Format &format )
 	: SamplePlayerNode( format ), mRingBufferPaddingFactor( 2 ), mLastUnderrun( 0 ), mLastOverrun( 0 ), mIsReadAsync( true )
 {
-	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
 }
 
 FilePlayerNode::FilePlayerNode( const SourceFileRef &sourceFile, bool isReadAsync, const Format &format )
 	: SamplePlayerNode( format ), mSourceFile( sourceFile ), mIsReadAsync( isReadAsync ), mRingBufferPaddingFactor( 2 ),
 		mLastUnderrun( 0 ), mLastOverrun( 0 )
 {
-	if( mSourceFile )
+	if( mSourceFile ) {
 		mNumFrames = mSourceFile->getNumFrames();
 
-	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
-	setNumChannels( mSourceFile->getNumChannels() );
+		// force channel mode to match buffer
+		setNumChannels( mSourceFile->getNumChannels() );
+	}
 }
 
 FilePlayerNode::~FilePlayerNode()

@@ -40,6 +40,7 @@ typedef std::shared_ptr<class FilePlayerNode>				FilePlayerNodeRef;
 //! \brief Base Node class for sampled audio playback. Can do operations like seek and loop.
 //!
 //! SamplePlayerNode itself doesn't process any audio, but contains the common interface for InputNode's that do.
+//! The ChannelMode is set to Node::ChannelMode::SPECIED and it always matches the sample's number of channels (or is equal to 1 if there is no source).
 //! \see BufferPlayerNode, FilePlayerNode
 class SamplePlayerNode : public InputNode {
   public:
