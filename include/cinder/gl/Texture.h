@@ -139,9 +139,9 @@ class TextureBase {
 		void	setInternalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; }
 		//! Sets the Texture's internal format to be automatically selected based on the context.
 		void	setAutoInternalFormat() { mInternalFormat = -1; }
-		
+		//! Corresponds to the 'format' parameter of glTexImage*(). Defaults to match the internalFormat (a value of \c -1)
 		void	setPixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; }
-			
+		//! Corresponds to the 'type' parameter of glTexImage*(). Defaults to \c GL_UNSIGNED_BYTE	
 		void	setPixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; }
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
@@ -174,10 +174,10 @@ class TextureBase {
 		//! Returns whether the Texture's internal format will be automatically selected based on the context.
 		bool	isAutoInternalFormat() const { return mInternalFormat == -1; }
 		
-		//! Returns the Texture's pixel format. A value of -1 implies automatic selection of the pixel format based on the context.
-		GLenum	getPixelDataFormat() const { return mPixelDataFormat; }
-		//! Returns the Texture's data type. A value of -1 implies automatic selection of the data type based on the context.
-		GLint	getPixelDataType() const { return mInternalFormat; }
+		//! Returns the Texture's pixel format as passed to glTexImage*() calls. A value of -1 implies automatic selection of the pixel format based on the context.
+		GLint	getPixelDataFormat() const { return mPixelDataFormat; }
+		//! Returns the Texture's data type as passed to glTexImage*() calls.
+		GLenum	getPixelDataType() const { return mPixelDataType; }
 		
 		//! Returns the horizontal wrapping behavior for the texture coordinates.
 		GLenum	getWrapS() const { return mWrapS; }
@@ -356,7 +356,7 @@ class Texture2d : public TextureBase {
 #endif
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
 		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
-		//! Corresponds to the 'format' parameter of glTexImage*(). Defaults to match the internalFormat
+		//! Corresponds to the 'format' parameter of glTexImage*(). Defaults to match the internalFormat (a value of \c -1)
 		Format& pixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; return *this; }
 		//! Corresponds to the 'type' parameter of glTexImage*(). Defaults to \c GL_UNSIGNED_BYTE
 		Format& pixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; return *this; }
