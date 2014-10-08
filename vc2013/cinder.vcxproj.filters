@@ -744,6 +744,9 @@
     <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererAngle.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1582,6 +1585,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h">
+      <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
