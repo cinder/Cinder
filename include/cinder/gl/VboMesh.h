@@ -248,6 +248,11 @@ class VboMesh {
 	MappedAttrib<T>		mapAttribImpl( geom::Attrib attr, int dims, bool orphanExisting );
 	void				unmapVboImpl( const VboRef &vbo );
 
+	struct MappedVboInfo {
+		size_t		mRefCount;
+		void		*mPtr;
+	};
+
 	std::map<VboRef,MappedVboInfo>		mMappedVbos;
 #endif
 	
@@ -257,11 +262,6 @@ class VboMesh {
 
 	std::vector<std::pair<geom::BufferLayout,VboRef>>	mVertexArrayVbos;
 	VboRef												mIndices;
-
-	struct MappedVboInfo {
-		size_t		mRefCount;
-		void		*mPtr;
-	};
 	
 	friend class VboMeshGeomTarget;
 };
