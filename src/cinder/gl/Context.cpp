@@ -177,7 +177,7 @@ void Context::makeCurrent() const
 	}
 #else
 	if( sThreadSpecificCurrentContext != this ) {
-	sThreadSpecificCurrentContext = const_cast<Context*>( this );
+		sThreadSpecificCurrentContext = const_cast<Context*>( this );
 		env()->makeContextCurrent( this );
 	}
 #endif

@@ -343,6 +343,7 @@ void VboMesh::bufferIndices( size_t dataSizeBytes, const void *data )
 	mIndices->bufferSubData( 0, dataSizeBytes, data );
 }
 
+#if ! defined( CINDER_GL_ANGLE )
 template<typename T>
 VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bool orphanExisting )
 {
@@ -451,6 +452,8 @@ void VboMesh::unmapVboImpl( const VboRef &vbo )
 	else
 		CI_LOG_E( "Attempto unmap VboMesh::MappedAttrib that was never mapped." );
 }
+
+#endif // ! defined( CINDER_GL_ANGLE )
 
 std::vector<VboRef>	VboMesh::getVertexArrayVbos()
 {

@@ -111,6 +111,7 @@ class VboMesh {
 
 	void		bufferIndices( size_t dataSizeBytes, const void *data );
 
+#if ! defined( CINDER_GL_ANGLE )
 	class MappedAttribBase {
 	  public:
 		//! Must be called before object is destructed.
@@ -215,6 +216,7 @@ class VboMesh {
 	MappedAttrib<vec3>		mapAttrib3f( geom::Attrib attr, bool orphanExisting = true );
 	//! Must call unmap() on the result. Throws ExcMissingAttrib if the VboMesh doesn't contain \a attr.
 	MappedAttrib<vec4>		mapAttrib4f( geom::Attrib attr, bool orphanExisting = true );
+#endif // ! defined( CINDER_GL_ES )
 
 	//! Issues a glDraw* call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawImpl();
@@ -241,9 +243,13 @@ class VboMesh {
 
 	void	echoVertices( std::ostream &os, const std::vector<uint32_t> &indices, bool printElements );
 
+#if ! defined( CINDER_GL_ANGLE )
 	template<typename T>
 	MappedAttrib<T>		mapAttribImpl( geom::Attrib attr, int dims, bool orphanExisting );
 	void				unmapVboImpl( const VboRef &vbo );
+
+	std::map<VboRef,MappedVboInfo>		mMappedVbos;
+#endif
 	
 	uint32_t			mNumVertices, mNumIndices;
 	GLenum				mGlPrimitive;
@@ -256,7 +262,6 @@ class VboMesh {
 		size_t		mRefCount;
 		void		*mPtr;
 	};
-	std::map<VboRef,MappedVboInfo>		mMappedVbos;
 	
 	friend class VboMeshGeomTarget;
 };

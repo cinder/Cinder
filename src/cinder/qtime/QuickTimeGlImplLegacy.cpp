@@ -161,7 +161,9 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 	
 	if( ! mTextureCache ) {
 		gl::Texture::Format format;
+#if ! defined( CINDER_GL_ES )
 		format.setTargetRect();
+#endif
 		format.loadTopDown();
 		mTextureCache = gl::Texture2dCache::create( Surface8u( ptr, width, height, rowBytes, sco ), format );
 	}
