@@ -4,6 +4,7 @@ out vec4 oColor;
 
 in vec4 TesColor;
 
-void main () {
+void main ()
+{
 	oColor = TesColor;
 }

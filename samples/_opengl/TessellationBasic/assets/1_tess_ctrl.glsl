@@ -10,10 +10,11 @@ out vec4 TcsColor[];
 // To evaluation shader. will be used to guide positioning of generated points
 out vec3 EvaluationPointWorld[];
 
-uniform float uTessLevelInner = 4.0; // controlled by keyboard buttons
-uniform float uTessLevelOuter = 4.0; // controlled by keyboard buttons
+uniform float uTessLevelInner = 4.0;
+uniform float uTessLevelOuter = 4.0;
 
-void main () {
+void main ()
+{
 	EvaluationPointWorld[gl_InvocationID] = ControlPointWorld[gl_InvocationID];
 	TcsColor[gl_InvocationID] = VsColor[gl_InvocationID];
 	

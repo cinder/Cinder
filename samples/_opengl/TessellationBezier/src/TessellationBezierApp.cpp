@@ -53,7 +53,7 @@ void TessellationBezierApp::mouseDown( MouseEvent event )
 {
 	mSelectedIndex = -1;
 	for( size_t i = 0; i < NUM_POINTS; ++i )
-		if( distance( vec2( event.getPos() ), mVertices[i] ) < 7.0f )
+		if( glm::distance( vec2( event.getPos() ), mVertices[i] ) < 7.0f )
 			mSelectedIndex = i;
 }
 
@@ -88,4 +88,4 @@ void TessellationBezierApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( TessellationBezierApp, RendererGl )
+CINDER_APP_NATIVE( TessellationBezierApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
