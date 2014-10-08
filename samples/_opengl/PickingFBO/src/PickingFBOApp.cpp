@@ -2,7 +2,6 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/Shader.h"
-#include "cinder/gl/Pbo.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/MayaCamUI.h"
@@ -17,7 +16,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class PickingPBOApp : public AppNative {
+class PickingFBOApp : public AppNative {
   public:
 	virtual void setup() override;
 	virtual void resize() override;
@@ -68,7 +67,7 @@ class PickingPBOApp : public AppNative {
 	params::InterfaceGlRef		mParams;
 };
 
-void PickingPBOApp::setup()
+void PickingFBOApp::setup()
 {
 	mDefaultVertexColor = vec4( 0.7f, 0.3f, 0.7f, 1.0f );
 	mDefaultEdgeColor = vec4( 0.3f, 0.7f, 0.9f, 1.0f );
@@ -102,7 +101,7 @@ void PickingPBOApp::setup()
 	gl::enableDepthRead();
 }
 
-void PickingPBOApp::resize()
+void PickingFBOApp::resize()
 {
 	CameraPersp cam( mMayaCam.getCamera() );
 	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
@@ -112,7 +111,7 @@ void PickingPBOApp::resize()
 	mNeedsRedraw = true;
 }
 
-void PickingPBOApp::draw()
+void PickingFBOApp::draw()
 {
 	if( mNeedsRedraw )
 		renderScene();
@@ -129,7 +128,7 @@ void PickingPBOApp::draw()
 	gl::enableDepthRead();
 }
 
-void PickingPBOApp::renderScene()
+void PickingFBOApp::renderScene()
 {
 	gl::ScopedFramebuffer scopedFbo( mFbo );
 	gl::clear( ci::ColorA( 0.0f, 0.0f, 0.0f, 0.0f ) );
@@ -158,7 +157,7 @@ void PickingPBOApp::renderScene()
 	mNeedsRedraw = false;
 }
 
-void PickingPBOApp::mouseDown( MouseEvent event )
+void PickingFBOApp::mouseDown( MouseEvent event )
 {
 	restoreDefaultColors();
 
@@ -174,13 +173,13 @@ void PickingPBOApp::mouseDown( MouseEvent event )
 	mNeedsRedraw = true;
 }
 
-void PickingPBOApp::mouseDrag( MouseEvent event )
+void PickingFBOApp::mouseDrag( MouseEvent event )
 {
 	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 	mNeedsRedraw = true;
 }
 
-int PickingPBOApp::pick( const ivec2 &mousePos )
+int PickingFBOApp::pick( const ivec2 &mousePos )
 {
 	// read the surrounding region where the user has clicked and iterate the pixels, counting the most common index
 	Surface8u pixels = mFbo->readPixels8u( Area( mousePos - ivec2( mPickPixelSize / 2 ), mousePos + ivec2( mPickPixelSize / 2 ) ), GL_COLOR_ATTACHMENT1 );
@@ -210,14 +209,14 @@ int PickingPBOApp::pick( const ivec2 &mousePos )
 	return selectedIndex;
 }
 
-void PickingPBOApp::setupParams()
+void PickingFBOApp::setupParams()
 {
 	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 60 ) );
 	mParams->addParam( "Select Vertices", &mSelectVertices ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
 	mParams->addParam( "Select Edges", &mSelectEdges ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
 }
 
-void PickingPBOApp::setupGeometry()
+void PickingFBOApp::setupGeometry()
 {
 	// Setup wire frame cube.
 	std::array<vec3, 8> vertexPositions = {
@@ -268,7 +267,7 @@ void PickingPBOApp::setupGeometry()
 	setPickingColors( mSelectVertices, mSelectEdges );
 }
 
-void PickingPBOApp::setupGrid( int xSize, int zSize, int spacing )
+void PickingFBOApp::setupGrid( int xSize, int zSize, int spacing )
 {
 	CI_ASSERT( ( spacing <= xSize ) && ( spacing <= zSize ) );
 
@@ -305,7 +304,7 @@ void PickingPBOApp::setupGrid( int xSize, int zSize, int spacing )
 	}// end for each z dir line
 }
 
-void PickingPBOApp::setupGradient()
+void PickingFBOApp::setupGradient()
 {
 	const Colorf topColor( 0.50f, 0.50f, 0.50f );
 	const Colorf bottomColor( 0.25f, 0.25f, 0.25f );
@@ -314,14 +313,14 @@ void PickingPBOApp::setupGradient()
 	mGradientMesh = gl::Batch::create( rectSource, mNotPickableProg );
 }
 
-void PickingPBOApp::setupFbo()
+void PickingFBOApp::setupFbo()
 {
 	gl::Fbo::Format fmt;
 	fmt.attachment( GL_COLOR_ATTACHMENT1, gl::Renderbuffer::create( getWindowWidth(), getWindowHeight() ) );
 	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), fmt );
 }
 
-void PickingPBOApp::setupShader()
+void PickingFBOApp::setupShader()
 {
 	try {
 		mPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "pickable.vs.glsl" ) )
@@ -342,17 +341,17 @@ void PickingPBOApp::setupShader()
 	}
 }
 
-uint32_t PickingPBOApp::colorToIndex( const ci::ColorA8u &color )
+uint32_t PickingFBOApp::colorToIndex( const ci::ColorA8u &color )
 {
 	return ((color.a << 24) | (color.r << 16) | (color.g << 8) | (color.b));
 }
 
-ci::ColorA8u PickingPBOApp::indexToColor( uint32_t index )
+ci::ColorA8u PickingFBOApp::indexToColor( uint32_t index )
 {
 	return ci::ColorA8u( ( ( index >> 16 ) & 0xFF ), ( ( index >> 8 ) & 0xFF ), ( index & 0xFF ), ( ( index >> 24 ) & 0xFF ) );
 }
 
-vec4 PickingPBOApp::colorToVec4( const ColorA8u &color )
+vec4 PickingFBOApp::colorToVec4( const ColorA8u &color )
 {
 	return vec4( static_cast<float>( color.r ) / 255.0f,
 		static_cast<float>( color.g ) / 255.0f,
@@ -360,7 +359,7 @@ vec4 PickingPBOApp::colorToVec4( const ColorA8u &color )
 		static_cast<float>( color.a ) / 255.0f );
 }
 
-void PickingPBOApp::setPickingColors( bool selectVertices, bool selectEdges )
+void PickingFBOApp::setPickingColors( bool selectVertices, bool selectEdges )
 {
 	// Set ordered colors picking.
 	uint32_t colorIdx = 1;
@@ -392,7 +391,7 @@ void PickingPBOApp::setPickingColors( bool selectVertices, bool selectEdges )
 	}
 }
 
-void PickingPBOApp::restoreDefaultColors()
+void PickingFBOApp::restoreDefaultColors()
 {
 	// Set edges back to default color.
 	uint32_t numEdgesColors = mEdgesMesh->getNumVertices();
@@ -411,7 +410,7 @@ void PickingPBOApp::restoreDefaultColors()
 	vertexColorIter.unmap();
 }
 
-void PickingPBOApp::setSelectedColors( int selected )
+void PickingFBOApp::setSelectedColors( int selected )
 {
 	if( selected < 0 )
 		return;
@@ -443,4 +442,4 @@ void PickingPBOApp::setSelectedColors( int selected )
 	}
 }
 
-CINDER_APP_NATIVE( PickingPBOApp, RendererGl )
+CINDER_APP_NATIVE( PickingFBOApp, RendererGl )

@@ -24,7 +24,7 @@
     <ClInclude Include="..\include\Resources.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClCompile Include="..\src\PickingPBOApp.cpp">
+    <ClCompile Include="..\src\PickingFBOApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
