@@ -372,11 +372,11 @@ void Node::pullInputs( Buffer *inPlaceBuffer )
 
 	if( mProcessInPlace ) {
 		if( mInputs.empty() ) {
-			// Fastest route: no inputs and process in-place. If disabled, get rid of any previously processsed samples.
+			// Fastest route: no inputs and process in-place. inPlaceBuffer must be cleared so that samples left over
+			// from InputNode's that aren't filling the entire buffer are zero.
+			inPlaceBuffer->zero();
 			if( mEnabled )
 				process( inPlaceBuffer );
-			else
-				inPlaceBuffer->zero();
 		}
 		else {
 			// First pull the input (can only be one when in-place), then run process() if input did any processing.

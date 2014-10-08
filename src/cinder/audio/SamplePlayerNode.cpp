@@ -189,7 +189,6 @@ void BufferPlayerNode::process( Buffer *buffer )
 			mReadPos.store( readBegin + readLeft );
 		}
 		else {
-			buffer->zero( readCount, numFrames - readCount );
 			mIsEof = true;
 			mReadPos = mNumFrames;
 			disable();
@@ -372,12 +371,10 @@ void FilePlayerNode::process( Buffer *buffer )
 			mLastUnderrun = getContext()->getNumProcessedFrames();
 	}
 
-	// zero any unused frames, handle loop or EOF
+	// handle loop or EOF
 	if( readCount < numFrames ) {
 		// TODO: if looping, should fill with samples from the beginning of file
 		// - these should also already be in the ringbuffer, since a seek is done there as well. Rethink this path.
-		buffer->zero( readCount, numFrames - readCount );
-
 		readPos += readCount;
 		if( mLoop && readPos >= mLoopEnd )
 			seekImpl( mLoopBegin );
