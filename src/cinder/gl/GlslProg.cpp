@@ -117,6 +117,54 @@ GlslProg::Format& GlslProg::Format::geometry( const char *geometryShader )
 
 	return *this;
 }
+
+GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
+{
+	if( dataSource ) {
+		Buffer buffer( dataSource );
+		mTessellationCtrlShader.resize( buffer.getDataSize() + 1 );
+		memcpy( (void*)mTessellationCtrlShader.data(), buffer.getData(), buffer.getDataSize() );
+		mTessellationCtrlShader[buffer.getDataSize()] = 0;
+	}
+	else
+		mTessellationCtrlShader.clear();
+	
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::tessellationCtrl( const char *tessellationCtrlShader )
+{
+	if( tessellationCtrlShader ) {
+		mTessellationCtrlShader = string( tessellationCtrlShader );	}
+	else
+		mTessellationCtrlShader.clear();
+	
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataSource )
+{
+	if( dataSource ) {
+		Buffer buffer( dataSource );
+		mTessellationEvalShader.resize( buffer.getDataSize() + 1 );
+		memcpy( (void*)mTessellationEvalShader.data(), buffer.getData(), buffer.getDataSize() );
+		mTessellationEvalShader[buffer.getDataSize()] = 0;
+	}
+	else
+		mTessellationEvalShader.clear();
+	
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::tessellationEval( const char *tessellationEvalShader )
+{
+	if( tessellationEvalShader ) {
+		mTessellationEvalShader = string( tessellationEvalShader );	}
+	else
+		mTessellationEvalShader.clear();
+	
+	return *this;
+}
 #endif // ! defined( CINDER_GL_ES )
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
@@ -159,6 +207,18 @@ GlslProgRef GlslProg::create( const Format &format )
 	return GlslProgRef( new GlslProg( format ) );
 }
 
+#if ! defined( CINDER_GL_ES )
+GlslProgRef GlslProg::create( DataSourceRef vertexShader, DataSourceRef fragmentShader, DataSourceRef geometryShader, DataSourceRef tessEvalShader, DataSourceRef tessCtrlShader )
+{
+	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ).geometry( geometryShader ).tessellationEval( tessEvalShader ).tessellationCtrl( tessCtrlShader ) ) );
+}
+
+GlslProgRef GlslProg::create( const char *vertexShader, const char *fragmentShader, const char *geometryShader, const char *tessEvalShader, const char *tessCtrlShader )
+{
+	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ).geometry( geometryShader ).tessellationEval( tessEvalShader ).tessellationCtrl( tessCtrlShader ) ) );
+}
+	
+#else
 GlslProgRef GlslProg::create( DataSourceRef vertexShader, DataSourceRef fragmentShader )
 {
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ) ) );
@@ -168,6 +228,8 @@ GlslProgRef GlslProg::create( const char *vertexShader, const char *fragmentShad
 {
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ) ) );
 }
+	
+#endif
 	
 GlslProg::~GlslProg()
 {
@@ -197,6 +259,10 @@ GlslProg::GlslProg( const Format &format )
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
 		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
+	if( ! format.getTessellationCtrl().empty() )
+		loadShader( format.getTessellationCtrl(), GL_TESS_CONTROL_SHADER );
+	if( ! format.getTessellationEval().empty() )
+		loadShader( format.getTessellationEval(), GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map
