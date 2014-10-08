@@ -1,4 +1,3 @@
-
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -17,10 +16,12 @@ class TessellationShaderApp : public AppNative {
   public:
 	void setup() override;
 	void draw() override;
+
   private:
 	gl::GlslProgRef			mGlsl;
 	float					mRadius;
 	params::InterfaceGlRef	mParams;
+	gl::VertBatchRef		mBatch;
 	
 	int mTessLevelInner;
 	int mTessLevelOuter;
@@ -29,9 +30,9 @@ class TessellationShaderApp : public AppNative {
 void TessellationShaderApp::setup()
 {
 	mTessLevelInner = mTessLevelOuter = 4;
-	int max_patch_vertices = 0;
-	glGetIntegerv( GL_MAX_PATCH_VERTICES, &max_patch_vertices );
-	app::console() << "Max supported patch vertices " << max_patch_vertices << std::endl;
+	int maxPatchVertices = 0;
+	glGetIntegerv( GL_MAX_PATCH_VERTICES, &maxPatchVertices );
+	app::console() << "Max supported patch vertices " << maxPatchVertices << std::endl;
 	
 	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 200 ) );
 	mRadius = 200.0f;
@@ -46,12 +47,20 @@ void TessellationShaderApp::setup()
 									 .tessellationEval( loadAsset( "2_tess_eval.glsl" ) )
 									 .fragment( loadAsset( "3_frag.glsl" ) ) );
 	}
-	catch( gl::GlslProgCompileExc ex ) {
+	catch( const gl::GlslProgCompileExc &ex ) {
 		cout << ex.what() << endl;
 		shutdown();
 	}
 	
-	glPatchParameteri( GL_PATCH_VERTICES, 3 );
+	mBatch = gl::VertBatch::create( GL_PATCHES );
+	mBatch->color( 1.0f, 0.0f, 0.0f );
+	mBatch->vertex( vec2( 1, -1 ) );
+	mBatch->color( 0.0f, 1.0f, 0.0f );
+	mBatch->vertex( vec2( 0 , 1 ) );
+	mBatch->color( 0.0f, 0.0f, 1.0f );
+	mBatch->vertex( vec2( -1, -1 ) );
+	
+	gl::patchParameteri( GL_PATCH_VERTICES, 3 );
 }
 
 void TessellationShaderApp::draw()
@@ -63,17 +72,11 @@ void TessellationShaderApp::draw()
 	gl::translate( getWindowCenter() );
 	
 	gl::ScopedGlslProg glslProg( mGlsl );
-	mGlsl->uniform( "tessLevelInner", (float) mTessLevelInner );
-	mGlsl->uniform( "tessLevelOuter", (float) mTessLevelOuter );
+	mGlsl->uniform( "uTessLevelInner", (float)mTessLevelInner );
+	mGlsl->uniform( "uTessLevelOuter", (float)mTessLevelOuter );
+	mGlsl->uniform( "uRadius", mRadius );	
 	
-	auto triangle = gl::VertBatch::create( GL_PATCHES );
-	triangle->color( 1.0f, 0.0f, 0.0f );
-	triangle->vertex( vec2( mRadius, -mRadius ) );
-	triangle->color( 0.0f, 1.0f, 0.0f );
-	triangle->vertex( vec2( 0 , mRadius ) );
-	triangle->color( 0.0f, 0.0f, 1.0f );
-	triangle->vertex( vec2( -mRadius, -mRadius ) );
-	triangle->draw();
+	mBatch->draw();
 	
 	gl::disableWireframe();
 	mParams->draw();

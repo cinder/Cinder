@@ -1,9 +1,9 @@
 #version 400
 
-out vec4 fragcolour;
+out vec4 oColor;
 
-in vec4 tes_color;
+in vec4 TesColor;
 
 void main () {
-	fragcolour = tes_color;
+	oColor = TesColor;
 }

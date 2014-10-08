@@ -3,23 +3,23 @@
 // number of control points in patch
 layout (vertices = 3) out;
 
-in vec3 controlpoint_world[];
-in  vec4 vs_color[];
-out vec4 tcs_color[];
+in vec3 ControlPointWorld[];
+in vec4 VsColor[];
+out vec4 TcsColor[];
 
 // To evaluation shader. will be used to guide positioning of generated points
-out vec3 evaluationpoint_world[];
+out vec3 EvaluationPointWorld[];
 
-uniform float tessLevelInner = 4.0; // controlled by keyboard buttons
-uniform float tessLevelOuter = 4.0; // controlled by keyboard buttons
+uniform float uTessLevelInner = 4.0; // controlled by keyboard buttons
+uniform float uTessLevelOuter = 4.0; // controlled by keyboard buttons
 
 void main () {
-	evaluationpoint_world[gl_InvocationID] = controlpoint_world[gl_InvocationID];
-	tcs_color[gl_InvocationID] = vs_color [gl_InvocationID];
+	EvaluationPointWorld[gl_InvocationID] = ControlPointWorld[gl_InvocationID];
+	TcsColor[gl_InvocationID] = VsColor[gl_InvocationID];
 	
 	// Calculate the tessellation levels
-	gl_TessLevelInner[0] = tessLevelInner; // number of nested primitives to generate
-	gl_TessLevelOuter[0] = tessLevelOuter; // times to subdivide first side
-	gl_TessLevelOuter[1] = tessLevelOuter; // times to subdivide second side
-	gl_TessLevelOuter[2] = tessLevelOuter; // times to subdivide third side
+	gl_TessLevelInner[0] = uTessLevelInner; // number of nested primitives to generate
+	gl_TessLevelOuter[0] = uTessLevelOuter; // times to subdivide first side
+	gl_TessLevelOuter[1] = uTessLevelOuter; // times to subdivide second side
+	gl_TessLevelOuter[2] = uTessLevelOuter; // times to subdivide third side
 }

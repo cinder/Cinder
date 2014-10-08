@@ -3,11 +3,12 @@
 in vec4 ciPosition;
 in vec4 ciColor;
 
-out vec3 controlpoint_world;
-out vec4 vs_color;
+uniform float uRadius;
+
+out vec3 ControlPointWorld;
+out vec4 VsColor;
 
 void main () {
-	controlpoint_world = ciPosition.xyz; // control points out == vertex points in
-	vs_color = ciColor;
+	ControlPointWorld = ciPosition.xyz * uRadius; // control points out == vertex points in
+	VsColor = ciColor;
 }
-
