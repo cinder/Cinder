@@ -150,6 +150,7 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	// so we accept it too and try to Initialize() optimistically.
 	if( hr == S_FALSE ) {
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
+		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
 
 		// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
 		if( closestMatch->wFormatTag != wfx->wFormatTag )
@@ -163,8 +164,6 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		wfx->nAvgBytesPerSec = closestMatch->nAvgBytesPerSec;
 		wfx->nBlockAlign = closestMatch->nBlockAlign;
 		wfx->wBitsPerSample = closestMatch->wBitsPerSample;
-
-		::CoTaskMemFree( closestMatch );
 	}
 	else if( hr != S_OK && hr != AUDCLNT_E_UNSUPPORTED_FORMAT ) {
 		throw AudioExc( "Format unsupported by IAudioClient", (int32_t)hr );
