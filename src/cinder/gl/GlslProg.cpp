@@ -1010,6 +1010,14 @@ GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint aShaderTyp
 		mMessage = "VERTEX: " + log;
 	else if( mShaderType == GL_FRAGMENT_SHADER )
 		mMessage = "FRAGMENT: " + log;
+#if ! defined( CINDER_GL_ES )
+	else if( mShaderType == GL_GEOMETRY_SHADER )
+		mMessage = "GEOMETRY: " + log;
+	else if( mShaderType == GL_TESS_CONTROL_SHADER )
+		mMessage = "TESSELLATION CONTROL: " + log;
+	else if( mShaderType == GL_TESS_EVALUATION_SHADER )
+		mMessage = "TESSELLATION EVALUATION: " + log;
+#endif		
 	else
 		mMessage = "UNKNOWN: " + log;
 }
