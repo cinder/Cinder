@@ -152,12 +152,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	static GlslProgRef create( const Format &format );
 
 #if ! defined( CINDER_GL_ES )
-		static GlslProgRef create( DataSourceRef vertexShader,
+	static GlslProgRef create( DataSourceRef vertexShader,
 								   DataSourceRef fragmentShader = DataSourceRef(),
 								   DataSourceRef geometryShader = DataSourceRef(),
 								   DataSourceRef tessEvalShader = DataSourceRef(),
 								   DataSourceRef tessCtrlShader = DataSourceRef() );
-		static GlslProgRef create( const char *vertexShader,
+	static GlslProgRef create( const char *vertexShader,
 								   const char *fragmentShader = 0,
 								   const char *geometryShader = 0,
 								   const char *tessEvalShader = 0,
