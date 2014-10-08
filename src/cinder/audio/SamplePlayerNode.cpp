@@ -181,16 +181,17 @@ void BufferPlayerNode::loadBuffer( const SourceFileRef &sourceFile )
 
 void BufferPlayerNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	size_t readPos = mReadPos;
-	size_t numFrames = buffer->getNumFrames();
+	size_t numFrames = frameRange.second - frameRange.first;
 	size_t readEnd = mLoop ? mLoopEnd.load() : mNumFrames;
 	size_t readCount = readEnd < readPos ? 0 : min( readEnd - readPos, numFrames );
 
-	buffer->copyOffset( *mBuffer, readCount, 0, readPos );
+	buffer->copyOffset( *mBuffer, readCount, frameRange.first, readPos );
 
 	if( readCount < numFrames  ) {
-		// End of File. If looping copy from beginning, otherwise zero the remainder, disable and mark the mIsEof.
-
+		// End of File. If looping copy from beginning, otherwise disable and mark the mIsEof.
 		if( mLoop ) {
 			size_t readBegin = mLoopBegin;
 			size_t readLeft = min( numFrames - readCount, mNumFrames - readBegin );
