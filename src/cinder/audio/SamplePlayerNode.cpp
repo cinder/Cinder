@@ -141,10 +141,6 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 {
 	lock_guard<mutex> lock( getContext()->getMutex() );
 
-	bool wasEnabled = isEnabled();
-	if( wasEnabled )
-		disable();
-
 	if( buffer ) {
 		if( getNumChannels() != buffer->getNumChannels() ) {
 			setNumChannels( buffer->getNumChannels() );
@@ -160,9 +156,6 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 
 	if( ! mLoopEnd || mLoopEnd > mNumFrames )
 		mLoopEnd = mNumFrames;
-
-	if( wasEnabled )
-		enable();
 }
 
 void BufferPlayerNode::loadBuffer( const SourceFileRef &sourceFile )
