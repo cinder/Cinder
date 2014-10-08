@@ -260,7 +260,13 @@ void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
 void beginTransformFeedback( GLenum primitiveMode );
 void endTransformFeedback();
 void resumeTransformFeedback();
-void pauseTransformFeedback();	
+void pauseTransformFeedback();
+
+// Tesselation
+//! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameteri().
+void patchParameteri( GLenum pname, GLint value );
+//! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameterfv().
+void patchParameterfv( GLenum pname, GLfloat *value );
 #endif
 	
 void color( float r, float g, float b );
