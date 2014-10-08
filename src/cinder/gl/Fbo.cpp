@@ -125,7 +125,9 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 
 Renderbuffer::~Renderbuffer()
 {
-	context()->renderbufferDeleted( this );
+	auto ctx = context();
+	if( ctx )
+		ctx->renderbufferDeleted( this );
 	
 	if( mId )
 		glDeleteRenderbuffers( 1, &mId );
