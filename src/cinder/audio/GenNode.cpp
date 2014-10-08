@@ -81,21 +81,22 @@ void GenNoiseNode::process( Buffer *buffer )
 
 void GenSineNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	float *data = buffer->getData();
-	const size_t count = buffer->getSize();
 	const float samplePeriod = mSamplePeriod;
 	float phase = mPhase;
 
 	if( mFreq.eval() ) {
 		const float *freqValues = mFreq.getValueArray();
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
 			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
 			phase = fract( phase + phaseIncr );
 		}

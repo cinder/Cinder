@@ -54,6 +54,16 @@ void SamplePlayerNode::stop()
 	seek( 0 );
 }
 
+void SamplePlayerNode::start( double when )
+{
+	getContext()->schedule( when, shared_from_this(), true, [this] { start(); } );
+}
+
+void SamplePlayerNode::stop( double when )
+{
+	getContext()->schedule( when, shared_from_this(), false, [this] { stop(); } );
+}
+
 void SamplePlayerNode::setLoopBegin( size_t positionFrames )
 {
 	mLoopBegin = positionFrames < mLoopEnd ? positionFrames : mLoopEnd.load();

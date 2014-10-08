@@ -492,8 +492,9 @@ void OutputDeviceNodeWasapi::renderInputs()
 	if( ! ctx )
 		return;
 
-	auto internalBuffer = getInternalBuffer();
+	ctx->preProcess();
 
+	auto internalBuffer = getInternalBuffer();
 	internalBuffer->zero();
 	pullInputs( internalBuffer );
 

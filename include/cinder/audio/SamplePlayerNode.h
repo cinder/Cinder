@@ -48,11 +48,15 @@ class SamplePlayerNode : public InputNode {
 
 	//! Starts playing the sample from the beginning.
 	virtual void start();
+	//! Starts playing the sample at \a when seconds, measured against Context::getNumProcessedSeconds().
+	void start( double when );
 	//! Stops playing the sample, returns the read position to the beginning and disables processing.
 	virtual void stop();
+	//! Stops playing the sample at \a when seconds, measured against Context::getNumProcessedSeconds().
+	void stop( double when );
+
 	//! Seek the read position to \a readPositionFrames.
 	virtual void seek( size_t positionFrames ) = 0;
-
 	//! Seek to read position \a readPositionSeconds,
 	void seekToTime( double positionSeconds );
 	//! Returns the current read position in frames.

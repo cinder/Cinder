@@ -183,12 +183,31 @@ void Node::disable()
 	disableProcessing();
 }
 
+void Node::enable( double when )
+{
+	getContext()->schedule( when, shared_from_this(), true, [this] { enable(); } );
+}
+
+void Node::disable( double when )
+{
+	getContext()->schedule( when, shared_from_this(), false, [this] { disable(); } );
+}
+
 void Node::setEnabled( bool b )
 {
 	if( b )
 		enable();
 	else
 		disable();
+}
+
+
+void Node::setEnabled( bool b, double when )
+{
+	if( b )
+		enable( when );
+	else
+		disable( when );
 }
 
 size_t Node::getNumConnectedInputs() const
@@ -224,6 +243,9 @@ void Node::initializeImpl()
 
 	if( mProcessInPlace && ! supportsProcessInPlace() )
 		setupProcessWithSumming();
+
+	mProcessFramesRange.first = 0;
+	mProcessFramesRange.second = getFramesPerBlock();
 
 	initialize();
 	mInitialized = true;
