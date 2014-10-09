@@ -143,19 +143,30 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 #endif
 
 	// Swizzle mask
-#if ! defined( CINDER_GL_ES_2 )
+#if ! defined( CINDER_GL_ES )
 	if( supportsHardwareSwizzle() ) {
 		if( format.mSwizzleMask[0] != GL_RED || format.mSwizzleMask[1] != GL_GREEN || format.mSwizzleMask[2] != GL_BLUE || format.mSwizzleMask[3] != GL_ALPHA )
 			glTexParameteriv( mTarget, GL_TEXTURE_SWIZZLE_RGBA, format.mSwizzleMask.data() );
 	}
+#elif defined( CINDER_GL_ES_3 )
+	if( format.mSwizzleMask[0] != GL_RED )
+		glTexParameteri( mTarget, GL_TEXTURE_SWIZZLE_R, format.mSwizzleMask[0] );
+	if( format.mSwizzleMask[1] != GL_GREEN )
+		glTexParameteri( mTarget, GL_TEXTURE_SWIZZLE_G, format.mSwizzleMask[1] );
+	if( format.mSwizzleMask[2] != GL_BLUE )
+		glTexParameteri( mTarget, GL_TEXTURE_SWIZZLE_B, format.mSwizzleMask[2] );
+	if( format.mSwizzleMask[3] != GL_ALPHA )
+		glTexParameteri( mTarget, GL_TEXTURE_SWIZZLE_A, format.mSwizzleMask[3] );
+#endif
 // Compare Mode and Func for Depth Texture
+#if ! defined( CINDER_GL_ES_2 )
 	if( format.mCompareMode > -1 ) {
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, format.mCompareMode );
 	}
 	if( format.mCompareFunc > -1 ) {
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
 	}
-#else
+
 	if( format.mCompareMode > -1 ) {
 		if( supportsShadowSampler() ) {
 			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, format.mCompareMode );

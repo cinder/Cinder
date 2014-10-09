@@ -44,7 +44,7 @@ typedef std::shared_ptr<FboCubeMap>		FboCubeMapRef;
 class Renderbuffer {
   public:
 	//! Create a Renderbuffer \a width pixels wide and \a heigh pixels high, with an internal format of \a internalFormat, defaulting to GL_RGBA8, MSAA samples \a msaaSamples, and CSAA samples \a coverageSamples
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	static RenderbufferRef create( int width, int height, GLenum internalFormat = GL_RGBA8_OES, int msaaSamples = 0, int coverageSamples = 0 );
 #else
 	static RenderbufferRef create( int width, int height, GLenum internalFormat = GL_RGBA8, int msaaSamples = 0, int coverageSamples = 0 );

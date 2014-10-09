@@ -46,7 +46,7 @@ using namespace std;
 		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-	#elif defined( CINDER_GL_ANGLE )
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
