@@ -111,7 +111,7 @@ class TextureBase {
 	std::array<GLint,4>	getSwizzleMask() const { return mSwizzleMask; }
 	//! Returns whether this hardware supports texture swizzling (via \c GL_TEXTURE_SWIZZLE_RGBA)
 	static bool		supportsHardwareSwizzle();
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	//! Returns whether this hardware supports shadow sampling.
 	static bool		supportsShadowSampler();
 #endif

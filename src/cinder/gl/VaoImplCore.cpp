@@ -24,7 +24,7 @@
 
 #include "cinder/gl/gl.h"
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Context.h"
@@ -166,10 +166,16 @@ void VaoImplCore::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
 	mLayout.vertexAttribDivisor( index, divisor );
 
+#if defined( CINDER_GL_ANGLE )
+	glVertexAttribDivisorANGLE( index, divisor );
+#elif defined( CINDER_GL_ES_3 )
+	glVertexAttribDivisor( index, divisor );
+#else
 	if( glVertexAttribDivisor ) // not always available
 		glVertexAttribDivisor( index, divisor );
 	else if( glVertexAttribDivisorARB )
 		glVertexAttribDivisorARB( index, divisor );
+#endif
 }
 
 void VaoImplCore::reflectBindBufferImpl( GLenum target, GLuint buffer )

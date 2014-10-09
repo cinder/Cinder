@@ -166,7 +166,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 	if( format.mCompareFunc > -1 ) {
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
 	}
-
+#else
 	if( format.mCompareMode > -1 ) {
 		if( supportsShadowSampler() ) {
 			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, format.mCompareMode );
@@ -299,7 +299,7 @@ void TextureBase::setMaxAnisotropy( GLfloat maxAnisotropy )
 
 void TextureBase::setCompareMode( GLenum compareMode )
 {
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, compareMode );
 #else
@@ -315,7 +315,7 @@ void TextureBase::setCompareMode( GLenum compareMode )
 	
 void TextureBase::setCompareFunc( GLenum compareFunc )
 {
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, compareFunc );
 #else
@@ -445,7 +445,7 @@ bool TextureBase::supportsHardwareSwizzle()
 	#endif
 }
 
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 bool TextureBase::supportsShadowSampler()
 {
 	static bool supported = gl::isExtensionAvailable( "GL_EXT_shadow_samplers" );

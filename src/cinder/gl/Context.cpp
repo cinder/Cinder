@@ -1437,17 +1437,25 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawArraysInstancedANGLE( mode, first, count, primcount );
+#else
 	glDrawArraysInstanced( mode, first, count, primcount );
+#endif
 }
 
 void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawElementsInstancedANGLE( mode, count, type, indices, primcount );
+#else
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
+#endif
 }
-#endif // ! defined( CINDER_GL_ES )
+#endif // ! defined( CINDER_GL_ES_2 )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders

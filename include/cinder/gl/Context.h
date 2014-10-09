@@ -330,12 +330,12 @@ class Context {
 	void		drawArrays( GLenum mode, GLint first, GLsizei count );
 	//! Analogous to glDrawElements()
 	void		drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	//! Analogous to glDrawArraysInstanced()
 	void		drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
 	//! Analogous to glDrawElementsInstanced()
 	void		drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount );
-#endif // ! defined( CINDER_GL_ES )
+#endif // ! defined( CINDER_GL_ES_2 )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
 	const ColorAf&	getCurrentColor() const { return mColor; }

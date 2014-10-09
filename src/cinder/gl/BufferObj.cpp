@@ -112,7 +112,7 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE )	
+#if ! defined( CINDER_GL_ANGLE )
 void* BufferObj::map( GLenum access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
@@ -122,11 +122,13 @@ void* BufferObj::map( GLenum access ) const
 	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
 #endif
 }
+#endif
 
+#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return reinterpret_cast<void*>( glMapBufferRangeEXT( mTarget, offset, length, access ) );
 #else
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
@@ -136,7 +138,7 @@ void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield 
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )	
+#if defined( CINDER_GL_ES_2 )	
 	GLboolean result = glUnmapBufferOES( mTarget );
 #else
 	GLboolean result = glUnmapBuffer( mTarget );
@@ -145,7 +147,7 @@ void BufferObj::unmap() const
 		//throw BufferFailedUnmapExc();
 	}
 }
-#endif // ! defined( CINDER_GL_ANGLE )
+#endif // #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 
 size_t BufferObj::getSize() const
 {
