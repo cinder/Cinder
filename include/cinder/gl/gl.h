@@ -26,10 +26,17 @@
 
 #if defined( CINDER_GL_ANGLE )
 	#define GL_GLEXT_PROTOTYPES
-	#include "GLES2/gl2.h"
-	#include "GLES2/gl2ext.h"
 	#define CINDER_GL_ES
-	#define CINDER_GL_ES_2
+	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
+	#if defined( CINDER_GL_ES_2 )
+		#include "GLES2/gl2.h"
+		#include "GLES2/gl2ext.h"
+	#else
+		#include "GLES3/gl3.h"
+		#include "GLES3/gl3ext.h"
+		#include "GLES2/gl2ext.h"
+		#define CINDER_GL_ES_3
+	#endif
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
 #elif ! defined( CINDER_COCOA_TOUCH )
