@@ -53,7 +53,7 @@ using namespace std;
 	#endif
 #endif
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	#define MAX_COLOR_ATTACHMENT	GL_COLOR_ATTACHMENT15
 #else
 	#define MAX_COLOR_ATTACHMENT	GL_COLOR_ATTACHMENT0
