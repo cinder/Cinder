@@ -88,9 +88,6 @@
     <Filter Include="Header Files\dx">
       <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\dx">
-      <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\audio\dsp">
       <UniqueIdentifier>{547d2686-dd07-4302-befa-3d0815504249}</UniqueIdentifier>
     </Filter>
