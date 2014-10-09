@@ -100,7 +100,11 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 		return false;
 
     EGLint contextAttibutes[] = {
+#if defined( CINDER_GL_ES_3 )
+		EGL_CONTEXT_CLIENT_VERSION, 3,
+#else
 		EGL_CONTEXT_CLIENT_VERSION, 2,
+#endif
 		EGL_NONE
     };
 
