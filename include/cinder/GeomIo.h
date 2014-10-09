@@ -28,6 +28,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
+#include "cinder/Color.h"
 
 #include <set>
 #include <vector>
