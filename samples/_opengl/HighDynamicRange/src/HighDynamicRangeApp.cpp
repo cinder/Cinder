@@ -33,9 +33,14 @@ void HighDynamicRangeApp::loadHdr( const fs::path &path )
 void HighDynamicRangeApp::setup()
 {
 	loadHdr( getAssetPath( "Desk_oBA2_scaled.hdr" ) );
-			
+
+#if ! defined( CINDER_GL_ES )
 	mShader = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader.vert" ) )
 																.fragment( loadAsset( "shader.frag" ) ) );
+#else
+	mShader = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader_es2.vert" ) )
+																.fragment( loadAsset( "shader_es2.frag" ) ) );
+#endif
 }
 
 void HighDynamicRangeApp::fileDrop( FileDropEvent event )
