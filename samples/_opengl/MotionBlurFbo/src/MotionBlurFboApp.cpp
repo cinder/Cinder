@@ -43,7 +43,7 @@ void MotionBlurFboApp::setup()
 	mBatch = gl::Batch::create( geom::Cube().enable( geom::Attrib::COLOR ), gl::getStockShader( gl::ShaderDef().color() ) );
 	mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) );
 
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	mAccumFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ),
 		gl::Fbo::Format().colorTexture( gl::Texture::Format().pixelDataType( GL_HALF_FLOAT_OES )
 													.internalFormat( GL_RGB ) ).disableDepth() );
