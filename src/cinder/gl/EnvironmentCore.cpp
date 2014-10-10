@@ -35,16 +35,17 @@ namespace cinder { namespace gl {
 
 class EnvironmentCore : public Environment {
   public:
-	virtual void	initializeFunctionPointers() override;
+	void	initializeFunctionPointers() override;
 
-	virtual bool	isCoreProfile() const override { return true; }
-	virtual bool	isExtensionAvailable( const std::string &extName ) override;
-	virtual bool	supportsHardwareVao() override;
-	virtual void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label );
+	bool	isCoreProfile() const override { return true; }
+	bool	isExtensionAvailable( const std::string &extName ) override;
+	bool	supportsHardwareVao() override;
+	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height ) override;
 
-	virtual std::string		generateVertexShader( const ShaderDef &shader ) override;
-	virtual std::string		generateFragmentShader( const ShaderDef &shader ) override;
-	virtual GlslProgRef		buildShader( const ShaderDef &shader ) override;
+	std::string		generateVertexShader( const ShaderDef &shader ) override;
+	std::string		generateFragmentShader( const ShaderDef &shader ) override;
+	GlslProgRef		buildShader( const ShaderDef &shader ) override;
 };
 
 Environment* allocateEnvironmentCore()
@@ -95,6 +96,14 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 	static auto objectLabelFn = glObjectLabel;
 	if( objectLabelFn )
 		(*objectLabelFn)( identifier, name, length, label );
+}
+
+void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height )
+{
+	static auto texStorage2DFn = ( glTexStorage2D ) ? glTexStorage2D : glTextStorage2DExt;
+	if( texStorage2DFn )
+		texStorage2DFn( target, levels, internalFormat, width, height );
+	else
 }
 
 std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )

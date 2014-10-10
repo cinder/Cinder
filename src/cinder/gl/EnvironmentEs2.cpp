@@ -39,15 +39,16 @@ namespace cinder { namespace gl {
 
 class EnvironmentEs2 : public Environment {
   public:
-	virtual void	initializeFunctionPointers() override;
+	void	initializeFunctionPointers() override;
 
-	virtual bool	isExtensionAvailable( const std::string &extName ) override;
-	virtual bool	supportsHardwareVao() override;
-	virtual void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label );
+	bool	isExtensionAvailable( const std::string &extName ) override;
+	bool	supportsHardwareVao() override;
+	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height ) override;
 
-	virtual std::string		generateVertexShader( const ShaderDef &shader ) override;
-	virtual std::string		generateFragmentShader( const ShaderDef &shader ) override;
-	virtual GlslProgRef		buildShader( const ShaderDef &shader ) override;
+	std::string		generateVertexShader( const ShaderDef &shader ) override;
+	std::string		generateFragmentShader( const ShaderDef &shader ) override;
+	GlslProgRef		buildShader( const ShaderDef &shader ) override;
 };
 
 Environment* allocateEnvironmentEs2()
@@ -100,6 +101,16 @@ void EnvironmentEs2::objectLabel( GLenum identifier, GLuint name, GLsizei length
 #if defined( CINDER_COCOA_TOUCH )
 	glLabelObjectEXT( identifier, name, length, label );
 #endif
+}
+
+void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height )
+{
+#if defined( CINDER_GL_ES_3 )
+	glTexStorage2D( target, levels, internalFormat, width, height );
+#else
+	// both ANGLE and iOS support EXT_texture_storage
+	glTexStorage2DEXT( target, levels, internalFormat, width, height );
+#endif 
 }
 
 std::string	EnvironmentEs2::generateVertexShader( const ShaderDef &shader )

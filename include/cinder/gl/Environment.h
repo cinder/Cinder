@@ -61,6 +61,8 @@ class Environment {
 	virtual bool			isExtensionAvailable( const std::string &extName ) = 0;
 	virtual bool			supportsHardwareVao() = 0;
 
+	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height ) = 0;
+
 	virtual void			objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) = 0;
 
 	virtual std::string		generateVertexShader( const ShaderDef &shader ) = 0;

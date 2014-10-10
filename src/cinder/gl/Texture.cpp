@@ -568,8 +568,14 @@ Texture2d::Texture2d( int width, int height, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, GL_RGBA );
-	initData( (unsigned char*)0, format.mPixelDataFormat, format.mPixelDataType, format );
+	initParams( format, GL_RGBA8 );
+	int mipLevels = 1;
+	if( mMipmapping )
+		mipLevels = getNumMipLevels();
+gl::checkError();
+	env()->allocateTexStorage2d( mTarget, mipLevels, mInternalFormat, width, height );
+gl::checkError();
+//	initData( (unsigned char*)0, format.mPixelDataFormat, format.mPixelDataType, format );
 }
 
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
