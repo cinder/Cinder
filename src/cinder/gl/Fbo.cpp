@@ -181,18 +181,21 @@ GLint Fbo::Format::getDefaultDepthInternalFormat()
 
 Texture::Format	Fbo::Format::getDefaultColorTextureFormat( bool alpha )
 {
-	if( alpha )
-		return Texture::Format().internalFormat( GL_RGBA8 ).pixelDataFormat( GL_RGBA ).pixelDataType( GL_UNSIGNED_BYTE );
-	else
-		return Texture::Format().internalFormat( GL_RGB8 ).pixelDataFormat( GL_RGB ).pixelDataType( GL_UNSIGNED_BYTE );
+#if defined( CINDER_GL_ES_2 )
+	auto internalFormat = alpha ? GL_RGBA : GL_RGB;
+#else
+	auto internalFormat = alpha ? GL_RGBA8 : GL_RGB8;
+#endif
+
+	return Texture::Format().internalFormat( internalFormat ).immutableStorage();
 }
 
 Texture::Format	Fbo::Format::getDefaultDepthTextureFormat()
 {
 #if defined( CINDER_GL_ES_2 )
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT ).pixelDataFormat( GL_DEPTH_COMPONENT ).pixelDataType( GL_UNSIGNED_SHORT );
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT ).immutableStorage();
 #else
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).pixelDataFormat( GL_DEPTH_COMPONENT ).pixelDataType( GL_FLOAT );
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).immutableStorage();
 #endif
 }
 

@@ -481,7 +481,6 @@
 		007050AD1114F93F003FCAE4 /* Trim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6D11057CC6007EC9AD /* Trim.cpp */; };
 		007050AF1114F93F003FCAE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		007050B01114F93F003FCAE4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
-		007050B21114F93F003FCAE4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
 		007050B51114F93F003FCAE4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */; };
 		007050B81114F93F003FCAE4 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		007050B91114F93F003FCAE4 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
@@ -1105,7 +1104,6 @@
 		C7B9305C121C94E900093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B9305B121C94E900093AFE /* AVFoundation.framework */; };
 		C7B9305E121C950800093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B9305B121C94E900093AFE /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7B9305F121C951400093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92EF5121C828400093AFE /* CoreMedia.framework */; };
-		C7B93060121C952400093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; };
 		C7B93061121C952800093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7BA40890FA8C13A00AADC07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		C7BA408B0FA8C13A00AADC07 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
@@ -1618,11 +1616,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7B93060121C952400093AFE /* CoreVideo.framework in Frameworks */,
 				C7B9305F121C951400093AFE /* CoreMedia.framework in Frameworks */,
 				007050AF1114F93F003FCAE4 /* AppKit.framework in Frameworks */,
 				007050B01114F93F003FCAE4 /* Cocoa.framework in Frameworks */,
-				007050B21114F93F003FCAE4 /* QTKit.framework in Frameworks */,
 				007050B51114F93F003FCAE4 /* CoreGraphics.framework in Frameworks */,
 				007050B81114F93F003FCAE4 /* AudioToolbox.framework in Frameworks */,
 				007050B91114F93F003FCAE4 /* AudioUnit.framework in Frameworks */,

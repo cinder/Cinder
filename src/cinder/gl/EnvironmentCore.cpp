@@ -28,6 +28,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
+#include "cinder/gl/Texture.h"
 
 #if ! defined( CINDER_GL_ES )
 
@@ -41,7 +42,7 @@ class EnvironmentCore : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
-	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
 
 	std::string		generateVertexShader( const ShaderDef &shader ) override;
 	std::string		generateFragmentShader( const ShaderDef &shader ) override;
@@ -98,12 +99,16 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 		(*objectLabelFn)( identifier, name, length, label );
 }
 
-void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height )
+void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
 {
-	static auto texStorage2DFn = ( glTexStorage2D ) ? glTexStorage2D : glTextStorage2DExt;
-	if( texStorage2DFn )
+	static auto texStorage2DFn = glTexStorage2D;
+	if( texStorage2DFn && immutable )
 		texStorage2DFn( target, levels, internalFormat, width, height );
-	else
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
 }
 
 std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )

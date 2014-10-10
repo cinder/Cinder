@@ -44,7 +44,7 @@ class EnvironmentEs2 : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
-	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
 
 	std::string		generateVertexShader( const ShaderDef &shader ) override;
 	std::string		generateFragmentShader( const ShaderDef &shader ) override;
@@ -103,14 +103,27 @@ void EnvironmentEs2::objectLabel( GLenum identifier, GLuint name, GLsizei length
 #endif
 }
 
-void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height )
+void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
 {
-#if defined( CINDER_GL_ES_3 )
-	glTexStorage2D( target, levels, internalFormat, width, height );
-#else
+#if defined( CINDER_GL_ES_2 )
+	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
-	glTexStorage2DEXT( target, levels, internalFormat, width, height );
-#endif 
+	static auto texStorage2DFn = glTexStorage2DEXT;
+#else
+	static auto texStorage2DFn = glTexStorage2D;
+#endif
+	
+	if( ! texStorage2DFn )
+		immutable = false;
+
+	if( immutable ) {
+		texStorage2DFn( target, levels, internalFormat, width, height );
+	}
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
 }
 
 std::string	EnvironmentEs2::generateVertexShader( const ShaderDef &shader )

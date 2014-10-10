@@ -99,7 +99,7 @@ TextureBase::~TextureBase()
 	}
 }
 
-// Expects texture to be bound and mTarget/mTextureId to be valid
+// Expects texture to be bound and mTarget,mTextureId,mWidth & mHeight to be valid
 void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 {
 	// default is GL_REPEAT
@@ -108,7 +108,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 	// default is GL_REPEAT
 	if( format.mWrapT != GL_REPEAT )
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_T, format.mWrapT );
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	// default is GL_REPEAT
 	if( format.mWrapR != GL_REPEAT )
 		glTexParameteri( mTarget, GL_TEXTURE_WRAP_R, format.mWrapR );
@@ -131,16 +131,6 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 		mInternalFormat = defaultInternalFormat;
 	else
 		mInternalFormat = format.mInternalFormat;
-
-#if defined( CINDER_GL_ES )		
-	// by default mPixelDataFormat should match mInternalFormat
-	if( format.mPixelDataFormat == -1 )
-		format.mPixelDataFormat = mInternalFormat;
-#else
-	if( format.mPixelDataFormat == -1 ) {
-		format.mPixelDataFormat = GL_RGB;
-	}
-#endif
 
 	// Swizzle mask
 #if ! defined( CINDER_GL_ES )
@@ -187,6 +177,13 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 	mSwizzleMask = format.mSwizzleMask;
 	
 	mMipmapping = format.mMipmapping;
+	if( format.mMipmapping ) {
+		glTexParameteri( mTarget, GL_TEXTURE_BASE_LEVEL, format.mBaseMipmapLevel );
+		if( format.mMaxMipmapLevel > -1 )
+			glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, format.mMaxMipmapLevel );
+		else
+			glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, format.mMaxMipmapLevel );
+	}
 
 #if ! defined( CINDER_GL_ES )
 	if( format.mBorderSpecified ) {
@@ -201,6 +198,72 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 GLint TextureBase::getInternalFormat() const
 {
 	return mInternalFormat;
+}
+
+void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType )
+{
+	switch( internalFormat ) {
+		case GL_R8:				*resultDataFormat = GL_RED;			*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_R8_SNORM:		*resultDataFormat = GL_RED;			*resultDataType = GL_BYTE;							break;
+		case GL_R16F:			*resultDataFormat = GL_RED;			*resultDataType = GL_HALF_FLOAT;					break;
+		case GL_R32F:			*resultDataFormat = GL_RED;			*resultDataType = GL_FLOAT;							break;
+		case GL_R8UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_R8I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_BYTE;							break;
+		case GL_R16UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_R16I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_SHORT;							break;
+		case GL_R32UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_INT;					break;
+		case GL_R32I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_INT;							break;
+		case GL_RG8:			*resultDataFormat = GL_RG;			*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RG8_SNORM:		*resultDataFormat = GL_RG;			*resultDataType = GL_BYTE;							break;
+		case GL_RG16F:			*resultDataFormat = GL_RG;			*resultDataType = GL_HALF_FLOAT;					break;
+		case GL_RG32F:			*resultDataFormat = GL_RG;			*resultDataType = GL_FLOAT;							break;
+		case GL_RG8UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RG8I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_BYTE;							break;
+		case GL_RG16UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_RG16I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_SHORT;							break;
+		case GL_RG32UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_INT;					break;
+		case GL_RG32I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_INT;							break;
+		case GL_RGB8:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_SRGB8:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB565:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB8_SNORM:		*resultDataFormat = GL_RGB;			*resultDataType = GL_BYTE;							break;
+		case GL_R11F_G11F_B10F: *resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_INT_10F_11F_11F_REV;	break;
+		case GL_RGB9_E5:		*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_INT_5_9_9_9_REV;		break;
+		case GL_RGB16F:			*resultDataFormat = GL_RGB;			*resultDataType = GL_HALF_FLOAT;					break;
+		case GL_RGB32F:			*resultDataFormat = GL_RGB;			*resultDataType = GL_FLOAT;							break;
+		case GL_RGB8UI:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB8I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_BYTE;							break;
+		case GL_RGB16UI:		*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_RGB16I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_SHORT;							break;
+		case GL_RGB32UI:		*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_INT;					break;
+		case GL_RGB32I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_INT;							break;
+		case GL_RGBA8:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_SRGB8_ALPHA8:	*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGBA8_SNORM:	*resultDataFormat = GL_RGBA;		*resultDataType = GL_BYTE;							break;
+		case GL_RGB5_A1:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGBA4:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB10_A2:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_INT_2_10_10_10_REV;	break;
+		case GL_RGBA16F:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_HALF_FLOAT;					break;
+		case GL_RGBA32F:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_FLOAT;							break;
+		case GL_RGBA8UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGBA8I:			*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_BYTE;							break;
+		case GL_RGB10_A2UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT_2_10_10_10_REV;	break;
+		case GL_RGBA16UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_RGBA16I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_SHORT;							break;
+		case GL_RGBA32I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_INT;							break;
+		case GL_RGBA32UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT;					break;
+		
+		// Depth variants
+		case GL_DEPTH_COMPONENT16:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_DEPTH_COMPONENT24:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_UNSIGNED_INT;					break;
+		case GL_DEPTH_COMPONENT32F:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_FLOAT;							break;
+		case GL_DEPTH24_STENCIL8:	*resultDataFormat = GL_DEPTH_STENCIL; *resultDataType = GL_UNSIGNED_INT_24_8;				break;
+		case GL_DEPTH32F_STENCIL8:	*resultDataFormat = GL_DEPTH_STENCIL; *resultDataType = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;	break;
+		default:
+			CI_LOG_W( "Unknown internalFormat:" << gl::constantToString( internalFormat ) );
+			*resultDataFormat = GL_RGBA;
+			*resultDataFormat = GL_UNSIGNED_BYTE;
+	}
 }
 
 void TextureBase::bind( uint8_t textureUnit ) const
@@ -474,11 +537,10 @@ TextureBase::Format::Format()
 	mMipmappingSpecified = false;
 	mBorderSpecified = false;
 	mBaseMipmapLevel = 0;
-	mMaxMipmapLevel = 1000;
+	mMaxMipmapLevel = -1;
+	mImmutableStorage = false;
 	mInternalFormat = -1;
 	mMaxAnisotropy = -1.0f;
-	mPixelDataFormat = -1;
-	mPixelDataType = GL_UNSIGNED_BYTE;
 	mSwizzleSpecified = false;
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
 	mCompareMode = -1;
@@ -568,14 +630,13 @@ Texture2d::Texture2d( int width, int height, Format format )
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
+#if ! defined( CINDER_GL_ES_2 )
 	initParams( format, GL_RGBA8 );
-	int mipLevels = 1;
-	if( mMipmapping )
-		mipLevels = getNumMipLevels();
-gl::checkError();
-	env()->allocateTexStorage2d( mTarget, mipLevels, mInternalFormat, width, height );
-gl::checkError();
-//	initData( (unsigned char*)0, format.mPixelDataFormat, format.mPixelDataType, format );
+#else
+	initParams( format, GL_RGBA );
+#endif
+	int mipLevels = mMipmapping ? getNumMipLevels() : 1;
+	env()->allocateTexStorage2d( mTarget, mipLevels, mInternalFormat, width, height, format.isImmutableStorage() );
 }
 
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
@@ -751,11 +812,7 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 	
 	replace( data );
 
-	if( format.mMipmapping && data.getNumLevels() <= 1 ) {
-#if ! defined( CINDER_GL_ES )	
-		glTexParameteri( mTarget, GL_TEXTURE_BASE_LEVEL, format.mBaseMipmapLevel );
-		glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, format.mMaxMipmapLevel );
-#endif		
+	if( mMipmapping && data.getNumLevels() <= 1 ) {
 		glGenerateMipmap( mTarget );
 	}
 }
@@ -1024,9 +1081,10 @@ void Texture2d::update( const PboRef &pbo, GLenum format, GLenum type, const Are
 }
 #endif
 
-int Texture2d::getNumMipLevels() const
+int Texture2d::requiredMipLevels() const
 {
-	return floor( std::log( std::max( mWidth, mHeight ) ) / std::log(2) ) + 1;
+	if( mMipmapping )
+		return floor( std::log( std::max( mWidth, mHeight ) ) / std::log(2) ) + 1;
 }
 	
 void Texture2d::setCleanSize( GLint cleanWidth, GLint cleanHeight )
@@ -1296,7 +1354,8 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	TextureBase::initParams( format, GL_RGB );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, format.mPixelDataFormat, format.mPixelDataType, NULL );
+	int mipLevels = mMipmapping ? getNumMipLevels() : 1;
+	env()->allocateTexStorage3d( mTarget, levels, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, const uint8_t *data, Format format )
