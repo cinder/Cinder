@@ -70,6 +70,13 @@ class TextureBase {
 	//!	Unbinds the Texture currently bound in the Texture's target
 	void			unbind( uint8_t textureUnit = 0 ) const;
 
+	//! Returns the width of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getWidth() const = 0;
+	//! Returns the height of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getHeight() const = 0;
+	//! Returns the depth of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getDepth() const = 0;
+
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void			setWrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
 	//! Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT and \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
@@ -93,12 +100,14 @@ class TextureBase {
 	// Specifies the texture comparison mode for currently bound depth textures.
 	void			setCompareMode( GLenum compareMode );
 	// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
-	void			setCompareFunc( GLenum compareFunc );	
+	void			setCompareFunc( GLenum compareFunc );
 
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
 	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat
 	static void		getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType );
+	//! Returns the number of mip levels necessary to represent a texture of \a width, \a height and \a depth
+	static int		requiredMipLevels( GLint width, GLint height, GLint depth );
 
 	//! Returns whether a Surface of \a width, \a rowBytes and \a surfaceChannelOrder would require an intermediate Surface in order to be copied into a GL Texture.
 	template<typename T>
@@ -258,6 +267,7 @@ class TextureBase {
 	GLuint				mTextureId;
 	mutable GLint		mInternalFormat;
 	bool				mMipmapping;
+	GLint				mBaseMipmapLevel, mMaxMipmapLevel;
 	bool				mDoNotDispose;
 	std::array<GLint,4>	mSwizzleMask;
 	std::string			mLabel; // debugging label
@@ -444,12 +454,12 @@ class Texture2d : public TextureBase {
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData. Use update() instead if the bounds of \a this match those of \a textureData
 	void			replace( const TextureData &textureData );
 
-	//! Returns the number of mip levels the texture bounds require
-	GLint			getNumMipLevels() const;
 	//! Returns the width of the texture in pixels, ignoring clean bounds.
 	GLint			getWidth() const { return mWidth; }
 	//! Returns the height of the texture in pixels, ignoring clean bounds.
 	GLint			getHeight() const { return mHeight; }
+	//! Returns the depth of the texture in pixels, ignoring clean bounds.
+	GLint			getDepth() const { return 1; }
 	//! Returns the width of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
 	GLint			getCleanWidth() const;
 	//! Returns the height of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
@@ -488,6 +498,7 @@ class Texture2d : public TextureBase {
 	Texture2d( const TextureData &data, Format format );
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
+	void	initMaxMipmapLevel();
 	template<typename T>
 	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const ivec2 &offset );
 	template<typename T>
@@ -506,7 +517,7 @@ class Texture2d : public TextureBase {
 	friend class Texture2dCache;
 };
 
-#ifndef CINDER_GL_ES
+#ifndef CINDER_GL_ES_2
 class Texture3d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
@@ -542,11 +553,11 @@ class Texture3d : public TextureBase {
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 	
 	//! Returns the width of the texture in pixels
-	GLint			getWidth() const { return mWidth; }
+	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels
-	GLint			getHeight() const { return mHeight; }
+	GLint			getHeight() const override { return mHeight; }
 	//! Returns the depth of the texture, which is the number of images in a texture array, or the depth of a 3D texture measured in pixels
-	GLint			getDepth() const { return mDepth; }
+	GLint			getDepth() const override { return mDepth; }
 	//! the aspect ratio of the texture (width / height)
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
@@ -560,7 +571,7 @@ class Texture3d : public TextureBase {
 
 	GLint		mWidth, mHeight, mDepth;
 };
-#endif
+#endif // ! defined( CINDER_GL_ES_2 )
 
 class TextureCubeMap : public TextureBase
 {
@@ -595,6 +606,13 @@ class TextureCubeMap : public TextureBase
 	static TextureCubeMapRef	createHorizontalCross( const ImageSourceRef &imageSource, const Format &format = Format() );
 	//! Expects images ordered { +X, -X, +Y, -Y, +Z, -Z }
 	static TextureCubeMapRef	create( const ImageSourceRef images[6], const Format &format = Format() );
+
+	//! Returns the width of the texture in pixels
+	GLint			getWidth() const override { return mWidth; }
+	//! Returns the height of the texture in pixels
+	GLint			getHeight() const override { return mHeight; }
+	//! Returns the depth of the texture in pixels (
+	GLint			getDepth() const override { return 1; }
 	
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );

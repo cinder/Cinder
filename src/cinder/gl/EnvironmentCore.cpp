@@ -43,7 +43,9 @@ class EnvironmentCore : public Environment {
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
-
+	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
+	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
+	
 	std::string		generateVertexShader( const ShaderDef &shader ) override;
 	std::string		generateFragmentShader( const ShaderDef &shader ) override;
 	GlslProgRef		buildShader( const ShaderDef &shader ) override;
@@ -108,6 +110,31 @@ void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenu
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
+}
+
+void EnvironmentCore::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable )
+{
+	static auto texStorage3DFn = glTexStorage3D;
+	if( texStorage3DFn && immutable )
+		texStorage3DFn( target, levels, internalFormat, width, height, depth );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
+	}	
+}
+
+void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+{
+	static auto texStorage2DFn = glTexStorage2D;
+	if( texStorage2DFn && immutable )
+		texStorage2DFn( GL_TEXTURE_CUBE_MAP, levels, internalFormat, width, height );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		for( int face = 0; face < 6; ++face )
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}
 }
 

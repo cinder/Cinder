@@ -24,6 +24,7 @@
 
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_GL_ES )
 
@@ -45,6 +46,8 @@ class EnvironmentEs2 : public Environment {
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
+	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
+	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
 
 	std::string		generateVertexShader( const ShaderDef &shader ) override;
 	std::string		generateFragmentShader( const ShaderDef &shader ) override;
@@ -112,17 +115,55 @@ void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum
 #else
 	static auto texStorage2DFn = glTexStorage2D;
 #endif
-	
-	if( ! texStorage2DFn )
-		immutable = false;
-
-	if( immutable ) {
+	if( immutable && texStorage2DFn ) {
 		texStorage2DFn( target, levels, internalFormat, width, height );
 	}
 	else {
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
+}
+
+void EnvironmentEs2::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable )
+{
+#if defined( CINDER_GL_ES_2 )
+	CI_LOG_E( "allocateTexStorage3d called on unsupported platform" );
+#else
+  #if ! defined( CINDER_GL_ES_3 )
+	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
+	// both ANGLE and iOS support EXT_texture_storage
+	static auto texStorage3DFn = glTexStorage3DEXT;
+  #else
+	static auto texStorage3DFn = glTexStorage3D;
+  #endif
+	if( immutable && texStorage3DFn ) {
+		texStorage3DFn( target, levels, internalFormat, width, height, depth );
+	}
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
+	}
+#endif
+}
+
+void EnvironmentEs2::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+{
+#if defined( CINDER_GL_ES_2 )
+	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
+	// both ANGLE and iOS support EXT_texture_storage
+	static auto texStorage2DFn = glTexStorage2DEXT;
+#else
+	static auto texStorage2DFn = glTexStorage2D;
+#endif
+	if( immutable && texStorage2DFn )
+		texStorage2DFn( GL_TEXTURE_CUBE_MAP, levels, internalFormat, width, height );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		for( int face = 0; face < 6; ++face )
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}
 }
 
