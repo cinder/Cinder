@@ -655,6 +655,8 @@
 		00BC898D10D2BEA200D6DC59 /* DataTarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC898C10D2BEA200D6DC59 /* DataTarget.h */; };
 		00BC89F210D2EA2200D6DC59 /* ImageTargetFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */; };
 		00BC8A0910D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
+		00BDDB3719EA21440006CBCF /* VaoImplCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D31992D64100647C8B /* VaoImplCore.cpp */; };
+		00BDDB3819EA21450006CBCF /* VaoImplCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D31992D64100647C8B /* VaoImplCore.cpp */; };
 		00C05B980F4A03660046CC99 /* CinderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C05B970F4A03660046CC99 /* CinderView.h */; };
 		00C071B00FF16244004801EA /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		00C071B30FF16261004801EA /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C071B20FF16261004801EA /* Font.h */; };
@@ -3379,6 +3381,7 @@
 				0003F4741992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C319151A5B7F003F2E30 /* Unicode.cpp in Sources */,
 				111A5F7C191F729D005C3166 /* r8bbase.cpp in Sources */,
+				00BDDB3719EA21440006CBCF /* VaoImplCore.cpp in Sources */,
 				0034C322151A5B9F003F2E30 /* linebreak.c in Sources */,
 				111A6002191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
 				0034C328151A5B9F003F2E30 /* linebreakdata.c in Sources */,
@@ -3559,6 +3562,7 @@
 				0003F4751992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C329151A5B9F003F2E30 /* linebreakdata.c in Sources */,
 				111A5F7D191F729D005C3166 /* r8bbase.cpp in Sources */,
+				00BDDB3819EA21450006CBCF /* VaoImplCore.cpp in Sources */,
 				0034C32C151A5B9F003F2E30 /* linebreakdef.c in Sources */,
 				111A6003191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
 				005B0300152CD16E00F2C237 /* json_reader.cpp in Sources */,
@@ -3788,10 +3792,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
@@ -3820,7 +3822,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_FAST_MATH = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;

@@ -41,7 +41,7 @@ using namespace std;
 
 #if (! defined( CINDER_GL_ES )) || defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ANGLE )
 	#define SUPPORTS_MULTISAMPLE
-	#if defined( CINDER_COCOA_TOUCH )
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleAPPLE
 		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
@@ -633,7 +633,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images have the same number of samples" );
 		return false;
 #endif
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_APPLE:
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images have the same number of samples" );
 		return false;

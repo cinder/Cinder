@@ -306,12 +306,8 @@ void VboMesh::bufferAttrib( geom::Attrib attrib, size_t dataSizeBytes, const voi
 		layoutVbo->second->bufferSubData( attribInfo.getOffset(), dataSizeBytes, data );
 	}
 	else { // interleaved data
-#if ! defined( CINDER_GL_ANGLE )
-  #if defined( CINDER_GL_ES_2 )
-		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->map( GL_WRITE_ONLY_OES ) );
-  #else
-		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->map( GL_WRITE_ONLY ) );
-  #endif
+#if ! defined( CINDER_GL_ANGLE ) || defined( CINDER_GL_ES_3 )
+		uint8_t *ptr = reinterpret_cast<uint8_t*>( layoutVbo->second->mapWriteOnly( false ) );
 		if( ! ptr ) {
 			CI_LOG_E( "Failed to map VBO" );
 			return;
@@ -362,14 +358,7 @@ VboMesh::MappedAttrib<T> VboMesh::mapAttribImpl( geom::Attrib attr, int dims, bo
 	else {
 		MappedVboInfo mappedVboInfo;
 		mappedVboInfo.mRefCount = 1;
-		if( orphanExisting ) {
-			layoutVbo->second->bufferData( layoutVbo->second->getSize(), nullptr, layoutVbo->second->getUsage() );
-		}
-#if defined( CINDER_GL_ES )
-		mappedVboInfo.mPtr = layoutVbo->second->map( GL_WRITE_ONLY_OES );
-#else
-		mappedVboInfo.mPtr = layoutVbo->second->map( GL_WRITE_ONLY );
-#endif
+		mappedVboInfo.mPtr = layoutVbo->second->mapWriteOnly( orphanExisting );
 		mMappedVbos[layoutVbo->second] = mappedVboInfo;
 		dataPtr = mappedVboInfo.mPtr;
 	}

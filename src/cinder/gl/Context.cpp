@@ -41,7 +41,7 @@ using namespace std;
 // ES 2 Multisampling is available on iOS via an extension
 #if ! defined( CINDER_GL_ES ) || ( defined( CINDER_COCOA_TOUCH ) )
 	#define SUPPORTS_FBO_MULTISAMPLING
-	#if defined( CINDER_COCOA_TOUCH )
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
 		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
@@ -1277,7 +1277,7 @@ void Context::sanityCheck()
 {
 	// assert cached (VAO) GL_VERTEX_ARRAY_BINDING is correct
 	GLint trueVaoBinding;
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &trueVaoBinding );
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
@@ -1358,7 +1358,7 @@ void Context::printState( std::ostream &os ) const
 	glGetIntegerv( GL_ELEMENT_ARRAY_BUFFER_BINDING, &queriedInt );
 	os << "GL_ELEMENT_ARRAY_BUFFER:" << queriedInt << ", ";
 
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &queriedInt );
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &queriedInt );

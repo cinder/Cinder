@@ -26,7 +26,7 @@
 
 #include "cinder/gl/gl.h"
 
-#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"

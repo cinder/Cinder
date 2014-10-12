@@ -39,7 +39,7 @@
 	#endif
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
-#elif ! defined( CINDER_COCOA_TOUCH )
+#elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
 		#pragma clang diagnostic ignored "-Wtypedef-redefinition"
@@ -48,11 +48,17 @@
 	#if defined( __clang__ )
 		#pragma clang diagnostic pop
 	#endif
-#else
-	#include <OpenGLES/ES2/gl.h>
-	#include <OpenGLES/ES2/glext.h>
+#else // iOS
 	#define CINDER_GL_ES
-	#define CINDER_GL_ES_2
+	// the default for iOS is GL ES 2, but can be overridden with CINDER_GL_ES_3
+	#if ! defined( CINDER_GL_ES_3 )
+		#include <OpenGLES/ES2/gl.h>
+		#include <OpenGLES/ES2/glext.h>
+		#define CINDER_GL_ES_2
+	#else
+		#include <OpenGLES/ES3/gl.h>
+		#include <OpenGLES/ES3/glext.h>
+	#endif
 #endif
 #include <boost/noncopyable.hpp>
 

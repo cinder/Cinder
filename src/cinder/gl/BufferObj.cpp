@@ -112,11 +112,11 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE )
+#if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
 void* BufferObj::map( GLenum access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return reinterpret_cast<void*>( glMapBufferOES( mTarget, access ) );
 #else
 	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
@@ -125,6 +125,19 @@ void* BufferObj::map( GLenum access ) const
 #endif
 
 #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+void* BufferObj::mapWriteOnly( bool invalidatePrevious )
+{
+	// iOS ES 2 only has glMapBufferOES()
+#if defined( CINDER_GL_ES_2 )
+	if( invalidatePrevious )
+		glBufferData( mTarget, mSize, nullptr, mUsage );
+	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
+#else	
+	// ES 3 has only glMapBufferRange
+	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT ) );
+#endif
+}
+
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );

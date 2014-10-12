@@ -55,12 +55,17 @@
 
 - (void)allocateGraphics:(cinder::app::RendererGlRef)sharedRenderer
 {
+#if defined( CINDER_GL_ES_3 )
+	auto api = kEAGLRenderingAPIOpenGLES3;
+#else
+	auto api = kEAGLRenderingAPIOpenGLES2;
+#endif
 	if( sharedRenderer ) {
 		EAGLSharegroup *sharegroup = [sharedRenderer->getEaglContext() sharegroup];
-		mContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2 sharegroup:sharegroup];
+		mContext = [[EAGLContext alloc] initWithAPI:api sharegroup:sharegroup];
 	}
 	else
-		mContext = [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
+		mContext = [[EAGLContext alloc] initWithAPI:api];
 	
 	if( ! mContext ) {
 		[self release];
@@ -91,19 +96,31 @@
 		mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mMsaaFramebuffer );
 		glBindRenderbuffer( GL_RENDERBUFFER, mMsaaRenderBuffer );
 		
+#if defined( CINDER_GL_ES_2 )
 		glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8_OES, 0, 0 );
+#else
+		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8, 0, 0 );
+#endif
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, mMsaaRenderBuffer );
 		
 		if( ! mUsingStencil ) {
 			glGenRenderbuffers( 1, &mDepthRenderBuffer );
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH_COMPONENT16, 0, 0  );
+#else
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH_COMPONENT16, 0, 0  );
+#endif
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer );
 		}
 		else {
 			glGenRenderbuffers( 1, &mDepthRenderBuffer );
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH24_STENCIL8_OES, 0, 0  );
+#else
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH24_STENCIL8, 0, 0  );
+#endif
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer );
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer );
 		}
@@ -118,7 +135,11 @@
 		else {
 			glGenRenderbuffers( 1, &mDepthRenderBuffer );
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, 0, 0 );
+#else
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 0, 0 );
+#endif
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer );
 			glFramebufferRenderbuffer( GL_FRAMEBUFFER, GL_STENCIL_ATTACHMENT, GL_RENDERBUFFER, mDepthRenderBuffer );
 		}
@@ -144,15 +165,31 @@
 		mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mMsaaFramebuffer );
 		if( ! mUsingStencil ) {
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH_COMPONENT16, mBackingWidth, mBackingHeight );
+#else
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH_COMPONENT16, mBackingWidth, mBackingHeight );
+#endif
 			glBindRenderbuffer( GL_RENDERBUFFER, mMsaaRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8_OES, mBackingWidth, mBackingHeight );
+#else
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8, mBackingWidth, mBackingHeight );
+#endif
 		}
 		else {
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE(GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH24_STENCIL8_OES, mBackingWidth, mBackingWidth );
+#else
+			glRenderbufferStorageMultisample(GL_RENDERBUFFER, mMsaaSamples, GL_DEPTH24_STENCIL8, mBackingWidth, mBackingWidth );
+#endif
 			glBindRenderbuffer( GL_RENDERBUFFER, mMsaaRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorageMultisampleAPPLE( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8_OES, mBackingWidth, mBackingHeight );
+#else
+			glRenderbufferStorageMultisample( GL_RENDERBUFFER, mMsaaSamples, GL_RGBA8, mBackingWidth, mBackingHeight );
+#endif
 		}
 	}
 	else {
@@ -162,7 +199,11 @@
 		}
 		else {
 			glBindRenderbuffer( GL_RENDERBUFFER, mDepthRenderBuffer );
+#if defined( CINDER_GL_ES_2 )
 			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8_OES, mBackingWidth, mBackingHeight );
+#else
+			glRenderbufferStorage( GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, mBackingWidth, mBackingHeight );
+#endif
 		}
 	}
 	
@@ -188,15 +229,24 @@
 
 - (void)flushBuffer
 {
-	if( mUsingMsaa ) {		
+	if( mUsingMsaa ) {
+#if defined( CINDER_GL_ES_2 )
 		mCinderContext->bindFramebuffer( GL_READ_FRAMEBUFFER_APPLE, mMsaaFramebuffer );
-		mCinderContext->bindFramebuffer( GL_DRAW_FRAMEBUFFER_APPLE, mViewFramebuffer );
-		
+		mCinderContext->bindFramebuffer( GL_DRAW_FRAMEBUFFER_APPLE, mViewFramebuffer );		
 		glResolveMultisampleFramebufferAPPLE();
+#else
+		mCinderContext->bindFramebuffer( GL_READ_FRAMEBUFFER, mMsaaFramebuffer );
+		mCinderContext->bindFramebuffer( GL_DRAW_FRAMEBUFFER, mViewFramebuffer );		
+		glBlitFramebuffer( 0, 0, mBackingWidth, mBackingHeight, 0, 0, mBackingWidth, mBackingHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+#endif
 
 		mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mMsaaFramebuffer );
 		GLenum attachments[] = { GL_COLOR_ATTACHMENT0, GL_DEPTH_ATTACHMENT };
+#if defined( CINDER_GL_ES_2 )
 		glDiscardFramebufferEXT( GL_FRAMEBUFFER, 2, attachments );
+#else
+		glInvalidateFramebuffer( GL_FRAMEBUFFER, 2, attachments );
+#endif
 	}
 	
     glBindRenderbuffer( GL_RENDERBUFFER, mViewRenderBuffer );
