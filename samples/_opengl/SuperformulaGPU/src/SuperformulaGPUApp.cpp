@@ -48,13 +48,15 @@ void SuperformulaGpuApp::setup()
 {
 	mA1 = mA2 = 1.0f;
 	mB1 = mB2 = 1.0f;
-	mM1 = mM2 = 5.0f;
 	mN11 = mN12 = 1.0f;
 	mN21 = mN22 = 1.0f;
-	mN31 = mN32 = 2.0f;
+	mM1 = 4.0f;
+	mM2 = 6.0f;
+	mN31 = 2.0f;
+	mN32 = 2.5f;
 
 	mDrawNormals = false;
-	mNormalsLength = 0.25f;
+	mNormalsLength = 0.20f;
 	mSubdivisions = 100;
 
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
@@ -75,13 +77,13 @@ void SuperformulaGpuApp::setup()
 	mParams->addParam( "Subdivisions", &mSubdivisions ).min( 5 ).max( 500 ).step( 30 ).updateFn( [&] { setupGeometry(); } );
 	mParams->addSeparator();
 	mParams->addParam( "Draw Normals", &mDrawNormals );
-	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.05f );
+	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
 	
 	mCam.lookAt( vec3( 3, 2, 4 ) * 0.75f, vec3( 0 ) );
 	
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
-
-	mNormalsGlsl = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "normals_shader.vert" ) ).fragment( loadAsset( "normals_shader.frag" ) )
+	mNormalsGlsl = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "normals_shader.vert" ) )
+											.fragment( loadAsset( "normals_shader.frag" ) )
 											.attrib( geom::CUSTOM_0, "vNormalWeight" ) );
 	setupGeometry();
 
@@ -98,7 +100,8 @@ void SuperformulaGpuApp::resize()
 void SuperformulaGpuApp::update()
 {
 	// Rotate the by 2 degrees around an arbitrary axis
-	mRotation *= rotate( toRadians( 0.2f ), normalize( vec3( cos( getElapsedSeconds() / 3 ), 1, sin( getElapsedSeconds() / 5 ) ) ) );
+	vec3 axis = vec3( cos( getElapsedSeconds() / 3 ), sin( getElapsedSeconds() / 2 ), sin( getElapsedSeconds() / 5 ) );
+	mRotation *= rotate( toRadians( 0.2f ), normalize( axis ) );
 	
 	gl::ScopedGlslProg glslScp( mBatch->getGlslProg() );
 	mBatch->getGlslProg()->uniform( "uA1", mA1 );
@@ -115,6 +118,7 @@ void SuperformulaGpuApp::update()
 	mBatch->getGlslProg()->uniform( "uN22", mN22 );
 	mBatch->getGlslProg()->uniform( "uN32", mN32 );	
 
+	gl::ScopedGlslProg glslScp2( mNormalsBatch->getGlslProg() );
 	mNormalsBatch->getGlslProg()->uniform( "uA1", mA1 );
 	mNormalsBatch->getGlslProg()->uniform( "uB1", mB1 );	
 	mNormalsBatch->getGlslProg()->uniform( "uM1", mM1 );
@@ -133,13 +137,13 @@ void SuperformulaGpuApp::update()
 
 void SuperformulaGpuApp::draw()
 {
-	gl::clear();
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
 
 	gl::setMatrices( mCam );
 	gl::pushMatrices();
 		gl::multModelMatrix( mRotation );
 		mBatch->draw();
-		gl::color( 1, 0.5, 0.25, 1 );
+		gl::color( 0.25f, 0.5f, 1.0f, 1 );
 		if( mDrawNormals )
 			mNormalsBatch->draw();
 	gl::popMatrices();
