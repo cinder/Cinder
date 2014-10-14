@@ -45,7 +45,7 @@ class EnvironmentEs2 : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
-	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
 	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
 
@@ -106,7 +106,7 @@ void EnvironmentEs2::objectLabel( GLenum identifier, GLuint name, GLsizei length
 #endif
 }
 
-void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
@@ -121,6 +121,12 @@ void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum
 	else {
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		if( texImageDataType != -1 )
+			dataType = texImageDataType;
+// on ES 2 non-sized formats are required for internalFormat
+#if defined( CINDER_GL_ES_2 )
+		internalFormat = dataFormat;
+#endif
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}
 }

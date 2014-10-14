@@ -182,7 +182,7 @@ GLint Fbo::Format::getDefaultDepthInternalFormat()
 Texture::Format	Fbo::Format::getDefaultColorTextureFormat( bool alpha )
 {
 #if defined( CINDER_GL_ES_2 )
-	auto internalFormat = alpha ? GL_RGBA : GL_RGB;
+	auto internalFormat = alpha ? GL_RGBA8_OES : GL_RGB8_OES;
 #else
 	auto internalFormat = alpha ? GL_RGBA8 : GL_RGB8;
 #endif

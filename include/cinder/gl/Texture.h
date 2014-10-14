@@ -158,6 +158,11 @@ class TextureBase {
 		//! Sets the Texture's internal format to be automatically selected based on the context.
 		void	setAutoInternalFormat() { mInternalFormat = -1; }
 		
+		//! Sets the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
+		void	setDataType( GLint dataType ) { mDataType = dataType; }
+		//! Sets the Texture's data type format to be automatically selected based on the context.
+		void	setAutoDataType() { mDataType = -1; }
+		
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
 		// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
@@ -188,6 +193,10 @@ class TextureBase {
 		GLint	getInternalFormat() const { return mInternalFormat; }
 		//! Returns whether the Texture's internal format will be automatically selected based on the context.
 		bool	isAutoInternalFormat() const { return mInternalFormat == -1; }
+		//! Returns the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination.
+		GLint	getDataType() const { return mDataType; }
+		//! Returns whether the Texture's data type will be automatically selected based on the context.
+		bool	isAutoDataType() const { return mDataType == -1; }
 		
 		//! Returns the horizontal wrapping behavior for the texture coordinates.
 		GLenum	getWrapS() const { return mWrapS; }
@@ -242,7 +251,8 @@ class TextureBase {
 		GLint				mMaxMipmapLevel;
 		bool				mImmutableStorage;
 		GLfloat				mMaxAnisotropy;
-		GLint				mInternalFormat;
+		GLint				mInternalFormat, mDataType;
+		GLint				mDataFormat;
 		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;
@@ -357,7 +367,10 @@ class Texture2d : public TextureBase {
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
 		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
+		//! Specifies the internal format for the Texture, used by glTexImage2D or glTexStorage2D when available. Defaults to \c -1 which implies automatic determination.
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		//! Specifies the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
+		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }

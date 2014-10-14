@@ -42,7 +42,7 @@ class EnvironmentCore : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
-	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
 	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
 	
@@ -101,7 +101,7 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 		(*objectLabelFn)( identifier, name, length, label );
 }
 
-void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 	static auto texStorage2DFn = glTexStorage2D;
 	if( texStorage2DFn && immutable )
@@ -109,6 +109,8 @@ void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenu
 	else {
 		GLenum dataFormat, dataType;
 		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		if( texImageDataType != -1 )
+			dataType = texImageDataType;
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}
 }

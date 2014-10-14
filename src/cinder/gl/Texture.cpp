@@ -251,8 +251,24 @@ void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLen
 		case GL_RGBA32I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_INT;							break;
 		case GL_RGBA32UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT;					break;
 #else
-		case GL_RGB8_OES:		*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGBA8_OES:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB8_OES:				*resultDataFormat = GL_RGB;				*resultDataType = GL_UNSIGNED_BYTE;		break;
+		case GL_RGBA8_OES:				*resultDataFormat = GL_RGBA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
+		case GL_ALPHA8_EXT:				*resultDataFormat = GL_ALPHA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
+		case GL_LUMINANCE8_EXT:			*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_UNSIGNED_BYTE;		break;
+		case GL_LUMINANCE8_ALPHA8_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_UNSIGNED_BYTE;		break;
+		case GL_RGBA32F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_FLOAT;				break;
+		case GL_RGB32F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_FLOAT;				break;
+		case GL_ALPHA32F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_FLOAT;				break;
+		case GL_LUMINANCE32F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_FLOAT;				break;
+		case GL_LUMINANCE_ALPHA32F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_FLOAT;				break;
+		case GL_RGBA16F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_RGB16F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_ALPHA16F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_LUMINANCE16F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_LUMINANCE_ALPHA16F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_BGRA8_EXT:				*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_R32F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_FLOAT;				break;
+		case GL_R16F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_HALF_FLOAT_OES;	break;
 #endif
 		case GL_RGB5_A1:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
 		case GL_RGBA4:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
@@ -570,6 +586,7 @@ TextureBase::Format::Format()
 	mMaxMipmapLevel = -1; // auto-calculate
 	mImmutableStorage = false;
 	mInternalFormat = -1;
+	mDataType = -1;
 	mMaxAnisotropy = -1.0f;
 	mSwizzleSpecified = false;
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
@@ -676,7 +693,7 @@ Texture2d::Texture2d( int width, int height, Format format )
 #endif
 
 	initMaxMipmapLevel();
-	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage() );
+	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage(), format.getDataType() );
 }
 
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
