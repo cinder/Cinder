@@ -169,13 +169,15 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 		//! Default constructor, sets the target to \c GL_TEXTURE_2D with an 8-bit color+alpha, a 24-bit depth texture, and no multisampling or mipmapping
 		Format();
 
-		//! Enables a color texture at \c GL_COLOR_ATTACHMENT0 with a Texture::Format of \a textureFormat, which defaults to 8-bit RGBA with no mipmapping. Disables a color buffer.
+		//! Enables a color texture at \c GL_COLOR_ATTACHMENT0 with a Texture::Format of \a textureFormat, which defaults to 8-bit RGBA with no mipmapping. Disables a color renderbuffer.
 		Format&	colorTexture( const Texture::Format &textureFormat = getDefaultColorTextureFormat( true ) ) { mColorTexture = true; mColorTextureFormat = textureFormat; return *this; }
 		//! Disables both a color Texture and a color Buffer
 		Format&	disableColor() { mColorTexture = false; return *this; }
 		
-		//! Enables a depth buffer with an internal format of \a internalFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth texture.
-		Format&	depthBuffer( GLenum internalFormat = getDefaultDepthInternalFormat() ) { mDepthBuffer = true; mDepthBufferInternalFormat = internalFormat; return *this; }
+		//! Enables a depth renderbuffer with an internal format of \a internalFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth texture.
+		Format&	depthBuffer( GLenum internalFormat = getDefaultDepthInternalFormat() ) { mDepthTexture = false; mDepthBuffer = true; mDepthBufferInternalFormat = internalFormat; return *this; }
+		//! Enables a depth texture with a format of \a textureFormat, which defaults to \c GL_DEPTH_COMPONENT24. Disables a depth renderbuffer.
+		Format&	depthTexture( const Texture::Format &textureFormat = getDefaultDepthTextureFormat()) { mDepthTexture = true; mDepthBuffer = false; mDepthTextureFormat = textureFormat; return *this; }
 		//! Disables both a depth Texture and a depth Buffer
 		Format&	disableDepth() { mDepthBuffer = false; return *this; }
 		
@@ -242,10 +244,10 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	  protected:
 		GLenum			mDepthBufferInternalFormat;
 		int				mSamples, mCoverageSamples;
-		bool			mColorTexture;
+		bool			mColorTexture, mDepthTexture;
 		bool			mDepthBuffer;
 		bool			mStencilBuffer;
-		Texture::Format	mColorTextureFormat;
+		Texture::Format	mColorTextureFormat, mDepthTextureFormat;
 		std::string		mLabel; // debug label
 		
 		std::map<GLenum,RenderbufferRef>	mAttachmentsBuffer;

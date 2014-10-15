@@ -30,6 +30,8 @@
 // * EXT_packed_depth_stencil http://www.opengl.org/registry/specs/EXT/packed_depth_stencil.txt
 // * http://www.khronos.org/registry/gles/extensions/ANGLE/ANGLE_framebuffer_multisample.txt
 
+// Both ANGLE and iOS support OES_depth_texture (ANGLE_depth_texture) so we support it everywhere
+
 #include "cinder/gl/gl.h" // must be first
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Context.h"
@@ -193,9 +195,9 @@ Texture::Format	Fbo::Format::getDefaultColorTextureFormat( bool alpha )
 Texture::Format	Fbo::Format::getDefaultDepthTextureFormat()
 {
 #if defined( CINDER_GL_ES_2 )
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT ).immutableStorage();
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24_OES ).immutableStorage();
 #else
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).immutableStorage();
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).immutableStorage().swizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE );
 #endif
 }
 
@@ -325,7 +327,10 @@ void Fbo::initFormatAttachments()
 	bool preexistingDepthAttachment = mFormat.mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT )
 										|| mFormat.mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
 #endif
-	if( mFormat.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
+	if( mFormat.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
+		mFormat.mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, mFormat.mDepthTextureFormat );
+	}
+	else if( mFormat.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
 		if( mFormat.mStencilBuffer ) {
 			GLint internalFormat;
 			GLenum pixelDataType;
