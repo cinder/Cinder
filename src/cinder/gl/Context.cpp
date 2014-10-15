@@ -544,27 +544,6 @@ void Context::restoreInvalidatedBufferBinding( GLenum target )
 	}
 }
 
-#if ! defined( CINDER_GL_ES )
-void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
-{
-	switch (target) {
-		case GL_TRANSFORM_FEEDBACK_BUFFER: {
-			if( mCachedTransformFeedbackObj ) {
-				mCachedTransformFeedbackObj->setIndex( index, buffer );
-			}
-			else {
-				glBindBufferBase( target, index, buffer->getId() );
-			}
-		}
-		break;
-		case GL_UNIFORM_BUFFER: {
-			// Soon to implement
-		}
-		break;
-		default:
-		break;
-	}
-}
 //////////////////////////////////////////////////////////////////
 // Renderbuffer
 void Context::bindRenderbuffer( GLenum target, GLuint id )
@@ -633,6 +612,29 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 	}
 	else
 		mRenderbufferBindingStack[target].push_back( 0 );
+}
+
+#if ! defined( CINDER_GL_ES )
+
+void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
+{
+	switch (target) {
+		case GL_TRANSFORM_FEEDBACK_BUFFER: {
+			if( mCachedTransformFeedbackObj ) {
+				mCachedTransformFeedbackObj->setIndex( index, buffer );
+			}
+			else {
+				glBindBufferBase( target, index, buffer->getId() );
+			}
+		}
+		break;
+		case GL_UNIFORM_BUFFER: {
+			// Soon to implement
+		}
+		break;
+		default:
+		break;
+	}
 }
 
 //////////////////////////////////////////////////////////////////
