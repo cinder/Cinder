@@ -28,6 +28,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/DataSource.h"
 #include "cinder/Display.h"
+#include "cinder/Exception.h"
 #include "cinder/Surface.h"
 #include "cinder/Thread.h"
 #include "cinder/Url.h"
@@ -305,7 +306,7 @@ protected:
 
 inline int32_t floatToFixed( float fl ) { return ((int32_t)((float)(fl) * ((int32_t) 0x00010000L))); }
 
-class AvfExc : public std::exception {
+class AvfExc : public Exception {
 };
 
 class AvfPathInvalidExc : public AvfExc {

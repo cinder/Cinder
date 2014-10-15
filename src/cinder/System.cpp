@@ -276,7 +276,7 @@ bool System::hasSse2()
 #elif defined( CINDER_WINRT )
 		instance()->mHasSSE2 = IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) != 0;
 #else
-	throw std::exception( "Not implemented" );
+	throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE2] = true;
 	}
@@ -296,7 +296,7 @@ bool System::hasSse3()
 #elif defined( CINDER_WINRT )
 		instance()->mHasSSE3 = IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE3] = true;
 	}
@@ -314,7 +314,7 @@ bool System::hasSse4_1()
 #elif defined( CINDER_MSW )
 		instance()->mHasSSE4_1 = ( instance()->mCPUID_ECX & ( 1 << 19 ) ) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE4_1] = true;
 	}
@@ -332,7 +332,7 @@ bool System::hasSse4_2()
 #elif defined( CINDER_MSW )
 		instance()->mHasSSE4_2 = ( instance()->mCPUID_ECX & ( 1 << 20 ) ) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 		instance()->mCachedValues[HAS_SSE4_2] = true;
 	}
@@ -371,7 +371,7 @@ bool System::hasX86_64()
 		::GetNativeSystemInfo(&info);
 		instance()->mHasX86_64 = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 
 		instance()->mCachedValues[HAS_X86_64] = true;
@@ -418,7 +418,7 @@ int System::getNumCpus()
 		// unlock from a particular logical processor
 		::SetProcessAffinityMask( GetCurrentProcess(), processAffinityMask );
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 
 		instance()->mCachedValues[PHYSICAL_CPUS] = true;
@@ -442,7 +442,7 @@ int System::getNumCores()
 		::GetSystemInfo( &sys );
 		instance()->mLogicalCPUs = sys.dwNumberOfProcessors;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[LOGICAL_CPUS] = true;
 	}
@@ -466,7 +466,7 @@ int System::getOsMajorVersion()
 		::GetVersionEx( (OSVERSIONINFO *)&info );
 		instance()->mOSMajorVersion = info.dwMajorVersion;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_MAJOR] = true;
 	}
@@ -490,7 +490,7 @@ int System::getOsMinorVersion()
 		::GetVersionEx( reinterpret_cast<LPOSVERSIONINFO>( &info ) );
 		instance()->mOSMinorVersion = info.dwMinorVersion;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_MINOR] = true;
 	}
@@ -517,7 +517,7 @@ int System::getOsBugFixVersion()
 		::GetVersionEx( reinterpret_cast<LPOSVERSIONINFO>( &info ) );
 		instance()->mOSBugFixVersion = info.wServicePackMajor;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_BUGFIX] = true;
 	}
@@ -548,7 +548,7 @@ bool System::hasMultiTouch()
 			}
 		});
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[MULTI_TOUCH] = true;
 	}
@@ -576,7 +576,7 @@ int32_t System::getMaxMultiTouchPoints()
 		instance()->mMaxMultiTouchPoints = maxContacts;
 
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] = true;
 	}
@@ -658,7 +658,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName) ) );
 	});
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 
 	return adapters;

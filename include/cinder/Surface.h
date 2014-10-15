@@ -33,6 +33,7 @@
 #include "cinder/ChanTraits.h"
 #include "cinder/Color.h"
 #include "cinder/Filesystem.h"
+#include "cinder/Exception.h"
 
 #include <boost/logic/tribool.hpp>
 
@@ -477,7 +478,7 @@ class SurfaceT {
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 };
 
-class SurfaceExc : public std::exception {
+class SurfaceExc : public Exception {
 	virtual const char* what() const throw() {
 		return "Surface exception";
 	}

@@ -21,14 +21,12 @@
 */
 
 #include "cinder/Exception.h"
-#include "cinder/Utilities.h"
 
 namespace cinder {
 
 Exception::Exception()
 	: std::exception() 
 {
-}		
-
+}
 
 } // namespace cinder

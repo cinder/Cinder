@@ -24,6 +24,8 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
+#include "cinder/Exception.h"
+
 #include <iostream>
 
 namespace cinder {
@@ -135,7 +137,7 @@ class IStreamUrl : public IStreamCinder {
 
 	virtual void		IORead( void *t, size_t size ) { mImpl->IORead( t, size ); }
 	//! IStreamURL does not yet support writing
-	virtual void		IOWrite( const void *t, size_t size ) { throw std::exception(); }
+	virtual void		IOWrite( const void *t, size_t size ) { throw Exception(); }
 	
 	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
