@@ -44,7 +44,7 @@ void FBOBasicApp::renderSceneToFbo()
 	gl::clear( Color( 0.25, 0.5f, 1.0f ) );
 
 	// setup the viewport to match the dimensions of the FBO
-	gl::viewport( 0, 0, mFbo->getWidth(), mFbo->getHeight() );
+	gl::ScopedViewport scpVp( ivec2( 0 ), mFbo->getSize() );
 
 	// setup our camera to render the torus scene
 	CameraPersp cam( mFbo->getWidth(), mFbo->getHeight(), 60.0f );
@@ -75,9 +75,6 @@ void FBOBasicApp::draw()
 {
 	// clear the window to gray
 	gl::clear( Color( 0.35f, 0.35f, 0.35f ) );
-
-	// set the viewport to match our window
-	gl::viewport( vec2( 0 ), toPixels( getWindowSize() ) );
 
 	// setup our camera to render the cube
 	CameraPersp cam( getWindowWidth(), getWindowHeight(), 60.0f );
