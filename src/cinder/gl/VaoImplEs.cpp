@@ -174,7 +174,7 @@ void VaoImplEs::vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type,
 void VaoImplEs::vertexAttribDivisorImpl( GLuint index, GLuint divisor )
 {
 	mLayout.vertexAttribDivisor( index, divisor );
-	// NO-OP - hardware instancing not supported in ES 2
+	glVertexAttribDivisorEXT( index, divisor );
 }
 
 void VaoImplEs::reflectBindBufferImpl( GLenum target, GLuint buffer )

@@ -127,6 +127,7 @@ void* BufferObj::map( GLenum access ) const
 #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 void* BufferObj::mapWriteOnly( bool invalidatePrevious )
 {
+	ScopedBuffer bufferBind( mTarget, mId );
 	// iOS ES 2 only has glMapBufferOES()
 #if defined( CINDER_GL_ES_2 )
 	if( invalidatePrevious )

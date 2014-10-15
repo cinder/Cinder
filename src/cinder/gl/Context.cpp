@@ -1437,11 +1437,13 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
 #if defined( CINDER_GL_ANGLE )
 	glDrawArraysInstancedANGLE( mode, first, count, primcount );
+#elif defined( CINDER_COCOA_TOUCH )
+	glDrawArraysInstancedEXT( mode, first, count, primcount );
 #else
 	glDrawArraysInstanced( mode, first, count, primcount );
 #endif
@@ -1451,11 +1453,13 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 {
 #if defined( CINDER_GL_ANGLE )
 	glDrawElementsInstancedANGLE( mode, count, type, indices, primcount );
+#elif defined( CINDER_COCOA_TOUCH )
+	glDrawElementsInstancedEXT( mode, count, type, indices, primcount );
 #else
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
 #endif
 }
-#endif // ! defined( CINDER_GL_ES_2 )
+#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders

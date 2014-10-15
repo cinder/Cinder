@@ -214,7 +214,7 @@ void Batch::draw()
 		ctx->drawArrays( mPrimitive, 0, mNumVertices );
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Batch::drawInstanced( GLsizei primcount )
 {
 	auto ctx = gl::context();
