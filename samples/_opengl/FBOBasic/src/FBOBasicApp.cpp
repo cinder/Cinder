@@ -27,7 +27,7 @@ void FBOBasicApp::setup()
 {
 	gl::Fbo::Format format;
 	//format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
-	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthBuffer() );
+	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format.depthTexture() );
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
@@ -55,7 +55,7 @@ void FBOBasicApp::renderSceneToFbo()
 	// set the modelview matrix to reflect our current rotation
 	gl::setModelMatrix( mRotation );
 	
-	// render an orange torus, with no textures
+	// render the color cube
 	gl::ScopedGlslProg shaderScp( gl::getStockShader( gl::ShaderDef().color() ) );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	gl::drawColorCube( vec3( 0 ), vec3( 2.2f ) );
@@ -91,9 +91,11 @@ void FBOBasicApp::draw()
 		gl::drawCube( vec3( 0 ), vec3( 2.2f ) );
 	}
 
-	// show the FBO texture in the upper left corner
+	// show the FBO color texture in the upper left corner
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
 	gl::draw( mFbo->getColorTexture(), Rectf( 0, 0, 128, 128 ) );
+	// and draw the depth texture adjacent
+	gl::draw( mFbo->getDepthTexture(), Rectf( 128, 0, 256, 128 ) );
 }
 
 CINDER_APP_NATIVE( FBOBasicApp, RendererGl )
