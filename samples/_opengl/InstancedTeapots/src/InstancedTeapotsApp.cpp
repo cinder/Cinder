@@ -39,7 +39,7 @@ void InstancedTeapotsApp::setup()
 #if ! defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #else
-	mGlsl = gl::GlslProg::create( loadAsset( "shader_es3.vert" ), loadAsset( "shader_es3.frag" ) );
+	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
 #endif
 
 	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
@@ -66,7 +66,7 @@ void InstancedTeapotsApp::setup()
 
 	// and finally, build our batch, mapping our CUSTOM_0 attribute to the "vInstancePosition" GLSL vertex attribute
 	mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
-console() << *mBatch->getGlslProg() << std::endl;
+
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
 	
@@ -88,7 +88,7 @@ void InstancedTeapotsApp::update()
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
 	
 	// update our instance positions; map our instance data VBO, write new positions, unmap
-	vec3 *positions = (vec3*)mInstanceDataVbo->mapBufferRange( 0, mInstanceDataVbo->getSize(), GL_MAP_WRITE_BIT );
+	vec3 *positions = (vec3*)mInstanceDataVbo->mapWriteOnly( true );
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {
 		for( size_t potY = 0; potY < NUM_INSTANCES_Y; ++potY ) {
 			float instanceX = potX / (float)NUM_INSTANCES_X - 0.5f;
@@ -107,11 +107,8 @@ void InstancedTeapotsApp::draw()
 {
 	gl::clear( Color::black() );
 	gl::setMatrices( mCam );
-auto i = gl::getError();
-if( i != GL_NO_ERROR )
-	console() << gl::getErrorString( i ) << std::endl;
+
 	mBatch->drawInstanced( NUM_INSTANCES_X * NUM_INSTANCES_Y );
-	//mBatch->draw();
 }
 
 #if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
