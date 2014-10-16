@@ -119,7 +119,7 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 	
 	checkGlStatus();
 
-	gl::Environment::setEs2();
+	gl::Environment::setEs();
 	checkGlStatus();
 
 	std::shared_ptr<gl::PlatformDataAngle> platformData( new gl::PlatformDataAngle( mContext, mDisplay, mSurface, config ) );

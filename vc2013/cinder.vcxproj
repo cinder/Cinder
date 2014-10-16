@@ -444,7 +444,7 @@
     <ClCompile Include="..\src\cinder\gl\Context.cpp" />
     <ClCompile Include="..\src\cinder\gl\Environment.cpp" />
     <ClCompile Include="..\src\cinder\gl\EnvironmentCore.cpp" />
-    <ClCompile Include="..\src\cinder\gl\EnvironmentEs2.cpp" />
+    <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp" />
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\gl.cpp" />
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp" />

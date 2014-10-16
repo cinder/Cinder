@@ -90,7 +90,7 @@
 	else
 		[EAGLContext setCurrentContext:mContext];
 	
-	cinder::gl::Environment::setEs2();
+	cinder::gl::Environment::setEs();
 
 	// setup msaa samples and clamp to max on this hardware
 	GLint maxSamples;

@@ -76,7 +76,7 @@ class Environment {
 
 	static void				setCore();
 #else
-	static void				setEs2();
+	static void				setEs();
 #endif
 };
 

@@ -38,7 +38,7 @@
 
 namespace cinder { namespace gl {
 
-class EnvironmentEs2 : public Environment {
+class EnvironmentEs : public Environment {
   public:
 	void	initializeFunctionPointers() override;
 
@@ -54,16 +54,16 @@ class EnvironmentEs2 : public Environment {
 	GlslProgRef		buildShader( const ShaderDef &shader ) override;
 };
 
-Environment* allocateEnvironmentEs2()
+Environment* allocateEnvironmentEs()
 {
-	return new EnvironmentEs2;
+	return new EnvironmentEs;
 }
 
-void EnvironmentEs2::initializeFunctionPointers()
+void EnvironmentEs::initializeFunctionPointers()
 {
 }
 
-bool EnvironmentEs2::isExtensionAvailable( const std::string &extName )
+bool EnvironmentEs::isExtensionAvailable( const std::string &extName )
 {
 	static const char *sExtStr = reinterpret_cast<const char*>( glGetString( GL_EXTENSIONS ) );
 	static std::map<std::string, bool> sExtMap;
@@ -90,7 +90,7 @@ bool EnvironmentEs2::isExtensionAvailable( const std::string &extName )
 	}
 }
 
-bool EnvironmentEs2::supportsHardwareVao()
+bool EnvironmentEs::supportsHardwareVao()
 {
 #if defined( CINDER_COCOA_TOUCH )
 	return true;
@@ -99,14 +99,14 @@ bool EnvironmentEs2::supportsHardwareVao()
 #endif
 }
 
-void EnvironmentEs2::objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label )
+void EnvironmentEs::objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label )
 {
 #if defined( CINDER_COCOA_TOUCH )
 	glLabelObjectEXT( identifier, name, length, label );
 #endif
 }
 
-void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
+void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
@@ -131,7 +131,7 @@ void EnvironmentEs2::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum
 	}
 }
 
-void EnvironmentEs2::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable )
+void EnvironmentEs::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable )
 {
 #if defined( CINDER_GL_ES_2 )
 	CI_LOG_E( "allocateTexStorage3d called on unsupported platform" );
@@ -154,7 +154,7 @@ void EnvironmentEs2::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum
 #endif
 }
 
-void EnvironmentEs2::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
 {
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
@@ -173,7 +173,7 @@ void EnvironmentEs2::allocateTexStorageCubeMap( GLsizei levels, GLenum internalF
 	}
 }
 
-std::string	EnvironmentEs2::generateVertexShader( const ShaderDef &shader )
+std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 {
 	std::string s;
 	
@@ -226,7 +226,7 @@ std::string	EnvironmentEs2::generateVertexShader( const ShaderDef &shader )
 	return s;
 }
 
-std::string	EnvironmentEs2::generateFragmentShader( const ShaderDef &shader )
+std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 {
 	std::string s;
 
@@ -267,7 +267,7 @@ std::string	EnvironmentEs2::generateFragmentShader( const ShaderDef &shader )
 }
 
 
-GlslProgRef	EnvironmentEs2::buildShader( const ShaderDef &shader )
+GlslProgRef	EnvironmentEs::buildShader( const ShaderDef &shader )
 {
 	GlslProg::Format fmt = GlslProg::Format().vertex( generateVertexShader( shader ).c_str() )
 												.fragment( generateFragmentShader( shader ).c_str() )

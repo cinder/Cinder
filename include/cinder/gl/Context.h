@@ -457,9 +457,6 @@ class Context {
 	std::set<const Fbo*>			mLiveFbos;
 
 	friend class				Environment;
-	friend class				EnvironmentEs2Profile;
-	friend class				EnvironmentCoreProfile;
-	friend class				EnvironmentCompatibilityProfile;
 	
 	friend class				Texture2d;
 };
