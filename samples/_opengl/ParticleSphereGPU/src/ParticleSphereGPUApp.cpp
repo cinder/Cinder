@@ -135,6 +135,7 @@ void ParticleSphereGPUApp::setup()
 
 	// Load our update program.
 	// Match up our attribute locations with the description we gave.
+
 #if defined( CINDER_GL_ES_3 )
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate_es3.vs" ) )
 		.fragment( loadAsset( "no_op_es3.fs" ) )
