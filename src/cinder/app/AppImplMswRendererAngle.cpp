@@ -55,16 +55,17 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 {
 	mWnd = wnd;
 	
-	EGLint configAttribList[] = {
-		EGL_RED_SIZE,       8,
-		EGL_GREEN_SIZE,     8,
-		EGL_BLUE_SIZE,      8,
-		EGL_ALPHA_SIZE,     EGL_DONT_CARE,
-		EGL_DEPTH_SIZE,     24,
-		EGL_STENCIL_SIZE,   EGL_DONT_CARE,
-		EGL_SAMPLE_BUFFERS, 0,
-		EGL_NONE
-	};
+	std::vector<EGLint> configAttribs;
+	configAttribs.push_back( EGL_RED_SIZE ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_GREEN_SIZE ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_BLUE_SIZE ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_ALPHA_SIZE ); configAttribs.push_back( EGL_DONT_CARE );
+	configAttribs.push_back( EGL_DEPTH_SIZE ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
+	configAttribs.push_back( EGL_STENCIL_SIZE ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
+// multisampling doesn't currently appear to work
+//	configAttribs.push_back( EGL_SAMPLE_BUFFERS ); configAttribs.push_back( 1 );
+	configAttribs.push_back( EGL_NONE );
+
 	EGLint surfaceAttribList[] =
 	{
 		EGL_NONE, EGL_NONE
@@ -90,7 +91,7 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 
 	EGLint configCount;
 	EGLConfig config;
-	if( ! eglChooseConfig( mDisplay, configAttribList, &config, 1, &configCount ) || (configCount != 1) )
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) )
 		return false;
 
 	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
