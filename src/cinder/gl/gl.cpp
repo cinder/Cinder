@@ -610,6 +610,17 @@ void endTransformFeedback()
 	auto ctx = gl::context();
 	ctx->endTransformFeedback();
 }
+
+void patchParameteri( GLenum pname, GLint value )
+{
+	glPatchParameteri( pname, value );
+}
+
+void patchParameterfv( GLenum pname, GLfloat *value )
+{
+	glPatchParameterfv( pname, value );
+}
+
 #endif
 
 void color( float r, float g, float b )
