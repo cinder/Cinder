@@ -163,6 +163,7 @@ Fbo::Format::Format()
 	
 	mDepthBufferInternalFormat = getDefaultDepthInternalFormat();
 	mDepthBuffer = true;
+	mDepthTexture = false;
 	
 	mSamples = 0;
 	mCoverageSamples = 0;
