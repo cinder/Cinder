@@ -127,6 +127,8 @@ class Vao;
 typedef std::shared_ptr<Vao>			VaoRef;
 class Fbo;
 typedef std::shared_ptr<Fbo>			FboRef;
+class Renderbuffer;
+typedef std::shared_ptr<Renderbuffer>	RenderbufferRef;
 
 class Context* context();
 class Environment* env();
@@ -271,8 +273,14 @@ void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
 void beginTransformFeedback( GLenum primitiveMode );
 void endTransformFeedback();
 void resumeTransformFeedback();
-void pauseTransformFeedback();	
-#endif // ! defined( CINDER_GL_ES_2 )
+void pauseTransformFeedback();
+
+// Tesselation
+//! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameteri().
+void patchParameteri( GLenum pname, GLint value );
+//! Specifies the parameters that will be used for patch primitives. Analogous to glPatchParameterfv().
+void patchParameterfv( GLenum pname, GLfloat *value );
+#endif
 	
 void color( float r, float g, float b );
 void color( float r, float g, float b, float a );
@@ -309,6 +317,10 @@ inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWiref
 
 //! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
 void	lineWidth( float width );
+#if ! defined( CINDER_GL_ES )
+//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize.
+void	pointSize( float size );
+#endif
 
 //! Converts a geom::Primitive to an OpenGL primitive mode( GL_TRIANGLES, GL_TRIANGLE_STRIP, etc )
 GLenum toGl( geom::Primitive prim );
@@ -408,6 +420,13 @@ inline void	vertexAttrib( GLuint index, float v0, float v1, float v2, float v3 )
 
 // Buffers
 void	bindBuffer( const BufferObjRef &buffer );
+#if ! defined( CINDER_GL_ES_2 )
+//! Specifies a color buffer as the source for subsequent glReadPixels(), glCopyTexImage2D(), glCopyTexSubImage2D(), and glCopyTexSubImage3D() commands. Analogous to glReadBuffer().
+void	readBuffer( GLenum src );
+#endif
+
+//! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
+void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
 
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
@@ -577,6 +596,17 @@ struct ScopedFaceCulling : public boost::noncopyable
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
+};
+
+//! Scopes state of Renderbuffer binding
+struct ScopedRenderbuffer : public boost::noncopyable
+{
+	ScopedRenderbuffer( const RenderbufferRef &rb );
+	ScopedRenderbuffer( GLenum target, GLuint id );
+	~ScopedRenderbuffer();
+	
+  private:
+	Context		*mCtx;
 };
 
 class Exception : public cinder::Exception {

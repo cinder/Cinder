@@ -311,30 +311,87 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Rect
-float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
-float Rect::sColors[4*3] = { 1, 0, 1,	0, 0, 1,	1, 1, 1,	0, 1, 1 };
-float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
+//float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
+//float Rect::sColors[4*3] = { 1, 0, 1,	0, 0, 1,	1, 1, 1,	0, 1, 1 };
+//float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
 float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
-	: mScale( 1 )
 {
 	enable( Attrib::POSITION );	
 	enable( Attrib::TEX_COORD_0 );
 	enable( Attrib::NORMAL );
+	
+	// upper-right, upper-left, lower-right, lower-left
+	mPositions[0] = vec2(  0.5f, -0.5f );
+	mTexCoords[0] = vec2( 1, 1 );
+	mColors[0] = ColorAf( 1, 0, 1, 1 );	
+	mPositions[1] = vec2( -0.5f, -0.5f );
+	mTexCoords[1] = vec2( 0, 1 );
+	mColors[1] = ColorAf( 0, 0, 1, 1 );	
+	mPositions[2] = vec2(  0.5f,  0.5f );
+	mTexCoords[2] = vec2( 1, 0 );
+	mColors[2] = ColorAf( 1, 1, 1, 1 );
+	mPositions[3] = vec2( -0.5f,  0.5f );
+	mTexCoords[3] = vec2( 0, 0 );
+	mColors[3] = ColorAf( 0, 1, 1, 1 );
+}
+
+Rect::Rect( const Rectf &r )
+{
+	enable( Attrib::POSITION );	
+	enable( Attrib::TEX_COORD_0 );
+	enable( Attrib::NORMAL );
+	
+	rect( r );
+	
+	// upper-right, upper-left, lower-right, lower-left
+	mTexCoords[0] = vec2( 1, 1 );
+	mColors[0] = ColorAf( 1, 0, 1, 1 );
+	mTexCoords[1] = vec2( 0, 1 );
+	mColors[1] = ColorAf( 0, 0, 1, 1 );	
+	mTexCoords[2] = vec2( 1, 0 );
+	mColors[2] = ColorAf( 1, 1, 1, 1 );
+	mTexCoords[3] = vec2( 0, 0 );
+	mColors[3] = ColorAf( 0, 1, 1, 1 );
+}
+
+Rect& Rect::rect( const Rectf &r )
+{ 
+	mPositions[0] = r.getUpperRight();
+	mPositions[1] = r.getUpperLeft();
+	mPositions[2] = r.getLowerRight();
+	mPositions[3] = r.getLowerLeft();
+	return *this;
+}
+
+Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
+{
+	enable( Attrib::COLOR );
+	mColors[0] = upperRight;
+	mColors[1] = upperLeft;
+	mColors[2] = lowerRight;
+	mColors[3] = lowerLeft;
+	return *this;
+}
+
+Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft )
+{
+	enable( Attrib::TEX_COORD_0 );
+	mTexCoords[0] = upperRight;
+	mTexCoords[1] = upperLeft;
+	mTexCoords[2] = lowerRight;
+	mTexCoords[3] = lowerLeft;
+	return *this;
 }
 
 void Rect::loadInto( Target *target ) const
 {
-	unique_ptr<vec2[]> positions( new vec2[4] );
-	for( size_t p = 0; p < 4; ++p )
-		positions.get()[p] = vec2( sPositions[p*2+0], sPositions[p*2+1] ) * mScale + mPos;
-
-	target->copyAttrib( Attrib::POSITION, 2, 0, value_ptr( *positions.get() ), 4 );
+	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
 	if( isEnabled( Attrib::COLOR ) )
-		target->copyAttrib( Attrib::COLOR, 3, 0, sColors, 4 );
+		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
 	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, sTexCoords, 4 );
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
 	if( isEnabled( Attrib::NORMAL ) )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 4 );
 }
@@ -342,12 +399,12 @@ void Rect::loadInto( Target *target ) const
 uint8_t	Rect::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 2;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 2;
+		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 4 : 0;
+		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
+		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		default:
+			return 0;
 	}
 }
 

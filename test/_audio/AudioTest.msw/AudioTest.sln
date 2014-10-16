@@ -1,59 +1,59 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeTest", "..\NodeTest\vc2012\NodeTest.vcxproj", "{F9F68040-3C5E-4DBE-B809-FD0BF117E5BA}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeTest", "..\NodeTest\vc2013\NodeTest.vcxproj", "{F9F68040-3C5E-4DBE-B809-FD0BF117E5BA}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EffectsXAudioTest", "..\EffectsXAudioTest\vc2012\EffectsXAudioTest.vcxproj", "{097EFD94-710C-4FDD-B40B-EB79FE034F0B}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EffectsXAudioTest", "..\EffectsXAudioTest\vc2013\EffectsXAudioTest.vcxproj", "{097EFD94-710C-4FDD-B40B-EB79FE034F0B}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio2Unit", "..\unit\vc2012\Audio2Unit.vcxproj", "{C812F577-7750-4839-8814-D6ED2435A817}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Audio2Unit", "..\unit\vc2013\Audio2Unit.vcxproj", "{C812F577-7750-4839-8814-D6ED2435A817}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeviceTest", "..\DeviceTest\vc2012\DeviceTest.vcxproj", "{74DC81AA-4A14-4966-BB88-794EB0C0F354}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DeviceTest", "..\DeviceTest\vc2013\DeviceTest.vcxproj", "{74DC81AA-4A14-4966-BB88-794EB0C0F354}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamTest", "..\ParamTest\vc2012\ParamTest.vcxproj", "{A8EA7518-49AF-4238-B769-DB509F20342F}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ParamTest", "..\ParamTest\vc2013\ParamTest.vcxproj", "{A8EA7518-49AF-4238-B769-DB509F20342F}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleTest", "..\SampleTest\vc2012\SampleTest.vcxproj", "{20E84023-6E68-4387-B158-0A13FDA53646}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleTest", "..\SampleTest\vc2013\SampleTest.vcxproj", "{20E84023-6E68-4387-B158-0A13FDA53646}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpectralTest", "..\SpectralTest\vc2012\SpectralTest.vcxproj", "{A576F01A-FF4D-44BE-BB7F-D589F7F3A376}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SpectralTest", "..\SpectralTest\vc2013\SpectralTest.vcxproj", "{A576F01A-FF4D-44BE-BB7F-D589F7F3A376}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WaveTableTest", "..\WaveTableTest\vc2012\WaveTableTest.vcxproj", "{276DA6AE-F82B-4757-9A51-9E1C9BCE12B2}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "WaveTableTest", "..\WaveTableTest\vc2013\WaveTableTest.vcxproj", "{276DA6AE-F82B-4757-9A51-9E1C9BCE12B2}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StressTest", "..\StressTest\vc2012\StressTest.vcxproj", "{1620909D-C0A6-4C43-BB27-1AA36859A81E}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "StressTest", "..\StressTest\vc2013\StressTest.vcxproj", "{1620909D-C0A6-4C43-BB27-1AA36859A81E}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceTest", "..\VoiceTest\vc2012\VoiceTest.vcxproj", "{98CAE2B2-EEA1-40AF-9A94-9EAC23268D25}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "VoiceTest", "..\VoiceTest\vc2013\VoiceTest.vcxproj", "{98CAE2B2-EEA1-40AF-9A94-9EAC23268D25}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeEffectsTest", "..\NodeEffectsTest\vc2012\NodeEffectsTest.vcxproj", "{A4E4C761-C966-49BC-B393-7DB37AD2D367}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NodeEffectsTest", "..\NodeEffectsTest\vc2013\NodeEffectsTest.vcxproj", "{A4E4C761-C966-49BC-B393-7DB37AD2D367}"
 	ProjectSection(ProjectDependencies) = postProject
 		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE} = {92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\vc2012\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\vc2013\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

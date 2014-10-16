@@ -36,8 +36,10 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/Log.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/ConstantStrings.h"
+#include "cinder/ip/Flip.h"
 
 using namespace std;
 
@@ -95,7 +97,7 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 	if( ! csaaSupported )
 		mCoverageSamples = 0;
 
-	glBindRenderbuffer( GL_RENDERBUFFER, mId );
+	gl::ScopedRenderbuffer rbb( GL_RENDERBUFFER, mId );
 
 #if defined( SUPPORTS_MULTISAMPLE )
   #if defined( CINDER_MSW )  && ( ! defined( CINDER_GL_ES ) )
@@ -125,6 +127,10 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 
 Renderbuffer::~Renderbuffer()
 {
+	auto ctx = context();
+	if( ctx )
+		ctx->renderbufferDeleted( this );
+	
 	if( mId )
 		glDeleteRenderbuffers( 1, &mId );
 }
@@ -367,8 +373,10 @@ void Fbo::setAllDrawBuffers()
 		if( textureAttachment.first >= GL_COLOR_ATTACHMENT0 && textureAttachment.first <= MAX_COLOR_ATTACHMENT )
 			drawBuffers.push_back( textureAttachment.first );
 
-	if( ! drawBuffers.empty() )
+	if( ! drawBuffers.empty() ) {
+		std::sort( drawBuffers.begin(), drawBuffers.end() );
 		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
+	}
 	else {
 		GLenum none = GL_NONE;
 		glDrawBuffers( 1, &none );
@@ -546,16 +554,16 @@ void Fbo::resolveTextures() const
 
 		ctx->pushFramebuffer( GL_DRAW_FRAMEBUFFER, mId );
 		ctx->pushFramebuffer( GL_READ_FRAMEBUFFER, mMultisampleFramebufferId );
-		
-        vector<GLenum> drawBuffers;
+
+		vector<GLenum> drawBuffers;
 		for( GLenum c = GL_COLOR_ATTACHMENT0; c <= MAX_COLOR_ATTACHMENT; ++c ) {
             auto colorAttachmentIt = mAttachmentsTexture.find( c );
             if( colorAttachmentIt != mAttachmentsTexture.end() ) {
                 glDrawBuffers( 1, &colorAttachmentIt->first );
                 glReadBuffer( colorAttachmentIt->first );
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
-                drawBuffers.push_back( colorAttachmentIt->first );
-            }
+				drawBuffers.push_back( colorAttachmentIt->first );
+			}
 		}
 
 		// restore the draw buffers to the default for the antialiased (non-resolve) framebuffer
@@ -688,7 +696,49 @@ void Fbo::setLabel( const std::string &label )
 	env()->objectLabel( GL_FRAMEBUFFER, mId, (GLsizei)label.size(), label.c_str() );
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+Surface8u Fbo::readPixels8u( const Area &area, GLenum attachment ) const
+{
+	// resolve first, before our own bind so that we don't force a resolve unnecessarily
+	resolveTextures();
+	ScopedFramebuffer readScp( GL_FRAMEBUFFER, mId );
+
+	// we need to determine the bounds of the attachment so that we can crop against it and subtract from its height
+	Area attachmentBounds = getBounds();
+	auto attachedBufferIt = mAttachmentsBuffer.find( attachment );
+	if( attachedBufferIt != mAttachmentsBuffer.end() )
+		attachmentBounds = attachedBufferIt->second->getBounds();
+	else {
+		auto attachedTextureIt = mAttachmentsTexture.find( attachment );	
+		// a texture attachment can be either of type Texture2d or TextureCubeMap but this only makes sense for the former
+		if( attachedTextureIt != mAttachmentsTexture.end() ) {
+			if( typeid(*(attachedTextureIt->second)) == typeid(Texture2d) )
+				attachmentBounds = static_cast<const Texture2d*>( attachedTextureIt->second.get() )->getBounds();
+			else
+				CI_LOG_W( "Reading from an unsupported texture attachment" );	
+		}
+		else // the user has attempted to read from an attachment we have no record of
+			CI_LOG_W( "Reading from unknown attachment" );
+	}
+	
+	Area clippedArea = area.getClipBy( attachmentBounds );
+
+#if ! defined( CINDER_GL_ES_2 )	
+	glReadBuffer( attachment );
+#endif
+	Surface8u result( clippedArea.getWidth(), clippedArea.getHeight(), true );
+	glReadPixels( clippedArea.x1, attachmentBounds.getHeight() - clippedArea.y2, clippedArea.getWidth(), clippedArea.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, result.getData() );
+	
+	// glReadPixels returns pixels which are bottom-up
+	ip::flipVertical( &result );
+	
+	// by binding we marked ourselves as needing to be resolved, but since this was a read-only
+	// operation and we resolved at the top, we can mark ourselves as not needing resolve
+	mNeedsResolve = false;
+	
+	return result;
+}
+
+#if ! defined( CINDER_GL_ES )
 void Fbo::blitTo( Fbo dst, const Area &srcArea, const Area &dstArea, GLenum filter, GLbitfield mask ) const
 {
 	ScopedFramebuffer readScp( GL_READ_FRAMEBUFFER, mId );

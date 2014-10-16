@@ -7,6 +7,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/Fbo.h"
 
 #include "cinder/Utilities.h"
 #include "cinder/Text.h"
@@ -609,7 +610,18 @@ void endTransformFeedback()
 	auto ctx = gl::context();
 	ctx->endTransformFeedback();
 }
-#endif // ! ( CINDER_GL_ES_2 )
+
+void patchParameteri( GLenum pname, GLint value )
+{
+	glPatchParameteri( pname, value );
+}
+
+void patchParameterfv( GLenum pname, GLfloat *value )
+{
+	glPatchParameterfv( pname, value );
+}
+
+#endif
 
 void color( float r, float g, float b )
 {
@@ -742,12 +754,21 @@ bool isWireframeEnabled()
 	return ctx->getPolygonMode( GL_FRONT_AND_BACK ) == GL_LINE;
 }
 
-#endif
+#endif // ! defined( CINDER_GL_ES )
 
 void lineWidth( float width )
 {
 	glLineWidth( width );
 }
+
+#if ! defined( CINDER_GL_ES )
+
+void pointSize( float size )
+{
+	glPointSize( size );
+}
+
+#endif // ! defined( CINDER_GL_ES )
 
 void draw( const VboMeshRef& mesh )
 {
@@ -811,6 +832,18 @@ void vertexAttrib4f( GLuint index, float v0, float v1, float v2, float v3 )
 void bindBuffer( const BufferObjRef &buffer )
 {
 	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
+}
+
+#if ! defined( CINDER_GL_ES_2 )
+void readBuffer( GLenum src )
+{
+	glReadBuffer( src );
+}
+#endif
+
+void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )
+{
+	glReadPixels( x, y, width, height, format, type, data );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2047,6 +2080,27 @@ ScopedFaceCulling::~ScopedFaceCulling()
 	mCtx->popBoolState( GL_CULL_FACE );
 	if( mSaveFace )
 		mCtx->popCullFace();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedRenderbuffer
+ScopedRenderbuffer::ScopedRenderbuffer( const RenderbufferRef &rb )
+	: mCtx( gl::context() )
+{
+	mCtx->pushRenderbufferBinding( GL_RENDERBUFFER, rb->getId() );
+}
+
+ScopedRenderbuffer::ScopedRenderbuffer( GLenum target, GLuint id )
+	: mCtx( gl::context() )
+{
+	// this is the only legal value currently
+	CI_ASSERT( target == GL_RENDERBUFFER );
+	mCtx->pushRenderbufferBinding( target, id );
+}
+
+ScopedRenderbuffer::~ScopedRenderbuffer()
+{
+	mCtx->popRenderbufferBinding( GL_RENDERBUFFER );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
