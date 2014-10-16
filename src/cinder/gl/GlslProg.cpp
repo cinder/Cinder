@@ -316,12 +316,14 @@ GlslProg::GlslProg( const Format &format )
 		}
 		glTransformFeedbackVaryings( mHandle, (GLsizei)format.getVaryings().size(), mTransformFeedbackVaryingsCharStarts->data(), format.getTransformFormat() );
 	}
+#endif
 
+#if ! defined( CINDER_GL_ES )
 	// setup fragment data locations
 	for( const auto &fragDataLocation : format.getFragDataLocations() )
 		glBindFragDataLocation( mHandle, fragDataLocation.second, fragDataLocation.first.c_str() );
 #endif
-	
+
 	link();
 	
 	setLabel( format.getLabel() );

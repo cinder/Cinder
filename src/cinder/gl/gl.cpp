@@ -610,7 +610,9 @@ void endTransformFeedback()
 	auto ctx = gl::context();
 	ctx->endTransformFeedback();
 }
+#endif // ! defined( CINDER_GL_ES_2 )
 
+#if ! defined( CINDER_GL_ES )
 void patchParameteri( GLenum pname, GLint value )
 {
 	glPatchParameteri( pname, value );
@@ -620,8 +622,7 @@ void patchParameterfv( GLenum pname, GLfloat *value )
 {
 	glPatchParameterfv( pname, value );
 }
-
-#endif
+#endif // ! defined( CINDER_GL_ES )
 
 void color( float r, float g, float b )
 {
