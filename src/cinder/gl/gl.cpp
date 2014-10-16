@@ -579,7 +579,7 @@ void end()
 	}
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void bindBufferBase( GLenum target, int index, BufferObjRef buffer )
 {
 	auto ctx = gl::context();
@@ -609,7 +609,7 @@ void endTransformFeedback()
 	auto ctx = gl::context();
 	ctx->endTransformFeedback();
 }
-#endif
+#endif // ! ( CINDER_GL_ES_2 )
 
 void color( float r, float g, float b )
 {

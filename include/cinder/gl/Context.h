@@ -42,10 +42,8 @@ class Vao;
 typedef std::shared_ptr<Vao>			VaoRef;
 class BufferObj;
 typedef std::shared_ptr<BufferObj>		BufferObjRef;
-#if ! defined( CINDER_GL_ES )
 class TransformFeedbackObj;
 typedef std::shared_ptr<TransformFeedbackObj>	TransformFeedbackObjRef;
-#endif
 class Texture2d;
 typedef std::shared_ptr<Texture2d>		Texture2dRef;
 class GlslProg;
@@ -183,7 +181,7 @@ class Context {
 	//! Used by object tracking.
 	void			glslProgDeleted( const GlslProg *glslProg );
 	
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	//! Binds \a ref to the specific \a index within \a target.
 	void bindBufferBase( GLenum target, int index, const BufferObjRef &ref );
 
@@ -383,7 +381,7 @@ class Context {
 	std::vector<GlslProgRef>			mGlslProgStack;
 	std::vector<VaoRef>					mVaoStack;
 	
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;
 #endif
 	

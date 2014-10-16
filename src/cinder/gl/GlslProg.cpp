@@ -38,7 +38,7 @@ GlslProg::AttribSemanticMap		GlslProg::sDefaultAttribNameToSemanticMap;
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
 GlslProg::Format::Format()
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	: mTransformFormat( -1 )
 #endif
 {
@@ -223,7 +223,7 @@ GlslProg::GlslProg( const Format &format )
 	for( auto &attribLoc : attribLocations )
 		glBindAttribLocation( mHandle, attribLoc.second, attribLoc.first.c_str() );
 	
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
 		// This is a mess due to an NVidia driver bug on MSW which expects the memory passed to glTransformFeedbackVaryings
 		// to still be around after the call. We allocate the storage and put it on the GlslProg itself to be freed at destruction
@@ -240,7 +240,7 @@ GlslProg::GlslProg( const Format &format )
 			memcpy( &(*mTransformFeedbackVaryingsChars)[curOffset], v.c_str(), v.length() + 1 );
 			curOffset += v.length() + 1;
 		}
-		glTransformFeedbackVaryings( mHandle, format.getVaryings().size(), mTransformFeedbackVaryingsCharStarts->data(), format.getTransformFormat() );
+		glTransformFeedbackVaryings( mHandle, (GLsizei)format.getVaryings().size(), mTransformFeedbackVaryingsCharStarts->data(), format.getTransformFormat() );
 	}
 #endif
 	

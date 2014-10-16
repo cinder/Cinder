@@ -265,14 +265,14 @@ inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 void begin( GLenum mode );
 void end();
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
 	
 void beginTransformFeedback( GLenum primitiveMode );
 void endTransformFeedback();
 void resumeTransformFeedback();
 void pauseTransformFeedback();	
-#endif
+#endif // ! defined( CINDER_GL_ES_2 )
 	
 void color( float r, float g, float b );
 void color( float r, float g, float b, float a );

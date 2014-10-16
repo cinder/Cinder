@@ -541,7 +541,7 @@ void Context::restoreInvalidatedBufferBinding( GLenum target )
 	}
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
 {
 	switch (target) {
