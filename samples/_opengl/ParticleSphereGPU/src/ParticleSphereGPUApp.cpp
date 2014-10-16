@@ -37,8 +37,12 @@ struct Particle
 	float	damping;
 };
 
-// Home many particles to create. (600k default)
+// How many particles to create. (600k default)
+#if defined( CINDER_GL_ES ) // ES devices can't handle as many particles as the desktop
+const int NUM_PARTICLES = 600e2;
+#else
 const int NUM_PARTICLES = 600e3;
+#endif
 
 /**
 	Simple particle simulation with Verlet integration and mouse interaction.
@@ -76,6 +80,7 @@ class ParticleSphereGPUApp : public AppNative {
 void ParticleSphereGPUApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize( 1280, 720 );
+	settings->enableMultiTouch( false );
 }
 
 void ParticleSphereGPUApp::setup()
@@ -130,7 +135,12 @@ void ParticleSphereGPUApp::setup()
 
 	// Load our update program.
 	// Match up our attribute locations with the description we gave.
+#if defined( CINDER_GL_ES_3 )
+	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate_es3.vs" ) )
+		.fragment( loadAsset( "no_op_es3.fs" ) )
+#else
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate.vs" ) )
+#endif
 		.feedbackFormat( GL_INTERLEAVED_ATTRIBS )
 		.feedbackVaryings( { "position", "pposition", "home", "color", "damping" } )
 		.attribLocation( "iPosition", 0 )
