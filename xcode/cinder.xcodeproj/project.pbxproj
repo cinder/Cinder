@@ -26,9 +26,6 @@
 		0003F3E81992D64100647C8B /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
 		0003F3E91992D64100647C8B /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
 		0003F3EA1992D64100647C8B /* EnvironmentCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C41992D64100647C8B /* EnvironmentCore.cpp */; };
-		0003F3ED1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
-		0003F3EE1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
-		0003F3EF1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
 		0003F3F01992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F11992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F21992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
@@ -640,6 +637,8 @@
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
+		00AD0D2E19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
+		00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
 		00B1337710FBBB8900AC7369 /* Shape2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B1337610FBBB8900AC7369 /* Shape2d.h */; };
 		00B1337910FBBBCC00AC7369 /* Shape2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B1337810FBBBCC00AC7369 /* Shape2d.cpp */; };
 		00B4F3E10F5394C500B75296 /* AppBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B4F3E00F5394C500B75296 /* AppBasic.h */; };
@@ -1126,7 +1125,6 @@
 		0003F3C21992D64100647C8B /* Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Context.cpp; path = gl/Context.cpp; sourceTree = "<group>"; };
 		0003F3C31992D64100647C8B /* Environment.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Environment.cpp; path = gl/Environment.cpp; sourceTree = "<group>"; };
 		0003F3C41992D64100647C8B /* EnvironmentCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentCore.cpp; path = gl/EnvironmentCore.cpp; sourceTree = "<group>"; };
-		0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs2.cpp; path = gl/EnvironmentEs2.cpp; sourceTree = "<group>"; };
 		0003F3C61992D64100647C8B /* Fbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fbo.cpp; path = gl/Fbo.cpp; sourceTree = "<group>"; };
 		0003F3C71992D64100647C8B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
 		0003F3C81992D64100647C8B /* GlslProg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlslProg.cpp; path = gl/GlslProg.cpp; sourceTree = "<group>"; };
@@ -1382,6 +1380,7 @@
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
 		00AA5C860F64851C009CD67F /* AppScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreenSaver.h; path = app/AppScreenSaver.h; sourceTree = "<group>"; };
+		00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs.cpp; path = gl/EnvironmentEs.cpp; sourceTree = "<group>"; };
 		00B1337610FBBB8900AC7369 /* Shape2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape2d.h; sourceTree = "<group>"; };
 		00B1337810FBBBCC00AC7369 /* Shape2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2d.cpp; sourceTree = "<group>"; };
 		00B4F3E00F5394C500B75296 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppBasic.h; path = app/AppBasic.h; sourceTree = "<group>"; };
@@ -2159,7 +2158,7 @@
 				0003F3C21992D64100647C8B /* Context.cpp */,
 				0003F3C31992D64100647C8B /* Environment.cpp */,
 				0003F3C41992D64100647C8B /* EnvironmentCore.cpp */,
-				0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */,
+				00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */,
 				0003F3C61992D64100647C8B /* Fbo.cpp */,
 				0003F3C71992D64100647C8B /* gl.cpp */,
 				0003F3C81992D64100647C8B /* GlslProg.cpp */,
@@ -3250,7 +3249,6 @@
 				007050531114F93F003FCAE4 /* Stream.cpp in Sources */,
 				111A5FA8191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F26191F727A005C3166 /* framing.c in Sources */,
-				0003F3EE1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				007050571114F93F003FCAE4 /* Color.cpp in Sources */,
 				111A5FC0191F72AE005C3166 /* Device.cpp in Sources */,
 				007050581114F93F003FCAE4 /* Rect.cpp in Sources */,
@@ -3366,6 +3364,7 @@
 				00A121EE1362778200081873 /* Tween.cpp in Sources */,
 				0003F4151992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF0191F72AE005C3166 /* Node.cpp in Sources */,
+				00AD0D2E19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
 				005C0CEE14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				111A5F5F191F7286005C3166 /* info.c in Sources */,
 				0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */,
@@ -3431,7 +3430,6 @@
 				00CFD9A41135C3520091E310 /* Stream.cpp in Sources */,
 				111A5FA9191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F28191F727B005C3166 /* framing.c in Sources */,
-				0003F3EF1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				00CFD9A51135C3520091E310 /* Color.cpp in Sources */,
 				111A5FC1191F72AE005C3166 /* Device.cpp in Sources */,
 				00CFD9A61135C3520091E310 /* Rect.cpp in Sources */,
@@ -3547,6 +3545,7 @@
 				0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0003F4161992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF1191F72AE005C3166 /* Node.cpp in Sources */,
+				00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
 				0041730514C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				111A5F36191F7285005C3166 /* info.c in Sources */,
 				43F78EF41516DAB700EB63B5 /* Json.cpp in Sources */,
@@ -3709,7 +3708,6 @@
 				00419C7611057CC6007EC9AD /* Trim.cpp in Sources */,
 				001E3561115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */,
-				0003F3ED1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				111A5FBF191F72AE005C3166 /* Device.cpp in Sources */,
 				111A5EA4191F703D005C3166 /* bitwise.c in Sources */,
 				0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */,
