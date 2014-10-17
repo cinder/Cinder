@@ -11,7 +11,7 @@
 #include "cinder/params/Params.h"
 
 // Define this to blow up the selection area that is picked.
-//#define DEBUG_PICKING 1
+// #define DEBUG_PICKING 1
 
 using namespace ci;
 using namespace ci::app;
@@ -124,7 +124,9 @@ void PickingFBOApp::draw()
 		gl::color( Color::white() );
 		gl::draw( mDebugTexture, Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
 	}
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
+#endif
 	gl::enableDepthRead();
 }
 
@@ -145,7 +147,9 @@ void PickingFBOApp::renderScene()
 	gl::enableDepthWrite();
 
 	// Draw scene.
-	gl::pointSize( 6.0f );
+#if ! defined( CINDER_GL_ES )
+	gl::pointSize( 6.0f ); // this is defined in the vertex shader in ES 3
+#endif
 	gl::pushMatrices();
 	gl::setMatrices( mMayaCam.getCamera() );
 	mGridMesh->draw();
@@ -183,6 +187,7 @@ int PickingFBOApp::pick( const ivec2 &mousePos )
 {
 	// read the surrounding region where the user has clicked and iterate the pixels, counting the most common index
 	Surface8u pixels = mFbo->readPixels8u( Area( mousePos - ivec2( mPickPixelSize / 2 ), mousePos + ivec2( mPickPixelSize / 2 ) ), GL_COLOR_ATTACHMENT1 );
+
 	std::map<int, int> voteCount;
 	for( int32_t y = 0; y < pixels.getHeight(); ++y ) {
 		for( int32_t x = 0; x < pixels.getWidth(); ++x ) {
@@ -211,9 +216,11 @@ int PickingFBOApp::pick( const ivec2 &mousePos )
 
 void PickingFBOApp::setupParams()
 {
+#if ! defined( CINDER_GL_ES )
 	mParams = params::InterfaceGl::create( "Settings", ivec2( 200, 60 ) );
 	mParams->addParam( "Select Vertices", &mSelectVertices ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
 	mParams->addParam( "Select Edges", &mSelectEdges ).updateFn( [&] { setPickingColors( mSelectVertices, mSelectEdges ); renderScene(); } );
+#endif
 }
 
 void PickingFBOApp::setupGeometry()
@@ -321,17 +328,17 @@ void PickingFBOApp::setupFbo()
 void PickingFBOApp::setupShader()
 {
 	try {
+#if defined(CINDER_GL_ES_3)
+		mPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "pickable_es3.vs.glsl" ) )
+			.fragment( loadAsset( "pickable_es3.fs.glsl" ) ) );
+		mNotPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "not_pickable_es3.vs.glsl" ) )
+			.fragment( loadAsset( "pickable_es3.fs.glsl" ) ) );
+#else
 		mPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "pickable.vs.glsl" ) )
 			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
-	}
-	catch( ci::Exception &exc ) {
-		CI_LOG_E( "Shader load error: " << exc.what() );
-		shutdown();
-	}
-
-	try {
 		mNotPickableProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "not_pickable.vs.glsl" ) )
 			.fragment( loadAsset( "pickable.fs.glsl" ) ).fragDataLocation( 0, "oColor" ).fragDataLocation( 1, "oPickingColor" ) );
+#endif
 	}
 	catch( ci::Exception &exc ) {
 		CI_LOG_E( "Shader load error: " << exc.what() );
