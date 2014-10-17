@@ -707,10 +707,6 @@ class ResourceLoadExc : public Exception {
 	ResourceLoadExc( int mswID, const std::string &mswType );
 	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
 #endif
-
-	virtual const char * what() const throw() { return mMessage; }
-
-	char mMessage[4096];
 };
 
 //! Exception for failed asset loading

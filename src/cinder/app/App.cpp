@@ -578,29 +578,25 @@ ivec2 App::getMousePos()
 #if defined( CINDER_COCOA )
 ResourceLoadExc::ResourceLoadExc( const string &macPath )
 {
-	sprintf( mMessage, "Failed to load resource: %s", macPath.c_str() );
+	setDescription( "Failed to load resource: " + macPath );
 }
 
 #elif defined( CINDER_MSW )
 
 ResourceLoadExc::ResourceLoadExc( int mswID, const string &mswType )
 {
-	sprintf( mMessage, "Failed to load resource: #%d type: %s", mswID, mswType.c_str() );
+	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
 }
 
 ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string &mswType )
 {
-	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
+	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType + " Mac path: " + macPath );
 }
 #endif // defined( CINDER_MSW )
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
+	: Exception( relativePath.string() )
 {
-#if defined( CINDER_WINRT )
-	strncpy_s( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
-#else
-	strncpy( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
-#endif
 }
 
 } } // namespace cinder::app

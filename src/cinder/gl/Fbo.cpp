@@ -825,5 +825,4 @@ mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
 	return result;
 }
 
-
 } } // namespace cinder::gl
