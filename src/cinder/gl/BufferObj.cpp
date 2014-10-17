@@ -135,7 +135,10 @@ void* BufferObj::mapWriteOnly( bool invalidatePrevious )
 	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
 #else	
 	// ES 3 has only glMapBufferRange
-	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, GL_MAP_WRITE_BIT | GL_MAP_INVALIDATE_BUFFER_BIT ) );
+	GLbitfield access = GL_MAP_WRITE_BIT;
+	if( invalidatePrevious )
+		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
+	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
 #endif
 }
 
