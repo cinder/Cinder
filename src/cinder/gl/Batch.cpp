@@ -152,7 +152,7 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	ctx->pushBufferBinding( GL_ARRAY_BUFFER );
 
 	mVao = Vao::create();
-	ScopedVao ScopedVao( mVao );
+	ctx->pushVao( mVao );
 	
 	std::set<geom::Attrib> enabledAttribs;
 	// iterate all the vertex array VBOs
@@ -190,6 +190,7 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	if( mNumIndices > 0 )
 		mIndices->bind();
 
+	ctx->popVao();
 	ctx->popBufferBinding( GL_ARRAY_BUFFER );
 
 	mAttribMapping = attributeMapping;
@@ -345,9 +346,6 @@ void VertBatch::draw()
 	auto ctx = context();
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( mPrimType, 0, mVertices.size() );
-	
-	// this was set by setupBuffers
-	ctx->popVao();
 }
 
 // Leaves mVAO bound
@@ -403,7 +401,7 @@ void VertBatch::setupBuffers()
 	}
 
 	// Setup the VAO
-	ctx->pushVao();
+	ctx->pushVao(); // this will be popped by draw()
 	if( ! mOwnsBuffers )
 		mVao->replacementBindBegin();
 	else {
@@ -442,6 +440,7 @@ void VertBatch::setupBuffers()
 	
 	if( ! mOwnsBuffers )
 		mVao->replacementBindEnd();
+	ctx->popVao();
 }
 
 } } // namespace cinder::gl
