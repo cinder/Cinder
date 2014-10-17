@@ -15,7 +15,7 @@ using namespace std;
 class CubeMapLayoutApp : public AppNative
 {
 public:
-    void prepareSettings ( Settings * settings );
+	void prepareSettings ( Settings * settings );
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
@@ -31,7 +31,7 @@ public:
 
 void CubeMapLayoutApp::prepareSettings( Settings * settings )
 {
-    settings->setWindowSize( 1280, 720 );
+	settings->setWindowSize( 1280, 720 );
 }
 
 void CubeMapLayoutApp::setup()
