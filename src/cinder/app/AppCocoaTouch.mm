@@ -23,6 +23,7 @@
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/app/CinderViewCocoaTouch.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
+#include "cinder/Log.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -442,8 +443,8 @@ void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 		::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
 	}
 	catch( std::exception &e ) {
-		std::cout << "Uncaught Exception: " << e.what() << std::endl;
-		throw e;
+		CI_LOG_E( "Uncaught Exception: " << e.what() );
+		throw;
 	}
 }
 
