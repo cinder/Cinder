@@ -38,14 +38,19 @@
 
 using namespace std;
 
-// ES 2 Multisampling is available on iOS via an extension
-#if ! defined( CINDER_GL_ES ) || ( defined( CINDER_COCOA_TOUCH ) )
+// ES 2 Multisampling is available on iOS and ANGLE via an extension
+#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
 	#define SUPPORTS_FBO_MULTISAMPLING
 	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
 		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 	#endif
 #endif
 
@@ -73,7 +78,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao );
 	mDefaultVao->setContext( this );
@@ -89,7 +94,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	 
 	mReadFramebufferStack.push_back( 0 );
 	mDrawFramebufferStack.push_back( 0 );	
-#elif defined( CINDER_GL_ANGLE )
+#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_GL_ANGLE )
 	mFramebufferStack.push_back( 0 );
 #endif
 	mDefaultArrayVboIdx = 0;

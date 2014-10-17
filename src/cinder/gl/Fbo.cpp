@@ -138,7 +138,7 @@ Renderbuffer::~Renderbuffer()
 void Renderbuffer::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	env()->objectLabel( GL_RENDERBUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
@@ -172,7 +172,7 @@ Fbo::Format::Format()
 
 GLint Fbo::Format::getDefaultColorInternalFormat( bool alpha )
 {
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return GL_RGBA;
 #else
 	return GL_RGBA8;
@@ -609,6 +609,7 @@ void Fbo::bindFramebuffer( GLenum target )
 {
 	// This in turn will call bindFramebufferImpl; indirection is so that the Context can update its cache of the active Fbo
 	gl::context()->bindFramebuffer( shared_from_this(), target );
+	markAsDirty();
 }
 
 void Fbo::unbindFramebuffer()
