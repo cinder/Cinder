@@ -250,8 +250,6 @@ void PickingFBOApp::setupGeometry()
 
 	gl::VboMesh::Layout layout;
 	layout.usage( GL_STATIC_DRAW ).attrib( geom::POSITION, 3 ).attrib( geom::COLOR, 4 ).attrib( geom::CUSTOM_0, 4 );
-	geom::BufferLayout instanceDataLayout;
-	instanceDataLayout.append( geom::Attrib::CUSTOM_0, 3, 0, 0, 1 /* per instance */ );
 
 	mEdgesMesh = gl::VboMesh::create( edgePositions.size(), GL_LINES, { layout } );
 	mVerticesMesh = gl::VboMesh::create( vertexPositions.size(), GL_POINTS, { layout } );
