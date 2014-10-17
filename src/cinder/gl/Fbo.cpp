@@ -825,12 +825,5 @@ mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
 	return result;
 }
 
-FboExceptionInvalidSpecification::FboExceptionInvalidSpecification( const string &message ) throw()
-	: FboException()
-{
-	strncpy( mMessage, message.c_str(), 255 );
-}
-
-#undef GL_SUFFIX
 
 } } // namespace cinder::gl

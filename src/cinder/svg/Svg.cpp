@@ -2274,9 +2274,9 @@ void Doc::renderSelf( Renderer &renderer ) const
 	Group::renderSelf( renderer );
 }
 
-ExcChildNotFound::ExcChildNotFound( const string &child ) throw()
+ExcChildNotFound::ExcChildNotFound( const string &child )
 {
-	sprintf( mMessage, "Could not find child: %s", child.c_str() );
+	setDescription( "Could not find child: " + child );
 }
 
 } } // namespace cinder::svg

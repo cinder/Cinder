@@ -23,6 +23,7 @@
 #pragma once
 
 #include <exception>
+#include <string>
 
 namespace cinder {
 
@@ -30,7 +31,16 @@ namespace cinder {
 class Exception : public std::exception {
   public:
 	Exception();
+	Exception( const std::string &description );
+
 	virtual ~Exception() throw() {}
+
+	virtual const char* what() const throw() override	{ return mDescription.c_str(); }
+
+protected:
+	void	setDescription( const std::string &description );
+private:
+	std::string mDescription;
 };
 
 } // namespace cinder

@@ -24,6 +24,7 @@
 
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/ip/Fill.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 
@@ -74,7 +75,7 @@ Surface8u convertHBitmap( HBITMAP hbitmap )
 	result.setDeallocator( surfaceDeallocatorGlobalAlloc, data );
 	
 	if( ::GetDIBits( hdc, hbitmap, 0, height, result.getData(), &bmi, DIB_RGB_COLORS ) == 0 )
-		throw std::exception( "Invalid HBITMAP" );
+		throw Exception( "Invalid HBITMAP" );
 	
 	::ReleaseDC( NULL, hdc );
 
@@ -153,16 +154,16 @@ std::wstring toWideString( const std::string &utf8String )
 {
 	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, NULL, 0 );
 	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
-		throw std::exception( "Invalid UTF-8 sequence." );
+		throw Exception( "Invalid UTF-8 sequence." );
 	}
 	else if( wideSize == 0 ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
 	}
 
 	std::vector<wchar_t> resultString( wideSize );
 	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, &resultString[0], wideSize );
 	if( convResult != wideSize ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
 	}
 
 	return std::wstring( &resultString[0] );
@@ -172,7 +173,7 @@ std::string toUtf8String( const std::wstring &wideString )
 {
 	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, NULL, 0, NULL, NULL );
 	if( utf8Size == 0 ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
+		throw Exception( "Error in UTF-16 to UTF-8 conversion." );
 	}
 
 	std::vector<char> resultString( utf8Size );
@@ -180,7 +181,7 @@ std::string toUtf8String( const std::wstring &wideString )
 	int convResult = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, &resultString[0], utf8Size, NULL, NULL );
 
 	if( convResult != utf8Size ) {
-		throw std::exception( "Error in UTF-16 to UTF-8 conversion." );
+		throw Exception( "Error in UTF-16 to UTF-8 conversion." );
 	}
 
 	return std::string( &resultString[0] );

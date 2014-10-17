@@ -150,11 +150,9 @@ class UrlLoadExc : public Exception {
   public:
 	UrlLoadExc( int statusCode, const std::string &message );
 
-	virtual const char * what() const throw() { return mMessage.c_str(); }
 	int statusCode() const { return mStatusCode; }
 
   private:
-	std::string		mMessage;
 	int				mStatusCode;
 };
 

@@ -327,17 +327,15 @@ class FboCubeMap : public Fbo {
 };
 
 class FboException : public Exception {
+  public:
+	FboException()	{}
+	FboException( const std::string &description ) : Exception( description )	{}
 };
 
 class FboExceptionInvalidSpecification : public FboException {
   public:
-	FboExceptionInvalidSpecification() : FboException() { mMessage[0] = 0; }
-	FboExceptionInvalidSpecification( const std::string &message ) throw();
-	
-	virtual const char * what() const throw() { return mMessage; }
-	
-  private:	
-	char	mMessage[256];
+	FboExceptionInvalidSpecification()	{}
+	FboExceptionInvalidSpecification( const std::string &description ) : FboException( description )	{}
 };
 
 } } // namespace cinder::gl

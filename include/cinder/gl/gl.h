@@ -597,6 +597,9 @@ struct ScopedRenderbuffer : public boost::noncopyable
 };
 
 class Exception : public cinder::Exception {
+  public:
+	Exception()	{}
+	Exception( const std::string &description ) : cinder::Exception( description )	{}
 };
 
 class ExceptionUnknownTarget : public Exception {

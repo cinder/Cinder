@@ -25,7 +25,11 @@
 namespace cinder {
 
 Exception::Exception()
-	: std::exception() 
+{
+}
+
+Exception::Exception( const std::string &description )
+	: mDescription( description )
 {
 }
 

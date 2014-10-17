@@ -1683,12 +1683,12 @@ void Texture2d::updateFromDds( const DataSourceRef &dataSource, const PboRef &in
 }
 #endif // ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
 
-TextureResizeExc::TextureResizeExc( const string &message, const ivec2 &updateSize, const ivec2 &textureSize )
+TextureResizeExc::TextureResizeExc( const string &description, const ivec2 &updateSize, const ivec2 &textureSize )
 	 : TextureDataExc( "" )
 {
 	stringstream ss;
-	ss << message << ", update size: " << updateSize << ", texture size: " << textureSize << ")";
-	mMessage = ss.str();
+	ss << description << ", update size: " << updateSize << ", texture size: " << textureSize << ")";
+	setDescription( ss.str() );
 }
 
 } } // namespace cinder::gl
