@@ -1415,7 +1415,7 @@ TextureCubeMap::LayoutFn TextureCubeMap::Layout::VERTICAL = []( const ImageSourc
 
 	return std::make_pair( result, offset );
 };
-	
+
 TextureCubeMap::Format::Format()
 	: TextureBase::Format()
 {
@@ -1428,7 +1428,7 @@ TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const F
 {
 	return TextureCubeMapRef( new TextureCubeMap( width, height, format ) );
 }
-	
+
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format )
 {
 	if ( imageSource->getDataType() == ImageIo::UINT8 )
