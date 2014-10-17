@@ -11,18 +11,19 @@
 #include "cinder/params/Params.h"
 
 // Define this to blow up the selection area that is picked.
-// #define DEBUG_PICKING 1
+//#define DEBUG_PICKING 1
 
 using namespace ci;
 using namespace ci::app;
 
 class PickingFBOApp : public AppNative {
   public:
-	virtual void setup() override;
-	virtual void resize() override;
-	virtual void draw() override;
-	virtual void mouseDown( MouseEvent event ) override;
-	virtual void mouseDrag( MouseEvent event ) override;
+	void prepareSettings( Settings *settings ) override { settings->enableMultiTouch( false ); }
+	void setup() override;
+	void resize() override;
+	void draw() override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
 
 	int pick( const ivec2 &mousePos );
 	void setupParams();
@@ -119,7 +120,7 @@ void PickingFBOApp::draw()
 	gl::clear();
 	gl::disableDepthRead();
 	gl::setMatricesWindow( toPixels( getWindowSize() ) );
-	gl::draw( mFbo->getColorTexture(), getWindowBounds() );
+	gl::draw( mFbo->getColorTexture(), toPixels( getWindowBounds() ) );
 	if( mDebugTexture ) {
 		gl::color( Color::white() );
 		gl::draw( mDebugTexture, Rectf( mPickPos.x - mDebugDisplaySize, mPickPos.y - mDebugDisplaySize, mPickPos.x + mDebugDisplaySize, mPickPos.y + mDebugDisplaySize ) );
@@ -165,7 +166,7 @@ void PickingFBOApp::mouseDown( MouseEvent event )
 {
 	restoreDefaultColors();
 
-	mPickPos = event.getPos();
+	mPickPos = toPixels( event.getPos() );
 
 	int selection = pick( mPickPos );
 	if( selection != -1 ) {
@@ -321,8 +322,8 @@ void PickingFBOApp::setupGradient()
 void PickingFBOApp::setupFbo()
 {
 	gl::Fbo::Format fmt;
-	fmt.attachment( GL_COLOR_ATTACHMENT1, gl::Renderbuffer::create( getWindowWidth(), getWindowHeight() ) );
-	mFbo = gl::Fbo::create( getWindowWidth(), getWindowHeight(), fmt );
+	fmt.attachment( GL_COLOR_ATTACHMENT1, gl::Renderbuffer::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) ) );
+	mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ), fmt );
 }
 
 void PickingFBOApp::setupShader()
