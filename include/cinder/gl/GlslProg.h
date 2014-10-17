@@ -282,27 +282,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 
 class GlslProgCompileExc : public Exception {
   public:
-	GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw();
-	virtual const char* what() const throw()
-	{
-		return mMessage.c_str();
-	}
-	
-  private:
-	std::string		mMessage;
-	GLint			mShaderType;
+	GlslProgCompileExc( const std::string &log, GLint shaderType );
 };
 
 class GlslProgLinkExc : public Exception {
   public:
-	GlslProgLinkExc( const std::string &log ) throw() : mMessage( log ) {}
-	virtual const char* what() const throw()
-	{
-		return mMessage.c_str();
-	}
-	
-  private:
-	std::string		mMessage;
+	GlslProgLinkExc( const std::string &log ) : Exception( log ) {}
 };
 
 class GlslNullProgramExc : public Exception {
