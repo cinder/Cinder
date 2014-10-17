@@ -280,17 +280,24 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
 
-class GlslProgCompileExc : public Exception {
+class GlslProgExc : public cinder::gl::Exception {
+  public:
+	GlslProgExc()	{}
+	GlslProgExc( const std::string &description ) : cinder::gl::Exception( description )	{}
+};
+
+
+class GlslProgCompileExc : public GlslProgExc {
   public:
 	GlslProgCompileExc( const std::string &log, GLint shaderType );
 };
 
-class GlslProgLinkExc : public Exception {
+class GlslProgLinkExc : public GlslProgExc {
   public:
-	GlslProgLinkExc( const std::string &log ) : Exception( log ) {}
+	GlslProgLinkExc( const std::string &log ) : GlslProgExc( log ) {}
 };
 
-class GlslNullProgramExc : public Exception {
+class GlslNullProgramExc : public GlslProgExc {
   public:
 	virtual const char* what() const throw()
 	{
