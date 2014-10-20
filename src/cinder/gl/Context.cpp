@@ -78,7 +78,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( SUPPORTS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao );
 	mDefaultVao->setContext( this );
@@ -94,7 +94,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	 
 	mReadFramebufferStack.push_back( 0 );
 	mDrawFramebufferStack.push_back( 0 );	
-#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_GL_ANGLE )
+#else
 	mFramebufferStack.push_back( 0 );
 #endif
 	mDefaultArrayVboIdx = 0;
@@ -549,27 +549,6 @@ void Context::restoreInvalidatedBufferBinding( GLenum target )
 	}
 }
 
-#if ! defined( CINDER_GL_ES_2 )
-void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
-{
-	switch (target) {
-		case GL_TRANSFORM_FEEDBACK_BUFFER: {
-			if( mCachedTransformFeedbackObj ) {
-				mCachedTransformFeedbackObj->setIndex( index, buffer );
-			}
-			else {
-				glBindBufferBase( target, index, buffer->getId() );
-			}
-		}
-		break;
-		case GL_UNIFORM_BUFFER: {
-			// Soon to implement
-		}
-		break;
-		default:
-		break;
-	}
-}
 //////////////////////////////////////////////////////////////////
 // Renderbuffer
 void Context::bindRenderbuffer( GLenum target, GLuint id )
@@ -638,6 +617,28 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 	}
 	else
 		mRenderbufferBindingStack[target].push_back( 0 );
+}
+
+#if ! defined( CINDER_GL_ES_2 )
+void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
+{
+	switch (target) {
+		case GL_TRANSFORM_FEEDBACK_BUFFER: {
+			if( mCachedTransformFeedbackObj ) {
+				mCachedTransformFeedbackObj->setIndex( index, buffer );
+			}
+			else {
+				glBindBufferBase( target, index, buffer->getId() );
+			}
+		}
+		break;
+		case GL_UNIFORM_BUFFER: {
+			// Soon to implement
+		}
+		break;
+		default:
+		break;
+	}
 }
 
 //////////////////////////////////////////////////////////////////
@@ -1353,9 +1354,11 @@ bool Context::getStackState( std::vector<T> &stack, T *result )
 void Context::sanityCheck()
 {
 	// assert cached (VAO) GL_VERTEX_ARRAY_BINDING is correct
-	GLint trueVaoBinding;
-#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
+	GLint trueVaoBinding = 0;
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &trueVaoBinding );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
 #endif
@@ -1435,8 +1438,10 @@ void Context::printState( std::ostream &os ) const
 	glGetIntegerv( GL_ELEMENT_ARRAY_BUFFER_BINDING, &queriedInt );
 	os << "GL_ELEMENT_ARRAY_BUFFER:" << queriedInt << ", ";
 
-#if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &queriedInt );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &queriedInt );
 #endif
