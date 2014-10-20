@@ -52,6 +52,9 @@ class DelayNode : public Node {
 	//! Returns the Param used to automate the delay seconds. \note Values over max delay seconds will be clipped, causing pops.
 	Param*	getParamDelaySeconds()			{ return &mParamDelaySeconds; }
 
+
+	void clearBuffer();
+
   protected:
 	void initialize()				override;
 	void process( Buffer *buffer )	override;

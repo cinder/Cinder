@@ -24,7 +24,7 @@
 #include "cinder/audio/DelayNode.h"
 #include "cinder/audio/Utilities.h" // currently for lroundf TODO: remove once this is moved to CinderMath
 #include "cinder/audio/Debug.h"
-
+#include "cinder/audio/Context.h"
 #include "cinder/CinderMath.h"
 
 using namespace ci;
@@ -71,9 +71,17 @@ void DelayNode::setMaxDelaySeconds( float seconds )
 	size_t delayBufferFrames = max( getFramesPerBlock(), delayFrames ) + 1;
 
 	mDelayBuffer.setSize( delayBufferFrames, getNumChannels() );
-	
+	mDelayBuffer.zero();
+
 	mMaxDelaySeconds = seconds;
 	mWriteIndex = 0;
+}
+
+void DelayNode::clearBuffer()
+{
+	lock_guard<mutex> lock( getContext()->getMutex() );
+
+	mDelayBuffer.zero();
 }
 
 void DelayNode::initialize()
@@ -83,6 +91,8 @@ void DelayNode::initialize()
 
 	if( mDelayBuffer.getNumChannels() != getNumChannels() )
 		mDelayBuffer.setNumChannels( getNumChannels() );
+
+	mDelayBuffer.zero();
 }
 
 void DelayNode::process( Buffer *buffer )
