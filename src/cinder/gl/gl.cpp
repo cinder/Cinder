@@ -840,9 +840,9 @@ void readBuffer( GLenum src )
 	glReadBuffer( src );
 }
 
-void drawBuffer( GLenum src )
+void drawBuffer( GLenum dst )
 {
-	glDrawBuffer( src );
+	glDrawBuffer( dst );
 }
 	
 void drawBuffers( GLsizei num, const GLenum *bufs )
