@@ -33,4 +33,9 @@ Exception::Exception( const std::string &description )
 {
 }
 
+void Exception::setDescription( const std::string &description )
+{
+	mDescription = description;
+}
+
 } // namespace cinder
