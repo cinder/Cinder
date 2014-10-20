@@ -99,7 +99,6 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 		fs::path path = getOpenFilePath();
 		if( ! path.empty() ) {
 			loadObjFile( path );
-			console() << "Total verts: " << mMesh->getNumVertices() << std::endl;
 		}
 	}
 	else if( event.getChar() == 'f' ) {
