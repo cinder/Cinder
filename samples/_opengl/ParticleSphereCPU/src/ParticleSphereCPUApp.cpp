@@ -65,6 +65,7 @@ class ParticleSphereCPUApp : public AppNative {
 void ParticleSphereCPUApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize( 1280, 720 );
+	settings->enableMultiTouch( false );
 }
 
 void ParticleSphereCPUApp::setup()
@@ -118,8 +119,7 @@ void ParticleSphereCPUApp::setup()
 
 void ParticleSphereCPUApp::disturbParticles( const vec3 &center, float force )
 {
-	for( auto &p : mParticles )
-	{
+	for( auto &p : mParticles ) {
 		vec3 dir = p.pos - center;
 		float d2 = length2( dir );
 		p.pos += force * dir / d2;
@@ -130,8 +130,7 @@ void ParticleSphereCPUApp::update()
 {
 	// Run Verlet integration on all particles on the CPU.
 	float dt2 = 1.0f / (60.0f * 60.0f);
-	for( auto &p : mParticles )
-	{
+	for( auto &p : mParticles ) {
 		vec3 vel = (p.pos - p.ppos) * p.damping;
 		p.ppos = p.pos;
 		vec3 acc = (p.home - p.pos) * 32.0f;
@@ -140,9 +139,8 @@ void ParticleSphereCPUApp::update()
 
 	// Copy particle data onto the GPU.
 	// Map the GPU memory and write over it.
-	Particle *gpu = static_cast<Particle*>( mParticleVbo->map( GL_WRITE_ONLY ) );
-	for( const auto &cpu : mParticles )
-	{
+	Particle *gpu = static_cast<Particle*>( mParticleVbo->mapWriteOnly( false ) );
+	for( const auto &cpu : mParticles ) {
 		*gpu = cpu;
 		++gpu;
 	}
