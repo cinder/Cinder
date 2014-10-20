@@ -21,6 +21,7 @@
 */
 
 #include "cinder/ImageSourcePng.h"
+#include "cinder/Log.h"
 #include <png.h>
 
 using namespace std;
@@ -39,7 +40,8 @@ static void ci_PNG_stream_reader( png_structp mPngPtr, png_bytep data, png_size_
 	try {
 		((ci_png_info*)png_get_io_ptr(mPngPtr))->srcStreamRef->readData( data, (size_t)length );
 	}
-	catch ( ... ) {
+	catch( std::exception &exc ) {
+		CI_LOG_W( "failed to read png, what: " << exc.what() );
 		longjmp( png_jmpbuf(mPngPtr), 1 );
 	}
 }
