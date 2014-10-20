@@ -839,6 +839,16 @@ void readBuffer( GLenum src )
 {
 	glReadBuffer( src );
 }
+
+void drawBuffer( GLenum src )
+{
+	glDrawBuffer( src );
+}
+	
+void drawBuffers( GLsizei num, const GLenum *bufs )
+{
+	glDrawBuffers( num, bufs );
+}
 #endif
 
 void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )

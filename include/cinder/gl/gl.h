@@ -410,6 +410,12 @@ void	bindBuffer( const BufferObjRef &buffer );
 #if ! defined( CINDER_GL_ES_2 )
 //! Specifies a color buffer as the source for subsequent glReadPixels(), glCopyTexImage2D(), glCopyTexSubImage2D(), and glCopyTexSubImage3D() commands. Analogous to glReadBuffer().
 void	readBuffer( GLenum src );
+	
+//! Specifies a color buffer as the source for subsequent draw calls. Analogous to glDrawBuffer().
+void	drawBuffer( GLenum src );
+	
+//! Specifies an array of buffers into which fragment color values or fragment data will be written for subsequent draw calls. Analogous to glDrawBuffers().
+void	drawBuffers( GLsizei num, const GLenum *bufs );
 #endif
 
 //! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
