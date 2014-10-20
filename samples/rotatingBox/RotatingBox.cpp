@@ -29,7 +29,10 @@ void RotatingCubeApp::setup()
 		mCapture = Capture( 320, 240 );
 		mCapture.start();
 	}
-	catch( ... ) { // failed to initialize the webcam, create a warning texture
+	catch( CaptureExc &exc ) {
+	    console() << "failed to initialize the webcam, what: " << exc.what() << std::endl;
+
+	    // create a warning texture
 		// if we threw in the start, we'll set the Capture to null
 		mCapture.reset();
 		

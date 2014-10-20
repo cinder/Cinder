@@ -27,8 +27,8 @@ void ImageFileTestApp::setup()
 	try {
 		mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE_JPG ) ) );
 	}
-	catch( ... ) {
-		std::cout << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		std::cout << "unable to load the texture file, what: " << exc.what() << std::endl;
 	}
 	
 	try {
@@ -38,8 +38,8 @@ void ImageFileTestApp::setup()
 		std::cout << "Shader compile error: " << std::endl;
 		std::cout << exc.what();
 	}
-	catch( ... ) {
-		std::cout << "Unable to load shader" << std::endl;
+	catch( ci::Exception &exc ) {
+		std::cout << "Unable to load shader, what: " << exc.what() << std::endl;
 	}
 	
 	mAngle = 0.0f;

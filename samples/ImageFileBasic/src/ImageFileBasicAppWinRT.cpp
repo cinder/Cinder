@@ -69,8 +69,8 @@ void ImageFileBasicApp::setup()
 			}
 		});
 	}
-	catch( ... ) {
-		console() << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "unable to load the texture file, what: " << exc.what() << endl;
 	}
 }
 

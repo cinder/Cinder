@@ -52,8 +52,8 @@ void SerialCommunicationApp::setup()
 		Serial::Device dev = Serial::findDeviceByNameContains("tty.usbserial");
 		serial = Serial( dev, 9600);
 	}
-	catch( ... ) {
-		console() << "There was an error initializing the serial device!" << std::endl;
+	catch( SerialExc &exc ) {
+		console() << "Exception caugh initializing the serial device, what: " << exc.what() << std::endl;
 		exit( -1 );
 	}
 	

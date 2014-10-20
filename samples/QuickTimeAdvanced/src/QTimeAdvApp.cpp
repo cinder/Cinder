@@ -97,8 +97,8 @@ void QTimeAdvApp::loadMovieUrl( const string &urlString )
 	try {
 		mLoadingMovies.push_back( qtime::MovieLoader::create( Url( urlString ) ) );
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie from URL: " << urlString << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from URL: " << urlString << ", what: " << exc.what() << std::endl;
 	}
 }
 
@@ -112,8 +112,8 @@ void QTimeAdvApp::loadMovieFile( const fs::path &moviePath )
 		addActiveMovie( movie );
 		mLastPath = moviePath;
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
 		return;
 	}
 }
@@ -136,8 +136,8 @@ void QTimeAdvApp::update()
 			else
 				++loaderIt;
 		}
-		catch( ... ) {
-			console() << "There was an error loading a movie." << std::endl;
+		catch( ci::Exception &exc ) {
+			console() << "Exception caught trying to load the movie from URL: " << *loaderIt << ", what: " << exc.what() << std::endl;
 			loaderIt = mLoadingMovies.erase( loaderIt );
 		}
 	}

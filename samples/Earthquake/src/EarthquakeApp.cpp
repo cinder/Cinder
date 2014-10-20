@@ -252,8 +252,8 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 			mEarth.addQuake( coords[0].getValue<float>(), coords[1].getValue<float>(), mag, title );
 		}
 	}
-	catch( ... ) {
-		console() << "Failed to parse." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Failed to parse json, what: " << exc.what() << std::endl;
 	}
 	
 	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );

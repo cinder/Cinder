@@ -42,8 +42,8 @@ void BasicApp::setup()
 	} catch ( dx::HlslProgCompileExc &exc ) {
 		std::cout << "Shader Compile Error: " << std::endl;
 		std::cout << exc.what();
-	} catch ( ... ) {
-		std::cout << "Unable to load shader" << std::endl;
+	} catch ( ci::Exception &exc ) {
+		std::cout << "Unable to load shader, what: " << exc.what << std::endl;
 	}
 
 	mAngle = 0.0f;

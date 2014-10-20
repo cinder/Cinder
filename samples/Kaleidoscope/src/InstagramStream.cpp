@@ -13,6 +13,7 @@
 #include "cinder/Json.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
+#include "cinder/Log.h"
 
 #include "InstagramStream.h"
 
@@ -131,17 +132,16 @@ void InstagramStream::serviceGrams(string url)
 				try {
 					nextQueryString = queryResult["pagination"].getChild("next_url").getValue();
 				}
-				catch(...) {
-					
+				catch( ci::Exception &exc ) {
+					// ignoring pagination exception..
 				}
 				
 				searchResults = queryResult.getChild("data");
 				resultIt = searchResults.begin();
 				mIsConnected = true;
 			}
-			catch( ... ) {
-				
-				console() << "something broke" << endl;
+			catch( ci::Exception &exc ) {				
+				CI_LOG_W( "exception caught, what: " << exc.what() );
 				console() << queryResult << endl;
 				console() << nextQueryString << endl;
 				
@@ -165,8 +165,8 @@ void InstagramStream::serviceGrams(string url)
 				// string imageUrl = "http://distilleryimage5.s3.amazonaws.com/1dd174cca14611e1af7612313813f8e8_7.jpg"; // Test image
 				mBuffer.pushFront( Instagram( userName, imageUrl, image ) );
 			}
-			catch( ... ) { // just ignore any errors
-				console() << "ERRORS FOUND" << endl;
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "exception caught, what: " << exc.what() );
 			}
 			++resultIt;
 		}
