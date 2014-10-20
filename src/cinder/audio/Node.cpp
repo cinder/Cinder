@@ -64,7 +64,7 @@ void Node::connect( const NodeRef &output )
 	// disconnecting us, which we may need later anyway
 	NodeRef thisRef = shared_from_this();
 
-	if( ! output->canConnectToInput( thisRef ) )
+	if( ! output || ! output->canConnectToInput( thisRef ) )
 		return;
 
 	if( checkCycle( thisRef, output ) )
