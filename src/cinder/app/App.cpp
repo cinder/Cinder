@@ -33,6 +33,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/Timeline.h"
 #include "cinder/Thread.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -551,7 +552,14 @@ void App::executeLaunch( App *app, RendererRef defaultRenderer, const char *titl
 {
 	sInstance = app;
 	app->mDefaultRenderer = defaultRenderer;
-	app->launch( title, argc, argv );
+
+	try {
+		app->launch( title, argc, argv );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "Uncaught Exception: " << exc.what() );
+		throw;
+	}
 }
 
 void App::cleanupLaunch()
