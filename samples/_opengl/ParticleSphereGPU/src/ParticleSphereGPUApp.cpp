@@ -79,7 +79,9 @@ class ParticleSphereGPUApp : public AppNative {
 
 void ParticleSphereGPUApp::prepareSettings( Settings *settings )
 {
+#if ! defined( CINDER_GL_ES )
 	settings->setWindowSize( 1280, 720 );
+#endif
 	settings->enableMultiTouch( false );
 }
 
