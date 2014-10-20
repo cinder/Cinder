@@ -29,6 +29,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Base64.h"
 #include "cinder/Text.h"
+#include "cinder/Log.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -1922,7 +1923,9 @@ std::shared_ptr<Surface8u> Image::parseDataImage( const string &data )
 		shared_ptr<Surface8u> result( new Surface8u( ci::loadImage( DataSourceBuffer::create( buf ), ImageSource::Options(), extension ) ) );
 		return result;
 	}
-	catch( ... ) {}
+	catch( std::exception &exc ) {
+		CI_LOG_W( "failed to parse data image, what: " << exc.what() );
+	}
 	return std::shared_ptr<Surface8u>();
 }
 
@@ -2099,7 +2102,8 @@ const std::shared_ptr<Font>	TextSpan::getFont() const
 				mFont = shared_ptr<Font>( new Font( *familyIt, fontSize ) );
 				break;
 			}
-			catch( ... ) {
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "failed to load font with name: " << *familyIt << ", size: " << fontSize << ". what: " << exc.what() << "\t - loading default font." );
 				mFont = shared_ptr<Font>( new Font( Font::getDefault() ) );
 			}
 		}
@@ -2274,9 +2278,9 @@ void Doc::renderSelf( Renderer &renderer ) const
 	Group::renderSelf( renderer );
 }
 
-ExcChildNotFound::ExcChildNotFound( const string &child ) throw()
+ExcChildNotFound::ExcChildNotFound( const string &child )
 {
-	sprintf( mMessage, "Could not find child: %s", child.c_str() );
+	setDescription( "Could not find child: " + child );
 }
 
 } } // namespace cinder::svg

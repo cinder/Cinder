@@ -30,16 +30,17 @@
 
 namespace cinder { namespace audio {
 
-//! General Audio exception.
+//! General audio exception.
 class AudioExc : public Exception {
   public:
-	AudioExc( const std::string &description, int32_t errorCode = 0 ) : mDescription( description )	{}
-	virtual const char* what() const throw()	{ return mDescription.c_str(); }
-	//! Returns a platform-specific error code received. May be 0 (meaning none was available).
+	AudioExc( const std::string &description, int32_t errorCode = 0 ) : Exception( description )	{}
+
+	//! Returns a platform-specific error code. Could return 0 (meaning none was available).
 	int32_t getCode() const						{ return mErrorCode; }
+
   protected:
-	std::string mDescription;
-	int32_t mErrorCode;
+	std::string	mDescription;
+	int32_t		mErrorCode;
 };
 
 //! Audio exception related to Device management.

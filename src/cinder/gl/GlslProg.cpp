@@ -1003,23 +1003,22 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProgCompileExc
-GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw()
-	: mShaderType( aShaderType )
+GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType )
 {
-	if( mShaderType == GL_VERTEX_SHADER )
-		mMessage = "VERTEX: " + log;
-	else if( mShaderType == GL_FRAGMENT_SHADER )
-		mMessage = "FRAGMENT: " + log;
+	string typeString;
+
+	switch( shaderType ) {
+		case GL_VERTEX_SHADER:			typeString = "VERTEX: "; break;
+		case GL_FRAGMENT_SHADER:		typeString = "FRAGMENT: "; break;
 #if ! defined( CINDER_GL_ES )
-	else if( mShaderType == GL_GEOMETRY_SHADER )
-		mMessage = "GEOMETRY: " + log;
-	else if( mShaderType == GL_TESS_CONTROL_SHADER )
-		mMessage = "TESSELLATION CONTROL: " + log;
-	else if( mShaderType == GL_TESS_EVALUATION_SHADER )
-		mMessage = "TESSELLATION EVALUATION: " + log;
-#endif		
-	else
-		mMessage = "UNKNOWN: " + log;
+		case GL_GEOMETRY_SHADER:		typeString = "GEOMETRY: "; break;
+		case GL_TESS_CONTROL_SHADER:	typeString = "TESSELLATION CONTROL: "; break;
+		case GL_TESS_EVALUATION_SHADER:	typeString = "TESSELLATION EVALUATION: "; break;
+#endif
+		default:						typeString = "UNKNOWN: ";
+	}
+
+	setDescription( typeString + log );
 }
 	
 } } // namespace cinder::gl

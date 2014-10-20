@@ -26,7 +26,6 @@
 #include <sstream>
 #include <iostream>
 #include <fstream>
-#include <exception>
 #include <map>
 #include <set>
 
@@ -36,6 +35,7 @@
 #include "cinder/Matrix.h"
 #include "cinder/DataSource.h"
 #include "cinder/GeomIo.h"
+#include "cinder/Exception.h"
 
 //! Convenience macro that allows one to embed raw glsl code in-line. The \a VERSION parameter will be used for the glsl's '#version' define.
 //! \note Some strings will confuse different compilers, most commonly being preprocessor derictives (hence the need for \a VERSION to be a pamaeter).
@@ -280,32 +280,24 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
 
-class GlslProgCompileExc : public std::exception {
+class GlslProgExc : public cinder::gl::Exception {
   public:
-	GlslProgCompileExc( const std::string &log, GLint aShaderType ) throw();
-	virtual const char* what() const throw()
-	{
-		return mMessage.c_str();
-	}
-	
-  private:
-	std::string		mMessage;
-	GLint			mShaderType;
+	GlslProgExc()	{}
+	GlslProgExc( const std::string &description ) : cinder::gl::Exception( description )	{}
 };
 
-class GlslProgLinkExc : public std::exception {
+
+class GlslProgCompileExc : public GlslProgExc {
   public:
-	GlslProgLinkExc( const std::string &log ) throw() : mMessage( log ) {}
-	virtual const char* what() const throw()
-	{
-		return mMessage.c_str();
-	}
-	
-  private:
-	std::string		mMessage;
+	GlslProgCompileExc( const std::string &log, GLint shaderType );
 };
 
-class GlslNullProgramExc : public std::exception {
+class GlslProgLinkExc : public GlslProgExc {
+  public:
+	GlslProgLinkExc( const std::string &log ) : GlslProgExc( log ) {}
+};
+
+class GlslNullProgramExc : public GlslProgExc {
   public:
 	virtual const char* what() const throw()
 	{

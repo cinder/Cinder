@@ -640,47 +640,30 @@ Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int 
 	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ), deleter );
 }
 
-
-class KtxParseExc : public Exception {
-  public:	
-	KtxParseExc( const std::string &message ) : mMessage( message )	{}
-
-	virtual const char* what() const throw()	{ return mMessage.c_str(); }
-	
-  protected:
-	std::string		mMessage;
-};
-
-class DdsParseExc : public Exception {
-  public:	
-	DdsParseExc( const std::string &message ) : mMessage( message )	{}
-
-	virtual const char* what() const throw()	{ return mMessage.c_str(); }
-	
-  protected:
-	std::string		mMessage;
-};
-
-class SurfaceConstraintsGLTexture : public SurfaceConstraints
-{
+class SurfaceConstraintsGLTexture : public SurfaceConstraints {
   public:
 	virtual SurfaceChannelOrder getChannelOrder( bool alpha ) const { return ( alpha ) ? SurfaceChannelOrder::BGRA : SurfaceChannelOrder::BGR; }
 	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
+class KtxParseExc : public Exception {
+  public:	
+	KtxParseExc( const std::string &description ) : Exception( description )	{}
+};
+
+class DdsParseExc : public Exception {
+  public:	
+	DdsParseExc( const std::string &description ) : Exception( description )	{}
+};
+
 class TextureDataExc : public Exception {
   public:	
-	TextureDataExc( const std::string &message ) : mMessage( message )	{}
-
-	virtual const char* what() const throw()	{ return mMessage.c_str(); }
-	
-  protected:
-	std::string		mMessage;
+	TextureDataExc( const std::string &description ) : Exception( description )	{}
 };
 
 class TextureResizeExc : public TextureDataExc {
   public:
-	TextureResizeExc( const std::string &message, const ivec2 &updateSize, const ivec2 &textureSize );
+	TextureResizeExc( const std::string &description, const ivec2 &updateSize, const ivec2 &textureSize );
 };
 
 class TextureDataStoreTooSmallExc : public Exception {

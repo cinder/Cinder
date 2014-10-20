@@ -11,15 +11,6 @@ using namespace ci;
 
 #define LOG_EXCEPTION( exc )	{ CI_LOG_E( "exception caught: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() ); }
 
-namespace {
-
-inline vec2 parsevec2( const JsonTree &json )
-{
-	return vec2( json.getValueAtIndex<float>( 0 ), json.getValueAtIndex<float>( 1 ) );
-}
-
-}
-
 Config::Config()
 {
 	reload();
@@ -34,7 +25,7 @@ void Config::reload()
 
 		CI_LOG_V( "successfully loaded config.json" );
 	}
-	catch( exception &exc ) {
+	catch( Exception &exc ) {
 		LOG_EXCEPTION( exc );
 	}
 }
@@ -56,7 +47,7 @@ ImageSourceRef Config::getBackgroundImage() const
 		string imageName = mData.getValueForKey( "background" );
 		result = loadImage( app::loadAsset( imageName ) );
 	}
-	catch( exception &exc ) {
+	catch( Exception &exc ) {
 		LOG_EXCEPTION( exc );
 	}
 

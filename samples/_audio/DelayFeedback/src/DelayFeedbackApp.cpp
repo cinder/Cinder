@@ -226,7 +226,7 @@ void DelayFeedback::loadBatch()
 	try {
 		glsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
 	}
-	catch( std::exception &exc ) {
+	catch( ci::Exception &exc ) {
 		CI_LOG_E( "failed to load shader, what: " << exc.what() );
 		return;
 	}

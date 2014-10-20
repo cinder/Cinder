@@ -63,7 +63,8 @@ void AnimatedRevealApp::load( const fs::path &path )
 		mMovie = qtime::MovieWriter( fs::path( getHomeDirectory() + "AnimatedReveal.mov" ), mDoc->getWidth(), mDoc->getHeight() );
 #endif
 	}
-	catch( ... ) {
+	catch( ci::Exception &exc ) {
+		console() << "failed to load doc, what: " << exc.what() << endl;
 	}
 }
 

@@ -70,8 +70,8 @@ void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 		infoText.setBorder( 4, 2 );
 		mInfoTexture = gl::Texture::create( infoText.render( true ) );
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
 		mMovie.reset();
 		mInfoTexture.reset();
 	}

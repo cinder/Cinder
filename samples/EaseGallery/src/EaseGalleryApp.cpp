@@ -4,6 +4,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Easing.h"
 #include "cinder/Text.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -17,8 +18,16 @@ struct EaseBox {
 		: mFn( fn )
 	{
 		// create label
-		TextLayout text; text.clear( Color::white() ); text.setColor( Color(0.5f, 0.5f, 0.5f) );
-		try { text.setFont( Font( "Futura-CondensedMedium", 18 ) ); } catch( ... ) { text.setFont( Font( "Arial", 18 ) ); }
+		TextLayout text;
+		text.clear( Color::white() );
+		text.setColor( Color(0.5f, 0.5f, 0.5f) );
+		try {
+			text.setFont( Font( "Futura-CondensedMedium", 18 ) );
+		}
+		catch( ci::Exception &exc ) {
+			CI_LOG_W( "failed to load specified font, what: " << exc.what() );
+			text.setFont( Font( "Arial", 18 ) );
+		}
 		text.addLine( name );
 		mLabelTex = gl::Texture::create( text.render( true ) );
 	}

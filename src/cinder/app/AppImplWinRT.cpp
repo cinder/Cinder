@@ -32,6 +32,7 @@
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/Display.h"
+#include "cinder/Exception.h"
 #include "cinder/WinRTUtils.h"
 #include "cinder/msw/CinderMsw.h"
 
@@ -140,7 +141,7 @@ fs::path AppImplWinRT::getAppPath()
 void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
 {
 	if(extensions.size() == 0) {
-		throw std::exception( "Must specify at least one file extension in extensions argument" );
+		throw Exception( "Must specify at least one file extension in extensions argument" );
 	}
 
 	// FilePicker APIs will not work if the application is in a snapped state.
@@ -172,7 +173,7 @@ void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std:
 void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
 {
 	if(extensions.size() == 0) {
-		throw std::exception( "Must specify at least one file extension in extensions argument" );
+		throw Exception( "Must specify at least one file extension in extensions argument" );
 	}
 
 	// FilePicker APIs will not work if the application is in a snapped state.
@@ -204,7 +205,7 @@ void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,  std::vector<st
 void AppImplWinRT::getSaveFilePath( const fs::path &initialPath,std::vector<std::string> extensions,std::function<void (fs::path)> f)
 {
 	if(initialPath.empty() && extensions.size() == 0) {
-		throw std::exception( "Must specify initialPath or at least one file extension" );
+		throw Exception( "Must specify initialPath or at least one file extension" );
 	}
 
     // FilePicker APIs will not work if the application is in a snapped state.

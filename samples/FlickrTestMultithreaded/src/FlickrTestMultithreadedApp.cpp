@@ -68,7 +68,8 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 			mImages->pushFront( gl::Texture::create( loadImage( loadUrl( urls.back() ) ) ) );
 			urls.pop_back();
 		}
-		catch( ... ) { // just ignore any exceptions
+		catch( ci::Exception &exc ) {
+			console() << "failed to create texture, what: " << exc.what() << std::endl;
 		}
 	}
 }
