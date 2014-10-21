@@ -744,6 +744,9 @@
     <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1585,6 +1588,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h">
       <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ubo.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
