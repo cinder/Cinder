@@ -620,25 +620,32 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 }
 
 #if ! defined( CINDER_GL_ES_2 )
-void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
+void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer )
 {
-	switch (target) {
-		case GL_TRANSFORM_FEEDBACK_BUFFER: {
-			if( mCachedTransformFeedbackObj ) {
+	switch( target ) {
+		case GL_TRANSFORM_FEEDBACK_BUFFER:
+			if( mCachedTransformFeedbackObj )
 				mCachedTransformFeedbackObj->setIndex( index, buffer );
-			}
-			else {
+			else
 				glBindBufferBase( target, index, buffer->getId() );
-			}
-		}
 		break;
-		case GL_UNIFORM_BUFFER: {
-			// Soon to implement
-		}
+		case GL_UNIFORM_BUFFER:
+			glBindBufferBase( target, index, buffer->getId() );
 		break;
 		default:
+			CI_LOG_E( "Unknown target" );
 		break;
 	}
+}
+
+void Context::bindBufferBase( GLenum target, GLuint index, GLuint id )
+{
+	glBindBufferBase( target, index, id );
+}
+
+void Context::bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size )
+{
+	glBindBufferRange( target, index, buffer->getId(), offset, size );
 }
 
 //////////////////////////////////////////////////////////////////

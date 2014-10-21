@@ -149,6 +149,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
 		std::map<std::string,geom::Attrib>		mAttribSemanticMap;
 		
+		
 		std::string								mLabel;
 	};
   
@@ -236,7 +237,17 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	GLint	getAttribLocation( const std::string &name ) const;
 	GLint	getUniformLocation( const std::string &name ) const;
-	
+
+#if ! defined( CINDER_GL_ES_2 )
+	// Uniform blocks
+	//! Analogous to glUniformBlockBinding()
+	void	uniformBlock( const std::string &name, GLint binding );
+	//! Analogous to glUniformBlockBinding()
+	void	uniformBlock( GLint loc, GLint binding );
+	GLint	getUniformBlockLocation( const std::string &name ) const;
+	GLint	getUniformBlockSize( GLint blockIndex ) const;
+#endif
+
 	std::string		getShaderLog( GLuint handle ) const;
 
 	//! Returns the debugging label associated with the Program.
@@ -280,6 +291,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 #if ! defined( CINDER_GL_ES_2 )
 	std::unique_ptr<std::vector<GLchar>>	mTransformFeedbackVaryingsChars;
 	std::unique_ptr<std::vector<GLchar*>>	mTransformFeedbackVaryingsCharStarts;
+	mutable std::map<std::string, GLint>	mUniformBlockLocs; // map between name and location
+	mutable std::map<GLint, GLint>			mUniformBlockSizes;
 #endif
 
 	friend class Context;
