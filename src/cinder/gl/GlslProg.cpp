@@ -847,7 +847,10 @@ void GlslProg::uniformBlock( int loc, int binding )
 void GlslProg::uniformBlock( const std::string &name, GLint binding )
 {
 	GLint loc = getUniformBlockLocation( name );
-	glUniformBlockBinding( mHandle, loc, binding );
+	if( loc == -1 )
+		CI_LOG_E( "Unknown uniform block: \"" << name << "\"" );
+	else
+		glUniformBlockBinding( mHandle, loc, binding );
 }
 
 GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
