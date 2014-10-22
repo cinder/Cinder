@@ -59,6 +59,8 @@ class TextureBase {
   public:
 	virtual ~TextureBase();
 
+	//! Determines whether the Texture will call glDeleteTextures() to free the associated texture objects on destruction
+	void			setDoNotDispose( bool aDoNotDispose = true ) { mDoNotDispose = aDoNotDispose; }
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
