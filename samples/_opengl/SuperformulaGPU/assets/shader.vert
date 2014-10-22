@@ -11,12 +11,14 @@ out highp vec2	TexCoord;
 out lowp vec4	Color;
 out highp vec3	Normal;
 
-uniform float uA1, uA2;
-uniform float uB1, uB2;
-uniform float uM1, uM2;
-uniform float uN11, uN12;
-uniform float uN21, uN22;
-uniform float uN31, uN32;
+layout (std140) uniform FormulaParams {
+	float	uA1, uA2;
+	float	uB1, uB2;
+	float	uM1, uM2;
+	float	uN11, uN12;
+	float	uN21, uN22;
+	float	uN31, uN32;
+};
 
 float superformula( float o, float a, float b, float m, float n1, float n2, float n3 )
 {

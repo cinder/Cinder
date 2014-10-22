@@ -6,6 +6,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
+#include "cinder/gl/Ubo.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -28,13 +29,18 @@ class SuperformulaGpuApp : public AppNative {
 	bool					mDrawNormals;
 	float					mNormalsLength;
 	int						mSubdivisions;
+	int						mCheckerFrequency;
 	
-	float			mA1, mA2;
-	float			mB1, mB2;
-	float			mM1, mM2;
-	float			mN11, mN12;
-	float			mN21, mN22;
-	float			mN31, mN32;
+	// This is dependent on the C++ compiler structuring these vars in RAM the same way that GL's std140 does
+	struct {
+		float	mA1, mA2;
+		float	mB1, mB2;
+		float	mM1, mM2;
+		float	mN11, mN12;
+		float	mN21, mN22;
+		float	mN31, mN32;
+	} mFormulaParams;
+	gl::UboRef				mFormulaParamsUbo;
 };
 
 void SuperformulaGpuApp::setupGeometry()
@@ -46,35 +52,37 @@ void SuperformulaGpuApp::setupGeometry()
 
 void SuperformulaGpuApp::setup()
 {
-	mA1 = mA2 = 1.0f;
-	mB1 = mB2 = 1.0f;
-	mN11 = mN12 = 1.0f;
-	mN21 = mN22 = 1.0f;
-	mM1 = 4.0f;
-	mM2 = 6.0f;
-	mN31 = 2.0f;
-	mN32 = 2.5f;
+	mFormulaParams.mA1 = mFormulaParams.mA2 = 1.0f;
+	mFormulaParams.mB1 = mFormulaParams.mB2 = 1.0f;
+	mFormulaParams.mN11 = mFormulaParams.mN12 = 1.0f;
+	mFormulaParams.mN21 = mFormulaParams.mN22 = 1.0f;
+	mFormulaParams.mM1 = 4.0f;
+	mFormulaParams.mM2 = 6.0f;
+	mFormulaParams.mN31 = 2.0f;
+	mFormulaParams.mN32 = 2.5f;
 
 	mDrawNormals = false;
 	mNormalsLength = 0.20f;
 	mSubdivisions = 100;
+	mCheckerFrequency = 7;
 
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
-	mParams->addParam( "A (1)", &mA1 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "B (1)", &mB1 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "M (1)", &mM1 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (1)", &mN11 ).min( 0 ).max( 100 ).step( 1.0 );
-	mParams->addParam( "N2 (1)", &mN21 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addParam( "N3 (1)", &mN31 ).min( -50 ).max( 100 ).step( 0.5f );
+	mParams->addParam( "A (1)", &mFormulaParams.mA1 ).min( 0 ).max( 5 ).step( 0.05f );
+	mParams->addParam( "B (1)", &mFormulaParams.mB1 ).min( 0 ).max( 5 ).step( 0.05f );
+	mParams->addParam( "M (1)", &mFormulaParams.mM1 ).min( 0 ).max( 20 ).step( 0.25f );
+	mParams->addParam( "N1 (1)", &mFormulaParams.mN11 ).min( 0 ).max( 100 ).step( 1.0 );
+	mParams->addParam( "N2 (1)", &mFormulaParams.mN21 ).min( -50 ).max( 100 ).step( 0.5f );
+	mParams->addParam( "N3 (1)", &mFormulaParams.mN31 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addSeparator();
-	mParams->addParam( "A (2)", &mA2 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "B (2)", &mB2 ).min( 0 ).max( 5 ).step( 0.05f );
-	mParams->addParam( "M (2)", &mM2 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (2)", &mN12 ).min( 0 ).max( 100 ).step( 1.0 );
-	mParams->addParam( "N2 (2)", &mN22 ).min( -50 ).max( 100 ).step( 0.5f );
-	mParams->addParam( "N3 (2)", &mN32 ).min( -50 ).max( 100 ).step( 0.5f );
+	mParams->addParam( "A (2)", &mFormulaParams.mA2 ).min( 0 ).max( 5 ).step( 0.05f );
+	mParams->addParam( "B (2)", &mFormulaParams.mB2 ).min( 0 ).max( 5 ).step( 0.05f );
+	mParams->addParam( "M (2)", &mFormulaParams.mM2 ).min( 0 ).max( 20 ).step( 0.25f );
+	mParams->addParam( "N1 (2)", &mFormulaParams.mN12 ).min( 0 ).max( 100 ).step( 1.0 );
+	mParams->addParam( "N2 (2)", &mFormulaParams.mN22 ).min( -50 ).max( 100 ).step( 0.5f );
+	mParams->addParam( "N3 (2)", &mFormulaParams.mN32 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addSeparator();
 	mParams->addParam( "Subdivisions", &mSubdivisions ).min( 5 ).max( 500 ).step( 30 ).updateFn( [&] { setupGeometry(); } );
+	mParams->addParam( "Checkerboard", &mCheckerFrequency ).min( 1 ).max( 500 ).step( 3 );
 	mParams->addSeparator();
 	mParams->addParam( "Draw Normals", &mDrawNormals );
 	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
@@ -85,6 +93,14 @@ void SuperformulaGpuApp::setup()
 	mNormalsGlsl = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "normals_shader.vert" ) )
 											.fragment( loadAsset( "normals_shader.frag" ) )
 											.attrib( geom::CUSTOM_0, "vNormalWeight" ) );
+	// allocate our UBO
+	mFormulaParamsUbo = gl::Ubo::create( sizeof( mFormulaParams ), &mFormulaParams, GL_DYNAMIC_DRAW );
+	// and bind it to buffer base 0; this is analogous to binding it to texture unit 0
+	mFormulaParamsUbo->bindBufferBase( 0 );
+	// and finally tell the shaders that their uniform buffer 'FormulaParams' can be found at buffer base 0
+	mGlsl->uniformBlock( "FormulaParams", 0 );
+	mNormalsGlsl->uniformBlock( "FormulaParams", 0 );
+
 	setupGeometry();
 
 	gl::enableDepthWrite();
@@ -102,37 +118,12 @@ void SuperformulaGpuApp::update()
 	// Rotate the by 2 degrees around an arbitrary axis
 	vec3 axis = vec3( cos( getElapsedSeconds() / 3 ), sin( getElapsedSeconds() / 2 ), sin( getElapsedSeconds() / 5 ) );
 	mRotation *= rotate( toRadians( 0.2f ), normalize( axis ) );
+
+	// buffer our data to our UBO to reflect any changed parameters
+	mFormulaParamsUbo->bufferSubData( 0, sizeof( mFormulaParams ), &mFormulaParams );
 	
-	gl::ScopedGlslProg glslScp( mBatch->getGlslProg() );
-	mBatch->getGlslProg()->uniform( "uA1", mA1 );
-	mBatch->getGlslProg()->uniform( "uB1", mB1 );	
-	mBatch->getGlslProg()->uniform( "uM1", mM1 );
-	mBatch->getGlslProg()->uniform( "uN11", mN11 );	
-	mBatch->getGlslProg()->uniform( "uN21", mN21 );
-	mBatch->getGlslProg()->uniform( "uN31", mN31 );	
-
-	mBatch->getGlslProg()->uniform( "uA2", mA2 );
-	mBatch->getGlslProg()->uniform( "uB2", mB2 );	
-	mBatch->getGlslProg()->uniform( "uM2", mM2 );
-	mBatch->getGlslProg()->uniform( "uN12", mN12 );	
-	mBatch->getGlslProg()->uniform( "uN22", mN22 );
-	mBatch->getGlslProg()->uniform( "uN32", mN32 );	
-
-	gl::ScopedGlslProg glslScp2( mNormalsBatch->getGlslProg() );
-	mNormalsBatch->getGlslProg()->uniform( "uA1", mA1 );
-	mNormalsBatch->getGlslProg()->uniform( "uB1", mB1 );	
-	mNormalsBatch->getGlslProg()->uniform( "uM1", mM1 );
-	mNormalsBatch->getGlslProg()->uniform( "uN11", mN11 );	
-	mNormalsBatch->getGlslProg()->uniform( "uN21", mN21 );
-	mNormalsBatch->getGlslProg()->uniform( "uN31", mN31 );	
-
-	mNormalsBatch->getGlslProg()->uniform( "uA2", mA2 );
-	mNormalsBatch->getGlslProg()->uniform( "uB2", mB2 );	
-	mNormalsBatch->getGlslProg()->uniform( "uM2", mM2 );
-	mNormalsBatch->getGlslProg()->uniform( "uN12", mN12 );	
-	mNormalsBatch->getGlslProg()->uniform( "uN22", mN22 );
-	mNormalsBatch->getGlslProg()->uniform( "uN32", mN32 );
 	mNormalsBatch->getGlslProg()->uniform( "uNormalsLength", mNormalsLength );
+	mBatch->getGlslProg()->uniform( "uCheckerFrequency", mCheckerFrequency );
 }
 
 void SuperformulaGpuApp::draw()
