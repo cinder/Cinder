@@ -37,9 +37,9 @@ BatchRef Batch::create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, 
 	return BatchRef( new Batch( vboMesh, glsl, attributeMapping ) );
 }
 
-BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl )
+BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping );
 {
-	return BatchRef( new Batch( source, glsl ) );
+	return BatchRef( new Batch( source, glsl, attributeMapping ) );
 }
 
 Batch::Batch( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
@@ -48,10 +48,10 @@ Batch::Batch( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const Attr
 	initVao( attributeMapping );
 }
 
-Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl )
+Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
 	: mGlsl( glsl ), mVboMesh( gl::VboMesh::create( source ) )
 {
-	initVao( AttributeMapping() );
+	initVao( attributeMapping );
 }
 
 
