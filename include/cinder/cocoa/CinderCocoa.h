@@ -114,7 +114,7 @@ CGContextRef getWindowContext();
 /** \brief Converts an NSBitmapImageRep into a cinder::Surface8u
 	If \a assumeOwnership the result will take ownership of \a rep and will destroy it upon the Surface's own destruction automatically.
 	\return a Surface8u which wraps the NSBitmapImageRep but does not own the data. **/
-Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership = false );
+Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership = false );
 #endif
 
 //! Converts a CFStringRef into std::string with UTF8 encoding.

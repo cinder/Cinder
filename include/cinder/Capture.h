@@ -83,8 +83,8 @@ class Capture {
 	//! Returns the bounding rectangle of the capture imagee, which is Area( 0, 0, width, height )
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	
-	//! Returns a Surface representing the current captured frame.
-	Surface8u	getSurface() const;
+	//! Returns a SurfaceRef representing the current captured frame.
+	Surface8uRef	getSurface() const;
 	//! Returns the associated Device for this instace of Capture
 	const Capture::DeviceRef getDevice() const;
 

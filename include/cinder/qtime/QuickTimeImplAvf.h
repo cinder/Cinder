@@ -228,7 +228,7 @@ class MovieSurface : public MovieBase {
 	virtual bool hasAlpha() const;
 	
 	//! Returns the Surface8u representing the Movie's current frame
-	Surface		getSurface();
+	Surface8uRef		getSurface();
 
   protected:
 	MovieSurface() : MovieBase() {}
@@ -241,7 +241,7 @@ class MovieSurface : public MovieBase {
 	virtual void		newFrame( CVImageBufferRef cvImage ) override;
 	virtual void		releaseFrame() override;
 
-	Surface				mSurface;
+	Surface8uRef		mSurface;
 };
 
 class MovieResponder {

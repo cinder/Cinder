@@ -180,12 +180,12 @@ class RendererGl : public Renderer {
 
 	const Options&	getOptions() const { return mOptions; }
 
-	virtual void	startDraw();
-	virtual void	finishDraw();
-	virtual void	defaultResize();
-	virtual void	makeCurrentContext();
-	virtual void	swapBuffers();
-	virtual Surface	copyWindowSurface( const Area &area );
+	void			startDraw() override;
+	void			finishDraw() override;
+	void			defaultResize() override;
+	void			makeCurrentContext() override;
+	void			swapBuffers()override;
+	Surface8u		copyWindowSurface( const Area &area ) override;
 
 	//! Overrides Renderer's start draw implementation for custom hooks. Only useful in advanced use cases.
 	void setStartDrawFn( const std::function<void( Renderer* )>& function ) { mStartDrawFn = function; }
