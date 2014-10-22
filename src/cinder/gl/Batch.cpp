@@ -37,7 +37,7 @@ BatchRef Batch::create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, 
 	return BatchRef( new Batch( vboMesh, glsl, attributeMapping ) );
 }
 
-BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping );
+BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
 {
 	return BatchRef( new Batch( source, glsl, attributeMapping ) );
 }
