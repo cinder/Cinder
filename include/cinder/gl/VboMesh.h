@@ -220,6 +220,10 @@ class VboMesh {
 
 	//! Issues a glDraw* call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawImpl();
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+	//! Issues a glDraw*Instanced call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
+	void		drawInstancedImpl( GLsizei instanceCount );
+#endif
 
 #if ! defined( CINDER_GL_ES )
 	//! Returns a geom::Source which references 'this'. Inefficient - primarily useful for debugging. The returned geom::SourceRef should not outlive 'this' (not a shared_ptr).
@@ -264,6 +268,7 @@ class VboMesh {
 	VboRef												mIndices;
 	
 	friend class VboMeshGeomTarget;
+	friend class Batch;
 };
 
 } } // namespace cinder::gl

@@ -265,7 +265,7 @@ void VboMesh::buildVao( const GlslProgRef &shader, const AttribGlslMap &attribut
 			// if either the shader's mapping or 'attributeMapping' has this semantic, add it to the VAO
 			if( loc != -1 ) {
 				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
 				if( attribInfo.getInstanceDivisor() > 0 )
 					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
 			}
@@ -283,6 +283,23 @@ void VboMesh::drawImpl()
 	else
 		glDrawArrays( mGlPrimitive, 0, mNumVertices );
 }
+
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+void VboMesh::drawInstancedImpl( GLsizei instanceCount )
+{
+#if defined( CINDER_COCOA_TOUCH )
+	if( mNumIndices )
+		glDrawElementsInstancedEXT( mGlPrimitive, mNumIndices, mIndexType, (GLvoid*)( 0 ), instanceCount );
+	else
+		glDrawArraysInstancedEXT( mGlPrimitive, 0, mNumVertices, instanceCount );
+#else
+	if( mNumIndices )
+		glDrawElementsInstanced( mGlPrimitive, mNumIndices, mIndexType, (GLvoid*)( 0 ), instanceCount );
+	else
+		glDrawArraysInstanced( mGlPrimitive, 0, mNumVertices, instanceCount );
+#endif
+}
+#endif
 
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {
