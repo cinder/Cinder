@@ -472,7 +472,6 @@ TextureBase::Format::Format()
 	mSwizzleMask[0] = GL_RED; mSwizzleMask[1] = GL_GREEN; mSwizzleMask[2] = GL_BLUE; mSwizzleMask[3] = GL_ALPHA;
 	mCompareMode = -1;
 	mCompareFunc = -1;
-	mDeleter = nullptr;
 }
 
 void TextureBase::Format::setSwizzleMask( GLint r, GLint g, GLint b, GLint a )
@@ -497,58 +496,58 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 // Texture
 Texture2dRef Texture2d::create( int width, int height, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( width, height, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( width, height, format ) )
 		: TextureRef( new Texture( width, height, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const unsigned char *data, int dataFormat, int width, int height, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( data, dataFormat, width, height, format ) ) 
+	return ( !format.mDeleter ) ? TextureRef( new Texture( data, dataFormat, width, height, format ) )
 		: TextureRef( new Texture( data, dataFormat, width, height, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const Surface8u &surface, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( surface, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( surface, format ) )
 		: TextureRef( new Texture( surface, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const Surface16u &surface, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( surface, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( surface, format ) )
 		: TextureRef( new Texture( surface, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const Surface32f &surface, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( surface, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( surface, format ) )
 		: TextureRef( new Texture( surface, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const Channel8u &channel, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( channel, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( channel, format ) )
 		: TextureRef( new Texture( channel, format ), format.mDeleter );
 }
 
 Texture2dRef Texture2d::create( const Channel16u &channel, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( channel, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( channel, format ) )
 		: TextureRef( new Texture( channel, format ), format.mDeleter );
 }
-	
+
 Texture2dRef Texture2d::create( const Channel32f &channel, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( channel, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( channel, format ) )
 		: TextureRef( new Texture( channel, format ), format.mDeleter );
 }
-	
+
 Texture2dRef Texture2d::create( ImageSourceRef imageSource, Format format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( imageSource, format ) )
+	return ( !format.mDeleter ) ? TextureRef( new Texture( imageSource, format ) )
 		: TextureRef( new Texture( imageSource, format ), format.mDeleter );
 }
-	
+
 Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose )
 {
 	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ) );
@@ -556,7 +555,7 @@ Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int 
 
 Texture2dRef Texture2d::create( const TextureData &data, const Format &format )
 {
-	return ( format.mDeleter == nullptr ) ? TextureRef( new Texture( data, format ) ) 
+	return ( !format.mDeleter ) ? TextureRef( new Texture( data, format ) )
 		: TextureRef( new Texture( data, format ), format.mDeleter );
 }
 

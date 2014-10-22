@@ -220,7 +220,7 @@ class TextureBase {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 
 		//! Returns whether the texture uses a custom deleter.
-		bool				hasDeleter() const { return mDeleter != nullptr; }
+		bool				hasDeleter() const { return (bool) mDeleter; }
 		//! Allows you to specify a custom \a deleter for the shared pointer.
 		void				setDeleter( const std::function<void( TextureBase* )> &deleter ) { mDeleter = deleter; }
 		//! Allows you to specify a custom \a deleter for the shared pointer.
