@@ -33,8 +33,9 @@
 #include <vector>
 
 namespace cinder { namespace gl {
-	
-typedef std::shared_ptr<class VboMesh> VboMeshRef;
+
+class VboMesh;
+typedef std::shared_ptr<VboMesh> VboMeshRef;
 	
 void draw( const VboMeshRef& vbo );
 void drawRange( const VboMeshRef& vbo, GLint start, GLsizei count );
@@ -43,25 +44,33 @@ class VboMesh {
   public:
 	class Layout {
 	  public:
-		Layout() : mUsage( GL_STATIC_DRAW ), mInterleave( false ) {}
+		Layout() : mUsage( GL_STATIC_DRAW ), mInterleave( true ) {}
 
-		//! Specifies whether the data is stored planar or interleaved.
+		//! Specifies whether the data is stored planar or interleaved. Deafult is interleaved.
 		Layout&		interleave( bool interleave = true ) { mInterleave = interleave; return *this; }
+		//! Returns whether the Layout stores data as interleaved (rather than planar)
 		bool		getInterleave() const { return mInterleave; }
 		/** For Desktop GL, \c GL_STREAM_DRAW, \c GL_STREAM_READ, \c GL_STREAM_COPY, \c GL_STATIC_DRAW, \c GL_STATIC_READ, \c GL_STATIC_COPY, \c GL_DYNAMIC_DRAW, \c GL_DYNAMIC_READ, or \c GL_DYNAMIC_COPY.
 			For ES 2, \c GL_STREAM_DRAW, \c GL_STATIC_DRAW, or \c GL_DYNAMIC_DRAW **/
 		Layout&		usage( GLenum usage ) { mUsage = usage; return *this; }
+		//! Returns the usage for the Layout. Default is \c GL_STATIC_DRAW
 		GLenum		getUsage() const { return mUsage; }
+		//! Appends an attribute of semantic \a attrib which is \a dims-dimensional
 		Layout&		attrib( geom::Attrib attrib, uint8_t dims ) { mAttribInfos.push_back( geom::AttribInfo( attrib, geom::DataType::FLOAT, dims, 0, 0, 0 ) ); return *this; }
-		
+		//! Appends an attribute using a geom::AttribInfo
+		Layout&		attrib( const geom::AttribInfo &attribInfo ) { mAttribInfos.push_back( attribInfo ); return *this; }
+
+		//! Clears all attributes in the Layout
 		void		clearAttribs() { mAttribInfos.clear(); }
 
+	  protected:
 		void		allocate( size_t numVertices, geom::BufferLayout *resultBufferLayout, gl::VboRef *resultVbo ) const;
 
-	  protected:
 		GLenum							mUsage;
 		bool							mInterleave;
 		std::vector<geom::AttribInfo>	mAttribInfos;
+
+		friend VboMesh;
 	};
   
 	//! Creates a VboMesh which represents the geom::Source \a source.
