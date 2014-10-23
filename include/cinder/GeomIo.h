@@ -127,10 +127,12 @@ class Source {
 
 	virtual void		loadInto( Target *target ) const = 0;
 
-	virtual void		clearAttribs() { mEnabledAttribs.clear(); }
-	virtual Source&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Source&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
-	virtual bool		isEnabled( Attrib attrib ) const;
+	void				clearAttribs() { mEnabledAttribs.clear(); }
+	void				enable( Attrib attrib );
+	void				disable( Attrib attrib );
+	bool				isEnabled( Attrib attrib ) const;
+	
+	std::vector<Attrib>	getEnabledAttribs() const { return mEnabledAttribs; }
 
   protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -140,7 +142,7 @@ class Source {
 	template<typename T>
 	void forceCopyIndicesTrianglesImpl( T *dest ) const;
 
-	std::set<Attrib>	mEnabledAttribs;
+	std::vector<Attrib>	mEnabledAttribs;
 };
 
 class Target {
@@ -166,8 +168,8 @@ class Rect : public Source {
 	Rect();
 	Rect( const Rectf &r );
 
-	virtual Rect&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Rect&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }	
+	Rect&				enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Rect&				disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 	Rect&				rect( const Rectf &r );
 	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&				colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
@@ -191,9 +193,9 @@ class Cube : public Source {
   public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
+	Cube&			enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Cube&			disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
-	virtual Cube&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Cube&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
 	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
 	Cube&			subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
@@ -217,9 +219,8 @@ class Icosahedron : public Source {
 	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
 	virtual ~Icosahedron() {}
-
-	virtual Icosahedron&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Icosahedron&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	Icosahedron&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Icosahedron&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
 	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
@@ -246,8 +247,8 @@ class Teapot : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
-	virtual Teapot&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Teapot&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	Teapot&				enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Teapot&				disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 	Teapot&				subdivisions( int sub );
 
 	virtual size_t		getNumVertices() const override;
@@ -289,8 +290,9 @@ class Circle : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Circle();
 
-	virtual Circle&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Circle&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	Circle&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Circle&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
+
 	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
@@ -321,8 +323,9 @@ class Sphere : public Source {
 	Sphere();
 	virtual ~Sphere() {}
 
-	virtual Sphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Sphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	Sphere&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	Sphere&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
+
 	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
@@ -355,8 +358,8 @@ class Icosphere : public Icosahedron {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Icosphere();
 
-	virtual Icosphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Icosphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Icosphere&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Icosphere&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
@@ -378,8 +381,8 @@ class Capsule : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Capsule();
 
-	virtual Capsule&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Capsule&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Capsule&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Capsule&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
 	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
@@ -421,8 +424,8 @@ class Torus : public Source {
 	Torus();
 	virtual ~Torus() {}
 
-	virtual Torus&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Torus&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Torus&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Torus&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	virtual Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
 	virtual Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
@@ -472,8 +475,8 @@ class Helix : public Torus {
 		coils(3.0f);
 	}
 
-	virtual Helix&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Helix&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Helix&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Helix&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
 	virtual Helix&	subdivisionsAxis( int subdiv ) override { Torus::subdivisionsAxis( subdiv ); return *this; }
 	virtual Helix&	subdivisionsHeight( int subdiv ) override { Torus::subdivisionsHeight( subdiv ); return *this; }
@@ -493,8 +496,8 @@ class Cylinder : public Source {
 	Cylinder();
 	virtual ~Cylinder() {}
 
-	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Cylinder&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Cylinder&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	//! Specifices the base of the Cylinder.
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
@@ -577,8 +580,8 @@ class Plane : public Source {
 	Plane();
 	virtual ~Plane() {}
 
-	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
+	virtual Plane&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
+	virtual Plane&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 
 	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
 	virtual Plane&	subdivisions( const ivec2 &subdivisions );
@@ -744,8 +747,8 @@ class Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
 	
-	virtual Extrude&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Extrude&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	virtual Extrude&	enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	virtual Extrude&	disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
 	//! Sets the distance of extrusion along the axis.
 	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
@@ -783,8 +786,8 @@ class ExtrudeSpline : public Source {
   public:
 	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
 	
-	virtual ExtrudeSpline&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual ExtrudeSpline&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	virtual ExtrudeSpline&	enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
+	virtual ExtrudeSpline&	disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
 	//! Enables or disables front and back caps. Enabled by default.
 	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }

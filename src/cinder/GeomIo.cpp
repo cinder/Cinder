@@ -262,8 +262,22 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 
 bool Source::isEnabled( Attrib attrib ) const
 {
-	return mEnabledAttribs.count( attrib ) > 0;
+	return find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib ) != mEnabledAttribs.end();
 }
+
+void Source::enable( Attrib attrib )
+{
+	if( find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib ) == mEnabledAttribs.end() )
+		mEnabledAttribs.push_back( attrib );
+}
+
+void Source::disable( Attrib attrib )
+{
+	auto existing = find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib );
+	if( existing != mEnabledAttribs.end() )
+		mEnabledAttribs.erase( existing );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Target
