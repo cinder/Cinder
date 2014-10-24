@@ -199,6 +199,9 @@
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Context.cpp">
       <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\AudioContext.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(IntDir)\AudioContext.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(IntDir)\AudioContext.obj</ObjectFileName>
+      <ObjectFileName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(IntDir)\AudioContext.obj</ObjectFileName>
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\DelayNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Device.cpp" />
