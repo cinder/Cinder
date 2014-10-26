@@ -52,7 +52,7 @@ class ShaderDef {
 	bool			mColor;
 	
 	friend class EnvironmentCore;
-	friend class EnvironmentEs2;
+	friend class EnvironmentEs;
 };
 	
 } } // namespace cinder::gl

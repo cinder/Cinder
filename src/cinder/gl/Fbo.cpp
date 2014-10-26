@@ -30,6 +30,8 @@
 // * EXT_packed_depth_stencil http://www.opengl.org/registry/specs/EXT/packed_depth_stencil.txt
 // * http://www.khronos.org/registry/gles/extensions/ANGLE/ANGLE_framebuffer_multisample.txt
 
+// Both ANGLE and iOS support OES_depth_texture (ANGLE_depth_texture) so we support it everywhere
+
 #include "cinder/gl/gl.h" // must be first
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Context.h"
@@ -43,19 +45,19 @@ using namespace std;
 
 #if (! defined( CINDER_GL_ES )) || defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ANGLE )
 	#define SUPPORTS_MULTISAMPLE
-	#if defined( CINDER_COCOA_TOUCH )
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleAPPLE
 		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-	#elif defined( CINDER_GL_ANGLE )
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
 		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
 	#endif
 #endif
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	#define MAX_COLOR_ATTACHMENT	GL_COLOR_ATTACHMENT15
 #else
 	#define MAX_COLOR_ATTACHMENT	GL_COLOR_ATTACHMENT0
@@ -136,7 +138,7 @@ Renderbuffer::~Renderbuffer()
 void Renderbuffer::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	env()->objectLabel( GL_RENDERBUFFER, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
@@ -161,6 +163,7 @@ Fbo::Format::Format()
 	
 	mDepthBufferInternalFormat = getDefaultDepthInternalFormat();
 	mDepthBuffer = true;
+	mDepthTexture = false;
 	
 	mSamples = 0;
 	mCoverageSamples = 0;
@@ -169,7 +172,7 @@ Fbo::Format::Format()
 
 GLint Fbo::Format::getDefaultColorInternalFormat( bool alpha )
 {
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return GL_RGBA;
 #else
 	return GL_RGBA8;
@@ -178,7 +181,7 @@ GLint Fbo::Format::getDefaultColorInternalFormat( bool alpha )
 
 GLint Fbo::Format::getDefaultDepthInternalFormat()
 {
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return GL_DEPTH_COMPONENT24_OES;
 #else
 	return GL_DEPTH_COMPONENT24;
@@ -187,18 +190,21 @@ GLint Fbo::Format::getDefaultDepthInternalFormat()
 
 Texture::Format	Fbo::Format::getDefaultColorTextureFormat( bool alpha )
 {
-	if( alpha )
-		return Texture::Format().internalFormat( GL_RGBA ).pixelDataFormat( GL_RGBA ).pixelDataType( GL_UNSIGNED_BYTE );
-	else
-		return Texture::Format().internalFormat( GL_RGB ).pixelDataFormat( GL_RGB ).pixelDataType( GL_UNSIGNED_BYTE );
+#if defined( CINDER_GL_ES_2 )
+	auto internalFormat = alpha ? GL_RGBA8_OES : GL_RGB8_OES;
+#else
+	auto internalFormat = alpha ? GL_RGBA8 : GL_RGB8;
+#endif
+
+	return Texture::Format().internalFormat( internalFormat ).immutableStorage();
 }
 
 Texture::Format	Fbo::Format::getDefaultDepthTextureFormat()
 {
-#if defined( CINDER_GL_ES )
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT ).pixelDataFormat( GL_DEPTH_COMPONENT ).pixelDataType( GL_UNSIGNED_SHORT );
+#if defined( CINDER_GL_ES_2 )
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24_OES ).immutableStorage();
 #else
-	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).pixelDataFormat( GL_DEPTH_COMPONENT ).pixelDataType( GL_FLOAT );
+	return Texture::Format().internalFormat( GL_DEPTH_COMPONENT24 ).immutableStorage().swizzleMask( GL_RED, GL_RED, GL_RED, GL_ONE );
 #endif
 }
 
@@ -206,7 +212,7 @@ Texture::Format	Fbo::Format::getDefaultDepthTextureFormat()
 void Fbo::Format::getDepthStencilFormats( GLint depthInternalFormat, GLint *resultInternalFormat, GLenum *resultPixelDataType )
 {
 	switch( depthInternalFormat ) {
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 		case GL_DEPTH24_STENCIL8_OES:
 			*resultInternalFormat = GL_DEPTH24_STENCIL8_OES; *resultPixelDataType = GL_UNSIGNED_INT_24_8_OES;
 		break;
@@ -322,19 +328,22 @@ void Fbo::initFormatAttachments()
 	}
 	
 	// Create the default depth(+stencil) attachment if there's not already something on GL_DEPTH_ATTACHMENT || GL_DEPTH_STENCIL_ATTACHMENT
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	bool preexistingDepthAttachment = mFormat.mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT );
 #else
 	bool preexistingDepthAttachment = mFormat.mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT )
 										|| mFormat.mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
 #endif
-	if( mFormat.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
+	if( mFormat.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
+		mFormat.mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, mFormat.mDepthTextureFormat );
+	}
+	else if( mFormat.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
 		if( mFormat.mStencilBuffer ) {
 			GLint internalFormat;
 			GLenum pixelDataType;
 			Format::getDepthStencilFormats( mFormat.mDepthBufferInternalFormat, &internalFormat, &pixelDataType );
 			RenderbufferRef depthStencilBuffer = Renderbuffer::create( mWidth, mHeight, internalFormat );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 			mFormat.mAttachmentsBuffer[GL_DEPTH_ATTACHMENT] = depthStencilBuffer;
 			mFormat.mAttachmentsBuffer[GL_STENCIL_ATTACHMENT] = depthStencilBuffer;
 #else
@@ -355,7 +364,7 @@ void Fbo::initFormatAttachments()
 // call glDrawBuffers against all color attachments
 void Fbo::setAllDrawBuffers()
 {
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	vector<GLenum> drawBuffers;
 	for( const auto &bufferAttachment : mAttachmentsBuffer )
 		if( bufferAttachment.first >= GL_COLOR_ATTACHMENT0 && bufferAttachment.first <= MAX_COLOR_ATTACHMENT )
@@ -369,8 +378,10 @@ void Fbo::setAllDrawBuffers()
 		std::sort( drawBuffers.begin(), drawBuffers.end() );
 		glDrawBuffers( (GLsizei)drawBuffers.size(), &drawBuffers[0] );
 	}
-	else
-		glDrawBuffer( GL_NONE );
+	else {
+		GLenum none = GL_NONE;
+		glDrawBuffers( 1, &none );
+	}
 #endif
 }
 
@@ -475,7 +486,7 @@ Texture2dRef Fbo::getDepthTexture()
 	auto attachedTextureIt = mAttachmentsTexture.find( GL_DEPTH_ATTACHMENT );
 	if( attachedTextureIt != mAttachmentsTexture.end() )
 		result = attachedTextureIt->second;
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	else { // search for a depth+stencil attachment
 		attachedTextureIt = mAttachmentsTexture.find( GL_DEPTH_STENCIL_ATTACHMENT );
 		if( attachedTextureIt != mAttachmentsTexture.end() )
@@ -522,14 +533,14 @@ void Fbo::resolveTextures() const
 	if( ! mNeedsResolve )
 		return;
 
-#if defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ANGLE ) && ( ! defined( CINDER_GL_ES_3 ) )
 	if( mMultisampleFramebufferId ) {
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER, mId );
 		ScopedFramebuffer readFbScp( GL_READ_FRAMEBUFFER, mMultisampleFramebufferId );
 		
 		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
 	}
-#elif defined( SUPPORTS_MULTISAMPLE ) && defined( CINDER_GL_ES )
+#elif defined( SUPPORTS_MULTISAMPLE ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
 	if( mMultisampleFramebufferId ) {
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER_APPLE, mId );
@@ -547,10 +558,10 @@ void Fbo::resolveTextures() const
 
 		vector<GLenum> drawBuffers;
 		for( GLenum c = GL_COLOR_ATTACHMENT0; c <= MAX_COLOR_ATTACHMENT; ++c ) {
-			auto colorAttachmentIt = mAttachmentsTexture.find( c );
-			if( colorAttachmentIt != mAttachmentsTexture.end() ) {
-				glDrawBuffer( colorAttachmentIt->first );
-				glReadBuffer( colorAttachmentIt->first );
+            auto colorAttachmentIt = mAttachmentsTexture.find( c );
+            if( colorAttachmentIt != mAttachmentsTexture.end() ) {
+                glDrawBuffers( 1, &colorAttachmentIt->first );
+                glReadBuffer( colorAttachmentIt->first );
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
 				drawBuffers.push_back( colorAttachmentIt->first );
 			}
@@ -598,6 +609,7 @@ void Fbo::bindFramebuffer( GLenum target )
 {
 	// This in turn will call bindFramebufferImpl; indirection is so that the Context can update its cache of the active Fbo
 	gl::context()->bindFramebuffer( shared_from_this(), target );
+	markAsDirty();
 }
 
 void Fbo::unbindFramebuffer()
@@ -636,7 +648,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images have the same number of samples" );
 		return false;
 #endif
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		case GL_FRAMEBUFFER_INCOMPLETE_MULTISAMPLE_APPLE:
 			*resultExc = FboExceptionInvalidSpecification( "Framebuffer incomplete: not all attached images have the same number of samples" );
 		return false;
@@ -651,7 +663,7 @@ bool Fbo::checkStatus( FboExceptionInvalidSpecification *resultExc )
 
 GLint Fbo::getMaxSamples()
 {
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	if( sMaxSamples < 0 ) {
 		glGetIntegerv( GL_MAX_SAMPLES, &sMaxSamples);
 	}
@@ -669,7 +681,7 @@ GLint Fbo::getMaxSamples()
 
 GLint Fbo::getMaxAttachments()
 {
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	if( sMaxAttachments < 0 ) {
 		glGetIntegerv( GL_MAX_COLOR_ATTACHMENTS, &sMaxAttachments );
 	}

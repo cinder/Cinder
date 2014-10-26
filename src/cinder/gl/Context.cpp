@@ -38,14 +38,19 @@
 
 using namespace std;
 
-// ES 2 Multisampling is available on iOS via an extension
-#if ! defined( CINDER_GL_ES ) || ( defined( CINDER_COCOA_TOUCH ) )
+// ES 2 Multisampling is available on iOS and ANGLE via an extension
+#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
 	#define SUPPORTS_FBO_MULTISAMPLING
-	#if defined( CINDER_COCOA_TOUCH )
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
 		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 	#endif
 #endif
 
@@ -73,7 +78,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if ! defined( CINDER_GL_ES )
+#if defined( SUPPORTS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao );
 	mDefaultVao->setContext( this );
@@ -89,7 +94,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	 
 	mReadFramebufferStack.push_back( 0 );
 	mDrawFramebufferStack.push_back( 0 );	
-#elif defined( CINDER_GL_ANGLE )
+#else
 	mFramebufferStack.push_back( 0 );
 #endif
 	mDefaultArrayVboIdx = 0;
@@ -180,7 +185,7 @@ void Context::makeCurrent() const
 	}
 #else
 	if( sThreadSpecificCurrentContext != this ) {
-	sThreadSpecificCurrentContext = const_cast<Context*>( this );
+		sThreadSpecificCurrentContext = const_cast<Context*>( this );
 		env()->makeContextCurrent( this );
 	}
 #endif
@@ -614,8 +619,7 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 		mRenderbufferBindingStack[target].push_back( 0 );
 }
 
-#if ! defined( CINDER_GL_ES )
-
+#if ! defined( CINDER_GL_ES_2 )
 void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
 {
 	switch (target) {
@@ -1350,9 +1354,11 @@ bool Context::getStackState( std::vector<T> &stack, T *result )
 void Context::sanityCheck()
 {
 	// assert cached (VAO) GL_VERTEX_ARRAY_BINDING is correct
-	GLint trueVaoBinding;
-#if defined( CINDER_GL_ES )
+	GLint trueVaoBinding = 0;
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &trueVaoBinding );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
 #endif
@@ -1432,8 +1438,10 @@ void Context::printState( std::ostream &os ) const
 	glGetIntegerv( GL_ELEMENT_ARRAY_BUFFER_BINDING, &queriedInt );
 	os << "GL_ELEMENT_ARRAY_BUFFER:" << queriedInt << ", ";
 
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &queriedInt );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &queriedInt );
 #endif
@@ -1511,17 +1519,29 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawArraysInstancedANGLE( mode, first, count, primcount );
+#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_COCOA_TOUCH )
+	glDrawArraysInstancedEXT( mode, first, count, primcount );
+#else
 	glDrawArraysInstanced( mode, first, count, primcount );
+#endif
 }
 
 void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawElementsInstancedANGLE( mode, count, type, indices, primcount );
+#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_COCOA_TOUCH )
+	glDrawElementsInstancedEXT( mode, count, type, indices, primcount );
+#else
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
+#endif
 }
-#endif // ! defined( CINDER_GL_ES )
+#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders

@@ -72,6 +72,13 @@ class TextureBase {
 	//!	Unbinds the Texture currently bound in the Texture's target
 	void			unbind( uint8_t textureUnit = 0 ) const;
 
+	//! Returns the width of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getWidth() const = 0;
+	//! Returns the height of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getHeight() const = 0;
+	//! Returns the depth of the texture in pixels, ignoring clean bounds.
+	virtual GLint	getDepth() const = 0;
+
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void			setWrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
 	//! Sets the horizontal wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT and \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
@@ -95,9 +102,15 @@ class TextureBase {
 	// Specifies the texture comparison mode for currently bound depth textures.
 	void			setCompareMode( GLenum compareMode );
 	// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
-	void			setCompareFunc( GLenum compareFunc );	
+	void			setCompareFunc( GLenum compareFunc );
+
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
+	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat
+	static void		getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType );
+	//! Returns the number of mip levels necessary to represent a texture of \a width, \a height and \a depth
+	static int		requiredMipLevels( GLint width, GLint height, GLint depth );
+
 	//! Returns whether a Surface of \a width, \a rowBytes and \a surfaceChannelOrder would require an intermediate Surface in order to be copied into a GL Texture.
 	template<typename T>
 	static bool		surfaceRequiresIntermediate( int32_t width, uint8_t pixelBytes, int32_t rowBytes, SurfaceChannelOrder surfaceChannelOrder );
@@ -113,7 +126,7 @@ class TextureBase {
 	std::array<GLint,4>	getSwizzleMask() const { return mSwizzleMask; }
 	//! Returns whether this hardware supports texture swizzling (via \c GL_TEXTURE_SWIZZLE_RGBA)
 	static bool		supportsHardwareSwizzle();
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	//! Returns whether this hardware supports shadow sampling.
 	static bool		supportsShadowSampler();
 #endif
@@ -132,19 +145,26 @@ class TextureBase {
 		
 		//! Enables or disables mipmapping. Default is disabled.
 		void	enableMipmapping( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; mMipmappingSpecified = true; }
-		//! Sets the base mipmap level. Default is \c 0. Ignored on ES 2.
+		//! Specifies the index of the lowest defined mipmap level. Default is \c 0. Ignored on ES 2.
 		void	setBaseMipmapLevel( GLuint level ) { mBaseMipmapLevel = level; }
-		//! Sets the max mipmap level. Default is \c 1000 (per OpenGL). Ignored on ES 2.
-		void	setMaxMipmapLevel( GLuint level ) { mMaxMipmapLevel = level; }
-			
+		//! Sets the max mipmap level. Default (expressed as \c -1) is derived from the size of the texture. Ignored on ES 2.
+		void	setMaxMipmapLevel( GLint level ) { mMaxMipmapLevel = level; }
+		
+		//! Sets whether the storage for the cannot be changed in the future (making glTexImage*D() calls illegal). More efficient when possible. Default is \c false.
+		void	setImmutableStorage( bool immutable = true ) { mImmutableStorage = immutable; }
+		//! Returns whether the storage for the cannot be changed in the future (making glTexImage*D() calls illegal). Default is \c false.
+		bool	isImmutableStorage() const { return mImmutableStorage; }
+		
 		//! Sets the Texture's internal format. A value of -1 implies selecting the best format for the context.
 		void	setInternalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; }
 		//! Sets the Texture's internal format to be automatically selected based on the context.
 		void	setAutoInternalFormat() { mInternalFormat = -1; }
-		//! Corresponds to the 'format' parameter of glTexImage*(). Defaults to match the internalFormat (a value of \c -1)
-		void	setPixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; }
-		//! Corresponds to the 'type' parameter of glTexImage*(). Defaults to \c GL_UNSIGNED_BYTE	
-		void	setPixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; }
+		
+		//! Sets the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
+		void	setDataType( GLint dataType ) { mDataType = dataType; }
+		//! Sets the Texture's data type format to be automatically selected based on the context.
+		void	setAutoDataType() { mDataType = -1; }
+		
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
 		// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
@@ -175,11 +195,10 @@ class TextureBase {
 		GLint	getInternalFormat() const { return mInternalFormat; }
 		//! Returns whether the Texture's internal format will be automatically selected based on the context.
 		bool	isAutoInternalFormat() const { return mInternalFormat == -1; }
-		
-		//! Returns the Texture's pixel format as passed to glTexImage*() calls. A value of -1 implies automatic selection of the pixel format based on the context.
-		GLint	getPixelDataFormat() const { return mPixelDataFormat; }
-		//! Returns the Texture's data type as passed to glTexImage*() calls.
-		GLenum	getPixelDataType() const { return mPixelDataType; }
+		//! Returns the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination.
+		GLint	getDataType() const { return mDataType; }
+		//! Returns whether the Texture's data type will be automatically selected based on the context.
+		bool	isAutoDataType() const { return mDataType == -1; }
 		
 		//! Returns the horizontal wrapping behavior for the texture coordinates.
 		GLenum	getWrapS() const { return mWrapS; }
@@ -231,11 +250,11 @@ class TextureBase {
 		bool				mMipmapping, mMipmappingSpecified;
 		bool				mMinFilterSpecified;
 		GLuint				mBaseMipmapLevel;
-		GLuint				mMaxMipmapLevel;
+		GLint				mMaxMipmapLevel;
+		bool				mImmutableStorage;
 		GLfloat				mMaxAnisotropy;
-		GLint				mInternalFormat;
-		GLint				mPixelDataFormat;
-		GLenum				mPixelDataType;
+		GLint				mInternalFormat, mDataType;
+		GLint				mDataFormat;
 		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;
@@ -260,6 +279,7 @@ class TextureBase {
 	GLuint				mTextureId;
 	mutable GLint		mInternalFormat;
 	bool				mMipmapping;
+	GLint				mBaseMipmapLevel, mMaxMipmapLevel;
 	bool				mDoNotDispose;
 	std::array<GLint,4>	mSwizzleMask;
 	std::string			mLabel; // debugging label
@@ -349,7 +369,10 @@ class Texture2d : public TextureBase {
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
 		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
+		//! Specifies the internal format for the Texture, used by glTexImage2D or glTexStorage2D when available. Defaults to \c -1 which implies automatic determination.
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		//! Specifies the data type parameter used by glTexImage2D when glTexStorage2D is unavailable. Defaults to \c -1 which implies automatic determination. Primary use is to pass \c GL_FLOAT or \c GL_HALF_FLOAT to create 32F or 16F textures on ES 2 when OES_texture_float is available.
+		Format& dataType( GLint dataType ) { mDataType = dataType; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
 		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
 		Format& wrapT( GLenum wrapT ) { mWrapT = wrapT; return *this; }
@@ -358,17 +381,14 @@ class Texture2d : public TextureBase {
 #endif
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
 		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
-		//! Corresponds to the 'format' parameter of glTexImage*(). Defaults to match the internalFormat (a value of \c -1)
-		Format& pixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; return *this; }
-		//! Corresponds to the 'type' parameter of glTexImage*(). Defaults to \c GL_UNSIGNED_BYTE
-		Format& pixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; return *this; }
-		//! Specifies the texture comparison mode for currently bound depth textures.
 		Format& compareMode( GLenum compareMode ) { mCompareMode = compareMode; return *this; }
 		//! Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE.
 		Format& compareFunc( GLenum compareFunc ) { mCompareFunc = compareFunc; return *this; }		Format& swizzleMask( const std::array<GLint,4> &swizzleMask ) { setSwizzleMask( swizzleMask ); return *this; }
 		Format& swizzleMask( GLint r, GLint g, GLint b, GLint a ) { setSwizzleMask( r, g, b, a ); return *this; }
 		//! Specifies whether the Texture should store scanlines top-down in memory. Default is \c false. Also marks Texture as top-down when \c true.
 		Format& loadTopDown( bool loadTopDown = true ) { mLoadTopDown = loadTopDown; return *this; }
+		//! Sets whether the storage for the cannot be changed in the future (making glTexImage2D() calls illegal). More efficient when possible. Default is \c false.
+		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 #if ! defined( CINDER_GL_ES )
 		Format& intermediatePbo( const PboRef &intermediatePbo ) { setIntermediatePbo( intermediatePbo ); return *this; }
 #endif		
@@ -449,12 +469,12 @@ class Texture2d : public TextureBase {
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData. Use update() instead if the bounds of \a this match those of \a textureData
 	void			replace( const TextureData &textureData );
 
-	//! Returns the number of mip levels the texture bounds require
-	GLint			getNumMipLevels() const;
 	//! Returns the width of the texture in pixels, ignoring clean bounds.
 	GLint			getWidth() const { return mWidth; }
 	//! Returns the height of the texture in pixels, ignoring clean bounds.
 	GLint			getHeight() const { return mHeight; }
+	//! Returns the depth of the texture in pixels, ignoring clean bounds.
+	GLint			getDepth() const { return 1; }
 	//! Returns the width of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
 	GLint			getCleanWidth() const;
 	//! Returns the height of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
@@ -493,6 +513,7 @@ class Texture2d : public TextureBase {
 	Texture2d( const TextureData &data, Format format );
 	
 	void	initParams( Format &format, GLint defaultInternalFormat );
+	void	initMaxMipmapLevel();
 	template<typename T>
 	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const ivec2 &offset );
 	template<typename T>
@@ -511,7 +532,7 @@ class Texture2d : public TextureBase {
 	friend class Texture2dCache;
 };
 
-#ifndef CINDER_GL_ES
+#ifndef CINDER_GL_ES_2
 class Texture3d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
@@ -533,8 +554,8 @@ class Texture3d : public TextureBase {
 #endif
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
 		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
-		Format& pixelDataFormat( GLenum pixelDataFormat ) { mPixelDataFormat = pixelDataFormat; return *this; }
-		Format& pixelDataType( GLenum pixelDataType ) { mPixelDataType = pixelDataType; return *this; }
+		//! Sets whether the storage for the cannot be changed in the future (making glTexImage3D() calls illegal). More efficient when possible. Default is \c false.
+		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		
@@ -547,11 +568,11 @@ class Texture3d : public TextureBase {
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 	
 	//! Returns the width of the texture in pixels
-	GLint			getWidth() const { return mWidth; }
+	GLint			getWidth() const override { return mWidth; }
 	//! Returns the height of the texture in pixels
-	GLint			getHeight() const { return mHeight; }
+	GLint			getHeight() const override { return mHeight; }
 	//! Returns the depth of the texture, which is the number of images in a texture array, or the depth of a 3D texture measured in pixels
-	GLint			getDepth() const { return mDepth; }
+	GLint			getDepth() const override { return mDepth; }
 	//! the aspect ratio of the texture (width / height)
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
@@ -565,7 +586,7 @@ class Texture3d : public TextureBase {
 
 	GLint		mWidth, mHeight, mDepth;
 };
-#endif
+#endif // ! defined( CINDER_GL_ES_2 )
 
 class TextureCubeMap : public TextureBase
 {
@@ -588,6 +609,8 @@ class TextureCubeMap : public TextureBase
 #endif // ! defined( CINDER_GL_ES )
 		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
 		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
+		//! Sets whether the storage for the cannot be changed in the future (making glTexImage2D() calls illegal). More efficient when possible. Default is \c false.
+		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		
@@ -598,6 +621,13 @@ class TextureCubeMap : public TextureBase
 	static TextureCubeMapRef	createHorizontalCross( const ImageSourceRef &imageSource, const Format &format = Format() );
 	//! Expects images ordered { +X, -X, +Y, -Y, +Z, -Z }
 	static TextureCubeMapRef	create( const ImageSourceRef images[6], const Format &format = Format() );
+
+	//! Returns the width of the texture in pixels
+	GLint			getWidth() const override { return mWidth; }
+	//! Returns the height of the texture in pixels
+	GLint			getHeight() const override { return mHeight; }
+	//! Returns the depth of the texture in pixels (
+	GLint			getDepth() const override { return 1; }
 	
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );

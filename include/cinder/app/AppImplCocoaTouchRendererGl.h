@@ -40,15 +40,16 @@
 	GLint			mPointsWidth, mPointsHeight;
 	
 	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
-	GLuint 			mViewFramebuffer, mViewRenderBuffer, mDepthRenderBuffer;
-	GLuint			mMsaaFramebuffer, mMsaaRenderBuffer;
+	GLuint 			mViewFramebuffer, mViewRenderbuffer, mDepthRenderbuffer;
+	GLuint			mMsaaFramebuffer, mMsaaRenderbuffer;
+	GLint			mColorInternalFormat, mDepthInternalFormat;
 	BOOL			mUsingMsaa;
     BOOL            mUsingStencil;
 	BOOL			mObjectTracking;
 	int				mMsaaSamples;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
 
 - (EAGLContext*)getEaglContext;
 - (void)makeCurrentContext;

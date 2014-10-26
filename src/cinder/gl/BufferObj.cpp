@@ -112,21 +112,40 @@ void BufferObj::ensureMinimumSize( GLsizeiptr minimumSize )
 	}
 }
 
-#if ! defined( CINDER_GL_ANGLE )	
+#if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
 void* BufferObj::map( GLenum access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return reinterpret_cast<void*>( glMapBufferOES( mTarget, access ) );
 #else
 	return reinterpret_cast<void*>( glMapBuffer( mTarget, access ) );
+#endif
+}
+#endif
+
+#if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
+void* BufferObj::mapWriteOnly( bool invalidatePrevious )
+{
+	ScopedBuffer bufferBind( mTarget, mId );
+	// iOS ES 2 only has glMapBufferOES()
+#if defined( CINDER_GL_ES_2 )
+	if( invalidatePrevious )
+		glBufferData( mTarget, mSize, nullptr, mUsage );
+	return reinterpret_cast<void*>( glMapBufferOES( mTarget, GL_WRITE_ONLY_OES ) );
+#else	
+	// ES 3 has only glMapBufferRange
+	GLbitfield access = GL_MAP_WRITE_BIT;
+	if( invalidatePrevious )
+		access |= GL_MAP_INVALIDATE_BUFFER_BIT;
+	return reinterpret_cast<void*>( glMapBufferRange( mTarget, 0, mSize, access ) );
 #endif
 }
 
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return reinterpret_cast<void*>( glMapBufferRangeEXT( mTarget, offset, length, access ) );
 #else
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
@@ -136,7 +155,7 @@ void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield 
 void BufferObj::unmap() const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
-#if defined( CINDER_GL_ES )	
+#if defined( CINDER_GL_ES_2 )	
 	GLboolean result = glUnmapBufferOES( mTarget );
 #else
 	GLboolean result = glUnmapBuffer( mTarget );
@@ -145,7 +164,7 @@ void BufferObj::unmap() const
 		//throw BufferFailedUnmapExc();
 	}
 }
-#endif // ! defined( CINDER_GL_ANGLE )
+#endif // #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 
 size_t BufferObj::getSize() const
 {

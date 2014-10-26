@@ -36,7 +36,11 @@ void InstancedTeapotsApp::setup()
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first, 0 ), vec3( 0 ) );
 	
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
+#if ! defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+#else
+	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
+#endif
 
 	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Teapot().subdivisions( 4 ) );
 
@@ -61,14 +65,7 @@ void InstancedTeapotsApp::setup()
 	mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
 
 	// and finally, build our batch, mapping our CUSTOM_0 attribute to the "vInstancePosition" GLSL vertex attribute
-#if ! defined( CINDER_MSW )
 	mBatch = gl::Batch::create( mesh, mGlsl, { { geom::Attrib::CUSTOM_0, "vInstancePosition" } } );
-#else
-	// unfortunately VC2012 doesn't support initializer lists yet
-	gl::Batch::AttributeMapping mapping;
-	mapping[geom::Attrib::CUSTOM_0] = "vInstancePosition";
-	mBatch = gl::Batch::create( mesh, mGlsl, mapping );
-#endif
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
@@ -91,7 +88,7 @@ void InstancedTeapotsApp::update()
 	mCam.lookAt( vec3( 0, CAMERA_Y_RANGE.first + abs(sin( getElapsedSeconds() / 4)) * (CAMERA_Y_RANGE.second - CAMERA_Y_RANGE.first), 0 ), vec3( 0 ) );
 	
 	// update our instance positions; map our instance data VBO, write new positions, unmap
-	vec3 *positions = (vec3*)mInstanceDataVbo->map( GL_WRITE_ONLY );
+	vec3 *positions = (vec3*)mInstanceDataVbo->mapWriteOnly( true );
 	for( size_t potX = 0; potX < NUM_INSTANCES_X; ++potX ) {
 		for( size_t potY = 0; potY < NUM_INSTANCES_Y; ++potY ) {
 			float instanceX = potX / (float)NUM_INSTANCES_X - 0.5f;
@@ -114,7 +111,7 @@ void InstancedTeapotsApp::draw()
 	mBatch->drawInstanced( NUM_INSTANCES_X * NUM_INSTANCES_Y );
 }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
 auto options = RendererGl::Options().version( 3, 3 ); // instancing functions are technically only in GL 3.3
 #else
 auto options = RendererGl::Options(); // implemented as extensions in Mac OS 10.7+

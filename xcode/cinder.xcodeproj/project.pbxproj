@@ -26,9 +26,6 @@
 		0003F3E81992D64100647C8B /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
 		0003F3E91992D64100647C8B /* Environment.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C31992D64100647C8B /* Environment.cpp */; };
 		0003F3EA1992D64100647C8B /* EnvironmentCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C41992D64100647C8B /* EnvironmentCore.cpp */; };
-		0003F3ED1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
-		0003F3EE1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
-		0003F3EF1992D64100647C8B /* EnvironmentEs2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */; };
 		0003F3F01992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F11992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F21992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
@@ -481,7 +478,6 @@
 		007050AD1114F93F003FCAE4 /* Trim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00419C6D11057CC6007EC9AD /* Trim.cpp */; };
 		007050AF1114F93F003FCAE4 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
 		007050B01114F93F003FCAE4 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */; };
-		007050B21114F93F003FCAE4 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
 		007050B51114F93F003FCAE4 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00E0B4B10F605D64002C8FBD /* CoreGraphics.framework */; };
 		007050B81114F93F003FCAE4 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		007050B91114F93F003FCAE4 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
@@ -641,6 +637,8 @@
 		00A3A9220F681AF4008DE5DC /* AppImplCocoaScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */; };
 		00A9CF010F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */; };
 		00AA5C870F64851C009CD67F /* AppScreenSaver.h in Headers */ = {isa = PBXBuildFile; fileRef = 00AA5C860F64851C009CD67F /* AppScreenSaver.h */; };
+		00AD0D2E19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
+		00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
 		00B1337710FBBB8900AC7369 /* Shape2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B1337610FBBB8900AC7369 /* Shape2d.h */; };
 		00B1337910FBBBCC00AC7369 /* Shape2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B1337810FBBBCC00AC7369 /* Shape2d.cpp */; };
 		00B4F3E10F5394C500B75296 /* AppBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B4F3E00F5394C500B75296 /* AppBasic.h */; };
@@ -656,6 +654,8 @@
 		00BC898D10D2BEA200D6DC59 /* DataTarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC898C10D2BEA200D6DC59 /* DataTarget.h */; };
 		00BC89F210D2EA2200D6DC59 /* ImageTargetFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */; };
 		00BC8A0910D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
+		00BDDB3719EA21440006CBCF /* VaoImplCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D31992D64100647C8B /* VaoImplCore.cpp */; };
+		00BDDB3819EA21450006CBCF /* VaoImplCore.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D31992D64100647C8B /* VaoImplCore.cpp */; };
 		00C05B980F4A03660046CC99 /* CinderView.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C05B970F4A03660046CC99 /* CinderView.h */; };
 		00C071B00FF16244004801EA /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		00C071B30FF16261004801EA /* Font.h in Headers */ = {isa = PBXBuildFile; fileRef = 00C071B20FF16261004801EA /* Font.h */; };
@@ -1105,7 +1105,6 @@
 		C7B9305C121C94E900093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B9305B121C94E900093AFE /* AVFoundation.framework */; };
 		C7B9305E121C950800093AFE /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B9305B121C94E900093AFE /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7B9305F121C951400093AFE /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7B92EF5121C828400093AFE /* CoreMedia.framework */; };
-		C7B93060121C952400093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; };
 		C7B93061121C952800093AFE /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C7BA40890FA8C13A00AADC07 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		C7BA408B0FA8C13A00AADC07 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
@@ -1126,7 +1125,6 @@
 		0003F3C21992D64100647C8B /* Context.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Context.cpp; path = gl/Context.cpp; sourceTree = "<group>"; };
 		0003F3C31992D64100647C8B /* Environment.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Environment.cpp; path = gl/Environment.cpp; sourceTree = "<group>"; };
 		0003F3C41992D64100647C8B /* EnvironmentCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentCore.cpp; path = gl/EnvironmentCore.cpp; sourceTree = "<group>"; };
-		0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs2.cpp; path = gl/EnvironmentEs2.cpp; sourceTree = "<group>"; };
 		0003F3C61992D64100647C8B /* Fbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fbo.cpp; path = gl/Fbo.cpp; sourceTree = "<group>"; };
 		0003F3C71992D64100647C8B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
 		0003F3C81992D64100647C8B /* GlslProg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlslProg.cpp; path = gl/GlslProg.cpp; sourceTree = "<group>"; };
@@ -1382,6 +1380,7 @@
 		00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaScreenSaver.h; path = app/AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
 		00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaRendererQuartz.mm; path = app/AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
 		00AA5C860F64851C009CD67F /* AppScreenSaver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppScreenSaver.h; path = app/AppScreenSaver.h; sourceTree = "<group>"; };
+		00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs.cpp; path = gl/EnvironmentEs.cpp; sourceTree = "<group>"; };
 		00B1337610FBBB8900AC7369 /* Shape2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape2d.h; sourceTree = "<group>"; };
 		00B1337810FBBBCC00AC7369 /* Shape2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2d.cpp; sourceTree = "<group>"; };
 		00B4F3E00F5394C500B75296 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppBasic.h; path = app/AppBasic.h; sourceTree = "<group>"; };
@@ -1618,11 +1617,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C7B93060121C952400093AFE /* CoreVideo.framework in Frameworks */,
 				C7B9305F121C951400093AFE /* CoreMedia.framework in Frameworks */,
 				007050AF1114F93F003FCAE4 /* AppKit.framework in Frameworks */,
 				007050B01114F93F003FCAE4 /* Cocoa.framework in Frameworks */,
-				007050B21114F93F003FCAE4 /* QTKit.framework in Frameworks */,
 				007050B51114F93F003FCAE4 /* CoreGraphics.framework in Frameworks */,
 				007050B81114F93F003FCAE4 /* AudioToolbox.framework in Frameworks */,
 				007050B91114F93F003FCAE4 /* AudioUnit.framework in Frameworks */,
@@ -2161,7 +2158,7 @@
 				0003F3C21992D64100647C8B /* Context.cpp */,
 				0003F3C31992D64100647C8B /* Environment.cpp */,
 				0003F3C41992D64100647C8B /* EnvironmentCore.cpp */,
-				0003F3C51992D64100647C8B /* EnvironmentEs2.cpp */,
+				00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */,
 				0003F3C61992D64100647C8B /* Fbo.cpp */,
 				0003F3C71992D64100647C8B /* gl.cpp */,
 				0003F3C81992D64100647C8B /* GlslProg.cpp */,
@@ -3252,7 +3249,6 @@
 				007050531114F93F003FCAE4 /* Stream.cpp in Sources */,
 				111A5FA8191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F26191F727A005C3166 /* framing.c in Sources */,
-				0003F3EE1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				007050571114F93F003FCAE4 /* Color.cpp in Sources */,
 				111A5FC0191F72AE005C3166 /* Device.cpp in Sources */,
 				007050581114F93F003FCAE4 /* Rect.cpp in Sources */,
@@ -3368,6 +3364,7 @@
 				00A121EE1362778200081873 /* Tween.cpp in Sources */,
 				0003F4151992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF0191F72AE005C3166 /* Node.cpp in Sources */,
+				00AD0D2E19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
 				005C0CEE14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				111A5F5F191F7286005C3166 /* info.c in Sources */,
 				0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */,
@@ -3383,6 +3380,7 @@
 				0003F4741992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C319151A5B7F003F2E30 /* Unicode.cpp in Sources */,
 				111A5F7C191F729D005C3166 /* r8bbase.cpp in Sources */,
+				00BDDB3719EA21440006CBCF /* VaoImplCore.cpp in Sources */,
 				0034C322151A5B9F003F2E30 /* linebreak.c in Sources */,
 				111A6002191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
 				0034C328151A5B9F003F2E30 /* linebreakdata.c in Sources */,
@@ -3432,7 +3430,6 @@
 				00CFD9A41135C3520091E310 /* Stream.cpp in Sources */,
 				111A5FA9191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F28191F727B005C3166 /* framing.c in Sources */,
-				0003F3EF1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				00CFD9A51135C3520091E310 /* Color.cpp in Sources */,
 				111A5FC1191F72AE005C3166 /* Device.cpp in Sources */,
 				00CFD9A61135C3520091E310 /* Rect.cpp in Sources */,
@@ -3548,6 +3545,7 @@
 				0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0003F4161992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF1191F72AE005C3166 /* Node.cpp in Sources */,
+				00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
 				0041730514C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				111A5F36191F7285005C3166 /* info.c in Sources */,
 				43F78EF41516DAB700EB63B5 /* Json.cpp in Sources */,
@@ -3563,6 +3561,7 @@
 				0003F4751992D6A000647C8B /* GeomIo.cpp in Sources */,
 				0034C329151A5B9F003F2E30 /* linebreakdata.c in Sources */,
 				111A5F7D191F729D005C3166 /* r8bbase.cpp in Sources */,
+				00BDDB3819EA21450006CBCF /* VaoImplCore.cpp in Sources */,
 				0034C32C151A5B9F003F2E30 /* linebreakdef.c in Sources */,
 				111A6003191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
 				005B0300152CD16E00F2C237 /* json_reader.cpp in Sources */,
@@ -3709,7 +3708,6 @@
 				00419C7611057CC6007EC9AD /* Trim.cpp in Sources */,
 				001E3561115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */,
-				0003F3ED1992D64100647C8B /* EnvironmentEs2.cpp in Sources */,
 				111A5FBF191F72AE005C3166 /* Device.cpp in Sources */,
 				111A5EA4191F703D005C3166 /* bitwise.c in Sources */,
 				0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */,
@@ -3792,10 +3790,8 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COPY_PHASE_STRIP = NO;
 				GCC_DYNAMIC_NO_PIC = NO;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;
@@ -3824,7 +3820,6 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				GCC_DEBUGGING_SYMBOLS = full;
 				GCC_FAST_MATH = YES;
-				GCC_MODEL_TUNING = G5;
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = cinder_Prefix.pch;

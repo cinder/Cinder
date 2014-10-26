@@ -10,6 +10,7 @@ using namespace std;
 
 class HighDynamicRangeApp : public AppNative {
   public:
+	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup() override;
 	void mouseDrag( MouseEvent event ) override;	
 	void draw() override;
@@ -25,17 +26,26 @@ class HighDynamicRangeApp : public AppNative {
 void HighDynamicRangeApp::loadHdr( const fs::path &path )
 {
 	Surface32f s( loadImage( path ) );
+#if defined( CINDER_GL_ES_2 )
+	mHdrTexture = gl::Texture::create( s, gl::Texture::Format().internalFormat( GL_RGB ).dataType( GL_FLOAT ) );
+#else
 	mHdrTexture = gl::Texture::create( s, gl::Texture::Format().internalFormat( GL_RGB32F ) );
-	
+#endif
+
 	mExposure = 1.0f;
 }
 
 void HighDynamicRangeApp::setup()
 {
 	loadHdr( getAssetPath( "Desk_oBA2_scaled.hdr" ) );
-			
+
+#if ! defined( CINDER_GL_ES )
 	mShader = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader.vert" ) )
 																.fragment( loadAsset( "shader.frag" ) ) );
+#else
+	mShader = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "shader_es2.vert" ) )
+																.fragment( loadAsset( "shader_es2.frag" ) ) );
+#endif
 }
 
 void HighDynamicRangeApp::fileDrop( FileDropEvent event )

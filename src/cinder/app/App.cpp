@@ -143,6 +143,10 @@ void App::privateUpdate__()
 	mIo->poll();
 #endif
 
+	WindowRef mainWin = getWindowIndex( 0 );
+	if( mainWin )
+		mainWin->getRenderer()->makeCurrentContext();
+
 	mSignalUpdate();
 
 	update();

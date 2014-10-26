@@ -27,7 +27,7 @@
 
 namespace cinder { namespace gl {
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	
 typedef std::shared_ptr<class TransformFeedbackObj> TransformFeedbackObjRef;
 

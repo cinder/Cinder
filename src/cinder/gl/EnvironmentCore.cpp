@@ -28,6 +28,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
+#include "cinder/gl/Texture.h"
 
 #if ! defined( CINDER_GL_ES )
 
@@ -35,16 +36,19 @@ namespace cinder { namespace gl {
 
 class EnvironmentCore : public Environment {
   public:
-	virtual void	initializeFunctionPointers() override;
+	void	initializeFunctionPointers() override;
 
-	virtual bool	isCoreProfile() const override { return true; }
-	virtual bool	isExtensionAvailable( const std::string &extName ) override;
-	virtual bool	supportsHardwareVao() override;
-	virtual void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label );
-
-	virtual std::string		generateVertexShader( const ShaderDef &shader ) override;
-	virtual std::string		generateFragmentShader( const ShaderDef &shader ) override;
-	virtual GlslProgRef		buildShader( const ShaderDef &shader ) override;
+	bool	isCoreProfile() const override { return true; }
+	bool	isExtensionAvailable( const std::string &extName ) override;
+	bool	supportsHardwareVao() override;
+	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
+	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
+	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
+	
+	std::string		generateVertexShader( const ShaderDef &shader ) override;
+	std::string		generateFragmentShader( const ShaderDef &shader ) override;
+	GlslProgRef		buildShader( const ShaderDef &shader ) override;
 };
 
 Environment* allocateEnvironmentCore()
@@ -95,6 +99,45 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 	static auto objectLabelFn = glObjectLabel;
 	if( objectLabelFn )
 		(*objectLabelFn)( identifier, name, length, label );
+}
+
+void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
+{
+	static auto texStorage2DFn = glTexStorage2D;
+	if( texStorage2DFn && immutable )
+		texStorage2DFn( target, levels, internalFormat, width, height );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		if( texImageDataType != -1 )
+			dataType = texImageDataType;
+		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
+}
+
+void EnvironmentCore::allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable )
+{
+	static auto texStorage3DFn = glTexStorage3D;
+	if( texStorage3DFn && immutable )
+		texStorage3DFn( target, levels, internalFormat, width, height, depth );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
+	}	
+}
+
+void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable )
+{
+	static auto texStorage2DFn = glTexStorage2D;
+	if( texStorage2DFn && immutable )
+		texStorage2DFn( GL_TEXTURE_CUBE_MAP, levels, internalFormat, width, height );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		for( int face = 0; face < 6; ++face )
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
+	}
 }
 
 std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )

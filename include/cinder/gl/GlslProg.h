@@ -73,6 +73,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&		tessellationEval( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationEval( const char *tessellationEvalShader );
+#endif
+#if ! defined( CINDER_GL_ES_2 )		
 		//! Sets the TransformFeedback varyings
 		Format&		feedbackVaryings( const std::vector<std::string>& varyings ) { mTransformVaryings = varyings; return *this; }
 		//! Sets the TransformFeedback format
@@ -103,6 +105,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::string&	getGeometry() const { return mGeometryShader; }
 		const std::string&	getTessellationCtrl() const { return mTessellationCtrlShader; }
 		const std::string&	getTessellationEval() const { return mTessellationEvalShader; }
+#endif
+#if ! defined( CINDER_GL_ES_2 )
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransFormFeedback format
 		GLenum			getTransformFormat() const { return mTransformFormat; }
@@ -134,6 +138,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::string								mGeometryShader;
 		std::string								mTessellationCtrlShader;
 		std::string								mTessellationEvalShader;
+#endif
+#if ! defined( CINDER_GL_ES_2 )
 		GLenum									mTransformFormat;
 		std::vector<std::string>				mTransformVaryings;
 		std::map<std::string,GLuint>			mFragDataLocations;
@@ -271,7 +277,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	std::string								mLabel; // debug label
 
 	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	std::unique_ptr<std::vector<GLchar>>	mTransformFeedbackVaryingsChars;
 	std::unique_ptr<std::vector<GLchar*>>	mTransformFeedbackVaryingsCharStarts;
 #endif

@@ -119,6 +119,8 @@ void DynamicCubeMappingApp::draw()
 	gl::clear( Color( 1, 0, 0 ) );
 
 	gl::pushViewport( ivec2( 0, 0 ), mDynamicCubeMapFbo->getSize() );
+	// we need to save the current FBO because we'll be calling bindFramebufferFace() below
+	gl::context()->pushFramebuffer();
 	for( uint8_t dir = 0; dir < 6; ++dir ) {
 		gl::setProjectionMatrix( ci::CameraPersp( mDynamicCubeMapFbo->getWidth(), mDynamicCubeMapFbo->getHeight(), 90.0f, 1, 1000 ).getProjectionMatrix() );
 		gl::setViewMatrix( mDynamicCubeMapFbo->calcViewMatrix( GL_TEXTURE_CUBE_MAP_POSITIVE_X + dir, vec3( 0 ) ) );
@@ -128,9 +130,9 @@ void DynamicCubeMappingApp::draw()
 		drawSatellites();
 		drawSkyBox();
 	}
-	gl::Fbo::unbindFramebuffer();
+	// restore the FBO before we bound the various faces of the CubeMapFbo
+	gl::context()->popFramebuffer();
 	gl::popViewport();
-
 
 	gl::setMatrices( mCam );
 	// now draw the full scene

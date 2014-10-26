@@ -26,13 +26,20 @@
 
 #if defined( CINDER_GL_ANGLE )
 	#define GL_GLEXT_PROTOTYPES
-	#include "GLES2/gl2.h"
-	#include "GLES2/gl2ext.h"
 	#define CINDER_GL_ES
-	#define CINDER_GL_ES_2
+	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
+	#if defined( CINDER_GL_ES_2 )
+		#include "GLES2/gl2.h"
+		#include "GLES2/gl2ext.h"
+	#else
+		#include "GLES3/gl3.h"
+		#include "GLES3/gl3ext.h"
+		#include "GLES2/gl2ext.h"
+		#define CINDER_GL_ES_3
+	#endif
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
-#elif ! defined( CINDER_COCOA_TOUCH )
+#elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
 		#pragma clang diagnostic ignored "-Wtypedef-redefinition"
@@ -41,11 +48,17 @@
 	#if defined( __clang__ )
 		#pragma clang diagnostic pop
 	#endif
-#else
-	#include <OpenGLES/ES2/gl.h>
-	#include <OpenGLES/ES2/glext.h>
+#else // iOS
 	#define CINDER_GL_ES
-	#define CINDER_GL_ES_2
+	// the default for iOS is GL ES 2, but can be overridden with CINDER_GL_ES_3
+	#if ! defined( CINDER_GL_ES_3 )
+		#include <OpenGLES/ES2/gl.h>
+		#include <OpenGLES/ES2/glext.h>
+		#define CINDER_GL_ES_2
+	#else
+		#include <OpenGLES/ES3/gl.h>
+		#include <OpenGLES/ES3/glext.h>
+	#endif
 #endif
 #include <boost/noncopyable.hpp>
 
@@ -254,7 +267,7 @@ inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 void begin( GLenum mode );
 void end();
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void bindBufferBase( GLenum target, int index, BufferObjRef buffer );
 	
 void beginTransformFeedback( GLenum primitiveMode );
