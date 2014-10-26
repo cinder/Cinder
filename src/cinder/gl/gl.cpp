@@ -69,8 +69,10 @@ bool isExtensionAvailable( const std::string &extName )
 std::pair<GLint,GLint> getVersion()
 {
 	//hard-coded for now
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
 	return std::make_pair( (GLint)2, (GLint)0 );
+#elif defined( CINDER_GL_ES_3 )
+	return std::make_pair( (GLint)3, (GLint)0 );
 #else
 	static bool	sInitialized = false;
 	static pair<GLint,GLint> sVersion;
