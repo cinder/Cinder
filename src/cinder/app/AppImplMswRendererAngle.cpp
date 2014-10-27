@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if defined( CINDER_GL_ANGLE )
+
 #include "cinder/app/AppImplMswRendererAngle.h"
 #include "cinder/app/RendererGl.h"
 
@@ -36,8 +38,6 @@
 #else
 #define CI_BREAK() 
 #endif
-
-#if defined( CINDER_GL_ANGLE )
 
 namespace cinder { namespace app {
 
