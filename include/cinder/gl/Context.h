@@ -196,8 +196,12 @@ class Context {
 	void			glslProgDeleted( const GlslProg *glslProg );
 	
 #if ! defined( CINDER_GL_ES_2 )
-	//! Binds \a ref to the specific \a index within \a target.
-	void bindBufferBase( GLenum target, int index, const BufferObjRef &ref );
+	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
+	void bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer );
+	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
+	void bindBufferBase( GLenum target, GLuint index, GLuint id );
+	//! Analogous to glBindBufferRange()
+	void bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size );
 
 	//! Binds \a feedbackObj as the current Transform Feedback Object. Also, unbinds currently bound Transform Feedback Obj if one exists.
 	void bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj );

@@ -2551,8 +2551,12 @@ uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
 {
 	if( attr == Attrib::POSITION )
 		return 3;
-	else
+	else if( attr == Attrib::CUSTOM_0 )
+		return 1;
+	else if( attr == Attrib::NORMAL || attr == Attrib::COLOR )
 		return 0;
+	else
+		return mSource.getAttribDims( attr );
 }
 
 void VertexNormalLines::loadInto( Target *target ) const
@@ -2561,6 +2565,7 @@ void VertexNormalLines::loadInto( Target *target ) const
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[Attrib::POSITION] = Modifier::READ_WRITE;
 	attribAccess[Attrib::NORMAL] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
+	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ_WRITE;
 	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
 	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
 	mSource.loadInto( &modifier );
@@ -2583,22 +2588,47 @@ void VertexNormalLines::loadInto( Target *target ) const
 	const uint32_t *indices = modifier.getIndicesData();
 	const vec3 *positions = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::POSITION ) );
 	const vec3 *normals = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::NORMAL ) );
+	const float *texCoords = nullptr;
+	size_t texCoordDims = modifier.getReadAttribDims( Attrib::TEX_COORD_0 );
+	if( texCoordDims > 0 )
+		texCoords = reinterpret_cast<const float*>( modifier.getReadAttribData( Attrib::TEX_COORD_0 ) );
 
 	vector<vec3> outPositions;
+	vector<float> outCustom0;
+	vector<float> outTexCoord0;
 	outPositions.reserve( getNumVertices() );
+	outCustom0.reserve( getNumVertices() );
+	outTexCoord0.reserve( getNumVertices() * texCoordDims );
 
 	if( indices ) {
 		for( size_t i = 0; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
 			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + normals[indices[i]] * mLength );
+			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
+			if( texCoords ) {
+				for( size_t d = 0; d < texCoordDims; ++d )
+					outTexCoord0.push_back( texCoords[indices[i] * texCoordDims + d] );
+				for( size_t d = 0; d < texCoordDims; ++d )
+					outTexCoord0.push_back( texCoords[indices[i] * texCoordDims + d] );
+			}
 		}
 	}
 	else {
 		for( size_t i = 0; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
 			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + normals[i] * mLength );
+			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
+			if( texCoords ) {
+				for( size_t d = 0; d < texCoordDims; ++d )
+					outTexCoord0.push_back( texCoords[i * texCoordDims + d] );
+				for( size_t d = 0; d < texCoordDims; ++d )
+					outTexCoord0.push_back( texCoords[i * texCoordDims + d] );
+			}
 		}
 	}
 	
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)outPositions.data(), getNumVertices() );
+	target->copyAttrib( Attrib::CUSTOM_0, 1, 0, (const float*)outCustom0.data(), getNumVertices() );
+	if( texCoords )
+		target->copyAttrib( Attrib::TEX_COORD_0, texCoordDims, 0, (const float*)outTexCoord0.data(), getNumVertices() );	
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

@@ -838,6 +838,50 @@ GLint GlslProg::getUniformLocation( const std::string &name ) const
 	}
 }
 
+#if ! defined( CINDER_GL_ES_2 )
+void GlslProg::uniformBlock( int loc, int binding )
+{
+	glUniformBlockBinding( mHandle, loc, binding );
+}
+
+void GlslProg::uniformBlock( const std::string &name, GLint binding )
+{
+	GLint loc = getUniformBlockLocation( name );
+	if( loc == -1 )
+		CI_LOG_E( "Unknown uniform block: \"" << name << "\"" );
+	else
+		glUniformBlockBinding( mHandle, loc, binding );
+}
+
+GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
+{
+	auto existing = mUniformBlockLocs.find( name );
+	if( existing == mUniformBlockLocs.end() ) {
+		const GLuint loc = glGetUniformBlockIndex( mHandle, name.c_str() );
+		if( loc == GL_INVALID_INDEX )
+			return -1;
+		else
+			mUniformBlockLocs[name] = loc;
+		return loc;
+	}
+	else
+		return existing->second;
+}
+
+GLint GlslProg::getUniformBlockSize( GLint blockIndex ) const
+{
+	auto existing = mUniformBlockSizes.find( blockIndex );
+	if( existing == mUniformBlockSizes.end() ) {
+		GLint blockSize = 0;
+		glGetActiveUniformBlockiv( mHandle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize );
+		mUniformBlockSizes[blockIndex] = blockSize;
+		return blockSize;
+	}
+	else
+		return existing->second;
+}
+#endif // ! defined( CINDER_GL_ES_2 )
+
 const std::map<std::string,GLenum>& GlslProg::getActiveUniformTypes() const
 {
 	if( ! mActiveUniformTypesCached ) {
