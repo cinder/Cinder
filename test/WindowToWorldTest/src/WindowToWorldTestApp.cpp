@@ -67,11 +67,7 @@ void WindowToWorldTestApp::setup()
 void WindowToWorldTestApp::update()
 {
 	// Check if mouse is inside rectangle, by converting the mouse coordinates to object space.
-	// The model matrix needs to be active for this to work.
-	gl::ScopedModelMatrix mat;
-	gl::multModelMatrix( mRectangle.matrix() );
-
-	vec3 object = gl::windowToObjectCoord( mMousePos );
+	vec3 object = gl::windowToObjectCoord( mRectangle.matrix(), mMousePos );
 	mIsOver = mRectangle.area.contains( vec2( object ) );
 }
 
