@@ -183,32 +183,44 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 	}
 	else {
 		switch( srcDimensions ) {
+			case 1:
+				switch( dstDimensions ) {
+					case 1: copyDataImpl<1,1>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 2: copyDataImpl<1,2>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<1,3>( srcData, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<1,4>( srcData, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+			break;
 			case 2:
 				switch( dstDimensions ) {
+					case 1: copyDataImpl<2,1>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 2: copyDataImpl<2,2>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 3: copyDataImpl<2,3>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 4: copyDataImpl<2,4>( srcData, numElements, dstStrideBytes, dstData ); break;
 					default: throw ExcIllegalDestDimensions();
 				}
-				break;
+			break;
 			case 3:
 				switch( dstDimensions ) {
+					case 1: copyDataImpl<3,1>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 2: copyDataImpl<3,2>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 3: copyDataImpl<3,3>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 4: copyDataImpl<3,4>( srcData, numElements, dstStrideBytes, dstData ); break;
 					default: throw ExcIllegalDestDimensions();
 				}
-				break;
-		case 4:
+			break;
+			case 4:
 				switch( dstDimensions ) {
+					case 1: copyDataImpl<4,1>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 2: copyDataImpl<4,2>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 3: copyDataImpl<4,3>( srcData, numElements, dstStrideBytes, dstData ); break;
 					case 4: copyDataImpl<4,4>( srcData, numElements, dstStrideBytes, dstData ); break;
 					default: throw ExcIllegalDestDimensions();
 				}
-				break;
-		default:
-			throw ExcIllegalSourceDimensions();
+			break;
+			default:
+				throw ExcIllegalSourceDimensions();
 		}
 	}
 }
@@ -2553,6 +2565,14 @@ void ExtrudeSpline::loadInto( Target *target ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // VertexNormalLines
+VertexNormalLines::VertexNormalLines( const geom::Source &source, float length )
+	: mSource( source ), mLength( length )
+{
+	enable( CUSTOM_0 );
+	enable( TEX_COORD_0 );
+}
+
+
 size_t VertexNormalLines::getNumVertices() const
 {
 	if( mSource.getNumIndices() > 0 )

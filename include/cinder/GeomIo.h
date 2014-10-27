@@ -824,9 +824,7 @@ class ExtrudeSpline : public Source {
 //! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0. Prevents pass-through of NORMAL and COLOR. Passes CI_TEX_COORD_0
 class VertexNormalLines : public Source {
   public:
-	VertexNormalLines( const geom::Source &source, float length )
-		: mSource( source ), mLength( length )
-	{}
+	VertexNormalLines( const geom::Source &source, float length );
 
 	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
 
