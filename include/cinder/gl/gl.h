@@ -263,7 +263,12 @@ inline void translate( float x, float y, float z ) { translate( vec3( x, y, z ) 
 inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
-	
+
+//! Returns the world coordinate of the specified window \a coordinate.
+vec3 windowToWorldCoord( const ivec2 &coordinate, float z = 0.0f );
+//! Returns the window coordinate of the specified world \a coordinate.
+ivec2 worldToWindowCoord( const vec3 &coordinate );
+
 void begin( GLenum mode );
 void end();
 
