@@ -264,10 +264,14 @@ inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 //! Translates the Model matrix by (\a x,\a y)
 inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 
-//! Returns the world coordinate of the specified window \a coordinate.
+//! Returns the object space coordinate of the specified window \a coordinate, using the currently active model, view and projection matrices.
+vec3 windowToObjectCoord( const ivec2 &coordinate, float z = 0.0f );
+//! Returns the window coordinate of the specified world \a coordinate, using the currently active model, view and projection matrices.
+vec2 objectToWindowCoord( const vec3 &coordinate );
+//! Returns the world space coordinate of the specified window \a coordinate, using the currently active view and projection matrices.
 vec3 windowToWorldCoord( const ivec2 &coordinate, float z = 0.0f );
-//! Returns the window coordinate of the specified world \a coordinate.
-ivec2 worldToWindowCoord( const vec3 &coordinate );
+//! Returns the window coordinate of the specified world \a coordinate, using the currently active view and projection matrices.
+vec2 worldToWindowCoord( const vec3 &coordinate );
 
 void begin( GLenum mode );
 void end();
