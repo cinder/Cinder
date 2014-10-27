@@ -176,17 +176,26 @@ VboMesh::VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboR
 
 	mGlPrimitive = toGl( source.getPrimitive() );
 
-	size_t vertexDataSizeBytes = 0;
+	// determine vertex stride by iterating all attribs and summing their size
+	size_t vertexStride = 0;
+	for( const auto &attrib : source.getEnabledAttribs() ) {
+		uint8_t attribDims = source.getAttribDims( attrib );
+		if( attribDims > 0 )
+			vertexStride += sizeof(float) * attribDims;
+	}
+
 	geom::BufferLayout bufferLayout;
-	for( int attribIt = 0; attribIt < (int)geom::Attrib::NUM_ATTRIBS; ++attribIt ) {
-		auto attribDims = source.getAttribDims( (geom::Attrib)attribIt );
+	GLsizei curOffset = 0;
+	for( const auto &attrib : source.getEnabledAttribs() ) {
+		uint8_t attribDims = source.getAttribDims( attrib );
 		if( attribDims > 0 ) {
-			bufferLayout.append( (geom::Attrib)attribIt, geom::DataType::FLOAT, attribDims, 0, vertexDataSizeBytes );
-			vertexDataSizeBytes += attribDims * sizeof(float) * mNumVertices;
+			bufferLayout.append( attrib, geom::DataType::FLOAT, attribDims, vertexStride, curOffset );
+			curOffset += sizeof(float) * attribDims;			
 		}
 	}
 
 	// TODO: this should use mapBuffer when available
+	const size_t vertexDataSizeBytes = vertexStride * mNumVertices;
 	std::unique_ptr<uint8_t[]> buffer( new uint8_t[vertexDataSizeBytes] );
 	
 	// Set our indices VBO to indexArrayVBO, which may well be empty, so that the target doesn't blow it away. Must do this before we loadInto().

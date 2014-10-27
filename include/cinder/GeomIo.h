@@ -120,6 +120,7 @@ void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, 
 
 class Source {
   public:
+	virtual ~Source() {}
 	virtual size_t		getNumVertices() const = 0;
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
