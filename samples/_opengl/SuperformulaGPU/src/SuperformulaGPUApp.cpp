@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 
 class SuperformulaGpuApp : public AppNative {
-  public:	
+  public:
 	void	setup() override;
 	void	resize() override;
 	void	update() override;
@@ -24,7 +24,9 @@ class SuperformulaGpuApp : public AppNative {
 	gl::BatchRef			mBatch, mNormalsBatch;
 	gl::GlslProgRef			mGlsl, mNormalsGlsl;
 	mat4					mRotation;
+#if ! defined( CINDER_GL_ES )
 	params::InterfaceGlRef	mParams;
+#endif
 
 	bool					mDrawNormals;
 	float					mNormalsLength;
@@ -66,6 +68,7 @@ void SuperformulaGpuApp::setup()
 	mSubdivisions = 100;
 	mCheckerFrequency = 7;
 
+#if ! defined( CINDER_GL_ES )
 	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
 	mParams->addParam( "A (1)", &mFormulaParams.mA1 ).min( 0 ).max( 5 ).step( 0.05f );
 	mParams->addParam( "B (1)", &mFormulaParams.mB1 ).min( 0 ).max( 5 ).step( 0.05f );
@@ -86,13 +89,22 @@ void SuperformulaGpuApp::setup()
 	mParams->addSeparator();
 	mParams->addParam( "Draw Normals", &mDrawNormals );
 	mParams->addParam( "Normals Length", &mNormalsLength ).min( 0.0f ).max( 2.0f ).step( 0.025f );
-	
+#endif
+
 	mCam.lookAt( vec3( 3, 2, 4 ) * 0.75f, vec3( 0 ) );
-	
+
+#if defined( CINDER_GL_ES_3 )
+	mGlsl = gl::GlslProg::create( loadAsset( "shader_es3.vert" ), loadAsset( "shader_es3.frag" ) );
+	mNormalsGlsl = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "normals_shader_es3.vert" ) )
+											.fragment( loadAsset( "normals_shader_es3.frag" ) )
+											.attrib( geom::CUSTOM_0, "vNormalWeight" ) );
+#else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 	mNormalsGlsl = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "normals_shader.vert" ) )
 											.fragment( loadAsset( "normals_shader.frag" ) )
 											.attrib( geom::CUSTOM_0, "vNormalWeight" ) );
+#endif
+
 	// allocate our UBO
 	mFormulaParamsUbo = gl::Ubo::create( sizeof( mFormulaParams ), &mFormulaParams, GL_DYNAMIC_DRAW );
 	// and bind it to buffer base 0; this is analogous to binding it to texture unit 0
@@ -139,7 +151,9 @@ void SuperformulaGpuApp::draw()
 			mNormalsBatch->draw();
 	gl::popMatrices();
 
+#if ! defined( CINDER_GL_ES )
 	mParams->draw();
+#endif
 }
 
 CINDER_APP_NATIVE( SuperformulaGpuApp, RendererGl )
