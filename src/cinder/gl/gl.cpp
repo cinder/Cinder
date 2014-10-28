@@ -842,6 +842,18 @@ void readBuffer( GLenum src )
 {
 	glReadBuffer( src );
 }
+
+void drawBuffers( GLsizei num, const GLenum *bufs )
+{
+	glDrawBuffers( num, bufs );
+}
+#endif
+
+#if ! defined( CINDER_GL_ES )
+void drawBuffer( GLenum dst )
+{
+	glDrawBuffer( dst );
+}
 #endif
 
 void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )
