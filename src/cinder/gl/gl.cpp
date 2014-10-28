@@ -843,14 +843,16 @@ void readBuffer( GLenum src )
 	glReadBuffer( src );
 }
 
-void drawBuffer( GLenum dst )
-{
-	glDrawBuffer( dst );
-}
-	
 void drawBuffers( GLsizei num, const GLenum *bufs )
 {
 	glDrawBuffers( num, bufs );
+}
+#endif
+
+#if ! defined( CINDER_GL_ES )
+void drawBuffer( GLenum dst )
+{
+	glDrawBuffer( dst );
 }
 #endif
 
