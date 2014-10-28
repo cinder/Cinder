@@ -63,7 +63,7 @@ ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bo
 	load();	
 }
 
-void ObjLoader::loadInto( geom::Target *target ) const
+void ObjLoader::loadInto( geom::Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
 {
 	// copy attributes
 	if( getAttribDims( geom::Attrib::POSITION ) )
@@ -688,7 +688,12 @@ void objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includ
 	OStreamRef stream = dataTarget->getStream();
 	
 	unique_ptr<ObjWriteTarget> target( new ObjWriteTarget( stream, includeNormals, includeTexCoords ) );
-	source.loadInto( target.get() );	
+	std::vector<geom::Attrib> requestedAttribs;
+	if( includeNormals )
+		requestedAttribs.push_back( geom::NORMAL );
+	if( includeTexCoords )
+		requestedAttribs.push_back( geom::TEX_COORD_0 );
+	source.loadInto( target.get(), requestedAttribs );
 	
 	if( source.getNumIndices() == 0 )
 		target->generateIndices( geom::Primitive::TRIANGLES, source.getNumVertices() );

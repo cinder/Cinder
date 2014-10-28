@@ -36,7 +36,7 @@ class VboMeshSource : public geom::Source {
   public:
 	static std::shared_ptr<VboMeshSource>	create( const gl::VboMesh *vboMesh );
 	
-	virtual void	loadInto( geom::Target *target ) const override;
+	virtual void	loadInto( geom::Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
 	virtual size_t			getNumVertices() const override;
 	virtual size_t			getNumIndices() const override;
@@ -152,7 +152,7 @@ void VboMesh::Layout::allocate( size_t numVertices, geom::BufferLayout *resultBu
 // VboMesh
 VboMeshRef VboMesh::create( const geom::Source &source )
 {
-	return VboMeshRef( new VboMesh( source, VboRef(), VboRef() ) );
+	return VboMeshRef( new VboMesh( source, VboRef(), VboRef(), std::vector<geom::Attrib>() ) );
 }
 
 VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std::vector<pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, uint32_t numIndices, GLenum indexType, const VboRef &indexVbo )
@@ -160,9 +160,9 @@ VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std:
 	return VboMeshRef( new VboMesh( numVertices, numIndices, glPrimitive, indexType, vertexArrayBuffers, indexVbo ) );
 }
 
-VboMeshRef VboMesh::create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo )
+VboMeshRef VboMesh::create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &requestedAttribs )
 {
-	return VboMeshRef( new VboMesh( source, arrayVbo, indexArrayVbo ) );
+	return VboMeshRef( new VboMesh( source, arrayVbo, indexArrayVbo, requestedAttribs ) );
 }
 
 VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std::vector<Layout> &vertexArrayLayouts, uint32_t numIndices, GLenum indexType, const VboRef &indexVbo )
@@ -170,28 +170,37 @@ VboMeshRef VboMesh::create( uint32_t numVertices, GLenum glPrimitive, const std:
 	return VboMeshRef( new VboMesh( numVertices, numIndices, glPrimitive, indexType, vertexArrayLayouts, indexVbo ) );
 }
 
-VboMesh::VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo )
+VboMesh::VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &additionalAttribs )
 {
-	mNumVertices = (uint32_t)source.getNumVertices();
+	// we need a unique set of attributes we'll be requesting and that the Source provides.
+	// This should be the enabled attribs on the Source as well as the additional attribs
+	std::set<geom::Attrib> attribs;
+	// iterate the Source's enabledAttribs and include them in our set
+	for( const auto &attrib : source.getEnabledAttribs() )
+		if( source.getAttribDims( attrib ) > 0 )
+			attribs.insert( attrib );
+	// and iterate the additionalAttribs
+	for( const auto &attrib : additionalAttribs )
+		if( source.getAttribDims( attrib ) > 0 )
+			attribs.insert( attrib );
 
+	mNumVertices = (uint32_t)source.getNumVertices();
 	mGlPrimitive = toGl( source.getPrimitive() );
 
 	// determine vertex stride by iterating all attribs and summing their size
 	size_t vertexStride = 0;
-	for( const auto &attrib : source.getEnabledAttribs() ) {
+	for( const auto &attrib : attribs ) {
 		uint8_t attribDims = source.getAttribDims( attrib );
-		if( attribDims > 0 )
-			vertexStride += sizeof(float) * attribDims;
+		vertexStride += sizeof(float) * attribDims;
 	}
 
+	// append each of the attribs to our buffer layout
 	geom::BufferLayout bufferLayout;
 	GLsizei curOffset = 0;
-	for( const auto &attrib : source.getEnabledAttribs() ) {
+	for( const auto &attrib : attribs ) {
 		uint8_t attribDims = source.getAttribDims( attrib );
-		if( attribDims > 0 ) {
-			bufferLayout.append( attrib, geom::DataType::FLOAT, attribDims, vertexStride, curOffset );
-			curOffset += sizeof(float) * attribDims;			
-		}
+		bufferLayout.append( attrib, geom::DataType::FLOAT, attribDims, vertexStride, curOffset );
+		curOffset += sizeof(float) * attribDims;
 	}
 
 	// TODO: this should use mapBuffer when available
@@ -202,7 +211,7 @@ VboMesh::VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboR
 	mIndices = indexArrayVbo;
 	
 	VboMeshGeomTarget target( source.getPrimitive(), bufferLayout, buffer.get(), this );
-	source.loadInto( &target );
+	source.loadInto( &target, std::vector<geom::Attrib>( attribs.begin(), attribs.end() ) );
 
 	VboRef vertexDataVbo = arrayVbo;
 	if( ! vertexDataVbo )
@@ -681,7 +690,7 @@ std::shared_ptr<VboMeshSource> VboMeshSource::create( const gl::VboMesh *vboMesh
 	return std::shared_ptr<VboMeshSource>( new VboMeshSource( vboMesh ) );
 }
 
-void VboMeshSource::loadInto( geom::Target *target ) const
+void VboMeshSource::loadInto( geom::Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
 {
 	// iterate all the vertex array VBOs; map<geom::BufferLayout,VboRef>
 	for( const auto &vertArrayVbo : mVboMesh->getVertexArrayLayoutVbos() ) {

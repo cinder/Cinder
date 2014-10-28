@@ -80,7 +80,7 @@ class VboMesh {
 	//! Creates a VboMesh which represents the user's vertex buffer objects. Allows optional \a indexVbo to enable indexed vertices; creates a static VBO if none provided.
 	static VboMeshRef	create( uint32_t numVertices, GLenum glPrimitive, const std::vector<Layout> &vertexArrayLayouts, uint32_t numIndices = 0, GLenum indexType = GL_UNSIGNED_SHORT, const VboRef &indexVbo = VboRef() );
 	//! Creates a VboMesh which represents the geom::Source \a source. Allows optional \a arrayVbo and \a indexArrayVbo in order to simplify recycling of VBOs.
-	static VboMeshRef	create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo );
+	static VboMeshRef	create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &requestedAttribs = std::vector<geom::Attrib>() );
 
 	//! Maps a geom::Attrib to a named attribute in the GlslProg
 	typedef std::map<geom::Attrib,std::string> AttribGlslMap;
@@ -248,7 +248,7 @@ class VboMesh {
 #endif
 
   protected:
-	VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo );
+	VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &additionalAttribs );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<std::pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, const VboRef &indexVbo );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<Layout> &vertexArrayLayouts, const VboRef &indexVbo );
 

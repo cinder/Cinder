@@ -73,7 +73,7 @@ class TriMesh : public geom::Source {
 	TriMesh( const Format &format );
 	TriMesh( const geom::Source &source );
 	
-	virtual void	loadInto( geom::Target *target ) const override;
+	virtual void	loadInto( geom::Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
 	void		clear();
 	

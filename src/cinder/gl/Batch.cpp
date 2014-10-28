@@ -49,8 +49,16 @@ Batch::Batch( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const Attr
 }
 
 Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
-	: mGlsl( glsl ), mVboMesh( gl::VboMesh::create( source ) )
+	: mGlsl( glsl )
 {
+	std::vector<geom::Attrib> attribs;
+	// include all the attributes in the custom attributeMapping
+	for( const auto &attrib : attributeMapping )
+		attribs.push_back( attrib.first );
+	// and then the attributes references by the GLSL
+	for( const auto &attrib : glsl->getAttribSemantics() )
+		attribs.push_back( attrib.second );
+	mVboMesh = gl::VboMesh::create( source, nullptr, nullptr, attribs );
 	initVao( attributeMapping );
 }
 

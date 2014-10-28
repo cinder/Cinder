@@ -126,7 +126,7 @@ class Source {
 	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 
-	virtual void		loadInto( Target *target ) const = 0;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const = 0;
 
 	void				clearAttribs() { mEnabledAttribs.clear(); }
 	void				enable( Attrib attrib );
@@ -181,7 +181,7 @@ class Rect : public Source {
 	virtual size_t		getNumIndices() const override { return 0; }
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	std::array<vec2,4>		mPositions, mTexCoords;
@@ -208,7 +208,7 @@ class Cube : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	ivec3		mSubdivisions;
@@ -227,7 +227,7 @@ class Icosahedron : public Source {
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -255,7 +255,7 @@ class Teapot : public Source {
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
 
   protected:
@@ -298,7 +298,7 @@ class Circle : public Source {
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
 
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	virtual size_t		getNumVertices() const override;
 	virtual size_t		getNumIndices() const override { return 0; }
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
@@ -336,7 +336,7 @@ class Sphere : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -364,7 +364,7 @@ class Icosphere : public Icosahedron {
 	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -399,7 +399,7 @@ class Capsule : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   private:
 	void	calculate() const;
@@ -443,7 +443,7 @@ class Torus : public Source {
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	void			calculate() const;
@@ -518,7 +518,7 @@ class Cylinder : public Source {
 	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	virtual void	calculate() const;
@@ -597,7 +597,7 @@ class Plane : public Source {
 	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
 	virtual Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 
   protected:
 	virtual void	calculate() const;
@@ -669,7 +669,7 @@ class Transform : public Source {
 	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
 	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
 	const geom::Source&		mSource;
 	mat4					mTransform;
@@ -693,7 +693,7 @@ class Twist : public Source {
 	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
 	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -712,7 +712,7 @@ class Lines : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -735,7 +735,7 @@ class ColorFromAttrib : public Source {
 	virtual size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
 	virtual Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&				mSource;
@@ -766,7 +766,7 @@ class Extrude : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	void calculate() const;
@@ -803,7 +803,7 @@ class ExtrudeSpline : public Source {
 	virtual size_t		getNumIndices() const override;
 	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	void calculate() const;
@@ -832,7 +832,7 @@ class VertexNormalLines : public Source {
 	virtual size_t		getNumIndices() const override				{ return 0; }
 	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -848,7 +848,7 @@ class BSpline : public Source {
 	virtual size_t		getNumIndices() const override				{ return 0; }
 	virtual Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
 	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
 	
   protected:
 	template<typename T>

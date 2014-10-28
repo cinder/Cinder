@@ -122,14 +122,14 @@ TriMesh::TriMesh( const geom::Source &source )
 	}
 
 	TriMeshGeomTarget target( this );
-	source.loadInto( &target );
+	source.loadInto( &target, std::vector<geom::Attrib>() );
 	
 	// if source is-nonindexed, generate indices
 	if( source.getNumIndices() == 0 )
 		target.generateIndices( source.getPrimitive(), source.getNumVertices() );
 }
 
-void TriMesh::loadInto( geom::Target *target ) const
+void TriMesh::loadInto( geom::Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
 {
 	// copy attributes
 	for( int attribIt = 0; attribIt < (int)geom::Attrib::NUM_ATTRIBS; ++attribIt ) {
