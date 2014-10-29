@@ -563,7 +563,7 @@ void translate( const ci::vec3& v )
 	ctx->getModelMatrixStack().back() *= glm::translate( v );
 }
 
-vec3 windowToObjectCoord( const mat4 &modelMatrix, const ci::ivec2 &coordinate, float z )
+vec3 windowToObjectCoord( const mat4 &modelMatrix, const ci::vec2 &coordinate, float z )
 {
 	// Build the viewport (x, y, width, height).
 	vec2 offset = gl::getViewport().first;

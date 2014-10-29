@@ -39,7 +39,7 @@
 		8D1107320486CEB800E47090 /* WindowToWorldTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = WindowToWorldTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		CDB4BDFCF211435CA630E314 /* WindowToWorldTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/WindowToWorldTestApp.cpp; sourceTree = "<group>"; name = WindowToWorldTestApp.cpp; };
 		96E373D83F504E0E847DB0AC /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		FA9C8695AD9F42279BE1CFD0 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		FA9C8695AD9F42279BE1CFD0 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		7C9C68ADDD5740D9B144837F /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		DC2DA4919F2544BAA2E42771 /* WindowToWorldTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = WindowToWorldTest_Prefix.pch; sourceTree = "<group>"; name = WindowToWorldTest_Prefix.pch; };
 /* End PBXFileReference section */

@@ -265,15 +265,15 @@ inline void translate( const ci::vec2 &v ) { translate( vec3( v, 0 ) ); }
 inline void translate( float x, float y ) { translate( vec3( x, y, 0 ) ); }
 
 //! Returns the object space coordinate of the specified window \a coordinate, using the specified \a modelMatrix and the currently active view and projection matrices.
-vec3 windowToObjectCoord( const mat4 &modelMatrix, const ivec2 &coordinate, float z = 0.0f );
+vec3 windowToObjectCoord( const mat4 &modelMatrix, const vec2 &coordinate, float z = 0.0f );
 //! Returns the window coordinate of the specified world \a coordinate, using the specified \a modelMatrix and the currently active view and projection matrices.
 vec2 objectToWindowCoord( const mat4 &modelMatrix, const vec3 &coordinate );
 //! Returns the object space coordinate of the specified window \a coordinate, using the currently active model, view and projection matrices.
-inline vec3 windowToObjectCoord( const ivec2 &coordinate, float z = 0.0f ) { return windowToObjectCoord( gl::getModelMatrix(), coordinate, z ); }
+inline vec3 windowToObjectCoord( const vec2 &coordinate, float z = 0.0f ) { return windowToObjectCoord( gl::getModelMatrix(), coordinate, z ); }
 //! Returns the window coordinate of the specified world \a coordinate, using the currently active model, view and projection matrices.
 inline vec2 objectToWindowCoord( const vec3 &coordinate ) { return objectToWindowCoord( gl::getModelMatrix(), coordinate ); }
 //! Returns the world space coordinate of the specified window \a coordinate, using the currently active view and projection matrices.
-inline vec3 windowToWorldCoord( const ivec2 &coordinate, float z = 0.0f ) { return windowToObjectCoord( mat4(), coordinate, z ); }
+inline vec3 windowToWorldCoord( const vec2 &coordinate, float z = 0.0f ) { return windowToObjectCoord( mat4(), coordinate, z ); }
 //! Returns the window coordinate of the specified world \a coordinate, using the currently active view and projection matrices.
 inline vec2 worldToWindowCoord( const vec3 &coordinate ) { return objectToWindowCoord( mat4(), coordinate ); }
 
