@@ -21,9 +21,8 @@
 */
 
 #include "cinder/CaptureImplDirectShow.h"
-#include <boost/noncopyable.hpp>
 
-#include <set>
+
 using namespace std;
 
 
@@ -31,7 +30,6 @@ namespace cinder {
 
 bool CaptureImplDirectShow::sDevicesEnumerated = false;
 vector<Capture::DeviceRef> CaptureImplDirectShow::sDevices;
-
 
 std::shared_ptr<CaptureMgr>	CaptureMgr::sInstance;
 int							CaptureMgr::sTotalDevices = 0;
@@ -54,7 +52,6 @@ std::shared_ptr<CaptureMgr> CaptureMgr::instance()
 	}
 	return sInstance;
 }
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // CaptureImplDirectShow
