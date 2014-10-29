@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* ImageSourcePbo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ImageSourcePbo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		498BC1F1B62A4D78A79D43C5 /* ImageSourcePboApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ImageSourcePboApp.cpp; sourceTree = "<group>"; name = ImageSourcePboApp.cpp; };
 		7F996F869DA149C4A732E9E2 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		EF7E02EC4BA844C693109DFE /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		EF7E02EC4BA844C693109DFE /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		E3F0DC5A5F5A4FC281990443 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		8B3B73F5B5BD4DE6AC8CD95A /* ImageSourcePbo_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ImageSourcePbo_Prefix.pch; sourceTree = "<group>"; name = ImageSourcePbo_Prefix.pch; };
 /* End PBXFileReference section */

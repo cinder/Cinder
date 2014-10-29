@@ -1,6 +1,6 @@
 #include "../include/Resources.h"
 
-1	ICON	"..\\resources\\cinder_app_icon.ico"
+1	ICON	"..\\..\\..\\data\\cinder_app_icon.ico"
 
 MIN_FILTER_LIN_LIN
 MIN_FILTER_NEA_LIN
