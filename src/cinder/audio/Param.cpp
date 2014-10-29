@@ -59,8 +59,14 @@ void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::p
 	}
 }
 
+Event::Event( float timeBegin, float timeEnd, float valueEnd, const RampFn &rampFn )
+	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mHasValueBegin( false ),
+		mValueBegin( 0 ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
+{
+}
+
 Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn )
-	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ),
+	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mHasValueBegin( true ),
 		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
 {
 }
@@ -73,14 +79,28 @@ Param::Param( Node *parentNode, float initialValue )
 void Param::setValue( float value )
 {
 	lock_guard<mutex> lock( getContext()->getMutex() );
-
 	resetImpl();
 	mValue = value;
 }
 
 EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &options )
 {
-	return applyRamp( mValue, valueEnd, rampSeconds, options );
+	initInternalBuffer();
+
+	auto ctx = getContext();
+	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : (float)ctx->getNumProcessedSeconds() + options.getDelay() );
+	float timeEnd = timeBegin + rampSeconds;
+
+	EventRef event( new Event( timeBegin, timeEnd, valueEnd, options.getRampFn() ) );
+
+	lock_guard<mutex> lock( ctx->getMutex() );
+
+	cancelEventsAfter( timeBegin );
+	if( mProcessor )
+		mProcessor.reset();
+
+	mEvents.push_back( event );
+	return event;
 }
 
 EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
@@ -94,9 +114,12 @@ EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
-	resetImpl();
-	mEvents.push_back( event );
 
+	cancelEventsAfter( timeBegin );
+	if( mProcessor )
+		mProcessor.reset();
+
+	mEvents.push_back( event );
 	return event;
 }
 
@@ -234,6 +257,9 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			float timeEndNormalized = float( timeBegin - event->mTimeBegin + endIndex * samplePeriod ) / event->mDuration;
 			float timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (float)count;
 
+			if( ! event->hasValueBegin() )
+				event->setValueBegin( mValue );
+
 			event->mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event->mValueBegin, event->mValueEnd ) );
 			samplesWritten += count;
 
@@ -276,6 +302,18 @@ void Param::resetImpl()
 	}
 
 	mProcessor.reset();
+}
+
+void Param::cancelEventsAfter( float time )
+{
+	mEvents.remove_if( [time]( const EventRef &event ) {
+		if( event->getTimeEnd() >= time ) {
+			event->cancel();
+			return true;
+		}
+		else
+			return false;
+	} );
 }
 
 void Param::initInternalBuffer()

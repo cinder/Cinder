@@ -56,15 +56,21 @@ class Event {
 	float getValueEnd()			const	{ return mValueEnd; }
 	const RampFn& getRampFn()	const	{ return mRampFn; }
 
+	float hasValueBegin()		const	{ return mHasValueBegin; }
+	void  setValueBegin( float value )	{ mValueBegin = value; mHasValueBegin = true; }
+
 	void cancel()				{ mIsCanceled = true; }
 	bool isComplete() const		{ return mIsComplete; }
 
   private:
+	Event( float timeBegin, float timeEnd, float valueEnd, const RampFn &rampFn );
 	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn );
 
 	float				mTimeBegin, mTimeEnd, mDuration;
 	float				mValueBegin, mValueEnd;
 	std::atomic<bool>	mIsComplete, mIsCanceled;
+	bool				mHasValueBegin;
+
 	RampFn	mRampFn;
 
 	friend class Param;
@@ -121,7 +127,6 @@ class Param {
 	EventRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
 	//! Replaces any existing Event's with a Event from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
-	//! Appends a Event from the end of the last scheduled Param (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
 
 	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded. \note Forces \a node to be mono.
@@ -153,6 +158,7 @@ class Param {
 	// non-locking protected methods
 	void		initInternalBuffer();
 	void		resetImpl();
+	void		cancelEventsAfter( float time );
 	ContextRef	getContext() const;
 
 	std::list<EventRef>	mEvents;
