@@ -39,7 +39,7 @@
 		8D1107320486CEB800E47090 /* TextureUpload.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TextureUpload.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		01350EB98A6C4EFCA6F4E71B /* TextureUploadApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/TextureUploadApp.cpp; sourceTree = "<group>"; name = TextureUploadApp.cpp; };
 		5AF43DC5CD9047E18AF12FDD /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		59779B48F8AA4C30B2E94E4C /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		59779B48F8AA4C30B2E94E4C /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		9BAC0436F3F24DB59FE160CF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		F00A5E74409A4AAEBC6DCFC7 /* TextureUpload_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TextureUpload_Prefix.pch; sourceTree = "<group>"; name = TextureUpload_Prefix.pch; };
 /* End PBXFileReference section */
