@@ -174,12 +174,6 @@
 
 - (void)layoutSubviews
 {
-	mCinderContext->makeCurrent();
-	mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mViewFramebuffer );
-	
-	// Allocate color buffer backing based on the current layer size
-    glBindRenderbuffer( GL_RENDERBUFFER, mViewRenderbuffer );
-
 	GLint backingWidth = mCinderView.layer.bounds.size.width * mCinderView.layer.contentsScale;
 	GLint backingHeight = mCinderView.layer.bounds.size.height * mCinderView.layer.contentsScale;
 
@@ -187,10 +181,16 @@
 	if( (mBackingWidth == backingWidth) && (mBackingHeight == backingHeight) )
 		return;
 
-	[mContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)mCinderView.layer];
+	mBackingWidth = backingWidth;
+	mBackingHeight = backingHeight;
 
-	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &mBackingWidth );
-	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &mBackingHeight );
+	mCinderContext->makeCurrent();
+	mCinderContext->bindFramebuffer( GL_FRAMEBUFFER, mViewFramebuffer );
+
+	// Allocate color buffer backing based on the current layer size
+	glBindRenderbuffer( GL_RENDERBUFFER, mViewRenderbuffer );
+
+	[mContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)mCinderView.layer];
 
 	if( ! mUsingMsaa ) {
 		glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer );
