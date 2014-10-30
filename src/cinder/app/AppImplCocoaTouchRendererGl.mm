@@ -180,18 +180,17 @@
 	// Allocate color buffer backing based on the current layer size
     glBindRenderbuffer( GL_RENDERBUFFER, mViewRenderbuffer );
 
-	[mContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)mCinderView.layer];
-
-	GLint backingWidth, backingHeight;
-	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &backingWidth );
-    glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &backingHeight );
+	GLint backingWidth = mCinderView.layer.bounds.size.width * mCinderView.layer.contentsScale;
+	GLint backingHeight = mCinderView.layer.bounds.size.height * mCinderView.layer.contentsScale;
 
 	// test to see if this is already the resolution we setup in allocateGraphics()
 	if( (mBackingWidth == backingWidth) && (mBackingHeight == backingHeight) )
 		return;
 
-	mBackingWidth = backingWidth;
-	mBackingHeight = backingHeight;
+	[mContext renderbufferStorage:GL_RENDERBUFFER fromDrawable:(CAEAGLLayer*)mCinderView.layer];
+
+	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_WIDTH, &mBackingWidth );
+	glGetRenderbufferParameteriv( GL_RENDERBUFFER, GL_RENDERBUFFER_HEIGHT, &mBackingHeight );
 
 	if( ! mUsingMsaa ) {
 		glBindRenderbuffer(GL_RENDERBUFFER, mDepthRenderbuffer );
