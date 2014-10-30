@@ -11,7 +11,7 @@
 	<header replaceContents="true" replaceName="true">include/_TBOX_PREFIX_Delegate.h</header>
 	<header replaceContents="true">include/Resources.h</header>
 	<header replaceName="true" isPCH="true">xcode/_TBOX_PREFIX__Prefix.pch</header>	
-	<resource>resources/CinderApp.icns</resource>
+	<resource cinder="true">samples/data/CinderApp.icns</resource>
 	<resource replaceContents="true">xcode/en.lproj/MainMenu.xib</resource>
 	<resource replaceContents="true" buildExclude="true">xcode/Info.plist</resource>
 </template>
