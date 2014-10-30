@@ -71,7 +71,7 @@
 		B2EB576F724D473ABEEEEF32 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		B41539A3E51D44279F98677F /* PostProcessingAA_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PostProcessingAA_Prefix.pch; sourceTree = "<group>"; };
 		DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = PostProcessingAAApp.cpp; path = ../src/PostProcessingAAApp.cpp; sourceTree = "<group>"; };
-		F1A8A31170B245B88850050A /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; };
+		F1A8A31170B245B88850050A /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */

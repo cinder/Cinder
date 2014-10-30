@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* CompressedTexture.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = CompressedTexture.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EF3559B0B05B4D89830AC779 /* CompressedTextureApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/CompressedTextureApp.cpp; sourceTree = "<group>"; name = CompressedTextureApp.cpp; };
 		02226DF1E52C4E85B6C55E95 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		1B29584A62254C20976DF009 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		1B29584A62254C20976DF009 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		74125A8F389641F39FF137E3 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		94C392D615CA4B8AB1049BDA /* CompressedTexture_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = CompressedTexture_Prefix.pch; sourceTree = "<group>"; name = CompressedTexture_Prefix.pch; };
 /* End PBXFileReference section */

@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* ConvenienceDrawingMethods.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ConvenienceDrawingMethods.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		24C11997EF3E47A0A9303CC7 /* ConvenienceDrawingMethodsApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ConvenienceDrawingMethodsApp.cpp; sourceTree = "<group>"; name = ConvenienceDrawingMethodsApp.cpp; };
 		82929B3F6EB1412995879D68 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		F827B00CB44545F98A4E5512 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		F827B00CB44545F98A4E5512 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		F51A59D188374365A9FBE4DE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		AFD2264E4B22468A99FE8C22 /* ConvenienceDrawingMethods_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ConvenienceDrawingMethods_Prefix.pch; sourceTree = "<group>"; name = ConvenienceDrawingMethods_Prefix.pch; };
 /* End PBXFileReference section */

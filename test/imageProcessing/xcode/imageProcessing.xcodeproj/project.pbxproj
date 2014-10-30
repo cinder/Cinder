@@ -39,7 +39,7 @@
 		8D1107320486CEB800E47090 /* imageProcessing.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = imageProcessing.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		52CB4D014C274AD98769F060 /* imageProcessingApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/imageProcessingApp.cpp; sourceTree = "<group>"; name = imageProcessingApp.cpp; };
 		2AE6FAFCAEF64141BA28D43B /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		1362F50687564E29AA11C567 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		1362F50687564E29AA11C567 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		B8EEBEAD97D04E7AB7EBB73B /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		4173BAD0B2074E18BB83D2E3 /* imageProcessing_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = imageProcessing_Prefix.pch; sourceTree = "<group>"; name = imageProcessing_Prefix.pch; };
 /* End PBXFileReference section */
