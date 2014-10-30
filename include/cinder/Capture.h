@@ -136,6 +136,7 @@ class Capture {
 		
  protected: 
 	struct Obj {
+		Obj() {};
 		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
 		virtual ~Obj();
 
