@@ -143,7 +143,9 @@ class Timeline : public TimelineItem {
 
 	//! Replaces any existing TimelineItems that match \a item's target and adds \a item to the timeline. Safe to use from callback fn's.
 	void apply( TimelineItemRef item );
-	
+	//! Replaces any existing TimelineItems that match \a item's target and end at or after `item->getStartTime()`, and adds \a item to the timeline. Safe to use from callback fn's.
+	void applyAt( TimelineItemRef item );
+
 	//! add an item to the timeline at the current time. Safe to use from callback fn's.
 	void add( TimelineItemRef item );
 	//! adds an item to the timeline. Its start time is not modified. Safe to use from callback fn's.
@@ -167,6 +169,8 @@ class Timeline : public TimelineItem {
 	void				remove( TimelineItemRef item );
 	//! Removes all TimelineItems whose target matches \a target
 	void				removeTarget( void *target );
+	//! Removes the TimelineItem \a item from the Timeline that have a end time at or after \a time. Safe to use from callback fn's.
+	void				removeTargetAt( void *target, float time );
 	//! Clones all TimelineItems whose target matches \a target, but replacing their target with \a replacementTarget
 	void				cloneAndReplaceTarget( void *target, void *replacementTarget );
 	//! Replaces the target of all TimelineItems whose target matches \a target, with \a replacementTarget
