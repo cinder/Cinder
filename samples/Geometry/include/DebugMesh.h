@@ -28,7 +28,7 @@
 
 class DebugMesh : public ci::geom::Source
 {
-public:
+  public:
 	DebugMesh(void);
 	DebugMesh(const ci::TriMesh& mesh, const ci::ColorA& color);
 	~DebugMesh(void);
@@ -41,9 +41,9 @@ public:
 	virtual ci::geom::Primitive	getPrimitive() const override { return ci::geom::Primitive::LINES; }
 	virtual uint8_t				getAttribDims( ci::geom::Attrib attr ) const override;
 	
-	virtual void				loadInto( ci::geom::Target *target ) const override;
+	virtual void				loadInto( ci::geom::Target *target, const std::vector<cinder::geom::Attrib> &requestedAttribs ) const override;
 
-private:
+  private:
 	std::vector<ci::vec3>		mVertices;
 	std::vector<ci::Color>		mColors;
 	std::vector<ci::uint32_t>	mIndices;

@@ -219,7 +219,7 @@ class Icosahedron : public Source {
   public:
 	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
-	virtual ~Icosahedron() {}
+
 	Icosahedron&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
 	Icosahedron&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
@@ -232,7 +232,6 @@ class Icosahedron : public Source {
   protected:
 	virtual void		calculate() const;
 
-	mutable bool						mCalculationsCached;
 	mutable std::vector<vec3>			mPositions;
 	mutable std::vector<vec3>			mNormals;
 	mutable std::vector<vec3>			mColors;

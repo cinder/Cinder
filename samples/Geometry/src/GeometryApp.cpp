@@ -425,7 +425,7 @@ void GeometryApp::createPrimitive(void)
 	if( mShowColors )
 		primitive->enable( geom::Attrib::COLOR );
 	
-	TriMesh mesh( (geom::Twist( (*primitive) )) );
+	TriMesh mesh( *primitive );
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 

@@ -423,9 +423,9 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 2;
-		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 4 : 0;
-		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		case Attrib::COLOR: return 4;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
 		default:
 			return 0;
 	}
@@ -459,9 +459,9 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
+		case Attrib::COLOR: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
 		default:
 			return 0;
 	}	
@@ -560,9 +560,12 @@ void Cube::loadInto( Target *target, const std::vector<geom::Attrib> &requestedA
 		normalsPtr, Color(1,1,0), colorsPtr, texCoordsPtr, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
-	target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
+	if( colorsPtr )
+		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
+	if( texCoordsPtr )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
+	if( normalsPtr )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
@@ -573,19 +576,18 @@ void Cube::loadInto( Target *target, const std::vector<geom::Attrib> &requestedA
 #undef PHI	// take the reciprocal of phi, to obtain an icosahedron that fits a unit cube
 #define PHI (1.0f / ((1.0f + math<float>::sqrt(5.0f)) / 2.0f))
 
-float Icosahedron::sPositions[12*3] = {  
+float Icosahedron::sPositions[12*3] = { 
 	-PHI, 1.0f, 0.0f,    PHI, 1.0f, 0.0f,   -PHI,-1.0f, 0.0f,    PHI,-1.0f, 0.0f,
 	0.0f, -PHI, 1.0f,   0.0f,  PHI, 1.0f,   0.0f, -PHI,-1.0f,   0.0f,  PHI,-1.0f,
 	1.0f, 0.0f, -PHI,   1.0f, 0.0f,  PHI,  -1.0f, 0.0f, -PHI,  -1.0f, 0.0f,  PHI };
 
-uint32_t Icosahedron::sIndices[60] ={	
+uint32_t Icosahedron::sIndices[60] ={
 	0,11, 5, 0, 5, 1, 0, 1, 7, 0, 7,10, 0,10,11,
 	1, 5, 9, 5,11, 4,11,10, 2,10, 7, 6, 7, 1, 8,
 	3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9,
 	4, 9, 5, 2, 4,11, 6, 2,10, 8, 6, 7, 9, 8, 1 };
 
 Icosahedron::Icosahedron()
-	: mCalculationsCached( false )
 {
 	enable( Attrib::POSITION );
 	enable( Attrib::NORMAL );
@@ -593,9 +595,6 @@ Icosahedron::Icosahedron()
 
 void Icosahedron::calculate() const
 {
-	if( mCalculationsCached )
-		return;
-
 	// instead of copying the positions, we create 3 unique vertices per face
 	// to make sure the face is flat
 	mPositions.resize( 60 );
@@ -624,28 +623,24 @@ void Icosahedron::calculate() const
 		mNormals[index0] = mNormals[index1] = mNormals[index2] = normalize( cross( e0, e1 ) );
 	}
 
-	// add color if necessary
-	if( isEnabled( Attrib::COLOR ) ) {
-		size_t numPositions = mPositions.size();
-		mColors.resize( numPositions );
-		for( size_t i = 0; i < numPositions; ++i ) {
-			mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
-			mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
-			mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
-		}
+	// color
+	size_t numPositions = mPositions.size();
+	mColors.resize( numPositions );
+	for( size_t i = 0; i < numPositions; ++i ) {
+		mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
+		mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
+		mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
 	}
-
-	mCalculationsCached = true;
 }
 
 uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -748,11 +743,11 @@ size_t Teapot::getNumIndices() const
 uint8_t	Teapot::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -766,7 +761,7 @@ void Teapot::updateVertexCounts() const
 
 void Teapot::calculate() const
 {
-	if(mCalculationsCached)
+	if( mCalculationsCached )
 		return;
 
 	updateVertexCounts();
@@ -991,17 +986,13 @@ void Circle::updateVertexCounts()
 void Circle::calculate() const
 {
 	mPositions.resize(mNumVertices); //  = unique_ptr<vec2[]>( new vec2[mNumVertices] );
-	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords.resize(mNumVertices); // = unique_ptr<vec2[]>( new vec2[mNumVertices] );
-	if( isEnabled( Attrib::NORMAL ) )		
-		mNormals.resize(mNumVertices); // = unique_ptr<vec3[]>( new vec3[mNumVertices] );	
+	mTexCoords.resize(mNumVertices); // = unique_ptr<vec2[]>( new vec2[mNumVertices] );
+	mNormals.resize(mNumVertices); // = unique_ptr<vec3[]>( new vec3[mNumVertices] );	
 
 	// center
 	mPositions[0] = mCenter;
-	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords[0] = vec2( 0.5f, 0.5f );
-	if( isEnabled( Attrib::NORMAL ) )
-		mNormals[0] = vec3( 0, 0, 1 );
+	mTexCoords[0] = vec2( 0.5f, 0.5f );
+	mNormals[0] = vec3( 0, 0, 1 );
 
 	// iterate the segments
 	const float tDelta = 1 / (float)mNumSubdivisions * 2.0f * 3.14159f;
@@ -1009,10 +1000,8 @@ void Circle::calculate() const
 	for( int s = 0; s <= mNumSubdivisions; s++ ) {
 		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		mPositions[s+1] = mCenter + unit * mRadius;
-		if( isEnabled( Attrib::TEX_COORD_0 ) )
-			mTexCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
-		if( isEnabled( Attrib::NORMAL ) )
-			mNormals[s+1] = vec3( 0, 0, 1 );
+		mTexCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
+		mNormals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
 	}
 }
@@ -1034,11 +1023,11 @@ void Circle::loadInto( Target *target, const std::vector<geom::Attrib> &requeste
 uint8_t	Circle::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 2;
-	case Attrib::TEX_COORD_0: return 2;
-	case Attrib::NORMAL: return 3;
-	default:
-		return 0;
+		case Attrib::POSITION: return 2;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -1081,10 +1070,6 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 	float segIncr = 1.0f / (float)( segments - 1 );
 	float radius = mRadius;
 
-	bool hasNormals = isEnabled( Attrib::NORMAL );
-	bool hasTexCoords = isEnabled( Attrib::TEX_COORD_0 );
-	bool hasColors = isEnabled( Attrib::COLOR );
-
 	auto vertIt = mPositions.begin();
 	auto normIt = mNormals.begin();
 	auto texIt = mTexCoords.begin();
@@ -1099,12 +1084,9 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 
 			*vertIt++ = vec3( x * radius + mCenter.x, y * radius + mCenter.y, z * radius + mCenter.z );
 
-			if( hasNormals )
-				*normIt++ = vec3( x, y, z );
-			if( hasTexCoords )
-				*texIt++ = vec2( u, v );
-			if( hasColors )
-				*colorIt++ = vec3( x * 0.5f + 0.5f, y * 0.5f + 0.5f, z * 0.5f + 0.5f );
+			*normIt++ = vec3( x, y, z );
+			*texIt++ = vec2( u, v );
+			*colorIt++ = vec3( x * 0.5f + 0.5f, y * 0.5f + 0.5f, z * 0.5f + 0.5f );
 		}
 	}
 
@@ -1137,12 +1119,12 @@ size_t Sphere::getNumIndices() const
 uint8_t Sphere::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -1183,22 +1165,18 @@ void Icosphere::calculate() const
 	subdivide();
 
 	// spherize
-	for( auto &pos : mPositions ) {
+	for( auto &pos : mPositions )
 		pos = normalize( pos );
-	}
-	for( auto &normal : mNormals ) {
+	for( auto &normal : mNormals )
 		normal = normalize( normal );
-	}
 
 	// add color if necessary
-	if( isEnabled( Attrib::COLOR ) ) {
-		size_t numPositions = mPositions.size();
-		mColors.resize( numPositions );
-		for( size_t i = 0; i < numPositions; ++i ) {
-			mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
-			mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
-			mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
-		}
+	size_t numPositions = mPositions.size();
+	mColors.resize( numPositions );
+	for( size_t i = 0; i < numPositions; ++i ) {
+		mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
+		mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
+		mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
 	}
 
 	// calculate texture coords based on equirectangular texture map
@@ -1221,12 +1199,11 @@ void Icosphere::calculateImplUV() const
 	auto addVertex = [&] ( size_t i, const vec2 &uv ) {
 		const uint32_t index = mIndices[i];
 		mIndices[i] = (uint32_t)mPositions.size();
-		mPositions.push_back( mPositions[index] );
-		mNormals.push_back( mNormals[index] );
-		mTexCoords.push_back( uv );
+		mPositions.emplace_back( mPositions[index] );
+		mNormals.emplace_back( mNormals[index] );
+		mTexCoords.emplace_back( uv );
 
-		if( isEnabled( Attrib::COLOR ) )
-			mColors.push_back( mColors[index] );
+		mColors.emplace_back( mColors[index] );
 	};
 
 	// fix texture seams (this is where the magic happens)
@@ -1239,15 +1216,12 @@ void Icosphere::calculateImplUV() const
 		const float d1 = uv1.x - uv0.x;
 		const float d2 = uv2.x - uv0.x;
 
-		if( math<float>::abs(d1) > 0.5f && math<float>::abs(d2) > 0.5f ) {
+		if( math<float>::abs(d1) > 0.5f && math<float>::abs(d2) > 0.5f )
 			addVertex( i * 3 + 0, uv0 + vec2( (d1 > 0.0f) ? 1.0f : -1.0f, 0.0f ) );
-		}
-		else if( math<float>::abs(d1) > 0.5f ) {
+		else if( math<float>::abs(d1) > 0.5f )
 			addVertex( i * 3 + 1, uv1 + vec2( (d1 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
-		}
-		else if( math<float>::abs(d2) > 0.5f ) {
+		else if( math<float>::abs(d2) > 0.5f )
 			addVertex( i * 3 + 2, uv2 + vec2( (d2 < 0.0f) ? 1.0f : -1.0f, 0.0f ) );
-		}
 	}
 }
 
@@ -1300,12 +1274,12 @@ void Icosphere::subdivide() const
 uint8_t Icosphere::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -1406,30 +1380,21 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) 
 {
 	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
 
-	bool hasNormals = isEnabled( Attrib::NORMAL );
-	bool hasTexCoords = isEnabled( Attrib::TEX_COORD_0 );
-	bool hasColors = isEnabled( Attrib::COLOR );
-
 	float segIncr = 1.0f / (float)( segments - 1 );
 	for( size_t s = 0; s < segments; s++ ) {
 		float x = math<float>::cos( float(M_PI * 2) * s * segIncr ) * radius;
 		float z = math<float>::sin( float(M_PI * 2) * s * segIncr ) * radius;
 
-		mPositions.push_back( mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
+		mPositions.emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
 
-		if( hasNormals ) {
-			mNormals.push_back( quaternion * glm::vec3( x, y, z ) );
-		}
-		if( hasTexCoords ) {
-			// perform cylindrical projection
-			float u = 1.0f - (s * segIncr);
-			float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-			mTexCoords.push_back( vec2( u, v ) );
-		}
-		if( hasColors ) {
-			float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-			mColors.push_back( vec3( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f ) );
-		}
+		mNormals.emplace_back( quaternion * glm::vec3( x, y, z ) );
+		// perform cylindrical projection
+		float u = 1.0f - (s * segIncr);
+		float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
+		mTexCoords.emplace_back( vec2( u, v ) );
+
+		float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
+		mColors.emplace_back( vec3( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f ) );
 	}
 }
 
@@ -1449,9 +1414,9 @@ uint8_t Capsule::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+	case Attrib::TEX_COORD_0: return 2;
+	case Attrib::NORMAL: return 3;
+	case Attrib::COLOR: return 3;
 	default:
 		return 0;
 	}
@@ -1505,10 +1470,7 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 	mTexCoords.resize( segments * rings, vec2() );
 	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
 
-	if( isEnabled( Attrib::COLOR ) )
-		mColors.resize( segments * rings );
-	else
-		mColors.clear();
+	mColors.resize( segments * rings );
 
 	float majorIncr = 1.0f / (segments - 1);
 	float minorIncr = 1.0f / (rings - 1);
@@ -1537,10 +1499,8 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 			mTexCoords[k] = vec2( i * majorIncr, j * minorIncr );
 			mNormals[k] = vec3( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
 
-			if( isEnabled( Attrib::COLOR ) ) {
-				const vec3 &n = mNormals[k];
-				mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
-			}
+			const vec3 &n = mNormals[k];
+			mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 		}
 	}
 
@@ -1562,12 +1522,12 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 uint8_t Torus::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -1627,10 +1587,7 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 	mTexCoords.resize( segments * rings, vec2() );
 	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
 
-	if( isEnabled( Attrib::COLOR ) )
-		mColors.resize( segments * rings );
-	else
-		mColors.clear();
+	mColors.resize( segments * rings );
 
 	const float segmentIncr = 1.0f / (segments - 1);
 	const float ringIncr = 1.0f / (rings - 1);
@@ -1653,9 +1610,7 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 			mTexCoords[k] = vec2( i * segmentIncr, 1.0f - j * ringIncr );
 			mNormals[k] = axis * n;
 
-			if( isEnabled( Attrib::COLOR ) ) {
-				mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
-			}
+			mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 		}
 	}
 
@@ -1691,11 +1646,8 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 	mTexCoords.resize( index + segments * 2 );
 	mNormals.resize( index + segments * 2, flip ? -mDirection : mDirection );
 
-	if( isEnabled( Attrib::COLOR ) ) {
-		const vec3 n = flip ? -mDirection : mDirection;
-		mColors.resize( index + segments * 2, 
-			vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
-	}
+	const vec3 n = flip ? -mDirection : mDirection;
+	mColors.resize( index + segments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 
 	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
@@ -1739,12 +1691,12 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 uint8_t Cylinder::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-	case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-	case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
@@ -1813,10 +1765,8 @@ void Plane::calculate() const
 
 	const size_t numVerts = ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 );
 	mPositions.resize( numVerts );
-	if( isEnabled( Attrib::NORMAL ) )
-		mNormals.resize( numVerts );
-	if( isEnabled( Attrib::TEX_COORD_0 ) )
-		mTexCoords.resize( numVerts );
+	mNormals.resize( numVerts );
+	mTexCoords.resize( numVerts );
 
 	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
 	const vec3 normal = cross( mAxisV, mAxisU );
@@ -1832,10 +1782,8 @@ void Plane::calculate() const
 			size_t i = x * ( mSubdivisions.y + 1 ) + y;
 			mPositions[i] = pos;
 
-			if( isEnabled( Attrib::NORMAL ) )
-				mNormals[i] = normal;
-			if( isEnabled( Attrib::TEX_COORD_0 ) )
-				mTexCoords[i] = vec2( u, v );
+			mNormals[i] = normal;
+			mTexCoords[i] = vec2( u, v );
 		}
 	}
 
@@ -1862,9 +1810,9 @@ uint8_t Plane::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 2 : 0;
-		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-		case Attrib::COLOR: return isEnabled( Attrib::COLOR ) ? 3 : 0;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
@@ -2336,8 +2284,8 @@ uint8_t	Extrude::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 3 : 0;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 3;
 		default:
 			return 0;
 	}
@@ -2510,8 +2458,8 @@ uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::NORMAL: return isEnabled( Attrib::NORMAL ) ? 3 : 0;
-		case Attrib::TEX_COORD_0: return isEnabled( Attrib::TEX_COORD_0 ) ? 3 : 0;		
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 3;
 		default:
 			return 0;
 	}

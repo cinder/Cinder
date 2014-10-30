@@ -120,7 +120,7 @@ uint8_t DebugMesh::getAttribDims( Attrib attr ) const
 	}
 }
 
-void DebugMesh::loadInto( Target *target ) const
+void DebugMesh::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
 {
 	target->copyAttrib( Attrib::POSITION, 3, 0, reinterpret_cast<const float*>(&mVertices.front()), mVertices.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, reinterpret_cast<const float*>(&mColors.front()), mColors.size() );
