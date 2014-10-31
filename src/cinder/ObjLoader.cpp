@@ -45,14 +45,12 @@ ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeUVs )
 	: mStream( stream )
 {
 	parse( includeUVs );
-	load();
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeUVs )
 	: mStream( dataSource->createStream() )
 {
 	parse( includeUVs );
-	load();
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeUVs )
@@ -60,7 +58,6 @@ ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bo
 {
     parseMaterial( materialSource->createStream() );
     parse( includeUVs );
-	load();	
 }
 
 void ObjLoader::loadInto( geom::Target *target ) const
@@ -257,6 +254,12 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 
 void ObjLoader::load( size_t groupIndex, boost::tribool loadNormals, boost::tribool loadTexCoords )
 {
+	mIndices.clear();
+	mOutputVertices.clear();
+	mOutputNormals.clear();
+	mOutputColors.clear();
+	mOutputTexCoords.clear();
+	
 	bool texCoords;
 	if( loadTexCoords ) texCoords = true;
 	else if( ! loadTexCoords ) texCoords = false;
@@ -283,11 +286,16 @@ void ObjLoader::load( size_t groupIndex, boost::tribool loadNormals, boost::trib
 		map<int,int> uniqueVerts;
 		loadGroup( mGroups[groupIndex], uniqueVerts );
 	}
-
 }
 
 void ObjLoader::load( boost::tribool loadNormals, boost::tribool loadTexCoords )
 {
+	mIndices.clear();
+	mOutputVertices.clear();
+	mOutputNormals.clear();
+	mOutputColors.clear();
+	mOutputTexCoords.clear();
+
 	// sort out if we're loading texCoords
 	bool texCoords, normals;
 	if( loadTexCoords ) texCoords = true;
