@@ -25,6 +25,8 @@
 //#define INITIAL_AUDIO_RES	RES_TONE440_OGG
 //#define INITIAL_AUDIO_RES	RES_TONE440L220R_OGG
 
+#define TEST_STEREO_INPUT_PANNING 0
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -93,7 +95,9 @@ void SamplePlayerNodeTestApp::setup()
 	auto ctx = audio::master();
 
 	mPan = ctx->makeNode( new audio::Pan2dNode() );
-//	mPan->setStereoInputModeEnabled( false );
+#if TEST_STEREO_INPUT_PANNING
+	mPan->setStereoInputModeEnabled( true );
+#endif
 
 	mGain = ctx->makeNode( new audio::GainNode() );
 	mGain->setValue( 0.6f );
@@ -324,8 +328,13 @@ void SamplePlayerNodeTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->setValue( mGainSlider.mValueScaled );
-	else if( mPanSlider.hitTest( pos ) )
+	else if( mPanSlider.hitTest( pos ) ) {
+#if TEST_STEREO_INPUT_PANNING
+		mPan->getParamPos()->applyRamp( mPanSlider.mValueScaled, 0.6f );
+#else
 		mPan->setPos( mPanSlider.mValueScaled );
+#endif
+	}
 	else if( mLoopBeginSlider.hitTest( pos ) )
 		mSamplePlayerNode->setLoopBeginTime( mLoopBeginSlider.mValueScaled );
 	else if( mLoopEndSlider.hitTest( pos ) )
