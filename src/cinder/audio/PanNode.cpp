@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 Pan2dNode::Pan2dNode( const Format &format )
-	: Node( format ), mPos( 0.5f ), mStereoInputMode( false )
+	: Node( format ), mPos( this, 0.5f ), mStereoInputMode( false )
 {
 	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( 2 );
@@ -101,7 +101,8 @@ void Pan2dNode::pullInputs( Buffer *destBuffer )
 // gives +3db when panned to center, which helps to remove the 'dead spot'
 void Pan2dNode::process( Buffer *buffer )
 {
-	float pos = mPos;
+	mPos.eval();
+	float pos = mPos.getValue();
 	float *channel0 = buffer->getChannel( 0 );
 	float *channel1 = buffer->getChannel( 1 );
 
@@ -135,7 +136,7 @@ void Pan2dNode::process( Buffer *buffer )
 
 void Pan2dNode::setPos( float pos )
 {
-	mPos = math<float>::clamp( pos );
+	mPos.setValue( math<float>::clamp( pos ) );
 }
 
 } } // namespace cinder::audio

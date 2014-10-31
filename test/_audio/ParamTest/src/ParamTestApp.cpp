@@ -261,11 +261,12 @@ void ParamTestApp::processDrag( Vec2i pos )
 	if( mGainSlider.hitTest( pos ) ) {
 //		mGain->setValue( mGainSlider.mValueScaled );
 //		mGain->getParam()->applyRamp( mGainSlider.mValueScaled );
-		CI_LOG_V( "applying ramp on gain from: " << mGain->getValue() << " to: " << mGainSlider.mValueScaled );
 		mGain->getParam()->applyRamp( mGainSlider.mValueScaled, 0.15f );
 	}
-	if( mPanSlider.hitTest( pos ) )
-		mPan->setPos( mPanSlider.mValueScaled );
+	if( mPanSlider.hitTest( pos ) ) {
+//		mPan->setPos( mPanSlider.mValueScaled );
+		mPan->getParamPos()->applyRamp( mPanSlider.mValueScaled, 0.3f, audio::Param::Options().rampFn( &audio::rampOutQuad ) );
+	}
 	if( mGenFreqSlider.hitTest( pos ) ) {
 //		mGen->setFreq( mGenFreqSlider.mValueScaled );
 //		mGen->getParamFreq()->applyRamp( mGenFreqSlider.mValueScaled, 0.3f );
@@ -328,6 +329,7 @@ void ParamTestApp::update()
 	if( audio::master()->isEnabled() ) {
 		mGainSlider.set( mGain->getValue() );
 		mGenFreqSlider.set( mGen->getFreq() );
+		mPanSlider.set( mPan->getPos() );
 	}
 }
 
