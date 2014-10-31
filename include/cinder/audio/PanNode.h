@@ -56,6 +56,9 @@ protected:
 	void process( Buffer *buffer ) override;
 
   private:
+	void processRegularMode( Buffer *buffer );
+	void processStereoInputMode( Buffer *buffer );
+
 	Param	mPos;
 	bool	mStereoInputMode;
 };
