@@ -420,7 +420,7 @@ void TextureMipmappingApp::createUserGenMip( const gl::Texture::Format &format, 
 	Surface surface( 512, 512, false );
 	ip::fill( &surface, Color( CM_HSV, 1, 1, 1 ) );
 	f->mUserCreatedMipmap = gl::Texture::create( surface, format );
-	int mipLevels = f->mUserCreatedMipmap->getNumMipLevels();
+	int mipLevels = gl::TextureBase::requiredMipLevels( surface.getWidth(), surface.getHeight(), 0 );
 	
 	for( int level = 1; level < mipLevels; ++level ) {
 		float hue = static_cast<float>( level ) / static_cast<float>( mipLevels );
@@ -435,7 +435,7 @@ void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &f
 {
 	// USER RESIZED CHECKERBOARD MIPMAP
 	f->mUserResizedMipmap = gl::Texture::create( mCheckerBoard, format );
-	int mipLevels = f->mUserResizedMipmap->getNumMipLevels();
+	int mipLevels = gl::TextureBase::requiredMipLevels( f->mUserResizedMipmap->getWidth(), f->mUserResizedMipmap->getHeight(), 0 );
 	
 	for( int level = 1; level < mipLevels; level++ ) {
 		ivec2 mipSize = gl::Texture::calcMipLevelSize( level, mCheckerBoard.getWidth(), mCheckerBoard.getHeight() );
