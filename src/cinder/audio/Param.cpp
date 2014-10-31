@@ -128,8 +128,8 @@ EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &op
 	initInternalBuffer();
 
 	auto ctx = getContext();
-	float endTime = findDuration();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTime + options.getDelay() );
+	auto endTimeAndValue = findEndTimeAndValue();
+	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueEnd, options.getRampFn() ) );
@@ -144,8 +144,8 @@ EventRef Param::appendRamp( float valueBegin, float valueEnd, float rampSeconds,
 	initInternalBuffer();
 
 	auto ctx = getContext();
-	float endTime = findDuration();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTime + options.getDelay() );
+	auto endTimeAndValue = findEndTimeAndValue();
+	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
