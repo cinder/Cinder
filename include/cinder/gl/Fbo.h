@@ -299,7 +299,7 @@ class FboCubeMap : public Fbo {
 		Format();
 		
 		//! Sets the TextureCubeMap format for the default CubeMap.
-		Format&							textureCubeMapFormat( const TextureCubeMap::Format &format );
+		Format&							textureCubeMapFormat( const TextureCubeMap::Format &format )	{ mTextureCubeMapFormat = format; return *this; }
 		//! Returns the TextureCubeMap format for the default CubeMap.
 		const TextureCubeMap::Format&	getTextureCubeMapFormat() const { return mTextureCubeMapFormat; }
 		
