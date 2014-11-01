@@ -1161,7 +1161,7 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 // Icosphere
 
 Icosphere::Icosphere()
-	: mSubdivision( 3 ), mCalculationsCached( false )
+	: mSubdivision( 3 ), mCalculationsCached( false ), mHasColors( false )
 {
 }
 
@@ -1291,7 +1291,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1299,7 +1299,10 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 
 AttribSet Icosphere::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	if( mHasColors )
+		attribs.insert( Attrib::COLOR );
+	return attribs;
 }
 
 void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1569,7 +1572,7 @@ void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 // Cylinder
 
 Cylinder::Cylinder()
-	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 )
+	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 ), mHasColors( false )
 {
 }
 
@@ -1713,7 +1716,7 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1721,7 +1724,10 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 
 AttribSet Cylinder::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	if( mHasColors )
+		attribs.insert( Attrib::COLOR );
+	return attribs;
 }
 
 void Cylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const

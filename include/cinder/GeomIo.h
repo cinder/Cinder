@@ -162,7 +162,7 @@ class Target {
 
 class Rect : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
+	//! Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
 	Rect();
 	Rect( const Rectf &r );
 
@@ -220,7 +220,6 @@ class Cube : public Source {
 
 class Icosahedron : public Source {
   public:
-	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
 
 	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
@@ -245,10 +244,9 @@ class Icosahedron : public Source {
 
 class Teapot : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
-	Teapot&				subdivisions( int sub );
+	Teapot&		subdivisions( int sub );
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -287,7 +285,6 @@ class Teapot : public Source {
 
 class Circle : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Circle();
 
 	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
@@ -343,7 +340,6 @@ class Sphere : public Source {
 
 class Icosphere : public Icosahedron {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Icosphere();
 
 	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
@@ -358,6 +354,7 @@ class Icosphere : public Icosahedron {
 	virtual void		subdivide() const;
 
 	int									mSubdivision;
+	bool								mHasColors;
 
 	mutable bool						mCalculationsCached;
 	mutable std::vector<vec2>			mTexCoords;
@@ -365,7 +362,6 @@ class Icosphere : public Icosahedron {
 
 class Capsule : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Capsule();
 
 	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
@@ -406,7 +402,6 @@ class Capsule : public Source {
 
 class Torus : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Torus();
 	virtual ~Torus() {}
 
@@ -453,7 +448,6 @@ class Torus : public Source {
 
 class Helix : public Torus {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Helix()
 	{
 		height(2.0f);
@@ -475,24 +469,24 @@ class Helix : public Torus {
 
 class Cylinder : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cylinder();
-	virtual ~Cylinder() {}
 
 	//! Specifices the base of the Cylinder.
-	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
+	Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
-	virtual Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
 	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
-	virtual Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; mCalculationsCached = false; return *this; }
 	//! Specifies the height of the cylinder.
-	virtual Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
+	Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
 	//! Specifies the base and apex radius.
-	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
+	Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
 	//! Specifies the axis of the cylinder.
-	virtual Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
+	Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
-	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
+	Cylinder&	set( const vec3 &from, const vec3 &to );
+	//! Enables colors. Disabled by default.
+	Cylinder&	colors() { mHasColors = true; return *this; }
 
 	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
@@ -513,6 +507,7 @@ class Cylinder : public Source {
 	float		mRadiusApex;
 	int			mSubdivisionsAxis;
 	int			mSubdivisionsHeight;
+	bool		mHasColors;
 
 	mutable bool						mCalculationsCached;
 	mutable std::vector<vec3>			mPositions;
@@ -524,18 +519,16 @@ class Cylinder : public Source {
 
 class Cone : public Cylinder {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cone() { radius( 1.0f, 0.0f ); }
-	virtual ~Cone() {}
 
-	virtual Cone&	origin( const vec3 &origin ) override { Cylinder::origin( origin ); return *this; }
+	Cone&	origin( const vec3 &origin ) { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
-	virtual Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
 	//! Specifies the number of subdivisions along the Cone's height. Defaults to \c 1.
-	virtual Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
-	virtual Cone&	height( float height ) override { Cylinder::height( height ); return *this; }
+	Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
+	Cone&	height( float height ) { Cylinder::height( height ); return *this; }
 	//! Specifies the base and apex radius.
-	virtual Cone&	radius( float radius ) override {  Cylinder::radius( radius ); return *this; }
+	Cone&	radius( float radius ) {  Cylinder::radius( radius ); return *this; }
 	//! Specifies the base radius.
 	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); mCalculationsCached = false; return *this; }
 	//! Specifies the apex radius.
@@ -548,15 +541,17 @@ class Cone : public Cylinder {
 		mRadiusApex = math<float>::max(0.f, apex); 
 		mCalculationsCached = false; return *this; }
 	//!
-	virtual Cone&	direction( const vec3 &direction ) override { Cylinder::direction( direction ); return *this; }
+	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
-	virtual Cone&	set( const vec3 &from, const vec3 &to ) override { Cylinder::set( from, to ); return *this; }
+	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
+	//! Enables colors. Disabled by default.
+	Cone&	colors() { mHasColors = true; return *this; }
+
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
 class Plane : public Source {
   public:
-	//! Defaults to having POSITION, NORMAL, and TEX_COORD_0
 	Plane();
 	virtual ~Plane() {}
 

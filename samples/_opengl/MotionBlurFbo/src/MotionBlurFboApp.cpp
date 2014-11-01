@@ -40,7 +40,7 @@ void MotionBlurFboApp::setup()
 	mCam.lookAt( vec3( 0, 0, 7 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
-	mBatch = gl::Batch::create( geom::Cube().enable( geom::Attrib::COLOR ), gl::getStockShader( gl::ShaderDef().color() ) );
+	mBatch = gl::Batch::create( geom::Cube().colors(), gl::getStockShader( gl::ShaderDef().color() ) );
 	mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ) );
 
 #if defined( CINDER_GL_ES_2 )

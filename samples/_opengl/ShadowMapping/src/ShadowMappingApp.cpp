@@ -217,18 +217,11 @@ void ShadowMappingApp::setup()
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
-	auto teapot = gl::VboMesh::create( geom::Teapot()
-									  .enable( geom::Attrib::POSITION )
-									  .enable( geom::Attrib::TEX_COORD_0 )
-									  .enable( geom::Attrib::NORMAL )
-									  .subdivisions(5) );
+	auto teapot = gl::VboMesh::create( geom::Teapot().subdivisions(5) );
 	mTeapot = gl::Batch::create( teapot, positionGlsl );
 	mTeapotShadowed = gl::Batch::create( teapot, mShadowShader );
 	
-	auto sphere = gl::VboMesh::create( geom::Icosphere()
-									  .enable( geom::Attrib::POSITION )
-									  .enable( geom::Attrib::TEX_COORD_0 )
-									  .enable( geom::Attrib::NORMAL ) );
+	auto sphere = gl::VboMesh::create( geom::Icosphere() );
 	mSphere = gl::Batch::create( sphere, positionGlsl );
 	mSphereShadowed = gl::Batch::create( sphere, mShadowShader );
 		
