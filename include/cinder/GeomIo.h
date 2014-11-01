@@ -188,8 +188,14 @@ class Rect : public Source {
 
 class Cube : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
+
+	//! Enables default colors. Disabled by default.
+	Cube&			colors();
+	//! Enables per-face colors ordered { +X, -X, +Y, -Y, +Z, -Z }. Colors are disabled by default.
+	Cube&			colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ );
+	//! Disables colors. Disabled by default.
+	Cube&			disableColors();
 
 	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
@@ -207,7 +213,9 @@ class Cube : public Source {
 
   protected:
 	ivec3		mSubdivisions;
-	vec3		mSize;	
+	vec3		mSize;
+	bool		mHasColors;
+	ColorAf		mColors[6];
 };
 
 class Icosahedron : public Source {
@@ -309,14 +317,13 @@ class Circle : public Source {
 
 class Sphere : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Sphere();
-	virtual ~Sphere() {}
 
-	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
+	Sphere&		colors() { mHasColors = true; return *this; }
+	Sphere&		center( const vec3 &center ) { mCenter = center; return *this; }
+	Sphere&		radius( float radius ) { mRadius = radius; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
-	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; mCalculationsCached = false; return *this; }
+	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; return *this; }
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -326,19 +333,12 @@ class Sphere : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void		calculate() const;
-	virtual void		calculateImplUV( size_t segments, size_t rings ) const;
+	void			numRingsAndSegments( int *numRings, int *numSegments ) const;
 
 	vec3		mCenter;
 	float		mRadius;
 	int			mSubdivisions;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
+	bool		mHasColors;
 };
 
 class Icosphere : public Icosahedron {
@@ -692,7 +692,7 @@ class Lines : public Source {
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override				{ return geom::LINES; }
 	uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	AttribSet	getAvailableAttribs() const override;
+	AttribSet	getAvailableAttribs() const override		{ return mSource.getAvailableAttribs(); }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:

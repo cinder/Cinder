@@ -411,8 +411,31 @@ AttribSet Rect::getAvailableAttribs() const
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cube
 Cube::Cube()
-	: mSubdivisions( 1 ), mSize( 1 )
+	: mSubdivisions( 1 ), mSize( 1 ), mHasColors( false )
 {
+}
+
+Cube& Cube::colors()
+{
+	return colors( Color(1,0,0), Color(0,1,1), Color(0,1,0), Color(1,0,1), Color(0,0,1), Color(1,1,0) );
+}
+
+Cube& Cube::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ )
+{
+	mHasColors = true;
+	mColors[0] = posX;
+	mColors[1] = negX;
+	mColors[2] = posY;
+	mColors[3] = negY;
+	mColors[4] = posZ;
+	mColors[5] = negZ;
+	return *this;
+}
+
+Cube& Cube::disableColors()
+{
+	mHasColors = false;
+	return *this;
 }
 
 size_t Cube::getNumVertices() const
@@ -435,7 +458,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
 		default:
 			return 0;
 	}	
@@ -443,12 +466,15 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 
 AttribSet Cube::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	if( mHasColors )
+		attribs.insert( Attrib::COLOR );
+	return attribs;
 }
 
 void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
 					vector<vec3> *positions, vector<vec3> *normals,
-					const Color &color, vector<Color> *colors, vector<vec2> *texCoords,
+					const ColorA &color, vector<ColorA> *colors, vector<vec2> *texCoords,
 					vector<uint32_t> *indices )
 {
 	const vec3 normal = normalize( faceCenter );
@@ -495,10 +521,10 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	vector<vec3> positions;
 	vector<uint32_t> indices;
 	vector<vec3> normals;
-	vector<Color> colors;
+	vector<ColorA> colors;
 	vector<vec2> texCoords;
 	vector<vec3> *normalsPtr = nullptr;
-	vector<Color> *colorsPtr = nullptr;
+	vector<ColorA> *colorsPtr = nullptr;
 	vector<vec2> *texCoordsPtr = nullptr;
 	
 	const size_t numVertices = getNumVertices();
@@ -510,33 +536,33 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 		normals.reserve( numVertices );
 		normalsPtr = &normals;
 	}
-	if( requestedAttribs.count( Attrib::COLOR ) > 0 ) {
+	if( requestedAttribs.count( Attrib::COLOR ) > 0 || mHasColors ) {
 		colors.reserve( numVertices );
 		colorsPtr = &colors;
 	}
-	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) > 0  ) {
+	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) > 0 ) {
 		texCoords.reserve( numVertices );
 		texCoordsPtr = &texCoords;
 	}
 	
 	// +X
 	generateFace( vec3(mSize.x,0,0), vec3(0,0,mSize.z), vec3(0,mSize.y,0), mSubdivisions.z, mSubdivisions.y, &positions,
-		normalsPtr, Color(1,0,0), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[0], colorsPtr, texCoordsPtr, &indices );
 	// +Y
 	generateFace( vec3(0,mSize.y,0), vec3(mSize.x,0,0), vec3(0,0,mSize.z), mSubdivisions.x, mSubdivisions.z, &positions,
-		normalsPtr, Color(0,1,0), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[2], colorsPtr, texCoordsPtr, &indices );
 	// +Z
 	generateFace( vec3(0,0,mSize.z), vec3(0,mSize.y,0), vec3(mSize.x,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
-		normalsPtr, Color(0,0,1), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[4], colorsPtr, texCoordsPtr, &indices );
 	// -X
 	generateFace( vec3(-mSize.x,0,0), vec3(0,mSize.y,0), vec3(0,0,mSize.z), mSubdivisions.y, mSubdivisions.z, &positions,
-		normalsPtr, Color(0,1,1), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[1], colorsPtr, texCoordsPtr, &indices );
 	// -Y
 	generateFace( vec3(0,-mSize.y,0), vec3(0,0,mSize.z), vec3(mSize.x,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
-		normalsPtr, Color(1,0,1), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[3], colorsPtr, texCoordsPtr, &indices );
 	// -Z
 	generateFace( vec3(0,0,-mSize.z), vec3(mSize.x,0,0), vec3(0,mSize.y,0), mSubdivisions.x, mSubdivisions.y, &positions,
-		normalsPtr, Color(1,1,0), colorsPtr, texCoordsPtr, &indices );
+		normalsPtr, mColors[5], colorsPtr, texCoordsPtr, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
 	if( normalsPtr )
@@ -544,7 +570,7 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	if( texCoordsPtr )
 		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
 	if( colorsPtr )
-		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
+		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)colors.data(), numVertices );
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
@@ -1021,45 +1047,82 @@ void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 // Sphere
 
 Sphere::Sphere()
-	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mCalculationsCached( false )
+	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mHasColors( false )
 {
 }
 
-void Sphere::calculate() const
+void Sphere::numRingsAndSegments( int *numRings, int *numSegments ) const
 {
-	if( mCalculationsCached )
-		return;
+	*numSegments = mSubdivisions;
+	if( *numSegments < 4 )
+		*numSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
 
-	int numSegments = mSubdivisions;
-	if( numSegments < 4 )
-		numSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
-
-	// numRings = numSegments / 2
-	int numRings = ( numSegments >> 1 );
-
-	calculateImplUV( numSegments + 1, numRings + 1 );
-	mCalculationsCached = true;
+	*numRings = ( *numSegments >> 1 ) + 1;
+	*numSegments += 1;
 }
 
-void Sphere::calculateImplUV( size_t segments, size_t rings ) const
+size_t Sphere::getNumVertices() const
 {
-	mPositions.resize( segments * rings );
-	mNormals.resize( segments * rings );
-	mTexCoords.resize( segments * rings );
-	mColors.resize( segments * rings );
-	mIndices.resize( segments * rings * 6 );
+	int numRings, numSegments;
+	numRingsAndSegments( &numRings, &numSegments );
+	return numSegments * numRings;
+}
 
-	float ringIncr = 1.0f / (float)( rings - 1 );
-	float segIncr = 1.0f / (float)( segments - 1 );
+size_t Sphere::getNumIndices() const
+{
+	int numRings, numSegments;
+	numRingsAndSegments( &numRings, &numSegments );
+	return numSegments * numRings * 6;
+}
+
+uint8_t Sphere::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		default:
+			return 0;
+	}
+}
+
+AttribSet Sphere::getAvailableAttribs() const
+{
+	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	if( mHasColors )
+		attribs.insert( Attrib::COLOR );
+	return attribs;
+}
+
+void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	int numRings, numSegments;
+	numRingsAndSegments( &numRings, &numSegments );
+
+	std::vector<vec3> positions;
+	std::vector<vec2> texCoords;
+	std::vector<vec3> normals;
+	std::vector<vec3> colors;
+	std::vector<uint32_t> indices;
+
+	positions.resize( numSegments * numRings );
+	normals.resize( numSegments * numRings );
+	texCoords.resize( numSegments * numRings );
+	colors.resize( numSegments * numRings );
+	indices.resize( numSegments * numRings * 6 );
+
+	float ringIncr = 1.0f / (float)( numRings - 1 );
+	float segIncr = 1.0f / (float)( numSegments - 1 );
 	float radius = mRadius;
 
-	auto vertIt = mPositions.begin();
-	auto normIt = mNormals.begin();
-	auto texIt = mTexCoords.begin();
-	auto colorIt = mColors.begin();
-	for( size_t r = 0; r < rings; r++ ) {
+	auto vertIt = positions.begin();
+	auto normIt = normals.begin();
+	auto texIt = texCoords.begin();
+	auto colorIt = colors.begin();
+	for( size_t r = 0; r < numRings; r++ ) {
 		float v = r * ringIncr;
-		for( size_t s = 0; s < segments; s++ ) {
+		for( size_t s = 0; s < numSegments; s++ ) {
 			float u = 1.0f - s * segIncr;
 			float x = math<float>::sin( float(M_PI * 2) * u ) * math<float>::sin( float(M_PI) * v );
 			float y = math<float>::sin( float(M_PI) * (v - 0.5f) );
@@ -1073,59 +1136,25 @@ void Sphere::calculateImplUV( size_t segments, size_t rings ) const
 		}
 	}
 
-	auto indexIt = mIndices.begin();
-	for( size_t r = 0; r < rings - 1; r++ ) {
-		for( size_t s = 0; s < segments - 1 ; s++ ) {
-			*indexIt++ = (uint32_t)(r * segments + ( s + 1 ));
-			*indexIt++ = (uint32_t)(r * segments + s);
-			*indexIt++ = (uint32_t)(( r + 1 ) * segments + ( s + 1 ));
+	auto indexIt = indices.begin();
+	for( size_t r = 0; r < numRings - 1; r++ ) {
+		for( size_t s = 0; s < numSegments - 1 ; s++ ) {
+			*indexIt++ = (uint32_t)(r * numSegments + ( s + 1 ));
+			*indexIt++ = (uint32_t)(r * numSegments + s);
+			*indexIt++ = (uint32_t)(( r + 1 ) * numSegments + ( s + 1 ));
 
-			*indexIt++ = (uint32_t)(( r + 1 ) * segments + s);
-			*indexIt++ = (uint32_t)(( r + 1 ) * segments + ( s + 1 ));
-			*indexIt++ = (uint32_t)(r * segments + s);
+			*indexIt++ = (uint32_t)(( r + 1 ) * numSegments + s);
+			*indexIt++ = (uint32_t)(( r + 1 ) * numSegments + ( s + 1 ));
+			*indexIt++ = (uint32_t)(r * numSegments + s);
 		}
 	}
-}
-
-size_t Sphere::getNumVertices() const
-{
-	calculate();
-	return mPositions.size();
-}
-
-size_t Sphere::getNumIndices() const
-{
-	calculate();
-	return mIndices.size();
-}
-
-uint8_t Sphere::getAttribDims( Attrib attr ) const
-{
-	switch( attr ) {
-		case Attrib::POSITION: return 3;
-		case Attrib::NORMAL: return 3;
-		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
-		default:
-			return 0;
-	}
-}
-
-AttribSet Sphere::getAvailableAttribs() const
-{
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
-}
-
-void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
-{
-	calculate();
 	
-	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
 
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
