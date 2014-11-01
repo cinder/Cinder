@@ -53,12 +53,17 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 	NORMAL, TANGENT, BITANGENT, BONE_INDEX, BONE_WEIGHT, 
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
 	NUM_ATTRIBS };
-extern std::string sAttribNames[(int)Attrib::NUM_ATTRIBS];
+typedef	std::set<Attrib>	AttribSet;
+extern std::string			sAttribNames[(int)Attrib::NUM_ATTRIBS];
+
 enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
+
 //! Debug utility which returns the name of \a attrib as a std::string
 std::string attribToString( Attrib attrib );
+//! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
+void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 
 struct AttribInfo {
 	AttribInfo( const Attrib &attrib, uint8_t dims, size_t stride, size_t offset, uint32_t instanceDivisor = 0 )
@@ -70,13 +75,14 @@ struct AttribInfo {
 
 	Attrib		getAttrib() const { return mAttrib; }
 	uint8_t		getDims() const { return mDims; }
+	void		setDims( uint8_t dims ) { mDims = dims; }
 	DataType	getDataType() const { return mDataType; }
+	void		setDataType( DataType dataType ) { mDataType = dataType; }
 	size_t		getStride() const { return mStride; }
-	size_t		getOffset() const { return mOffset;	}
-	uint32_t	getInstanceDivisor() const { return mInstanceDivisor; }
-
 	void		setStride( size_t stride ) { mStride = stride; }
+	size_t		getOffset() const { return mOffset;	}
 	void		setOffset( size_t offset ) { mOffset = offset; }
+	uint32_t	getInstanceDivisor() const { return mInstanceDivisor; }
 
 	uint8_t		getByteSize() const { if( mDataType == geom::DataType::DOUBLE ) return mDims * 8; else return mDims * 4; }
 
@@ -116,8 +122,6 @@ class BufferLayout {
 	std::vector<AttribInfo>		mAttribs;
 };
 
-void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
-
 class Source {
   public:
 	virtual ~Source() {}
@@ -126,14 +130,9 @@ class Source {
 	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const = 0;
+	virtual void		loadInto( Target *target, const AttribSet &requestedAttribs ) const = 0;
 
-	void				clearAttribs() { mEnabledAttribs.clear(); }
-	void				enable( Attrib attrib );
-	void				disable( Attrib attrib );
-	bool				isEnabled( Attrib attrib ) const;
-	
-	std::vector<Attrib>	getEnabledAttribs() const { return mEnabledAttribs; }
+	virtual AttribSet	getAvailableAttribs() const = 0;
 
   protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -142,8 +141,6 @@ class Source {
 	void	copyIndicesNonIndexed( uint32_t *dest ) const;
 	template<typename T>
 	void forceCopyIndicesTrianglesImpl( T *dest ) const;
-
-	std::vector<Attrib>	mEnabledAttribs;
 };
 
 class Target {
@@ -169,19 +166,18 @@ class Rect : public Source {
 	Rect();
 	Rect( const Rectf &r );
 
-	Rect&				enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Rect&				disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-	Rect&				rect( const Rectf &r );
+	Rect&		rect( const Rectf &r );
 	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
-	Rect&				colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
+	Rect&		colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
-	Rect&				texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
+	Rect&		texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
-	virtual size_t		getNumVertices() const override { return 4; }
-	virtual size_t		getNumIndices() const override { return 0; }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override { return 4; }
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	std::array<vec2,4>		mPositions, mTexCoords;
@@ -194,8 +190,6 @@ class Cube : public Source {
   public:
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
-	Cube&			enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Cube&			disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 
 	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
@@ -204,11 +198,12 @@ class Cube : public Source {
 	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
 	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	ivec3		mSubdivisions;
@@ -220,14 +215,12 @@ class Icosahedron : public Source {
 	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
 
-	Icosahedron&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Icosahedron&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -247,15 +240,14 @@ class Teapot : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
-	Teapot&				enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Teapot&				disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
 	Teapot&				subdivisions( int sub );
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	void			calculate() const;
@@ -290,18 +282,16 @@ class Circle : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Circle();
 
-	Circle&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Circle&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-
 	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
 
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override { return 0; }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   private:
 	void	updateVertexCounts();
@@ -323,19 +313,17 @@ class Sphere : public Source {
 	Sphere();
 	virtual ~Sphere() {}
 
-	Sphere&		enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	Sphere&		disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-
 	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
 	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; mCalculationsCached = false; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -358,12 +346,11 @@ class Icosphere : public Icosahedron {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Icosphere();
 
-	virtual Icosphere&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Icosphere&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	virtual void		calculate() const;
@@ -381,8 +368,6 @@ class Capsule : public Source {
 	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Capsule();
 
-	virtual Capsule&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Capsule&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
 	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
@@ -394,11 +379,12 @@ class Capsule : public Source {
 	//! Conveniently sets center, length and direction
 	Capsule&			set( const vec3 &from, const vec3 &to );
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   private:
 	void	calculate() const;
@@ -424,8 +410,6 @@ class Torus : public Source {
 	Torus();
 	virtual ~Torus() {}
 
-	virtual Torus&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Torus&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
 	virtual Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
 	virtual Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
@@ -438,11 +422,12 @@ class Torus : public Source {
 	//! Specifies the major and minor radius separately.
 	virtual Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); mCalculationsCached = false; return *this; }
 
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	void			calculate() const;
@@ -475,8 +460,6 @@ class Helix : public Torus {
 		coils(3.0f);
 	}
 
-	virtual Helix&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Helix&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
 	virtual Helix&	subdivisionsAxis( int subdiv ) override { Torus::subdivisionsAxis( subdiv ); return *this; }
 	virtual Helix&	subdivisionsHeight( int subdiv ) override { Torus::subdivisionsHeight( subdiv ); return *this; }
@@ -496,8 +479,6 @@ class Cylinder : public Source {
 	Cylinder();
 	virtual ~Cylinder() {}
 
-	virtual Cylinder&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Cylinder&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
 	//! Specifices the base of the Cylinder.
 	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
@@ -513,11 +494,12 @@ class Cylinder : public Source {
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
 
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	virtual void	calculate() const;
@@ -546,8 +528,6 @@ class Cone : public Cylinder {
 	Cone() { radius( 1.0f, 0.0f ); }
 	virtual ~Cone() {}
 
-	virtual Cone&	enable( Attrib attrib ) override { Cylinder::enable( attrib ); return *this; }
-	virtual Cone&	disable( Attrib attrib ) override { Cylinder::disable( attrib ); return *this; }
 	virtual Cone&	origin( const vec3 &origin ) override { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
 	virtual Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
@@ -580,9 +560,6 @@ class Plane : public Source {
 	Plane();
 	virtual ~Plane() {}
 
-	virtual Plane&	enable( Attrib attrib ) { Source::enable( attrib ); mCalculationsCached = false; return *this; }
-	virtual Plane&	disable( Attrib attrib ) { Source::disable( attrib ); mCalculationsCached = false; return *this; }
-
 	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
 	virtual Plane&	subdivisions( const ivec2 &subdivisions );
 	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
@@ -592,11 +569,12 @@ class Plane : public Source {
 	Plane& origin( const vec3 &origin )	{ mOrigin = origin; mCalculationsCached = false; return *this; }
 	Plane& normal( const vec3 &normal );
 
-	virtual size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	virtual void	calculate() const;
@@ -628,9 +606,10 @@ class Modifier : public geom::Target {
 		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
 	{}
 
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t		getAttribDims( geom::Attrib attr ) const override;
+	
+	void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	uint8_t	getReadAttribDims( Attrib attr ) const;
 	// not const because consumer is allowed to overwrite this data
@@ -664,11 +643,12 @@ class Transform : public Source {
 	const mat4&			getMatrix() const { return mTransform; }
 	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
   
-  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
 	const geom::Source&		mSource;
 	mat4					mTransform;
@@ -688,11 +668,12 @@ class Twist : public Source {
 	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
 	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
   
-  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -707,11 +688,12 @@ class Lines : public Source {
 		: mSource( source )
 	{}
 
-	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override				{ return geom::LINES; }
+	uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -730,11 +712,12 @@ class ColorFromAttrib : public Source {
 	Attrib				getAttrib() const { return mAttrib; }
 	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
 
-	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&				mSource;
@@ -747,9 +730,6 @@ class Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
 	
-	virtual Extrude&	enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	virtual Extrude&	disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-
 	//! Sets the distance of extrusion along the axis.
 	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
 	//! Enables or disables front and back caps. Enabled by default.
@@ -761,11 +741,12 @@ class Extrude : public Source {
 	//! Sets the number of subdivisions along the axis of extrusion
 	Extrude&			subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	void calculate() const;
@@ -786,9 +767,6 @@ class ExtrudeSpline : public Source {
   public:
 	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
 	
-	virtual ExtrudeSpline&	enable( Attrib attrib ) { Source::enable( attrib ); return *this; }
-	virtual ExtrudeSpline&	disable( Attrib attrib ) { Source::disable( attrib ); return *this; }
-
 	//! Enables or disables front and back caps. Enabled by default.
 	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
 	//! Enables or disables front cap. Enabled by default.
@@ -798,11 +776,12 @@ class ExtrudeSpline : public Source {
 	//! Sets the number of subdivisions along the axis of extrusion
 	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	void calculate() const;
@@ -827,11 +806,12 @@ class VertexNormalLines : public Source {
 
 	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override				{ return 0; }
-	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override				{ return 0; }
+	Primitive	getPrimitive() const override				{ return geom::LINES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -843,11 +823,12 @@ class BSpline : public Source {
 	template<int D, typename T>
 	BSpline( const ci::BSpline<D,T> &spline, int subdivisions );
 
-	virtual size_t		getNumVertices() const override				{ return mNumVertices; }
-	virtual size_t		getNumIndices() const override				{ return 0; }
-	virtual Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const override;
+	size_t		getNumVertices() const override				{ return mNumVertices; }
+	size_t		getNumIndices() const override				{ return 0; }
+	Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	template<typename T>

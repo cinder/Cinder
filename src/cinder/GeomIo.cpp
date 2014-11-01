@@ -272,24 +272,6 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 
 } // anonymous namespace
 
-bool Source::isEnabled( Attrib attrib ) const
-{
-	return find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib ) != mEnabledAttribs.end();
-}
-
-void Source::enable( Attrib attrib )
-{
-	if( find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib ) == mEnabledAttribs.end() )
-		mEnabledAttribs.push_back( attrib );
-}
-
-void Source::disable( Attrib attrib )
-{
-	auto existing = find( mEnabledAttribs.begin(), mEnabledAttribs.end(), attrib );
-	if( existing != mEnabledAttribs.end() )
-		mEnabledAttribs.erase( existing );
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Target
@@ -344,10 +326,6 @@ float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 
 Rect::Rect()
 {
-	enable( Attrib::POSITION );	
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
-	
 	// upper-right, upper-left, lower-right, lower-left
 	mPositions[0] = vec2(  0.5f, -0.5f );
 	mTexCoords[0] = vec2( 1, 1 );
@@ -365,10 +343,6 @@ Rect::Rect()
 
 Rect::Rect( const Rectf &r )
 {
-	enable( Attrib::POSITION );	
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
-	
 	rect( r );
 	
 	// upper-right, upper-left, lower-right, lower-left
@@ -393,7 +367,6 @@ Rect& Rect::rect( const Rectf &r )
 
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
-	enable( Attrib::COLOR );
 	mColors[0] = upperRight;
 	mColors[1] = upperLeft;
 	mColors[2] = lowerRight;
@@ -403,7 +376,6 @@ Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const C
 
 Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft )
 {
-	enable( Attrib::TEX_COORD_0 );
 	mTexCoords[0] = upperRight;
 	mTexCoords[1] = upperLeft;
 	mTexCoords[2] = lowerRight;
@@ -411,24 +383,29 @@ Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2
 	return *this;
 }
 
-void Rect::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+void Rect::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
-	target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 4 );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
+	target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
 }
 
 uint8_t	Rect::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 2;
-		case Attrib::COLOR: return 4;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return 4;
 		default:
 			return 0;
 	}
+}
+
+AttribSet Rect::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -436,9 +413,6 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 Cube::Cube()
 	: mSubdivisions( 1 ), mSize( 1 )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
 }
 
 size_t Cube::getNumVertices() const
@@ -459,12 +433,17 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::COLOR: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}	
+}
+
+AttribSet Cube::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
@@ -511,7 +490,7 @@ void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis,
 	}
 }
 
-void Cube::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	vector<vec3> positions;
 	vector<uint32_t> indices;
@@ -527,15 +506,15 @@ void Cube::loadInto( Target *target, const std::vector<geom::Attrib> &requestedA
 	// reserve room in vectors and set pointers to non-null for normals, texcoords and colors as appropriate
 	positions.reserve( numVertices );
 	indices.reserve( getNumIndices() );
-	if( isEnabled( Attrib::NORMAL ) || std::find( requestedAttribs.begin(), requestedAttribs.end(), Attrib::NORMAL ) != requestedAttribs.end() ) {
+	if( requestedAttribs.count( Attrib::NORMAL ) > 0 ) {
 		normals.reserve( numVertices );
 		normalsPtr = &normals;
 	}
-	if( isEnabled( Attrib::COLOR ) || std::find( requestedAttribs.begin(), requestedAttribs.end(), Attrib::COLOR ) != requestedAttribs.end() ) {
+	if( requestedAttribs.count( Attrib::COLOR ) > 0 ) {
 		colors.reserve( numVertices );
 		colorsPtr = &colors;
 	}
-	if( isEnabled( Attrib::TEX_COORD_0 ) || std::find( requestedAttribs.begin(), requestedAttribs.end(), Attrib::TEX_COORD_0 ) != requestedAttribs.end() ) {
+	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) > 0  ) {
 		texCoords.reserve( numVertices );
 		texCoordsPtr = &texCoords;
 	}
@@ -560,12 +539,12 @@ void Cube::loadInto( Target *target, const std::vector<geom::Attrib> &requestedA
 		normalsPtr, Color(1,1,0), colorsPtr, texCoordsPtr, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
-	if( colorsPtr )
-		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
-	if( texCoordsPtr )
-		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
 	if( normalsPtr )
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), numVertices );
+	if( texCoordsPtr )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
+	if( colorsPtr )
+		target->copyAttrib( Attrib::COLOR, 3, 0, (const float*)colors.data(), numVertices );
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
@@ -589,8 +568,6 @@ uint32_t Icosahedron::sIndices[60] ={
 
 Icosahedron::Icosahedron()
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
 }
 
 void Icosahedron::calculate() const
@@ -644,7 +621,12 @@ uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 	}
 }
 
-void Icosahedron::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Icosahedron::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::COLOR, Attrib::NORMAL };
+}
+
+void Icosahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
@@ -706,9 +688,6 @@ const float Teapot::sCurveData[][3] =
 Teapot::Teapot()
 	: mSubdivision( 6 ), mCalculationsCached( false )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
 	updateVertexCounts();
 }
 
@@ -724,17 +703,6 @@ size_t Teapot::getNumVertices() const
 	return mNumVertices;
 }
 
-void Teapot::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
-{
-	calculate();
-
-	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mNumVertices );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), mNumVertices );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
-
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mNumIndices, 4 );
-}
-
 size_t Teapot::getNumIndices() const
 {
 	return mNumIndices;
@@ -744,11 +712,27 @@ uint8_t	Teapot::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		default:
 			return 0;
 	}
+}
+
+AttribSet Teapot::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Teapot::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)mPositions.data(), mNumVertices );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), mNumVertices );
+
+	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mNumIndices, 4 );
 }
 
 void Teapot::updateVertexCounts() const
@@ -951,9 +935,6 @@ vec3 Teapot::evaluateNormal( int gridU, int gridV, const float *B, const float *
 Circle::Circle()
 	: mRequestedSubdivisions( -1 ), mCenter( 0, 0 ), mRadius( 1.0f )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
 	updateVertexCounts();
 }
 
@@ -1011,24 +992,29 @@ size_t Circle::getNumVertices() const
 	return mNumVertices;
 }
 
-void Circle::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
-{
-	calculate();
-
-	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), mNumVertices );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), mNumVertices );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
-}
-
 uint8_t	Circle::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 2;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		default:
 			return 0;
 	}
+}
+
+AttribSet Circle::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	calculate();
+
+	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), mNumVertices );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), mNumVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1037,9 +1023,6 @@ uint8_t	Circle::getAttribDims( Attrib attr ) const
 Sphere::Sphere()
 	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mCalculationsCached( false )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
 }
 
 void Sphere::calculate() const
@@ -1120,21 +1103,26 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
 }
 
-void Sphere::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Sphere::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 	
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1146,9 +1134,6 @@ void Sphere::loadInto( Target *target, const std::vector<geom::Attrib> &requeste
 Icosphere::Icosphere()
 	: mSubdivision( 3 ), mCalculationsCached( false )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::TEX_COORD_0 );
-	enable( Attrib::NORMAL );
 }
 
 void Icosphere::calculate() const
@@ -1275,21 +1260,26 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
 }
 
-void Icosphere::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Icosphere::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1303,10 +1293,6 @@ Capsule::Capsule()
 {
 	radius( 0.5f );
 	subdivisionsHeight( 6 );
-
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
 }
 
 Capsule& Capsule::set( const vec3 &from, const vec3 &to )
@@ -1413,21 +1399,26 @@ size_t Capsule::getNumIndices() const
 uint8_t Capsule::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
-	case Attrib::POSITION: return 3;
-	case Attrib::TEX_COORD_0: return 2;
-	case Attrib::NORMAL: return 3;
-	case Attrib::COLOR: return 3;
-	default:
-		return 0;
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return 3;
+		default:
+			return 0;
 	}
 }
 
-void Capsule::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Capsule::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Capsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1438,12 +1429,9 @@ void Capsule::loadInto( Target *target, const std::vector<geom::Attrib> &request
 // Torus
 
 Torus::Torus()
-	: mCenter( 0, 0, 0), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mCoils( 1 ), mHeight( 0 )
-	, mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mTwist( 0 ), mTwistOffset( 0 )
+	: mCenter( 0, 0, 0), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mCoils( 1 ), mHeight( 0 ),
+	mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mTwist( 0 ), mTwistOffset( 0 )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
 }
 
 void Torus::calculate() const
@@ -1523,21 +1511,26 @@ uint8_t Torus::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
 }
 
-void Torus::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Torus::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1549,9 +1542,6 @@ void Torus::loadInto( Target *target, const std::vector<geom::Attrib> &requested
 Cylinder::Cylinder()
 	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
 }
 
 Cylinder& Cylinder::set( const vec3 &from, const vec3 &to )
@@ -1692,21 +1682,26 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
 }
 
-void Cylinder::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Cylinder::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Cylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1718,9 +1713,6 @@ void Cylinder::loadInto( Target *target, const std::vector<geom::Attrib> &reques
 Plane::Plane()
 	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mSubdivisions( 1, 1 )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
 }
 
 Plane& Plane::subdivisions( const ivec2 &subdivisions )
@@ -1810,21 +1802,26 @@ uint8_t Plane::getAttribDims( Attrib attr ) const
 {
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
-		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
 }
 
-void Plane::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Plane::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 	
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1841,7 +1838,12 @@ uint8_t Transform::getAttribDims( Attrib attr ) const
 	}
 }
 
-void Transform::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Transform::getAvailableAttribs() const
+{
+	return mSource.getAvailableAttribs();
+}
+
+void Transform::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we want to capture and then modify both positions and normals
 	map<Attrib,Modifier::Access> attribAccess;
@@ -1893,7 +1895,12 @@ uint8_t Twist::getAttribDims( Attrib attr ) const
 	return mSource.getAttribDims( attr );
 }
 
-void Twist::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Twist::getAvailableAttribs() const
+{
+	return mSource.getAvailableAttribs();
+}
+
+void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we want to capture and then modify both positions and normals
 	map<Attrib,Modifier::Access> attribAccess;
@@ -1963,7 +1970,7 @@ size_t Lines::getNumIndices() const
 	return mSource.getNumIndices();
 }
 
-void Lines::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we are only interested in changing indices
 	Modifier modifier( mSource, target, map<Attrib,Modifier::Access>(), Modifier::READ_WRITE );
@@ -2079,6 +2086,13 @@ uint8_t ColorFromAttrib::getAttribDims( Attrib attr ) const
 	}
 }
 
+AttribSet ColorFromAttrib::getAvailableAttribs() const
+{
+	AttribSet result = mSource.getAvailableAttribs();
+	result.insert( Attrib::COLOR );
+	return result;
+}
+
 namespace {
 template<typename I, typename IFD, typename O>
 void processColorAttrib( const I* inputData, O *outputData, const std::function<O(IFD)> &fn, size_t numVertices )
@@ -2097,9 +2111,9 @@ void processColorAttrib2d( const vec2* inputData, O *outputData, const std::func
 		outputData[v] = fn( in );
 	}
 }
-}
+} // anonymous namespace
 
-void ColorFromAttrib::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	if( (! mFnColor2) && (! mFnColor3) ) {
 		mSource.loadInto( target, requestedAttribs );
@@ -2149,10 +2163,6 @@ void ColorFromAttrib::loadInto( Target *target, const std::vector<geom::Attrib> 
 Extrude::Extrude( const Shape2d &shape, float distance, float approximationScale )
 	: mCalculationsCached( false ), mDistance( distance ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( 1 )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
-	
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
 }
@@ -2291,7 +2301,12 @@ uint8_t	Extrude::getAttribDims( Attrib attr ) const
 	}
 }
 
-void Extrude::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet Extrude::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Extrude::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
@@ -2307,10 +2322,6 @@ void Extrude::loadInto( Target *target, const std::vector<geom::Attrib> &request
 ExtrudeSpline::ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions, float approximationScale )
 	: mCalculationsCached( false ), mApproximationScale( approximationScale ), mFrontCap( true ), mBackCap( true ), mSubdivisions( splineSubdivisions )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::NORMAL );
-	enable( Attrib::TEX_COORD_0 );
-	
 	for( const auto &contour : shape.getContours() )
 		mPaths.push_back( contour );
 
@@ -2465,7 +2476,12 @@ uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
 	}
 }
 
-void ExtrudeSpline::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet ExtrudeSpline::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+}
+
+void ExtrudeSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	calculate();
 
@@ -2481,10 +2497,7 @@ void ExtrudeSpline::loadInto( Target *target, const std::vector<geom::Attrib> &r
 VertexNormalLines::VertexNormalLines( const geom::Source &source, float length )
 	: mSource( source ), mLength( length )
 {
-	enable( CUSTOM_0 );
-	enable( TEX_COORD_0 );
 }
-
 
 size_t VertexNormalLines::getNumVertices() const
 {
@@ -2506,7 +2519,17 @@ uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
 		return mSource.getAttribDims( attr );
 }
 
-void VertexNormalLines::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet VertexNormalLines::getAvailableAttribs() const
+{
+	AttribSet result = mSource.getAvailableAttribs();
+	result.erase( Attrib::NORMAL );
+	result.erase( Attrib::COLOR );
+	result.insert( Attrib::POSITION );
+	result.insert( Attrib::CUSTOM_0 );
+	return result;
+}
+
+void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we are interested in removing normals and colors and outputting positions
 	map<Attrib,Modifier::Access> attribAccess;
@@ -2644,7 +2667,12 @@ uint8_t	BSpline::getAttribDims( Attrib attr ) const
 		return 0;
 }
 
-void BSpline::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+AttribSet BSpline::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL };
+}
+
+void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );

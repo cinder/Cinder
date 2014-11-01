@@ -1658,7 +1658,8 @@ void drawSphere( const vec3 &center, float radius, int subdivisions )
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
-	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ).enable( geom::Attrib::NORMAL ).enable( geom::Attrib::TEX_COORD_0 ), ctx->getDefaultArrayVbo(), ctx->getDefaultElementVbo() );
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ),
+			{ { VboMesh::Layout().attrib( geom::POSITION, 3 ).attrib( geom::NORMAL, 3 ).attrib( geom::TEX_COORD_0, 2 ), ctx->getDefaultArrayVbo() } }, ctx->getDefaultElementVbo() );
 	mesh->buildVao( curGlslProg );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();

@@ -55,15 +55,18 @@ class VboMesh {
 		Layout&		usage( GLenum usage ) { mUsage = usage; return *this; }
 		//! Returns the usage for the Layout. Default is \c GL_STATIC_DRAW
 		GLenum		getUsage() const { return mUsage; }
-		//! Appends an attribute of semantic \a attrib which is \a dims-dimensional
-		Layout&		attrib( geom::Attrib attrib, uint8_t dims ) { mAttribInfos.push_back( geom::AttribInfo( attrib, geom::DataType::FLOAT, dims, 0, 0, 0 ) ); return *this; }
-		//! Appends an attribute using a geom::AttribInfo
-		Layout&		attrib( const geom::AttribInfo &attribInfo ) { mAttribInfos.push_back( attribInfo ); return *this; }
+		//! Appends an attribute of semantic \a attrib which is \a dims-dimensional. Replaces AttribInfo if it exists for \a attrib
+		Layout&		attrib( geom::Attrib attrib, uint8_t dims );
+		//! Appends an attribute using a geom::AttribInfo. Replaces AttribInfo if it exists for \a attribInfo.getAttrib()
+		Layout&		attrib( const geom::AttribInfo &attribInfo );
 
+		std::vector<geom::AttribInfo>&			getAttribs() { return mAttribInfos; }
+		const std::vector<geom::AttribInfo>&	getAttribs() const { return mAttribInfos; }
 		//! Clears all attributes in the Layout
-		void		clearAttribs() { mAttribInfos.clear(); }
+		void									clearAttribs() { mAttribInfos.clear(); }
 
 	  protected:
+		//! If \a resultVbo is null then no VBO is allocated
 		void		allocate( size_t numVertices, geom::BufferLayout *resultBufferLayout, gl::VboRef *resultVbo ) const;
 
 		GLenum							mUsage;
@@ -73,14 +76,16 @@ class VboMesh {
 		friend VboMesh;
 	};
   
-	//! Creates a VboMesh which represents the geom::Source \a source.
+	//! Creates a VboMesh which represents the geom::Source \a source. Layout is derived from the contents of \a source.
 	static VboMeshRef	create( const geom::Source &source );
+	//! Creates a VboMesh which represents the geom::Source \a source using \a layout.
+	static VboMeshRef	create( const geom::Source &source, const geom::AttribSet &requestedAttribs );
+	//! Creates a VboMesh which represents the geom::Source \a source using 1 or more Vbo/VboMesh::Layout pairs. A null VboRef requests allocation.
+	static VboMeshRef	create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef>> &vertexArrayLayouts, const VboRef &indexVbo = nullptr );
 	//! Creates a VboMesh which represents the user's vertex buffer objects. Allows optional \a indexVbo to enable indexed vertices; creates a static VBO if none provided.
 	static VboMeshRef	create( uint32_t numVertices, GLenum glPrimitive, const std::vector<std::pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, uint32_t numIndices = 0, GLenum indexType = GL_UNSIGNED_SHORT, const VboRef &indexVbo = VboRef() );
 	//! Creates a VboMesh which represents the user's vertex buffer objects. Allows optional \a indexVbo to enable indexed vertices; creates a static VBO if none provided.
 	static VboMeshRef	create( uint32_t numVertices, GLenum glPrimitive, const std::vector<Layout> &vertexArrayLayouts, uint32_t numIndices = 0, GLenum indexType = GL_UNSIGNED_SHORT, const VboRef &indexVbo = VboRef() );
-	//! Creates a VboMesh which represents the geom::Source \a source. Allows optional \a arrayVbo and \a indexArrayVbo in order to simplify recycling of VBOs.
-	static VboMeshRef	create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &requestedAttribs = std::vector<geom::Attrib>() );
 
 	//! Maps a geom::Attrib to a named attribute in the GlslProg
 	typedef std::map<geom::Attrib,std::string> AttribGlslMap;
@@ -97,7 +102,9 @@ class VboMesh {
 	GLenum		getIndexDataType() const { return mIndexType; }
 
 	//! Returns 0 if \a attr is not present
-	uint8_t		getAttribDims( geom::Attrib attr ) const;
+	uint8_t			getAttribDims( geom::Attrib attr ) const;
+	//! Returns AttribSet of geom::Attribs present in the VboMesh
+	geom::AttribSet	getAvailableAttribs() const;
 
 	//! Returns the VBO containing the indices of the mesh, or a NULL for non-indexed geometry
 	VboRef		getIndexVbo() { return mIndices; }
@@ -248,7 +255,7 @@ class VboMesh {
 #endif
 
   protected:
-	VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo, const std::vector<geom::Attrib> &additionalAttribs );
+	VboMesh( const geom::Source &source, std::vector<std::pair<Layout,VboRef>> vertexArrayBuffers, const VboRef &indexArrayVbo );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<std::pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, const VboRef &indexVbo );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<Layout> &vertexArrayLayouts, const VboRef &indexVbo );
 
