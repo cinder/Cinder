@@ -177,7 +177,7 @@ void GeometryApp::draw()
 			gl::enableAlphaBlending();
 
 			gl::enable( GL_CULL_FACE );
-			glCullFace( GL_FRONT );
+			gl::cullFace( GL_FRONT );
 
 			mWireframeShader->uniform( "uBrightness", 0.5f );
 			mPrimitiveWireframe->draw();
@@ -185,7 +185,7 @@ void GeometryApp::draw()
 
 		// (Now render the front side.)
 		if( mViewMode == WIREFRAME ) {
-			glCullFace( GL_BACK );
+			gl::cullFace( GL_BACK );
 
 			mWireframeShader->uniform( "uBrightness", 1.0f );
 			mPrimitiveWireframe->draw();
@@ -422,10 +422,10 @@ void GeometryApp::createPrimitive(void)
 			break;
 	}
 
-	if( mShowColors )
-		primitive->enable( geom::Attrib::COLOR );
-	
-	TriMesh mesh( *primitive );
+	TriMesh::Format fmt = TriMesh::Format().positions().normals();
+	if( mShowColors && primitive->getAttribDims( geom::Attrib::COLOR ) > 0 )
+		fmt.colors();
+	TriMesh mesh( *primitive, fmt );
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 

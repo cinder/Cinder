@@ -342,22 +342,18 @@ class Icosphere : public Icosahedron {
   public:
 	Icosphere();
 
-	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
+	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; return *this; }
 
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void		calculate() const;
-	virtual void		calculateImplUV() const;
-	virtual void		subdivide() const;
+	void		calculateImplUV( std::vector<vec2> *texCoords ) const;
+	void		subdivide() const;
 
-	int									mSubdivision;
-	bool								mHasColors;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec2>			mTexCoords;
+	int			mSubdivision;
+	bool		mHasColors;
 };
 
 class Capsule : public Source {
@@ -553,37 +549,27 @@ class Cone : public Cylinder {
 class Plane : public Source {
   public:
 	Plane();
-	virtual ~Plane() {}
 
 	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
 	virtual Plane&	subdivisions( const ivec2 &subdivisions );
 	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
-	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }
+	virtual Plane&	size( const vec2 &size ) { mSize = size; return *this; }
 	virtual Plane&	axes( const vec3 &uAxis, const vec3 &vAxis );
 
-	Plane& origin( const vec3 &origin )	{ mOrigin = origin; mCalculationsCached = false; return *this; }
+	Plane& origin( const vec3 &origin )	{ mOrigin = origin; return *this; }
 	Plane& normal( const vec3 &normal );
 
-	size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
-	size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
+	size_t		getNumVertices() const override		{ return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ); }
+	size_t		getNumIndices() const override		{ return mSubdivisions.x * mSubdivisions.y * 6; }
 	Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void	calculate() const;
-
 	ivec2		mSubdivisions;
 	vec2		mSize;
 	vec3		mOrigin, mAxisU, mAxisV;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////

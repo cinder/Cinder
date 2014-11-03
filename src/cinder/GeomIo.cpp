@@ -413,11 +413,18 @@ AttribSet Rect::getAvailableAttribs() const
 Cube::Cube()
 	: mSubdivisions( 1 ), mSize( 1 ), mHasColors( false )
 {
+	mColors[0] = Color(1,0,0);
+	mColors[1] = Color(0,1,1);
+	mColors[2] = Color(0,1,0);
+	mColors[3] = Color(1,0,1);
+	mColors[4] = Color(0,0,1);
+	mColors[5] = Color(1,1,0);
 }
 
 Cube& Cube::colors()
 {
-	return colors( Color(1,0,0), Color(0,1,1), Color(0,1,0), Color(1,0,1), Color(0,0,1), Color(1,1,0) );
+	mHasColors = true;
+	return *this;
 }
 
 Cube& Cube::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ )
@@ -458,7 +465,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return mHasColors ? 4 : 0;
+		case Attrib::COLOR: return 4;
 		default:
 			return 0;
 	}	
@@ -536,7 +543,7 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 		normals.reserve( numVertices );
 		normalsPtr = &normals;
 	}
-	if( requestedAttribs.count( Attrib::COLOR ) > 0 || mHasColors ) {
+	if( requestedAttribs.count( Attrib::COLOR ) > 0 ) {
 		colors.reserve( numVertices );
 		colorsPtr = &colors;
 	}
@@ -1081,7 +1088,7 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
@@ -1161,61 +1168,28 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 // Icosphere
 
 Icosphere::Icosphere()
-	: mSubdivision( 3 ), mCalculationsCached( false ), mHasColors( false )
+	: mSubdivision( 3 ), mHasColors( false )
 {
 }
 
-void Icosphere::calculate() const
-{
-	if( mCalculationsCached )
-		return;
-
-	// start by copying the base icosahedron in its entirety (vertices are shared among faces)
-	mPositions.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
-	mNormals.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
-	mIndices.assign( sIndices, sIndices + 60 );
-
-	// subdivide all triangles
-	subdivide();
-
-	// spherize
-	for( auto &pos : mPositions )
-		pos = normalize( pos );
-	for( auto &normal : mNormals )
-		normal = normalize( normal );
-
-	// add color if necessary
-	size_t numPositions = mPositions.size();
-	mColors.resize( numPositions );
-	for( size_t i = 0; i < numPositions; ++i ) {
-		mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
-		mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
-		mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
-	}
-
-	// calculate texture coords based on equirectangular texture map
-	calculateImplUV();
-
-	mCalculationsCached = true;
-}
-
-void Icosphere::calculateImplUV() const
+void Icosphere::calculateImplUV( std::vector<vec2> *texCoords ) const
 {
 	// calculate texture coords
-	mTexCoords.resize( mNormals.size(), vec2() );
+	texCoords->reserve( mNormals.size() );
 	for( size_t i = 0; i < mNormals.size(); ++i ) {
 		const vec3 &normal = mNormals[i];
-		mTexCoords[i].x = (math<float>::atan2( normal.z, -normal.x ) / float(M_PI)) * 0.5f + 0.5f;
-		mTexCoords[i].y = -normal.y * 0.5f + 0.5f;
+		float x = (math<float>::atan2( normal.z, -normal.x ) / float(M_PI)) * 0.5f + 0.5f;
+		float y = -normal.y * 0.5f + 0.5f;
+		texCoords->emplace_back( x, y );
 	}
 
 	// lambda closure to easily add a vertex with unique texture coordinate to our mesh
-	auto addVertex = [&] ( size_t i, const vec2 &uv ) {
+	auto addVertex = [&]( size_t i, const vec2 &uv ) {
 		const uint32_t index = mIndices[i];
 		mIndices[i] = (uint32_t)mPositions.size();
 		mPositions.emplace_back( mPositions[index] );
 		mNormals.emplace_back( mNormals[index] );
-		mTexCoords.emplace_back( uv );
+		texCoords->emplace_back( uv );
 
 		mColors.emplace_back( mColors[index] );
 	};
@@ -1223,9 +1197,9 @@ void Icosphere::calculateImplUV() const
 	// fix texture seams (this is where the magic happens)
 	size_t numTriangles = mIndices.size() / 3;
 	for( size_t i = 0; i < numTriangles; ++i ) {
-		const vec2 &uv0 = mTexCoords[ mIndices[i * 3 + 0] ];
-		const vec2 &uv1 = mTexCoords[ mIndices[i * 3 + 1] ];
-		const vec2 &uv2 = mTexCoords[ mIndices[i * 3 + 2] ];
+		const vec2 &uv0 = (*texCoords)[ mIndices[i * 3 + 0] ];
+		const vec2 &uv1 = (*texCoords)[ mIndices[i * 3 + 1] ];
+		const vec2 &uv2 = (*texCoords)[ mIndices[i * 3 + 2] ];
 
 		const float d1 = uv1.x - uv0.x;
 		const float d2 = uv2.x - uv0.x;
@@ -1291,7 +1265,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
@@ -1307,11 +1281,36 @@ AttribSet Icosphere::getAvailableAttribs() const
 
 void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	calculate();
+	vector<vec2> texCoords;
+	// start by copying the base icosahedron in its entirety (vertices are shared among faces)
+	mPositions.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
+	mNormals.assign( reinterpret_cast<vec3*>(sPositions), reinterpret_cast<vec3*>(sPositions) + 12 );
+	mIndices.assign( sIndices, sIndices + 60 );
+
+	// subdivide all triangles
+	subdivide();
+
+	// spherize
+	for( auto &pos : mPositions )
+		pos = normalize( pos );
+	for( auto &normal : mNormals )
+		normal = normalize( normal );
+
+	// add color
+	size_t numPositions = mPositions.size();
+	mColors.resize( numPositions );
+	for( size_t i = 0; i < numPositions; ++i ) {
+		mColors[i].x = mPositions[i].x * 0.5f + 0.5f;
+		mColors[i].y = mPositions[i].y * 0.5f + 0.5f;
+		mColors[i].z = mPositions[i].z * 0.5f + 0.5f;
+	}
+
+	// calculate texture coords based on equirectangular texture map
+	calculateImplUV( &texCoords );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
@@ -1716,7 +1715,7 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::COLOR: return 3;
 		default:
 			return 0;
 	}
@@ -1754,7 +1753,6 @@ Plane& Plane::subdivisions( const ivec2 &subdivisions )
 {
 	mSubdivisions.x = std::max( subdivisions.x, 1 );
 	mSubdivisions.y = std::max( subdivisions.y, 1 );
-	mCalculationsCached = false;
 	return *this;
 }
 
@@ -1773,7 +1771,6 @@ Plane& Plane::normal( const vec3 &normal )
 		mAxisV = normalQuat * vec3( 0, -1, 0 );
 	}
 
-	mCalculationsCached = false;
 	return *this;
 }
 
@@ -1781,19 +1778,35 @@ Plane& Plane::axes( const vec3 &uAxis, const vec3 &vAxis )
 {
 	mAxisU = normalize( uAxis );
 	mAxisV = normalize( vAxis );
-	mCalculationsCached = false;
 	return *this;
 }
 
-void Plane::calculate() const
+uint8_t Plane::getAttribDims( Attrib attr ) const
 {
-	if( mCalculationsCached )
-		return;
+	switch( attr ) {
+		case Attrib::POSITION: return 3;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		default:
+			return 0;
+	}
+}
+
+AttribSet Plane::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec3> positions, normals;
+	std::vector<vec2> texCoords;
+	std::vector<uint32_t> indices;
 
 	const size_t numVerts = ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 );
-	mPositions.resize( numVerts );
-	mNormals.resize( numVerts );
-	mTexCoords.resize( numVerts );
+	positions.reserve( numVerts );
+	normals.reserve( numVerts );
+	texCoords.reserve( numVerts );
 
 	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
 	const vec3 normal = cross( mAxisV, mAxisU );
@@ -1803,63 +1816,33 @@ void Plane::calculate() const
 		for( int y = 0; y <= mSubdivisions.y; y++ ) {
 			float u = x * stepIncr.x;
 			float v = y * stepIncr.y;
-
-			vec3 pos = mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV;
-
-			size_t i = x * ( mSubdivisions.y + 1 ) + y;
-			mPositions[i] = pos;
-
-			mNormals[i] = normal;
-			mTexCoords[i] = vec2( u, v );
+			positions.emplace_back( mOrigin + ( mSize.x * ( u - 0.5f ) ) * mAxisU + ( mSize.y * ( v - 0.5f ) ) * mAxisV );
+			normals.emplace_back( normal );
+			texCoords.emplace_back( u, v );
 		}
 	}
 
-	// fill indices. TODO: this could be optimized by moving it to above loop, though last row of vertices would need to be done outside of loop
-	mIndices.clear();
+	// fill indices
 	for( int x = 0; x < mSubdivisions.x; x++ ) {
 		for( int y = 0; y < mSubdivisions.y; y++ ) {
-			uint32_t i = x * ( mSubdivisions.y + 1 ) + y;
+			const uint32_t i = x * ( mSubdivisions.y + 1 ) + y;
 
-			mIndices.push_back( i );
-			mIndices.push_back( i + 1 );
-			mIndices.push_back( i + mSubdivisions.y + 1 );
+			indices.push_back( i );
+			indices.push_back( i + 1 );
+			indices.push_back( i + mSubdivisions.y + 1 );
 
-			mIndices.push_back( i + mSubdivisions.y + 1 );
-			mIndices.push_back( i + 1 );
-			mIndices.push_back( i + mSubdivisions.y + 2 );
+			indices.push_back( i + mSubdivisions.y + 1 );
+			indices.push_back( i + 1 );
+			indices.push_back( i + mSubdivisions.y + 2 );
 		}
 	}
 
-	mCalculationsCached = true;
-}
 
-uint8_t Plane::getAttribDims( Attrib attr ) const
-{
-	switch( attr ) {
-		case Attrib::POSITION: return 3;
-		case Attrib::NORMAL: return 3;
-		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
-		default:
-			return 0;
-	}
-}
-
-AttribSet Plane::getAvailableAttribs() const
-{
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
-}
-
-void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
-{
-	calculate();
-
-	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
 	
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

@@ -29,18 +29,12 @@ using namespace std;
 DebugMesh::DebugMesh(void)
 	: mColor( Color::white() )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::COLOR );
-
 	clear();
 }
 
 DebugMesh::DebugMesh(const TriMesh& mesh, const ColorA& color)
 	: mColor( color )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::COLOR );
-
 	setMesh(mesh);
 }
 
@@ -120,7 +114,12 @@ uint8_t DebugMesh::getAttribDims( Attrib attr ) const
 	}
 }
 
-void DebugMesh::loadInto( Target *target, const std::vector<geom::Attrib> &requestedAttribs ) const
+geom::AttribSet DebugMesh::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::COLOR };
+}
+
+void DebugMesh::loadInto( Target *target, const geom::AttribSet &requestedAttribs ) const
 {
 	target->copyAttrib( Attrib::POSITION, 3, 0, reinterpret_cast<const float*>(&mVertices.front()), mVertices.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, reinterpret_cast<const float*>(&mColors.front()), mColors.size() );
