@@ -71,10 +71,9 @@ bool Clipboard::hasString()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
-    NSDictionary *options = [NSDictionary dictionary];
- 
-	return [pasteboard canReadObjectForClasses:classArray options:options];
+	NSArray *classArray = @[[NSString class]];
+
+	return [pasteboard canReadObjectForClasses:classArray options:nil];
 #elif defined( CINDER_COCOA_TOUCH )
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
 	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListString];	
@@ -89,10 +88,9 @@ bool Clipboard::hasImage()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSArray *classArray = [NSArray arrayWithObject:[NSImage class]];
-    NSDictionary *options = [NSDictionary dictionary];
- 
-	return [pasteboard canReadObjectForClasses:classArray options:options];
+	NSArray *classArray = @[[NSImage class]];
+
+	return [pasteboard canReadObjectForClasses:classArray options:nil];
 #elif defined( CINDER_COCOA_TOUCH )
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
 	return [pasteboard containsPasteboardTypes:UIPasteboardTypeListImage];		
@@ -107,12 +105,11 @@ std::string	Clipboard::getString()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSArray *classArray = [NSArray arrayWithObject:[NSString class]];
-    NSDictionary *options = [NSDictionary dictionary];
- 
-	if( [pasteboard canReadObjectForClasses:classArray options:options] ) {
-		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
-        NSString *text = [objectsToPaste objectAtIndex:0];
+	NSArray *classArray = @[[NSString class]];
+
+	if( [pasteboard canReadObjectForClasses:classArray options:nil] ) {
+		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:nil];
+		NSString *text = [objectsToPaste firstObject];
 		return cocoa::convertNsString( text );
 	}
 	else {
@@ -180,11 +177,11 @@ ImageSourceRef Clipboard::getImage()
 void Clipboard::setString( const std::string &str )
 {
 #if defined( CINDER_MAC )
-	[[NSPasteboard generalPasteboard] declareTypes: [NSArray arrayWithObject: NSStringPboardType] owner:nil];
-	[[NSPasteboard generalPasteboard] setString:[NSString stringWithUTF8String:str.c_str()] forType: NSStringPboardType];
+	[[NSPasteboard generalPasteboard] declareTypes: @[NSStringPboardType] owner:nil];
+	[[NSPasteboard generalPasteboard] setString:@(str.c_str()) forType: NSStringPboardType];
 #elif defined( CINDER_COCOA_TOUCH )
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
-	pasteboard.string = [NSString stringWithUTF8String:str.c_str()];
+	pasteboard.string = @(str.c_str());
 #elif defined( CINDER_MSW )
 	::OpenClipboard( NULL );
 	::EmptyClipboard();
@@ -209,7 +206,7 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	NSBitmapImageRep *imageRep = [[[NSBitmapImageRep alloc] initWithCGImage:target->getCgImage()] autorelease];
 	NSImage *image = [[NSImage alloc] initWithSize:[imageRep size]];
 	[image addRepresentation: imageRep];
-	[[NSPasteboard generalPasteboard] declareTypes: [NSArray arrayWithObject: NSTIFFPboardType] owner:nil];
+	[[NSPasteboard generalPasteboard] declareTypes: @[NSTIFFPboardType] owner:nil];
 	[[NSPasteboard generalPasteboard] setData:[image TIFFRepresentation] forType:NSTIFFPboardType];	
 	[image release];
 #elif defined( CINDER_COCOA_TOUCH )

@@ -75,8 +75,7 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();
 	
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		AVCaptureDevice *device = [devices objectAtIndex:i];
+	for( AVCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
 	}
 	sDevicesEnumerated = true;
@@ -94,7 +93,7 @@ static BOOL sDevicesEnumerated = false;
 			mDevice = [CaptureImplAvFoundation getDevices:NO][0];
 		}
 		
-		mDeviceUniqueId = [NSString stringWithUTF8String:mDevice->getUniqueId().c_str()];
+		mDeviceUniqueId = @(mDevice->getUniqueId().c_str());
 		[mDeviceUniqueId retain];
 		
 		mIsCapturing = false;
@@ -161,9 +160,7 @@ static BOOL sDevicesEnumerated = false;
 	/*
 	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
-	for( int i = 0; i < [connections count]; i++ ) {
-		AVCaptureConnection * connection = [connections objectAtIndex:i];
-		
+	for( AVCaptureConnection *connection in connections ) {
 		if( connection.supportsVideoOrientation ) {
 			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
 		}
@@ -175,7 +172,7 @@ static BOOL sDevicesEnumerated = false;
     dispatch_release(queue);
 
     // Specify the pixel format
-    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+	output.videoSettings = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA)};
 
     // If you wish to cap the frame rate to a known value, such as 15 fps, set 
     // minFrameDuration.

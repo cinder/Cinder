@@ -85,7 +85,7 @@
 
 	// register for drop events
 	if( mReceivesEvents )
-		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
+		[self registerForDraggedTypes:@[NSFilenamesPboardType]];
 
 	// register for touch events
 	if( mDelegate && mApp->getSettings().isMultiTouchEnabled() ) {
@@ -143,9 +143,9 @@
         // Kiosk Mode
         NSMutableDictionary *dict = [NSMutableDictionary dictionary];
         if( ! options->isSecondaryDisplayBlankingEnabled() )
-            [dict setObject:[NSNumber numberWithBool:NO] forKey:NSFullScreenModeAllScreens];
+            [dict setObject:@NO forKey:NSFullScreenModeAllScreens];
 		if( ! options->isExclusive() )
-			[dict setObject:[NSNumber numberWithUnsignedInteger:( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock )] forKey:NSFullScreenModeApplicationPresentationOptions];
+			[dict setObject:@( NSApplicationPresentationHideMenuBar | NSApplicationPresentationHideDock ) forKey:NSFullScreenModeApplicationPresentationOptions];
 
         NSScreen *screen = ( options->getDisplay() ? options->getDisplay()->getNsScreen() : [[self window] screen] );
         [self enterFullScreenMode:screen withOptions:dict];
@@ -450,10 +450,9 @@
 	
     if( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
-        size_t numberOfFiles = [files count];
 		std::vector<cinder::fs::path> paths;
-		for( size_t i = 0; i < numberOfFiles; ++i )
-			paths.push_back( cinder::fs::path( [[files objectAtIndex:i] UTF8String] ) );
+		for( NSString *file in files )
+			paths.push_back( cinder::fs::path( [file UTF8String] ) );
 		NSPoint curPoint = [sender draggingLocation];
 		int x = curPoint.x - [self frame].origin.x;
 		int y = [self frame].size.height - ( curPoint.y - [self frame].origin.y );
@@ -508,11 +507,11 @@
 	bool found = true;
 	while( found ) {
 		candidateId++;
-		if( [currentValues indexOfObjectIdenticalTo:[NSNumber numberWithInt:candidateId]] == NSNotFound )
+		if( [currentValues indexOfObjectIdenticalTo:@(candidateId)] == NSNotFound )
 			found = false;
 	}
 	
-	[mTouchIdMap setObject:[NSNumber numberWithInt:candidateId] forKey:[touch identity]];
+	[mTouchIdMap setObject:@(candidateId) forKey:[touch identity]];
 	mTouchPrevPointMap[candidateId] = point;
 	return candidateId;
 }

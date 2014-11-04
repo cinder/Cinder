@@ -67,7 +67,6 @@
 - (void)disableFrameRate;
 - (bool)isFrameRateEnabled;
 - (std::string)getAppPath;
-- (void)quit;
 
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
 - (cinder::app::WindowRef)getWindow;
@@ -100,7 +99,6 @@
 - (cinder::Vec2i)getSize;
 - (void)setSize:(cinder::Vec2i)size;
 - (cinder::Vec2i)getPos;
-- (float)getContentScale;
 - (void)setPos:(cinder::Vec2i)pos;
 - (float)getContentScale;
 - (void)close;

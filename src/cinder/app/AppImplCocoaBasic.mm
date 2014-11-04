@@ -58,7 +58,7 @@
 	self.windows = [NSMutableArray array];
 	
 	const std::string& applicationName = aApp->getSettings().getTitle();
-	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
+	[self setApplicationMenu:@(applicationName.c_str())];
 	
 	[(NSApplication*)NSApp setDelegate:self];
 	
@@ -226,7 +226,7 @@
 		if( [mWindows count] == 1 ) // we're about to release the last window; set the active window to be NULL
 			mActiveWindow = nil;
 		else
-			mActiveWindow = [mWindows objectAtIndex:0];
+			mActiveWindow = [mWindows firstObject];
 	}
 
 	windowImpl->mWindowRef->setInvalid();
@@ -289,7 +289,7 @@
 	// we need to close all existing windows
 	while( [mWindows count] > 0 ) {
 		// this counts on windowWillCloseNotification: firing and in turn calling releaseWindow
-		[[mWindows objectAtIndex:0] close];
+		[[mWindows firstObject] close];
 	}
 
 	mApp->emitShutdown();
@@ -727,7 +727,7 @@
 
 	// title
 	if( ! winFormat.getTitle().empty() )
-		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+		[winImpl->mWin setTitle:@(winFormat.getTitle().c_str())];
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];

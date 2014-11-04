@@ -32,27 +32,11 @@
 
 #import <AVFoundation/AVAudioSession.h>
 
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_6_0 )
-
-#include <AudioToolbox/AudioSession.h>	// still needed for IO buffer duration on pre iOS 6
-
-@interface AudioSessionInterruptionHandlerImpl : NSObject <AVAudioSessionDelegate>
-
-- (void)beginInterruption;
-- (void)endInterruptionWithFlags:(NSUInteger)flags;
-
-@end
-
-#else
-
 @interface AudioSessionInterruptionHandlerImpl : NSObject
 
 - (void)notifyInterrupted:(NSNotification *)notification;
 
 @end
-
-#endif
-
 
 using namespace std;
 
@@ -133,59 +117,35 @@ size_t DeviceManagerAudioSession::getNumInputChannels( const DeviceRef &device )
 	if( ! isInputEnabled() )
 		return 0;
 
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	// TODO: AVAudioSession's maximumOutputNumberOfChannels will say 2 here if headphones are plugged in - need to expose that as an option
 	NSInteger result = [[AVAudioSession sharedInstance] inputNumberOfChannels];
-#else
-	NSInteger result = [[AVAudioSession sharedInstance] currentHardwareInputNumberOfChannels];
-#endif
 	return static_cast<size_t>( result );
 }
 
 size_t DeviceManagerAudioSession::getNumOutputChannels( const DeviceRef &device )
 {
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	NSInteger result = [[AVAudioSession sharedInstance] outputNumberOfChannels];
-#else
-	NSInteger result = [[AVAudioSession sharedInstance] currentHardwareOutputNumberOfChannels];
-#endif
 
 	return static_cast<size_t>( result );
 }
 
 size_t DeviceManagerAudioSession::getSampleRate( const DeviceRef &device )
 {
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	double result = [[AVAudioSession sharedInstance] sampleRate];
-#else
-	double result = [[AVAudioSession sharedInstance] currentHardwareSampleRate];
-#endif
 
 	return static_cast<size_t>( result );
 }
 
 size_t DeviceManagerAudioSession::getFramesPerBlock( const DeviceRef &device )
 {
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	double durationSeconds = [[AVAudioSession sharedInstance] IOBufferDuration];
-#else
-	Float32 durationSeconds;
-	UInt32 durationSecondsSize = sizeof( durationSeconds );
-	OSStatus status = ::AudioSessionGetProperty( kAudioSessionProperty_CurrentHardwareIOBufferDuration, &durationSecondsSize, &durationSeconds );
-	CI_VERIFY( status == noErr );
-#endif
-
 	return lround( static_cast<Float32>( getSampleRate( device ) ) * durationSeconds );
 }
 
 void DeviceManagerAudioSession::setSampleRate( const DeviceRef &device, size_t sampleRate )
 {
 	NSError *error = nil;
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	BOOL didUpdate = [[AVAudioSession sharedInstance] setPreferredSampleRate:sampleRate error:&error];
-#else
-	BOOL didUpdate = [[AVAudioSession sharedInstance] setPreferredHardwareSampleRate:sampleRate error:&error];
-#endif
 	CI_ASSERT( ! error );
 
 	if( ! didUpdate || getSampleRate( device ) != sampleRate )
@@ -220,11 +180,7 @@ void DeviceManagerAudioSession::activateSession()
 {
 	AVAudioSession *globalSession = [AVAudioSession sharedInstance];
 
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_6_0 )
 	[[NSNotificationCenter defaultCenter] addObserver:getSessionInterruptionHandler() selector:@selector(notifyInterrupted:) name:AVAudioSessionInterruptionNotification object:nil];
-#else
-	globalSession.delegate = getSessionInterruptionHandler();
-#endif
 
 	NSError *error = nil;
 	bool didActivate = [globalSession setActive:YES error:&error];
@@ -258,19 +214,6 @@ AudioSessionInterruptionHandlerImpl *DeviceManagerAudioSession::getSessionInterr
 
 @implementation AudioSessionInterruptionHandlerImpl
 
-#if( __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_6_0 )
-
-- (void)beginInterruption
-{
-	// TODO: handle audio interruptions.
-}
-
-- (void)endInterruptionWithFlags:(NSUInteger)flags
-{
-}
-
-#else // iOS 6+
-
 - (void)notifyInterrupted:(NSNotification*)notification
 {
 	NSUInteger interruptionType = (NSUInteger)[[notification userInfo] objectForKey:AVAudioSessionInterruptionTypeKey];
@@ -280,7 +223,5 @@ AudioSessionInterruptionHandlerImpl *DeviceManagerAudioSession::getSessionInterr
 //	else
 //		 CI_LOG_V( "interruption ended" );
 }
-
-#endif // iOS pre 6
 
 @end

@@ -33,8 +33,7 @@ CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
 	
 		// Apparently this stuff is basically useless
 /*	NSArray *formats = [device formatDescriptions];
-	for( int f = 0; f < [formats count]; ++f ) {
-		QTFormatDescription *format = [formats objectAtIndex:f];
+	for( QTFormatDescription *format in formats ) {
 		if( [[format mediaType] isEqualToString:QTMediaTypeVideo] ) {
 			NSLog( @"%d %@", [formats count], [format formatDescriptionAttributes] );
 		}
@@ -45,13 +44,13 @@ CaptureImplQtKitDevice::CaptureImplQtKitDevice( QTCaptureDevice* device )
 
 bool CaptureImplQtKitDevice::checkAvailable() const
 {
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:@(mUniqueId.c_str())];
 	return [device isConnected] && (! [device isInUseByAnotherApplication]);
 }
 
 bool CaptureImplQtKitDevice::isConnected() const
 {
-	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:[NSString stringWithUTF8String:mUniqueId.c_str()]];
+	QTCaptureDevice *device = [QTCaptureDevice deviceWithUniqueID:@(mUniqueId.c_str())];
 	return [device isConnected];
 }
 
@@ -74,14 +73,12 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();	
 
 	NSArray *devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
+	for( QTCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
 	}
 	
 	devices = [QTCaptureDevice inputDevicesWithMediaType:QTMediaTypeMuxed];
-	for( int i = 0; i < [devices count]; i++) {
-		QTCaptureDevice *device = [devices objectAtIndex:i];
+	for( QTCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplQtKitDevice( device ) ) );
 	}
 
@@ -95,7 +92,7 @@ static BOOL sDevicesEnumerated = false;
 
 		mDevice = device;
 		if( mDevice ) {
-			mDeviceUniqueId = [NSString stringWithUTF8String:device->getUniqueId().c_str()];
+			mDeviceUniqueId = @(device->getUniqueId().c_str());
 			[mDeviceUniqueId retain];
 		}
 		
@@ -154,8 +151,7 @@ static BOOL sDevicesEnumerated = false;
 	
 	// Disable the sound connection
 	NSArray *connections = [mCaptureDeviceInput connections];
-	for( int i = 0; i < [connections count]; i++ ) {
-		QTCaptureConnection *connection = [connections objectAtIndex:i];
+	for( QTCaptureConnection *connection in connections ) {
 		if( [[connection mediaType] isEqualToString:QTMediaTypeSound] ) {
 			[connection setEnabled:NO];
 		}
@@ -174,16 +170,13 @@ static BOOL sDevicesEnumerated = false;
 	if( pixelBufferFormat < 0 ) 
 		throw cinder::CaptureExcInvalidChannelOrder(); 	*/
 	
-	NSDictionary *attributes = [NSDictionary dictionaryWithObjectsAndKeys:
-								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
-								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
-								//10.4: k32ARGBPixelFormat
-								//10.5: kCVPixelFormatType_32ARGB
-								//[NSNumber numberWithUnsignedInt:pixelBufferFormat], (id)kCVPixelBufferPixelFormatTypeKey,
-								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_24RGB], (id)kCVPixelBufferPixelFormatTypeKey,
-								nil
-								];
-	
+	NSDictionary *attributes = @{
+		(id)kCVPixelBufferWidthKey: @(mWidth),
+		(id)kCVPixelBufferHeightKey : @(mHeight),
+		// (id)kCVPixelBufferPixelFormatTypeKey: @(pixelBufferFormat),
+		(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_24RGB),
+	};
+
 	[mCaptureDecompressedOutput setPixelBufferAttributes: attributes];
 }
 

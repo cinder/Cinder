@@ -755,22 +755,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	self.view = mCinderView;
 }
 
-// pre iOS 6
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
-{
-	// Only rotate after setup. On secondary monitors we don't support any rotation
-	if( ! mAppImpl->mSetupHasFired || mDisplay != cinder::Display::getMainDisplay() ) {
-		return ( toInterfaceOrientation == UIInterfaceOrientationPortrait );
-	}
-
-	ci::app::InterfaceOrientation orientation = ci::app::convertInterfaceOrientation( toInterfaceOrientation );
-	uint32_t supportedOrientations = mAppImpl->mApp->emitSupportedOrientations();
-
-	return ( ( supportedOrientations & orientation ) != 0 );
-}
-
-// iOS 6+
-#if __IPHONE_OS_VERSION_MAX_ALLOWED >= 60000
 - (NSUInteger)supportedInterfaceOrientations
 {
 	// Only rotate after setup. On secondary monitors we don't support any rotation
@@ -791,7 +775,6 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 	return result;
 }
-#endif
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation duration:(NSTimeInterval)duration
 {
