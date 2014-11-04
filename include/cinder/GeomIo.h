@@ -225,33 +225,6 @@ class Icosahedron : public Source {
 	// Enables colors. Disabled by default.
 	Icosahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
 	
-	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-
-  protected:
-	virtual void		calculate() const;
-
-	bool							mHasColors;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
-
-	static float	sPositions[12*3];
-
-	static uint32_t	sIndices[60];
-};
-
-class Teapot : public Source {
-  public:
-	Teapot();
-
-	Teapot&		subdivisions( int sub );
-
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -260,28 +233,70 @@ class Teapot : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void			calculate() const;
-	void			updateVertexCounts() const;
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+
+	bool			mHasColors;
+	static float	sPositions[12*3];
+	static uint32_t	sIndices[60];
+	
+	friend class Icosphere;
+};
+
+class Icosphere : public Source {
+  public:
+	Icosphere();
+
+	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
+
+	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	void	calculate() const;
+	void	calculateImplUV() const;
+	void	subdivide() const;
+
+	int								mSubdivision;
+	bool							mHasColors;
+	mutable bool					mCalculationsCached;
+	mutable std::vector<vec3>		mPositions, mNormals, mColors;
+	mutable std::vector<vec2>		mTexCoords;
+	mutable std::vector<uint32_t>	mIndices;
+};
+
+class Teapot : public Source {
+  public:
+	Teapot();
+
+	Teapot&		subdivisions( int sub );
+
+	size_t		getNumVertices() const override { return mNumVertices; }
+	size_t		getNumIndices() const override { return mNumIndices; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	void			calculate( std::vector<float> *positions, std::vector<float> *normals, std::vector<float> *texCoords, std::vector<uint32_t> *indices ) const;
+	void			updateVertexCounts();
 
 	static void		generatePatches( float *v, float *n, float *tc, uint32_t *el, int grid );
 	static void		buildPatchReflect( int patchNum, float *B, float *dB, float *v, float *n, float *tc, unsigned int *el,
-		int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
+										int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
 	static void		buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
-		unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
+										unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
 	static void		getPatch( int patchNum, vec3 patch[][4], bool reverseV );
 	static void		computeBasisFunctions( float *B, float *dB, int grid );
-	static vec3	evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] );
-	static vec3	evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] );
+	static vec3		evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] );
+	static vec3		evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] );
 
 	int			mSubdivision;
-
-	mutable bool					mCalculationsCached;
-	mutable	size_t					mNumVertices;
-	mutable size_t					mNumIndices;
-	mutable std::vector<float>		mPositions;
-	mutable std::vector<float>		mTexCoords;
-	mutable std::vector<float>		mNormals;
-	mutable std::vector<uint32_t>	mIndices;
+	size_t		mNumVertices, mNumIndices;
 
 	static const uint8_t	sPatchIndices[][16];
 	static const float		sCurveData[][3];
@@ -304,16 +319,11 @@ class Circle : public Source {
 
   private:
 	void	updateVertexCounts();
-	void	calculate() const;
 
 	vec2		mCenter;
 	float		mRadius;
 	int			mRequestedSubdivisions, mNumSubdivisions;
-
-	size_t						mNumVertices;
-	mutable std::vector<vec2>	mPositions;
-	mutable std::vector<vec2>	mTexCoords;
-	mutable std::vector<vec3>	mNormals;
+	size_t		mNumVertices;
 };
 
 class Sphere : public Source {
@@ -339,24 +349,6 @@ class Sphere : public Source {
 	vec3		mCenter;
 	float		mRadius;
 	int			mSubdivisions;
-	bool		mHasColors;
-};
-
-class Icosphere : public Icosahedron {
-  public:
-	Icosphere();
-
-	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; return *this; }
-
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-
-  protected:
-	void		calculateImplUV( std::vector<vec2> *texCoords ) const;
-	void		subdivide() const;
-
-	int			mSubdivision;
 	bool		mHasColors;
 };
 
@@ -489,7 +481,7 @@ class Cylinder : public Source {
 
   protected:
 	void	updateCounts();
-	void	calculateImplUV( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void	calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 	void	calculateCap( bool flip, float height, float radius, std::vector<vec3> *positions, std::vector<vec3> *normals,
 								std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
@@ -698,15 +690,15 @@ class Extrude : public Source {
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
 	
 	//! Sets the distance of extrusion along the axis.
-	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
+	Extrude&	distance( float dist ) { mDistance = dist; return *this; }
 	//! Enables or disables front and back caps. Enabled by default.
-	Extrude&			caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	Extrude&	caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
 	//! Enables or disables front cap. Enabled by default.
-	Extrude&			frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	Extrude&	frontCap( bool cap ) { mFrontCap = cap; return *this; }
 	//! Enables or disables back cap. Enabled by default.
-	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	Extrude&	backCap( bool cap ) { mBackCap = cap; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
-	Extrude&			subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -716,18 +708,18 @@ class Extrude : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	void calculate() const;
+	void		updatePathSubdivision();
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
   
 	std::vector<Path2d>				mPaths;
 	float							mApproximationScale;
 	float							mDistance;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
 	
-	mutable bool							mCalculationsCached;
-	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
-	mutable std::vector<uint32_t>			mIndices;
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 class ExtrudeSpline : public Source {
@@ -735,13 +727,13 @@ class ExtrudeSpline : public Source {
 	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
 	
 	//! Enables or disables front and back caps. Enabled by default.
-	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
 	//! Enables or disables front cap. Enabled by default.
-	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; return *this; }
 	//! Enables or disables back cap. Enabled by default.
-	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
-	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -751,19 +743,19 @@ class ExtrudeSpline : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	void calculate() const;
-  
+	void updatePathSubdivision();
+	void calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
+	
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
 	std::vector<float>				mSplineTimes;
 	float							mApproximationScale;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
-	
-	mutable bool							mCalculationsCached;
-	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
-	mutable std::vector<uint32_t>			mIndices;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
+
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 //! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0. Prevents pass-through of NORMAL and COLOR. Passes CI_TEX_COORD_0

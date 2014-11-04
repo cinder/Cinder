@@ -111,7 +111,7 @@ void ExtrudeApp::makeGeom()
 		mSplineBatch = gl::Batch::create( geom::BSpline( mSpline, 100 ), gl::getStockShader( gl::ShaderDef().color() ) );
 	}
 	else {
-		auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions ).enable( geom::TEX_COORD_0 );
+		auto extrudeSource = geom::Extrude( shape, mDepth, mApproximation ).caps( mCaps ).subdivisions( mSubdivisions );
 		// this remaps the TEX_COORD_0s to color
 		mBatch = gl::Batch::create( geom::ColorFromAttrib( extrudeSource, geom::TEX_COORD_0,
 											texCoordToColor ), mGlsl );

@@ -57,6 +57,8 @@ class Triangulator {
 
 	//! Performs the tesselation, returning a TriMesh2d
 	TriMesh		calcMesh( Winding winding = WINDING_ODD );
+	//! Performs the tesselation, returning a TriMesh2d
+	TriMeshRef	createMesh( Winding winding = WINDING_ODD );
 	
 	class Exception : public cinder::Exception {
 	};
