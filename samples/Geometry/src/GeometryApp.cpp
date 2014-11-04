@@ -423,7 +423,7 @@ void GeometryApp::createPrimitive(void)
 	}
 
 	TriMesh::Format fmt = TriMesh::Format().positions().normals();
-	if( mShowColors && primitive->getAttribDims( geom::Attrib::COLOR ) > 0 )
+	if( mShowColors && primitive->getAvailableAttribs().count( geom::COLOR ) > 0 )
 		fmt.colors();
 	TriMesh mesh( *primitive, fmt );
 	mCameraCOI = mesh.calcBoundingBox().getCenter();

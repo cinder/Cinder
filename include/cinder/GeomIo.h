@@ -222,6 +222,9 @@ class Icosahedron : public Source {
   public:
 	Icosahedron();
 
+	// Enables colors. Disabled by default.
+	Icosahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	
 	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
 	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
@@ -232,6 +235,7 @@ class Icosahedron : public Source {
   protected:
 	virtual void		calculate() const;
 
+	bool							mHasColors;
 	mutable std::vector<vec3>			mPositions;
 	mutable std::vector<vec3>			mNormals;
 	mutable std::vector<vec3>			mColors;
@@ -360,16 +364,18 @@ class Capsule : public Source {
   public:
 	Capsule();
 
-	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	//! Enables colors. Disabled by default.
+	Capsule&		colors() { mHasColors = true; return *this; }
+	Capsule&		center( const vec3 &center ) { mCenter = center; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
-	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Capsule&		subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
-	Capsule&			subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; mCalculationsCached = false; return *this; }
-	Capsule&			radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
-	Capsule&			length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
-	Capsule&			direction( const vec3 &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
+	Capsule&		subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; updateCounts(); return *this; }
+	Capsule&		radius( float radius ) { mRadius = math<float>::max(0.f, radius); return *this; }
+	Capsule&		length( float length ) { mLength = math<float>::max(0.f, length); return *this; }
+	Capsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
 	//! Conveniently sets center, length and direction
-	Capsule&			set( const vec3 &from, const vec3 &to );
+	Capsule&		set( const vec3 &from, const vec3 &to );
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -379,50 +385,45 @@ class Capsule : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   private:
-	void	calculate() const;
-	void	calculateImplUV( size_t segments, size_t rings ) const;
-	void	calculateRing( size_t segments, float radius, float y, float dy ) const;
+	void	updateCounts();
+	void	calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void	calculateRing( size_t segments, float radius, float y, float dy, std::vector<vec3> *positions,
+							std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors ) const;
 
 	vec3		mDirection, mCenter;
 	float		mLength, mRadius;
-	int			mSubdivisionsHeight, mSubdivisionsAxis;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
-
+	int			mSubdivisionsHeight, mSubdivisionsAxis, mNumSegments;
+	bool		mHasColors;
 };
 
 class Torus : public Source {
   public:
 	Torus();
-	virtual ~Torus() {}
 
-	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	virtual Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
-	virtual Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
+	// Enables colors. Disabled by default.
+	Torus&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	Torus&	center( const vec3 &center ) { mCenter = center; return *this; }
+	Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
+	Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; updateCounts(); return *this; }
 	//! Allows you to twist the torus along the ring.
-	virtual Torus&	twist( unsigned twist ) { mTwist = twist; mCalculationsCached = false; return *this; }
+	Torus&	twist( unsigned twist ) { mTwist = twist; return *this; }
 	//! Allows you to twist the torus along the ring. The \a offset is in radians.
-	virtual Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; mCalculationsCached = false; return *this; }
+	Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; return *this; }
 	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
-	virtual Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; mCalculationsCached = false; return *this; }
+	Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
 	//! Specifies the major and minor radius separately.
-	virtual Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); mCalculationsCached = false; return *this; }
+	Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); return *this; }
 
-	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void			calculate() const;
-	void			calculateImplUV( size_t segments, size_t rings ) const;
+	void		updateCounts();
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
 	vec3		mCenter;
 	float		mRadiusMajor;
@@ -433,34 +434,29 @@ class Torus : public Source {
 	float		mCoils;
 	unsigned	mTwist;
 	float		mTwistOffset;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
+	bool		mHasColors;
+	int			mNumRings, mNumAxis;
 };
 
 class Helix : public Torus {
   public:
 	Helix()
 	{
-		height(2.0f);
-		coils(3.0f);
+		height( 2.0f );
+		coils( 3.0f );
 	}
 
-	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
-	virtual Helix&	subdivisionsAxis( int subdiv ) override { Torus::subdivisionsAxis( subdiv ); return *this; }
-	virtual Helix&	subdivisionsHeight( int subdiv ) override { Torus::subdivisionsHeight( subdiv ); return *this; }
+	virtual Helix&	center( const vec3 &center ) { Torus::center( center ); return *this; }
+	virtual Helix&	subdivisionsAxis( int subdiv ) { Torus::subdivisionsAxis( subdiv ); return *this; }
+	virtual Helix&	subdivisionsHeight( int subdiv ) { Torus::subdivisionsHeight( subdiv ); return *this; }
 	//! Specifies the height, measured from center to center.
-	Helix&			height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
+	Helix&			height( float height ) { mHeight = height; return *this; }
 	//! Specifies the number of coils.
-	Helix&			coils( float coils ) { mCoils = math<float>::max(0.f, coils); mCalculationsCached = false; return *this; }
+	Helix&			coils( float coils ) { mCoils = math<float>::max(0.f, coils); return *this; }
 	//! Allows you to twist the helix along the ring.
-	virtual Helix&	twist( unsigned twist ) override { Torus::twist( twist ); return *this; }
+	Helix&			twist( unsigned twist ) { Torus::twist( twist ); return *this; }
 	//! Allows you to twist the helix along the ring. The \a offset is in radians.
-	virtual Helix&	twist( unsigned twist, float offset ) override { Torus::twist( twist, offset ); return *this; }
+	Helix&			twist( unsigned twist, float offset ) { Torus::twist( twist, offset ); return *this; }
 };
 
 class Cylinder : public Source {
@@ -468,33 +464,34 @@ class Cylinder : public Source {
 	Cylinder();
 
 	//! Specifices the base of the Cylinder.
-	Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
+	Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; updateCounts(); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
-	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
-	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; updateCounts(); return *this; }
 	//! Specifies the height of the cylinder.
-	Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
+	Cylinder&	height( float height ) { mHeight = height; return *this; }
 	//! Specifies the base and apex radius.
-	Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
+	Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); updateCounts(); return *this; }
 	//! Specifies the axis of the cylinder.
-	Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
+	Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	Cylinder&	set( const vec3 &from, const vec3 &to );
 	//! Enables colors. Disabled by default.
 	Cylinder&	colors() { mHasColors = true; return *this; }
 
-	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
 	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
 	uint8_t		getAttribDims( Attrib attr ) const override;
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void	calculate() const;
-	virtual void	calculateImplUV( size_t segments, size_t rings ) const;
-	virtual void	calculateCap( bool flip, float height, float radius, size_t segments ) const;
+	void	updateCounts();
+	void	calculateImplUV( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void	calculateCap( bool flip, float height, float radius, std::vector<vec3> *positions, std::vector<vec3> *normals,
+								std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
 	vec3		mOrigin;
 	float		mHeight;
@@ -504,13 +501,7 @@ class Cylinder : public Source {
 	int			mSubdivisionsAxis;
 	int			mSubdivisionsHeight;
 	bool		mHasColors;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
+	int			mNumSegments, mNumSlices;
 };
 
 class Cone : public Cylinder {
@@ -519,30 +510,25 @@ class Cone : public Cylinder {
 
 	Cone&	origin( const vec3 &origin ) { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
-	Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of subdivisions along the Cone's height. Defaults to \c 1.
-	Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
+	Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; updateCounts(); return *this; }
 	Cone&	height( float height ) { Cylinder::height( height ); return *this; }
 	//! Specifies the base and apex radius.
 	Cone&	radius( float radius ) {  Cylinder::radius( radius ); return *this; }
 	//! Specifies the base radius.
-	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
 	//! Specifies the apex radius.
-	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
 	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
-	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
 	//! Specifies the base and apex radius separately.
-	Cone&	radius( float base, float apex ) { 
-		mRadiusBase = math<float>::max(0.f, base); 
-		mRadiusApex = math<float>::max(0.f, apex); 
-		mCalculationsCached = false; return *this; }
-	//!
+	Cone&	radius( float base, float apex ) { mRadiusBase = math<float>::max(0.f, base); mRadiusApex = math<float>::max(0.f, apex); return *this; }
 	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
 	//! Enables colors. Disabled by default.
 	Cone&	colors() { mHasColors = true; return *this; }
-
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]

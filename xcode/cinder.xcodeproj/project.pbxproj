@@ -1148,7 +1148,7 @@
 		0003F3D41992D64100647C8B /* VaoImplEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VaoImplEs.cpp; path = gl/VaoImplEs.cpp; sourceTree = "<group>"; };
 		0003F3D51992D64100647C8B /* VaoImplSoftware.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VaoImplSoftware.cpp; path = gl/VaoImplSoftware.cpp; sourceTree = "<group>"; };
 		0003F3D61992D64100647C8B /* Vbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vbo.cpp; path = gl/Vbo.cpp; sourceTree = "<group>"; };
-		0003F3D71992D64100647C8B /* VboMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VboMesh.cpp; path = gl/VboMesh.cpp; sourceTree = "<group>"; };
+		0003F3D71992D64100647C8B /* VboMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; name = VboMesh.cpp; path = gl/VboMesh.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
 		0003F4261992D67300647C8B /* Batch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Batch.h; path = gl/Batch.h; sourceTree = "<group>"; };
 		0003F4271992D67300647C8B /* BufferObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferObj.h; path = gl/BufferObj.h; sourceTree = "<group>"; };
 		0003F4281992D67300647C8B /* BufferTexture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferTexture.h; path = gl/BufferTexture.h; sourceTree = "<group>"; };
@@ -1167,9 +1167,9 @@
 		0003F4351992D67300647C8B /* TransformFeedbackObj.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TransformFeedbackObj.h; path = gl/TransformFeedbackObj.h; sourceTree = "<group>"; };
 		0003F4361992D67300647C8B /* Vao.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vao.h; path = gl/Vao.h; sourceTree = "<group>"; };
 		0003F4371992D67300647C8B /* Vbo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Vbo.h; path = gl/Vbo.h; sourceTree = "<group>"; };
-		0003F4381992D67300647C8B /* VboMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VboMesh.h; path = gl/VboMesh.h; sourceTree = "<group>"; };
-		0003F4721992D6A000647C8B /* GeomIo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = GeomIo.cpp; sourceTree = "<group>"; };
-		0003F4761992D6C100647C8B /* GeomIo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GeomIo.h; sourceTree = "<group>"; };
+		0003F4381992D67300647C8B /* VboMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = VboMesh.h; path = gl/VboMesh.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		0003F4721992D6A000647C8B /* GeomIo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = GeomIo.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		0003F4761992D6C100647C8B /* GeomIo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = GeomIo.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		0003F47A1992DA7C00647C8B /* Log.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Log.h; sourceTree = "<group>"; };
 		0003F47E1992DA9A00647C8B /* Log.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Log.cpp; sourceTree = "<group>"; };
 		0003F4821992DB0500647C8B /* RendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = RendererGl.h; path = app/RendererGl.h; sourceTree = "<group>"; };
@@ -1208,10 +1208,10 @@
 		00241ABC0E830DD5004D34EB /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
 		00241ABD0E830DD5004D34EB /* Matrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Matrix.cpp; sourceTree = "<group>"; };
 		002991B619B92C080002BC2D /* CinderGlm.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderGlm.h; sourceTree = "<group>"; };
-		002DFC050FA50D0200E45AE0 /* TriMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TriMesh.h; sourceTree = "<group>"; };
-		002DFC070FA50D1600E45AE0 /* TriMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = TriMesh.cpp; sourceTree = "<group>"; };
-		002DFD500FA5600900E45AE0 /* ObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ObjLoader.cpp; sourceTree = "<group>"; };
-		002DFD530FA5602900E45AE0 /* ObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ObjLoader.h; sourceTree = "<group>"; };
+		002DFC050FA50D0200E45AE0 /* TriMesh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = TriMesh.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
+		002DFC070FA50D1600E45AE0 /* TriMesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = TriMesh.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		002DFD500FA5600900E45AE0 /* ObjLoader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; lineEnding = 0; path = ObjLoader.cpp; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.cpp; };
+		002DFD530FA5602900E45AE0 /* ObjLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = ObjLoader.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		002F8F71103AFD9A0077CB91 /* System.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = System.h; sourceTree = "<group>"; };
 		002F8F74103AFEBF0077CB91 /* System.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = System.cpp; sourceTree = "<group>"; };
 		003133A3129EB85D009DC098 /* Blend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Blend.h; path = ip/Blend.h; sourceTree = "<group>"; };

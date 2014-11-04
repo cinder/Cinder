@@ -465,7 +465,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 4;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
 		default:
 			return 0;
 	}	
@@ -473,10 +473,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 
 AttribSet Cube::getAvailableAttribs() const
 {
-	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
-	if( mHasColors )
-		attribs.insert( Attrib::COLOR );
-	return attribs;
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
@@ -600,6 +597,7 @@ uint32_t Icosahedron::sIndices[60] ={
 	4, 9, 5, 2, 4,11, 6, 2,10, 8, 6, 7, 9, 8, 1 };
 
 Icosahedron::Icosahedron()
+	: mHasColors( false )
 {
 }
 
@@ -648,7 +646,7 @@ uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -656,7 +654,7 @@ uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 
 AttribSet Icosahedron::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::COLOR, Attrib::NORMAL };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR };
 }
 
 void Icosahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1088,7 +1086,7 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1096,10 +1094,7 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 
 AttribSet Sphere::getAvailableAttribs() const
 {
-	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
-	if( mHasColors )
-		attribs.insert( Attrib::COLOR );
-	return attribs;
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1265,7 +1260,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1273,10 +1268,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 
 AttribSet Icosphere::getAvailableAttribs() const
 {
-	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
-	if( mHasColors )
-		attribs.insert( Attrib::COLOR );
-	return attribs;
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1318,9 +1310,8 @@ void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Capsule
-
 Capsule::Capsule()
-	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 )
+	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 ), mHasColors( false )
 {
 	radius( 0.5f );
 	subdivisionsHeight( 6 );
@@ -1332,68 +1323,55 @@ Capsule& Capsule::set( const vec3 &from, const vec3 &to )
 	mLength = glm::length( axis );
 	mDirection = normalize( axis );
 	mCenter = from + 0.5f * axis;
-	mCalculationsCached = false;
 	return *this;
 }
 
-void Capsule::calculate() const
+void Capsule::updateCounts()
 {
-	if( mCalculationsCached )
-		return;
-
-	int numSegments = mSubdivisionsAxis;
-	if( numSegments < 4 )
-		numSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
-
-	calculateImplUV( numSegments, std::max( mSubdivisionsHeight, 2 ) );
-	mCalculationsCached = true;
+	mNumSegments = mSubdivisionsAxis;
+	if( mNumSegments < 4 )
+		mNumSegments = std::max( 12, (int)math<double>::floor( mRadius * float(M_PI * 2) ) );
+	mSubdivisionsHeight = std::max( mSubdivisionsHeight, 2 );
 }
 
-void Capsule::calculateImplUV( size_t segments, size_t rings ) const
+void Capsule::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec2> *texCoords, vector<vec3> *colors, vector<uint32_t> *indices ) const
 {
 	size_t ringsBody = mSubdivisionsHeight + 1;
-	size_t ringsTotal = rings + ringsBody;
+	size_t ringsTotal = mSubdivisionsHeight + ringsBody;
 
-	mPositions.clear();
-	mNormals.clear();
-	mTexCoords.clear();
-	mColors.clear();
-	mIndices.clear();
-
-	mPositions.reserve( segments * ringsTotal );
-	mNormals.reserve( segments * ringsTotal );
-	mTexCoords.reserve( segments * ringsTotal );
-	mColors.reserve( segments * ringsTotal );
-	mIndices.reserve( segments * ringsTotal * 6 );
+	positions->reserve( mNumSegments * ringsTotal );
+	normals->reserve( mNumSegments * ringsTotal );
+	texCoords->reserve( mNumSegments * ringsTotal );
+	colors->reserve( mNumSegments * ringsTotal );
+	indices->reserve( mNumSegments * ringsTotal * 6 );
 
 	float bodyIncr = 1.0f / (float)( ringsBody - 1 );
-	float ringIncr = 1.0f / (float)( rings - 1 );
-	for( size_t r = 0; r < rings / 2; r++ ) {
-		calculateRing( segments, math<float>::sin( float(M_PI) * r * ringIncr),
-			math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), -0.5f );
-	}
-	for( size_t r = 0; r < ringsBody; r++ ) {
-		calculateRing( segments, 1.0f, 0.0f, r * bodyIncr - 0.5f );
-	}
-	for( size_t r = rings / 2; r < rings; r++ ) {
-		calculateRing( segments, math<float>::sin( float(M_PI) * r * ringIncr),
-			math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), +0.5f );
-	}
+	float ringIncr = 1.0f / (float)( mSubdivisionsHeight - 1 );
+	for( size_t r = 0; r < mSubdivisionsHeight / 2; r++ )
+		calculateRing( mNumSegments, math<float>::sin( float(M_PI) * r * ringIncr), math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), -0.5f,
+							positions, normals, texCoords, colors );
+	for( size_t r = 0; r < ringsBody; r++ )
+		calculateRing( mNumSegments, 1.0f, 0.0f, r * bodyIncr - 0.5f,
+							positions, normals, texCoords, colors );
+	for( size_t r = mSubdivisionsHeight / 2; r < mSubdivisionsHeight; r++ )
+		calculateRing( mNumSegments, math<float>::sin( float(M_PI) * r * ringIncr), math<float>::sin( float(M_PI) * ( r * ringIncr - 0.5f ) ), +0.5f,
+							positions, normals, texCoords, colors );
 
 	for( size_t r = 0; r < ringsTotal - 1; r++ ) {
-		for( size_t s = 0; s < segments - 1; s++ ) {
-			mIndices.push_back( (uint32_t)(r * segments + ( s + 1 )) );
-			mIndices.push_back( (uint32_t)(r * segments + ( s + 0 )) );
-			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 1 )) );
+		for( size_t s = 0; s < mNumSegments - 1; s++ ) {
+			indices->push_back( (uint32_t)(r * mNumSegments + ( s + 1 )) );
+			indices->push_back( (uint32_t)(r * mNumSegments + ( s + 0 )) );
+			indices->push_back( (uint32_t)(( r + 1 ) * mNumSegments + ( s + 1 )) );
 
-			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 0 )) );
-			mIndices.push_back( (uint32_t)(( r + 1 ) * segments + ( s + 1 )) );
-			mIndices.push_back( (uint32_t)(r * segments + s) );
+			indices->push_back( (uint32_t)(( r + 1 ) * mNumSegments + ( s + 0 )) );
+			indices->push_back( (uint32_t)(( r + 1 ) * mNumSegments + ( s + 1 )) );
+			indices->push_back( (uint32_t)(r * mNumSegments + s) );
 		}
 	}
 }
 
-void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) const
+void Capsule::calculateRing( size_t segments, float radius, float y, float dy,
+								vector<vec3> *positions, vector<vec3> *normals, vector<vec2> *texCoords, vector<vec3> *colors ) const
 {
 	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
 
@@ -1402,29 +1380,27 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy ) 
 		float x = math<float>::cos( float(M_PI * 2) * s * segIncr ) * radius;
 		float z = math<float>::sin( float(M_PI * 2) * s * segIncr ) * radius;
 
-		mPositions.emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
+		positions->emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
 
-		mNormals.emplace_back( quaternion * glm::vec3( x, y, z ) );
+		normals->emplace_back( quaternion * glm::vec3( x, y, z ) );
 		// perform cylindrical projection
 		float u = 1.0f - (s * segIncr);
 		float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-		mTexCoords.emplace_back( vec2( u, v ) );
+		texCoords->emplace_back( u, v );
 
 		float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-		mColors.emplace_back( vec3( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f ) );
+		colors->emplace_back( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f );
 	}
 }
 
 size_t Capsule::getNumVertices() const
 {
-	calculate();
-	return mPositions.size();
+	return mNumSegments * ( mSubdivisionsHeight * 2 + 1 );
 }
 
 size_t Capsule::getNumIndices() const
 {
-	calculate();
-	return mIndices.size();
+	return mNumSegments * ( mSubdivisionsHeight * 2 + 1 ) * 6;
 }
 
 uint8_t Capsule::getAttribDims( Attrib attr ) const
@@ -1433,7 +1409,7 @@ uint8_t Capsule::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1446,64 +1422,75 @@ AttribSet Capsule::getAvailableAttribs() const
 
 void Capsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	calculate();
-	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	std::vector<vec3> positions, normals;
+	std::vector<vec2> texCoords;
+	std::vector<vec3> colors;
+	std::vector<uint32_t> indices;
 
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+	calculate( &positions, &normals, &texCoords, &colors, &indices );
+	
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Torus
-
 Torus::Torus()
 	: mCenter( 0, 0, 0), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mCoils( 1 ), mHeight( 0 ),
-	mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mTwist( 0 ), mTwistOffset( 0 )
+	mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mTwist( 0 ), mTwistOffset( 0 ), mHasColors( false )
 {
+	updateCounts();
 }
 
-void Torus::calculate() const
+void Torus::updateCounts()
 {
-	if( mCalculationsCached )
-		return;
+	mNumAxis = (int) math<float>::ceil( mSubdivisionsAxis * mCoils );
+	if( mNumAxis < 4 )
+		mNumAxis = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) );
+	mNumAxis += 1;
 
-	int numAxis = (int) math<float>::ceil( mSubdivisionsAxis * mCoils );
-	if( numAxis < 4 )
-		numAxis = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) );
-
-	int numRing = mSubdivisionsHeight;
-	if( numRing < 3 )
-		numRing = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) );
-
-	calculateImplUV( numAxis + 1, numRing + 1 );
-	mCalculationsCached = true;
+	mNumRings = mSubdivisionsHeight;
+	if( mNumRings < 3 )
+		mNumRings = std::max( 12, (int)math<double>::floor( mRadiusMajor * float(M_PI * 2) ) ) + 1;
+	mNumRings += 1;
 }
 
-void Torus::calculateImplUV( size_t segments, size_t rings ) const
+size_t Torus::getNumVertices() const
 {
-	mPositions.resize( segments * rings );
-	mNormals.resize( segments * rings );
-	mTexCoords.resize( segments * rings, vec2() );
-	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
+	return mNumAxis * mNumRings;
+}
 
-	mColors.resize( segments * rings );
+size_t Torus::getNumIndices() const
+{
+	return (mNumAxis - 1) * (mNumRings - 1) * 6;
+}
 
-	float majorIncr = 1.0f / (segments - 1);
-	float minorIncr = 1.0f / (rings - 1);
+void Torus::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec2> *texCoords, vector<vec3> *colors, vector<uint32_t> *indices ) const
+{
+	positions->reserve( mNumAxis * mNumRings );
+	normals->reserve( mNumAxis * mNumRings );
+	texCoords->reserve( mNumAxis * mNumRings );
+	colors->reserve( mNumAxis * mNumRings );
+	indices->reserve( (mNumAxis - 1) * (mNumRings - 1) * 6 );
+
+	float majorIncr = 1.0f / (mNumAxis - 1);
+	float minorIncr = 1.0f / (mNumRings - 1);
 	float radiusDiff = mRadiusMajor - mRadiusMinor;
 	float angle = float(M_PI * 2) * mCoils;
 	float twist = angle * mTwist * minorIncr * majorIncr;
 
 	// vertex, normal, tex coord and color buffers
-	for( size_t i = 0; i < segments; ++i ) {
+	for( size_t i = 0; i < mNumAxis; ++i ) {
 		float phi = i * majorIncr * angle;
 		float cosPhi = -math<float>::cos( phi );
 		float sinPhi =  math<float>::sin( phi );
 
-		for( size_t j = 0; j < rings; ++j ) {
+		for( size_t j = 0; j < mNumRings; ++j ) {
 			float theta = j * minorIncr * float(M_PI * 2) + i * twist + mTwistOffset;
 			float cosTheta = -math<float>::cos( theta );
 			float sinTheta =  math<float>::sin( theta );
@@ -1513,27 +1500,25 @@ void Torus::calculateImplUV( size_t segments, size_t rings ) const
 			float y = i * majorIncr * mHeight + sinTheta * radiusDiff;
 			float z = r * sinPhi;
 
-			const size_t k = i * rings + j;
-			mPositions[k] = mCenter + vec3( x, y, z );
-			mTexCoords[k] = vec2( i * majorIncr, j * minorIncr );
-			mNormals[k] = vec3( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
+			positions->emplace_back( mCenter + vec3( x, y, z ) );
+			texCoords->emplace_back( i * majorIncr, j * minorIncr );
+			normals->emplace_back( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
 
-			const vec3 &n = mNormals[k];
-			mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
+			const vec3 &n = normals->back();
+			colors->emplace_back( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 		}
 	}
 
 	// index buffer
-	size_t k = 0;
-	for( size_t i = 0; i < segments - 1; ++i ) {
-		for ( size_t j = 0; j < rings - 1; ++j ) {
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 0));
+	for( size_t i = 0; i < mNumAxis - 1; ++i ) {
+		for ( size_t j = 0; j < mNumRings - 1; ++j ) {
+			indices->push_back( (uint32_t)((i + 0) * mNumRings + (j + 0)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumRings + (j + 1)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumRings + (j + 0)) );
 
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 1));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
+			indices->push_back( (uint32_t)((i + 0) * mNumRings + (j + 0)) );
+			indices->push_back( (uint32_t)((i + 0) * mNumRings + (j + 1)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumRings + (j + 1)) );
 		}
 	}
 }
@@ -1544,7 +1529,7 @@ uint8_t Torus::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1557,22 +1542,28 @@ AttribSet Torus::getAvailableAttribs() const
 
 void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	calculate();
+	std::vector<vec3> positions, normals;
+	std::vector<vec2> texCoords;
+	std::vector<vec3> colors;
+	std::vector<uint32_t> indices;
 
-	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	calculate( &positions, &normals, &texCoords, &colors, &indices );
 
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cylinder
-
 Cylinder::Cylinder()
-	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 ), mHasColors( false )
+	: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ),
+		mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 1 ), mHasColors( false )
 {
+	updateCounts();
 }
 
 Cylinder& Cylinder::set( const vec3 &from, const vec3 &to )
@@ -1581,42 +1572,55 @@ Cylinder& Cylinder::set( const vec3 &from, const vec3 &to )
 	mHeight = length( axis );
 	mDirection = normalize( axis );
 	mOrigin = from;
-	mCalculationsCached = false;
 	return *this;
 }
 
-void Cylinder::calculate() const
+void Cylinder::updateCounts()
 {
-	if( mCalculationsCached )
-		return;
-
-	int numSegments = mSubdivisionsAxis;
-	if( numSegments < 4 ) {
+	mNumSegments = mSubdivisionsAxis + 1;
+	if( mNumSegments < 4 ) {
 		float radius = math<float>::max( mRadiusBase, mRadiusApex );
-		numSegments = std::max( 12, (int)math<double>::floor( radius * float(M_PI * 2) ) );
+		mNumSegments = std::max( 12, (int)math<double>::floor( radius * float(M_PI * 2) ) ) + 1;
 	}
-	int numSlices = math<int>::max( mSubdivisionsHeight, 1 );
-
-	calculateImplUV( numSegments + 1, numSlices + 1 );
-	mCalculationsCached = true;
+	mNumSlices = math<int>::max( mSubdivisionsHeight, 1 ) + 1;
 }
 
-void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
+size_t Cylinder::getNumVertices() const
 {
-	mPositions.resize( segments * rings );
-	mNormals.resize( segments * rings );
-	mTexCoords.resize( segments * rings, vec2() );
-	mIndices.resize( (segments - 1) * (rings - 1) * 6, 0 );
+	size_t result = mNumSegments * mNumSlices;
+	if( mRadiusBase > 0 )
+		result += mNumSegments * 2;
+	if( mRadiusApex > 0.0f )
+		result += mNumSegments * 2;
+	return result;
+}
 
-	mColors.resize( segments * rings );
+size_t Cylinder::getNumIndices() const
+{
+	size_t result = (mNumSegments - 1) * (mNumSlices - 1) * 6;
+	if( mRadiusBase > 0 )
+		result += 3 * (mNumSegments - 1);
+	if( mRadiusApex > 0 )
+		result += 3 * (mNumSegments - 1);
+	return result;
+}
 
-	const float segmentIncr = 1.0f / (segments - 1);
-	const float ringIncr = 1.0f / (rings - 1);
+void Cylinder::calculateImplUV( vector<vec3> *positions, vector<vec3> *normals, vector<vec2> *texCoords, vector<vec3> *colors, vector<uint32_t> *indices ) const
+{
+	positions->reserve( mNumSegments * mNumSlices );
+	normals->reserve( mNumSegments * mNumSlices );
+	texCoords->reserve( mNumSegments * mNumSlices );
+	indices->reserve( (mNumSegments - 1) * (mNumSlices - 1) * 6 );
+
+	colors->reserve( mNumSegments * mNumSlices );
+
+	const float segmentIncr = 1.0f / (mNumSegments - 1);
+	const float ringIncr = 1.0f / (mNumSlices - 1);
 	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertex, normal, tex coord and color buffers
-	for( size_t j = 0; j < rings; ++j ) {
-		for( size_t i = 0; i < segments; ++i ) {
+	for( size_t i = 0; i < mNumSegments; ++i ) {
+		for( size_t j = 0; j < mNumSlices; ++j ) {
 			float cosPhi = -math<float>::cos( i * segmentIncr * float(M_PI * 2) );
 			float sinPhi =  math<float>::sin( i * segmentIncr * float(M_PI * 2) );
 
@@ -1626,58 +1630,50 @@ void Cylinder::calculateImplUV( size_t segments, size_t rings ) const
 			float z = r * sinPhi;
 			const vec3 n = normalize( vec3( mHeight * cosPhi, mRadiusBase - mRadiusApex, mHeight * sinPhi ) );
 
-			const size_t k = i * rings + j;
-			mPositions[k] = mOrigin + axis * vec3( x, y, z );
-			mTexCoords[k] = vec2( i * segmentIncr, 1.0f - j * ringIncr );
-			mNormals[k] = axis * n;
-
-			mColors[k] = vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
+			positions->emplace_back( mOrigin + axis * vec3( x, y, z ) );
+			texCoords->emplace_back( i * segmentIncr, 1.0f - j * ringIncr );
+			normals->emplace_back( axis * n );
+			colors->emplace_back( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 		}
 	}
 
 	// index buffer
-	size_t k = 0;
-	for ( size_t j = 0; j < rings - 1; ++j ) {
-		for( size_t i = 0; i < segments - 1; ++i ) {
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 0));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
+	for ( size_t j = 0; j < mNumSlices - 1; ++j ) {
+		for( size_t i = 0; i < mNumSegments - 1; ++i ) {
+			indices->push_back( (uint32_t)((i + 0) * mNumSlices + (j + 0)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumSlices + (j + 0)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumSlices + (j + 1)) );
 
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 0));
-			mIndices[k++] = (uint32_t)((i + 1) * rings + (j + 1));
-			mIndices[k++] = (uint32_t)((i + 0) * rings + (j + 1));
+			indices->push_back( (uint32_t)((i + 0) * mNumSlices + (j + 0)) );
+			indices->push_back( (uint32_t)((i + 1) * mNumSlices + (j + 1)) );
+			indices->push_back( (uint32_t)((i + 0) * mNumSlices + (j + 1)) );
 		}
 	}
 
 	// caps
-	if( mRadiusBase > 0.0f ) {
-		calculateCap( true, 0.0f, mRadiusBase, segments );
-	}
+	if( mRadiusBase > 0.0f )
+		calculateCap( true, 0.0f, mRadiusBase, positions, normals, texCoords, colors, indices );
 
-	if( mRadiusApex > 0.0f ) {
-		calculateCap( false, mHeight, mRadiusApex, segments );
-	}
+	if( mRadiusApex > 0.0f )
+		calculateCap( false, mHeight, mRadiusApex, positions, normals, texCoords, colors, indices );
 }
 
-void Cylinder::calculateCap( bool flip, float height, float radius, size_t segments ) const
+void Cylinder::calculateCap( bool flip, float height, float radius, vector<vec3> *positions, vector<vec3> *normals,
+								vector<vec2> *texCoords, vector<vec3> *colors, vector<uint32_t> *indices ) const
 {
-	const size_t index = mPositions.size();
-
-	mPositions.resize( index + segments * 2 );
-	mTexCoords.resize( index + segments * 2 );
-	mNormals.resize( index + segments * 2, flip ? -mDirection : mDirection );
-
+	const size_t index = positions->size();
 	const vec3 n = flip ? -mDirection : mDirection;
-	mColors.resize( index + segments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
+	normals->resize( index + mNumSegments * 2, n );
+	colors->resize( index + mNumSegments * 2, vec3( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f ) );
 
 	const quat axis( vec3( 0, 1, 0 ), mDirection );
 
 	// vertices
-	const float segmentIncr = 1.0f / (segments - 1);
-	for( size_t i = 0; i < segments; ++i ) {
+	const float segmentIncr = 1.0f / (mNumSegments - 1);
+	for( size_t i = 0; i < mNumSegments; ++i ) {
 		// center point
-		mPositions[index + i * 2 + 0] = mOrigin + mDirection * height;
-		mTexCoords[index + i * 2 + 0] = vec2( i * segmentIncr, 1.0f - height / mHeight );
+		positions->emplace_back( mOrigin + mDirection * height );
+		texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
 
 		// edge point
 		float cosPhi = -math<float>::cos( i * segmentIncr * float(M_PI * 2) );
@@ -1687,24 +1683,23 @@ void Cylinder::calculateCap( bool flip, float height, float radius, size_t segme
 		float y = height;
 		float z = radius * sinPhi;
 
-		mPositions[index + i * 2 + 1] = mOrigin + axis * vec3( x, y, z );
-		mTexCoords[index + i * 2 + 1] = vec2( i * segmentIncr, 1.0f - height / mHeight );
+		positions->emplace_back( mOrigin + axis * vec3( x, y, z ) );
+		texCoords->emplace_back( i * segmentIncr, 1.0f - height / mHeight );
 	}
 
 	// index buffer
-	size_t k = mIndices.size();
-	mIndices.resize( mIndices.size() + 3 * (segments - 1), 0 );
+	indices->reserve( indices->size() + 3 * (mNumSegments - 1) );
 
-	for( size_t i = 0; i < segments - 1; ++i ) {
+	for( size_t i = 0; i < mNumSegments - 1; ++i ) {
 		if( flip ) {
-			mIndices[k++] = (uint32_t)(index + i * 2 + 0);
-			mIndices[k++] = (uint32_t)(index + i * 2 + 3);
-			mIndices[k++] = (uint32_t)(index + i * 2 + 1);
+			indices->push_back( (uint32_t)(index + i * 2 + 0) );
+			indices->push_back( (uint32_t)(index + i * 2 + 3) );
+			indices->push_back( (uint32_t)(index + i * 2 + 1) );
 		}
 		else {
-			mIndices[k++] = (uint32_t)(index + i * 2 + 0);
-			mIndices[k++] = (uint32_t)(index + i * 2 + 1);
-			mIndices[k++] = (uint32_t)(index + i * 2 + 3);
+			indices->push_back( (uint32_t)(index + i * 2 + 0) );
+			indices->push_back( (uint32_t)(index + i * 2 + 1) );
+			indices->push_back( (uint32_t)(index + i * 2 + 3) );
 		}
 	}
 }
@@ -1715,7 +1710,7 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 3;
+		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
 			return 0;
 	}
@@ -1723,27 +1718,27 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 
 AttribSet Cylinder::getAvailableAttribs() const
 {
-	AttribSet attribs = { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
-	if( mHasColors )
-		attribs.insert( Attrib::COLOR );
-	return attribs;
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
 }
 
 void Cylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	calculate();
+	vector<vec3> positions, normals, colors;
+	vector<vec2> texCoords;
+	vector<uint32_t> indices;
 
-	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *mPositions.data() ), mPositions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+	calculateImplUV( &positions, &normals, &texCoords, &colors, &indices );
 
-	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Plane
-
 Plane::Plane()
 	: mOrigin( 0, 0, 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ), mSize( 2, 2 ), mSubdivisions( 1, 1 )
 {
