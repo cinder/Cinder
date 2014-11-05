@@ -668,8 +668,6 @@ void Icosahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) 
 	vector<uint32_t> indices;
 	
 	calculate( &positions, &normals, &colors, &indices );
-CI_ASSERT( getNumIndices() == indices.size() );
-CI_ASSERT( getNumVertices() == positions.size() );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
@@ -733,11 +731,10 @@ void Icosphere::calculateImplUV() const
 	auto addVertex = [&] ( size_t i, const vec2 &uv ) {
 		const uint32_t index = mIndices[i];
 		mIndices[i] = (uint32_t)mPositions.size();
-		mPositions.emplace_back( mPositions[index] );
-		mNormals.emplace_back( mNormals[index] );
-		mTexCoords.emplace_back( uv );
-
-		mColors.emplace_back( mColors[index] );
+		mPositions.push_back( mPositions[index] );
+		mNormals.push_back( mNormals[index] );
+		mTexCoords.push_back( uv );
+		mColors.push_back( mColors[index] );
 	};
 
 	// fix texture seams (this is where the magic happens)
