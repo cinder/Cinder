@@ -69,6 +69,7 @@ class TriMesh : public geom::Source {
 	static TriMeshRef	create() { return TriMeshRef( new TriMesh( Format().positions().normals().texCoords() ) ); }
 	static TriMeshRef	create( const Format &format ) { return TriMeshRef( new TriMesh( format ) ); }
 	static TriMeshRef	create( const geom::Source &source ) { return TriMeshRef( new TriMesh( source ) ); }
+	static TriMeshRef	create( const geom::Source &source, const Format &format ) { return TriMeshRef( new TriMesh( source, format ) ); }
 
 	TriMesh( const Format &format );
 	TriMesh( const geom::Source &source );
