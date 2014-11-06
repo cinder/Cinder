@@ -148,6 +148,22 @@ uint8_t	BufferLayout::getAttribDims( Attrib attrib ) const
 	return 0;
 }
 
+size_t BufferLayout::calcRequiredStorage( size_t numVertices ) const
+{
+	if( numVertices == 0 )
+		return 0;
+	
+	size_t result = 0;
+	for( auto &attrib : mAttribs ) {
+		size_t stride = attrib.getStride();
+		if( stride == 0 )
+			stride = attrib.getByteSize();
+		result = std::max( result, attrib.getOffset() + (numVertices-1) * stride + attrib.getByteSize() );
+	}
+	
+	return result;
+}
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // Source
 namespace { // these are helper functions for copyData() and copyDataMultAdd

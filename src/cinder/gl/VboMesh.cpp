@@ -63,8 +63,10 @@ class VboMeshGeomTarget : public geom::Target {
 	{
 		mVboMesh->mNumIndices = 0; // this may be replaced later with a copyIndices call
 		// create a vector of temporary data that parallels the VboMesh's vertexData
-		for( const auto &vertexArrayBuffer : mVboMesh->getVertexArrayLayoutVbos() )
-			mBufferData.push_back( BufferData( vertexArrayBuffer.first, std::unique_ptr<uint8_t[]>( new uint8_t[vertexArrayBuffer.second->getSize()] ) ) );
+		for( const auto &vertexArrayBuffer : mVboMesh->getVertexArrayLayoutVbos() ) {
+			size_t requiredBytes = vertexArrayBuffer.first.calcRequiredStorage( mVboMesh->mNumVertices );
+			mBufferData.push_back( BufferData( vertexArrayBuffer.first, std::unique_ptr<uint8_t[]>( new uint8_t[requiredBytes] ) ) );
+		}
 	}
 	
 	virtual geom::Primitive	getPrimitive() const;
@@ -204,8 +206,13 @@ void VboMesh::Layout::allocate( size_t numVertices, geom::BufferLayout *resultBu
 	}
 
 	*resultBufferLayout = geom::BufferLayout( attribInfos );
-	if( resultVbo )
-		*resultVbo = Vbo::create( GL_ARRAY_BUFFER, totalDataBytes, nullptr, mUsage );
+
+	if( resultVbo ) {
+		if( *resultVbo ) // non-null shared_ptr means the VBO should be resized
+			(*resultVbo)->ensureMinimumSize( totalDataBytes );
+		else // else allocate
+			*resultVbo = Vbo::create( GL_ARRAY_BUFFER, totalDataBytes, nullptr, mUsage );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -277,7 +284,7 @@ VboMesh::VboMesh( const geom::Source &source, std::vector<pair<Layout,VboRef>> v
 		geom::BufferLayout bufferLayout;
 		VboRef vbo = vertexArrayBuffer.second;
 		// we pass nullptr for the VBO if we already have one, to prevent re-allocation by allocate()
-		vertexArrayBuffer.first.allocate( mNumVertices, &bufferLayout, (vbo) ? nullptr : &vbo );
+		vertexArrayBuffer.first.allocate( mNumVertices, &bufferLayout, &vbo );
 		mVertexArrayVbos.push_back( make_pair( bufferLayout, vbo ) );
 	}
 	

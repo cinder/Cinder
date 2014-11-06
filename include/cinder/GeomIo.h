@@ -118,6 +118,8 @@ class BufferLayout {
 	uint8_t			getAttribDims( Attrib attrib ) const;
 	//! Returns a vector of all present Attribs
 	const std::vector<AttribInfo>&	getAttribs() const { return mAttribs; }
+	//! Returns the number of bytes necessary to store \a numVertices
+	size_t			calcRequiredStorage( size_t numVertices ) const;
   protected:
 	std::vector<AttribInfo>		mAttribs;
 };
