@@ -2174,6 +2174,7 @@ void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttrib
 	uint8_t inputAttribDims = modifier.getReadAttribDims( mAttrib );
 	const float* inputAttribData = modifier.getReadAttribData( mAttrib );
 	
+	
 	if( mFnColor2 ) {
 		if( inputAttribDims == 2 )
 			processColorAttrib( reinterpret_cast<const vec2*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor2, numVertices );
@@ -2192,6 +2193,73 @@ void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttrib
 	}
 
 	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// AttribFn
+template<typename S, typename D>
+uint8_t AttribFn<S,D>::getAttribDims( Attrib attr ) const
+{
+	if( attr == mDstAttrib )
+		return DSTDIM;
+	else
+		return mSource.getAttribDims( attr );
+}
+
+template<typename S, typename D>
+geom::AttribSet geom::AttribFn<S,D>::getAvailableAttribs() const
+{
+	AttribSet result = mSource.getAvailableAttribs();
+	result.insert( mDstAttrib );
+	return result;
+}
+
+namespace {
+template<typename S, typename D>
+void processAttrib( const float *inputDataFloat, float *outputDataFloat, const std::function<D(S)> &fn, size_t numVertices )
+{
+	const S *inData = reinterpret_cast<const S*>( inputDataFloat );
+	D *outData = reinterpret_cast<D*>( outputDataFloat );
+
+	for( size_t v = 0; v < numVertices; ++v )
+		outData[v] = fn( inData[v] );
+}
+} // anonymous namespace
+
+template<typename S, typename D>
+void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	// we want to capture 'mSrcAttrib' and we want to write 'mDstAttrib'
+	std::map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[mSrcAttrib] = Modifier::READ;
+	attribAccess[mDstAttrib] = Modifier::WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
+	mSource.loadInto( &modifier, requestedAttribs );
+
+	if( modifier.getAttribDims( mSrcAttrib ) == 0 ) {
+		CI_LOG_W( "AttribFn called on geom::Source missing requested " << attribToString( mSrcAttrib ) );
+		mSource.loadInto( target, requestedAttribs );
+		return;
+	}
+
+	const auto numVertices = mSource.getNumVertices();
+	std::unique_ptr<float[]> outData( new float[numVertices * DSTDIM] );
+	std::unique_ptr<float[]> tempInData;
+	const float *inputAttribData;
+	const uint8_t inputAttribDims = modifier.getReadAttribDims( mSrcAttrib );
+	// if the actual input dims of the attribute don't equal SRCDIMS, we'll need to temporarily copy it to a buffer
+	if( inputAttribDims != SRCDIM ) {
+		CI_LOG_W( "AttribFn source dimensions don't match for attrib " << attribToString( mSrcAttrib ) );
+		tempInData = std::unique_ptr<float[]>( new float[numVertices * SRCDIM] );
+		auto tempDataWrongDims = modifier.getReadAttribData( mSrcAttrib );
+		geom::copyData( inputAttribDims, tempDataWrongDims, numVertices, SRCDIM, 0, tempInData.get() );
+		inputAttribData = tempInData.get();
+	}
+	else
+		inputAttribData = modifier.getReadAttribData( mSrcAttrib );
+	
+	processAttrib<S,D>( inputAttribData, outData.get(), mFn, numVertices );
+	target->copyAttrib( Attrib::COLOR, DSTDIM, 0, outData.get(), numVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2734,5 +2802,10 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
 template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+
+template class AttribFn<float,float>;	template class AttribFn<float,vec2>;	template class AttribFn<float,vec3>;	template class AttribFn<float,vec4>;
+template class AttribFn<vec2,float>;	template class AttribFn<vec2,vec2>;		template class AttribFn<vec2,vec3>;		template class AttribFn<vec2,vec4>;
+template class AttribFn<vec3,float>;	template class AttribFn<vec3,vec2>;		template class AttribFn<vec3,vec3>;		template class AttribFn<vec3,vec4>;
+template class AttribFn<vec4,float>;	template class AttribFn<vec4,vec2>;		template class AttribFn<vec4,vec3>;		template class AttribFn<vec4,vec4>;
 
 } } // namespace cinder::geom

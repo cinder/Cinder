@@ -687,6 +687,31 @@ class ColorFromAttrib : public Source {
 	std::function<Colorf(vec3)>		mFnColor3;
 };
 
+//! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
+template<typename S, typename D>
+class AttribFn : public Source {
+  public:
+	typedef typename std::function<D(S)> FN;
+	static const int SRCDIM = sizeof(S)/ sizeof(float);
+	static const int DSTDIM = sizeof(D)/ sizeof(float);
+	
+	AttribFn( const Source &source, Attrib src, Attrib dst, const FN &fn )
+		: mSource( source ), mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
+	{}
+	
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	const geom::Source	&mSource;
+	geom::Attrib		mSrcAttrib, mDstAttrib;
+	FN					mFn;
+};
+
 class Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
