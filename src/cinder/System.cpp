@@ -455,7 +455,7 @@ int System::getOsMajorVersion()
 	if( ! instance()->mCachedValues[OS_MAJOR] ) {
 #if defined( CINDER_COCOA_TOUCH )
 		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
-		instance()->mOSMajorVersion = [[sysVerComponents objectAtIndex:0] intValue];
+		instance()->mOSMajorVersion = [[sysVerComponents firstObject] intValue];
 #elif defined( CINDER_COCOA )	
 		if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr)
 			throw SystemExcFailedQuery();

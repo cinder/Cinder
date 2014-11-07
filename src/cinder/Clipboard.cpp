@@ -112,7 +112,7 @@ std::string	Clipboard::getString()
  
 	if( [pasteboard canReadObjectForClasses:classArray options:options] ) {
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
-        NSString *text = [objectsToPaste objectAtIndex:0];
+        NSString *text = [objectsToPaste firstObject];
 		return cocoa::convertNsString( text );
 	}
 	else {
