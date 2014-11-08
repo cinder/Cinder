@@ -174,8 +174,8 @@
 
 - (void)layoutSubviews
 {
-	GLint backingWidth = mCinderView.layer.bounds.size.width * mCinderView.layer.contentsScale;
-	GLint backingHeight = mCinderView.layer.bounds.size.height * mCinderView.layer.contentsScale;
+	GLint backingWidth = mCinderView.bounds.size.width * mCinderView.contentScaleFactor;
+	GLint backingHeight = mCinderView.bounds.size.height * mCinderView.contentScaleFactor;
 
 	// test to see if this is already the resolution we setup in allocateGraphics()
 	if( (mBackingWidth == backingWidth) && (mBackingHeight == backingHeight) )
