@@ -95,7 +95,7 @@ EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &opt
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
-	cancelEventsAfter( timeBegin );
+	removeEventsAt( timeBegin );
 	if( mProcessor )
 		mProcessor.reset();
 
@@ -115,7 +115,7 @@ EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, 
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
-	cancelEventsAfter( timeBegin );
+	removeEventsAt( timeBegin );
 	if( mProcessor )
 		mProcessor.reset();
 
@@ -128,15 +128,30 @@ EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &op
 	initInternalBuffer();
 
 	auto ctx = getContext();
-	auto endTimeAndValue = findEndTimeAndValue();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
+	float endTime = findDuration();
+	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTime + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
-	EventRef event( new Event( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, options.getRampFn() ) );
+	EventRef event( new Event( timeBegin, timeEnd, valueEnd, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
+	return event;
+}
 
+EventRef Param::appendRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
+{
+	initInternalBuffer();
+
+	auto ctx = getContext();
+	float endTime = findDuration();
+	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTime + options.getDelay() );
+	float timeEnd = timeBegin + rampSeconds;
+
+	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
+
+	lock_guard<mutex> lock( ctx->getMutex() );
+	mEvents.push_back( event );
 	return event;
 }
 
@@ -304,7 +319,7 @@ void Param::resetImpl()
 	mProcessor.reset();
 }
 
-void Param::cancelEventsAfter( float time )
+void Param::removeEventsAt( float time )
 {
 	mEvents.remove_if( [time]( const EventRef &event ) {
 		if( event->getTimeEnd() >= time ) {

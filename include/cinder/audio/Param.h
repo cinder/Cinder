@@ -127,7 +127,10 @@ class Param {
 	EventRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
 	//! Replaces any existing Event's with a Event from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Appends a ramp Event onto the end of the last scheduled Event (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Appends an ramp Event onto the end of the last scheduled Event (or the current time), from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	EventRef appendRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
 
 	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded. \note Forces \a node to be mono.
 	void	setProcessor( const NodeRef &node );
@@ -158,7 +161,7 @@ class Param {
 	// non-locking protected methods
 	void		initInternalBuffer();
 	void		resetImpl();
-	void		cancelEventsAfter( float time );
+	void		removeEventsAt( float time );
 	ContextRef	getContext() const;
 
 	std::list<EventRef>	mEvents;
