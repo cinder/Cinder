@@ -59,14 +59,8 @@ void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::p
 	}
 }
 
-Event::Event( float timeBegin, float timeEnd, float valueEnd, const RampFn &rampFn )
-	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mHasValueBegin( false ),
-		mValueBegin( 0 ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
-{
-}
-
-Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn )
-	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mHasValueBegin( true ),
+Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn )
+	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mCopyValueOnBegin( copyValueOnBegin ),
 		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
 {
 }
@@ -91,7 +85,7 @@ EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &opt
 	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : (float)ctx->getNumProcessedSeconds() + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
-	EventRef event( new Event( timeBegin, timeEnd, valueEnd, options.getRampFn() ) );
+	EventRef event( new Event( timeBegin, timeEnd, mValue, valueEnd, true, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
@@ -111,7 +105,7 @@ EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, 
 	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : (float)ctx->getNumProcessedSeconds() + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
-	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
+	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
@@ -132,7 +126,7 @@ EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &op
 	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
-	EventRef event( new Event( timeBegin, timeEnd, valueEnd, options.getRampFn() ) );
+	EventRef event( new Event( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, true, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
@@ -148,7 +142,7 @@ EventRef Param::appendRamp( float valueBegin, float valueEnd, float rampSeconds,
 	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
 	float timeEnd = timeBegin + rampSeconds;
 
-	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, options.getRampFn() ) );
+	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
@@ -272,8 +266,8 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			float timeEndNormalized = float( timeBegin - event->mTimeBegin + endIndex * samplePeriod ) / event->mDuration;
 			float timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (float)count;
 
-			if( ! event->hasValueBegin() )
-				event->setValueBegin( mValue );
+			if( event->getCopyValueOnBegin() )
+				event->setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
 
 			event->mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event->mValueBegin, event->mValueEnd ) );
 			samplesWritten += count;
@@ -285,6 +279,7 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 				eventIt = mEvents.erase( eventIt );
 			}
 			else if( samplesWritten == arrayLength ) {
+				// the array was filled, store the last calculated samples in mValue and finish evaluating
 				mValue = array[arrayLength - 1];
 				break;
 			}
