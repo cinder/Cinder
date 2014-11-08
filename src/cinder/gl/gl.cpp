@@ -1775,7 +1775,7 @@ void drawFrustum( const Camera &cam )
 	
 void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 {
-	gl::color( 1.0f, 0.0f, 0.0f, 1.0f );
+	gl::ScopedColor color( ColorA( 1.0f, 0.0f, 0.0f, 1.0f ) );
 	drawVector( vec3( 0.0f ), vec3( 1.0f, 0.0f, 0.0f ) * axisLength, headLength, headRadius );
 	gl::color( 0.0f, 1.0f, 0.0f, 1.0f );
 	drawVector( vec3( 0.0f ), vec3( 0.0f, 1.0f, 0.0f ) * axisLength, headLength, headRadius );
