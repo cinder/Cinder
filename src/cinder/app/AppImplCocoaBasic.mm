@@ -287,10 +287,7 @@
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
 	// we need to close all existing windows
-	while( [mWindows count] > 0 ) {
-		// this counts on windowWillCloseNotification: firing and in turn calling releaseWindow
-		[[mWindows objectAtIndex:0] close];
-	}
+	[mWindows makeObjectsPerformSelector:@selector(close)];
 
 	mApp->emitShutdown();
 	delete mApp;
