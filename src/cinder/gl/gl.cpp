@@ -1025,6 +1025,8 @@ void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 	VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( totalArrayBufferSize );
 	ScopedBuffer vboScp( defaultArrayVbo );
 	VboRef elementVbo = ctx->getDefaultElementVbo( 6*6 );
+	// we seem to need to orphan the existing element vbo on AMD on OS X
+	elementVbo->bufferData( 36, nullptr, GL_STREAM_DRAW );
 
 	elementVbo->bind();
 	size_t curBufferOffset = 0;
