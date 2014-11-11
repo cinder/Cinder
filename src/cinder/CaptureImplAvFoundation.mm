@@ -75,7 +75,7 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();
 	
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-	for(AVCaptureDevice *device in devices) {
+	for( AVCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
 	}
 	sDevicesEnumerated = true;
@@ -160,7 +160,7 @@ static BOOL sDevicesEnumerated = false;
 	/*
 	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
-	for(AVCaptureConnection * connection in connections) {
+	for( AVCaptureConnection * connection in connections ) {
 		if( connection.supportsVideoOrientation ) {
 			connection.videoOrientation = AVCaptureVideoOrientationPortrait;
 		}
