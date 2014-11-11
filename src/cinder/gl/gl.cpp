@@ -2057,11 +2057,11 @@ ScopedTextureBind::~ScopedTextureBind()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedScissor
-ScopedScissor::ScopedScissor( const ivec2 &lowerLeftPostion, const ivec2 &dimension )
+ScopedScissor::ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension )
 	: mCtx( gl::context() )
 {
 	mCtx->pushBoolState( GL_SCISSOR_TEST, GL_TRUE );
-	mCtx->pushScissor( std::pair<ivec2, ivec2>( lowerLeftPostion, dimension ) ); 
+	mCtx->pushScissor( std::pair<ivec2, ivec2>( lowerLeftPosition, dimension ) );
 }
 
 ScopedScissor::ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height )
@@ -2122,10 +2122,10 @@ ScopedRenderbuffer::~ScopedRenderbuffer()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedViewport
-ScopedViewport::ScopedViewport( const ivec2 &lowerLeftPostion, const ivec2 &dimension )
+ScopedViewport::ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension )
 	: mCtx( gl::context() )
 {
-	mCtx->pushViewport( std::pair<ivec2, ivec2>( lowerLeftPostion, dimension ) ); 
+	mCtx->pushViewport( std::pair<ivec2, ivec2>( lowerLeftPosition, dimension ) );
 }
 
 ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height )

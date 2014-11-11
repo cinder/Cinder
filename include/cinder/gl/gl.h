@@ -555,7 +555,7 @@ struct ScopedTextureBind : public boost::noncopyable
 struct ScopedScissor : public boost::noncopyable
 {
 	//! Implicitly enables scissor test
-	ScopedScissor( const ivec2 &lowerLeftPostion, const ivec2 &dimension );
+	ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
 	//! Implicitly enables scissor test	
 	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedScissor();
@@ -566,7 +566,7 @@ struct ScopedScissor : public boost::noncopyable
 
 struct ScopedViewport : public boost::noncopyable
 {
-	ScopedViewport( const ivec2 &lowerLeftPostion, const ivec2 &dimension );
+	ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
 	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedViewport();
 
