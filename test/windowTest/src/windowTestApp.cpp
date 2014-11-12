@@ -27,17 +27,17 @@ class BasicApp : public AppBasic {
 	void fileDrop( FileDropEvent event );
 	void resize();
 
-void setup();
-void update();
-void anotherTest( MouseEvent event );
-void mouseDown( MouseEvent event );
-void mouseDown1( MouseEvent &event );
-bool mouseDown2( MouseEvent event );
-void mouseDown3( MouseEvent &event );
-void windowMove();
-void windowClose();
-void windowMouseDown( MouseEvent &mouseEvt );
-void displayChange();
+	void setup();
+	void update();
+	void anotherTest( MouseEvent event );
+	void mouseDown( MouseEvent event );
+	void mouseDown1( MouseEvent &event );
+	bool mouseDown2( MouseEvent event );
+	void mouseDown3( MouseEvent &event );
+	void windowMove();
+	void windowClose();
+	void windowMouseDown( MouseEvent &mouseEvt );
+	void displayChange();
 
 	bool	shouldQuit();
 
@@ -110,7 +110,7 @@ void BasicApp::mouseDown( MouseEvent event )
 void BasicApp::mouseDown1( MouseEvent &event )
 {
 	enablePowerManagement( ! isPowerManagementEnabled() );
-console() << "Power mgmt: " << isPowerManagementEnabled() << std::endl;
+	console() << "Power mgmt: " << isPowerManagementEnabled() << std::endl;
 	console() << "window pos: " << getWindow()->getPos() << std::endl;
 	console() << "Title was: " << getWindow()->getTitle() << "." << std::endl;
 	getWindow()->setTitle( "Crunk " + toString( getWindow()->getPos().x ) );
@@ -256,7 +256,7 @@ void BasicApp::windowDraw()
 	gl::pushMatrices();
 		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() * 5 );
+		gl::rotate( getElapsedSeconds() );
 		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
 	gl::popMatrices();
 }
