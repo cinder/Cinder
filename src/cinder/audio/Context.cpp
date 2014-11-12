@@ -334,7 +334,7 @@ void Context::preProcessScheduledEvents()
 			}
 			else {
 				// set the process range but don't call its function until postProcess() (which should be disable()'ing the Node)
-				event.mNode->mProcessFramesRange.second = frameOffset;
+				event.mNode->mProcessFramesRange.second = (size_t)frameOffset;
 			}
 
 			event.mFinished = true;
