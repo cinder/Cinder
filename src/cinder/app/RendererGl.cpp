@@ -44,8 +44,6 @@
 
 namespace cinder { namespace app {
 
-const int RendererGl::sAntiAliasingSamples[] = { 0, 2, 4, 6, 8, 16, 32 };
-
 RendererGl::RendererGl( const RendererGl::Options &options )
 	: Renderer(), mImpl( 0 ), mOptions( options )
 {}

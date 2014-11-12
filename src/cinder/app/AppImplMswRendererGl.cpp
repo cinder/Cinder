@@ -157,7 +157,7 @@ HWND createDummyWindow( int *width, int *height, bool fullscreen )
 
 bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
-	if( ( ! sMultisampleSupported ) && mRenderer->getOptions().getAntiAliasing() ) {
+	if( ( ! sMultisampleSupported ) && mRenderer->getOptions().getMsaa() ) {
 		// first create a dummy window and use it to determine if we can do antialiasing
 		int width = 640;
 		int height = 480;
@@ -312,8 +312,8 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 
 	wgl_LoadFunctions( dc );								// Initialize WGL function pointers
 
-	if( ( ! sMultisampleSupported ) && ( mRenderer->getOptions().getAntiAliasing() > RendererGl::AA_NONE ) )  {
-		int level = initMultisample( pfd, mRenderer->getOptions().getAntiAliasing(), dc );
+	if( ( ! sMultisampleSupported ) && ( mRenderer->getOptions().getMsaa() > 0 ) )  {
+		int level = initMultisample( pfd, mRenderer->getOptions().getMsaa(), dc );
 		if( level > 0 ) {
 			// kill the current context and relaunch
 			::wglMakeCurrent( NULL, NULL );
@@ -339,7 +339,7 @@ bool AppImplMswRendererGl::initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC 
 	return true;									// Success
 }
 
-int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc )
+int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedSamples, HDC dc )
 {
 	// this is an array that corresponds to AppSettings::AA_NONE through AA_MSAA_16
 	if( ( ! wglext_ARB_multisample ) || ( ! wglChoosePixelFormatARB ) ) {
@@ -375,8 +375,8 @@ int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int reques
 	};
 
 	// iterate down the levels until one sticks
-	for( int levelIdx = requestedLevelIdx; levelIdx > RendererGl::AA_NONE; --levelIdx ) {
-		iAttributes[19] = RendererGl::sAntiAliasingSamples[levelIdx];
+	for( int samples = requestedSamples; samples > 0; samples >>= 1 ) {
+		iAttributes[19] = samples;
 
 		// First We Check To See If We Can Get A Pixel Format For 4 Samples
 		valid = ::wglChoosePixelFormatARB( dc, iAttributes, fAttributes, 1, &pixelFormat, &numFormats );
@@ -384,7 +384,7 @@ int AppImplMswRendererGl::initMultisample( PIXELFORMATDESCRIPTOR pfd, int reques
 		if( valid && ( numFormats >= 1 ) ) {
 			sMultisampleSupported = true;
 			sArbMultisampleFormat = pixelFormat;	
-			return levelIdx;
+			return samples;
 		}
 	}
 

@@ -64,11 +64,11 @@ class RendererGl : public Renderer {
 	  public:
 		Options() {
 #if defined( CINDER_COCOA_TOUCH )
-			mAntiAliasing = AA_NONE;
+			mMsaaSamples = 0;
 			mCoreProfile = false;
 			mVersion = std::pair<int,int>( 2, 0 );
 #else
-			mAntiAliasing = AA_MSAA_16;
+			mMsaaSamples = 16;
 			mCoreProfile = true;
 			mVersion = std::pair<int,int>( 3, 2 );	
 #endif
@@ -92,9 +92,10 @@ class RendererGl : public Renderer {
 		void				setVersion( int major, int minor ) { mVersion = std::make_pair( major, minor ); }
 		void				setVersion( std::pair<int,int> version ) { mVersion = version; }
 		
-		Options&	antiAliasing( int amount ) { mAntiAliasing = amount; return *this; }
-		int			getAntiAliasing() const { return mAntiAliasing; }
-		void		setAntiAliasing( int amount ) { mAntiAliasing = amount; }
+		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 16 on desktop and \c 0 on iOS.
+		Options&	msaa( int samples ) { mMsaaSamples = samples; return *this; }
+		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
+		int			getMsaa() const { return mMsaaSamples; }
 
 #if ! defined( CINDER_GL_ES )
 		//! Enables a debug context (per \c ARB_debug_output). Currently only implemented by MSW GL implementations. By default this is made GL_DEBUG_OUTPUT_SYNCHRONOUS
@@ -133,7 +134,7 @@ class RendererGl : public Renderer {
 	  protected:
 		bool					mCoreProfile;
 		std::pair<int,int>		mVersion;
-		int						mAntiAliasing;
+		int						mMsaaSamples;
 		bool					mStencil;
 		int						mDepthBufferBits;
 #if ! defined( CINDER_GL_ES )
@@ -171,8 +172,6 @@ class RendererGl : public Renderer {
 	virtual void	finishToggleFullScreen();
 #endif
 
-	static const int sAntiAliasingSamples[];
-	enum	{ AA_NONE = 0, AA_MSAA_2, AA_MSAA_4, AA_MSAA_6, AA_MSAA_8, AA_MSAA_16, AA_MSAA_32 };
 	const Options&	getOptions() const { return mOptions; }
 
 	virtual void	startDraw();
