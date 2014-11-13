@@ -46,9 +46,6 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	makeCurrentContext();
 
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
-	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedSamples, HDC dc );
-	
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;
 

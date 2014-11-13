@@ -80,6 +80,7 @@ class RendererGl : public Renderer {
 			mObjectTracking = false;
 			mStencil = false;
 			mDepthBufferBits = 24;
+			mColorBpc = 8;
 		}
 
 		Options&	coreProfile( bool enable = true ) { mCoreProfile = enable; return *this; }
@@ -130,13 +131,18 @@ class RendererGl : public Renderer {
 		bool		getStencil() const { return mStencil; }
 		//! Enables or disables a stencil buffer. Default is \c false
 		void		setStencil( bool createStencil = true ) { mStencil = createStencil; }
-		
+
+		//! Sets the number of bits per color channel. Default is \c 8 but can be \c 10 on professional GPUs (Quadro/FireGL)
+		Options&	colorChannelDepth( int colorBitsPerChannel ) { mColorBpc = colorBitsPerChannel; return *this; }
+		//! Returns the number of bits per color channel. Default is \c 8 but can be \c 10 on professional GPUs (Quadro/FireGL)
+		int			getColorChannelDepth() const { return mColorBpc; }
+
 	  protected:
 		bool					mCoreProfile;
 		std::pair<int,int>		mVersion;
 		int						mMsaaSamples;
 		bool					mStencil;
-		int						mDepthBufferBits;
+		int						mColorBpc, mDepthBufferBits;
 #if ! defined( CINDER_GL_ES )
 		bool					mDebugContext;
 		GLenum					mDebugLogSeverity; // initial value of 0 means debug logging is disabled

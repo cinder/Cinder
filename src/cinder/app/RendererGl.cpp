@@ -212,7 +212,7 @@ void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer 
 		mImpl = new AppImplMswRendererGl( mApp, this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
-		throw ExcRendererAllocation();
+		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );
 }
 
 void RendererGl::kill()
