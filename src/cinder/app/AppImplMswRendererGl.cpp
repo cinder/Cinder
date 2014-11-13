@@ -44,23 +44,15 @@ typedef BOOL (__stdcall * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int * p
 AppImplMswRendererGl::AppImplMswRendererGl( App *aApp, RendererGl *aRenderer )
 	: AppImplMswRenderer( aApp ), mRenderer( aRenderer )
 {
-	mPrevRC = 0;
 	mRC = 0;
 }
 
 void AppImplMswRendererGl::prepareToggleFullScreen()
 {
-	mPrevRC = mRC;
-	mWasVerticalSynced = gl::isVerticalSyncEnabled();
 }
 
 void AppImplMswRendererGl::finishToggleFullScreen()
 {
-	if( mPrevRC ) {
-		::wglDeleteContext( mPrevRC );
-	}
-
-	gl::enableVerticalSync( mWasVerticalSynced );
 }
 
 void AppImplMswRendererGl::defaultResize() const

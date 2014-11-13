@@ -136,9 +136,6 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 	eglSwapInterval( mDisplay, 0 );
 	checkGlStatus();
 
-	// this is necessary to force another makeCurrent call once the window is drawn
-	gl::Context::reflectCurrent( nullptr );
-
 	return true;
 }
 
