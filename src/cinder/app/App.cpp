@@ -83,14 +83,14 @@ void App::Settings::disableFrameRate()
 	mFrameRateEnabled = false;
 }
 
-void App::Settings::setFrameRate( float aFrameRate )
+void App::Settings::setFrameRate( float frameRate )
 {
-	mFrameRate = aFrameRate;
+	mFrameRate = frameRate;
 }
 
-void App::Settings::enablePowerManagement( bool aPowerManagement )
+void App::Settings::enablePowerManagement( bool powerManagement )
 {
-	mPowerManagement = aPowerManagement;
+	mPowerManagement = powerManagement;
 }
 
 void App::Settings::prepareWindow( const Window::Format &format )
