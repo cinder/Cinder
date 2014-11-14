@@ -289,7 +289,7 @@
 	// we need to close all existing windows
 	while( [mWindows count] > 0 ) {
 		// this counts on windowWillCloseNotification: firing and in turn calling releaseWindow
-		[[mWindows objectAtIndex:0] close];
+		[[mWindows lastObject] close];
 	}
 
 	mApp->emitShutdown();
