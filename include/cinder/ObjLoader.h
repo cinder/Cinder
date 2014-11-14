@@ -124,8 +124,6 @@ class ObjLoader : public geom::Source {
 	typedef boost::tuple<int,int> VertexPair;
 	typedef boost::tuple<int,int,int> VertexTriple;
 
-	void	init( std::shared_ptr<IStreamCinder> dataStream, std::shared_ptr<IStreamCinder> materialStream, bool loadNormals, bool loadTexCoords );
-
 	void	parse( bool loadNormals, bool loadTexCoords );
  	void	parseFace( Group *group, const Material *material, const std::string &s, bool loadNormals, bool loadTexCoords );
     void    parseMaterial( std::shared_ptr<IStreamCinder> material );
