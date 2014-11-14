@@ -130,6 +130,8 @@ uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
 
 geom::AttribSet	ObjLoader::getAvailableAttribs() const
 {
+	load();
+
 	geom::AttribSet result;
 	
 	if( ! mOutputVertices.empty() )

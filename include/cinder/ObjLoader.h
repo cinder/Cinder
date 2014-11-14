@@ -113,8 +113,8 @@ class ObjLoader : public geom::Source {
 	//! Returns a vector<> of the Groups in the OBJ.
 	const std::vector<Group>&		getGroups() const { return mGroups; }
 
-	size_t			getNumVertices() const override { return mOutputVertices.size(); }
-	size_t			getNumIndices() const override { return mIndices.size(); }	
+	size_t			getNumVertices() const override { load(); return mOutputVertices.size(); }
+	size_t			getNumIndices() const override { load(); return mIndices.size(); }
 	geom::Primitive	getPrimitive() const override { return geom::Primitive::TRIANGLES; }
 	uint8_t			getAttribDims( geom::Attrib attr ) const override;
 	geom::AttribSet	getAvailableAttribs() const override;
