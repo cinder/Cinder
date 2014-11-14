@@ -71,9 +71,10 @@ void ObjLoader::init( std::shared_ptr<IStreamCinder> dataStream, std::shared_ptr
 	
 ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
 {
-	mGroupIndex = groupIndex;
-
-	mCached = false;
+	if ( groupIndex < mGroups.size() ) {
+		mGroupIndex = groupIndex;
+		mCached = false;
+	}
 
 	return *this;
 }
@@ -86,10 +87,9 @@ ObjLoader& ObjLoader::groupName( const std::string &groupName )
 	
 	if ( it != mGroups.end() ) {
 		mGroupIndex = std::distance( mGroups.begin(), it );
+		mCached = false;
 	}
 	
-	mCached = false;
-
 	return *this;
 }
 	
