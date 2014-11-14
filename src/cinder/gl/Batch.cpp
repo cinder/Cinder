@@ -116,9 +116,15 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	mAttribMapping = attributeMapping;
 }
 
-void Batch::setGlslProg( const GlslProgRef& glsl )
+void Batch::replaceGlslProg( const GlslProgRef& glsl )
 {
 	mGlsl = glsl;
+	initVao( mAttribMapping );
+}
+
+void Batch::replaceVboMesh( const VboMeshRef &vboMesh )
+{
+	mVboMesh = vboMesh;
 	initVao( mAttribMapping );
 }
 

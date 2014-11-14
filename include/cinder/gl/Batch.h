@@ -63,12 +63,14 @@ class Batch {
 	GLenum			getIndexDataType() const { return mVboMesh->getIndexDataType(); }
 	//! Returns the shader associated with the Batch
 	const GlslProgRef&	getGlslProg() const	{ return mGlsl; }
-	//! Replaces the shader associated with the Batch. Issues a warning if not all attributes were able to match
-	void			setGlslProg( const GlslProgRef& glsl );
+	//! Replaces the shader associated with the Batch. Issues a warning if not all attributes were able to match.
+	void			replaceGlslProg( const GlslProgRef& glsl );
 	//! Returns the VAO mapping the Batch's geometry to its shader
 	const VaoRef&	getVao() const { return mVao; }
 	//! Returns the VboMesh associated with the Batch
 	VboMeshRef		getVboMesh() const { return mVboMesh; }
+	//! Replaces the VboMesh associated with the Batch. Issues a warning if not all attributes were able to match.
+	void			replaceVboMesh( const VboMeshRef &vboMesh );
 
 	//! Changes the GL context the Batch is associated with
 	void			reassignContext( Context *context );
