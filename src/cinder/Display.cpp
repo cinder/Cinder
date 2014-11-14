@@ -113,10 +113,8 @@ void Display::enumerateDisplays()
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
 	@autoreleasepool {
 		NSArray *screens = [NSScreen screens];
-		Area primaryScreenArea;
-		size_t screenCount = [screens count];
-		for( size_t i = 0; i < screenCount; ++i ) {
-			::NSScreen *screen = [screens objectAtIndex:i];
+		__block Area primaryScreenArea;
+		[screens enumerateObjectsUsingBlock:^(NSScreen* screen, NSUInteger idx, BOOL *stop) {
 			[screen retain]; // this is released in the destructor for Display
 			NSRect frame = [screen frame];
 
@@ -128,7 +126,7 @@ void Display::enumerateDisplays()
 			newDisplay->mContentScale = [screen backingScaleFactor];
 
 			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
-			if( i == 0 ) {
+			if( idx == 0 ) {
 				primaryScreenArea = newDisplay->mArea;
 			}
 			else {
@@ -137,7 +135,7 @@ void Display::enumerateDisplays()
 			}
 
 			sDisplays.push_back( newDisplay );
-		}
+		}];
 
 		sDisplaysInitialized = true;
 	}
@@ -153,9 +151,7 @@ void Display::enumerateDisplays()
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
 	@autoreleasepool {
 		NSArray *screens = [UIScreen screens];
-		NSUInteger screenCount = [screens count];
-		for( NSUInteger i = 0; i < screenCount; ++i ) {
-			::UIScreen *screen = [screens objectAtIndex:i];
+		for( UIScreen* screen in screens ) {
 			[screen retain]; // this is released in the destructor for Display
 			CGRect frame = [screen bounds];
 
@@ -165,9 +161,8 @@ void Display::enumerateDisplays()
 			newDisplay->mBitsPerPixel = 24;
 			newDisplay->mContentScale = screen.scale;
 
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			NSArray *modes = [screen availableModes];
+			for( UIScreenMode *mode in modes ) {
 				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 			}
 
@@ -176,7 +171,7 @@ void Display::enumerateDisplays()
 
 		// <TEMPORARY>
 		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
-		if( screenCount == 0 ) {
+		if( [screens count] == 0 ) {
 			UIScreen *screen = [UIScreen mainScreen];
 			[screen retain];
 			CGRect frame = [screen bounds];
@@ -187,9 +182,8 @@ void Display::enumerateDisplays()
 			newDisplay->mBitsPerPixel = 24;
 			newDisplay->mContentScale = screen.scale;
 
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			NSArray *modes = [screen availableModes];
+			for( UIScreenMode *mode in modes ) {
 				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 			}
 
@@ -205,17 +199,16 @@ void Display::enumerateDisplays()
 void Display::setResolution( const ivec2 &resolution )
 {
 	NSArray *modes = [mUiScreen availableModes];
-	int closestIndex = 0;
-	float closestDistance = 1000000.0f; // big distance
-	for( int i = 0; i < [modes count]; ++i ) {
-		::UIScreenMode *mode = [modes objectAtIndex:i];
+	__block NSUInteger closestIndex = 0;
+	__block float closestDistance = 1000000.0f; // big distance
+	[modes enumerateObjectsUsingBlock:^(UIScreenMode *mode, NSUInteger idx, BOOL *stop) {
 		ivec2 thisModeRes = vec2( mode.size.width, mode.size.height );
 		if( distance( vec2(resolution), vec2(thisModeRes) ) < closestDistance ) {
 			closestDistance = distance( vec2(resolution), vec2(thisModeRes) );
-			closestIndex = i;
+			closestIndex = idx;
 		}
-	}
-	
+	}];
+
 	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
 }
 #elif defined( CINDER_WINRT )
