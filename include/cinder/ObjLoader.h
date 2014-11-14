@@ -37,15 +37,14 @@ namespace cinder {
 
 /** \brief Loads Alias|Wavefront .OBJ file format
  *
- * Currently does not support anything but polygonal data
- * \n Example usage:
+ * Example usage:
  * \code
- * cinder::TriMesh myCube;
+ * cinder::gl::BatchRef myCubeRef;
  * ObjLoader loader( loadFile( "myPath/cube.obj" ) );
- * loader.load( &myCube );
- * gl::draw( myCube );
+ * myCubeRef = gl::Batch::create( loader, gl::getStockShader( gl::ShaderDef().color() ) );
+ * myCubeRef->draw();
  * \endcode
-**/ 
+**/
 
 class ObjLoader : public geom::Source {
   public:
