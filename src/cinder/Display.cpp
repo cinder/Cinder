@@ -79,6 +79,17 @@ Area Display::getSpanningArea()
 	return result;
 }
 
+Area Display::getBounds() const
+{
+#if defined( CINDER_COCOA_TOUCH )
+	// WORKAROUND for iOS 8 - mArea was cached and could be flipped if we're in landscape, so instead use UIScreen's bounds
+	CGRect frame = [mUiScreen bounds];
+	return Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+#else
+	return mArea;
+#endif
+}
+
 #if defined( CINDER_MAC )
 DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
 {

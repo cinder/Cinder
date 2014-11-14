@@ -65,7 +65,7 @@ class Display {
 	//! Returns the Display aspect ratio, which is its width / height
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
-	Area			getBounds() const { return mArea; }
+	Area			getBounds() const;
 	
 	//! Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative \a displayRelativeCoordinate. The results are suitable for use with app::Window's position functions.
 	Vec2i			getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const;
