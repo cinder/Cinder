@@ -42,19 +42,19 @@ geom::SourceRef	loadGeom( const fs::path &path )
 }
 
 ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool loadNormals, bool loadTexCoords )
-	: mStream( stream ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+	: mStream( stream ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parse( loadNormals, loadTexCoords );
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, bool loadNormals, bool loadTexCoords )
-	: mStream( dataSource->createStream() ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parse( loadNormals, loadTexCoords );
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool loadNormals, bool loadTexCoords )
-	: mStream( dataSource->createStream() ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parseMaterial( materialSource->createStream() );
 	parse( loadNormals, loadTexCoords );
@@ -67,7 +67,7 @@ ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
 		if ( groupIndex != mGroupIndex ) {
 		
 			mGroupIndex = groupIndex;
-			mCached = false;
+			mOutputCached = false;
 		}
 	}
 
@@ -88,7 +88,7 @@ ObjLoader& ObjLoader::groupName( const std::string &groupName )
 		if ( groupIndex != mGroupIndex ) {
 			
 			mGroupIndex = groupIndex;
-			mCached = false;
+			mOutputCached = false;
 		}
 	}
 	
@@ -111,7 +111,7 @@ void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requested
 	
 	// copy indices
 	if( getNumIndices() )
-		target->copyIndices( geom::Primitive::TRIANGLES, mIndices.data(), getNumIndices(), 4 /* bytes per index */ );
+		target->copyIndices( geom::Primitive::TRIANGLES, mOutputIndices.data(), getNumIndices(), 4 /* bytes per index */ );
 }
 
 uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
@@ -313,9 +313,10 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 	
 void ObjLoader::load() const
 {
-	if( mCached )
+	if( mOutputCached )
 		return;
 
+	mOutputIndices.clear();
 	mOutputVertices.clear();
 	mOutputNormals.clear();
 	mOutputTexCoords.clear();
@@ -388,7 +389,7 @@ void ObjLoader::load() const
 		}
 	}
 	
-	mCached = true;
+	mOutputCached = true;
 }
 
 void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,int> &uniqueVerts ) const
@@ -456,7 +457,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
@@ -518,7 +519,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
@@ -575,7 +576,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
@@ -613,7 +614,7 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }

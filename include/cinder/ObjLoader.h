@@ -113,7 +113,7 @@ class ObjLoader : public geom::Source {
 	const std::vector<Group>&		getGroups() const { return mGroups; }
 
 	size_t			getNumVertices() const override { load(); return mOutputVertices.size(); }
-	size_t			getNumIndices() const override { load(); return mIndices.size(); }
+	size_t			getNumIndices() const override { load(); return mOutputIndices.size(); }
 	geom::Primitive	getPrimitive() const override { return geom::Primitive::TRIANGLES; }
 	uint8_t			getAttribDims( geom::Attrib attr ) const override;
 	geom::AttribSet	getAvailableAttribs() const override;
@@ -139,17 +139,18 @@ class ObjLoader : public geom::Source {
 	std::vector<vec3>			    mInternalVertices, mInternalNormals;
 	std::vector<vec2>			    mInternalTexCoords;
 	std::vector<Colorf>				mInternalColors;
+
+	mutable bool					mOutputCached;
 	mutable std::vector<vec3>		mOutputVertices, mOutputNormals;
 	mutable std::vector<vec2>		mOutputTexCoords;
 	mutable std::vector<Colorf>		mOutputColors;
-
-	std::vector<Group>				mGroups;
-	mutable std::vector<uint32_t>	mIndices;
-	std::map<std::string, Material>	mMaterials;
-
-	mutable bool					mCached;
+	mutable std::vector<uint32_t>	mOutputIndices;
 
 	size_t							mGroupIndex;
+	std::vector<Group>				mGroups;
+	std::map<std::string, Material>	mMaterials;
+
+
 };
 
 //! Writes a new OBJ file to \a dataTarget.
