@@ -42,30 +42,21 @@ geom::SourceRef	loadGeom( const fs::path &path )
 }
 
 ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool loadNormals, bool loadTexCoords )
+	: mStream( stream ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	init( stream, nullptr, loadNormals, loadTexCoords );
+	parse( loadNormals, loadTexCoords );
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, bool loadNormals, bool loadTexCoords )
+	: mStream( dataSource->createStream() ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	init( dataSource->createStream(), nullptr, loadNormals, loadTexCoords );
+	parse( loadNormals, loadTexCoords );
 }
 
 ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool loadNormals, bool loadTexCoords )
+	: mStream( dataSource->createStream() ), mCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	init( dataSource->createStream(), materialSource->createStream(), loadNormals, loadTexCoords );
-}
-
-void ObjLoader::init( std::shared_ptr<IStreamCinder> dataStream, std::shared_ptr<IStreamCinder> materialStream, bool loadNormals, bool loadTexCoords )
-{
-	mStream = dataStream;
-	mGroupIndex = numeric_limits<size_t>::max();
-
-	mCached = false;
-	
-	if ( materialStream )
-		parseMaterial( materialStream );
-	
+	parseMaterial( materialSource->createStream() );
 	parse( loadNormals, loadTexCoords );
 }
 	
