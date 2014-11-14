@@ -153,9 +153,7 @@ void Display::enumerateDisplays()
 	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
 	@autoreleasepool {
 		NSArray *screens = [UIScreen screens];
-		NSUInteger screenCount = [screens count];
-		for( NSUInteger i = 0; i < screenCount; ++i ) {
-			::UIScreen *screen = [screens objectAtIndex:i];
+		for( UIScreen *screen in screens ) {
 			[screen retain]; // this is released in the destructor for Display
 			CGRect frame = [screen bounds];
 
@@ -176,7 +174,7 @@ void Display::enumerateDisplays()
 
 		// <TEMPORARY>
 		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
-		if( screenCount == 0 ) {
+		if( [screens count] == 0 ) {
 			UIScreen *screen = [UIScreen mainScreen];
 			[screen retain];
 			CGRect frame = [screen bounds];
@@ -187,9 +185,8 @@ void Display::enumerateDisplays()
 			newDisplay->mBitsPerPixel = 24;
 			newDisplay->mContentScale = screen.scale;
 
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			NSArray *modes = [screen availableModes];
+			for( UIScreenMode *mode in modes ) {
 				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 			}
 
