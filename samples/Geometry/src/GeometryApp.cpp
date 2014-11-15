@@ -87,6 +87,7 @@ void GeometryApp::prepareSettings( Settings* settings )
 {
 	settings->setWindowSize(1024, 768);
 	settings->enableHighDensityDisplay();
+	settings->enableMultiTouch( false );
 }
 
 void GeometryApp::setup()
@@ -225,7 +226,7 @@ void GeometryApp::mouseDrag( MouseEvent event )
 	mCamera = mMayaCam.getCamera();
 }
 
-void GeometryApp::resize(void)
+void GeometryApp::resize()
 {
 	mCamera.setAspectRatio( getWindowAspectRatio() );
 	
@@ -439,8 +440,11 @@ void GeometryApp::createPrimitive()
 	if( mSubdivision > 1 )
 		mesh.subdivide( mSubdivision );
 
-	mPrimitive = gl::Batch::create( mesh, mPhongShader );
-	mPrimitiveWireframe = gl::Batch::create( mesh, mWireframeShader );
+	if( mPhongShader )
+		mPrimitive = gl::Batch::create( mesh, mPhongShader );
+
+	if( mWireframeShader )
+		mPrimitiveWireframe = gl::Batch::create( mesh, mWireframeShader );
 
 	// FIXME: can't use TriMesh calculated above because the stock shader doesn't define normals, hence geom doesn't provide them
 	// - using the source directly sneakily steps around this because most of them ignore the requestedAttribs set and create normals anyway.
@@ -454,7 +458,11 @@ void GeometryApp::createPrimitive()
 void GeometryApp::createPhongShader()
 {
 	try {
+#if defined( CINDER_GL_ES )
+		mPhongShader = gl::GlslProg::create( loadAsset( "phong_es2.vert" ), loadAsset( "phong_es2.frag" ) );
+#else
 		mPhongShader = gl::GlslProg::create( loadAsset( "phong.vert" ), loadAsset( "phong.frag" ) );
+#endif
 	}
 	catch( Exception &exc ) {
 		CI_LOG_E( "error loading phong shader: " << exc.what() );
