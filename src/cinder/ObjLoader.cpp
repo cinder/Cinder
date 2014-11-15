@@ -41,23 +41,23 @@ geom::SourceRef	loadGeom( const fs::path &path )
 	return geom::SourceRef();
 }
 
-ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool loadNormals, bool loadTexCoords )
+ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords )
 	: mStream( stream ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( loadNormals, loadTexCoords );
+	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, bool loadNormals, bool loadTexCoords )
+ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeNormals, bool includeTexCoords )
 	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( loadNormals, loadTexCoords );
+	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool loadNormals, bool loadTexCoords )
+ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals, bool includeTexCoords )
 	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parseMaterial( materialSource->createStream() );
-	parse( loadNormals, loadTexCoords );
+	parse( includeNormals, includeTexCoords );
 }
 	
 ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
@@ -173,7 +173,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
         mMaterials[m.mName] = m;
 }
 
-void ObjLoader::parse( bool loadNormals, bool loadTexCoords )
+void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 {
 	Group *currentGroup;
 	mGroups.push_back( Group() );
@@ -197,21 +197,21 @@ void ObjLoader::parse( bool loadNormals, bool loadTexCoords )
 			mInternalVertices.push_back( v );
 		}
 		else if( tag == "vt" ) { // vertex texture coordinates
-			if( loadTexCoords ) {
+			if( includeTexCoords ) {
 				vec2 tex;
 				ss >> tex.x >> tex.y;
 				mInternalTexCoords.push_back( tex );
 			}
 		}
 		else if( tag == "vn" ) { // vertex normals
-			if ( loadNormals ) {
+			if ( includeNormals ) {
 				vec3 v;
 				ss >> v.x >> v.y >> v.z;
 				mInternalNormals.push_back( normalize( v ) );
 			}
 		}
 		else if( tag == "f" ) { // face
-			parseFace( currentGroup, currentMaterial, line, loadNormals, loadTexCoords );
+			parseFace( currentGroup, currentMaterial, line, includeNormals, includeTexCoords );
 		}
 		else if( tag == "g" ) { // group
 			if( ! currentGroup->mFaces.empty() )
@@ -233,7 +233,7 @@ void ObjLoader::parse( bool loadNormals, bool loadTexCoords )
 	}
 }
 
-void ObjLoader::parseFace( Group *group, const Material *material, const std::string &s, bool loadNormals, bool loadTexCoords )
+void ObjLoader::parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords )
 {
 	ObjLoader::Face result;
 	result.mNumVertices = 0;
@@ -269,7 +269,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			result.mVertexIndices.push_back( vertexIndex - 1 );
 			
 		// process the tex coord index
-		if( loadTexCoords && ( firstSlashOffset != string::npos ) ) {
+		if( includeTexCoords && ( firstSlashOffset != string::npos ) ) {
 			size_t numSize = ( secondSlashOffset == string::npos ) ? ( endOfTriple - firstSlashOffset - 1 ) : secondSlashOffset - firstSlashOffset - 1;
 			if( numSize > 0 ) {
 				int texCoordIndex = lexical_cast<int>( s.substr( firstSlashOffset + 1, numSize ) );
@@ -287,7 +287,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			group->mHasTexCoords = false;
 			
 		// process the normal index
-		if( loadNormals && ( secondSlashOffset != string::npos ) ) {
+		if( includeNormals && ( secondSlashOffset != string::npos ) ) {
 			int normalIndex = lexical_cast<int>( s.substr( secondSlashOffset + 1, endOfTriple - secondSlashOffset - 1 ) );
 			if( normalIndex < 0 )
 				result.mNormalIndices.push_back( group->mBaseNormalOffset + normalIndex );
@@ -310,11 +310,11 @@ void ObjLoader::load() const
 	if( mOutputCached )
 		return;
 
-	mOutputIndices.clear();
 	mOutputVertices.clear();
 	mOutputNormals.clear();
 	mOutputTexCoords.clear();
 	mOutputColors.clear();
+	mOutputIndices.clear();
 	
 	bool hasGroupIndex = ( mGroupIndex != numeric_limits<size_t>::max() );
 

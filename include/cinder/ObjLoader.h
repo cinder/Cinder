@@ -48,20 +48,20 @@ namespace cinder {
 class ObjLoader : public geom::Source {
   public:
 	/**Constructs and does the parsing of the file
-	 * \param loadNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param loadTexCoords if false normasls will be skipped, which can provide a faster load time
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool loadNormals = true, bool loadTexCoords = true );
+	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true );
 	/**Constructs and does the parsing of the file
-	 * \param loadNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param loadTexCoords if false normasls will be skipped, which can provide a faster load time
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( DataSourceRef dataSource, bool loadNormals = true, bool loadTexCoords = true );
+	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true );
 	/**Constructs and does the parsing of the file
-	 * \param loadNormals if false texture coordinates will be skipped, which can provide a faster load time
-	 * \param loadTexCoords if false normasls will be skipped, which can provide a faster load time
-     **/
-	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool loadNormals = true, bool loadTexCoords = true );
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	**/
+	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true );
 
 	/**Loads a specific group index from the file**/
 	ObjLoader&	groupIndex( size_t groupIndex );
@@ -122,16 +122,16 @@ class ObjLoader : public geom::Source {
 	typedef boost::tuple<int,int> VertexPair;
 	typedef boost::tuple<int,int,int> VertexTriple;
 
-	void	parse( bool loadNormals, bool loadTexCoords );
- 	void	parseFace( Group *group, const Material *material, const std::string &s, bool loadNormals, bool loadTexCoords );
+	void	parse( bool includeNormals, bool includeTexCoords );
+ 	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords );
     void    parseMaterial( std::shared_ptr<IStreamCinder> material );
+
+	void	load() const;
 
 	void	loadGroupNormalsTextures( const Group &group, std::map<boost::tuple<int,int,int>,int> &uniqueVerts ) const;
 	void	loadGroupNormals( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts ) const;
 	void	loadGroupTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts ) const;
 	void	loadGroup( const Group &group, std::map<int,int> &uniqueVerts ) const;
-
-	void	load() const;
 
 	std::shared_ptr<IStreamCinder>	mStream;
 
@@ -146,14 +146,14 @@ class ObjLoader : public geom::Source {
 	mutable std::vector<uint32_t>	mOutputIndices;
 
 	size_t							mGroupIndex;
+
 	std::vector<Group>				mGroups;
 	std::map<std::string, Material>	mMaterials;
-
 
 };
 
 //! Writes a new OBJ file to \a dataTarget.
-void	objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );	
+void		objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
 inline void	objWrite( DataTargetRef dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
 {
 	objWrite( dataTarget, *source, includeNormals, includeTexCoords );
