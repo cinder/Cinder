@@ -502,7 +502,7 @@ void GeometryApp::createPhongShader(void)
 				"	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;\n"
 				"\n"
 				"	// texCoord checkerboard\n"
-				"	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 ) ) & 1) == 0 )\n"
+				"	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2) == 0 )\n"
 				"		diffuse *= vec3( 0.5, 0.5, 0.5 );\n"
 				"\n"
 				"	// specular coefficient with energy conservation\n"
