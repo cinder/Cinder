@@ -254,9 +254,10 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)applicationDidFinishLaunching:(UIApplication *)application
 {
 	mApp->privatePrepareSettings__();
-	
-	[self updatePowerManagement];
-	
+
+	// Calling this will invoke [self updatePowerManagement]
+	mApp->enablePowerManagement( mApp->getSettings().isPowerManagementEnabled() );
+
 	if( ! mApp->getSettings().isStatusBarEnabled() ) {
 		[UIApplication sharedApplication].statusBarHidden = YES;
 	}
