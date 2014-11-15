@@ -272,8 +272,8 @@ void GeometryApp::createParams()
 	std::string qualities[] = { "Low", "Default", "High" };
 	std::string viewmodes[] = { "Shaded", "Wireframe" };
 
-	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 340, 200 ) ) );
-	mParams->setOptions( "", "valueswidth=100 refresh=0.1" );
+	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 200 ) ) );
+	mParams->setOptions( "", "valueswidth=160 refresh=0.1" );
 
 	mParams->addParam( "Primitive", vector<string>(primitives,primitives+11), (int*) &mPrimitiveSelected );
 	mParams->addParam( "Quality", vector<string>(qualities,qualities+3), (int*) &mQualitySelected );
