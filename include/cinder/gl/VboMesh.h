@@ -33,8 +33,9 @@
 #include <vector>
 
 namespace cinder { namespace gl {
-	
-typedef std::shared_ptr<class VboMesh> VboMeshRef;
+
+class VboMesh;
+typedef std::shared_ptr<VboMesh> VboMeshRef;
 	
 void draw( const VboMeshRef& vbo );
 void drawRange( const VboMeshRef& vbo, GLint start, GLsizei count );
@@ -43,35 +44,48 @@ class VboMesh {
   public:
 	class Layout {
 	  public:
-		Layout() : mUsage( GL_STATIC_DRAW ), mInterleave( false ) {}
+		Layout() : mUsage( GL_STATIC_DRAW ), mInterleave( true ) {}
 
-		//! Specifies whether the data is stored planar or interleaved.
+		//! Specifies whether the data is stored planar or interleaved. Deafult is interleaved.
 		Layout&		interleave( bool interleave = true ) { mInterleave = interleave; return *this; }
+		//! Returns whether the Layout stores data as interleaved (rather than planar)
 		bool		getInterleave() const { return mInterleave; }
 		/** For Desktop GL, \c GL_STREAM_DRAW, \c GL_STREAM_READ, \c GL_STREAM_COPY, \c GL_STATIC_DRAW, \c GL_STATIC_READ, \c GL_STATIC_COPY, \c GL_DYNAMIC_DRAW, \c GL_DYNAMIC_READ, or \c GL_DYNAMIC_COPY.
 			For ES 2, \c GL_STREAM_DRAW, \c GL_STATIC_DRAW, or \c GL_DYNAMIC_DRAW **/
 		Layout&		usage( GLenum usage ) { mUsage = usage; return *this; }
+		//! Returns the usage for the Layout. Default is \c GL_STATIC_DRAW
 		GLenum		getUsage() const { return mUsage; }
-		Layout&		attrib( geom::Attrib attrib, uint8_t dims ) { mAttribInfos.push_back( geom::AttribInfo( attrib, geom::DataType::FLOAT, dims, 0, 0, 0 ) ); return *this; }
-		
-		void		clearAttribs() { mAttribInfos.clear(); }
+		//! Appends an attribute of semantic \a attrib which is \a dims-dimensional. Replaces AttribInfo if it exists for \a attrib
+		Layout&		attrib( geom::Attrib attrib, uint8_t dims );
+		//! Appends an attribute using a geom::AttribInfo. Replaces AttribInfo if it exists for \a attribInfo.getAttrib()
+		Layout&		attrib( const geom::AttribInfo &attribInfo );
 
-		void		allocate( size_t numVertices, geom::BufferLayout *resultBufferLayout, gl::VboRef *resultVbo ) const;
+		std::vector<geom::AttribInfo>&			getAttribs() { return mAttribInfos; }
+		const std::vector<geom::AttribInfo>&	getAttribs() const { return mAttribInfos; }
+		//! Clears all attributes in the Layout
+		void									clearAttribs() { mAttribInfos.clear(); }
 
 	  protected:
+		//! If \a resultVbo is null then no VBO is allocated
+		void		allocate( size_t numVertices, geom::BufferLayout *resultBufferLayout, gl::VboRef *resultVbo ) const;
+
 		GLenum							mUsage;
 		bool							mInterleave;
 		std::vector<geom::AttribInfo>	mAttribInfos;
+
+		friend VboMesh;
 	};
   
-	//! Creates a VboMesh which represents the geom::Source \a source.
+	//! Creates a VboMesh which represents the geom::Source \a source. Layout is derived from the contents of \a source.
 	static VboMeshRef	create( const geom::Source &source );
+	//! Creates a VboMesh which represents the geom::Source \a source using \a layout.
+	static VboMeshRef	create( const geom::Source &source, const geom::AttribSet &requestedAttribs );
+	//! Creates a VboMesh which represents the geom::Source \a source using 1 or more Vbo/VboMesh::Layout pairs. A null VboRef requests allocation.
+	static VboMeshRef	create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef>> &vertexArrayLayouts, const VboRef &indexVbo = nullptr );
 	//! Creates a VboMesh which represents the user's vertex buffer objects. Allows optional \a indexVbo to enable indexed vertices; creates a static VBO if none provided.
 	static VboMeshRef	create( uint32_t numVertices, GLenum glPrimitive, const std::vector<std::pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, uint32_t numIndices = 0, GLenum indexType = GL_UNSIGNED_SHORT, const VboRef &indexVbo = VboRef() );
 	//! Creates a VboMesh which represents the user's vertex buffer objects. Allows optional \a indexVbo to enable indexed vertices; creates a static VBO if none provided.
 	static VboMeshRef	create( uint32_t numVertices, GLenum glPrimitive, const std::vector<Layout> &vertexArrayLayouts, uint32_t numIndices = 0, GLenum indexType = GL_UNSIGNED_SHORT, const VboRef &indexVbo = VboRef() );
-	//! Creates a VboMesh which represents the geom::Source \a source. Allows optional \a arrayVbo and \a indexArrayVbo in order to simplify recycling of VBOs.
-	static VboMeshRef	create( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo );
 
 	//! Maps a geom::Attrib to a named attribute in the GlslProg
 	typedef std::map<geom::Attrib,std::string> AttribGlslMap;
@@ -88,7 +102,9 @@ class VboMesh {
 	GLenum		getIndexDataType() const { return mIndexType; }
 
 	//! Returns 0 if \a attr is not present
-	uint8_t		getAttribDims( geom::Attrib attr ) const;
+	uint8_t			getAttribDims( geom::Attrib attr ) const;
+	//! Returns AttribSet of geom::Attribs present in the VboMesh
+	geom::AttribSet	getAvailableAttribs() const;
 
 	//! Returns the VBO containing the indices of the mesh, or a NULL for non-indexed geometry
 	VboRef		getIndexVbo() { return mIndices; }
@@ -220,6 +236,10 @@ class VboMesh {
 
 	//! Issues a glDraw* call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawImpl();
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+	//! Issues a glDraw*Instanced call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
+	void		drawInstancedImpl( GLsizei instanceCount );
+#endif
 
 #if ! defined( CINDER_GL_ES )
 	//! Returns a geom::Source which references 'this'. Inefficient - primarily useful for debugging. The returned geom::SourceRef should not outlive 'this' (not a shared_ptr).
@@ -235,7 +255,7 @@ class VboMesh {
 #endif
 
   protected:
-	VboMesh( const geom::Source &source, const VboRef &arrayVbo, const VboRef &indexArrayVbo );
+	VboMesh( const geom::Source &source, std::vector<std::pair<Layout,VboRef>> vertexArrayBuffers, const VboRef &indexArrayVbo );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<std::pair<geom::BufferLayout,VboRef>> &vertexArrayBuffers, const VboRef &indexVbo );
 	VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive, GLenum indexType, const std::vector<Layout> &vertexArrayLayouts, const VboRef &indexVbo );
 
@@ -264,6 +284,7 @@ class VboMesh {
 	VboRef												mIndices;
 	
 	friend class VboMeshGeomTarget;
+	friend class Batch;
 };
 
 } } // namespace cinder::gl

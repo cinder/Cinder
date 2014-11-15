@@ -63,17 +63,17 @@ ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bo
 	load();	
 }
 
-void ObjLoader::loadInto( geom::Target *target ) const
+void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
 {
 	// copy attributes
 	if( getAttribDims( geom::Attrib::POSITION ) )
 		target->copyAttrib( geom::Attrib::POSITION, getAttribDims( geom::Attrib::POSITION ), 0, (const float*)mOutputVertices.data(), getNumVertices() );
-	if( getAttribDims( geom::Attrib::COLOR ) )
-		target->copyAttrib( geom::Attrib::COLOR, getAttribDims( geom::Attrib::COLOR ), 0, (const float*)mOutputColors.data(), std::min( mOutputColors.size(), mOutputVertices.size() ) );
-	if( getAttribDims( geom::Attrib::TEX_COORD_0 ) )
-		target->copyAttrib( geom::Attrib::TEX_COORD_0, getAttribDims( geom::Attrib::TEX_COORD_0 ), 0, (const float*)mOutputTexCoords.data(), std::min( mOutputTexCoords.size(), mOutputVertices.size() ) );
 	if( getAttribDims( geom::Attrib::NORMAL ) )
 		target->copyAttrib( geom::Attrib::NORMAL, getAttribDims( geom::Attrib::NORMAL ), 0, (const float*)mOutputNormals.data(), std::min( mOutputNormals.size(), mOutputVertices.size() ) );
+	if( getAttribDims( geom::Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( geom::Attrib::TEX_COORD_0, getAttribDims( geom::Attrib::TEX_COORD_0 ), 0, (const float*)mOutputTexCoords.data(), std::min( mOutputTexCoords.size(), mOutputVertices.size() ) );
+	if( getAttribDims( geom::Attrib::COLOR ) )
+		target->copyAttrib( geom::Attrib::COLOR, getAttribDims( geom::Attrib::COLOR ), 0, (const float*)mOutputColors.data(), std::min( mOutputColors.size(), mOutputVertices.size() ) );
 	
 	// copy indices
 	if( getNumIndices() )
@@ -84,12 +84,28 @@ uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
 {
 	switch( attr ) {
 		case geom::Attrib::POSITION: return mOutputVertices.empty() ? 0 : 3;
-		case geom::Attrib::COLOR: return mOutputColors.empty() ? 0 : 3;
-		case geom::Attrib::TEX_COORD_0: return mOutputTexCoords.empty() ? 0 : 2;
 		case geom::Attrib::NORMAL: return mOutputNormals.empty() ? 0 : 3;
+		case geom::Attrib::TEX_COORD_0: return mOutputTexCoords.empty() ? 0 : 2;
+		case geom::Attrib::COLOR: return mOutputColors.empty() ? 0 : 3;
 		default:
 			return 0;
 	}
+}
+
+geom::AttribSet	ObjLoader::getAvailableAttribs() const
+{
+	geom::AttribSet result;
+	
+	if( ! mOutputVertices.empty() )
+		result.insert( geom::Attrib::POSITION );
+	if( ! mOutputNormals.empty() )
+		result.insert( geom::Attrib::NORMAL );
+	if( ! mOutputTexCoords.empty() )
+		result.insert( geom::Attrib::TEX_COORD_0 );
+	if( ! mOutputColors.empty() )
+		result.insert( geom::Attrib::COLOR );
+	
+	return result;
 }
 
 void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
@@ -688,7 +704,12 @@ void objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includ
 	OStreamRef stream = dataTarget->getStream();
 	
 	unique_ptr<ObjWriteTarget> target( new ObjWriteTarget( stream, includeNormals, includeTexCoords ) );
-	source.loadInto( target.get() );	
+	geom::AttribSet requestedAttribs;
+	if( includeNormals )
+		requestedAttribs.insert( geom::NORMAL );
+	if( includeTexCoords )
+		requestedAttribs.insert( geom::TEX_COORD_0 );
+	source.loadInto( target.get(), requestedAttribs );
 	
 	if( source.getNumIndices() == 0 )
 		target->generateIndices( geom::Primitive::TRIANGLES, source.getNumVertices() );

@@ -69,11 +69,16 @@ class TriMesh : public geom::Source {
 	static TriMeshRef	create() { return TriMeshRef( new TriMesh( Format().positions().normals().texCoords() ) ); }
 	static TriMeshRef	create( const Format &format ) { return TriMeshRef( new TriMesh( format ) ); }
 	static TriMeshRef	create( const geom::Source &source ) { return TriMeshRef( new TriMesh( source ) ); }
+	static TriMeshRef	create( const geom::Source &source, const Format &format ) { return TriMeshRef( new TriMesh( source, format ) ); }
 
 	TriMesh( const Format &format );
 	TriMesh( const geom::Source &source );
+	TriMesh( const geom::Source &source, const Format &format );
 	
-	virtual void	loadInto( geom::Target *target ) const override;
+	//! Creates a suitable TriMesh::Format for representing a geom::Source \a source
+	static Format		formatFromSource( const geom::Source &source );
+	
+	virtual void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 	
 	void		clear();
 	
@@ -318,16 +323,19 @@ class TriMesh : public geom::Source {
 							   const std::vector<vec2> &texCoords );*/
 
 	// geom::Source virtuals
-	virtual geom::Primitive		getPrimitive() const override { return geom::Primitive::TRIANGLES; }
-	
-	virtual uint8_t		getAttribDims( geom::Attrib attr ) const override;
+	geom::Primitive		getPrimitive() const override { return geom::Primitive::TRIANGLES; }
+	uint8_t				getAttribDims( geom::Attrib attr ) const override;
+	geom::AttribSet		getAvailableAttribs() const override;
 
   protected:
+	void		initFromFormat( const TriMesh::Format &format );
+	void		loadFromSource( const geom::Source &source );
+
 	void		getAttribPointer( geom::Attrib attr, const float **resultPtr, size_t *resultStrideBytes, uint8_t *resultDims ) const;
 	void		copyAttrib( geom::Attrib attr, uint8_t dims, size_t stride, const float *srcData, size_t count );
 
 	//! Returns whether or not the vertex, color etc. at both indices is the same.
-	bool		isEqual( uint32_t indexA, uint32_t indexB ) const;
+	bool		verticesEqual( uint32_t indexA, uint32_t indexB ) const;
 
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;

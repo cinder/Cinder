@@ -53,12 +53,17 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 	NORMAL, TANGENT, BITANGENT, BONE_INDEX, BONE_WEIGHT, 
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
 	NUM_ATTRIBS };
-extern std::string sAttribNames[(int)Attrib::NUM_ATTRIBS];
+typedef	std::set<Attrib>	AttribSet;
+extern std::string			sAttribNames[(int)Attrib::NUM_ATTRIBS];
+
 enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
+
 //! Debug utility which returns the name of \a attrib as a std::string
 std::string attribToString( Attrib attrib );
+//! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
+void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 
 struct AttribInfo {
 	AttribInfo( const Attrib &attrib, uint8_t dims, size_t stride, size_t offset, uint32_t instanceDivisor = 0 )
@@ -70,13 +75,14 @@ struct AttribInfo {
 
 	Attrib		getAttrib() const { return mAttrib; }
 	uint8_t		getDims() const { return mDims; }
+	void		setDims( uint8_t dims ) { mDims = dims; }
 	DataType	getDataType() const { return mDataType; }
+	void		setDataType( DataType dataType ) { mDataType = dataType; }
 	size_t		getStride() const { return mStride; }
-	size_t		getOffset() const { return mOffset;	}
-	uint32_t	getInstanceDivisor() const { return mInstanceDivisor; }
-
 	void		setStride( size_t stride ) { mStride = stride; }
+	size_t		getOffset() const { return mOffset;	}
 	void		setOffset( size_t offset ) { mOffset = offset; }
+	uint32_t	getInstanceDivisor() const { return mInstanceDivisor; }
 
 	uint8_t		getByteSize() const { if( mDataType == geom::DataType::DOUBLE ) return mDims * 8; else return mDims * 4; }
 
@@ -112,25 +118,23 @@ class BufferLayout {
 	uint8_t			getAttribDims( Attrib attrib ) const;
 	//! Returns a vector of all present Attribs
 	const std::vector<AttribInfo>&	getAttribs() const { return mAttribs; }
+	//! Returns the number of bytes necessary to store \a numVertices
+	size_t			calcRequiredStorage( size_t numVertices ) const;
   protected:
 	std::vector<AttribInfo>		mAttribs;
 };
 
-void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
-
 class Source {
   public:
+	virtual ~Source() {}
 	virtual size_t		getNumVertices() const = 0;
 	virtual size_t		getNumIndices() const = 0;
 	virtual Primitive	getPrimitive() const = 0;
 	virtual uint8_t		getAttribDims( Attrib attr ) const = 0;
 
-	virtual void		loadInto( Target *target ) const = 0;
+	virtual void		loadInto( Target *target, const AttribSet &requestedAttribs ) const = 0;
 
-	virtual void		clearAttribs() { mEnabledAttribs.clear(); }
-	virtual Source&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Source&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
-	virtual bool		isEnabled( Attrib attrib ) const;
+	virtual AttribSet	getAvailableAttribs() const = 0;
 
   protected:
 	//! Builds a sequential list of vertices to simulate an indexed geometry when Source is non-indexed. Assumes \a dest contains storage for getNumVertices() entries
@@ -139,8 +143,6 @@ class Source {
 	void	copyIndicesNonIndexed( uint32_t *dest ) const;
 	template<typename T>
 	void forceCopyIndicesTrianglesImpl( T *dest ) const;
-
-	std::set<Attrib>	mEnabledAttribs;
 };
 
 class Target {
@@ -162,23 +164,22 @@ class Target {
 
 class Rect : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
+	//! Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
 	Rect();
 	Rect( const Rectf &r );
 
-	virtual Rect&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Rect&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }	
-	Rect&				rect( const Rectf &r );
+	Rect&		rect( const Rectf &r );
 	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
-	Rect&				colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
+	Rect&		colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
-	Rect&				texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
+	Rect&		texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
-	virtual size_t		getNumVertices() const override { return 4; }
-	virtual size_t		getNumIndices() const override { return 0; }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override { return 4; }
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	std::array<vec2,4>		mPositions, mTexCoords;
@@ -189,11 +190,15 @@ class Rect : public Source {
 
 class Cube : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Cube();
 
-	virtual Cube&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Cube&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
+	//! Enables default colors. Disabled by default.
+	Cube&			colors();
+	//! Enables per-face colors ordered { +X, -X, +Y, -Y, +Z, -Z }. Colors are disabled by default.
+	Cube&			colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ );
+	//! Disables colors. Disabled by default.
+	Cube&			disableColors();
+
 	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
 	Cube&			subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
@@ -201,84 +206,99 @@ class Cube : public Source {
 	Cube&			size( const vec3 &sz ) { mSize = sz; return *this; }
 	Cube&			size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
 	ivec3		mSubdivisions;
-	vec3		mSize;	
+	vec3		mSize;
+	bool		mHasColors;
+	ColorAf		mColors[6];
 };
 
 class Icosahedron : public Source {
   public:
-	//! Defaults to having POSITION and NORMAL. Supports COLOR
 	Icosahedron();
-	virtual ~Icosahedron() {}
 
-	virtual Icosahedron&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Icosahedron&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	// Enables colors. Disabled by default.
+	Icosahedron&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void		calculate() const;
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
-
+	bool			mHasColors;
 	static float	sPositions[12*3];
-
 	static uint32_t	sIndices[60];
+	
+	friend class Icosphere;
+};
+
+class Icosphere : public Source {
+  public:
+	Icosphere();
+
+	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
+
+	size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
+	size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	void	calculate() const;
+	void	calculateImplUV() const;
+	void	subdivide() const;
+
+	int								mSubdivision;
+	bool							mHasColors;
+	mutable bool					mCalculationsCached;
+	mutable std::vector<vec3>		mPositions, mNormals, mColors;
+	mutable std::vector<vec2>		mTexCoords;
+	mutable std::vector<uint32_t>	mIndices;
 };
 
 class Teapot : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Teapot();
 
-	virtual Teapot&		enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Teapot&		disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Teapot&				subdivisions( int sub );
+	Teapot&		subdivisions( int sub );
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual void		loadInto( Target *target ) const override;
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	size_t		getNumVertices() const override { return mNumVertices; }
+	size_t		getNumIndices() const override { return mNumIndices; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void			calculate() const;
-	void			updateVertexCounts() const;
+	void			calculate( std::vector<float> *positions, std::vector<float> *normals, std::vector<float> *texCoords, std::vector<uint32_t> *indices ) const;
+	void			updateVertexCounts();
 
 	static void		generatePatches( float *v, float *n, float *tc, uint32_t *el, int grid );
 	static void		buildPatchReflect( int patchNum, float *B, float *dB, float *v, float *n, float *tc, unsigned int *el,
-		int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
+										int &index, int &elIndex, int &tcIndex, int grid, bool reflectX, bool reflectY );
 	static void		buildPatch( vec3 patch[][4], float *B, float *dB, float *v, float *n, float *tc, 
-		unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
+										unsigned int *el, int &index, int &elIndex, int &tcIndex, int grid, const mat3 reflect, bool invertNormal );
 	static void		getPatch( int patchNum, vec3 patch[][4], bool reverseV );
 	static void		computeBasisFunctions( float *B, float *dB, int grid );
-	static vec3	evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] );
-	static vec3	evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] );
+	static vec3		evaluate( int gridU, int gridV, const float *B, const vec3 patch[][4] );
+	static vec3		evaluateNormal( int gridU, int gridV, const float *B, const float *dB, const vec3 patch[][4] );
 
 	int			mSubdivision;
-
-	mutable bool					mCalculationsCached;
-	mutable	size_t					mNumVertices;
-	mutable size_t					mNumIndices;
-	mutable std::vector<float>		mPositions;
-	mutable std::vector<float>		mTexCoords;
-	mutable std::vector<float>		mNormals;
-	mutable std::vector<uint32_t>	mIndices;
+	size_t		mNumVertices, mNumIndices;
 
 	static const uint8_t	sPatchIndices[][16];
 	static const float		sCurveData[][3];
@@ -286,164 +306,118 @@ class Teapot : public Source {
 
 class Circle : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL
 	Circle();
 
-	virtual Circle&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Circle&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
 	Circle&		center( const vec2 &center ) { mCenter = center; return *this; }
 	Circle&		radius( float radius );
 	Circle&		subdivisions( int subdivs );
 
-	virtual void		loadInto( Target *target ) const override;
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override { return 0; }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   private:
 	void	updateVertexCounts();
-	void	calculate() const;
 
 	vec2		mCenter;
 	float		mRadius;
 	int			mRequestedSubdivisions, mNumSubdivisions;
-
-	size_t						mNumVertices;
-	mutable std::vector<vec2>	mPositions;
-	mutable std::vector<vec2>	mTexCoords;
-	mutable std::vector<vec3>	mNormals;
+	size_t		mNumVertices;
 };
 
 class Sphere : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Sphere();
-	virtual ~Sphere() {}
 
-	virtual Sphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Sphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Sphere&		center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	Sphere&		radius( float radius ) { mRadius = radius; mCalculationsCached = false; return *this; }
+	Sphere&		colors() { mHasColors = true; return *this; }
+	Sphere&		center( const vec3 &center ) { mCenter = center; return *this; }
+	Sphere&		radius( float radius ) { mRadius = radius; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
-	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; mCalculationsCached = false; return *this; }
+	Sphere&		subdivisions( int subdiv ) { mSubdivisions = subdiv; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void		calculate() const;
-	virtual void		calculateImplUV( size_t segments, size_t rings ) const;
+	void			numRingsAndSegments( int *numRings, int *numSegments ) const;
 
 	vec3		mCenter;
 	float		mRadius;
 	int			mSubdivisions;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
-};
-
-class Icosphere : public Icosahedron {
-  public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
-	Icosphere();
-
-	virtual Icosphere&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Icosphere&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Icosphere&			subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
-
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
-
-  protected:
-	virtual void		calculate() const;
-	virtual void		calculateImplUV() const;
-	virtual void		subdivide() const;
-
-	int									mSubdivision;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec2>			mTexCoords;
+	bool		mHasColors;
 };
 
 class Capsule : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Capsule();
 
-	virtual Capsule&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Capsule&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	Capsule&			center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
+	//! Enables colors. Disabled by default.
+	Capsule&		colors() { mHasColors = true; return *this; }
+	Capsule&		center( const vec3 &center ) { mCenter = center; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
-	Capsule&			subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Capsule&		subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
-	Capsule&			subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; mCalculationsCached = false; return *this; }
-	Capsule&			radius( float radius ) { mRadius = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
-	Capsule&			length( float length ) { mLength = math<float>::max(0.f, length); mCalculationsCached = false; return *this; }
-	Capsule&			direction( const vec3 &direction ) { mDirection = normalize( direction ); mCalculationsCached = false; return *this; }
+	Capsule&		subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; updateCounts(); return *this; }
+	Capsule&		radius( float radius ) { mRadius = math<float>::max(0.f, radius); return *this; }
+	Capsule&		length( float length ) { mLength = math<float>::max(0.f, length); return *this; }
+	Capsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
 	//! Conveniently sets center, length and direction
-	Capsule&			set( const vec3 &from, const vec3 &to );
+	Capsule&		set( const vec3 &from, const vec3 &to );
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   private:
-	void	calculate() const;
-	void	calculateImplUV( size_t segments, size_t rings ) const;
-	void	calculateRing( size_t segments, float radius, float y, float dy ) const;
+	void	updateCounts();
+	void	calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void	calculateRing( size_t segments, float radius, float y, float dy, std::vector<vec3> *positions,
+							std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors ) const;
 
 	vec3		mDirection, mCenter;
 	float		mLength, mRadius;
-	int			mSubdivisionsHeight, mSubdivisionsAxis;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
-
+	int			mSubdivisionsHeight, mSubdivisionsAxis, mNumSegments;
+	bool		mHasColors;
 };
 
 class Torus : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Torus();
-	virtual ~Torus() {}
 
-	virtual Torus&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Torus&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	virtual Torus&	center( const vec3 &center ) { mCenter = center; mCalculationsCached = false; return *this; }
-	virtual Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
-	virtual Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
+	// Enables colors. Disabled by default.
+	Torus&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	Torus&	center( const vec3 &center ) { mCenter = center; return *this; }
+	Torus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
+	Torus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; updateCounts(); return *this; }
 	//! Allows you to twist the torus along the ring.
-	virtual Torus&	twist( unsigned twist ) { mTwist = twist; mCalculationsCached = false; return *this; }
+	Torus&	twist( unsigned twist ) { mTwist = twist; return *this; }
 	//! Allows you to twist the torus along the ring. The \a offset is in radians.
-	virtual Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; mCalculationsCached = false; return *this; }
+	Torus&	twist( unsigned twist, float offset ) { mTwist = twist; mTwistOffset = offset; return *this; }
 	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
-	virtual Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; mCalculationsCached = false; return *this; }
+	Torus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
 	//! Specifies the major and minor radius separately.
-	virtual Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); mCalculationsCached = false; return *this; }
+	Torus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max(0, major); mRadiusMinor = math<float>::max(0, minor); return *this; }
 
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void			calculate() const;
-	void			calculateImplUV( size_t segments, size_t rings ) const;
+	void		updateCounts();
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
 	vec3		mCenter;
 	float		mRadiusMajor;
@@ -454,72 +428,64 @@ class Torus : public Source {
 	float		mCoils;
 	unsigned	mTwist;
 	float		mTwistOffset;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
+	bool		mHasColors;
+	int			mNumRings, mNumAxis;
 };
 
 class Helix : public Torus {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Helix()
 	{
-		height(2.0f);
-		coils(3.0f);
+		height( 2.0f );
+		coils( 3.0f );
 	}
 
-	virtual Helix&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Helix&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
-	virtual Helix&	center( const vec3 &center ) override { Torus::center( center ); return *this; }
-	virtual Helix&	subdivisionsAxis( int subdiv ) override { Torus::subdivisionsAxis( subdiv ); return *this; }
-	virtual Helix&	subdivisionsHeight( int subdiv ) override { Torus::subdivisionsHeight( subdiv ); return *this; }
+	virtual Helix&	center( const vec3 &center ) { Torus::center( center ); return *this; }
+	virtual Helix&	subdivisionsAxis( int subdiv ) { Torus::subdivisionsAxis( subdiv ); return *this; }
+	virtual Helix&	subdivisionsHeight( int subdiv ) { Torus::subdivisionsHeight( subdiv ); return *this; }
 	//! Specifies the height, measured from center to center.
-	Helix&			height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
+	Helix&			height( float height ) { mHeight = height; return *this; }
 	//! Specifies the number of coils.
-	Helix&			coils( float coils ) { mCoils = math<float>::max(0.f, coils); mCalculationsCached = false; return *this; }
+	Helix&			coils( float coils ) { mCoils = math<float>::max(0.f, coils); return *this; }
 	//! Allows you to twist the helix along the ring.
-	virtual Helix&	twist( unsigned twist ) override { Torus::twist( twist ); return *this; }
+	Helix&			twist( unsigned twist ) { Torus::twist( twist ); return *this; }
 	//! Allows you to twist the helix along the ring. The \a offset is in radians.
-	virtual Helix&	twist( unsigned twist, float offset ) override { Torus::twist( twist, offset ); return *this; }
+	Helix&			twist( unsigned twist, float offset ) { Torus::twist( twist, offset ); return *this; }
 };
 
 class Cylinder : public Source {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cylinder();
-	virtual ~Cylinder() {}
 
-	virtual Cylinder&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Cylinder&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 	//! Specifices the base of the Cylinder.
-	virtual Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; mCalculationsCached = false; return *this; }
+	Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; updateCounts(); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
-	virtual Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
-	virtual Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; mCalculationsCached = false; return *this; }
+	Cylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; updateCounts(); return *this; }
 	//! Specifies the height of the cylinder.
-	virtual Cylinder&	height( float height ) { mHeight = height; mCalculationsCached = false; return *this; }
+	Cylinder&	height( float height ) { mHeight = height; return *this; }
 	//! Specifies the base and apex radius.
-	virtual Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); mCalculationsCached = false; return *this; }
+	Cylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max(0.f, radius); updateCounts(); return *this; }
 	//! Specifies the axis of the cylinder.
-	virtual Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction );  mCalculationsCached = false; return *this; }
+	Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
-	virtual Cylinder&	set( const vec3 &from, const vec3 &to );
+	Cylinder&	set( const vec3 &from, const vec3 &to );
+	//! Enables colors. Disabled by default.
+	Cylinder&	colors() { mHasColors = true; return *this; }
 
-	virtual size_t		getNumVertices() const override { calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override { calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void	calculate() const;
-	virtual void	calculateImplUV( size_t segments, size_t rings ) const;
-	virtual void	calculateCap( bool flip, float height, float radius, size_t segments ) const;
+	void	updateCounts();
+	void	calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void	calculateCap( bool flip, float height, float radius, std::vector<vec3> *positions, std::vector<vec3> *normals,
+								std::vector<vec2> *texCoords, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
 
 	vec3		mOrigin;
 	float		mHeight;
@@ -528,86 +494,62 @@ class Cylinder : public Source {
 	float		mRadiusApex;
 	int			mSubdivisionsAxis;
 	int			mSubdivisionsHeight;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
+	bool		mHasColors;
+	int			mNumSegments, mNumSlices;
 };
 
 class Cone : public Cylinder {
   public:
-	//! Defaults to having POSITION, TEX_COORD_0, NORMAL. Supports COLOR
 	Cone() { radius( 1.0f, 0.0f ); }
-	virtual ~Cone() {}
 
-	virtual Cone&	enable( Attrib attrib ) override { Cylinder::enable( attrib ); return *this; }
-	virtual Cone&	disable( Attrib attrib ) override { Cylinder::disable( attrib ); return *this; }
-	virtual Cone&	origin( const vec3 &origin ) override { Cylinder::origin( origin ); return *this; }
+	Cone&	origin( const vec3 &origin ) { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
-	virtual Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; mCalculationsCached = false; return *this; }
+	Cone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
 	//! Specifies the number of subdivisions along the Cone's height. Defaults to \c 1.
-	virtual Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; mCalculationsCached = false; return *this; }
-	virtual Cone&	height( float height ) override { Cylinder::height( height ); return *this; }
+	Cone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; updateCounts(); return *this; }
+	Cone&	height( float height ) { Cylinder::height( height ); return *this; }
 	//! Specifies the base and apex radius.
-	virtual Cone&	radius( float radius ) override {  Cylinder::radius( radius ); return *this; }
+	Cone&	radius( float radius ) {  Cylinder::radius( radius ); return *this; }
 	//! Specifies the base radius.
-	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
 	//! Specifies the apex radius.
-	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
 	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
-	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); mCalculationsCached = false; return *this; }
+	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
 	//! Specifies the base and apex radius separately.
-	Cone&	radius( float base, float apex ) { 
-		mRadiusBase = math<float>::max(0.f, base); 
-		mRadiusApex = math<float>::max(0.f, apex); 
-		mCalculationsCached = false; return *this; }
-	//!
-	virtual Cone&	direction( const vec3 &direction ) override { Cylinder::direction( direction ); return *this; }
+	Cone&	radius( float base, float apex ) { mRadiusBase = math<float>::max(0.f, base); mRadiusApex = math<float>::max(0.f, apex); return *this; }
+	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
-	virtual Cone&	set( const vec3 &from, const vec3 &to ) override { Cylinder::set( from, to ); return *this; }
+	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
+	//! Enables colors. Disabled by default.
+	Cone&	colors() { mHasColors = true; return *this; }
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
 class Plane : public Source {
   public:
-	//! Defaults to having POSITION, NORMAL, and TEX_COORD_0
 	Plane();
-	virtual ~Plane() {}
-
-	virtual Plane&	enable( Attrib attrib ) override { mEnabledAttribs.insert( attrib ); mCalculationsCached = false; return *this; }
-	virtual Plane&	disable( Attrib attrib ) override { mEnabledAttribs.erase( attrib ); mCalculationsCached = false; return *this; }
 
 	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
 	virtual Plane&	subdivisions( const ivec2 &subdivisions );
 	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
-	virtual Plane&	size( const vec2 &size )	{ mSize = size; mCalculationsCached = false; return *this; }
+	virtual Plane&	size( const vec2 &size ) { mSize = size; return *this; }
 	virtual Plane&	axes( const vec3 &uAxis, const vec3 &vAxis );
 
-	Plane& origin( const vec3 &origin )	{ mOrigin = origin; mCalculationsCached = false; return *this; }
+	Plane& origin( const vec3 &origin )	{ mOrigin = origin; return *this; }
 	Plane& normal( const vec3 &normal );
 
-	virtual size_t		getNumVertices() const override		{ calculate(); return mPositions.size(); }
-	virtual size_t		getNumIndices() const override		{ calculate(); return mIndices.size(); }
-	virtual Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override		{ return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ); }
+	size_t		getNumIndices() const override		{ return mSubdivisions.x * mSubdivisions.y * 6; }
+	Primitive	getPrimitive() const override		{ return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	virtual void	calculate() const;
-
 	ivec2		mSubdivisions;
 	vec2		mSize;
 	vec3		mOrigin, mAxisU, mAxisV;
-
-	mutable bool						mCalculationsCached;
-	mutable std::vector<vec3>			mPositions;
-	mutable std::vector<vec2>			mTexCoords;
-	mutable std::vector<vec3>			mNormals;
-	mutable std::vector<vec3>			mColors;
-	mutable std::vector<uint32_t>		mIndices;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -625,9 +567,10 @@ class Modifier : public geom::Target {
 		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
 	{}
 
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t		getAttribDims( geom::Attrib attr ) const override;
+	
+	void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	uint8_t	getReadAttribDims( Attrib attr ) const;
 	// not const because consumer is allowed to overwrite this data
@@ -661,11 +604,12 @@ class Transform : public Source {
 	const mat4&			getMatrix() const { return mTransform; }
 	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
   
-  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
 	const geom::Source&		mSource;
 	mat4					mTransform;
@@ -685,11 +629,12 @@ class Twist : public Source {
 	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
 	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
   
-  	virtual size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -704,11 +649,12 @@ class Lines : public Source {
 		: mSource( source )
 	{}
 
-	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override				{ return geom::LINES; }
+	uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
+	AttribSet	getAvailableAttribs() const override		{ return mSource.getAvailableAttribs(); }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -727,11 +673,12 @@ class ColorFromAttrib : public Source {
 	Attrib				getAttrib() const { return mAttrib; }
 	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
 
-	virtual size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	virtual size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
-	virtual Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&				mSource;
@@ -740,97 +687,117 @@ class ColorFromAttrib : public Source {
 	std::function<Colorf(vec3)>		mFnColor3;
 };
 
+//! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
+template<typename S, typename D>
+class AttribFn : public Source {
+  public:
+	typedef typename std::function<D(S)> FN;
+	static const int SRCDIM = sizeof(S)/ sizeof(float);
+	static const int DSTDIM = sizeof(D)/ sizeof(float);
+	
+	AttribFn( const Source &source, Attrib src, Attrib dst, const FN &fn )
+		: mSource( source ), mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
+	{}
+	
+	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	const geom::Source	&mSource;
+	geom::Attrib		mSrcAttrib, mDstAttrib;
+	FN					mFn;
+};
+
 class Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
 	
-	virtual Extrude&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual Extrude&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
-
 	//! Sets the distance of extrusion along the axis.
-	Extrude&			distance( float dist ) { mDistance = dist; mCalculationsCached = false; return *this; }
+	Extrude&	distance( float dist ) { mDistance = dist; return *this; }
 	//! Enables or disables front and back caps. Enabled by default.
-	Extrude&			caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	Extrude&	caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
 	//! Enables or disables front cap. Enabled by default.
-	Extrude&			frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	Extrude&	frontCap( bool cap ) { mFrontCap = cap; return *this; }
 	//! Enables or disables back cap. Enabled by default.
-	Extrude&			backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	Extrude&	backCap( bool cap ) { mBackCap = cap; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
-	Extrude&			subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	void calculate() const;
+	void		updatePathSubdivision();
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
   
 	std::vector<Path2d>				mPaths;
 	float							mApproximationScale;
 	float							mDistance;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
 	
-	mutable bool							mCalculationsCached;
-	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
-	mutable std::vector<uint32_t>			mIndices;
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 class ExtrudeSpline : public Source {
   public:
 	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
 	
-	virtual ExtrudeSpline&	enable( Attrib attrib ) { mEnabledAttribs.insert( attrib ); return *this; }
-	virtual ExtrudeSpline&	disable( Attrib attrib ) { mEnabledAttribs.erase( attrib ); return *this; }
-
 	//! Enables or disables front and back caps. Enabled by default.
-	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
 	//! Enables or disables front cap. Enabled by default.
-	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; return *this; }
 	//! Enables or disables back cap. Enabled by default.
-	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; return *this; }
 	//! Sets the number of subdivisions along the axis of extrusion
-	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); mCalculationsCached = false; return *this; }
+	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override;
-	virtual Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	void calculate() const;
-  
+	void updatePathSubdivision();
+	void calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
+	
 	std::vector<Path2d>				mPaths;
 	std::vector<mat4>				mSplineFrames;
 	std::vector<float>				mSplineTimes;
 	float							mApproximationScale;
 	bool							mFrontCap, mBackCap;
 	int								mSubdivisions;
-	
-	mutable bool							mCalculationsCached;
-	mutable std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-	mutable std::vector<vec3>				mPositions, mNormals, mTexCoords;
-	mutable std::vector<uint32_t>			mIndices;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
+
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
 //! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0. Prevents pass-through of NORMAL and COLOR. Passes CI_TEX_COORD_0
 class VertexNormalLines : public Source {
   public:
-	VertexNormalLines( const geom::Source &source, float length )
-		: mSource( source ), mLength( length )
-	{}
+	VertexNormalLines( const geom::Source &source, float length );
 
 	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
 
-	virtual size_t		getNumVertices() const override;
-	virtual size_t		getNumIndices() const override				{ return 0; }
-	virtual Primitive	getPrimitive() const override				{ return geom::LINES; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override				{ return 0; }
+	Primitive	getPrimitive() const override				{ return geom::LINES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	const geom::Source&		mSource;
@@ -842,11 +809,12 @@ class BSpline : public Source {
 	template<int D, typename T>
 	BSpline( const ci::BSpline<D,T> &spline, int subdivisions );
 
-	virtual size_t		getNumVertices() const override				{ return mNumVertices; }
-	virtual size_t		getNumIndices() const override				{ return 0; }
-	virtual Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
-	virtual uint8_t		getAttribDims( Attrib attr ) const override;
-	virtual void		loadInto( Target *target ) const override;
+	size_t		getNumVertices() const override				{ return mNumVertices; }
+	size_t		getNumIndices() const override				{ return 0; }
+	Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	template<typename T>

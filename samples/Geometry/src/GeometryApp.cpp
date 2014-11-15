@@ -91,13 +91,13 @@ void GeometryApp::prepareSettings( Settings* settings )
 void GeometryApp::setup()
 {
 	// Initialize variables.
-	mPrimitiveSelected = mPrimitiveCurrent = ICOSAHEDRON;
+	mPrimitiveSelected = mPrimitiveCurrent = TORUS;
 	mQualitySelected = mQualityCurrent = HIGH;
 	mViewMode = SHADED;
 
 	mShowColors = false;
 	mShowNormals = false;
-	mShowGrid = false;
+	mShowGrid = true;
 	mEnableFaceFulling = false;
 
 	mSubdivision = 1;
@@ -177,7 +177,7 @@ void GeometryApp::draw()
 			gl::enableAlphaBlending();
 
 			gl::enable( GL_CULL_FACE );
-			glCullFace( GL_FRONT );
+			gl::cullFace( GL_FRONT );
 
 			mWireframeShader->uniform( "uBrightness", 0.5f );
 			mPrimitiveWireframe->draw();
@@ -185,7 +185,7 @@ void GeometryApp::draw()
 
 		// (Now render the front side.)
 		if( mViewMode == WIREFRAME ) {
-			glCullFace( GL_BACK );
+			gl::cullFace( GL_BACK );
 
 			mWireframeShader->uniform( "uBrightness", 1.0f );
 			mPrimitiveWireframe->draw();
@@ -422,15 +422,16 @@ void GeometryApp::createPrimitive(void)
 			break;
 	}
 
-	if( mShowColors )
-		primitive->enable( geom::Attrib::COLOR );
-	
-	TriMesh mesh( (geom::Twist( (*primitive) )) );
+	// The purpose of the TriMesh is to capture a bounding box; without that need we could just instantiate the Batch directly using primitive
+	TriMesh::Format fmt = TriMesh::Format().positions().normals().texCoords();
+	if( mShowColors && primitive->getAvailableAttribs().count( geom::COLOR ) > 0 )
+		fmt.colors();
+	TriMesh mesh( *primitive, fmt );
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 
-	if(mSubdivision > 1)
-		mesh.subdivide(mSubdivision);
+	if( mSubdivision > 1 )
+		mesh.subdivide( mSubdivision );
 
 	mPrimitive = gl::Batch::create( mesh, mPhongShader );
 	mPrimitiveWireframe = gl::Batch::create( mesh, mWireframeShader );
@@ -453,17 +454,20 @@ void GeometryApp::createPhongShader(void)
 				"in vec4		ciPosition;\n"
 				"in vec3		ciNormal;\n"
 				"in vec4		ciColor;\n"
+				"in vec2		ciTexCoord0;\n"
 				"\n"
 				"out VertexData {\n"
 				"	vec4 position;\n"
 				"	vec3 normal;\n"
 				"	vec4 color;\n"
+				"	vec2 texCoord;\n"
 				"} vVertexOut;\n"
 				"\n"
 				"void main(void) {\n"
 				"	vVertexOut.position = ciModelView * ciPosition;\n"
 				"	vVertexOut.normal = ciNormalMatrix * ciNormal;\n"
 				"	vVertexOut.color = ciColor;\n"
+				"	vVertexOut.texCoord = ciTexCoord0;\n"
 				"	gl_Position = ciModelViewProjection * ciPosition;\n"
 				"}\n"
 			)
@@ -474,6 +478,7 @@ void GeometryApp::createPhongShader(void)
 				"	vec4 position;\n"
 				"	vec3 normal;\n"
 				"	vec4 color;\n"
+				"	vec2 texCoord;\n"
 				"} vVertexIn;\n"
 				"\n"
 				"out vec4 oColor;\n"
@@ -495,6 +500,10 @@ void GeometryApp::createPhongShader(void)
 				"\n"
 				"	// diffuse coefficient\n"
 				"	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;\n"
+				"\n"
+				"	// texCoord checkerboard\n"
+				"	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2) == 0 )\n"
+				"		diffuse *= vec3( 0.5, 0.5, 0.5 );\n"
 				"\n"
 				"	// specular coefficient with energy conservation\n"
 				"	const float shininess = 20.0;\n"
@@ -518,7 +527,7 @@ void GeometryApp::createPhongShader(void)
 	}
 }
 
-void GeometryApp::createWireframeShader(void)
+void GeometryApp::createWireframeShader()
 {
 	try {
 		mWireframeShader = gl::GlslProg::create( gl::GlslProg::Format()

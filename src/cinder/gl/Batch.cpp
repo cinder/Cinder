@@ -30,59 +30,6 @@
 
 namespace cinder { namespace gl {
 
-/////////////////////////////////////////////////////////////////////////////////////////////////
-// BatchGeomTarget
-class BatchGeomTarget : public geom::Target {
-  public:
-	BatchGeomTarget( geom::Primitive prim, const geom::BufferLayout &bufferLayout, uint8_t *data, Batch *batch )
-		: mPrimitive( prim ), mBufferLayout( bufferLayout ), mData( data ), mBatch( batch )
-	{
-		mBatch->mNumIndices = 0; // this may be replaced later with a copyIndices call
-	}
-	
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-	
-  protected:
-	geom::Primitive				mPrimitive;
-	const geom::BufferLayout	&mBufferLayout;
-	uint8_t						*mData;
-	Batch						*mBatch;
-};
-
-uint8_t	BatchGeomTarget::getAttribDims( geom::Attrib attr ) const
-{
-	return mBufferLayout.getAttribDims( attr );
-}
-
-void BatchGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
-{
-//	mMesh->copyAttrib( attr, dims, strideBytes, srcData, count );
-	if( mBufferLayout.hasAttrib( attr ) ) {
-		geom::AttribInfo attrInfo = mBufferLayout.getAttribInfo( attr );
-		geom::copyData( dims, srcData, count, attrInfo.getDims(), attrInfo.getStride(), reinterpret_cast<float*>( mData + attrInfo.getOffset() ) ); 
-	}
-}
-
-void BatchGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
-{
-	mBatch->mNumIndices = numIndices;
-
-	if( requiredBytesPerIndex <= 2 ) {
-		mBatch->mIndexType = GL_UNSIGNED_SHORT;
-		std::unique_ptr<uint16_t[]> indices( new uint16_t[numIndices] );
-		copyIndexData( source, numIndices, indices.get() );
-		mBatch->mIndices = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(uint16_t), indices.get() );
-	}
-	else {
-		mBatch->mIndexType = GL_UNSIGNED_INT;
-		std::unique_ptr<uint32_t[]> indices( new uint32_t[numIndices] );
-		copyIndexData( source, numIndices, indices.get() );
-		mBatch->mIndices = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, numIndices * sizeof(uint32_t), indices.get() );
-	}
-}
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Batch
 BatchRef Batch::create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
@@ -90,60 +37,33 @@ BatchRef Batch::create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, 
 	return BatchRef( new Batch( vboMesh, glsl, attributeMapping ) );
 }
 
-BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl )
+BatchRef Batch::create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
 {
-	return BatchRef( new Batch( source, glsl ) );
-}
-
-BatchRef Batch::create( const geom::SourceRef &sourceRef, const gl::GlslProgRef &glsl )
-{
-	return BatchRef( new Batch( *sourceRef, glsl ) );
+	return BatchRef( new Batch( source, glsl, attributeMapping ) );
 }
 
 Batch::Batch( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
-	: mGlsl( glsl )
+	: mGlsl( glsl ), mVboMesh( vboMesh )
 {
-	mIndices = vboMesh->getIndexVbo();
-	mPrimitive = vboMesh->getGlPrimitive();
-	mNumVertices = vboMesh->getNumVertices();
-	mNumIndices = vboMesh->getNumIndices();
-	mIndexType = vboMesh->getIndexDataType();
-	mVertexArrayVbos = vboMesh->getVertexArrayLayoutVbos();
 	initVao( attributeMapping );
 }
 
-Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl )
+Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping )
 	: mGlsl( glsl )
 {
-	init( source, mGlsl );
-}
-
-
-void Batch::init( const geom::Source &source, const gl::GlslProgRef &glsl )
-{
-	mNumVertices = source.getNumVertices();
-	mPrimitive = toGl( source.getPrimitive() );
-
-	size_t vertexDataSizeBytes = 0;
-	geom::BufferLayout bufferLayout;
-	for( int attribIt = 0; attribIt < (int)geom::Attrib::NUM_ATTRIBS; ++attribIt ) {
-		auto attribDims = source.getAttribDims( (geom::Attrib)attribIt );
-		if( attribDims > 0 ) {
-			bufferLayout.append( (geom::Attrib)attribIt, geom::DataType::FLOAT, attribDims, 0, vertexDataSizeBytes );
-			vertexDataSizeBytes += attribDims * sizeof(float) * mNumVertices;
-		}
+	geom::AttribSet attribs;
+	// include all the attributes in the custom attributeMapping
+	for( const auto &attrib : attributeMapping ) {
+		if( source.getAttribDims( attrib.first ) )
+			attribs.insert( attrib.first );
 	}
-
-	// TODO: this should use mapBuffer when available
-	std::unique_ptr<uint8_t[]> buffer( new uint8_t[vertexDataSizeBytes] );
-	
-	BatchGeomTarget target( source.getPrimitive(), bufferLayout, buffer.get(), this );
-	source.loadInto( &target );
-
-	auto vbo = Vbo::create( GL_ARRAY_BUFFER, vertexDataSizeBytes, buffer.get() );
-	mVertexArrayVbos.push_back( make_pair( bufferLayout, vbo ) );
-	
-	initVao();
+	// and then the attributes references by the GLSL
+	for( const auto &attrib : glsl->getAttribSemantics() ) {
+		if( source.getAttribDims( attrib.second ) )
+			attribs.insert( attrib.second );
+	}
+	mVboMesh = gl::VboMesh::create( source, attribs );
+	initVao( attributeMapping );
 }
 
 void Batch::initVao( const AttributeMapping &attributeMapping )
@@ -156,7 +76,7 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	
 	std::set<geom::Attrib> enabledAttribs;
 	// iterate all the vertex array VBOs
-	for( const auto &vertArrayVbo : mVertexArrayVbos ) {
+	for( const auto &vertArrayVbo : mVboMesh->getVertexArrayLayoutVbos() ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
 		// now iterate the attributes associated with this VBO
@@ -172,7 +92,7 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 
 			if( loc != -1 ) {
 				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
 				if( attribInfo.getInstanceDivisor() > 0 )
 					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
 				enabledAttribs.insert( attribInfo.getAttrib() );
@@ -187,8 +107,8 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.second ) << " but vertex data doesn't provide it." );			
 	}
 	
-	if( mNumIndices > 0 )
-		mIndices->bind();
+	if( mVboMesh->getIndexVbo() )
+		mVboMesh->getIndexVbo()->bind();
 
 	ctx->popVao();
 	ctx->popBufferBinding( GL_ARRAY_BUFFER );
@@ -196,9 +116,15 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	mAttribMapping = attributeMapping;
 }
 
-void Batch::setGlslProg( const GlslProgRef& glsl )
+void Batch::replaceGlslProg( const GlslProgRef& glsl )
 {
 	mGlsl = glsl;
+	initVao( mAttribMapping );
+}
+
+void Batch::replaceVboMesh( const VboMeshRef &vboMesh )
+{
+	mVboMesh = vboMesh;
 	initVao( mAttribMapping );
 }
 
@@ -209,24 +135,18 @@ void Batch::draw()
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
-	if( mNumIndices )
-		ctx->drawElements( mPrimitive, mNumIndices, mIndexType, 0 );
-	else
-		ctx->drawArrays( mPrimitive, 0, mNumVertices );
+	mVboMesh->drawImpl();
 }
 
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
-void Batch::drawInstanced( GLsizei primcount )
+void Batch::drawInstanced( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
 	
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
-	if( mNumIndices )
-		ctx->drawElementsInstanced( mPrimitive, mNumIndices, mIndexType, 0, primcount );
-	else
-		ctx->drawArraysInstanced( mPrimitive, 0, mNumVertices, primcount );
+	mVboMesh->drawInstancedImpl( instanceCount );
 }
 #endif
 
@@ -345,7 +265,7 @@ void VertBatch::draw()
 	
 	auto ctx = context();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( mPrimType, 0, mVertices.size() );
+	ctx->drawArrays( mPrimType, 0, (GLsizei)mVertices.size() );
 }
 
 // Leaves mVAO bound

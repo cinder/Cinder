@@ -26,6 +26,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Vao.h"
+#include "cinder/gl/VboMesh.h"
 #include "cinder/GeomIo.h"
 
 #include <map>
@@ -41,54 +42,51 @@ class Batch {
 	//! Maps a geom::Attrib to a named attribute in the GlslProg
 	typedef std::map<geom::Attrib,std::string> AttributeMapping;
 
-	//! Builds a Batch from a VboMesh and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
+	//! Builds a Batch from a VboMesh and a GlslProg. Attributes defined in \a attributeMapping override the default mapping between AttributeSemantics and GlslProg attribute names
 	static BatchRef		create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
-	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl );
-	static BatchRef		create( const geom::SourceRef &sourceRef, const gl::GlslProgRef &glsl );
+	//! Builds a Batch from a geom::Source and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
+	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	
 	void			draw();
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
-	void			drawInstanced( GLsizei primcount );
+	void			drawInstanced( GLsizei instanceCount );
 #endif
 	void			bind();
 
 	//! Returns OpenGL primitive type (GL_TRIANGLES, GL_TRIANGLE_STRIP, etc)
-	GLenum			getPrimitive() const { return mPrimitive; }
+	GLenum			getPrimitive() const { return mVboMesh->getGlPrimitive(); }
 	//! Returns the total number of vertices in the associated geometry
-	size_t			getNumVertices() const { return mNumVertices; }
+	size_t			getNumVertices() const { return mVboMesh->getNumVertices(); }
 	//! Returns the number of element indices in the associated geometry; 0 for non-indexed geometry
-	size_t			getNumIndices() const { return mNumIndices; }
+	size_t			getNumIndices() const { return mVboMesh->getNumIndices(); }
 	//! Returns the data type for indices; GL_UNSIGNED_INT or GL_UNSIGNED_SHORT
-	GLenum			getIndexDataType() const { return mIndexType; }
+	GLenum			getIndexDataType() const { return mVboMesh->getIndexDataType(); }
 	//! Returns the shader associated with the Batch
 	const GlslProgRef&	getGlslProg() const	{ return mGlsl; }
-	//! Replaces the shader associated with the Batch. Issues a warning if not all attributes were able to match
-	void			setGlslProg( const GlslProgRef& glsl );
+	//! Replaces the shader associated with the Batch. Issues a warning if not all attributes were able to match.
+	void			replaceGlslProg( const GlslProgRef& glsl );
 	//! Returns the VAO mapping the Batch's geometry to its shader
-	const VaoRef&		getVao() const { return mVao; }
+	const VaoRef&	getVao() const { return mVao; }
+	//! Returns the VboMesh associated with the Batch
+	VboMeshRef		getVboMesh() const { return mVboMesh; }
+	//! Replaces the VboMesh associated with the Batch. Issues a warning if not all attributes were able to match.
+	void			replaceVboMesh( const VboMeshRef &vboMesh );
 
 	//! Changes the GL context the Batch is associated with
 	void			reassignContext( Context *context );
 
   protected:
 	Batch( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping );
-	Batch( const geom::Source &source, const gl::GlslProgRef &glsl );
+	Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping );
 
 	void	init( const geom::Source &source, const gl::GlslProgRef &glsl );
 	void	initVao( const AttributeMapping &attributeMapping = AttributeMapping() );
 		
-	GlslProgRef		mGlsl;
-	
-	std::vector<std::pair<geom::BufferLayout,VboRef>>	mVertexArrayVbos;
-	VboRef					mIndices;
+	VboMeshRef				mVboMesh;
 	VaoRef					mVao;
+	GlslProgRef				mGlsl;
 	AttributeMapping		mAttribMapping;
 	
-	GLenum		mPrimitive;
-	size_t		mNumVertices;
-	size_t		mNumIndices;
-	GLenum		mIndexType;
-
 	friend class BatchGeomTarget;
 };
 
