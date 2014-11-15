@@ -368,8 +368,8 @@ void GeometryApp::createPrimitive(void)
 	case HELIX:
 		switch(mQualityCurrent) {
 			case DEFAULT: primitive = geom::SourceRef( new geom::Helix( geom::Helix() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 12 ).subdivisionsHeight( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 60 ).subdivisionsHeight( 60 ) ) ); break;
+			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ) ) ); break;
+			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
 		}
 		break;
 	case ICOSAHEDRON:
@@ -501,9 +501,12 @@ void GeometryApp::createPhongShader(void)
 				"	// diffuse coefficient\n"
 				"	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;\n"
 				"\n"
-				"	// texCoord checkerboard\n"
-				"	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2) == 0 )\n"
-				"		diffuse *= vec3( 0.5, 0.5, 0.5 );\n"
+				"	// texCoord checkerboard with protection against edge case\n"
+				"	const float kEpsilon = 0.0001;\n"
+				"	vec2 p = vVertexIn.texCoord * 10.0;\n"
+				"	float x = 0.5 - 0.5 * step( min( fract( p.x - kEpsilon ), fract( p.x + kEpsilon ) ), 0.5 );\n"
+				"	float y = 0.5 + 0.5 * step( min( fract( p.y - kEpsilon ), fract( p.y + kEpsilon ) ), 0.5 );\n"
+				"	diffuse *= 0.5 + fract( x + y );\n"
 				"\n"
 				"	// specular coefficient with energy conservation\n"
 				"	const float shininess = 20.0;\n"
