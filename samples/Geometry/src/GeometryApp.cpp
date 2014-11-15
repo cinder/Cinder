@@ -21,21 +21,20 @@ using namespace std;
 
 class GeometryApp : public AppNative {
   public:
-	typedef enum { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE } Primitive;
-	typedef enum { LOW, DEFAULT, HIGH } Quality;
-	typedef enum { SHADED, WIREFRAME } ViewMode;
+	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE };
+	enum Quality { LOW, DEFAULT, HIGH };
+	enum ViewMode { SHADED, WIREFRAME };
 
-	void prepareSettings( Settings* settings );
-	void setup();
-	void update();
-	void draw();
+	void prepareSettings( Settings *settings ) override;
+	void setup() override;
+	void resize() override;
+	void update() override;
+	void draw() override;
 
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
 
-	void keyDown( KeyEvent event );
-
-	void resize();
   private:
 	void createGrid();
 	void createPhongShader();
