@@ -453,11 +453,9 @@ void GeometryApp::createPrimitive()
 	if( mWireframeShader )
 		mPrimitiveWireframe = gl::Batch::create( mesh, mWireframeShader );
 
-	// FIXME: can't use TriMesh calculated above because the stock shader doesn't define normals, hence geom doesn't provide them
-	// - using the source directly sneakily steps around this because most of them ignore the requestedAttribs set and create normals anyway.
 	vec3 size = bbox.getMax() - bbox.getMin();
 	float scale = std::max( std::max( size.x, size.y ), size.z ) / 25.0f;
-	mPrimitiveNormalLines = gl::Batch::create( geom::VertexNormalLines( *primitive, scale ), gl::getStockShader( gl::ShaderDef().color() ) );
+	mPrimitiveNormalLines = gl::Batch::create( geom::VertexNormalLines( mesh, scale ), gl::getStockShader( gl::ShaderDef().color() ) );
 
 	getWindow()->setTitle( "Geometry - " + to_string( mesh.getNumVertices() ) + " vertices" );
 }
