@@ -66,6 +66,7 @@ class GeometryApp : public AppNative {
 	MayaCamUI			mMayaCam;
 	bool				mRecenterCamera;
 	vec3				mCameraCOI;
+	double				mLastMouseDownTime;
 
 	gl::VertBatchRef	mGrid;
 
@@ -96,7 +97,7 @@ void GeometryApp::setup()
 	mPrimitiveSelected = mPrimitiveCurrent = TORUS;
 	mQualitySelected = mQualityCurrent = HIGH;
 	mViewMode = SHADED;
-
+	mLastMouseDownTime = 0;
 	mShowColors = false;
 	mShowNormals = false;
 	mShowGrid = true;
@@ -218,6 +219,13 @@ void GeometryApp::mouseDown( MouseEvent event )
 
 	mMayaCam.setCurrentCam( mCamera );
 	mMayaCam.mouseDown( event.getPos() );
+
+	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
+		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
+		createPrimitive();
+	}
+
+	mLastMouseDownTime = getElapsedSeconds();
 }
 
 void GeometryApp::mouseDrag( MouseEvent event )
