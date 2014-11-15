@@ -25,11 +25,10 @@
 
 #pragma once
 
-#include "cinder/TriMesh.h"
-#include "cinder/Stream.h"
+#include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
 #include "cinder/GeomIo.h"
 
-#include <boost/logic/tribool.hpp>
 #include <boost/tuple/tuple_comparison.hpp>
 #include <map>
 
