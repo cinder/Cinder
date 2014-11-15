@@ -11,6 +11,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/params/Params.h"
+#include "cinder/Log.h"
 
 #include "DebugMesh.h"
 
@@ -257,6 +258,7 @@ void GeometryApp::keyDown( KeyEvent event )
 				mViewMode = WIREFRAME;
 			break;
 		case KeyEvent::KEY_RETURN:
+			CI_LOG_V( "reload" );
 			createPhongShader();
 			createPrimitive();
 			break;
@@ -329,7 +331,7 @@ void GeometryApp::createGrid()
 	mGrid->end();
 }
 
-void GeometryApp::createPrimitive(void)
+void GeometryApp::createPrimitive()
 {
 	geom::SourceRef primitive;
 	std::string     name;
@@ -440,198 +442,31 @@ void GeometryApp::createPrimitive(void)
 	getWindow()->setTitle( "Geometry - " + to_string( mesh.getNumVertices() ) + " vertices" );
 }
 
-void GeometryApp::createPhongShader(void)
+void GeometryApp::createPhongShader()
 {
 	try {
-		mPhongShader = gl::GlslProg::create( gl::GlslProg::Format()
-			.vertex(
-				"#version 150\n"
-				"\n"
-				"uniform mat4	ciModelViewProjection;\n"
-				"uniform mat4	ciModelView;\n"
-				"uniform mat3	ciNormalMatrix;\n"
-				"\n"
-				"in vec4		ciPosition;\n"
-				"in vec3		ciNormal;\n"
-				"in vec4		ciColor;\n"
-				"in vec2		ciTexCoord0;\n"
-				"\n"
-				"out VertexData {\n"
-				"	vec4 position;\n"
-				"	vec3 normal;\n"
-				"	vec4 color;\n"
-				"	vec2 texCoord;\n"
-				"} vVertexOut;\n"
-				"\n"
-				"void main(void) {\n"
-				"	vVertexOut.position = ciModelView * ciPosition;\n"
-				"	vVertexOut.normal = ciNormalMatrix * ciNormal;\n"
-				"	vVertexOut.color = ciColor;\n"
-				"	vVertexOut.texCoord = ciTexCoord0;\n"
-				"	gl_Position = ciModelViewProjection * ciPosition;\n"
-				"}\n"
-			)
-			.fragment(
-				"#version 150\n"
-				"\n"
-				"in VertexData	{\n"
-				"	vec4 position;\n"
-				"	vec3 normal;\n"
-				"	vec4 color;\n"
-				"	vec2 texCoord;\n"
-				"} vVertexIn;\n"
-				"\n"
-				"out vec4 oColor;\n"
-				"\n"
-				"void main(void) {\n"
-				"	// set diffuse and specular colors\n"
-				"	vec3 cDiffuse = vVertexIn.color.rgb;\n"
-				"	vec3 cSpecular = vec3(0.3, 0.3, 0.3);\n"
-				"\n"
-				"	// light properties in view space\n"
-				"	vec3 vLightPosition = vec3(0.0, 0.0, 0.0);\n"
-				"\n"
-				"	// lighting calculations\n"
-				"	vec3 vVertex = vVertexIn.position.xyz;\n"
-				"	vec3 vNormal = normalize( vVertexIn.normal );\n"
-				"	vec3 vToLight = normalize( vLightPosition - vVertex );\n"
-				"	vec3 vToEye = normalize( -vVertex );\n"
-				"	vec3 vReflect = normalize( -reflect(vToLight, vNormal) );\n"
-				"\n"
-				"	// diffuse coefficient\n"
-				"	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;\n"
-				"\n"
-				"	// texCoord checkerboard\n"
-				"	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2) == 0 )\n"
-				"		diffuse *= vec3( 0.5, 0.5, 0.5 );\n"
-				"\n"
-				"	// specular coefficient with energy conservation\n"
-				"	const float shininess = 20.0;\n"
-				"	const float coeff = (2.0 + shininess) / (2.0 * 3.14159265);\n"
-				"	vec3 specular = pow( max( dot( vReflect, vToEye ), 0.0 ), shininess ) * coeff * cSpecular;\n"
-				"\n"
-				"	// to conserve energy, diffuse and specular colors should not exceed one\n"
-				"	float maxDiffuse = max(diffuse.r, max(diffuse.g, diffuse.b));\n"
-				"	float maxSpecular = max(specular.r, max(specular.g, specular.b));\n"
-				"	float fConserve = 1.0 / max(1.0, maxDiffuse + maxSpecular);\n"
-				"\n"
-				"	// final color\n"
-				"	oColor.rgb = (diffuse + specular) * fConserve;\n"
-				"	oColor.a = 1.0;\n"
-				"}\n"
-			)
-		);
+		mPhongShader = gl::GlslProg::create( loadAsset( "phong.vert" ), loadAsset( "phong.frag" ) );
 	}
-	catch( const std::exception& e ) {
-		console() << e.what() << std::endl;
+	catch( Exception &exc ) {
+		CI_LOG_E( "error loading phong shader: " << exc.what() );
 	}
 }
 
 void GeometryApp::createWireframeShader()
 {
+#if ! defined( CINDER_GL_ES )
 	try {
-		mWireframeShader = gl::GlslProg::create( gl::GlslProg::Format()
-			.vertex(
-				"#version 150\n"
-				"\n"
-				"uniform mat4	ciModelViewProjection;\n"
-				"in vec4		ciPosition;\n"
-				"in vec4		ciColor;\n"
-				"in vec2		ciTexCoord0;\n"
-				"\n"
-				"out VertexData {\n"
-				"	vec4 color;\n"
-				"	vec2 texcoord;\n"
-				"} vVertexOut;\n"
-				"\n"
-				"void main(void) {\n"
-				"	vVertexOut.color = ciColor;\n"
-				"	vVertexOut.texcoord = ciTexCoord0;\n"
-				"	gl_Position = ciModelViewProjection * ciPosition;\n"
-				"}\n"
-			) 
-			.geometry(
-				"#version 150\n"
-				"\n"
-				"layout (triangles) in;\n"
-				"layout (triangle_strip, max_vertices = 3) out;\n"
-				"\n"
-				"uniform vec2 			uViewportSize;\n"
-				"\n"
-				"in VertexData	{\n"
-				"	vec4 color;\n"
-				"	vec2 texcoord;\n"
-				"} vVertexIn[];\n"
-				"\n"
-				"out VertexData	{\n"
-				"	noperspective vec3 distance;\n"
-				"	vec4 color;\n"
-				"	vec2 texcoord;\n"
-				"} vVertexOut;\n"
-				"\n"
-				"void main(void)\n"
-				"{\n"
-				"	// taken from 'Single-Pass Wireframe Rendering'\n"
-				"	vec2 p0 = uViewportSize * gl_in[0].gl_Position.xy / gl_in[0].gl_Position.w;\n"
-				"	vec2 p1 = uViewportSize * gl_in[1].gl_Position.xy / gl_in[1].gl_Position.w;\n"
-				"	vec2 p2 = uViewportSize * gl_in[2].gl_Position.xy / gl_in[2].gl_Position.w;\n"
-				"\n"
-				"	vec2 v0 = p2-p1;\n"
-				"	vec2 v1 = p2-p0;\n"
-				"	vec2 v2 = p1-p0;\n"
-				"	float fArea = abs(v1.x*v2.y - v1.y * v2.x);\n"
-				"\n"
-				"	vVertexOut.distance = vec3(fArea/length(v0),0,0);\n"
-				"	vVertexOut.color = vVertexIn[0].color;\n"
-				"	vVertexOut.texcoord = vVertexIn[0].texcoord;\n"
-				"	gl_Position = gl_in[0].gl_Position;\n"
-				"	EmitVertex();\n"
-				"\n"
-				"	vVertexOut.distance = vec3(0,fArea/length(v1),0);\n"
-				"	vVertexOut.color = vVertexIn[1].color;\n"
-				"	vVertexOut.texcoord = vVertexIn[1].texcoord;\n"
-				"	gl_Position = gl_in[1].gl_Position;\n"
-				"	EmitVertex();\n"
-				"\n"
-				"	vVertexOut.distance = vec3(0,0,fArea/length(v2));\n"
-				"	vVertexOut.color = vVertexIn[2].color;\n"
-				"	vVertexOut.texcoord = vVertexIn[2].texcoord;\n"
-				"	gl_Position = gl_in[2].gl_Position;\n"
-				"	EmitVertex();\n"
-				"\n"
-				"	EndPrimitive();\n"
-				"}\n"
-			) 
-			.fragment(
-				"#version 150\n"
-				"\n"
-				"uniform float uBrightness;\n"
-				"\n"
-				"in VertexData	{\n"
-				"	noperspective vec3 distance;\n"
-				"	vec4 color;\n"
-				"	vec2 texcoord;\n"
-				"} vVertexIn;\n"
-				"\n"
-				"out vec4				oColor;\n"
-				"\n"
-				"void main(void) {\n"
-				"	// determine frag distance to closest edge\n"
-				"	float fNearest = min(min(vVertexIn.distance[0],vVertexIn.distance[1]),vVertexIn.distance[2]);\n"
-				"	float fEdgeIntensity = exp2(-1.0*fNearest*fNearest);\n"
-				"\n"
-				"	// blend between edge color and face color\n"
-				"	vec3 vFaceColor = vVertexIn.color.rgb;\n"
-				"	vec3 vEdgeColor = vec3(0.2, 0.2, 0.2);\n"
-				"	oColor.rgb = mix(vFaceColor, vEdgeColor, fEdgeIntensity) * uBrightness;\n"
-				"	oColor.a = 0.65;\n"
-				"}\n"
-			)
-		);
+		auto format = gl::GlslProg::Format()
+			.vertex( loadAsset( "wireframe.vert" ) )
+			.geometry( loadAsset( "wireframe.geom" ) )
+			.fragment( loadAsset( "wireframe.frag" ) );
+
+		mWireframeShader = gl::GlslProg::create( format );
 	}
-	catch( const std::exception& e ) {
-		console() << e.what() << std::endl;
+	catch( Exception &exc ) {
+		CI_LOG_E( "error loading wireframe shader: " << exc.what() );
 	}
+#endif // ! defined( CINDER_GL_ES )
 }
 
 CINDER_APP_NATIVE( GeometryApp, RendererGl )

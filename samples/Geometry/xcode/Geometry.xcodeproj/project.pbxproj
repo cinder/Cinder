@@ -10,7 +10,6 @@
 		005783EC189D935000D6FB4C /* DebugMesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005783EB189D935000D6FB4C /* DebugMesh.cpp */; };
 		006D72C619953267008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72C419953267008149E2 /* AVFoundation.framework */; };
 		006D72C719953267008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72C519953267008149E2 /* CoreMedia.framework */; };
-		0089674E1A1678A1002A57DB /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 0089674D1A1678A1002A57DB /* assets */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
 		00B784B30FF439BC000DE1D7 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784AF0FF439BC000DE1D7 /* Accelerate.framework */; };
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
@@ -68,13 +67,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -120,7 +112,6 @@
 			isa = PBXGroup;
 			children = (
 				0089674D1A1678A1002A57DB /* assets */,
-				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -213,7 +204,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				2D4F733DA474454B814B16FE /* CinderApp.icns in Resources */,
-				0089674E1A1678A1002A57DB /* assets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
