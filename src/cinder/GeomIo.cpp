@@ -2660,7 +2660,7 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ_WRITE;
 	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
 	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
-	mSource.loadInto( &modifier, requestedAttribs );
+	mSource.loadInto( &modifier, { Attrib::POSITION, Attrib::NORMAL } );
 
 	const size_t numInIndices = modifier.getNumIndices();
 	const size_t numInVertices = mSource.getNumVertices();
