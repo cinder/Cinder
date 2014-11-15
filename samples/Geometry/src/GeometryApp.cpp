@@ -71,7 +71,7 @@ class GeometryApp : public AppNative {
 
 	gl::BatchRef		mPrimitive;
 	gl::BatchRef		mPrimitiveWireframe;
-	gl::BatchRef		mNormals;
+	gl::BatchRef		mPrimitiveNormalLines;
 
 	gl::GlslProgRef		mPhongShader;
 	gl::GlslProgRef		mWireframeShader;
@@ -167,12 +167,14 @@ void GeometryApp::draw()
 		gl::rotate( float( getElapsedSeconds() / 5 ), 0.0f, 1.0f, 0.0f );
 
 		// Draw the normals.
-		if( mShowNormals && mNormals )
-			mNormals->draw();
+		if( mShowNormals && mPrimitiveNormalLines ) {
+			gl::ScopedColor colorScope( Color( 1, 1, 0 ) );
+			mPrimitiveNormalLines->draw();
+		}
 
 		// Draw the primitive.
-		gl::color( Color(0.7f, 0.5f, 0.3f) );
-		
+		gl::ScopedColor colorScope( Color( 0.7f, 0.5f, 0.3f ) );
+
 		// (If transparent, render the back side first).
 		if( mViewMode == WIREFRAME ) {
 			gl::enableAlphaBlending();
@@ -428,7 +430,9 @@ void GeometryApp::createPrimitive()
 	TriMesh::Format fmt = TriMesh::Format().positions().normals().texCoords();
 	if( mShowColors && primitive->getAvailableAttribs().count( geom::COLOR ) > 0 )
 		fmt.colors();
+
 	TriMesh mesh( *primitive, fmt );
+	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 
@@ -437,7 +441,12 @@ void GeometryApp::createPrimitive()
 
 	mPrimitive = gl::Batch::create( mesh, mPhongShader );
 	mPrimitiveWireframe = gl::Batch::create( mesh, mWireframeShader );
-	mNormals = gl::Batch::create( DebugMesh( mesh, Color(1,1,0) ), gl::context()->getStockShader( gl::ShaderDef().color() ) );
+
+	// FIXME: can't use TriMesh calculated above because the stock shader doesn't define normals, hence geom doesn't provide them
+	// - using the source directly sneakily steps around this because most of them ignore the requestedAttribs set and create normals anyway.
+	vec3 size = bbox.getMax() - bbox.getMin();
+	float scale = std::max( std::max( size.x, size.y ), size.z ) / 25.0f;
+	mPrimitiveNormalLines = gl::Batch::create( geom::VertexNormalLines( *primitive, scale ), gl::getStockShader( gl::ShaderDef().color() ) );
 
 	getWindow()->setTitle( "Geometry - " + to_string( mesh.getNumVertices() ) + " vertices" );
 }
