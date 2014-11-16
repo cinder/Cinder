@@ -107,7 +107,6 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\DebugMesh.cpp" />
     <ClCompile Include="..\src\GeometryApp.cpp" />
   </ItemGroup>
   <ItemGroup>
