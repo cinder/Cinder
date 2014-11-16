@@ -113,6 +113,13 @@ void Timeline::apply( TimelineItemRef item )
 	insert( item );
 }
 
+void Timeline::applyAt( TimelineItemRef item )
+{
+	if( item->getTarget() )
+		removeTargetAt( item->getTarget(), item->getStartTime() );
+	insert( item );
+}
+
 void Timeline::add( TimelineItemRef item )
 {
 	item->mParent = this;
@@ -247,6 +254,21 @@ void Timeline::removeTarget( void *target )
 	pair<s_iter,s_iter> range = mItems.equal_range( target );
 	for( s_iter iter = range.first; iter != range.second; ++iter )
 		iter->second->mMarkedForRemoval = true;
+
+	setDurationDirty();
+}
+
+void Timeline::removeTargetAt( void *target, float time )
+{
+	if( target == 0 )
+		return;
+
+	pair<s_iter,s_iter> range = mItems.equal_range( target );
+	for( s_iter iter = range.first; iter != range.second; ++iter ) {
+
+		if( iter->second->getEndTime() >= time )
+			iter->second->mMarkedForRemoval = true;
+	}
 
 	setDurationDirty();
 }
