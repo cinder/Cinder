@@ -1,5 +1,8 @@
 #version 150
 
+uniform sampler2D	uTex0;
+uniform int			uTexturingMode;
+
 in VertexData	{
 	vec4 position;
 	vec3 normal;
@@ -28,9 +31,13 @@ void main()
 	// diffuse coefficient
 	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
 
-	// texCoord checkerboard
-	if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2 ) == 0 )
-		diffuse *= 0.5;
+	if( uTexturingMode == 1 ) {
+		// procedural texCoord checkerboard
+		if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2 ) == 0 )
+			diffuse *= 0.5;
+	}
+	else if ( uTexturingMode == 2 )
+		diffuse *= texture( uTex0, vVertexIn.texCoord.st ).rgb;
 
 	// specular coefficient with energy conservation
 	const float shininess = 20.0;

@@ -22,6 +22,7 @@ class GeometryApp : public AppNative {
 	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE };
 	enum Quality { LOW, DEFAULT, HIGH };
 	enum ViewMode { SHADED, WIREFRAME };
+	enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
 
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
@@ -48,6 +49,7 @@ class GeometryApp : public AppNative {
 	ViewMode			mViewMode;
 
 	int					mSubdivision;
+	int					mTexturingMode;
 
 	bool				mShowColors;
 	bool				mShowNormals;
@@ -88,6 +90,7 @@ void GeometryApp::setup()
 	// Initialize variables.
 	mPrimitiveSelected = mPrimitiveCurrent = TORUS;
 	mQualitySelected = mQualityCurrent = HIGH;
+	mTexturingMode = PROCEDURAL;
 	mViewMode = SHADED;
 	mLastMouseDownTime = 0;
 	mShowColors = false;
@@ -157,6 +160,7 @@ void GeometryApp::draw()
 
 	if( mPrimitive ) {
 		gl::ScopedTextureBind scopedTextureBind( mTexture );
+		mPhongShader->uniform( "uTexturingMode", mTexturingMode );
 
 		// Rotate it slowly around the y-axis.
 		gl::pushModelView();
@@ -275,14 +279,16 @@ void GeometryApp::createParams()
 #if ! defined( CINDER_GL_ES )
 	std::string primitives[] = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane" };
 	std::string qualities[] = { "Low", "Default", "High" };
-	std::string viewmodes[] = { "Shaded", "Wireframe" };
+	std::string viewModes[] = { "Shaded", "Wireframe" };
+	std::string texturingModes[] = { "None", "Procedural", "Sampler" };
 
 	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 200 ) ) );
 	mParams->setOptions( "", "valueswidth=160 refresh=0.1" );
 
 	mParams->addParam( "Primitive", vector<string>( primitives, primitives + 11 ), (int*) &mPrimitiveSelected );
 	mParams->addParam( "Quality", vector<string>( qualities, qualities + 3 ), (int*) &mQualitySelected );
-	mParams->addParam( "Viewing Mode", vector<string>( viewmodes, viewmodes + 2 ), (int*) &mViewMode );
+	mParams->addParam( "Viewing Mode", vector<string>( viewModes, viewModes + 2 ), (int*) &mViewMode );
+	mParams->addParam( "Texturing Mode", vector<string>( texturingModes, texturingModes + 3 ), (int*) &mTexturingMode );
 
 	mParams->addSeparator();
 
