@@ -567,6 +567,8 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		}
 	}
 
+	mNormalsDims = 3;
+
 	return true;
 }
 
