@@ -46,7 +46,7 @@ public:
 	audio::GenNodeRef		mGen, mNoise;
 
 	vector<TestWidget *>	mWidgets;
-	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton;
+	Button					mPlayButton, mEnableNoiseButton, mEnableSineButton, mDelayedEnableButton;
 	VSelector				mTestSelector;
 	HSlider					mGainSlider;
 
@@ -285,18 +285,25 @@ void NodeTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
+	Rectf buttonRect( 0, 70, 200, 120 );
+
 	mEnableSineButton.mIsToggle = true;
 	mEnableSineButton.mTitleNormal = "sine disabled";
 	mEnableSineButton.mTitleEnabled = "sine enabled";
-	mEnableSineButton.mBounds = Rectf( 0, 70, 200, 120 );
+	mEnableSineButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableSineButton );
 
+	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
 	mEnableNoiseButton.mIsToggle = true;
 	mEnableNoiseButton.mTitleNormal = "noise disabled";
 	mEnableNoiseButton.mTitleEnabled = "noise enabled";
-	mEnableNoiseButton.mBounds = mEnableSineButton.mBounds + Vec2f( 0, mEnableSineButton.mBounds.getHeight() + 10 );
+	mEnableNoiseButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableNoiseButton );
 
+	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	mDelayedEnableButton.mTitleNormal = "delayed enable";
+	mDelayedEnableButton.mBounds = buttonRect;
+	mWidgets.push_back( &mDelayedEnableButton );
 
 	getWindow()->getSignalMouseDown().connect( [this] ( MouseEvent &event ) { processTap( event.getPos() ); } );
 	getWindow()->getSignalMouseDrag().connect( [this] ( MouseEvent &event ) { processDrag( event.getPos() ); } );
@@ -325,6 +332,9 @@ void NodeTestApp::processTap( Vec2i pos )
 		mGen->setEnabled( ! mGen->isEnabled() );
 	if( mNoise && mEnableNoiseButton.hitTest( pos ) ) // FIXME: this check doesn't work any more because there is always an mNoise / mGen
 		mNoise->setEnabled( ! mNoise->isEnabled() );
+	if( mDelayedEnableButton.hitTest( pos ) ) {
+		mGen->setEnabled( ! mGen->isEnabled(), ctx->getNumProcessedSeconds() + 1.0 );
+	}
 
 	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
 	if( mTestSelector.hitTest( pos ) && currentIndex != mTestSelector.mCurrentSectionIndex ) {

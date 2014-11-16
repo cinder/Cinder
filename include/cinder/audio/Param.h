@@ -52,25 +52,32 @@ class Event {
 	float getTimeBegin()		const	{ return mTimeBegin; }
 	float getTimeEnd()			const	{ return mTimeEnd; }
 	float getDuration()			const	{ return mDuration; }
+	//! \note if getCopyValueOnBegin() is true then the begin value may not be known until the Event begins to be processed.
 	float getValueBegin()		const	{ return mValueBegin; }
 	float getValueEnd()			const	{ return mValueEnd; }
 	const RampFn& getRampFn()	const	{ return mRampFn; }
+	//! Returns whether the Param's current value will be copied when this Event begins or not.
+	bool getCopyValueOnBegin()  const	{ return mCopyValueOnBegin; }
+	//! Sets the value that will be used when this Event begins.
+	void setValueBegin( float value )	{ mValueBegin = value; mCopyValueOnBegin = false; }
 
 	void cancel()				{ mIsCanceled = true; }
 	bool isComplete() const		{ return mIsComplete; }
 
   private:
-	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, const RampFn &rampFn );
+	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn );
 
 	float				mTimeBegin, mTimeEnd, mDuration;
 	float				mValueBegin, mValueEnd;
 	std::atomic<bool>	mIsComplete, mIsCanceled;
+	bool				mCopyValueOnBegin;
+
 	RampFn	mRampFn;
 
 	friend class Param;
 };
 
-//! \brief Allows an audio parameter to be controlled over time with sample accuracate curves.
+//! \brief Allows an audio parameter to be controlled over time with sample accurate curves.
 
 //! The Param class enables expressive control over variables that control audio::Node's with a Timeline-esque API.
 //! It supports appending 'ramps' (audio animations) and maintains these in an internal timeline that is evaluated from the audio thread.
@@ -78,25 +85,33 @@ class Event {
 //!
 //! A Param is owned by a parent Node, from which it gains access to the current Context.  This is a necessary step in making it sample
 //! accurate yet still controllable in a thread-safe manager on the user thread.
+//!
+//! \note Ramp Events should not overlap, or you may get discontinuities in the evaluated curve. This could potentially happen when
+//! using multiple appendRamp() calls. Instead, use applyRamp() and set Options::beginTime() accordingly, which will remove any
+//! Events that would otherwise be overlapping.
 class Param {
   public:
 
 	//! Optional parameters when applying or appending ramps. \see applyRamp() \see appendRamp()
 	struct Options {
-		Options() : mDelay( 0 ), mRampFn( rampLinear ) {}
+		Options() : mDelay( 0 ), mBeginTime( -1 ), mRampFn( rampLinear ) {}
 
 		//! Specifies a delay of \a delay in seconds.
 		Options& delay( float delay )				{ mDelay = delay; return *this; }
+		//! Specifies the begin time in seconds. If this is value is greater or equal to zero, delay() is ignored.
+		Options& beginTime( float time )			{ mBeginTime = time; return *this; }
 		//! Specifies the ramping function used during evaluation.
 		Options& rampFn( const RampFn &rampFn )		{ mRampFn = rampFn; return *this; }
 
 		//! Returns the delay specified in seconds.
 		float getDelay() const				{ return mDelay; }
+		//! Returns the begin time specified in seconds.
+		float getBeginTime() const			{ return mBeginTime; }
 		//! Returns the ramping function that will be used during evaluation.
 		const RampFn&	getRampFn() const	{ return mRampFn; }
 
 	  private:
-		float mDelay;
+		float	mDelay, mBeginTime;
 		RampFn	mRampFn;
 	};
 
@@ -113,12 +128,14 @@ class Param {
 	//! Returns an array of values, time varying if `Event`s were processed, or filled with the a constant value if there were no `Event`s this block. \note Must call eval() once per block before using this method.
 	const float*	getValueArray();
 
-	//! Replaces any existing Event's with a Event from the current value to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	//! Apply a ramp Event from the current value to \a valueEnd over \a rampSeconds, replacing any existing Events when this one begins. Any existing processing Node is disconnected. \see Options.
 	EventRef applyRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
-	//! Replaces any existing Event's with a Event from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	//! Apply a ramp Event from t\a valueBegin to \a valueEnd over \a rampSeconds, replacing any existing Events when this one begins. Any existing processing Node is disconnected. \see Options.
 	EventRef applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
-	//! Appends a Event from the end of the last scheduled Param (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	//! Appends a ramp Event onto the end of the last scheduled Event (or the current time) to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
 	EventRef appendRamp( float valueEnd, float rampSeconds, const Options &options = Options() );
+	//! Appends an ramp Event onto the end of the last scheduled Event (or the current time), from \a valueBegin to \a valueEnd over \a rampSeconds, according to \a options. Any existing processing Node is disconnected.
+	EventRef appendRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options = Options() );
 
 	//! Sets this Param's input to be the processing performed by \a node. Any existing Event's are discarded. \note Forces \a node to be mono.
 	void	setProcessor( const NodeRef &node );
@@ -149,6 +166,7 @@ class Param {
 	// non-locking protected methods
 	void		initInternalBuffer();
 	void		resetImpl();
+	void		removeEventsAt( float time );
 	ContextRef	getContext() const;
 
 	std::list<EventRef>	mEvents;
