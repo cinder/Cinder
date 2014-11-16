@@ -42,12 +42,6 @@ class GeometryApp : public AppNative {
 	void createPrimitive();
 	void createParams();
 
-	void setSubdivision(int subdivision) { mSubdivision = math<int>::clamp(subdivision, 1, 5); createPrimitive(); }
-	int  getSubdivision() const { return mSubdivision; }
-
-	void enableColors(bool enabled=true) { mShowColors = enabled; createPrimitive(); }
-	bool isColorsEnabled() const { return mShowColors; }
-
 	Primitive			mPrimitiveSelected;
 	Primitive			mPrimitiveCurrent;
 	Quality				mQualitySelected;
@@ -285,28 +279,20 @@ void GeometryApp::createParams()
 	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 200 ) ) );
 	mParams->setOptions( "", "valueswidth=160 refresh=0.1" );
 
-	mParams->addParam( "Primitive", vector<string>(primitives,primitives+11), (int*) &mPrimitiveSelected );
-	mParams->addParam( "Quality", vector<string>(qualities,qualities+3), (int*) &mQualitySelected );
-	mParams->addParam( "Viewing Mode", vector<string>(viewmodes,viewmodes+2), (int*) &mViewMode );
+	mParams->addParam( "Primitive", vector<string>( primitives, primitives + 11 ), (int*) &mPrimitiveSelected );
+	mParams->addParam( "Quality", vector<string>( qualities, qualities + 3 ), (int*) &mQualitySelected );
+	mParams->addParam( "Viewing Mode", vector<string>( viewmodes, viewmodes + 2 ), (int*) &mViewMode );
 
 	mParams->addSeparator();
-	
-	{
-		std::function<void(int)> setter	= std::bind( &GeometryApp::setSubdivision, this, std::placeholders::_1 );
-		std::function<int()> getter		= std::bind( &GeometryApp::getSubdivision, this );
-		mParams->addParam( "Subdivision", setter, getter );
-	}
+
+	mParams->addParam( "Subdivision", &mSubdivision ).min( 1 ).max( 5 ).updateFn( [this] { createPrimitive(); } );
 
 	mParams->addSeparator();
 
 	mParams->addParam( "Show Grid", &mShowGrid );
 	mParams->addParam( "Show Normals", &mShowNormals );
-	{
-		std::function<void(bool)> setter	= std::bind( &GeometryApp::enableColors, this, std::placeholders::_1 );
-		std::function<bool()> getter		= std::bind( &GeometryApp::isColorsEnabled, this );
-		mParams->addParam( "Show Colors", setter, getter );
-	}
-	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [&] { gl::enableFaceCulling( mEnableFaceFulling ); } );
+	mParams->addParam( "Show Colors", &mShowColors ).updateFn( [this] { createPrimitive(); } );
+	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [this] { gl::enableFaceCulling( mEnableFaceFulling ); } );
 #endif
 }
 
