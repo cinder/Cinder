@@ -38,33 +38,61 @@ namespace cinder {
 
 geom::SourceRef	loadGeom( const fs::path &path )
 {
-return geom::SourceRef();
+	return geom::SourceRef();
 }
 
-ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeUVs )
-	: mStream( stream )
+ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords )
+	: mStream( stream ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( includeUVs );
-	load();
+	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeUVs )
-	: mStream( dataSource->createStream() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeNormals, bool includeTexCoords )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-	parse( includeUVs );
-	load();
+	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeUVs )
-    : mStream( dataSource->createStream() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals, bool includeTexCoords )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
 {
-    parseMaterial( materialSource->createStream() );
-    parse( includeUVs );
-	load();	
+	parseMaterial( materialSource->createStream() );
+	parse( includeNormals, includeTexCoords );
+}
+	
+ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
+{
+	if ( groupIndex < mGroups.size() ) {
+		if ( groupIndex != mGroupIndex ) {
+			mGroupIndex = groupIndex;
+			mOutputCached = false;
+		}
+	}
+
+	return *this;
 }
 
+ObjLoader& ObjLoader::groupName( const std::string &groupName )
+{
+	auto it = std::find_if( mGroups.begin(), mGroups.end(), [&] ( Group g ) {
+		return g.mName == groupName;
+	});
+	
+	if ( it != mGroups.end() ) {
+		size_t groupIndex = std::distance( mGroups.begin(), it );
+		if ( groupIndex != mGroupIndex ) {
+			mGroupIndex = groupIndex;
+			mOutputCached = false;
+		}
+	}
+	
+	return *this;
+}
+	
 void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
 {
+	load();
+	
 	// copy attributes
 	if( getAttribDims( geom::Attrib::POSITION ) )
 		target->copyAttrib( geom::Attrib::POSITION, getAttribDims( geom::Attrib::POSITION ), 0, (const float*)mOutputVertices.data(), getNumVertices() );
@@ -77,11 +105,13 @@ void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requested
 	
 	// copy indices
 	if( getNumIndices() )
-		target->copyIndices( geom::Primitive::TRIANGLES, mIndices.data(), getNumIndices(), 4 /* bytes per index */ );
+		target->copyIndices( geom::Primitive::TRIANGLES, mOutputIndices.data(), getNumIndices(), 4 /* bytes per index */ );
 }
 
 uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
 {
+	load();
+	
 	switch( attr ) {
 		case geom::Attrib::POSITION: return mOutputVertices.empty() ? 0 : 3;
 		case geom::Attrib::NORMAL: return mOutputNormals.empty() ? 0 : 3;
@@ -94,6 +124,8 @@ uint8_t	ObjLoader::getAttribDims( geom::Attrib attr ) const
 
 geom::AttribSet	ObjLoader::getAvailableAttribs() const
 {
+	load();
+
 	geom::AttribSet result;
 	
 	if( ! mOutputVertices.empty() )
@@ -141,7 +173,7 @@ void ObjLoader::parseMaterial( std::shared_ptr<IStreamCinder> material )
         mMaterials[m.mName] = m;
 }
 
-void ObjLoader::parse( bool includeUVs )
+void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 {
 	Group *currentGroup;
 	mGroups.push_back( Group() );
@@ -165,19 +197,21 @@ void ObjLoader::parse( bool includeUVs )
 			mInternalVertices.push_back( v );
 		}
 		else if( tag == "vt" ) { // vertex texture coordinates
-			if( includeUVs ) {
+			if( includeTexCoords ) {
 				vec2 tex;
 				ss >> tex.x >> tex.y;
 				mInternalTexCoords.push_back( tex );
 			}
 		}
 		else if( tag == "vn" ) { // vertex normals
-			vec3 v;
-			ss >> v.x >> v.y >> v.z;
-			mInternalNormals.push_back( normalize( v ) );
+			if ( includeNormals ) {
+				vec3 v;
+				ss >> v.x >> v.y >> v.z;
+				mInternalNormals.push_back( normalize( v ) );
+			}
 		}
 		else if( tag == "f" ) { // face
-			parseFace( currentGroup, currentMaterial, line, includeUVs );
+			parseFace( currentGroup, currentMaterial, line, includeNormals, includeTexCoords );
 		}
 		else if( tag == "g" ) { // group
 			if( ! currentGroup->mFaces.empty() )
@@ -199,7 +233,7 @@ void ObjLoader::parse( bool includeUVs )
 	}
 }
 
-void ObjLoader::parseFace( Group *group, const Material *material, const std::string &s, bool includeUVs )
+void ObjLoader::parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords )
 {
 	ObjLoader::Face result;
 	result.mNumVertices = 0;
@@ -235,7 +269,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			result.mVertexIndices.push_back( vertexIndex - 1 );
 			
 		// process the tex coord index
-		if( includeUVs && ( firstSlashOffset != string::npos ) ) {
+		if( includeTexCoords && ( firstSlashOffset != string::npos ) ) {
 			size_t numSize = ( secondSlashOffset == string::npos ) ? ( endOfTriple - firstSlashOffset - 1 ) : secondSlashOffset - firstSlashOffset - 1;
 			if( numSize > 0 ) {
 				int texCoordIndex = lexical_cast<int>( s.substr( firstSlashOffset + 1, numSize ) );
@@ -253,7 +287,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			group->mHasTexCoords = false;
 			
 		// process the normal index
-		if( secondSlashOffset != string::npos ) {
+		if( includeNormals && ( secondSlashOffset != string::npos ) ) {
 			int normalIndex = lexical_cast<int>( s.substr( secondSlashOffset + 1, endOfTriple - secondSlashOffset - 1 ) );
 			if( normalIndex < 0 )
 				result.mNormalIndices.push_back( group->mBaseNormalOffset + normalIndex );
@@ -270,45 +304,23 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 	
 	group->mFaces.push_back( result );
 }
-
-void ObjLoader::load( size_t groupIndex, boost::tribool loadNormals, boost::tribool loadTexCoords )
+	
+void ObjLoader::load() const
 {
+	if( mOutputCached )
+		return;
+
+	mOutputVertices.clear();
+	mOutputNormals.clear();
+	mOutputTexCoords.clear();
+	mOutputColors.clear();
+	mOutputIndices.clear();
+	
+	bool hasGroupIndex = ( mGroupIndex != numeric_limits<size_t>::max() );
+
 	bool texCoords;
-	if( loadTexCoords ) texCoords = true;
-	else if( ! loadTexCoords ) texCoords = false;
-	else texCoords = mGroups[groupIndex].mHasTexCoords;
-
-	bool normals;
-	if( loadNormals ) normals = true;
-	else if( ! loadNormals ) normals = false;
-	else normals = mGroups[groupIndex].mHasNormals;
-
-	if( normals && texCoords ) {
-		map<VertexTriple,int> uniqueVerts;
-		loadGroupNormalsTextures( mGroups[groupIndex], uniqueVerts );
-	}
-	else if( normals ) {
-		map<VertexPair,int> uniqueVerts;
-		loadGroupNormals( mGroups[groupIndex], uniqueVerts );
-	}
-	else if( texCoords ) {
-		map<VertexPair,int> uniqueVerts;
-		loadGroupTextures( mGroups[groupIndex], uniqueVerts );
-	}
+	if( hasGroupIndex ) texCoords = mGroups[mGroupIndex].mHasTexCoords;
 	else {
-		map<int,int> uniqueVerts;
-		loadGroup( mGroups[groupIndex], uniqueVerts );
-	}
-
-}
-
-void ObjLoader::load( boost::tribool loadNormals, boost::tribool loadTexCoords )
-{
-	// sort out if we're loading texCoords
-	bool texCoords, normals;
-	if( loadTexCoords ) texCoords = true;
-	else if( ! loadTexCoords ) texCoords = false;
-	else { // determine if any groups have texCoords
 		texCoords = false;
 		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt ) {
 			if( groupIt->mHasTexCoords ) {
@@ -317,11 +329,10 @@ void ObjLoader::load( boost::tribool loadNormals, boost::tribool loadTexCoords )
 			}
 		}
 	}
-
-	// sort out if we're loading normals
-	if( loadNormals ) normals = true;
-	else if( ! loadNormals ) normals = false;
-	else { // determine if any groups have normals
+	
+	bool normals;
+	if( hasGroupIndex ) normals = mGroups[mGroupIndex].mHasNormals;
+	else {
 		normals = false;
 		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt ) {
 			if( groupIt->mHasNormals ) {
@@ -330,30 +341,52 @@ void ObjLoader::load( boost::tribool loadNormals, boost::tribool loadTexCoords )
 			}
 		}
 	}
-
+	
 	if( normals && texCoords ) {
-		map<VertexTriple,int> uniqueVerts;
-		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
-			loadGroupNormalsTextures( *groupIt, uniqueVerts );
+		if ( hasGroupIndex ) {
+			map<VertexTriple,int> uniqueVerts;
+			loadGroupNormalsTextures( mGroups[mGroupIndex], uniqueVerts );
+		} else {
+			map<VertexTriple,int> uniqueVerts;
+			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
+				loadGroupNormalsTextures( *groupIt, uniqueVerts );
+		}
 	}
 	else if( normals ) {
-		map<VertexPair,int> uniqueVerts;
-		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
-			loadGroupNormals( *groupIt, uniqueVerts );
+		if ( hasGroupIndex ) {
+			map<VertexPair,int> uniqueVerts;
+			loadGroupNormals( mGroups[mGroupIndex], uniqueVerts );
+		} else {
+			map<VertexPair,int> uniqueVerts;
+			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
+				loadGroupNormals( *groupIt, uniqueVerts );
+		}
 	}
 	else if( texCoords ) {
-		map<VertexPair,int> uniqueVerts;
-		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
-			loadGroupTextures( *groupIt, uniqueVerts );
+		if ( hasGroupIndex ) {
+			map<VertexPair,int> uniqueVerts;
+			loadGroupTextures( mGroups[mGroupIndex], uniqueVerts );
+		} else {
+			map<VertexPair,int> uniqueVerts;
+			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
+				loadGroupTextures( *groupIt, uniqueVerts );
+		}
 	}
 	else {
-		map<int,int> uniqueVerts;
-		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
-			loadGroup( *groupIt, uniqueVerts );
+		if ( hasGroupIndex ) {
+			map<int,int> uniqueVerts;
+			loadGroup( mGroups[mGroupIndex], uniqueVerts );
+		} else {
+			map<int,int> uniqueVerts;
+			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
+				loadGroup( *groupIt, uniqueVerts );
+		}
 	}
+	
+	mOutputCached = true;
 }
 
-void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,int> &uniqueVerts )
+void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,int> &uniqueVerts ) const
 {
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
@@ -418,12 +451,12 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
 
-void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqueVerts )
+void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqueVerts ) const
 {
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
@@ -480,12 +513,12 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
 
-void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniqueVerts )
+void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniqueVerts ) const
 {
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
@@ -537,12 +570,12 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
 
-void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts )
+void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 {
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
@@ -575,7 +608,7 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts )
 
 		int32_t triangles = (int32_t)faceIndices.size() - 2;
 		for( int t = 0; t < triangles; ++t ) {
-			mIndices.push_back( faceIndices[0] ); mIndices.push_back( faceIndices[t + 1] ); mIndices.push_back( faceIndices[t + 2] );
+			mOutputIndices.push_back( faceIndices[0] ); mOutputIndices.push_back( faceIndices[t + 1] ); mOutputIndices.push_back( faceIndices[t + 2] );
 		}
 	}	
 }
