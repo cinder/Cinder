@@ -277,18 +277,18 @@ void GeometryApp::keyDown( KeyEvent event )
 void GeometryApp::createParams()
 {
 #if ! defined( CINDER_GL_ES )
-	std::string primitives[] = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane" };
-	std::string qualities[] = { "Low", "Default", "High" };
-	std::string viewModes[] = { "Shaded", "Wireframe" };
-	std::string texturingModes[] = { "None", "Procedural", "Sampler" };
+	vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane" };
+	vector<string> qualities = { "Low", "Default", "High" };
+	vector<string> viewModes = { "Shaded", "Wireframe" };
+	vector<string> texturingModes = { "None", "Procedural", "Sampler" };
 
 	mParams = params::InterfaceGl::create( getWindow(), "Geometry Demo", toPixels( ivec2( 300, 200 ) ) );
 	mParams->setOptions( "", "valueswidth=160 refresh=0.1" );
 
-	mParams->addParam( "Primitive", vector<string>( primitives, primitives + 11 ), (int*) &mPrimitiveSelected );
-	mParams->addParam( "Quality", vector<string>( qualities, qualities + 3 ), (int*) &mQualitySelected );
-	mParams->addParam( "Viewing Mode", vector<string>( viewModes, viewModes + 2 ), (int*) &mViewMode );
-	mParams->addParam( "Texturing Mode", vector<string>( texturingModes, texturingModes + 3 ), (int*) &mTexturingMode );
+	mParams->addParam( "Primitive", primitives, (int*) &mPrimitiveSelected );
+	mParams->addParam( "Quality", qualities, (int*) &mQualitySelected );
+	mParams->addParam( "Viewing Mode", viewModes, (int*) &mViewMode );
+	mParams->addParam( "Texturing Mode", texturingModes, (int*) &mTexturingMode );
 
 	mParams->addSeparator();
 
