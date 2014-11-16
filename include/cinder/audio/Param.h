@@ -56,8 +56,9 @@ class Event {
 	float getValueBegin()		const	{ return mValueBegin; }
 	float getValueEnd()			const	{ return mValueEnd; }
 	const RampFn& getRampFn()	const	{ return mRampFn; }
-
+	//! Returns whether the Param's current value will be copied when this Event begins or not.
 	bool getCopyValueOnBegin()  const	{ return mCopyValueOnBegin; }
+	//! Sets the value that will be used when this Event begins.
 	void setValueBegin( float value )	{ mValueBegin = value; mCopyValueOnBegin = false; }
 
 	void cancel()				{ mIsCanceled = true; }
