@@ -39,7 +39,8 @@ class GeometryApp : public AppNative {
 	void createGrid();
 	void createPhongShader();
 	void createWireframeShader();
-	void createPrimitive();
+	void createGeometry();
+	void loadGeomSource( const geom::Source &source );
 	void createParams();
 
 	Primitive			mPrimitiveSelected;
@@ -114,7 +115,7 @@ void GeometryApp::setup()
 
 	// Create the meshes.
 	createGrid();
-	createPrimitive();
+	createGeometry();
 
 	// Enable the depth buffer.
 	gl::enableDepthRead();
@@ -131,7 +132,7 @@ void GeometryApp::update()
 		mSubdivision = 1;
 		mPrimitiveCurrent = mPrimitiveSelected;
 		mQualityCurrent = mQualitySelected;
-		createPrimitive();
+		createGeometry();
 	}
 
 	// After creating a new primitive, gradually move the camera to get a good view.
@@ -217,7 +218,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 
 	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
 		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
-		createPrimitive();
+		createGeometry();
 	}
 
 	mLastMouseDownTime = getElapsedSeconds();
@@ -242,11 +243,11 @@ void GeometryApp::keyDown( KeyEvent event )
 	switch( event.getCode() ) {
 		case KeyEvent::KEY_SPACE:
 			mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
-			createPrimitive();
+			createGeometry();
 			break;
 		case KeyEvent::KEY_c:
 			mShowColors = ! mShowColors;
-			createPrimitive();
+			createGeometry();
 			break;
 		case KeyEvent::KEY_n:
 			mShowNormals = ! mShowNormals;
@@ -266,7 +267,7 @@ void GeometryApp::keyDown( KeyEvent event )
 		case KeyEvent::KEY_RETURN:
 			CI_LOG_V( "reload" );
 			createPhongShader();
-			createPrimitive();
+			createGeometry();
 			break;
 	}
 }
@@ -287,13 +288,13 @@ void GeometryApp::createParams()
 
 	mParams->addSeparator();
 
-	mParams->addParam( "Subdivision", &mSubdivision ).min( 1 ).max( 5 ).updateFn( [this] { createPrimitive(); } );
+	mParams->addParam( "Subdivision", &mSubdivision ).min( 1 ).max( 5 ).updateFn( [this] { createGeometry(); } );
 
 	mParams->addSeparator();
 
 	mParams->addParam( "Show Grid", &mShowGrid );
 	mParams->addParam( "Show Normals", &mShowNormals );
-	mParams->addParam( "Show Colors", &mShowColors ).updateFn( [this] { createPrimitive(); } );
+	mParams->addParam( "Show Colors", &mShowColors ).updateFn( [this] { createGeometry(); } );
 	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [this] { gl::enableFaceCulling( mEnableFaceFulling ); } );
 #endif
 }
@@ -319,86 +320,85 @@ void GeometryApp::createGrid()
 	mGrid->end();
 }
 
-void GeometryApp::createPrimitive()
+void GeometryApp::createGeometry()
 {
 	geom::SourceRef primitive;
-	std::string     name;
 
 	switch( mPrimitiveCurrent ) {
-	default:
-		mPrimitiveSelected = CAPSULE;
-	case CAPSULE:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Capsule( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ) ); break;
-		}
-		break;
-	case CONE:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Cone() ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cone( geom::Cone().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cone( geom::Cone().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
-		}
-		break;
-	case CUBE:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Cube( geom::Cube() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cube( geom::Cube().subdivisions( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cube( geom::Cube().subdivisions( 10 ) ) ); break;
-		}
-		break;
-	case CYLINDER:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().subdivisionsAxis( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Cylinder( geom::Cylinder().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ) ); break;
-		}
-		break;
-	case HELIX:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Helix( geom::Helix() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 12 ).subdivisionsHeight( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Helix( geom::Helix().subdivisionsHeight( 60 ).subdivisionsHeight( 60 ) ) ); break;
-		}
-		break;
-	case ICOSAHEDRON:
-		primitive = geom::SourceRef( new geom::Icosahedron( geom::Icosahedron() ) );
-		break;
-	case ICOSPHERE:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivisions( 1 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Icosphere( geom::Icosphere().subdivisions( 5 ) ) ); break;
-		}
-		break;
-	case SPHERE:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().subdivisions( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Sphere( geom::Sphere().subdivisions( 60 ) ) ); break;
-		}
-		break;
-	case TEAPOT:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivisions( 2 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Teapot( geom::Teapot().subdivisions( 12 ) ) ); break;
-		}
-		break;
-	case TORUS:
-		switch(mQualityCurrent) {
-			case DEFAULT: primitive = geom::SourceRef( new geom::Torus( geom::Torus() ) ); break;
-			case LOW: primitive = geom::SourceRef( new geom::Torus( geom::Torus().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ) ) ); break;
-			case HIGH: primitive = geom::SourceRef( new geom::Torus( geom::Torus().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
-		}
-		break;
-	case PLANE:
+		default:
+			mPrimitiveSelected = CAPSULE;
+		case CAPSULE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Capsule( geom::Capsule() ) ); break;
+				case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ); break;
+				case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ); break;
+			}
+			break;
+		case CONE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cone() ); break;
+				case LOW:		loadGeomSource( geom::Cone( geom::Cone().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Cone( geom::Cone().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
+			}
+			break;
+		case CUBE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cube( geom::Cube() ) ); break;
+				case LOW:		loadGeomSource( geom::Cube( geom::Cube().subdivisions( 1 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Cube( geom::Cube().subdivisions( 10 ) ) ); break;
+			}
+			break;
+		case CYLINDER:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Cylinder( geom::Cylinder() ) ); break;
+				case LOW:		loadGeomSource( geom::Cylinder( geom::Cylinder().subdivisionsAxis( 6 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Cylinder( geom::Cylinder().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ) ) ); break;
+			}
+			break;
+		case HELIX:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Helix( geom::Helix() ) ); break;
+				case LOW:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsHeight( 12 ).subdivisionsHeight( 6 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsHeight( 60 ).subdivisionsHeight( 60 ) ) ); break;
+			}
+			break;
+		case ICOSAHEDRON:
+			loadGeomSource( geom::Icosahedron( geom::Icosahedron() ) );
+			break;
+		case ICOSPHERE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Icosphere( geom::Icosphere() ) ); break;
+				case LOW:		loadGeomSource( geom::Icosphere( geom::Icosphere().subdivisions( 1 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Icosphere( geom::Icosphere().subdivisions( 5 ) ) ); break;
+			}
+			break;
+		case SPHERE:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Sphere( geom::Sphere() ) ); break;
+				case LOW:		loadGeomSource( geom::Sphere( geom::Sphere().subdivisions( 6 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Sphere( geom::Sphere().subdivisions( 60 ) ) ); break;
+			}
+			break;
+		case TEAPOT:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Teapot( geom::Teapot() ) ); break;
+				case LOW:		loadGeomSource( geom::Teapot( geom::Teapot().subdivisions( 2 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Teapot( geom::Teapot().subdivisions( 12 ) ) ); break;
+			}
+			break;
+		case TORUS:
+			switch( mQualityCurrent ) {
+				case DEFAULT:	loadGeomSource( geom::Torus( geom::Torus() ) ); break;
+				case LOW:		loadGeomSource( geom::Torus( geom::Torus().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Torus( geom::Torus().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
+			}
+			break;
+		case PLANE:
 			ivec2 numSegments;
 			switch( mQualityCurrent ) {
-				case DEFAULT: numSegments = ivec2( 10, 10 ); break;
-				case LOW: numSegments = ivec2( 2, 2 ); break;
-				case HIGH: numSegments = ivec2( 100, 100 ); break;
+				case DEFAULT:	numSegments = ivec2( 10, 10 ); break;
+				case LOW:		numSegments = ivec2( 2, 2 ); break;
+				case HIGH:		numSegments = ivec2( 100, 100 ); break;
 			}
 
 			auto plane = geom::Plane().subdivisions( numSegments );
@@ -407,17 +407,19 @@ void GeometryApp::createPrimitive()
 //			plane.axes( vec3( 0.70710678118, -0.70710678118, 0 ), vec3( 0.70710678118, 0.70710678118, 0 ) ); // dictate plane u/v axes directly
 //			plane.subdivisions( ivec2( 3, 10 ) ).size( vec2( 0.5f, 2.0f ) ).origin( vec3( 0, 1.0f, 0 ) ).normal( vec3( 0, 0, 1 ) ); // change the size and origin so that it is tall and thin, above the y axis.
 
-			primitive = geom::SourceRef( new geom::Plane( plane ) );
-
+			loadGeomSource( geom::Plane( plane ) );
 			break;
 	}
+}
 
+void GeometryApp::loadGeomSource( const geom::Source &source )
+{
 	// The purpose of the TriMesh is to capture a bounding box; without that need we could just instantiate the Batch directly using primitive
 	TriMesh::Format fmt = TriMesh::Format().positions().normals().texCoords();
-	if( mShowColors && primitive->getAvailableAttribs().count( geom::COLOR ) > 0 )
+	if( mShowColors && source.getAvailableAttribs().count( geom::COLOR ) > 0 )
 		fmt.colors();
 
-	TriMesh mesh( *primitive, fmt );
+	TriMesh mesh( source, fmt );
 	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
 	mCameraCOI = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
