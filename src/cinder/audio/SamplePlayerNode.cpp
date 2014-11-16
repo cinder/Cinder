@@ -38,6 +38,7 @@ SamplePlayerNode::SamplePlayerNode( const Format &format )
 	: InputNode( format ), mNumFrames( 0 ), mReadPos( 0 ), mLoop( false ),
 		mLoopBegin( 0 ), mLoopEnd( 0 )
 {
+	setChannelMode( ChannelMode::SPECIFIED );
 }
 
 void SamplePlayerNode::start()
@@ -50,6 +51,16 @@ void SamplePlayerNode::stop()
 {
 	disable();
 	seek( 0 );
+}
+
+void SamplePlayerNode::start( double when )
+{
+	getContext()->schedule( when, shared_from_this(), true, [this] { start(); } );
+}
+
+void SamplePlayerNode::stop( double when )
+{
+	getContext()->schedule( when, shared_from_this(), false, [this] { stop(); } );
 }
 
 void SamplePlayerNode::setLoopBegin( size_t positionFrames )
@@ -116,7 +127,6 @@ BufferPlayerNode::BufferPlayerNode( const BufferRef &buffer, const Format &forma
 	mNumFrames = mLoopEnd = numFrames;
 
 	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( mBuffer->getNumChannels() );
 }
 
@@ -140,10 +150,6 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 {
 	lock_guard<mutex> lock( getContext()->getMutex() );
 
-	bool wasEnabled = isEnabled();
-	if( wasEnabled )
-		disable();
-
 	if( buffer ) {
 		if( getNumChannels() != buffer->getNumChannels() ) {
 			setNumChannels( buffer->getNumChannels() );
@@ -159,9 +165,6 @@ void BufferPlayerNode::setBuffer( const BufferRef &buffer )
 
 	if( ! mLoopEnd || mLoopEnd > mNumFrames )
 		mLoopEnd = mNumFrames;
-
-	if( wasEnabled )
-		enable();
 }
 
 void BufferPlayerNode::loadBuffer( const SourceFileRef &sourceFile )
@@ -177,16 +180,17 @@ void BufferPlayerNode::loadBuffer( const SourceFileRef &sourceFile )
 
 void BufferPlayerNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	size_t readPos = mReadPos;
-	size_t numFrames = buffer->getNumFrames();
+	size_t numFrames = frameRange.second - frameRange.first;
 	size_t readEnd = mLoop ? mLoopEnd.load() : mNumFrames;
 	size_t readCount = readEnd < readPos ? 0 : min( readEnd - readPos, numFrames );
 
-	buffer->copyOffset( *mBuffer, readCount, 0, readPos );
+	buffer->copyOffset( *mBuffer, readCount, frameRange.first, readPos );
 
 	if( readCount < numFrames  ) {
-		// End of File. If looping copy from beginning, otherwise zero the remainder, disable and mark the mIsEof.
-
+		// End of File. If looping copy from beginning, otherwise disable and mark the mIsEof.
 		if( mLoop ) {
 			size_t readBegin = mLoopBegin;
 			size_t readLeft = min( numFrames - readCount, mNumFrames - readBegin );
@@ -195,7 +199,6 @@ void BufferPlayerNode::process( Buffer *buffer )
 			mReadPos.store( readBegin + readLeft );
 		}
 		else {
-			buffer->zero( readCount, numFrames - readCount );
 			mIsEof = true;
 			mReadPos = mNumFrames;
 			disable();
@@ -212,20 +215,18 @@ void BufferPlayerNode::process( Buffer *buffer )
 FilePlayerNode::FilePlayerNode( const Format &format )
 	: SamplePlayerNode( format ), mRingBufferPaddingFactor( 2 ), mLastUnderrun( 0 ), mLastOverrun( 0 ), mIsReadAsync( true )
 {
-	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
 }
 
 FilePlayerNode::FilePlayerNode( const SourceFileRef &sourceFile, bool isReadAsync, const Format &format )
 	: SamplePlayerNode( format ), mSourceFile( sourceFile ), mIsReadAsync( isReadAsync ), mRingBufferPaddingFactor( 2 ),
 		mLastUnderrun( 0 ), mLastOverrun( 0 )
 {
-	if( mSourceFile )
+	if( mSourceFile ) {
 		mNumFrames = mSourceFile->getNumFrames();
 
-	// force channel mode to match buffer
-	setChannelMode( ChannelMode::SPECIFIED );
-	setNumChannels( mSourceFile->getNumChannels() );
+		// force channel mode to match buffer
+		setNumChannels( mSourceFile->getNumChannels() );
+	}
 }
 
 FilePlayerNode::~FilePlayerNode()
@@ -282,31 +283,40 @@ void FilePlayerNode::disableProcessing()
 
 void FilePlayerNode::stop()
 {
-	disable();
-
-	{
-		mutex &m = mIsReadAsync ? mAsyncReadMutex : getContext()->getMutex();
-		lock_guard<mutex> lock( m );
-
-		for( auto &ringBuffer : mRingBuffers )
-			ringBuffer.clear();
+	if( mIsReadAsync ) {
+		lock_guard<mutex> lock( mAsyncReadMutex );
+		stopImpl();
 	}
-
-	seek( 0 );
+	else {
+		auto ctx = getContext();
+		if( ! ctx->isAudioThread() ) {
+			lock_guard<mutex> lock( ctx->getMutex() );
+			stopImpl();
+		}
+		else {
+			// called from audio thread, lock is already held for the duration of this block
+			stopImpl();
+		}
+	}
 }
 
 void FilePlayerNode::seek( size_t readPositionFrames )
 {
-	if( ! mSourceFile )
-		return;
-
-	// Synchronize with the mutex that protects the read thread, which is different depending on if
-	// read is async or sync (done on audio thread)
-	mutex &m = mIsReadAsync ? mAsyncReadMutex : getContext()->getMutex();
-	lock_guard<mutex> lock( m );
-
-	mIsEof = false;
-	seekImpl( readPositionFrames );
+	if( mIsReadAsync ) {
+		lock_guard<mutex> lock( mAsyncReadMutex );
+		seekImpl( readPositionFrames );
+	}
+	else {
+		auto ctx = getContext();
+		if( ! ctx->isAudioThread() ) {
+			lock_guard<mutex> lock( ctx->getMutex() );
+			seekImpl( readPositionFrames );
+		}
+		else {
+			// called from audio thread, lock is already held for the duration of this block
+			seekImpl( readPositionFrames );
+		}
+	}
 }
 
 void FilePlayerNode::setSourceFile( const SourceFileRef &sourceFile )
@@ -371,12 +381,10 @@ void FilePlayerNode::process( Buffer *buffer )
 			mLastUnderrun = getContext()->getNumProcessedFrames();
 	}
 
-	// zero any unused frames, handle loop or EOF
+	// handle loop or EOF
 	if( readCount < numFrames ) {
 		// TODO: if looping, should fill with samples from the beginning of file
 		// - these should also already be in the ringbuffer, since a seek is done there as well. Rethink this path.
-		buffer->zero( readCount, numFrames - readCount );
-
 		readPos += readCount;
 		if( mLoop && readPos >= mLoopEnd )
 			seekImpl( mLoopBegin );
@@ -437,11 +445,25 @@ void FilePlayerNode::readImpl()
 
 void FilePlayerNode::seekImpl( size_t readPos )
 {
+	if( ! mSourceFile )
+		return;
+
+	mIsEof = false;
 	mReadPos = math<size_t>::clamp( readPos, 0, mNumFrames );
 
 	// if async mode, readAsyncImpl() will notice mReadPos was updated and do the seek there.
 	if( ! mIsReadAsync )
 		mSourceFile->seek( mReadPos );
+}
+
+void FilePlayerNode::stopImpl()
+{
+	disable();
+
+	for( auto &ringBuffer : mRingBuffers )
+		ringBuffer.clear();
+
+	seekImpl( 0 );
 }
 
 void FilePlayerNode::destroyReadThreadImpl()

@@ -67,10 +67,10 @@ void GenNode::initialize()
 
 void GenNoiseNode::process( Buffer *buffer )
 {
-	float *data = buffer->getData();
-	size_t count = buffer->getSize();
+	const auto &frameRange = getProcessFramesRange();
 
-	for( size_t i = 0; i < count; i++ )
+	float *data = buffer->getData();
+	for( size_t i = frameRange.first; i < frameRange.second; i++ )
 		data[i] = ci::randFloat( -1.0f, 1.0f );
 }
 
@@ -80,21 +80,22 @@ void GenNoiseNode::process( Buffer *buffer )
 
 void GenSineNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	float *data = buffer->getData();
-	const size_t count = buffer->getSize();
 	const float samplePeriod = mSamplePeriod;
 	float phase = mPhase;
 
 	if( mFreq.eval() ) {
 		const float *freqValues = mFreq.getValueArray();
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
 			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = math<float>::sin( phase * float( 2 * M_PI ) );
 			phase = fract( phase + phaseIncr );
 		}
@@ -109,21 +110,22 @@ void GenSineNode::process( Buffer *buffer )
 
 void GenPhasorNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	float *data = buffer->getData();
-	const size_t count = buffer->getSize();
 	const float samplePeriod = mSamplePeriod;
 	float phase = mPhase;
 
 	if( mFreq.eval() ) {
 		const float *freqValues = mFreq.getValueArray();
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = phase;
 			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
-		for( size_t i = 0; i < count; i++ ) {
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = phase;
 			phase = fract( phase + phaseIncr );
 		}
@@ -159,14 +161,15 @@ inline float calcTriangleSignal( float phase, float upSlope, float downSlope )
 
 void GenTriangleNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+
 	float *data = buffer->getData();
-	size_t count = buffer->getSize();
 	const float samplePeriod = mSamplePeriod;
 	float phase = mPhase;
 
 	if( mFreq.eval() ) {
 		const float *freqValues = mFreq.getValueArray();
-		for( size_t i = 0; i < count; i++ )	{
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = calcTriangleSignal( phase, mUpSlope, mDownSlope );
 			phase = fract( phase + freqValues[i] * samplePeriod );
 		}
@@ -174,7 +177,7 @@ void GenTriangleNode::process( Buffer *buffer )
 	}
 	else {
 		const float phaseIncr = mFreq.getValue() * samplePeriod;
-		for( size_t i = 0; i < count; i++ )	{
+		for( size_t i = frameRange.first; i < frameRange.second; i++ ) {
 			data[i] = calcTriangleSignal( phase, mUpSlope, mDownSlope );
 			phase = fract( phase + phaseIncr );
 		}
@@ -199,10 +202,13 @@ void GenTableNode::initialize()
 
 void GenTableNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+	size_t numFrames = frameRange.second - frameRange.first;
+
 	if( mFreq.eval() )
-		mPhase = mWaveTable->lookup( buffer->getData(), buffer->getSize(), mPhase, mFreq.getValueArray() );
+		mPhase = mWaveTable->lookup( buffer->getData() + frameRange.first, numFrames, mPhase, mFreq.getValueArray() + frameRange.first );
 	else
-		mPhase = mWaveTable->lookup( buffer->getData(), buffer->getSize(), mPhase, mFreq.getValue() );
+		mPhase = mWaveTable->lookup( buffer->getData() + frameRange.first, numFrames, mPhase, mFreq.getValue() );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -258,10 +264,13 @@ void GenOscNode::setWaveform( WaveformType waveformType )
 
 void GenOscNode::process( Buffer *buffer )
 {
+	const auto &frameRange = getProcessFramesRange();
+	size_t numFrames = frameRange.second - frameRange.first;
+
 	if( mFreq.eval() )
-		mPhase = mWaveTable->lookupBandlimited( buffer->getData(), buffer->getSize(), mPhase, mFreq.getValueArray() );
+		mPhase = mWaveTable->lookupBandlimited( buffer->getData() + frameRange.first, numFrames, mPhase, mFreq.getValueArray() + frameRange.first );
 	else
-		mPhase = mWaveTable->lookupBandlimited( buffer->getData(), buffer->getSize(), mPhase, mFreq.getValue() );
+		mPhase = mWaveTable->lookupBandlimited( buffer->getData() + frameRange.first, numFrames, mPhase, mFreq.getValue() );
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -299,17 +308,20 @@ void GenPulseNode::initialize()
 
 void GenPulseNode::process( Buffer *buffer )
 {
-	size_t numFrames = buffer->getNumFrames();
+	const auto &frameRange = getProcessFramesRange();
+
+	size_t numFrames = frameRange.second - frameRange.first;
+	float *outputData = buffer->getData() + frameRange.first;
+	float *data2 = mBuffer2.getData() + frameRange.first;
 	const float samplePeriod = mSamplePeriod;
 	float phase = mPhase;
 
 	if( mWidth.eval() ) {
-		float *data2 = mBuffer2.getData();
-		const float *widthArray = mWidth.getValueArray();
+		const float *widthArray = mWidth.getValueArray() + frameRange.first;
 
 		if( mFreq.eval() ) {
-			const float *f0Array = mFreq.getValueArray();
-			mPhase = mWaveTable->lookupBandlimited( buffer->getData(), numFrames, phase, f0Array );
+			const float *f0Array = mFreq.getValueArray() + frameRange.first;
+			mPhase = mWaveTable->lookupBandlimited( outputData, numFrames, phase, f0Array );
 
 			for( size_t i = 0; i < numFrames; i++ ) {
 				float f0 = f0Array[i];
@@ -323,7 +335,7 @@ void GenPulseNode::process( Buffer *buffer )
 		} else {
 			float f0 = mFreq.getValue();
 			float phaseIncr = f0 * samplePeriod;
-			mPhase = mWaveTable->lookupBandlimited( buffer->getData(), numFrames, phase, f0 );
+			mPhase = mWaveTable->lookupBandlimited( outputData, numFrames, phase, f0 );
 
 			for( size_t i = 0; i < numFrames; i++ ) {
 				float phaseOffset = widthArray[i];
@@ -339,19 +351,20 @@ void GenPulseNode::process( Buffer *buffer )
 		float phase2 = fract( phase + phaseOffset );
 
 		if( mFreq.eval() ) {
-			mPhase = mWaveTable->lookupBandlimited( buffer->getData(), numFrames, phase, mFreq.getValueArray() );
-			mWaveTable->lookupBandlimited( mBuffer2.getData(), numFrames, phase2, mFreq.getValueArray() );
+			const float *f0Array = mFreq.getValueArray() + frameRange.first;
+			mPhase = mWaveTable->lookupBandlimited( outputData, numFrames, phase, f0Array );
+			mWaveTable->lookupBandlimited( data2, numFrames, phase2, f0Array );
 		} else {
 			float f0 = mFreq.getValue();
-			mPhase = mWaveTable->lookupBandlimited( buffer->getData(), numFrames, phase, f0 );
-			mWaveTable->lookupBandlimited( mBuffer2.getData(), numFrames, phase2, f0 );
+			mPhase = mWaveTable->lookupBandlimited( outputData, numFrames, phase, f0 );
+			mWaveTable->lookupBandlimited( data2, numFrames, phase2, f0 );
 		}
 
 		float phaseCorrect = 1 - 2 * phaseOffset;
-		dsp::add( buffer->getData(), phaseCorrect, buffer->getData(), buffer->getSize() );
+		dsp::add( outputData, phaseCorrect, outputData, numFrames );
 	}
 
-	dsp::sub( buffer->getData(), mBuffer2.getData(), buffer->getData(), buffer->getSize() );
+	dsp::sub( outputData, data2, outputData, numFrames );
 }
 
 } } // namespace cinder::audio

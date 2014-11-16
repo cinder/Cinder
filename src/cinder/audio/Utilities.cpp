@@ -71,6 +71,11 @@ float midiToFreq( float midi )
 	return 8.17579891564f * math<float>::exp( .0577622650f * m );
 }
 
+uint64_t timeToFrame( double timeSeconds, double sampleRate )
+{
+	return static_cast<uint64_t>( lround( timeSeconds * sampleRate ) );
+}
+
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame )
 {
 	const float *buf = buffer.getData();

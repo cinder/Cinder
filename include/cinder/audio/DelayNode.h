@@ -48,9 +48,11 @@ class DelayNode : public Node {
 	void	setDelaySeconds( float seconds );
 	//! Returns the delay value in seconds.
 	float	getDelaySeconds() const				{ return mParamDelaySeconds.getValue(); }
-
 	//! Returns the Param used to automate the delay seconds. \note Values over max delay seconds will be clipped, causing pops.
 	Param*	getParamDelaySeconds()			{ return &mParamDelaySeconds; }
+
+	//! Clears any samples in the delay buffer (sets them to zero).
+	void clearBuffer();
 
   protected:
 	void initialize()				override;

@@ -39,6 +39,7 @@ class ParamTestApp : public AppNative {
 	void testDelay();
 	void testAppendCancel();
 	void testProcessor();
+	void testSchedule();
 
 	void writeParamEval( audio::Param *param );
 
@@ -48,7 +49,8 @@ class ParamTestApp : public AppNative {
 	audio::FilterLowPassNodeRef		mLowPass;
 
 	vector<TestWidget *>	mWidgets;
-	Button					mPlayButton, mApplyButton, mApply0Button, mApplyAppendButton, mAppendButton, mDelayButton, mProcessorButton, mAppendCancelButton;
+	Button					mPlayButton, mApplyButton, mApply0Button, mApplyAppendButton, mAppendButton;
+	Button					mDelayButton, mProcessorButton, mAppendCancelButton, mScheduleButton;
 	VSelector				mTestSelector;
 	HSlider					mGainSlider, mPanSlider, mLowPassFreqSlider, mGenFreqSlider;
 };
@@ -69,6 +71,7 @@ void ParamTestApp::setup()
 	mGen = ctx->makeNode( new audio::GenSineNode() );
 //	mGen = ctx->makeNode( new audio::GenTriangleNode() );
 //	mGen = ctx->makeNode( new audio::GenPhasorNode() );
+	mGen = ctx->makeNode( new audio::GenPulseNode );
 
 	mGen->setFreq( 220 );
 
@@ -102,7 +105,7 @@ void ParamTestApp::testApply()
 	// (a): ramp volume to 0.7 of 0.2 seconds
 //	mGain->getParam()->applyRamp( 0.7f, 0.2f );
 
-	mGen->getParamFreq()->applyRamp( 220, 440, 1 );
+	mGen->getParamFreq()->applyRamp( 220, 440, 2 );
 
 	// PSEUDO CODE: possible syntax where context keeps references to Params, calling updateValueArray() (or just process() ?) on them each block:
 	// - problem I have with this right now is that its alot more syntax for the common case (see: (a)) of ramping up volume
@@ -169,6 +172,12 @@ void ParamTestApp::testProcessor()
 	mGain->getParam()->setProcessor( mod );
 }
 
+void ParamTestApp::testSchedule()
+{
+	bool enabled = mGen->isEnabled();
+	mGen->setEnabled( ! enabled, audio::master()->getNumProcessedSeconds() + 0.5f );
+}
+
 void ParamTestApp::setupUI()
 {
 	const float padding = 10.0f;
@@ -211,6 +220,11 @@ void ParamTestApp::setupUI()
 	mAppendCancelButton = Button( false, "cancel" );
 	mAppendCancelButton.mBounds = paramButtonRect;
 	mWidgets.push_back( &mAppendCancelButton );
+
+	paramButtonRect += vec2( paramButtonRect.getWidth() + padding, 0 );
+	mScheduleButton = Button( false, "schedule" );
+	mScheduleButton.mBounds = paramButtonRect;
+	mWidgets.push_back( &mScheduleButton );
 
 	mTestSelector.mSegments.push_back( "basic" );
 	mTestSelector.mSegments.push_back( "filter" );
@@ -297,6 +311,8 @@ void ParamTestApp::processTap( ivec2 pos )
 		testProcessor();
 	else if( mAppendCancelButton.hitTest( pos ) )
 		testAppendCancel();
+	else if( mScheduleButton.hitTest( pos ) )
+		testSchedule();
 	else if( mTestSelector.hitTest( pos ) && selectorIndex != mTestSelector.mCurrentSectionIndex ) {
 		string currentTest = mTestSelector.currentSection();
 		CI_LOG_V( "selected: " << currentTest );

@@ -40,6 +40,7 @@ typedef std::shared_ptr<class FilePlayerNode>				FilePlayerNodeRef;
 //! \brief Base Node class for sampled audio playback. Can do operations like seek and loop.
 //!
 //! SamplePlayerNode itself doesn't process any audio, but contains the common interface for InputNode's that do.
+//! The ChannelMode is set to Node::ChannelMode::SPECIED and it always matches the sample's number of channels (or is equal to 1 if there is no source).
 //! \see BufferPlayerNode, FilePlayerNode
 class SamplePlayerNode : public InputNode {
   public:
@@ -47,11 +48,15 @@ class SamplePlayerNode : public InputNode {
 
 	//! Starts playing the sample from the beginning.
 	virtual void start();
+	//! Starts playing the sample at \a when seconds, measured against Context::getNumProcessedSeconds().
+	void start( double when );
 	//! Stops playing the sample, returns the read position to the beginning and disables processing.
 	virtual void stop();
+	//! Stops playing the sample at \a when seconds, measured against Context::getNumProcessedSeconds().
+	void stop( double when );
+
 	//! Seek the read position to \a readPositionFrames.
 	virtual void seek( size_t positionFrames ) = 0;
-
 	//! Seek to read position \a readPositionSeconds,
 	void seekToTime( double positionSeconds );
 	//! Returns the current read position in frames.
@@ -154,6 +159,7 @@ class FilePlayerNode : public SamplePlayerNode {
 	void readAsyncImpl();
 	void readImpl();
 	void seekImpl( size_t readPos );
+	void stopImpl();
 	void destroyReadThreadImpl();
 
 	std::vector<dsp::RingBuffer>				mRingBuffers;	// used to transfer samples from io to audio thread, one ring buffer per channel

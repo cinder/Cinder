@@ -145,6 +145,7 @@ OSStatus OutputDeviceNodeAudioUnit::renderCallback( void *data, ::AudioUnitRende
 	internalBuffer->zero();
 
 	renderData->context->setCurrentTimeStamp( timeStamp );
+	ctx->preProcess();
 	lineOut->pullInputs( internalBuffer );
 
 	// if clip detection is enabled and buffer clipped, silence it
@@ -215,7 +216,7 @@ void InputDeviceNodeAudioUnit::initialize()
 			lineOutAu->initialize();
 
 		if( lineOutWasEnabled )
-			lineOutAu->setEnabled();
+			lineOutAu->enable();
 	}
 	else {
 		if( device->getSampleRate() != sampleRate || device->getFramesPerBlock() != framesPerBlock )
