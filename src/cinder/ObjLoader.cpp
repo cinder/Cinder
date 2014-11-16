@@ -331,7 +331,9 @@ void ObjLoader::load() const
 	}
 	
 	bool normals;
-	if( hasGroupIndex ) normals = mGroups[mGroupIndex].mHasNormals;
+	if( hasGroupIndex ) {
+		normals = mGroups[mGroupIndex].mHasNormals;
+	}
 	else {
 		normals = false;
 		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt ) {
@@ -343,40 +345,44 @@ void ObjLoader::load() const
 	}
 	
 	if( normals && texCoords ) {
-		if ( hasGroupIndex ) {
+		if( hasGroupIndex ) {
 			map<VertexTriple,int> uniqueVerts;
 			loadGroupNormalsTextures( mGroups[mGroupIndex], uniqueVerts );
-		} else {
+		}
+		else {
 			map<VertexTriple,int> uniqueVerts;
 			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
 				loadGroupNormalsTextures( *groupIt, uniqueVerts );
 		}
 	}
 	else if( normals ) {
-		if ( hasGroupIndex ) {
+		if( hasGroupIndex ) {
 			map<VertexPair,int> uniqueVerts;
 			loadGroupNormals( mGroups[mGroupIndex], uniqueVerts );
-		} else {
+		}
+		else {
 			map<VertexPair,int> uniqueVerts;
 			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
 				loadGroupNormals( *groupIt, uniqueVerts );
 		}
 	}
 	else if( texCoords ) {
-		if ( hasGroupIndex ) {
+		if( hasGroupIndex ) {
 			map<VertexPair,int> uniqueVerts;
 			loadGroupTextures( mGroups[mGroupIndex], uniqueVerts );
-		} else {
+		}
+		else {
 			map<VertexPair,int> uniqueVerts;
 			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
 				loadGroupTextures( *groupIt, uniqueVerts );
 		}
 	}
 	else {
-		if ( hasGroupIndex ) {
+		if( hasGroupIndex ) {
 			map<int,int> uniqueVerts;
 			loadGroup( mGroups[mGroupIndex], uniqueVerts );
-		} else {
+		}
+		else {
 			map<int,int> uniqueVerts;
 			for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt )
 				loadGroup( *groupIt, uniqueVerts );
