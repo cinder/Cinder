@@ -358,8 +358,8 @@ void GeometryApp::createGeometry()
 		case HELIX:
 			switch( mQualityCurrent ) {
 				case DEFAULT:	loadGeomSource( geom::Helix( geom::Helix() ) ); break;
-				case LOW:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsHeight( 12 ).subdivisionsHeight( 6 ) ) ); break;
-				case HIGH:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsHeight( 60 ).subdivisionsHeight( 60 ) ) ); break;
+				case LOW:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsAxis( 12 ).subdivisionsHeight( 6 ) ) ); break;
+				case HIGH:		loadGeomSource( geom::Helix( geom::Helix().subdivisionsAxis( 60 ).subdivisionsHeight( 60 ) ) ); break;
 			}
 			break;
 		case ICOSAHEDRON:
