@@ -13,8 +13,6 @@
 #include "cinder/params/Params.h"
 #include "cinder/Log.h"
 
-#include "DebugMesh.h"
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
