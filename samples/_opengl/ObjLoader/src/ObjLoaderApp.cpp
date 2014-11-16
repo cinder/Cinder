@@ -36,24 +36,22 @@ class ObjLoaderApp : public AppNative {
 	MayaCamUI		mMayaCam;
 	TriMeshRef		mMesh;
 	gl::BatchRef	mBatch;
-	gl::GlslProgRef	mShader;
-	gl::TextureRef	mTexture;
+	gl::GlslProgRef	mGlsl;
 };
 
 void ObjLoaderApp::setup()
 {	
-//	mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE ) ) );
-//	mShader = gl::GlslProg( loadResource( RES_SHADER_VERT ), loadResource( RES_SHADER_FRAG ) );
+#if defined( CINDER_GL_ES )
+	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
+#else
+	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+#endif
 
 	CameraPersp initialCam;
 	initialCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
 	mMayaCam.setCurrentCam( initialCam );
 
-//	mTexture->bind();
-	
-	loadObjFile( getAssetPath( "warpdodec.obj" ) );
-//	mShader.bind();
-//	mShader.uniform( "tex0", 0 );
+	loadObjFile( getAssetPath( "8lbs.obj" ) );
 }
 
 void ObjLoaderApp::resize()
@@ -82,8 +80,10 @@ void ObjLoaderApp::mouseDrag( MouseEvent event )
 void ObjLoaderApp::loadObjFile( const fs::path &filePath )
 {
 	ObjLoader loader( (DataSourceRef)loadFile( filePath ) );
-//	TriMesh mesh( loader );
-	mBatch = gl::Batch::create( loader, gl::getStockShader( gl::ShaderDef().color() ) );
+	mMesh = TriMesh::create( loader );
+	if( ! loader.getAvailableAttribs().count( geom::NORMAL ) )
+		mMesh->recalculateNormals();
+	mBatch = gl::Batch::create( *mMesh, mGlsl );
 }
 
 void ObjLoaderApp::frameCurrentObject()
