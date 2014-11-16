@@ -318,7 +318,7 @@ class FboCubeMap : public Fbo {
 	static FboCubeMapRef	create( int32_t faceWidth, int32_t faceHeight, const Format &format = Format() );
 	
 	//! Binds a face of the Fbo as the currently active framebuffer. \a faceTarget expects values in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family.
-	void 	bindFramebufferFace( GLenum faceTarget, GLenum target = GL_FRAMEBUFFER, GLenum attachment = GL_COLOR_ATTACHMENT0 );
+	void 	bindFramebufferFace( GLenum faceTarget, GLint level = 0, GLenum target = GL_FRAMEBUFFER, GLenum attachment = GL_COLOR_ATTACHMENT0 );
 	//! Returns the view matrix appropriate for a given face (in the \c GL_TEXTURE_CUBE_MAP_POSITIVE_X family) looking from the position \a eyePos
 	mat4	calcViewMatrix( GLenum face, const vec3 &eyePos );
 	

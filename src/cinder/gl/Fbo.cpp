@@ -812,10 +812,10 @@ FboCubeMap::FboCubeMap( int32_t faceWidth, int32_t faceHeight, const Format &for
 {
 }
 
-void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLenum target, GLenum attachment )
+void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLint level, GLenum target, GLenum attachment )
 {
 	bindFramebuffer( target );
-	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), 0 );
+	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), level );
 }
 
 mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
