@@ -151,6 +151,8 @@ void GeometryApp::draw()
 	// Draw the grid.
 	if( mShowGrid && mGrid ) {
 		gl::ScopedGlslProg scopedGlslProg( gl::context()->getStockShader( gl::ShaderDef().color() ) );
+		// draw the coordinate frame with length 2.
+		gl::drawCoordinateFrame( 2 );
 		mGrid->draw();
 	}
 
@@ -300,24 +302,14 @@ void GeometryApp::createGrid()
 {
 	mGrid = gl::VertBatch::create( GL_LINES );
 	mGrid->begin( GL_LINES );
-	mGrid->color( Color(0.25f, 0.25f, 0.25f) ); mGrid->vertex( -10.0f, 0.0f, 0.0f );
-	mGrid->color( Color(0.25f, 0.25f, 0.25f) ); mGrid->vertex( 0.0f, 0.0f, 0.0f );
-	mGrid->color( Color(1, 0, 0) ); mGrid->vertex( 0.0f, 0.0f, 0.0f );
-	mGrid->color( Color(1, 0, 0) ); mGrid->vertex( 20.0f, 0.0f, 0.0f );
-	mGrid->color( Color(0, 1, 0) ); mGrid->vertex( 0.0f, 0.0f, 0.0f );
-	mGrid->color( Color(0, 1, 0) ); mGrid->vertex( 0.0f, 20.0f, 0.0f );
-	mGrid->color( Color(0.25f, 0.25f, 0.25f) ); mGrid->vertex( 0.0f, 0.0f, -10.0f );
-	mGrid->color( Color(0.25f, 0.25f, 0.25f) ); mGrid->vertex( 0.0f, 0.0f, 0.0f );
-	mGrid->color( Color(0, 0, 1) ); mGrid->vertex( 0.0f, 0.0f, 0.0f );
-	mGrid->color( Color(0, 0, 1) ); mGrid->vertex( 0.0f, 0.0f, 20.0f );
 	for( int i = -10; i <= 10; ++i ) {
 		if( i == 0 )
 			continue;
 
-		mGrid->color( Color(0.25f, 0.25f, 0.25f) );
-		mGrid->color( Color(0.25f, 0.25f, 0.25f) );
-		mGrid->color( Color(0.25f, 0.25f, 0.25f) );
-		mGrid->color( Color(0.25f, 0.25f, 0.25f) );
+		mGrid->color( Color( 0.25f, 0.25f, 0.25f ) );
+		mGrid->color( Color( 0.25f, 0.25f, 0.25f ) );
+		mGrid->color( Color( 0.25f, 0.25f, 0.25f ) );
+		mGrid->color( Color( 0.25f, 0.25f, 0.25f ) );
 		
 		mGrid->vertex( float(i), 0.0f, -10.0f );
 		mGrid->vertex( float(i), 0.0f, +10.0f );
