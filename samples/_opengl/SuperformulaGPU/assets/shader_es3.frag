@@ -8,22 +8,23 @@ in highp vec2		TexCoord;
 
 out highp vec4 	oColor;
 
-// This is due to GPU Gems Ch. 25: Fast Filter-Width Estimates with Texture Maps
-highp float checker( highp vec2 uv, int freq )
+// Based on OpenGL Programming Guide (8th edition), p 457-459.
+highp float checkered( in vec2 uv, in int freq )
 {
-	uv *= vec2( freq );
-	highp vec2 fw = fwidth( uv );
-	highp float width = max( fw.s, fw.t );
-	highp vec2 p0 = vec2( uv - 0.5 * width ), p1 = vec2( uv + 0.5 * width );
-	highp vec2 ip0 = floor(p0 / 2.0) + 2.0 * max( p0 / 2.0 - floor( p0 / 2.0 ) - 0.5, 0.0 );
-	highp vec2 ip1 = floor(p1 / 2.0) + 2.0 * max( p1 / 2.0 - floor( p1 / 2.0 ) - 0.5, 0.0 );
-	highp vec2 i = (ip1 - ip0) / width;
-	return i.x * i.y + (1.0 - i.x) * (1.0 - i.y);
+	highp vec2 checker = fract( uv * freq );
+	highp vec2 edge = fwidth( uv ) * freq;
+	highp float mx = max( edge.x, edge.y );
+
+	highp vec2 pattern = smoothstep( vec2(0.5), vec2(0.5) + edge, checker );
+	pattern += 1.0 - smoothstep( vec2(0.0), edge, checker );
+
+	highp float factor = pattern.x * pattern.y + ( 1.0 - pattern.x ) * ( 1.0 - pattern.y );
+	return mix( factor, 0.5, smoothstep( 0.0, 0.75, mx ) );
 }
 
 void main( void )
 {
 	highp vec3 normal = normalize( -Normal );
 	highp float diffuse = max( dot( normal, vec3( 0, 0, -1.0 ) ), 0.0 );
-	oColor = vec4( vec3( abs(diffuse) ) * vec3( checker( TexCoord.xy, uCheckerFrequency ) ), 1.0 );
+	oColor = vec4( vec3( abs(diffuse) ) * vec3( checkered( TexCoord.xy, uCheckerFrequency ) ), 1.0 );
 }

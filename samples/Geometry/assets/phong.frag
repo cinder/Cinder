@@ -12,6 +12,20 @@ in VertexData	{
 
 out vec4 oFragColor;
 
+// Based on OpenGL Programming Guide (8th edition), p 457-459.
+float checkered( in vec2 uv, in int freq )
+{
+	vec2 checker = fract( uv * freq );
+	vec2 edge = fwidth( uv ) * freq;
+	float mx = max( edge.x, edge.y );
+
+	vec2 pattern = smoothstep( vec2(0.5), vec2(0.5) + edge, checker );
+	pattern += 1.0 - smoothstep( vec2(0.0), edge, checker );
+
+	float factor = pattern.x * pattern.y + ( 1.0 - pattern.x ) * ( 1.0 - pattern.y );
+	return mix( factor, 0.5, smoothstep( 0.0, 0.75, mx ) );
+}
+
 void main()
 {
 	// set diffuse and specular colors
@@ -31,13 +45,10 @@ void main()
 	// diffuse coefficient
 	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
 
-	if( uTexturingMode == 1 ) {
-		// procedural texCoord checkerboard
-		if( (int( floor( vVertexIn.texCoord.x * 20.0 ) + floor( vVertexIn.texCoord.y * 20.0 + 0.001 ) ) % 2 ) == 0 )
-			diffuse *= 0.5;
-	}
+	if( uTexturingMode == 1 )
+		diffuse *= 0.5 + 0.5 * checkered( vVertexIn.texCoord, 20 );
 	else if ( uTexturingMode == 2 )
-		diffuse *= texture( uTex0, vVertexIn.texCoord.st ).rgb;
+		diffuse *= 0.5 + 0.5 * texture( uTex0, vVertexIn.texCoord.st ).rgb;
 
 	// specular coefficient with energy conservation
 	const float shininess = 20.0;
