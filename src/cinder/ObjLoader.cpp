@@ -319,7 +319,9 @@ void ObjLoader::load() const
 	bool hasGroupIndex = ( mGroupIndex != numeric_limits<size_t>::max() );
 
 	bool texCoords;
-	if( hasGroupIndex ) texCoords = mGroups[mGroupIndex].mHasTexCoords;
+	if( hasGroupIndex ) {
+		texCoords = mGroups[mGroupIndex].mHasTexCoords;
+	}
 	else {
 		texCoords = false;
 		for( vector<Group>::const_iterator groupIt = mGroups.begin(); groupIt != mGroups.end(); ++groupIt ) {
