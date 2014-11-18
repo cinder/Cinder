@@ -370,7 +370,12 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
-		return fs::path( [result UTF8String] );
+		if( ! result ) {
+			CI_LOG_E( "empty path result" );
+			return fs::path();
+		}
+		else
+			return fs::path( [result UTF8String] );
 	}
 	else
 		return fs::path();
@@ -411,7 +416,12 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
-		return fs::path([result UTF8String]);
+		if( ! result ) {
+			CI_LOG_E( "empty path result" );
+			return fs::path();
+		}
+		else
+			return fs::path([result UTF8String]);
 	}
 	else
 		return fs::path();
