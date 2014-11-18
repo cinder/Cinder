@@ -119,6 +119,8 @@ class Texture2d;
 typedef std::shared_ptr<Texture2d>		Texture2dRef;
 class TextureBase;
 typedef std::shared_ptr<TextureBase>	TextureBaseRef;
+typedef std::shared_ptr<class Texture3d>		Texture3dRef;
+typedef std::shared_ptr<class TextureCubeMap>	TextureCubeMapRef;
 class BufferObj;
 typedef std::shared_ptr<BufferObj>		BufferObjRef;
 class GlslProg;
@@ -544,6 +546,15 @@ struct ScopedTextureBind : public boost::noncopyable
 	ScopedTextureBind( GLenum target, GLuint textureId, uint8_t textureUnit );
 	ScopedTextureBind( const TextureBaseRef &texture );
 	ScopedTextureBind( const TextureBaseRef &texture, uint8_t textureUnit );
+
+	//! \cond
+	// These overloads are to alleviate a VS2013 bug where it cannot deduce
+	// the correct constructor when a TextureBaseRef subclass is passed in
+	ScopedTextureBind( const Texture2dRef &texture, uint8_t textureUnit );
+	ScopedTextureBind( const Texture3dRef &texture, uint8_t textureUnit );
+	ScopedTextureBind( const TextureCubeMapRef &texture, uint8_t textureUnit );
+	//! \endcond
+
 	~ScopedTextureBind();
 	
   private:
