@@ -326,9 +326,14 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures,
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
+	auto ctx = context();
+	auto shader = ctx->getGlslProg();
+	// Create a new shader iff there isn't a texturing shader already bound.
+	if( (! shader) || (! shader->hasAttribSemantic( geom::Attrib::TEX_COORD_0 )) ) {
+		auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
+		shader = gl::getStockShader( shaderDef );
+	}
 	ScopedTextureBind texBindScp( mTextures[0] );
-	auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
-	GlslProgRef shader = gl::getStockShader( shaderDef );
 	ScopedGlslProg glslScp( shader );
 
 	vec2 baseline = baselineIn;
@@ -441,9 +446,14 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyp
 	if( ! colors.empty() )
 		assert( glyphMeasures.size() == colors.size() );
 
+	auto ctx = context();
+	auto shader = ctx->getGlslProg();
+	// Create a new shader iff there isn't a texturing shader already bound.
+	if( (! shader) || (! shader->hasAttribSemantic( geom::Attrib::TEX_COORD_0 )) ) {
+		auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
+		shader = gl::getStockShader( shaderDef );
+	}
 	ScopedTextureBind texBindScp( mTextures[0] );
-	auto shaderDef = ShaderDef().texture( mTextures[0] ).color();
-	GlslProgRef shader = gl::getStockShader( shaderDef );
 	ScopedGlslProg glslScp( shader );
 
 	const float scale = options.getScale();
