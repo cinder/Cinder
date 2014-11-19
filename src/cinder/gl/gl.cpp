@@ -563,6 +563,39 @@ void translate( const ci::vec3& v )
 	ctx->getModelMatrixStack().back() *= glm::translate( v );
 }
 
+vec3 windowToObjectCoord( const mat4 &modelMatrix, const ci::vec2 &coordinate, float z )
+{
+	// Build the viewport (x, y, width, height).
+	vec2 offset = gl::getViewport().first;
+	vec2 size = gl::getViewport().second;
+	vec4 viewport = vec4( offset.x, offset.y, size.x, size.y );
+
+	// Calculate the view-projection matrix.
+	mat4 viewProjectionMatrix = gl::getProjectionMatrix() * gl::getViewMatrix();
+
+	// Calculate the intersection of the mouse ray with the near (z=0) and far (z=1) planes.
+	vec3 nearPlane = glm::unProject( vec3( coordinate.x, size.y - coordinate.y, 0 ), modelMatrix, viewProjectionMatrix, viewport );
+	vec3 farPlane = glm::unProject( vec3( coordinate.x, size.y - coordinate.y, 1 ), modelMatrix, viewProjectionMatrix, viewport );
+
+	// Calculate world position.
+	return ci::lerp( nearPlane, farPlane, ( z - nearPlane.z ) / ( farPlane.z - nearPlane.z ) );
+}
+
+vec2 objectToWindowCoord( const mat4 &modelMatrix, const ci::vec3 &coordinate )
+{
+	// Build the viewport (x, y, width, height).
+	vec2 offset = gl::getViewport().first;
+	vec2 size = gl::getViewport().second;
+	vec4 viewport = vec4( offset.x, offset.y, size.x, size.y );
+
+	// Calculate the view-projection matrix.
+	mat4 viewProjectionMatrix = gl::getProjectionMatrix() * gl::getViewMatrix();
+
+	vec2 p = vec2( glm::project( coordinate, modelMatrix, viewProjectionMatrix, viewport ) );
+
+	return p;
+}
+
 void begin( GLenum mode )
 {
 	auto ctx = gl::context();
