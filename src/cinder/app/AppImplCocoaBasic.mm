@@ -226,7 +226,7 @@
 		if( [mWindows count] == 1 ) // we're about to release the last window; set the active window to be NULL
 			mActiveWindow = nil;
 		else
-			mActiveWindow = [mWindows objectAtIndex:0];
+			mActiveWindow = [mWindows firstObject];
 	}
 
 	windowImpl->mWindowRef->setInvalid();

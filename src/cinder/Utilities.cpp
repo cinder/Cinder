@@ -107,7 +107,7 @@ fs::path getDocumentsDirectory()
 {
 #if defined( CINDER_COCOA )
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
-	NSString *docDir = [arrayPaths objectAtIndex:0];
+	NSString *docDir = [arrayPaths firstObject];
 	return cocoa::convertNsString( docDir ) + "/";
 #elif defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest

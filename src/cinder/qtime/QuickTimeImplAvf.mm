@@ -217,15 +217,15 @@ float MovieBase::getPixelAspectRatio() const
 	NSArray* video_tracks = [mAsset tracksWithMediaType:AVMediaTypeVideo];
 	if( video_tracks ) {
 		CMFormatDescriptionRef format_desc = NULL;
-		NSArray* descriptions_arr = [[video_tracks objectAtIndex:0] formatDescriptions];
+		NSArray* descriptions_arr = [[video_tracks firstObject] formatDescriptions];
 		if ([descriptions_arr count] > 0)
-			format_desc = (CMFormatDescriptionRef)[descriptions_arr objectAtIndex:0];
+			format_desc = (CMFormatDescriptionRef)[descriptions_arr firstObject];
 		
 		CGSize size;
 		if (format_desc)
 			size = CMVideoFormatDescriptionGetPresentationDimensions(format_desc, false, false);
 		else
-			size = [[video_tracks objectAtIndex:0] naturalSize];
+			size = [[video_tracks firstObject] naturalSize];
 		
 		CFDictionaryRef pixelAspectRatioDict = (CFDictionaryRef) CMFormatDescriptionGetExtension(format_desc, kCMFormatDescriptionExtension_PixelAspectRatio);
 		if (pixelAspectRatioDict) {
@@ -675,7 +675,7 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 	NSArray* videoTracks = [asset tracksWithMediaType:AVMediaTypeVideo];
 	mHasVideo = [videoTracks count] > 0;
 	if( mHasVideo ) {
-		AVAssetTrack* videoTrack = [videoTracks objectAtIndex:0];
+		AVAssetTrack* videoTrack = [videoTracks firstObject];
 		if( videoTrack ) {
 			// Grab track dimensions from format description
 			CGSize size = [videoTrack naturalSize];
