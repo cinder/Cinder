@@ -10,6 +10,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/System.h"
 #include "cinder/Text.h"
+#include "cinder/audio/Debug.h"
 
 #import <UIKit/UIKit.h>
 
@@ -55,7 +56,7 @@ struct TestCallbackOrder {
 		if( mDone ) return;
 		
 		if( mState != state - 1 )
-			app::console() << "Fail at state: " << mState << "->" << state << std::endl;
+			CI_LOG_V( "Fail at state: " << mState << "->" << state );
 		else
 			mState = state;
 		if( mState == DRAW )
@@ -131,7 +132,7 @@ void iosAppTestApp::prepareSettings( Settings *settings )
 	tester.setState( TestCallbackOrder::PREPARESETTINGS );
 
 	for( auto &display : Display::getDisplays() )
-		console() << *display << std::endl;
+		CI_LOG_V( *display );
 
 	settings->enableMultiTouch( true );
 	settings->enableHighDensityDisplay( true );
@@ -181,7 +182,7 @@ void iosAppTestApp::setup()
 
 	mTex = gl::Texture( surface );
 	
-	std::cout << "Size: " << getWindowSize() << std::endl;
+	CI_LOG_V( "window size: " << getWindowSize() );
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
 
@@ -202,76 +203,78 @@ void iosAppTestApp::setup()
 	getSignalWillRotate().connect( std::bind( &iosAppTestApp::willRotate, this ) );
 	getSignalDidRotate().connect( std::bind( &iosAppTestApp::didRotate, this ) );
 
-	console() << "Device is " << ( System::isDeviceIpad() ? "iPad" : "iPhone" ) << std::endl;
+	CI_LOG_V( "Device is " << ( System::isDeviceIpad() ? "iPad" : "iPhone" ) );
 
-	console() << " ### num Windows: " << getNumWindows() << endl;
+	CI_LOG_V( " ### num Windows: " << getNumWindows() );
 
 }
 
 void iosAppTestApp::didEnterBackground()
 {
-	console() << "Did enter background!" << std::endl;
+	CI_LOG_V( "Did enter background!" );
 }
 
 void iosAppTestApp::willEnterForeground()
 {
-	console() << "Will enter foreground!" << std::endl;
+	CI_LOG_V( "Will enter foreground!" );
 }
 
 void iosAppTestApp::willResignActive()
 {
-	console() << "Will resign active!" << std::endl;
+	CI_LOG_V( "Will resign active!" );
 }
 
 void iosAppTestApp::didBecomeActive()
 {
-	console() << "Did become active!" << std::endl;
+	CI_LOG_V( "Did become active!" );
 }
 
 void iosAppTestApp::shuttingDown()
 {
-	console() << "Shutting down!" << std::endl;
+	CI_LOG_V( "Shutting down!" );
 }
 
 void iosAppTestApp::memoryWarning()
 {
-	console() << "Memory warning!" << std::endl;
+	CI_LOG_V( "Memory warning!" );
 }
 
 uint32_t iosAppTestApp::supportAllOrientations()
 {
-	console() << "Supporting all orientations." << std::endl;
+	CI_LOG_V( "Supporting all orientations." );
 	return InterfaceOrientation::All;
 }
 
 uint32_t iosAppTestApp::supportPortraitOrientations()
 {
-	console() << "Supporting only portrait orientations." << std::endl;
+	CI_LOG_V( "Supporting only portrait orientations." );
 	return InterfaceOrientation::PortraitAll;
 }
 
 void iosAppTestApp::willRotate()
 {
 	InterfaceOrientation orientation = getOrientation();
-	console() << __PRETTY_FUNCTION__ << "orientation:" << orientation << std::endl;
+	CI_LOG_V( __PRETTY_FUNCTION__ << "orientation:" << orientation );
 }
 
 void iosAppTestApp::didRotate()
 {
 	InterfaceOrientation orientation = getOrientation();
-	console() << __PRETTY_FUNCTION__ << "orientation:" << orientation << std::endl;
+	CI_LOG_V( __PRETTY_FUNCTION__ << "orientation:" << orientation );
 }
 
 void iosAppTestApp::resize()
 {
 	tester.setState( TestCallbackOrder::RESIZE );
-	console() << "Resize!" << std::endl;
+	CI_LOG_V( "Resize!" );
+
+	CI_LOG_V( "window size: " << getWindowSize() );
 }
 
 void iosAppTestApp::mouseDown( MouseEvent event )
 {
 	Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
-std::cout << "Starting with: " << event.getPos() << std::endl;
+	CI_LOG_V( "Starting with: " << event.getPos() );
 	mActivePoints.insert( make_pair( ++mMouseTouchId, TouchPoint( event.getPos(), newColor ) ) );
 }
 
@@ -293,7 +296,7 @@ void iosAppTestApp::touchesBegan( TouchEvent event )
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
 		mActivePoints.insert( make_pair( touchIt->getId(), TouchPoint( touchIt->getPos(), newColor ) ) );
 	}
-	console() << "Width: " << getWindowWidth() << std::endl;
+	CI_LOG_V( "Width: " << getWindowWidth() );
 }
 
 void iosAppTestApp::touchesMoved( TouchEvent event )
@@ -322,30 +325,30 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 	else {
 		showStatusBar( StatusBarAnimation::SLIDE );
 	}
-	console() << getWindowSize() << std::endl;
+	CI_LOG_V( getWindowSize() );
 	
 //	setFrameRate( 12.0f );
 }
 
 void iosAppTestApp::keyDown( KeyEvent event )
 {
-	std::cout << "Key: " << event.getCharUtf32() << std::endl;
+	CI_LOG_V( "Key: " << event.getCharUtf32() );
 	if( event.getCode() == KeyEvent::KEY_BACKSPACE )
-		console() << "backspace!" << std::endl;
+		CI_LOG_V( "backspace!" );
 	else if( event.getCode() == KeyEvent::KEY_RETURN )
-		console() << "return!" << std::endl;
+		CI_LOG_V( "return!" );
 
 	mSecondWindowMessage = getKeyboardString();
 }
 
 void iosAppTestApp::proximitySensor( bool isClose )
 {
-	std::cout << "Device is" << ( isClose ? " " : " NOT " ) << "close to your head!" << std::endl;
+	CI_LOG_V( "Device is" << ( isClose ? " " : " NOT " ) << "close to your head!" );
 }
 
 void iosAppTestApp::batteryStateChange( bool isUnplugged )
 {
-	std::cout << "Power is" << ( isUnplugged ? " " : " NOT " ) << "unplugged!" << std::endl;
+	CI_LOG_V( "Power is" << ( isUnplugged ? " " : " NOT " ) << "unplugged!" );
 }
 
 void iosAppTestApp::update()
