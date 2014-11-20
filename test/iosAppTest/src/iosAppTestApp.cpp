@@ -12,7 +12,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/System.h"
 #include "cinder/Text.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #import <UIKit/UIKit.h>
 

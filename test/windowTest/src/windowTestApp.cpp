@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
