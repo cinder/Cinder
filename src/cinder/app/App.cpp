@@ -69,13 +69,8 @@ App::Settings::Settings()
 	mPowerManagement = false;
 	mFrameRateEnabled = true;
 	mFrameRate = 60.0f;
-#if defined( CINDER_COCOA_TOUCH )
-	mEnableHighDensityDisplay = true;
-	mEnableMultiTouch = true;
-#else
 	mEnableHighDensityDisplay = false;
 	mEnableMultiTouch = false;	
-#endif	
 }
 
 void App::Settings::disableFrameRate()

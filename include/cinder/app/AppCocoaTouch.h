@@ -61,6 +61,8 @@ class AppCocoaTouch : public App {
 			: App::Settings(), mEnableStatusBar( false )
 		{
 			mPowerManagement = true;
+			mEnableHighDensityDisplay = true;
+			mEnableMultiTouch = true;
 		}
 
 		//! Determines whether the system status bar is visible initially. Default is \c false.
