@@ -217,6 +217,18 @@ SurfaceT<T>::SurfaceT( const SurfaceT<T> &rhs )
 	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
+}
+
+template<typename T>
+SurfaceT<T>::SurfaceT( SurfaceT<T> &&rhs )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mIsPremultiplied( rhs.mIsPremultiplied )
+{
+	mDataStore = rhs.mDataStore;
+	rhs.mDataStore = nullptr;
+	mOwnsData = true;
+	mData = mDataStore.get();
+	initChannels();
 }
 
 template<typename T>
@@ -300,10 +312,32 @@ SurfaceT<T>& SurfaceT<T>::operator=( const SurfaceT<T> &rhs )
 	mRowBytes = rhs.mRowBytes;
 	mIsPremultiplied = rhs.mIsPremultiplied;
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
-copy pixels
+	
 	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
+	
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
+	
+	return *this;
+}
+
+template<typename T>
+SurfaceT<T>& SurfaceT<T>::operator=( SurfaceT<T> &&rhs )
+{
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mChannelOrder = rhs.mChannelOrder;
+	mRowBytes = rhs.mRowBytes;
+	mIsPremultiplied = rhs.mIsPremultiplied;
+	mDataStore = rhs.mDataStore;
+	rhs.mDataStore = nullptr;
+	
+	mOwnsData = true;
+	mData = mDataStore.get();
+	initChannels();
+	
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
 	
 	return *this;
 }

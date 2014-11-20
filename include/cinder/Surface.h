@@ -121,6 +121,7 @@ class SurfaceT {
 
 	//! Creates a clone of \a rhs. Matches rowBytes and channel order of \a rhs, but creates its own dataStore.
 	SurfaceT( const SurfaceT &rhs );
+	SurfaceT( SurfaceT &&rhs );
 
 	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED )
 	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, channelOrder ); }
@@ -142,6 +143,7 @@ class SurfaceT {
 #endif
 
 	SurfaceT<T>&	operator=( const SurfaceT<T> &rhs );
+	SurfaceT<T>&	operator=( SurfaceT<T> &&rhs );
 
 	operator ImageSourceRef() const;
 	operator ImageTargetRef();
