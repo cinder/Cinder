@@ -245,6 +245,11 @@ WindowRef AppBasic::getForegroundWindow() const
 #endif
 }
 
+void AppBasic::restoreWindowContext()
+{
+	getWindow()->getRenderer()->makeCurrentContext();
+}
+
 void AppBasic::hideCursor()
 {
 #if defined( CINDER_MAC )

@@ -147,6 +147,8 @@ class AppBasic : public App {
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef		getForegroundWindow() const;
 
+	void restoreWindowContext() override;
+
 #if defined( CINDER_WINRT)
 	class AppImplWinRTBasic*	getImpl() {return mImpl;};
 #endif

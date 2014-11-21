@@ -529,13 +529,6 @@ Surface	App::copyWindowSurface( const Area &area )
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea );
 }
 
-void App::restoreWindowContext()
-{
-#if defined( CINDER_MAC )
-	getWindow()->getRenderer()->makeCurrentContext();
-#endif
-}
-
 RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
 {
 	if( ! searchRenderer )

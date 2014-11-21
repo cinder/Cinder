@@ -485,7 +485,7 @@ class App {
 	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface( const Area &area );
 	//! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has displayed a dialog box or some other external window.
-	void	restoreWindowContext();
+	virtual void	restoreWindowContext()	{}
 
 	//! Finds any Renderer of the same type as \a searchRenderer among existing windows. This is generally not necessary and used to enable context sharing between Windows. Returns NULL on failure.
 	RendererRef		findSharedRenderer( RendererRef searchRenderer ) const;
