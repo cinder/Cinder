@@ -145,7 +145,7 @@ void InstascopeApp::defineMirrorGrid()
 				
 				vec2 start( startX, startY );
 				
-				TrianglePiece tri = TrianglePiece(vec2(startX, startY), pt1, pt2, pt3, 60*k, scale);
+				TrianglePiece tri = TrianglePiece(vec2(startX, startY), pt1, pt2, pt3, M_PI / 3 * k, scale);
 				mTriPieces.push_back(tri);
 			}
 		}
@@ -169,8 +169,8 @@ void InstascopeApp::changePhase( int newPhase )
 			transitionMirrorIn( &mTriPieces );
 			resetSample(); 
 			
-			mMirrorRot = randFloat(180, 360);
-			float newRot = mMirrorRot + randFloat(60, 100);
+			mMirrorRot = randFloat(M_PI, M_PI * 2);
+			float newRot = mMirrorRot + randFloat(M_PI, M_PI/4);
 			timeline().apply(&mMirrorRot, newRot, MIRROR_DUR, EaseInOutQuad());
 			mPiecesIn = false;
 		}
@@ -280,7 +280,7 @@ void InstascopeApp::updateMirrors( vector<TrianglePiece> *vec )
 	MatrixAffine2f mtrx = MatrixAffine2f::identity();
 	mtrx.translate(mSamplePt.value());
 	mtrx.scale(mSampleSize);
-	mtrx.rotate((getElapsedFrames()*4)/360.0); // degrees, not radians
+	mtrx.rotate((getElapsedFrames()*4)/2*M_PI);
 	
 	mSamplePt1 = mtrx.transformPoint(mSamplePt1);
 	mSamplePt2 = mtrx.transformPoint(mSamplePt2);

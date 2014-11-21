@@ -28,6 +28,7 @@
 
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
+#include "cinder/Exception.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
 #include "cinder/Thread.h"
@@ -318,7 +319,7 @@ extern std::string getQuickTimeVersionString();
 //! Gives QuickTime an opportunity to update all playing movies by calling \c ::MoviesTask. Generally only necessary when playing audio-only movies on Windows.
 extern void quickTimeTask();
 
-class QuickTimeExc : public std::exception {
+class QuickTimeExc : public Exception {
 };
 
 class QuickTimePathInvalidExc : public QuickTimeExc {

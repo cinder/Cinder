@@ -88,9 +88,6 @@
     <Filter Include="Header Files\dx">
       <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\dx">
-      <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Header Files\audio\dsp">
       <UniqueIdentifier>{547d2686-dd07-4302-befa-3d0815504249}</UniqueIdentifier>
     </Filter>
@@ -642,9 +639,6 @@
     <ClCompile Include="..\src\cinder\gl\EnvironmentCore.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\EnvironmentEs2.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -737,6 +731,21 @@
     </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Query.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppImplMswRendererAngle.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
+      <Filter>Source Files\gl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1570,6 +1579,18 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\CinderGlm.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Query.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ubo.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -60,7 +60,7 @@ class AppCocoaTouch : public App {
 		Settings()
 			: App::Settings(), mEnableStatusBar( false )
 		{
-			mPowerManagement = false;
+			mPowerManagement = true;
 		}
 
 		//! Determines whether the system status bar is visible initially. Default is \c false.

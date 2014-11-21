@@ -25,6 +25,7 @@
  */
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -100,20 +101,20 @@ void TuioClientApp::draw2( tuio::Cursor cursor, int sourcenum )
 		case 4: gl::color(ColorA(0.0f, 1.0f, 1.0f, 0.6f)); break;
 		case 5: gl::color(ColorA(1.0f, 0.0f, 1.0f, 0.6f)); break;
 	}
-	gl::drawSolidCircle( cursor.getPos() * Vec2f(getWindowSize()), 30 );
+	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 30 );
 }
 
 void TuioClientApp::draw2b( tuio::Cursor cursor )
 {
 	gl::color( Color::white() );
-	gl::drawSolidCircle( cursor.getPos() * Vec2f(getWindowSize()), 5.0f );
+	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), 5.0f );
 }
 
 void TuioClientApp::draw25d( tuio::Cursor25d cursor )
 {
 	gl::color(ColorA(0.0f, 1.0f, 0.0f, 1.0f));
 	float radius = 75.0f * cursor.getPos25().z;
-	gl::drawSolidCircle( cursor.getPos() * Vec2f(getWindowSize()), radius );
+	gl::drawSolidCircle( cursor.getPos() * vec2(getWindowSize()), radius );
 }
 
 void TuioClientApp::draw()

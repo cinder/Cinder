@@ -88,12 +88,11 @@ void HodginParticlesReduxApp::setup()
 	try {
 		mEmitterShader = gl::GlslProg( loadResource( RES_EMITTER_VERT ), loadResource( RES_EMITTER_FRAG ) );
 	}
-	catch( gl::GlslProgCompileExc &exc ) {
-		std::cout << "Shader compile error: " << std::endl;
-		std::cout << exc.what();
+	catch( gl::GlslProgExc &exc ) {
+		std::cout << "GlslProg error, what: " << exc.what() << std::endl;
 	}
-	catch( ... ) {
-		std::cout << "Unable to load shader" << std::endl;
+	catch( ci::Exception &exc ) {
+		std::cout << "Unable to load shader, what: " << exc.what() << std::endl;
 	}
 	
 	mLightDir		= vec3( 0.0f, 0.25f, 1.0f );

@@ -77,12 +77,12 @@ class App;
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
-	enum RendererType
-	{
+	enum RendererType {
 		RENDERER_GL,
 		RENDERER_DX
 	};
-	virtual ~Renderer() {};
+
+	virtual ~Renderer() {}
 	
 	virtual RendererRef	clone() const = 0;
 	virtual RendererType getRendererType() const { return RENDERER_GL; }
@@ -97,7 +97,6 @@ class Renderer {
 		virtual void		setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) = 0;
 		virtual bool		isEaglLayer() const { return false; }
 	#endif
-
 
 	virtual void	setFrameSize( int width, int height ) {}		
 
@@ -121,8 +120,9 @@ class Renderer {
 	virtual Surface	copyWindowSurface( const Area &area ) = 0;
 
 	virtual void startDraw() {}
-	virtual void finishDraw() {}		
+	virtual void finishDraw() {}
 	virtual void makeCurrentContext() {}
+	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
  protected:

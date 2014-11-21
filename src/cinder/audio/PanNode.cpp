@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder { namespace audio {
 
 Pan2dNode::Pan2dNode( const Format &format )
-	: Node( format ), mPos( 0.5f ), mStereoInputMode( false )
+	: Node( format ), mPos( this, 0.5f ), mStereoInputMode( false )
 {
 	setChannelMode( ChannelMode::SPECIFIED );
 	setNumChannels( 2 );
@@ -96,37 +96,85 @@ void Pan2dNode::pullInputs( Buffer *destBuffer )
 }
 */
 
+void Pan2dNode::process( Buffer *buffer )
+{
+	if( mStereoInputMode )
+		processStereoInputMode( buffer );
+	else
+		processRegularMode( buffer );
+}
+
 // equal power panning eq:
 // left = cos(p) * signal, right = sin(p) * signal, where p is in radians from 0 to PI/2
 // gives +3db when panned to center, which helps to remove the 'dead spot'
-void Pan2dNode::process( Buffer *buffer )
+void Pan2dNode::processRegularMode( Buffer *buffer )
 {
-	float pos = mPos;
+	const size_t numFrames = buffer->getNumFrames();
 	float *channel0 = buffer->getChannel( 0 );
 	float *channel1 = buffer->getChannel( 1 );
 
-	float posRadians = pos * float( M_PI / 2.0 );
-	float leftGain = math<float>::cos( posRadians );
-	float rightGain = math<float>::sin( posRadians );
+	if( mPos.eval() ) {
+		const float *posArray = mPos.getValueArray();
+		for( size_t i = 0; i < numFrames; i++ ) {
+			const float posRadians = posArray[i] * float( M_PI / 2.0 );
+			const float leftGain = math<float>::cos( posRadians );
+			const float rightGain = math<float>::sin( posRadians );
 
-	if( ! mStereoInputMode ) {
+			channel0[i] *= leftGain;
+			channel1[i] *= rightGain;
+		}
+	}
+	else {
+		const float posRadians = mPos.getValue() * float( M_PI / 2.0 );
+		const float leftGain = math<float>::cos( posRadians );
+		const float rightGain = math<float>::sin( posRadians );
+
 		dsp::mul( channel0, leftGain, channel0, buffer->getNumFrames() );
 		dsp::mul( channel1, rightGain, channel1, buffer->getNumFrames() );
 	}
-	else {
-		// suitable impl for stereo panning an already-stereo input...
+}
 
-		static const float kCenterGain = math<float>::cos( float( M_PI / 4.0 ) );
-		size_t n = buffer->getNumFrames();
+// Suitable for stereo panning an already-stereo input (hardly a good idea but hey sometimes useful)
+void Pan2dNode::processStereoInputMode( Buffer *buffer )
+{
+	static const float centerGain = math<float>::cos( float( M_PI / 4.0 ) );
+
+	const size_t numFrames = buffer->getNumFrames();
+	float *channel0 = buffer->getChannel( 0 );
+	float *channel1 = buffer->getChannel( 1 );
+
+	if( mPos.eval() ) {
+		const float *posArray = mPos.getValueArray();
+		for( size_t i = 0; i < numFrames; i++ ) {
+			const float pos = posArray[i];
+			const float posRadians = pos * float( M_PI / 2.0 );
+			const float leftGain = math<float>::cos( posRadians );
+			const float rightGain = math<float>::sin( posRadians );
+
+			if( pos < 0.5f ) {
+				channel0[i] = channel0[i] * leftGain + channel1[i] * ( leftGain - centerGain );
+				channel1[i] *= rightGain;
+			}
+			else {
+				channel1[i] = channel1[i] * rightGain + channel0[i] * ( rightGain - centerGain );
+				channel0[i] *= leftGain;
+			}
+		}
+	}
+	else {
+		const float pos = mPos.getValue();
+		const float posRadians = pos * float( M_PI / 2.0 );
+		const float leftGain = math<float>::cos( posRadians );
+		const float rightGain = math<float>::sin( posRadians );
 
 		if( pos < 0.5f ) {
-			for( size_t i = 0; i < n; i++ ) {
-				channel0[i] = channel0[i] * leftGain + channel1[i] * ( leftGain - kCenterGain );
+			for( size_t i = 0; i < numFrames; i++ ) {
+				channel0[i] = channel0[i] * leftGain + channel1[i] * ( leftGain - centerGain );
 				channel1[i] *= rightGain;
 			}
 		} else {
-			for( size_t i = 0; i < n; i++ ) {
-				channel1[i] = channel1[i] * rightGain + channel0[i] * ( rightGain - kCenterGain );
+			for( size_t i = 0; i < numFrames; i++ ) {
+				channel1[i] = channel1[i] * rightGain + channel0[i] * ( rightGain - centerGain );
 				channel0[i] *= leftGain;
 			}
 		}
@@ -135,7 +183,7 @@ void Pan2dNode::process( Buffer *buffer )
 
 void Pan2dNode::setPos( float pos )
 {
-	mPos = math<float>::clamp( pos );
+	mPos.setValue( math<float>::clamp( pos ) );
 }
 
 } } // namespace cinder::audio

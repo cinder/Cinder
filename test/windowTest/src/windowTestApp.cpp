@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -11,7 +12,7 @@ using namespace std;
 
 class WindowData {
   public:
-  	~WindowData() { std::cout << "Destroying Window Data" << std::endl; };
+	~WindowData() { CI_LOG_V( "Destroying Window Data" ); };
 	vector<vec2> 	mPoints;
 };
 
@@ -27,17 +28,17 @@ class BasicApp : public AppBasic {
 	void fileDrop( FileDropEvent event );
 	void resize();
 
-void setup();
-void update();
-void anotherTest( MouseEvent event );
-void mouseDown( MouseEvent event );
-void mouseDown1( MouseEvent &event );
-bool mouseDown2( MouseEvent event );
-void mouseDown3( MouseEvent &event );
-void windowMove();
-void windowClose();
-void windowMouseDown( MouseEvent &mouseEvt );
-void displayChange();
+	void setup();
+	void update();
+	void anotherTest( MouseEvent event );
+	void mouseDown( MouseEvent event );
+	void mouseDown1( MouseEvent &event );
+	bool mouseDown2( MouseEvent event );
+	void mouseDown3( MouseEvent &event );
+	void windowMove();
+	void windowClose();
+	void windowMouseDown( MouseEvent &mouseEvt );
+	void displayChange();
 
 	bool	shouldQuit();
 
@@ -66,11 +67,11 @@ void BasicApp::prepareSettings( Settings *settings )
 void BasicApp::setup()
 {
 	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt )
-		console() << "Resolution: " << (*displayIt)->getBounds() << std::endl;
+		CI_LOG_V( "Resolution: " << (*displayIt)->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
-getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
+	getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
 	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown1, this, std::placeholders::_1 ) );
 	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown2, this, std::placeholders::_1 ) );
 	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown3, this, std::placeholders::_1 ) );
@@ -81,8 +82,8 @@ getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
 	getWindow()->getSignalDisplayChange().connect( std::bind( &BasicApp::displayChange, this ) );
 	getWindow()->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
 	
-	getSignalDidBecomeActive().connect( [] { app::console() << "App became active." << endl; } );
-	getSignalWillResignActive().connect( [] { app::console() << "App will resign active." << endl; } );
+	getSignalDidBecomeActive().connect( [] { CI_LOG_V( "App became active." ); } );
+	getSignalWillResignActive().connect( [] { CI_LOG_V( "App will resign active." ); } );
 }
 
 bool BasicApp::shouldQuit()
@@ -96,76 +97,73 @@ void BasicApp::update()
 
 void BasicApp::anotherTest( MouseEvent event )
 {
-	console() << "Totes." << std::endl;
+	CI_LOG_V( "Totes." );
 }
 
 void BasicApp::mouseDown( MouseEvent event )
 {
-	console() << "Main mouseDown" << std::endl;
-	vector<int> v;
-	for( auto it = v.begin(); it != v.end(); ++it )
-		console() << *it;
+	CI_LOG_V( "Main mouseDown" );
 }
 
 void BasicApp::mouseDown1( MouseEvent &event )
 {
 	enablePowerManagement( ! isPowerManagementEnabled() );
-console() << "Power mgmt: " << isPowerManagementEnabled() << std::endl;
-	console() << "window pos: " << getWindow()->getPos() << std::endl;
-	console() << "Title was: " << getWindow()->getTitle() << "." << std::endl;
+	CI_LOG_V( "Power mgmt: " << isPowerManagementEnabled() );
+	CI_LOG_V( "window pos: " << getWindow()->getPos() );
+	CI_LOG_V( "Title was: " << getWindow()->getTitle() << "." );
 	getWindow()->setTitle( "Crunk " + toString( getWindow()->getPos().x ) );
-	console() << "Window size from app: " << getWindowWidth() << " x " << getWindowHeight() << " from window: " << event.getWindow()->getSize() << std::endl;
-	console() << "Window pos from app: " << getWindowPos() << " from window: " << getWindow()->getPos() << std::endl;
+	CI_LOG_V( "Window size from app: " << getWindowWidth() << " x " << getWindowHeight() << " from window: " << event.getWindow()->getSize() );
+	CI_LOG_V( "Window pos from app: " << getWindowPos() << " from window: " << getWindow()->getPos() );
 //	event.setHandled();
 }
 
 void BasicApp::windowMove()
 {
-	console() << "window pos: " << getWindow()->getPos() << std::endl;
+	CI_LOG_V( "window pos: " << getWindow()->getPos() );
 }
 
 void BasicApp::displayChange()
 {
-	console() << "window display changed: " << getWindow()->getDisplay()->getBounds() << std::endl;
+	CI_LOG_V( "window display changed: " << getWindow()->getDisplay()->getBounds() );
 }
 
 bool BasicApp::mouseDown2( MouseEvent event )
 {
-	console() << "It worked 2!" << std::endl;
+	CI_LOG_V( "It worked 2!" );
 	return false;
 }
 
 void BasicApp::mouseDown3( MouseEvent &event )
 {
-	console() << "It worked 3!" << getMousePos() << std::endl;
+	CI_LOG_V( "It worked 3!" << getMousePos() );
 	event.setHandled();
 }
 
 void BasicApp::windowClose()
 {
 	WindowRef win = getWindow();
-	console() << "Closing " << getWindow() << std::endl;
+	CI_LOG_V( "Closing " << getWindow() );
 }
 
 void BasicApp::windowMouseDown( MouseEvent &mouseEvt )
 {
-	console() << "Mouse down in window" << std::endl;
+	CI_LOG_V( "Mouse down in window" );
 }
 
 void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getCode() == KeyEvent::KEY_RSHIFT ) {
-		console() << "Right shift down" << std::endl;
+		CI_LOG_V( "Right shift down" );
 	}
 	else if( event.getCode() == KeyEvent::KEY_LCTRL ) {
-		console() << "Left control down" << std::endl;
+		CI_LOG_V( "Left control down" );
 	}
 	if( event.getChar() == 'f' ) {
-		console() << "Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
+		CI_LOG_V( "Toggling from fullscreen: " << getWindow()->isFullScreen() );
 		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
 	}
 	else if( event.getChar() == 'o' ) {
-		console() << "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() << std::endl;
+		CI_LOG_V( "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() );
 		FullScreenOptions fullScreenOptions = FullScreenOptions().kioskMode();
 		if( event.isControlDown() )
 			fullScreenOptions.secondaryDisplayBlanking( false );
@@ -211,8 +209,8 @@ void BasicApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 's' ) {
 		getWindow()->setBorderless();
 		getWindow()->spanAllDisplays();
-		console() << "Spanning Area: " << Display::getSpanningArea() << std::endl;
-		console() << "Bounds: " << getWindow()->getBounds() << std::endl;
+		CI_LOG_V( "Spanning Area: " << Display::getSpanningArea() );
+		CI_LOG_V( "Bounds: " << getWindow()->getBounds() );
 		//getWindow()->setPos( ivec2( -1680 + 1, 0 + 1 ) );
 //		getWindow()->setSize( 1440, 900 );
 //		getWindow()->setPos( 0, 0 );
@@ -221,12 +219,12 @@ void BasicApp::keyDown( KeyEvent event )
 
 void BasicApp::fileDrop( FileDropEvent event )
 {
-	console() << "File drop: " << event << std::endl;
+	CI_LOG_V( "File drop: " << event );
 }
 
 void BasicApp::resize()
 {
-	console() << "Resized: " << getWindowSize() << std::endl;
+	CI_LOG_V( "Resized: " << getWindowSize() );
 }
 
 void BasicApp::windowDraw()
@@ -256,7 +254,7 @@ void BasicApp::windowDraw()
 	gl::pushMatrices();
 		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() * 5 );
+		gl::rotate( getElapsedSeconds() );
 		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
 	gl::popMatrices();
 }

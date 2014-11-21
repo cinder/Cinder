@@ -450,7 +450,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	void		setUserData( T *userData ) { mUserData = std::shared_ptr<void>( std::shared_ptr<T>( userData ) ); }
 	
 	//! Returns whether this Window is valid. \c false means it should no longer be used (neither read nor write)
-	bool	isValid() const { return ! mValid; }
+	bool	isValid() const { return mValid; }
 	void	setInvalid() { mValid = false; }
 	
 	//! \cond

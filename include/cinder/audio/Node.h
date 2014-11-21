@@ -98,10 +98,16 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 
 	//! Enables this Node for processing. Same as `setEnabled( true )`.
 	void enable();
+	//! Enables this Node for processing at \a when seconds, measured against Context::getNumProcessedSeconds(). Same as `setEnabled( true, when )`.
+	void enable( double when );
 	//! Disables this Node for processing. Same as `setEnabled( false )`.
 	void disable();
+	//! Disables this Node for processing at \a when seconds, measured against Context::getNumProcessedSeconds(). Same as `setEnabled( false, when )`.
+	void disable( double when );
 	//! Sets whether this Node is enabled for processing or not.
-	void setEnabled( bool b = true );
+	void setEnabled( bool b );
+	//! Sets whether this Node is enabled for processing or not at \a when seconds, measured against Context::getNumProcessedSeconds().
+	void setEnabled( bool b, double when );
 	//! Returns whether this Node is enabled for processing or not.
 	bool isEnabled() const						{ return mEnabled; }
 
@@ -203,6 +209,12 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 	//! Only Node subclasses can specify channel mode directly - users specify via Format at construction time.
 	void setChannelMode( ChannelMode mode );
 
+	//! \brief Returns a pair of frame indices for Nodes that wish to support sample accurate enable and disable.
+	//!
+	//! The first index is where processing should start, the second is where it should	end. Should only be called on the audio thread from within a Node's process() method.
+	//! Unless scheduled (with Context::schedule()), this will be [0, getFramesPerBlock()]
+	const std::pair<size_t, size_t>& getProcessFramesRange() const	{ return mProcessFramesRange; }
+
 	void initializeImpl();
 	void uninitializeImpl();
 
@@ -220,6 +232,9 @@ class Node : public std::enable_shared_from_this<Node>, public boost::noncopyabl
 	bool					mProcessInPlace;
 	ChannelMode				mChannelMode;
 	size_t					mNumChannels;
+
+	std::pair<size_t, size_t>	mProcessFramesRange;
+
 	uint64_t				mLastProcessedFrame;
 	std::string				mName;
 	BufferDynamic			mInternalBuffer, mSummingBuffer;

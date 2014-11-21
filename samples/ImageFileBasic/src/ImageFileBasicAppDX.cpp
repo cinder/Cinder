@@ -22,14 +22,13 @@ class ImageFileBasicApp : public AppBasic {
 void ImageFileBasicApp::setup()
 {
 	try {
-		console() << "unable to load the texture file!" << std::endl;
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
 			mTexture = dx::Texture( loadImage( path ) );
 		}
 	}
-	catch( ... ) {
-		console() << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "unable to load the texture file, what: " << exc.what() << endl;
 	}
 }
 

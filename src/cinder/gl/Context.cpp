@@ -38,14 +38,19 @@
 
 using namespace std;
 
-// ES 2 Multisampling is available on iOS via an extension
-#if ! defined( CINDER_GL_ES ) || ( defined( CINDER_COCOA_TOUCH ) )
+// ES 2 Multisampling is available on iOS and ANGLE via an extension
+#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
 	#define SUPPORTS_FBO_MULTISAMPLING
-	#if defined( CINDER_COCOA_TOUCH )
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
 		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
 		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
 		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
 		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
 	#endif
 #endif
 
@@ -73,20 +78,23 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if ! defined( CINDER_GL_ES )
+#if defined( SUPPORTS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao );
 	mDefaultVao->setContext( this );
 	mDefaultVao->bindImpl( NULL );
-	
+
 	mBufferBindingStack[GL_ARRAY_BUFFER] = vector<int>();
 	mBufferBindingStack[GL_ARRAY_BUFFER].push_back( 0 );
 	mBufferBindingStack[GL_ELEMENT_ARRAY_BUFFER] = vector<int>();
 	mBufferBindingStack[GL_ELEMENT_ARRAY_BUFFER].push_back( 0 );
+
+	mRenderbufferBindingStack[GL_RENDERBUFFER] = vector<int>();
+	mRenderbufferBindingStack[GL_RENDERBUFFER].push_back( 0 );
 	 
 	mReadFramebufferStack.push_back( 0 );
 	mDrawFramebufferStack.push_back( 0 );	
-#elif defined( CINDER_GL_ANGLE )
+#else
 	mFramebufferStack.push_back( 0 );
 #endif
 	mDefaultArrayVboIdx = 0;
@@ -177,7 +185,7 @@ void Context::makeCurrent() const
 	}
 #else
 	if( sThreadSpecificCurrentContext != this ) {
-	sThreadSpecificCurrentContext = const_cast<Context*>( this );
+		sThreadSpecificCurrentContext = const_cast<Context*>( this );
 		env()->makeContextCurrent( this );
 	}
 #endif
@@ -371,6 +379,44 @@ std::pair<ivec2, ivec2> Context::getScissor()
 }
 
 //////////////////////////////////////////////////////////////////
+// Face Culling
+
+void Context::cullFace( GLenum face )
+{
+	if( setStackState( mCullFaceStack, face ) ) {
+		glCullFace( face );
+	}
+}
+
+void Context::pushCullFace( GLenum face )
+{
+	if( pushStackState( mCullFaceStack, face ) ) {
+		glCullFace( face );
+	}
+}
+
+void Context::pushCullFace()
+{
+	mCullFaceStack.push_back( getCullFace() );
+}
+
+void Context::popCullFace()
+{
+	if( mCullFaceStack.empty() || popStackState( mCullFaceStack ) ) {
+		glCullFace( getCullFace() );
+	}
+}
+
+GLenum Context::getCullFace()
+{
+	if( mCullFaceStack.empty() ) {
+		mCullFaceStack.push_back( GL_BACK );
+	}
+
+	return mCullFaceStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
 // Buffer
 void Context::bindBuffer( GLenum target, GLuint id )
 {
@@ -503,28 +549,105 @@ void Context::restoreInvalidatedBufferBinding( GLenum target )
 	}
 }
 
-#if ! defined( CINDER_GL_ES )
-void Context::bindBufferBase( GLenum target, int index, const BufferObjRef &buffer )
+//////////////////////////////////////////////////////////////////
+// Renderbuffer
+void Context::bindRenderbuffer( GLenum target, GLuint id )
 {
-	switch (target) {
-		case GL_TRANSFORM_FEEDBACK_BUFFER: {
-			if( mCachedTransformFeedbackObj ) {
+	GLuint prevValue = getRenderbufferBinding( target );
+	if( prevValue != id ) {
+		mRenderbufferBindingStack[target].back() = id;
+		glBindRenderbuffer( target, id );
+	}
+}
+
+void Context::pushRenderbufferBinding( GLenum target, GLuint id )
+{
+	pushRenderbufferBinding( target );
+	bindRenderbuffer( target, id );
+}
+
+void Context::pushRenderbufferBinding( GLenum target )
+{
+	GLuint curValue = getRenderbufferBinding( target );
+	mRenderbufferBindingStack[target].push_back( curValue );
+}
+
+void Context::popRenderbufferBinding( GLenum target )
+{
+	GLuint prevValue = getRenderbufferBinding( target );
+	auto cachedIt = mRenderbufferBindingStack.find( target );
+	cachedIt->second.pop_back();
+	if( ! cachedIt->second.empty() && cachedIt->second.back() != prevValue ) {
+		glBindRenderbuffer( target, cachedIt->second.back() );
+	}
+}
+
+GLuint Context::getRenderbufferBinding( GLenum target )
+{
+	// currently only GL_RENDERBUFFER is legal in GL
+	CI_ASSERT( target == GL_RENDERBUFFER );
+	
+	auto cachedIt = mRenderbufferBindingStack.find( target );
+	if( (cachedIt == mRenderbufferBindingStack.end()) || ( cachedIt->second.empty() ) || ( cachedIt->second.back() == -1 ) ) {
+		GLint queriedInt = 0;
+		glGetIntegerv( GL_RENDERBUFFER_BINDING, &queriedInt );
+		
+		if( mRenderbufferBindingStack[target].empty() ) { // bad - empty stack; push twice to allow for the pop later and not lead to an empty stack
+			mRenderbufferBindingStack[target] = vector<GLint>();
+			mRenderbufferBindingStack[target].push_back( queriedInt );
+			mRenderbufferBindingStack[target].push_back( queriedInt );			
+		}
+		else
+			mRenderbufferBindingStack[target].back() = queriedInt;
+		return (GLuint)queriedInt;
+	}
+	else
+		return (GLuint)cachedIt->second.back();
+}
+
+void Context::renderbufferDeleted( const Renderbuffer *buffer )
+{
+	GLenum target = GL_RENDERBUFFER;
+
+	// if 'id' was bound to 'target', mark 'target's binding as 0
+	auto existingIt = mRenderbufferBindingStack.find( target );
+	if( existingIt != mRenderbufferBindingStack.end() ) {
+		if( mRenderbufferBindingStack[target].back() == buffer->getId() )
+			mRenderbufferBindingStack[target].back() = 0;
+	}
+	else
+		mRenderbufferBindingStack[target].push_back( 0 );
+}
+
+#if ! defined( CINDER_GL_ES_2 )
+void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer )
+{
+	switch( target ) {
+		case GL_TRANSFORM_FEEDBACK_BUFFER:
+			if( mCachedTransformFeedbackObj )
 				mCachedTransformFeedbackObj->setIndex( index, buffer );
-			}
-			else {
+			else
 				glBindBufferBase( target, index, buffer->getId() );
-			}
-		}
 		break;
-		case GL_UNIFORM_BUFFER: {
-			// Soon to implement
-		}
+		case GL_UNIFORM_BUFFER:
+			glBindBufferBase( target, index, buffer->getId() );
 		break;
 		default:
+			CI_LOG_E( "Unknown target" );
 		break;
 	}
 }
-	
+
+void Context::bindBufferBase( GLenum target, GLuint index, GLuint id )
+{
+	glBindBufferBase( target, index, id );
+}
+
+void Context::bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size )
+{
+	glBindBufferRange( target, index, buffer->getId(), offset, size );
+}
+
 //////////////////////////////////////////////////////////////////
 // TransformFeedbackObj
 void Context::bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj )
@@ -1238,9 +1361,11 @@ bool Context::getStackState( std::vector<T> &stack, T *result )
 void Context::sanityCheck()
 {
 	// assert cached (VAO) GL_VERTEX_ARRAY_BINDING is correct
-	GLint trueVaoBinding;
-#if defined( CINDER_GL_ES )
+	GLint trueVaoBinding = 0;
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &trueVaoBinding );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
 #endif
@@ -1320,8 +1445,10 @@ void Context::printState( std::ostream &os ) const
 	glGetIntegerv( GL_ELEMENT_ARRAY_BUFFER_BINDING, &queriedInt );
 	os << "GL_ELEMENT_ARRAY_BUFFER:" << queriedInt << ", ";
 
-#if defined( CINDER_GL_ES )
+#if defined( CINDER_GL_ES_2 )
+  #if ! defined( CINDER_GL_ANGLE )
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING_OES, &queriedInt );
+  #endif
 #else
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &queriedInt );
 #endif
@@ -1399,17 +1526,29 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawArraysInstancedANGLE( mode, first, count, primcount );
+#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_COCOA_TOUCH )
+	glDrawArraysInstancedEXT( mode, first, count, primcount );
+#else
 	glDrawArraysInstanced( mode, first, count, primcount );
+#endif
 }
 
 void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount )
 {
+#if defined( CINDER_GL_ANGLE )
+	glDrawElementsInstancedANGLE( mode, count, type, indices, primcount );
+#elif defined( CINDER_GL_ES_2 ) && defined( CINDER_COCOA_TOUCH )
+	glDrawElementsInstancedEXT( mode, count, type, indices, primcount );
+#else
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
+#endif
 }
-#endif // ! defined( CINDER_GL_ES )
+#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders

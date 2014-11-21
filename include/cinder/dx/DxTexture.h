@@ -35,6 +35,7 @@
 #include "cinder/Rect.h"
 #include "cinder/Stream.h"
 #include "cinder/FileSystem.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 #include <utility>
@@ -331,7 +332,7 @@ class SurfaceConstraintsGLTexture : public SurfaceConstraints {
 	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
-class TextureDataExc : public std::exception {
+class TextureDataExc : public Exception {
 public:	
 	TextureDataExc( const std::string &log ) throw();
 	virtual const char* what() const throw()

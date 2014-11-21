@@ -63,8 +63,9 @@ void SimpleViewerApp::load( fs::path path )
 		
 		mTex = renderCairoToTexture( mDoc );
 	}
-	catch( ... ) {
-	} // ignore errors
+	catch( ci::Exception &exc ) {
+		console() << "exception caught parsing svg doc, what: " << exc.what() << endl;
+	}
 }
 
 void SimpleViewerApp::draw()

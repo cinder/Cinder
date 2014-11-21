@@ -5,6 +5,7 @@
 #include "cinder/Json.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
+#include "cinder/Log.h"
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -53,8 +54,9 @@ void TweetStream::serviceTweets()
 				searchResults = queryResult.getChild( "results" );
 				resultIt = searchResults.begin();
 			}
-			catch( ... ) {
+			catch( ci::Exception &exc ) {
 				// our API query failed: put up a "tweet" with our error
+				CI_LOG_W( "exception caught parsing query: " << exc.what() );
 				mBuffer.pushFront( Tweet( "Twitter API query failed", "sadness", Surface() ) );
 				ci::sleep( 2000 ); // try again in 2 seconds
 			}
@@ -69,7 +71,8 @@ void TweetStream::serviceTweets()
 				string userName = (*resultIt)["from_user"].getValue();
 				mBuffer.pushFront( Tweet( text, userName, userIcon ) );
 			}
-			catch( ... ) { // just ignore any errors
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "exception caught parsing search results: " << exc.what() );
 			}
 			++resultIt;
 		}

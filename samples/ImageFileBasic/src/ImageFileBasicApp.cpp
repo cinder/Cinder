@@ -28,8 +28,8 @@ void ImageFileBasicApp::setup()
 			mTexture = gl::Texture::create( loadImage( path ) );
 		}
 	}
-	catch( ... ) {
-		console() << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "unable to load the texture file, what: " << exc.what() << endl;
 	}
 }
 
@@ -60,9 +60,9 @@ void ImageFileBasicApp::fileDrop( FileDropEvent event )
 	try {
 		mTexture = gl::Texture::create( loadImage( event.getFile( 0 ) ) );
 	}
-	catch( ... ) {
-		console() << "unable to load the texture file!" << std::endl;
-	};
+	catch( ci::Exception &exc ) {
+		console() << "unable to load the texture file, what: " << exc.what() << endl;
+	}
 }
 
 void ImageFileBasicApp::draw()

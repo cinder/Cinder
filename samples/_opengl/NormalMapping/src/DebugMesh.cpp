@@ -28,17 +28,11 @@ using namespace std;
 
 DebugMesh::DebugMesh()
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::COLOR );
-
 	clear();
 }
 
 DebugMesh::DebugMesh( const TriMesh& mesh )
 {
-	enable( Attrib::POSITION );
-	enable( Attrib::COLOR );
-
 	setMesh( mesh );
 }
 
@@ -83,8 +77,8 @@ void DebugMesh::setMesh( const TriMesh& mesh )
 	for( size_t i = 0; i < numVertices; ++i ) {
 		uint32_t idx = mVertices.size();
 
-		mVertices.push_back( mesh.getVertices<3>()[i] );
-		mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getNormals()[i] );
+		mVertices.push_back( mesh.getPositions<3>()[i] );
+		mVertices.push_back( mesh.getPositions<3>()[i] + scale * mesh.getNormals()[i] );
 		
 		mColors.push_back( Color( 0, 0, 0 ) );
 		mColors.push_back( Color( 0, 0, 1 ) );
@@ -93,8 +87,8 @@ void DebugMesh::setMesh( const TriMesh& mesh )
 		mIndices.push_back( idx + 1 );
 
 		if( hasTangents ) {
-			mVertices.push_back( mesh.getVertices<3>()[i] + scale * mesh.getTangents()[i] );
-			mVertices.push_back( mesh.getVertices<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
+			mVertices.push_back( mesh.getPositions<3>()[i] + scale * mesh.getTangents()[i] );
+			mVertices.push_back( mesh.getPositions<3>()[i] + scale * cross( mesh.getNormals()[i], mesh.getTangents()[i] ) );
 
 			mColors.push_back( Color( 1, 0, 0 ) );
 			mColors.push_back( Color( 0, 1, 0 ) );
@@ -117,7 +111,12 @@ uint8_t DebugMesh::getAttribDims( Attrib attr ) const
 	}
 }
 
-void DebugMesh::loadInto( Target *target ) const
+geom::AttribSet DebugMesh::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::COLOR };
+}
+
+void DebugMesh::loadInto( Target *target, const geom::AttribSet &requestedAttribs ) const
 {
 	target->copyAttrib( Attrib::POSITION, 3, 0, reinterpret_cast<const float*>(&mVertices.front()), mVertices.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, reinterpret_cast<const float*>(&mColors.front()), mColors.size() );

@@ -22,15 +22,12 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Capture.h"
-#if defined( CINDER_MAC )
-	#import "cinder/CaptureImplQtKit.h"
-	typedef CaptureImplQtKit	CapturePlatformImpl;
+#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
+	#import "cinder/CaptureImplAvFoundation.h"
+	typedef CaptureImplAvFoundation	CapturePlatformImpl;
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
 	#include "cinder/CaptureImplCocoaDummy.h"
 	typedef CaptureImplCocoaDummy	CapturePlatformImpl;
-#elif defined( CINDER_COCOA_TOUCH_DEVICE )
-	#import "cinder/CaptureImplAvFoundation.h"
-	typedef CaptureImplAvFoundation	CapturePlatformImpl;
 #elif defined( CINDER_MSW )
 	#include "cinder/CaptureImplDirectShow.h"
 	typedef cinder::CaptureImplDirectShow	CapturePlatformImpl;

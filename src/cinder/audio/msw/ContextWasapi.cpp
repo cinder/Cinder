@@ -146,10 +146,11 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 	auto wfx = interleavedFloatWaveFormat( sampleRate, numChannels );
 	::WAVEFORMATEX *closestMatch;
 	hr = mAudioClient->IsFormatSupported( ::AUDCLNT_SHAREMODE_SHARED, wfx.get(), &closestMatch );
-	// only handle S_FALSE, which indicates that a closest match was provided. AUDCLNT_E_UNSUPPORTED_FORMAT seems to be unreliable,
-	// so otherwise we just carry on and try to Initialize() optimistically.
+	// S_FALSE indicates that a closest match was provided. AUDCLNT_E_UNSUPPORTED_FORMAT seems to be unreliable,
+	// so we accept it too and try to Initialize() optimistically.
 	if( hr == S_FALSE ) {
 		CI_ASSERT_MSG( closestMatch, "expected closestMatch" );
+		auto scopedClosestMatch = shared_ptr<::WAVEFORMATEX>( closestMatch, ::CoTaskMemFree );
 
 		// If possible, update wfx to the closestMatch. Currently this can only be done if the channels are different.
 		if( closestMatch->wFormatTag != wfx->wFormatTag )
@@ -163,8 +164,9 @@ void WasapiAudioClientImpl::initAudioClient( const DeviceRef &device, size_t num
 		wfx->nAvgBytesPerSec = closestMatch->nAvgBytesPerSec;
 		wfx->nBlockAlign = closestMatch->nBlockAlign;
 		wfx->wBitsPerSample = closestMatch->wBitsPerSample;
-
-		::CoTaskMemFree( closestMatch );
+	}
+	else if( hr != S_OK && hr != AUDCLNT_E_UNSUPPORTED_FORMAT ) {
+		throw AudioExc( "Format unsupported by IAudioClient", (int32_t)hr );
 	}
 
 	mNumChannels = wfx->nChannels; // in preparation for using closesMatch
@@ -490,8 +492,9 @@ void OutputDeviceNodeWasapi::renderInputs()
 	if( ! ctx )
 		return;
 
-	auto internalBuffer = getInternalBuffer();
+	ctx->preProcess();
 
+	auto internalBuffer = getInternalBuffer();
 	internalBuffer->zero();
 	pullInputs( internalBuffer );
 

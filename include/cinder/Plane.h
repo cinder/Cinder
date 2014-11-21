@@ -26,6 +26,8 @@
 #pragma once
 
 #include "cinder/Vector.h"
+#include "cinder/Exception.h"
+
 #include <iostream>
 
 namespace cinder {
@@ -75,7 +77,7 @@ std::ostream& operator<<( std::ostream &o, const Plane<T> &p )
 }
 
 
-class PlaneExc : public std::exception {
+class PlaneExc : public Exception {
  public:
 	virtual const char* what() const throw() { return "Invalid parameters specified"; }
 };

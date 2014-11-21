@@ -238,7 +238,7 @@ struct Entry {
 	}
 
 	template <typename T>
-	Entry& operator<<( T rhs )
+	Entry& operator<<( const T &rhs )
 	{
 		mHasContent = true;
 		mStream << rhs;

@@ -1,0 +1,4 @@
+#include "../include/Resources.h"
+
+RES_DRAIN_OGG
+RES_TONE_440L220R

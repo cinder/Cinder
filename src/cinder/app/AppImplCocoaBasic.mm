@@ -226,7 +226,7 @@
 		if( [mWindows count] == 1 ) // we're about to release the last window; set the active window to be NULL
 			mActiveWindow = nil;
 		else
-			mActiveWindow = [mWindows objectAtIndex:0];
+			mActiveWindow = [mWindows firstObject];
 	}
 
 	windowImpl->mWindowRef->setInvalid();
@@ -289,7 +289,7 @@
 	// we need to close all existing windows
 	while( [mWindows count] > 0 ) {
 		// this counts on windowWillCloseNotification: firing and in turn calling releaseWindow
-		[[mWindows objectAtIndex:0] close];
+		[[mWindows lastObject] close];
 	}
 
 	mApp->emitShutdown();

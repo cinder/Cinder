@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* PboUploadTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PboUploadTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D3134D70E25E448687E534A1 /* PboUploadTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/PboUploadTestApp.cpp; sourceTree = "<group>"; name = PboUploadTestApp.cpp; };
 		A3544884D94341DCA4282A9D /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		03978B1B6024433D8F9FA7B9 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		03978B1B6024433D8F9FA7B9 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		C0717443F6A54139AA2C70A2 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		6B88A3C0D5804F41B27572B9 /* PboUploadTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = PboUploadTest_Prefix.pch; sourceTree = "<group>"; name = PboUploadTest_Prefix.pch; };
 /* End PBXFileReference section */

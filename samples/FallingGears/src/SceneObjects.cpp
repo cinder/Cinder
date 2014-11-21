@@ -39,7 +39,7 @@ void Gear::draw()
 	Rectf imageDest( - mRadius, - mRadius, mRadius, mRadius );
 
 	vec2 pos = vec2( mBody->GetPosition().x, mBody->GetPosition().y ) * pointsPerMeter;
-	float t = toDegrees( mBody->GetAngle() );
+	float t = mBody->GetAngle();
 
 	gl::pushModelMatrix();
 		gl::translate( pos );
@@ -66,10 +66,10 @@ void Wall::handleCollision( const Gear *gear, const vec2 &contactPoint )
 
 	if( mSide == Wall::Side::RIGHT ) {
 		freqMidi += 7;
-		panPos = 0.1f;
+		panPos = 0.9f; // almost all the way to the right
 	}
 	else
-		panPos = 0.9f;
+		panPos = 0.1f; // almost all the way to the left
 
 	while( freqMidi > BASS_MAX )
 		freqMidi -= 12;

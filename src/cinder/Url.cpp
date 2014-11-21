@@ -109,7 +109,7 @@ IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, co
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // UrlLoadExc
 UrlLoadExc::UrlLoadExc( int code, const std::string &message )
-	: mMessage( message ), mStatusCode( code )
+	: Exception( message ), mStatusCode( code )
 {
 }
 

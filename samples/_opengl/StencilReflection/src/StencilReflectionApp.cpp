@@ -35,11 +35,7 @@ void StencilReflectionApp::setup()
 	// Below are the formats to allow stencil buffers on a user generated FBO
 	// Look at the bottom to see how to turn stencil buffers on for the system
 	// FBO
-#if defined( CINDER_GLES )
-    mFormat.colorTexture().depthBuffer().stencilBuffer().samples( 4 );
-#else
     mFormat.colorTexture().depthBuffer().stencilBuffer().samples( 16 );
-#endif
     mFbo = gl::Fbo::create( toPixels( getWindowWidth() ), toPixels( getWindowHeight() ), mFormat );
 	
     mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 ); 

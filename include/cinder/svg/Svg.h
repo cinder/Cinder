@@ -838,12 +838,7 @@ class TransformParseExc : public Exc
 
 class ExcChildNotFound : public Exc {
   public:
-	ExcChildNotFound( const std::string &child ) throw();
-  
-	virtual const char* what() const throw() { return mMessage; }
-  
-  private:
-	char mMessage[2048];
+	ExcChildNotFound( const std::string &child );
 };
 
 

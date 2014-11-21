@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* ObjectTracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ObjectTracking.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		3C60D5E500ED467792D96224 /* ObjectTrackingApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/ObjectTrackingApp.cpp; sourceTree = "<group>"; name = ObjectTrackingApp.cpp; };
 		EC13C67A6E3548F4AB0CE1C1 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		72FE4C3FED4C41EABF58BDE3 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		72FE4C3FED4C41EABF58BDE3 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		075C9C4AD9924BFA98FD34D8 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		834D9F444A0241948B5092CF /* ObjectTracking_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ObjectTracking_Prefix.pch; sourceTree = "<group>"; name = ObjectTracking_Prefix.pch; };
 /* End PBXFileReference section */

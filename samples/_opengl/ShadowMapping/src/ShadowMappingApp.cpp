@@ -1,4 +1,3 @@
-
 /**
  
  Eric Renaud-Houde - August 2014
@@ -85,8 +84,6 @@ public:
 		depthFormat.setMagFilter( GL_LINEAR );
 		depthFormat.setMinFilter( GL_LINEAR );
 		depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		depthFormat.setPixelDataFormat( GL_DEPTH_COMPONENT );
-		depthFormat.setPixelDataType( GL_FLOAT );
 		depthFormat.setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
 		depthFormat.setCompareFunc( GL_LEQUAL );
 		mTextureShadowMap = gl::Texture2d::create( size, size, depthFormat );
@@ -137,7 +134,7 @@ private:
 	
 	gl::BatchRef				mTeapot, mTeapotShadowed;
 	gl::BatchRef				mSphere, mSphereShadowed;
-	std::vector< std::pair<mat4, vec3>>	mTransforms;
+	std::vector<std::pair<mat4, vec3>>	mTransforms;
 	
 	
 	gl::GlslProgRef				mShadowShader;
@@ -220,18 +217,11 @@ void ShadowMappingApp::setup()
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
-	auto teapot = gl::VboMesh::create( geom::Teapot()
-									  .enable( geom::Attrib::POSITION )
-									  .enable( geom::Attrib::TEX_COORD_0 )
-									  .enable( geom::Attrib::NORMAL )
-									  .subdivisions(5) );
+	auto teapot = gl::VboMesh::create( geom::Teapot().subdivisions(5) );
 	mTeapot = gl::Batch::create( teapot, positionGlsl );
 	mTeapotShadowed = gl::Batch::create( teapot, mShadowShader );
 	
-	auto sphere = gl::VboMesh::create( geom::Icosphere()
-									  .enable( geom::Attrib::POSITION )
-									  .enable( geom::Attrib::TEX_COORD_0 )
-									  .enable( geom::Attrib::NORMAL ) );
+	auto sphere = gl::VboMesh::create( geom::Icosphere() );
 	mSphere = gl::Batch::create( sphere, positionGlsl );
 	mSphereShadowed = gl::Batch::create( sphere, mShadowShader );
 		
@@ -266,7 +256,6 @@ void ShadowMappingApp::update()
 		transform.first *= orientate4( vec3( c, s, -c ) * 0.01f );
 	}
 	
-	
 	mLight.viewpoint.x = mLight.distanceRadius * sin( 0.25f * e );
 	mLight.viewpoint.z = mLight.distanceRadius * cos( 0.25f * e );
 	mLight.camera.lookAt( mLight.viewpoint, mLight.target );
@@ -284,7 +273,8 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 			shadowGlsl->uniform( "uIsTeapot", false );
 			mSphereShadowed->draw();
 			shadowGlsl->uniform( "uIsTeapot", true );
-		} else {
+		}
+		else {
 			mSphere->draw();
 		}
 	}
@@ -295,11 +285,10 @@ void ShadowMappingApp::drawScene( float spinAngle, const gl::GlslProgRef& shadow
 			gl::ScopedModelMatrix push;
 			gl::scale( vec3(0.25) );
 			gl::multModelMatrix( rotate( spinAngle, transform.second ) * transform.first );
-			if( shadowGlsl ) {
+			if( shadowGlsl )
 				mTeapotShadowed->draw();
-			} else {
+			else
 				mTeapot->draw();
-			}
 		}
 	}
 }
@@ -350,7 +339,6 @@ void ShadowMappingApp::draw()
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
 	
 	mParams->draw();
-	CI_CHECK_GL();
 }
 
 void ShadowMappingApp::mouseDown( MouseEvent event )
@@ -378,7 +366,8 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' ) {
 		app::setFullScreen( !app::isFullScreen() );
-	} else if( event.getChar() == KeyEvent::KEY_SPACE ) {
+	}
+	else if( event.getChar() == KeyEvent::KEY_SPACE ) {
 		mParams->maximize( ! mParams->isMaximized() );
 	}
 }

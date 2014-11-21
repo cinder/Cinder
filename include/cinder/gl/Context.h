@@ -42,10 +42,8 @@ class Vao;
 typedef std::shared_ptr<Vao>			VaoRef;
 class BufferObj;
 typedef std::shared_ptr<BufferObj>		BufferObjRef;
-#if ! defined( CINDER_GL_ES )
 class TransformFeedbackObj;
 typedef std::shared_ptr<TransformFeedbackObj>	TransformFeedbackObjRef;
-#endif
 class Texture2d;
 typedef std::shared_ptr<Texture2d>		Texture2dRef;
 class GlslProg;
@@ -54,6 +52,7 @@ class Fbo;
 typedef std::shared_ptr<Fbo>			FboRef;
 class VertBatch;
 typedef std::shared_ptr<VertBatch>		VertBatchRef;
+class Renderbuffer;
 
 class Context {
   public:
@@ -136,6 +135,17 @@ class Context {
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the scissor box
 	std::pair<ivec2, ivec2>	getScissor();
 
+	//! Analogous to glCullFace( \a face ). Valid arguments are \c GL_FRONT and \c GL_BACK.
+	void					cullFace( GLenum face );
+	//! Pushes the cull face \a face. Valid arguments are \c GL_FRONT and \c GL_BACK.
+	void					pushCullFace( GLenum face );
+	//! Duplicates and pushes the top of the Cull Face stack.
+	void					pushCullFace();
+	//! Pops the top of the Cull Face stack.
+	void					popCullFace();
+	//! Returns a GLenum representing the current cull face. Either \c GL_FRONT or \c GL_BACK.
+	GLenum					getCullFace();
+
 	//! Analogous to glBindBuffer( \a target, \a id )
 	void		bindBuffer( GLenum target, GLuint id );
 	//! Pushes and binds buffer object \a id for the target \a target
@@ -157,6 +167,19 @@ class Context {
 	//! Restores a buffer binding when code that is not caching aware has invalidated it. Not typically necessary.
 	void		restoreInvalidatedBufferBinding( GLenum target );
 
+	//! Analogous to glBindRenderbuffer( \a target, \a id )
+	void		bindRenderbuffer( GLenum target, GLuint id );
+	//! Pushes and binds renderbuffer object \a id for the target \a target
+	void		pushRenderbufferBinding( GLenum target, GLuint id );
+	//! Duplicates and pushes the renderbuffer binding for the target \a target
+	void		pushRenderbufferBinding( GLenum target );
+	//! Pops the renderbuffer binding for the target \a target
+	void		popRenderbufferBinding( GLenum target );
+	//! Returns the current renderbuffer binding for \a target. If not cached, queries the GL for the current value (and caches it).
+	GLuint		getRenderbufferBinding( GLenum target );
+	//! No-op if Renderbuffer wasn't bound, otherwise reflects the binding as 0 (in accordance with what GL has done automatically).
+	void		renderbufferDeleted( const Renderbuffer *buffer );
+
 	//! Binds GLSL program \a prog. Analogous to glUseProgram()
 	void			bindGlslProg( const GlslProgRef &prog );
 	//! Pushes and binds GLSL program \a prog.
@@ -172,9 +195,13 @@ class Context {
 	//! Used by object tracking.
 	void			glslProgDeleted( const GlslProg *glslProg );
 	
-#if ! defined( CINDER_GL_ES )
-	//! Binds \a ref to the specific \a index within \a target.
-	void bindBufferBase( GLenum target, int index, const BufferObjRef &ref );
+#if ! defined( CINDER_GL_ES_2 )
+	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
+	void bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer );
+	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
+	void bindBufferBase( GLenum target, GLuint index, GLuint id );
+	//! Analogous to glBindBufferRange()
+	void bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size );
 
 	//! Binds \a feedbackObj as the current Transform Feedback Object. Also, unbinds currently bound Transform Feedback Obj if one exists.
 	void bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj );
@@ -319,12 +346,12 @@ class Context {
 	void		drawArrays( GLenum mode, GLint first, GLsizei count );
 	//! Analogous to glDrawElements()
 	void		drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-#if ! defined( CINDER_GL_ES )
+#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 	//! Analogous to glDrawArraysInstanced()
 	void		drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount );
 	//! Analogous to glDrawElementsInstanced()
 	void		drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei primcount );
-#endif // ! defined( CINDER_GL_ES )
+#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
 	const ColorAf&	getCurrentColor() const { return mColor; }
@@ -369,10 +396,11 @@ class Context {
 	std::map<ShaderDef,GlslProgRef>		mStockShaders;
 	
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
+	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
 	std::vector<GlslProgRef>			mGlslProgStack;
 	std::vector<VaoRef>					mVaoStack;
 	
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;
 #endif
 	
@@ -380,11 +408,14 @@ class Context {
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;
 	std::vector<GLint>					mBlendSrcAlphaStack, mBlendDstAlphaStack;
 
-#if defined( CINDER_GL_ES ) && (! defined( CINDER_COCOA_TOUCH ))
+#if defined( CINDER_GL_ES_2 ) && (! defined( CINDER_COCOA_TOUCH )) && (! defined( CINDER_GL_ANGLE ))
 	std::vector<GLint>			mFramebufferStack;
 #else
 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
 #endif
+
+	// Face culling stack.
+	std::vector<GLenum>			mCullFaceStack;
 	
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
@@ -430,9 +461,6 @@ class Context {
 	std::set<const Fbo*>			mLiveFbos;
 
 	friend class				Environment;
-	friend class				EnvironmentEs2Profile;
-	friend class				EnvironmentCoreProfile;
-	friend class				EnvironmentCompatibilityProfile;
 	
 	friend class				Texture2d;
 };

@@ -34,8 +34,8 @@ void CaptureBasicApp::setup()
 		mCapture = Capture::create( 640, 480 );
 		mCapture->start();
 	}
-	catch( ... ) {
-		console() << "Failed to initialize capture" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Failed to initialize capture, what: " << exc.what() << std::endl;
 	}
 }
 
@@ -65,7 +65,7 @@ void CaptureBasicApp::draw()
     gl::pushModelMatrix();
 #if defined( CINDER_COCOA_TOUCH )
 		//change iphone to landscape orientation
-		gl::rotate( 90.0f );
+		gl::rotate( M_PI / 2 );
 		gl::translate( 0.0f, -getWindowWidth() );
 
 		Rectf flippedBounds( 0.0f, 0.0f, getWindowHeight(), getWindowWidth() );

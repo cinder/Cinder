@@ -28,6 +28,7 @@ void RotatingCubeApp::setup()
 	mCam.lookAt( vec3( 3, 2, 4 ), vec3( 0 ) );
 	
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
+	mTexture->bind();
 
 #if defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
@@ -35,13 +36,9 @@ void RotatingCubeApp::setup()
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
 	mBatch = gl::Batch::create( geom::Cube(), mGlsl );
-//	mBatch = gl::Batch::create( geom::Cube().enable( geom::COLOR ), mGlsl ); // per-vertex (face) coloring
-//	mBatch = gl::Batch::create( geom::Teapot().enable( geom::TEX_COORD_0 ).enable( geom::NORMAL ).subdivision( 5 ), mGlsl ); // teapot
 
 	gl::enableDepthWrite();
 	gl::enableDepthRead();
-	
-	mGlsl->bind();
 }
 
 void RotatingCubeApp::resize()
@@ -52,8 +49,8 @@ void RotatingCubeApp::resize()
 
 void RotatingCubeApp::update()
 {
-	// Rotate the cube by 2 degrees around an arbitrary axis
-	mCubeRotation *= rotate( toRadians( 2.0f ), normalize( vec3( 1, 1.3, 0.5 ) ) );
+	// Rotate the cube by 0.2 degrees around the y-axis
+	mCubeRotation *= rotate( toRadians( 0.2f ), normalize( vec3( 0, 1, 0 ) ) );
 }
 
 void RotatingCubeApp::draw()
@@ -61,11 +58,10 @@ void RotatingCubeApp::draw()
 	gl::clear();
 
 	gl::setMatrices( mCam );
-	mTexture->bind();
-	gl::pushMatrices();
-		gl::multModelMatrix( mCubeRotation );
-		mBatch->draw();
-	gl::popMatrices();
+
+	gl::ScopedModelMatrix modelScope;
+	gl::multModelMatrix( mCubeRotation );
+	mBatch->draw();
 }
 
 CINDER_APP_NATIVE( RotatingCubeApp, RendererGl )

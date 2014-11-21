@@ -101,7 +101,7 @@ void InputAnalyzer::drawLabels()
 	string dbLabel = "Magnitude (decibels, linear)";
 	gl::pushModelView();
 		gl::translate( 30, getWindowCenter().y + mTextureFont->measureString( dbLabel ).x / 2 );
-		gl::rotate( -90 );
+		gl::rotate( -M_PI / 2 );
 		mTextureFont->drawString( dbLabel, vec2( 0 ) );
 	gl::popModelView();
 }

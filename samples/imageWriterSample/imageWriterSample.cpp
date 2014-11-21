@@ -21,8 +21,8 @@ class ImageWriterSampleApp : public AppBasic {
 				writeImage( pngPath, srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
 			}
 		}
-		catch( ... ) {
-			console() << "unable to save the image file!" << std::endl;
+		catch( ci::Exception &exc ) {
+			console() << "unable to save the image file, what: " << exc.what() << std::endl;
 		}		
 	}
 };

@@ -24,6 +24,7 @@
 
 #include "cinder/dx/dx.h"
 #include "cinder/TriMesh.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 #include <utility>
@@ -281,7 +282,7 @@ class VboMesh {
 	std::shared_ptr<Obj>		mObj;
 };
 
-class VboExc : public std::exception {
+class VboExc : public Exception {
  public:
 	virtual const char* what() const throw() { return "OpenGL Vbo exception"; }
 };

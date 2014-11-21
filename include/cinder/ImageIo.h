@@ -202,10 +202,7 @@ void			writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource
 
 class ImageIoException : public Exception {
   public:
-	ImageIoException( const std::string &description = "" ) : mDescription( description ) {}
-	virtual const char* what() const throw()	{ return mDescription.c_str(); }
-  protected:
-	std::string mDescription;
+	ImageIoException( const std::string &description = "" ) : Exception( description ) {}
 };
 
 class ImageIoExceptionFailedLoad : public ImageIoException {

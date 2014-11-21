@@ -75,7 +75,7 @@ void RetinaSampleApp::draw()
 	gl::pushModelMatrix();
 		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() * 5 );
+		gl::rotate( getElapsedSeconds() / 10 );
 		gl::drawSolidRect( Rectf( Area( -100, -100, 100, 100 ) ) );
 	gl::popModelMatrix();
 

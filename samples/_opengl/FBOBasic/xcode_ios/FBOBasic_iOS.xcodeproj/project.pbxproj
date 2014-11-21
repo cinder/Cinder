@@ -23,6 +23,8 @@
 		0087D29F12CD814F002CD69F /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D29E12CD814F002CD69F /* libz.dylib */; };
 		0087D2BF12CD81BB002CD69F /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D2BE12CD81BB002CD69F /* QuartzCore.framework */; };
 		009CB6F5120F42DE0066763D /* FBOBasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009CB6F4120F42DE0066763D /* FBOBasicApp.cpp */; };
+		00BDDB3A19EA27AF0006CBCF /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00BDDB3919EA27AF0006CBCF /* Accelerate.framework */; };
+		00BDDB3E19EF26110006CBCF /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 00BDDB3D19EF26110006CBCF /* Default-568h@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -42,6 +44,8 @@
 		0087D29E12CD814F002CD69F /* libz.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libz.dylib; path = usr/lib/libz.dylib; sourceTree = SDKROOT; };
 		0087D2BE12CD81BB002CD69F /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
 		009CB6F4120F42DE0066763D /* FBOBasicApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FBOBasicApp.cpp; path = ../src/FBOBasicApp.cpp; sourceTree = SOURCE_ROOT; };
+		00BDDB3919EA27AF0006CBCF /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00BDDB3D19EF26110006CBCF /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
 		1D6058910D05DD3D006BFB54 /* FBOBasic_iOS.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FBOBasic_iOS.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		32CA4F630368D1EE00C91783 /* FBOBasic_iOS_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FBOBasic_iOS_Prefix.pch; sourceTree = "<group>"; };
 		8D1107310486CEB800E47090 /* FBOBasic_iOS-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "FBOBasic_iOS-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
@@ -52,6 +56,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00BDDB3A19EA27AF0006CBCF /* Accelerate.framework in Frameworks */,
 				007480B4165D57D10024B57A /* ImageIO.framework in Frameworks */,
 				007480B5165D57D10024B57A /* MobileCoreServices.framework in Frameworks */,
 				0087D27712CD8104002CD69F /* AudioToolbox.framework in Frameworks */,
@@ -120,6 +125,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				00BDDB3D19EF26110006CBCF /* Default-568h@2x.png */,
 				8D1107310486CEB800E47090 /* FBOBasic_iOS-Info.plist */,
 			);
 			name = Resources;
@@ -128,6 +134,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00BDDB3919EA27AF0006CBCF /* Accelerate.framework */,
 				007480B2165D57D10024B57A /* ImageIO.framework */,
 				007480B3165D57D10024B57A /* MobileCoreServices.framework */,
 				0087D27A12CD8104002CD69F /* CoreAudio.framework */,
@@ -198,6 +205,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00BDDB3E19EF26110006CBCF /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

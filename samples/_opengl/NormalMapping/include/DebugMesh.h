@@ -34,12 +34,13 @@ class DebugMesh : public ci::geom::Source {
 	void						clear();
 	void						setMesh(const ci::TriMesh& mesh);
 
-	virtual size_t				getNumVertices() const override { return mVertices.size(); }
-	virtual size_t				getNumIndices() const override { return mIndices.size(); }
-	virtual ci::geom::Primitive	getPrimitive() const override { return ci::geom::Primitive::LINES; }
-	virtual uint8_t				getAttribDims( ci::geom::Attrib attr ) const override;
-	
-	virtual void				loadInto( ci::geom::Target *target ) const override;
+	size_t				getNumVertices() const override { return mVertices.size(); }
+	size_t				getNumIndices() const override { return mIndices.size(); }
+	ci::geom::Primitive	getPrimitive() const override { return ci::geom::Primitive::LINES; }
+	uint8_t				getAttribDims( ci::geom::Attrib attr ) const override;
+
+	ci::geom::AttribSet	getAvailableAttribs() const override;
+	void				loadInto( ci::geom::Target *target, const ci::geom::AttribSet &requestedAttribs ) const override;
 
   private:
 	std::vector<ci::vec3>		mVertices;

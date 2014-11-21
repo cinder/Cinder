@@ -19,23 +19,22 @@ const float dt2 = 1.0 / (60.0 * 60.0);
 
 void main()
 {
-  position =  iPosition;
-  pposition = iPPostion;
-  damping =   iDamping;
-  home =      iHome;
-  color =     iColor;
+	position =  iPosition;
+	pposition = iPPostion;
+	damping =   iDamping;
+	home =      iHome;
+	color =     iColor;
 
-  // mouse interaction
-  if( uMouseForce > 0.0 )
-  {
-    vec3 dir = position - uMousePos;
-    float d2 = length( dir );
-    d2 *= d2;
-    position += uMouseForce * dir / d2;
-  }
+	// mouse interaction
+	if( uMouseForce > 0.0 ) {
+		vec3 dir = position - uMousePos;
+		float d2 = length( dir );
+		d2 *= d2;
+		position += uMouseForce * dir / d2;
+	}
 
-  vec3 vel = (position - pposition) * damping;
-  pposition = position;
-  vec3 acc = (home - position) * 32.0f;
-  position += vel + acc * dt2;
+	vec3 vel = (position - pposition) * damping;
+	pposition = position;
+	vec3 acc = (home - position) * 32.0f;
+	position += vel + acc * dt2;
 }

@@ -27,7 +27,7 @@
 
 namespace cinder { namespace gl {
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 	
 extern TransformFeedbackObjRef createTransformFeedbackObjImplHardware();
 extern TransformFeedbackObjRef createTransformFeedbackObjImplSoftware();
@@ -75,9 +75,7 @@ void TransformFeedbackObj::end()
 void TransformFeedbackObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if ! defined( CINDER_GL_ES )
 	env()->objectLabel( GL_TRANSFORM_FEEDBACK, mId, (GLsizei)label.size(), label.c_str() );
-#endif
 }
 
 #endif
