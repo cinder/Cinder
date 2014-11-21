@@ -550,7 +550,7 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 	[mImpl setKeyboardString:keyboardString];
 }
 
-::UITextView *AppCocoaTouch::getkeyboardTextView() const
+::UITextView* AppCocoaTouch::getkeyboardTextView() const
 {
 	return [mImpl getkeyboardTextView];
 }
@@ -558,9 +558,12 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 
 void AppCocoaTouch::showStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {
-	if( animation == StatusBarAnimation::FADE ) [mImpl showStatusBar:UIStatusBarAnimationFade];
-	else if( animation == StatusBarAnimation::SLIDE ) [mImpl showStatusBar:UIStatusBarAnimationSlide];
-	else [mImpl showStatusBar:UIStatusBarAnimationNone];
+	if( animation == StatusBarAnimation::FADE )
+		[mImpl showStatusBar:UIStatusBarAnimationFade];
+	else if( animation == StatusBarAnimation::SLIDE )
+		[mImpl showStatusBar:UIStatusBarAnimationSlide];
+	else
+		[mImpl showStatusBar:UIStatusBarAnimationNone];
 }
 
 bool AppCocoaTouch::isStatusBarVisible() const
@@ -570,9 +573,12 @@ bool AppCocoaTouch::isStatusBarVisible() const
 
 void AppCocoaTouch::hideStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {
-	if( animation == StatusBarAnimation::FADE ) [mImpl hideStatusBar:UIStatusBarAnimationFade];
-	else if( animation == StatusBarAnimation::SLIDE ) [mImpl hideStatusBar:UIStatusBarAnimationSlide];
-	else [mImpl hideStatusBar:UIStatusBarAnimationNone];
+	if( animation == StatusBarAnimation::FADE )
+		[mImpl hideStatusBar:UIStatusBarAnimationFade];
+	else if( animation == StatusBarAnimation::SLIDE )
+		[mImpl hideStatusBar:UIStatusBarAnimationSlide];
+	else
+		[mImpl hideStatusBar:UIStatusBarAnimationNone];
 }
 
 //! Returns the maximum frame-rate the App will attempt to maintain.
@@ -605,7 +611,7 @@ double AppCocoaTouch::getElapsedSeconds() const
 
 fs::path AppCocoaTouch::getAppPath() const
 { 
-	return fs::path([[[NSBundle mainBundle] bundlePath] UTF8String]);
+	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
 void AppCocoaTouch::quit()
