@@ -354,9 +354,9 @@ class App {
 	void				setFpsSampleInterval( double sampleInterval ) { mFpsSampleInterval = sampleInterval; }	
 
 	//! Returns whether the App is in full-screen mode or not.
-	bool				isFullScreen() const { return getWindow()->isFullScreen(); }
+	virtual bool		isFullScreen() const { return getWindow()->isFullScreen(); }
 	//! Sets whether the active App is in full-screen mode based on \a fullScreen
-	void				setFullScreen( bool aFullScreen, const FullScreenOptions &options = FullScreenOptions() ) { getWindow()->setFullScreen( aFullScreen, options ); }
+	virtual void		setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) { getWindow()->setFullScreen( fullScreen, options ); }
 
 	//! Returns the number of seconds which have elapsed since application launch
 	double				getElapsedSeconds() const { return mTimer.getSeconds(); }

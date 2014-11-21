@@ -598,7 +598,7 @@ bool AppCocoaTouch::isFullScreen() const
 	return true;
 }
 
-void AppCocoaTouch::setFullScreen( bool aFullScreen )
+void AppCocoaTouch::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	// NO-OP
 }

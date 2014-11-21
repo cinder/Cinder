@@ -191,23 +191,21 @@ class AppCocoaTouch : public App {
 	//! Hides the system status bar
 	void	hideStatusBar( StatusBarAnimation animation = StatusBarAnimation::NONE );
 	
-	//! Returns the maximum frame-rate the App will attempt to maintain.
-	virtual float		getFrameRate() const;
-	//! Sets the maximum frame-rate the App will attempt to maintain. This will be rounded to the nearest factor of 60 FPS.
-	virtual void		setFrameRate( float frameRate );
-	//! Returns whether the App is in full-screen mode or not.
-	virtual bool		isFullScreen() const;
-	//! Sets whether the active App is in full-screen mode based on \a fullScreen
-	virtual void		setFullScreen( bool aFullScreen );
+	float	getFrameRate() const override;
+	void	setFrameRate( float frameRate ) override;
+	//! Overidden to always return \a true on mobile
+	bool	isFullScreen() const override;
+	//! Overidden to disable, mobile is always full screen.
+	void	setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) override;
 
 	//! Returns the number seconds which have elapsed since the active App launched.
 	virtual double		getElapsedSeconds() const;
 
 	//! Returns the path to the application on disk
-	virtual fs::path	getAppPath() const;
+	fs::path	getAppPath() const override;
 
-	//! Not implemented on iPhone
-	virtual void	quit();
+	//! No-op on iOS
+	void quit() override;
 
 	//! Returns a pointer to the current global AppBasic
 	static AppCocoaTouch*	get() { return sInstance; }

@@ -111,43 +111,35 @@ class AppBasic : public App {
 
 	//! Creates a new Window
 	WindowRef		createWindow( const Window::Format &format = Window::Format() );
-    
-	//! Returns the maximum frame-rate the App will attempt to maintain measured in frames-per-second
-	virtual float		getFrameRate() const;
-	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second
-	virtual void		setFrameRate( float frameRate );
+
+	fs::path	getAppPath() const override;
+	float		getFrameRate() const override;
+	void		setFrameRate( float frameRate ) override;
+	void		restoreWindowContext() override;
+	void		quit() override;
+
+	app::WindowRef	getWindow() const override;
+	size_t			getNumWindows() const override;
+	WindowRef		getWindowIndex( size_t index ) const override;
+
 	//! Disables frameRate limiting.
 	virtual void		disableFrameRate();
 	//! Returns whether frameRate limiting is enabled.
-	virtual bool		isFrameRateEnabled() const;	
+	virtual bool		isFrameRateEnabled() const;
 
 	//! Hides the mouse cursor
 	void				hideCursor();
 	//! Shows the mouse cursor
 	void				showCursor();
-
+	//! Returns AppBasic::Settings that were set during prepareSettings() (or the defaults)
 	const Settings&		getSettings() const { return mSettings; }
 
-
-	//! Ceases execution of the application
-	virtual void		quit();
 
 	//! Returns a vector of the command line arguments passed to the app
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
 
-	//! Returns the path to the application on disk
-	virtual fs::path	getAppPath() const;
-	
-	//! Gets the currently active Window
-	virtual app::WindowRef	getWindow() const;
-	//! Returns the number of Windows the app has open
-	virtual size_t			getNumWindows() const;
-	//! Gets a Window by index, in the range [0, getNumWindows()).
-	virtual WindowRef		getWindowIndex( size_t index ) const;
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef		getForegroundWindow() const;
-
-	void restoreWindowContext() override;
 
 #if defined( CINDER_WINRT)
 	class AppImplWinRTBasic*	getImpl() {return mImpl;};
@@ -162,7 +154,7 @@ class AppBasic : public App {
 	bool		privateShouldQuit();
 	
 #if defined( CINDER_MSW )
-	virtual bool		getsWindowsPaintEvents() { return true; }
+	bool		getsWindowsPaintEvents() override { return true; }
 #endif
 	//! \endcond
 	
