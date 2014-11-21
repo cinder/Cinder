@@ -113,7 +113,7 @@ void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 
 	// Apply SMAA.
 	gl::ScopedTextureBind tex0( source );
-	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mFboBlendPass->getColorTexture(), 1 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
+	gl::ScopedTextureBind tex1( mFboBlendPass->getColorTexture(), 1 );
 	gl::ScopedGlslProg shader( mSMAAThirdPass->program() );
 	mSMAAThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAAThirdPass->uniform( "uColorTex", 0 );
@@ -172,8 +172,8 @@ void SMAA::doBlendPass()
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
-	gl::ScopedTextureBind tex1( ( gl::TextureBaseRef ) mAreaTex, 1 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
-	gl::ScopedTextureBind tex2( ( gl::TextureBaseRef ) mSearchTex, 2 ); // @andrewfb : we are forced to cast, because of ambiguous symbol.
+	gl::ScopedTextureBind tex1( mAreaTex, 1 );
+	gl::ScopedTextureBind tex2( mSearchTex, 2 );
 	gl::ScopedGlslProg shader( mSMAASecondPass->program() );
 	mSMAASecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
 	mSMAASecondPass->uniform( "uEdgesTex", 0 );

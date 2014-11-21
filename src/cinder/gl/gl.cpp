@@ -2083,7 +2083,29 @@ ScopedTextureBind::ScopedTextureBind( const TextureBaseRef &texture, uint8_t tex
 {
 	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
 }
-	
+
+// ----------------------------------------------------------------
+// These overloads are to alleviate a VS2013 bug where it cannot deduce
+// the correct constructor when a TextureBaseRef subclass is passed in
+ScopedTextureBind::ScopedTextureBind( const Texture2dRef &texture, uint8_t textureUnit )
+: mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
+}
+
+ScopedTextureBind::ScopedTextureBind( const Texture3dRef &texture, uint8_t textureUnit )
+: mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
+}
+
+ScopedTextureBind::ScopedTextureBind( const TextureCubeMapRef &texture, uint8_t textureUnit )
+: mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
+{
+	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
+}
+// ----------------------------------------------------------------
+
 ScopedTextureBind::~ScopedTextureBind()
 {
 	mCtx->popTextureBinding( mTarget, mTextureUnit );
