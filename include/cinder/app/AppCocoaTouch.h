@@ -198,9 +198,6 @@ class AppCocoaTouch : public App {
 	//! Overidden to disable, mobile is always full screen.
 	void	setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) override;
 
-	//! Returns the number seconds which have elapsed since the active App launched.
-	virtual double		getElapsedSeconds() const;
-
 	//! Returns the path to the application on disk
 	fs::path	getAppPath() const override;
 

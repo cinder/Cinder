@@ -113,7 +113,6 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 @interface AppImplCocoaTouch : NSObject <UIApplicationDelegate> {
   @public
 	cinder::app::AppCocoaTouch			*mApp;
-	CFAbsoluteTime						mStartTime;
 	std::list<WindowImplCocoaTouch*>	mWindows;
 	WindowImplCocoaTouch*				mActiveWindow;
 
@@ -160,7 +159,6 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	
 	mApp = cinder::app::AppCocoaTouch::get();
 	mApp->privateSetImpl__( self );
-	mStartTime = ::CFAbsoluteTimeGetCurrent();
 	mAnimationFrameInterval = 1;
 	mAnimating = NO;
 	mUpdateHasFired = NO;
@@ -601,12 +599,6 @@ bool AppCocoaTouch::isFullScreen() const
 void AppCocoaTouch::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	// NO-OP
-}
-
-double AppCocoaTouch::getElapsedSeconds() const
-{
-	CFAbsoluteTime currentTime = ::CFAbsoluteTimeGetCurrent();
-	return ( currentTime - mImpl->mStartTime );
 }
 
 fs::path AppCocoaTouch::getAppPath() const
