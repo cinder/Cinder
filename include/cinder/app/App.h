@@ -450,13 +450,9 @@ class App {
 	//! Return \c true if the calling thread is the Application's primary thread
 	static bool		isPrimaryThread();
 
-#if !defined( CINDER_WINRT )
 	//! Returns a reference to the App's asio::io_service()
 	asio::io_service&	io_service() { return *mIo; }
-#endif //!defined( CINDER_WINRT )
 
-	
-	
 	//! Executes a std::function on the App's primary thread ahead of the next update()
 	void	dispatchAsync( const std::function<void()> &fn );
 	
@@ -545,10 +541,15 @@ class App {
 
 	signals::signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
 
+<<<<<<< HEAD
 #if ! defined( CINDER_WINRT )
 	std::shared_ptr<asio::io_service>	mIo;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 #endif // ! defined( CINDER_WINRT )
+=======
+	std::shared_ptr<boost::asio::io_service>	mIo;
+	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class
+>>>>>>> removed #if guards for boost::asio::io_service on WinRT, it should be possible to support now.
 
 	// have we already setup the default path to assets?
 	bool						mAssetDirectoriesInitialized;

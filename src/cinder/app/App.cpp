@@ -102,10 +102,8 @@ App::App()
 	mFpsLastSampleTime = 0;
 	mAssetDirectoriesInitialized = false;
 
-#if !defined( CINDER_WINRT )
 	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
 	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );
-#endif
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
 	// it's necessary to create a fs::path here in case of secondary threads doing the same thing simultaneously
@@ -116,9 +114,7 @@ App::App()
 
 App::~App()
 {
-#if !defined( CINDER_WINRT )
 	mIo->stop();
-#endif
 }
 
 void App::privateSetup__()
@@ -132,10 +128,12 @@ void App::privateUpdate__()
 {
 	mFrameCount++;
 
+<<<<<<< HEAD
 #if !defined( CINDER_WINRT )
 	// service asio::io_service
+=======
+>>>>>>> removed #if guards for boost::asio::io_service on WinRT, it should be possible to support now.
 	mIo->poll();
-#endif
 
 	if( getNumWindows() > 0 ) {
 		WindowRef mainWin = getWindowIndex( 0 );
@@ -504,19 +502,10 @@ bool App::isPrimaryThread()
 	return std::this_thread::get_id() == sPrimaryThreadId;
 }
 
-#if !defined( CINDER_WINRT )
 void App::dispatchAsync( const std::function<void()> &fn )
 {
 	io_service().post( fn );
 }
-#else
-void App::dispatchAsync( const std::function<void()> &fn )
-{
-	std::async(fn);
-}
-
-
-#endif
 
 Surface	App::copyWindowSurface()
 {
