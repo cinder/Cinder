@@ -342,7 +342,7 @@ void Param::initInternalBuffer()
 
 ContextRef Param::getContext() const
 {
-	return	mParentNode->getContext();
+	return mParentNode->getContext();
 }
 
 } } // namespace cinder::audio
