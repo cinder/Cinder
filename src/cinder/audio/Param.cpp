@@ -61,7 +61,7 @@ void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::p
 
 Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn )
 	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mCopyValueOnBegin( copyValueOnBegin ),
-		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
+		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false ), mTimeCancel( -1 )
 {
 }
 
@@ -257,6 +257,7 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			size_t endIndex = timeEnd < event->mTimeEnd ? arrayLength : size_t( ( event->mTimeEnd - timeBegin ) * sampleRate );
 
 			CI_ASSERT( startIndex <= arrayLength && endIndex <= arrayLength );
+			CI_ASSERT( event->mTimeEnd >= event->mTimeBegin );
 
 			if( startIndex > 0 && samplesWritten == 0 )
 				dsp::fill( mValue, array, startIndex );
@@ -265,6 +266,15 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 			float timeBeginNormalized = float( timeBegin - event->mTimeBegin + startIndex * samplePeriod ) / event->mDuration;
 			float timeEndNormalized = float( timeBegin - event->mTimeBegin + endIndex * samplePeriod ) / event->mDuration;
 			float timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (float)count;
+
+			// If the event has a cancel time, adjust the count if needed, but all other ramp values remain the same
+			if( event->mTimeCancel > 0 ) {
+				size_t endIndexModified = timeEnd < event->mTimeCancel ? arrayLength : size_t( ( event->mTimeCancel - timeBegin ) * sampleRate );
+				if( endIndexModified != endIndex ) {
+					count = endIndexModified - startIndex;
+					event->cancel(); // cancel but still process. This Event will be removed from the container next block.
+				}
+			}
 
 			if( event->getCopyValueOnBegin() )
 				event->setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
@@ -316,14 +326,12 @@ void Param::resetImpl()
 
 void Param::removeEventsAt( float time )
 {
-	mEvents.remove_if( [time]( const EventRef &event ) {
-		if( event->getTimeEnd() >= time ) {
+	for( auto &event : mEvents ) {
+		if( event->getTimeBegin() >= time )
 			event->cancel();
-			return true;
-		}
-		else
-			return false;
-	} );
+		else if( event->getTimeEnd() >= time )
+			event->mTimeCancel = time;
+	}
 }
 
 void Param::initInternalBuffer()

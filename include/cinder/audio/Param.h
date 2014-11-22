@@ -67,7 +67,7 @@ class Event {
   private:
 	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn );
 
-	float				mTimeBegin, mTimeEnd, mDuration;
+	float				mTimeBegin, mTimeEnd, mTimeCancel, mDuration;
 	float				mValueBegin, mValueEnd;
 	std::atomic<bool>	mIsComplete, mIsCanceled;
 	bool				mCopyValueOnBegin;
