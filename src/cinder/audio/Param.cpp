@@ -87,6 +87,9 @@ EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &opt
 
 	EventRef event( new Event( timeBegin, timeEnd, mValue, valueEnd, true, options.getRampFn() ) );
 
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
+
 	lock_guard<mutex> lock( ctx->getMutex() );
 
 	removeEventsAt( timeBegin );
@@ -106,6 +109,9 @@ EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, 
 	float timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
+
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
@@ -128,6 +134,9 @@ EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &op
 
 	EventRef event( new Event( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, true, options.getRampFn() ) );
 
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
+
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
 	return event;
@@ -143,6 +152,9 @@ EventRef Param::appendRamp( float valueBegin, float valueEnd, float rampSeconds,
 	float timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
+
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );

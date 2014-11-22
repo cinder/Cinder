@@ -28,6 +28,7 @@
 #include <list>
 #include <atomic>
 #include <functional>
+#include <string>
 
 namespace cinder { namespace audio {
 
@@ -64,6 +65,9 @@ class Event {
 	void cancel()				{ mIsCanceled = true; }
 	bool isComplete() const		{ return mIsComplete; }
 
+	//! Returns the label that was assigned when the Event was created, or an empty string. Useful when debugging.
+	const std::string&	getLabel() const	{ return mLabel; }
+
   private:
 	Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn );
 
@@ -71,8 +75,8 @@ class Event {
 	float				mValueBegin, mValueEnd;
 	std::atomic<bool>	mIsComplete, mIsCanceled;
 	bool				mCopyValueOnBegin;
-
-	RampFn	mRampFn;
+	std::string			mLabel;
+	RampFn				mRampFn;
 
 	friend class Param;
 };
@@ -102,17 +106,22 @@ class Param {
 		Options& beginTime( float time )			{ mBeginTime = time; return *this; }
 		//! Specifies the ramping function used during evaluation.
 		Options& rampFn( const RampFn &rampFn )		{ mRampFn = rampFn; return *this; }
+		//! Sets a label that will be assigned to the Event. Useful when debugging.
+		Options& label( const std::string &label )	{ mLabel = label; return *this; }
 
 		//! Returns the delay specified in seconds.
-		float getDelay() const				{ return mDelay; }
+		float				getDelay() const		{ return mDelay; }
 		//! Returns the begin time specified in seconds.
-		float getBeginTime() const			{ return mBeginTime; }
+		float				getBeginTime() const	{ return mBeginTime; }
 		//! Returns the ramping function that will be used during evaluation.
-		const RampFn&	getRampFn() const	{ return mRampFn; }
+		const RampFn&		getRampFn() const		{ return mRampFn; }
+		//! Returns a label that will be assigned to the Event. Useful when debugging.
+		const std::string&	getLabel() const		{ return mLabel; }
 
 	  private:
 		float	mDelay, mBeginTime;
 		RampFn	mRampFn;
+		std::string	mLabel;
 	};
 
 	//! Constructs a Param with a pointer (weak reference) to the owning parent Node and an optional \a initialValue (default = 0).
