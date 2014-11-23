@@ -35,6 +35,7 @@ namespace cinder { namespace app {
 
 typedef	signals::signal<bool (),BooleanAndEventCombiner>				EventSignalShouldQuit;
 
+//! Abstract class that defines the interface for a 'basic' app (ex. desktop, installation, 'normal').
 class AppBasic : public App {
   public:
 	class Settings : public App::Settings {
@@ -115,16 +116,11 @@ class AppBasic : public App {
 	//! Returns AppBasic::Settings that were set during prepareSettings() (or the defaults)
 	const Settings&		getSettings() const { return mSettings; }
 
-
 	//! Returns a vector of the command line arguments passed to the app
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
 
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef	getForegroundWindow() const = 0;
-
-#if defined( CINDER_WINRT)
-	class AppImplWinRTBasic*	getImpl() {return mImpl;};
-#endif
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
