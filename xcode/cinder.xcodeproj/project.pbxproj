@@ -1580,8 +1580,21 @@
 		111A5FA4191F72AE005C3166 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
 		111A5FA5191F72AE005C3166 /* Voice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Voice.cpp; sourceTree = "<group>"; };
 		111A5FA6191F72AE005C3166 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
+		114675781A2128E200C616B6 /* AppImplMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMsw.h; path = app/AppImplMsw.h; sourceTree = "<group>"; };
+		114675791A2128E200C616B6 /* AppImplMswBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswBasic.h; path = app/AppImplMswBasic.h; sourceTree = "<group>"; };
+		1146757A1A2128E200C616B6 /* AppImplMswRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswRenderer.h; path = app/AppImplMswRenderer.h; sourceTree = "<group>"; };
+		1146757B1A2128E200C616B6 /* AppImplMswRendererAngle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswRendererAngle.h; path = app/AppImplMswRendererAngle.h; sourceTree = "<group>"; };
+		1146757C1A2128E200C616B6 /* AppImplMswRendererGdi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswRendererGdi.h; path = app/AppImplMswRendererGdi.h; sourceTree = "<group>"; };
+		1146757D1A2128E200C616B6 /* AppImplMswRendererGl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswRendererGl.h; path = app/AppImplMswRendererGl.h; sourceTree = "<group>"; };
+		1146757E1A2128E200C616B6 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswScreenSaver.h; path = app/AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
+		11C102931A1FA7FE002850A2 /* AppImplMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMsw.cpp; path = app/AppImplMsw.cpp; sourceTree = "<group>"; };
+		11C102941A1FA7FE002850A2 /* AppImplMswBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswBasic.cpp; path = app/AppImplMswBasic.cpp; sourceTree = "<group>"; };
+		11C102951A1FA7FE002850A2 /* AppImplMswRendererAngle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswRendererAngle.cpp; path = app/AppImplMswRendererAngle.cpp; sourceTree = "<group>"; };
+		11C102961A1FA7FE002850A2 /* AppImplMswRendererGdi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswRendererGdi.cpp; path = app/AppImplMswRendererGdi.cpp; sourceTree = "<group>"; };
+		11C102971A1FA7FE002850A2 /* AppImplMswRendererGl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswRendererGl.cpp; path = app/AppImplMswRendererGl.cpp; sourceTree = "<group>"; };
+		11C102981A1FA7FE002850A2 /* AppImplMswScreenSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswScreenSaver.cpp; path = app/AppImplMswScreenSaver.cpp; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
 		277C2CED1366632B00178A29 /* Matrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix33.h; sourceTree = "<group>"; };
@@ -1678,27 +1691,34 @@
 		002419CC0E8035CA004D34EB /* app */ = {
 			isa = PBXGroup;
 			children = (
-				0053819915A8CDF90019BA91 /* Event.h */,
-				0049C1B31010E5A40015B4B9 /* Renderer.h */,
-				0003F4821992DB0500647C8B /* RendererGl.h */,
-				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
-				5391FD670E957646002A13D5 /* KeyEvent.h */,
-				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
-				43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */,
-				00C05B970F4A03660046CC99 /* CinderView.h */,
-				009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */,
 				002419CD0E8035D3004D34EB /* App.h */,
-				003FABA61290ED38002D6860 /* AppNative.h */,
 				00B4F3E00F5394C500B75296 /* AppBasic.h */,
-				003C0CE615A34D3F00FF29F5 /* AppCocoaView.h */,
-				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
 				009D6B161157FCFB0037C77C /* AppCocoaTouch.h */,
+				003C0CE615A34D3F00FF29F5 /* AppCocoaView.h */,
 				002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */,
 				002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */,
 				00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */,
+				00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */,
 				009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */,
 				0005630611513B1D00ECFD91 /* AppImplCocoaTouchRendererQuartz.h */,
-				00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */,
+				114675781A2128E200C616B6 /* AppImplMsw.h */,
+				114675791A2128E200C616B6 /* AppImplMswBasic.h */,
+				1146757A1A2128E200C616B6 /* AppImplMswRenderer.h */,
+				1146757B1A2128E200C616B6 /* AppImplMswRendererAngle.h */,
+				1146757C1A2128E200C616B6 /* AppImplMswRendererGdi.h */,
+				1146757D1A2128E200C616B6 /* AppImplMswRendererGl.h */,
+				1146757E1A2128E200C616B6 /* AppImplMswScreenSaver.h */,
+				003FABA61290ED38002D6860 /* AppNative.h */,
+				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
+				00C05B970F4A03660046CC99 /* CinderView.h */,
+				009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */,
+				0053819915A8CDF90019BA91 /* Event.h */,
+				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
+				5391FD670E957646002A13D5 /* KeyEvent.h */,
+				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
+				0049C1B31010E5A40015B4B9 /* Renderer.h */,
+				0003F4821992DB0500647C8B /* RendererGl.h */,
+				43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */,
 				007A7B16158D09A600BEAD18 /* Window.h */,
 			);
 			name = app;
@@ -1707,22 +1727,28 @@
 		00241A0A0E803708004D34EB /* app */ = {
 			isa = PBXGroup;
 			children = (
-				007B09830E957B9A0052257E /* KeyEvent.cpp */,
 				002419D30E8035E1004D34EB /* App.cpp */,
 				00B4F3E60F53955000B75296 /* AppBasic.cpp */,
-				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
 				009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */,
 				00BBBDF815A34F49006B9BBE /* AppCocoaView.mm */,
 				002419D40E8035E1004D34EB /* AppImplCocoaBasic.mm */,
-				00F976ED0F9D182D00F92D65 /* AppImplCocoaScreenSaver.mm */,
 				00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */,
 				00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */,
-				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
+				00F976ED0F9D182D00F92D65 /* AppImplCocoaScreenSaver.mm */,
 				009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */,
-				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
-				006D703F19940F25008149E2 /* RendererGl.cpp */,
+				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
+				11C102931A1FA7FE002850A2 /* AppImplMsw.cpp */,
+				11C102941A1FA7FE002850A2 /* AppImplMswBasic.cpp */,
+				11C102951A1FA7FE002850A2 /* AppImplMswRendererAngle.cpp */,
+				11C102961A1FA7FE002850A2 /* AppImplMswRendererGdi.cpp */,
+				11C102971A1FA7FE002850A2 /* AppImplMswRendererGl.cpp */,
+				11C102981A1FA7FE002850A2 /* AppImplMswScreenSaver.cpp */,
+				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
 				00DCBA940F7932F400D88D86 /* CinderView.mm */,
 				009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */,
+				007B09830E957B9A0052257E /* KeyEvent.cpp */,
+				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
+				006D703F19940F25008149E2 /* RendererGl.cpp */,
 				007A7B12158D098D00BEAD18 /* Window.cpp */,
 			);
 			name = app;
