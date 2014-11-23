@@ -29,17 +29,6 @@
 #include "cinder/Display.h"
 #include "cinder/Function.h"
 
-#if defined( CINDER_MAC )
-	#include <OpenGL/CGLTypes.h>
-	#ifdef __OBJC__
-		@class AppImplCocoaBasic;
-		@class WindowImplBasicCocoa;
-	#else
-		class AppImplCocoaBasic;
-		class WindowImplBasicCocoa;
-	#endif
-#endif
-
 #include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace app {
@@ -109,28 +98,20 @@ class AppBasic : public App {
 	//! This is fired before the app is quit. If any slots return false then the app quitting is canceled.
 	EventSignalShouldQuit&	getSignalShouldQuit() { return mSignalShouldQuit; }
 
-	//! Creates a new Window
-	WindowRef		createWindow( const Window::Format &format = Window::Format() );
+	//! Creates and returns a reference to a new Window, adhering to \a format.
+	virtual WindowRef		createWindow( const Window::Format &format = Window::Format() ) = 0;
 
-	fs::path	getAppPath() const override;
-	float		getFrameRate() const override;
-	void		setFrameRate( float frameRate ) override;
 	void		restoreWindowContext() override;
-	void		quit() override;
-
-	app::WindowRef	getWindow() const override;
-	size_t			getNumWindows() const override;
-	WindowRef		getWindowIndex( size_t index ) const override;
 
 	//! Disables frameRate limiting.
-	virtual void		disableFrameRate();
+	virtual void		disableFrameRate() = 0;
 	//! Returns whether frameRate limiting is enabled.
-	virtual bool		isFrameRateEnabled() const;
+	virtual bool		isFrameRateEnabled() const = 0;
 
 	//! Hides the mouse cursor
-	void				hideCursor();
+	virtual void		hideCursor() = 0;
 	//! Shows the mouse cursor
-	void				showCursor();
+	virtual void		showCursor() = 0;
 	//! Returns AppBasic::Settings that were set during prepareSettings() (or the defaults)
 	const Settings&		getSettings() const { return mSettings; }
 
@@ -139,7 +120,7 @@ class AppBasic : public App {
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
 
 	//! Gets the foreground Window, which has keyboard and mouse focus
-	virtual WindowRef		getForegroundWindow() const;
+	virtual WindowRef	getForegroundWindow() const = 0;
 
 #if defined( CINDER_WINRT)
 	class AppImplWinRTBasic*	getImpl() {return mImpl;};
@@ -149,7 +130,7 @@ class AppBasic : public App {
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 #if defined( CINDER_MAC )
-	void		privateSetImpl__( AppImplCocoaBasic *aImpl );
+//	void		privateSetImpl__( AppImplCocoaBasic *aImpl );
 #endif
 	bool		privateShouldQuit();
 	
@@ -171,9 +152,7 @@ class AppBasic : public App {
 #elif defined( CINDER_MAC )
 	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
 #endif
-	static void		cleanupLaunch() { App::cleanupLaunch(); }
-	
-	virtual void	launch( const char *title, int argc, char * const argv[] );
+	static void		cleanupLaunch() { App::cleanupLaunch(); }	
 	//! \endcond
 
   protected:
@@ -182,7 +161,7 @@ class AppBasic : public App {
 	EventSignalShouldQuit	mSignalShouldQuit;
 
 #if defined( CINDER_MAC )
-	AppImplCocoaBasic			*mImpl;
+//	AppImplCocoaBasic			*mImpl;
 #elif defined( CINDER_MSW )
 	class AppImplMswBasic	*mImpl;
 	friend class AppImplMswBasic;
@@ -200,17 +179,7 @@ class AppBasic : public App {
 
 // App-instantiation macros
 
-#if defined( CINDER_MAC )
-	#define CINDER_APP_BASIC( APP, RENDERER )								\
-	int main( int argc, char * const argv[] ) {								\
-		cinder::app::AppBasic::prepareLaunch();								\
-		cinder::app::AppBasic *app = new APP;								\
-		cinder::app::RendererRef ren( new RENDERER );						\
-		cinder::app::AppBasic::executeLaunch( app, ren, #APP, argc, argv );	\
-		cinder::app::AppBasic::cleanupLaunch();								\
-		return 0;															\
-	}
-#elif defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	#define CINDER_APP_BASIC( APP, RENDERER )														\
 	int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) {	\
 		cinder::app::AppBasic::prepareLaunch();														\

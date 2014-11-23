@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
@@ -17,7 +17,7 @@ class WindowData {
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class BasicApp : public AppBasic {
+class BasicApp : public AppNative {
  public:
 	// Cinder will always call this function whenever the user drags the mouse
 	void prepareSettings( Settings *settings ) override;

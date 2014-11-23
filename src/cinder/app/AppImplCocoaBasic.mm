@@ -63,7 +63,6 @@
 	[(NSApplication*)NSApp setDelegate:self];
 	
 	mApp = aApp;
-	mApp->privateSetImpl__( self );
 	mNeedsUpdate = YES;
 	
     return self;

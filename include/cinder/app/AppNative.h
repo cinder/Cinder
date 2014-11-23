@@ -26,9 +26,9 @@
 #include "cinder/Cinder.h"
 
 #if defined( CINDER_MAC )
-	#include "cinder/app/AppBasic.h"
+	#include "cinder/app/AppBasicMac.h"
 	namespace cinder { namespace app {
-		typedef AppBasic		AppNative;
+		typedef AppBasicMac		AppNative;
 	} } // namespace cinder::app
 	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC( APP, RENDERER )	
 #elif defined( CINDER_COCOA_TOUCH )

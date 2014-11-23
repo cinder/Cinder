@@ -27,7 +27,7 @@
 #include "cinder/Unicode.h"
 
 #if defined( CINDER_MAC )
-	#import "cinder/app/AppImplCocoaBasic.h"
+//	#import "cinder/app/AppImplCocoaBasic.h"
 #elif defined( CINDER_WINRT )
 	#include "cinder/app/AppImplWinRTBasic.h"
 
@@ -45,16 +45,10 @@ AppBasic*	AppBasic::sInstance;
 AppBasic::AppBasic()
 	: App()
 {
-	mImpl = 0;
 }
 
 AppBasic::~AppBasic()
 {
-#if defined( CINDER_MAC )
-	[mImpl release];
-#else
-	delete mImpl;
-#endif
 }
 
 #if defined( CINDER_MSW )
@@ -91,194 +85,9 @@ void AppBasic::executeLaunch( AppBasic *app, RendererRef renderer, const char *t
 }
 #endif
 
-void AppBasic::launch( const char *title, int argc, char * const argv[] )
-{
-	for( int arg = 0; arg < argc; ++arg )
-		mCommandLineArgs.push_back( std::string( argv[arg] ) );
-
-	mSettings.setTitle( title );
-
-	prepareSettings( &mSettings );
-	if( ! mSettings.isPrepared() ) {
-		return;
-	}
-
-#if defined( CINDER_MSW )
-	// allocate and redirect the console if requested
-	if( mSettings.isConsoleWindowEnabled() ) {
-		::AllocConsole();
-		freopen( "CONIN$", "r", stdin );
-		freopen( "CONOUT$", "w", stdout );
-		freopen( "CONOUT$", "w", stderr );
-
-		// set the app's console stream to std::cout and give its shared_ptr a null deleter
-		mOutputStream = std::shared_ptr<std::ostream>( &std::cout, [](std::ostream*){} );
-	}
-#endif
-
-	// pull out app-level variables
-	enablePowerManagement( mSettings.isPowerManagementEnabled() );
-
-#if defined( CINDER_COCOA )
-	@autoreleasepool {
-		NSApplication * application = [NSApplication sharedApplication];
-
-		mImpl = [[AppImplCocoaBasic alloc] init:this];
-
-		[application setDelegate:mImpl];
-		[application run];
-	}
-#elif defined( CINDER_WINRT )
-	mImpl = new AppImplWinRTBasic( this );	
-	mImpl->run();
-#else
-	mImpl = new AppImplMswBasic( this );	
-	mImpl->run();
-#endif
-// NOTHING AFTER THIS LINE RUNS
-}
-
-#if defined( CINDER_MAC )
-void AppBasic::privateSetImpl__( AppImplCocoaBasic *aImpl )
-{
-	mImpl = aImpl;
-}
-#endif
-
-WindowRef AppBasic::createWindow( const Window::Format &format )
-{
-#if defined( CINDER_COCOA )
-	return [mImpl createWindow:format];
-#elif defined( CINDER_MSW )
-	return mImpl->createWindow( format );
-#elif defined( CINDER_WINRT )
-	throw (std::string(__FUNCTION__) + " not implemented on WinRT").c_str();
-#endif
-}
-
-float AppBasic::getFrameRate() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getFrameRate];
-#else
-	return mImpl->getFrameRate();
-#endif
-}
-
-void AppBasic::setFrameRate( float aFrameRate )
-{
-#if defined( CINDER_COCOA )
-	[mImpl setFrameRate:aFrameRate];
-#else
-	mImpl->setFrameRate( aFrameRate );
-#endif
-}
-
-void AppBasic::disableFrameRate()
-{
-#if defined( CINDER_COCOA )
-	[mImpl disableFrameRate];
-#else
-	mImpl->disableFrameRate();
-#endif
-}
-
-bool AppBasic::isFrameRateEnabled() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl isFrameRateEnabled];
-#else
-	return mImpl->isFrameRateEnabled();
-#endif
-}
-
-fs::path AppBasic::getAppPath() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getAppPath];
-#elif defined( CINDER_WINRT )
-	return AppImplWinRT::getAppPath();
-#elif defined( CINDER_MSW )
-	return AppImplMsw::getAppPath();
-#endif
-}
-
-size_t AppBasic::getNumWindows() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getNumWindows];
-#elif defined( CINDER_WINRT )
-	return 1;
-#elif defined( CINDER_MSW )
-	return mImpl->getNumWindows();
-#endif
-}
-
-WindowRef AppBasic::getWindowIndex( size_t index ) const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getWindowIndex:index];
-#elif defined( CINDER_WINRT )
-	return mImpl->getWindow();
-#elif defined( CINDER_MSW )
-	return mImpl->getWindowIndex( index );
-#endif
-}
-
-WindowRef AppBasic::getWindow() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getWindow];
-#else
-	return mImpl->getWindow();
-#endif
-}
-
-WindowRef AppBasic::getForegroundWindow() const
-{
-#if defined( CINDER_COCOA )
-	return [mImpl getForegroundWindow];
-#elif defined( CINDER_WINRT )
-	return mImpl->getWindow();
-#elif defined( CINDER_MSW )
-	return mImpl->getForegroundWindow();
-#endif
-}
-
 void AppBasic::restoreWindowContext()
 {
 	getWindow()->getRenderer()->makeCurrentContext();
-}
-
-void AppBasic::hideCursor()
-{
-#if defined( CINDER_MAC )
-	[NSCursor hide];
-#elif defined( CINDER_WINRT )
-	AppImplWinRT::hideCursor();
-#elif defined( CINDER_MSW )
-	AppImplMsw::hideCursor();
-#endif
-}
-
-void AppBasic::showCursor()
-{
-#if defined( CINDER_MAC )
-	[NSCursor unhide];
-#elif defined( CINDER_WINRT )
-	AppImplWinRT::showCursor();
-#elif defined( CINDER_MSW )
-	AppImplMsw::showCursor();
-#endif
-}
-
-void AppBasic::quit()
-{
-#if defined( CINDER_COCOA )
-	[mImpl quit];
-#else
-	mImpl->quit();
-#endif
 }
 
 bool AppBasic::privateShouldQuit()
@@ -296,9 +105,9 @@ AppBasic::Settings::Settings()
 #endif
 }
 
-void AppBasic::Settings::setShouldQuit( bool aShouldQuit )
+void AppBasic::Settings::setShouldQuit( bool shouldQuit )
 {
-	mShouldQuit = aShouldQuit;
+	mShouldQuit = shouldQuit;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////
