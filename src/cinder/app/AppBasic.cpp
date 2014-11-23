@@ -26,17 +26,6 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Unicode.h"
 
-#if defined( CINDER_MAC )
-//	#import "cinder/app/AppImplCocoaBasic.h"
-#elif defined( CINDER_WINRT )
-	#include "cinder/app/AppImplWinRTBasic.h"
-
-#elif defined( CINDER_MSW )
-	#include <Shellapi.h>
-	#include "cinder/Utilities.h"
-	#include "cinder/app/AppImplMswBasic.h"
-#endif
-
 namespace cinder { namespace app {
 
 // Global singleton

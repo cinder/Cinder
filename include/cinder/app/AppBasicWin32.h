@@ -25,17 +25,12 @@
 
 #include "cinder/app/AppBasic.h"
 
-#if defined( __OBJC__ )
-	@class AppImplCocoaBasic;
-#else
-	class AppImplCocoaBasic;
-#endif
-
 namespace cinder { namespace app {
 
-class AppBasicMac : public AppBasic {
+class AppImplMswBasic;
+
+class AppBasicWin32 : public AppBasic {
   public:
-	virtual ~AppBasicMac();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
 	void		quit() override;
@@ -59,18 +54,18 @@ class AppBasicMac : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	AppImplCocoaBasic *mImpl;
+	AppImplMswBasic *mImpl;
 };
 
-#define CINDER_APP_BASIC( APP, RENDERER )								\
-int main( int argc, char * const argv[] )								\
-{																		\
-	cinder::app::AppBasic::prepareLaunch();								\
-	cinder::app::AppBasic *app = new APP;								\
-	cinder::app::RendererRef ren( new RENDERER );						\
-	cinder::app::AppBasic::executeLaunch( app, ren, #APP, argc, argv );	\
-	cinder::app::AppBasic::cleanupLaunch();								\
-	return 0;															\
+#define CINDER_APP_BASIC( APP, RENDERER )															\
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
+{																									\
+	cinder::app::AppBasic::prepareLaunch();															\
+	cinder::app::AppBasic *app = new APP;															\
+	cinder::app::RendererRef ren( new RENDERER );													\
+	cinder::app::AppBasic::executeLaunch( app, ren, #APP );											\
+	cinder::app::AppBasic::cleanupLaunch();															\
+	return 0;																						\
 }
 
 } } // namespace cinder::app

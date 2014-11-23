@@ -160,44 +160,9 @@ class AppBasic : public App {
 
 	EventSignalShouldQuit	mSignalShouldQuit;
 
-#if defined( CINDER_MAC )
-//	AppImplCocoaBasic			*mImpl;
-#elif defined( CINDER_MSW )
-	class AppImplMswBasic	*mImpl;
-	friend class AppImplMswBasic;
-#elif defined ( CINDER_WINRT )
-	class AppImplWinRTBasic	*mImpl;
-	friend class AppImplWinRTBasic;
-#endif
-	
 	std::vector<std::string>	mCommandLineArgs;
 
 	Settings		mSettings;
 };
 
 } } // namespace cinder::app
-
-// App-instantiation macros
-
-#if defined( CINDER_MSW )
-	#define CINDER_APP_BASIC( APP, RENDERER )														\
-	int WINAPI WinMain(HINSTANCE hInstance,HINSTANCE hPrevInstance,LPSTR lpCmdLine,int nCmdShow) {	\
-		cinder::app::AppBasic::prepareLaunch();														\
-		cinder::app::AppBasic *app = new APP;														\
-		cinder::app::RendererRef ren( new RENDERER );												\
-		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
-		cinder::app::AppBasic::cleanupLaunch();														\
-		return 0;																					\
-	}
-#elif defined( CINDER_WINRT )
-	#define CINDER_APP_BASIC( APP, RENDERER )														\
-	[Platform::MTAThread]																			\
-	int main(Platform::Array<Platform::String^>^) {													\
-		cinder::app::AppBasic::prepareLaunch();														\
-		cinder::app::AppBasic *app = new APP;														\
-		cinder::app::RendererRef ren( new RENDERER );												\
-		cinder::app::AppBasic::executeLaunch( app, ren, #APP );										\
-		cinder::app::AppBasic::cleanupLaunch();														\
-		return 0;																					\
-	}
-#endif

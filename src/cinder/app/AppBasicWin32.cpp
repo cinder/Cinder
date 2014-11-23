@@ -21,18 +21,20 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/AppBasicMac.h"
+#include "cinder/app/AppBasicWin32.h"
 
-#import "cinder/app/AppImplCocoaBasic.h"
+//#include <Shellapi.h>
+//#include "cinder/Utilities.h"
+#include "cinder/app/AppImplMswBasic.h"
 
 namespace cinder { namespace app {
 
-AppBasicMac::~AppBasicMac()
+AppBasicWin32::~AppBasicWin32()
 {
-	[mImpl release];
+	delete mImpl;
 }
 
-void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
+void AppBasicWin32::launch( const char *title, int argc, char * const argv[] )
 {
 	// -----------------------
 	// TODO: consider moving this to a common AppBasic method, or doing in App
@@ -51,79 +53,84 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 
 	// -----------------------
 
-	@autoreleasepool {
-		NSApplication * application = [NSApplication sharedApplication];
+	// allocate and redirect the console if requested
+	if( mSettings.isConsoleWindowEnabled() ) {
+		::AllocConsole();
+		freopen( "CONIN$", "r", stdin );
+		freopen( "CONOUT$", "w", stdout );
+		freopen( "CONOUT$", "w", stderr );
 
-		mImpl = [[AppImplCocoaBasic alloc] init:this];
-
-		[application setDelegate:mImpl];
-		[application run];
+		// set the app's console stream to std::cout and give its shared_ptr a null deleter
+		mOutputStream = std::shared_ptr<std::ostream>( &std::cout, [](std::ostream*){} );
 	}
+
+	mImpl = new AppImplMswBasic( this );
+	mImpl->run();
 }
 
-WindowRef AppBasicMac::createWindow( const Window::Format &format )
+WindowRef AppBasicWin32::createWindow( const Window::Format &format )
 {
-	return [mImpl createWindow:format];
+	return mImpl->createWindow( format );
 }
 
-void AppBasicMac::quit()
+void AppBasicWin32::quit()
 {
-	[mImpl quit];
+	mImpl->quit();
 }
 
-float AppBasicMac::getFrameRate() const
+float AppBasicWin32::getFrameRate() const
 {
-	return [mImpl getFrameRate];
+	return mImpl->getFrameRate();
 }
 
-void AppBasicMac::setFrameRate( float frameRate )
+void AppBasicWin32::setFrameRate( float frameRate )
 {
-	[mImpl setFrameRate:frameRate];
+	mImpl->setFrameRate( aFrameRate );
 }
 
-void AppBasicMac::disableFrameRate()
+void AppBasicWin32::disableFrameRate()
 {
-	[mImpl disableFrameRate];
+	mImpl->disableFrameRate();
 }
 
-bool AppBasicMac::isFrameRateEnabled() const
+bool AppBasicWin32::isFrameRateEnabled() const
 {
-	return [mImpl isFrameRateEnabled];
+	return mImpl->isFrameRateEnabled();
 }
 
-fs::path AppBasicMac::getAppPath() const
+fs::path AppBasicWin32::getAppPath() const
 {
-	return [mImpl getAppPath];
+	return AppImplMsw::getAppPath();
 }
 
-WindowRef AppBasicMac::getWindow() const
+WindowRef AppBasicWin32::getWindow() const
 {
-	return [mImpl getWindow];
+	return mImpl->getWindow();
 }
 
-WindowRef AppBasicMac::getWindowIndex( size_t index ) const
+WindowRef AppBasicWin32::getWindowIndex( size_t index ) const
 {
-	return [mImpl getWindowIndex:index];
+	return mImpl->getWindowIndex( index );
 }
 
-size_t AppBasicMac::getNumWindows() const
+size_t AppBasicWin32::getNumWindows() const
 {
-	return [mImpl getNumWindows];
+	return mImpl->getNumWindows();
 }
 
-WindowRef AppBasicMac::getForegroundWindow() const
+WindowRef AppBasicWin32::getForegroundWindow() const
 {
-	return [mImpl getForegroundWindow];
+	return mImpl->getForegroundWindow();
 }
 
-void AppBasicMac::hideCursor()
+void AppBasicWin32::hideCursor()
 {
-	[NSCursor hide];
+	AppImplMsw::hideCursor();
 }
 
-void AppBasicMac::showCursor()
+void AppBasicWin32::showCursor()
 {
-	[NSCursor unhide];
+	AppImplMsw::showCursor();
 }
 
 } } // namespace cinder::app
