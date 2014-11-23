@@ -282,12 +282,10 @@ class App {
 	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
 
-#if ! defined( CINDER_WINRT )
 	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
     void 						emitWillResignActive();
 	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
 	void 						emitDidBecomeActive();
-#endif
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
@@ -399,48 +397,20 @@ class App {
 	virtual NSBundle*			getBundle() const;
 #endif\
 
-#if defined( CINDER_WINRT )
-	//! Presents the user with a file-open dialog and returns the selected file path in the spcified callback method.
-	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
-		If the active app is in snapped mode it will be unsnapped to present the dialog.
-		\return void. The selected file path or an empty string  if the user cancelled will be returned in the \a f callback. **/
-	void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
-#else
 	//! Presents the user with a folder-open dialog and returns the selected folder path in the spcified callback.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
 		If the active app is in snapped mode it will be unsnapped to present the dialog.
 		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
-	fs::path getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-#endif
-
-#if defined( CINDER_WINRT )
-	//! Presents the user with a folder-open dialog and returns the selected folder path with the spcified callback.
-	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
-		If the active app is in snapped mode it will be unsnapped to present the dialog.
-		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
-	void getFolderPath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
-#else
-//! Presents the user with a folder-open dialog and returns the selected folder.
-	fs::path		getFolderPath(const fs::path &initialPath="");
-#endif
-
-#if defined( CINDER_WINRT )
-	//! Presents the user with a file-save dialog and returns the selected file path with the specified callback.
-	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
-		If the active app is in snapped mode it will be unsnapped to present the dialog.
-		\return void. The selected file path or an empty string if the user cancelled will be returned in the \a f callback. **/
-	void getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
-#else	
+	fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
+	//! Presents the user with a folder-open dialog and returns the selected folder.
+	fs::path		getFolderPath(const fs::path &initialPath = fs::path() );
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
-	fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-#endif
+	fs::path		getSaveFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
+
 	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 	std::ostream&	console();
 	

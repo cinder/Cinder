@@ -327,13 +327,6 @@ fs::path App::getResourcePath()
 
 #endif
 
-#if defined CINDER_WINRT
-
-void App::getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions, std::function<void (fs::path)> f)
-{
-	AppImplWinRT::getOpenFilePath( initialPath, extensions, f );
-}
-#else
 fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
@@ -377,16 +370,7 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 	return fs::path();
 #endif
 }
-#endif
 
-
-#if defined CINDER_WINRT
-
-void App::getFolderPath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
-{
-	AppImplWinRT::getFolderPath( initialPath, extensions, f );
-}
-#else
 fs::path App::getFolderPath( const fs::path &initialPath )
 {
 #if defined( CINDER_MAC )
@@ -423,15 +407,7 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	return fs::path();
 #endif
 }
-#endif
 
-#if defined ( CINDER_WINRT )
-
-void App::getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions, std::function<void (fs::path)> f)
-{
-	AppImplWinRT::getSaveFilePath( initialPath, extensions, f );
-}
-#else
 fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> extensions )
 {
 #if defined( CINDER_MAC )
@@ -484,7 +460,6 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 	return fs::path();
 #endif
 }
-#endif
 
 std::ostream& App::console()
 {
