@@ -183,7 +183,7 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->setSize( getWindow()->getSize().x + 1, getWindow()->getSize().y + 1 );
 	else if( event.getChar() == 'w' ) {
 		Window::Format format( RendererGl::create() );
-		format.setFullScreen( true );
+		//format.setFullScreen( true );
 		mSecondWindow = createWindow( format );
 		mSecondWindow->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
 		mSecondWindow->getSignalMouseDown().connect( std::bind( &BasicApp::windowMouseDown, this, std::placeholders::_1 ) );
