@@ -55,6 +55,11 @@ class AppBasicMac : public AppBasic {
 	void		hideCursor() override;
 	void		showCursor() override;
 
+	//! \cond
+	// Called by app instantiation macro during launch process
+	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
+	//! \endcond
+
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
@@ -62,15 +67,15 @@ class AppBasicMac : public AppBasic {
 	AppImplCocoaBasic *mImpl;
 };
 
-#define CINDER_APP_BASIC( APP, RENDERER )								\
-int main( int argc, char * const argv[] )								\
-{																		\
-	cinder::app::AppBasic::prepareLaunch();								\
-	cinder::app::AppBasic *app = new APP;								\
-	cinder::app::RendererRef ren( new RENDERER );						\
-	cinder::app::AppBasic::executeLaunch( app, ren, #APP, argc, argv );	\
-	cinder::app::AppBasic::cleanupLaunch();								\
-	return 0;															\
+#define CINDER_APP_BASIC_MAC( APP, RENDERER )								\
+int main( int argc, char * const argv[] )									\
+{																			\
+	cinder::app::AppBasic::prepareLaunch();									\
+	cinder::app::AppBasic *app = new APP;									\
+	cinder::app::RendererRef ren( new RENDERER );							\
+	cinder::app::AppBasicMac::executeLaunch( app, ren, #APP, argc, argv );	\
+	cinder::app::AppBasic::cleanupLaunch();									\
+	return 0;																\
 }
 
 } } // namespace cinder::app

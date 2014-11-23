@@ -30,17 +30,17 @@
 	namespace cinder { namespace app {
 		typedef AppBasicMac		AppNative;
 	} } // namespace cinder::app
-	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC( APP, RENDERER )	
+	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC_MAC( APP, RENDERER )
 #elif defined( CINDER_COCOA_TOUCH )
 	#include "cinder/app/AppCocoaTouch.h"
 	namespace cinder { namespace app {
 		typedef AppCocoaTouch	AppNative;
 	} }
 	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_COCOA_TOUCH( APP, RENDERER )	
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-	#include "cinder/app/AppBasic.h"
+#elif (defined( CINDER_MSW )
+	#include "cinder/app/AppBasicWin32.h"
 	namespace cinder { namespace app {
-		typedef AppBasic		AppNative;
+		typedef AppBasicWin32		AppNative;
 	} } // namespace cinder::app		
-	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC( APP, RENDERER )	
+	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC_WIN32( APP, RENDERER )
 #endif

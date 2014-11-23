@@ -50,6 +50,11 @@ class AppBasicWin32 : public AppBasic {
 	void		hideCursor() override;
 	void		showCursor() override;
 
+	//! \cond
+	// Called by app instantiation macro during launch process
+	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
+	//! \endcond
+
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
@@ -57,13 +62,13 @@ class AppBasicWin32 : public AppBasic {
 	AppImplMswBasic *mImpl;
 };
 
-#define CINDER_APP_BASIC( APP, RENDERER )															\
-int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
+#define CINDER_APP_BASIC_WIN32( APP, RENDERER )														\
+int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
 {																									\
 	cinder::app::AppBasic::prepareLaunch();															\
 	cinder::app::AppBasic *app = new APP;															\
 	cinder::app::RendererRef ren( new RENDERER );													\
-	cinder::app::AppBasic::executeLaunch( app, ren, #APP );											\
+	cinder::app::AppBasicWin32::executeLaunch( app, ren, #APP );									\
 	cinder::app::AppBasic::cleanupLaunch();															\
 	return 0;																						\
 }

@@ -141,14 +141,7 @@ class AppBasic : public App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
-#if defined( CINDER_MSW )
-	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
-#elif defined( CINDER_WINRT )
-	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
-#elif defined( CINDER_MAC )
-	static void		executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
-#endif
-	static void		cleanupLaunch() { App::cleanupLaunch(); }	
+	static void		cleanupLaunch() { App::cleanupLaunch(); }
 	//! \endcond
 
   protected:

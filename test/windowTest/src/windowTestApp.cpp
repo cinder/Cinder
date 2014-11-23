@@ -260,4 +260,4 @@ void BasicApp::windowDraw()
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererGl )
+CINDER_APP_NATIVE( BasicApp, RendererGl )
