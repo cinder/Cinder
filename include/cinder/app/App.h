@@ -427,19 +427,7 @@ class App {
 	void	dispatchAsync( const std::function<void()> &fn );
 	
 	template<typename T>
-	typename std::result_of<T()>::type dispatchSync( T fn )
-	{
-		if( isPrimaryThread() )
-			return fn();
-		else {
-			typedef typename std::result_of<T()>::type result_type;
-			std::packaged_task<result_type()> task( std::move(fn) );
-
-			auto fute = task.get_future();
-			dispatchAsync( [&task]() { task(); } );
-			return fute.get();
-		}
-	}
+	typename std::result_of<T()>::type dispatchSync( T fn );
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
 	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
@@ -663,6 +651,21 @@ inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cas
 #endif
 
 //@}
+
+template<typename T>
+typename std::result_of<T()>::type App::dispatchSync( T fn )
+{
+	if( isPrimaryThread() )
+		return fn();
+	else {
+		typedef typename std::result_of<T()>::type result_type;
+		std::packaged_task<result_type()> task( std::move( fn ) );
+
+		auto fute = task.get_future();
+		dispatchAsync( [&task]() { task(); } );
+		return fute.get();
+	}
+}
 
 //! Exception for failed resource loading
 class ResourceLoadExc : public Exception {
