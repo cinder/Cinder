@@ -31,6 +31,7 @@ class AppImplMswBasic;
 
 class AppBasicWin32 : public AppBasic {
   public:
+	virtual ~AppBasicWin32();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
 	void		quit() override;

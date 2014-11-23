@@ -22,10 +22,8 @@
  */
 
 #include "cinder/app/AppBasicWin32.h"
-
-//#include <Shellapi.h>
-//#include "cinder/Utilities.h"
 #include "cinder/app/AppImplMswBasic.h"
+#include "cinder/Unicode.h"
 
 namespace cinder { namespace app {
 
@@ -112,7 +110,7 @@ float AppBasicWin32::getFrameRate() const
 
 void AppBasicWin32::setFrameRate( float frameRate )
 {
-	mImpl->setFrameRate( aFrameRate );
+	mImpl->setFrameRate( frameRate );
 }
 
 void AppBasicWin32::disableFrameRate()

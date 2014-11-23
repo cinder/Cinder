@@ -363,6 +363,7 @@
     <ClCompile Include="..\src\AntTweakBar\LoadOGLCore.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppBasicWin32.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswRendererAngle.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
@@ -590,6 +591,7 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\include\cinder\app\AppBasicWin32.h" />
     <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h" />
     <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h" />
     <ClInclude Include="..\include\cinder\app\AppNative.h" />

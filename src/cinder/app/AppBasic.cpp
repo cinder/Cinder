@@ -24,7 +24,6 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/app/Renderer.h"
-#include "cinder/Unicode.h"
 
 namespace cinder { namespace app {
 

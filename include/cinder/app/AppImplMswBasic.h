@@ -77,7 +77,7 @@ class AppImplMswBasic : public AppImplMsw {
 	WindowRef								mForegroundWindow;
 
 	friend LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	friend class AppBasic;
+	friend class AppBasicWin32;
 };
 
 class WindowImplMswBasic : public WindowImplMsw {
