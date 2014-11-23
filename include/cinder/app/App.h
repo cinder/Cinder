@@ -433,11 +433,8 @@ class App {
 			return fn();
 		else {
 			typedef typename std::result_of<T()>::type result_type;
-#if defined( _MSC_VER ) && ( _MSC_VER <= 1600 ) // slightly different signature with Boost.Thread
-			std::packaged_task<result_type> task( std::move(fn) );
-#else
 			std::packaged_task<result_type()> task( std::move(fn) );
-#endif
+
 			auto fute = task.get_future();
 			dispatchAsync( [&task]() { task(); } );
 			return fute.get();
