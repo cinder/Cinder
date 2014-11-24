@@ -165,4 +165,4 @@ void EaseGalleryApp::draw()
 		easeIt->draw( time );
 }
 
-CINDER_APP_BASIC( EaseGalleryApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_MSAA_16 ) ) )
+CINDER_APP_BASIC( EaseGalleryApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
