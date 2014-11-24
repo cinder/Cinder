@@ -7,6 +7,20 @@ varying vec3 Normal;
 varying vec4 Color;
 varying vec2 TexCoord;
 
+// Based on OpenGL Programming Guide (8th edition), p 457-459.
+highp float checkered( in vec2 uv, in int freq )
+{
+	highp vec2 checker = fract( uv * freq );
+	highp vec2 edge = fwidth( uv ) * freq;
+	highp float mx = max( edge.x, edge.y );
+
+	highp vec2 pattern = smoothstep( vec2(0.5), vec2(0.5) + edge, checker );
+	pattern += 1.0 - smoothstep( vec2(0.0), edge, checker );
+
+	highp float factor = pattern.x * pattern.y + ( 1.0 - pattern.x ) * ( 1.0 - pattern.y );
+	return mix( factor, 0.5, smoothstep( 0.0, 0.75, mx ) );
+}
+
 void main()
 {
 	// set diffuse and specular colors
@@ -27,8 +41,7 @@ void main()
 	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
 
 	// texCoord checkerboard
-	if( mod( floor( TexCoord.x * 20.0 ) + floor( TexCoord.y * 20.0 + 0.001 ), 2.0 ) == 0.0 )
-		diffuse *= 0.5;
+	diffuse *= 0.5 + 0.5 * checkered( TexCoord );
 
 	// texCoord checkerboard with protection against edge case\n"
 	const float kEpsilon = 0.0001;
