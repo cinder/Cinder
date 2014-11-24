@@ -204,9 +204,19 @@ class Renderer2d : public Renderer {
 #endif
 
 class ExcRenderer : public Exception {
+  public:
+	ExcRenderer() {}
+	ExcRenderer( const std::string &description )
+		: Exception( description )
+	{}
 };
 
 class ExcRendererAllocation : public ExcRenderer {
+  public:
+	ExcRendererAllocation() {}
+	ExcRendererAllocation( const std::string &description )
+		: ExcRenderer( description )
+	{}
 };
 
 } } // namespace cinder::app

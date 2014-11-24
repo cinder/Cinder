@@ -138,6 +138,9 @@ class WindowImplMsw {
 
 	void			privateClose();
   protected:
+	//! Sets 'mWindowStyle' and 'mWindowExStyle' based on 'mFullScreen' and 'mBorderless'
+	void			setWindowStyleValues();
+
 	void			createWindow( const ivec2 &windowSize, const std::string &title, DisplayRef display, RendererRef sharedRenderer );
 	void			completeCreation();
 	static void		registerWindowClass();

@@ -187,11 +187,11 @@ if( ! view )
 		attributes.push_back( (CGLPixelFormatAttribute) 8 );
 	}
 	
-	if( rendererOptions.getAntiAliasing() != cinder::app::RendererGl::AA_NONE ) {
+	if( rendererOptions.getMsaa() > 0 ) {
 		attributes.push_back( NSOpenGLPFASampleBuffers );
 		attributes.push_back( (NSOpenGLPixelFormatAttribute) 1 );
 		attributes.push_back( NSOpenGLPFASamples );
-		attributes.push_back( (NSOpenGLPixelFormatAttribute) cinder::app::RendererGl::sAntiAliasingSamples[ rendererOptions.getAntiAliasing() ] );
+		attributes.push_back( (NSOpenGLPixelFormatAttribute) rendererOptions.getMsaa() );
 		attributes.push_back( NSOpenGLPFAMultisample );
 	}
 	

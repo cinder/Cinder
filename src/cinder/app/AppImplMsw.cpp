@@ -368,6 +368,23 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
 
+void WindowImplMsw::setWindowStyleValues()
+{
+	if( mFullScreen ) {
+		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
+		mWindowStyle = WS_POPUP;										// Windows Style
+	}
+	else if( mBorderless ) {
+		mWindowExStyle = WS_EX_APPWINDOW;
+		mWindowStyle = WS_POPUP;
+	}
+	else {
+		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
+		mWindowStyle = ( mResizable ) ? WS_OVERLAPPEDWINDOW
+			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MINIMIZEBOX & ~WS_MAXIMIZEBOX );	// Windows Style
+	}
+}
+
 void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &title, const DisplayRef display, RendererRef sharedRenderer )
 {
 	RECT windowRect;
@@ -387,21 +404,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	}
 
 	registerWindowClass();
-	
-	if( mFullScreen ) {
-		mWindowExStyle = WS_EX_APPWINDOW;								// Window Extended Style
-		mWindowStyle = WS_POPUP;										// Windows Style
-	}
-	else if( mBorderless ) {
-		mWindowExStyle = WS_EX_APPWINDOW;
-		mWindowStyle = WS_POPUP;
-	}
-	else {
-		mWindowExStyle = WS_EX_APPWINDOW | WS_EX_WINDOWEDGE;			// Window Extended Style
-		mWindowStyle = ( mResizable ) ? WS_OVERLAPPEDWINDOW
-			:	( WS_OVERLAPPEDWINDOW & ~WS_THICKFRAME & ~WS_MINIMIZEBOX & ~WS_MAXIMIZEBOX );	// Windows Style
-	}
-
+	setWindowStyleValues();
 	::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );		// Adjust Window To True Requested Size
 
 	std::wstring wideTitle = msw::toWideString( title ); 
@@ -495,29 +498,39 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 	HWND oldWnd = mWnd;
 	
 	mFullScreen = ! mFullScreen;
-	
+	setWindowStyleValues();
+
+	RECT windowRect;
 	if( prevFullScreen ) {
-		newWindowSize = mWindowedSize;
+		windowRect.left = mWindowedPos.x;
+		windowRect.top = mWindowedPos.y;
+		windowRect.right = mWindowedPos.x + mWindowedSize.x;
+		windowRect.bottom = mWindowedPos.y + mWindowedSize.y;
+		::AdjustWindowRectEx( &windowRect, mWindowStyle, FALSE, mWindowExStyle );
 	}
 	else {
+		DisplayRef display = options.getDisplay();
+		if( ! display ) // use the default, which is this Window's display
+			display = mDisplay;
+
 		mWindowedPos = mWindowOffset;
 		mWindowedSize = ivec2( mWindowWidth, mWindowHeight );
-		newWindowSize = mDisplay->getSize();
+		newWindowSize = display->getSize();
+
+		windowRect.left = 0;
+		windowRect.top = 0;
+		windowRect.right = newWindowSize.x;
+		windowRect.bottom = newWindowSize.y;
 	}
 
-	getRenderer()->prepareToggleFullScreen();
-	DisplayRef display = options.getDisplay();
-	if( ! display ) // use the default, which is this Window's display
-		display = mDisplay;
-	// we don't need to share a renderer because we're not really creating a window per se
-	createWindow( newWindowSize, getTitle(), display, RendererRef() );
-	getRenderer()->finishToggleFullScreen();
+	::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
+	::SetWindowLongA( mWnd, GWL_EXSTYLE, mWindowExStyle );
+	::SetWindowPos( mWnd, HWND_TOP, windowRect.left, windowRect.top, windowRect.right - windowRect.left, windowRect.bottom - windowRect.top,
+			SWP_FRAMECHANGED|SWP_NOZORDER|SWP_NOCOPYBITS|SWP_NOREDRAW );
 
-	::ReleaseDC( oldWnd, oldDC );
-	::DestroyWindow( oldWnd ); 
-
-	completeCreation();
-	mWindowRef->emitResize();
+	::ShowWindow( mWnd, SW_SHOW );
+	::SetForegroundWindow( mWnd );
+	::SetFocus( mWnd );
 }
 
 void WindowImplMsw::getScreenSize( int clientWidth, int clientHeight, int *resultWidth, int *resultHeight )

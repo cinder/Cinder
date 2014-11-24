@@ -55,7 +55,7 @@
 	mBackingWidth = 0;
 	mBackingHeight = 0;
 	
-	mMsaaSamples = cinder::app::RendererGl::sAntiAliasingSamples[renderer->getOptions().getAntiAliasing()];
+	mMsaaSamples = renderer->getOptions().getMsaa();
 	
 	mUsingStencil = renderer->getOptions().getStencil();
 	mObjectTracking = renderer->getOptions().getObjectTracking();

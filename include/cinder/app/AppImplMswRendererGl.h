@@ -46,15 +46,12 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	makeCurrentContext();
 
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
-	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
-	
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;
 
 	bool		mWasFullScreen;
 	bool		mWasVerticalSynced;
-	HGLRC		mRC, mPrevRC;
+	HGLRC		mRC;
 	HDC			mDC;
 };
 
