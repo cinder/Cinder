@@ -105,7 +105,6 @@
 				00F0B3651039F869003AB416 /* PBXTargetDependency */,
 				00F0B3691039F869003AB416 /* PBXTargetDependency */,
 				00F0B36B1039F869003AB416 /* PBXTargetDependency */,
-				000B6788103CB3E4003D463F /* PBXTargetDependency */,
 				007BDE131118924E00BC750C /* PBXTargetDependency */,
 				009C40ED112068140053283A /* PBXTargetDependency */,
 				00236DA31130E4D8006C991F /* PBXTargetDependency */,
@@ -417,20 +416,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = eventTest;
-		};
-		000B6784103CB3C5003D463F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = NormalMapping;
-		};
-		000B6787103CB3E4003D463F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = NormalMapping;
 		};
 		00125BAC1249B0FA00080A0D /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1604,7 +1589,6 @@
 		0005CA531006823B004D82BC /* TextTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest.xcodeproj; path = ../../TextTest/xcode/TextTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA5D10068241004D82BC /* VBOSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VBOSample.xcodeproj; path = ../../VBOSample/xcode/VBOSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA6610068252004D82BC /* waterSim.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = waterSim.xcodeproj; path = ../../waterSim/xcode/waterSim.xcodeproj; sourceTree = SOURCE_ROOT; };
-		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../_opengl/FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = "<group>"; };
@@ -1731,7 +1715,6 @@
 				009709CE16CC6741005DC014 /* LocationManager.xcodeproj */,
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
 				00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */,
-				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
 				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
@@ -1929,14 +1912,6 @@
 			isa = PBXGroup;
 			children = (
 				0005CA6E10068252004D82BC /* waterSim.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		000B677E103CB3C5003D463F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				000B6785103CB3C5003D463F /* NormalMapping.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2926,10 +2901,6 @@
 					ProjectRef = 11754434193596B20075AF60 /* NodeBasic.xcodeproj */;
 				},
 				{
-					ProductGroup = 000B677E103CB3C5003D463F /* Products */;
-					ProjectRef = 000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */;
-				},
-				{
 					ProductGroup = 006D717C199528F7008149E2 /* Products */;
 					ProjectRef = 006D717B199528F7008149E2 /* NormalMapping.xcodeproj */;
 				},
@@ -3255,13 +3226,6 @@
 			fileType = wrapper.application;
 			path = waterSim.app;
 			remoteRef = 0005CA6D10068252004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		000B6785103CB3C5003D463F /* NormalMapping.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = NormalMapping.app;
-			remoteRef = 000B6784103CB3C5003D463F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		00125BAD1249B0FA00080A0D /* Picking3D.app */ = {
@@ -3945,11 +3909,6 @@
 			isa = PBXTargetDependency;
 			name = eventTest;
 			targetProxy = 0005CAAC10068268004D82BC /* PBXContainerItemProxy */;
-		};
-		000B6788103CB3E4003D463F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = NormalMapping;
-			targetProxy = 000B6787103CB3E4003D463F /* PBXContainerItemProxy */;
 		};
 		00125BAF1249B10500080A0D /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
