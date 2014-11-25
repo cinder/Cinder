@@ -702,6 +702,10 @@ class AttribFn : public Source {
 	AttribFn( const Source &source, Attrib src, Attrib dst, const FN &fn )
 		: mSource( source ), mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
 	{}
+
+	AttribFn( const Source &source, Attrib attrib, const FN &fn )
+		: mSource( source ), mSrcAttrib( attrib ), mDstAttrib( attrib ), mFn( fn )
+	{}
 	
 	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
 	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }

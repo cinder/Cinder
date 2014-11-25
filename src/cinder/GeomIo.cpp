@@ -2414,10 +2414,16 @@ void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAt
 {
 	// we want to capture 'mSrcAttrib' and we want to write 'mDstAttrib'
 	std::map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[mSrcAttrib] = Modifier::READ;
-	attribAccess[mDstAttrib] = Modifier::WRITE;
+	if( mSrcAttrib != mDstAttrib ) {
+		attribAccess[mSrcAttrib] = Modifier::READ;
+		attribAccess[mDstAttrib] = Modifier::WRITE;
+	}
+	else
+		attribAccess[mSrcAttrib] = Modifier::READ_WRITE;
+	auto attribs = requestedAttribs;
+	attribs.insert( mSrcAttrib );
 	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
-	mSource.loadInto( &modifier, requestedAttribs );
+	mSource.loadInto( &modifier, attribs );
 
 	if( modifier.getAttribDims( mSrcAttrib ) == 0 ) {
 		CI_LOG_W( "AttribFn called on geom::Source missing requested " << attribToString( mSrcAttrib ) );
@@ -2442,7 +2448,7 @@ void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAt
 		inputAttribData = modifier.getReadAttribData( mSrcAttrib );
 	
 	processAttrib<S,D>( inputAttribData, outData.get(), mFn, numVertices );
-	target->copyAttrib( Attrib::COLOR, DSTDIM, 0, outData.get(), numVertices );
+	target->copyAttrib( mDstAttrib, DSTDIM, 0, outData.get(), numVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
