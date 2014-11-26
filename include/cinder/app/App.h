@@ -54,10 +54,6 @@
 		class NSBundle;
 	#endif
 //	class CinderView;
-#elif defined( CINDER_MSW )
-	#include "cinder/msw/OutputDebugStringStream.h"
-#elif defined( CINDER_WINRT)
-	#include "cinder/msw/OutputDebugStringStream.h"
 #endif
 
 #include <vector>
@@ -411,8 +407,8 @@ class App {
 		\return the selected file path or an empty string if the user cancelled. **/
 	fs::path		getSaveFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 
-	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
-	std::ostream&	console();
+	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
+	virtual std::ostream&	console();
 	
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
@@ -468,14 +464,6 @@ class App {
 	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
 	
 	//! \endcond
-
-#if defined( CINDER_MSW )
-	friend class AppImplMsw;
-	std::shared_ptr<std::ostream>	mOutputStream;
-#elif defined( CINDER_WINRT )
-	friend class AppImplWinRT;
-	std::shared_ptr<std::ostream>	mOutputStream;
-#endif
 
   private:
 	  void 		prepareAssetLoading();

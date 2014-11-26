@@ -45,7 +45,6 @@
 	#include <thread>
 	#include <filesystem>
 #elif defined( CINDER_MSW )
-	#include "cinder/msw/OutputDebugStringStream.h"
 	#include "cinder/app/AppImplMsw.h"
 #endif
 
@@ -461,13 +460,7 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 
 std::ostream& App::console()
 {
-#if defined( CINDER_COCOA )
 	return std::cout;
-#else
-	if( ! mOutputStream )
-		mOutputStream = shared_ptr<cinder::msw::dostream>( new cinder::msw::dostream );
-	return *mOutputStream;
-#endif
 }
 
 bool App::isPrimaryThread()

@@ -23,6 +23,7 @@
 
 #include "cinder/app/AppBasicMsw.h"
 #include "cinder/app/AppImplMswBasic.h"
+#include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
 
 namespace cinder { namespace app {
@@ -101,6 +102,13 @@ WindowRef AppBasicMsw::createWindow( const Window::Format &format )
 void AppBasicMsw::quit()
 {
 	mImpl->quit();
+}
+
+std::ostream& AppBasicMsw::console()
+{
+	if( ! mOutputStream )
+		mOutputStream = shared_ptr<cinder::msw::dostream>( new cinder::msw::dostream );
+	return *mOutputStream;
 }
 
 float AppBasicMsw::getFrameRate() const

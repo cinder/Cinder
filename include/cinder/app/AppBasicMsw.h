@@ -36,6 +36,9 @@ class AppBasicMsw : public AppBasic {
 	WindowRef	createWindow( const Window::Format &format ) override;
 	void		quit() override;
 
+	// Overridden to use OutputDebugString
+	std::ostream&	console() override;
+
 	float		getFrameRate() const override;
 	void		setFrameRate( float frameRate ) override;
 	void		disableFrameRate() override;
@@ -60,6 +63,9 @@ class AppBasicMsw : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
+
+	std::shared_ptr<std::ostream>	mOutputStream; // TODO: use unique_ptr, add for msw screensaver
+
 	AppImplMswBasic *mImpl;
 };
 
