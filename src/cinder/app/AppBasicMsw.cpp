@@ -21,19 +21,19 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/AppBasicWin32.h"
+#include "cinder/app/AppBasicMsw.h"
 #include "cinder/app/AppImplMswBasic.h"
 #include "cinder/Unicode.h"
 
 namespace cinder { namespace app {
 
-AppBasicWin32::~AppBasicWin32()
+AppBasicMsw::~AppBasicMsw()
 {
 	delete mImpl;
 }
 
 // static
-void AppBasicWin32::executeLaunch( AppBasic *app, RendererRef renderer, const char *title )
+void AppBasicMsw::executeLaunch( AppBasic *app, RendererRef renderer, const char *title )
 {
 	sInstance = app;
 
@@ -59,7 +59,7 @@ void AppBasicWin32::executeLaunch( AppBasic *app, RendererRef renderer, const ch
 	::LocalFree( szArglist );
 }
 
-void AppBasicWin32::launch( const char *title, int argc, char * const argv[] )
+void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 {
 	// -----------------------
 	// TODO: consider moving this to a common AppBasic method, or doing in App
@@ -93,67 +93,67 @@ void AppBasicWin32::launch( const char *title, int argc, char * const argv[] )
 	mImpl->run();
 }
 
-WindowRef AppBasicWin32::createWindow( const Window::Format &format )
+WindowRef AppBasicMsw::createWindow( const Window::Format &format )
 {
 	return mImpl->createWindow( format );
 }
 
-void AppBasicWin32::quit()
+void AppBasicMsw::quit()
 {
 	mImpl->quit();
 }
 
-float AppBasicWin32::getFrameRate() const
+float AppBasicMsw::getFrameRate() const
 {
 	return mImpl->getFrameRate();
 }
 
-void AppBasicWin32::setFrameRate( float frameRate )
+void AppBasicMsw::setFrameRate( float frameRate )
 {
 	mImpl->setFrameRate( frameRate );
 }
 
-void AppBasicWin32::disableFrameRate()
+void AppBasicMsw::disableFrameRate()
 {
 	mImpl->disableFrameRate();
 }
 
-bool AppBasicWin32::isFrameRateEnabled() const
+bool AppBasicMsw::isFrameRateEnabled() const
 {
 	return mImpl->isFrameRateEnabled();
 }
 
-fs::path AppBasicWin32::getAppPath() const
+fs::path AppBasicMsw::getAppPath() const
 {
 	return AppImplMsw::getAppPath();
 }
 
-WindowRef AppBasicWin32::getWindow() const
+WindowRef AppBasicMsw::getWindow() const
 {
 	return mImpl->getWindow();
 }
 
-WindowRef AppBasicWin32::getWindowIndex( size_t index ) const
+WindowRef AppBasicMsw::getWindowIndex( size_t index ) const
 {
 	return mImpl->getWindowIndex( index );
 }
 
-size_t AppBasicWin32::getNumWindows() const
+size_t AppBasicMsw::getNumWindows() const
 {
 	return mImpl->getNumWindows();
 }
 
-WindowRef AppBasicWin32::getForegroundWindow() const
+WindowRef AppBasicMsw::getForegroundWindow() const
 {
 	return mImpl->getForegroundWindow();
 }
 
-void AppBasicWin32::hideCursor()
+void AppBasicMsw::hideCursor()
 {
 	AppImplMsw::hideCursor();
 }
 
-void AppBasicWin32::showCursor()
+void AppBasicMsw::showCursor()
 {
 	AppImplMsw::showCursor();
 }

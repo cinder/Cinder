@@ -29,9 +29,9 @@ namespace cinder { namespace app {
 
 class AppImplMswBasic;
 
-class AppBasicWin32 : public AppBasic {
+class AppBasicMsw : public AppBasic {
   public:
-	virtual ~AppBasicWin32();
+	virtual ~AppBasicMsw();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
 	void		quit() override;
@@ -63,13 +63,13 @@ class AppBasicWin32 : public AppBasic {
 	AppImplMswBasic *mImpl;
 };
 
-#define CINDER_APP_BASIC_WIN32( APP, RENDERER )														\
+#define CINDER_APP_BASIC_MSW( APP, RENDERER )														\
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
 {																									\
 	cinder::app::AppBasic::prepareLaunch();															\
 	cinder::app::AppBasic *app = new APP;															\
 	cinder::app::RendererRef ren( new RENDERER );													\
-	cinder::app::AppBasicWin32::executeLaunch( app, ren, #APP );									\
+	cinder::app::AppBasicMsw::executeLaunch( app, ren, #APP );										\
 	cinder::app::AppBasic::cleanupLaunch();															\
 	return 0;																						\
 }
