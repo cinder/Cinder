@@ -39,21 +39,11 @@
 #include "cinder/Thread.h"
 
 #if defined( CINDER_COCOA )
-	#if defined( CINDER_COCOA_TOUCH )
-		#if defined( __OBJC__ )
-			#import <UIKit/UIKit.h>
-			#import <CoreFoundation/CoreFoundation.h>
-		#endif
-	#else
-		#include <ApplicationServices/ApplicationServices.h>
-	#endif
 	#if defined __OBJC__
-		@class CinderView;
 		@class NSBundle;
 	#else
 		class NSBundle;
 	#endif
-//	class CinderView;
 #endif
 
 #include <vector>
