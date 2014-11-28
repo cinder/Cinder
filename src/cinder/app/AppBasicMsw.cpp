@@ -26,6 +26,8 @@
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
 
+using namespace std;
+
 namespace cinder { namespace app {
 
 AppBasicMsw::~AppBasicMsw()

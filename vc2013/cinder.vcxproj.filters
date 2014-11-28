@@ -740,7 +740,7 @@
     </ClCompile>
     <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
       <Filter>Source Files\jsoncpp</Filter>
-    <ClCompile Include="..\src\cinder\app\AppBasicWin32.cpp">
+    <ClCompile Include="..\src\cinder\app\AppBasicMsw.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
   </ItemGroup>
@@ -1567,7 +1567,7 @@
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
       <Filter>Header Files\json</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppBasicWin32.h">
+    <ClInclude Include="..\include\cinder\app\AppBasicMsw.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>
