@@ -13,6 +13,7 @@
 		00CFDFE011384CC60091E310 /* iosAppTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00CFDFDF11384CC60091E310 /* iosAppTestApp.cpp */; };
 		11012A9D166862B2009DDE50 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11012A9C166862B2009DDE50 /* ImageIO.framework */; };
 		11012A9F166862CA009DDE50 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11012A9E166862CA009DDE50 /* MobileCoreServices.framework */; };
+		11C102901A1D5D3A002850A2 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11C1028F1A1D5D3A002850A2 /* Accelerate.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		28FD15000DC6FC520079059D /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD14FF0DC6FC520079059D /* OpenGLES.framework */; };
@@ -32,6 +33,7 @@
 		00CFDFDF11384CC60091E310 /* iosAppTestApp.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = iosAppTestApp.cpp; path = ../src/iosAppTestApp.cpp; sourceTree = "<group>"; };
 		11012A9C166862B2009DDE50 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		11012A9E166862CA009DDE50 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
+		11C1028F1A1D5D3A002850A2 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* iosAppTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosAppTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -52,6 +54,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11C102901A1D5D3A002850A2 /* Accelerate.framework in Frameworks */,
 				11012A9F166862CA009DDE50 /* MobileCoreServices.framework in Frameworks */,
 				11012A9D166862B2009DDE50 /* ImageIO.framework in Frameworks */,
 				00BC996C15B1D91D002B8F42 /* CoreLocation.framework in Frameworks */,
@@ -128,6 +131,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11C1028F1A1D5D3A002850A2 /* Accelerate.framework */,
 				11012A9E166862CA009DDE50 /* MobileCoreServices.framework */,
 				11012A9C166862B2009DDE50 /* ImageIO.framework */,
 				00BC996B15B1D91D002B8F42 /* CoreLocation.framework */,
@@ -268,10 +272,6 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv7,
-					armv7s,
-				);
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
@@ -290,10 +290,6 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = (
-					armv7,
-					armv7s,
-				);
 				CINDER_PATH = ../../..;
 				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";

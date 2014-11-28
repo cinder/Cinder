@@ -39,8 +39,10 @@ class Pan2dNode : public Node {
 
 	//! Sets the panning position in range of [0:1]: 0 = left, 1 = right, and 0.5 = center.
 	void setPos( float pos );
-	//! Gets the current
-	float getPos() const	{ return mPos; }
+	//! Gets the current panning position in range of [0:1]: 0 = left, 1 = right, and 0.5 = center.
+	float getPos() const	{ return mPos.getValue(); }
+	//! Returns a pointer to the Param that controls the position.
+	Param* getParamPos()			{ return &mPos; }
 
 	//! \brif Sets whether 'stereo input mode' is enabled or not (it is disabled by default)
 	//!
@@ -54,8 +56,11 @@ protected:
 	void process( Buffer *buffer ) override;
 
   private:
-	std::atomic<float>	mPos;
-	bool				mStereoInputMode;
+	void processRegularMode( Buffer *buffer );
+	void processStereoInputMode( Buffer *buffer );
+
+	Param	mPos;
+	bool	mStereoInputMode;
 };
 
 } } // namespace cinder::audio

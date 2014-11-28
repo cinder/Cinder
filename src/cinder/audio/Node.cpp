@@ -64,7 +64,7 @@ void Node::connect( const NodeRef &output )
 	// disconnecting us, which we may need later anyway
 	NodeRef thisRef = shared_from_this();
 
-	if( ! output->canConnectToInput( thisRef ) )
+	if( ! output || ! output->canConnectToInput( thisRef ) )
 		return;
 
 	if( checkCycle( thisRef, output ) )
@@ -183,12 +183,31 @@ void Node::disable()
 	disableProcessing();
 }
 
+void Node::enable( double when )
+{
+	getContext()->schedule( when, shared_from_this(), true, [this] { enable(); } );
+}
+
+void Node::disable( double when )
+{
+	getContext()->schedule( when, shared_from_this(), false, [this] { disable(); } );
+}
+
 void Node::setEnabled( bool b )
 {
 	if( b )
 		enable();
 	else
 		disable();
+}
+
+
+void Node::setEnabled( bool b, double when )
+{
+	if( b )
+		enable( when );
+	else
+		disable( when );
 }
 
 size_t Node::getNumConnectedInputs() const
@@ -224,6 +243,9 @@ void Node::initializeImpl()
 
 	if( mProcessInPlace && ! supportsProcessInPlace() )
 		setupProcessWithSumming();
+
+	mProcessFramesRange.first = 0;
+	mProcessFramesRange.second = getFramesPerBlock();
 
 	initialize();
 	mInitialized = true;
@@ -372,11 +394,11 @@ void Node::pullInputs( Buffer *inPlaceBuffer )
 
 	if( mProcessInPlace ) {
 		if( mInputs.empty() ) {
-			// Fastest route: no inputs and process in-place. If disabled, get rid of any previously processsed samples.
+			// Fastest route: no inputs and process in-place. inPlaceBuffer must be cleared so that samples left over
+			// from InputNode's that aren't filling the entire buffer are zero.
+			inPlaceBuffer->zero();
 			if( mEnabled )
 				process( inPlaceBuffer );
-			else
-				inPlaceBuffer->zero();
 		}
 		else {
 			// First pull the input (can only be one when in-place), then run process() if input did any processing.

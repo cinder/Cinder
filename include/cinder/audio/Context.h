@@ -27,8 +27,10 @@
 #include "cinder/audio/InputNode.h"
 #include "cinder/audio/OutputNode.h"
 
+#include <list>
 #include <mutex>
 #include <set>
+#include <thread>
 
 namespace cinder { namespace audio {
 
@@ -65,15 +67,13 @@ class Context : public std::enable_shared_from_this<Context> {
 	virtual void setOutput( const OutputNodeRef &output );
 	//! Returns the OutputNode for the Context (currently always an OutputDeviceNode that sends audio to your speakers). This can be thought of as the 'heartbeat', it is the one who initiates the pulling and processing of all other Node's in the audio graph. \a note If the output has not already been set, it is the default OutputDeviceNode
 	virtual const OutputNodeRef& getOutput();
-	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
-	std::mutex& getMutex() const			{ return mMutex; }
 
 	//! Enables audio processing. Effectively the same as calling getOutput()->enable()
 	virtual void enable();
 	//! Enables audio processing. Effectively the same as calling getOutput()->disable()
 	virtual void disable();
 	//! start / stop audio processing via boolean
-	void setEnabled( bool enable = true );
+	void setEnabled( bool enable );
 	//! Returns whether or not this \a Context is current enabled and processing audio.
 	bool isEnabled() const		{ return mEnabled; }
 
@@ -107,7 +107,18 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Remove \a node from the list of auto-pulled nodes.
 	//! \note Callers on the non-audio thread must synchronize with getMutex().
 	void removeAutoPulledNode( const NodeRef &node );
-	//! OutputNode implmenentations should call this at the end of each rendering block.
+
+	//! Schedule \a node to be enabled or disabled with with \a func on the audio thread, to be called at \a when seconds measured against getNumProcessedSeconds(). \a node is owned until the scheduled event completes.
+	void schedule( double when, const NodeRef &node, bool enable, const std::function<void ()> &func );
+
+	//! Returns the mutex used to synchronize the audio thread. This is also used internally by the Node class when making connections.
+	std::mutex& getMutex() const			{ return mMutex; }
+	//! Returns true if the current thread is the thread used for audio processing, false otherwise.
+	bool isAudioThread() const;
+
+	//! OutputNode implementations should call this before each rendering block.
+	void preProcess();
+	//! OutputNode implementations should call this after each rendering block.
 	void postProcess();
 
 	//! Returns a string representation of the Node graph for debugging purposes.
@@ -117,17 +128,33 @@ class Context : public std::enable_shared_from_this<Context> {
 	Context();
 
   private:
+	struct ScheduledEvent {
+		ScheduledEvent( uint64_t eventFrameThreshold, const NodeRef &node, bool enable, const std::function<void ()> &fn )
+			: mEventFrameThreshold( eventFrameThreshold ), mNode( node ), mEnable( enable ), mFunc( fn ), mFinished( false )
+		{}
+
+		uint64_t				mEventFrameThreshold;
+		NodeRef					mNode;
+		bool					mEnable;
+		bool					mFinished;
+		std::function<void ()>	mFunc;
+	};
+
 	void	disconnectRecursive( const NodeRef &node, std::set<NodeRef> &traversedNodes );
 	void	initRecursisve( const NodeRef &node, std::set<NodeRef> &traversedNodes  );
 	void	uninitRecursisve( const NodeRef &node, std::set<NodeRef> &traversedNodes  );
 	const	std::vector<Node *>& getAutoPulledNodes(); // called if there are any nodes besides output that need to be pulled
 	void	processAutoPulledNodes();
+	void	preProcessScheduledEvents();
+	void	postProcessScheduledEvents();
 	void	incrementFrameCount();
 
 	static void registerClearStatics();
 
-	std::atomic<uint64_t>	mNumProcessedFrames;
-	OutputNodeRef			mOutput;
+	bool						mEnabled;
+	std::atomic<uint64_t>		mNumProcessedFrames;
+	OutputNodeRef				mOutput;
+	std::list<ScheduledEvent>	mScheduledEvents;
 
 	// other nodes that don't have any outputs and need to be explictly pulled
 	std::set<NodeRef>		mAutoPulledNodes;
@@ -136,7 +163,7 @@ class Context : public std::enable_shared_from_this<Context> {
 	BufferDynamic			mAutoPullBuffer;
 
 	mutable std::mutex		mMutex;
-	bool					mEnabled;
+	std::thread::id			mAudioThreadId;
 
 	// - Context is stored in Node classes as a weak_ptr, so it needs to (for now) be created as a shared_ptr
 	static std::shared_ptr<Context>			sMasterContext;

@@ -192,7 +192,7 @@ class App {
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 
 		//! a value of \c true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
-		void	enablePowerManagement( bool aPowerManagement = true );
+		void	enablePowerManagement( bool enable = true );
 		//! is power management enabled, allowing screensavers and the system's power management to hide the application
 		bool	isPowerManagementEnabled() const { return mPowerManagement; }
 

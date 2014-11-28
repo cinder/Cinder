@@ -45,6 +45,8 @@ void decibelToLinear( float *array, size_t length );
 float freqToMidi( float freq );
 //! Scale \a midi from MIDI note values to frequency (hertz). Adapted from Pure Data's mtof function. \see freqToMidi()
 float midiToFreq( float midi );
+//! Convert \a timeSeconds to frames running at \a sampleRate, rounding to the nearest integral frame.
+uint64_t timeToFrame( double timeSeconds, double sampleRate );
 
 //! Checks if the absolute value of any sample in \a buffer is over \a threshold. Optionally provide \a recordFrame to record the frame index. \return true if one is found, false otherwise. 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame = nullptr );
