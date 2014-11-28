@@ -2093,11 +2093,13 @@ ScopedTextureBind::ScopedTextureBind( const Texture2dRef &texture, uint8_t textu
 	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
 }
 
+#if ! defined( CINDER_GL_ES_2 )
 ScopedTextureBind::ScopedTextureBind( const Texture3dRef &texture, uint8_t textureUnit )
 : mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
 {
 	mCtx->pushTextureBinding( mTarget, texture->getId(), mTextureUnit );
 }
+#endif // ! defined( CINDER_GL_ES_2 )
 
 ScopedTextureBind::ScopedTextureBind( const TextureCubeMapRef &texture, uint8_t textureUnit )
 : mCtx( gl::context() ), mTarget( texture->getTarget() ), mTextureUnit( textureUnit )
