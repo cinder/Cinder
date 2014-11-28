@@ -92,7 +92,7 @@ class CaptureImplDirectShow {
  public:
 	class Device;
 	CaptureImplDirectShow() { };
-	CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device );
+	CaptureImplDirectShow(int32_t width, int32_t height, const Capture::DeviceRef device, int32_t crossbar);
 	CaptureImplDirectShow( int32_t width, int32_t height );
 	~CaptureImplDirectShow();
 	

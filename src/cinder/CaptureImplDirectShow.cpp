@@ -82,14 +82,14 @@ const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceR
 	return sDevices;
 }
 
-CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device )
+CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device, int32_t crossbar )
 	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR ), mDeviceID( 0 )
 {
 	mDevice = device;
 	if( mDevice ) {
 		mDeviceID = device->getUniqueId();
 	}
-	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight ) )
+	if( ! CaptureMgr::instanceVI()->setupDevice( mDeviceID, mWidth, mHeight, crossbar ) )
 		throw CaptureExcInitFail();
 	mWidth = CaptureMgr::instanceVI()->getWidth( mDeviceID );
 	mHeight = CaptureMgr::instanceVI()->getHeight( mDeviceID );
