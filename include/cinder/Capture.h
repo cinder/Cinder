@@ -63,11 +63,14 @@ class Capture {
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
 
-	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
+	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef(), int32_t crossbar = -1 )
+	{ 
+		return CaptureRef( new Capture( width, height, device, crossbar ) ); 
+	}
 
 	Capture() {}
 	//! \deprecated Call Capture::create() instead
-	Capture( int32_t width, int32_t height, const DeviceRef device = DeviceRef() );
+	Capture(int32_t width, int32_t height, const DeviceRef device = DeviceRef(), int32_t crossbar = -1);
 	~Capture() {}
 
 	//! Begin capturing video
@@ -136,7 +139,7 @@ class Capture {
 		
  protected: 
 	struct Obj {
-		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
+		Obj(int32_t width, int32_t height, const Capture::DeviceRef device, int32_t crossbar = -1);
 		virtual ~Obj();
 
 #if defined( CINDER_MAC ) 

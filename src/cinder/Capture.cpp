@@ -75,12 +75,12 @@ Capture::DeviceRef Capture::findDeviceByNameContains( const string &nameFragment
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Capture::Obj
-Capture::Obj::Obj( int32_t width, int32_t height, const DeviceRef device )
+Capture::Obj::Obj(int32_t width, int32_t height, const DeviceRef device, int32_t crossbar)
 {
 #if defined( CINDER_COCOA )
 	mImpl = [[::CapturePlatformImpl alloc] initWithDevice:device width:width height:height];
 #else
-	mImpl = new CapturePlatformImpl( width, height, device );
+	mImpl = new CapturePlatformImpl(width, height, device, crossbar );
 #endif	
 }
 
@@ -93,9 +93,9 @@ Capture::Obj::~Obj()
 #endif
 }
 
-Capture::Capture( int32_t width, int32_t height, const DeviceRef device ) 
+Capture::Capture(int32_t width, int32_t height, const DeviceRef device, int32_t crossbar)
 {
-	mObj = shared_ptr<Obj>( new Obj( width, height, device ) );
+	mObj = shared_ptr<Obj>( new Obj( width, height, device, crossbar ) );
 }
 
 void Capture::start()
