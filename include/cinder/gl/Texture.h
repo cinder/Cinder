@@ -532,7 +532,7 @@ class Texture2d : public TextureBase {
 	friend class Texture2dCache;
 };
 
-#ifndef CINDER_GL_ES_2
+#if ! defined( CINDER_GL_ES_2 )
 class Texture3d : public TextureBase {
   public:
 	struct Format : public TextureBase::Format {
