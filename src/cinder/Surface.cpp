@@ -189,11 +189,11 @@ int	SurfaceChannelOrder::getImageIoChannelOrder() const
 template<typename T>
 void SurfaceT<T>::initChannels()
 {
-	mChannels[SurfaceChannelOrder::CHAN_RED] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getRedOffset() );
-	mChannels[SurfaceChannelOrder::CHAN_GREEN] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getGreenOffset() );
-	mChannels[SurfaceChannelOrder::CHAN_BLUE] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getBlueOffset() );
+	mChannels[SurfaceChannelOrder::CHAN_RED] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getRedOffset(), mDataStore );
+	mChannels[SurfaceChannelOrder::CHAN_GREEN] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getGreenOffset(), mDataStore );
+	mChannels[SurfaceChannelOrder::CHAN_BLUE] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getBlueOffset(), mDataStore );
 	if( mChannelOrder.hasAlpha() )
-		mChannels[SurfaceChannelOrder::CHAN_ALPHA] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getAlphaOffset() );
+		mChannels[SurfaceChannelOrder::CHAN_ALPHA] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getAlphaOffset(), mDataStore );
 }
 
 template<typename T>
@@ -205,16 +205,15 @@ void SurfaceT<T>::setChannelOrder( const SurfaceChannelOrder &aChannelOrder )
 
 template<typename T>
 SurfaceT<T>::SurfaceT()
-	: mWidth( 0 ), mHeight( 0 ), mChannelOrder( SurfaceChannelOrder::UNSPECIFIED ), mRowBytes( 0 ), mData( nullptr ), mOwnsData( false )
+	: mWidth( 0 ), mHeight( 0 ), mChannelOrder( SurfaceChannelOrder::UNSPECIFIED ), mRowBytes( 0 ), mData( nullptr ), mPremultiplied( false )
 {
 }
 
 template<typename T>
 SurfaceT<T>::SurfaceT( const SurfaceT<T> &rhs )
-	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mIsPremultiplied( rhs.mIsPremultiplied )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mPremultiplied( rhs.mPremultiplied )
 {
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
-	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
@@ -222,11 +221,10 @@ SurfaceT<T>::SurfaceT( const SurfaceT<T> &rhs )
 
 template<typename T>
 SurfaceT<T>::SurfaceT( SurfaceT<T> &&rhs )
-	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mIsPremultiplied( rhs.mIsPremultiplied )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mPremultiplied( rhs.mPremultiplied )
 {
 	mDataStore = rhs.mDataStore;
 	rhs.mDataStore = nullptr;
-	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
 }
@@ -237,8 +235,8 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannel
 {
 	if( mChannelOrder == SurfaceChannelOrder::UNSPECIFIED )
 		mChannelOrder = ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB;
+	mPremultiplied = false;
 	mRowBytes = width * sizeof(T) * mChannelOrder.getPixelInc();
-	mOwnsData = true;
 	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes] );
 	mData = mDataStore.get();
 	initChannels();
@@ -249,8 +247,8 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceC
 	: mWidth( width ), mHeight( height )
 {
 	mChannelOrder = constraints.getChannelOrder( alpha );
+	mPremultiplied = false;
 	mRowBytes = constraints.getRowBytes( width, mChannelOrder, sizeof(T) );
-	mOwnsData = true;
 	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes] );
 	mData = mDataStore.get();
 	initChannels();
@@ -260,7 +258,7 @@ template<typename T>
 SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder )
 	: mData( data ), mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mChannelOrder( channelOrder )
 {
-	mOwnsData = false;
+	mPremultiplied = false;
 	initChannels();
 }
 
@@ -310,10 +308,9 @@ SurfaceT<T>& SurfaceT<T>::operator=( const SurfaceT<T> &rhs )
 	mHeight = rhs.mHeight;
 	mChannelOrder = rhs.mChannelOrder;
 	mRowBytes = rhs.mRowBytes;
-	mIsPremultiplied = rhs.mIsPremultiplied;
+	mPremultiplied = rhs.mPremultiplied;
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
 	
-	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
 	
@@ -329,15 +326,12 @@ SurfaceT<T>& SurfaceT<T>::operator=( SurfaceT<T> &&rhs )
 	mHeight = rhs.mHeight;
 	mChannelOrder = rhs.mChannelOrder;
 	mRowBytes = rhs.mRowBytes;
-	mIsPremultiplied = rhs.mIsPremultiplied;
+	mPremultiplied = rhs.mPremultiplied;
 	mDataStore = rhs.mDataStore;
 	rhs.mDataStore = nullptr;
 	
-	mOwnsData = true;
 	mData = mDataStore.get();
 	initChannels();
-	
-	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
 	
 	return *this;
 }
@@ -390,19 +384,18 @@ void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &co
 	mChannelOrder = constraints.getChannelOrder( hasAlpha );
 	mRowBytes = constraints.getRowBytes( mWidth, mChannelOrder, sizeof(T) );
 	
-	mOwnsData = true;
 	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
 	mData = mDataStore.get();
 
-	mIsPremultiplied = imageSource->isPremultiplied();
+	mPremultiplied = imageSource->isPremultiplied();
 	
 	std::shared_ptr<ImageTargetSurface<T> > target = ImageTargetSurface<T>::createRef( this );
 	imageSource->load( target );
 	
+	initChannels();
 	// if the image doesn't have alpha but we do, set the alpha to 1.0
-	if( hasAlpha && ( ! imageSource->hasAlpha() ) ) {
+	if( hasAlpha && ( ! imageSource->hasAlpha() ) )
 		ip::fill( &getChannelAlpha(), CHANTRAIT<T>::max() );
-	}	
 }
 
 template<typename T>

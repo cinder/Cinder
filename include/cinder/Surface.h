@@ -107,33 +107,41 @@ template<typename T>
 //! An in-memory representation of an image. \ImplShared
 class SurfaceT {
   public:
+	//! A null Surface.
 	SurfaceT();
+	//! Allocates a Surface of size \a width X \a height, with an optional \a alpha channel. The default value for \a channelOrder selects a platform default.
 	SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED );
+	//! Allocates a Surface of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
 	SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints );
 	//! Constructs a surface from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
 	SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder );
-	/*! \brief Creates a Surface object from an ImageSource, for instance from the result of a loadImage() call
-	 
-	 To load an image from a resource, pass the result of the loadImage() call to the Surface constructor as shown below
-	 <tt>Surface mySurface = Surface( loadImage( loadResource( RES ) );</tt>
-	 */
+	//! Constructs a Surface from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
 	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
 	//! Creates a clone of \a rhs. Matches rowBytes and channel order of \a rhs, but creates its own dataStore.
 	SurfaceT( const SurfaceT &rhs );
+	//! Surface move constructor.
 	SurfaceT( SurfaceT &&rhs );
 
+	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. The default value for \a channelOrder selects a platform default.
 	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED )
 	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, channelOrder ); }
 	
+	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
 	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints )
 	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, constraints ); }
 	
+	//! Creates a SurfaceRef from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
 	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder )
 	{ return std::make_shared<SurfaceT<T>>( data, width, height, rowBytes, channelOrder ); }
 	
+	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
 	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
 	{ return std::make_shared<SurfaceT<T>>( imageSource, constraints, alpha ); }
+
+	//! Creates s SurfaceRef which is a clone of the Surface \a surface, and with its own dataStore
+	static std::shared_ptr<SurfaceT<T>>	create( const SurfaceT<T> &surface )
+	{ return std::make_shared<SurfaceT<T>>( surface ); }
 
 #if defined( CINDER_WINRT )
 	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
@@ -161,9 +169,9 @@ class SurfaceT {
 	//! Returns whether the Surface contains an alpha channel
 	bool			hasAlpha() const { return mChannelOrder.hasAlpha(); }
 	//! Returns whether the Surface color data is premultiplied by its alpha channel or not
-	bool			isPremultiplied() const { return mIsPremultiplied; }
+	bool			isPremultiplied() const { return mPremultiplied; }
 	//! Sets whether the Surface color data should be interpreted as being premultiplied by its alpha channel or not
-	void			setPremultiplied( bool premult = true ) { mIsPremultiplied = premult; }
+	void			setPremultiplied( bool premult = true ) { mPremultiplied = premult; }
 	//! Returns the width of a row of the Surface measured in bytes, which is not necessarily getWidth() * getPixelInc()
 	int32_t			getRowBytes() const { return mRowBytes; }
 	//! Returns the amount to increment a T* to increment by a pixel. Analogous to the number of channels, which is either 3 or 4
@@ -256,10 +264,9 @@ class SurfaceT {
 	void	initChannels();
 
 	int32_t						mWidth, mHeight, mRowBytes;
-	bool						mIsPremultiplied;
+	bool						mPremultiplied;
 	T							*mData;
 	std::shared_ptr<T>			mDataStore;
-	bool						mOwnsData;
 	SurfaceChannelOrder			mChannelOrder;
 	ChannelT<T>					mChannels[4];
 	
