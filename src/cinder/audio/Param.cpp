@@ -281,6 +281,13 @@ bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t samp
 
 			// If the event has a cancel time, adjust the count if needed, but all other ramp values remain the same
 			if( event->mTimeCancel > 0 ) {
+				if( event->mTimeCancel < timeBegin ) {
+					// event should already be over
+					event->cancel();
+					eventIt = mEvents.erase( eventIt );
+					continue;
+				}
+
 				size_t endIndexModified = timeEnd < event->mTimeCancel ? arrayLength : size_t( ( event->mTimeCancel - timeBegin ) * sampleRate );
 				if( endIndexModified != endIndex ) {
 					count = endIndexModified - startIndex;
