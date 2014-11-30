@@ -346,10 +346,17 @@ void Param::resetImpl()
 void Param::removeEventsAt( float time )
 {
 	for( auto &event : mEvents ) {
-		if( event->getTimeBegin() >= time )
+		if( event->getTimeBegin() >= time ) {
 			event->cancel();
-		else if( event->getTimeEnd() >= time )
-			event->mTimeCancel = time;
+		}
+		else if( event->getTimeEnd() >= time ) {
+			// Handle cancel later to allow the ramp to continue until the cancel point. Only reset cancel time if it is newer than a previous setting.
+			if( event->mTimeCancel > 0 ) {
+				event->mTimeCancel = min( event->mTimeCancel, time );
+			}
+			else
+				event->mTimeCancel = time;
+		}
 	}
 }
 
