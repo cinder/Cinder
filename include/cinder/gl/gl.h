@@ -340,8 +340,8 @@ void draw( const Texture2dRef &texture, const Rectf &dstRect );
 //! Draws a subregion \a srcArea of a Texture (expressed as upper-left origin pixels).
 void draw( const Texture2dRef &texture, const Area &srcArea, const Rectf &dstRect );
 void draw( const Texture2dRef &texture, const vec2 &dstOffset = vec2() );
-void draw( const class PolyLine<vec2> &polyLine );
-void draw( const class PolyLine<vec3> &polyLine );
+void draw( const PolyLine2 &polyLine );
+void draw( const PolyLine3 &polyLine );
 //! Draws a Path2d \a pathd using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
 void draw( const Path2d &path, float approximationScale = 1.0f );
 //! Draws a Shaped2d \a shaped using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc
@@ -355,7 +355,7 @@ void draw( const geom::Source &source );
 void drawSolid( const Path2d &path2d, float approximationScale = 1.0f );
 //! Draws a solid (filled) Shape2d \a shape using approximation scale \a approximationScale. 1.0 corresponds to screenspace, 2.0 is double screen resolution, etc. Performance warning: This routine tesselates the polygon into triangles. Consider using Triangulator directly.
 void drawSolid( const Shape2d &shape, float approximationScale = 1.0f );
-void drawSolid( const class PolyLine<vec2> &polyLine );
+void drawSolid( const PolyLine2 &polyLine );
 
 //! Renders a solid cube centered at \a center of size \a size. Normals and created texture coordinates are generated.
 void drawCube( const vec3 &center, const vec3 &size );
