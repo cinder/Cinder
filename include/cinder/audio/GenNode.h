@@ -48,6 +48,8 @@ class GenNode : public InputNode {
 	float getFreq() const			{ return mFreq.getValue(); }
 	//! Returns a pointer to the Param, which can be used to animate the frequency.
 	Param* getParamFreq()			{ return &mFreq; }
+	//! Sets the starting phase of the next processed block, in radians.
+	void	setPhase( float phase );
 
   protected:
 	GenNode( const Format &format = Format() );
