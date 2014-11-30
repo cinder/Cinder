@@ -28,9 +28,9 @@
 
 namespace cinder { namespace audio {
 
-//! Typedef for the base GenNode. If all you need to set on the GenNode is the frequency, you can reference the Node with this.
+//! Typedef for a shared_ptr to the base GenNode. If all you need to set on the GenNode is the frequency, you can reference the Node with this.
 typedef std::shared_ptr<class GenNode>				GenNodeRef;
-// Typedefs for all available GenNode types.
+// Typedefs for shared_ptr's to all available GenNode types.
 typedef std::shared_ptr<class GenNoiseNode>			GenNoiseNodeRef;
 typedef std::shared_ptr<class GenPhasorNode>		GenPhasorNodeRef;
 typedef std::shared_ptr<class GenSineNode>			GenSineNodeRef;
