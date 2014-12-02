@@ -22,8 +22,8 @@
 
 #pragma once
 
-#include "Vector.h"
-#include "Ray.h"
+#include "cinder/Vector.h"
+#include "cinder/Ray.h"
 
 #include <vector>
 
