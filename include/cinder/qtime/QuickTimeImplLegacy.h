@@ -219,7 +219,7 @@ class MovieSurface : public MovieBase {
 	{ return std::shared_ptr<MovieSurface>( new MovieSurface( dataSource, mimeTypeHint ) ); }
 	
 	//! Returns the Surface8u representing the Movie's current frame
-	Surface		getSurface();
+	SurfaceRef	getSurface();
 	
   protected:
 	MovieSurface() : MovieBase() {}
@@ -238,7 +238,7 @@ class MovieSurface : public MovieBase {
 		virtual void		releaseFrame();
 		virtual void		newFrame( CVImageBufferRef cvImage );
 		
-		Surface				mSurface;
+		SurfaceRef			mSurface;
 	};
 	
 	std::shared_ptr<Obj>		mObj;

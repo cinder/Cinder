@@ -407,12 +407,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 	return result;
 }
 
-static void CVPixelBufferDealloc( void *refcon )
-{
-	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
-}
-
-Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 {
 	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
 	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
@@ -429,9 +424,8 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 		sco = SurfaceChannelOrder::BGR;
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
-	Surface result( ptr, width, height, rowBytes, sco );
-	result.setDeallocator( CVPixelBufferDealloc, pixelBufferRef );
-	return result;
+	Surface8u *newSurface = new Surface8u( ptr, width, height, rowBytes, sco );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
 }
 
 #endif // ( ! defined( __LP64__ ) )

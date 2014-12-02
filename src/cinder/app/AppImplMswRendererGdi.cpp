@@ -25,6 +25,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/app/App.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/Log.h"
 #include <windowsx.h>
 
 namespace cinder { namespace app {
@@ -86,8 +87,6 @@ bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRe
 
 Surface8u AppImplMswRendererGdi::copyWindowContents( const Area &area )
 {
-	Surface8u result;
-
 	// Warning - if you step through this code with a debugger, the image returned
 	// will be of the foreground window (presumably your IDE) instead
 	::RECT clientRect;
@@ -97,19 +96,24 @@ Surface8u AppImplMswRendererGdi::copyWindowContents( const Area &area )
 	::HDC memDC = ::CreateCompatibleDC( hdc );
 
 	::HBITMAP copyBitmap = ::CreateCompatibleBitmap( hdc, clippedArea.getWidth(), clippedArea.getHeight() );
-	if( ! copyBitmap )
-		return result;
-	
+	if( ! copyBitmap ) {
+		CI_LOG_E( "::CreateCompatibleBitmap() failed on copyWindowContents()" );
+		return Surface8u();
+	}
+
 	::GdiFlush();
 
 	// Copy the bits to our bitmap
 	::HGDIOBJ oldBitmap = ::SelectObject( memDC, copyBitmap );
-	if( ! ::BitBlt( memDC, 0, 0, clippedArea.getWidth(), clippedArea.getHeight(), hdc, clippedArea.x1, clippedArea.y1, SRCCOPY ) )
-		return result;
+	if( ! ::BitBlt( memDC, 0, 0, clippedArea.getWidth(), clippedArea.getHeight(), hdc, clippedArea.x1, clippedArea.y1, SRCCOPY ) ){
+		CI_LOG_E( "BitBlt() failed on copyWindowContents()" );
+		return Surface8u();
+	}
 	::SelectObject( memDC, oldBitmap );
 	
-	result = msw::convertHBitmap( copyBitmap );
-	
+	auto tempSurface = msw::convertHBitmap( copyBitmap );
+	Surface8u result( *tempSurface );
+
 	::DeleteObject( copyBitmap );
 
 	::ReleaseDC( NULL, hdc );
