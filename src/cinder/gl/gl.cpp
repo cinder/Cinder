@@ -1218,7 +1218,7 @@ void draw( const Shape2d &shape, float approximationScale )
 		gl::draw( path );
 }
 
-void draw( const PolyLine<vec2> &polyLine )
+void draw( const PolyLine2 &polyLine )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1246,7 +1246,7 @@ void draw( const PolyLine<vec2> &polyLine )
 	ctx->popVao();
 }
 
-void draw( const PolyLine<vec3> &polyLine )
+void draw( const PolyLine3 &polyLine )
 {
 	auto ctx = context();
 	GlslProgRef curGlslProg = ctx->getGlslProg();
@@ -1361,7 +1361,7 @@ void drawSolid( const Shape2d &shape, float approximationScale )
 	draw( Triangulator( shape ).calcMesh() );
 }
 
-void drawSolid( const PolyLine<vec2> &polyLine )
+void drawSolid( const PolyLine2 &polyLine )
 {
 	draw( Triangulator( polyLine ).calcMesh() );
 }

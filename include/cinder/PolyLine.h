@@ -28,10 +28,10 @@
 namespace cinder {
 
 template<typename T>
-class PolyLine {
+class PolyLineT {
   public:
-	PolyLine() : mClosed( false ) {}
-	PolyLine( const std::vector<T> &aPoints ) : mPoints( aPoints ), mClosed( false ) {}
+	PolyLineT() : mClosed( false ) {}
+	PolyLineT( const std::vector<T> &aPoints ) : mPoints( aPoints ), mClosed( false ) {}
 	
 	const std::vector<T>&	getPoints() const { return mPoints; }
 	std::vector<T>&			getPoints() { return mPoints; }
@@ -61,20 +61,24 @@ class PolyLine {
 	bool	contains( const vec2 &pt ) const;
 
 	//! Calculates the boolean union of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
-	static std::vector<PolyLine> 	calcUnion( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	static std::vector<PolyLineT> 	calcUnion( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	//! Calculates the boolean intersection of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
-	static std::vector<PolyLine> 	calcIntersection( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	static std::vector<PolyLineT> 	calcIntersection( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	//! Calculates the boolean XOR (symmetric difference) of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
-	static std::vector<PolyLine> 	calcXor( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );
+	static std::vector<PolyLineT> 	calcXor( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	//! Calculates the boolean difference of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
-	static std::vector<PolyLine> 	calcDifference( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );		
+	static std::vector<PolyLineT> 	calcDifference( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	
   private:
 	std::vector<T>			mPoints;
 	bool					mClosed;
 };
 
-typedef PolyLine<vec2> PolyLine2f;
-typedef PolyLine<dvec2> PolyLine2d;
+typedef PolyLineT<vec2>		PolyLine2;
+typedef PolyLineT<vec2>		PolyLine2f;
+typedef PolyLineT<dvec2>	PolyLine2d;
+typedef PolyLineT<vec3>		PolyLine3;
+typedef PolyLineT<vec3>		PolyLine3f;
+typedef PolyLineT<dvec3>	PolyLine3d;
 
 } // namespace cinder
