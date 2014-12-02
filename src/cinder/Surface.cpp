@@ -213,7 +213,7 @@ template<typename T>
 SurfaceT<T>::SurfaceT( const SurfaceT<T> &rhs )
 	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mPremultiplied( rhs.mPremultiplied )
 {
-	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	initChannels();
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
@@ -237,7 +237,7 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannel
 		mChannelOrder = ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB;
 	mPremultiplied = false;
 	mRowBytes = width * sizeof(T) * mChannelOrder.getPixelInc();
-	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes] );
+	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	initChannels();
 }
@@ -249,7 +249,7 @@ SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceC
 	mChannelOrder = constraints.getChannelOrder( alpha );
 	mPremultiplied = false;
 	mRowBytes = constraints.getRowBytes( width, mChannelOrder, sizeof(T) );
-	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes] );
+	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	initChannels();
 }
@@ -309,7 +309,7 @@ SurfaceT<T>& SurfaceT<T>::operator=( const SurfaceT<T> &rhs )
 	mChannelOrder = rhs.mChannelOrder;
 	mRowBytes = rhs.mRowBytes;
 	mPremultiplied = rhs.mPremultiplied;
-	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
 	
 	mData = mDataStore.get();
 	initChannels();
@@ -384,7 +384,7 @@ void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &co
 	mChannelOrder = constraints.getChannelOrder( hasAlpha );
 	mRowBytes = constraints.getRowBytes( mWidth, mChannelOrder, sizeof(T) );
 	
-	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes] );
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 
 	mPremultiplied = imageSource->isPremultiplied();

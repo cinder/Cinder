@@ -117,7 +117,7 @@ ChannelT<T>::ChannelT( int32_t width, int32_t height )
 	mRowBytes = mWidth * sizeof(T);
 	mIncrement = 1;
 	
-	mDataStore = shared_ptr<T>( new T[mWidth * mHeight] );
+	mDataStore = shared_ptr<T>( new T[mWidth * mHeight], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 }
 
@@ -138,7 +138,7 @@ template<typename T>
 ChannelT<T>::ChannelT( const ChannelT &rhs )
 	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mRowBytes( mWidth * sizeof(T) ), mIncrement( 1 )
 {
-	mDataStore = shared_ptr<T>( new T[mWidth * mHeight] );
+	mDataStore = shared_ptr<T>( new T[mWidth * mHeight], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
@@ -160,7 +160,7 @@ ChannelT<T>::ChannelT( const ImageSourceRef &imageSource )
 	mRowBytes = mWidth * sizeof(T);
 	mIncrement = 1;
 
-	mDataStore = shared_ptr<T>( new T[mHeight * (mRowBytes/sizeof(T))] );
+	mDataStore = shared_ptr<T>( new T[mHeight * (mRowBytes/sizeof(T))], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	
 	shared_ptr<ImageTargetChannel<T>> target = ImageTargetChannel<T>::createRef( this );
@@ -174,7 +174,7 @@ ChannelT<T>& ChannelT<T>::operator=( const ChannelT &rhs )
 	mHeight = rhs.mHeight;
 	mRowBytes = mWidth * sizeof(T);
 	mIncrement = 1;
-	mDataStore = shared_ptr<T>( new T[mHeight * mWidth] );
+	mDataStore = shared_ptr<T>( new T[mHeight * mWidth], std::default_delete<T[]>() );
 	mData = mDataStore.get();
 	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
 	

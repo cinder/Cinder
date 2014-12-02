@@ -266,7 +266,7 @@ class SurfaceT {
 	int32_t						mWidth, mHeight, mRowBytes;
 	bool						mPremultiplied;
 	T							*mData;
-	std::shared_ptr<T>			mDataStore;
+	std::shared_ptr<T>			mDataStore; // shared rather than unique because member Channels (r/g/b/a) share the same data store and may need to outlive their parent Surface
 	SurfaceChannelOrder			mChannelOrder;
 	ChannelT<T>					mChannels[4];
 	
