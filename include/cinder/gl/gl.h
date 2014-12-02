@@ -62,8 +62,6 @@
 #endif
 #include <boost/noncopyable.hpp>
 
-#include "cinder/gl/Texture.h"
-
 #include "cinder/Area.h"
 #include "cinder/Rect.h"
 #include "cinder/AxisAlignedBox.h"
