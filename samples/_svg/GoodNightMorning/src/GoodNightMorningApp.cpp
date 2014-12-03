@@ -71,7 +71,7 @@ gl::TextureRef GoodNightMorningApp::renderTweet( const Tweet &tweet, float width
 	Surface result( textSurface.getWidth() + 56, std::max( headerSurface.getHeight() + textSurface.getHeight() + 10, 56 ), true );
 	ip::fill( &result, ColorA( 1, 1, 1, backgroundAlpha ) );
 	if( tweet.getIcon() )
-		result.copyFrom( tweet.getIcon(), tweet.getIcon().getBounds(), ivec2( 4, 4 ) );
+		result.copyFrom( *tweet.getIcon(), tweet.getIcon()->getBounds(), ivec2( 4, 4 ) );
 	ip::blend( &result, headerSurface, headerSurface.getBounds(), ivec2( result.getWidth() - 4 - headerSurface.getWidth(), textSurface.getHeight() + 6 ) );
 	ip::blend( &result, textSurface, textSurface.getBounds(), ivec2( 56, 4 ) );
 	return gl::Texture::create( result );

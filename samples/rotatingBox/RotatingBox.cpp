@@ -59,7 +59,7 @@ void RotatingCubeApp::resize()
 void RotatingCubeApp::update()
 {
 	if( mCapture && mCapture.checkNewFrame() )
-		mTexture = gl::Texture2d::create( mCapture.getSurface() );
+		mTexture = gl::Texture2d::create( *mCapture.getSurface(), gl::Texture2d::Format().loadTopDown() );
 	
 	// Rotate the cube by .03 radians around an arbitrary axis
 	mCubeRotation *= rotate( 0.03f, vec3( 1 ) );
