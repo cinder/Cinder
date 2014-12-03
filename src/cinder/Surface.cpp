@@ -327,10 +327,11 @@ SurfaceT<T>& SurfaceT<T>::operator=( SurfaceT<T> &&rhs )
 	mChannelOrder = rhs.mChannelOrder;
 	mRowBytes = rhs.mRowBytes;
 	mPremultiplied = rhs.mPremultiplied;
-	mDataStore = rhs.mDataStore;
+	mDataStore = rhs.mDataStore;	
+	mData = rhs.mData;
 	rhs.mDataStore = nullptr;
+	rhs.mData = nullptr;
 	
-	mData = mDataStore.get();
 	initChannels();
 	
 	return *this;
