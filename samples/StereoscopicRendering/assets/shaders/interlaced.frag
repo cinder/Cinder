@@ -1,13 +1,17 @@
-#version 110
+#version 130
 
 uniform sampler2D	tex0;
 
 uniform vec2		window_origin;
 uniform vec2		window_size;
 
+in vec4 vColor;
+in vec2 vTexCoord0;
+
+out vec4 oColor;
+
 // find the correct half of the texture to sample (over-under FBO)
-const vec2			halfOffset = vec2(1.0, 0.5);
-const vec2			offset = vec2(0.0, 0.5);
+const vec4	kOffset = vec4(1.0, 0.5, 0.0, 0.5);
 
 void main()
 {	
@@ -18,5 +22,5 @@ void main()
 	float isOdd = mod( floor(y), 2.0 );
 
 	// sample the correct half of the texture
-	gl_FragColor = texture2D( tex0, gl_TexCoord[0].st * halfOffset + ( isOdd * offset ) );
+	oColor = texture( tex0, vTexCoord0 * kOffset.xy + ( isOdd * kOffset.zw ) );
 }
