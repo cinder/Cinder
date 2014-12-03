@@ -205,18 +205,19 @@ static BOOL sDevicesEnumerated = false;
 
 	@synchronized( self ) {
 		[mSession stopRunning];
+
+		if( mWorkingPixelBuffer ) {
+			CVBufferRelease( mWorkingPixelBuffer );
+			mWorkingPixelBuffer = nullptr;
+		}
+		
 		[mSession release];
 		mSession = nil;
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
 		
-		mCurrentFrame.reset();
-		
-		if( mWorkingPixelBuffer ) {
-			CVBufferRelease( mWorkingPixelBuffer );
-			mWorkingPixelBuffer = 0;
-		}		
+		mCurrentFrame.reset();		
 	}
 }
 
@@ -233,7 +234,7 @@ static BOOL sDevicesEnumerated = false;
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
 				CVBufferRelease( mWorkingPixelBuffer );
-				mWorkingPixelBuffer = NULL;
+				mWorkingPixelBuffer = nullptr;
 			}
 			
 			CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
