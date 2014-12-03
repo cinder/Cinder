@@ -259,19 +259,10 @@ void SurfaceImage::initCinderSurface( bool alpha, cairo_surface_t *cairoSurface 
 	unsigned char *data = cairo_image_surface_get_data( cairoSurface );
 	int stride = cairo_image_surface_get_stride( cairoSurface );
 
-#if defined( BOOST_BIG_ENDIAN )
-	if( alpha )
-		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::ARGB );
-	else
-		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::RGBX );
-#else
 	if( alpha )
 		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::BGRA );
 	else
 		mCinderSurface = Surface( data, mWidth, mHeight, stride, SurfaceChannelOrder::BGRX );
-#endif
-	mCinderSurface.setDeallocator( &SurfaceImage::surfaceDeallocator, cairoSurface );
-	cairo_surface_reference( cairoSurface ); // decremented by the mCinderSurface deallocator
 }
 
 /////////////////////////////////////////////////////////////////////////////
