@@ -208,20 +208,20 @@ class SurfaceT {
 	//! Returns the channel order of the Surface, the in-memory ordering of the channels of each pixel
 	const SurfaceChannelOrder&	getChannelOrder() const { return mChannelOrder; }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 0.
-	uint8_t						getRedOffset() const { return mChannelOrder.getRedOffset(); }
+	uint8_t					getRedOffset() const { return mChannelOrder.getRedOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 1.
-	uint8_t						getGreenOffset() const { return mChannelOrder.getGreenOffset(); }
+	uint8_t					getGreenOffset() const { return mChannelOrder.getGreenOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 2.
-	uint8_t						getBlueOffset() const { return mChannelOrder.getBlueOffset(); }
+	uint8_t					getBlueOffset() const { return mChannelOrder.getBlueOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 3. Returns SurfaceChannelOrder::INVALID in the absence of an alpha channel.
-	uint8_t						getAlphaOffset() const { return mChannelOrder.getAlphaOffset(); }
+	uint8_t					getAlphaOffset() const { return mChannelOrder.getAlphaOffset(); }
 	//! Sets the channel order of the Surface, the in-memory ordering of the channels of each pixel. Call does not modify any pixel data, but does modify its interpretation. 
-	void						setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
+	void					setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
 
 	//! Returns a reference to a Channel \a channelIndex indexed according to how the channels are arranged per the SurfaceChannelOrder.
-	ChannelT<T>&				getChannel( uint8_t channelIndex ) { return mChannels[channelIndex]; }
+	ChannelT<T>&			getChannel( uint8_t channelIndex ) { return mChannels[channelIndex]; }
 	//! Returns a const reference to a Channel \a channelIndex indexed  according to how the channels are arranged per the SurfaceChannelOrder.
-	const ChannelT<T>&			getChannel( uint8_t channelIndex ) const { return mChannels[channelIndex]; }
+	const ChannelT<T>&		getChannel( uint8_t channelIndex ) const { return mChannels[channelIndex]; }
 	
 	/*! Returns a reference to the red Channel of the Surface */
 	ChannelT<T>&		getChannelRed() { return mChannels[SurfaceChannelOrder::CHAN_RED]; }
