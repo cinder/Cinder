@@ -75,6 +75,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	,mObjectTrackingEnabled( platformData->mObjectTracking )
 {
 	// set thread's active Context to 'this' in case anything calls gl::context() (like the GlslProg constructor)
+	auto prevCtx = Context::getCurrent();
 	Context::reflectCurrent( this );
 
 	// setup default VAO
@@ -143,6 +144,9 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 		}
 	}
 #endif
+
+	// restore current context thread-local to what it was previously
+	Context::reflectCurrent( prevCtx );
 }
 
 Context::~Context()
