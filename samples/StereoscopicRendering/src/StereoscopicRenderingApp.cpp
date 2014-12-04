@@ -185,8 +185,8 @@ void StereoscopicRenderingApp::setup()
 			mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
 
 			gl::Batch::AttributeMapping mapping;
-			mapping[geom::Attrib::CUSTOM_0] = "vInstancePosition";
-			mapping[geom::Attrib::CUSTOM_1] = "vInstanceColor";
+			mapping[geom::Attrib::CUSTOM_0] = "aInstancePosition";
+			mapping[geom::Attrib::CUSTOM_1] = "aInstanceColor";
 
 			mBatchNote = gl::Batch::create( mesh, mShaderInstancedPhong, mapping );
 		}
@@ -420,7 +420,7 @@ void StereoscopicRenderingApp::createFbo()
 
 	// By doubling the horizontal resolution, we can effectively render
 	// both the left and right eye views side by side at full resolution.
-	if( mRenderMethod == ANAGLYPH_RED_CYAN )
+	if( mRenderMethod == ANAGLYPH_RED_CYAN || mRenderMethod == INTERLACED_HORIZONTAL )
 		size.x *= 2;
 
 	// Do we really need to create the fbo?
@@ -466,9 +466,9 @@ void StereoscopicRenderingApp::renderAnaglyph( const ivec2 &size, const ColorA &
 
 	// enable the anaglyph shader
 	gl::ScopedGlslProg shader( mShaderAnaglyph );
-	mShaderAnaglyph->uniform( "tex0", 0 );
-	mShaderAnaglyph->uniform( "clr_left", left );
-	mShaderAnaglyph->uniform( "clr_right", right );
+	mShaderAnaglyph->uniform( "uTex0", 0 );
+	mShaderAnaglyph->uniform( "uColorLeft", left );
+	mShaderAnaglyph->uniform( "uColorRight", right );
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following lines do
@@ -518,16 +518,16 @@ void StereoscopicRenderingApp::renderInterlacedHorizontal( const ivec2 &size )
 	mFbo->bindFramebuffer();
 
 	// render the scene using the over-under technique
-	renderOverUnder( mFbo->getSize() );
+	renderSideBySide( mFbo->getSize() );
 
 	// unbind the FBO
 	mFbo->unbindFramebuffer();
 
 	// enable the interlace shader
 	gl::ScopedGlslProg shader( mShaderInterlaced );
-	mShaderInterlaced->uniform( "tex0", 0 );
-	mShaderInterlaced->uniform( "window_origin", vec2( getWindowPos() ) );
-	mShaderInterlaced->uniform( "window_size", vec2( getWindowSize() ) );
+	mShaderInterlaced->uniform( "uTex0", 0 );
+	mShaderInterlaced->uniform( "uWindowOrigin", vec2( getWindowPos() ) );
+	mShaderInterlaced->uniform( "uWindowSize", vec2( getWindowSize() ) );
 
 	// bind the FBO texture and draw a full screen rectangle,
 	// which conveniently is exactly what the following lines do

@@ -1,4 +1,4 @@
-#version 130
+#version 150
 
 uniform mat4	ciModelView;
 uniform mat4	ciModelViewProjection;
@@ -7,20 +7,18 @@ uniform mat3	ciNormalMatrix;
 in vec4			ciPosition;
 in vec3			ciNormal;
 in vec4			ciColor;
-in vec2			ciTexCoord0;
 
-out vec4		vVertex;
-out vec3		vNormal;
-out vec2		vTexCoord0;
-out vec4		vColor;
+out vec4		vertPosition;
+out vec3		vertNormal;
+out vec4		vertColor;
+out vec4        vertUp;
 
 void main()
 {
-	vVertex = ciModelView * ciPosition;       
-	vNormal = ciNormalMatrix * ciNormal;
-
-	vTexCoord0 = ciTexCoord0;
-	vColor = ciColor;
+	vertPosition = ciModelView * ciPosition;       
+	vertNormal = ciNormalMatrix * ciNormal;
+	vertColor = ciColor;
+	vertUp = ciModelView * vec4(0, 1, 0, 0);
 	
 	// vertex shader must always pass projection space position
 	gl_Position = ciModelViewProjection * ciPosition;
