@@ -271,16 +271,9 @@ bool initializeGl( HWND wnd, HDC dc, HGLRC sharedRC, const RendererGl::Options &
 	wgl_LoadFunctions( dc );								// Initialize WGL function pointers
 
 	::wglMakeCurrent( NULL, NULL );
-/*	if( mPrevRC ) {
-		if( ! ::wglCopyContext( mPrevRC, resultRc, 0xFFFFFFFF GL_ALL_ATTRIB_BITS ) )
-			CI_LOG_E( "Unable to copy GL context attributes." );
-	}
-
-	if( mPrevRC )
-		::wglShareLists( mPrevRC, mRC );
 	
 	if( sharedRC )
-		::wglShareLists( sharedRC, mRC );*/
+		::wglShareLists( sharedRC, *resultRc );
 
 	::wglMakeCurrent( dc, *resultRc );
 
