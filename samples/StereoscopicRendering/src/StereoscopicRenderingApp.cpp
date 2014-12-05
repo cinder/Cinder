@@ -117,8 +117,8 @@ private:
 	gl::BatchRef			mBatchNote;
 	gl::VertBatchRef		mGrid;
 
-	static const int		kGridSize = 100;
-	static const int		kNumNotes = 2 * kGridSize + 1;
+	int		kGridSize;
+	int		kNumNotes;
 	gl::VboRef				mInstanceDataVbo;
 
 	gl::FboRef				mFbo;
@@ -140,6 +140,9 @@ void StereoscopicRenderingApp::prepareSettings( Settings *settings )
 
 void StereoscopicRenderingApp::setup()
 {
+    kGridSize = 100;
+    kNumNotes = 2 * kGridSize + 1;
+    
 	// Enable stereoscopic rendering by default.
 	mRenderMethod = SIDE_BY_SIDE;
 
