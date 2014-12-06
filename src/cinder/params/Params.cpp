@@ -26,8 +26,6 @@
 
 #include "AntTweakBar.h"
 
-#include <boost/assign/list_of.hpp>
-
 #if defined( USE_DIRECTX )
 	#include "cinder/dx/dx.h"
 	#include "cinder/app/AppImplMswRendererDx.h"
@@ -42,34 +40,34 @@ namespace {
 
 #undef DELETE
 
-#define SYNONYM(ck,ak) ((int)cinder::app::KeyEvent::KEY_ ## ck, TW_KEY_ ## ak)
+#define SYNONYM(ck,ak) {(int)cinder::app::KeyEvent::KEY_ ## ck, TW_KEY_ ## ak}
 #define HOMONYM(k) SYNONYM(k,k)
-    std::map<int,TwKeySpecial> specialKeys = boost::assign::map_list_of
-        HOMONYM(RIGHT)
-        HOMONYM(LEFT)
-        HOMONYM(BACKSPACE)
-        HOMONYM(DELETE)
-        HOMONYM(TAB)
-        HOMONYM(F1)
-        HOMONYM(F2)
-        HOMONYM(F3)
-        HOMONYM(F4)
-        HOMONYM(F5)
-        HOMONYM(F6)
-        HOMONYM(F7)
-        HOMONYM(F8)
-        HOMONYM(F9)
-        HOMONYM(F10)
-        HOMONYM(F11)
-        HOMONYM(F12)
-        HOMONYM(F13)
-        HOMONYM(F14)
-        HOMONYM(F15)
-        HOMONYM(HOME)
-        HOMONYM(END)
-        SYNONYM(PAGEUP,PAGE_UP)
+    std::map<int,TwKeySpecial> specialKeys = {
+        HOMONYM(RIGHT),
+        HOMONYM(LEFT),
+        HOMONYM(BACKSPACE),
+        HOMONYM(DELETE),
+        HOMONYM(TAB),
+        HOMONYM(F1),
+        HOMONYM(F2),
+        HOMONYM(F3),
+        HOMONYM(F4),
+        HOMONYM(F5),
+        HOMONYM(F6),
+        HOMONYM(F7),
+        HOMONYM(F8),
+        HOMONYM(F9),
+        HOMONYM(F10),
+        HOMONYM(F11),
+        HOMONYM(F12),
+        HOMONYM(F13),
+        HOMONYM(F14),
+        HOMONYM(F15),
+        HOMONYM(HOME),
+        HOMONYM(END),
+        SYNONYM(PAGEUP,PAGE_UP),
         SYNONYM(PAGEDOWN,PAGE_DOWN)
-        ;
+        };
 #undef SYNONYM
 #undef HOMONYM
 
