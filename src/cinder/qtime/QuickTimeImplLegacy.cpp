@@ -721,12 +721,12 @@ void MovieSurface::Obj::releaseFrame()
 	mSurface.reset();
 }
 
-Surface MovieSurface::getSurface()
+SurfaceRef MovieSurface::getSurface()
 {
 	updateFrame();
 	
 	mObj->lock();
-		Surface result = mObj->mSurface;
+		SurfaceRef result = mObj->mSurface;
 	mObj->unlock();
 	
 	return result;

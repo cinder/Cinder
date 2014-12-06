@@ -257,11 +257,11 @@ static void CVPixelBufferDealloc( void* refcon )
 	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
 }
 
-Surface8u convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+Surface8uRef convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 {
 	::CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
 	uint8_t *ptr = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( pixelBufferRef ) );
-	int32_t rowBytes = ::CVPixelBufferGetBytesPerRow( pixelBufferRef );
+	int32_t rowBytes = (int32_t)::CVPixelBufferGetBytesPerRow( pixelBufferRef );
 	OSType type = ::CVPixelBufferGetPixelFormatType( pixelBufferRef );
 	size_t width = ::CVPixelBufferGetWidth( pixelBufferRef );
 	size_t height = ::CVPixelBufferGetHeight( pixelBufferRef );
@@ -294,10 +294,9 @@ Surface8u convertCvPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
 #endif
-	Surface result( ptr, width, height, rowBytes, sco );
-	result.setDeallocator( CVPixelBufferDealloc, pixelBufferRef );
 	
-	return result;
+	return std::shared_ptr<Surface8u>( new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco ),
+		[=]( Surface8u *s ) { delete s; CVPixelBufferDealloc( pixelBufferRef ); } );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -310,7 +309,7 @@ ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef 
 ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	setSize( imageSource->getWidth(), imageSource->getHeight() );
 	
 	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
 	

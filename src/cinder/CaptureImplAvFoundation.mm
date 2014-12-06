@@ -205,18 +205,19 @@ static BOOL sDevicesEnumerated = false;
 
 	@synchronized( self ) {
 		[mSession stopRunning];
+
+		if( mWorkingPixelBuffer ) {
+			CVBufferRelease( mWorkingPixelBuffer );
+			mWorkingPixelBuffer = nullptr;
+		}
+		
 		[mSession release];
 		mSession = nil;
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
 		
-		mCurrentFrame.reset();
-		
-		if( mWorkingPixelBuffer ) {
-			CVBufferRelease( mWorkingPixelBuffer );
-			mWorkingPixelBuffer = 0;
-		}		
+		mCurrentFrame.reset();		
 	}
 }
 
@@ -233,7 +234,7 @@ static BOOL sDevicesEnumerated = false;
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
 				CVBufferRelease( mWorkingPixelBuffer );
-				mWorkingPixelBuffer = NULL;
+				mWorkingPixelBuffer = nullptr;
 			}
 			
 			CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -248,7 +249,7 @@ static BOOL sDevicesEnumerated = false;
 	}	
 }
 
-- (cinder::Surface8u)getCurrentFrame
+- (cinder::Surface8uRef)getCurrentFrame
 {
 	if( ( ! mIsCapturing ) || ( ! mWorkingPixelBuffer ) ) {
 		return mCurrentFrame;
@@ -262,8 +263,8 @@ static BOOL sDevicesEnumerated = false;
 		mExposedFrameWidth = (int32_t)CVPixelBufferGetWidth( mWorkingPixelBuffer );
 		mExposedFrameHeight = (int32_t)CVPixelBufferGetHeight( mWorkingPixelBuffer );
 
-		mCurrentFrame = cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA );
-		mCurrentFrame.setDeallocator( frameDeallocator, mWorkingPixelBuffer );
+		mCurrentFrame = std::shared_ptr<cinder::Surface8u>( new cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA ),
+				[=]( cinder::Surface8u* s ){ delete s; frameDeallocator( mWorkingPixelBuffer ); } );
 		
 		// mark the working pixel buffer as empty since we have wrapped it in the current frame
 		mWorkingPixelBuffer = 0;

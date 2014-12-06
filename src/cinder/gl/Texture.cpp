@@ -1237,20 +1237,18 @@ Texture2dCache::Texture2dCache( const Surface8u &prototypeSurface, const Texture
 {
 	if( mWidth * prototypeSurface.getChannelOrder().getPixelInc() != prototypeSurface.getRowBytes() ) {
 		CI_LOG_V( "Surface rowBytes will prevent full efficiency in gl::Texture upload." );
-		mIntermediateSurface = Surface8u( prototypeSurface.getWidth(), prototypeSurface.getHeight(), 
+		mIntermediateSurface = Surface8u::create( prototypeSurface.getWidth(), prototypeSurface.getHeight(), 
 				prototypeSurface.hasAlpha(), prototypeSurface.getChannelOrder() );
 	}
 }
 
 gl::TextureRef Texture2dCache::cache( const Surface8u &originalData )
 {
-	Surface8u surfaceData = originalData;
+	const Surface8u &surfaceData = ( mIntermediateSurface ) ? *mIntermediateSurface : originalData;
 	// If mIntermediateSurface isn't null then we need to use that instead.
 	// This is to accommodate rowBytes values which aren't the same as width * bytesPerPixel
-	if( mIntermediateSurface ) {
-		mIntermediateSurface.copyFrom( originalData, originalData.getBounds() );
-		surfaceData = mIntermediateSurface;
-	}
+	if( mIntermediateSurface )
+		mIntermediateSurface->copyFrom( originalData, originalData.getBounds() );
 
 	// find an available slot and update that if possible
 	for( vector<pair<int,TextureRef>>::iterator texIt = mTextures.begin(); texIt != mTextures.end(); ++texIt ) {

@@ -117,7 +117,7 @@ class Renderer {
 	virtual void kill() {}
 #endif
 
-	virtual Surface	copyWindowSurface( const Area &area ) = 0;
+	virtual Surface8u		copyWindowSurface( const Area &area ) = 0;
 
 	virtual void startDraw() {}
 	virtual void finishDraw() {}
@@ -150,12 +150,12 @@ class Renderer2d : public Renderer {
 
 	virtual CGContextRef			getCgContext();
 
-	virtual void startDraw();
-	virtual void finishDraw();
-	virtual void defaultResize();
-	virtual void makeCurrentContext();	
-	virtual void setFrameSize( int width, int height );
-	virtual Surface	copyWindowSurface( const Area &area );
+	void			startDraw() override;
+	void			finishDraw() override;
+	void			defaultResize() override;
+	void			makeCurrentContext() override;
+	void			setFrameSize( int width, int height ) override;
+	Surface8u		copyWindowSurface( const Area &area ) override;
 	
   protected:
 	Renderer2d( const Renderer2d &renderer );
@@ -177,19 +177,19 @@ class Renderer2d : public Renderer {
 	static Renderer2dRef	create( bool doubleBuffer = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 	
-	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
-	virtual void kill();
+	void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
+	void kill();
 	
-	virtual HWND	getHwnd() { return mWnd; }
-	virtual HDC		getDc();
+	HWND	getHwnd() { return mWnd; }
+	HDC		getDc();
 
-	virtual void	prepareToggleFullScreen();
-	virtual void	finishToggleFullScreen();
+	void			prepareToggleFullScreen();
+	void			finishToggleFullScreen();
 
-	virtual void startDraw() override;
-	virtual void finishDraw() override;
-	virtual void defaultResize() override;
-	virtual Surface	copyWindowSurface( const Area &area );
+	void			startDraw() override;
+	void			finishDraw() override;
+	void			defaultResize() override;
+	Surface8u		copyWindowSurface( const Area &area ) override;
 	
  protected:
 	Renderer2d( const Renderer2d &renderer );

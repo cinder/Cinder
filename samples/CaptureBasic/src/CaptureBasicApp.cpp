@@ -52,7 +52,7 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 void CaptureBasicApp::update()
 {
 	if( mCapture && mCapture->checkNewFrame() ) {
-		mTexture = gl::Texture::create( mCapture->getSurface() );
+		mTexture = gl::Texture::create( *mCapture->getSurface() );
 	}
 }
 

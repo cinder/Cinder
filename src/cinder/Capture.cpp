@@ -131,7 +131,7 @@ bool Capture::checkNewFrame() const
 #endif	
 }
 
-Surface8u Capture::getSurface() const
+Surface8uRef Capture::getSurface() const
 {
 #if defined( CINDER_COCOA )
 	return [((::CapturePlatformImpl*)mObj->mImpl) getCurrentFrame];

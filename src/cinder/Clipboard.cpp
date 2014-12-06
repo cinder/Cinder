@@ -158,7 +158,7 @@ ImageSourceRef Clipboard::getImage()
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
 	UIImage *image = pasteboard.image;
 	if( image )
-		return ImageSourceRef( cocoa::convertUiImage( image ) );
+		return ImageSourceRef( *cocoa::convertUiImage( image ) );
 	else
 		return ImageSourceRef();
 #elif defined( CINDER_MSW )

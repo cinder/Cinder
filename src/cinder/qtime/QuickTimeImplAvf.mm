@@ -842,15 +842,15 @@ bool MovieSurface::hasAlpha() const
 		}
 	}
 	
-	return mSurface.hasAlpha();
+	return mSurface->hasAlpha();
 }
 
-Surface MovieSurface::getSurface()
+Surface8uRef MovieSurface::getSurface()
 {
 	updateFrame();
 	
 	lock();
-	Surface result = mSurface;
+	Surface8uRef result = mSurface;
 	unlock();
 	
 	return result;

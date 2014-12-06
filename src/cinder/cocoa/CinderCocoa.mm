@@ -147,15 +147,8 @@ CGContextRef getWindowContext()
 #endif
 }
 
-// This will get called when the Surface::Obj is destroyed
-static void NSBitmapImageRepSurfaceDeallocator( void *refcon )
-{
-	NSBitmapImageRep *rep = reinterpret_cast<NSBitmapImageRep*>( refcon );
-	[rep release];
-}
-
 #if defined( CINDER_MAC )
-Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
+Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
 {
 	NSInteger bpp = [rep bitsPerPixel];
 	int32_t rowBytes = (int32_t)[rep bytesPerRow];
@@ -163,11 +156,12 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
 	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::RGBA;
-	Surface8u result( data, width, height, rowBytes, co );
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
-		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
-	return result;
+		return Surface8uRef( new Surface8u( data, width, height, rowBytes, co ),
+			[=] ( Surface8u *s ) { delete s; [rep release]; } );
+	else
+		return Surface8u::create( data, width, height, rowBytes, co );
 }
 #endif // defined( CINDER_MAC )
 

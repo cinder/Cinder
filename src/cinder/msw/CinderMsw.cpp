@@ -35,12 +35,7 @@
 namespace cinder { namespace msw {
 
 #if !defined( CINDER_WINRT )
-static void surfaceDeallocatorGlobalAlloc( void *refcon )
-{
-	::GlobalFree( (HGLOBAL)refcon );
-}
-
-Surface8u convertHBitmap( HBITMAP hbitmap )
+Surface8uRef convertHBitmap( HBITMAP hbitmap )
 {
 	// create a temporary DC
 	HDC hdc = ::CreateCompatibleDC( 0 );
@@ -70,11 +65,11 @@ Surface8u convertHBitmap( HBITMAP hbitmap )
 	// We use GlobalAlloc / GlobalFree to ensure 8-byte alignment
 	DWORD dwBmpSize = ((width * 32 + 31) / 32) * 4 * height;
 	uint8_t *data = reinterpret_cast<uint8_t*>( ::GlobalAlloc( GMEM_FIXED, dwBmpSize ) );
-	Surface8u result = Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
+	Surface8u *newSurface = new Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
+	Surface8uRef result( newSurface, [=] ( Surface8u *s ) { ::GlobalFree( (HGLOBAL)data ); delete s; } );
 	// have the Surface's destructor call this to call ::GlobalFree
-	result.setDeallocator( surfaceDeallocatorGlobalAlloc, data );
 	
-	if( ::GetDIBits( hdc, hbitmap, 0, height, result.getData(), &bmi, DIB_RGB_COLORS ) == 0 )
+	if( ::GetDIBits( hdc, hbitmap, 0, height, result->getData(), &bmi, DIB_RGB_COLORS ) == 0 )
 		throw Exception( "Invalid HBITMAP" );
 	
 	::ReleaseDC( NULL, hdc );

@@ -57,7 +57,7 @@ void TweetStream::serviceTweets()
 			catch( ci::Exception &exc ) {
 				// our API query failed: put up a "tweet" with our error
 				CI_LOG_W( "exception caught parsing query: " << exc.what() );
-				mBuffer.pushFront( Tweet( "Twitter API query failed", "sadness", Surface() ) );
+				mBuffer.pushFront( Tweet( "Twitter API query failed", "sadness", SurfaceRef() ) );
 				ci::sleep( 2000 ); // try again in 2 seconds
 			}
 		}
@@ -65,7 +65,7 @@ void TweetStream::serviceTweets()
 			try {
 				// get the URL and load the image for this profile
 				Url profileImgUrl = (*resultIt)["profile_image_url"].getValue<Url>();
-				Surface userIcon( loadImage( loadUrl( profileImgUrl ) ) );
+				SurfaceRef userIcon = Surface::create( loadImage( loadUrl( profileImgUrl ) ) );
 				// pull out the text of the tweet and replace any XML-style escapes
 				string text = replaceEscapes( (*resultIt)["text"].getValue() );
 				string userName = (*resultIt)["from_user"].getValue();

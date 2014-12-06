@@ -132,15 +132,15 @@ Surface Renderer2d::copyWindowSurface( const Area &area )
 #if defined( CINDER_MAC )
 	NSBitmapImageRep *rep = [mImpl getContents:area];
 	if( rep )
-		return cocoa::convertNsBitmapDataRep( rep, true );
+		return *cocoa::convertNsBitmapDataRep( rep, true );
 	else
-		return Surface();
+		return Surface( 0, 0, false );
 #elif defined( CINDER_COCOA_TOUCH )
 	UIImage *image = [mImpl getContents:area];
 	if( image )
-		return cocoa::convertUiImage( image, true );
+		return *cocoa::convertUiImage( image, true );
 	else
-		return Surface();
+		return Surface( 0, 0, false );
 #endif
 }
 #endif
