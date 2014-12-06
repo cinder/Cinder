@@ -31,6 +31,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
+#include "cinder/gl/Texture.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#include <OpenGLES/ES2/glext.h>
