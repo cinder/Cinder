@@ -476,6 +476,7 @@ struct ScopedState : public boost::noncopyable {
 };
 
 struct ScopedColor : public boost::noncopyable {
+	ScopedColor();
 	ScopedColor( const ColorAf &color );
 	~ScopedColor();
 
