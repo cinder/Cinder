@@ -74,9 +74,9 @@ ObjLoader& ObjLoader::groupIndex( size_t groupIndex )
 
 ObjLoader& ObjLoader::groupName( const std::string &groupName )
 {
-	auto it = std::find_if( mGroups.begin(), mGroups.end(), [&] ( Group g ) {
-		return g.mName == groupName;
-	});
+	auto it = std::find_if( mGroups.begin(), mGroups.end(), [&] ( const Group &group ) {
+		return group.mName == groupName;
+	} );
 	
 	if ( it != mGroups.end() ) {
 		size_t groupIndex = std::distance( mGroups.begin(), it );
