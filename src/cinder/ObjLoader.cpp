@@ -88,7 +88,16 @@ ObjLoader& ObjLoader::groupName( const std::string &groupName )
 	
 	return *this;
 }
-	
+
+bool ObjLoader::hasGroup( const std::string &groupName ) const
+{
+	auto it = std::find_if( mGroups.begin(), mGroups.end(), [&] ( const Group &group ) {
+		return group.mName == groupName;
+	} );
+
+	return it != mGroups.end();
+}
+
 void ObjLoader::loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const
 {
 	load();

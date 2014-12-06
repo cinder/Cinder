@@ -67,6 +67,8 @@ class ObjLoader : public geom::Source {
 	ObjLoader&	groupIndex( size_t groupIndex );
 	/**Loads a specific group name from the file**/
 	ObjLoader&	groupName( const std::string &groupName );
+	/**Returns whether the file contains a group labeled with \a groupName**/
+	bool		hasGroup( const std::string &groupName ) const;
 
 	struct Material {
         Material() {
