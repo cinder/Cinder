@@ -310,4 +310,4 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	gl::drawSolidRect( rect );
 }
 
-CINDER_APP_NATIVE( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
+CINDER_APP_NATIVE( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )

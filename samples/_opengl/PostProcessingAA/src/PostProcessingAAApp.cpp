@@ -378,4 +378,4 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
+CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )

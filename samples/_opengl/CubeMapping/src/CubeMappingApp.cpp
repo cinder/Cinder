@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/GlslProg.h"
 

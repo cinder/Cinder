@@ -3,6 +3,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/VboMesh.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
