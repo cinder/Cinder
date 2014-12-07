@@ -3825,6 +3825,7 @@
 				PRODUCT_NAME = "cinder-iphone_d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Debug;
 		};
@@ -3854,6 +3855,7 @@
 				PRODUCT_NAME = "cinder-iphone";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = "arm64 armv7";
 			};
 			name = Release;
 		};
@@ -3920,7 +3922,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				CHECKED_STL = "-D_GLIBCXX_DEBUG -D_GLIBCXX_DEBUG_PEDANTIC";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
@@ -3943,7 +3945,6 @@
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder_d;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Debug;
 		};
@@ -3951,7 +3952,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
+				ARCHS = "$(ARCHS_STANDARD)";
 				COMBINE_HIDPI_IMAGES = YES;
 				COPY_PHASE_STRIP = NO;
 				DEAD_CODE_STRIPPING = YES;
@@ -3976,7 +3977,6 @@
 				);
 				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
 				PRODUCT_NAME = cinder;
-				VALID_ARCHS = "i386 x86_64";
 			};
 			name = Release;
 		};
