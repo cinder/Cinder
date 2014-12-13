@@ -30,6 +30,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
+#include "cinder/System.h"
 #include "cinder/Utilities.h"
 #include "cinder/Timeline.h"
 #include "cinder/Thread.h"
@@ -573,7 +574,7 @@ void App::executeLaunch( App *app, RendererRef defaultRenderer, const char *titl
 		app->launch( title, argc, argv );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "Uncaught Exception: " << exc.what() );
+		CI_LOG_E( "Uncaught exception, type: " << ci::System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
 		throw;
 	}
 }
