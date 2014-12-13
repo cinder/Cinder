@@ -77,12 +77,18 @@ void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef
 
 void RendererGl::startDraw()
 {
-	[mImpl makeCurrentContext];
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		[mImpl makeCurrentContext];
 }
 
 void RendererGl::finishDraw()
 {
-	[mImpl flushBuffer];
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		[mImpl flushBuffer];
 }
 
 void RendererGl::setFrameSize( int width, int height )
