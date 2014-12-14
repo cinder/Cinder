@@ -648,8 +648,8 @@ void MovieBase::updateFrame()
 			
 			CVImageBufferRef buffer = nil;
 			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
-			if (buffer) {
-				newFrame(buffer);
+			if( buffer ) {
+				newFrame( buffer );
 				mSignalNewFrame();
 			}
 		}

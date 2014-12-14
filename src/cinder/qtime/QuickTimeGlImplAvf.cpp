@@ -24,10 +24,11 @@
 #include "cinder/Cinder.h"
 
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for >=Mac OS 10.8
-#if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
+#if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) ) || defined( CINDER_COCOA_TOUCH )
 
 #include "cinder/qtime/QuickTimeGlImplAvf.h"
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 
 namespace cinder { namespace qtime {
 /////////////////////////////////////////////////////////////////////////////////
@@ -175,13 +176,23 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 #if defined( CINDER_COCOA_TOUCH )
 	GLenum target = ::CVOpenGLESTextureGetTarget( videoTextureRef );
 	GLuint name = ::CVOpenGLESTextureGetName( videoTextureRef );
-	bool flipped = ! ::CVOpenGLESTextureIsFlipped( videoTextureRef );
-	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true );
-	vec2 t0, lowerRight, t2, upperLeft;
-	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-	mTexture->setTopDown( flipped );
-
+	bool topDown = ::CVOpenGLESTextureIsFlipped( videoTextureRef );
+	
+	// custom deleter fires when last reference to Texture goes out of scope
+	auto deleter = [cvImage, videoTextureRef] ( gl::Texture *texture ) {
+		::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
+		::CVBufferRelease( cvImage );
+		::CFRelease( videoTextureRef );
+		delete texture;
+	};
+	
+	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, deleter );
+	
+//	vec2 t0, lowerRight, t2, upperLeft;
+//	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
+	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+	mTexture->setCleanSize( mWidth, mHeight );
+	mTexture->setTopDown( topDown );
 #elif defined( CINDER_MAC )
 	GLenum target = ::CVOpenGLTextureGetTarget( videoTextureRef );
 	GLuint name = ::CVOpenGLTextureGetName( videoTextureRef );
@@ -192,16 +203,16 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 		::CVOpenGLTextureRelease( videoTextureRef );
 		delete texture;
 	};
-	mTexture = gl::Texture::create( target, name, mWidth, mHeight, true, deleter );
+	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, deleter );
 
 	vec2 t0, lowerRight, t2, upperLeft;
 	::CVOpenGLTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-//	mTexture.setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
+	mTexture->setCleanSize( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 	mTexture->setTopDown( topDown );
-#endif
 
 	::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
 	::CVPixelBufferRelease( cvImage );
+#endif
 }
 
 void MovieGl::releaseFrame()
