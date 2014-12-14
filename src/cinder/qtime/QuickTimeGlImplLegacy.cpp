@@ -131,14 +131,14 @@ void MovieGl::Obj::newFrame( CVImageBufferRef cvImage )
 {
 #if defined( CINDER_MAC )
 	CVOpenGLTextureRef imgRef = reinterpret_cast<CVOpenGLTextureRef>( cvImage );
-	GLenum target = CVOpenGLTextureGetTarget( imgRef );
-	GLuint name = CVOpenGLTextureGetName( imgRef );
-	bool flipped = ! CVOpenGLTextureIsFlipped( imgRef );
-	mTexture = gl::TextureRef( new gl::Texture( target, name, mWidth, mHeight, true ), std::bind( CVOpenGLTextureDealloc, std::placeholders::_1, imgRef ) );
+	GLenum target = ::CVOpenGLTextureGetTarget( imgRef );
+	GLuint name = ::CVOpenGLTextureGetName( imgRef );
+	bool flipped = ::CVOpenGLTextureIsFlipped( imgRef );
+	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, std::bind( CVOpenGLTextureDealloc, std::placeholders::_1, imgRef ) );
 	vec2 t0, lowerRight, t2, upperLeft;
 	::CVOpenGLTextureGetCleanTexCoords( imgRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-	mTexture->setCleanTexCoords( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-	mTexture->setFlipped( flipped );
+	mTexture->setCleanSize( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
+	mTexture->setTopDown( flipped );
 #else
 	// on Windows this is actually a CVPixelBufferRef, which we will convert into a texture
 	CVPixelBufferRef imgRef = reinterpret_cast<CVPixelBufferRef>( cvImage );
