@@ -6,6 +6,7 @@
 
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
@@ -61,7 +62,7 @@ class BuddhabrotApp : public AppBasic {
 	int mBlueBuffer[ TEXTURE_WIDTH * TEXTURE_HEIGHT ];
 	
 	Surface mSurface;
-	gl::Texture	mTexture;
+	gl::TextureRef	mTexture;
 	
 	int mVMaxR;
 	int mVMaxG;
@@ -83,7 +84,7 @@ void BuddhabrotApp::setup()
 	Rand::randomize();
 	mTotalPixels	= TEXTURE_WIDTH * TEXTURE_HEIGHT;
 	mSurface	= Surface( TEXTURE_WIDTH, TEXTURE_HEIGHT, false );
-	mTexture	= gl::Texture( mSurface );
+	mTexture	= gl::Texture::create( mSurface );
 	
 	mWidth		= TEXTURE_WIDTH;//getWindowWidth();
 	mHeight		= TEXTURE_HEIGHT;//getWindowHeight();
@@ -104,7 +105,7 @@ void BuddhabrotApp::setup()
 	mGLimit		= 15000;
 	mBLimit		= 1000;
 	
-	mMaxIterations = max( mRLimit, max( mGLimit, mBLimit ) );
+	mMaxIterations = glm::max( mRLimit, glm::max( mGLimit, mBLimit ) );
 	
 	int tmpW = (int)( (double)mWidth  * mXDim/mYDim );
 	int tmpH = (int)( (double)mHeight * mYDim/mXDim );
@@ -195,8 +196,8 @@ void BuddhabrotApp::mouseUp( MouseEvent event )
 		
 	int dx = abs( mBoundingX1 - mBoundingX0 );
 	int dy = abs( mBoundingY1 - mBoundingY0 );
-	double x0 = min( mBoundingX0, mBoundingX1 );
-	double y0 = min( mBoundingY0, mBoundingY1 );
+	double x0 = glm::min( mBoundingX0, mBoundingX1 );
+	double y0 = glm::min( mBoundingY0, mBoundingY1 );
 	
 	if( dx == 0 && dy == 0 ){
 		mXCorner += mXDim * ( (double)( x0 - TEXTURE_WIDTH/2 ) / (double)TEXTURE_WIDTH );
@@ -252,7 +253,7 @@ void BuddhabrotApp::keyDown( KeyEvent event )
 void BuddhabrotApp::runBrot()
 {
     int oldhits      = -1;
-    uint32_t n       = 2000000000;
+    std::uint32_t n  = 2000000000;
     int oldt         = 0;
 	
     double cx		 = 0;
@@ -275,7 +276,7 @@ void BuddhabrotApp::runBrot()
 		double t2		= transitionProbability( oldt, newt );
 		
 		if( oldhits > 0 ){
-			double alpha = min( 1.0, exp( log( (double)newhits * t1 ) - log( (double)oldhits * t2 ) ) );
+			double alpha = glm::min( 1.0, exp( log( (double)newhits * t1 ) - log( (double)oldhits * t2 ) ) );
 			if( alpha > Rand::randFloat() ){
 				cx			= xTemp;
 				cy			= yTemp;
@@ -354,16 +355,12 @@ void BuddhabrotApp::update()
 			iter.b() = (int)( b * 255 );
 		}
 	}
-	mTexture = gl::Texture( mSurface );
+	mTexture = gl::Texture::create( mSurface );
 }
 
 void BuddhabrotApp::draw()
 {
-	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
-
-	glEnable( GL_TEXTURE_2D );
-
+	gl::clear();
 	gl::draw( mTexture );
 }
 

@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 
 #include "cinder/audio/Context.h"
@@ -115,7 +115,7 @@ void NodeAdvancedApp::draw()
 	float circleX = percent * getWindowWidth();
 
 	gl::color( 0, 0.8f, 0.8f );
-	gl::drawSolidCircle( Vec2f( circleX, getWindowCenter().y ), 50 );
+	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
 CINDER_APP_NATIVE( NodeAdvancedApp, RendererGl )

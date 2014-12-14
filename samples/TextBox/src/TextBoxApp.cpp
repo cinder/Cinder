@@ -1,4 +1,5 @@
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
@@ -17,9 +18,9 @@ class TextBoxApp : public AppNative {
 
 	void render();
 	
-	gl::Texture		mTextTexture;
-	Vec2f			mSize;
-	Font			mFont;
+	gl::TextureRef		mTextTexture;
+	vec2				mSize;
+	Font				mFont;
 };
 
 void TextBoxApp::setup()
@@ -29,7 +30,7 @@ void TextBoxApp::setup()
 #else
 	mFont = Font( "Times New Roman", 32 );
 #endif
-	mSize = Vec2f( 100, 100 );
+	mSize = vec2( 100, 100 );
 	render();
 }
 
@@ -42,12 +43,12 @@ void TextBoxApp::mouseDrag( MouseEvent event )
 void TextBoxApp::render()
 {
 	string txt = "Here is some text that is larger than can fit naturally inside of 100 pixels.\nAnd here is another line after a hard break.";
-	TextBox tbox = TextBox().alignment( TextBox::RIGHT ).font( mFont ).size( Vec2i( mSize.x, TextBox::GROW ) ).text( txt );
+	TextBox tbox = TextBox().alignment( TextBox::RIGHT ).font( mFont ).size( ivec2( mSize.x, TextBox::GROW ) ).text( txt );
 	tbox.setColor( Color( 1.0f, 0.65f, 0.35f ) );
 	tbox.setBackgroundColor( ColorA( 0.5, 0, 0, 1 ) );
-	Vec2i sz = tbox.measure();
+	ivec2 sz = tbox.measure();
 	console() << "Height: " << sz.y << endl;
-	mTextTexture = gl::Texture( tbox.render() );
+	mTextTexture = gl::Texture2d::create( tbox.render() );
 }
 
 void TextBoxApp::update()

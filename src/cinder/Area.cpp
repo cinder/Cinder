@@ -27,7 +27,8 @@
 using std::pair;
 
 namespace cinder {
-Area::Area( const Vec2i &UL, const Vec2i &LR )
+
+Area::Area( const ivec2 &UL, const ivec2 &LR )
 {
 	set( UL.x, UL.y, LR.x, LR.y );
 }
@@ -86,7 +87,7 @@ Area Area::getClipBy( const Area &clip ) const
 	return result;
 }
 
-void Area::offset( const Vec2i &o )
+void Area::offset( const ivec2 &o )
 {
 	x1 += o.x;
 	x2 += o.x;
@@ -94,22 +95,22 @@ void Area::offset( const Vec2i &o )
 	y2 += o.y;
 }
 
-Area Area::getOffset( const Vec2i &offset ) const
+Area Area::getOffset( const ivec2 &offset ) const
 {
 	return Area( x1 + offset.x, y1 + offset.y, x2 + offset.x, y2 + offset.y );
 }
 
-void Area::moveULTo( const Vec2i &newUL )
+void Area::moveULTo( const ivec2 &newUL )
 {
 	set( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-Area Area::getMoveULTo( const Vec2i &newUL ) const
+Area Area::getMoveULTo( const ivec2 &newUL ) const
 {
 	return Area( newUL.x, newUL.y, newUL.x + getWidth(), newUL.y + getHeight() );
 }
 
-bool Area::contains( const Vec2i &offset ) const
+bool Area::contains( const ivec2 &offset ) const
 {
 	return ( ( offset.x >= x1 ) && ( offset.x < x2 ) && ( offset.y >= y1 ) && ( offset.y < y2 ) );
 }
@@ -122,7 +123,7 @@ bool Area::intersects( const Area &area ) const
 		return true;
 }
 
-void Area::include( const Vec2i &point )
+void Area::include( const ivec2 &point )
 {
 	if( x1 > point.x ) x1 = point.x;
 	if( x2 < point.x ) x2 = point.x;
@@ -130,7 +131,7 @@ void Area::include( const Vec2i &point )
 	if( y2 < point.y ) y2 = point.y;
 }
 
-void Area::include( const std::vector<Vec2i > &points )
+void Area::include( const std::vector<ivec2> &points )
 {
 	for( size_t s = 0; s < points.size(); ++s )
 		include( points[s] );
@@ -138,46 +139,8 @@ void Area::include( const std::vector<Vec2i > &points )
 
 void Area::include( const Area &area )
 {
-	include( Vec2i( area.x1, area.y1 ) );
-	include( Vec2i( area.x2, area.y2 ) );
-}
-
-template<typename Y>
-float Area::distance( const Vec2<Y> &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	if( squaredDistance > 0 )
-		return math<float>::sqrt( squaredDistance );
-	else
-		return 0;
-}
-
-template<typename Y>
-float Area::distanceSquared( const Vec2<Y> &pt ) const
-{
-	float squaredDistance = 0;
-	if( pt.x < x1 ) squaredDistance += ( x1 - pt.x ) * ( x1 - pt.x );
-	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
-	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
-	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
-	return squaredDistance;
-}
-
-template<typename Y>
-Vec2<Y>	Area::closestPoint( const Vec2<Y> &pt ) const
-{
-	Vec2<Y> result = pt;
-	if( pt.x < (Y)x1 ) result.x = (Y)x1;
-	else if( pt.x > (Y)x2 ) result.x = (Y)x2;
-	if( pt.y < (Y)y1 ) result.y = (Y)y1;
-	else if( pt.y > (Y)y2 ) result.y = (Y)y2;
-	return result;
+	include( ivec2( area.x1, area.y1 ) );
+	include( ivec2( area.x2, area.y2 ) );
 }
 
 bool Area::operator<( const Area &aArea ) const
@@ -212,18 +175,18 @@ Area Area::proportionalFit( const Area &srcArea, const Area &dstArea, bool cente
 	
 	Area resultArea( 0, 0, resultWidth, resultHeight );
 	if ( center )
-		resultArea.offset( Vec2i( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
+		resultArea.offset( ivec2( ( dstArea.getWidth() - resultWidth ) / 2, ( dstArea.getHeight() - resultHeight ) / 2 ) );
 	resultArea.offset( dstArea.getUL() );
 	return resultArea;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 /*** Returns a pair composed of the source area and the destination absolute offset ***/
-pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const Vec2i &dstLT )
+pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT )
 {
 	Area clippedSrc = srcArea.getClipBy( srcSurfaceBounds );
-	Vec2i newDstLT = dstLT + ( clippedSrc.getUL() - srcArea.getUL() );
-	Vec2i oldSrcLT = clippedSrc.getUL();
+	ivec2 newDstLT = dstLT + ( clippedSrc.getUL() - srcArea.getUL() );
+	ivec2 oldSrcLT = clippedSrc.getUL();
 	clippedSrc.moveULTo( newDstLT );
 	Area oldClippedDst = clippedSrc;
 	clippedSrc.clipBy( dstSurfaceBounds );
@@ -233,11 +196,63 @@ pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcAre
 	return std::make_pair( clippedSrc, newDstLT );
 }
 
-template float Area::distance( const Vec2i &pt ) const;
-template float Area::distance( const Vec2f &pt ) const;
-template float Area::distanceSquared( const Vec2i &pt ) const;
-template float Area::distanceSquared( const Vec2f &pt ) const;
-template Vec2i Area::closestPoint( const Vec2i &pt ) const;
-template Vec2f Area::closestPoint( const Vec2f &pt ) const;
+namespace {
+
+template<typename Vec2T>
+float calcDistanceSquared( const Area &area, const Vec2T &pt )
+{
+	float result = 0;
+	if( pt.x < area.x1 )
+		result += ( area.x1 - pt.x ) * ( area.x1 - pt.x );
+	else if( pt.x > area.x2 )
+		result += ( pt.x - area.x2 ) * ( pt.x - area.x2 );
+	if( pt.y < area.y1 )
+		result += ( area.y1 - pt.y ) * ( area.y1 - pt.y );
+	else if( pt.y > area.y2 )
+		result += ( pt.y - area.y2 ) * ( pt.y - area.y2 );
+
+	return result;
+}
+
+template<typename Vec2T>
+float calcDistance( const Area &area, const Vec2T &pt )
+{
+	float result = calcDistanceSquared( area, pt );
+	if( result > 0 )
+		return math<float>::sqrt( result );
+	else
+		return 0;
+}
+
+template<typename Vec2T>
+Vec2T calcClosestPoint( const Area &area, const Vec2T &pt )
+{
+	typedef typename Vec2T::value_type ValueT;
+
+	auto result = pt;
+	if( pt.x < (ValueT)area.x1 )
+		result.x = (ValueT)area.x1;
+	else if( pt.x > (ValueT)area.x2 )
+		result.x = (ValueT)area.x2;
+	if( pt.y < (ValueT)area.y1 )
+		result.y = (ValueT)area.y1;
+	else if( pt.y > (ValueT)area.y2 )
+		result.y = (ValueT)area.y2;
+	return result;
+}
+
+} // anonymous namespace
+
+float Area::distance( const vec2 &pt ) const			{ return calcDistance( *this, pt ); }
+float Area::distance( const ivec2 &pt ) const			{ return calcDistance( *this, pt ); }
+float Area::distance( const dvec2 &pt ) const			{ return calcDistance( *this, pt ); }
+
+float Area::distanceSquared( const vec2 &pt ) const		{ return calcDistanceSquared( *this, pt ); }
+float Area::distanceSquared( const ivec2 &pt ) const	{ return calcDistanceSquared( *this, pt ); }
+float Area::distanceSquared( const dvec2 &pt ) const	{ return calcDistanceSquared( *this, pt ); }
+
+vec2 Area::closestPoint( const vec2 &pt ) const			{ return calcClosestPoint( *this, pt ); }
+ivec2 Area::closestPoint( const ivec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
+dvec2 Area::closestPoint( const dvec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
 
 } // namespace cinder

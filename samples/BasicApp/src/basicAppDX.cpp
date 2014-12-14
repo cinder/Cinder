@@ -17,7 +17,7 @@ class BasicApp : public AppBasic {
 	void draw();
 
 	// This will maintain a list of points which we will draw line segments between
-	list<Vec2f>		mPoints;
+	list<vec2>		mPoints;
 };
 
 void BasicApp::mouseDrag( MouseEvent event )
@@ -42,7 +42,7 @@ void BasicApp::draw()
 	}
 	dx::end();
 #if 0
-	Surface s = getRenderer()->copyWindowSurface(Area(Vec2i(0, 0), Vec2i(500, 500)));
+	Surface s = getRenderer()->copyWindowSurface(Area(ivec2(0, 0), ivec2(500, 500)));
 	dx::Texture tex(s);
 	dx::draw(tex, Rectf(100, 100, 600, 600));  
 #endif // 0

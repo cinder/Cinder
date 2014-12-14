@@ -27,7 +27,7 @@ class perlinTestApp : public AppBasic {
 	
 	float					mFrequency;
 	
-	Vec2f	mGradientPos;
+	vec2	mGradientPos;
 	bool	mDrawLines;
 	bool	mDrawNormalized;
 	bool	mPaused;
@@ -41,7 +41,7 @@ void perlinTestApp::renderNoise()
 	Surface8u::Iter iter = s.getIter();
 	while( iter.line() ) {
 		while( iter.pixel() ) {
-			float v = ( mPerlin.fBm( Vec3f( iter.x(), iter.y(), mTime ) * mFrequency ) + 1.0f ) / 2.0f;
+			float v = ( mPerlin.fBm( vec3( iter.x(), iter.y(), mTime ) * mFrequency ) + 1.0f ) / 2.0f;
 			v *= v * v;
 			uint8_t val = v * 255;
 			iter.r() = iter.g() = iter.b() = val;
@@ -64,7 +64,7 @@ void perlinTestApp::setup()
 	mPaused = false;
 	mDrawLines = true;
 	
-	mGradientPos = Vec2f( getWindowWidth(), getWindowHeight() ) / 2.0f;
+	mGradientPos = vec2( getWindowWidth(), getWindowHeight() ) / 2.0f;
 
 	mNoiseSurface = new cairo::SurfaceImage( getWindowWidth(), getWindowHeight(), false );
 	renderNoise();
@@ -72,12 +72,12 @@ void perlinTestApp::setup()
 
 void perlinTestApp::mouseDown( MouseEvent event )
 {		
-	mGradientPos = Vec2f( event.getX(), event.getY() );
+	mGradientPos = vec2( event.getX(), event.getY() );
 }
 
 void perlinTestApp::mouseDrag( MouseEvent event )
 {		
-	mGradientPos = Vec2f( event.getX(), event.getY() );
+	mGradientPos = vec2( event.getX(), event.getY() );
 }
 
 void perlinTestApp::keyDown( KeyEvent event )
@@ -136,7 +136,7 @@ void perlinTestApp::draw()
 	// draw the gradient
 	ctx.setSourceRgb( 1.0, 0.5, 0.25 );
 	ctx.moveTo( mGradientPos );
-	Vec3f norm = mPerlin.dfBm( Vec3f( mGradientPos.x, mGradientPos.y, mTime ) * mFrequency ) * 20.0f;
+	vec3 norm = mPerlin.dfBm( vec3( mGradientPos.x, mGradientPos.y, mTime ) * mFrequency ) * 20.0f;
 	ctx.lineTo( mGradientPos.x + norm.x, mGradientPos.y + norm.y );
 	ctx.stroke();	
 
@@ -146,17 +146,19 @@ void perlinTestApp::draw()
 		ctx.setSourceRgba( 1.0, 1.0, 0.05, 0.25 );
 		for( int y = 0; y < getWindowHeight(); y += 20 ) {
 			for( int x = 0; x < getWindowWidth(); x += 20 ) {
-				ctx.moveTo( Vec2f( x, y ) );
-				Vec3f norm = mPerlin.dfBm( Vec3f( x, y, mTime ) * mFrequency ) * 20.0f;
-				if( mDrawNormalized )
-					ctx.lineTo( Vec2f( x, y ) + Vec2f( norm.x, norm.y ).safeNormalized() * 20.0f );
+				ctx.moveTo( vec2( x, y ) );
+				vec3 norm = mPerlin.dfBm( vec3( x, y, mTime ) * mFrequency ) * 20.0f;
+				if( mDrawNormalized ) {
+					if( length2( vec2( norm.x, norm.y ) ) > 0 )
+						ctx.lineTo( vec2( x, y ) + normalize( vec2( norm.x, norm.y ) ) * 20.0f );
+				}
 				else
-					ctx.lineTo( Vec2f( x, y ) + Vec2f( norm.x, norm.y ) );
-				/*float thisVal = mPerlin.fBm( Vec3f( x, y, mTime ) * mFrequency );
-				float rightVal = mPerlin.fBm( Vec3f( x, y, mTime ) * mFrequency + Vec3f( 0.001f, 0, 0 ) );
-				float downVal = mPerlin.fBm( Vec3f( x, y, mTime ) * mFrequency + Vec3f( 0, 0.001f, 0 ) );
-				Vec2f deriv = Vec2f( ( rightVal - thisVal ) / 0.001f, ( downVal - thisVal ) / 0.001f );
-				ctx.lineTo( Vec2f( x, y ) + deriv.normalized() * 20.0f );*/
+					ctx.lineTo( vec2( x, y ) + vec2( norm.x, norm.y ) );
+				/*float thisVal = mPerlin.fBm( vec3( x, y, mTime ) * mFrequency );
+				float rightVal = mPerlin.fBm( vec3( x, y, mTime ) * mFrequency + vec3( 0.001f, 0, 0 ) );
+				float downVal = mPerlin.fBm( vec3( x, y, mTime ) * mFrequency + vec3( 0, 0.001f, 0 ) );
+				vec2 deriv = vec2( ( rightVal - thisVal ) / 0.001f, ( downVal - thisVal ) / 0.001f );
+				ctx.lineTo( vec2( x, y ) + deriv.normalized() * 20.0f );*/
 			}
 		}
 		ctx.stroke();	

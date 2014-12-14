@@ -9,7 +9,7 @@ Predator::Predator()
 {
 }
 
-Predator::Predator( Vec3f pos, Vec3f vel )
+Predator::Predator( vec3 pos, vec3 vel )
 {
 	mLen			= 5;
 	mInvLen			= 1.0f/(float)mLen;
@@ -19,10 +19,10 @@ Predator::Predator( Vec3f pos, Vec3f vel )
 	}
 	
 	mVel			= vel;
-	mVelNormal		= Vec3f::yAxis();
-	mAcc			= Vec3f::zero();
+	mVelNormal		= vec3::yAxis();
+	mAcc			= vec3::zero();
 	
-	mNeighborPos	= Vec3f::zero();
+	mNeighborPos	= vec3::zero();
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 4.0f, 4.5f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -40,9 +40,9 @@ Predator::Predator( Vec3f pos, Vec3f vel )
 	mIsHungry		= true;
 }
 
-void Predator::pullToCenter( const Vec3f &center )
+void Predator::pullToCenter( const vec3 &center )
 {
-	Vec3f dirToCenter	= mPos[0] - center;
+	vec3 dirToCenter	= mPos[0] - center;
 	float distToCenter	= dirToCenter.length();
 	float maxDistance	= 600.0f;
 	
@@ -73,8 +73,8 @@ void Predator::update( bool flatten )
 	
 	mVel *= mDecay;
 	
-	mAcc = Vec3f::zero();
-	mNeighborPos = Vec3f::zero();
+	mAcc = vec3::zero();
+	mNeighborPos = vec3::zero();
 	mNumNeighbors = 0;
 	
 	mHunger += 0.001f;
@@ -99,7 +99,7 @@ void Predator::limitSpeed()
 void Predator::draw()
 {
 	glColor4f( mColor );
-	Vec3f vel = mVelNormal * mLength;
+	vec3 vel = mVelNormal * mLength;
 	gl::drawVector( mPos[0] - mVel, mPos[0], mLength * 0.85f, 3.0f + mHunger );
 }
 
@@ -109,7 +109,7 @@ void Predator::drawTail()
 	gl::vertex( mPos[1] );
 }
 
-void Predator::addNeighborPos( Vec3f pos )
+void Predator::addNeighborPos( vec3 pos )
 {
 	mNeighborPos += pos;
 	mNumNeighbors ++;

@@ -12,7 +12,7 @@ class MotionBasicApp : public AppCocoaTouch {
 	virtual void	update();
 	virtual void	draw();
 	
-	Matrix44f		mModelView;
+	mat4		mModelView;
 	CameraPersp		mCam;
 	Anim<Color>		mBackgroundColor;
 };
@@ -24,7 +24,7 @@ void MotionBasicApp::setup()
 	MotionManager::enable( 60.0f/*, MotionManager::SensorMode::Accelerometer*/ );
 
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	mCam.lookAt( Vec3f( 0, 0, 3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0, 0, 3 ), vec3::zero() );
 }
 
 void MotionBasicApp::update()
@@ -46,7 +46,7 @@ void MotionBasicApp::draw()
 	gl::setMatrices( mCam );
 	gl::multModelView( mModelView );
 
-//	gl::drawColorCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
+//	gl::drawColorCube( vec3::zero(), vec3( 1, 1, 1 ) );
 	gl::drawCoordinateFrame();
 }
 

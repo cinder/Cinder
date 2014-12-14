@@ -22,12 +22,18 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#if ! defined ( CINDER_WINRT )
+	#define BOOST_REGEX_NO_LIB
+	#include <boost/asio.hpp>
+#endif
+
 #include "cinder/app/App.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
 #include "cinder/Utilities.h"
 #include "cinder/Timeline.h"
 #include "cinder/Thread.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -42,11 +48,6 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
 	#include "cinder/app/AppImplMsw.h"
-#endif
-
-#if !defined ( CINDER_WINRT )
-#define BOOST_REGEX_NO_LIB
-#include <boost/asio.hpp>
 #endif
 
 using namespace std;
@@ -141,6 +142,12 @@ void App::privateUpdate__()
 	// service boost::asio::io_service
 	mIo->poll();
 #endif
+
+	if( getNumWindows() > 0 ) {
+		WindowRef mainWin = getWindowIndex( 0 );
+		if( mainWin )
+			mainWin->getRenderer()->makeCurrentContext();
+	}
 
 	mSignalUpdate();
 
@@ -362,8 +369,13 @@ fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> exten
 	restoreWindowContext();
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
-		NSString *result = [[[cinderOpen URLs] objectAtIndex:0] path];
-		return fs::path( [result UTF8String] );
+		NSString *result = [[[cinderOpen URLs] firstObject] path];
+		if( ! result ) {
+			CI_LOG_E( "empty path result" );
+			return fs::path();
+		}
+		else
+			return fs::path( [result UTF8String] );
 	}
 	else
 		return fs::path();
@@ -403,8 +415,13 @@ fs::path App::getFolderPath( const fs::path &initialPath )
 	restoreWindowContext();
 	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
-		NSString *result = [[[cinderOpen URLs] objectAtIndex:0] path];
-		return fs::path([result UTF8String]);
+		NSString *result = [[[cinderOpen URLs] firstObject] path];
+		if( ! result ) {
+			CI_LOG_E( "empty path result" );
+			return fs::path();
+		}
+		else
+			return fs::path([result UTF8String]);
 	}
 	else
 		return fs::path();
@@ -551,7 +568,14 @@ void App::executeLaunch( App *app, RendererRef defaultRenderer, const char *titl
 {
 	sInstance = app;
 	app->mDefaultRenderer = defaultRenderer;
-	app->launch( title, argc, argv );
+
+	try {
+		app->launch( title, argc, argv );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "Uncaught Exception: " << exc.what() );
+		throw;
+	}
 }
 
 void App::cleanupLaunch()
@@ -561,46 +585,42 @@ void App::cleanupLaunch()
 #endif
 }
 
-Vec2i App::getMousePos()
+ivec2 App::getMousePos()
 {
 #if defined( CINDER_MAC )
 	NSPoint loc = [NSEvent mouseLocation];
-	return Vec2i( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
+	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
 #elif defined( CINDER_MSW )
 	POINT point;
 	::GetCursorPos( &point );
-	return Vec2i( point.x, point.y );
+	return ivec2( point.x, point.y );
 #else
-	return Vec2i( -1, -1 );
+	return ivec2( -1, -1 );
 #endif
 }
 
 #if defined( CINDER_COCOA )
 ResourceLoadExc::ResourceLoadExc( const string &macPath )
 {
-	sprintf( mMessage, "Failed to load resource: %s", macPath.c_str() );
+	setDescription( "Failed to load resource: " + macPath );
 }
 
 #elif defined( CINDER_MSW )
 
 ResourceLoadExc::ResourceLoadExc( int mswID, const string &mswType )
 {
-	sprintf( mMessage, "Failed to load resource: #%d type: %s", mswID, mswType.c_str() );
+	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
 }
 
 ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string &mswType )
 {
-	sprintf( mMessage, "Failed to load resource: #%d type: %s Mac path: %s", mswID, mswType.c_str(), macPath.c_str() );
+	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType + " Mac path: " + macPath );
 }
 #endif // defined( CINDER_MSW )
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
+	: Exception( relativePath.string() )
 {
-#if defined( CINDER_WINRT )
-	strncpy_s( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
-#else
-	strncpy( mMessage, relativePath.string().c_str(), sizeof(mMessage) );
-#endif
 }
 
 } } // namespace cinder::app

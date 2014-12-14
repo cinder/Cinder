@@ -28,7 +28,7 @@
 namespace cinder {
 
 MotionImplCoreMotion::MotionImplCoreMotion()
-	: mSensorMode( MotionManager::SensorMode::Gyroscope ), mLastAccel( 0, 0, 0 ), mAccelFilter( 0.3f )
+	: mSensorMode( MotionManager::SensorMode::Gyroscope ), mLastAccel( 0, 0, 0 ), mAccelFilter( 0.3f ), mLastAccelValid( false )
 {
 	mMotionManager = [[CMMotionManager alloc] init];
 }
@@ -122,72 +122,79 @@ void MotionImplCoreMotion::setShowsCalibrationView( bool shouldShow )
 }
 
 namespace {
-	Vec3f vecOrientationCorrected( const Vec3f &vec, app::InterfaceOrientation orientation )
+	vec3 vecOrientationCorrected( const vec3 &vec, app::InterfaceOrientation orientation )
 	{
 		switch ( orientation ) {
-			case app::PortraitUpsideDown:	return Vec3f( -vec.x, -vec.y, vec.z );
-			case app::LandscapeLeft:		return Vec3f(  vec.y, -vec.x, vec.z );
-			case app::LandscapeRight:		return Vec3f( -vec.y,  vec.x, vec.z );
-			default:						return Vec3f(  vec.x,  vec.y, vec.z );
+			case app::PortraitUpsideDown:	return vec3( -vec.x, -vec.y, vec.z );
+			case app::LandscapeLeft:		return vec3(  vec.y, -vec.x, vec.z );
+			case app::LandscapeRight:		return vec3( -vec.y,  vec.x, vec.z );
+			default:						return vec3(  vec.x,  vec.y, vec.z );
 		}
 	}
 }
 
-Vec3f MotionImplCoreMotion::getGravityDirection( app::InterfaceOrientation orientation )
+vec3 MotionImplCoreMotion::getGravityDirection( app::InterfaceOrientation orientation )
 {
     if( ! isMotionDataAvailable() )
-        return Vec3f( 0.0f, -1.0f, 0.0f );
+        return vec3( 0.0f, -1.0f, 0.0f );
 
     ::CMAcceleration g = mMotionManager.deviceMotion.gravity;
-	return vecOrientationCorrected( Vec3f( g.x,  g.y, g.z ), orientation );
+	return vecOrientationCorrected( vec3( g.x, g.y, g.z ), orientation );
 }
 
-Quatf MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
+quat MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
 {
 	static const float kPiOverTwo = M_PI / 2.0f;
-	static const Quatf kCorrectionRotation = Quatf( Vec3f( -1.0f, 0.0f, 0.0f ), kPiOverTwo ) * Quatf( Vec3f( 0.0f, 1.0f, 0.0f ), kPiOverTwo );
+	static const quat kCorrectionRotation = angleAxis( kPiOverTwo, vec3( 0, 1, 0 ) ) * angleAxis( kPiOverTwo, vec3( -1, 0, 0 ) );
 
-	if( ! isMotionDataAvailable() )
-		return Quatf( Vec3f( 0, -1, 0 ), mLastAccel.normalized() );
+	if( ! isMotionDataAvailable() ) {
+		if( mLastAccelValid )
+			return glm::rotation( vec3( 0, -1, 0 ), normalize( mLastAccel ) );
+		else
+			return quat();
+	}
 
 	::CMQuaternion cq = mMotionManager.deviceMotion.attitude.quaternion;
-	Quatf quat = Quatf( cq.w, cq.x, cq.y, cq.z ) * kCorrectionRotation;
-	switch ( orientation ) {
-		case app::PortraitUpsideDown:	return Quatf( quat.w, -quat.v.x, -quat.v.y, quat.v.z ) * Quatf( Vec3f( 0.0f,  0.0f,  1.0f ), M_PI );
-		case app::LandscapeLeft:		return Quatf( quat.w,  quat.v.y, -quat.v.x, quat.v.z ) * Quatf( Vec3f( 0.0f,  0.0f,	 1.0f ), kPiOverTwo );
-		case app::LandscapeRight:		return Quatf( quat.w, -quat.v.y,  quat.v.x, quat.v.z ) * Quatf( Vec3f( 0.0f,  0.0f, -1.0f ), kPiOverTwo );
-		default: break;
+	quat q = kCorrectionRotation * quat( cq.w, cq.x, cq.y, cq.z );
+	switch( orientation ) {
+		case app::PortraitUpsideDown:	q = angleAxis( (float)M_PI, vec3( 0, 0, 1 ) ) * quat( q.w, -q.x, -q.y, q.z );
+		case app::LandscapeLeft:		q = angleAxis( (float)kPiOverTwo, vec3( 0, 0, 1 ) ) * quat( q.w, q.y, -q.x, q.z );
+		case app::LandscapeRight:		q = angleAxis( (float)kPiOverTwo, vec3( 0, 0, -1 ) ) * quat( q.w, -q.y,  q.x, q.z );
+		default:
+			break;
 	}
-	return quat;
+
+	return q;
 }
 
-ci::Vec3f MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orientation )
+vec3 MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orientation )
 {
 	if( ! isMotionDataAvailable() )
-		return Vec3f::zero();
+		return vec3( 0 );
 
 	::CMRotationRate rot = mMotionManager.deviceMotion.rotationRate;
-	return vecOrientationCorrected( Vec3f( rot.x, rot.y, rot.z ), orientation );
+	return vecOrientationCorrected( vec3( rot.x, rot.y, rot.z ), orientation );
 }
 
-ci::Vec3f MotionImplCoreMotion::getAcceleration( app::InterfaceOrientation orientation )
+vec3 MotionImplCoreMotion::getAcceleration( app::InterfaceOrientation orientation )
 {
 	if( mSensorMode == MotionManager::SensorMode::Gyroscope ) {
 		if( ! isMotionDataAvailable() )
-			return Vec3f::zero();
+			return vec3( 0 );
 
 		::CMAcceleration accel = mMotionManager.deviceMotion.userAcceleration;
-		return vecOrientationCorrected( Vec3f( accel.x, accel.y, accel.z ), orientation );
+		return vecOrientationCorrected( vec3( accel.x, accel.y, accel.z ), orientation );
 	}
 
 	// accelerometer mode
 	if( ! mMotionManager.accelerometerData )
-		return Vec3f::zero();
+		return vec3( 0 );
 
 	::CMAcceleration accelCM = mMotionManager.accelerometerData.acceleration;
-	Vec3f accel = Vec3f( accelCM.x, accelCM.y, accelCM.z );
-	Vec3f accelFiltered = mLastAccel * mAccelFilter + accel * (1.0f - mAccelFilter);
+	vec3 accel( accelCM.x, accelCM.y, accelCM.z );
+	vec3 accelFiltered = mLastAccel * mAccelFilter + accel * (1.0f - mAccelFilter);
 	mLastAccel = accelFiltered;
+	mLastAccelValid = true;
 	
 	return vecOrientationCorrected( accelFiltered, orientation );
 }

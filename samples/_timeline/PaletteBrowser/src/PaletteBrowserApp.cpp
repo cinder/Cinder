@@ -4,13 +4,12 @@
  */
 
 #include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/Context.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/Url.h"
 #include "cinder/System.h"
-#include "boost/filesystem.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -41,16 +40,16 @@ class PaletteBrowserApp : public AppBasic {
 	vector<Item>::iterator	mNewMouseOverItem;
 	vector<Item>::iterator	mSelectedItem;
 	
-	vector<gl::Texture>		mImages;
+	vector<gl::Texture2dRef>	mImages;
 	
 	float mLeftBorder;
 	float mTopBorder;
 	float mItemSpacing;
 	
-	gl::Texture mTitleTex;
-	gl::Texture mBgImage;
-	gl::Texture mFgImage;
-	gl::Texture mSwatchSmallTex, mSwatchLargeTex;
+	gl::Texture2dRef mTitleTex;
+	gl::Texture2dRef mBgImage;
+	gl::Texture2dRef mFgImage;
+	gl::Texture2dRef mSwatchSmallTex, mSwatchLargeTex;
 	
 	Anim<float> mFgAlpha;
 	Anim<Color> mBgColor;
@@ -75,7 +74,7 @@ void PaletteBrowserApp::setup()
 	layout.setFont( bigFont );
 	layout.setColor( Color::white() );
 	layout.addLine( "Icelandic Colors" );
-	mTitleTex		= gl::Texture( layout.render( true ) );
+	mTitleTex		= gl::Texture2d::create( layout.render( true ) );
 	
 	// positioning
 	mLeftBorder		= 50.0f;
@@ -86,14 +85,14 @@ void PaletteBrowserApp::setup()
 	initData( getAssetPath( "iceland.txt" ) );
 	
 	// textures and colors
-	mFgImage		= gl::Texture( loadImage( loadAsset( "Colors of Iceland.jpg" ) ) );
-	mBgImage		= gl::Texture( APP_WIDTH, APP_HEIGHT );
+	mFgImage		= gl::Texture2d::create( loadImage( loadAsset( "Colors of Iceland.jpg" ) ) );
+	mBgImage		= gl::Texture2d::create( APP_WIDTH, APP_HEIGHT );
 	mFgAlpha		= 1.0f;
 	mBgColor		= Color::white();
 	
 	// swatch graphics (square and blurry square)
-	mSwatchSmallTex	= gl::Texture( loadImage( loadAsset( "swatchSmall.png" ) ) );
-	mSwatchLargeTex	= gl::Texture( loadImage( loadAsset( "swatchLarge.png" ) ) );
+	mSwatchSmallTex	= gl::Texture2d::create( loadImage( loadAsset( "swatchSmall.png" ) ) );
+	mSwatchLargeTex	= gl::Texture2d::create( loadImage( loadAsset( "swatchLarge.png" ) ) );
 	
 	// state
 	mMouseOverItem		= mItems.end();
@@ -112,14 +111,14 @@ void PaletteBrowserApp::initData( const fs::path &path )
 
 void PaletteBrowserApp::createItem( const std::string &line, int lineNumber )
 {
-	string title			= line.substr( 0, line.find_last_of( ':' ) );
-	string desc				= line.substr( line.find_last_of( ':' ) +1 );
-	string imageFilename	= toString( lineNumber + 1 ) + ".jpg";
-	string paletteFilename	= toString( lineNumber + 1 ) + ".png";
-	gl::Texture image		= gl::Texture( loadImage( loadAsset( fs::path("images") / imageFilename ) ) );
+	string title				= line.substr( 0, line.find_last_of( ':' ) );
+	string desc					= line.substr( line.find_last_of( ':' ) +1 );
+	string imageFilename		= toString( lineNumber + 1 ) + ".jpg";
+	string paletteFilename		= toString( lineNumber + 1 ) + ".png";
+	gl::Texture2dRef image		= gl::Texture::create( loadImage( loadAsset( fs::path("images") / imageFilename ) ) );
 	Surface palette			= Surface( loadImage( loadAsset( fs::path("palettes") / paletteFilename ) ) );
 	
-	Vec2f pos( mLeftBorder, mTopBorder + lineNumber * mItemSpacing );
+	vec2 pos( mLeftBorder, mTopBorder + lineNumber * mItemSpacing );
 	Item item = Item( lineNumber, pos, title, desc, palette );
 	
 	mItems.push_back( item );
@@ -193,8 +192,6 @@ void PaletteBrowserApp::draw()
 	
 	gl::setMatricesWindowPersp( getWindowSize() );
 	
-	glEnable( GL_TEXTURE_2D );
-	
 	// draw background image
 	if( mBgImage ){
 		gl::color( mBgColor );
@@ -208,18 +205,18 @@ void PaletteBrowserApp::draw()
 	}
 	
 	// draw swatches
-	mSwatchLargeTex.enableAndBind();
+	gl::context()->pushTextureBinding( mSwatchLargeTex->getTarget(), mSwatchLargeTex->getId(), 0 );
 	if( mSelectedItem != mItems.end() )
 		mSelectedItem->drawSwatches();
 	
-	mSwatchSmallTex.bind();
+	gl::context()->bindTexture( mSwatchLargeTex->getTarget(), mSwatchLargeTex->getId(), 0 );
 	for( vector<Item>::const_iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 		if( ! itemIt->getSelected() )
 			itemIt->drawSwatches();
 	}
+	gl::context()->popTextureBinding( mSwatchLargeTex->getTarget(), 0 );
 	
 	// turn off textures and draw bgBar
-	glDisable( GL_TEXTURE_2D );
 	for( vector<Item>::const_iterator itemIt = mItems.begin(); itemIt != mItems.end(); ++itemIt ) {
 		itemIt->drawBgBar();
 	}

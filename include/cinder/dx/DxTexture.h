@@ -35,6 +35,7 @@
 #include "cinder/Rect.h"
 #include "cinder/Stream.h"
 #include "cinder/FileSystem.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 #include <utility>
@@ -127,7 +128,7 @@ class Texture {
 	//! the height of the texture in pixels accounting for its "clean" area - \sa getCleanBounds()
 	UINT			getCleanHeight() const;
 	//! the size of the texture in pixels
-	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }	
+	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! the aspect ratio of the texture (width / height)
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! the Area defining the Texture's bounds in pixels: [0,0]-[width,height]
@@ -331,7 +332,7 @@ class SurfaceConstraintsGLTexture : public SurfaceConstraints {
 	virtual int32_t				getRowBytes( int requestedWidth, const SurfaceChannelOrder &sco, int elementSize ) const { return requestedWidth * elementSize * sco.getPixelInc(); }
 };
 
-class TextureDataExc : public std::exception {
+class TextureDataExc : public Exception {
 public:	
 	TextureDataExc( const std::string &log ) throw();
 	virtual const char* what() const throw()

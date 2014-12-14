@@ -21,7 +21,7 @@ class NormalMappingApp : public AppBasic {
 	
 	gl::GlslProg	mShader;
 	gl::Texture		mDiffuseTex, mSpecStrengthTex, mNormalMapTex;
-	Vec3f			mLightLoc;
+	vec3			mLightLoc;
 	CameraPersp		mCam;
 };
 
@@ -36,13 +36,13 @@ void NormalMappingApp::setup()
 	mDiffuseTex = gl::Texture( loadImage( loadResource( RES_DIFFUSE_MAP ) ) );
 	mSpecStrengthTex = gl::Texture( loadImage( loadResource( RES_SPEC_STRENGTH_MAP ) ) );
 	mNormalMapTex = gl::Texture( loadImage( loadResource( RES_NORMAL_MAP_PNG ) ) );
-	mLightLoc = Vec3f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f, 150 );
+	mLightLoc = vec3( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f, 150 );
 	
-	mCam.lookAt( Vec3f( 12.638f, 11.856f, 41.337f ), Vec3f::zero() );
+	mCam.lookAt( vec3( 12.638f, 11.856f, 41.337f ), vec3::zero() );
 	mCam.setPerspective( 35, 1.0, 1, 100 );
 }
 
-void computeTangent( Vec3f v1, Vec3f v2, Vec2f st1, Vec2f st2, Vec3f *tangent )
+void computeTangent( vec3 v1, vec3 v2, vec2 st1, vec2 st2, vec3 *tangent )
 {
 	float coef = 1.0f / ( st1.x * st2.y - st2.x * st1.y );
 	tangent->x = coef * ((v1.x * st2.y)  + (v2.x * -st1.y));
@@ -53,8 +53,8 @@ void computeTangent( Vec3f v1, Vec3f v2, Vec2f st1, Vec2f st2, Vec3f *tangent )
 void NormalMappingApp::drawQuad( ci::Rectf r )
 {
 	GLint tangentUniformLoc = mShader.getAttribLocation( "tangent" );
-	Vec3f tangent;
-	computeTangent( Vec3f( r.getLowerLeft() - r.getUpperLeft(), 0 ), Vec3f( r.getUpperRight() - r.getUpperLeft(), 0 ), Vec2f( 0, 1 ) - Vec2f( 0, 0 ), Vec2f( 1, 0 ) - Vec2f( 0, 0 ), &tangent );
+	vec3 tangent;
+	computeTangent( vec3( r.getLowerLeft() - r.getUpperLeft(), 0 ), vec3( r.getUpperRight() - r.getUpperLeft(), 0 ), vec2( 0, 1 ) - vec2( 0, 0 ), vec2( 1, 0 ) - vec2( 0, 0 ), &tangent );
 	glBegin( GL_TRIANGLE_STRIP );
 		glTexCoord2f( 0, 1 );
 		glNormal3f( 0, 0, 1 );
@@ -80,8 +80,8 @@ void NormalMappingApp::drawQuad( ci::Rectf r )
 
 void NormalMappingApp::mouseMove( MouseEvent event )
 {
-	mLightLoc = Vec3f( ( ( event.getX() / (float)getWindowWidth() ) * 2 - 1 ) * 20, ( ( 0.5f - event.getY() / (float)getWindowHeight() ) * 2 ) * 14, 20 );
-//	Vec3f lightEyeSpace = mCam.getModelViewMatrix().transformPointAffine( mLightLoc );
+	mLightLoc = vec3( ( ( event.getX() / (float)getWindowWidth() ) * 2 - 1 ) * 20, ( ( 0.5f - event.getY() / (float)getWindowHeight() ) * 2 ) * 14, 20 );
+//	vec3 lightEyeSpace = mCam.getModelViewMatrix().transformPointAffine( mLightLoc );
 //	std::cout << "eye: " << lightEyeSpace << std::endl;
 }
 
@@ -96,7 +96,7 @@ void NormalMappingApp::draw()
 	mShader.uniform( "diffuseMap", 0 );
 	mShader.uniform( "specMap", 1 );
 	mShader.uniform( "normalMap", 2 );
-	Vec3f lightEyeSpace = mCam.getModelViewMatrix().transformPointAffine( mLightLoc );
+	vec3 lightEyeSpace = mCam.getModelViewMatrix().transformPointAffine( mLightLoc );
 	mShader.uniform( "lightLoc", lightEyeSpace );
 	mDiffuseTex.bind( 0 );
 	mSpecStrengthTex.bind( 1 );	

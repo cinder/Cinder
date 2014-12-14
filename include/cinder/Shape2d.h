@@ -33,18 +33,18 @@ namespace cinder {
 
 class Shape2d {
   public:
-	void	moveTo( const Vec2f &p );
-	void	moveTo( float x, float y ) { moveTo( Vec2f( x, y ) ); }
-	void	lineTo( const Vec2f &p );
-	void	lineTo( float x, float y ) { lineTo( Vec2f( x, y ) ); }
-	void	quadTo( const Vec2f &p1, const Vec2f &p2 );
-	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ) ); }
-	void	curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 );
-	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( Vec2f( x1, y1 ), Vec2f( x2, y2 ), Vec2f( x3, y3 ) ); }
-	void	arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward = true );
-	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( Vec2f( centerX, centerY ), radius, startRadians, endRadians, forward ); }
-	void	arcTo( const Vec2f &p, const Vec2f &t, float radius );
-	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( Vec2f( x, y ), Vec2f( tanX, tanY ), radius ); }
+	void	moveTo( const vec2 &p );
+	void	moveTo( float x, float y ) { moveTo( vec2( x, y ) ); }
+	void	lineTo( const vec2 &p );
+	void	lineTo( float x, float y ) { lineTo( vec2( x, y ) ); }
+	void	quadTo( const vec2 &p1, const vec2 &p2 );
+	void	quadTo( float x1, float y1, float x2, float y2 ) { quadTo( vec2( x1, y1 ), vec2( x2, y2 ) ); }
+	void	curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 );
+	void	curveTo( float x1, float y1, float x2, float y2, float x3, float y3 ) { curveTo( vec2( x1, y1 ), vec2( x2, y2 ), vec2( x3, y3 ) ); }
+	void	arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward = true );
+	void	arc( float centerX, float centerY, float radius, float startRadians, float endRadians, bool forward = true ) { arc( vec2( centerX, centerY ), radius, startRadians, endRadians, forward ); }
+	void	arcTo( const vec2 &p, const vec2 &t, float radius );
+	void	arcTo( float x, float y, float tanX, float tanY, float radius) { arcTo( vec2( x, y ), vec2( tanX, tanY ), radius ); }
 	void	close();
 	
 	bool	empty() const { return mContours.empty(); }
@@ -56,7 +56,7 @@ class Shape2d {
 	const std::vector<Path2d>&	getContours() const { return mContours; }
 	std::vector<Path2d>&		getContours() { return mContours; }
 	
-	const Vec2f&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
+	const vec2&	getCurrentPoint() const { return mContours.back().getCurrentPoint(); }
 	
 	//! Appends the contours of \a shape to this shape
 	void			append( const Shape2d &shape );
@@ -64,7 +64,7 @@ class Shape2d {
 	void			removeContour( size_t i ) { mContours.erase( mContours.begin() + i ); }
 
 	//! Scales the Shape2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
-	void		scale( const Vec2f &amount, Vec2f scaleCenter = Vec2f::zero() );
+	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 
 	//! Transforms the Shape2d by \a matrix.
 	void		transform( const MatrixAffine2f &matrix );
@@ -77,11 +77,11 @@ class Shape2d {
 	Rectf	calcPreciseBoundingBox() const;
 
 	//! Returns whether the point \a pt is contained within the boundaries of the shape
-	bool	contains( const Vec2f &pt ) const;
+	bool	contains( const vec2 &pt ) const;
 
 	//! Iterates all of the contours and points of a Shape2d.
 	/** Expects a template parameter that implements
-		\code bool operator()( Path2d::SegmentType type, Vec2f *points, Vec2f *previousPoint ) \endcode.
+		\code bool operator()( Path2d::SegmentType type, vec2 *points, vec2 *previousPoint ) \endcode.
 		Functor should return false to cease iteration.
 		A \a SegmentType of type \c CLOSE receives &mPoints[0] for its \a points parameters. **/
 	template<typename IT>

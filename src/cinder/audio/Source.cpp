@@ -24,7 +24,6 @@
 #include "cinder/audio/Source.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/FileOggVorbis.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/Utilities.h"
 
@@ -151,7 +150,7 @@ BufferRef SourceFile::loadBuffer()
 		Buffer converterDestBuffer( mConverter->getDestMaxFramesPerBlock(), getNumChannels() );
 		size_t readCount = 0;
 		while( true ) {
-			size_t framesNeeded = min( getMaxFramesPerRead(), mFileNumFrames - readCount );
+			size_t framesNeeded = std::min( getMaxFramesPerRead(), mFileNumFrames - readCount );
 			if( framesNeeded == 0 )
 				break;
 

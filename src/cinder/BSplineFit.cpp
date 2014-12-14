@@ -72,8 +72,7 @@ class BSplineFitBasis {
 };
 
 template<typename T>
-class BSplineFit
-{
+class BSplineFit {
  public:
 	// Construction and destruction.  The preconditions for calling the
 	// constructor are
@@ -584,16 +583,23 @@ bool BSplineFit<T>::solveUpper( BandedMatrixd& rkMatrix, double *adControlData )
     return true;
 }
 
-template<typename T>
-BSpline<T> fitBSpline( const std::vector<T> &samples, int degree, int outputSamples )
+template<int D, typename T>
+BSpline<D, T> fitBSpline( const vector<typename BSpline<D, T>::VecT> &samples, int degree, int outputSamples )
 {
-	BSplineFit<typename T::TYPE> fit( T::DIM, (int)samples.size(), &(samples[0].x), degree, outputSamples );
+	typedef typename BSpline<D, T>::VecT VecType;
 
-	vector<T> points;
+	BSplineFit<T> fit( D, (int)samples.size(), &(samples[0].x), degree, outputSamples );
+
+	vector<VecType> points;
 	for( int c = 0; c < fit.getControlQuantity(); ++c ) {
-		points.push_back( ( T( &fit.getControlData()[c * T::DIM] ) ) );
+		const T *vp = &fit.getControlData()[c * D];
+		VecType vec;
+		for( glm::length_t i = 0; i < D; ++i )
+			vec[i] = vp[i];
+
+		points.push_back( vec );
 	}
-	return BSpline<T>( points, fit.getDegree(), false, true );
+	return BSpline<D, T>( points, fit.getDegree(), false, true );
 }
 
 template class BSplineFit<float>;
@@ -601,9 +607,8 @@ template class BSplineFit<double>;
 template class BSplineFitBasis<float>;
 template class BSplineFitBasis<double>;
 
-template BSpline<Vec2f> fitBSpline( const std::vector<Vec2f> &samples, int degree, int outputSamples );
-template BSpline<Vec3f> fitBSpline( const std::vector<Vec3f> &samples, int degree, int outputSamples );
-template BSpline<Vec4f> fitBSpline( const std::vector<Vec4f> &samples, int degree, int outputSamples );
-
+template BSpline<2, float> fitBSpline( const std::vector<vec2> &samples, int degree, int outputSamples );
+template BSpline<3, float> fitBSpline( const std::vector<vec3> &samples, int degree, int outputSamples );
+template BSpline<4, float> fitBSpline( const std::vector<vec4> &samples, int degree, int outputSamples );
 
 } // namespace cinder

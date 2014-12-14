@@ -44,6 +44,7 @@
 	using namespace Windows::Storage;
 	using namespace Concurrency;
 #endif
+#include "cinder/ImageSourceFileRadiance.h" // we use this .hdr reader on all platforms
 
 using namespace std;
 
@@ -160,6 +161,11 @@ float ImageSource::getPixelAspectRatio() const
 bool ImageSource::isPremultiplied() const
 {
 	return mIsPremultiplied;
+}
+
+size_t ImageSource::getRowBytes() const
+{
+	return getWidth() * ImageIo::channelOrderNumChannels( getChannelOrder() ) * ImageIo::dataTypeBytes( getDataType() );
 }
 
 /* SD - source data type, TD - target data type, TCM - target color model */
@@ -473,6 +479,10 @@ ImageTargetRef ImageIoRegistrar::Inst::createTarget( DataTargetRef dataTarget, I
 {
 	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>(tolower) );	
 	
+	// strip the leading '.' that may be present
+	if( extension.find( '.' ) == 0 )
+		extension = extension.substr( 1, string::npos );
+	
 	map<string, multimap<int32_t,pair<ImageIoRegistrar::TargetCreationFunc,string> > >::iterator sIt = mTargets.find( extension );
 	if( sIt != mTargets.end() )	{
 		ImageIoRegistrar::TargetCreationFunc creationFunc = sIt->second.begin()->second.first;
@@ -491,6 +501,10 @@ ImageSourceRef ImageIoRegistrar::createSource( DataSourceRef dataSource, ImageSo
 ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, ImageSource::Options options, string extension )
 {
 	std::transform( extension.begin(), extension.end(), extension.begin(), static_cast<int(*)(int)>( tolower ) );
+
+	// strip the leading '.' that may be present
+	if( extension.find( '.' ) == 0 )
+		extension = extension.substr( 1, string::npos );
 
 	// for non-empty extensions we'll walk everyone who is registered for this extension
 	if( ! extension.empty() ) {

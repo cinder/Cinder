@@ -1,7 +1,8 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -11,8 +12,8 @@ using namespace std;
 
 class WindowData {
   public:
-  	~WindowData() { CI_LOG_V( "Destroying Window Data" ); };
-	vector<Vec2f> 	mPoints;
+	~WindowData() { CI_LOG_V( "Destroying Window Data" ); };
+	vector<vec2> 	mPoints;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
@@ -27,17 +28,17 @@ class BasicApp : public AppBasic {
 	void fileDrop( FileDropEvent event );
 	void resize();
 
-void setup();
-void update();
-void anotherTest( MouseEvent event );
-void mouseDown( MouseEvent event );
-void mouseDown1( MouseEvent &event );
-bool mouseDown2( MouseEvent event );
-void mouseDown3( MouseEvent &event );
-void windowMove();
-void windowClose();
-void windowMouseDown( MouseEvent &mouseEvt );
-void displayChange();
+	void setup();
+	void update();
+	void anotherTest( MouseEvent event );
+	void mouseDown( MouseEvent event );
+	void mouseDown1( MouseEvent &event );
+	bool mouseDown2( MouseEvent event );
+	void mouseDown3( MouseEvent &event );
+	void windowMove();
+	void windowClose();
+	void windowMouseDown( MouseEvent &mouseEvt );
+	void displayChange();
 
 	bool	shouldQuit();
 
@@ -47,9 +48,9 @@ void displayChange();
 
 void BasicApp::mouseDrag( MouseEvent event )
 {
-	Vec2f v = event.getPos();
+	vec2 v = event.getPos();
 	WindowRef w = event.getWindow();
-	vector<Vec2f> &points = w->getUserData<WindowData>()->mPoints;
+	vector<vec2> &points = w->getUserData<WindowData>()->mPoints;
 	points.push_back( v );
 }
 
@@ -182,7 +183,7 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->setSize( getWindow()->getSize().x + 1, getWindow()->getSize().y + 1 );
 	else if( event.getChar() == 'w' ) {
 		Window::Format format( RendererGl::create() );
-		format.setFullScreen( true );
+		//format.setFullScreen( true );
 		mSecondWindow = createWindow( format );
 		mSecondWindow->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
 		mSecondWindow->getSignalMouseDown().connect( std::bind( &BasicApp::windowMouseDown, this, std::placeholders::_1 ) );
@@ -210,7 +211,7 @@ void BasicApp::keyDown( KeyEvent event )
 		getWindow()->spanAllDisplays();
 		CI_LOG_V( "Spanning Area: " << Display::getSpanningArea() );
 		CI_LOG_V( "Bounds: " << getWindow()->getBounds() );
-		//getWindow()->setPos( Vec2i( -1680 + 1, 0 + 1 ) );
+		//getWindow()->setPos( ivec2( -1680 + 1, 0 + 1 ) );
 //		getWindow()->setSize( 1440, 900 );
 //		getWindow()->setPos( 0, 0 );
 	}
@@ -236,27 +237,27 @@ void BasicApp::windowDraw()
 		gl::clear( Color( 0.3f, 0.1f, 0.1f ) );
 
 	// We'll set the color to an orange color
-	glColor3f( 1.0f, 0.5f, 0.25f );
+	gl::color( 1.0f, 0.5f, 0.25f );
 
 	glEnable( GL_LINE_SMOOTH );
 	glHint( GL_LINE_SMOOTH_HINT, GL_NICEST );
 	
-	glBegin( GL_LINE_STRIP );
-	const vector<Vec2f> &points = getWindow()->getUserData<WindowData>()->mPoints;
+	gl::begin( GL_LINE_STRIP );
+	const vector<vec2> &points = getWindow()->getUserData<WindowData>()->mPoints;
 	for( auto pointIter = points.begin(); pointIter != points.end(); ++pointIter ) {
-		gl::vertex( *pointIter /*+ Vec2f( 0, getElapsedSeconds() )*/ );
+		gl::vertex( *pointIter /*+ vec2( 0, getElapsedSeconds() )*/ );
 	}
-	glEnd();
+	gl::end();
 	
 	//if( window == mSecondWindow )
-		gl::drawLine( Vec2f( 50, 50 ), Vec2f( 250, 250 ) );
+		gl::drawLine( vec2( 50, 50 ), vec2( 250, 250 ) );
 	gl::pushMatrices();
-		glColor3f( 1.0f, 0.2f, 0.15f );
+		gl::color( 1.0f, 0.2f, 0.15f );
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() * 5 );
+		gl::rotate( getElapsedSeconds() );
 		gl::drawSolidRect( Rectf( -100, -100, 100, 100 ) );
 	gl::popMatrices();
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererGl(RendererGl::AA_MSAA_16) )
+CINDER_APP_BASIC( BasicApp, RendererGl )

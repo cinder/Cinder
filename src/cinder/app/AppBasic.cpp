@@ -120,15 +120,14 @@ void AppBasic::launch( const char *title, int argc, char * const argv[] )
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );
 
 #if defined( CINDER_COCOA )
-	NSAutoreleasePool * pool = [[NSAutoreleasePool alloc] init];
-    NSApplication * application = [NSApplication sharedApplication];
+	@autoreleasepool {
+		NSApplication * application = [NSApplication sharedApplication];
 
-    mImpl = [[AppImplCocoaBasic alloc] init:this];
+		mImpl = [[AppImplCocoaBasic alloc] init:this];
 
-    [application setDelegate:mImpl];
-    [application run];
-
-    [pool drain];
+		[application setDelegate:mImpl];
+		[application run];
+	}
 #elif defined( CINDER_WINRT )
 	mImpl = new AppImplWinRTBasic( this );	
 	mImpl->run();

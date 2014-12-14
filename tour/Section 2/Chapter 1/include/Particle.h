@@ -6,14 +6,14 @@
 class Particle {
  public:
 	Particle();
-	Particle( ci::Vec3f, ci::Vec3f );
-	void pullToCenter( const ci::Vec3f &center );
+	Particle( ci::vec3, ci::vec3 );
+	void pullToCenter( const ci::vec3 &center );
 	void update();
 	void draw();
 	
-	ci::Vec3f	mPos;
-	ci::Vec3f	mVel;
-	ci::Vec3f	mAcc;
+	ci::vec3	mPos;
+	ci::vec3	mVel;
+	ci::vec3	mAcc;
 	
 	float		mDecay;
 	float		mRadius;

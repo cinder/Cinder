@@ -16,7 +16,7 @@ void ForceRepulsion::apply( std::list<Particle> &particles, int counter )
 		
 		for( list<Particle>::iterator p2 = p1; p2 != particles.end(); ++p2 ){
 			if( p1 != p2 ){
-				Vec3f dir = p1->mLoc[0] - p2->mLoc[0];
+				vec3 dir = p1->mLoc[0] - p2->mLoc[0];
 				float distSqrd = dir.lengthSquared();
 				float radiusSum = 125.0f;//( p1->mRadius + p2->mRadius ) * 100.0f;
 				float radiusSqrd = radiusSum * radiusSum;

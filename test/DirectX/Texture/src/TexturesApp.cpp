@@ -49,8 +49,8 @@ private:
 	grfx::TextureRef	mTex;
 	std::string			mMsg;
 
-	Vec2i				mP0;
-	Vec2i				mP1;
+	ivec2				mP0;
+	ivec2				mP1;
 	bool				mDrawRect;
 	bool				mDoUpdate;
 };
@@ -220,7 +220,7 @@ void TexturesApp::draw()
 	grfx::color( ColorA( 0, 0, 0, 0.6f ) );
 	grfx::drawSolidRect( Rectf( 0, 0, getWindowWidth(), 50.0f ) );
 
-	grfx::drawString( mMsg, Vec2f( 2, 2 ), ci::Color( 1, 1, 1 ), ci::Font( "Arial", 24.0f ) );
+	grfx::drawString( mMsg, vec2( 2, 2 ), ci::Color( 1, 1, 1 ), ci::Font( "Arial", 24.0f ) );
 
 	if( mDrawRect ) {
 		grfx::color( Color( 0, 1, 0 ) );

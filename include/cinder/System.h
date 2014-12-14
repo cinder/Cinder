@@ -23,6 +23,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 #include <string>
@@ -117,7 +118,7 @@ inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapte
 	return outp;
 }
 
-class SystemExc : public std::exception {
+class SystemExc : public Exception {
 };
 
 class SystemExcFailedQuery : public SystemExc {

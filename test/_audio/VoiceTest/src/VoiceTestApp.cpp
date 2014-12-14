@@ -1,10 +1,10 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/Voice.h"
 #include "cinder/audio/MonitorNode.h"
-#include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "Resources.h"
 #include "../../common/AudioTestGui.h"
@@ -30,8 +30,8 @@ public:
 	void setupScope();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	audio::VoiceRef		mVoice;
 	audio::MonitorNodeRef	mMonitor;
@@ -120,13 +120,13 @@ void VoiceTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void VoiceTestApp::processDrag( Vec2i pos )
+void VoiceTestApp::processDrag( ivec2 pos )
 {
 	if( mVolumeSlider.hitTest( pos ) )
 		mVoice->setVolume( mVolumeSlider.mValueScaled );
 }
 
-void VoiceTestApp::processTap( Vec2i pos )
+void VoiceTestApp::processTap( ivec2 pos )
 {
 	if( mPlayButton.hitTest( pos ) )
 		mVoice->start();
@@ -164,7 +164,7 @@ void VoiceTestApp::draw()
 	gl::clear();
 
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
-		Vec2f padding( 20, 4 );
+		vec2 padding( 20, 4 );
 
 		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
 		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );

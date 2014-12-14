@@ -63,8 +63,9 @@ void SimpleViewerApp::load( fs::path path )
 		
 		mTex = renderCairoToTexture( mDoc );
 	}
-	catch( ... ) {
-	} // ignore errors
+	catch( ci::Exception &exc ) {
+		console() << "exception caught parsing svg doc, what: " << exc.what() << endl;
+	}
 }
 
 void SimpleViewerApp::draw()
@@ -85,7 +86,7 @@ void SimpleViewerApp::draw()
 	}
 	else {
 		gl::drawStringCentered( "Drag & Drop an SVG file", getWindowCenter() );
-		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + Vec2f( 0, 20 ) );
+		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + vec2( 0, 20 ) );
 	}
 }
 

@@ -25,6 +25,8 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/CinderGlm.h"
+
 #include <cmath>
 #include <climits>
 #include <cfloat>

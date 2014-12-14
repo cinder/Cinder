@@ -75,40 +75,32 @@ class SurfaceCache {
 		: mWidth( width ), mHeight( height ), mSCO( sco )
 	{
 		for( int i = 0; i < numSurfaces; ++i ) {
-			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], checked_array_deleter<uint8_t>() ) );
-			mDeallocatorRefcon.push_back( make_pair( this, i ) );
+			mSurfaceData.push_back( std::shared_ptr<uint8_t>( new uint8_t[width*height*sco.getPixelInc()], std::default_delete<uint8_t[]>() ) );
 			mSurfaceUsed.push_back( false );
 		}
 	}
 	
-	Surface8u getNewSurface()
+	Surface8uRef getNewSurface()
 	{
 		// try to find an available block of pixel data to wrap a surface around	
 		for( size_t i = 0; i < mSurfaceData.size(); ++i ) {
 			if( ! mSurfaceUsed[i] ) {
 				mSurfaceUsed[i] = true;
-				Surface8u result( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
-				result.setDeallocator( surfaceDeallocator, &mDeallocatorRefcon[i] );
+				auto newSurface = new Surface( mSurfaceData[i].get(), mWidth, mHeight, mWidth * mSCO.getPixelInc(), mSCO );
+				Surface8uRef result = shared_ptr<Surface8u>( newSurface, [=] ( Surface8u* s ) { mSurfaceUsed[i] = false; } );
 				return result;
 			}
 		}
 
 		// we couldn't find an available surface, so we'll need to allocate one
-		return Surface8u( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
-	}
-	
-	static void surfaceDeallocator( void *refcon )
-	{
-		pair<SurfaceCache*,int> *info = reinterpret_cast<pair<SurfaceCache*,int>*>( refcon );
-		info->first->mSurfaceUsed[info->second] = false;
+		return Surface8u::create( mWidth, mHeight, mSCO.hasAlpha(), mSCO );
 	}
 
  private:
-	vector<std::shared_ptr<uint8_t> >	mSurfaceData;
-	vector<bool>					mSurfaceUsed;
-	vector<pair<SurfaceCache*,int> >	mDeallocatorRefcon;
-	int32_t				mWidth, mHeight;
-	SurfaceChannelOrder	mSCO;
+	vector<std::shared_ptr<uint8_t>>	mSurfaceData;
+	vector<bool>						mSurfaceUsed;
+	int32_t								mWidth, mHeight;
+	SurfaceChannelOrder					mSCO;
 };
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -141,7 +133,7 @@ const vector<Capture::DeviceRef>& CaptureImplDirectShow::getDevices( bool forceR
 }
 
 CaptureImplDirectShow::CaptureImplDirectShow( int32_t width, int32_t height, const Capture::DeviceRef device )
-	: mWidth( width ), mHeight( height ), mCurrentFrame( width, height, false, SurfaceChannelOrder::BGR ), mDeviceID( 0 )
+	: mWidth( width ), mHeight( height ), mCurrentFrame( Surface8u::create( width, height, false, SurfaceChannelOrder::BGR ) ), mDeviceID( 0 )
 {
 	mDevice = device;
 	if( mDevice ) {
@@ -193,11 +185,11 @@ bool CaptureImplDirectShow::checkNewFrame() const
 	return CaptureMgr::instanceVI()->isFrameNew( mDeviceID );
 }
 
-Surface8u CaptureImplDirectShow::getSurface() const
+Surface8uRef CaptureImplDirectShow::getSurface() const
 {
 	if( CaptureMgr::instanceVI()->isFrameNew( mDeviceID ) ) {
 		mCurrentFrame = mSurfaceCache->getNewSurface();
-		CaptureMgr::instanceVI()->getPixels( mDeviceID, mCurrentFrame.getData(), false, true );
+		CaptureMgr::instanceVI()->getPixels( mDeviceID, mCurrentFrame->getData(), false, true );
 	}
 	
 	return mCurrentFrame;

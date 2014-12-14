@@ -21,14 +21,21 @@
 */
 
 #include "cinder/Exception.h"
-#include "cinder/Utilities.h"
 
 namespace cinder {
 
 Exception::Exception()
-	: std::exception() 
 {
-}		
+}
 
+Exception::Exception( const std::string &description )
+	: mDescription( description )
+{
+}
+
+void Exception::setDescription( const std::string &description )
+{
+	mDescription = description;
+}
 
 } // namespace cinder

@@ -1,11 +1,11 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/CinderAssert.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/MonitorNode.h"
-#include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/audio/Utilities.h"
 
@@ -25,8 +25,8 @@ public:
 	void draw();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 	void keyDown( KeyEvent event );
 
 	void setupTable();
@@ -188,7 +188,7 @@ void WaveTableTestApp::setupUI()
 	mGainSlider.set( mGain->getValue() );
 	mWidgets.push_back( &mGainSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mFreqRampSlider.mBounds = sliderRect;
 	mFreqRampSlider.mTitle = "freq ramp";
 	mFreqRampSlider.mMin = -5;
@@ -196,19 +196,19 @@ void WaveTableTestApp::setupUI()
 	mFreqRampSlider.set( 0.2f );
 	mWidgets.push_back( &mFreqRampSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mPulseWidthSlider.mBounds = sliderRect;
 	mPulseWidthSlider.mTitle = "pulse width";
 	mPulseWidthSlider.set( 0.05f );
 	mWidgets.push_back( &mPulseWidthSlider );
 
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 30 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 30 );
 	mNumPartialsInput.mBounds = sliderRect;
 	mNumPartialsInput.mTitle = "num partials";
 	mWidgets.push_back( &mNumPartialsInput );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 30 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 30 );
 	mTableSizeInput.mBounds = sliderRect;
 	mTableSizeInput.mTitle = "table size";
 	mTableSizeInput.setValue( mGenOsc ? mGenOsc->getTableSize() : 0 );
@@ -227,7 +227,7 @@ void WaveTableTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void WaveTableTestApp::processDrag( Vec2i pos )
+void WaveTableTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->getParam()->applyRamp( mGainSlider.mValueScaled, 0.03f );
@@ -242,7 +242,7 @@ void WaveTableTestApp::processDrag( Vec2i pos )
 
 }
 
-void WaveTableTestApp::processTap( Vec2i pos )
+void WaveTableTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 	size_t currentIndex = mTestSelector.mCurrentSectionIndex;
@@ -326,10 +326,10 @@ void WaveTableTestApp::draw()
 	Rectf rect( padding, padding + mFreqSlider.mBounds.y2, getWindowWidth() - padding - 200, mFreqSlider.mBounds.y2 + scopeHeight + padding );
 	drawAudioBuffer( mTableCopy, rect, true );
 
-	rect += Vec2f( 0, scopeHeight + padding );
+	rect += vec2( 0, scopeHeight + padding );
 	drawAudioBuffer( mMonitor->getBuffer(), rect, true );
 
-	rect += Vec2f( 0, scopeHeight + padding );
+	rect += vec2( 0, scopeHeight + padding );
 	mSpectrumPlot.setBounds( rect );
 	mSpectrumPlot.draw( mMonitor->getMagSpectrum() );
 

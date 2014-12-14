@@ -33,25 +33,18 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
 		#import <Cocoa/Cocoa.h>
-		#import "cinder/app/AppImplCocoaRendererGl.h"
 		#import "cinder/app/AppImplCocoaRendererQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/AppImplCocoaTouchRendererGl.h"
 		#import "cinder/app/AppImplCocoaTouchRendererQuartz.h"		
 	#endif
 
 #elif defined( CINDER_MSW )
 	#include "cinder/app/AppImplMsw.h"
-	#include "cinder/app/AppImplMswRendererGl.h"
 	#include "cinder/app/AppImplMswRendererGdi.h"
 #endif
-#include "cinder/ip/Flip.h"
-
 
 namespace cinder { namespace app {
-
-const int RendererGl::sAntiAliasingSamples[] = { 0, 2, 4, 6, 8, 16, 32 };
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer
@@ -59,220 +52,6 @@ Renderer::Renderer( const Renderer &renderer )
 	: mApp( renderer.mApp )
 {
 }
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// RendererGl
-RendererGl::RendererGl( int aAntiAliasing )
-	: Renderer(), mImpl( 0 ), mAntiAliasing( aAntiAliasing )
-{}
-
-RendererGl::RendererGl( const RendererGl &renderer )
-	: Renderer( renderer ), mAntiAliasing( renderer.mAntiAliasing )
-{
-#if defined( CINDER_COCOA )
-	mImpl = 0;
-#elif defined( CINDER_MSW )
-	mImpl = 0;
-	mWnd = renderer.mWnd;
-#endif
-}
-
-void RendererGl::setAntiAliasing( int aAntiAliasing )
-{
-	mAntiAliasing = aAntiAliasing;
-}
-
-#if defined( CINDER_MAC )
-RendererGl::~RendererGl()
-{
-	if( mImpl )
-		::CFRelease( mImpl );
-}
-
-void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
-{
-	mApp = aApp;
-	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
-	// This is necessary for Objective-C garbage collection to do the right thing
-	::CFRetain( mImpl );
-}
-
-void RendererGl::startDraw()
-{
-	[mImpl makeCurrentContext];
-}
-
-void RendererGl::finishDraw()
-{
-	[mImpl flushBuffer];
-}
-
-void RendererGl::setFrameSize( int width, int height )
-{
-	[mImpl setFrameSize:NSSizeToCGSize(NSMakeSize( width, height ))];
-}
-
-void RendererGl::defaultResize()
-{
-	[mImpl defaultResize];
-}
-
-Surface RendererGl::copyWindowSurface( const Area &area )
-{
-	Surface s( area.getWidth(), area.getHeight(), false );
-	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
-	GLint oldPackAlignment;
-	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
-	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );		
-	ip::flipVertical( &s );
-	return s;
-}
-
-CGLContextObj RendererGl::getCglContext()
-{
-	return [mImpl getCglContext];
-}
-
-CGLPixelFormatObj RendererGl::getCglPixelFormat()
-{
-	return [mImpl getCglPixelFormat];
-}
-
-NSOpenGLContext* RendererGl::getNsOpenGlContext()
-{
-	return [mImpl getNsOpenGlContext];
-}
-
-void RendererGl::makeCurrentContext()
-{
-	[mImpl makeCurrentContext];
-}
-
-#elif defined( CINDER_COCOA_TOUCH ) 
-RendererGl::~RendererGl()
-{
-}
-
-void RendererGl::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
-{
-	mApp = aApp;
-
-	RendererGlRef sharedRendererGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView app:mApp renderer:this sharedRenderer:sharedRendererGl];
-}
-
-EAGLContext* RendererGl::getEaglContext() const
-{
-	return [mImpl getEaglContext];
-}
-
-void RendererGl::startDraw()
-{
-	[mImpl makeCurrentContext];
-}
-
-void RendererGl::finishDraw()
-{
-	[mImpl flushBuffer];
-}
-
-void RendererGl::setFrameSize( int width, int height )
-{
-	[mImpl setFrameSize:CGSizeMake( width, height )];
-}
-
-void RendererGl::defaultResize()
-{
-	[mImpl defaultResize];
-}
-
-void RendererGl::makeCurrentContext()
-{
-	[mImpl makeCurrentContext];
-}
-
-Surface	RendererGl::copyWindowSurface( const Area &area )
-{
-	Surface s( area.getWidth(), area.getHeight(), true );
-	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
-	GLint oldPackAlignment;
-	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
-	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
-	ip::flipVertical( &s );
-
-	return s;
-}
-
-#elif defined( CINDER_MSW )
-RendererGl::~RendererGl()
-{
-	delete mImpl;
-}
-
-void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
-{
-	mWnd = wnd;
-	mApp = aApp;
-	if( ! mImpl )
-		mImpl = new AppImplMswRendererGl( mApp, this );
-
-	mImpl->initialize( wnd, dc, sharedRenderer );
-}
-
-void RendererGl::kill()
-{
-	mImpl->kill();
-}
-
-void RendererGl::prepareToggleFullScreen()
-{
-	mImpl->prepareToggleFullScreen();
-}
-
-void RendererGl::finishToggleFullScreen()
-{
-	mImpl->finishToggleFullScreen();
-}
-
-void RendererGl::startDraw()
-{
-	mImpl->makeCurrentContext();
-}
-
-void RendererGl::makeCurrentContext()
-{
-	mImpl->makeCurrentContext();
-}
-
-void RendererGl::finishDraw()
-{
-	mImpl->swapBuffers();
-}
-
-void RendererGl::defaultResize()
-{
-	mImpl->defaultResize();
-}
-
-Surface	RendererGl::copyWindowSurface( const Area &area )
-{
-	Surface s( area.getWidth(), area.getHeight(), false );
-	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
-	GLint oldPackAlignment;
-	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
-	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
-	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
-	ip::flipVertical( &s );
-	return s;
-}
-
-#endif // 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer2d
@@ -353,15 +132,15 @@ Surface Renderer2d::copyWindowSurface( const Area &area )
 #if defined( CINDER_MAC )
 	NSBitmapImageRep *rep = [mImpl getContents:area];
 	if( rep )
-		return cocoa::convertNsBitmapDataRep( rep, true );
+		return *cocoa::convertNsBitmapDataRep( rep, true );
 	else
-		return Surface();
+		return Surface( 0, 0, false );
 #elif defined( CINDER_COCOA_TOUCH )
 	UIImage *image = [mImpl getContents:area];
 	if( image )
-		return cocoa::convertUiImage( image, true );
+		return *cocoa::convertUiImage( image, true );
 	else
-		return Surface();
+		return Surface( 0, 0, false );
 #endif
 }
 #endif

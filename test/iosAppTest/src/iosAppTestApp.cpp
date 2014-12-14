@@ -3,14 +3,16 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
 #include "cinder/System.h"
 #include "cinder/Text.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #import <UIKit/UIKit.h>
 
@@ -23,12 +25,12 @@ using namespace std;
 
 struct TouchPoint {
 	TouchPoint() {}
-	TouchPoint( const Vec2f &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
+	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
 	{
 		mLine.push_back( initialPt ); 
 	}
 	
-	void addPoint( const Vec2f &pt ) { mLine.push_back( pt ); }
+	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
 	
 	void draw() const
 	{
@@ -44,7 +46,7 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<Vec2f>	mLine;
+	PolyLine<vec2>	mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
@@ -114,9 +116,9 @@ class iosAppTestApp : public AppCocoaTouch {
 
 	TestCallbackOrder	tester;
 					
-	Matrix44f		mCubeRotation;
-	gl::Texture 	mTex;
-	gl::Texture		mTextTex;
+	mat4		mCubeRotation;
+	gl::TextureRef 	mTex;
+	gl::TextureRef		mTextTex;
 	gl::TextureFontRef	mFont;
 	CameraPersp		mCam;
 	WindowRef		mSecondWindow;
@@ -165,8 +167,6 @@ void iosAppTestApp::setup()
 	getSignalBatteryState().connect( std::bind( &iosAppTestApp::batteryStateChange, this, std::placeholders::_1 ) );
 	enableBatteryMonitoring();
 	
-	mCubeRotation.setToIdentity();
-
 	mFont = gl::TextureFont::create( Font( "Helvetica", 16 ) );
 
 	// Create a blue-green gradient as an OpenGL texture
@@ -180,7 +180,7 @@ void iosAppTestApp::setup()
 		}
 	}
 
-	mTex = gl::Texture( surface );
+	mTex = gl::Texture::create( surface );
 	
 	CI_LOG_V( "window size: " << getWindowSize() );
 
@@ -355,7 +355,7 @@ void iosAppTestApp::update()
 {
 	tester.setState( TestCallbackOrder::UPDATE );
 
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation *= rotate( 0.03f, vec3( 1 ) );
 }
 
 void iosAppTestApp::draw()
@@ -364,7 +364,7 @@ void iosAppTestApp::draw()
 	gl::enableDepthRead();
 	tester.setState( TestCallbackOrder::DRAW );
 	CameraPersp mCam;
-	mCam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	if( isUnplugged() )
@@ -372,17 +372,18 @@ void iosAppTestApp::draw()
 	else
 		gl::clear( Color( 0.4f, 0.2f, 0.2f ) );		
 
-	gl::enable( GL_TEXTURE_2D );
 	gl::color( Color::white() );
-	gl::enableDepthRead();
-	mTex.bind();
+
+	gl::bindStockShader( gl::ShaderDef().color().texture() );
+	mTex->bind();
+
 	gl::setMatrices( mCam );
-	glPushMatrix();
-		gl::multModelView( mCubeRotation );
-		gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
-	glPopMatrix();
-	gl::disable( GL_TEXTURE_2D );
-	
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::multModelMatrix( mCubeRotation );
+		gl::drawCube( vec3( 0 ), vec3( 2 ) );
+	}
+
 	gl::setMatricesWindow( getWindowSize() );
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
 		activeIt->second.draw();
@@ -404,24 +405,24 @@ void iosAppTestApp::draw()
 	if( getWindow() == mSecondWindow || Display::getDisplays().size() < 2 ) {
 		static Font font = Font( "Arial", 48 );
 		static std::string lastMessage;
-		static gl::Texture messageTex;
+		static gl::TextureRef messageTex;
 		if( lastMessage != mSecondWindowMessage ) {
 			TextBox box = TextBox().font( font ).text( mSecondWindowMessage );
-			messageTex = box.render();
+			messageTex = gl::Texture::create( box.render() );
 			lastMessage = mSecondWindowMessage;
 		}
 		if( messageTex ) {
 			gl::color( Color::white() );
-			gl::draw( messageTex, Vec2i( ( getWindowWidth() - messageTex.getCleanWidth() ) / 2, getWindowCenter().y ) );
+			gl::draw( messageTex, ivec2( ( getWindowWidth() - messageTex->getCleanWidth() ) / 2, getWindowCenter().y ) );
 		}
 	}
-//
+
 	gl::disableDepthRead();
 	gl::color( Color( 0.0f, 1.0f, 0.0f ) );
-	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), Vec2f( 10.0f, 60.0f ) );
-//	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), Vec2f( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
+	mFont->drawString( orientationString( getWindowOrientation() ) + "@ " + toString( getWindowContentScale() ), vec2( 10.0f, 60.0f ) );
+//	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
-	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", Vec2f( 10.0f, 90.0f ) );
+	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
 }
 
-CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl(RendererGl::AA_NONE) )
+CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )

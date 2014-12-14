@@ -1,5 +1,5 @@
-#include "cinder/Cinder.h"
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 using namespace ci;
@@ -13,12 +13,12 @@ using namespace std;
 
 struct TouchPoint {
 	TouchPoint() {}
-	TouchPoint( const Vec2f &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
+	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
 	{
 		mLine.push_back( initialPt ); 
 	}
 	
-	void addPoint( const Vec2f &pt ) { mLine.push_back( pt ); }
+	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
 	
 	void draw() const
 	{
@@ -34,7 +34,7 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<Vec2f>	mLine;
+	PolyLine<vec2>	mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
@@ -53,7 +53,7 @@ class MultiTouchApp : public AppNative {
 
 	void	setup();
 	void	draw();
-	void	keyDown( KeyEvent event ) { setFullScreen( ! isFullScreen() ); }
+	void	keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) setFullScreen( ! isFullScreen() ); }
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;

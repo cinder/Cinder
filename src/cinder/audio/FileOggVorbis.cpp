@@ -24,7 +24,6 @@
 #include "cinder/audio/FileOggVorbis.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
 
 #include <sstream>
 

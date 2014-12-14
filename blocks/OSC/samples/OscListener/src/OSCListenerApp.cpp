@@ -25,6 +25,7 @@
  */
 
 #include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -94,7 +95,7 @@ void OSCListenerApp::draw()
 {
 	gl::clear();
 	gl::color( Color::white() );
-	gl::drawSolidRect( Rectf(Vec2f(0, 0), Vec2f(positionX * getWindowWidth(), getWindowHeight())) );
+	gl::drawSolidRect( Rectf( vec2(0), vec2(positionX * getWindowWidth(), getWindowHeight())) );
 }
 
 CINDER_APP_NATIVE( OSCListenerApp, RendererGl )

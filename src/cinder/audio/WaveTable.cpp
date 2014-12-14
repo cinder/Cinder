@@ -24,7 +24,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/audio/WaveTable.h"
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/CinderMath.h"
 
 #include "cinder/Timer.h" // TEMP

@@ -24,6 +24,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
 
+#include <memory>
 #include <map>
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
@@ -195,7 +196,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	setupPixelFormat( formatGUID );
 	
-	mData = shared_ptr<uint8_t>( new uint8_t[mHeight * mRowBytes], boost::checked_array_delete<uint8_t> );
+	mData = shared_ptr<uint8_t>( new uint8_t[mHeight * mRowBytes], std::default_delete<uint8_t[]>() );
 }
 
 void ImageTargetFileWic::setupPixelFormat( const GUID &guid )

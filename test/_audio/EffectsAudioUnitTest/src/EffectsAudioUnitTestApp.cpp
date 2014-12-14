@@ -1,10 +1,8 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
-
-
+#include "cinder/app/RendererGl.h"
+#include "cinder/Log.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/audio/cocoa/ContextAudioUnit.h"
 
@@ -27,8 +25,8 @@ class EffectsAudioUnitTestApp : public AppNative {
 	void setupNativeThenGeneric();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 	void initParams();
 
 	audio::GenNodeRef mGen;
@@ -128,12 +126,12 @@ void EffectsAudioUnitTestApp::setupUI()
 	mGenFreqSlider.set( mGen->getFreq() );
 	mGenFreqSlider.mBounds = sliderRect;
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mLowpassCutoffSlider.mBounds = sliderRect;
 	mLowpassCutoffSlider.mTitle = "Lowpass Cutoff";
 	mLowpassCutoffSlider.mMax = 1500.0f;
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mBandpassSlider.mBounds = sliderRect;
 	mBandpassSlider.mTitle = "Bandpass";
 	mBandpassSlider.mMin = 100.0f;
@@ -150,7 +148,7 @@ void EffectsAudioUnitTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void EffectsAudioUnitTestApp::processDrag( Vec2i pos )
+void EffectsAudioUnitTestApp::processDrag( ivec2 pos )
 {
 	if( mGenFreqSlider.hitTest( pos ) )
 		mGen->getParamFreq()->applyRamp( mGenFreqSlider.mValueScaled, 0.02f );
@@ -162,7 +160,7 @@ void EffectsAudioUnitTestApp::processDrag( Vec2i pos )
 		mEffect2->setParameter( kBandpassParam_CenterFrequency, mBandpassSlider.mValueScaled );
 }
 
-void EffectsAudioUnitTestApp::processTap( Vec2i pos )
+void EffectsAudioUnitTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 

@@ -16,6 +16,8 @@
 		111A61631921CFB8005C3166 /* tone440L220R.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A61621921CFB8005C3166 /* tone440L220R.wav */; };
 		111A61651921CFDC005C3166 /* DrainMagic.ogg in Resources */ = {isa = PBXBuildFile; fileRef = 111A61641921CFDC005C3166 /* DrainMagic.ogg */; };
 		111A62AC192DCCBB0024BE66 /* libcinder_d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A62A5192DCCAF0024BE66 /* libcinder_d.a */; };
+		1120DAB619B63DFA00522276 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAB419B63DFA00522276 /* AVFoundation.framework */; };
+		1120DAB719B63DFA00522276 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAB519B63DFA00522276 /* CoreMedia.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -65,6 +67,8 @@
 		111A61621921CFB8005C3166 /* tone440L220R.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440L220R.wav; path = ../../data/tone440L220R.wav; sourceTree = "<group>"; };
 		111A61641921CFDC005C3166 /* DrainMagic.ogg */ = {isa = PBXFileReference; lastKnownFileType = file; name = DrainMagic.ogg; path = ../../../../samples/data/sound/DrainMagic.ogg; sourceTree = "<group>"; };
 		111A629E192DCCAF0024BE66 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
+		1120DAB419B63DFA00522276 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		1120DAB519B63DFA00522276 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		119CCEEA184A716B00853BEE /* AudioTestGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioTestGui.h; path = ../../common/AudioTestGui.h; sourceTree = "<group>"; };
 		128572BBFD5C4118B6B34756 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -83,6 +87,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				111A62AC192DCCBB0024BE66 /* libcinder_d.a in Frameworks */,
+				1120DAB619B63DFA00522276 /* AVFoundation.framework in Frameworks */,
+				1120DAB719B63DFA00522276 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -185,6 +191,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1120DAB419B63DFA00522276 /* AVFoundation.framework */,
+				1120DAB519B63DFA00522276 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -354,7 +362,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -375,7 +383,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

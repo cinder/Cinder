@@ -1,5 +1,5 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
@@ -67,7 +67,7 @@ void MultichannelOutputApp::setup()
 void MultichannelOutputApp::setupMultichannelDevice()
 {
 	// debug print all devices to console
-	console() << audio::Device::printDevicesToString();
+	console() << audio::Device::printDevicesToString() << endl;
 
 	audio::DeviceRef deviceWithMaxOutputs;
 

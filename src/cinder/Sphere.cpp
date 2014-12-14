@@ -29,10 +29,10 @@ namespace cinder {
 bool Sphere::intersects( const Ray &ray )
 {
 	float 		t;
-	Vec3f		temp 	= ray.getOrigin() - mCenter;
-	float 		a 		= ray.getDirection().dot( ray.getDirection() );
-	float 		b 		= 2.0f * temp.dot( ray.getDirection() );
-	float 		c 		= temp.dot( temp ) - mRadius * mRadius;
+	vec3		temp 	= ray.getOrigin() - mCenter;
+	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
+	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
+	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
 	float 		disc	= b * b - 4.0f * a * c;
 
 	if( disc < 0.0f ) {
@@ -59,10 +59,10 @@ bool Sphere::intersects( const Ray &ray )
 int Sphere::intersect( const Ray &ray, float *intersection )
 {
 	float 		t;
-	Vec3f		temp 	= ray.getOrigin() - mCenter;
-	float 		a 		= ray.getDirection().dot( ray.getDirection() );
-	float 		b 		= 2.0f * temp.dot( ray.getDirection() );
-	float 		c 		= temp.dot( temp ) - mRadius * mRadius;
+	vec3		temp 	= ray.getOrigin() - mCenter;
+	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
+	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
+	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
 	float 		disc	= b * b - 4.0f * a * c;
 
 	if( disc < 0.0f ) {
@@ -88,11 +88,17 @@ int Sphere::intersect( const Ray &ray, float *intersection )
 	return 0;
 }
 
-Sphere Sphere::calculateBoundingSphere( const vector<Vec3f> &points )
+
+Sphere Sphere::calculateBoundingSphere( const vector<vec3> &points )
+{
+	return calculateBoundingSphere( points.data(), points.size() );
+}
+
+Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 {
 	// compute minimal and maximal bounds
-	Vec3f min(points[0]), max(points[0]);
-	for( size_t i = 1; i < points.size(); ++i ) {
+	vec3 min(points[0]), max(points[0]);
+	for( size_t i = 1; i < numPoints; ++i ) {
 		if( points[i].x < min.x )
 			min.x = points[i].x;
 		else if( points[i].x > max.x )
@@ -107,10 +113,10 @@ Sphere Sphere::calculateBoundingSphere( const vector<Vec3f> &points )
 			max.z = points[i].z;
 	}
 	// compute center and radius
-	Vec3f center = 0.5f * ( min + max );
-	float maxDistance = center.distanceSquared( points[0] );
-	for( size_t i = 1; i < points.size(); ++i ) {
-		float dist = center.distanceSquared( points[i] );
+	vec3 center = 0.5f * ( min + max );
+	float maxDistance = distance2( center, points[0] );
+	for( size_t i = 1; i < numPoints; ++i ) {
+		float dist = distance2( center, points[i] );
 		if( dist > maxDistance )
 			maxDistance = dist;
 	}

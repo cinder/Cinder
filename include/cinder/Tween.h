@@ -53,23 +53,25 @@ T tweenLerp( const T &start, const T &end, float time )
 
 // Specialization of tweenLerp for Quaternions to use slerping
 template<>
-inline Quatf tweenLerp( const Quatf &start, const Quatf &end, float time )
+inline quat tweenLerp( const quat &start, const quat &end, float time )
 {
-	Quatf val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+	quat val = glm::slerp( start, end, time );
+	glm::vec3 axis = glm::axis( val );
+	if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
 		return val;
 	else
-		return Quatf::identity();
+		return quat();
 }
 
 template<>
-inline Quatd tweenLerp( const Quatd &start, const Quatd &end, float time )
+inline dquat tweenLerp( const dquat &start, const dquat &end, float time )
 {
-	Quatd val = start.slerp( time, end ).normalized();
-	if( std::isfinite( val.getAxis().x ) && std::isfinite( val.getAxis().y ) && std::isfinite( val.getAxis().z ) )
+	dquat val = glm::slerp( start, end, (double)time );
+	glm::dvec3 axis = glm::axis( val );
+	if( std::isfinite( axis.x ) && std::isfinite( axis.y ) && std::isfinite( axis.z ) )
 		return val;
 	else
-		return Quatd::identity();
+		return dquat();
 }
 
 

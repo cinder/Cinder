@@ -76,7 +76,7 @@ void BasicApp::setup()
 	randomizeFont('A');
 	recalcMesh();
 
-	mParams = params::InterfaceGl( "Parameters", Vec2i( 220, 170 ) );
+	mParams = params::InterfaceGl( "Parameters", ivec2( 220, 170 ) );
 	mParams.addParam( "Draw Wireframe", &mDrawWireframe, "min=1 max=2000 keyIncr== keyDecr=-" );
 	//mParams.addButton( "Random Font", bind( &BasicApp::setRandomFont, this ), "key=f" );
 	//mParams.addButton( "Random Glyph", bind( &BasicApp::setRandomGlyph, this ) );
@@ -180,9 +180,9 @@ void BasicApp::draw()
 
 	dx::pushModelView();
 
-	dx::translate(getWindowCenter() * Vec2f( 1.06f - (mZoom*.12f), 1.1f + (mZoom*.12f) ));
+	dx::translate(getWindowCenter() * vec2( 1.06f - (mZoom*.12f), 1.1f + (mZoom*.12f) ));
 
-	dx::scale( Vec3f( mZoom, mZoom, mZoom ) );
+	dx::scale( vec3( mZoom, mZoom, mZoom ) );
    
 	if ( mDrawFill ) {
 		dx::color( Color( 1.0f, 0.0f, 0.0f ) );
@@ -203,9 +203,9 @@ void BasicApp::draw()
 	std::stringstream s2;
 	s2 << "Precision: " << mPrecision << "     Indices: " << mNumPoints << "     Fill: " << mDrawFill << "     Wireframe: " << mDrawWireframe << "      Zoom: " << mZoom << "     FPS: " << getAverageFps() << "     Font: " << mFontNames[mFontIndex];
 
-	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", Vec2f(30.0f, 60.f), Color::white(), mOutputTitle) ;
-	dx::drawString(s1.str(), Vec2f(30.0, 100.0f), Color::white(), mOutputFont);
-	dx::drawString(s2.str(), Vec2f(30.0, 130.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
+	dx::drawString("WinRT: Testing getGlyphShape(), Shape2D and VBOMesh", vec2(30.0f, 60.f), Color::white(), mOutputTitle) ;
+	dx::drawString(s1.str(), vec2(30.0, 100.0f), Color::white(), mOutputFont);
+	dx::drawString(s2.str(), vec2(30.0, 130.0f), Color(0.0f, 1.0f, 0.6f), mOutputFont);
 	
 	mParams.draw();
 }

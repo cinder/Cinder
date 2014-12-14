@@ -128,30 +128,28 @@
 - (void)threadEntry:(id)arg
 {
 	ci::IStreamUrlImplCocoa *impl = ((IStreamUrlImplCocoaDelegate*)self)->mImpl;
-	NSAutoreleasePool *pool = [[NSAutoreleasePool alloc] init];
-	
-	NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
-	NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
-								cachePolicy:cachePolicy
-								timeoutInterval:impl->getOptions().getTimeout()];
 
-	NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
-	if( ! connection ) {
-		[pool drain];
-		return;
-	}
-		
-	while( mStillConnected ) {
-		[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
-	}
+	@autoreleasepool {
+		NSURLRequestCachePolicy cachePolicy = (impl->getOptions().getIgnoreCache())? NSURLRequestReloadIgnoringLocalCacheData : NSURLRequestUseProtocolCachePolicy;
+		NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[NSString stringWithUTF8String:mUrl.c_str()]]
+															   cachePolicy:cachePolicy
+														   timeoutInterval:impl->getOptions().getTimeout()];
+
+		NSURLConnection *connection = [[NSURLConnection alloc] initWithRequest:request delegate:self];
+		if( connection ) {
+			while( mStillConnected ) {
+				[[NSRunLoop currentRunLoop] runMode:NSDefaultRunLoopMode beforeDate:[NSDate distantFuture]];
+			}
+
 /*
-	if( ( ! mUser.empty() ) || ( ! mPassword.empty() ) ) {
-//		mUserColonPassword = mUser + ":" + mPassword;
+			if( ( ! mUser.empty() ) || ( ! mPassword.empty() ) ) {
+//				mUserColonPassword = mUser + ":" + mPassword;
+			}
+
+			// we fill the buffer just to get things rolling*/
+		}
+		[connection release];
 	}
-		
-	// we fill the buffer just to get things rolling*/
-	[connection release];
-	[pool drain];
 }
 
 -(void)connection:(NSURLConnection *)connection
