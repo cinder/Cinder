@@ -121,7 +121,7 @@ class ObjLoader : public geom::Source {
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 
   private:
-	typedef std::pair<int,int> VertexPair;
+	typedef std::tuple<int,int> VertexPair;
 	typedef std::tuple<int,int,int> VertexTriple;
 
 	void	parse( bool includeNormals, bool includeTexCoords );
