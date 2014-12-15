@@ -147,7 +147,7 @@ void GeometryApp::update()
 void GeometryApp::draw()
 {
 	// Prepare for drawing.
-	gl::clear( Color::black() );
+	gl::clear();
 	gl::setMatrices( mCamera );
 	
 	// Draw the grid.
@@ -163,8 +163,8 @@ void GeometryApp::draw()
 		mPhongShader->uniform( "uTexturingMode", mTexturingMode );
 
 		// Rotate it slowly around the y-axis.
-		gl::pushModelView();
-		gl::rotate( float( getElapsedSeconds() / 5 ), 0.0f, 1.0f, 0.0f );
+		gl::ScopedModelMatrix matScope;
+		gl::rotate( float( getElapsedSeconds() / 5 ), 0, 1, 0 );
 
 		// Draw the normals.
 		if( mShowNormals && mPrimitiveNormalLines ) {
@@ -175,33 +175,22 @@ void GeometryApp::draw()
 		// Draw the primitive.
 		gl::ScopedColor colorScope( Color( 0.7f, 0.5f, 0.3f ) );
 
-		// (If transparent, render the back side first).
 		if( mViewMode == WIREFRAME ) {
-			gl::enableAlphaBlending();
-
-			gl::enable( GL_CULL_FACE );
-			gl::cullFace( GL_FRONT );
+			// We're using alpha blending, so render the back side first.
+			gl::ScopedAlphaBlend blendScope( false );
+			gl::ScopedFaceCulling cullScope( true, GL_FRONT );
 
 			mWireframeShader->uniform( "uBrightness", 0.5f );
 			mPrimitiveWireframe->draw();
-		}
 
-		// (Now render the front side.)
-		if( mViewMode == WIREFRAME ) {
+			// Now render the front side.
 			gl::cullFace( GL_BACK );
 
 			mWireframeShader->uniform( "uBrightness", 1.0f );
 			mPrimitiveWireframe->draw();
-			
-			gl::disable( GL_CULL_FACE );
-
-			gl::disableAlphaBlending();
 		}
 		else
 			mPrimitive->draw();
-		
-		// Done.
-		gl::popModelView();
 	}
 
 	// Render the parameter window.
