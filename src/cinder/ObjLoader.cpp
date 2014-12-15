@@ -25,14 +25,8 @@
 
 #include "cinder/ObjLoader.h"
 
-#include <boost/lexical_cast.hpp>
-using boost::lexical_cast;
-#include <sstream>
-using std::ostringstream;
-
 #include <sstream>
 using namespace std;
-using boost::make_tuple;
 
 namespace cinder {
 
@@ -269,8 +263,8 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 		
 		// process the vertex index
 		int vertexIndex = (firstSlashOffset != string::npos) ? 
-            lexical_cast<int>( s.substr( offset, firstSlashOffset - offset ) ) : 
-            lexical_cast<int>( s.substr( offset, endOfTriple - offset));
+            stoi( s.substr( offset, firstSlashOffset - offset ) ) :
+            stoi( s.substr( offset, endOfTriple - offset));
         
 		if( vertexIndex < 0 )
 			result.mVertexIndices.push_back( group->mBaseVertexOffset + vertexIndex );
@@ -281,7 +275,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 		if( includeTexCoords && ( firstSlashOffset != string::npos ) ) {
 			size_t numSize = ( secondSlashOffset == string::npos ) ? ( endOfTriple - firstSlashOffset - 1 ) : secondSlashOffset - firstSlashOffset - 1;
 			if( numSize > 0 ) {
-				int texCoordIndex = lexical_cast<int>( s.substr( firstSlashOffset + 1, numSize ) );
+				int texCoordIndex = stoi( s.substr( firstSlashOffset + 1, numSize ) );
 				if( texCoordIndex < 0 )
 					result.mTexCoordIndices.push_back( group->mBaseTexCoordOffset + texCoordIndex );
 				else
@@ -297,7 +291,7 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
 			
 		// process the normal index
 		if( includeNormals && ( secondSlashOffset != string::npos ) ) {
-			int normalIndex = lexical_cast<int>( s.substr( secondSlashOffset + 1, endOfTriple - secondSlashOffset - 1 ) );
+			int normalIndex = stoi( s.substr( secondSlashOffset + 1, endOfTriple - secondSlashOffset - 1 ) );
 			if( normalIndex < 0 )
 				result.mNormalIndices.push_back( group->mBaseNormalOffset + normalIndex );
 			else
@@ -437,8 +431,8 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
-				VertexTriple triple = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v], group.mFaces[f].mNormalIndices[v] );
-				pair<map<VertexTriple,int>::iterator,bool> result = uniqueVerts.insert( make_pair( triple, mOutputVertices.size() ) );
+				VertexTriple vTriple = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v], group.mFaces[f].mNormalIndices[v] );
+				pair<map<VertexTriple,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vTriple, mOutputVertices.size() ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
@@ -504,8 +498,8 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
-				VertexPair triple = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mNormalIndices[v] );
-				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( triple, mOutputVertices.size() ) );
+				VertexPair vPair = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mNormalIndices[v] );
+				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, mOutputVertices.size() ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
@@ -561,8 +555,8 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 		faceIndices.reserve( group.mFaces[f].mNumVertices );
 		for( int v = 0; v < group.mFaces[f].mNumVertices; ++v ) {
 			if( ! forceUnique ) {
-				VertexPair triple = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v] );
-				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( triple, mOutputVertices.size() ) );
+				VertexPair vPair = make_tuple( group.mFaces[f].mVertexIndices[v], group.mFaces[f].mTexCoordIndices[v] );
+				pair<map<VertexPair,int>::iterator,bool> result = uniqueVerts.insert( make_pair( vPair, mOutputVertices.size() ) );
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );

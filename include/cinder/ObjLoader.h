@@ -29,7 +29,7 @@
 #include "cinder/DataTarget.h"
 #include "cinder/GeomIo.h"
 
-#include <boost/tuple/tuple_comparison.hpp>
+#include <tuple>
 #include <map>
 
 namespace cinder {
@@ -121,8 +121,8 @@ class ObjLoader : public geom::Source {
 	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 
   private:
-	typedef boost::tuple<int,int> VertexPair;
-	typedef boost::tuple<int,int,int> VertexTriple;
+	typedef std::tuple<int,int> VertexPair;
+	typedef std::tuple<int,int,int> VertexTriple;
 
 	void	parse( bool includeNormals, bool includeTexCoords );
  	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords );
@@ -130,9 +130,9 @@ class ObjLoader : public geom::Source {
 
 	void	load() const;
 
-	void	loadGroupNormalsTextures( const Group &group, std::map<boost::tuple<int,int,int>,int> &uniqueVerts ) const;
-	void	loadGroupNormals( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts ) const;
-	void	loadGroupTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts ) const;
+	void	loadGroupNormalsTextures( const Group &group, std::map<VertexTriple,int> &uniqueVerts ) const;
+	void	loadGroupNormals( const Group &group, std::map<VertexPair,int> &uniqueVerts ) const;
+	void	loadGroupTextures( const Group &group, std::map<VertexPair,int> &uniqueVerts ) const;
 	void	loadGroup( const Group &group, std::map<int,int> &uniqueVerts ) const;
 
 	std::shared_ptr<IStreamCinder>	mStream;
