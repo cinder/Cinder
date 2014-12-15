@@ -195,13 +195,6 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 			vec3 v;
 			ss >> v.x >> v.y >> v.z;
 			mInternalVertices.push_back( v );
-			// Check if per-vertex colors exist
-			if ( (ss.rdstate() & ios_base::eofbit ) == 0 ) {
-				Colorf c;
-				ss >> c.r >> c.g >> c.b;
-				if ( (ss.rdstate() & ios_base::failbit ) == 0 && (ss.rdstate() & ios_base::badbit ) == 0 )
-					mInternalColors.push_back( c );
-			}
 		}
 		else if( tag == "vt" ) { // vertex texture coordinates
 			if( includeTexCoords ) {
@@ -227,7 +220,6 @@ void ObjLoader::parse( bool includeNormals, bool includeTexCoords )
 			currentGroup->mBaseVertexOffset = (int32_t)mInternalVertices.size();
 			currentGroup->mBaseTexCoordOffset = (int32_t)mInternalTexCoords.size();
 			currentGroup->mBaseNormalOffset = (int32_t)mInternalNormals.size();
-			currentGroup->mBaseColorOffset = (int32_t)mInternalColors.size();
 			currentGroup->mName = line.substr( line.find( ' ' ) + 1 );
 		}
         else if( tag == "usemtl") { // material
@@ -271,14 +263,10 @@ void ObjLoader::parseFace( Group *group, const Material *material, const std::st
             lexical_cast<int>( s.substr( offset, firstSlashOffset - offset ) ) : 
             lexical_cast<int>( s.substr( offset, endOfTriple - offset));
         
-		if( vertexIndex < 0 ) {
-			result.mVertexIndices.push_back( group->mBaseVertexOffset + vertexIndex );	
-			result.mColorIndices.push_back( group->mBaseColorOffset + vertexIndex );
-		}
-		else {
+		if( vertexIndex < 0 )
+			result.mVertexIndices.push_back( group->mBaseVertexOffset + vertexIndex );
+		else
 			result.mVertexIndices.push_back( vertexIndex - 1 );
-			result.mColorIndices.push_back( vertexIndex - 1 );
-		}
 			
 		// process the tex coord index
 		if( includeTexCoords && ( firstSlashOffset != string::npos ) ) {
@@ -408,12 +396,12 @@ void ObjLoader::load() const
 
 void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,int> &uniqueVerts ) const
 {
-    bool hasMaterialColors = mMaterials.size() > 0;
+    bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
 		vec3 inferredNormal;
 		bool forceUnique = false;
 		Color rgb;
-		if( hasMaterialColors ) {
+		if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
 			if( m ) {
 				rgb.r = m->Kd[0];
@@ -446,10 +434,8 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
-					if( hasMaterialColors )
+					if( hasColors )
 						mOutputColors.push_back( rgb );
-					else if ( mInternalColors.size() > 0 )
-						mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -466,11 +452,8 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 					mOutputTexCoords.push_back( vec2() );
 				else
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
-                if( hasMaterialColors )
+                if( hasColors )
                     mOutputColors.push_back( rgb );
-				else if ( mInternalColors.size() > 0 )
-					mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
-
 			}
 		}
 
@@ -483,10 +466,10 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
 
 void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqueVerts ) const
 {
-    bool hasMaterialColors = mMaterials.size() > 0;
+    bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
         Color rgb;
-        if( hasMaterialColors ) {
+        if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
 			if( m ) {
 				rgb.r = m->Kd[0];
@@ -517,10 +500,8 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
-                    if( hasMaterialColors )
+                    if( hasColors )
                         mOutputColors.push_back( rgb );
-                    else if ( mInternalColors.size() > 0 )
-						mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -533,11 +514,8 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 					mOutputNormals.push_back( inferredNormal );
 				else
 					mOutputNormals.push_back( mInternalNormals[group.mFaces[f].mNormalIndices[v]] );
-                if( hasMaterialColors )
+                if( hasColors )
                     mOutputColors.push_back( rgb );
-				else if ( mInternalColors.size() > 0 )
-					mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
-
 			}
 		}
 
@@ -550,10 +528,10 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 
 void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniqueVerts ) const
 {
-    bool hasMaterialColors = mMaterials.size() > 0;
+    bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
         Color rgb;
-        if( hasMaterialColors ) {
+        if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
 			if( m ) {
 				rgb.r = m->Kd[0];
@@ -579,11 +557,8 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 				if( result.second ) { // we've got a new, unique vertex here, so let's append it
 					mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
-                    if( hasMaterialColors )
+                    if( hasColors )
                         mOutputColors.push_back( rgb );
-					else if ( mInternalColors.size() > 0 )
-						mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
-
 				}
 				// the unique ID of the vertex is appended for this vert
 				faceIndices.push_back( result.first->second );
@@ -596,10 +571,8 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 					mOutputTexCoords.push_back( vec2() );
 				else
 					mOutputTexCoords.push_back( mInternalTexCoords[group.mFaces[f].mTexCoordIndices[v]] );
-                if( hasMaterialColors )
+                if( hasColors )
                     mOutputColors.push_back( rgb );
-				else if ( mInternalColors.size() > 0 )
-					mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
 			}
 		}
 
@@ -612,10 +585,10 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 
 void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 {
-    bool hasMaterialColors = mMaterials.size() > 0;
+    bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
         Color rgb;
-        if( hasMaterialColors ) {
+        if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
             if( m ) {
                 rgb.r = m->Kd[0];
@@ -634,10 +607,8 @@ void ObjLoader::loadGroup( const Group &group, map<int,int> &uniqueVerts ) const
 			pair<map<int,int>::iterator,bool> result = uniqueVerts.insert( make_pair( group.mFaces[f].mVertexIndices[v], mOutputVertices.size() ) );
 			if( result.second ) { // we've got a new, unique vertex here, so let's append it
 				mOutputVertices.push_back( mInternalVertices[group.mFaces[f].mVertexIndices[v]] );
-                if( hasMaterialColors )
+                if( hasColors )
                     mOutputColors.push_back( rgb );
-				else if ( mInternalColors.size() > 0 )
-					mOutputColors.push_back( mInternalColors[group.mFaces[f].mColorIndices[v]] );
 			}
 			// the unique ID of the vertex is appended for this vert
 			faceIndices.push_back( result.first->second );
