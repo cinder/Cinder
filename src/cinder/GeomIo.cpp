@@ -286,8 +286,73 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 	}
 }
 
+// Lengyel, Eric. "Computing Tangent Space Basis Vectors for an Arbitrary Mesh". 
+// Terathon Software 3D Graphics Library, 2001.
+// http://www.terathon.com/code/tangent.html
+template<typename TEXTYPE>
+void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const TEXTYPE *texCoords, vector<vec3> *resultTangents, vector<vec3> *resultBitangents )
+{
+	if( resultTangents )
+		resultTangents->assign( numVertices, vec3( 0 ) );
+
+	size_t numTriangles = numIndices / 3;
+	for( size_t i = 0; i < numTriangles; ++i ) {
+		uint32_t index0 = indices[i * 3];
+		uint32_t index1 = indices[i * 3 + 1];
+		uint32_t index2 = indices[i * 3 + 2];
+
+		const vec3 &v0 = positions[index0];
+		const vec3 &v1 = positions[index1];
+		const vec3 &v2 = positions[index2];
+
+		const vec2 &w0 = vec2( texCoords[index0] );
+		const vec2 &w1 = vec2( texCoords[index1] );
+		const vec2 &w2 = vec2( texCoords[index2] );
+
+		float x1 = v1.x - v0.x;
+		float x2 = v2.x - v0.x;
+		float y1 = v1.y - v0.y;
+		float y2 = v2.y - v0.y;
+		float z1 = v1.z - v0.z;
+		float z2 = v2.z - v0.z;
+
+		float s1 = w1.x - w0.x;
+		float s2 = w2.x - w0.x;
+		float t1 = w1.y - w0.y;
+		float t2 = w2.y - w0.y;
+
+		float r = 1.0f / (s1 * t2 - s2 * t1);
+		vec3 tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+
+		(*resultTangents)[index0] += tangent;
+		(*resultTangents)[index1] += tangent;
+		(*resultTangents)[index2] += tangent;
+	}
+
+	for( size_t i = 0; i < numVertices; ++i ) {
+		vec3 normal = normals[i];
+		vec3 tangent = (*resultTangents)[i];
+		(*resultTangents)[i] = normalize( tangent - normal * dot( normal, tangent ) );
+	}
+
+	if( resultBitangents ) {
+		resultBitangents->reserve( numVertices );
+		for( size_t i = 0; i < numVertices; ++i )
+			resultBitangents->emplace_back( normalize( cross( normals[i], (*resultTangents)[i] ) ) );
+	}
+}
+
 } // anonymous namespace
 
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec2 *texCoords, vector<vec3> *resultTangents, vector<vec3> *resultBitangents )
+{
+	calculateTangentsImpl( numIndices, indices, numVertices, positions, normals, texCoords, resultTangents, resultBitangents );
+}
+
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec3 *texCoords, vector<vec3> *resultTangents, vector<vec3> *resultBitangents )
+{
+	calculateTangentsImpl( numIndices, indices, numVertices, positions, normals, texCoords, resultTangents, resultBitangents );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Target
@@ -337,8 +402,9 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 // Rect
 //float Rect::sPositions[4*2] = { 0.5f,-0.5f,	-0.5f,-0.5f,	0.5f,0.5f,	-0.5f,0.5f };
 //float Rect::sColors[4*3] = { 1, 0, 1,	0, 0, 1,	1, 1, 1,	0, 1, 1 };
-//float Rect::sTexCoords[4*2] = { 1, 1,	0, 1,		1, 0,		0, 0 };
-float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
+//float Rect::sTexCoords[4*2] = { 1, 1,		0, 1,		1, 0,		0, 0 };
+const float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
+const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
 
 Rect::Rect()
 {
@@ -401,10 +467,16 @@ Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2
 
 void Rect::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 4 );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
-	target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
+	if( requestedAttribs.count( Attrib::POSITION ) )
+		target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)mPositions.data(), 4 );
+	if( requestedAttribs.count( Attrib::NORMAL ) )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, sNormals, 4 );
+	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)mTexCoords.data(), 4 );
+	if( requestedAttribs.count( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)mColors.data(), 4 );
+	if( requestedAttribs.count( Attrib::TANGENT ) )
+		target->copyAttrib( Attrib::TANGENT, 3, 0, sTangents, 4 );
 }
 
 uint8_t	Rect::getAttribDims( Attrib attr ) const
@@ -414,6 +486,7 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return 4;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -421,7 +494,7 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 
 AttribSet Rect::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -482,6 +555,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 4 : 0;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}	
@@ -489,7 +563,7 @@ uint8_t	Cube::getAttribDims( Attrib attr ) const
 
 AttribSet Cube::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void generateFace( const vec3 &faceCenter, const vec3 &uAxis, const vec3 &vAxis, int subdivU, int subdivV,
@@ -552,7 +626,7 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	// reserve room in vectors and set pointers to non-null for normals, texcoords and colors as appropriate
 	positions.reserve( numVertices );
 	indices.reserve( getNumIndices() );
-	if( requestedAttribs.count( Attrib::NORMAL ) > 0 ) {
+	if( requestedAttribs.count( Attrib::NORMAL ) || requestedAttribs.count( Attrib::TANGENT ) ) {
 		normals.reserve( numVertices );
 		normalsPtr = &normals;
 	}
@@ -560,7 +634,7 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 		colors.reserve( numVertices );
 		colorsPtr = &colors;
 	}
-	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) > 0 ) {
+	if( requestedAttribs.count( Attrib::TEX_COORD_0 ) || requestedAttribs.count( Attrib::TANGENT ) ) {
 		texCoords.reserve( numVertices );
 		texCoordsPtr = &texCoords;
 	}
@@ -591,6 +665,15 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), numVertices );
 	if( colorsPtr )
 		target->copyAttrib( Attrib::COLOR, 4, 0, (const float*)colors.data(), numVertices );
+
+	// generate tangents
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( getNumIndices(), indices.data(), numVertices, positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), numVertices );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), getNumIndices(), calcIndicesRequiredBytes( getNumIndices() ) );
 }
@@ -823,6 +906,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 	switch( attr ) {
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
+		case Attrib::TANGENT: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
 		default:
@@ -832,7 +916,7 @@ uint8_t Icosphere::getAttribDims( Attrib attr ) const
 
 AttribSet Icosphere::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -843,6 +927,12 @@ void Icosphere::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *mNormals.data() ), mNormals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *mTexCoords.data() ), mTexCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *mColors.data() ), mColors.size() );
+
+	if( requestedAttribs.count( Attrib::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( mIndices.size(), mIndices.data(), mPositions.size(), mPositions.data(), mNormals.data(), mTexCoords.data(), &tangents, nullptr );
+		target->copyAttrib( Attrib::TANGENT, 3, 0, value_ptr( *tangents.data() ), tangents.size() );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, mIndices.data(), mIndices.size(), 4 );
 }
@@ -924,6 +1014,7 @@ uint8_t	Teapot::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -931,7 +1022,7 @@ uint8_t	Teapot::getAttribDims( Attrib attr ) const
 
 AttribSet Teapot::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::TANGENT };
 }
 
 void Teapot::updateVertexCounts()
@@ -1132,6 +1223,12 @@ void Teapot::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	target->copyAttrib( Attrib::NORMAL, 3, 0, normals.data(), mNumVertices );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, texCoords.data(), mNumVertices );
 
+	if( requestedAttribs.count( Attrib::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( indices.size(), indices.data(), positions.size() / 3, (const vec3*)positions.data(), (const vec3*)normals.data(), (const vec2*)texCoords.data(), &tangents, nullptr );
+		target->copyAttrib( Attrib::TANGENT, 3, 0, value_ptr( *tangents.data() ), tangents.size() );
+	}
+
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), mNumIndices, 4 );
 }
 
@@ -1192,8 +1289,8 @@ AttribSet Circle::getAvailableAttribs() const
 
 void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
-	std::vector<vec2>	positions, texCoords;
-	std::vector<vec3>	normals;
+	std::vector<vec2> positions, texCoords;
+	std::vector<vec3> normals;
 
 	positions.reserve( mNumVertices );
 	texCoords.reserve( mNumVertices );
@@ -1259,6 +1356,7 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -1266,7 +1364,7 @@ uint8_t Sphere::getAttribDims( Attrib attr ) const
 
 AttribSet Sphere::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1328,6 +1426,14 @@ void Sphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
 
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( indices.size(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
+
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
 
@@ -1363,10 +1469,13 @@ void Capsule::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<
 	size_t ringsTotal = mSubdivisionsHeight + ringsBody;
 
 	positions->reserve( mNumSegments * ringsTotal );
-	normals->reserve( mNumSegments * ringsTotal );
-	texCoords->reserve( mNumSegments * ringsTotal );
-	colors->reserve( mNumSegments * ringsTotal );
-	indices->reserve( mNumSegments * ringsTotal * 6 );
+	if( normals )
+		normals->reserve( mNumSegments * ringsTotal );
+	if( texCoords )
+		texCoords->reserve( mNumSegments * ringsTotal );
+	if( colors )
+		colors->reserve( mNumSegments * ringsTotal );
+	indices->reserve( ( mNumSegments - 1 ) * ( ringsTotal - 1 ) * 6 );
 
 	float bodyIncr = 1.0f / (float)( ringsBody - 1 );
 	float ringIncr = 1.0f / (float)( mSubdivisionsHeight - 1 );
@@ -1405,14 +1514,19 @@ void Capsule::calculateRing( size_t segments, float radius, float y, float dy,
 
 		positions->emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) ) );
 
-		normals->emplace_back( quaternion * glm::vec3( x, y, z ) );
+		if( normals )
+			normals->emplace_back( quaternion * glm::vec3( x, y, z ) );
 		// perform cylindrical projection
-		float u = 1.0f - (s * segIncr);
-		float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-		texCoords->emplace_back( u, v );
-
-		float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
-		colors->emplace_back( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f );
+		if( texCoords ) {
+			float u = 1.0f - (s * segIncr);
+			float v = 0.5f - ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
+			texCoords->emplace_back( u, v );
+		}
+		
+		if( colors ) {
+			float g = 0.5f + ((mRadius * y + mLength * dy) / (2.0f * mRadius + mLength));
+			colors->emplace_back( x * 0.5f + 0.5f, g, z * 0.5f + 0.5f );
+		}
 	}
 }
 
@@ -1423,7 +1537,7 @@ size_t Capsule::getNumVertices() const
 
 size_t Capsule::getNumIndices() const
 {
-	return mNumSegments * ( mSubdivisionsHeight * 2 + 1 ) * 6;
+	return ( mNumSegments - 1 ) * ( mSubdivisionsHeight + mSubdivisionsHeight ) * 6;
 }
 
 uint8_t Capsule::getAttribDims( Attrib attr ) const
@@ -1433,6 +1547,7 @@ uint8_t Capsule::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -1440,7 +1555,7 @@ uint8_t Capsule::getAttribDims( Attrib attr ) const
 
 AttribSet Capsule::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void Capsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1450,12 +1565,27 @@ void Capsule::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 	std::vector<vec3> colors;
 	std::vector<uint32_t> indices;
 
-	calculate( &positions, &normals, &texCoords, &colors, &indices );
-	
+	vector<vec3> *normalsPtr = ( requestedAttribs.count( Attrib::NORMAL ) || requestedAttribs.count( Attrib::TANGENT ) ) ? &normals : nullptr;
+	vector<vec2> *texCoordsPtr = ( requestedAttribs.count( Attrib::TEX_COORD_0 ) || requestedAttribs.count( Attrib::TANGENT ) ) ? &texCoords : nullptr;
+	vector<vec3> *colorsPtr = ( requestedAttribs.count( Attrib::COLOR ) ) ? &colors : nullptr;
+
+	calculate( &positions, normalsPtr, texCoordsPtr, colorsPtr, &indices );
+
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
-	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+	if( normalsPtr )
+		target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	if( texCoordsPtr )
+		target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	if( colorsPtr )
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( indices.size(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
@@ -1498,7 +1628,8 @@ void Torus::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<ve
 	positions->reserve( mNumAxis * mNumRings );
 	normals->reserve( mNumAxis * mNumRings );
 	texCoords->reserve( mNumAxis * mNumRings );
-	colors->reserve( mNumAxis * mNumRings );
+	if( colors )
+		colors->reserve( mNumAxis * mNumRings );
 	indices->reserve( (mNumAxis - 1) * (mNumRings - 1) * 6 );
 
 	float majorIncr = 1.0f / (mNumAxis - 1);
@@ -1528,7 +1659,8 @@ void Torus::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<ve
 			normals->emplace_back( cosPhi * cosTheta, sinTheta, sinPhi * cosTheta );
 
 			const vec3 &n = normals->back();
-			colors->emplace_back( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
+			if( colors )
+				colors->emplace_back( n.x * 0.5f + 0.5f, n.y * 0.5f + 0.5f, n.z * 0.5f + 0.5f );
 		}
 	}
 
@@ -1553,6 +1685,7 @@ uint8_t Torus::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -1560,7 +1693,7 @@ uint8_t Torus::getAttribDims( Attrib attr ) const
 
 AttribSet Torus::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1570,12 +1703,23 @@ void Torus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	std::vector<vec3> colors;
 	std::vector<uint32_t> indices;
 
-	calculate( &positions, &normals, &texCoords, &colors, &indices );
+	vector<vec3> *colorsPtr = ( requestedAttribs.count( Attrib::COLOR ) ) ? &colors : nullptr;
+
+	calculate( &positions, &normals, &texCoords, colorsPtr, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
-	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+	if( requestedAttribs.count( Attrib::COLOR ) )
+		target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( indices.size(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
@@ -1734,6 +1878,7 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -1741,7 +1886,7 @@ uint8_t Cylinder::getAttribDims( Attrib attr ) const
 
 AttribSet Cylinder::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
 }
 
 void Cylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1756,6 +1901,14 @@ void Cylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( indices.size(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
@@ -1805,6 +1958,7 @@ uint8_t Plane::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -1812,7 +1966,7 @@ uint8_t Plane::getAttribDims( Attrib attr ) const
 
 AttribSet Plane::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::TANGENT };
 }
 
 void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -1859,6 +2013,15 @@ void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+
+	// generate tangents
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( getNumIndices(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
 	
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 4 );
 }
@@ -1885,6 +2048,7 @@ void Transform::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[POSITION] = Modifier::READ_WRITE;
 	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	attribAccess[TANGENT] = Modifier::READ_WRITE;
 	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
 	mSource.loadInto( &modifier, requestedAttribs );
 	
@@ -1911,7 +2075,7 @@ void Transform::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 	else if( modifier.getReadAttribDims( POSITION ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
 	
-	// and finally, we'll make the sort of modification to our normals (if they're present)
+	// we'll make the sort of modification to our normals (if they're present)
 	// using the inverse transpose of 'mTransform'
 	if( modifier.getReadAttribDims( NORMAL ) == 3 ) {
 		vec3* normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
@@ -1919,6 +2083,18 @@ void Transform::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 		for( size_t v = 0; v < numVertices; ++v )
 			normals[v] = normalsTransform * normals[v];
 		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
+	}
+	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
+
+	// and finally, we'll make the sort of modification to our tangents (if they're present)
+	// using the inverse transpose of 'mTransform'
+	if( modifier.getReadAttribDims( TANGENT ) == 3 ) {
+		vec3* tangents = reinterpret_cast<vec3*>( modifier.getReadAttribData( TANGENT ) );
+		mat3 tangentsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
+		for( size_t v = 0; v < numVertices; ++v )
+			tangents[v] = tangentsTransform * tangents[v];
+		target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents, numVertices );
 	}
 	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
@@ -1942,6 +2118,7 @@ void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[POSITION] = Modifier::READ_WRITE;
 	attribAccess[NORMAL] = Modifier::READ_WRITE;
+	attribAccess[TANGENT] = Modifier::READ_WRITE;
 	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
 	mSource.loadInto( &modifier, requestedAttribs );
 	
@@ -1951,9 +2128,11 @@ void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 
 	if( modifier.getReadAttribDims( POSITION ) == 3 ) {
 		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
-		vec3* normals = nullptr;
+		vec3* normals = nullptr, *tangents = nullptr;
 		if( modifier.getReadAttribDims( NORMAL ) == 3 )
 			normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
+		if( modifier.getReadAttribDims( TANGENT ) == 3 )
+			tangents = reinterpret_cast<vec3*>( modifier.getReadAttribData( TANGENT ) );
 		
 		for( size_t v = 0; v < numVertices; ++v ) {
 			// find the 't' value of the point on the axis that inPosition is closest to
@@ -1968,13 +2147,17 @@ void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 			vec3 outPos = vec3( transform * vec4( positions[v], 1 ) );
 			positions[v] = outPos;
 			// we need to transform the normal by rotating it by the same angle (but not around the point) we did the position
-			if( normals ) {
+			if( normals )
 				normals[v] = vec3( rotation * vec4( normals[v], 0 ) );
-			}
+			// we need to transform the tangent by rotating it by the same angle (but not around the point) we did the position
+			if( tangents )
+				tangents[v] = vec3( rotation * vec4( tangents[v], 0 ) );
 		}
 		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
 		if( normals )
 			target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
+		if( tangents )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents, numVertices );
 	}
 	else if( modifier.getReadAttribDims( POSITION ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Twist" );
@@ -2231,10 +2414,16 @@ void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAt
 {
 	// we want to capture 'mSrcAttrib' and we want to write 'mDstAttrib'
 	std::map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[mSrcAttrib] = Modifier::READ;
-	attribAccess[mDstAttrib] = Modifier::WRITE;
+	if( mSrcAttrib != mDstAttrib ) {
+		attribAccess[mSrcAttrib] = Modifier::READ;
+		attribAccess[mDstAttrib] = Modifier::WRITE;
+	}
+	else
+		attribAccess[mSrcAttrib] = Modifier::READ_WRITE;
+	auto attribs = requestedAttribs;
+	attribs.insert( mSrcAttrib );
 	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
-	mSource.loadInto( &modifier, requestedAttribs );
+	mSource.loadInto( &modifier, attribs );
 
 	if( modifier.getAttribDims( mSrcAttrib ) == 0 ) {
 		CI_LOG_W( "AttribFn called on geom::Source missing requested " << attribToString( mSrcAttrib ) );
@@ -2259,7 +2448,7 @@ void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAt
 		inputAttribData = modifier.getReadAttribData( mSrcAttrib );
 	
 	processAttrib<S,D>( inputAttribData, outData.get(), mFn, numVertices );
-	target->copyAttrib( Attrib::COLOR, DSTDIM, 0, outData.get(), numVertices );
+	target->copyAttrib( mDstAttrib, DSTDIM, 0, outData.get(), numVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2407,6 +2596,7 @@ uint8_t	Extrude::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 3;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -2414,7 +2604,7 @@ uint8_t	Extrude::getAttribDims( Attrib attr ) const
 
 AttribSet Extrude::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::TANGENT };
 }
 
 void Extrude::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -2427,6 +2617,15 @@ void Extrude::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), positions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), normals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 3, 0, (const float*)texCoords.data(), texCoords.size() );
+
+	// generate tangents
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( getNumIndices(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), calcIndicesRequiredBytes( indices.size() ) );
 }
@@ -2590,6 +2789,7 @@ uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 3;
+		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
 	}
@@ -2597,7 +2797,7 @@ uint8_t	ExtrudeSpline::getAttribDims( Attrib attr ) const
 
 AttribSet ExtrudeSpline::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::TANGENT };
 }
 
 void ExtrudeSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -2611,13 +2811,22 @@ void ExtrudeSpline::loadInto( Target *target, const AttribSet &requestedAttribs 
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), normals.size() );
 	target->copyAttrib( Attrib::TEX_COORD_0, 3, 0, (const float*)texCoords.data(), texCoords.size() );
 
+	// generate tangents
+	if( requestedAttribs.count( geom::TANGENT ) ) {
+		vector<vec3> tangents;
+		calculateTangents( getNumIndices(), indices.data(), positions.size(), positions.data(), normals.data(), texCoords.data(), &tangents, nullptr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), tangents.size() );
+	}
+
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), calcIndicesRequiredBytes( indices.size() ) );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // VertexNormalLines
-VertexNormalLines::VertexNormalLines( const geom::Source &source, float length )
-	: mSource( source ), mLength( length )
+VertexNormalLines::VertexNormalLines( const geom::Source &source, float length, Attrib attrib )
+	: mSource( source ), mLength( length ), mAttrib( attrib )
 {
 }
 
@@ -2635,7 +2844,7 @@ uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
 		return 3;
 	else if( attr == Attrib::CUSTOM_0 )
 		return 1;
-	else if( attr == Attrib::NORMAL || attr == Attrib::COLOR )
+	else if( attr == mAttrib || attr == Attrib::COLOR )
 		return 0;
 	else
 		return mSource.getAttribDims( attr );
@@ -2644,7 +2853,7 @@ uint8_t VertexNormalLines::getAttribDims( Attrib attr ) const
 AttribSet VertexNormalLines::getAvailableAttribs() const
 {
 	AttribSet result = mSource.getAvailableAttribs();
-	result.erase( Attrib::NORMAL );
+	result.erase( mAttrib );
 	result.erase( Attrib::COLOR );
 	result.insert( Attrib::POSITION );
 	result.insert( Attrib::CUSTOM_0 );
@@ -2656,11 +2865,11 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 	// we are interested in removing normals and colors and outputting positions
 	map<Attrib,Modifier::Access> attribAccess;
 	attribAccess[Attrib::POSITION] = Modifier::READ_WRITE;
-	attribAccess[Attrib::NORMAL] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
+	attribAccess[mAttrib] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
 	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ_WRITE;
 	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
 	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
-	mSource.loadInto( &modifier, { Attrib::POSITION, Attrib::NORMAL } );
+	mSource.loadInto( &modifier, { Attrib::POSITION, mAttrib } );
 
 	const size_t numInIndices = modifier.getNumIndices();
 	const size_t numInVertices = mSource.getNumVertices();
@@ -2669,17 +2878,17 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 		CI_LOG_W( "VertexNormalLines only works for 3D positions" );
 		return;
 	}
-	if( modifier.getReadAttribDims( Attrib::NORMAL ) != 3 ) {
-		if( modifier.getReadAttribDims( Attrib::NORMAL ) > 0 )
-			CI_LOG_W( "VertexNormalLines requires 3D normals" );
+	if( modifier.getReadAttribDims( mAttrib ) != 3 ) {
+		if( modifier.getReadAttribDims( mAttrib ) > 0 )
+			CI_LOG_W( "VertexNormalLines requires 3D " << attribToString( mAttrib ) );
 		else
-			CI_LOG_W( "VertexNormalLines requires normals" );
+			CI_LOG_W( "VertexNormalLines requires " << attribToString( mAttrib ) );
 		return;
 	}
 
 	const uint32_t *indices = modifier.getIndicesData();
 	const vec3 *positions = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::POSITION ) );
-	const vec3 *normals = reinterpret_cast<const vec3*>( modifier.getReadAttribData( Attrib::NORMAL ) );
+	const vec3 *attrib = reinterpret_cast<const vec3*>( modifier.getReadAttribData( mAttrib ) );
 	const float *texCoords = nullptr;
 	size_t texCoordDims = modifier.getReadAttribDims( Attrib::TEX_COORD_0 );
 	if( texCoordDims > 0 )
@@ -2694,7 +2903,7 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 
 	if( indices ) {
 		for( size_t i = 0; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
-			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + normals[indices[i]] * mLength );
+			outPositions.emplace_back( positions[indices[i]] ); outPositions.emplace_back( positions[indices[i]] + attrib[indices[i]] * mLength );
 			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
 			if( texCoords ) {
 				for( size_t d = 0; d < texCoordDims; ++d )
@@ -2706,7 +2915,7 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 	}
 	else {
 		for( size_t i = 0; i < numInVertices; i++ ) { // lines connecting first vertex ("hub") and all others
-			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + normals[i] * mLength );
+			outPositions.emplace_back( positions[i] ); outPositions.emplace_back( positions[i] + attrib[i] * mLength );
 			outCustom0.emplace_back( 0 ); outCustom0.emplace_back( 1 );
 			if( texCoords ) {
 				for( size_t d = 0; d < texCoordDims; ++d )
@@ -2721,6 +2930,73 @@ void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttr
 	target->copyAttrib( Attrib::CUSTOM_0, 1, 0, (const float*)outCustom0.data(), getNumVertices() );
 	if( texCoords )
 		target->copyAttrib( Attrib::TEX_COORD_0, texCoordDims, 0, (const float*)outTexCoord0.data(), getNumVertices() );	
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Tangents
+uint8_t Tangents::getAttribDims( Attrib attr ) const
+{
+	if( attr == Attrib::TANGENT || attr == Attrib::BITANGENT )
+		return 3;
+	else
+		return mSource.getAttribDims( attr );
+}
+
+AttribSet Tangents::getAvailableAttribs() const
+{
+	AttribSet result = mSource.getAvailableAttribs();
+	result.insert( Attrib::TANGENT );
+	result.insert( Attrib::BITANGENT );
+	return result;
+}
+
+void Tangents::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	// we are interested in removing normals and colors and outputting positions
+	map<Attrib,Modifier::Access> attribAccess;
+	attribAccess[Attrib::POSITION] = Modifier::READ;
+	attribAccess[Attrib::NORMAL] = Modifier::READ;
+	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ;
+	attribAccess[Attrib::TANGENT] = Modifier::WRITE;
+	if( requestedAttribs.count( Attrib::BITANGENT ) )
+		attribAccess[Attrib::BITANGENT] = Modifier::WRITE;
+	Modifier modifier( mSource, target, attribAccess, Modifier::READ );
+	mSource.loadInto( &modifier, { Attrib::POSITION, Attrib::NORMAL, TEX_COORD_0 } );
+
+	const size_t numIndices = modifier.getNumIndices();
+	const size_t numVertices = mSource.getNumVertices();
+
+	if( ! modifier.getNumIndices() ) {
+		CI_LOG_W( "geom::Tangents requires indexed geometry" );
+		return;
+	}
+	if( modifier.getReadAttribDims( Attrib::POSITION ) != 3 ) {
+		CI_LOG_W( "geom::Tangents requires 3D positions" );
+		return;
+	}
+	if( modifier.getReadAttribDims( Attrib::NORMAL ) != 3 ) {
+		CI_LOG_W( "geom::Tangents requires 3D normals" );
+		return;
+	}
+	if( modifier.getReadAttribDims( Attrib::TEX_COORD_0 ) != 2 ) {
+		CI_LOG_W( "geom::Tangents requires 2D texture coordinates" );
+		return;
+	}
+
+	const vec3 *positions = (const vec3*)modifier.getReadAttribData( geom::POSITION );
+	const vec3 *normals = (const vec3*)modifier.getReadAttribData( geom::NORMAL );
+	const vec2 *texCoords = (const vec2*)modifier.getReadAttribData( geom::TEX_COORD_0 );
+	
+	if( requestedAttribs.count( geom::TANGENT ) || requestedAttribs.count( geom::BITANGENT ) ) {
+		vector<vec3> tangents, bitangents;
+		vector<vec3> *bitangentPtr = ( requestedAttribs.count( geom::BITANGENT ) ) ? &bitangents : nullptr;
+		calculateTangents( numIndices, modifier.getIndicesData(), numVertices, positions, normals, texCoords, &tangents, bitangentPtr );
+		
+		if( requestedAttribs.count( geom::TANGENT ) )
+			target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents.data(), numVertices );
+		if( bitangentPtr )
+			target->copyAttrib( Attrib::BITANGENT, 3, 0, (const float*)bitangentPtr, numVertices );
+	}
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////

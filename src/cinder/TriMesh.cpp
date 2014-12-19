@@ -572,10 +572,6 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 	return true;
 }
 
-// Code taken from:
-// Lengyel, Eric. "Computing Tangent Space Basis Vectors for an Arbitrary Mesh". 
-// Terathon Software 3D Graphics Library, 2001.
-// http://www.terathon.com/code/tangent.html
 bool TriMesh::recalculateTangents()
 {
 	// requires valid 2D texture coords and 3D normals
@@ -585,48 +581,12 @@ bool TriMesh::recalculateTangents()
 	if( ! hasNormals() )
 		return false;
 
-	mTangents.assign( mNormals.size(), vec3() );
+	mTangents.clear();
 
-	size_t n = getNumTriangles();
-	for( size_t i = 0; i < n; ++i ) {
-		uint32_t index0 = mIndices[i * 3];
-		uint32_t index1 = mIndices[i * 3 + 1];
-		uint32_t index2 = mIndices[i * 3 + 2];
-
-		const vec3 &v0 = *(const vec3*)(&mPositions[index0*3]);
-		const vec3 &v1 = *(const vec3*)(&mPositions[index1*3]);
-		const vec3 &v2 = *(const vec3*)(&mPositions[index2*3]);
-
-		const vec2 &w0 = *(const vec2*)(&mTexCoords0[index0*2]);
-		const vec2 &w1 = *(const vec2*)(&mTexCoords0[index1*2]);
-		const vec2 &w2 = *(const vec2*)(&mTexCoords0[index2*2]);
-
-		float x1 = v1.x - v0.x;
-		float x2 = v2.x - v0.x;
-		float y1 = v1.y - v0.y;
-		float y2 = v2.y - v0.y;
-		float z1 = v1.z - v0.z;
-		float z2 = v2.z - v0.z;
-
-		float s1 = w1.x - w0.x;
-		float s2 = w2.x - w0.x;
-		float t1 = w1.y - w0.y;
-		float t2 = w2.y - w0.y;
-
-		float r = 1.0f / (s1 * t2 - s2 * t1);
-		vec3 tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
-
-		mTangents[ index0 ] += tangent;
-		mTangents[ index1 ] += tangent;
-		mTangents[ index2 ] += tangent;
-	}
-
-	n = getNumVertices();
-	for( size_t i = 0; i < n; ++i ) {
-		vec3 normal = mNormals[i];
-		vec3 tangent = mTangents[i];
-		mTangents[i] = normalize( tangent - normal * dot( normal, tangent ) );
-	}
+	const vec3 *positions = reinterpret_cast<const vec3*>( mPositions.data() );
+	const vec3 *normals = reinterpret_cast<const vec3*>( mNormals.data() );
+	const vec2 *texCoords = reinterpret_cast<const vec2*>( mTexCoords0.data() );
+	geom::calculateTangents( mIndices.size(), mIndices.data(), mPositions.size(), positions, normals, texCoords, &mTangents, nullptr );
 
 	mTangentsDims = 3;
 

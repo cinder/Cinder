@@ -64,6 +64,10 @@ enum DataType { FLOAT, INTEGER, DOUBLE };
 std::string attribToString( Attrib attrib );
 //! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
+//! Utility function for calculating tangents and bitangents from indexed geometry. \a resultBitangents may be NULL if not needed.
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec2 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
+//! Utility function for calculating tangents and bitangents from indexed geometry and 3D texture coordinates. \a resultBitangents may be NULL if not needed.
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec3 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
 
 struct AttribInfo {
 	AttribInfo( const Attrib &attrib, uint8_t dims, size_t stride, size_t offset, uint32_t instanceDivisor = 0 )
@@ -185,7 +189,7 @@ class Rect : public Source {
 	std::array<vec2,4>		mPositions, mTexCoords;
 	std::array<ColorAf,4>	mColors;
 
-	static float	sNormals[4*3];
+	static const float	sNormals[4*3], sTangents[4*3];
 };
 
 class Cube : public Source {
@@ -698,6 +702,10 @@ class AttribFn : public Source {
 	AttribFn( const Source &source, Attrib src, Attrib dst, const FN &fn )
 		: mSource( source ), mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
 	{}
+
+	AttribFn( const Source &source, Attrib attrib, const FN &fn )
+		: mSource( source ), mSrcAttrib( attrib ), mDstAttrib( attrib ), mFn( fn )
+	{}
 	
 	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
 	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
@@ -788,7 +796,7 @@ class ExtrudeSpline : public Source {
 //! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0. Prevents pass-through of NORMAL and COLOR. Passes CI_TEX_COORD_0
 class VertexNormalLines : public Source {
   public:
-	VertexNormalLines( const geom::Source &source, float length );
+	VertexNormalLines( const geom::Source &source, float length, Attrib attrib = Attrib::NORMAL );
 
 	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
 
@@ -801,7 +809,26 @@ class VertexNormalLines : public Source {
 	
   protected:
 	const geom::Source&		mSource;
+	Attrib					mAttrib;
 	float					mLength;
+};
+
+//! Enables creation of TANGENT and BITANGENT attributes based on POSITIONS, NORMALS and TEX_COORD_0. Requires indexed geometry.
+class Tangents : public Source {
+  public:
+	Tangents( const geom::Source &source )
+		: mSource( source )
+	{}
+
+	size_t		getNumVertices() const override { return mSource.getNumVertices(); }
+	size_t		getNumIndices() const override { return mSource.getNumIndices(); }
+	Primitive	getPrimitive() const override { return mSource.getPrimitive(); }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	const Source	&mSource;
 };
 
 class BSpline : public Source {
