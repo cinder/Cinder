@@ -308,8 +308,8 @@ VboMesh::VboMesh( uint32_t numVertices, uint32_t numIndices, GLenum glPrimitive,
 	: mNumVertices( numVertices ), mNumIndices( numIndices ), mGlPrimitive( glPrimitive ), mIndexType( indexType ), mIndices( indexVbo )
 {
 	geom::BufferLayout bufferLayout;
-	VboRef vbo;
 	for( const auto &layout : vertexArrayLayouts ) {
+		VboRef vbo;
 		layout.allocate( numVertices, &bufferLayout, &vbo );
 		mVertexArrayVbos.push_back( make_pair( bufferLayout, vbo ) );
 	}
