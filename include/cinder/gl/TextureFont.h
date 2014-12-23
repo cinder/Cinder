@@ -98,10 +98,15 @@ class TextureFont {
 		//! Sets the scale at which the type is rendered. 2 is double size. Default \c 1
 		DrawOptions&	scale( float sc ) { mScale = sc; return *this; }
 
+		//! Returns the user-specified glsl program if set. Otherwise returns nullptr.
+		const GlslProgRef& getGlslProg() const { return mGlslProg; }
+		//! Sets a custom shader to use when the type is rendered.
+		DrawOptions&	glslProg( const GlslProgRef &glslProg ) { mGlslProg = glslProg; return *this; }
 
 	  protected:
 		bool		mClipHorizontal, mClipVertical, mPixelSnap, mLigate;
 		float		mScale;
+		GlslProgRef	mGlslProg;
 	};
 
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
