@@ -420,7 +420,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures,
 			int colorLoc = shader->getAttribSemanticLocation( geom::Attrib::COLOR );
 			if( colorLoc >= 0 ) {
 				enableVertexAttribArray( colorLoc );
-				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, (void*)dataOffset );
+				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)dataOffset );
 				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
 				dataOffset += vertColors.size() * sizeof(ColorA8u);				
 			}
@@ -554,7 +554,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyp
 			int colorLoc = shader->getAttribSemanticLocation( geom::Attrib::COLOR );
 			if( colorLoc >= 0 ) {
 				enableVertexAttribArray( colorLoc );
-				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_FALSE, 0, (void*)dataOffset );
+				vertexAttribPointer( colorLoc, 4, GL_UNSIGNED_BYTE, GL_TRUE, 0, (void*)dataOffset );
 				defaultArrayVbo->bufferSubData( dataOffset, vertColors.size() * sizeof(ColorA8u), vertColors.data() );
 				dataOffset += vertColors.size() * sizeof(ColorA8u);				
 			}
