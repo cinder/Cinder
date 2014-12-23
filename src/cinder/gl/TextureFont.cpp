@@ -393,7 +393,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures,
 		curTex->bind();
 		auto ctx = gl::context();
 		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
-		ctx->pushVao();
+		gl::ScopedVao vaoScp( ctx->getDefaultVao() );
 		ctx->getDefaultVao()->replacementBindBegin();
 		VboRef defaultElementVbo = ctx->getDefaultElementVbo( indices.size() * sizeof(curIdx) );
 		VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( dataSize );
@@ -527,7 +527,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyp
 		curTex->bind();
 		auto ctx = gl::context();
 		size_t dataSize = (verts.size() + texCoords.size()) * sizeof(float) + vertColors.size() * sizeof(ColorA8u);
-		ctx->pushVao();
+		gl::ScopedVao vaoScp( ctx->getDefaultVao() );
 		ctx->getDefaultVao()->replacementBindBegin();
 		VboRef defaultElementVbo = ctx->getDefaultElementVbo( indices.size() * sizeof(curIdx) );
 		VboRef defaultArrayVbo = ctx->getDefaultArrayVbo( dataSize );
