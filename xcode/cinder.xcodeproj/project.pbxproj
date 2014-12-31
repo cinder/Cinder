@@ -156,21 +156,6 @@
 		0059BD33151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
 		0059BD34151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
 		0059BD35151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
-		005B02FB152CD16E00F2C237 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F6152CD16E00F2C237 /* json_batchallocator.h */; };
-		005B02FC152CD16E00F2C237 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F6152CD16E00F2C237 /* json_batchallocator.h */; };
-		005B02FD152CD16E00F2C237 /* json_batchallocator.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F6152CD16E00F2C237 /* json_batchallocator.h */; };
-		005B02FE152CD16E00F2C237 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F7152CD16E00F2C237 /* json_reader.cpp */; };
-		005B02FF152CD16E00F2C237 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F7152CD16E00F2C237 /* json_reader.cpp */; };
-		005B0300152CD16E00F2C237 /* json_reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F7152CD16E00F2C237 /* json_reader.cpp */; };
-		005B0301152CD16E00F2C237 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F8152CD16E00F2C237 /* json_tool.h */; };
-		005B0302152CD16E00F2C237 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F8152CD16E00F2C237 /* json_tool.h */; };
-		005B0303152CD16E00F2C237 /* json_tool.h in Headers */ = {isa = PBXBuildFile; fileRef = 005B02F8152CD16E00F2C237 /* json_tool.h */; };
-		005B0304152CD16E00F2C237 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F9152CD16E00F2C237 /* json_value.cpp */; };
-		005B0305152CD16E00F2C237 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F9152CD16E00F2C237 /* json_value.cpp */; };
-		005B0306152CD16E00F2C237 /* json_value.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02F9152CD16E00F2C237 /* json_value.cpp */; };
-		005B0307152CD16E00F2C237 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02FA152CD16E00F2C237 /* json_writer.cpp */; };
-		005B0308152CD16E00F2C237 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02FA152CD16E00F2C237 /* json_writer.cpp */; };
-		005B0309152CD16E00F2C237 /* json_writer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 005B02FA152CD16E00F2C237 /* json_writer.cpp */; };
 		005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
 		005C0CEA14CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
 		005C0CEB14CBB3DB00A12CD2 /* Base64.h in Headers */ = {isa = PBXBuildFile; fileRef = 005C0CE814CBB3DB00A12CD2 /* Base64.h */; };
@@ -915,6 +900,9 @@
 		1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
 		1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
+		1162EA7F1A53DBC500020351 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1162EA7E1A53DBC500020351 /* jsoncpp.cpp */; };
+		1162EA801A53DBC500020351 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1162EA7E1A53DBC500020351 /* jsoncpp.cpp */; };
+		1162EA811A53DBC500020351 /* jsoncpp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1162EA7E1A53DBC500020351 /* jsoncpp.cpp */; };
 		11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
@@ -1071,11 +1059,6 @@
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
 		0053819915A8CDF90019BA91 /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = app/Event.h; sourceTree = "<group>"; };
 		0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConcurrentCircularBuffer.h; sourceTree = "<group>"; };
-		005B02F6152CD16E00F2C237 /* json_batchallocator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_batchallocator.h; path = ../src/jsoncpp/json_batchallocator.h; sourceTree = "<group>"; };
-		005B02F7152CD16E00F2C237 /* json_reader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json_reader.cpp; path = ../src/jsoncpp/json_reader.cpp; sourceTree = "<group>"; };
-		005B02F8152CD16E00F2C237 /* json_tool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = json_tool.h; path = ../src/jsoncpp/json_tool.h; sourceTree = "<group>"; };
-		005B02F9152CD16E00F2C237 /* json_value.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json_value.cpp; path = ../src/jsoncpp/json_value.cpp; sourceTree = "<group>"; };
-		005B02FA152CD16E00F2C237 /* json_writer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = json_writer.cpp; path = ../src/jsoncpp/json_writer.cpp; sourceTree = "<group>"; };
 		005C0CE814CBB3DB00A12CD2 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		005C0CEC14CBB47500A12CD2 /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64.cpp; sourceTree = "<group>"; };
 		006228E110C8248800A8191C /* DataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataSource.h; sourceTree = "<group>"; };
@@ -1386,6 +1369,7 @@
 		111A5FA6191F72AE005C3166 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
+		1162EA7E1A53DBC500020351 /* jsoncpp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = jsoncpp.cpp; path = ../src/jsoncpp/jsoncpp.cpp; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
 		277C2CED1366632B00178A29 /* Matrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix33.h; sourceTree = "<group>"; };
@@ -1599,11 +1583,7 @@
 		005B02F4152CD13C00F2C237 /* jsoncpp */ = {
 			isa = PBXGroup;
 			children = (
-				005B02F6152CD16E00F2C237 /* json_batchallocator.h */,
-				005B02F7152CD16E00F2C237 /* json_reader.cpp */,
-				005B02F8152CD16E00F2C237 /* json_tool.h */,
-				005B02F9152CD16E00F2C237 /* json_value.cpp */,
-				005B02FA152CD16E00F2C237 /* json_writer.cpp */,
+				1162EA7E1A53DBC500020351 /* jsoncpp.cpp */,
 			);
 			name = jsoncpp;
 			sourceTree = "<group>";
@@ -2459,8 +2439,6 @@
 				008B43A414F5F39100B55B07 /* SvgGl.h in Headers */,
 				0034C325151A5B9F003F2E30 /* linebreak.h in Headers */,
 				0034C32E151A5B9F003F2E30 /* linebreakdef.h in Headers */,
-				005B02FC152CD16E00F2C237 /* json_batchallocator.h in Headers */,
-				005B0302152CD16E00F2C237 /* json_tool.h in Headers */,
 				007A7B18158D09A600BEAD18 /* Window.h in Headers */,
 				0053819B15A8CDF90019BA91 /* Event.h in Headers */,
 				00782615171CD91400B47F9C /* ConvexHull.h in Headers */,
@@ -2605,8 +2583,6 @@
 				008B43A514F5F39100B55B07 /* SvgGl.h in Headers */,
 				0034C326151A5B9F003F2E30 /* linebreak.h in Headers */,
 				0034C32F151A5B9F003F2E30 /* linebreakdef.h in Headers */,
-				005B02FD152CD16E00F2C237 /* json_batchallocator.h in Headers */,
-				005B0303152CD16E00F2C237 /* json_tool.h in Headers */,
 				007A7B19158D09A600BEAD18 /* Window.h in Headers */,
 				0053819C15A8CDF90019BA91 /* Event.h in Headers */,
 				00E5A41C163F5A2B00AACB3A /* CaptureImplCocoaDummy.h in Headers */,
@@ -2799,8 +2775,6 @@
 				0034C324151A5B9F003F2E30 /* linebreak.h in Headers */,
 				0034C32D151A5B9F003F2E30 /* linebreakdef.h in Headers */,
 				111A5EB3191F703D005C3166 /* envelope.h in Headers */,
-				005B02FB152CD16E00F2C237 /* json_batchallocator.h in Headers */,
-				005B0301152CD16E00F2C237 /* json_tool.h in Headers */,
 				007A7B17158D09A600BEAD18 /* Window.h in Headers */,
 				111A5EE5191F703D005C3166 /* window.h in Headers */,
 				003C0CE715A34D3F00FF29F5 /* AppCocoaView.h in Headers */,
@@ -3032,6 +3006,7 @@
 				43F78EF31516DAB700EB63B5 /* Json.cpp in Sources */,
 				008B43A914F5F8F800B55B07 /* Svg.cpp in Sources */,
 				0034C319151A5B7F003F2E30 /* Unicode.cpp in Sources */,
+				1162EA801A53DBC500020351 /* jsoncpp.cpp in Sources */,
 				111A5F7C191F729D005C3166 /* r8bbase.cpp in Sources */,
 				0034C322151A5B9F003F2E30 /* linebreak.c in Sources */,
 				111A6002191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
@@ -3039,9 +3014,6 @@
 				111A5FF3191F72AE005C3166 /* NodeMath.cpp in Sources */,
 				111A5F5A191F7286005C3166 /* envelope.c in Sources */,
 				0034C32B151A5B9F003F2E30 /* linebreakdef.c in Sources */,
-				005B02FF152CD16E00F2C237 /* json_reader.cpp in Sources */,
-				005B0305152CD16E00F2C237 /* json_value.cpp in Sources */,
-				005B0308152CD16E00F2C237 /* json_writer.cpp in Sources */,
 				007A7B14158D098D00BEAD18 /* Window.cpp in Sources */,
 				00131434159E330F00C8D927 /* Display.cpp in Sources */,
 				111A5F5D191F7286005C3166 /* floor1.c in Sources */,
@@ -3188,14 +3160,12 @@
 				0034C31A151A5B7F003F2E30 /* Unicode.cpp in Sources */,
 				0034C323151A5B9F003F2E30 /* linebreak.c in Sources */,
 				0034C329151A5B9F003F2E30 /* linebreakdata.c in Sources */,
+				1162EA811A53DBC500020351 /* jsoncpp.cpp in Sources */,
 				111A5F7D191F729D005C3166 /* r8bbase.cpp in Sources */,
 				0034C32C151A5B9F003F2E30 /* linebreakdef.c in Sources */,
 				111A6003191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
-				005B0300152CD16E00F2C237 /* json_reader.cpp in Sources */,
 				111A5FF4191F72AE005C3166 /* NodeMath.cpp in Sources */,
 				111A5F31191F7285005C3166 /* envelope.c in Sources */,
-				005B0306152CD16E00F2C237 /* json_value.cpp in Sources */,
-				005B0309152CD16E00F2C237 /* json_writer.cpp in Sources */,
 				007A7B15158D098D00BEAD18 /* Window.cpp in Sources */,
 				00131436159E331000C8D927 /* Display.cpp in Sources */,
 				00E5A41A163F45AF00AACB3A /* Capture.cpp in Sources */,
@@ -3225,6 +3195,7 @@
 				008CE8430E94679D00644A05 /* Area.cpp in Sources */,
 				00E45D0B0E94792600B47EC2 /* Texture.cpp in Sources */,
 				007B09740E9559960052257E /* Rand.cpp in Sources */,
+				1162EA7F1A53DBC500020351 /* jsoncpp.cpp in Sources */,
 				007B09840E957B9A0052257E /* KeyEvent.cpp in Sources */,
 				003832E40E9C04AD00ACB120 /* Stream.cpp in Sources */,
 				111A5EE1191F703D005C3166 /* synthesis.c in Sources */,
@@ -3362,10 +3333,7 @@
 				111A5EF1191F722E005C3166 /* CinderAssert.cpp in Sources */,
 				0034C32A151A5B9F003F2E30 /* linebreakdef.c in Sources */,
 				111A5FCB191F72AE005C3166 /* Dsp.cpp in Sources */,
-				005B02FE152CD16E00F2C237 /* json_reader.cpp in Sources */,
 				111A5EA5191F703D005C3166 /* framing.c in Sources */,
-				005B0304152CD16E00F2C237 /* json_value.cpp in Sources */,
-				005B0307152CD16E00F2C237 /* json_writer.cpp in Sources */,
 				007A7B13158D098D00BEAD18 /* Window.cpp in Sources */,
 				00BBBDF915A34F49006B9BBE /* AppCocoaView.mm in Sources */,
 				002CFA621644BC0800C1A31D /* StereoAutoFocuser.cpp in Sources */,
@@ -3592,7 +3560,7 @@
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SYMROOT = ../lib;
-				USER_HEADER_SEARCH_PATHS = "../include ../include/json ../src/oggvorbis/vorbis ../src/r8brain";
+				USER_HEADER_SEARCH_PATHS = "../include ../src/oggvorbis/vorbis ../src/r8brain";
 			};
 			name = Debug;
 		};
