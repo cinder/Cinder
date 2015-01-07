@@ -517,10 +517,12 @@ void WindowImplMsw::toggleFullScreen( const app::FullScreenOptions &options )
 		mWindowedSize = ivec2( mWindowWidth, mWindowHeight );
 		newWindowSize = display->getSize();
 
-		windowRect.left = 0;
-		windowRect.top = 0;
-		windowRect.right = newWindowSize.x;
-		windowRect.bottom = newWindowSize.y;
+		Area area = display->getBounds();
+
+		windowRect.left = area.getX1();
+		windowRect.top = area.getY1();
+		windowRect.right = area.getX2();
+		windowRect.bottom = area.getY2();
 	}
 
 	::SetWindowLongA( mWnd, GWL_STYLE, mWindowStyle );
