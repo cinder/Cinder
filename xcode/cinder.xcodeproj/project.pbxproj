@@ -796,6 +796,12 @@
 		00FFAED519DB5D330002CA8E /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
 		00FFAED619DB5D330002CA8E /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
 		00FFAED719DB5D330002CA8E /* ImageSourceFileRadiance.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */; };
+		1116CC4C1A5F154000023856 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC491A5F154000023856 /* PlatformCocoa.cpp */; };
+		1116CC4D1A5F154000023856 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC4A1A5F154000023856 /* Platform.cpp */; };
+		1116CC4E1A5F154D00023856 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC491A5F154000023856 /* PlatformCocoa.cpp */; };
+		1116CC4F1A5F154E00023856 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC491A5F154000023856 /* PlatformCocoa.cpp */; };
+		1116CC501A5F155400023856 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC4A1A5F154000023856 /* Platform.cpp */; };
+		1116CC511A5F155500023856 /* Platform.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1116CC4A1A5F154000023856 /* Platform.cpp */; };
 		111A5EA4191F703D005C3166 /* bitwise.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E4F191F703D005C3166 /* bitwise.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		111A5EA5191F703D005C3166 /* framing.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E50191F703D005C3166 /* framing.c */; settings = {COMPILER_FLAGS = "-Wno-conversion"; }; };
 		111A5EA6191F703D005C3166 /* analysis.c in Sources */ = {isa = PBXBuildFile; fileRef = 111A5E53191F703D005C3166 /* analysis.c */; };
@@ -1423,6 +1429,12 @@
 		0867D6A5FE840307C02AAC07 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		1058C7B1FEA5585E11CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		11166BE019A387FE00EAA5C7 /* glm */ = {isa = PBXFileReference; lastKnownFileType = folder; name = glm; path = ../include/glm; sourceTree = "<group>"; };
+		1116CC421A5F150200023856 /* PlatformMsw.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformMsw.h; path = app/PlatformMsw.h; sourceTree = "<group>"; };
+		1116CC431A5F150200023856 /* PlatformCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformCocoa.h; path = app/PlatformCocoa.h; sourceTree = "<group>"; };
+		1116CC441A5F150200023856 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = app/Platform.h; sourceTree = "<group>"; };
+		1116CC481A5F154000023856 /* PlatformMsw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformMsw.cpp; path = app/PlatformMsw.cpp; sourceTree = "<group>"; };
+		1116CC491A5F154000023856 /* PlatformCocoa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformCocoa.cpp; path = app/PlatformCocoa.cpp; sourceTree = "<group>"; };
+		1116CC4A1A5F154000023856 /* Platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Platform.cpp; path = app/Platform.cpp; sourceTree = "<group>"; };
 		111A5E4F191F703D005C3166 /* bitwise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitwise.c; sourceTree = "<group>"; };
 		111A5E50191F703D005C3166 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = framing.c; sourceTree = "<group>"; };
 		111A5E53191F703D005C3166 /* analysis.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = analysis.c; sourceTree = "<group>"; };
@@ -1716,6 +1728,9 @@
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
 				5391FD670E957646002A13D5 /* KeyEvent.h */,
 				00241ABA0E830DC7004D34EB /* MouseEvent.h */,
+				1116CC441A5F150200023856 /* Platform.h */,
+				1116CC431A5F150200023856 /* PlatformCocoa.h */,
+				1116CC421A5F150200023856 /* PlatformMsw.h */,
 				0049C1B31010E5A40015B4B9 /* Renderer.h */,
 				0003F4821992DB0500647C8B /* RendererGl.h */,
 				43D8B2EF11B0C87800B61EB6 /* TouchEvent.h */,
@@ -1747,6 +1762,9 @@
 				00DCBA940F7932F400D88D86 /* CinderView.mm */,
 				009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */,
 				007B09830E957B9A0052257E /* KeyEvent.cpp */,
+				1116CC4A1A5F154000023856 /* Platform.cpp */,
+				1116CC491A5F154000023856 /* PlatformCocoa.cpp */,
+				1116CC481A5F154000023856 /* PlatformMsw.cpp */,
 				0049C1B61010E5B10015B4B9 /* Renderer.cpp */,
 				006D703F19940F25008149E2 /* RendererGl.cpp */,
 				007A7B12158D098D00BEAD18 /* Window.cpp */,
@@ -3261,6 +3279,7 @@
 				0070504A1114F93F003FCAE4 /* Matrix.cpp in Sources */,
 				0070504D1114F93F003FCAE4 /* Surface.cpp in Sources */,
 				111A5FF6191F72AE005C3166 /* OutputNode.cpp in Sources */,
+				1116CC501A5F155400023856 /* Platform.cpp in Sources */,
 				111A5F5C191F7286005C3166 /* floor0.c in Sources */,
 				0070504E1114F93F003FCAE4 /* Channel.cpp in Sources */,
 				0003F3F11992D64100647C8B /* Fbo.cpp in Sources */,
@@ -3424,6 +3443,7 @@
 				00131434159E330F00C8D927 /* Display.cpp in Sources */,
 				111A5F5D191F7286005C3166 /* floor1.c in Sources */,
 				1161C977165C7DFB00268A5E /* ImageTargetFileQuartz.cpp in Sources */,
+				1116CC4E1A5F154D00023856 /* PlatformCocoa.cpp in Sources */,
 				1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */,
 				0078261A171CD9D800B47F9C /* ConvexHull.cpp in Sources */,
 				111A5F78191F7286005C3166 /* vorbisfile.c in Sources */,
@@ -3441,6 +3461,7 @@
 				00CFD99E1135C3520091E310 /* Matrix.cpp in Sources */,
 				00CFD99F1135C3520091E310 /* Surface.cpp in Sources */,
 				111A5FF7191F72AE005C3166 /* OutputNode.cpp in Sources */,
+				1116CC511A5F155500023856 /* Platform.cpp in Sources */,
 				111A5F33191F7285005C3166 /* floor0.c in Sources */,
 				00CFD9A01135C3520091E310 /* Channel.cpp in Sources */,
 				0003F3F21992D64100647C8B /* Fbo.cpp in Sources */,
@@ -3604,6 +3625,7 @@
 				00E5A41F163F5AC600AACB3A /* CaptureImplCocoaDummy.mm in Sources */,
 				111A5F34191F7285005C3166 /* floor1.c in Sources */,
 				1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */,
+				1116CC4F1A5F154E00023856 /* PlatformCocoa.cpp in Sources */,
 				1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */,
 				0078261B171CD9D800B47F9C /* ConvexHull.cpp in Sources */,
 				111A5F4F191F7285005C3166 /* vorbisfile.c in Sources */,
@@ -3644,6 +3666,7 @@
 				111A5EBD191F703D005C3166 /* lsp.c in Sources */,
 				006D705919942BF5008149E2 /* QuickTimeImplLegacy.cpp in Sources */,
 				00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */,
+				1116CC4C1A5F154000023856 /* PlatformCocoa.cpp in Sources */,
 				00DCBA950F7932F400D88D86 /* CinderView.mm in Sources */,
 				0003F49D1995DEF000647C8B /* LoadOGL.cpp in Sources */,
 				00DCBE270F7986B800D88D86 /* AppImplCocoaRendererGl.mm in Sources */,
@@ -3754,6 +3777,7 @@
 				00A113D5135535C500081873 /* Triangulate.cpp in Sources */,
 				0003F3DE1992D64100647C8B /* BufferTexture.cpp in Sources */,
 				00A114051355369A00081873 /* bucketalloc.c in Sources */,
+				1116CC4D1A5F154000023856 /* Platform.cpp in Sources */,
 				00A114071355369A00081873 /* dict.c in Sources */,
 				0003F40B1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				00A114091355369A00081873 /* geom.c in Sources */,
