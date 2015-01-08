@@ -23,6 +23,24 @@
 
 #include "cinder/app/Platform.h"
 
+using namespace std;
+
 namespace cinder { namespace app {
+
+ResourceLoadExc::ResourceLoadExc( const fs::path &resourcePath )
+{
+	setDescription( "Failed to load resource: " + resourcePath.string() );
+}
+
+
+//ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string &mswType )
+//{
+//	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType + " Mac path: " + macPath );
+//}
+
+AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
+{
+	setDescription( string( "Failed to load asset with relative path: " ) + relativePath.string() );
+}
 
 } } // namespace cinder::app

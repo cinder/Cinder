@@ -25,6 +25,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/app/Platform.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
 #include "cinder/Vector.h"
@@ -634,22 +635,5 @@ typename std::result_of<T()>::type App::dispatchSync( T fn )
 		return fute.get();
 	}
 }
-
-//! Exception for failed resource loading
-class ResourceLoadExc : public Exception {
-  public:
-#if defined( CINDER_COCOA )
-	ResourceLoadExc( const std::string &macPath );
-#elif defined( CINDER_MSW )
-	ResourceLoadExc( int mswID, const std::string &mswType );
-	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
-#endif
-};
-
-//! Exception for failed asset loading
-class AssetLoadExc : public Exception {
-  public:
-	AssetLoadExc( const fs::path &relativePath );
-};
 
 } } // namespace cinder::app

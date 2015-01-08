@@ -23,6 +23,8 @@
 
 #include "cinder/app/PlatformCocoa.h"
 
+using namespace std;
+
 namespace cinder { namespace app {
 
 } } // namespace cinder::app

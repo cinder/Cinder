@@ -541,28 +541,4 @@ ivec2 App::getMousePos()
 #endif
 }
 
-#if defined( CINDER_COCOA )
-ResourceLoadExc::ResourceLoadExc( const string &macPath )
-{
-	setDescription( "Failed to load resource: " + macPath );
-}
-
-#elif defined( CINDER_MSW )
-
-ResourceLoadExc::ResourceLoadExc( int mswID, const string &mswType )
-{
-	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
-}
-
-ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string &mswType )
-{
-	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType + " Mac path: " + macPath );
-}
-#endif // defined( CINDER_MSW )
-
-AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
-{
-	setDescription( string( "Failed to load asset with relative path: " ) + relativePath.string() );
-}
-
 } } // namespace cinder::app

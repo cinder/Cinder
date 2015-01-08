@@ -35,4 +35,10 @@ class PlatformMsw : public Platform {
   private:
 };
 
+//! MSW-specific Exception for failed resource loading, reports windows resource id and type
+class ResourceLoadExcMsw : public ResourceLoadExc {
+  public:
+	ResourceLoadExcMsw( int mswID, const std::string &mswType );
+};
+
 } } // namespace cinder::app

@@ -23,6 +23,14 @@
 
 #include "cinder/app/PlatformMsw.h"
 
+using namespace std;
+
 namespace cinder { namespace app {
+
+
+ResourceLoadExc::ResourceLoadExcMsw( int mswID, const string &mswType )
+{
+	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
+}
 
 } } // namespace cinder::app

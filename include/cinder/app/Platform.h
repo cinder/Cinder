@@ -23,6 +23,9 @@
 
 #pragma once
 
+#include "cinder/Exception.h"
+#include "cinder/Filesystem.h"
+
 namespace cinder { namespace app {
 
 class Platform {
@@ -31,6 +34,22 @@ class Platform {
   protected:
 
   private:
+};
+
+
+//! Exception for failed resource loading
+class ResourceLoadExc : public Exception {
+  public:
+
+	ResourceLoadExc( const fs::path &resourcePath );
+
+//	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
+};
+
+//! Exception for failed asset loading
+class AssetLoadExc : public Exception {
+public:
+	AssetLoadExc( const fs::path &relativePath );
 };
 
 } } // namespace cinder::app
