@@ -35,7 +35,9 @@ using namespace std;
 namespace cinder { namespace app {
 
 namespace {
-	static Platform *sInstance = nullptr;
+
+static Platform *sInstance = nullptr;
+
 } // anonymous namespace
 
 // static
@@ -62,6 +64,66 @@ void Platform::set( Platform *platform )
 	sInstance = platform;
 }
 
+DataSourceRef Platform::loadAsset( const fs::path &relativePath )
+{
+	fs::path assetPath = findAssetPath( relativePath );
+	if( ! assetPath.empty() )
+		return DataSourcePath::create( assetPath.string() );
+	else
+		throw AssetLoadExc( relativePath );
+}
+
+fs::path Platform::getAssetPath( const fs::path &relativePath )
+{
+	return findAssetPath( relativePath );
+}
+
+void Platform::addAssetDirectory( const fs::path &dirPath )
+{
+	auto it = find( mAssetPaths.begin(), mAssetPaths.end(), dirPath );
+	if( it == mAssetPaths.end() )
+		mAssetPaths.push_back( dirPath );
+}
+
+fs::path Platform::findAssetPath( const fs::path &relativePath )
+{
+	if( ! mAssetPathsInitialized ) {
+		prepareAssetLoading();
+		findAndAddAssetBasePath();
+		mAssetPathsInitialized = true;
+	}
+
+	for( const auto &assetPath : mAssetPaths ) {
+		auto fullPath = assetPath / relativePath;
+		if( fs::exists( fullPath ) )
+			return fullPath;
+	}
+
+	return fs::path(); // empty implies failure
+}
+
+void Platform::findAndAddAssetBasePath()
+{
+	// first search the local directory, then its parent, up to 5 levels up
+	// check at least the app path, even if it has no parent directory
+	auto execPath = getExecutablePath();
+	int parentCt = 0;
+	for( fs::path curPath = execPath; curPath.has_parent_path() || ( curPath == execPath ); curPath = curPath.parent_path(), ++parentCt ) {
+		if( parentCt >= 5 )
+			break;
+
+		const fs::path curAssetPath = curPath / "assets";
+		if( fs::exists( curAssetPath ) && fs::is_directory( curAssetPath ) ) {
+			mAssetPaths.push_back( curAssetPath );
+			break;
+		}
+	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+// Exceptions
+// ----------------------------------------------------------------------------------------------------
+
 ResourceLoadExc::ResourceLoadExc( const fs::path &resourcePath )
 {
 	setDescription( "Failed to load resource: " + resourcePath.string() );
@@ -75,7 +137,7 @@ ResourceLoadExc::ResourceLoadExc( const fs::path &resourcePath )
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
 {
-	setDescription( string( "Failed to load asset with relative path: " ) + relativePath.string() );
+	setDescription( "Failed to load asset with relative path: " + relativePath.string() );
 }
 
 } } // namespace cinder::app

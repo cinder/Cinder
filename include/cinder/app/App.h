@@ -358,11 +358,11 @@ class App {
 #endif
 
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourceRef			loadAsset( const fs::path &relativePath );
+	DataSourceRef			loadAsset( const fs::path &relativePath )					{ return Platform::get()->loadAsset( relativePath ); }
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
-	fs::path				getAssetPath( const fs::path &relativePath );
+	fs::path				getAssetPath( const fs::path &relativePath ) const			{ return Platform::get()->getAssetPath( relativePath ); }
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
-	void					addAssetDirectory( const fs::path &dirPath );
+	void					addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
 	
 	//! Returns the path to the application on disk
 	virtual fs::path			getAppPath() const = 0;
@@ -420,6 +420,7 @@ class App {
 
 #if defined( CINDER_MSW )
 	// Not all Windows target types receive paint events, and the AppImplMswRenderer* needs to know that.
+	// TODO: remove and pass bool in to renderer for each platform (see andrew's suggestion in email)
 	virtual bool        getsWindowsPaintEvents() = 0;
 #endif
 
@@ -440,9 +441,7 @@ class App {
 	//! \endcond
 
   private:
-	  void 		prepareAssetLoading();
-	  fs::path	findAssetPath( const fs::path &relativePath );
-  
+
 #if defined( CINDER_COCOA )
 	static void				*sAutoReleasePool;
 #endif
@@ -461,11 +460,6 @@ class App {
 	std::shared_ptr<asio::io_service>	mIo;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 
-	// have we already setup the default path to assets?
-	bool						mAssetDirectoriesInitialized;
-	// Path to directories which contain assets
-	std::vector<fs::path>		mAssetDirectories;
-	
   protected:
 	static App*					sInstance;
 	RendererRef					mDefaultRenderer;
@@ -546,15 +540,15 @@ inline uint32_t	getElapsedFrames() { return App::get()->getElapsedFrames(); }
 inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return Platform::get()->loadResource( mswID, mswType ); }
 #else
 //! Returns a DataSource to an application resource. \a resourcePath is defined on a per-platform basis. \sa \ref CinderResources
-inline DataSourceRef	loadResource( const fs::path &resourcePath ) { return Platform::get()->loadResource( resourcePath ); }
+inline DataSourceRef	loadResource( const fs::path &resourcePath )		{ return Platform::get()->loadResource( resourcePath ); }
 #endif // defined( CINDER_MSW )
 
 //! Returns a DataSourceRef to the active App's's asset. Throws a AssetLoadExc on failure.
-inline DataSourceRef		loadAsset( const fs::path &relativePath ) { return App::get()->loadAsset( relativePath ); }
+inline DataSourceRef		loadAsset( const fs::path &relativePath )		{ return Platform::get()->loadAsset( relativePath ); }
 //! Returns a fs::path to the active App's asset. Returns an empty path on failure.
-inline fs::path				getAssetPath( const fs::path &relativePath ) { return App::get()->getAssetPath( relativePath ); }
+inline fs::path				getAssetPath( const fs::path &relativePath )	{ return Platform::get()->getAssetPath( relativePath ); }
 //! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
-inline void					addAssetDirectory( const fs::path &dirPath ) { App::get()->addAssetDirectory( dirPath ); }
+inline void					addAssetDirectory( const fs::path &dirPath )	{ return Platform::get()->addAssetDirectory( dirPath ); }
 
 //! Returns the path to the active App on disk
 inline fs::path		getAppPath() { return App::get()->getAppPath(); }

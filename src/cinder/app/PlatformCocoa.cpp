@@ -23,7 +23,11 @@
 
 #include "cinder/app/PlatformCocoa.h"
 
-#import <Cocoa/Cocoa.h>
+#if defined( CINDER_MAC )
+	#import <Cocoa/Cocoa.h>
+#else
+	#import <Foundation/Foundation.h>
+#endif
 
 using namespace std;
 
@@ -66,9 +70,24 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 {
 	fs::path fullPath = getResourcePath( resourcePath );
 	if( fullPath.empty() )
-		throw ResourceLoadExc( resourcePath		);
+		throw ResourceLoadExc( resourcePath );
 	else
 		return DataSourcePath::create( fullPath );
+}
+
+void PlatformCocoa::prepareAssetLoading()
+{
+	// search for the assets folder inside the bundle's resources, and then the bundle's root
+	fs::path bundleAssetsPath = Platform::get()->getResourcePath() / "assets";
+	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
+		addAssetDirectory( bundleAssetsPath );
+	}
+	else {
+		fs::path appAssetPath = getExecutablePath() / "assets";
+		if( fs::exists( appAssetPath ) && fs::is_directory( appAssetPath ) ) {
+			addAssetDirectory( appAssetPath );
+		}
+	}
 }
 
 } } // namespace cinder::app

@@ -44,6 +44,8 @@ class PlatformCocoa : public Platform {
 	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
 	NSBundle*		getBundle() const;
 
+	void prepareAssetLoading() override;
+
   protected:
 
   private:

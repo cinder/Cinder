@@ -56,6 +56,9 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 
 		mImpl = [[AppImplCocoaBasic alloc] init:this];
 
+		// must set the Platform's executable path after mImpl has been constructed
+		Platform::get()->setExecutablePath( getAppPath() );
+
 		[application setDelegate:mImpl];
 		[application run];
 	}

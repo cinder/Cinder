@@ -99,7 +99,6 @@ App::App()
 {
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
-	mAssetDirectoriesInitialized = false;
 
 	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
 	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );
@@ -171,94 +170,6 @@ void App::emitWillResignActive()
 void App::emitDidBecomeActive()
 {
 	mSignalDidBecomeActive();
-}
-
-void App::prepareAssetLoading()
-{
-	if( ! mAssetDirectoriesInitialized ) {
-		fs::path appPath = getAppPath();
-
-		// if this is Mac OS or iOS, search inside the bundle's resources, and then the bundle's root
-#if defined( CINDER_COCOA )
-		fs::path bundleAssetsPath = Platform::get()->getResourcePath() / "assets";
-		if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
-			mAssetDirectories.push_back( bundleAssetsPath );
-			mAssetDirectoriesInitialized = true;
-			return;
-		}
-		else {
-			fs::path appAssetPath = getAppPath() / "assets/";
- #if TARGET_IPHONE_SIMULATOR // for some reason is_directory fails under the simulator
-			if( fs::exists( appAssetPath ) /*&& fs::is_directory( appAssetPath )*/ ) {
- #else
-			if( fs::exists( appAssetPath ) && fs::is_directory( appAssetPath ) ) {
- #endif
-				mAssetDirectories.push_back( appAssetPath );
-				mAssetDirectoriesInitialized = true;
-				return;		
-			}
-		}
-#endif		
-
-
-#if defined( CINDER_WINRT )
-		mAssetDirectories.push_back( appPath );
-		fs::path curPath = appPath;
-		fs::path curAssetPath = curPath / fs::path( "Assets" );
-		mAssetDirectories.push_back( curAssetPath );
-#else
-		// first search the local directory, then its parent, up to 5 levels up
-		int parentCt = 0;
-		for( fs::path curPath = appPath; 
-			curPath.has_parent_path() || ( curPath == appPath ); //check at least the app path, even if it has no parent directory
-			curPath = curPath.parent_path(), ++parentCt ) 
-		{   
-			if( parentCt >= 5 )
-				break;
-    
-			const fs::path curAssetPath = curPath / "assets";
-			if( fs::exists( curAssetPath ) && fs::is_directory( curAssetPath ) ) {
-				mAssetDirectories.push_back( curAssetPath );
-				break;
-			}
-		}
-#endif
-				
-		mAssetDirectoriesInitialized = true;
-	}
-}
-
-// locate the asset at 'relativePath'
-fs::path App::findAssetPath( const fs::path &relativePath )
-{
-	prepareAssetLoading();
-	for( vector<fs::path>::const_iterator assetDirIt = mAssetDirectories.begin(); assetDirIt != mAssetDirectories.end(); ++assetDirIt ) {
-		if( fs::exists( *assetDirIt / relativePath ) )
-			return ( *assetDirIt / relativePath );
-	}
-	
-	// empty implies failure
-	return fs::path();
-}
-
-DataSourceRef App::loadAsset( const fs::path &relativePath )
-{
-	fs::path assetPath = findAssetPath( relativePath );
-	if( ! assetPath.empty() )
-		return DataSourcePath::create( assetPath.string() );
-	else
-		throw AssetLoadExc( relativePath );
-}
-
-fs::path App::getAssetPath( const fs::path &relativePath )
-{
-	return findAssetPath( relativePath );
-}
-
-void App::addAssetDirectory( const fs::path &dirPath )
-{
-	
-	mAssetDirectories.push_back( dirPath );
 }
 
 fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
