@@ -31,7 +31,12 @@ namespace cinder { namespace app {
 
 class Platform {
   public:
+	virtual ~Platform()	{}
+
+	//! Returns the current Platform.
 	static Platform* get();
+	//! Sets the current Platform.
+	static void set( Platform *platform );
 
 	// Assets
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.

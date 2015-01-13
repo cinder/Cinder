@@ -41,9 +41,8 @@ namespace {
 // static
 Platform* Platform::get()
 {
-	// TODO: should this be lazy loaded, or created and set by each app?
-	// - should be possible for user to set sInstance
 	if( ! sInstance ) {
+		// set a default platform instance
 #if defined( CINDER_COCOA )
 		sInstance = new PlatformCocoa;
 #elif defined( CINDER_MSW )
@@ -52,6 +51,15 @@ Platform* Platform::get()
 	}
 
 	return sInstance;
+}
+
+// static
+void Platform::set( Platform *platform )
+{
+	if( sInstance )
+		delete sInstance;
+
+	sInstance = platform;
 }
 
 ResourceLoadExc::ResourceLoadExc( const fs::path &resourcePath )
