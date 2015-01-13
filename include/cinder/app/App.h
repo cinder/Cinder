@@ -713,10 +713,6 @@ class ResourceLoadExc : public Exception {
 class AssetLoadExc : public Exception {
   public:
 	AssetLoadExc( const fs::path &relativePath );
-
-	virtual const char * what() const throw() { return mMessage; }
-
-	char mMessage[4096];
 };
 
 } } // namespace cinder::app

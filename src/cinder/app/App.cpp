@@ -620,8 +620,8 @@ ResourceLoadExc::ResourceLoadExc( const string &macPath, int mswID, const string
 #endif // defined( CINDER_MSW )
 
 AssetLoadExc::AssetLoadExc( const fs::path &relativePath )
-	: Exception( relativePath.string() )
 {
+	setDescription( string( "Failed to load asset with relative path: " ) + relativePath.string() );
 }
 
 } } // namespace cinder::app
