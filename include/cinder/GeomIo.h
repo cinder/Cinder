@@ -46,6 +46,8 @@ namespace cinder {
 namespace cinder { namespace geom {
 
 class Target;
+class SourceModsBase;
+class SourceModsContext;
 typedef std::shared_ptr<class Source>	SourceRef;
 
 // keep this incrementing by 1 only; some code relies on that for iterating; add corresponding entry to sAttribNames
@@ -164,6 +166,36 @@ class Target {
 	void copyIndexData( const uint32_t *source, size_t numIndices, uint16_t *target );
 	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint32_t *target );
 	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t *target );
+};
+
+class Modifier {
+  public:
+	//! Expresses the upstream parameters for a Modifier such as # vertices
+	class Params {
+	  public:
+		size_t		getNumVertices() const { return mNumVertices; }
+		size_t		getNumIndices() const { return mNumIndices; }
+		Primitive	getPrimitive() const { return mPrimitive; }
+		AttribSet	getAvailableAttribs() const { return mAvaliableAttribs; }
+		
+		size_t		mNumVertices, mNumIndices;
+		Primitive	mPrimitive;
+		AttribSet	mAvaliableAttribs;
+		
+		friend class SourceModsBase;
+	};
+	
+	virtual ~Modifier() {}
+	
+	virtual Modifier*	clone() const = 0;
+	
+	virtual size_t		getNumVertices( const Modifier::Params &upstreamParams ) const;
+	virtual size_t		getNumIndices( const Modifier::Params &upstreamParams ) const;
+	virtual Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const;
+	virtual uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const;
+	virtual AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const;
+	
+	virtual void		process( SourceModsContext *ctx ) const = 0;
 };
 
 class Rect : public Source {
@@ -563,11 +595,11 @@ class Plane : public Source {
 // READ attributes values are captured from mSource, typically to derive other attributes from, and then are passed through
 // WRITE attributes prevent the passing of the attribute data from source -> target, to allow the owner of the Modifier to write it later
 // READ_WRITE attributes are captured but not passed through to the target
-class Modifier : public geom::Target {
+class ModifierUtil : public geom::Target {
   public:
 	typedef enum { READ, WRITE, READ_WRITE, IGNORED } Access;
 
-	Modifier( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
+	ModifierUtil( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
 		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
 	{}
 
@@ -598,25 +630,22 @@ class Modifier : public geom::Target {
 };
 
 //! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
-class Transform : public Source {
+class Transform : public Modifier {
   public:
 	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
-	Transform( const geom::Source &source, const mat4 &transform )
-		: mSource( source ), mTransform( transform )
+	Transform( const mat4 &transform )
+		: mTransform( transform )
 	{}
 
 	const mat4&			getMatrix() const { return mTransform; }
 	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
-  
-  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
-	const geom::Source&		mSource;
-	mat4					mTransform;
+	// Inherited from Modifier
+	virtual Modifier*	clone() const override { return new Transform( mTransform ); }
+	uint8_t				getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	void				process( SourceModsContext *ctx ) const override;
+	
+	mat4		mTransform;
 };
 
 //! Twists a geom::Source around a given axis
@@ -647,21 +676,16 @@ class Twist : public Source {
 };
 
 //! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
-class Lines : public Source {
+class Lines : public Modifier {
   public:
-	Lines( const geom::Source &source )
-		: mSource( source )
-	{}
-
-	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override				{ return geom::LINES; }
-	uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	AttribSet	getAvailableAttribs() const override		{ return mSource.getAvailableAttribs(); }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	virtual Modifier*	clone() const override { return new Lines(); }
+	
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override { return geom::LINES; }
+	void		process( SourceModsContext *ctx ) const override;
 	
   protected:
-	const geom::Source&		mSource;
+	static size_t	calcNumIndices( Primitive primitive, size_t upstreamNumIndices, size_t upstreamNumVertices );
 };
 
 //! Modifiers the color of a geom::Source as a function of a 2D or 3D input attribute
@@ -856,6 +880,241 @@ class BSpline : public Source {
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
 };
+
+////////////////////////////////////////////////////////////////////////////////
+//! Base class for SourceMods<> and SourceModsPtr<>
+class SourceModsBase : public Source {
+  public:
+	SourceModsBase()
+		: mVariablesCached( false )
+	{}
+
+	// geom::Source methods
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override;
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+	void	addModifier( const Modifier &modifier );
+	
+	virtual const Source*		getSource() const = 0;
+
+  protected:
+	void		cacheVariables() const;
+	
+	std::vector<std::unique_ptr<Modifier>>	mModifiers;
+	
+	mutable bool				mVariablesCached;
+	mutable std::vector<Modifier::Params>	mParamsStack;
+	
+	friend class SourceModsContext;
+};
+
+//! Used by Modifiers to process Source -> Target
+class SourceModsContext : public Target {
+  public:
+	SourceModsContext( const SourceModsBase *sourceMods );
+
+	// called by SourceModsBase::loadInto()
+	void			loadInto( Target *target, const AttribSet &requestedAttribs );
+	
+	void			attribRead( Attrib attr );
+	void			attribWrite( Attrib attr );
+	void			attribReadWrite( Attrib attr );
+	
+	void			indicesRead();
+	void			indicesWrite();
+	void			indicesReadWrite();
+	
+	// Target virtuals; also used by Modifiers
+	uint8_t			getAttribDims( Attrib attr ) const override;
+	void			copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void			copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;	
+
+	size_t			getNumVertices() const;
+	size_t			getNumIndices() const;
+	Primitive		getPrimitive() const;
+	
+	void			processUpstream();
+
+	float*			getAttribData( Attrib attr );
+	uint32_t*		getIndicesData();
+	
+  private:
+	const SourceModsBase	*mSourceMods;
+
+	std::vector<Modifier*>			mModiferStack;
+	std::vector<Modifier::Params>	mParamsStack;
+	
+	typedef enum { READ, WRITE, READ_WRITE, IGNORED } Access;
+	std::map<Attrib,AttribInfo>					mAttribInfo;
+	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,size_t>						mAttribCount;
+	
+	Access									mIndicesAccess;
+	std::unique_ptr<uint32_t[]>				mIndices;
+	size_t									mNumIndices;
+	geom::Primitive							mPrimitive;
+};
+
+
+//! In general you should not return this as the result of a function or even instantiate it directly
+//! Similar to SourceMods<> but stores a pointer to the SOURCE rather than a copy of it
+template<typename SOURCE>
+class SourceModsPtr : public SourceModsBase {
+  public:
+	SourceModsPtr( const SOURCE *srcPtr )
+		: mSrcPtr( srcPtr )
+	{}
+
+	virtual const Source*		getSource() const override { return mSrcPtr; }
+
+	SourceModsPtr( const SourceModsPtr<SOURCE> &rhs )
+		: mSrcPtr( rhs.mSrcPtr )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+
+	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
+		: mSrcPtr( rhs.mSrcPtr )
+	{
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+	}
+	
+	SourceModsPtr& operator=( const SourceModsPtr<SOURCE> &rhs )
+	{
+		mSrcPtr = rhs.mSrcPtr;
+		
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+
+		return *this;
+	}
+	
+	SourceModsPtr& operator=( SourceModsPtr<SOURCE> &&rhs )
+	{
+		mSrcPtr = std::move( rhs.mSrc );
+		
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+
+		return *this;
+	}
+	
+	const SOURCE		*mSrcPtr;
+};
+
+template<typename SOURCE>
+class SourceMods : public SourceModsBase {
+  public:
+	SourceMods( const SOURCE &src )
+		: mSrc( src )
+	{}
+	
+	SourceMods( SOURCE &&src )
+		: mSrc( std::move( src ) )
+	{}
+
+	virtual const Source*		getSource() const override { return &mSrc; }
+
+	SourceMods( const SourceMods<SOURCE> &rhs )
+		: mSrc( rhs.mSrc )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+
+	SourceMods( SourceMods<SOURCE> &&rhs )
+		: mSrc( std::move( rhs.mSrc ) )
+	{
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+	}
+
+	SourceMods( const SourceModsPtr<SOURCE> &rhs )
+		: mSrc( *rhs.mSrcPtr )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+	
+	SourceMods& operator=( const SourceMods<SOURCE> &rhs )
+	{
+		mSrc = rhs.mSrc;
+		
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+
+		return *this;
+	}
+	
+	SourceMods& operator=( SourceMods<SOURCE> &&rhs )
+	{
+		mSrc = std::move( rhs.mSrc );
+		
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+
+		return *this;
+	}
+	
+	SOURCE		mSrc;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Source
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( SourceMods<SOURCE> &sourceMod, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( &sourceMod.mSrc );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+SourceMods<SOURCE>&& operator>>( SourceMods<SOURCE> &&sourceMod, const Modifier &modifier )
+{
+	sourceMod.addModifier( modifier );
+	return std::move(sourceMod);
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( SourceModsPtr<SOURCE> &sourceMod, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( sourceMod );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE>&& operator>>( SourceModsPtr<SOURCE> &&sourceMod, const Modifier &modifier )
+{
+	sourceMod.addModifier( modifier );
+	return std::move(sourceMod);
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( &source );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+typename std::enable_if<std::is_base_of<Source,SOURCE>::value, SourceMods<SOURCE>>::type operator>>( SOURCE &&source, const Modifier &modifier )
+{
+	SourceMods<SOURCE> result( std::forward<SOURCE>( source ) );
+	result.addModifier( modifier );
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 
 class Exc : public Exception {
 };

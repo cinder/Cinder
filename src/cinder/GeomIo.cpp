@@ -51,7 +51,33 @@ std::string attribToString( Attrib attrib )
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Modifier
-uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
+size_t Modifier::getNumVertices( const Modifier::Params &upstreamParams ) const
+{
+	return upstreamParams.getNumVertices();
+}
+
+size_t Modifier::getNumIndices( const Modifier::Params &upstreamParams ) const
+{
+	return upstreamParams.getNumIndices();
+}
+
+Primitive Modifier::getPrimitive( const Modifier::Params &upstreamParams ) const
+{
+	return upstreamParams.getPrimitive();
+}
+
+uint8_t	Modifier::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
+{
+	return upstreamDims;
+}
+
+AttribSet Modifier::getAvailableAttribs( const Modifier::Params &upstreamParams ) const
+{
+	return upstreamParams.getAvailableAttribs();
+}
+
+
+uint8_t	ModifierUtil::getAttribDims( geom::Attrib attr ) const
 {
 	auto attrIt = mAttribs.find( attr );
 	if( attrIt == mAttribs.end() || attrIt->second == IGNORED ) { // not an attribute we're interested in; pass through and ask the target
@@ -64,7 +90,7 @@ uint8_t	Modifier::getAttribDims( geom::Attrib attr ) const
 		return 0;
 }
 
-void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
+void ModifierUtil::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
 	auto attrIt = mAttribs.find( attr );
 	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORED) ) { // not an attribute we're interested in; pass through to the target
@@ -81,7 +107,7 @@ void Modifier::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const 
 	// WRITE means our consumer will be writing this value later
 }
 
-void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+void ModifierUtil::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
 	mNumIndices = numIndices;
 	mPrimitive = primitive;
@@ -101,7 +127,7 @@ void Modifier::copyIndices( Primitive primitive, const uint32_t *source, size_t 
 	}
 }
 
-uint8_t	Modifier::getReadAttribDims( Attrib attr ) const
+uint8_t	ModifierUtil::getReadAttribDims( Attrib attr ) const
 {
 	if( mAttribDims.find( attr ) == mAttribDims.end() )
 		return 0;
@@ -110,7 +136,7 @@ uint8_t	Modifier::getReadAttribDims( Attrib attr ) const
 }
 
 // not const because consumer is allowed to overwrite this data
-float* Modifier::getReadAttribData( Attrib attr ) const
+float* ModifierUtil::getReadAttribData( Attrib attr ) const
 {
 	if( mAttribData.find( attr ) == mAttribData.end() )
 		return nullptr;
@@ -2028,76 +2054,62 @@ void Plane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Transform
-uint8_t Transform::getAttribDims( Attrib attr ) const
+uint8_t	Transform::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
 {
-	switch( attr ) {
-		case Attrib::POSITION: return std::max<uint8_t>( 3, mSource.getAttribDims( Attrib::POSITION ) );
-		default:
-			return mSource.getAttribDims( attr );
-	}
+	if( attr == Attrib::POSITION )
+		return 3;
+	else
+		return upstreamDims;
 }
 
-AttribSet Transform::getAvailableAttribs() const
+void Transform::process( SourceModsContext *ctx ) const
 {
-	return mSource.getAvailableAttribs();
-}
-
-void Transform::loadInto( Target *target, const AttribSet &requestedAttribs ) const
-{
-	// we want to capture and then modify both positions and normals
-	map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[POSITION] = Modifier::READ_WRITE;
-	attribAccess[NORMAL] = Modifier::READ_WRITE;
-	attribAccess[TANGENT] = Modifier::READ_WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
-	mSource.loadInto( &modifier, requestedAttribs );
+	ctx->attribReadWrite( POSITION );
+	ctx->attribReadWrite( NORMAL );
+	ctx->attribReadWrite( TANGENT );
+	ctx->processUpstream();
 	
-	const size_t numVertices = mSource.getNumVertices();
+	const size_t numVertices = ctx->getNumVertices();
 
-	if( modifier.getReadAttribDims( POSITION ) == 2 ) {
-		vec2* positions = reinterpret_cast<vec2*>( modifier.getReadAttribData( POSITION ) );
+	if( ctx->getAttribDims( POSITION ) == 2 ) {
+		vec2* positions = reinterpret_cast<vec2*>( ctx->getAttribData( POSITION ) );
 		for( size_t v = 0; v < numVertices; ++v )
 			positions[v] = vec2( mTransform * vec4( positions[v], 0, 1 ) );
-		target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions, numVertices );
 	}
-	else if( modifier.getReadAttribDims( POSITION ) == 3 ) {
-		vec3* positions = reinterpret_cast<vec3*>( modifier.getReadAttribData( POSITION ) );
+	else if( ctx->getAttribDims( POSITION ) == 3 ) {
+		vec3* positions = reinterpret_cast<vec3*>( ctx->getAttribData( POSITION ) );
 		for( size_t v = 0; v < numVertices; ++v )
 			positions[v] = vec3( mTransform * vec4( positions[v], 1 ) );
-		target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions, numVertices );
 	}
-	else if( modifier.getReadAttribDims( POSITION ) == 4 ) {
-		vec4* positions = reinterpret_cast<vec4*>( modifier.getReadAttribData( POSITION ) );
+	else if( ctx->getAttribDims( POSITION ) == 4 ) {
+		vec4* positions = reinterpret_cast<vec4*>( ctx->getAttribData( POSITION ) );
 		for( size_t v = 0; v < numVertices; ++v )
 			positions[v] = mTransform * positions[v];
-		target->copyAttrib( Attrib::POSITION, 4, 0, (const float*)positions, numVertices );
 	}
-	else if( modifier.getReadAttribDims( POSITION ) != 0 )
+	else if( ctx->getAttribDims( POSITION ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::POSITION passed to geom::Transform" );
 	
 	// we'll make the sort of modification to our normals (if they're present)
 	// using the inverse transpose of 'mTransform'
-	if( modifier.getReadAttribDims( NORMAL ) == 3 ) {
-		vec3* normals = reinterpret_cast<vec3*>( modifier.getReadAttribData( NORMAL ) );
+	if( ctx->getAttribDims( NORMAL ) == 3 ) {
+		vec3* normals = reinterpret_cast<vec3*>( ctx->getAttribData( NORMAL ) );
 		mat3 normalsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
 		for( size_t v = 0; v < numVertices; ++v )
 			normals[v] = normalsTransform * normals[v];
-		target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals, numVertices );
 	}
-	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
+	else if( ctx->getAttribDims( NORMAL ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
 
 	// and finally, we'll make the sort of modification to our tangents (if they're present)
 	// using the inverse transpose of 'mTransform'
-	if( modifier.getReadAttribDims( TANGENT ) == 3 ) {
-		vec3* tangents = reinterpret_cast<vec3*>( modifier.getReadAttribData( TANGENT ) );
+	if( ctx->getAttribDims( TANGENT ) == 3 ) {
+		vec3* tangents = reinterpret_cast<vec3*>( ctx->getAttribData( TANGENT ) );
 		mat3 tangentsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
 		for( size_t v = 0; v < numVertices; ++v )
 			tangents[v] = tangentsTransform * tangents[v];
-		target->copyAttrib( Attrib::TANGENT, 3, 0, (const float*)tangents, numVertices );
 	}
-	else if( modifier.getReadAttribDims( NORMAL ) != 0 )
-		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
+	else if( ctx->getAttribDims( TANGENT ) != 0 )
+		CI_LOG_W( "Unsupported dimension for geom::TANGENT passed to geom::Transform" );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -2115,11 +2127,11 @@ AttribSet Twist::getAvailableAttribs() const
 void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we want to capture and then modify both positions and normals
-	map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[POSITION] = Modifier::READ_WRITE;
-	attribAccess[NORMAL] = Modifier::READ_WRITE;
-	attribAccess[TANGENT] = Modifier::READ_WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
+	map<Attrib,ModifierUtil::Access> attribAccess;
+	attribAccess[POSITION] = ModifierUtil::READ_WRITE;
+	attribAccess[NORMAL] = ModifierUtil::READ_WRITE;
+	attribAccess[TANGENT] = ModifierUtil::READ_WRITE;
+	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::IGNORED );
 	mSource.loadInto( &modifier, requestedAttribs );
 	
 	const size_t numVertices = mSource.getNumVertices();
@@ -2165,52 +2177,55 @@ void Twist::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Lines
-size_t Lines::getNumIndices() const
+size_t Lines::getNumIndices( const Modifier::Params &upstreamParams ) const
 {
-	switch( mSource.getPrimitive() ) {
-		case LINES:
-			return mSource.getNumIndices();
-		break;
-		case LINE_STRIP:
-			return mSource.getNumIndices() ? ((mSource.getNumIndices() - 1) * 2 ) : ((mSource.getNumVertices() - 1) * 2 );
-		break;
-		case TRIANGLES:
-			return mSource.getNumIndices() ? (mSource.getNumIndices() * 2) : (mSource.getNumVertices() * 2);
-		break;
-		case TRIANGLE_STRIP:
-			return std::max<int>( 0, mSource.getNumIndices() ? (int)((mSource.getNumIndices() - 2) * 6 )
-				: (int)(mSource.getNumVertices() - 2) * 6 );
-		break;
-		case TRIANGLE_FAN:
-			return std::max<int>( 0, mSource.getNumIndices() ? (int)(mSource.getNumIndices() * 4 - 2 )
-				: (int)(mSource.getNumVertices() * 4 - 2 ) );
-		break;
-	}
-	return mSource.getNumIndices();
+	return calcNumIndices( upstreamParams.getPrimitive(), upstreamParams.getNumIndices(), upstreamParams.getNumVertices() );
 }
 
-void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+size_t Lines::calcNumIndices( Primitive primitive, size_t upstreamNumIndices, size_t upstreamNumVertices )
 {
-	// we are only interested in changing indices
-	Modifier modifier( mSource, target, map<Attrib,Modifier::Access>(), Modifier::READ_WRITE );
-	mSource.loadInto( &modifier, requestedAttribs );
-
-	const size_t numInIndices = modifier.getNumIndices();
-	const size_t numInVertices = mSource.getNumVertices();
-
-	if( getNumIndices() < 2 ) { // early exit
-		target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
-		return;
+	switch( primitive ) {
+		case LINES:
+			return upstreamNumIndices;
+		break;
+		case LINE_STRIP:
+			return upstreamNumIndices ? ((upstreamNumIndices - 1) * 2 ) : ((upstreamNumVertices - 1) * 2 );
+		break;
+		case TRIANGLES:
+			return upstreamNumIndices ? (upstreamNumIndices * 2) : (upstreamNumVertices * 2);
+		break;
+		case TRIANGLE_STRIP:
+			return std::max<int>( 0, upstreamNumIndices ? (int)((upstreamNumVertices - 2) * 6 )
+				: (int)(upstreamNumIndices - 2) * 6 );
+		break;
+		case TRIANGLE_FAN:
+			return std::max<int>( 0, upstreamNumIndices ? (int)(upstreamNumVertices * 4 - 2 )
+				: (int)(upstreamNumIndices * 4 - 2 ) );
+		break;
+		default:
+			return upstreamNumIndices;
 	}
+}
 
-	switch( mSource.getPrimitive() ) {
+void Lines::process( SourceModsContext *ctx ) const
+{
+	ctx->indicesReadWrite();
+	ctx->processUpstream();
+	
+	const size_t numInIndices = ctx->getNumIndices();
+	const size_t numInVertices = ctx->getNumVertices();
+	const size_t numOutIndices = calcNumIndices( ctx->getPrimitive(), numInIndices, numInVertices );
+
+	if( numOutIndices < 2 ) // early exit
+		return;
+
+	switch( ctx->getPrimitive() ) {
 		case Primitive::LINES: // pass-through
-			target->copyIndices( geom::LINES, modifier.getIndicesData(), modifier.getNumIndices(), 4 );
 		break;
 		case Primitive::LINE_STRIP: {
 			vector<uint32_t> outIndices;
-			outIndices.reserve( getNumIndices() );
-			const uint32_t *indices = modifier.getIndicesData();
+			outIndices.reserve( numOutIndices );
+			const uint32_t *indices = ctx->getIndicesData();
 			if( indices ) {
 				for( size_t i = 0; i < numInIndices - 1; i++ ) {
 					outIndices.push_back( indices[i] ); outIndices.push_back( indices[i + 1] );
@@ -2221,12 +2236,14 @@ void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 					outIndices.push_back( (uint32_t)i ); outIndices.push_back( (uint32_t)(i + 1) );
 				}
 			}
+			
+			ctx->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
 		}
 		break;
 		case Primitive::TRIANGLE_FAN: {
 			vector<uint32_t> outIndices;
-			outIndices.reserve( getNumIndices() );
-			const uint32_t *indices = modifier.getIndicesData();
+			outIndices.reserve( numOutIndices );
+			const uint32_t *indices = ctx->getIndicesData();
 			if( indices ) {
 				for( size_t i = 1; i < numInIndices; i++ ) { // lines connecting first vertex ("hub") and all others
 					outIndices.push_back( indices[0] ); outIndices.push_back( indices[i] );
@@ -2244,13 +2261,13 @@ void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 				}
 			}
 			
-			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+			ctx->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
 		}
 		break;
 		case Primitive::TRIANGLES: {
 			vector<uint32_t> outIndices;
-			outIndices.reserve( getNumIndices() );
-			const uint32_t *indices = modifier.getIndicesData();
+			outIndices.reserve( numOutIndices );
+			const uint32_t *indices = ctx->getIndicesData();
 			if( indices ) {
 				for( size_t i = 0; i < numInIndices; i += 3 ) {
 					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
@@ -2266,13 +2283,13 @@ void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 				}
 			}
 			
-			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+			ctx->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
 		}
 		break;
 		case Primitive::TRIANGLE_STRIP: {
 			vector<uint32_t> outIndices;
-			outIndices.reserve( getNumIndices() );
-			const uint32_t *indices = modifier.getIndicesData();
+			outIndices.reserve( numOutIndices );
+			const uint32_t *indices = ctx->getIndicesData();
 			if( indices ) {
 				for( size_t i = 0; i < numInIndices - 2; i++ ) {
 					outIndices.push_back( indices[i + 0] ); outIndices.push_back( indices[i + 1] );
@@ -2288,7 +2305,7 @@ void Lines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 				}
 			}
 			
-			target->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
+			ctx->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
 		}
 		break;
 	}
@@ -2340,10 +2357,10 @@ void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttrib
 	}
 
 	// we want to capture 'mAttrib' and we want to write COLOR
-	map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[mAttrib] = Modifier::READ;
-	attribAccess[COLOR] = Modifier::WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
+	map<Attrib,ModifierUtil::Access> attribAccess;
+	attribAccess[mAttrib] = ModifierUtil::READ;
+	attribAccess[COLOR] = ModifierUtil::WRITE;
+	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::IGNORED );
 	mSource.loadInto( &modifier, requestedAttribs );
 
 	if( modifier.getAttribDims( mAttrib ) == 0 ) {
@@ -2413,16 +2430,16 @@ template<typename S, typename D>
 void geom::AttribFn<S,D>::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we want to capture 'mSrcAttrib' and we want to write 'mDstAttrib'
-	std::map<Attrib,Modifier::Access> attribAccess;
+	std::map<Attrib,ModifierUtil::Access> attribAccess;
 	if( mSrcAttrib != mDstAttrib ) {
-		attribAccess[mSrcAttrib] = Modifier::READ;
-		attribAccess[mDstAttrib] = Modifier::WRITE;
+		attribAccess[mSrcAttrib] = ModifierUtil::READ;
+		attribAccess[mDstAttrib] = ModifierUtil::WRITE;
 	}
 	else
-		attribAccess[mSrcAttrib] = Modifier::READ_WRITE;
+		attribAccess[mSrcAttrib] = ModifierUtil::READ_WRITE;
 	auto attribs = requestedAttribs;
 	attribs.insert( mSrcAttrib );
-	Modifier modifier( mSource, target, attribAccess, Modifier::IGNORED );
+	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::IGNORED );
 	mSource.loadInto( &modifier, attribs );
 
 	if( modifier.getAttribDims( mSrcAttrib ) == 0 ) {
@@ -2863,12 +2880,12 @@ AttribSet VertexNormalLines::getAvailableAttribs() const
 void VertexNormalLines::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we are interested in removing normals and colors and outputting positions
-	map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[Attrib::POSITION] = Modifier::READ_WRITE;
-	attribAccess[mAttrib] = Modifier::READ_WRITE; // we actually won't ever write it but this prevents pass-through
-	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ_WRITE;
-	attribAccess[Attrib::COLOR] = Modifier::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
-	Modifier modifier( mSource, target, attribAccess, Modifier::READ_WRITE );
+	map<Attrib,ModifierUtil::Access> attribAccess;
+	attribAccess[Attrib::POSITION] = ModifierUtil::READ_WRITE;
+	attribAccess[mAttrib] = ModifierUtil::READ_WRITE; // we actually won't ever write it but this prevents pass-through
+	attribAccess[Attrib::TEX_COORD_0] = ModifierUtil::READ_WRITE;
+	attribAccess[Attrib::COLOR] = ModifierUtil::WRITE; // we actually won't ever write it but this prevents pass-through as colors are often inconvenient
+	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::READ_WRITE );
 	mSource.loadInto( &modifier, { Attrib::POSITION, mAttrib } );
 
 	const size_t numInIndices = modifier.getNumIndices();
@@ -2953,14 +2970,14 @@ AttribSet Tangents::getAvailableAttribs() const
 void Tangents::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	// we are interested in removing normals and colors and outputting positions
-	map<Attrib,Modifier::Access> attribAccess;
-	attribAccess[Attrib::POSITION] = Modifier::READ;
-	attribAccess[Attrib::NORMAL] = Modifier::READ;
-	attribAccess[Attrib::TEX_COORD_0] = Modifier::READ;
-	attribAccess[Attrib::TANGENT] = Modifier::WRITE;
+	map<Attrib,ModifierUtil::Access> attribAccess;
+	attribAccess[Attrib::POSITION] = ModifierUtil::READ;
+	attribAccess[Attrib::NORMAL] = ModifierUtil::READ;
+	attribAccess[Attrib::TEX_COORD_0] = ModifierUtil::READ;
+	attribAccess[Attrib::TANGENT] = ModifierUtil::WRITE;
 	if( requestedAttribs.count( Attrib::BITANGENT ) )
-		attribAccess[Attrib::BITANGENT] = Modifier::WRITE;
-	Modifier modifier( mSource, target, attribAccess, Modifier::READ );
+		attribAccess[Attrib::BITANGENT] = ModifierUtil::WRITE;
+	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::READ );
 	mSource.loadInto( &modifier, { Attrib::POSITION, Attrib::NORMAL, TEX_COORD_0 } );
 
 	const size_t numIndices = modifier.getNumIndices();
@@ -3078,6 +3095,242 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
 template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+
+
+//////////////////////////////////////////////////////////////////////////////////////
+// SourceModsBase
+size_t SourceModsBase::getNumVertices() const
+{
+	cacheVariables();
+	return mParamsStack.back().getNumVertices();
+}
+
+size_t SourceModsBase::getNumIndices() const
+{
+	cacheVariables();
+	return mParamsStack.back().getNumIndices();
+}
+
+Primitive SourceModsBase::getPrimitive() const
+{
+	cacheVariables();
+	return mParamsStack.back().getPrimitive();
+}
+
+uint8_t	SourceModsBase::getAttribDims( Attrib attr ) const
+{
+	cacheVariables();
+	
+	uint8_t result = getSource()->getAttribDims( attr );
+	for( auto &mod : mModifiers ) {
+		result = mod->getAttribDims( attr, result );
+	}
+	
+	return result;
+}
+
+AttribSet SourceModsBase::getAvailableAttribs() const
+{
+	cacheVariables();
+	return mParamsStack.back().getAvailableAttribs();
+}
+
+// Caches out 'mCachedNumVertices', 'mCachedNumIndices', 'mCachedPrimitive' & 'mCachedAvailableAttribs'
+//
+// First we store the Source's values for the above variables; then we iterate the modifiers, updating all variables in turn
+// A Modifier's various get*() methods (getNumVertices() for example) will call back into 'this' in some instances.
+// For example, the geom::Lines modifier must call getPrimitive() in order to calculate the numIndices
+// In this example, the SourceModsBase::getPrimitive() method will reflect whatever the primitive is as of the previous modifier in the iteration,
+// or the Source if this is the first modifier, because we are setting 'mCachedPrimitive' in the loop
+void SourceModsBase::cacheVariables() const
+{
+	if( mVariablesCached )
+		return;
+
+	// this is important to set first; modifiers' get*() methods might call into one of our get*() methods
+	// in which case we need cacheVariables() to return immediately
+	mVariablesCached = true;
+	
+	mParamsStack.push_back( Modifier::Params() );
+	mParamsStack.back().mNumVertices = getSource()->getNumVertices();
+	mParamsStack.back().mNumIndices = getSource()->getNumIndices();
+	mParamsStack.back().mPrimitive = getSource()->getPrimitive();
+	mParamsStack.back().mAvaliableAttribs = getSource()->getAvailableAttribs();
+	for( auto &mod : mModifiers ) {
+		// we store these values in temporaries so that they aren't yet returned by get*()
+		auto numVertices = mod->getNumVertices( mParamsStack.back() );
+		auto numIndices = mod->getNumIndices( mParamsStack.back() );
+		auto primitive = mod->getPrimitive( mParamsStack.back() );
+		auto availableAttribs = mod->getAvailableAttribs( mParamsStack.back() );
+
+		mParamsStack.push_back( Modifier::Params() );
+		mParamsStack.back().mNumVertices = numVertices;
+		mParamsStack.back().mNumIndices = numIndices;
+		mParamsStack.back().mPrimitive = primitive;
+		mParamsStack.back().mAvaliableAttribs = availableAttribs;
+	}
+}
+
+void SourceModsBase::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	// if we have no modifiers (not typical) just do a standard loadInto
+	if( mModifiers.empty() ) {
+		getSource()->loadInto( target, requestedAttribs );
+	}
+	else {
+		SourceModsContext context( this );
+		context.loadInto( target, requestedAttribs );
+	}
+}
+
+void SourceModsBase::addModifier( const Modifier &modifier )
+{
+	mModifiers.push_back( std::unique_ptr<Modifier>( modifier.clone() ) );
+	mVariablesCached = false;
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// SourceModsContext
+SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
+	: mSourceMods( sourceMods )
+{
+	for( auto &modifier : mSourceMods->mModifiers )
+		mModiferStack.push_back( modifier.get() );
+
+	mParamsStack = mSourceMods->mParamsStack;
+}
+
+void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttribs )
+{
+	// initiate the chain by calling the last modifier's process() method.
+	// This in turn will call processUpstream(), which will call the next modifier's process(), until there
+	// are no remaining modifiers. Finally processUpstream() will call loadInto() on the Source
+	if( ! mModiferStack.empty() ) {
+		auto modifier = mModiferStack.back();
+		mModiferStack.pop_back();
+		mParamsStack.pop_back();
+		modifier->process( this );
+
+		// We've finished processing all Modifiers and the Source. Now iterate all the attribute data and the indices
+		// and copy them to the target.
+		for( const auto &attribInfoPair : mAttribInfo ) {
+			Attrib attrib = attribInfoPair.first;
+			const AttribInfo &attribInfo = attribInfoPair.second;
+			target->copyAttrib( attrib, attribInfo.getDims(), attribInfo.getStride(), mAttribData[attrib].get(), mAttribCount[attrib] );
+		}
+
+		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, 4 );
+	}
+	else {
+		// extremely rare but technically possible that we'd have a SourceMods with no mods; in this case just call loadInto()
+		mSourceMods->getSource()->loadInto( target, requestedAttribs );
+	}
+}
+
+void SourceModsContext::processUpstream()
+{
+	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
+	if( mModiferStack.empty() ) {
+		mSourceMods->getSource()->loadInto( this, mSourceMods->getAvailableAttribs() );
+	}
+	else {
+		// we want the Params to reflect upstream from the current Modifier
+		auto modifier = mModiferStack.back();
+		mModiferStack.pop_back();
+		mParamsStack.pop_back();
+		modifier->process( this );
+	}
+
+/*	// now that we're done,
+	for( mAttribData )
+			virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
+		}
+	
+		target->copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex );*/
+	
+}
+	
+void SourceModsContext::attribRead( Attrib attr )
+{
+}
+
+void SourceModsContext::attribWrite( Attrib attr )
+{
+}
+void SourceModsContext::attribReadWrite( Attrib attr )
+{
+}
+
+void SourceModsContext::indicesRead()
+{
+}
+
+void SourceModsContext::indicesWrite()
+{
+}
+
+void SourceModsContext::indicesReadWrite()
+{
+}
+
+uint8_t	SourceModsContext::getAttribDims( Attrib attr ) const
+{
+	auto attrInfoIt = mAttribInfo.find( attr );
+	if( attrInfoIt != mAttribInfo.end() )
+		return attrInfoIt->second.getDims();
+	else
+		return 0;
+}
+
+size_t SourceModsContext::getNumVertices() const
+{
+	return mParamsStack.back().getNumVertices();
+}
+
+size_t SourceModsContext::getNumIndices() const
+{
+	return mParamsStack.back().getNumIndices();
+}
+
+Primitive SourceModsContext::getPrimitive() const
+{
+	return mParamsStack.back().getPrimitive();
+}
+
+float* SourceModsContext::getAttribData( Attrib attr )
+{
+	auto attrDataIt = mAttribData.find( attr );
+	if( attrDataIt != mAttribData.end() ) {
+		return attrDataIt->second.get();
+	}
+	else
+		return nullptr;
+}
+
+uint32_t* SourceModsContext::getIndicesData()
+{
+	return nullptr;
+}
+
+void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
+{
+// this needs to be optimized to not reallocate when it already exists
+	// make some room for our own copy of this data
+	
+	mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
+	mAttribInfo.emplace( attr, AttribInfo( attr, dims, strideBytes, (size_t)0 ) );
+	mAttribCount[attr] = count;
+	copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+}
+
+void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+{
+	mNumIndices = numIndices;
+	mPrimitive = primitive;
+	mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
+	memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
+}
+
 
 template class AttribFn<float,float>;	template class AttribFn<float,vec2>;	template class AttribFn<float,vec3>;	template class AttribFn<float,vec4>;
 template class AttribFn<vec2,float>;	template class AttribFn<vec2,vec2>;		template class AttribFn<vec2,vec3>;		template class AttribFn<vec2,vec4>;

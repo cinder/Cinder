@@ -127,7 +127,7 @@ class VboMesh {
 
 	void		bufferIndices( size_t dataSizeBytes, const void *data );
 
-#if defined(CINDER_GL_ES_3) || (! defined( CINDER_GL_ANGLE ))
+#if defined( CINDER_GL_ES_3 ) || (! defined( CINDER_GL_ANGLE ))
 	class MappedAttribBase {
 	  public:
 		//! Must be called before object is destructed.
