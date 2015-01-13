@@ -23,8 +23,52 @@
 
 #include "cinder/app/PlatformCocoa.h"
 
+#import <Cocoa/Cocoa.h>
+
 using namespace std;
 
 namespace cinder { namespace app {
+
+// TODO: this will need to accomodate Screensavers, which used to override App::getBundle() to return a different user bundle
+// - probably app needs to set the bundle instance
+NSBundle* PlatformCocoa::getBundle() const
+{
+	return [NSBundle mainBundle];
+}
+
+fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) const
+{
+	fs::path path = rsrcRelativePath.parent_path();
+	fs::path fileName = rsrcRelativePath.filename();
+
+	if( fileName.empty() )
+		return string();
+
+	NSString *pathNS = NULL;
+	if( ( ! path.empty() ) && ( path != rsrcRelativePath ) )
+		pathNS = [NSString stringWithUTF8String:path.c_str()];
+
+	NSString *resultPath = [getBundle() pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:NULL inDirectory:pathNS];
+	if( ! resultPath )
+		return string();
+
+	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+}
+
+fs::path PlatformCocoa::getResourcePath() const
+{
+	NSString *resultPath = [getBundle() resourcePath];
+
+	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+}
+
+DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
+{
+	fs::path fullPath = getResourcePath( resourcePath );
+	if( fullPath.empty() )
+		throw ResourceLoadExc( resourcePath		);
+	else
+		return DataSourcePath::create( fullPath );
+}
 
 } } // namespace cinder::app

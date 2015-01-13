@@ -25,10 +25,24 @@
 
 #include "cinder/app/Platform.h"
 
+#if defined __OBJC__
+	@class NSBundle;
+#else
+	class NSBundle;
+#endif
+
 namespace cinder { namespace app {
 
 class PlatformCocoa : public Platform {
   public:
+
+	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
+
+	fs::path getResourcePath() const override;
+	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
+
+	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
+	NSBundle*		getBundle() const;
 
   protected:
 

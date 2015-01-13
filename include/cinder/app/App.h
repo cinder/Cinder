@@ -39,14 +39,6 @@
 #include "cinder/Function.h"
 #include "cinder/Thread.h"
 
-#if defined( CINDER_COCOA )
-	#if defined __OBJC__
-		@class NSBundle;
-	#else
-		class NSBundle;
-	#endif
-#endif
-
 #include <vector>
 #include <algorithm>
 
@@ -358,24 +350,13 @@ class App {
 	static ivec2		getMousePos();
 	
 	// utilities
-	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType );
-#if defined( CINDER_COCOA )
-	//! Returns a DataSourceRef to an application resource. \a macPath is a path relative to the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static DataSourceRef		loadResource( const std::string &macPath );
-	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa \ref CinderResources
-	static fs::path				getResourcePath( const fs::path &rsrcRelativePath );
-	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
-	static fs::path				getResourcePath();
-#elif defined( CINDER_WINRT )
-	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
-	static DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
-
-#elif defined( CINDER_MSW )
+#if defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	static DataSourceRef		loadResource( int mswID, const std::string &mswType );
+	DataSourceRef		loadResource( int mswID, const std::string &mswType ) const		{ return Platform::get()->loadResource( mswID, mswType ); }
+#else
+	DataSourceRef		loadResource( const fs::path &resourcePath ) const				{ return Platform::get()->loadResource( resourcePath ); }
 #endif
-	
+
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
 	DataSourceRef			loadAsset( const fs::path &relativePath );
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
@@ -385,10 +366,6 @@ class App {
 	
 	//! Returns the path to the application on disk
 	virtual fs::path			getAppPath() const = 0;
-#if defined( CINDER_COCOA )
-	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
-	virtual NSBundle*			getBundle() const;
-#endif\
 
 	//! Presents the user with a folder-open dialog and returns the selected folder path in the spcified callback.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
@@ -564,18 +541,13 @@ inline double	getElapsedSeconds() { return App::get()->getElapsedSeconds(); }
 //! Returns the number of animation frames which have elapsed since the active App launched.
 inline uint32_t	getElapsedFrames() { return App::get()->getElapsedFrames(); }
 
-//! Returns a DataSource to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const std::string &mswType ) { return App::loadResource( macPath, mswID, mswType ); }
-#if defined( CINDER_COCOA )
-	//! Returns a DataSource to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
-	inline DataSourceRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
-#elif defined( CINDER_WINRT )
-	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
-	inline DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
-#elif defined( CINDER_MSW )
-	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
-#endif
+#if defined( CINDER_MSW )
+//! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
+inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return Platform::get()->loadResource( mswID, mswType ); }
+#else
+//! Returns a DataSource to an application resource. \a resourcePath is defined on a per-platform basis. \sa \ref CinderResources
+inline DataSourceRef	loadResource( const fs::path &resourcePath ) { return Platform::get()->loadResource( resourcePath ); }
+#endif // defined( CINDER_MSW )
 
 //! Returns a DataSourceRef to the active App's's asset. Throws a AssetLoadExc on failure.
 inline DataSourceRef		loadAsset( const fs::path &relativePath ) { return App::get()->loadAsset( relativePath ); }

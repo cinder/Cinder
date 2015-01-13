@@ -30,6 +30,11 @@ namespace cinder { namespace app {
 class PlatformMsw : public Platform {
   public:
 
+	DataSourceRef	loadResource( int mswID, const std::string &mswType ) override;
+
+	fs::path getResourcePath() const override										{ return fs::path(); }
+	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
+
   protected:
 
   private:

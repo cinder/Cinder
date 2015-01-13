@@ -23,6 +23,7 @@
 
 #pragma once
 
+#include "cinder/DataSource.h"
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
 
@@ -30,6 +31,30 @@ namespace cinder { namespace app {
 
 class Platform {
   public:
+	static Platform* get();
+
+	// Assets
+	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
+	DataSourceRef			loadAsset( const fs::path &relativePath );
+	//! Returns a fs::path to an application asset. Returns an empty path on failure.
+	fs::path				getAssetPath( const fs::path &relativePath );
+	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
+	void					addAssetDirectory( const fs::path &dirPath );
+
+	// Resources
+#if defined( CINDER_MSW )
+	//! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
+	virtual DataSourceRef	loadResource( int mswID, const std::string &mswType ) = 0;
+#else
+	//! Returns a DataSource to an application resource. \a resourcePath is defined on a per-platform basis. \sa \ref CinderResources
+	virtual DataSourceRef	loadResource( const fs::path &resourcePath ) = 0;
+#endif // defined( CINDER_MSW )
+
+	//! Returns the absolute file path to the resources folder. Returns an empty fs::path on windows. \sa CinderResources
+	virtual fs::path getResourcePath() const = 0;
+	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa CinderResources
+	//! TODO: this seems unnecessary to be abstract virtual - instead can implement as getResourcePath() / relPath.
+	virtual fs::path getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
   protected:
 

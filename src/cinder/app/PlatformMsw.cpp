@@ -27,6 +27,10 @@ using namespace std;
 
 namespace cinder { namespace app {
 
+DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType ) override
+{
+	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
+}
 
 ResourceLoadExc::ResourceLoadExcMsw( int mswID, const string &mswType )
 {

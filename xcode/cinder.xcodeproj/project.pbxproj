@@ -1433,7 +1433,7 @@
 		1116CC431A5F150200023856 /* PlatformCocoa.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PlatformCocoa.h; path = app/PlatformCocoa.h; sourceTree = "<group>"; };
 		1116CC441A5F150200023856 /* Platform.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Platform.h; path = app/Platform.h; sourceTree = "<group>"; };
 		1116CC481A5F154000023856 /* PlatformMsw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformMsw.cpp; path = app/PlatformMsw.cpp; sourceTree = "<group>"; };
-		1116CC491A5F154000023856 /* PlatformCocoa.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformCocoa.cpp; path = app/PlatformCocoa.cpp; sourceTree = "<group>"; };
+		1116CC491A5F154000023856 /* PlatformCocoa.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = PlatformCocoa.cpp; path = app/PlatformCocoa.cpp; sourceTree = "<group>"; };
 		1116CC4A1A5F154000023856 /* Platform.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Platform.cpp; path = app/Platform.cpp; sourceTree = "<group>"; };
 		111A5E4F191F703D005C3166 /* bitwise.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = bitwise.c; sourceTree = "<group>"; };
 		111A5E50191F703D005C3166 /* framing.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = framing.c; sourceTree = "<group>"; };

@@ -173,36 +173,6 @@ void App::emitDidBecomeActive()
 	mSignalDidBecomeActive();
 }
 
-DataSourceRef App::loadResource( const string &macPath, int mswID, const string &mswType )
-{
-#if defined( CINDER_COCOA )
-	return loadResource( macPath );
-#elif defined( CINDER_WINRT )
-	return DataSourceBuffer::create( AppImplWinRT::loadResource( mswID, mswType ), macPath );
-#else
-	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ), macPath );
-#endif
-}
-
-#if defined( CINDER_COCOA )
-DataSourceRef App::loadResource( const string &macPath )
-{
-	fs::path resourcePath = App::get()->getResourcePath( macPath );
-	if( resourcePath.empty() )
-		throw ResourceLoadExc( macPath );
-	else
-		return DataSourcePath::create( resourcePath );
-}
-#elif defined( CINDER_MSW )
-
-DataSourceRef App::loadResource( int mswID, const string &mswType )
-{
-	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
-}
-
-#endif
-
-
 void App::prepareAssetLoading()
 {
 	if( ! mAssetDirectoriesInitialized ) {
@@ -210,8 +180,9 @@ void App::prepareAssetLoading()
 
 		// if this is Mac OS or iOS, search inside the bundle's resources, and then the bundle's root
 #if defined( CINDER_COCOA )
-		if( fs::exists( getResourcePath() / "assets" ) && fs::is_directory( getResourcePath() / "assets" ) ) {
-			mAssetDirectories.push_back( getResourcePath() / "assets" );
+		fs::path bundleAssetsPath = Platform::get()->getResourcePath() / "assets";
+		if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
+			mAssetDirectories.push_back( bundleAssetsPath );
 			mAssetDirectoriesInitialized = true;
 			return;
 		}
@@ -289,40 +260,6 @@ void App::addAssetDirectory( const fs::path &dirPath )
 	
 	mAssetDirectories.push_back( dirPath );
 }
-
-#if defined( CINDER_COCOA )
-NSBundle* App::getBundle() const
-{
-	return [NSBundle mainBundle];
-}
-
-fs::path App::getResourcePath( const fs::path &rsrcRelativePath )
-{
-	fs::path path = rsrcRelativePath.parent_path();
-	fs::path fileName = rsrcRelativePath.filename();
-	
-	if( fileName.empty() )
-		return string();
-	
-	NSString *pathNS = 0;
-	if( ( ! path.empty() ) && ( path != rsrcRelativePath ) )
-		pathNS = [NSString stringWithUTF8String:path.c_str()];
-	
-	NSString *resultPath = [App::get()->getBundle() pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:nil inDirectory:pathNS];
-	if( ! resultPath )
-		return string();
-	
-	return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
-}
-
-fs::path App::getResourcePath()
-{
-	NSString *resultPath = [App::get()->getBundle() resourcePath];
-
-	return fs::path([resultPath cStringUsingEncoding:NSUTF8StringEncoding]);
-}
-
-#endif
 
 fs::path App::getOpenFilePath( const fs::path &initialPath, vector<string> extensions )
 {
