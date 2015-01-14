@@ -43,7 +43,7 @@ void VboSampleApp::setup()
 	
 	// buffer our static data - the texcoords and the indices
 	vector<uint32_t> indices;
-	vector<Vec2f> texCoords;
+	vector<vec2> texCoords;
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			// create a quad for each vertex, except for along the bottom and right edges
@@ -54,7 +54,7 @@ void VboSampleApp::setup()
 				indices.push_back( (x+0) * VERTICES_Z + (z+1) );
 			}
 			// the texture coordinates are mapped to [0,1.0)
-			texCoords.push_back( Vec2f( x / (float)VERTICES_X, z / (float)VERTICES_Z ) );
+			texCoords.push_back( vec2( x / (float)VERTICES_X, z / (float)VERTICES_Z ) );
 		}
 	}
 	
@@ -82,7 +82,7 @@ void VboSampleApp::update()
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			float height = sin( z / (float)VERTICES_Z * zFreq + x / (float)VERTICES_X * xFreq + offset ) / 5.0f;
-			iter.setPosition( Vec3f( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) );
+			iter.setPosition( vec3( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) );
 			++iter;
 		}
 	}
@@ -92,7 +92,7 @@ void VboSampleApp::update()
 	for( int x = 0; x < VERTICES_X; ++x ) {
 		for( int z = 0; z < VERTICES_Z; ++z ) {
 			float height = sin( z / (float)VERTICES_Z * zFreq * 2 + x / (float)VERTICES_X * xFreq * 3 + offset ) / 10.0f;
-			iter2.setPosition( Vec3f( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) + Vec3f( 0, 0.5, 0 ) );
+			iter2.setPosition( vec3( x / (float)VERTICES_X, height, z / (float)VERTICES_Z ) + vec3( 0, 0.5, 0 ) );
 			++iter2;
 		}
 	}
@@ -103,7 +103,7 @@ void VboSampleApp::draw()
 	// this pair of lines is the standard way to clear the screen in OpenGL
 	gl::clear( Color( 0.15f, 0.15f, 0.15f ) );
 
-	gl::scale( Vec3f( 10, 10, 10 ) );
+	gl::scale( vec3( 10, 10, 10 ) );
 	mTexture->enableAndBind();
 	gl::draw( mVboMesh );
 	gl::draw( mVboMesh2 );

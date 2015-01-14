@@ -3,6 +3,9 @@
 <template name="Basic OpenGL"
 	id = "org.libcinder.apptemplates.basicopengl"
 	>
+	<supports os="macosx" />
+	<supports os="ios" />
+	<supports os="msw" />
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
 	<platform os="macosx">
@@ -12,7 +15,7 @@
 	</platform>
 	<platform os="ios">
 		<resource>resources/CinderApp_ios.png</resource>
-		<resource>xcode_ios/Default-568h@2x.png</resource>
+		<resource>xcode_ios/Images.xcassets/</resource>
 		<resource replaceContents="true" buildExclude="true">xcode_ios/Info.plist</resource>
 		<header replaceName="true" isPCH="true">xcode_ios/_TBOX_PREFIX__Prefix.pch</header>
 	</platform>

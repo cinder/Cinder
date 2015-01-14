@@ -20,7 +20,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#if ! defined( __LP64__ )
+// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
+#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
 	#error "This file must be compiled as Objective-C++ on the Mac"
@@ -40,6 +41,7 @@
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <CVPixelBuffer.h>
@@ -282,7 +284,7 @@ void MovieWriter::Obj::addFrame( const ImageSourceRef &imageSource, float durati
 	::CVPixelBufferRelease( pixelBuffer );
 
 	if( err )
-		MovieWriterExcFrameEncode();
+		throw MovieWriterExcFrameEncode();
 }
 
 extern "C" {
@@ -515,6 +517,8 @@ void MovieWriter::Obj::finish()
 		if( err )
 			throw MovieWriterExc();
 	}
+
+	::ICMCompressionSessionRelease( mCompressionSession );
         
 	// Close movie file
 	if( mDataHandler )
@@ -609,4 +613,4 @@ bool MovieWriter::getUserCompressionSettings( Format *result, ImageSourceRef ima
 
 } } // namespace cinder::qtime
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) ) && ( ! defined( _WIN64 ) )

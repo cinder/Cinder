@@ -75,8 +75,7 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();
 	
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		AVCaptureDevice *device = [devices objectAtIndex:i];
+	for( AVCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
 	}
 	sDevicesEnumerated = true;
@@ -125,9 +124,9 @@ static BOOL sDevicesEnumerated = false;
 
     mSession = [[AVCaptureSession alloc] init];
 
-	if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 640, 480 ) )
+	if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 640, 480 ) )
 		mSession.sessionPreset = AVCaptureSessionPreset640x480;
-	else if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 1280, 720 ) )
+	else if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 1280, 720 ) )
 		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
 	else
 		mSession.sessionPreset = AVCaptureSessionPresetMedium;
@@ -161,7 +160,7 @@ static BOOL sDevicesEnumerated = false;
 	/*
 	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
-	for( int i = 0; i < [connections count]; i++ ) {
+	for( AVCaptureConnection *connection in connections ) {
 		AVCaptureConnection * connection = [connections objectAtIndex:i];
 		
 		if( connection.supportsVideoOrientation ) {
@@ -206,18 +205,19 @@ static BOOL sDevicesEnumerated = false;
 
 	@synchronized( self ) {
 		[mSession stopRunning];
+
+		if( mWorkingPixelBuffer ) {
+			CVBufferRelease( mWorkingPixelBuffer );
+			mWorkingPixelBuffer = nullptr;
+		}
+		
 		[mSession release];
 		mSession = nil;
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
 		
-		mCurrentFrame.reset();
-		
-		if( mWorkingPixelBuffer ) {
-			CVBufferRelease( mWorkingPixelBuffer );
-			mWorkingPixelBuffer = 0;
-		}		
+		mCurrentFrame.reset();		
 	}
 }
 
@@ -234,7 +234,7 @@ static BOOL sDevicesEnumerated = false;
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
 				CVBufferRelease( mWorkingPixelBuffer );
-				mWorkingPixelBuffer = NULL;
+				mWorkingPixelBuffer = nullptr;
 			}
 			
 			CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
@@ -249,7 +249,7 @@ static BOOL sDevicesEnumerated = false;
 	}	
 }
 
-- (cinder::Surface8u)getCurrentFrame
+- (cinder::Surface8uRef)getCurrentFrame
 {
 	if( ( ! mIsCapturing ) || ( ! mWorkingPixelBuffer ) ) {
 		return mCurrentFrame;
@@ -259,12 +259,12 @@ static BOOL sDevicesEnumerated = false;
 		CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
 		
 		uint8_t *data = (uint8_t *)CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
-		mExposedFrameBytesPerRow = CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
-		mExposedFrameWidth = CVPixelBufferGetWidth( mWorkingPixelBuffer );
-		mExposedFrameHeight = CVPixelBufferGetHeight( mWorkingPixelBuffer );
+		mExposedFrameBytesPerRow = (int32_t)CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
+		mExposedFrameWidth = (int32_t)CVPixelBufferGetWidth( mWorkingPixelBuffer );
+		mExposedFrameHeight = (int32_t)CVPixelBufferGetHeight( mWorkingPixelBuffer );
 
-		mCurrentFrame = cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA );
-		mCurrentFrame.setDeallocator( frameDeallocator, mWorkingPixelBuffer );
+		mCurrentFrame = std::shared_ptr<cinder::Surface8u>( new cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA ),
+				[=]( cinder::Surface8u* s ){ delete s; frameDeallocator( mWorkingPixelBuffer ); } );
 		
 		// mark the working pixel buffer as empty since we have wrapped it in the current frame
 		mWorkingPixelBuffer = 0;

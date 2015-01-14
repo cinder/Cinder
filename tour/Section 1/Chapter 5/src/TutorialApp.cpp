@@ -33,8 +33,8 @@ class TutorialApp : public AppBasic {
 	Channel32f mChannel;
 	gl::Texture	mTexture;
 	
-	Vec2i mMouseLoc;
-	Vec2f mMouseVel;
+	ivec2 mMouseLoc;
+	vec2 mMouseVel;
 	bool mIsPressed;
 	
 	ParticleController mParticleController;
@@ -62,8 +62,8 @@ void TutorialApp::setup()
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
 	mTexture = mChannel;
 
-	mMouseLoc = Vec2i( 0, 0 );
-	mMouseVel = Vec2f::zero();
+	mMouseLoc = ivec2( 0, 0 );
+	mMouseVel = vec2::zero();
 	
 	mDrawParticles	= true;
 	mDrawImage		= false;

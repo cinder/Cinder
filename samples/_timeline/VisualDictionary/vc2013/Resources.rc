@@ -1,0 +1,9 @@
+#include "Resources.h"
+
+ID ICON "..\\..\\..\\data\\cinder_app_icon.ico"
+
+RES_FONT
+RES_BACKGROUND_IMAGE
+RES_CIRCLE_IMAGE
+RES_SMALL_CIRCLE_IMAGE
+RES_DICTIONARY

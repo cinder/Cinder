@@ -22,6 +22,7 @@
 */
 
 #include "cinder/Clipboard.h"
+#include "cinder/Unicode.h"
 #if defined( CINDER_MAC )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#import <Cocoa/Cocoa.h>
@@ -111,8 +112,11 @@ std::string	Clipboard::getString()
  
 	if( [pasteboard canReadObjectForClasses:classArray options:options] ) {
 		NSArray *objectsToPaste = [pasteboard readObjectsForClasses:classArray options:options];
-        NSString *text = [objectsToPaste objectAtIndex:0];
-		return cocoa::convertNsString( text );
+        NSString *text = [objectsToPaste firstObject];
+		if( ! text )
+			return std::string();
+		else
+			return cocoa::convertNsString( text );
 	}
 	else {
 		return std::string();
@@ -132,7 +136,7 @@ std::string	Clipboard::getString()
 		wchar_t *pstr = reinterpret_cast<wchar_t*>( ::GlobalLock( dataH ) );
 		if( pstr ) {
 			std::wstring wstr( pstr );
-			result = toUtf8( wstr );
+			result = toUtf8( (char16_t*)wstr.c_str() );
 			::GlobalUnlock( dataH );
 		}
 	}
@@ -154,7 +158,7 @@ ImageSourceRef Clipboard::getImage()
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard]; 
 	UIImage *image = pasteboard.image;
 	if( image )
-		return ImageSourceRef( cocoa::convertUiImage( image ) );
+		return ImageSourceRef( *cocoa::convertUiImage( image ) );
 	else
 		return ImageSourceRef();
 #elif defined( CINDER_MSW )
@@ -187,7 +191,7 @@ void Clipboard::setString( const std::string &str )
 #elif defined( CINDER_MSW )
 	::OpenClipboard( NULL );
 	::EmptyClipboard();
-	std::wstring wstr = toUtf16( str );
+	std::u16string wstr = toUtf16( str );
 	HANDLE hglbCopy = ::GlobalAlloc( GMEM_MOVEABLE, sizeof(uint16_t) * (wstr.length()+1) );
 	// Lock the handle and copy the text to the buffer. 
 	void *lptstrCopy = ::GlobalLock( hglbCopy ); 

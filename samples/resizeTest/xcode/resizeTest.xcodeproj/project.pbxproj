@@ -9,8 +9,9 @@
 /* Begin PBXBuildFile section */
 		003828140F4E83FF00FADA8D /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 003828120F4E83FF00FADA8D /* QuickTime.framework */; };
 		003828150F4E83FF00FADA8D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 003828130F4E83FF00FADA8D /* QTKit.framework */; };
-		009EEF510EB7A894003AB86B /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 009EEF4F0EB7A894003AB86B /* QTKit.framework */; };
-		009EEF520EB7A894003AB86B /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 009EEF500EB7A894003AB86B /* CoreVideo.framework */; };
+		004329301999692600A9C460 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0043292F1999692600A9C460 /* CoreVideo.framework */; };
+		006D732E199533B2008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D732C199533B2008149E2 /* AVFoundation.framework */; };
+		006D732F199533B2008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D732D199533B2008149E2 /* CoreMedia.framework */; };
 		009EEF5E0EB7ABC8003AB86B /* resizeTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009EEF5D0EB7ABC8003AB86B /* resizeTest.cpp */; };
 		009EEF6E0EB7ABEC003AB86B /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 009EEF6D0EB7ABEC003AB86B /* OpenGL.framework */; };
 		00C075EB0FF33C47004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075E70FF33C47004801EA /* Accelerate.framework */; };
@@ -24,6 +25,9 @@
 /* Begin PBXFileReference section */
 		003828120F4E83FF00FADA8D /* QuickTime.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuickTime.framework; path = /System/Library/Frameworks/QuickTime.framework; sourceTree = "<absolute>"; };
 		003828130F4E83FF00FADA8D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		0043292F1999692600A9C460 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		006D732C199533B2008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		006D732D199533B2008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		009EEF4F0EB7A894003AB86B /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = DEVELOPER_DIR; };
 		009EEF500EB7A894003AB86B /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
 		009EEF5D0EB7ABC8003AB86B /* resizeTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = resizeTest.cpp; path = ../resizeTest.cpp; sourceTree = SOURCE_ROOT; };
@@ -48,9 +52,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				004329301999692600A9C460 /* CoreVideo.framework in Frameworks */,
+				006D732E199533B2008149E2 /* AVFoundation.framework in Frameworks */,
+				006D732F199533B2008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
-				009EEF510EB7A894003AB86B /* QTKit.framework in Frameworks */,
-				009EEF520EB7A894003AB86B /* CoreVideo.framework in Frameworks */,
 				009EEF6E0EB7ABEC003AB86B /* OpenGL.framework in Frameworks */,
 				003828140F4E83FF00FADA8D /* QuickTime.framework in Frameworks */,
 				003828150F4E83FF00FADA8D /* QTKit.framework in Frameworks */,
@@ -138,6 +143,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0043292F1999692600A9C460 /* CoreVideo.framework */,
+				006D732C199533B2008149E2 /* AVFoundation.framework */,
+				006D732D199533B2008149E2 /* CoreMedia.framework */,
 				003828120F4E83FF00FADA8D /* QuickTime.framework */,
 				003828130F4E83FF00FADA8D /* QTKit.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
@@ -260,12 +268,12 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = x86_64;
 				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = ../../../../flint/lib/libcinder_d.a;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
@@ -275,12 +283,12 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = i386;
+				ARCHS = x86_64;
 				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "$(CINDER_PATH)/boost";
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				MACOSX_DEPLOYMENT_TARGET = 10.8;
 				OTHER_LDFLAGS = ../../../../flint/lib/libcinder.a;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";

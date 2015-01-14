@@ -33,19 +33,18 @@ typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<dou
 
 namespace {
 
-template<typename T>
-PolyLine<Vec2<T> > toPolyLine( const polygon &p )
+PolyLine2f toPolyLine( const polygon &p )
 {
-	PolyLine<Vec2<T> > result;
+	PolyLine2f result;
 
 	for( auto pt = p.outer().begin(); pt != p.outer().end(); ++pt )
-		result.push_back( Vec2<T>( (T)boost::geometry::get<0>(*pt), (T)boost::geometry::get<1>(*pt) ) );
+		result.push_back( vec2( boost::geometry::get<0>(*pt), boost::geometry::get<1>(*pt) ) );
 
 	
 	return result;
 }
 
-boost::geometry::model::d2::point_xy<double> makePoint( const Vec2f &p )
+boost::geometry::model::d2::point_xy<double> makePoint( const vec2 &p )
 {
 	return boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( p.x, p.y );
 }
@@ -91,12 +90,15 @@ void includePathExtremeties( const Path2d &p, polygon *output )
 
 } // anonymous namespace
 
-PolyLine2f calcConvexHull( const std::vector<Vec2f> &points )
+PolyLine2f calcConvexHull( const std::vector<vec2> &points )
 {
-	return calcConvexHull( &points[0], points.size() );
+	if( points.empty() )
+		return PolyLine2f();
+	else
+		return calcConvexHull( points.data(), points.size() );
 }
 
-PolyLine2f calcConvexHull( const Vec2f *points, size_t numPoints )
+PolyLine2f calcConvexHull( const vec2 *points, size_t numPoints )
 {
 	polygon poly;
 	for( size_t p = 0; p < numPoints; ++p )
@@ -105,7 +107,7 @@ PolyLine2f calcConvexHull( const Vec2f *points, size_t numPoints )
 	polygon result;
 	boost::geometry::convex_hull( poly, result );
 	
-	return toPolyLine<float>( result );
+	return toPolyLine( result );
 }
 
 PolyLine2f calcConvexHull( const Shape2d &shape )
@@ -117,7 +119,7 @@ PolyLine2f calcConvexHull( const Shape2d &shape )
 	polygon result;
 	boost::geometry::convex_hull( poly, result );
 
-	return toPolyLine<float>( result );	
+	return toPolyLine( result );
 }
 
 PolyLine2f calcConvexHull( const Path2d &path )
@@ -128,7 +130,7 @@ PolyLine2f calcConvexHull( const Path2d &path )
 	polygon result;
 	boost::geometry::convex_hull( poly, result );
 	
-	return toPolyLine<float>( result );	
+	return toPolyLine( result );
 }
 
 PolyLine2f calcConvexHull( const PolyLine2f &polyLine )
@@ -140,7 +142,7 @@ PolyLine2f calcConvexHull( const PolyLine2f &polyLine )
 	polygon result;
 	boost::geometry::convex_hull( poly, result );
 	
-	return toPolyLine<float>( result );
+	return toPolyLine( result );
 }
 
 } // namespace cinder

@@ -147,27 +147,21 @@ CGContextRef getWindowContext()
 #endif
 }
 
-// This will get called when the Surface::Obj is destroyed
-static void NSBitmapImageRepSurfaceDeallocator( void *refcon )
-{
-	NSBitmapImageRep *rep = reinterpret_cast<NSBitmapImageRep*>( refcon );
-	[rep release];
-}
-
 #if defined( CINDER_MAC )
-Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
+Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
 {
-	int bpp = [rep bitsPerPixel];
-	int rowBytes = [rep bytesPerRow];
-	int width = [rep pixelsWide];
-	int height = [rep pixelsHigh];
+	NSInteger bpp = [rep bitsPerPixel];
+	int32_t rowBytes = (int32_t)[rep bytesPerRow];
+	int32_t width = (int32_t)[rep pixelsWide];
+	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
 	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::RGBA;
-	Surface8u result( data, width, height, rowBytes, co );
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
-		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
-	return result;
+		return Surface8uRef( new Surface8u( data, width, height, rowBytes, co ),
+			[=] ( Surface8u *s ) { delete s; [rep release]; } );
+	else
+		return Surface8u::create( data, width, height, rowBytes, co );
 }
 #endif // defined( CINDER_MAC )
 
@@ -426,7 +420,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 	else
 		setDataType( ( bpc == 16 ) ? ImageIo::UINT16 : ImageIo::UINT8 );
 	if( isFloat && ( bpc != 32 ) )
-		throw ImageIoExceptionIllegalDataType(); // we don't know how to handle half-sized floats yet, but Quartz seems to make them 32bit anyway
+		throw ImageIoExceptionIllegalDataType( "Illegal data type (cannot handle half-precision floats)" ); // we don't know how to handle half-sized floats yet, but Quartz seems to make them 32bit anyway
 	bool hasAlpha = ( alphaInfo != kCGImageAlphaNone ) && ( alphaInfo != kCGImageAlphaNoneSkipLast ) && ( alphaInfo != kCGImageAlphaNoneSkipFirst );
 
 	bool swapEndian = false;
@@ -494,7 +488,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 			}
 			break;
 			default: // we only support Gray and RGB data for now
-				throw ImageIoExceptionIllegalColorModel();
+				throw ImageIoExceptionIllegalColorModel( "Core Graphics unexpected data type" );
 			break;
 		}
 	}
@@ -506,14 +500,14 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
 	if( ! pixels )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedLoad( "Core Graphics failure copying data." );
 	
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 	
-	shared_ptr<Color8u> tempRowBuffer;
+	unique_ptr<Color8u[]> tempRowBuffer;
 	if( mIsIndexed || mIs16BitPacked )
-		tempRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
+		tempRowBuffer = unique_ptr<Color8u[]>( new Color8u[mWidth] );
 	
 	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {

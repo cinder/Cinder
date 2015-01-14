@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -30,11 +31,13 @@
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
 #include "cinder/Function.h"
 #include "cinder/Thread.h"
+
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#if defined( __OBJC__ )
@@ -53,6 +56,8 @@
 //	class CinderView;
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/OutputDebugStringStream.h"
+#elif defined( CINDER_WINRT)
+	#include "cinder/msw/OutputDebugStringStream.h"
 #endif
 
 #include <vector>
@@ -62,9 +67,11 @@ namespace cinder {
 class Timeline;
 } // namespace cinder
 
+#if !defined( CINDER_WINRT )
 namespace boost { namespace asio {
 class io_service;
 } } // namespace boost::asio
+#endif
 
 namespace cinder { namespace app { 
 
@@ -122,21 +129,21 @@ class App {
 	class Settings {
 	  public:
 	    // whether or not the app should terminate prior to launching
-		bool	isPrepared() const { return ! mShouldQuit; };
+		bool	isPrepared() const { return ! mShouldQuit; }
 
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( Vec2i( windowSizeX, windowSizeY ) ); }
+		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( const Vec2i &size ) { mDefaultWindowFormat.setSize( size ); }
+		void	setWindowSize( const ivec2 &size ) { mDefaultWindowFormat.setSize( size ); }
 		//! Gets the size of the default window measured in pixels
-		Vec2i	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
+		ivec2	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
 		
 		//! Returns the position of the default window in screen coordinates measured in pixels
-		Vec2i	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
+		ivec2	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( Vec2i( windowPosX, windowPosY ) ); }
+		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( ivec2( windowPosX, windowPosY ) ); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( const Vec2i &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
+		void    setWindowPos( const ivec2 &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
 		//! Returns whether a non-default window position has been requested
 		bool	isWindowPosSpecified() const { return mDefaultWindowFormat.isPosSpecified(); }
 		//! Marks the window position setting as unspecified, effectively requesting the default
@@ -185,7 +192,7 @@ class App {
 		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 
 		//! a value of \c true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
-		void	enablePowerManagement( bool aPowerManagement = true );
+		void	enablePowerManagement( bool enable = true );
 		//! is power management enabled, allowing screensavers and the system's power management to hide the application
 		bool	isPowerManagementEnabled() const { return mPowerManagement; }
 
@@ -277,6 +284,13 @@ class App {
 	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
 
+#if ! defined( CINDER_WINRT )
+	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
+    void 						emitWillResignActive();
+	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
+	void 						emitDidBecomeActive();
+#endif
+
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
 	// Accessors
@@ -303,14 +317,14 @@ class App {
 	//! Returns the height of the App's current window measured in points
 	int					getWindowHeight() const { return getWindow()->getHeight(); }
 	//! Sets the size of the App's current window measured in points. Ignored in full-screen mode.
-	void				setWindowSize( int windowWidth, int windowHeight ) { setWindowSize( Vec2i( windowWidth, windowHeight ) ); }
+	void				setWindowSize( int windowWidth, int windowHeight ) { setWindowSize( ivec2( windowWidth, windowHeight ) ); }
 	//! Sets the size of the App's window measured in points. Ignored in full-screen mode.
-	void				setWindowSize( const Vec2i &size ) { getWindow()->setSize( size ); }
+	void				setWindowSize( const ivec2 &size ) { getWindow()->setSize( size ); }
 	//! Returns the center of the App's window measured in points
-	/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
-	Vec2f				getWindowCenter() const { return Vec2f( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
+	/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 )</tt> **/	
+	vec2				getWindowCenter() const { return vec2( (float)getWindowWidth(), (float)getWindowHeight() ) * 0.5f; }
 	//! Returns the size of the App's current window measured in points
-	Vec2i				getWindowSize() const { return Vec2i( getWindowWidth(), getWindowHeight() ); }
+	ivec2				getWindowSize() const { return ivec2( getWindowWidth(), getWindowHeight() ); }
 	//! Returns the aspect ratio of the App's current window
 	float				getWindowAspectRatio() const { return getWindowWidth() / (float)getWindowHeight(); }
 	//! Returns the bounding area of the App's current window measured in points.
@@ -320,15 +334,15 @@ class App {
 	float				getWindowContentScale() const { return getWindow()->getContentScale(); }
 	
 	//! Returns tcoordinates of the top-left corner of the current window measured in points
-	Vec2i				getWindowPos() const { return getWindow()->getPos(); }
+	ivec2				getWindowPos() const { return getWindow()->getPos(); }
 	//! Returns the X coordinate of the top-left corner of the current window measured in points
 	int         		getWindowPosX() const { return getWindow()->getPos().x; }
 	//! Returns the Y coordinate of the top-left corner of the current window contents measured in points
 	int         		getWindowPosY() const { return getWindow()->getPos().y; }
 	//! Sets the coordinates of the top-left corner of the current window measured in points
-	void        		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) ); }
+	void        		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) ); }
 	//! Sets the coordinates of the top-left corner of the current window measured points
-	virtual void        setWindowPos( const Vec2i &windowPos ) { getWindow()->setPos( windowPos ); }
+	virtual void        setWindowPos( const ivec2 &windowPos ) { getWindow()->setPos( windowPos ); }
     
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	virtual float		getFrameRate() const = 0;
@@ -352,7 +366,7 @@ class App {
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 
 	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
-	static Vec2i		getMousePos();
+	static ivec2		getMousePos();
 	
 	// utilities
 	//! Returns a DataSourceRef to an application resource. On Mac OS X, \a macPath is a path relative to the bundle's resources folder. On Windows, \a mswID and \a mswType identify the resource as defined the application's .rc file(s). Throws ResourceLoadExc on failure. \sa \ref CinderResources
@@ -364,7 +378,11 @@ class App {
 	static fs::path				getResourcePath( const fs::path &rsrcRelativePath );
 	//! Returns the absolute file path to the bundle's resources folder. \sa \ref CinderResources
 	static fs::path				getResourcePath();
-#else
+#elif defined( CINDER_WINRT )
+	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
+	static DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
+
+#elif defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	static DataSourceRef		loadResource( int mswID, const std::string &mswType );
 #endif
@@ -381,20 +399,50 @@ class App {
 #if defined( CINDER_COCOA )
 	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
 	virtual NSBundle*			getBundle() const;
-#endif
-	//! Presents the user with a file-open dialog and returns the selected file path.
+#endif\
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a file-open dialog and returns the selected file path in the spcified callback method.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
-		\return the selected file path or an empty string if the user cancelled. **/
-	fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-	//! Presents the user with a folder-open dialog and returns the selected folder.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected file path or an empty string  if the user cancelled will be returned in the \a f callback. **/
+	void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else
+	//! Presents the user with a folder-open dialog and returns the selected folder path in the spcified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	fs::path getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
+#endif
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a folder-open dialog and returns the selected folder path with the spcified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	void getFolderPath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else
+//! Presents the user with a folder-open dialog and returns the selected folder.
 	fs::path		getFolderPath(const fs::path &initialPath="");
+#endif
+
+#if defined( CINDER_WINRT )
+	//! Presents the user with a file-save dialog and returns the selected file path with the specified callback.
+	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
+		If the active app is in snapped mode it will be unsnapped to present the dialog.
+		\return void. The selected file path or an empty string if the user cancelled will be returned in the \a f callback. **/
+	void getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
+#else	
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
 	fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() );
-
+#endif
 	//! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 	std::ostream&	console();
 	
@@ -404,9 +452,11 @@ class App {
 	//! Return \c true if the calling thread is the Application's primary thread
 	static bool		isPrimaryThread();
 
+#if !defined( CINDER_WINRT )
 	//! Returns a reference to the App's boost::asio::io_service()
 	boost::asio::io_service&	io_service() { return *mIo; }
-	
+#endif //!defined( CINDER_WINRT )
+
 	
 	
 	//! Executes a std::function on the App's primary thread ahead of the next update()
@@ -473,6 +523,9 @@ class App {
 #if defined( CINDER_MSW )
 	friend class AppImplMsw;
 	std::shared_ptr<std::ostream>	mOutputStream;
+#elif defined( CINDER_WINRT )
+	friend class AppImplWinRT;
+	std::shared_ptr<std::ostream>	mOutputStream;
 #endif
 
   private:
@@ -492,11 +545,13 @@ class App {
 
 	std::shared_ptr<Timeline>	mTimeline;
 
-	signals::signal<void()>		mSignalUpdate, mSignalShutdown;
-	
+	signals::signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+
+#if !defined( CINDER_WINRT )
 	std::shared_ptr<boost::asio::io_service>	mIo;
 	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class
-	
+#endif // !defined( CINDER_WINRT )
+
 	// have we already setup the default path to assets?
 	bool						mAssetDirectoriesInitialized;
 	// Path to directories which contain assets
@@ -521,20 +576,20 @@ inline WindowRef	getWindowIndex( size_t index ) { return App::get()->getWindowIn
 //! Returns the width of the active App's window measured in points, or of the screen when in full-screen mode
 inline int	getWindowWidth() { return App::get()->getWindowWidth(); }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
-inline void		setWindowPos( const Vec2i &windowPos ) { App::get()->setWindowPos( windowPos);  }
+inline void		setWindowPos( const ivec2 &windowPos ) { App::get()->setWindowPos( windowPos);  }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
-inline void		setWindowPos( int x, int y ) { setWindowPos( Vec2i( x, y ) );  }
+inline void		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) );  }
 //! Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
 inline int	getWindowHeight() { return App::get()->getWindowHeight(); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( int windowWidth, int windowHeight ) { App::get()->setWindowSize( windowWidth, windowHeight ); }
 //! Returns the center of the active App's window in pixels or of the screen in full-screen mode.
-/** Equivalent to <tt>Vec2f( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
-inline Vec2f	getWindowCenter() { return App::get()->getWindowCenter(); }
+/** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
+inline vec2	getWindowCenter() { return App::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode measured in points
-inline Vec2i	getWindowSize() { return App::get()->getWindowSize(); }
+inline ivec2	getWindowSize() { return App::get()->getWindowSize(); }
 //! Returns the position of the active App's window measured in points
-inline Vec2i	getWindowPos() { return App::get()->getWindowPos(); }
+inline ivec2	getWindowPos() { return App::get()->getWindowPos(); }
 //! Returns the aspect ratio of the active App's window or the screen in full-screen mode
 inline float	getWindowAspectRatio() { return App::get()->getWindowAspectRatio(); }
 //! Returns the bounding area of the active App's window or the screen in full-screen mode measured in points
@@ -553,20 +608,20 @@ inline void		setFullScreen( bool fullScreen = true ) { App::get()->setFullScreen
 
 //! Returns a scalar mapped from points to pixels for the current Window
 inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
-//! Returns a Vec2f mapped from points to pixels for the current Window
-inline Vec2f	toPixels( Vec2f s ) { return getWindow()->toPixels( s ); }
-//! Returns a Vec2i mapped from points to pixels for the current Window
-inline	Vec2i	toPixels( Vec2i s ) { return app::getWindow()->toPixels( s ); }
+//! Returns a vec2 mapped from points to pixels for the current Window
+inline vec2	toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
+//! Returns a ivec2 mapped from points to pixels for the current Window
+inline	ivec2	toPixels( ivec2 s ) { return app::getWindow()->toPixels( s ); }
 //! Returns an Area mapped from points to pixels for the current Window
 inline	Area	toPixels( const Area &a ) { return getWindow()->toPixels( a ); }
 //! Returns a Rectf mapped from points to pixels for the current Window
 inline	Rectf	toPixels( const Rectf &a ) { return getWindow()->toPixels( a ); }
 //! Returns a scalar mapped from pixels to points for the current Window
 inline	float	toPoints( float s ) { return getWindow()->toPoints( s ); }
-//! Returns a Vec2f mapped from pixels to points for the current Window
-inline	Vec2f	toPoints( Vec2f s ) { return getWindow()->toPoints( s ); }
-//! Returns a Vec2i mapped from pixels to points for the current Window
-inline	Vec2i	toPoints( Vec2i s ) { return getWindow()->toPoints( s ); }
+//! Returns a vec2 mapped from pixels to points for the current Window
+inline	vec2	toPoints( vec2 s ) { return getWindow()->toPoints( s ); }
+//! Returns a ivec2 mapped from pixels to points for the current Window
+inline	ivec2	toPoints( ivec2 s ) { return getWindow()->toPoints( s ); }
 //! Returns an Area mapped from pixels to points for the current Window
 inline	Area	toPoints( const Area &a ) { return getWindow()->toPoints( a ); }
 //! Returns a Rectf mapped from pixels to points for the current Window
@@ -582,7 +637,10 @@ inline DataSourceRef		loadResource( const std::string &macPath, int mswID, const
 #if defined( CINDER_COCOA )
 	//! Returns a DataSource to an application resource. \a macPath is a path relative to the bundle's resources folder. \sa \ref CinderResources
 	inline DataSourceRef	loadResource( const std::string &macPath ) { return App::loadResource( macPath ); }
-#else
+#elif defined( CINDER_WINRT )
+	//! Returns a DataSource to an application resource stored in the Assets folder (on WinRT only). Equivalent on this platform to calling loadAsset(). \sa \ref CinderResources
+	inline DataSourceRef	loadResource( const std::string &assetPath ) { return App::get()->loadAsset( assetPath ); }
+#elif defined( CINDER_MSW )
 	//! Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
 	inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return App::loadResource( mswID, mswType ); }
 #endif
@@ -600,12 +658,22 @@ inline fs::path		getAppPath() { return App::get()->getAppPath(); }
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
+
+#if defined( CINDER_WINRT )
+inline void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr ) { return App::get()->getOpenFilePath( initialPath, extensions, f ); }
+#else
 inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getOpenFilePath( initialPath, extensions ); }
+#endif
+
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
+#if defined( CINDER_WINRT )
+inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr) { App::get()->getSaveFilePath( initialPath, extensions, f ); }
+#else
 inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return App::get()->getSaveFilePath( initialPath, extensions ); }
+#endif
 
 //! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 /** On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console
@@ -639,20 +707,12 @@ class ResourceLoadExc : public Exception {
 	ResourceLoadExc( int mswID, const std::string &mswType );
 	ResourceLoadExc( const std::string &macPath, int mswID, const std::string &mswType );
 #endif
-
-	virtual const char * what() const throw() { return mMessage; }
-
-	char mMessage[4096];
 };
 
 //! Exception for failed asset loading
 class AssetLoadExc : public Exception {
   public:
 	AssetLoadExc( const fs::path &relativePath );
-
-	virtual const char * what() const throw() { return mMessage; }
-
-	char mMessage[4096];
 };
 
 } } // namespace cinder::app

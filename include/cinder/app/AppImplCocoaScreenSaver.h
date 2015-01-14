@@ -82,10 +82,10 @@
 // WindowImplCocoa methods
 - (BOOL)isFullScreen;
 - (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
-- (cinder::Vec2i)getSize;
-- (void)setSize:(cinder::Vec2i)size;
-- (cinder::Vec2i)getPos;
-- (void)setPos:(cinder::Vec2i)pos;
+- (cinder::ivec2)getSize;
+- (void)setSize:(cinder::ivec2)size;
+- (cinder::ivec2)getPos;
+- (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
 - (std::string)getTitle;

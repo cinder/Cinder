@@ -2,7 +2,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
 
-POV::POV( ci::app::App *aApp, ci::Vec3f aEye, ci::Vec3f aCenter ){
+POV::POV( ci::app::App *aApp, ci::vec3 aEye, ci::vec3 aCenter ){
 	mApp = aApp;
 	
 	mAspectRatio	= mApp->getWindowAspectRatio();
@@ -47,12 +47,12 @@ void POV::adjustDist( float distDelta )
 	mDistDest += distDelta;
 }
 
-void POV::setEye( ci::Vec3f v )
+void POV::setEye( ci::vec3 v )
 {
 	mEye = v;
 }
 
-void POV::setCenter( ci::Vec3f v )
+void POV::setCenter( ci::vec3 v )
 {
 	mCenter = v;
 }

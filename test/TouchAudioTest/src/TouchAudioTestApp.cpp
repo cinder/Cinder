@@ -73,12 +73,12 @@ void TouchAudioTestApp::drawWaveForm()
 	float scale = displaySize / (float)( endIdx - startIdx );
 	//float scale = displaySize / (float)( endIdx );
 	
-	PolyLine<Vec2f>	line;
+	PolyLine<vec2>	line;
 	
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
 	for( uint32_t i = startIdx, c = 0; i < endIdx; i++, c++ ) {
 		float y = ( ( leftBuffer->mData[i] - 1 ) * - center );
-		line.push_back( Vec2f( y, ( c * scale ) ) );
+		line.push_back( vec2( y, ( c * scale ) ) );
 	}
 	gl::draw( line );
 	

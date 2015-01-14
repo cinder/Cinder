@@ -20,11 +20,17 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Cinder.h"
+
+// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
+#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
+
 #include "cinder/gl/gl.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
 #if defined( CINDER_MSW )
+	#include "cinder/msw/CinderMsw.h"
 	#pragma push_macro( "__STDC_CONSTANT_MACROS" )
 	#pragma push_macro( "_STDINT_H" )
 		#undef __STDC_CONSTANT_MACROS
@@ -46,7 +52,7 @@ using namespace std;
 
 namespace cinder { namespace qtime {
 
-#if ! defined( __LP64__ )
+#if ( ! defined( __LP64__ ) )
 
 bool dictionarySetValue( CFMutableDictionaryRef dict, CFStringRef key, SInt32 value )
 {
@@ -212,7 +218,12 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 
 	moviePropCount = openMovieBaseProperties( movieProps );
 
+#if defined( CINDER_MSW )
+	std::string pathUtf8 = msw::toUtf8String( path.wstring() );
+	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, pathUtf8.c_str(), kCFStringEncodingUTF8 );
+#else
 	::CFStringRef basePathCF = ::CFStringCreateWithCString( kCFAllocatorDefault, path.string().c_str(), kCFStringEncodingUTF8 );
+#endif
 	shared_ptr<const __CFString> pathCF = shared_ptr<const __CFString>( basePathCF, ::CFRelease );
 	// Store the movie properties in the array
 	movieProps[moviePropCount].propClass = kQTPropertyClass_DataLocation;
@@ -258,7 +269,7 @@ OSStatus ptrDataRefAddFileNameExtension( ComponentInstance dataRefHandler, const
 	if( fileName.empty() )
 		osErr = ::PtrToHand( &myChar, &fileNameHandle, sizeof(myChar) );
 	else {
-		shared_ptr<char> tempStr( new char[fileName.size()+1], checked_array_deleter<char>() );
+		unique_ptr<char[]> tempStr( new char[fileName.size()+1] );
 		memcpy( &tempStr.get()[1], &fileName[0], fileName.size() );
 		tempStr.get()[0] = fileName.size();
 		osErr = ::PtrToHand( &tempStr.get()[0], &fileNameHandle, tempStr.get()[0] + 1 );
@@ -286,7 +297,7 @@ OSStatus ptrDataRefAddMIMETypeExtension( ComponentInstance dataRefHandler, const
     if( mimeType.empty() )
         return paramErr;
 
-	shared_ptr<char> tempStr( new char[mimeType.size()+1], checked_array_deleter<char>() );
+	unique_ptr<char[]> tempStr( new char[mimeType.size()+1] );
 	memcpy( &tempStr.get()[1], &mimeType[0], mimeType.size() );
 	tempStr.get()[0] = mimeType.size();
     osErr = ::PtrToHand( &tempStr.get()[0], &mimeTypeHndl, tempStr.get()[0] + 1 );
@@ -396,12 +407,7 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 	return result;
 }
 
-static void CVPixelBufferDealloc( void *refcon )
-{
-	::CVBufferRelease( (CVPixelBufferRef)(refcon) );
-}
-
-Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 {
 	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
 	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
@@ -418,12 +424,11 @@ Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 		sco = SurfaceChannelOrder::BGR;
 	else if( type == k32BGRAPixelFormat )
 		sco = SurfaceChannelOrder::BGRA;
-	Surface result( ptr, width, height, rowBytes, sco );
-	result.setDeallocator( CVPixelBufferDealloc, pixelBufferRef );
-	return result;
+	Surface8u *newSurface = new Surface8u( ptr, width, height, rowBytes, sco );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
 }
 
-#endif // ! defined( __LP64__ )
+#endif // ( ! defined( __LP64__ ) )
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 // ImageTargetCgImage
@@ -619,3 +624,5 @@ GWorldPtr createGWorld( ImageSourceRef imageSource )
 #endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
+
+#endif // ! defined( _WIN64 )

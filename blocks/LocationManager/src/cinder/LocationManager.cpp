@@ -64,7 +64,7 @@
 	if( newLocation.horizontalAccuracy < 0 )
 		return; // not enough accuracy
 
-	*mMostRecentLocationPtr = cinder::LocationEvent( cinder::Vec2f( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
+	*mMostRecentLocationPtr = cinder::LocationEvent( cinder::vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
 								   newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy );
 
 	mMgr->emitLocationChanged( *mMostRecentLocationPtr );
@@ -73,7 +73,7 @@
 #if defined( CINDER_COCOA_TOUCH )
 - (void)locationManager:(CLLocationManager*)manager didUpdateHeading:(CLHeading*)heading
 {
-    ci::Vec3f data( heading.x, heading.y, heading.z );
+    cinder::vec3 data( heading.x, heading.y, heading.z );
     std::string description( [heading.description UTF8String] );
 	mMgr->emitHeadingChanged( cinder::HeadingEvent( heading.magneticHeading, heading.trueHeading, heading.headingAccuracy, description, data ) );
 }
@@ -126,7 +126,7 @@ void LocationManager::enableImpl( float accuracyInMeters, float distanceFilter, 
 #endif
 	[mClLocationManager startUpdatingLocation];
 	CLLocation *newLocation = mClLocationManager.location;	
-	sMostRecentLocation = cinder::LocationEvent( cinder::Vec2f( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
+	sMostRecentLocation = cinder::LocationEvent( cinder::vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
 								   newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy );
 }
 

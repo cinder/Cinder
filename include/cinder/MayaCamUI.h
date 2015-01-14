@@ -32,14 +32,14 @@ class MayaCamUI {
 	MayaCamUI() { mInitialCam = mCurrentCam = CameraPersp(); }
 	MayaCamUI( const CameraPersp &aInitialCam ) { mInitialCam = mCurrentCam = aInitialCam; }
 	
-	void mouseDown( const Vec2i &mousePos )
+	void mouseDown( const ivec2 &mousePos )
 	{
 		mInitialMousePos = mousePos;
 		mInitialCam = mCurrentCam;
 		mLastAction = ACTION_NONE;
 	}
 	
-	void mouseDrag( const Vec2i &mousePos, bool leftDown, bool middleDown, bool rightDown )
+	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 	{
 		int action;
 		if( rightDown || ( leftDown && middleDown ) )
@@ -62,36 +62,36 @@ class MayaCamUI {
 			int mouseDelta = ( mousePos.x - mInitialMousePos.x ) + ( mousePos.y - mInitialMousePos.y );
 
 			float newCOI = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialCam.getCenterOfInterest();
-			Vec3f oldTarget = mInitialCam.getCenterOfInterestPoint();
-			Vec3f newEye = oldTarget - mInitialCam.getViewDirection() * newCOI;
+			vec3 oldTarget = mInitialCam.getCenterOfInterestPoint();
+			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newCOI;
 			mCurrentCam.setEyePoint( newEye );
 			mCurrentCam.setCenterOfInterest( newCOI );
 		}
 		else if( action == ACTION_PAN ) { // panning
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / 1000.0f * mInitialCam.getCenterOfInterest();
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 1000.0f * mInitialCam.getCenterOfInterest();
-			Vec3f mW = mInitialCam.getViewDirection().normalized();
-			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
-			Vec3f mV = mW.cross( mU ).normalized();
+			vec3 mW = normalize( mInitialCam.getViewDirection() );
+			vec3 mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
+			vec3 mV = normalize( cross( mW, mU ) );
 			mCurrentCam.setEyePoint( mInitialCam.getEyePoint() + mU * deltaX + mV * deltaY );
 		}
 		else { // tumbling
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
-			Vec3f mW = mInitialCam.getViewDirection().normalized();
-			bool invertMotion = ( mInitialCam.getOrientation() * Vec3f::yAxis() ).y < 0.0f;
-			Vec3f mU = Vec3f::yAxis().cross( mW ).normalized();
+			vec3 mW = normalize( mInitialCam.getViewDirection() );
+			bool invertMotion = ( mInitialCam.getOrientation() * glm::vec3( 0, 1, 0 ) ).y < 0.0f;
+			vec3 mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
 
 			if( invertMotion ) {
 				deltaX = -deltaX;
 				deltaY = -deltaY;
 			}
-			
-			Vec3f rotatedVec = Quatf( mU, deltaY ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
-			rotatedVec = Quatf( Vec3f::yAxis(), deltaX ) * rotatedVec;
-	
+
+			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
+			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
+
 			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
-			mCurrentCam.setOrientation( mInitialCam.getOrientation() * Quatf( mU, deltaY ) * Quatf( Vec3f::yAxis(), deltaX ) );
+			mCurrentCam.setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
 	}	
 	
@@ -101,7 +101,7 @@ class MayaCamUI {
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
  
-	Vec2i		mInitialMousePos;
+	ivec2		mInitialMousePos;
 	CameraPersp	mCurrentCam, mInitialCam;
 	int			mLastAction;
 };

@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -22,19 +24,18 @@
 
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/ip/Fill.h"
+#include "cinder/Exception.h"
 
 #include <vector>
+
+#if !defined( CINDER_WINRT )
 #include <boost/thread/tss.hpp>
+#endif
 
 namespace cinder { namespace msw {
 
-
-static void surfaceDeallocatorGlobalAlloc( void *refcon )
-{
-	::GlobalFree( (HGLOBAL)refcon );
-}
-
-Surface8u convertHBitmap( HBITMAP hbitmap )
+#if !defined( CINDER_WINRT )
+Surface8uRef convertHBitmap( HBITMAP hbitmap )
 {
 	// create a temporary DC
 	HDC hdc = ::CreateCompatibleDC( 0 );
@@ -64,17 +65,18 @@ Surface8u convertHBitmap( HBITMAP hbitmap )
 	// We use GlobalAlloc / GlobalFree to ensure 8-byte alignment
 	DWORD dwBmpSize = ((width * 32 + 31) / 32) * 4 * height;
 	uint8_t *data = reinterpret_cast<uint8_t*>( ::GlobalAlloc( GMEM_FIXED, dwBmpSize ) );
-	Surface8u result = Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
+	Surface8u *newSurface = new Surface8u( data, width, height, width * 4, SurfaceChannelOrder::BGRX );
+	Surface8uRef result( newSurface, [=] ( Surface8u *s ) { ::GlobalFree( (HGLOBAL)data ); delete s; } );
 	// have the Surface's destructor call this to call ::GlobalFree
-	result.setDeallocator( surfaceDeallocatorGlobalAlloc, data );
 	
-	if( ::GetDIBits( hdc, hbitmap, 0, height, result.getData(), &bmi, DIB_RGB_COLORS ) == 0 )
-		throw std::exception( "Invalid HBITMAP" );
+	if( ::GetDIBits( hdc, hbitmap, 0, height, result->getData(), &bmi, DIB_RGB_COLORS ) == 0 )
+		throw Exception( "Invalid HBITMAP" );
 	
 	::ReleaseDC( NULL, hdc );
 
 	return result;
 }
+#endif
 
 void ComDelete( void *p )
 {
@@ -83,6 +85,9 @@ void ComDelete( void *p )
 		unknown->Release();
 	}
 }
+
+/////////////////////////////////////////////////////////////////////
+// ComOStream
 
 HRESULT STDMETHODCALLTYPE ComOStream::QueryInterface(REFIID iid, void ** ppvObject)
 { 
@@ -140,8 +145,122 @@ HRESULT STDMETHODCALLTYPE ComOStream::Seek( LARGE_INTEGER liDistanceToMove, DWOR
 	return S_OK;
 }
 
+std::wstring toWideString( const std::string &utf8String )
+{
+	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, NULL, 0 );
+	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
+		throw Exception( "Invalid UTF-8 sequence." );
+	}
+	else if( wideSize == 0 ) {
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	std::vector<wchar_t> resultString( wideSize );
+	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8String.c_str(), -1, &resultString[0], wideSize );
+	if( convResult != wideSize ) {
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
+	}
+
+	return std::wstring( &resultString[0] );
+}
+
+std::string toUtf8String( const std::wstring &wideString )
+{
+	int utf8Size = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, NULL, 0, NULL, NULL );
+	if( utf8Size == 0 ) {
+		throw Exception( "Error in UTF-16 to UTF-8 conversion." );
+	}
+
+	std::vector<char> resultString( utf8Size );
+
+	int convResult = ::WideCharToMultiByte( CP_UTF8, 0, wideString.c_str(), -1, &resultString[0], utf8Size, NULL, NULL );
+
+	if( convResult != utf8Size ) {
+		throw Exception( "Error in UTF-16 to UTF-8 conversion." );
+	}
+
+	return std::string( &resultString[0] );
+}
+
+/////////////////////////////////////////////////////////////////////
+// ComIStream
+
+HRESULT STDMETHODCALLTYPE ComIStream::QueryInterface(REFIID iid, void ** ppvObject)
+{ 
+	if (iid == __uuidof(IUnknown)
+		|| iid == __uuidof(IStream)
+		|| iid == __uuidof(ISequentialStream))
+	{
+		*ppvObject = static_cast<IStream*>(this);
+		AddRef();
+		return S_OK;
+	}
+	else
+		return E_NOINTERFACE; 
+}
+
+ULONG STDMETHODCALLTYPE ComIStream::AddRef() 
+{ 
+	return (ULONG)InterlockedIncrement(&_refcount); 
+}
+
+ULONG STDMETHODCALLTYPE ComIStream::Release() 
+{
+	ULONG res = (ULONG) InterlockedDecrement(&_refcount);
+	if (res == 0) 
+		delete this;
+	return res;
+}
+
+HRESULT STDMETHODCALLTYPE ComIStream::Read( void* pv, ULONG cb, ULONG* pcbRead )
+{
+	ULONG dataLeft = mIStream->size() - mIStream->tell();
+	if( dataLeft < cb ) {
+		mIStream->readData( pv, dataLeft );
+		*pcbRead = dataLeft;
+		return S_FALSE;
+	}
+	else {
+		mIStream->readData( pv, cb );
+		*pcbRead = cb;
+		return S_OK;
+	}
+}
+
+HRESULT STDMETHODCALLTYPE ComIStream::Seek( LARGE_INTEGER liDistanceToMove, DWORD dwOrigin, ULARGE_INTEGER* lpNewFilePointer )
+{ 
+	switch( dwOrigin ) {
+	case STREAM_SEEK_SET:
+		mIStream->seekAbsolute( (off_t)liDistanceToMove.QuadPart );
+		break;
+	case STREAM_SEEK_CUR:
+		mIStream->seekRelative( (off_t)liDistanceToMove.QuadPart );
+		break;
+	case STREAM_SEEK_END:
+		mIStream->seekAbsolute( (off_t)( - liDistanceToMove.QuadPart ) );
+		break;
+	default:   
+		return STG_E_INVALIDFUNCTION;
+		break;
+	}
+	off_t pos = mIStream->tell();
+	if( lpNewFilePointer )
+		lpNewFilePointer->QuadPart = pos;
+
+	return S_OK;
+}
+
+HRESULT STDMETHODCALLTYPE ComIStream::Stat( STATSTG* pStatstg, DWORD grfStatFlag)
+{
+	pStatstg->pwcsName = NULL;
+	pStatstg->cbSize.QuadPart = (ULONGLONG)mIStream->size();
+
+	return S_OK;
+}
+
 /////////////////////////////////////////////////////////////////////
 // ComInitializer
+
 struct ComInitializer {
 	ComInitializer( DWORD params ) {
 		::CoInitializeEx( NULL, params );
@@ -153,6 +272,13 @@ struct ComInitializer {
 	}
 };
 
+#if defined( CINDER_WINRT )
+
+void initializeCom( DWORD params )
+{
+	::CoInitializeEx( NULL, params );
+}
+#else
 boost::thread_specific_ptr<ComInitializer> threadComInitializer;
 
 void initializeCom( DWORD params )
@@ -160,6 +286,6 @@ void initializeCom( DWORD params )
 	if( threadComInitializer.get() == NULL )
 		threadComInitializer.reset( new ComInitializer( params ) );
 }
-
+#endif
 
 } } // namespace cinder::msw

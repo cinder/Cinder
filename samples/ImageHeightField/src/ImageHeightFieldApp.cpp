@@ -1,10 +1,12 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ArcBall.h"
-#include "cinder/Rand.h"
 #include "cinder/Camera.h"
 #include "cinder/Surface.h"
-#include "cinder/gl/Vbo.h"
 #include "cinder/ImageIo.h"
+#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Shader.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -31,7 +33,8 @@ class ImageHFApp : public AppBasic {
 	uint32_t    mWidth, mHeight;
 
 	Surface32f		mImage;
-	gl::VboMesh		mVboMesh;
+	gl::VboMeshRef	mVboMesh;
+	gl::BatchRef	mPointsBatch;
 };
 
 void ImageHFApp::setup()
@@ -41,7 +44,7 @@ void ImageHFApp::setup()
 	gl::enableDepthWrite();    
 
 	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
-	mArcball.setQuat( Quatf( Vec3f( 0.0577576f, -0.956794f, 0.284971f ), 3.68f ) );
+	mArcball.setQuat( quat( 0.28f, vec3( 0.0577576f, -0.956794f, 0.284971f ) ) );
 
 	openFile();
 }
@@ -55,10 +58,8 @@ void ImageHFApp::openFile()
 		mWidth = mImage.getWidth();
 		mHeight = mImage.getHeight();
 
-		gl::VboMesh::Layout layout;
-		layout.setDynamicColorsRGB();
-		layout.setDynamicPositions();
-		mVboMesh = gl::VboMesh( mWidth * mHeight, 0, layout, GL_POINTS );
+		mVboMesh = gl::VboMesh::create( mWidth * mHeight, GL_POINTS, { gl::VboMesh::Layout().usage(GL_STATIC_DRAW).attrib(geom::POSITION, 3).attrib(geom::COLOR, 3) } );
+		mPointsBatch = gl::Batch::create( mVboMesh, gl::getStockShader( gl::ShaderDef().color() ) );
 
 		updateData( kColor );		
 	}
@@ -67,10 +68,10 @@ void ImageHFApp::openFile()
 void ImageHFApp::resize()
 {
 	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( Vec2f( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
+	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
 	mArcball.setRadius( getWindowHeight() / 2.0f );
 
-	mCam.lookAt( Vec3f( 0.0f, 0.0f, -150 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0.0f, 0.0f, -150 ), vec3( 0, 0, 0 ) );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
 	gl::setMatrices( mCam );
 }
@@ -108,11 +109,10 @@ void ImageHFApp::keyDown( KeyEvent event )
 
 void ImageHFApp::draw()
 {
-    glClearColor( 0.0f, 0.0f, 0.0f, 1.0f );
-    glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+    gl::clear();
 
     gl::pushModelView();
-		gl::translate( Vec3f( 0.0f, 0.0f, mHeight / 2.0f ) );
+		gl::translate( vec3( 0.0f, 0.0f, mHeight / 2.0f ) );
 		gl::rotate( mArcball.getQuat() );
 		if( mVboMesh )
 			gl::draw( mVboMesh );
@@ -122,7 +122,8 @@ void ImageHFApp::draw()
 void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 {
 	Surface32f::Iter pixelIter = mImage.getIter();
-	gl::VboMesh::VertexIter vertexIter( mVboMesh );
+	auto vertPosIter = mVboMesh->mapAttrib3f( geom::POSITION );
+	auto vertColorIter = mVboMesh->mapAttrib3f( geom::COLOR );
 
 	while( pixelIter.line() ) {
 		while( pixelIter.pixel() ) {
@@ -153,11 +154,13 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 			float x = pixelIter.x() - mWidth / 2.0f;
 			float z = pixelIter.y() - mHeight / 2.0f;
 
-            vertexIter.setPosition( x, height * 30.0f, z );
-			vertexIter.setColorRGB( color );
-			++vertexIter;
+			*vertPosIter++ = vec3( x, height * 30.0f, z );
+			*vertColorIter++ = vec3( color.r, color.g, color.b );
 		}
 	}
+
+	vertPosIter.unmap();
+	vertColorIter.unmap();
 }
 
-CINDER_APP_BASIC( ImageHFApp, RendererGl );
+CINDER_APP_BASIC( ImageHFApp, RendererGl )

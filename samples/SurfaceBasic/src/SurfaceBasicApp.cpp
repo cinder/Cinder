@@ -1,7 +1,6 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
-#include "cinder/gl/gl.h"
-#include "cinder/gl/Texture.h"
 #include "Resources.h"
 
 using namespace ci;
@@ -13,7 +12,7 @@ class SurfaceBasicApp : public AppBasic {
 	void	setup();
 	void	draw();	
 	
-	gl::Texture		mProcessedImageTex;
+	gl::Texture2dRef		mProcessedImageTex;
 };
 
 // We can invert the image by subtracting each R,G,B value from 255
@@ -100,7 +99,7 @@ Surface processImage( const Surface input )
 void SurfaceBasicApp::setup()
 {
 	Surface processedImage( processImage( loadImage( loadResource( RES_IMAGE ) ) ) );
-	mProcessedImageTex = gl::Texture( processedImage );
+	mProcessedImageTex = gl::Texture2d::create( processedImage );
 }
 
 void SurfaceBasicApp::draw()

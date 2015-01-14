@@ -22,7 +22,7 @@
 
 #include "cinder/Triangulate.h"
 #include "cinder/Shape2d.h"
-#include "tesselator.h"
+#include "../libtess2/tesselator.h"
 
 using namespace std;
 
@@ -89,22 +89,40 @@ void Triangulator::addShape( const Shape2d &shape, float approximationScale )
 
 void Triangulator::addPath( const Path2d &path, float approximationScale )
 {
-	vector<Vec2f> subdivided = path.subdivide( approximationScale );
-	tessAddContour( mTess.get(), 2, &subdivided[0], sizeof(float) * 2, subdivided.size() );
+	vector<vec2> subdivided = path.subdivide( approximationScale );
+	tessAddContour( mTess.get(), 2, &subdivided[0], sizeof(float) * 2, (int)subdivided.size() );
 }
 
 void Triangulator::addPolyLine( const PolyLine2f &polyLine )
 {
-	tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, polyLine.size() );
+	if( polyLine.size() > 0 )
+		tessAddContour( mTess.get(), 2, &polyLine.getPoints()[0], sizeof(float) * 2, (int)polyLine.size() );
 }
 
-TriMesh2d Triangulator::calcMesh( Winding winding )
+void Triangulator::addPolyLine( const vec2 *points, size_t numPoints )
 {
-	TriMesh2d result;
+	if( numPoints > 0 )
+		tessAddContour( mTess.get(), 2, &points, sizeof(vec2), (int)numPoints );
+}
+
+TriMesh Triangulator::calcMesh( Winding winding )
+{
+	TriMesh result( TriMesh::Format().positions( 2 ) );
 	
 	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
-	result.appendVertices( (Vec2f*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result.appendVertices( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result.appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
+	
+	return result;
+}
+
+TriMeshRef Triangulator::createMesh( Winding winding )
+{
+	TriMeshRef result = make_shared<TriMesh>( TriMesh::Format().positions( 2 ) );
+	
+	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
+	result->appendVertices( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result->appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
 	
 	return result;
 }

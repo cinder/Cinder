@@ -8,12 +8,12 @@ using namespace ci::app;
 SquareListener::SquareListener( app::WindowRef window )
 	: mWindow( window )
 {
-	mRect = Rectf( Vec2f( -40, -40 ), Vec2f( 40, 40 ) );
+	mRect = Rectf( vec2( -40, -40 ), vec2( 40, 40 ) );
 	mRect.offset( window->getCenter() );
 	mSelected = false;
 	
-	mCbMouseDown = mWindow->getSignalMouseDown().connect( std::bind( &SquareListener::mouseDown, this, std::_1 ) );
-	mCbMouseDrag = mWindow->getSignalMouseDrag().connect( std::bind( &SquareListener::mouseDrag, this, std::_1 ) );	
+	mCbMouseDown = mWindow->getSignalMouseDown().connect( std::bind( &SquareListener::mouseDown, this, std::placeholders::_1 ) );
+	mCbMouseDrag = mWindow->getSignalMouseDrag().connect( std::bind( &SquareListener::mouseDrag, this, std::placeholders::_1 ) );	
 }
  
 void SquareListener::mouseDown( MouseEvent &event )

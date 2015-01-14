@@ -5,7 +5,7 @@
 using namespace ci;
 using std::list;
 
-Constraint::Constraint( Vec3f normal, float minValue, float maxValue )
+Constraint::Constraint( vec3 normal, float minValue, float maxValue )
 {
 	mNormal = normal;
 	mMinValue = minValue;

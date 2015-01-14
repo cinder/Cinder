@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -28,10 +29,13 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Vector.h"
 #include "cinder/Function.h"
+#include "cinder/Rect.h"
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+#include "cinder/Exception.h"
+
 
 namespace cinder { namespace app {
 
@@ -51,10 +55,10 @@ typedef std::shared_ptr<Window>		WindowRef;
 		@required
 		- (BOOL)isFullScreen;
 		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
-		- (cinder::Vec2i)getSize;
-		- (void)setSize:(cinder::Vec2i)size;
-		- (cinder::Vec2i)getPos;
-		- (void)setPos:(cinder::Vec2i)pos;
+		- (cinder::ivec2)getSize;
+		- (void)setSize:(cinder::ivec2)size;
+		- (cinder::ivec2)getPos;
+		- (void)setPos:(cinder::ivec2)pos;
 		- (float)getContentScale;
 		- (void)close;
 		- (NSString *)getTitle;
@@ -79,6 +83,10 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#if defined( CINDER_COCOA_TOUCH )
 		class UIViewController;
 	#endif
+#elif defined( CINDER_WINRT )
+	namespace cinder { namespace app {
+		class WindowImplWinRT;
+	} } // namespace cinder::app
 #elif defined( CINDER_MSW )
 	namespace cinder { namespace app {
 		class WindowImplMsw;
@@ -130,7 +138,7 @@ class Window : public std::enable_shared_from_this<Window> {
   public:
 	// Parameters for a Window, which are used to create the physical window by the App
 	struct Format {
-		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, Vec2i size = Vec2i( 640, 480 ), Vec2i pos = Vec2i::zero() )
+		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, ivec2 size = ivec2( 640, 480 ), ivec2 pos = ivec2() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
 			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false ),
 			mTitleSpecified( false ), mTitle( "" )
@@ -156,26 +164,26 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Sets whether the Window will be created full-screen. Default is \c false.
 		Format&		fullScreen( bool fs = true ) { mFullScreen = fs; return *this; }
 		//! Returns the size in points at which the Window will be created. Default is 640 x 480.
-		Vec2i		getSize() const { return mSize; }
+		ivec2		getSize() const { return mSize; }
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
-		void		setSize( const Vec2i &size ) { mSize = size; }
+		void		setSize( const ivec2 &size ) { mSize = size; }
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
-		void		setSize( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); }
+		void		setSize( int32_t width, int32_t height ) { mSize = ivec2( width, height ); }
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
-		Format&		size( const Vec2i &s ) { mSize = s; return *this; }
+		Format&		size( const ivec2 &s ) { mSize = s; return *this; }
 		//! Sets the size in points at which the Window will be created. Default is 640 x 480.
-		Format&		size( int32_t width, int32_t height ) { mSize = Vec2i( width, height ); return *this; }
+		Format&		size( int32_t width, int32_t height ) { mSize = ivec2( width, height ); return *this; }
 
 		//! Returns the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
-		Vec2i		getPos() const { return mPos; }
+		ivec2		getPos() const { return mPos; }
 		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
-		void		setPos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; }
+		void		setPos( const ivec2 &pos ) { mPos = pos; mPosSpecified = true; }
 		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
-		void		setPos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; }
+		void		setPos( int32_t x, int32_t y ) { mPos = ivec2( x, y ); mPosSpecified = true; }
 		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
-		Format&		pos( const Vec2i &pos ) { mPos = pos; mPosSpecified = true; return *this; }
+		Format&		pos( const ivec2 &pos ) { mPos = pos; mPosSpecified = true; return *this; }
 		//! Sets the position in points measured relative to the system's primary display's upper-left corner at which the Window will be created. Default is centered on the display.
-		Format&		pos( int32_t x, int32_t y ) { mPos = Vec2i( x, y ); mPosSpecified = true; return *this; }
+		Format&		pos( int32_t x, int32_t y ) { mPos = ivec2( x, y ); mPosSpecified = true; return *this; }
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
 		//! Unspecifies a non-default position for the window, effectively requestion the default position.
@@ -190,7 +198,7 @@ class Window : public std::enable_shared_from_this<Window> {
 
 #if defined( CINDER_COCOA_TOUCH )
 		//! Returns the root UIViewController for the associated UIWindow on iOS
-		UIViewController*	getRootViewController() { return mRootViewController;}
+		UIViewController*	getRootViewController() const { return mRootViewController;}
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
 		void				setRootViewController( UIViewController *v ) { mRootViewController = v; }
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
@@ -239,7 +247,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		bool					mFullScreen;
 		FullScreenOptions		mFullScreenOptions;
 		DisplayRef				mDisplay;
-		Vec2i					mSize, mPos;
+		ivec2					mSize, mPos;
 		bool					mPosSpecified;
 		bool					mResizable, mBorderless, mAlwaysOnTop, mFullScreenButtonEnabled;
 		std::string				mTitle;
@@ -263,19 +271,19 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns the bounding Area of the Window in points: [0,0]-(width,height)
 	Area	getBounds() const { return Area( 0, 0, getSize().x, getSize().y ); }
 	//! Gets the size of the Window measured in points
-	virtual Vec2i	getSize() const;
+	virtual ivec2	getSize() const;
 	//! Sets the size of the Window to ( \a width, \a height ) measured in points
-	void	setSize( int32_t width, int32_t height ) { setSize( Vec2i( width, height ) ); }
+	void	setSize( int32_t width, int32_t height ) { setSize( ivec2( width, height ) ); }
 	//! Sets the size of the Window to \a size measured in points
-	void	setSize( const Vec2i &size );
+	void	setSize( const ivec2 &size );
 	//! Gets the position of the Window's upper-left corner measured in points, relative to the primary display's upper-left corner.
-	Vec2i	getPos() const;
+	ivec2	getPos() const;
 	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left corner to (\a x, \a y) measured in points.
-	void	setPos( int32_t x, int32_t y ) const { setPos( Vec2i( x, y ) ); }
+	void	setPos( int32_t x, int32_t y ) const { setPos( ivec2( x, y ) ); }
 	//! Sets the position of the Window's upper-left corner relative to the primary display's upper-left to \a pos measured in points.
-	void	setPos( const Vec2i &pos ) const;
+	void	setPos( const ivec2 &pos ) const;
 	//! Returns the center of the Window in its own coordinate system measured in points
-	Vec2f	getCenter() const { return Vec2f( getWidth() / 2.0f, getHeight() / 2.0f ); }
+	vec2	getCenter() const { return vec2( getWidth() / 2.0f, getHeight() / 2.0f ); }
 	//! Sets the position and size of the Window so that it spans all connected displays
 	void	spanAllDisplays();
 	
@@ -283,20 +291,20 @@ class Window : public std::enable_shared_from_this<Window> {
 	float	getContentScale() const;
 	//! Returns a scalar mapped from points to pixels by multiplying by getContentScale()
 	float	toPixels( float s ) const { return s * getContentScale(); }
-	//! Returns a Vec2f mapped from points to pixels by multiplying by getContentScale()
-	Vec2f	toPixels( Vec2f s ) const { return s * getContentScale(); }
-	//! Returns a Vec2i mapped from points to pixels by multiplying by getContentScale()
-	Vec2i	toPixels( Vec2i s ) const { return Vec2i( (int32_t)(s.x * getContentScale()), (int32_t)(s.y * getContentScale()) ); }	
+	//! Returns a vec2 mapped from points to pixels by multiplying by getContentScale()
+	vec2	toPixels( vec2 s ) const { return s * getContentScale(); }
+	//! Returns a ivec2 mapped from points to pixels by multiplying by getContentScale()
+	ivec2	toPixels( ivec2 s ) const { return ivec2( (int32_t)(s.x * getContentScale()), (int32_t)(s.y * getContentScale()) ); }	
 	//! Returns an Area mapped from points to pixels by multiplying by getContentScale()
 	Area	toPixels( const Area &a ) const { const float s = getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
 	//! Returns a Rectf mapped from points to pixels by multiplying by getContentScale()
 	Rectf	toPixels( const Rectf &a ) const { return a * getContentScale(); }
 	//! Returns a scalar mapped from pixels to points by dividing by getContentScale()
 	float	toPoints( float s ) const { return s / getContentScale(); }
-	//! Returns a Vec2f mapped from pixels to points by dividing by getContentScale()
-	Vec2f	toPoints( Vec2f s ) const { return s / getContentScale(); }
-	//! Returns a Vec2i mapped from pixels to points by dividing by getContentScale()
-	Vec2i	toPoints( Vec2i s ) const { return Vec2i( (int32_t)(s.x / getContentScale()), (int32_t)(s.y / getContentScale()) ); }	
+	//! Returns a vec2 mapped from pixels to points by dividing by getContentScale()
+	vec2	toPoints( vec2 s ) const { return s / getContentScale(); }
+	//! Returns a ivec2 mapped from pixels to points by dividing by getContentScale()
+	ivec2	toPoints( ivec2 s ) const { return ivec2( (int32_t)(s.x / getContentScale()), (int32_t)(s.y / getContentScale()) ); }	
 	//! Returns an Area mapped from pixels to points by dividing by getContentScale()
 	Area	toPoints( const Area &a ) const { const float s = 1.0f / getContentScale(); return Area( (int32_t)(a.x1 * s), (int32_t)(a.y1 * s), (int32_t)(a.x2 * s), (int32_t)(a.y2 * s) ); }
 	//! Returns a Rectf mapped from pixels to points by dividing by getContentScale()
@@ -335,6 +343,8 @@ class Window : public std::enable_shared_from_this<Window> {
 #if defined( CINDER_COCOA_TOUCH )
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
+#elif defined( CINDER_WINRT )
+	DX_WINDOW_TYPE getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.
@@ -344,42 +354,42 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalMouse&	getSignalMouseDown() { return mSignalMouseDown; }
 	void				emitMouseDown( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseDown( T fn, Y *inst ) { return getSignalMouseDown().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseDown( T fn, Y *inst ) { return getSignalMouseDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseDrag() { return mSignalMouseDrag; }
 	void				emitMouseDrag( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseDrag( T fn, Y *inst ) { return getSignalMouseDrag().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseDrag( T fn, Y *inst ) { return getSignalMouseDrag().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseUp() { return mSignalMouseUp; }
 	void				emitMouseUp( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseUp( T fn, Y *inst ) { return getSignalMouseUp().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseUp( T fn, Y *inst ) { return getSignalMouseUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseMove() { return mSignalMouseMove; }
 	void				emitMouseMove( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseMove( T fn, Y *inst ) { return getSignalMouseMove().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseMove( T fn, Y *inst ) { return getSignalMouseMove().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseWheel() { return mSignalMouseWheel; }
 	void				emitMouseWheel( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseWheel( T fn, Y *inst ) { return getSignalMouseWheel().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseWheel( T fn, Y *inst ) { return getSignalMouseWheel().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesBegan() { return mSignalTouchesBegan; }
 	void				emitTouchesBegan( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesBegan( T fn, Y *inst ) { return getSignalTouchesBegan().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesBegan( T fn, Y *inst ) { return getSignalTouchesBegan().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesMoved() { return mSignalTouchesMoved; }
 	void				emitTouchesMoved( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesMoved( T fn, Y *inst ) { return getSignalTouchesMoved().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesMoved( T fn, Y *inst ) { return getSignalTouchesMoved().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesEnded() { return mSignalTouchesEnded; }
 	void				emitTouchesEnded( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesEnded( T fn, Y *inst ) { return getSignalTouchesEnded().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesEnded( T fn, Y *inst ) { return getSignalTouchesEnded().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	//! Returns a std::vector of all active touches
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
@@ -387,12 +397,12 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalKey&		getSignalKeyDown() { return mSignalKeyDown; }
 	void				emitKeyDown( KeyEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectKeyDown( T fn, Y *inst ) { return getSignalKeyDown().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectKeyDown( T fn, Y *inst ) { return getSignalKeyDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalKey&		getSignalKeyUp() { return mSignalKeyUp; }
 	void				emitKeyUp( KeyEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectKeyUp( T fn, Y *inst ) { return getSignalKeyUp().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectKeyUp( T fn, Y *inst ) { return getSignalKeyUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 	
 	EventSignalWindow&	getSignalDraw() { return mSignalDraw; }
 	//! Fires the 'draw' signal. Note in general this should not be called directly as it doesn't perform all necessary setup.
@@ -430,7 +440,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalFileDrop&	getSignalFileDrop() { return mSignalFileDrop; }
 	void					emitFileDrop( FileDropEvent *event );
 	template<typename T, typename Y>
-	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 	
 	//! Returns the window-specific data associated with this Window.
 	template<typename T>
@@ -440,7 +450,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	void		setUserData( T *userData ) { mUserData = std::shared_ptr<void>( std::shared_ptr<T>( userData ) ); }
 	
 	//! Returns whether this Window is valid. \c false means it should no longer be used (neither read nor write)
-	bool	isValid() const { return ! mValid; }
+	bool	isValid() const { return mValid; }
 	void	setInvalid() { mValid = false; }
 	
 	//! \cond
@@ -449,6 +459,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, App *app )
 #elif defined( CINDER_MSW )
 	static WindowRef		privateCreate__( WindowImplMsw *impl, App *app )
+#elif defined( CINDER_WINRT )
+	static WindowRef		privateCreate__( WindowImplWinRT *impl, App *app )
 #else
 	static WindowRef		privateCreate__( WindowImplCocoa *impl, App *app )
 #endif
@@ -481,6 +493,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
+#elif defined( CINDER_WINRT )
+	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
 #endif
 
 	App							*mApp;
@@ -501,6 +515,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
+#elif defined( CINDER_WINRT )
+	WindowImplWinRT *mImpl;
 #endif
 };
 

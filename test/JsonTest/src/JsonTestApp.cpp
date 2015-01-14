@@ -1,26 +1,18 @@
 #include "cinder/app/AppBasic.h"
-#include "cinder/Json.h"
-#include "Resources.h"
 
 class JsonTestApp : public ci::app::AppBasic 
 {
-
   public:
-
-      void draw();
 	  void mouseDown( ci::app::MouseEvent event );
 	  void setup();
-
 };
+
+#include "cinder/Json.h"
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-
-void JsonTestApp::draw()
-{
-    gl::clear();
-}
 
 void JsonTestApp::setup()
 {
@@ -96,9 +88,11 @@ void JsonTestApp::mouseDown( MouseEvent event )
 	JsonTree library = JsonTree::makeObject( "library" );
 	JsonTree album = JsonTree::makeArray( "album" );
 	
-	album.pushBack( JsonTree( "musician", string( "Sufjan Stevens" ) ) );
-	album.pushBack( JsonTree( "year", string( "2004" ) ) );
-	album.pushBack( JsonTree( "title", string( "Seven Swans" ) ) );
+	album.addChild( 
+		JsonTree( "musician", string( "Sufjan Stevens" ) ) ).addChild( 
+		JsonTree( "year", string( "2004" ) ) ).addChild( 
+		JsonTree( "title", string( "Seven Swans" ) ) 
+		);
 
 	JsonTree tracks = JsonTree::makeArray( "tracks" );
 
@@ -129,24 +123,17 @@ void JsonTestApp::mouseDown( MouseEvent event )
 			break;
 		}
 
-		track.pushBack( title );
+		track.addChild( title ).addChild( track );
 		tracks.pushBack( track );
-
 	}
 	
 	for ( JsonTree::Iter trackIt = tracks.begin(); trackIt != tracks.end(); ++trackIt ) {
 		if ( trackIt->getChild( "id" ).getValue<int>() == 3 ) {
-			JsonTree track;
-			track.pushBack( JsonTree( "id", 3 ) );
-			track.pushBack( JsonTree( "title", "In the Devil's Territory" ) );
-			tracks.replaceChild( trackIt, track );
+			tracks.replaceChild( trackIt, JsonTree().addChild( JsonTree( "id", 3 ) ).addChild( JsonTree( "title", "In the Devil's Territory" ) ) );
 		}
 	}
 	
-	JsonTree track;
-	track.pushBack( JsonTree( "id", 4 ) );
-	track.pushBack( JsonTree( "title", "To Be Alone With You" ) );
-	tracks.replaceChild( 3, track );
+	tracks.replaceChild( 3, JsonTree().addChild( JsonTree( "id", 4 ) ).addChild( JsonTree( "title", "To Be Alone With You" ) ) );
 	
 	tracks.removeChild( 4 );
 	
@@ -169,4 +156,4 @@ void JsonTestApp::mouseDown( MouseEvent event )
 
 }
 
-CINDER_APP_BASIC( JsonTestApp, RendererGl )
+CINDER_APP_BASIC( JsonTestApp, Renderer2d )

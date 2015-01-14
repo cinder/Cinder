@@ -3,15 +3,16 @@
 #include <cstdarg>
 #include <cstdio>
 #include <cstdlib>
+#include <algorithm>
 #include "grid.h"
 #include "cinder/Rand.h"
 
 using namespace std;
-using ci::Vec2f;
+using ci::vec2;
 using ci::Rand;
 
 void Grid::
-init( Vec2f gravity_, int cell_nx, int cell_ny, float lx_)
+init( vec2 gravity_, int cell_nx, int cell_ny, float lx_)
 {
 	gravity=gravity_;
 	lx=lx_;
@@ -37,7 +38,7 @@ init( Vec2f gravity_, int cell_nx, int cell_ny, float lx_)
 float Grid::
 CFL(void)
 {
-   float maxv2=max(h*gravity.length(), sqr(u.infnorm())+sqr(v.infnorm()));
+   float maxv2=std::max(h*gravity.length(), sqr(u.infnorm())+sqr(v.infnorm()));
    if(maxv2<1e-16) maxv2=1e-16;
    return h/sqrt(maxv2);
 }

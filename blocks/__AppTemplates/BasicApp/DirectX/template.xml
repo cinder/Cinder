@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<cinder>
+<template name="Basic DirectX"
+	id = "org.libcinder.apptemplates.basicdirectx"
+	>
+	<supports os="msw" />
+	<supports os="winrt" />
+	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
+	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
+	<platform os="msw">
+		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
+		<staticLibrary absolute="true">d3d11.lib</staticLibrary>
+	</platform>
+	<platform os="winrt">
+		<file replaceContents="true">vc2012_winrt/Package.appxmanifest</file>
+		<file>vc2012_winrt/Assets/Logo.png</file>
+		<file>vc2012_winrt/Assets/SmallLogo.png</file>
+		<file>vc2012_winrt/Assets/SplashScreen.png</file>
+		<file>vc2012_winrt/Assets/StoreLogo.png</file>
+	</platform>
+</template>
+</cinder>

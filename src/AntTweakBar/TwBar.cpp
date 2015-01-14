@@ -13,7 +13,9 @@
 #include "TwMgr.h"
 #include "TwBar.h"
 #include "TwColors.h"
-  
+
+#include <algorithm> // ci: needed for min / max with vs2013
+
 using namespace std;
 
 extern const char *g_ErrNotFound;
@@ -7680,7 +7682,7 @@ bool CTwBar::EditInPlaceGetClipboard(std::string *_OutString)
     assert( _OutString!=NULL );
     *_OutString = m_EditInPlace.m_Clipboard; // default implementation
 
-#if defined ANT_WINDOWS
+#if defined ANT_WINDOWS && defined(CINDER_MSW)
 
     if( !IsClipboardFormatAvailable(CF_TEXT) )
         return false;
@@ -7730,7 +7732,7 @@ bool CTwBar::EditInPlaceSetClipboard(const std::string& _String)
         return false;   // keep last clipboard
     m_EditInPlace.m_Clipboard = _String; // default implementation
 
-#if defined ANT_WINDOWS
+#if defined ANT_WINDOWS && defined(CINDER_MSW)
 
     if( !OpenClipboard(NULL) )
         return false;

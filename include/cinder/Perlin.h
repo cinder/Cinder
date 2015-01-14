@@ -39,17 +39,17 @@ class Perlin
 
 	/// Class Perlin look: fractal Brownian motion by summing 'mOctaves' worth of noise
 	float	fBm( float v ) const;
-	float	fBm( const Vec2f &v ) const;
-	float	fBm( float x, float y ) const { return fBm( Vec2f( x, y ) ); }
-	float	fBm( const Vec3f &v ) const;
-	float	fBm( float x, float y, float z ) const { return fBm( Vec3f( x, y, z ) ); }
+	float	fBm( const vec2 &v ) const;
+	float	fBm( float x, float y ) const { return fBm( vec2( x, y ) ); }
+	float	fBm( const vec3 &v ) const;
+	float	fBm( float x, float y, float z ) const { return fBm( vec3( x, y, z ) ); }
 
 	/// Derivative of fractal Brownian motion, corresponding with the values returned by fBm()
 //	float	dfBm( float v ) const;
-	Vec2f	dfBm( const Vec2f &v ) const;
-	Vec2f	dfBm( float x, float y ) const { return dfBm( Vec2f( x, y ) ); }
-	Vec3f	dfBm( const Vec3f &v ) const;
-	Vec3f	dfBm( float x, float y, float z ) const { return dfBm( Vec3f( x, y, z ) ); }
+	vec2	dfBm( const vec2 &v ) const;
+	vec2	dfBm( float x, float y ) const { return dfBm( vec2( x, y ) ); }
+	vec3	dfBm( const vec3 &v ) const;
+	vec3	dfBm( float x, float y, float z ) const { return dfBm( vec3( x, y, z ) ); }
 
 	/// Calculates a single octave of noise
 	float	noise( float x ) const;
@@ -58,8 +58,8 @@ class Perlin
 
 	/// Calculates the derivative of a single octave of noise
 //	float	dnoise( float x ) const;
-	Vec2f	dnoise( float x, float y ) const;
-	Vec3f	dnoise( float x, float y, float z ) const;
+	vec2	dnoise( float x, float y ) const;
+	vec3	dnoise( float x, float y, float z ) const;
 
  private:
 	void	initPermutationTable();

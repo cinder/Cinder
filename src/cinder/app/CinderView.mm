@@ -304,7 +304,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -316,7 +316,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -328,7 +328,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
- 	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+ 	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDown:&mouseEvent];
 }
 
@@ -340,7 +340,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -352,7 +352,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -364,7 +364,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseUp:&mouseEvent];
 }
 
@@ -375,7 +375,7 @@
 	int y					= ([self frame].size.height - ( curPoint.y - [self frame].origin.y ));
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseMove:&mouseEvent];
 }
 
@@ -387,7 +387,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::RIGHT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::RIGHT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -399,7 +399,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::MIDDLE_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::MIDDLE_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -411,7 +411,7 @@
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
 	mods |= cinder::app::MouseEvent::LEFT_DOWN;
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, x, y, mods, 0.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseDrag:&mouseEvent];
 }
 
@@ -423,7 +423,7 @@
 	int y					= ([self frame].size.height - ( curPoint.y - [self frame].origin.y ));
 	int mods				= [self prepMouseEventModifiers:theEvent];
 	
-	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, wheelDelta / 4.0f, [theEvent modifierFlags] );
+	cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], 0, x, y, mods, wheelDelta / 4.0f, (uint32_t)[theEvent modifierFlags] );
 	[mDelegate mouseWheel:&mouseEvent];
 }
 
@@ -450,9 +450,9 @@
 	
     if( [[pboard types] containsObject:NSFilenamesPboardType] ) {
         NSArray *files = [pboard propertyListForType:NSFilenamesPboardType];
-        int numberOfFiles = [files count];
+        size_t numberOfFiles = [files count];
 		std::vector<cinder::fs::path> paths;
-		for( int i = 0; i < numberOfFiles; ++i )
+		for( size_t i = 0; i < numberOfFiles; ++i )
 			paths.push_back( cinder::fs::path( [[files objectAtIndex:i] UTF8String] ) );
 		NSPoint curPoint = [sender draggingLocation];
 		int x = curPoint.x - [self frame].origin.x;
@@ -501,7 +501,7 @@
 	}
 }
 
-- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(cinder::Vec2f)point
+- (uint32_t)addTouchToMap:(NSTouch *)touch withPoint:(cinder::vec2)point
 {
 	uint32_t candidateId = 0;
 	NSArray *currentValues = [mTouchIdMap allValues];
@@ -525,13 +525,13 @@
 	mTouchPrevPointMap.erase( curId );
 }
 
-- (std::pair<uint32_t,cinder::Vec2f>)updateTouch:(NSTouch *)touch withPoint:(cinder::Vec2f)point
+- (std::pair<uint32_t,cinder::vec2>)updateTouch:(NSTouch *)touch withPoint:(cinder::vec2)point
 {
 	uint32_t curId = 0;
 	NSNumber *num = [mTouchIdMap objectForKey:[touch identity]];
 	if( num ) {
 		curId = [num unsignedIntValue];
-		cinder::Vec2f prevPt = mTouchPrevPointMap[curId];
+		cinder::vec2 prevPt = mTouchPrevPointMap[curId];
 		mTouchPrevPointMap[curId] = point;
 		return std::make_pair( curId, prevPt );		
 	}
@@ -551,8 +551,8 @@
 	double eventTime = [event timestamp];
 	for( NSTouch *touch in touches ) {
 		NSPoint rawPt = [touch normalizedPosition];
-		cinder::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
-		std::pair<uint32_t,cinder::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		cinder::vec2 pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,cinder::vec2> prev = [self updateTouch:touch withPoint:pt];
 		mActiveTouches.push_back( cinder::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 	}
 }
@@ -571,7 +571,7 @@
 	double eventTime = [event timestamp];
 	for( NSTouch *touch in touches ) {
 		NSPoint rawPt = [touch normalizedPosition];
-		cinder::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
+		cinder::vec2 pt( rawPt.x * width, height - rawPt.y * height );
 		touchList.push_back( cinder::app::TouchEvent::Touch( pt, pt, [self addTouchToMap:touch withPoint:pt], eventTime, touch ) );
 	}
 	[self updateActiveTouches:event];
@@ -590,8 +590,8 @@
 	double eventTime = [event timestamp];
 	for( NSTouch *touch in touches ) {
 		NSPoint rawPt = [touch normalizedPosition];
-		cinder::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
-		std::pair<uint32_t,cinder::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		cinder::vec2 pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,cinder::vec2> prev = [self updateTouch:touch withPoint:pt];
 		touchList.push_back( cinder::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 	}
 	[self updateActiveTouches:event];
@@ -610,8 +610,8 @@
 	double eventTime = [event timestamp];
 	for( NSTouch *touch in touches ) {
 		NSPoint rawPt = [touch normalizedPosition];
-		cinder::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
-		std::pair<uint32_t,cinder::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		cinder::vec2 pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,cinder::vec2> prev = [self updateTouch:touch withPoint:pt];
 		touchList.push_back( cinder::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 		[self removeTouchFromMap:touch];
 	}
@@ -632,8 +632,8 @@
 	double eventTime = [event timestamp];
 	for( NSTouch *touch in touches ) {
 		NSPoint rawPt = [touch normalizedPosition];
-		cinder::Vec2f pt( rawPt.x * width, height - rawPt.y * height );
-		std::pair<uint32_t,cinder::Vec2f> prev = [self updateTouch:touch withPoint:pt];
+		cinder::vec2 pt( rawPt.x * width, height - rawPt.y * height );
+		std::pair<uint32_t,cinder::vec2> prev = [self updateTouch:touch withPoint:pt];
 		touchList.push_back( cinder::app::TouchEvent::Touch( pt, prev.second, prev.first, eventTime, touch ) );
 		[self removeTouchFromMap:touch];
 	}

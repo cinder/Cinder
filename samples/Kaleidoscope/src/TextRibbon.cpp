@@ -8,8 +8,8 @@
 
 #include "cinder/app/AppBasic.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/Text.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Timeline.h"
 
 #include "TextRibbon.h"
@@ -33,7 +33,7 @@ void TextRibbon::update( string tag, string user )
 	mTag = (tag!="") ? "#" + tag : "";
 	mUser = user;
 	
-	mCurPos.value() = Vec2f(-60, 0);
+	mCurPos.value() = vec2(-60, 0);
 	mCurAlpha = 0.0f;
 	
 	makeText();
@@ -45,14 +45,14 @@ void TextRibbon::ribbonIn( float delay )
 {
 	// animate ribbon in
 	app::timeline().apply( &mCurAlpha, 1.0f, 0.4f, EaseOutQuint()).delay(delay);
-	app::timeline().apply( &mCurPos, Vec2f::zero(), 0.4f, EaseOutQuint()).delay(delay);	
+	app::timeline().apply( &mCurPos, vec2( 0, 0 ), 0.4f, EaseOutQuint()).delay(delay);	
 }
 
 void TextRibbon::ribbonOut( float delay )
 {
 	// animate ribbon out
 	app::timeline().apply( &mCurAlpha, 0.0f, 0.4f, EaseInQuint()).delay(delay);
-	app::timeline().apply( &mCurPos, Vec2f(-60, 0), 0.4f, EaseInQuint()).delay(delay);
+	app::timeline().apply( &mCurPos, vec2(-60, 0), 0.4f, EaseInQuint()).delay(delay);
 }
 
 void TextRibbon::makeText()
@@ -63,20 +63,20 @@ void TextRibbon::makeText()
 	
 	// Create the texture for the text
 	if( ! mTag.empty() ) {
-		mTagBox = TextBox().alignment(TextBox::LEFT).font(mTagFont).size(Vec2i(200, TextBox::GROW)).text(mTag);
+		mTagBox = TextBox().alignment(TextBox::LEFT).font(mTagFont).size(ivec2(200, TextBox::GROW)).text(mTag);
 		mTagBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 		mTagBox.setBackgroundColor(ColorA(0, 0, 0, 0));
-		mTagTex = mTagBox.render();
+		mTagTex = gl::Texture::create( mTagBox.render() );
 	}
 	
-	mUserBox = TextBox().alignment( TextBox::LEFT ).font( mUserFont ).size( Vec2i( 250, TextBox::GROW ) ).text( "@" + mUser );
+	mUserBox = TextBox().alignment( TextBox::LEFT ).font( mUserFont ).size( ivec2( 250, TextBox::GROW ) ).text( "@" + mUser );
 	mUserBox.setColor(ColorA(mTextCol.r, mTextCol.g, mTextCol.b, 1));
 	mUserBox.setBackgroundColor( ColorA( 0, 0, 0, 0) );
-	mUserTex = mUserBox.render();
+	mUserTex = gl::Texture::create( mUserBox.render() );
 	
 	float ribbonWidth = mTagBox.measure().x + mUserBox.measure().x + 30;
-	mRibbonSize = Vec2f(ribbonWidth, 50);
-	mTextPos = Vec2f(0, getWindowHeight() - mRibbonSize.y - 20);
+	mRibbonSize = vec2(ribbonWidth, 50);
+	mTextPos = vec2(0, getWindowHeight() - mRibbonSize.y - 20);
 }
 
 // Draws the solid shape behind the text
@@ -89,23 +89,24 @@ void TextRibbon::drawTextShape()
 	float offsetX = mCurPos.value().x;
 	float offsetY = mCurPos.value().y;
 	
-	Vec2f points[4];
-	points[0] = Vec2f(offsetX + 0,				offsetY + 0);
-	points[1] = Vec2f(offsetX + 0,				offsetY + boxH);
-	points[2] = Vec2f(offsetX + boxW,			offsetY + 0);
-	points[3] = Vec2f(offsetX + boxW + farPt,	offsetY + boxH);
-	
-	glColor4f( mCol.r, mCol.g, mCol.b, mCurAlpha );
-	glEnableClientState( GL_VERTEX_ARRAY );
+	gl::color( mCol.r, mCol.g, mCol.b, mCurAlpha );
+	gl::VertBatch vb( GL_TRIANGLE_STRIP );
+		vb.color( mCol.r, mCol.g, mCol.b, mCurAlpha );
+		vb.vertex( offsetX + 0,				offsetY + 0 );
+		vb.vertex( offsetX + 0,				offsetY + boxH );
+		vb.vertex( offsetX + boxW,			offsetY + 0 );
+		vb.vertex( offsetX + boxW + farPt,	offsetY + boxH );
+	vb.draw();
+/*	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &points[0].x );
 	glDrawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	glDisableClientState( GL_VERTEX_ARRAY );
-	glColor4f( 1, 1, 1, 1 );
+	gl::color( 1, 1, 1, 1 );*/
 }
 
 void TextRibbon::draw()
 {
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate(mTextPos);
   
 	drawTextShape();
@@ -117,11 +118,11 @@ void TextRibbon::draw()
 	// check it the texture exists and if mTagBox has a height (meaning that there's something in that texture)
 	if( mTagTex && mTagBox.measure().y > 0 ) {
 		spacing = 5;
-		gl::draw( mTagTex, Vec2f(mCurPos.value().x + TEXT_PADDING_X, (mRibbonSize.y - mTagBox.measure().y)/2) );
+		gl::draw( mTagTex, vec2(mCurPos.value().x + TEXT_PADDING_X, (mRibbonSize.y - mTagBox.measure().y)/2) );
 	}
 	
 	if( mUserTex )
-		gl::draw( mUserTex, Vec2f(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
+		gl::draw( mUserTex, vec2(mCurPos.value().x + TEXT_PADDING_X + mTagBox.measure().x + spacing, (mRibbonSize.y - mUserBox.measure().y)/2) );
 	gl::color( 1, 1, 1 );
-	glPopMatrix();
+	gl::popModelMatrix();
 }

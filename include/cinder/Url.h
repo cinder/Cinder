@@ -24,6 +24,8 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Stream.h"
+#include "cinder/Exception.h"
+
 #include <iostream>
 
 namespace cinder {
@@ -114,7 +116,7 @@ class IStreamUrlImpl {
 typedef std::shared_ptr<class IStreamUrl>	IStreamUrlRef;
 
 /** \warning IStreamUrl does not currently support proper random access **/
-class IStreamUrl : public IStream {
+class IStreamUrl : public IStreamCinder {
   public:
 	//! Creates a new IStreamUrlRef from the Url \a url with an optional login and password
 	static IStreamUrlRef		create( const Url &url, const std::string &user = "", const std::string &password = "", const UrlOptions &options = UrlOptions() );
@@ -135,7 +137,7 @@ class IStreamUrl : public IStream {
 
 	virtual void		IORead( void *t, size_t size ) { mImpl->IORead( t, size ); }
 	//! IStreamURL does not yet support writing
-	virtual void		IOWrite( const void *t, size_t size ) { throw std::exception(); }
+	virtual void		IOWrite( const void *t, size_t size ) { throw Exception(); }
 	
 	std::shared_ptr<IStreamUrlImpl>	mImpl;
 };
@@ -148,11 +150,9 @@ class UrlLoadExc : public Exception {
   public:
 	UrlLoadExc( int statusCode, const std::string &message );
 
-	virtual const char * what() const throw() { return mMessage.c_str(); }
 	int statusCode() const { return mStatusCode; }
 
   private:
-	std::string		mMessage;
 	int				mStatusCode;
 };
 

@@ -9,6 +9,7 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 #include "TrianglePiece.h"
@@ -18,7 +19,7 @@ using namespace ci::app;
 using namespace std;
 
 
-TrianglePiece::TrianglePiece( Vec2f _startPt, Vec2f _pt1, Vec2f _pt2, Vec2f _pt3, float _rotation, Vec2f _scale )
+TrianglePiece::TrianglePiece( vec2 _startPt, vec2 _pt1, vec2 _pt2, vec2 _pt3, float _rotation, vec2 _scale )
 	: mAlpha(0.0f), mTransOut(false)
 {
 	mStartPt = _startPt;
@@ -64,7 +65,7 @@ void TrianglePiece::setVisible( bool vis )
 	mVisible = vis;
 }
 
-void TrianglePiece::update( gl::TextureRef tex, Vec2f pt1, Vec2f pt2, Vec2f pt3 )
+void TrianglePiece::update( gl::TextureRef tex, vec2 pt1, vec2 pt2, vec2 pt3 )
 {	 
 	if( ! mTransOut ) {
 		mTexVertices[0] = pt1;
@@ -80,19 +81,19 @@ void TrianglePiece::draw()
 	if( ! mReadyToDraw ) return;
 	if( mAlpha == 0.0f ) return;
 	
-	glPushMatrix();
+	gl::pushModelMatrix();
 	gl::translate( mStartPt );				// move to the start point
 	gl::scale( mScale );					// scale the triangle
-	gl::rotate( Vec3f( 0, 0, mRotation ) );	// rotate on the Z axis
+	gl::rotate( mRotation );	// rotate on the Z axis
 	
-	glColor4f(1.0, 1.0, 1.0, mAlpha);
+	gl::color( 1.0f, 1.0f, 1.0f, mAlpha );
 	
 	// draw the texture to the triangle
-	mDrawTex->enableAndBind();
-	gl::drawSolidTriangle(mVertices, mTexVertices);
-	mDrawTex->unbind();
-	glColor4f(1.0, 1.0, 1.0, 1.0);			// reset the color/alpha
-	glPopMatrix();
+	gl::ScopedGlslProg glslScp( gl::getStockShader( gl::ShaderDef().color().texture() ) );
+	gl::ScopedTextureBind texScp( mDrawTex );
+	gl::drawSolidTriangle( mVertices, mTexVertices );
+	gl::color( 1.0f, 1.0f, 1.0f, 1.0f );			// reset the color/alpha
+	gl::popModelMatrix();
 }
 
 bool TrianglePiece::isOut() const

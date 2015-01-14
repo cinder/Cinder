@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -21,12 +23,27 @@
 */
 
 #include "cinder/Surface.h"
+
+#if defined( CINDER_WINRT )
+#include <ppltasks.h>
+#include "cinder/WinRTUtils.h"
+#include "cinder/Utilities.h"
+#include "cinder/msw/CinderMsw.h"
+using namespace Windows::Storage;
+using namespace Concurrency;
+#undef max
+using namespace Windows::Storage;
+using namespace Concurrency;
+#endif
+
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Fill.h"
 
 #include <boost/preprocessor/seq.hpp>
 #include <boost/type_traits/is_same.hpp>
 using boost::tribool;
+
+
 
 namespace cinder {
 
@@ -57,20 +74,18 @@ class ImageSourceSurface : public ImageSource {
 		setChannelOrder( ImageIo::ChannelOrder( surface.getChannelOrder().getImageIoChannelOrder() ) );
 		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
-			mSurface8u = *reinterpret_cast<const Surface8u*>( &surface ); // register reference to 'surface'
 		}
 		else if( boost::is_same<T,uint16_t>::value ) {
 			setDataType( ImageIo::UINT16 );
-			mSurface16u = *reinterpret_cast<const Surface16u*>( &surface ); // register reference to 'surface'
 		}
 		else if( boost::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
-			mSurface32f = *reinterpret_cast<const Surface32f*>( &surface ); // register reference to 'surface'
 		}
 		else
 			throw; // this surface seems to be a type we've never met
 		mRowBytes = surface.getRowBytes();
 		mData = reinterpret_cast<const uint8_t*>( surface.getData() );
+		mDataStoreRef = surface.getDataStore();
 	}
 
 	void load( ImageTargetRef target ) {
@@ -85,11 +100,9 @@ class ImageSourceSurface : public ImageSource {
 	}
 	
 	// not ideal, but these are used to register a reference to the surface we were constructed with
-	Surface8u			mSurface8u;
-	Surface16u			mSurface16u;
-	Surface32f			mSurface32f;
-	const uint8_t		*mData;
-	int32_t				mRowBytes;
+	const uint8_t			*mData;
+	int32_t					mRowBytes;
+	std::shared_ptr<void>	mDataStoreRef;
 };
 
 SurfaceChannelOrder::SurfaceChannelOrder( int aCode )
@@ -171,84 +184,157 @@ int	SurfaceChannelOrder::getImageIoChannelOrder() const
 }
 
 
-
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SurfaceT::Obj
+// SurfaceT
 template<typename T>
-SurfaceT<T>::Obj::Obj( int32_t aWidth, int32_t aHeight, SurfaceChannelOrder aChannelOrder, T *aData, bool aOwnsData, int32_t aRowBytes )
-	: mWidth( aWidth ), mHeight( aHeight ), mChannelOrder( aChannelOrder ), mData( aData ), mOwnsData( aOwnsData ), mRowBytes( aRowBytes ), mIsPremultiplied( false )
+void SurfaceT<T>::initChannels()
 {
-	mDeallocatorFunc = NULL;
-	initChannels();
-}
-
-template<typename T>
-SurfaceT<T>::Obj::~Obj()
-{
-	if( mDeallocatorFunc )
-		(*mDeallocatorFunc)( mDeallocatorRefcon );
-
-	if( mOwnsData )
-		delete [] mData;
-}
-
-template<typename T>
-void SurfaceT<T>::Obj::initChannels()
-{
-	mChannels[SurfaceChannelOrder::CHAN_RED] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getRedOffset() );
-	mChannels[SurfaceChannelOrder::CHAN_GREEN] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getGreenOffset() );
-	mChannels[SurfaceChannelOrder::CHAN_BLUE] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getBlueOffset() );
+	mChannels[SurfaceChannelOrder::CHAN_RED] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getRedOffset(), mDataStore );
+	mChannels[SurfaceChannelOrder::CHAN_GREEN] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getGreenOffset(), mDataStore );
+	mChannels[SurfaceChannelOrder::CHAN_BLUE] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getBlueOffset(), mDataStore );
 	if( mChannelOrder.hasAlpha() )
-		mChannels[SurfaceChannelOrder::CHAN_ALPHA] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getAlphaOffset() );
+		mChannels[SurfaceChannelOrder::CHAN_ALPHA] = ChannelT<T>( mWidth, mHeight, mRowBytes, mChannelOrder.getPixelInc(), mData + mChannelOrder.getAlphaOffset(), mDataStore );
 }
 
 template<typename T>
-void SurfaceT<T>::Obj::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
-{
-	mDeallocatorFunc = aDeallocatorFunc;
-	mDeallocatorRefcon = aDeallocatorRefcon;
-}
-
-template<typename T>
-void SurfaceT<T>::Obj::setChannelOrder( const SurfaceChannelOrder &aChannelOrder )
+void SurfaceT<T>::setChannelOrder( const SurfaceChannelOrder &aChannelOrder )
 {
 	mChannelOrder = aChannelOrder;
 	initChannels();
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// SurfaceT
-
 template<typename T>
-SurfaceT<T>::SurfaceT( int32_t aWidth, int32_t aHeight, bool alpha, SurfaceChannelOrder aChannelOrder )
+SurfaceT<T>::SurfaceT()
+	: mWidth( 0 ), mHeight( 0 ), mChannelOrder( SurfaceChannelOrder::UNSPECIFIED ), mRowBytes( 0 ), mData( nullptr ), mPremultiplied( false )
 {
-	SurfaceChannelOrder channelOrder = aChannelOrder;
-	if( channelOrder == SurfaceChannelOrder::UNSPECIFIED )
-		channelOrder = ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB;
-	int32_t rowBytes = aWidth * sizeof(T) * channelOrder.getPixelInc();
-	T *data = new T[aHeight * rowBytes];
-	mObj = std::shared_ptr<Obj>( new Obj( aWidth, aHeight, channelOrder, data, true, rowBytes ) );
 }
 
 template<typename T>
-SurfaceT<T>::SurfaceT( int32_t aWidth, int32_t aHeight, bool alpha, const SurfaceConstraints &constraints )
+SurfaceT<T>::SurfaceT( const SurfaceT<T> &rhs )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mPremultiplied( rhs.mPremultiplied )
 {
-	SurfaceChannelOrder channelOrder = constraints.getChannelOrder( alpha );
-	int32_t rowBytes = constraints.getRowBytes( aWidth, channelOrder, sizeof(T) );
-	T *data = new T[aHeight * rowBytes];
-	mObj = std::shared_ptr<Obj>( new Obj( aWidth, aHeight, channelOrder, data, true, rowBytes ) );
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
+	mData = mDataStore.get();
+	initChannels();
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
 }
 
 template<typename T>
-SurfaceT<T>::SurfaceT( T *aData, int32_t aWidth, int32_t aHeight, int32_t aRowBytes, SurfaceChannelOrder aChannelOrder )
+SurfaceT<T>::SurfaceT( SurfaceT<T> &&rhs )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mChannelOrder( rhs.mChannelOrder ), mRowBytes( rhs.mRowBytes ), mPremultiplied( rhs.mPremultiplied )
 {
-	mObj = std::shared_ptr<Obj>( new Obj( aWidth, aHeight, aChannelOrder, aData, false, aRowBytes ) );
+	mDataStore = rhs.mDataStore;
+	rhs.mDataStore = nullptr;
+	mData = mDataStore.get();
+	initChannels();
+}
+
+template<typename T>
+SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder )
+	: mWidth( width ), mHeight( height ), mChannelOrder( channelOrder )
+{
+	if( mChannelOrder == SurfaceChannelOrder::UNSPECIFIED )
+		mChannelOrder = ( alpha ) ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB;
+	mPremultiplied = false;
+	mRowBytes = width * sizeof(T) * mChannelOrder.getPixelInc();
+	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes], std::default_delete<T[]>() );
+	mData = mDataStore.get();
+	initChannels();
+}
+
+template<typename T>
+SurfaceT<T>::SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints )
+	: mWidth( width ), mHeight( height )
+{
+	mChannelOrder = constraints.getChannelOrder( alpha );
+	mPremultiplied = false;
+	mRowBytes = constraints.getRowBytes( width, mChannelOrder, sizeof(T) );
+	mDataStore = std::shared_ptr<T>( new T[height * mRowBytes], std::default_delete<T[]>() );
+	mData = mDataStore.get();
+	initChannels();
+}
+
+template<typename T>
+SurfaceT<T>::SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder )
+	: mData( data ), mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mChannelOrder( channelOrder )
+{
+	mPremultiplied = false;
+	initChannels();
 }
 
 template<typename T>
 SurfaceT<T>::SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints, boost::tribool alpha )
 {
 	init( imageSource, constraints, alpha );
+}
+
+#if defined( CINDER_WINRT )
+
+template<typename T>
+void SurfaceT<T>::loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
+{
+	auto loadImageTask = create_task([path]() -> ImageSourceRef
+	{
+		return loadImage(path);
+	});
+
+	  // Task-based continuation.
+    auto c2 = loadImageTask.then([path, &surface,constraints,alpha](task<ImageSourceRef> previousTask)
+    {
+        // We do expect to get here because task-based continuations 
+        // are scheduled even when the antecedent task throws. 
+        try
+        {
+			surface = SurfaceT(previousTask.get(),constraints, alpha);
+        }
+        catch (const ImageIoExceptionFailedLoad&)
+        {
+			auto copyTask = winrt::copyFileToTempDirAsync(path);
+			copyTask.then([path, &surface,constraints,alpha](StorageFile^ file) 
+			{
+				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
+				surface = SurfaceT(loadImage(fs::path(temp)),constraints, alpha);
+				winrt::deleteFileAsync(temp);
+			});
+        }
+    });
+}
+#endif
+
+template<typename T>
+SurfaceT<T>& SurfaceT<T>::operator=( const SurfaceT<T> &rhs )
+{
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mChannelOrder = rhs.mChannelOrder;
+	mRowBytes = rhs.mRowBytes;
+	mPremultiplied = rhs.mPremultiplied;
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
+	
+	mData = mDataStore.get();
+	initChannels();
+	
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
+	
+	return *this;
+}
+
+template<typename T>
+SurfaceT<T>& SurfaceT<T>::operator=( SurfaceT<T> &&rhs )
+{
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mChannelOrder = rhs.mChannelOrder;
+	mRowBytes = rhs.mRowBytes;
+	mPremultiplied = rhs.mPremultiplied;
+	mDataStore = rhs.mDataStore;	
+	mData = rhs.mData;
+	rhs.mDataStore = nullptr;
+	rhs.mData = nullptr;
+	
+	initChannels();
+	
+	return *this;
 }
 
 template<typename T>
@@ -284,16 +370,10 @@ SurfaceT<T> SurfaceT<T>::clone( const Area &area, bool copyPixels ) const
 }
 
 template<typename T>
-void SurfaceT<T>::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
-{
-	mObj->setDeallocator( aDeallocatorFunc, aDeallocatorRefcon );
-}
-
-template<typename T>
 void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &constraints, boost::tribool alpha )
 {
-	int32_t width = imageSource->getWidth();
-	int32_t height = imageSource->getHeight();
+	mWidth = imageSource->getWidth();
+	mHeight = imageSource->getHeight();
 	bool hasAlpha;
 	if( alpha )
 		hasAlpha = true;
@@ -302,33 +382,27 @@ void SurfaceT<T>::init( ImageSourceRef imageSource, const SurfaceConstraints &co
 	else
 		hasAlpha = imageSource->hasAlpha();
 
-	SurfaceChannelOrder channelOrder = constraints.getChannelOrder( hasAlpha );
-	int32_t rowBytes = constraints.getRowBytes( width, channelOrder, sizeof(T) );
+	mChannelOrder = constraints.getChannelOrder( hasAlpha );
+	mRowBytes = constraints.getRowBytes( mWidth, mChannelOrder, sizeof(T) );
 	
-	T *data = new T[height * rowBytes];
+	mDataStore = std::shared_ptr<T>( new T[mHeight * mRowBytes], std::default_delete<T[]>() );
+	mData = mDataStore.get();
 
-	mObj = std::shared_ptr<Obj>( new Obj( width, height, channelOrder, data, true, rowBytes ) );
-	mObj->mIsPremultiplied = imageSource->isPremultiplied();
+	mPremultiplied = imageSource->isPremultiplied();
 	
 	std::shared_ptr<ImageTargetSurface<T> > target = ImageTargetSurface<T>::createRef( this );
 	imageSource->load( target );
 	
-	// if the image doesn't have alpha but we do, set ourselves to be full alpha
-	if( hasAlpha && ( ! imageSource->hasAlpha() ) ) {
+	initChannels();
+	// if the image doesn't have alpha but we do, set the alpha to 1.0
+	if( hasAlpha && ( ! imageSource->hasAlpha() ) )
 		ip::fill( &getChannelAlpha(), CHANTRAIT<T>::max() );
-	}	
 }
 
 template<typename T>
-void SurfaceT<T>::setChannelOrder( const SurfaceChannelOrder &aChannelOrder )
+void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset )
 {
-	mObj->setChannelOrder( aChannelOrder );
-}
-
-template<typename T>
-void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset )
-{
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
 	
 	if( getChannelOrder() == srcSurface.getChannelOrder() )
 		copyRawSameChannelOrder( srcSurface, srcDst.first, srcDst.second );
@@ -341,7 +415,7 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	int32_t srcRowBytes = srcSurface.getRowBytes();
 	int32_t srcPixelInc = srcSurface.getPixelInc();
@@ -355,7 +429,7 @@ void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const 
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	uint8_t srcRed = srcSurface.getChannelOrder().getRedOffset();
@@ -385,7 +459,7 @@ void SurfaceT<T>::copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcAre
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	const int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -416,7 +490,7 @@ void SurfaceT<T>::copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area
 }
 
 template<typename T>
-void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset )
+void SurfaceT<T>::copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
 {
 	const int32_t srcRowBytes = srcSurface.getRowBytes();
 	const int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -535,7 +609,7 @@ bool ImageTargetSurface<T>::hasAlpha() const
 template<typename T>
 void* ImageTargetSurface<T>::getRowPointer( int32_t row )
 {
-	return reinterpret_cast<void*>( mSurface->getData( Vec2i( 0, row ) ) );
+	return reinterpret_cast<void*>( mSurface->getData( ivec2( 0, row ) ) );
 }
 
 #define Surface_PROTOTYPES(r,data,T)\

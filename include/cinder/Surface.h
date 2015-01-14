@@ -1,5 +1,7 @@
 /*
  Copyright (c) 2010, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Portions Copyright (c) 2010, The Barbarian Group
@@ -30,10 +32,27 @@
 #include "cinder/Channel.h"
 #include "cinder/ChanTraits.h"
 #include "cinder/Color.h"
+#include "cinder/Filesystem.h"
+#include "cinder/Exception.h"
 
 #include <boost/logic/tribool.hpp>
 
 namespace cinder {
+
+template<typename T>
+class SurfaceT;
+//! 8-bit image. Synonym for Surface8u.
+typedef SurfaceT<uint8_t> Surface;
+//! 8-bit image
+typedef SurfaceT<uint8_t>			Surface8u;	
+typedef std::shared_ptr<Surface8u>	Surface8uRef;
+typedef std::shared_ptr<Surface8u>	SurfaceRef;
+//! 16-bit image. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
+typedef SurfaceT<uint16_t> Surface16u;
+typedef std::shared_ptr<Surface16u>	Surface16uRef;
+//! 32-bit floating point image
+typedef SurfaceT<float> Surface32f;
+typedef std::shared_ptr<Surface32f>	Surface32fRef;
 
 //! Specifies the in-memory ordering of the channels of a Surface.
 class SurfaceChannelOrder {
@@ -87,70 +106,78 @@ typedef std::shared_ptr<class ImageTarget> ImageTargetRef;
 template<typename T>
 //! An in-memory representation of an image. \ImplShared
 class SurfaceT {
- private:
-	/// \cond
-	struct Obj {
-		Obj( int32_t aWidth, int32_t aHeight, SurfaceChannelOrder aChannelOrder, T *aData, bool aOwnsData, int32_t aRowBytes );
-		~Obj();
-		
-		void		initChannels();
-		void		setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
-		void		setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
-	
-		int32_t						mWidth, mHeight, mRowBytes;
-		bool						mIsPremultiplied;
-		T							*mData;
-		bool						mOwnsData;
-		SurfaceChannelOrder			mChannelOrder;
-		ChannelT<T>					mChannels[4];
-		
-		void						(*mDeallocatorFunc)(void *refcon);
-		void						*mDeallocatorRefcon;
-	};
-	/// \endcond
-
- public:
-	/*! Constructs an empty Surface, which is the equivalent of NULL and should not be used directly. */
-	SurfaceT() {}
-	/*! \brief Creates a Surface object that is \a height and \a width pixels, an alpha channel based on \a alpha, and the channel order \a channelOrder
-	 
-	 As an example, the following would create a 640x480 pixel surface with an alpha channel, and an RGBA channel order
-	 <tt>Surface32f mySurface( 640, 480, true, SurfaceChannelOrder::RGBA );</tt>
-	*/
+  public:
+	//! A null Surface.
+	SurfaceT();
+	//! Allocates a Surface of size \a width X \a height, with an optional \a alpha channel. The default value for \a channelOrder selects a platform default.
 	SurfaceT( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED );
+	//! Allocates a Surface of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
 	SurfaceT( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints );
 	//! Constructs a surface from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
 	SurfaceT( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder );
-	/*! \brief Creates a Surface object from an ImageSource, for instance from the result of a loadImage() call
-	 
-	 To load an image from a resource, pass the result of the loadImage() call to the Surface constructor as shown below
-	 <tt>Surface mySurface = Surface( loadImage( loadResource( RES ) );</tt>
-	 */
+	//! Constructs a Surface from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
 	SurfaceT( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+
+	//! Creates a clone of \a rhs. Matches rowBytes and channel order of \a rhs, but creates its own dataStore.
+	SurfaceT( const SurfaceT &rhs );
+	//! Surface move constructor.
+	SurfaceT( SurfaceT &&rhs );
+
+	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. The default value for \a channelOrder selects a platform default.
+	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, SurfaceChannelOrder channelOrder = SurfaceChannelOrder::UNSPECIFIED )
+	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, channelOrder ); }
+	
+	//! Creates a SurfaceRef of size \a width X \a height, with an optional \a alpha channel. \a constraints allows specification of channel order and rowBytes constraints as a function of width.
+	static std::shared_ptr<SurfaceT<T>>	create( int32_t width, int32_t height, bool alpha, const SurfaceConstraints &constraints )
+	{ return std::make_shared<SurfaceT<T>>( width, height, alpha, constraints ); }
+	
+	//! Creates a SurfaceRef from the memory pointed to by \a data. Does not assume ownership of the memory in \a data, which consequently should not be freed while the Surface is still in use.
+	static std::shared_ptr<SurfaceT<T>>	create( T *data, int32_t width, int32_t height, int32_t rowBytes, SurfaceChannelOrder channelOrder )
+	{ return std::make_shared<SurfaceT<T>>( data, width, height, rowBytes, channelOrder ); }
+	
+	//! Creates a SurfaceRef from an \a imageSource and optional \a constraints. Default value for \a alpha chooses one based on the contents of the ImageSource.
+	static std::shared_ptr<SurfaceT<T>>	create( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate )
+	{ return std::make_shared<SurfaceT<T>>( imageSource, constraints, alpha ); }
+
+	//! Creates s SurfaceRef which is a clone of the Surface \a surface, and with its own dataStore
+	static std::shared_ptr<SurfaceT<T>>	create( const SurfaceT<T> &surface )
+	{ return std::make_shared<SurfaceT<T>>( surface ); }
+
+#if defined( CINDER_WINRT )
+	/** \brief Constructs asynchronously a Surface from an images located at \a path. The loaded Surface is returned in \a surface.
+		If you are creating a Surface from an image that is located outside of the WinRT Windows Store App folder, you must use this method.
+	**/
+	static void loadImageAsync(const fs::path path, SurfaceT &surface, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
+#endif
+
+	SurfaceT<T>&	operator=( const SurfaceT<T> &rhs );
+	SurfaceT<T>&	operator=( SurfaceT<T> &&rhs );
 
 	operator ImageSourceRef() const;
 	operator ImageTargetRef();
 
 	//! Returns the width of the Surface in pixels
-	int32_t			getWidth() const { return mObj->mWidth; }
+	int32_t			getWidth() const { return mWidth; }
 	//! Returns the height of the Surface in pixels
-	int32_t			getHeight() const { return mObj->mHeight; }
+	int32_t			getHeight() const { return mHeight; }
 	//! Returns the size of the Surface in pixels
-	Vec2i			getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	ivec2			getSize() const { return ivec2( mWidth, mHeight ); }
 	//! Returns the Surface aspect ratio, which is its width / height
-	float			getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
+	float			getAspectRatio() const { return mWidth / (float)mHeight; }
 	//! Returns the bounding Area of the Surface in pixels: [0,0]-(width,height)
-	Area			getBounds() const { return Area( 0, 0, mObj->mWidth, mObj->mHeight ); }
+	Area			getBounds() const { return Area( 0, 0, mWidth, mHeight ); }
 	//! Returns whether the Surface contains an alpha channel
-	bool			hasAlpha() const { return mObj->mChannelOrder.hasAlpha(); }
+	bool			hasAlpha() const { return mChannelOrder.hasAlpha(); }
 	//! Returns whether the Surface color data is premultiplied by its alpha channel or not
-	bool			isPremultiplied() const { return mObj->mIsPremultiplied; }
+	bool			isPremultiplied() const { return mPremultiplied; }
 	//! Sets whether the Surface color data should be interpreted as being premultiplied by its alpha channel or not
-	bool			setPremultiplied( bool premult = true ) const { return mObj->mIsPremultiplied = premult; }
+	void			setPremultiplied( bool premult = true ) { mPremultiplied = premult; }
 	//! Returns the width of a row of the Surface measured in bytes, which is not necessarily getWidth() * getPixelInc()
-	int32_t			getRowBytes() const { return mObj->mRowBytes; }
+	int32_t			getRowBytes() const { return mRowBytes; }
 	//! Returns the amount to increment a T* to increment by a pixel. Analogous to the number of channels, which is either 3 or 4
-	uint8_t			getPixelInc() const { return mObj->mChannelOrder.getPixelInc(); }
+	uint8_t			getPixelInc() const { return mChannelOrder.getPixelInc(); }
+	//! Returns the number of bytes to increment by a pixel. Analogous to the number of channels, (which is either 3 or 4) * sizeof(T)
+	uint8_t			getPixelBytes() const { return mChannelOrder.getPixelInc() * sizeof(T); }
 
 	//! Returns a new Surface which is a duplicate. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized
 	SurfaceT			clone( bool copyPixels = true ) const;
@@ -158,92 +185,92 @@ class SurfaceT {
 	SurfaceT			clone( const Area &area, bool copyPixels = true ) const;
 
 	//! Retuns the raw data of an image as a pointer to either uin8t_t values in the case of a Surface8u or floats in the case of a Surface32f
-	T*					getData() { return mObj->mData; }
-	const T*			getData() const { return mObj->mData; }
-	T*					getData( const Vec2i &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
-	const T*			getData( const Vec2i &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * getPixelInc() ) + offset.y * mObj->mRowBytes ); }
+	T*					getData() { return mData; }
+	const T*			getData() const { return mData; }
+	T*					getData( const ivec2 &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + offset.x * getPixelInc() ) + offset.y * mRowBytes ); }
+	const T*			getData( const ivec2 &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + offset.x * getPixelInc() ) + offset.y * mRowBytes ); }
 	//! Returns a pointer to the red channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataRed( const Vec2i &offset ) { return getData( offset ) + getRedOffset(); }
-	const T*			getDataRed( const Vec2i &offset ) const { return getData( offset ) + getRedOffset(); }
+	T*					getDataRed( const ivec2 &offset ) { return getData( offset ) + getRedOffset(); }
+	const T*			getDataRed( const ivec2 &offset ) const { return getData( offset ) + getRedOffset(); }
 	//! Returns a pointer to the green channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataGreen( const Vec2i &offset ) { return getData( offset ) + getGreenOffset(); }
-	const T*			getDataGreen( const Vec2i &offset ) const { return getData( offset ) + getGreenOffset(); }
+	T*					getDataGreen( const ivec2 &offset ) { return getData( offset ) + getGreenOffset(); }
+	const T*			getDataGreen( const ivec2 &offset ) const { return getData( offset ) + getGreenOffset(); }
 	//! Returns a pointer to the blue channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f.
-	T*					getDataBlue( const Vec2i &offset ) { return getData( offset ) + getBlueOffset(); }
-	const T*			getDataBlue( const Vec2i &offset ) const { return getData( offset ) + getBlueOffset(); }
+	T*					getDataBlue( const ivec2 &offset ) { return getData( offset ) + getBlueOffset(); }
+	const T*			getDataBlue( const ivec2 &offset ) const { return getData( offset ) + getBlueOffset(); }
 	//! Returns a pointer to the alpha channel data of the pixel located at \a offset. Result is a uint8_t* for Surface8u and a float* for Surface32f. Undefined for Surfaces without an alpha channel.
-	T*					getDataAlpha( const Vec2i &offset ) { return getData( offset ) + getAlphaOffset(); }
-	const T*			getDataAlpha( const Vec2i &offset ) const { return getData( offset ) + getAlphaOffset(); }
+	T*					getDataAlpha( const ivec2 &offset ) { return getData( offset ) + getAlphaOffset(); }
+	const T*			getDataAlpha( const ivec2 &offset ) const { return getData( offset ) + getAlphaOffset(); }
 	
-	/** Sets the deallocator, an optional callback which will fire upon the Surface::Obj's destruction. This is useful when a Surface is wrapping another API's image data structure whose lifetime is tied to the Surface's. **/
-	void				setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
+	//! Returns the shared_ptr to the underlying pixel data. Maybe be nullptr if the Surface does not own its data
+	std::shared_ptr<T>	getDataStore() const { return mDataStore; }
 	
 	//! Returns the channel order of the Surface, the in-memory ordering of the channels of each pixel
-	const SurfaceChannelOrder&	getChannelOrder() const { return mObj->mChannelOrder; }
+	const SurfaceChannelOrder&	getChannelOrder() const { return mChannelOrder; }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 0.
-	uint8_t						getRedOffset() const { return mObj->mChannelOrder.getRedOffset(); }
+	uint8_t					getRedOffset() const { return mChannelOrder.getRedOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 1.
-	uint8_t						getGreenOffset() const { return mObj->mChannelOrder.getGreenOffset(); }
+	uint8_t					getGreenOffset() const { return mChannelOrder.getGreenOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 2.
-	uint8_t						getBlueOffset() const { return mObj->mChannelOrder.getBlueOffset(); }
+	uint8_t					getBlueOffset() const { return mChannelOrder.getBlueOffset(); }
 	//! Returns the in-memory offset relative to a pixel for the red data. For example, for RGBA, returns 3. Returns SurfaceChannelOrder::INVALID in the absence of an alpha channel.
-	uint8_t						getAlphaOffset() const { return mObj->mChannelOrder.getAlphaOffset(); }
+	uint8_t					getAlphaOffset() const { return mChannelOrder.getAlphaOffset(); }
 	//! Sets the channel order of the Surface, the in-memory ordering of the channels of each pixel. Call does not modify any pixel data, but does modify its interpretation. 
-	void						setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
+	void					setChannelOrder( const SurfaceChannelOrder &aChannelOrder );
 
 	//! Returns a reference to a Channel \a channelIndex indexed according to how the channels are arranged per the SurfaceChannelOrder.
-	ChannelT<T>&				getChannel( uint8_t channelIndex ) { return mObj->mChannels[channelIndex]; }
+	ChannelT<T>&			getChannel( uint8_t channelIndex ) { return mChannels[channelIndex]; }
 	//! Returns a const reference to a Channel \a channelIndex indexed  according to how the channels are arranged per the SurfaceChannelOrder.
-	const ChannelT<T>&			getChannel( uint8_t channelIndex ) const { return mObj->mChannels[channelIndex]; }
+	const ChannelT<T>&		getChannel( uint8_t channelIndex ) const { return mChannels[channelIndex]; }
 	
 	/*! Returns a reference to the red Channel of the Surface */
-	ChannelT<T>&		getChannelRed() { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	ChannelT<T>&		getChannelRed() { return mChannels[SurfaceChannelOrder::CHAN_RED]; }
 	/*! Returns a reference to the green Channel of the Surface */
-	ChannelT<T>&		getChannelGreen() { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	ChannelT<T>&		getChannelGreen() { return mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
 	/*! Returns a reference to the blue Channel of the Surface */
-	ChannelT<T>&		getChannelBlue() { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	ChannelT<T>&		getChannelBlue() { return mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
 	/*! Returns a reference to the alpha Channel of the Surface. Undefined in the absence of an alpha channel. */
-	ChannelT<T>&		getChannelAlpha() { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	ChannelT<T>&		getChannelAlpha() { return mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
 	/*! Returns a const reference to the red Channel of the Surface */
-	const ChannelT<T>&	getChannelRed() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_RED]; }
+	const ChannelT<T>&	getChannelRed() const { return mChannels[SurfaceChannelOrder::CHAN_RED]; }
 	/*! Returns a const reference to the green Channel of the Surface */	
-	const ChannelT<T>&	getChannelGreen() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
+	const ChannelT<T>&	getChannelGreen() const { return mChannels[SurfaceChannelOrder::CHAN_GREEN]; }
 	/*! Returns a const reference to the blue Channel of the Surface */	
-	const ChannelT<T>&	getChannelBlue() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
+	const ChannelT<T>&	getChannelBlue() const { return mChannels[SurfaceChannelOrder::CHAN_BLUE]; }
 	/*! Returns a const reference to the alpha Channel of the Surface. Undefined in the absence of an alpha channel. */	
-	const ChannelT<T>&	getChannelAlpha() const { return mObj->mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
+	const ChannelT<T>&	getChannelAlpha() const { return mChannels[SurfaceChannelOrder::CHAN_ALPHA]; }
 
 	//! Convenience method for getting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	ColorAT<T>	getPixel( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }
+	ColorAT<T>	getPixel( ivec2 pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mHeight - 1 ); const T *p = getData( pos ); return ColorAT<T>( p[getRedOffset()], p[getGreenOffset()], p[getBlueOffset()], ( hasAlpha() ) ? p[getAlphaOffset()] : CHANTRAIT<T>::max() ); }
 	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	void	setPixel( Vec2i pos, const ColorT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; }
+	void	setPixel( ivec2 pos, const ColorT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; }
 	//! Convenience method for setting a single pixel. For performance-sensitive code consider \ref SurfaceT::Iter "Surface::Iter" instead.
-	void	setPixel( Vec2i pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
+	void	setPixel( ivec2 pos, const ColorAT<T> &c ) { pos.x = constrain<int32_t>( pos.x, 0, mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mHeight - 1 ); T *p = getData( pos ); p[getRedOffset()] = c.r; p[getGreenOffset()] = c.g; p[getBlueOffset()] = c.b; if( hasAlpha() ) p[getAlphaOffset()] = c.a; }
 
 	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
-	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
+	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset = ivec2() );
 
 	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;
-
-	/// \cond
-	typedef std::shared_ptr<Obj> SurfaceT::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &SurfaceT::mObj; }
-	void reset() { mObj.reset(); }
-	/// \endcond
-
- private:
-	std::shared_ptr<Obj>		mObj;
-
+  private:
 	void init( ImageSourceRef imageSource, const SurfaceConstraints &constraints = SurfaceConstraintsDefault(), boost::tribool alpha = boost::logic::indeterminate );
 
-	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void 	copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
-	void	copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &absoluteOffset );
- 
- public:
+	void	copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void	copyRawRgba( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void 	copyRawRgbFullAlpha( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+	void	copyRawRgb( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset );
+
+	void	initChannels();
+
+	int32_t						mWidth, mHeight, mRowBytes;
+	bool						mPremultiplied;
+	T							*mData;
+	std::shared_ptr<T>			mDataStore; // shared rather than unique because member Channels (r/g/b/a) share the same data store and may need to outlive their parent Surface
+	SurfaceChannelOrder			mChannelOrder;
+	ChannelT<T>					mChannels[4];
+	
+  public:
 	
 	//! Convenience class for iterating the pixels of a Surface.
 	class Iter {
@@ -306,7 +333,7 @@ class SurfaceT {
 		//! Returns the y coordinate of the pixel the Iter currently points to
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -421,7 +448,7 @@ class SurfaceT {
 			//! Returns the t coordinate of the pixel the Iter currently points to		
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -465,7 +492,7 @@ class SurfaceT {
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 };
 
-class SurfaceExc : public std::exception {
+class SurfaceExc : public Exception {
 	virtual const char* what() const throw() {
 		return "Surface exception";
 	}
@@ -476,14 +503,5 @@ class SurfaceConstraintsExc : public SurfaceExc {
 		return "Surface exception: does not conform to expected SurfaceConstraints";
 	}
 };
-
-//! 8-bit image. Synonym for Surface8u.
-typedef SurfaceT<uint8_t> Surface;
-//! 8-bit image
-typedef SurfaceT<uint8_t> Surface8u;	
-//! 16-bit image. Suitable as an intermediate representation and ImageIo but not a first-class citizen.
-typedef SurfaceT<uint16_t> Surface16u;
-//! 32-bit floating point image
-typedef SurfaceT<float> Surface32f;
 
 } // namespace cinder

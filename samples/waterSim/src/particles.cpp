@@ -6,10 +6,10 @@
 #include "util.h"
 
 using namespace std;
-using ci::Vec2f;
+using ci::vec2;
 
 void Particles::
-add_particle(const Vec2f &px, const Vec2f &pu)
+add_particle(const vec2 &px, const vec2 &pu)
 {
    x.push_back(px);
    u.push_back(pu);
@@ -95,15 +95,15 @@ update_from_grid(void)
       grid.bary_x_centre(x[p][0], i, fx);
       grid.bary_y(x[p][1], vj, vfy);
       grid.bary_y_centre(x[p][1], j, fy);
-      //u[p]+=Vec2f(grid.du.bilerp(ui, j, ufx, fy), grid.dv.bilerp(i, vj, fx, vfy)); // FLIP
-      u[p]=Vec2f(grid.u.bilerp(ui, j, ufx, fy), grid.v.bilerp(i, vj, fx, vfy)); // PIC
+      //u[p]+=vec2(grid.du.bilerp(ui, j, ufx, fy), grid.dv.bilerp(i, vj, fx, vfy)); // FLIP
+      u[p]=vec2(grid.u.bilerp(ui, j, ufx, fy), grid.v.bilerp(i, vj, fx, vfy)); // PIC
    }
 }
 
 void Particles::
 move_particles_in_grid(float dt)
 {
-	Vec2f midx, gu;
+	vec2 midx, gu;
 	float xmin=1.001*grid.h, xmax=grid.lx-1.001*grid.h;
 	float ymin=1.001*grid.h, ymax=grid.ly-1.001*grid.h;
 	for( int p = 0; p < np; ++p ) {

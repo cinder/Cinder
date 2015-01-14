@@ -22,6 +22,9 @@
 
 #pragma once
 
+// This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
+#if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
+
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/Surface.h"
@@ -41,6 +44,7 @@
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <Movies.h>
@@ -66,10 +70,8 @@ CFMutableDictionaryRef initQTVisualContextOptions( int width, int height, bool a
 
 //! \endcond
 
-//! Designed to be the deallocator for surfaces returned by convertToPixelBufferToSurface
-static void CVPixelBufferDealloc( void *refcon );
 //! Makes a cinder::Surface form a CVPixelBufferRef, setting a proper deallocation function to free the CVPixelBufferRef upon the destruction of the Surface::Obj
-Surface8u convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 #endif // ! defined( __LP64__ )
 
@@ -126,3 +128,5 @@ GWorldPtr createGWorld( ImageSourceRef imageSource );
 #endif // defined( CINDER_MSW )
 
 } } // namespace cinder::qtime
+
+#endif // end of 64-bit / 10.8+ test

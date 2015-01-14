@@ -1,6 +1,9 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2013, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -22,55 +25,52 @@
 
 #pragma once
 
-#include "cinder/TriMesh.h"
-#include "cinder/Stream.h"
+#include "cinder/DataSource.h"
+#include "cinder/DataTarget.h"
+#include "cinder/GeomIo.h"
 
-#include <boost/logic/tribool.hpp>
-#include <boost/tuple/tuple_comparison.hpp>
+#include <tuple>
 #include <map>
 
 namespace cinder {
 
 /** \brief Loads Alias|Wavefront .OBJ file format
  *
- * Currently does not support anything but polygonal data
- * \n Example usage:
+ * Example usage:
  * \code
- * cinder::TriMesh myCube;
+ * cinder::gl::BatchRef myCubeRef;
  * ObjLoader loader( loadFile( "myPath/cube.obj" ) );
- * loader.load( &myCube );
- * gl::draw( myCube );
+ * myCubeRef = gl::Batch::create( loader, gl::getStockShader( gl::ShaderDef().color() ) );
+ * myCubeRef->draw();
  * \endcode
-**/ 
-class ObjLoader {
- public:
-	/**Constructs and does the parsing of the file
-	 * \param includeUVs  if false UV coordinates will be skipped, which can provide a faster load time
-	**/
-	ObjLoader( std::shared_ptr<IStream> aStream, bool includeUVs = true );
-	/**Constructs and does the parsing of the file
-	 * \param includeUVs if false UV coordinates will be skipped, which can provide a faster load time
-	**/
-	ObjLoader( DataSourceRef dataSource, bool includeUVs = true );
-	/**Constructs and does the parsing of the file
-	 * \param includeUVs if false UV coordinates will be skipped, which can provide a faster load time
-     **/
-	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeUVs = true );
-	~ObjLoader();
+**/
 
-	/**Loads all the groups present in the file into a single TriMesh
-	 * \param destTriMesh the destination TriMesh, whose contents are cleared first
-	 * \param loadNormals  should normals be loaded or generated if not present. Default determines from the contents of the file
-	 * \param loadTexCoords  should 2D texture coordinates be loaded or set to zero if not present. Default determines from the contents of the file
-	 * \param optimizeVertices  should the loader minimze the vertices by identifying shared vertices between faces. */
-	void	load( TriMesh *destTriMesh, boost::tribool loadNormals = boost::logic::indeterminate, boost::tribool loadTexCoords = boost::logic::indeterminate, bool optimizeVertices = true );
-	/**Loads a particular group into a TriMesh
-	 * \param loadNormals  should normals be loaded or generated if not present. Default determines from the contents of the file
-	 * \param loadTexCoords  should 2D texture coordinates be loaded or set to zero if not present. Default determines from the contents of the file
-	 * \param optimizeVertices  should the loader minimize the vertices by identifying shared vertices between faces.*/
-	void	load( size_t groupIndex, TriMesh *destTriMesh, boost::tribool loadNormals = boost::logic::indeterminate, boost::tribool loadTexCoords = boost::logic::indeterminate, bool optimizeVertices = true );
-	
-    struct Material {
+class ObjLoader : public geom::Source {
+  public:
+	/**Constructs and does the parsing of the file
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	**/
+	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true );
+	/**Constructs and does the parsing of the file
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	**/
+	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true );
+	/**Constructs and does the parsing of the file
+	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
+	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
+	**/
+	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true );
+
+	/**Loads a specific group index from the file**/
+	ObjLoader&	groupIndex( size_t groupIndex );
+	/**Loads a specific group name from the file**/
+	ObjLoader&	groupName( const std::string &groupName );
+	/**Returns whether the file contains a group labeled with \a groupName**/
+	bool		hasGroup( const std::string &groupName ) const;
+
+	struct Material {
         Material() {
             Ka[0] = Ka[1] = Ka[2] = 0;
             Kd[0] = Kd[1] = Kd[2] = 1;
@@ -92,49 +92,73 @@ class ObjLoader {
     };
     
 	struct Face {
-		int					mNumVertices;
-		std::vector<int>	mVertexIndices;
-		std::vector<int>	mTexCoordIndices;
-		std::vector<int>	mNormalIndices;
-		const Material*     mMaterial;
+		int						mNumVertices;
+		std::vector<int32_t>	mVertexIndices;
+		std::vector<int32_t>	mTexCoordIndices;
+		std::vector<int32_t>	mNormalIndices;
+		const Material*			mMaterial;
 	};
 
 	struct Group {
 		std::string				mName;
-		int						mBaseVertexOffset, mBaseTexCoordOffset, mBaseNormalOffset;
+		int32_t					mBaseVertexOffset, mBaseTexCoordOffset, mBaseNormalOffset;
 		std::vector<Face>		mFaces;
 		bool					mHasTexCoords;
 		bool					mHasNormals;
 	};
 
-	//! Writes a new OBJ file to \a dataTarget. \warning - this method will be moved in the future
-	static void		write( DataTargetRef dataTarget, const TriMesh &mesh, bool writeNormals = true, bool writeUVs = true );
-	
-    //! Returns the total number of groups.
+	//! Returns the total number of groups.
 	size_t		getNumGroups() const { return mGroups.size(); }
 	
 	//! Returns a vector<> of the Groups in the OBJ.
 	const std::vector<Group>&		getGroups() const { return mGroups; }
-	
- private:
-	typedef boost::tuple<int,int> VertexPair;
-	typedef boost::tuple<int,int,int> VertexTriple;
 
-	void	parse( bool includeUVs );
+	size_t			getNumVertices() const override { load(); return mOutputVertices.size(); }
+	size_t			getNumIndices() const override { load(); return mOutputIndices.size(); }
+	geom::Primitive	getPrimitive() const override { return geom::Primitive::TRIANGLES; }
+	uint8_t			getAttribDims( geom::Attrib attr ) const override;
+	geom::AttribSet	getAvailableAttribs() const override;
+	void			loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 
- 	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeUVs );
-    void    parseMaterial( std::shared_ptr<IStream> material );
-	void	loadInternalNoOptimize( const Group &group, TriMesh *destTriMesh, bool texCoords, bool normals );
-	void	loadInternalNormalsTextures( const Group &group, std::map<boost::tuple<int,int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
-	void	loadInternalNormals( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
-	void	loadInternalTextures( const Group &group, std::map<boost::tuple<int,int>,int> &uniqueVerts, TriMesh *destTriMesh );
-	void	loadInternal( const Group &group, std::map<int,int> &uniqueVerts, TriMesh *destTriMesh );	
- 
-	std::shared_ptr<IStream>        mStream;
-	std::vector<Vec3f>			    mVertices, mNormals;
-	std::vector<Vec2f>			    mTexCoords;
-	std::vector<Group>			    mGroups;
-	std::map<std::string, Material> mMaterials;
+  private:
+	typedef std::tuple<int,int> VertexPair;
+	typedef std::tuple<int,int,int> VertexTriple;
+
+	void	parse( bool includeNormals, bool includeTexCoords );
+ 	void	parseFace( Group *group, const Material *material, const std::string &s, bool includeNormals, bool includeTexCoords );
+    void    parseMaterial( std::shared_ptr<IStreamCinder> material );
+
+	void	load() const;
+
+	void	loadGroupNormalsTextures( const Group &group, std::map<VertexTriple,int> &uniqueVerts ) const;
+	void	loadGroupNormals( const Group &group, std::map<VertexPair,int> &uniqueVerts ) const;
+	void	loadGroupTextures( const Group &group, std::map<VertexPair,int> &uniqueVerts ) const;
+	void	loadGroup( const Group &group, std::map<int,int> &uniqueVerts ) const;
+
+	std::shared_ptr<IStreamCinder>	mStream;
+
+	std::vector<vec3>			    mInternalVertices, mInternalNormals;
+	std::vector<vec2>			    mInternalTexCoords;
+	std::vector<Colorf>				mInternalColors;
+
+	mutable bool					mOutputCached;
+	mutable std::vector<vec3>		mOutputVertices, mOutputNormals;
+	mutable std::vector<vec2>		mOutputTexCoords;
+	mutable std::vector<Colorf>		mOutputColors;
+	mutable std::vector<uint32_t>	mOutputIndices;
+
+	size_t							mGroupIndex;
+
+	std::vector<Group>				mGroups;
+	std::map<std::string, Material>	mMaterials;
+
 };
+
+//! Writes a new OBJ file to \a dataTarget.
+void		objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
+inline void	objWrite( DataTargetRef dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
+{
+	objWrite( dataTarget, *source, includeNormals, includeTexCoords );
+}
 
 } // namespace cinder

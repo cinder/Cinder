@@ -32,39 +32,12 @@ const char *g_ErrCreateSampler11 = "Direct3D11 sampler state creation failed";
 //  vertex and pixel shaders are compiled offline in a pre-build step using
 //  the fxc.exe compiler (from the DirectX SDK Aug'09 or later)
 
-#ifdef _WIN64
-#   ifdef _DEBUG
-#       include "debug64\TwDirect3D11_LineRectVS.h"
-#       include "debug64\TwDirect3D11_LineRectCstColorVS.h"
-#       include "debug64\TwDirect3D11_LineRectPS.h"
-#       include "debug64\TwDirect3D11_TextVS.h"
-#       include "debug64\TwDirect3D11_TextCstColorVS.h"
-#       include "debug64\TwDirect3D11_TextPS.h"
-#   else
-#       include "release64\TwDirect3D11_LineRectVS.h"
-#       include "release64\TwDirect3D11_LineRectCstColorVS.h"
-#       include "release64\TwDirect3D11_LineRectPS.h"
-#       include "release64\TwDirect3D11_TextVS.h"
-#       include "release64\TwDirect3D11_TextCstColorVS.h"
-#       include "release64\TwDirect3D11_TextPS.h"
-#   endif
-#else
-#   ifdef _DEBUG
-#       include "debug32\TwDirect3D11_LineRectVS.h"
-#       include "debug32\TwDirect3D11_LineRectCstColorVS.h"
-#       include "debug32\TwDirect3D11_LineRectPS.h"
-#       include "debug32\TwDirect3D11_TextVS.h"
-#       include "debug32\TwDirect3D11_TextCstColorVS.h"
-#       include "debug32\TwDirect3D11_TextPS.h"
-#   else
-#       include "release32\TwDirect3D11_LineRectVS.h"
-#       include "release32\TwDirect3D11_LineRectCstColorVS.h"
-#       include "release32\TwDirect3D11_LineRectPS.h"
-#       include "release32\TwDirect3D11_TextVS.h"
-#       include "release32\TwDirect3D11_TextCstColorVS.h"
-#       include "release32\TwDirect3D11_TextPS.h"
-#   endif
-#endif
+#include "TwDirect3D11_LineRectVS.h"
+#include "TwDirect3D11_LineRectCstColorVS.h"
+#include "TwDirect3D11_LineRectPS.h"
+#include "TwDirect3D11_TextVS.h"
+#include "TwDirect3D11_TextCstColorVS.h"
+#include "TwDirect3D11_TextPS.h"
 
 //  ---------------------------------------------------------------------------
 
@@ -657,7 +630,8 @@ int CTwGraphDirect3D11::Init()
     sd.ComparisonFunc = D3D11_COMPARISON_NEVER;
     sd.Filter = D3D11_FILTER_MIN_MAG_MIP_POINT;
     sd.MaxAnisotropy = 1;
-    sd.MaxLOD = sd.MinLOD = 0;
+    sd.MaxLOD = D3D11_FLOAT32_MAX;
+	sd.MinLOD = 0;
     sd.MipLODBias = 0;
     hr = m_D3DDev->CreateSamplerState(&sd, &m_SamplerState);
     if( FAILED(hr) )
