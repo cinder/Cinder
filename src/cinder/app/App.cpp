@@ -375,18 +375,4 @@ void App::cleanupLaunch()
 #endif
 }
 
-ivec2 App::getMousePos()
-{
-#if defined( CINDER_MAC )
-	NSPoint loc = [NSEvent mouseLocation];
-	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
-#elif defined( CINDER_MSW )
-	POINT point;
-	::GetCursorPos( &point );
-	return ivec2( point.x, point.y );
-#else
-	return ivec2( -1, -1 );
-#endif
-}
-
 } } // namespace cinder::app

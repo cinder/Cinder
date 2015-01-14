@@ -50,6 +50,7 @@ class AppBasicMsw : public AppBasic {
 
 	void		hideCursor() override;
 	void		showCursor() override;
+	ivec2		getMousePos() override;
 
 	//! \cond
 	// Called by app instantiation macro during launch process

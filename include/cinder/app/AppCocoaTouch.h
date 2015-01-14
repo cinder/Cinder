@@ -201,6 +201,9 @@ class AppCocoaTouch : public App {
 	//! Returns the path to the application on disk
 	fs::path	getAppPath() const override;
 
+	//! Returns an invalid position since the device doesn't have a mouse.
+	ivec2 getMousePos() override	{ return ivec2( -1 ); }
+
 	//! No-op on iOS
 	void quit() override;
 

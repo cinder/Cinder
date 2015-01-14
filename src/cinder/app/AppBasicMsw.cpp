@@ -161,4 +161,12 @@ void AppBasicMsw::showCursor()
 	AppImplMsw::showCursor();
 }
 
+ivec2 AppBasicMsw::getMousePos()
+{
+	POINT point;
+	::GetCursorPos( &point );
+	
+	return ivec2( point.x, point.y );
+}
+
 } } // namespace cinder::app

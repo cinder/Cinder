@@ -287,6 +287,8 @@ class App {
 	virtual size_t		getNumWindows() const = 0;
 	//! Gets a Window by index, in the range [0, getNumWindows()). Throw ExcInvalidWindow if \a index is out of bounds.
 	virtual WindowRef	getWindowIndex( size_t index ) const = 0;
+	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
+	virtual ivec2		getMousePos() = 0;
 
 	//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
 	virtual void	enablePowerManagement( bool powerManagement = true ) { mPowerManagement = powerManagement; }
@@ -346,9 +348,6 @@ class App {
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 
-	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
-	static ivec2		getMousePos();
-	
 	// utilities
 #if defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources

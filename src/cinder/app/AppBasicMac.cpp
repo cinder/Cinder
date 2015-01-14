@@ -129,4 +129,10 @@ void AppBasicMac::showCursor()
 	[NSCursor unhide];
 }
 
+ivec2 AppBasicMac::getMousePos()
+{
+	NSPoint loc = [NSEvent mouseLocation];
+	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
+}
+
 } } // namespace cinder::app
