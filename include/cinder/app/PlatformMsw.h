@@ -35,9 +35,12 @@ class PlatformMsw : public Platform {
 	fs::path getResourcePath() const override										{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
-  protected:
+	// Overridden to use OutputDebugString
+	std::ostream&	console() override;
 
   private:
+
+	std::unique_ptr<std::ostream>	mOutputStream;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type

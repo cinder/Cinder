@@ -64,6 +64,9 @@ class Platform {
 	void				setExecutablePath( const fs::path &execPath )	{ mExecutablePath = execPath; }
 	fs::path			getExecutablePath() const						{ return mExecutablePath; }
 
+	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
+	virtual std::ostream&	console();
+
   protected:
 	Platform() : mAssetPathsInitialized( false )	{}
 

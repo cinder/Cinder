@@ -106,13 +106,6 @@ void AppBasicMsw::quit()
 	mImpl->quit();
 }
 
-std::ostream& AppBasicMsw::console()
-{
-	if( ! mOutputStream )
-		mOutputStream = shared_ptr<cinder::msw::dostream>( new cinder::msw::dostream );
-	return *mOutputStream;
-}
-
 float AppBasicMsw::getFrameRate() const
 {
 	return mImpl->getFrameRate();

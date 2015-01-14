@@ -382,7 +382,7 @@ class App {
 	fs::path		getSaveFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
-	virtual std::ostream&	console();
+	std::ostream&	console();
 	
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
@@ -568,7 +568,7 @@ inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<
 /** On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console
 	On Windows output is echoed using OutputDebugString, echoed to the Output window of the debugger or to a stream viewable with Dbgview
 	\code console() << "This line will be echoed" << std::endl; \endcode **/
-inline std::ostream&	console() { return App::get()->console(); }
+inline std::ostream&	console()	{ return Platform::get()->console(); }
 
 //! Returns a reference to the active App's Timeline
 inline Timeline&	timeline() { return App::get()->timeline(); }

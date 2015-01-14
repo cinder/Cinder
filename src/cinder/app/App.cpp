@@ -308,7 +308,7 @@ fs::path App::getSaveFilePath( const fs::path &initialPath, vector<string> exten
 
 std::ostream& App::console()
 {
-	return std::cout;
+	return Platform::get()->console();
 }
 
 bool App::isPrimaryThread()

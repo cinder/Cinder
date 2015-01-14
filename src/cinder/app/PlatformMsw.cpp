@@ -32,6 +32,14 @@ DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
 	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
 }
 
+std::ostream& PlatformMsw::console()
+{
+	if( ! mOutputStream )
+		mOutputStream.reset( new cinder::msw::dostream );
+	
+	return *mOutputStream;
+}
+
 ResourceLoadExc::ResourceLoadExcMsw( int mswID, const string &mswType )
 {
 	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
