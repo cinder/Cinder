@@ -1135,6 +1135,8 @@ void Texture2d::update( const PboRef &pbo, GLenum format, GLenum type, const Are
 	ScopedBuffer bufScp( (BufferObjRef)( pbo ) );
 	ScopedTextureBind tbs( mTarget, mTextureId );
 	glTexSubImage2D( mTarget, mipLevel, destArea.getX1(), mHeight - destArea.getY2(), destArea.getWidth(), destArea.getHeight(), format, type, reinterpret_cast<const GLvoid*>( pboByteOffset ) );
+	if( mMipmapping && mipLevel == 0 )
+		glGenerateMipmap( mTarget );
 }
 #endif
 
