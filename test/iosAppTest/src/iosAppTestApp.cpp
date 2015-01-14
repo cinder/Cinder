@@ -46,7 +46,7 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<vec2>	mLine;
+	PolyLine2f	mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
@@ -425,4 +425,4 @@ void iosAppTestApp::draw()
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
 }
 
-CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().antiAliasing( RendererGl::AA_NONE ) ) )
+CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
