@@ -289,17 +289,19 @@ LoggerFile::LoggerFile( const fs::path &filePath )
 		mFilePath = DEFAULT_FILE_LOG_PATH;
 
 	setTimestampEnabled();
-	
-	mStream.open( mFilePath.string() );
 }
 
 LoggerFile::~LoggerFile()
 {
-	mStream.close();
+	if( mStream.is_open() )
+		mStream.close();
 }
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
+	if( !mStream.is_open() )
+		mStream.open( mFilePath.string() );
+	
 	writeDefault( mStream, meta, text );
 }
 
