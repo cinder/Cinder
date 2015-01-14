@@ -195,7 +195,7 @@ class Modifier {
 	virtual uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const;
 	virtual AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const;
 	
-	virtual void		process( SourceModsContext *ctx ) const = 0;
+	virtual void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const = 0;
 };
 
 class Rect : public Source {
@@ -643,7 +643,7 @@ class Transform : public Modifier {
 	// Inherited from Modifier
 	virtual Modifier*	clone() const override { return new Transform( mTransform ); }
 	uint8_t				getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
-	void				process( SourceModsContext *ctx ) const override;
+	void				process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
 	mat4		mTransform;
 };
@@ -682,34 +682,36 @@ class Lines : public Modifier {
 	
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
 	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override { return geom::LINES; }
-	void		process( SourceModsContext *ctx ) const override;
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
 	static size_t	calcNumIndices( Primitive primitive, size_t upstreamNumIndices, size_t upstreamNumVertices );
 };
 
-//! Modifiers the color of a geom::Source as a function of a 2D or 3D input attribute
-class ColorFromAttrib : public Source {
+//! Modifies the color of a geom::Source as a function of a 2D or 3D input attribute
+class ColorFromAttrib : public Modifier {
   public:
-	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec2)> &fn )
-		: mSource( source ), mAttrib( attrib ), mFnColor2( fn )
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec2)> &fn )
+		: mAttrib( attrib ), mFnColor2( fn )
 	{}
-	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec3)> &fn )
-		: mSource( source ), mAttrib( attrib ), mFnColor3( fn )
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec3)> &fn )
+		: mAttrib( attrib ), mFnColor3( fn )
 	{}
 	
 	Attrib				getAttrib() const { return mAttrib; }
 	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
 
-	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	virtual Modifier*	clone() const override { return new ColorFromAttrib( mAttrib, mFnColor2, mFnColor3 ); }
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	const geom::Source&				mSource;
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec2)> &fn2, const std::function<Colorf(vec3)> &fn3 )
+		: mAttrib( attrib ), mFnColor2( fn2 ), mFnColor3( fn3 )
+	{}
+
 	Attrib							mAttrib;
 	std::function<Colorf(vec2)>		mFnColor2;
 	std::function<Colorf(vec3)>		mFnColor3;
@@ -920,14 +922,6 @@ class SourceModsContext : public Target {
 	// called by SourceModsBase::loadInto()
 	void			loadInto( Target *target, const AttribSet &requestedAttribs );
 	
-	void			attribRead( Attrib attr );
-	void			attribWrite( Attrib attr );
-	void			attribReadWrite( Attrib attr );
-	
-	void			indicesRead();
-	void			indicesWrite();
-	void			indicesReadWrite();
-	
 	// Target virtuals; also used by Modifiers
 	uint8_t			getAttribDims( Attrib attr ) const override;
 	void			copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
@@ -937,7 +931,7 @@ class SourceModsContext : public Target {
 	size_t			getNumIndices() const;
 	Primitive		getPrimitive() const;
 	
-	void			processUpstream();
+	void			processUpstream( const AttribSet &requestedAttribs );
 
 	float*			getAttribData( Attrib attr );
 	uint32_t*		getIndicesData();
@@ -948,12 +942,10 @@ class SourceModsContext : public Target {
 	std::vector<Modifier*>			mModiferStack;
 	std::vector<Modifier::Params>	mParamsStack;
 	
-	typedef enum { READ, WRITE, READ_WRITE, IGNORED } Access;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
 	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
 	std::map<Attrib,size_t>						mAttribCount;
 	
-	Access									mIndicesAccess;
 	std::unique_ptr<uint32_t[]>				mIndices;
 	size_t									mNumIndices;
 	geom::Primitive							mPrimitive;

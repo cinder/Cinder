@@ -2062,12 +2062,9 @@ uint8_t	Transform::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
 		return upstreamDims;
 }
 
-void Transform::process( SourceModsContext *ctx ) const
+void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
-	ctx->attribReadWrite( POSITION );
-	ctx->attribReadWrite( NORMAL );
-	ctx->attribReadWrite( TANGENT );
-	ctx->processUpstream();
+	ctx->processUpstream( requestedAttribs );
 	
 	const size_t numVertices = ctx->getNumVertices();
 
@@ -2207,10 +2204,9 @@ size_t Lines::calcNumIndices( Primitive primitive, size_t upstreamNumIndices, si
 	}
 }
 
-void Lines::process( SourceModsContext *ctx ) const
+void Lines::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
-	ctx->indicesReadWrite();
-	ctx->processUpstream();
+	ctx->processUpstream( requestedAttribs );
 	
 	const size_t numInIndices = ctx->getNumIndices();
 	const size_t numInVertices = ctx->getNumVertices();
@@ -2313,18 +2309,18 @@ void Lines::process( SourceModsContext *ctx ) const
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // ColorFromAttrib
-uint8_t ColorFromAttrib::getAttribDims( Attrib attr ) const
+uint8_t ColorFromAttrib::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
 {
 	switch( attr ) {
 		case Attrib::COLOR: return 3;
 		default:
-			return mSource.getAttribDims( attr );
+			return upstreamDims;
 	}
 }
 
-AttribSet ColorFromAttrib::getAvailableAttribs() const
+AttribSet ColorFromAttrib::getAvailableAttribs( const Modifier::Params &upstreamParams ) const
 {
-	AttribSet result = mSource.getAvailableAttribs();
+	AttribSet result = upstreamParams.getAvailableAttribs();
 	result.insert( Attrib::COLOR );
 	return result;
 }
@@ -2349,31 +2345,25 @@ void processColorAttrib2d( const vec2* inputData, O *outputData, const std::func
 }
 } // anonymous namespace
 
-void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+void ColorFromAttrib::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
-	if( (! mFnColor2) && (! mFnColor3) ) {
-		mSource.loadInto( target, requestedAttribs );
+	if( ( ! mFnColor2 ) && ( ! mFnColor3 ) ) {
 		return;
 	}
 
-	// we want to capture 'mAttrib' and we want to write COLOR
-	map<Attrib,ModifierUtil::Access> attribAccess;
-	attribAccess[mAttrib] = ModifierUtil::READ;
-	attribAccess[COLOR] = ModifierUtil::WRITE;
-	ModifierUtil modifier( mSource, target, attribAccess, ModifierUtil::IGNORED );
-	mSource.loadInto( &modifier, requestedAttribs );
+	AttribSet request = requestedAttribs;
+	request.insert( mAttrib );
+	ctx->processUpstream( request );
 
-	if( modifier.getAttribDims( mAttrib ) == 0 ) {
+	if( ctx->getAttribDims( mAttrib ) == 0 ) {
 		CI_LOG_W( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
-		mSource.loadInto( target, requestedAttribs );
 		return;
 	}
 
-	const auto numVertices = mSource.getNumVertices();
+	const auto numVertices = ctx->getNumVertices();
 	unique_ptr<float[]> mColorData( new float[numVertices * 3] );
-	uint8_t inputAttribDims = modifier.getReadAttribDims( mAttrib );
-	const float* inputAttribData = modifier.getReadAttribData( mAttrib );
-	
+	uint8_t inputAttribDims = ctx->getAttribDims( mAttrib );
+	const float* inputAttribData = ctx->getAttribData( mAttrib );
 	
 	if( mFnColor2 ) {
 		if( inputAttribDims == 2 )
@@ -2392,7 +2382,7 @@ void ColorFromAttrib::loadInto( Target *target, const AttribSet &requestedAttrib
 			processColorAttrib( reinterpret_cast<const vec4*>( inputAttribData ), reinterpret_cast<Colorf*>( mColorData.get() ), mFnColor3, numVertices );
 	}
 
-	target->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
+	ctx->copyAttrib( Attrib::COLOR, 3, 0, mColorData.get(), numVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3192,7 +3182,7 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
-	: mSourceMods( sourceMods )
+	: mSourceMods( sourceMods ), mNumIndices( 0 )
 {
 	for( auto &modifier : mSourceMods->mModifiers )
 		mModiferStack.push_back( modifier.get() );
@@ -3209,7 +3199,7 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 		auto modifier = mModiferStack.back();
 		mModiferStack.pop_back();
 		mParamsStack.pop_back();
-		modifier->process( this );
+		modifier->process( this, requestedAttribs );
 
 		// We've finished processing all Modifiers and the Source. Now iterate all the attribute data and the indices
 		// and copy them to the target.
@@ -3227,18 +3217,18 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 	}
 }
 
-void SourceModsContext::processUpstream()
+void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 {
 	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
 	if( mModiferStack.empty() ) {
-		mSourceMods->getSource()->loadInto( this, mSourceMods->getAvailableAttribs() );
+		mSourceMods->getSource()->loadInto( this, requestedAttribs );
 	}
 	else {
 		// we want the Params to reflect upstream from the current Modifier
 		auto modifier = mModiferStack.back();
 		mModiferStack.pop_back();
 		mParamsStack.pop_back();
-		modifier->process( this );
+		modifier->process( this, requestedAttribs );
 	}
 
 /*	// now that we're done,
@@ -3250,29 +3240,6 @@ void SourceModsContext::processUpstream()
 	
 }
 	
-void SourceModsContext::attribRead( Attrib attr )
-{
-}
-
-void SourceModsContext::attribWrite( Attrib attr )
-{
-}
-void SourceModsContext::attribReadWrite( Attrib attr )
-{
-}
-
-void SourceModsContext::indicesRead()
-{
-}
-
-void SourceModsContext::indicesWrite()
-{
-}
-
-void SourceModsContext::indicesReadWrite()
-{
-}
-
 uint8_t	SourceModsContext::getAttribDims( Attrib attr ) const
 {
 	auto attrInfoIt = mAttribInfo.find( attr );
@@ -3309,25 +3276,39 @@ float* SourceModsContext::getAttribData( Attrib attr )
 
 uint32_t* SourceModsContext::getIndicesData()
 {
-	return nullptr;
+	return mIndices.get();
 }
 
 void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
-// this needs to be optimized to not reallocate when it already exists
-	// make some room for our own copy of this data
+	// we definitely need allocation if we haven't encountered this attrib before
+	bool needsAllocation = ( mAttribCount.count( attr ) == 0 ) || ( mAttribData.count( attr ) == 0 ) || ( mAttribInfo.count( attr ) == 0 );
+	// we need allocation if we have this attrib but with different parameters
+	if( ! needsAllocation ) {
+		const AttribInfo &attribInfo = mAttribInfo.at( attr );
+		needsAllocation = ( attribInfo.getStride() != strideBytes ) || ( attribInfo.getDims() != dims ) || ( count != mAttribCount[attr] );
+	}
 	
-	mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
-	mAttribInfo.emplace( attr, AttribInfo( attr, dims, strideBytes, (size_t)0 ) );
-	mAttribCount[attr] = count;
+	if( needsAllocation ) {
+		mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
+		mAttribCount[attr] = count;
+		// oddly elaborate logic necessary to replace set contents w/o a default-constructible type
+		// equivalent to mAttribInfo[attr] = AttribInfo( ... )
+		auto it = mAttribInfo.insert( make_pair( attr, AttribInfo( attr, dims, strideBytes, (size_t)0 ) ) ).first;
+		it->second = AttribInfo( attr, dims, strideBytes, (size_t)0 ); // only necessary if the key already exists
+	}
+	
 	copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
 }
 
 void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
-	mNumIndices = numIndices;
 	mPrimitive = primitive;
-	mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
+	// need to reallocate storage only if this is a different number of indices
+	if( mNumIndices != numIndices ) {
+		mNumIndices = numIndices;
+		mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
+	}
 	memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
 }
 
