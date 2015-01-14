@@ -299,7 +299,7 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
-	if( !mStream.is_open() )
+	if( ! mStream.is_open() )
 		mStream.open( mFilePath.string() );
 	
 	writeDefault( mStream, meta, text );
