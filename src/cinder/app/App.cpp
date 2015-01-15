@@ -34,20 +34,6 @@
 #include "cinder/Thread.h"
 #include "cinder/Log.h"
 
-#if defined( CINDER_COCOA )
-	#if defined( CINDER_MAC )
-		#import "cinder/app/CinderView.h"
-		#import <Cocoa/Cocoa.h>
-	#endif
-	#include "cinder/cocoa/CinderCocoa.h"
-#elif defined( CINDER_WINRT )
-	#include "cinder/app/AppImplWinRT.h"
-	#include <thread>
-	#include <filesystem>
-#elif defined( CINDER_MSW )
-	#include "cinder/app/AppImplMsw.h"
-#endif
-
 using namespace std;
 
 namespace cinder { namespace app {
