@@ -70,10 +70,9 @@ class MayaCamUI {
 		else if( action == ACTION_PAN ) { // panning
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / 1000.0f * mInitialCam.getCenterOfInterest();
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 1000.0f * mInitialCam.getCenterOfInterest();
-			vec3 mW = normalize( mInitialCam.getViewDirection() );
-			vec3 mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
-			vec3 mV = normalize( cross( mW, mU ) );
-			mCurrentCam.setEyePoint( mInitialCam.getEyePoint() + mU * deltaX + mV * deltaY );
+			vec3 right, up;
+			mInitialCam.getBillboardVectors( &right, &up );
+			mCurrentCam.setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
 		}
 		else { // tumbling
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
