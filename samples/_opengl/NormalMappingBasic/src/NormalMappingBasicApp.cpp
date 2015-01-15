@@ -3,6 +3,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/VboMesh.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
@@ -39,7 +40,7 @@ void NormalMappingBasicApp::setup()
 #else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
-	mBatch = gl::Batch::create( geom::Transform( geom::Cube(), scale( vec3( 1.5f ) ) ), mGlsl );
+	mBatch = gl::Batch::create( geom::Cube() >> geom::Transform( scale( vec3( 1.5f ) ) ), mGlsl );
 	gl::ScopedGlslProg glslScp( mGlsl );
 	mGlsl->uniform( "uDiffuseMap", 0 );
 	mGlsl->uniform( "uNormalMap", 1 );
