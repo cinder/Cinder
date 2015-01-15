@@ -377,6 +377,14 @@ void VboMesh::drawImpl()
 		glDrawArrays( mGlPrimitive, 0, mNumVertices );
 }
 
+void VboMesh::drawRangeImpl( GLuint start, GLuint end )
+{
+	if( mNumIndices )
+		glDrawRangeElements( mGlPrimitive, start, end, end - start, mIndexType, (GLvoid*) ( 0 ) );
+	else
+		glDrawArrays( mGlPrimitive, start, end - start );
+}
+
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
