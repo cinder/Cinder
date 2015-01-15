@@ -975,6 +975,13 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 	context()->drawElements( mode, count, type, indices );
 }
 
+#if (! defined( CINDER_GL_ES_2 ))
+void drawRangeElements( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices )
+{
+	context()->drawRangeElements( mode, start, end, count, type, indices );
+}
+#endif // (! defined( CINDER_GL_ES_2 ))
+
 namespace {
 std::array<vec3, 8> getCubePoints( const vec3 &c, const vec3 &size )
 {

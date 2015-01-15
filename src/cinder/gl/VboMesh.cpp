@@ -380,7 +380,11 @@ void VboMesh::drawImpl()
 void VboMesh::drawRangeImpl( GLuint start, GLuint end )
 {
 	if( mNumIndices )
+#if defined( CINDER_GL_ES_2 )
+		CI_LOG_E("glDrawRangeElements() is not supported on ES2. Consider using the non-indexed alternative glDrawArrays() instead");
+#else
 		glDrawRangeElements( mGlPrimitive, start, end, end - start + 1, mIndexType, (GLvoid*) ( 0 ) );
+#endif
 	else
 		glDrawArrays( mGlPrimitive, start, end - start + 1 );
 }
