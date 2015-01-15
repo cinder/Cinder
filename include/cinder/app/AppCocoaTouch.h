@@ -204,6 +204,13 @@ class AppCocoaTouch : public App {
 	//! Returns an invalid position since the device doesn't have a mouse.
 	ivec2 getMousePos() override	{ return ivec2( -1 ); }
 
+	//! No-op on iOS, returns empty path.
+	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override { return fs::path(); }
+	//! No-op on iOS, returns empty path.
+	fs::path getFolderPath( const fs::path &initialPath ) override { return fs::path(); }
+	//! No-op on iOS, returns empty path.
+	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override { return fs::path(); }
+
 	//! No-op on iOS
 	void quit() override;
 

@@ -366,19 +366,18 @@ class App {
 	//! Returns the path to the application on disk
 	virtual fs::path			getAppPath() const = 0;
 
-	//! Presents the user with a folder-open dialog and returns the selected folder path in the spcified callback.
+	//! Presents the user with a file-open dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		On WinRT, at least one extension must be specified in \a extensions or an exception will occur.
-		If the active app is in snapped mode it will be unsnapped to present the dialog.
-		\return void. The selected folder path or an empty string if the user cancelled will be returned in the \a f callback. **/
-	fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
+		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
+		\return the selected file path or an empty string if the user cancelled. **/
+	virtual fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) = 0;
 	//! Presents the user with a folder-open dialog and returns the selected folder.
-	fs::path		getFolderPath(const fs::path &initialPath = fs::path() );
+	virtual fs::path getFolderPath( const fs::path &initialPath = fs::path() ) = 0;
 	//! Presents the user with a file-save dialog and returns the selected file path.
 	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 		\return the selected file path or an empty string if the user cancelled. **/
-	fs::path		getSaveFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() );
+	virtual fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) = 0;
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	std::ostream&	console();

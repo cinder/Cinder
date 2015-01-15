@@ -56,6 +56,10 @@ class AppBasicMac : public AppBasic {
 	void		showCursor() override;
 	ivec2		getMousePos() override;
 
+	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+	fs::path getFolderPath( const fs::path &initialPath ) override;
+	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+
 	//! \cond
 	// Called by app instantiation macro during launch process
 	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
