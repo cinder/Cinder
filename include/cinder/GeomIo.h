@@ -588,6 +588,106 @@ class Plane : public Source {
 	vec3		mOrigin, mAxisU, mAxisV;
 };
 
+class Extrude : public Source {
+  public:
+	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
+	
+	//! Sets the distance of extrusion along the axis.
+	Extrude&	distance( float dist ) { mDistance = dist; return *this; }
+	//! Enables or disables front and back caps. Enabled by default.
+	Extrude&	caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
+	//! Enables or disables front cap. Enabled by default.
+	Extrude&	frontCap( bool cap ) { mFrontCap = cap; return *this; }
+	//! Enables or disables back cap. Enabled by default.
+	Extrude&	backCap( bool cap ) { mBackCap = cap; return *this; }
+	//! Sets the number of subdivisions along the axis of extrusion
+	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void		updatePathSubdivision();
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
+  
+	std::vector<Path2d>				mPaths;
+	float							mApproximationScale;
+	float							mDistance;
+	bool							mFrontCap, mBackCap;
+	int								mSubdivisions;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
+	
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+};
+
+class ExtrudeSpline : public Source {
+  public:
+	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
+	
+	//! Enables or disables front and back caps. Enabled by default.
+	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
+	//! Enables or disables front cap. Enabled by default.
+	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; return *this; }
+	//! Enables or disables back cap. Enabled by default.
+	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; return *this; }
+	//! Sets the number of subdivisions along the axis of extrusion
+	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updatePathSubdivision();
+	void calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
+	
+	std::vector<Path2d>				mPaths;
+	std::vector<mat4>				mSplineFrames;
+	std::vector<float>				mSplineTimes;
+	float							mApproximationScale;
+	bool							mFrontCap, mBackCap;
+	int								mSubdivisions;
+	std::shared_ptr<TriMesh>		mCap;
+	Rectf							mCapBounds;
+
+	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
+};
+
+//! Converts a BSpline into a \c LINE_STRIP
+class BSpline : public Source {
+  public:
+	template<int D, typename T>
+	BSpline( const ci::BSpline<D,T> &spline, int subdivisions );
+
+	size_t		getNumVertices() const override				{ return mNumVertices; }
+	size_t		getNumIndices() const override				{ return 0; }
+	Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	template<typename T>
+	void init( const ci::BSpline<2,T> &spline, int subdivisions );
+	template<typename T>
+	void init( const ci::BSpline<3,T> &spline, int subdivisions );
+	template<typename T>
+	void init( const ci::BSpline<4,T> &spline, int subdivisions );
+
+	int						mPositionDims;
+	size_t					mNumVertices;
+	std::vector<float>		mPositions;
+	std::vector<vec3>		mNormals;
+};
+
 //////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
 //! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
@@ -699,79 +799,6 @@ class AttribFn : public Modifier {
 	FN					mFn;
 };
 
-class Extrude : public Source {
-  public:
-	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
-	
-	//! Sets the distance of extrusion along the axis.
-	Extrude&	distance( float dist ) { mDistance = dist; return *this; }
-	//! Enables or disables front and back caps. Enabled by default.
-	Extrude&	caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
-	//! Enables or disables front cap. Enabled by default.
-	Extrude&	frontCap( bool cap ) { mFrontCap = cap; return *this; }
-	//! Enables or disables back cap. Enabled by default.
-	Extrude&	backCap( bool cap ) { mBackCap = cap; return *this; }
-	//! Sets the number of subdivisions along the axis of extrusion
-	Extrude&	subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
-
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	void		updatePathSubdivision();
-	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
-  
-	std::vector<Path2d>				mPaths;
-	float							mApproximationScale;
-	float							mDistance;
-	bool							mFrontCap, mBackCap;
-	int								mSubdivisions;
-	std::shared_ptr<TriMesh>		mCap;
-	Rectf							mCapBounds;
-	
-	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-};
-
-class ExtrudeSpline : public Source {
-  public:
-	ExtrudeSpline( const Shape2d &shape, const ci::BSpline<3,float> &spline, int splineSubdivisions = 10, float approximationScale = 1.0f );
-	
-	//! Enables or disables front and back caps. Enabled by default.
-	ExtrudeSpline&		caps( bool caps ) { mFrontCap = mBackCap = caps; return *this; }
-	//! Enables or disables front cap. Enabled by default.
-	ExtrudeSpline&		frontCap( bool cap ) { mFrontCap = cap; return *this; }
-	//! Enables or disables back cap. Enabled by default.
-	ExtrudeSpline&		backCap( bool cap ) { mBackCap = cap; return *this; }
-	//! Sets the number of subdivisions along the axis of extrusion
-	ExtrudeSpline&		subdivisions( int sub ) { mSubdivisions = std::max<int>( 1, sub ); updatePathSubdivision(); return *this; }
-
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override { return Primitive::TRIANGLES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	void updatePathSubdivision();
-	void calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *texCoords, std::vector<uint32_t> *indices ) const;
-	
-	std::vector<Path2d>				mPaths;
-	std::vector<mat4>				mSplineFrames;
-	std::vector<float>				mSplineTimes;
-	float							mApproximationScale;
-	bool							mFrontCap, mBackCap;
-	int								mSubdivisions;
-	std::shared_ptr<TriMesh>		mCap;
-	Rectf							mCapBounds;
-
-	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
-};
-
 //! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0
 class VertexNormalLines : public Modifier {
   public:
@@ -803,32 +830,6 @@ class Tangents : public Modifier {
 	
 	Modifier*	clone() const override { return new Tangents; }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-};
-
-class BSpline : public Source {
-  public:
-	template<int D, typename T>
-	BSpline( const ci::BSpline<D,T> &spline, int subdivisions );
-
-	size_t		getNumVertices() const override				{ return mNumVertices; }
-	size_t		getNumIndices() const override				{ return 0; }
-	Primitive	getPrimitive() const override				{ return geom::LINE_STRIP; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	template<typename T>
-	void init( const ci::BSpline<2,T> &spline, int subdivisions );
-	template<typename T>
-	void init( const ci::BSpline<3,T> &spline, int subdivisions );
-	template<typename T>
-	void init( const ci::BSpline<4,T> &spline, int subdivisions );
-
-	int						mPositionDims;
-	size_t					mNumVertices;
-	std::vector<float>		mPositions;
-	std::vector<vec3>		mNormals;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
