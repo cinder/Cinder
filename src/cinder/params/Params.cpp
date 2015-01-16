@@ -260,6 +260,11 @@ InterfaceGlRef InterfaceGl::create( const cinder::app::WindowRef &window, const 
 
 void InterfaceGl::init( app::WindowRef window, const std::string &title, const ivec2 &size, const ColorA color )
 {
+	// preserve the current context
+	auto prevCtx = gl::context();
+	// set the context to 'window'
+	window->getRenderer()->makeCurrentContext();
+
 	mTwWindowId = initAntGl( window );
 	// due to a bug in Ant we need to restore the currently bound VAO as well as the buffer bindings
 	gl::context()->restoreInvalidatedVao();
@@ -285,6 +290,8 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const i
 	window->getSignalMouseDrag().connect( std::bind( mouseMove, mWindow, mTwWindowId, std::placeholders::_1 ) );
 	window->getSignalKeyDown().connect( std::bind( keyDown, mTwWindowId, std::placeholders::_1 ) );
 	window->getSignalResize().connect( std::bind( resize, mWindow, mTwWindowId ) );
+
+	prevCtx->makeCurrent();
 }
 
 void InterfaceGl::draw()
