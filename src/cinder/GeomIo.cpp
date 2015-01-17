@@ -2905,6 +2905,49 @@ void Tangents::process( SourceModsContext *ctx, const AttribSet &requestedAttrib
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// Invert
+void Invert::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+{
+	ctx->processUpstream( requestedAttribs );
+
+	if( ctx->getAttribDims( mAttrib ) == 0 ) {
+		CI_LOG_W( "geom::Invert missing attrib: " << attribToString( mAttrib ) );
+		return;
+	}
+	
+	float *d = ctx->getAttribData( mAttrib );
+	size_t maxIdx = ctx->getAttribDims( mAttrib ) * ctx->getNumVertices();
+	for( size_t i = 0; i < maxIdx; ++i )
+		d[i] = -d[i];
+	
+	// we don't need to copyAttrib() because we processed in place
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Remove
+uint8_t Remove::getAttribDims( Attrib attr, uint8_t upstreamDims ) const
+{
+	if( attr == mAttrib )
+		return 0;
+	else
+		return upstreamDims;
+}
+
+AttribSet Remove::getAvailableAttribs( const Modifier::Params &upstreamParams ) const
+{
+	AttribSet result = upstreamParams.getAvailableAttribs();
+	result.erase( mAttrib );
+	return result;
+}
+
+void Remove::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+{
+	ctx->processUpstream( requestedAttribs );
+
+	ctx->clearAttrib( mAttrib );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // BSpline
 template<int D, typename T>
 BSpline::BSpline( const ci::BSpline<D,T> &spline, int subdivisions )

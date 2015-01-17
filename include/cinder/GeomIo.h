@@ -832,6 +832,37 @@ class Tangents : public Modifier {
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 };
 
+//! Inverts the value of an attribute. Works for any dimension.
+class Invert : public Modifier {
+  public:
+	Invert( Attrib attrib )
+		: mAttrib( attrib )
+	{}
+
+	Modifier*	clone() const override { return new Invert( mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	Attrib		mAttrib;
+};
+
+//! Removes an attribute entirely
+class Remove : public Modifier {
+  public:
+	Remove( Attrib attrib )
+		: mAttrib( attrib )
+	{}
+	
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;	
+	
+	Modifier*	clone() const override { return new Remove( mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	Attrib		mAttrib;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //! Base class for SourceMods<> and SourceModsPtr<>
 class SourceModsBase : public Source {
