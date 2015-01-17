@@ -7,6 +7,8 @@
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
+#include "Resources.h"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -27,7 +29,7 @@ void AppTestApp::setup()
 	auto asset = loadAsset( "mustache-green.png" );
 	mImgAsset = gl::Texture::create( loadImage( asset ) );
 
-	auto resource = loadResource( "mustache-blue.png" );
+	auto resource = loadResource( RES_IMAGE );
 	mImgResource = gl::Texture::create( loadImage( resource ) );
 
 	gl::enableAlphaBlending();
