@@ -743,6 +743,12 @@
     <ClCompile Include="..\src\cinder\app\AppBasicMsw.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Platform.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\PlatformMsw.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1568,6 +1574,12 @@
       <Filter>Header Files\json</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppBasicMsw.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Platform.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\PlatformMsw.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>

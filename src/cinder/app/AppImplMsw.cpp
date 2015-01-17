@@ -28,6 +28,8 @@
 #include "cinder/Display.h"
 #include "cinder/msw/CinderMsw.h"
 
+#include "cinder/app/PlatformMsw.h" // TEMPORARY
+
 #include <Windows.h>
 #include <CommDlg.h>
 #include <ShellAPI.h>
@@ -98,17 +100,17 @@ Buffer AppImplMsw::loadResource( int id, const std::string &type )
 	wsprintfW( unicodeType, L"%S", type.c_str() );
 	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE(id), unicodeType );
 	if( resInfoHandle == NULL ) {
-		throw ResourceLoadExc( id, type );
+		throw ResourceLoadExcMsw( id, type );
 	}
 	resHandle = ::LoadResource( NULL, resInfoHandle );
 	if( resHandle == NULL ) {
-		throw ResourceLoadExc( id, type );
+		throw ResourceLoadExcMsw( id, type );
 	}
 	// it's not necessary to unlock resources because the system automatically deletes them when the process
 	// that created them terminates.
 	dataPtr = ::LockResource( resHandle );
 	if( dataPtr == 0 ) {
-		throw ResourceLoadExc( id, type );
+		throw ResourceLoadExcMsw( id, type );
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
 	return Buffer( dataPtr, dataSize );

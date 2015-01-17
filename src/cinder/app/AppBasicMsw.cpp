@@ -23,8 +23,9 @@
 
 #include "cinder/app/AppBasicMsw.h"
 #include "cinder/app/AppImplMswBasic.h"
-#include "cinder/msw/OutputDebugStringStream.h"
+#include "cinder/app/PlatformMsw.h"
 #include "cinder/Unicode.h"
+#include "cinder/CinderAssert.h"
 
 using namespace std;
 
@@ -88,11 +89,15 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 		freopen( "CONOUT$", "w", stdout );
 		freopen( "CONOUT$", "w", stderr );
 
-		// set the app's console stream to std::cout and give its shared_ptr a null deleter
-		mOutputStream = std::shared_ptr<std::ostream>( &std::cout, [](std::ostream*){} );
+		// tell msw platform that it should use std::cout for the console
+		auto platformMsw = reinterpret_cast<PlatformMsw *>( Platform::get() );
+		CI_ASSERT_MSG( platformMsw, "expected current Platform to be of type PlatformMsw" );
+
+		platformMsw->directConsoleToCout(  true );
 	}
 
 	mImpl = new AppImplMswBasic( this );
+	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl->run();
 }
 

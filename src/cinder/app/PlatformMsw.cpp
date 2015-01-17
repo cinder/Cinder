@@ -22,25 +22,38 @@
  */
 
 #include "cinder/app/PlatformMsw.h"
+#include "cinder/msw/OutputDebugStringStream.h"
+
+#include "cinder/app/AppImplMsw.h" // TEMPORARY
 
 using namespace std;
 
 namespace cinder { namespace app {
 
-DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType ) override
+PlatformMsw::PlatformMsw()
+	: mDirectConsoleToCout( false )
 {
+}
+
+DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
+{
+	// TODO: move contents of AppImplMsw::loadResource to here.
 	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
 }
 
 std::ostream& PlatformMsw::console()
 {
+	if( mDirectConsoleToCout )
+		return std::cout;
+
 	if( ! mOutputStream )
 		mOutputStream.reset( new cinder::msw::dostream );
 	
 	return *mOutputStream;
 }
 
-ResourceLoadExc::ResourceLoadExcMsw( int mswID, const string &mswType )
+ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
+	: ResourceLoadExc( "" )
 {
 	setDescription( "Failed to load resource: #" + to_string( mswID ) + " type: " + mswType );
 }

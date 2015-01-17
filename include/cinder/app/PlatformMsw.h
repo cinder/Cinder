@@ -29,18 +29,25 @@ namespace cinder { namespace app {
 
 class PlatformMsw : public Platform {
   public:
+	PlatformMsw();
 
 	DataSourceRef	loadResource( int mswID, const std::string &mswType ) override;
 
 	fs::path getResourcePath() const override										{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
+	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
+	void prepareAssetLoading() override {}
+
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
+
+	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
 
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;
+	bool							mDirectConsoleToCout;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type
