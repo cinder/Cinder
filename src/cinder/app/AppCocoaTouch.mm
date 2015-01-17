@@ -437,6 +437,8 @@ AppCocoaTouch::AppCocoaTouch()
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
+	Platform::get()->setExecutablePath( getAppPath() );
+
 	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
 }
 
