@@ -28,8 +28,6 @@
 #include "cinder/Display.h"
 #include "cinder/msw/CinderMsw.h"
 
-#include "cinder/app/PlatformMsw.h" // TEMPORARY
-
 #include <Windows.h>
 #include <CommDlg.h>
 #include <ShellAPI.h>
@@ -87,33 +85,6 @@ void AppImplMsw::showCursor()
 
 	// when repeatedly calling showCursor(), keep counter at 0
 	if(counter > 0) while( ::ShowCursor(false) > 0 );
-}
-
-Buffer AppImplMsw::loadResource( int id, const std::string &type )
-{
-	HRSRC resInfoHandle;
-	HGLOBAL resHandle;
-	void *dataPtr;
-	size_t dataSize;
-
-	wchar_t unicodeType[1024]; 
-	wsprintfW( unicodeType, L"%S", type.c_str() );
-	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE(id), unicodeType );
-	if( resInfoHandle == NULL ) {
-		throw ResourceLoadExcMsw( id, type );
-	}
-	resHandle = ::LoadResource( NULL, resInfoHandle );
-	if( resHandle == NULL ) {
-		throw ResourceLoadExcMsw( id, type );
-	}
-	// it's not necessary to unlock resources because the system automatically deletes them when the process
-	// that created them terminates.
-	dataPtr = ::LockResource( resHandle );
-	if( dataPtr == 0 ) {
-		throw ResourceLoadExcMsw( id, type );
-	}
-	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return Buffer( dataPtr, dataSize );
 }
 
 fs::path AppImplMsw::getAppPath()

@@ -24,8 +24,6 @@
 #include "cinder/app/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 
-#include "cinder/app/AppImplMsw.h" // TEMPORARY
-
 using namespace std;
 
 namespace cinder { namespace app {
@@ -37,8 +35,30 @@ PlatformMsw::PlatformMsw()
 
 DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
 {
-	// TODO: move contents of AppImplMsw::loadResource to here.
-	return DataSourceBuffer::create( AppImplMsw::loadResource( mswID, mswType ) );
+	HRSRC resInfoHandle;
+	HGLOBAL resHandle;
+	void *dataPtr;
+	size_t dataSize;
+
+	wchar_t unicodeType[1024];
+	wsprintfW( unicodeType, L"%S", mswType.c_str() );
+	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE( mswID ), unicodeType );
+	if( resInfoHandle == NULL ) {
+		throw ResourceLoadExcMsw( mswID, mswType );
+	}
+	resHandle = ::LoadResource( NULL, resInfoHandle );
+	if( resHandle == NULL ) {
+		throw ResourceLoadExcMsw( mswID, mswType );
+	}
+
+	// it's not necessary to unlock resources because the system automatically deletes them when the process
+	// that created them terminates.
+	dataPtr = ::LockResource( resHandle );
+	if( dataPtr == 0 ) {
+		throw ResourceLoadExcMsw( mswID, mswType );
+	}
+	dataSize = ::SizeofResource( NULL, resInfoHandle );
+	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ) );
 }
 
 std::ostream& PlatformMsw::console()
