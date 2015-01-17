@@ -120,7 +120,11 @@ void Node::disconnectAllInputs()
 
 void Node::connectInput( const NodeRef &input )
 {
-	lock_guard<mutex> lock( getContext()->getMutex() );
+	auto ctx = getContext();
+	if( ! ctx )
+		return;
+
+	lock_guard<mutex> lock( ctx->getMutex() );
 
 	mInputs.insert( input );
 	configureConnections();
@@ -128,7 +132,11 @@ void Node::connectInput( const NodeRef &input )
 
 void Node::disconnectInput( const NodeRef &input )
 {
-	lock_guard<mutex> lock( getContext()->getMutex() );
+	auto ctx = getContext();
+	if( ! ctx )
+		return;
+
+	lock_guard<mutex> lock( ctx->getMutex() );
 
 	for( auto inIt = mInputs.begin(); inIt != mInputs.end(); ++inIt ) {
 		if( *inIt == input ) {
@@ -140,7 +148,11 @@ void Node::disconnectInput( const NodeRef &input )
 
 void Node::disconnectOutput( const NodeRef &output )
 {
-	lock_guard<mutex> lock( getContext()->getMutex() );
+	auto ctx = getContext();
+	if( ! ctx )
+		return;
+
+	lock_guard<mutex> lock( ctx->getMutex() );
 
 	for( auto outIt = mOutputs.begin(); outIt != mOutputs.end(); ++outIt ) {
 		if( outIt->lock() == output ) {
@@ -471,7 +483,11 @@ bool Node::checkCycle( const NodeRef &sourceNode, const NodeRef &destNode ) cons
 
 void Node::notifyConnectionsDidChange()
 {
-	getContext()->connectionsDidChange( shared_from_this() );
+	auto ctx = getContext();
+	if( ! ctx )
+		return;
+
+	ctx->connectionsDidChange( shared_from_this() );
 }
 
 bool Node::canConnectToInput( const NodeRef &input )
