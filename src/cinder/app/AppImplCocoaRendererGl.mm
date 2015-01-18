@@ -37,12 +37,15 @@
 // This is only here so that we can override isOpaque, which is necessary
 // for the ScreenSaverView to show it
 @interface AppImplCocoaTransparentGlView : NSOpenGLView 
-{}
 @end
 
 @implementation AppImplCocoaTransparentGlView
+
 - (BOOL)isOpaque
-{ return NO; }
+{
+	return NO;
+}
+
 // For whatever reasons, rightMouseDown does not get propagated along the normal responder chain
 - (void)rightMouseDown:(NSEvent *)theEvent
 {
