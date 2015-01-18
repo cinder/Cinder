@@ -22,17 +22,17 @@
 */
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Context.h"
-#include "cinder/Camera.h"
-#import <Cocoa/Cocoa.h>
-
 #import "cinder/app/AppImplCocoaRendererGl.h"
 #import "cinder/app/CinderView.h"
 
-#import "cinder/app/App.h"
-#include "cinder/app/Renderer.h"
+#include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/Camera.h"
+#include "cinder/Log.h"
+
 #include <iostream>
+
+#import <Cocoa/Cocoa.h>
 
 // This is only here so that we can override isOpaque, which is necessary
 // for the ScreenSaverView to show it
@@ -53,40 +53,39 @@
 
 @implementation AppImplCocoaRendererGl
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView app:(cinder::app::App *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled
 {
 	self = [super init];
-//	self = [super initWithFrame:frame cinderView:aCinderView app:aApp];
-	cinderView = aCinderView;
-	
-	renderer = aRenderer;
 
-	cinder::app::RendererGl::Options options = renderer->getOptions();
+	mCinderView = cinderView;
+	mRenderer = renderer;
+
+	cinder::app::RendererGl::Options options = mRenderer->getOptions();
 	NSOpenGLPixelFormat* fmt = [AppImplCocoaRendererGl defaultPixelFormat:options];
 	GLint aaSamples;
 	[fmt getValues:&aaSamples forAttribute:NSOpenGLPFASamples forVirtualScreen:0];
 
 	NSRect bounds = NSMakeRect( 0, 0, frame.size.width, frame.size.height );
-	view = [[AppImplCocoaTransparentGlView alloc] initWithFrame:bounds pixelFormat:fmt];
-if( ! view )
-	NSLog( @"Unable to allocate GL view" );
+	mView = [[AppImplCocoaTransparentGlView alloc] initWithFrame:bounds pixelFormat:fmt];
+	if( ! mView )
+		CI_LOG_E( "Unable to allocate GL view" );
 
 	// if we've been passed a context to share with, replace our NSOpenGLContext with a new one that shares
 	if( sharedRenderer ) {
 		assert( typeid( *sharedRenderer ) == typeid( cinder::app::RendererGl ) );
 		NSOpenGLContext *newContext = [[NSOpenGLContext alloc] initWithFormat:fmt shareContext:sharedRenderer->getNsOpenGlContext()];
-		[view setOpenGLContext:newContext];
+		[mView setOpenGLContext:newContext];
 		[newContext release];
 	}
 
-	[cinderView addSubview:view];
+	[mCinderView addSubview:mView];
 	
 	if( retinaEnabled )
-		[view setWantsBestResolutionOpenGLSurface:YES];
+		[mView setWantsBestResolutionOpenGLSurface:YES];
 	
 	cinder::gl::Environment::setCore();
 	
-	CGLContextObj cglContext = (CGLContextObj)[[view openGLContext] CGLContextObj];
+	CGLContextObj cglContext = (CGLContextObj)[[mView openGLContext] CGLContextObj];
 	::CGLSetCurrentContext( cglContext );
 	auto platformData = std::shared_ptr<cinder::gl::Context::PlatformData>( new cinder::gl::PlatformDataMac( cglContext ) );
 	platformData->mObjectTracking = options.getObjectTracking();
@@ -94,34 +93,34 @@ if( ! view )
 	mContext->makeCurrent();
 
 	GLint swapInterval = 1;
-	[[view openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
+	[[mView openGLContext] setValues:&swapInterval forParameter:NSOpenGLCPSwapInterval];
 
 	return self;
 }
 
 - (NSOpenGLView*)view
 {
-	return view;
+	return mView;
 }
 
 - (CGLContextObj)getCglContext
 {
-	return (CGLContextObj)[[view openGLContext] CGLContextObj];
+	return (CGLContextObj)[[mView openGLContext] CGLContextObj];
 }
 
 - (CGLPixelFormatObj)getCglPixelFormat
 {
-	return (CGLPixelFormatObj)[[view pixelFormat] CGLPixelFormatObj];
+	return (CGLPixelFormatObj)[[mView pixelFormat] CGLPixelFormatObj];
 }
 
 - (NSOpenGLContext *)getNsOpenGlContext
 {
-	return [view openGLContext];
+	return [mView openGLContext];
 }
 
 - (NSOpenGLPixelFormat *)getNSOpenGLPixelFormat
 {
-	return [view pixelFormat];
+	return [mView pixelFormat];
 }
 
 - (void)makeCurrentContext
@@ -136,19 +135,19 @@ if( ! view )
 
 - (void)drawRect:(NSRect)rect
 {
-	[view drawRect:rect];
+	[mView drawRect:rect];
 }
 
 - (void)setFrameSize:(CGSize)newSize
 {
 //	[super setFrameSize:newSize];
-	[view setFrameSize:NSSizeFromCGSize( newSize )];
+	[mView setFrameSize:NSSizeFromCGSize( newSize )];
 }
 
 - (void)defaultResize
 {
-	NSSize nsSize = [view frame].size;
-	NSSize backingSize = [view convertSizeToBacking:nsSize];
+	NSSize nsSize = [mView frame].size;
+	NSSize backingSize = [mView convertSizeToBacking:nsSize];
 	ci::gl::viewport( 0, 0, backingSize.width, backingSize.height );
 	cinder::gl::setMatricesWindow( nsSize.width, nsSize.height );
 }

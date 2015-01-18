@@ -21,22 +21,22 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import <Cocoa/Cocoa.h>
 #import "cinder/app/App.h"
 #import "cinder/app/RendererGl.h"
 
 @class AppImplCocoa;
 @class CinderView;
+@class NSOpenGLView;
+@class NSOpenGLPixelFormat;
 
-@interface AppImplCocoaRendererGl : NSObject
-{
-	NSOpenGLView					*view;
-	cinder::app::RendererGl*		renderer; // equivalent of a weak_ptr; 'renderer' actually owns us
-	NSView							*cinderView;
+@interface AppImplCocoaRendererGl : NSObject {
+	NSOpenGLView*					mView;
+	cinder::app::RendererGl*		mRenderer;		// equivalent of a weak_ptr; 'renderer' actually owns us
+	NSView*							mCinderView;
 	cinder::gl::ContextRef			mContext;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView app:(cinder::app::App *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
 - (NSOpenGLView*)view;
 
 - (void)makeCurrentContext;
