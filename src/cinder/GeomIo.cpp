@@ -3296,8 +3296,6 @@ SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
 	
 	for( auto &modifier : sourceMods->mModifiers )
 		mModiferStack.push_back( modifier.get() );
-
-	mParamsStack = sourceMods->mParamsStack;
 }
 
 SourceModsContext::SourceModsContext()
@@ -3318,7 +3316,6 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 	if( ! mModiferStack.empty() ) {
 		auto modifier = mModiferStack.back();
 		mModiferStack.pop_back();
-		mParamsStack.pop_back();
 		modifier->process( this, requestedAttribs );
 
 		// We've finished processing all Modifiers and the Source. Now iterate all the attribute data and the indices
@@ -3353,7 +3350,6 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 		// we want the Params to reflect upstream from the current Modifier
 		auto modifier = mModiferStack.back();
 		mModiferStack.pop_back();
-		mParamsStack.pop_back();
 		modifier->process( this, requestedAttribs );
 	}
 }

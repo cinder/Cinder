@@ -931,9 +931,7 @@ class SourceModsContext : public Target {
 	
   private:
 	const Source					*mSource;
-
 	std::vector<Modifier*>			mModiferStack;
-	std::vector<Modifier::Params>	mParamsStack;
 	
 	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
