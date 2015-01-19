@@ -1112,31 +1112,6 @@ typename std::enable_if<std::is_base_of<Source,SOURCE>::value, SourceMods<SOURCE
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-//! Captures vertex and index data from a Source
-/*class SourceCapture : public geom::Target {
-  public:
-	SourceCapture( const geom::Source &source, const AttribSet &requestedAttribs );
-
-	void		copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	void		copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-
-	uint8_t		getAttribDims( geom::Attrib attr ) const override;
-	float*		getAttribData( Attrib attr ) const;
-
-	Primitive		getPrimitive() const { return mPrimitive; }
-	size_t			getNumIndices() const { return mNumIndices; }
-	const uint32_t*	getIndicesData() const { return mIndices.get(); }
-		
-  protected:
-	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
-	std::map<Attrib,uint8_t>					mAttribDims;
-	
-	std::unique_ptr<uint32_t[]>				mIndices;
-	size_t									mNumIndices;
-	geom::Primitive							mPrimitive;
-};*/
-
-////////////////////////////////////////////////////////////////////////////////
 
 class Exc : public Exception {
 };
