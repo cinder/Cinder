@@ -3148,6 +3148,48 @@ void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs
 	}
 }
 
+//////////////////////////////////////////////////////////////////////////////////////
+// Bounds
+void Bounds::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+{
+	AttribSet request = requestedAttribs;
+	request.insert( mAttrib );
+	ctx->processUpstream( request );
+	
+	uint8_t dims = ctx->getAttribDims( mAttrib );
+	if( dims == 0 ) {
+		CI_LOG_W( "geom::Bounds requested attribute " << attribToString( mAttrib ) << " missing." );
+		return;
+	}
+	
+	size_t numVertices = ctx->getNumVertices();
+	const float *data = ctx->getAttribData( mAttrib );
+	vec3 minResult( FLT_MAX ), maxResult( FLT_MIN );
+	for( size_t v = 0; v < numVertices; ++v ) {
+		if( dims == 1 ) {
+			minResult.x = std::min<float>( minResult.x, data[0] );
+			maxResult.x = std::max<float>( maxResult.x, data[0] );
+		}
+		else if( dims == 2 ) {
+			minResult.x = std::min<float>( minResult.x, data[0] );
+			maxResult.x = std::max<float>( maxResult.x, data[0] );
+			minResult.y = std::min<float>( minResult.y, data[1] );
+			maxResult.y = std::max<float>( maxResult.y, data[1] );
+		}
+		else {
+			minResult.x = std::min<float>( minResult.x, data[0] );
+			maxResult.x = std::max<float>( maxResult.x, data[0] );
+			minResult.y = std::min<float>( minResult.y, data[1] );
+			maxResult.y = std::max<float>( maxResult.y, data[1] );
+			minResult.z = std::min<float>( minResult.z, data[2] );
+			maxResult.z = std::max<float>( maxResult.z, data[2] );
+		}
+		data += dims;
+	}
+	
+	if( mResult )
+		*mResult = AxisAlignedBox3f( minResult, maxResult );
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 // SourceModsBase

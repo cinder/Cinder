@@ -29,6 +29,7 @@
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
 #include "cinder/Color.h"
+#include "cinder/AxisAlignedBox.h"
 
 #include <set>
 #include <vector>
@@ -881,6 +882,22 @@ class Combine : public Modifier {
 	
   protected:
 	const Source		*mSource;
+};
+
+//! Calculates the 3D bounding box of the geometry.
+class Bounds : public Modifier {
+  public:
+	Bounds( AxisAlignedBox3f *result, Attrib attrib = POSITION )
+		: mResult( result ), mAttrib( attrib )
+	{}
+	
+	
+	Modifier*	clone() const override { return new Bounds( mResult, mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	AxisAlignedBox3f	*mResult;
+	Attrib				mAttrib;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
