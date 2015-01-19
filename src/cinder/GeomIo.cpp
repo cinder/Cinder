@@ -41,10 +41,22 @@ std::string sAttribNames[(int)Attrib::NUM_ATTRIBS] = {
 	"CUSTOM_0", "CUSTOM_1", "CUSTOM_2", "CUSTOM_3", "CUSTOM_4", "CUSTOM_5", "CUSTOM_6", "CUSTOM_7", "CUSTOM_8", "CUSTOM_9"
 };
 
+std::string sPrimitiveNames[(int)Primitive::NUM_PRIMITIVES] = {
+	"LINES", "LINE_STRIP", "TRIANGLES", "TRIANGLE_STRIP", "TRIANGLE_FAN"
+};
+
 std::string attribToString( Attrib attrib )
 {
 	if( attrib < Attrib::NUM_ATTRIBS )
 		return sAttribNames[(int)attrib];
+	else
+		return "";
+}
+
+std::string primitiveToString( Primitive primitive )
+{
+	if( primitive < Primitive::NUM_PRIMITIVES )
+		return sPrimitiveNames[(int)primitive];
 	else
 		return "";
 }
@@ -2732,6 +2744,87 @@ void ExtrudeSpline::loadInto( Target *target, const AttribSet &requestedAttribs 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), calcIndicesRequiredBytes( indices.size() ) );
 }
 
+
+///////////////////////////////////////////////////////////////////////////////////////
+// BSpline
+template<int D, typename T>
+BSpline::BSpline( const ci::BSpline<D,T> &spline, int subdivisions )
+	: mPositionDims( D )
+{
+	CI_ASSERT( D >= 2 && D <= 4 );
+	
+	subdivisions = std::max( 2, subdivisions );
+	mNumVertices = subdivisions;
+	
+	mPositions.reserve( mNumVertices * D );
+	mNormals.reserve( mNumVertices );
+
+	init( spline, subdivisions );
+}
+
+template<typename T>
+void BSpline::init( const ci::BSpline<2,T> &spline, int subdivisions )
+{
+	const float tInc = 1.0f / ( subdivisions - 1 );
+
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y );
+		mNormals.emplace_back( vec3( normalize( vec2( deriv.y, -deriv.x ) ), 0 ) );
+	}
+}
+
+template<typename T>
+void BSpline::init( const ci::BSpline<3,T> &spline, int subdivisions )
+{
+	const float tInc = 1.0f / ( subdivisions - 1 );
+
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z );
+		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
+	}
+}
+
+template<typename T>
+void BSpline::init( const ci::BSpline<4,T> &spline, int subdivisions )
+{
+	const float tInc = 1.0f / ( subdivisions - 1 );
+
+	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
+		auto pos = spline.getPosition( i * tInc );
+		auto deriv = spline.getDerivative( i * tInc );
+		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z ); mPositions.push_back( pos.w );
+		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
+	}
+}
+
+uint8_t	BSpline::getAttribDims( Attrib attr ) const
+{
+	if( attr == Attrib::POSITION )
+		return mPositionDims;
+	else if( attr == Attrib::NORMAL )
+		return 3;
+	else
+		return 0;
+}
+
+AttribSet BSpline::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL };
+}
+
+void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
+}
+
+template BSpline::BSpline( const ci::BSpline<2,float>&, int );
+template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+
 ///////////////////////////////////////////////////////////////////////////////////////
 // VertexNormalLines
 VertexNormalLines::VertexNormalLines( float length, Attrib attrib )
@@ -2948,84 +3041,112 @@ void Remove::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// BSpline
-template<int D, typename T>
-BSpline::BSpline( const ci::BSpline<D,T> &spline, int subdivisions )
-	: mPositionDims( D )
+// Combine
+size_t Combine::getNumVertices( const Modifier::Params &upstreamParams ) const
 {
-	CI_ASSERT( D >= 2 && D <= 4 );
-	
-	subdivisions = std::max( 2, subdivisions );
-	mNumVertices = subdivisions;
-	
-	mPositions.reserve( mNumVertices * D );
-	mNormals.reserve( mNumVertices );
-
-	init( spline, subdivisions );
+	return upstreamParams.getNumVertices() + mSource->getNumVertices();
 }
 
-template<typename T>
-void BSpline::init( const ci::BSpline<2,T> &spline, int subdivisions )
+size_t Combine::getNumIndices( const Modifier::Params &upstreamParams ) const
 {
-	const float tInc = 1.0f / ( subdivisions - 1 );
-
-	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
-		auto pos = spline.getPosition( i * tInc );
-		auto deriv = spline.getDerivative( i * tInc );
-		mPositions.push_back( pos.x ); mPositions.push_back( pos.y );
-		mNormals.emplace_back( vec3( normalize( vec2( deriv.y, -deriv.x ) ), 0 ) );
+	// we have to return indexed geometry if either upstream or
+	size_t numIndices = upstreamParams.getNumIndices();
+	size_t sourceNumIndices = mSource->getNumIndices();
+	if( numIndices || sourceNumIndices ) {
+		if( numIndices == 0 )
+			numIndices = upstreamParams.getNumVertices();
+		if( sourceNumIndices == 0 )
+			sourceNumIndices = mSource->getNumVertices();
+		return numIndices + sourceNumIndices;
 	}
-}
-
-template<typename T>
-void BSpline::init( const ci::BSpline<3,T> &spline, int subdivisions )
-{
-	const float tInc = 1.0f / ( subdivisions - 1 );
-
-	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
-		auto pos = spline.getPosition( i * tInc );
-		auto deriv = spline.getDerivative( i * tInc );
-		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z );
-		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
-	}
-}
-
-template<typename T>
-void BSpline::init( const ci::BSpline<4,T> &spline, int subdivisions )
-{
-	const float tInc = 1.0f / ( subdivisions - 1 );
-
-	for( size_t i = 0; i < (size_t)subdivisions; ++i ) {
-		auto pos = spline.getPosition( i * tInc );
-		auto deriv = spline.getDerivative( i * tInc );
-		mPositions.push_back( pos.x ); mPositions.push_back( pos.y ); mPositions.push_back( pos.z ); mPositions.push_back( pos.w );
-		mNormals.emplace_back( normalize( vec3( deriv.y, -deriv.x, deriv.z ) ) );
-	}
-}
-
-uint8_t	BSpline::getAttribDims( Attrib attr ) const
-{
-	if( attr == Attrib::POSITION )
-		return mPositionDims;
-	else if( attr == Attrib::NORMAL )
-		return 3;
 	else
 		return 0;
 }
 
-AttribSet BSpline::getAvailableAttribs() const
+void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
-	return { Attrib::POSITION, Attrib::NORMAL };
-}
+	if( mSource->getPrimitive() != ctx->getPrimitive() ) {
+		CI_LOG_W( "geom::Combine() primitive types don't match: " << primitiveToString( ctx->getPrimitive() ) << " vs. "
+					<< primitiveToString( mSource->getPrimitive() ) );
+		return;
+	}
 
-void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) const
-{
-	target->copyAttrib( Attrib::POSITION, mPositionDims, 0, mPositions.data(), mNumVertices );
-	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)mNormals.data(), mNumVertices );
-}
+	ctx->processUpstream( requestedAttribs );
 
-template BSpline::BSpline( const ci::BSpline<2,float>&, int );
-template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+	SourceModsContext sourceCtx;
+	mSource->loadInto( &sourceCtx, requestedAttribs );
+
+	// Handle indices
+	size_t numIndices = ctx->getNumIndices(); // upstream indices
+	size_t sourceNumIndices = mSource->getNumIndices(); // mSource indices
+	size_t numVertices = ctx->getNumVertices(); // upstream vertices
+	size_t sourceNumVertices = mSource->getNumVertices(); // mSource vertices
+	// indexed output if either upstream or mSource is indexed
+	if( ( numIndices > 0 ) || ( sourceNumIndices > 0 ) ) {
+		// allocate space for the output indices
+		size_t numOutIndices = numIndices + sourceNumIndices;
+		if( numIndices == 0 )
+			numOutIndices += ctx->getNumVertices();
+		if( sourceNumIndices == 0 )
+			numOutIndices += mSource->getNumVertices();
+		std::vector<uint32_t> outIndices;
+		
+		if( numIndices > 0 ) { // is upstream geometry indexed?
+			outIndices.resize( numOutIndices );
+			memcpy( outIndices.data(), ctx->getIndicesData(), sizeof(uint32_t) * numIndices );
+			if( sourceNumIndices > 0 ) { // both upstream and mSource are indexed
+				const uint32_t *sourceIndicesData = sourceCtx.getIndicesData();
+				for( size_t i = 0; i < sourceNumIndices; ++i ) // append index data from mSource, offseting values by # of upstream indices
+					outIndices[numIndices+i] = (uint32_t)(sourceIndicesData[i] + numVertices);
+			}
+			else { // source is non-indexed
+				for( size_t i = 0; i < sourceNumVertices; ++i )
+					outIndices[numIndices+i] = (uint32_t)(numVertices + i);
+			}
+		}
+		else { // upstream geometry is non-indexed; implies mSource geometry is though
+			for( size_t i = 0; i < numVertices; ++i )
+				outIndices.push_back( (uint32_t)i );
+			// we need to increment the values of mSource indices by 'numVertices'
+			const uint32_t *sourceIndicesData = sourceCtx.getIndicesData();
+			for( size_t i = 0; i < sourceNumVertices; ++i )
+				outIndices.push_back( (uint32_t)(sourceIndicesData[i] + numVertices) );
+		}
+		
+		// output indices
+		ctx->copyIndices( ctx->getPrimitive(), outIndices.data(), outIndices.size(), 4 );
+	}
+	else { // non-indexed output
+		ctx->clearIndices();
+	}
+	
+	// Handle Attributes
+	for( const auto &attrib : requestedAttribs ) {
+		uint8_t dims = ctx->getAttribDims( attrib );
+		if( dims > 0 ) {
+			unique_ptr<float[]> outAttribData( new float[dims * (numVertices + sourceNumVertices)] );
+			
+			// copy the existing data from upstream
+			const float *existingAttribData = ctx->getAttribData( attrib );
+			memcpy( outAttribData.get(), existingAttribData, dims * numVertices * sizeof(float) );
+
+			uint8_t sourceDims = sourceCtx.getAttribDims( attrib );
+			// if mSource has data for the attribute, copy that
+			if( sourceDims > 0 ) {
+				const float *sourceExistingAttribData = sourceCtx.getAttribData( attrib );
+				copyData( sourceDims, sourceExistingAttribData, sourceNumVertices, dims, 0, outAttribData.get() + ( numVertices * dims ) );
+			}
+			else { // mSource has no data for this attribute. Fill with zeros.
+				float *ptr = outAttribData.get() + ( numVertices * dims );
+				for( size_t i = 0; i < dims * sourceNumVertices; ++i )
+					ptr[i] = 0;
+			}
+			
+			// output attribute
+			ctx->copyAttrib( attrib, dims, 0, outAttribData.get(), numVertices + sourceNumVertices );
+		}
+	}
+}
 
 
 //////////////////////////////////////////////////////////////////////////////////////
@@ -3100,6 +3221,10 @@ void SourceModsBase::cacheVariables() const
 		mParamsStack.back().mPrimitive = primitive;
 		mParamsStack.back().mAvaliableAttribs = availableAttribs;
 	}
+	
+	for( size_t p = 0; p < mParamsStack.size(); ++p ) {
+		std::cout << mParamsStack[p].getNumIndices() << " " << primitiveToString( mParamsStack[p].getPrimitive() ) << std::endl;
+	}
 }
 
 void SourceModsBase::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3123,16 +3248,28 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
-	: mSourceMods( sourceMods ), mNumIndices( 0 )
+	: mNumIndices( 0 )
 {
-	for( auto &modifier : mSourceMods->mModifiers )
+	mSource = sourceMods->getSource();
+	
+	for( auto &modifier : sourceMods->mModifiers )
 		mModiferStack.push_back( modifier.get() );
 
-	mParamsStack = mSourceMods->mParamsStack;
+	mParamsStack = sourceMods->mParamsStack;
+}
+
+SourceModsContext::SourceModsContext()
+	: mNumIndices( 0 ), mSource( nullptr )
+{
 }
 
 void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttribs )
 {
+	if( ! mSource ) {
+		CI_LOG_E( "SourceModsContext::loadInto() called with a NULL source." );
+		return;
+	}
+
 	// initiate the chain by calling the last modifier's process() method.
 	// This in turn will call processUpstream(), which will call the next modifier's process(), until there
 	// are no remaining modifiers. Finally processUpstream() will call loadInto() on the Source
@@ -3153,8 +3290,8 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, 4 );
 	}
 	else {
-		// extremely rare but technically possible that we'd have a SourceMods with no mods; in this case just call loadInto()
-		mSourceMods->getSource()->loadInto( target, requestedAttribs );
+		// no modifiers; in this case just call loadInto()
+		mSource->loadInto( target, requestedAttribs );
 	}
 }
 
@@ -3162,7 +3299,7 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 {
 	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
 	if( mModiferStack.empty() ) {
-		mSourceMods->getSource()->loadInto( this, requestedAttribs );
+		mSource->loadInto( this, requestedAttribs );
 	}
 	else {
 		// we want the Params to reflect upstream from the current Modifier
@@ -3171,14 +3308,6 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 		mParamsStack.pop_back();
 		modifier->process( this, requestedAttribs );
 	}
-
-/*	// now that we're done,
-	for( mAttribData )
-			virtual void	copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) = 0;
-		}
-	
-		target->copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex );*/
-	
 }
 	
 uint8_t	SourceModsContext::getAttribDims( Attrib attr ) const
@@ -3265,6 +3394,76 @@ void SourceModsContext::clearIndices()
 	mNumIndices = 0;
 	mIndices.reset();
 }
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Modifier
+/*SourceCapture::SourceCapture( const geom::Source &source, const AttribSet &requestedAttribs )
+{
+	source.loadInto( this, requestedAttribs );
+}
+
+uint8_t	SourceCapture::getAttribDims( geom::Attrib attr ) const
+{
+	auto attrIt = mAttribDims.find( attr );
+	if( attrIt != mAttribDims.end() )
+		return attrIt->second;
+	else // WRITE means our consumer will be writing this value later so we don't need the source to supply it
+		return 0;
+}
+
+void SourceCapture::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
+{
+	auto attrIt = mAttribs.find( attr );
+	if( (attrIt == mAttribs.end()) || (attrIt->second == IGNORED) ) { // not an attribute we're interested in; pass through to the target
+		mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	else if( (attrIt->second == READ) || (attrIt->second == READ_WRITE) ) { // READ or READ_WRITE implies we want to capture the values; for READ, we pass them to target
+		// make some room for our own copy of this data
+		mAttribData[attr] = unique_ptr<float[]>( new float[dims * count] );
+		mAttribDims[attr] = dims;
+		copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+		if( attrIt->second == READ ) // pass through to target when READ but not READ_WRITE
+			mTarget->copyAttrib( attr, dims, strideBytes, srcData, count );
+	}
+	// WRITE means our consumer will be writing this value later
+}
+
+void ModifierUtil::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+{
+	mNumIndices = numIndices;
+	mPrimitive = primitive;
+	switch( mIndicesAccess ) {
+		case IGNORED: // we just pass the indices through to the target
+			mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		case READ: // capture, and pass through to target
+		case READ_WRITE: // capture but don't pass through
+			mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
+			memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
+			if( mIndicesAccess == READ )
+				mTarget->copyIndices( primitive, source, numIndices, requiredBytesPerIndex );
+		break;
+		default: // for WRITE we will supply our own indices later so do nothing but record the count
+		break;
+	}
+}
+
+uint8_t	ModifierUtil::getReadAttribDims( Attrib attr ) const
+{
+	if( mAttribDims.find( attr ) == mAttribDims.end() )
+		return 0;
+	else
+		return mAttribDims.at( attr );
+}
+
+// not const because consumer is allowed to overwrite this data
+float* ModifierUtil::getReadAttribData( Attrib attr ) const
+{
+	if( mAttribData.find( attr ) == mAttribData.end() )
+		return nullptr;
+	else
+		return mAttribData.at( attr ).get();
+}*/
 
 
 template class AttribFn<float,float>;	template class AttribFn<float,vec2>;	template class AttribFn<float,vec3>;	template class AttribFn<float,vec4>;

@@ -58,12 +58,14 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 typedef	std::set<Attrib>	AttribSet;
 extern std::string			sAttribNames[(int)Attrib::NUM_ATTRIBS];
 
-enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN };
+enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, NUM_PRIMITIVES };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
 
 //! Debug utility which returns the name of \a attrib as a std::string
 std::string attribToString( Attrib attrib );
+//! Debug utility which returns the name of \a primitive as a std::string
+std::string primitiveToString( Primitive primitive );
 //! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 //! Utility function for calculating tangents and bitangents from indexed geometry. \a resultBitangents may be NULL if not needed.
@@ -863,41 +865,32 @@ class Remove : public Modifier {
 	Attrib		mAttrib;
 };
 
-////////////////////////////////////////////////////////////////////////////////
-//! Base class for SourceMods<> and SourceModsPtr<>
-class SourceModsBase : public Source {
+//! Combines an additional Source. Requires the Primitive types to match. Attributes not available on Source will be filled with \c 0
+class Combine : public Modifier {
   public:
-	SourceModsBase()
-		: mVariablesCached( false )
+	Combine( const Source *source )
+		: mSource( source )
 	{}
-
-	// geom::Source methods
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override;
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
-	void	addModifier( const Modifier &modifier );
+	Modifier*	clone() const override { return new Combine( mSource ); }
 	
-	virtual const Source*		getSource() const = 0;
-
+	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
   protected:
-	void		cacheVariables() const;
-	
-	std::vector<std::unique_ptr<Modifier>>	mModifiers;
-	
-	mutable bool				mVariablesCached;
-	mutable std::vector<Modifier::Params>	mParamsStack;
-	
-	friend class SourceModsContext;
+	const Source		*mSource;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+//! Base class for SourceMods<> and SourceModsPtr<>
 //! Used by Modifiers to process Source -> Target
 class SourceModsContext : public Target {
   public:
 	SourceModsContext( const SourceModsBase *sourceMods );
+	//! Can be used to capture a Source. Calling loadInto() in this case is an error.
+	SourceModsContext();
 
 	// called by SourceModsBase::loadInto()
 	void			loadInto( Target *target, const AttribSet &requestedAttribs );
@@ -920,7 +913,7 @@ class SourceModsContext : public Target {
 	uint32_t*		getIndicesData();
 	
   private:
-	const SourceModsBase	*mSourceMods;
+	const Source					*mSource;
 
 	std::vector<Modifier*>			mModiferStack;
 	std::vector<Modifier::Params>	mParamsStack;
@@ -934,6 +927,35 @@ class SourceModsContext : public Target {
 	geom::Primitive							mPrimitive;
 };
 
+class SourceModsBase : public Source {
+  public:
+	SourceModsBase( const Source *sourceBase )
+		: mSourceBase( sourceBase ), mVariablesCached( false )
+	{}
+
+	// geom::Source methods
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override;
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+	void	addModifier( const Modifier &modifier );
+	
+	const Source*		getSource() const { return mSourceBase; }
+
+  protected:
+	void		cacheVariables() const;
+	
+	const Source* 							mSourceBase;
+	std::vector<std::unique_ptr<Modifier>>	mModifiers;
+	
+	mutable bool				mVariablesCached;
+	mutable std::vector<Modifier::Params>	mParamsStack;
+	
+	friend class SourceModsContext;
+};
 
 //! In general you should not return this as the result of a function or even instantiate it directly
 //! Similar to SourceMods<> but stores a pointer to the SOURCE rather than a copy of it
@@ -941,20 +963,18 @@ template<typename SOURCE>
 class SourceModsPtr : public SourceModsBase {
   public:
 	SourceModsPtr( const SOURCE *srcPtr )
-		: mSrcPtr( srcPtr )
+		: SourceModsBase( srcPtr ), mSrcPtr( srcPtr )
 	{}
 
-	virtual const Source*		getSource() const override { return mSrcPtr; }
-
 	SourceModsPtr( const SourceModsPtr<SOURCE> &rhs )
-		: mSrcPtr( rhs.mSrcPtr )
+		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
 	}
 
 	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
-		: mSrcPtr( rhs.mSrcPtr )
+		: SourceModsPtr( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
 	{
 		for( auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::move( rhsMod ) );
@@ -962,6 +982,7 @@ class SourceModsPtr : public SourceModsBase {
 	
 	SourceModsPtr& operator=( const SourceModsPtr<SOURCE> &rhs )
 	{
+		mSourceBase = rhs.mSrcPtr;
 		mSrcPtr = rhs.mSrcPtr;
 		
 		for( const auto &rhsMod : rhs.mModifiers )
@@ -972,6 +993,7 @@ class SourceModsPtr : public SourceModsBase {
 	
 	SourceModsPtr& operator=( SourceModsPtr<SOURCE> &&rhs )
 	{
+		mSourceBase = rhs.mSrcPtr;
 		mSrcPtr = std::move( rhs.mSrc );
 		
 		for( auto &rhsMod : rhs.mModifiers )
@@ -987,31 +1009,29 @@ template<typename SOURCE>
 class SourceMods : public SourceModsBase {
   public:
 	SourceMods( const SOURCE &src )
-		: mSrc( src )
+		: SourceModsBase( &mSrc ), mSrc( src )
 	{}
 	
 	SourceMods( SOURCE &&src )
-		: mSrc( std::move( src ) )
+		: SourceModsBase( &mSrc ), mSrc( std::move( src ) )
 	{}
 
-	virtual const Source*		getSource() const override { return &mSrc; }
-
 	SourceMods( const SourceMods<SOURCE> &rhs )
-		: mSrc( rhs.mSrc )
+		: SourceModsBase( &mSrc ), mSrc( rhs.mSrc )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
 	}
 
 	SourceMods( SourceMods<SOURCE> &&rhs )
-		: mSrc( std::move( rhs.mSrc ) )
+		: SourceModsBase( &mSrc ), mSrc( std::move( rhs.mSrc ) )
 	{
 		for( auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::move( rhsMod ) );
 	}
 
 	SourceMods( const SourceModsPtr<SOURCE> &rhs )
-		: mSrc( *rhs.mSrcPtr )
+		: SourceModsBase( &mSrc ), mSrc( *rhs.mSrcPtr )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
@@ -1019,6 +1039,7 @@ class SourceMods : public SourceModsBase {
 	
 	SourceMods& operator=( const SourceMods<SOURCE> &rhs )
 	{
+		mSourceBase = &mSrc;
 		mSrc = rhs.mSrc;
 		
 		for( const auto &rhsMod : rhs.mModifiers )
@@ -1029,6 +1050,7 @@ class SourceMods : public SourceModsBase {
 	
 	SourceMods& operator=( SourceMods<SOURCE> &&rhs )
 	{
+		mSourceBase = &mSrc;
 		mSrc = std::move( rhs.mSrc );
 		
 		for( auto &rhsMod : rhs.mModifiers )
@@ -1089,7 +1111,31 @@ typename std::enable_if<std::is_base_of<Source,SOURCE>::value, SourceMods<SOURCE
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+//! Captures vertex and index data from a Source
+/*class SourceCapture : public geom::Target {
+  public:
+	SourceCapture( const geom::Source &source, const AttribSet &requestedAttribs );
 
+	void		copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void		copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+
+	uint8_t		getAttribDims( geom::Attrib attr ) const override;
+	float*		getAttribData( Attrib attr ) const;
+
+	Primitive		getPrimitive() const { return mPrimitive; }
+	size_t			getNumIndices() const { return mNumIndices; }
+	const uint32_t*	getIndicesData() const { return mIndices.get(); }
+		
+  protected:
+	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,uint8_t>					mAttribDims;
+	
+	std::unique_ptr<uint32_t[]>				mIndices;
+	size_t									mNumIndices;
+	geom::Primitive							mPrimitive;
+};*/
+
+////////////////////////////////////////////////////////////////////////////////
 
 class Exc : public Exception {
 };
