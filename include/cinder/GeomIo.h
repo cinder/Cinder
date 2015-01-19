@@ -918,6 +918,7 @@ class SourceModsContext : public Target {
 	std::vector<Modifier*>			mModiferStack;
 	std::vector<Modifier::Params>	mParamsStack;
 	
+	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
 	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
 	std::map<Attrib,size_t>						mAttribCount;

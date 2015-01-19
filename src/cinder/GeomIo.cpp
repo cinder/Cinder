@@ -2271,13 +2271,13 @@ void processColorAttrib2d( const vec2* inputData, O *outputData, const std::func
 
 void ColorFromAttrib::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
-	if( ( ! mFnColor2 ) && ( ! mFnColor3 ) ) {
-		return;
-	}
-
 	AttribSet request = requestedAttribs;
 	request.insert( mAttrib );
 	ctx->processUpstream( request );
+
+	// if we have no function to apply just continue
+	if( ( ! mFnColor2 ) && ( ! mFnColor3 ) )
+		return;
 
 	if( ctx->getAttribDims( mAttrib ) == 0 ) {
 		CI_LOG_W( "ColorFromAttrib called on geom::Source missing requested " << attribToString( mAttrib ) );
@@ -3065,13 +3065,13 @@ size_t Combine::getNumIndices( const Modifier::Params &upstreamParams ) const
 
 void Combine::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
+	ctx->processUpstream( requestedAttribs );
+	
 	if( mSource->getPrimitive() != ctx->getPrimitive() ) {
 		CI_LOG_W( "geom::Combine() primitive types don't match: " << primitiveToString( ctx->getPrimitive() ) << " vs. "
 					<< primitiveToString( mSource->getPrimitive() ) );
 		return;
 	}
-
-	ctx->processUpstream( requestedAttribs );
 
 	SourceModsContext sourceCtx;
 	mSource->loadInto( &sourceCtx, requestedAttribs );
@@ -3248,7 +3248,7 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
-	: mNumIndices( 0 )
+	: mNumIndices( 0 ), mNumVertices( 0 )
 {
 	mSource = sourceMods->getSource();
 	
@@ -3259,7 +3259,7 @@ SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
 }
 
 SourceModsContext::SourceModsContext()
-	: mNumIndices( 0 ), mSource( nullptr )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr )
 {
 }
 
@@ -3281,6 +3281,12 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 
 		// We've finished processing all Modifiers and the Source. Now iterate all the attribute data and the indices
 		// and copy them to the target.
+		
+		// first let's verify that all counts on our attributes are the same. If not, we'll continue to process but with an error
+		for( const auto &attribCount : mAttribCount )
+			if( attribCount.second != mNumVertices )
+				CI_LOG_E( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
+		
 		for( const auto &attribInfoPair : mAttribInfo ) {
 			Attrib attrib = attribInfoPair.first;
 			const AttribInfo &attribInfo = attribInfoPair.second;
@@ -3321,17 +3327,17 @@ uint8_t	SourceModsContext::getAttribDims( Attrib attr ) const
 
 size_t SourceModsContext::getNumVertices() const
 {
-	return mParamsStack.back().getNumVertices();
+	return mNumVertices;
 }
 
 size_t SourceModsContext::getNumIndices() const
 {
-	return mParamsStack.back().getNumIndices();
+	return mNumIndices;
 }
 
 Primitive SourceModsContext::getPrimitive() const
 {
-	return mParamsStack.back().getPrimitive();
+	return mPrimitive;
 }
 
 float* SourceModsContext::getAttribData( Attrib attr )
@@ -3351,6 +3357,9 @@ uint32_t* SourceModsContext::getIndicesData()
 
 void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
+	// theoretically this should be the same for all calls to copyAttrib from a given modifier. If it's not at loadInto(), we'll log an error
+	mNumVertices = count;
+
 	// we definitely need allocation if we haven't encountered this attrib before
 	bool needsAllocation = ( mAttribCount.count( attr ) == 0 ) || ( mAttribData.count( attr ) == 0 ) || ( mAttribInfo.count( attr ) == 0 );
 	// we need allocation if we have this attrib but with different parameters
