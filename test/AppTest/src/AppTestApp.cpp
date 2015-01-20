@@ -15,22 +15,49 @@ using namespace std;
 
 class AppTestApp : public AppNative {
   public:
+	AppTestApp();
+
+	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void update() override;
 	void draw() override;
 
-	gl::TextureRef mImgAsset, mImgResource;
+	gl::TextureRef mTexStartup, mTexAsset, mTexResource;
 
 };
 
+AppTestApp::AppTestApp()
+{
+	CI_LOG_V( "bang" );
+
+	Surface8u surface( 256, 256, false );
+	Surface8u::Iter iter = surface.getIter();
+	while( iter.line() ) {
+		while( iter.pixel() ) {
+			iter.r() = 0;
+			iter.g() = iter.x();
+			iter.b() = iter.y();
+		}
+	}
+
+	mTexStartup = gl::Texture::create( surface );
+}
+
+void AppTestApp::prepareSettings( Settings *settings )
+{
+	CI_LOG_V( "bang" );
+}
+
 void AppTestApp::setup()
 {
+	mTexStartup = gl::Texture::create( surface );
+
 	auto asset = loadAsset( "mustache-green.png" );
-	mImgAsset = gl::Texture::create( loadImage( asset ) );
+	mTexAsset = gl::Texture::create( loadImage( asset ) );
 
 	auto resource = loadResource( RES_IMAGE );
-	mImgResource = gl::Texture::create( loadImage( resource ) );
+	mTexResource = gl::Texture::create( loadImage( resource ) );
 
 	gl::enableAlphaBlending();
 	
@@ -51,13 +78,21 @@ void AppTestApp::draw()
 
 	auto offset = vec2( 0 );
 
-	if( mImgAsset ) {
-		gl::draw( mImgAsset, offset );
-		offset += vec2( mImgAsset->getWidth(), 0 );
+	if( mTexAsset ) {
+		gl::draw( mTexAsset, offset );
 	}
 
-	if( mImgResource ) {
-		gl::draw( mImgResource, offset );
+	if( mTexResource ) {
+		offset.x += mTexAsset->getWidth();
+		gl::draw( mTexResource, offset );
+	}
+
+	if( mTexStartup ) {
+		offset.x = 0;
+		offset.y += mTexStartup->getHeight();
+
+		// draws wrong, probably because the renderer's gl context changes before we use it
+		gl::draw( mTexStartup, offset );
 	}
 }
 
