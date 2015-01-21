@@ -98,7 +98,16 @@ std::string Message::getArgAsString( int index, bool typeConvert ) const{
 	else
         return ((ArgString*)args[index])->get();
 }
+    
+ci::Buffer Message::getArgAsBlob(int index, bool typeConvert) const{
+    if (getArgType(index) != TYPE_BLOB){
+        //TODO: handle typeConvert
+        throw OscExcInvalidArgumentType();
+    }else 
+        return ((ArgBlob*)args[index])->get();
+}
 
+    
 void Message::addIntArg( int32_t argument ){
 	args.push_back( new ArgInt32( argument ) );
 }
@@ -109,6 +118,10 @@ void Message::addFloatArg( float argument ){
 
 void Message::addStringArg( std::string argument ){
 	args.push_back( new ArgString( argument ) );
+}
+    
+void Message::addBlobArg( ci::Buffer argument ){
+    args.push_back( new ArgBlob( argument ) );
 }
 	
 Message& Message::copy( const Message& other ){
@@ -128,6 +141,8 @@ Message& Message::copy( const Message& other ){
 			args.push_back( new ArgFloat( other.getArgAsFloat( i ) ) );
 		else if ( argType == TYPE_STRING )
 			args.push_back( new ArgString( other.getArgAsString( i ) ) );
+        else if( argType == TYPE_BLOB)
+            args.push_back(new ArgBlob( other.getArgAsBlob(i)));
 		else
 		{
 			throw OscExcInvalidArgumentType();

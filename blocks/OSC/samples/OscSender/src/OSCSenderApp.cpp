@@ -59,12 +59,13 @@ class OSCSenderApp : public AppNative {
 void OSCSenderApp::setup()
 {
 	mMouseLocX = getWindowCenter().x;
-	port = 3000;
+//	port = 3000;
+    port = 7770;
 	// assume the broadcast address is this machine's IP address but with 255 as the final value
 	// so to multicast from IP 192.168.1.100, the host should be 192.168.1.255
 	host = System::getIpAddress();
-	if( host.rfind( '.' ) != string::npos )
-		host.replace( host.rfind( '.' ) + 1, 3, "255" );
+//	if( host.rfind( '.' ) != string::npos )
+//		host.replace( host.rfind( '.' ) + 1, 3, "255" );
 	sender.setup( host, port, true );
 }
 
@@ -75,7 +76,8 @@ void OSCSenderApp::update()
 	
 	osc::Message message;
 	message.setAddress("/cinder/osc/1");
-	message.addFloatArg(positionX);
+	message.addIntArg(positionX);
+    
 	sender.sendMessage(message);
 }
 
