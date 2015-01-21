@@ -89,6 +89,26 @@ div.contents {
     right: auto;
 }
 
+/* remove gradient bg */
+.tabs, .tabs2, .tabs3, .tablist li, .navpath ul {
+    background-image: none;
+    background-color: #232323;
+}
+
+.tablist a {
+  color: #ffffff;
+  text-shadow: none;
+}
+
+.tablist li.current a {
+  background-image: none;
+  background-color: #c64b24;
+}
+
+.navpath ul {
+  background-color: #e7e7e7;
+}
+
 
 
 hr.footer {
