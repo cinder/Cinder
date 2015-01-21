@@ -900,21 +900,18 @@ class Bounds : public Modifier {
 	Attrib				mAttrib;
 };
 
-//! Calculates a single level of Phong tessellation, per "Phong Tessellation", by Tamy Boubekeur & Marc Alexa, SIGGRAPH Asia, 2008 Proceedings
-class PhongTessellate : public Modifier {
+//! Calculates a single level of subdivision of triangles by inserting a single vertex in the center of each triangle.
+//! Interpolates all attributes and normalizes 3D NORMAL, TANGENT and BITANGENT attributes.
+class Subdivide : public Modifier {
   public:
-	PhongTessellate( float alpha = 0.75f )
-		: mAlpha( alpha )
+	Subdivide()
 	{}
 	
 	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
 	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
 	
-	Modifier*	clone() const override { return new PhongTessellate( mAlpha ); }
+	Modifier*	clone() const override { return new Subdivide(); }
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	float		mAlpha;
 };
 
 

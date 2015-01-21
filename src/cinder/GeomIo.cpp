@@ -3195,40 +3195,33 @@ void Bounds::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-// PhongTessellate
-size_t PhongTessellate::getNumVertices( const Modifier::Params &upstreamParams ) const
+// Subdivide
+size_t Subdivide::getNumVertices( const Modifier::Params &upstreamParams ) const
 {
 	if( upstreamParams.getPrimitive() == Primitive::TRIANGLES ) {
 		size_t numTriangles = upstreamParams.getNumIndices() / 3;
+		// we add one new vertex for every input triangle
 		return upstreamParams.getNumVertices() + numTriangles;
 	}
 	else
 		return upstreamParams.getNumVertices();
 }
 
-size_t PhongTessellate::getNumIndices( const Modifier::Params &upstreamParams ) const
+size_t Subdivide::getNumIndices( const Modifier::Params &upstreamParams ) const
 {
+	// We create 3 triangles per every input triangle
 	if( upstreamParams.getPrimitive() == Primitive::TRIANGLES ) {
 		size_t numTriangles = upstreamParams.getNumIndices() / 3;
-		return numTriangles * 9;
+		return numTriangles * 3 /*output triangles per input*/ * 3 /*vertices per triangle*/;
 	}
 	else
 		return upstreamParams.getNumIndices();
 }
 
-namespace {
-vec3 phongPosition( vec3 lerpPosition, vec3 vertPosition, vec3 vertNormal )
-{
-	float projection = dot( ( lerpPosition - vertPosition ), vertNormal );
-	return ( lerpPosition - vertNormal * projection );
-}
-} // anonymous namespace
-
-void PhongTessellate::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+void Subdivide::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
 {
 	AttribSet request = requestedAttribs;
 	request.insert( POSITION );
-	request.insert( NORMAL );
 	ctx->processUpstream( request );
 	
 	if( ctx->getPrimitive() != Primitive::TRIANGLES ) {
@@ -3236,8 +3229,8 @@ void PhongTessellate::process( SourceModsContext *ctx, const AttribSet &requeste
 		return;
 	}
 
-	if( ( ctx->getAttribDims( POSITION ) != 3 ) || ( ctx->getAttribDims( NORMAL ) != 3 ) ) {
-		CI_LOG_E( "geom::PhongTessellate requires 3D POSITION and NORMAL." );
+	if( ctx->getAttribDims( POSITION ) != 3 ) {
+		CI_LOG_E( "geom::Subdivide requires 3D POSITION." );
 		return;
 	}
 	
@@ -3246,22 +3239,15 @@ void PhongTessellate::process( SourceModsContext *ctx, const AttribSet &requeste
 	
 	const uint32_t *inIndices = ctx->getIndicesData();
 	const vec3 *inPositions = reinterpret_cast<const vec3*>( ctx->getAttribData( POSITION ) );
-	const vec3 *inNormals = reinterpret_cast<const vec3*>( ctx->getAttribData( NORMAL ) );
 	
-	vector<vec3> outPositions, outNormals;
+	vector<vec3> outPositions;
 	vector<uint32_t> outIndices;
 	
 	for( size_t idx = 0; idx < numInIndices; idx += 3 ) {
-		vec3 lerpPos = (inPositions[inIndices[idx+0]] + inPositions[inIndices[idx+1]] +
-						inPositions[inIndices[idx+2]] ) / 3.0f;
-		vec3 finalPos = phongPosition( lerpPos, inPositions[inIndices[idx+0]], inNormals[inIndices[idx+0]] );
-		finalPos += phongPosition( lerpPos, inPositions[inIndices[idx+1]], inNormals[inIndices[idx+1]] );
-		finalPos += phongPosition( lerpPos, inPositions[inIndices[idx+2]], inNormals[inIndices[idx+2]] );
-		finalPos *= 0.333333f;
-		outPositions.push_back( finalPos );
-		outNormals.push_back( normalize(inNormals[inIndices[idx+0]] + inNormals[inIndices[idx+1]] +
-						inNormals[inIndices[idx+2]] ) );
-
+		vec3 sumPos = inPositions[inIndices[idx+0]] + inPositions[inIndices[idx+1]] +
+						inPositions[inIndices[idx+2]];
+		outPositions.push_back( sumPos / 3.0f );
+		
 		uint32_t newIdx = (uint32_t)(outPositions.size() + numInVertices - 1);
 		// 0-new-2
 		outIndices.push_back( inIndices[idx+0] ); outIndices.push_back( newIdx ); outIndices.push_back( inIndices[idx+2] );
@@ -3273,26 +3259,34 @@ void PhongTessellate::process( SourceModsContext *ctx, const AttribSet &requeste
 	
 	// iterate the attributes and lerp
 	for( const auto &attr : ctx->getAvailableAttribs() ) {
-		// we processed POSITION and NORMAL in the previous loop
-		if( ( attr == POSITION ) || ( attr == NORMAL ) )
+		// we processed POSITION in the previous loop
+		if( attr == POSITION )
 			continue;
 	
 		vector<float> outData;
 		const float *inData = ctx->getAttribData( attr );
 		uint8_t dims = ctx->getAttribDims( attr );
-
+		outData.reserve( numInIndices / 3 * dims );
 		for( size_t idx = 0; idx < numInIndices; idx += 3 ) {
 			for( uint8_t dim = 0; dim < dims; ++dim )
 				outData.push_back( (inData[inIndices[idx+0]*dims + dim] +
 									inData[inIndices[idx+1]*dims + dim] +
 									inData[inIndices[idx+2]*dims + dim]) / 3.0f );
 		}
+		
+		// normalize 3D NORMAL, TANGENT or BITANGENT
+		if( ( (attr == NORMAL) || (attr == TANGENT) || (attr == BITANGENT) ) && ( dims == 3 ) ) {
+			size_t numVerts = outData.size() / 3;
+			for( size_t v = 0; v < numVerts; ++v ) {
+				vec3 *d = reinterpret_cast<vec3*>( &outData[v * 3] );
+				*d = normalize( *d );
+			}
+		}
 
 		ctx->appendAttrib( attr, dims, outData.data(), outData.size() / dims );
 	}
 	
 	ctx->appendAttrib( POSITION, 3, (const float*)outPositions.data(), outPositions.size() );
-	ctx->appendAttrib( NORMAL, 3, (const float*)outNormals.data(), outNormals.size() );
 	ctx->copyIndices( ctx->getPrimitive(), outIndices.data(), outIndices.size(), 4 );
 }
 
