@@ -31,6 +31,7 @@
 
 #include <string>
 #include <boost/container/list.hpp>
+#include <type_traits>
 
 namespace Json {
 	class Value;
@@ -121,8 +122,14 @@ class JsonTree {
 	//! Creates a JsonTree with key \a key and uint64_t \a value .
 	explicit JsonTree( const std::string &key, uint64_t value );
 	
+	template<typename Arg1, typename... Args>
+	JsonTree( const std::string &key, const Arg1 &argument, const Args&... arguments );
+	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
-	static JsonTree					makeArray( const std::string &key = "" );
+	template<typename Arg1, typename... Args>
+	static JsonTree					makeArray( const std::string &key, const Arg1 &argument, const Args&... arguments );
+	template<typename T>
+	static JsonTree					makeArray( const std::string &key, std::initializer_list<T> arguments );
 	/**! Creates a JsonTree with key \a key as an empty object. **/
 	static JsonTree					makeObject( const std::string &key = "" );
 	
@@ -255,6 +262,13 @@ private:
 	enum ValueType	{ VALUE_BOOL, VALUE_DOUBLE, VALUE_INT, VALUE_STRING, VALUE_UINT	};
 
 	explicit JsonTree( const std::string &key, const Json::Value &value );
+	
+	static void initVariadic( JsonTree & parent ) {}
+	
+	template<typename Arg1, typename... Args>
+	static void initVariadic( JsonTree & parent, const Arg1 &first, const Args&... rest );
+	template<typename Object>
+	static bool isJsonTree( const Object &object );
 
 	Json::Value						createNativeDoc( WriteOptions writeOptions = WriteOptions() ) const;
 	static Json::Value				deserializeNative( const std::string &jsonString, ParseOptions parseOptions );
@@ -323,6 +337,55 @@ private:
 	};
 
 };
+	
+template<typename Arg1, typename... Args>
+JsonTree::JsonTree( const std::string &key, const Arg1 &argument, const Args&... arguments )
+{
+	mNodeType = NODE_ARRAY;
+	mKey = key;
+	initVariadic( *this, argument, arguments... );
+}
+	
+template<typename Arg1, typename... Args>
+JsonTree JsonTree::makeArray( const std::string &key, const Arg1 &argument, const Args&... arguments )
+{
+	JsonTree result;
+	result.mNodeType = NODE_ARRAY;
+	result.mKey = key;
+	initVariadic( result, argument, arguments... );
+	return result;
+}
+
+template<typename T>
+JsonTree JsonTree::makeArray( const std::string &key, std::initializer_list<T> arguments )
+{
+	JsonTree result;
+	result.mNodeType = NODE_ARRAY;
+	result.mKey = key;
+	for( auto & arg : arguments ) {
+		result.pushBack( JsonTree( "", arg ) );
+	}
+	return result;
+}
+	
+template<>
+JsonTree JsonTree::makeArray( const std::string &key, std::initializer_list<JsonTree> arguments )
+{
+	JsonTree result;
+	result.mNodeType = NODE_ARRAY;
+	result.mKey = key;
+	for( auto & arg : arguments ) {
+		result.pushBack( arg );
+	}
+	return result;
+}
+
+template<typename Arg1, typename... Args>
+void JsonTree::initVariadic( JsonTree &parent, const Arg1 &argument, const Args&... arguments )
+{
+	parent.pushBack( JsonTree( "", argument ) );
+	initVariadic( parent, arguments... );
+}
 
 std::ostream&						operator<<( std::ostream &out, const JsonTree &json );
 
