@@ -8,14 +8,14 @@
 class Particle {
  public:
 	Particle();
-	Particle( ci::Vec2f );
-	void update( const ci::Channel32f &channel, const ci::Vec2i &mouseLoc );
+	Particle( ci::vec2 );
+	void update( const ci::Channel32f &channel, const ci::ivec2 &mouseLoc );
 	void draw();
 	
-	ci::Vec2f	mLoc;
-	ci::Vec2f	mLocPer;
-	ci::Vec2f	mDir;
-	ci::Vec2f	mDirToCursor;
+	ci::vec2	mLoc;
+	ci::vec2	mLocPer;
+	ci::vec2	mDir;
+	ci::vec2	mDirToCursor;
 	float		mVel;
 	
 	float		mRadius;

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/params/Params.h"
 
@@ -19,17 +20,17 @@ class TweakBarApp : public AppBasic {
 	CameraPersp				mCam;
 	params::InterfaceGlRef	mParams;
 	float					mObjSize;
-	Quatf					mObjOrientation;
+	quat					mObjOrientation;
 	ColorA					mColor;
 	std::string				mString;
 	
-	void					setLightDirection( Vec3f direction );
-	Vec3f					getLightDirection() { return mLightDirection; }
-	Vec3f					mLightDirection;
+	void					setLightDirection( vec3 direction );
+	vec3					getLightDirection() { return mLightDirection; }
+	vec3					mLightDirection;
 	uint32_t				mSomeValue;
 };
 
-void TweakBarApp::setLightDirection( Vec3f direction )
+void TweakBarApp::setLightDirection( vec3 direction )
 {
 	console() << "Light direction: " << direction << std::endl;
 	mLightDirection = direction;
@@ -38,15 +39,15 @@ void TweakBarApp::setLightDirection( Vec3f direction )
 void TweakBarApp::setup()
 {
 	mObjSize = 4;
-	mLightDirection = Vec3f( 0, 0, -1 );
+	mLightDirection = vec3( 0, 0, -1 );
 	mColor = ColorA( 0.25f, 0.5f, 1, 1 );
 	mSomeValue = 2;
 
 	// Setup our default camera, looking down the z-axis
-	mCam.lookAt( Vec3f( -20, 0, 0 ), Vec3f::zero() );
+	mCam.lookAt( vec3( -20, 0, 0 ), vec3( 0 ) );
 
 	// Create the interface and give it a name.
-	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( Vec2i( 200, 400 ) ) );
+	mParams = params::InterfaceGl::create( getWindow(), "App parameters", toPixels( ivec2( 200, 400 ) ) );
 
 	// Setup the parameters
 	mParams->addParam( "Cube Size", &mObjSize ).min( 0.1f ).max( 20.5f ).keyIncr( "z" ).keyDecr( "Z" ).precision( 2 ).step( 0.02f );
@@ -60,8 +61,8 @@ void TweakBarApp::setup()
 	mParams->addParam( "some value", &mSomeValue ).updateFn( [this] { console() << "new value: " << mSomeValue << std::endl; } );
 
 	// Add a param with no target, but instead provide setter and getter functions.
-	std::function<void( Vec3f )> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
-	std::function<Vec3f ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
+	std::function<void( vec3 )> setter	= std::bind( &TweakBarApp::setLightDirection, this, std::placeholders::_1 );
+	std::function<vec3 ()> getter		= std::bind( &TweakBarApp::getLightDirection, this );
 	mParams->addParam( "Light Direction", setter, getter );
 
 	// Other types of controls that can be added to the interface
@@ -87,17 +88,17 @@ void TweakBarApp::draw()
 	gl::enableDepthWrite();
 	gl::clear( Color::gray( 0.1f ) );
 
-	glLoadIdentity();
+/*	glLoadIdentity();
 	glEnable( GL_LIGHTING );
 	glEnable( GL_LIGHT0 );	
 	GLfloat lightPosition[] = { -mLightDirection.x, -mLightDirection.y, -mLightDirection.z, 0 };
 	glLightfv( GL_LIGHT0, GL_POSITION, lightPosition );
-	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );
+	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );*/
 
 	gl::setMatrices( mCam );
 	gl::rotate( mObjOrientation );
 	gl::color( mColor );
-	gl::drawCube( Vec3f::zero(), Vec3f( mObjSize, mObjSize, mObjSize ) );
+	gl::drawCube( vec3( 0 ), vec3( mObjSize ) );
 
 	// Draw the interface
 	mParams->draw();

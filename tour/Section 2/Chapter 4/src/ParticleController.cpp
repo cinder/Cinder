@@ -13,14 +13,14 @@ ParticleController::ParticleController()
 void ParticleController::applyForce( float zoneRadius, float lowerThresh, float higherThresh, float attractStrength, float repelStrength, float alignStrength  )
 {
 	float twoPI = M_PI * 2.0f;
-	mParticleCentroid = Vec3f::zero();
+	mParticleCentroid = vec3::zero();
 	mNumParticles = mParticles.size();
 	
 	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ){
 	
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
-			Vec3f dir = p1->mPos - p2->mPos;
+			vec3 dir = p1->mPos - p2->mPos;
 			float distSqrd = dir.lengthSquared();
 			float zoneRadiusSqrd = zoneRadius * zoneRadius;
 			
@@ -60,7 +60,7 @@ void ParticleController::applyForce( float zoneRadius, float lowerThresh, float 
 	mParticleCentroid /= (float)mNumParticles;
 }
 
-void ParticleController::pullToCenter( const ci::Vec3f &center )
+void ParticleController::pullToCenter( const ci::vec3 &center )
 {
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
 		p->pullToCenter( center );
@@ -93,9 +93,9 @@ void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		Vec3f randVec = Rand::randVec3f();
-		Vec3f pos = randVec * Rand::randFloat( 100.0f, 600.0f );
-		Vec3f vel = -randVec;
+		vec3 randVec = Rand::randVec3f();
+		vec3 pos = randVec * Rand::randFloat( 100.0f, 600.0f );
+		vec3 vel = -randVec;
 
 		mParticles.push_back( Particle( pos, vel ) );
 	}

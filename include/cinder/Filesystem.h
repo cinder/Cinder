@@ -27,7 +27,7 @@
 #include "cinder/Cinder.h"
 
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
 	#include <filesystem>
 #else
 	#define BOOST_FILESYSTEM_VERSION 3
@@ -37,7 +37,7 @@
 
 namespace cinder {
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
 	namespace fs = std::tr2::sys;
 #else
 	namespace fs = boost::filesystem;

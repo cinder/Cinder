@@ -25,7 +25,6 @@
 #include "cinder/audio/InputNode.h"
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/Cinder.h"
 #include "cinder/app/App.h"

@@ -25,7 +25,7 @@ bool			ALLOWGRAVITY = false;
 bool			ALLOWPERLIN = false;
 bool			ALLOWTRAILS = false;
 
-Vec3f		gravity( 0, 0.35f, 0 );
+vec3		gravity( 0, 0.35f, 0 );
 const int	CINDER_FACTOR = 5; // how many times more particles than the Java version
 
 class BasicApp : public AppBasic {
@@ -45,7 +45,7 @@ class BasicApp : public AppBasic {
 	Font		mFont;
 	Emitter		mEmitter;
 	bool		mouseIsDown;
-	Vec2i		mMousePos;
+	ivec2		mMousePos;
 };
 
 void BasicApp::prepareSettings( Settings *settings )
@@ -133,10 +133,10 @@ void BasicApp::draw()
 	dx::color( 1.0, 1.0, 1.0, 1.0 );
 	std::stringstream s;
 	s << "Framerate:" << getAverageFps() << " QUAD count:" << quadCount;
-	dx::drawString(s.str(),Vec2f(10.0f,10.0f),Color::white(),mFont);
+	dx::drawString(s.str(),vec2(10.0f,10.0f),Color::white(),mFont);
 }
 
-void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha )
+void renderImage( vec3 _loc, float _diam, Color _col, float _alpha )
 {
 	quadCount++;
 

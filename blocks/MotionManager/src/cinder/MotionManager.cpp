@@ -73,22 +73,22 @@ void MotionManager::setShowsCalibrationView( bool shouldShow )
 	get()->mImpl->setShowsCalibrationView( shouldShow );
 }
 
-Vec3f MotionManager::getGravityDirection( app::InterfaceOrientation orientation )
+vec3 MotionManager::getGravityDirection( app::InterfaceOrientation orientation )
 {
 	return get()->mImpl->getGravityDirection( orientation );
 }
 
-Quatf MotionManager::getRotation( app::InterfaceOrientation orientation )
+quat MotionManager::getRotation( app::InterfaceOrientation orientation )
 {
     return get()->mImpl->getRotation( orientation );
 }
 
-ci::Vec3f MotionManager::getRotationRate( app::InterfaceOrientation orientation )
+vec3 MotionManager::getRotationRate( app::InterfaceOrientation orientation )
 {
     return get()->mImpl->getRotationRate( orientation );
 }
 
-ci::Vec3f MotionManager::getAcceleration( app::InterfaceOrientation orientation)
+vec3 MotionManager::getAcceleration( app::InterfaceOrientation orientation)
 {
     return get()->mImpl->getAcceleration( orientation );
 }
@@ -104,19 +104,19 @@ MotionManager* MotionManager::get()
 	std::unique_lock<std::mutex> lock( sMutex );
 	if( ! sInst ) {
 		sInst = new MotionManager;
-        sInst->mImpl = std::shared_ptr<MotionImplCoreMotion>( new MotionImplCoreMotion() );
+        sInst->mImpl = std::make_shared<MotionImplCoreMotion>();
 	}
 	return sInst;
 }
 
 bool MotionManager::isShakingImpl( float minShakeDeltaThreshold )
 {
-    const Vec3f& accel = getAcceleration();
+    const vec3& accel = getAcceleration();
 	std::unique_lock<std::mutex> lock( sMutex ); // lock after we get the acceleration so there is no deadlock
     bool isShaking = false;
-    if( mPrevAcceleration != Vec3f::zero() ) {
-        mShakeDelta = (accel - mPrevAcceleration).lengthSquared();
-        if( (accel - mPrevAcceleration).lengthSquared() > (minShakeDeltaThreshold * minShakeDeltaThreshold) )
+    if( mPrevAcceleration != vec3( 0 ) ) {
+        mShakeDelta = length2(accel - mPrevAcceleration);
+        if( length2(accel - mPrevAcceleration) > (minShakeDeltaThreshold * minShakeDeltaThreshold) )
             isShaking = true;
     }
     mPrevAcceleration = accel;

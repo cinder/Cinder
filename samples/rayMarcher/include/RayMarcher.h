@@ -18,12 +18,14 @@ class RayMarcher {
 	void		renderScanline( int scanline, ci::Surface8u *surface );
 	void		renderSceneGL();
 
+	static glm::vec3 sLightDir;
  private:
 	ci::ColorA		march( const ci::Ray &ray );
 	float			marchSecondary( const ci::Ray &ray );
-	float			sampleDensity( const ci::Vec3f &v );
+	float			sampleDensity( const ci::vec3 &v );
 	
 	const ci::Camera			*mCamera;
+	
 	ci::Perlin					mPerlin;
 	std::vector<ci::Sphere>		mSpheres;
 	std::vector<ci::Sphere>		mTransformedSpheres;

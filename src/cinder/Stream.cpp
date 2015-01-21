@@ -167,7 +167,7 @@ IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBu
 IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IStreamCinder(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
@@ -316,7 +316,7 @@ IoStreamFileRef IoStreamFile::create( FILE *file, bool ownsFile, int32_t default
 IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IoStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;

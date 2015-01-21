@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Arcball.h"
 #include "cinder/Rand.h"
 
@@ -16,10 +17,10 @@ class ArcballDemoApp : public AppBasic {
 	void drawVerbose();	
 	
 	Arcball		mArcball;
-	Vec2i		mInitialMouseDown, mCurrentMouseDown;
+	ivec2		mInitialMouseDown, mCurrentMouseDown;
 	bool		mDrawVerbose;
 	bool		mUseConstraintAxis;
-	Vec3f		mConstraintAxis;
+	vec3		mConstraintAxis;
 };
 
 void ArcballDemoApp::setup()
@@ -32,7 +33,7 @@ void ArcballDemoApp::setup()
 
 	mDrawVerbose = true;
 	mUseConstraintAxis = false;
-	mCurrentMouseDown = mInitialMouseDown = Vec2i( 200, 200 );
+	mCurrentMouseDown = mInitialMouseDown = ivec2( 200, 200 );
 }
 
 void ArcballDemoApp::resize()
@@ -74,50 +75,50 @@ void ArcballDemoApp::keyDown( KeyEvent event )
 void ArcballDemoApp::drawVerbose()
 {
 	// draw the cube
-	gl::pushModelView();
+	gl::pushModelMatrix();
 		gl::translate( getWindowCenter() );
-		gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
+		gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );	
 		gl::rotate( mArcball.getQuat() );
-		gl::drawColorCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
-	gl::popModelView();
+		gl::drawColorCube( vec3( 0.0f ), vec3( 1, 1, 1 ) );
+	gl::popModelMatrix();
 
 	// draw the back faces of the sphere
-	gl::pushModelView();
-		glColor4f( 0.0, 0.0, 0.0, 0.3f );
+	gl::pushModelMatrix();
+		gl::color( 0.0, 0.0, 0.0, 0.3f );
 		gl::disableDepthWrite();
 		gl::translate( getWindowCenter() );
 		glCullFace( GL_FRONT );
-		gl::drawSphere( Vec3f::zero(), mArcball.getRadius(), 50 );
-	gl::popModelView();
+		gl::drawSphere( vec3( 0 ), mArcball.getRadius(), 50 );
+	gl::popModelMatrix();
 
 	gl::enableDepthWrite();
 	glCullFace( GL_BACK );
 
 	// draw the axes
-	gl::pushModelView();
+	gl::pushModelMatrix();
 		gl::translate( getWindowCenter() );
 		
 		// start
-		glColor4f( 1.0, 1.0, 0.0f, 1.0f );
-		gl::drawVector( Vec3f::zero(), mArcball.mouseOnSphere( mInitialMouseDown ) * mArcball.getRadius(), 10, 5 );
+		gl::color( 1.0, 1.0, 0.0f, 1.0f );
+		gl::drawVector( vec3( 0 ), mArcball.mouseOnSphere( mInitialMouseDown ) * mArcball.getRadius(), 10, 5 );
 		
 		// end
-		glColor4f( 0.0, 1.0, 0.0f, 1.0f );
-		gl::drawVector( Vec3f::zero(), mArcball.mouseOnSphere( mCurrentMouseDown ) * mArcball.getRadius(), 10, 5 );
+		gl::color( 0.0, 1.0, 0.0f, 1.0f );
+		gl::drawVector( vec3( 0 ), mArcball.mouseOnSphere( mCurrentMouseDown ) * mArcball.getRadius(), 10, 5 );
 		
 		// constraint
 		if( mUseConstraintAxis ) {
-			glColor4f( 0.0, 0.7f, 1.0f, 1.0f );
-			gl::drawVector( mConstraintAxis * -mArcball.getRadius() * 1.5, mConstraintAxis * mArcball.getRadius() * 1.5, 10, 5 );		
+			gl::color( ColorAf( 0.0, 0.7f, 1.0f, 1.0f ) );
+			gl::drawVector( mConstraintAxis * -mArcball.getRadius() * 1.5f, mConstraintAxis * mArcball.getRadius() * 1.5f, 10, 5 );
 		}
-	gl::popModelView();
+	gl::pushModelMatrix();
 
 	// draw the front faces of the sphere
-	gl::pushModelView();
-		glColor4f( 0.0, 0.0, 0.0, 0.3f );
+	gl::pushModelMatrix();
+		gl::color( ColorAf( 0.0, 0.0, 0.0, 0.3f ) );
 		gl::translate( getWindowCenter() );
-		gl::drawSphere( Vec3f::zero(), mArcball.getRadius(), 50 );
-	gl::popModelView();	
+		gl::drawSphere( vec3( 0.0f ), mArcball.getRadius(), 50 );
+	gl::popModelMatrix();
 }
 
 void ArcballDemoApp::draw()
@@ -133,13 +134,13 @@ void ArcballDemoApp::draw()
 		// 1) rotates the cube by the quaternion that arcball has provided
 		// 2) scales the cube to be 200 pixels big
 		// 3) moves the cube to the center of the window
-		gl::pushModelView();
+		gl::pushModelMatrix();
 			glCullFace( GL_BACK );
-			gl::translate( getWindowSize() / 2.0f );
-			gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
+			gl::translate( getWindowSize() / 2 );
+			gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );	
 			gl::rotate( mArcball.getQuat() );
-			gl::drawColorCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
-		gl::popModelView();		
+			gl::drawColorCube( vec3( 0 ), vec3( 1 ) );
+		gl::popModelMatrix();
 	}
 }
 

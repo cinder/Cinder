@@ -23,7 +23,7 @@
 
 #import <Cocoa/Cocoa.h>
 #import "cinder/app/App.h"
-#import "cinder/app/Renderer.h"
+#import "cinder/app/RendererGl.h"
 
 @class AppImplCocoa;
 @class CinderView;
@@ -33,6 +33,7 @@
 	NSOpenGLView					*view;
 	cinder::app::RendererGl*		renderer; // equivalent of a weak_ptr; 'renderer' actually owns us
 	NSView							*cinderView;
+	cinder::gl::ContextRef			mContext;
 }
 
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)aRenderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
@@ -48,6 +49,6 @@
 
 - (BOOL)needsDrawRect;
 
-+ (NSOpenGLPixelFormat*)defaultPixelFormat:(int)antialiasLevel;
++ (NSOpenGLPixelFormat*)defaultPixelFormat: (cinder::app::RendererGl::Options)rendererOptions;
 
 @end

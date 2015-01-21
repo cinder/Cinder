@@ -23,67 +23,52 @@
 #include "CullableObject.h"
 
 using namespace ci;
+using namespace ci::gl;
 
-CullableObject::CullableObject(ci::gl::VboMesh mesh, ci::gl::Texture diffuse, ci::gl::Texture normal, ci::gl::Texture specular)
-	: mVboMesh(mesh), mDiffuse(diffuse), mNormal(normal), mSpecular(specular), bIsCulled(false)
+CullableObject::CullableObject( const BatchRef &batch )
+	: mBatch( batch ), mIsCulled( false )
 {
-	setTransform( Vec3f::zero(), Vec3f::zero(), Vec3f::one() * 0.10f );
+	setTransform( vec3( 0 ), vec3( 0 ), vec3( 0.1f ) );
 }
 
-CullableObject::~CullableObject(void)
-{
-}
-
-void CullableObject::setup()
+CullableObject::~CullableObject()
 {
 }
 
-void CullableObject::update(double elapsed)
+void CullableObject::update( double elapsed )
 {
-	//! rotate slowly around the y-axis (independent of frame rate)
+	// rotate slowly around the y-axis (independent of frame rate)
 	mRotation.y += (float) elapsed;
 	setTransform( mPosition, mRotation, mScale );
 }
 
 void CullableObject::draw()
 {
-	//! don't draw if culled
-	if(bIsCulled) return;
+	// don't draw if culled
+	if( mIsCulled )
+		return;
 
-	//! only draw if mesh is valid
-	if(mVboMesh) {
+	// only draw if mesh is valid
+	if( mBatch ) {
 		gl::color( Color::white() );
 
-		//! enable and bind the textures (optional, not used)
-		gl::enable(GL_TEXTURE_2D);
-		if(mDiffuse) mDiffuse.bind(0);
-		if(mNormal) mNormal.bind(1);
-		if(mSpecular) mSpecular.bind(2);
+		// draw the mesh
+		gl::ScopedModelMatrix scopeModel;
 
-		//! draw the mesh 
-		gl::pushModelView();
-		gl::multModelView(mTransform);
-		gl::draw( mVboMesh );
-		gl::popModelView();
-
-		//! unbind the textures (optional, not used)
-		if(mSpecular) mSpecular.unbind();
-		if(mNormal) mNormal.unbind();
-		if(mDiffuse) mDiffuse.unbind();
-		gl::disable(GL_TEXTURE_2D);
+		gl::multModelMatrix( mTransform );
+		mBatch->draw();
 	}
 }
 
-void CullableObject::setTransform(const ci::Vec3f &position, const ci::Vec3f &rotation, const ci::Vec3f &scale)
+void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, const vec3 &scale )
 {
 	mPosition = position;
 	mRotation = rotation;
 	mScale = scale;
 
-	//! by creating a single transformation matrix, it will be very easy
-	//! to construct a world space bounding box for this object
-	mTransform = mTransform.identity();
-	mTransform.translate(position);
-	mTransform.rotate(rotation);
-	mTransform.scale(scale);
+	// by creating a single transformation matrix, it will be very easy to construct a world space bounding box for this object
+	mTransform = mat4();
+	mTransform *= glm::translate( position );
+	mTransform *= toMat4( quat( rotation ) );
+	mTransform *= glm::scale( scale );
 }

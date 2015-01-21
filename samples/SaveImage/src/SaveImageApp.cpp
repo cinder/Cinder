@@ -12,7 +12,7 @@ using namespace ci::app;
 using namespace std;
 
 struct Circle {
-	Circle( const Vec2f &aCenter )
+	Circle( const vec2 &aCenter )
 		: mCenter( aCenter )
 	{
 		mRadiusOfTravel = aCenter.x / 10.0f;
@@ -28,10 +28,10 @@ struct Circle {
 	
 	void draw() {
 		gl::color( mColor );
-		gl::drawSolidCircle( mCenter + Vec2f( cos( mAngle ), sin( mAngle ) ) * mRadiusOfTravel, mRadius );
+		gl::drawSolidCircle( mCenter + vec2( cos( mAngle ), sin( mAngle ) ) * mRadiusOfTravel, mRadius );
 	}
 		
-	Vec2f	mCenter;
+	vec2	mCenter;
 	float	mSpeed, mAngle;
 	float	mRadiusOfTravel, mRadius;
 	Color	mColor;
@@ -53,7 +53,7 @@ void SaveImageApp::setup()
 	mCurrentFrame = 0;
 	
 	for( size_t s = 0; s < 100; ++s )
-		mCircles.push_back( Circle( Vec2f( Rand::randFloat( 0, 640 ), Rand::randFloat( 0, 480 ) ) ) );
+		mCircles.push_back( Circle( vec2( Rand::randFloat( 0, 640 ), Rand::randFloat( 0, 480 ) ) ) );
 }
 
 void SaveImageApp::mouseDown( MouseEvent event )

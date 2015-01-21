@@ -1,5 +1,6 @@
 #include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/Log.h"
 
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/GainNode.h"
@@ -7,7 +8,6 @@
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/audio/dsp/Converter.h"
-#include "cinder/audio/Debug.h"
 
 #include "InterleavedPassThruNode.h"
 #include "../../common/AudioTestGui.h"
@@ -38,8 +38,8 @@ public:
 
 	void printDefaultOutput();
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 	audio::GainNodeRef			mGain;
 	audio::MonitorNodeRef	mMonitor;
@@ -293,14 +293,14 @@ void NodeTestApp::setupUI()
 	mEnableSineButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableSineButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
 	mEnableNoiseButton.mIsToggle = true;
 	mEnableNoiseButton.mTitleNormal = "noise disabled";
 	mEnableNoiseButton.mTitleEnabled = "noise enabled";
 	mEnableNoiseButton.mBounds = buttonRect;
 	mWidgets.push_back( &mEnableNoiseButton );
 
-	buttonRect += Vec2f( 0, buttonRect.getHeight() + 10 );
+	buttonRect += vec2( 0, buttonRect.getHeight() + 10 );
 	mDelayedEnableButton.mTitleNormal = "delayed enable";
 	mDelayedEnableButton.mBounds = buttonRect;
 	mWidgets.push_back( &mDelayedEnableButton );
@@ -316,13 +316,13 @@ void NodeTestApp::setupUI()
 	gl::enableAlphaBlending();
 }
 
-void NodeTestApp::processDrag( Vec2i pos )
+void NodeTestApp::processDrag( ivec2 pos )
 {
 	if( mGainSlider.hitTest( pos ) )
 		mGain->setValue( mGainSlider.mValueScaled );
 }
 
-void NodeTestApp::processTap( Vec2i pos )
+void NodeTestApp::processTap( ivec2 pos )
 {
 	auto ctx = audio::master();
 
@@ -382,7 +382,7 @@ void NodeTestApp::draw()
 	gl::clear();
 
 	if( mMonitor && mMonitor->getNumConnectedInputs() ) {
-		Vec2f padding( 20, 20 );
+		vec2 padding( 20, 20 );
 
 		Rectf scopeRect( padding.x, padding.y, getWindowWidth() - padding.x, getWindowHeight() - padding.y );
 		drawAudioBuffer( mMonitor->getBuffer(), scopeRect, true );

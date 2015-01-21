@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include <list>
 
@@ -25,7 +26,7 @@ class WindowData {
 	{}
   
 	Color			mColor;
-	list<Vec2f>		mPoints; // the points drawn into this window
+	list<vec2>		mPoints; // the points drawn into this window
 };
 
 void BasicAppMultiWindow::setup()

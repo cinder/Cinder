@@ -58,8 +58,8 @@ public:
 	void updateLowpass();
 
 	void setupUI();
-	void processDrag( Vec2i pos );
-	void processTap( Vec2i pos );
+	void processDrag( ivec2 pos );
+	void processTap( ivec2 pos );
 
 
 	audio::GenNodeRef mGen;
@@ -197,14 +197,14 @@ void EffectXAudioTestApp::setupUI()
 	mFreqSlider.set( mGen->getFreq() );
 	mWidgets.push_back( &mFreqSlider);
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mLowpassCutoffSlider.mBounds = sliderRect;
 	mLowpassCutoffSlider.mTitle = "Lowpass Cutoff";
 	mLowpassCutoffSlider.mMax = 1500.0f;
 	mLowpassCutoffSlider.set( mLowpassCutoffSlider.mValueScaled );
 	mWidgets.push_back( &mLowpassCutoffSlider );
 
-	sliderRect += Vec2f( 0, sliderRect.getHeight() + 10 );
+	sliderRect += vec2( 0, sliderRect.getHeight() + 10 );
 	mReverbDecaySlider.mBounds = sliderRect;
 	mReverbDecaySlider.mTitle = "Reverb Decay (s)";
 	mReverbDecaySlider.mMin = XAUDIO2FX_REVERB_MIN_DECAY_TIME;
@@ -243,7 +243,7 @@ void EffectXAudioTestApp::updateReverb()
 	}
 }
 
-void EffectXAudioTestApp::processDrag( Vec2i pos )
+void EffectXAudioTestApp::processDrag( ivec2 pos )
 {
 	if( mFreqSlider.hitTest( pos ) )
 		mGen->setFreq( mFreqSlider.mValueScaled );
@@ -253,7 +253,7 @@ void EffectXAudioTestApp::processDrag( Vec2i pos )
 		updateReverb();
 }
 
-void EffectXAudioTestApp::processTap( Vec2i pos )
+void EffectXAudioTestApp::processTap( ivec2 pos )
 {
 	if( mPlayButton.hitTest( pos ) )
 		audio::master()->setEnabled( ! audio::master()->isEnabled() );

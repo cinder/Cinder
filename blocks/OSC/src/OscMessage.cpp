@@ -117,6 +117,8 @@ Message& Message::copy( const Message& other ){
 	
 	remote_host = other.remote_host;
 	remote_port = other.remote_port;
+
+	args.clear();
 	
 	for ( int i=0; i<(int)other.args.size(); ++i ){
 		ArgType argType = other.getArgType( i );

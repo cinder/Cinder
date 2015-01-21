@@ -13,6 +13,25 @@
 			buildPhases = (
 			);
 			dependencies = (
+				B05F590019AC495C001558CB /* PBXTargetDependency */,
+				00239C6919ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6B19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6D19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C6F19ABF8B900B652B4 /* PBXTargetDependency */,
+				00239C7119ABF8B900B652B4 /* PBXTargetDependency */,
+				006D71B91995295E008149E2 /* PBXTargetDependency */,
+				006D71BB1995295E008149E2 /* PBXTargetDependency */,
+				006D71BD1995295E008149E2 /* PBXTargetDependency */,
+				006D71BF1995295E008149E2 /* PBXTargetDependency */,
+				006D71C11995295E008149E2 /* PBXTargetDependency */,
+				006D71C31995295E008149E2 /* PBXTargetDependency */,
+				006D71C51995295E008149E2 /* PBXTargetDependency */,
+				006D71C71995295E008149E2 /* PBXTargetDependency */,
+				006D71C91995295E008149E2 /* PBXTargetDependency */,
+				006D71CB1995295E008149E2 /* PBXTargetDependency */,
+				006D71CD1995295E008149E2 /* PBXTargetDependency */,
+				006D71CF1995295E008149E2 /* PBXTargetDependency */,
+				006D71D11995295E008149E2 /* PBXTargetDependency */,
 				00D494BC1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494BE1988A24F00A44E4C /* PBXTargetDependency */,
 				00D494C01988A24F00A44E4C /* PBXTargetDependency */,
@@ -65,14 +84,12 @@
 				0005CA7B10068268004D82BC /* PBXTargetDependency */,
 				0005CA7D10068268004D82BC /* PBXTargetDependency */,
 				0005CA7F10068268004D82BC /* PBXTargetDependency */,
-				0005CA8110068268004D82BC /* PBXTargetDependency */,
 				0005CA8510068268004D82BC /* PBXTargetDependency */,
 				0005CA8710068268004D82BC /* PBXTargetDependency */,
 				0005CA8910068268004D82BC /* PBXTargetDependency */,
 				0005CA8B10068268004D82BC /* PBXTargetDependency */,
 				0005CA8D10068268004D82BC /* PBXTargetDependency */,
 				0005CA8F10068268004D82BC /* PBXTargetDependency */,
-				0005CA9110068268004D82BC /* PBXTargetDependency */,
 				0005CA9310068268004D82BC /* PBXTargetDependency */,
 				0005CA9710068268004D82BC /* PBXTargetDependency */,
 				0005CA9B10068268004D82BC /* PBXTargetDependency */,
@@ -84,10 +101,8 @@
 				0049C66C1011366C0015B4B9 /* PBXTargetDependency */,
 				00B1021D101A5CDC0078D775 /* PBXTargetDependency */,
 				00B1021F101A5CE40078D775 /* PBXTargetDependency */,
-				00D716FE1021336B00894269 /* PBXTargetDependency */,
 				00F0B3611039F869003AB416 /* PBXTargetDependency */,
 				00F0B3651039F869003AB416 /* PBXTargetDependency */,
-				00F0B3671039F869003AB416 /* PBXTargetDependency */,
 				00F0B3691039F869003AB416 /* PBXTargetDependency */,
 				00F0B36B1039F869003AB416 /* PBXTargetDependency */,
 				000B6788103CB3E4003D463F /* PBXTargetDependency */,
@@ -96,7 +111,6 @@
 				00236DA31130E4D8006C991F /* PBXTargetDependency */,
 				009F02051136D24300636E3C /* PBXTargetDependency */,
 				00AE0FF3113DF1F2005AFB58 /* PBXTargetDependency */,
-				0039FB34115AD32700BA0BAD /* PBXTargetDependency */,
 				0039FB43115AD34700BA0BAD /* PBXTargetDependency */,
 				0039FB53115AD3A200BA0BAD /* PBXTargetDependency */,
 				006A1FCA11D7F87600941A5E /* PBXTargetDependency */,
@@ -159,13 +173,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = bspline;
 		};
-		0005C9A9100681CB004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = CubeMapping;
-		};
 		0005C9B3100681D2004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */;
@@ -207,13 +214,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = imageWriterSample;
-		};
-		0005C9FD10068200004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9F510068200004D82BC /* OBJLoader.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = OBJLoader;
 		};
 		0005CA0610068206004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -320,13 +320,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = fontSample;
 		};
-		0005CA8010068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9F510068200004D82BC /* OBJLoader.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = OBJLoader;
-		};
 		0005CA8410068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */;
@@ -368,13 +361,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = shaderTest;
-		};
-		0005CA9010068268004D82BC /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = CubeMapping;
 		};
 		0005CA9210068268004D82BC /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -474,6 +460,69 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = CairoBasic;
 		};
+		00239C5319ABF67100B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = FBOBasic;
+		};
+		00239C5A19ABF78A00B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MotionBlurVelocityBuffer;
+		};
+		00239C6019ABF7C800B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ParticleSphereCPU;
+		};
+		00239C6619ABF7D100B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ParticleSphereGPU;
+		};
+		00239C6819ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ParticleSphereCPU;
+		};
+		00239C6A19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ParticleSphereGPU;
+		};
+		00239C6C19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MotionBlurVelocityBuffer;
+		};
+		00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = FBOBasic;
+		};
+		00239C7019ABF8B900B652B4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D72BE1995325D008149E2 /* Geometry.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Geometry;
+		};
 		002932A41530F5660022B1BF /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */;
@@ -544,20 +593,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = StereoscopicRendering;
 		};
-		0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = FBOBasic;
-		};
-		0039FB33115AD32700BA0BAD /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = FBOBasic;
-		};
 		0039FB40115AD33F00BA0BAD /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */;
@@ -613,6 +648,195 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = QuickTimeWriter;
+		};
+		006D7149199528BB008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7145199528BA008149E2 /* Cube.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Cube;
+		};
+		006D714F199528C4008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D714B199528C4008149E2 /* CubeMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = CubeMapping;
+		};
+		006D7155199528CD008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = DynamicCubeMapping;
+		};
+		006D715B199528D5008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = GeometryShaderBasic;
+		};
+		006D7161199528DB008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = HighDynamicRange;
+		};
+		006D7167199528E1008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ImmediateMode;
+		};
+		006D716D199528E7008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = InstancedTeapots;
+		};
+		006D7173199528ED008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D716F199528EC008149E2 /* MipMap.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MipMap;
+		};
+		006D7179199528F2008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = MotionBlurFbo;
+		};
+		006D717F199528F7008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D717B199528F7008149E2 /* NormalMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = NormalMapping;
+		};
+		006D7185199528FD008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7181199528FC008149E2 /* ObjLoader.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ObjLoader;
+		};
+		006D718B19952903008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = TransformFeedbackClothSimulation;
+		};
+		006D719119952909008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = TransformFeedbackSmokeParticles;
+		};
+		006D71B81995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = TransformFeedbackSmokeParticles;
+		};
+		006D71BA1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = TransformFeedbackClothSimulation;
+		};
+		006D71BC1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7181199528FC008149E2 /* ObjLoader.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ObjLoader;
+		};
+		006D71BE1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D717B199528F7008149E2 /* NormalMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = NormalMapping;
+		};
+		006D71C01995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MotionBlurFbo;
+		};
+		006D71C21995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D716F199528EC008149E2 /* MipMap.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = MipMap;
+		};
+		006D71C41995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = InstancedTeapots;
+		};
+		006D71C61995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ImmediateMode;
+		};
+		006D71C81995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = HighDynamicRange;
+		};
+		006D71CA1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = GeometryShaderBasic;
+		};
+		006D71CC1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = DynamicCubeMapping;
+		};
+		006D71CE1995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D714B199528C4008149E2 /* CubeMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = CubeMapping;
+		};
+		006D71D01995295E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D7145199528BA008149E2 /* Cube.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = Cube;
+		};
+		006D72C21995325E008149E2 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 006D72BE1995325D008149E2 /* Geometry.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = Geometry;
 		};
 		00705E731018F3F700DD615B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1146,20 +1370,6 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = slerpBasic;
 		};
-		00D716FA1021335A00894269 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = OpenGLLighting;
-		};
-		00D716FD1021336B00894269 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = OpenGLLighting;
-		};
 		00F0B3311039DFFD003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
@@ -1188,13 +1398,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = QuickTimeIteration;
 		};
-		00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = GLSLLighting;
-		};
 		00F0B3601039F869003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */;
@@ -1208,13 +1411,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = ParamsBasic;
-		};
-		00F0B3661039F869003AB416 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = GLSLLighting;
 		};
 		00F0B3681039F869003AB416 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1370,6 +1566,20 @@
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = BufferPlayer;
 		};
+		B05F581C19AC4852001558CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 8D1107320486CEB800E47090;
+			remoteInfo = ShadowMapping;
+		};
+		B05F58FF19AC495C001558CB /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 8D1107260486CEB800E47090;
+			remoteInfo = ShadowMapping;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
@@ -1378,14 +1588,12 @@
 		0005C9731006817F004D82BC /* ArcballDemo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ArcballDemo.xcodeproj; path = ../../ArcballDemo/xcode/ArcballDemo.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C985100681AF004D82BC /* bezierPath.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bezierPath.xcodeproj; path = ../../bezierPath/xcode/bezierPath.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C98E100681B5004D82BC /* bspline.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = bspline.xcodeproj; path = ../../bspline/xcode/bspline.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../cubeMapping/xcode/CubeMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Earthquake.xcodeproj; path = ../../Earthquake/xcode/Earthquake.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9B5100681D9004D82BC /* eventTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = eventTest.xcodeproj; path = ../../eventTest/xcode/eventTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = flickrTest.xcodeproj; path = ../../flickrTest/xcode/flickrTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9D0100681E9004D82BC /* fontSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = fontSample.xcodeproj; path = ../../fontSample/xcode/fontSample.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9D9100681F2004D82BC /* HodginParticles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticles.xcodeproj; path = ../../HodginParticles/xcode/HodginParticles.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = imageWriterSample.xcodeproj; path = ../../imageWriterSample/xcode/imageWriterSample.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0005C9F510068200004D82BC /* OBJLoader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OBJLoader.xcodeproj; path = ../../OBJLoaderDemo/xcode/OBJLoader.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005C9FF10068206004D82BC /* perlinTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = perlinTest.xcodeproj; path = ../../perlinTest/xcode/perlinTest.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA1210068210004D82BC /* rayMarcher.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = rayMarcher.xcodeproj; path = ../../rayMarcher/xcode/rayMarcher.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0005CA1D10068217004D82BC /* resizeTest.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = resizeTest.xcodeproj; path = ../../resizeTest/xcode/resizeTest.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -1399,16 +1607,33 @@
 		000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Picking3D.xcodeproj; path = ../../Picking3D/xcode/Picking3D.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00236D981130E4C7006C991F /* CairoBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CairoBasic.xcodeproj; path = ../../CairoBasic/xcode/CairoBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
+		00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../_opengl/FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = "<group>"; };
+		00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBlurVelocityBuffer.xcodeproj; path = ../../_opengl/MotionBlurVelocityBuffer/xcode/MotionBlurVelocityBuffer.xcodeproj; sourceTree = "<group>"; };
+		00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereCPU.xcodeproj; path = ../../_opengl/ParticleSphereCPU/xcode/ParticleSphereCPU.xcodeproj; sourceTree = "<group>"; };
+		00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParticleSphereGPU.xcodeproj; path = ../../_opengl/ParticleSphereGPU/xcode/ParticleSphereGPU.xcodeproj; sourceTree = "<group>"; };
 		0029329C1530F5660022B1BF /* AnimatedReveal.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AnimatedReveal.xcodeproj; path = ../../_svg/AnimatedReveal/xcode/AnimatedReveal.xcodeproj; sourceTree = "<group>"; };
 		002932A61530F5720022B1BF /* EuroMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = EuroMap.xcodeproj; path = ../../_svg/EuroMap/xcode/EuroMap.xcodeproj; sourceTree = "<group>"; };
 		002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GoodNightMorning.xcodeproj; path = ../../_svg/GoodNightMorning/xcode/GoodNightMorning.xcodeproj; sourceTree = "<group>"; };
 		002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = SimpleViewer.xcodeproj; path = ../../_svg/SimpleViewer/xcode/SimpleViewer.xcodeproj; sourceTree = "<group>"; };
 		002CFBD11644BE2B00C1A31D /* StereoscopicRendering.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = StereoscopicRendering.xcodeproj; path = ../../StereoscopicRendering/xcode/StereoscopicRendering.xcodeproj; sourceTree = "<group>"; };
-		0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MandelbrotGLSL.xcodeproj; path = ../../MandelbrotGLSL/xcode/MandelbrotGLSL.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0039FB48115AD39A00BA0BAD /* Buddhabrot.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Buddhabrot.xcodeproj; path = ../../Buddhabrot/xcode/Buddhabrot.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HodginParticlesRedux.xcodeproj; path = ../../HodginParticlesRedux/xcode/HodginParticlesRedux.xcodeproj; sourceTree = SOURCE_ROOT; };
 		006A1FBD11D7F85F00941A5E /* QuickTimeWriter.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeWriter.xcodeproj; path = ../../QuickTimeWriter/xcode/QuickTimeWriter.xcodeproj; sourceTree = SOURCE_ROOT; };
+		006D7145199528BA008149E2 /* Cube.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Cube.xcodeproj; path = ../../_opengl/Cube/xcode/Cube.xcodeproj; sourceTree = "<group>"; };
+		006D714B199528C4008149E2 /* CubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CubeMapping.xcodeproj; path = ../../_opengl/CubeMapping/xcode/CubeMapping.xcodeproj; sourceTree = "<group>"; };
+		006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DynamicCubeMapping.xcodeproj; path = ../../_opengl/DynamicCubeMapping/xcode/DynamicCubeMapping.xcodeproj; sourceTree = "<group>"; };
+		006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GeometryShaderBasic.xcodeproj; path = ../../_opengl/GeometryShaderBasic/xcode/GeometryShaderBasic.xcodeproj; sourceTree = "<group>"; };
+		006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = HighDynamicRange.xcodeproj; path = ../../_opengl/HighDynamicRange/xcode/HighDynamicRange.xcodeproj; sourceTree = "<group>"; };
+		006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImmediateMode.xcodeproj; path = ../../_opengl/ImmediateMode/xcode/ImmediateMode.xcodeproj; sourceTree = "<group>"; };
+		006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InstancedTeapots.xcodeproj; path = ../../_opengl/InstancedTeapots/xcode/InstancedTeapots.xcodeproj; sourceTree = "<group>"; };
+		006D716F199528EC008149E2 /* MipMap.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MipMap.xcodeproj; path = ../../_opengl/MipMap/xcode/MipMap.xcodeproj; sourceTree = "<group>"; };
+		006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBlurFbo.xcodeproj; path = ../../_opengl/MotionBlurFbo/xcode/MotionBlurFbo.xcodeproj; sourceTree = "<group>"; };
+		006D717B199528F7008149E2 /* NormalMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NormalMapping.xcodeproj; path = ../../_opengl/NormalMapping/xcode/NormalMapping.xcodeproj; sourceTree = "<group>"; };
+		006D7181199528FC008149E2 /* ObjLoader.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ObjLoader.xcodeproj; path = ../../_opengl/ObjLoader/xcode/ObjLoader.xcodeproj; sourceTree = "<group>"; };
+		006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TransformFeedbackClothSimulation.xcodeproj; path = ../../_opengl/TransformFeedbackClothSimulation/xcode/TransformFeedbackClothSimulation.xcodeproj; sourceTree = "<group>"; };
+		006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TransformFeedbackSmokeParticles.xcodeproj; path = ../../_opengl/TransformFeedbackSmokeParticles/xcode/TransformFeedbackSmokeParticles.xcodeproj; sourceTree = "<group>"; };
+		006D72BE1995325D008149E2 /* Geometry.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Geometry.xcodeproj; path = ../../Geometry/xcode/Geometry.xcodeproj; sourceTree = "<group>"; };
 		00705E6B1018F3F700DD615B /* ImageHeightField.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageHeightField.xcodeproj; path = ../../ImageHeightField/xcode/ImageHeightField.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FlickrTestMultithreaded.xcodeproj; path = ../../FlickrTestMultithreaded/xcode/FlickrTestMultithreaded.xcodeproj; sourceTree = "<group>"; };
 		00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FrustumCulling.xcodeproj; path = ../../FrustumCulling/xcode/FrustumCulling.xcodeproj; sourceTree = "<group>"; };
@@ -1447,12 +1672,10 @@
 		00D494A91988A1D300A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode/Renderer2d.xcodeproj; sourceTree = "<group>"; };
 		00D494AF1988A1FE00A44E4C /* RetinaSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RetinaSample.xcodeproj; path = ../../RetinaSample/xcode/RetinaSample.xcodeproj; sourceTree = "<group>"; };
 		00D494B51988A22800A44E4C /* slerpBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = slerpBasic.xcodeproj; path = ../../slerpBasic/xcode/slerpBasic.xcodeproj; sourceTree = "<group>"; };
-		00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = OpenGLLighting.xcodeproj; path = ../../OpenGLLighting/xcode/OpenGLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ParamsBasic.xcodeproj; path = ../../ParamsBasic/xcode/ParamsBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3351039F6F4003AB416 /* ListenerBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ListenerBasic.xcodeproj; path = ../../ListenerBasic/xcode/ListenerBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B3441039F821003AB416 /* QTimeAdvApp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QTimeAdvApp.xcodeproj; path = ../../QuickTimeAdvanced/xcode/QTimeAdvApp.xcodeproj; sourceTree = SOURCE_ROOT; };
 		00F0B34E1039F830003AB416 /* QuickTimeIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = QuickTimeIteration.xcodeproj; path = ../../QuickTimeIteration/xcode/QuickTimeIteration.xcodeproj; sourceTree = SOURCE_ROOT; };
-		00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = GLSLLighting.xcodeproj; path = ../../GLSLLighting/xcode/GLSLLighting.xcodeproj; sourceTree = SOURCE_ROOT; };
 		11754405193594480075AF60 /* TextureFont.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextureFont.xcodeproj; path = ../../TextureFont/xcode/TextureFont.xcodeproj; sourceTree = "<group>"; };
 		1175440B1935946C0075AF60 /* TextBox.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextBox.xcodeproj; path = ../../TextBox/xcode/TextBox.xcodeproj; sourceTree = "<group>"; };
 		11754416193596610075AF60 /* BufferPlayer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BufferPlayer.xcodeproj; path = ../../_audio/BufferPlayer/xcode/BufferPlayer.xcodeproj; sourceTree = "<group>"; };
@@ -1463,12 +1686,14 @@
 		11754434193596B20075AF60 /* NodeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeBasic.xcodeproj; path = ../../_audio/NodeBasic/xcode/NodeBasic.xcodeproj; sourceTree = "<group>"; };
 		1175443A193596BE0075AF60 /* VoiceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasic.xcodeproj; path = ../../_audio/VoiceBasic/xcode/VoiceBasic.xcodeproj; sourceTree = "<group>"; };
 		11754440193596CF0075AF60 /* VoiceBasicProcessing.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasicProcessing.xcodeproj; path = ../../_audio/VoiceBasicProcessing/xcode/VoiceBasicProcessing.xcodeproj; sourceTree = "<group>"; };
+		B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ShadowMapping.xcodeproj; path = ../../_opengl/ShadowMapping/xcode/ShadowMapping.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0005C93A10067FF4004D82BC = {
 			isa = PBXGroup;
 			children = (
+				006D7144199528A4008149E2 /* _opengl */,
 				11754415193596440075AF60 /* _audio */,
 				0029329B1530F5480022B1BF /* _svg */,
 				009F6E0E14C0FDD20036C292 /* _timeline */,
@@ -1485,19 +1710,17 @@
 				009709C816CC6735005DC014 /* CaptureBasic.xcodeproj */,
 				00D4948F19889F1B00A44E4C /* ClipboardBasic.xcodeproj */,
 				00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */,
-				0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */,
 				0005C9AB100681D2004D82BC /* Earthquake.xcodeproj */,
 				00A11A32135A28BF00081873 /* EaseGallery.xcodeproj */,
 				0005C9B5100681D9004D82BC /* eventTest.xcodeproj */,
 				00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */,
-				0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */,
 				009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */,
 				0005C9C7100681E3004D82BC /* flickrTest.xcodeproj */,
 				00712F241627A416005FC5A0 /* FlickrTestMultithreaded.xcodeproj */,
 				0005C9D0100681E9004D82BC /* fontSample.xcodeproj */,
 				00712F301627A439005FC5A0 /* FrustumCulling.xcodeproj */,
 				00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */,
-				00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */,
+				006D72BE1995325D008149E2 /* Geometry.xcodeproj */,
 				0005C9D9100681F2004D82BC /* HodginParticles.xcodeproj */,
 				0049C662101136610015B4B9 /* HodginParticlesRedux.xcodeproj */,
 				009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */,
@@ -1509,8 +1732,6 @@
 				0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */,
 				00D494A31988A14E00A44E4C /* MultiTouch_OSX.xcodeproj */,
 				000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */,
-				0005C9F510068200004D82BC /* OBJLoader.xcodeproj */,
-				00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */,
 				00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */,
 				0005C9FF10068206004D82BC /* perlinTest.xcodeproj */,
 				00125BA81249B0FA00080A0D /* Picking3D.xcodeproj */,
@@ -1584,14 +1805,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0005C9A2100681CB004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C9AA100681CB004D82BC /* CubeMapping.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0005C9AC100681D2004D82BC /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1636,14 +1849,6 @@
 			isa = PBXGroup;
 			children = (
 				0005C9F4100681FC004D82BC /* imageWriterSample.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0005C9F610068200004D82BC /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0005C9FE10068200004D82BC /* OBJLoader.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1752,6 +1957,38 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00239C5019ABF67000B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C5419ABF67100B652B4 /* FBOBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C5719ABF78A00B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C5B19ABF78A00B652B4 /* MotionBlurVelocityBuffer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C5D19ABF7C800B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C6119ABF7C800B652B4 /* ParticleSphereCPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00239C6319ABF7D100B652B4 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00239C6719ABF7D100B652B4 /* ParticleSphereGPU.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 		0029329B1530F5480022B1BF /* _svg */ = {
 			isa = PBXGroup;
 			children = (
@@ -1803,14 +2040,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		0039FB29115AD31B00BA0BAD /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0039FB32115AD31B00BA0BAD /* FBOBasic.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		0039FB39115AD33F00BA0BAD /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -1839,6 +2068,143 @@
 			isa = PBXGroup;
 			children = (
 				006A1FC711D7F86000941A5E /* QuickTimeWriter.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7144199528A4008149E2 /* _opengl */ = {
+			isa = PBXGroup;
+			children = (
+				006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */,
+				006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */,
+				B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */,
+				00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */,
+				00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */,
+				006D7181199528FC008149E2 /* ObjLoader.xcodeproj */,
+				006D717B199528F7008149E2 /* NormalMapping.xcodeproj */,
+				00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */,
+				006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */,
+				006D716F199528EC008149E2 /* MipMap.xcodeproj */,
+				006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */,
+				006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */,
+				006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */,
+				006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */,
+				00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */,
+				006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */,
+				006D714B199528C4008149E2 /* CubeMapping.xcodeproj */,
+				006D7145199528BA008149E2 /* Cube.xcodeproj */,
+			);
+			name = _opengl;
+			sourceTree = "<group>";
+		};
+		006D7146199528BA008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D714A199528BB008149E2 /* Cube.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D714C199528C4008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7150199528C4008149E2 /* CubeMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7152199528CC008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7156199528CD008149E2 /* DynamicCubeMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7158199528D5008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D715C199528D5008149E2 /* GeometryShaderBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D715E199528DB008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7162199528DB008149E2 /* HighDynamicRange.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7164199528E1008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7168199528E1008149E2 /* ImmediateMode.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D716A199528E7008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D716E199528E7008149E2 /* InstancedTeapots.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7170199528EC008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7174199528ED008149E2 /* MipMap.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7176199528F2008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D717A199528F2008149E2 /* MotionBlurFbo.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D717C199528F7008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7180199528F7008149E2 /* NormalMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D7182199528FC008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D7186199528FD008149E2 /* ObjLoader.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D718819952903008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D718C19952903008149E2 /* TransformFeedbackClothSimulation.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D718E19952909008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D719219952909008149E2 /* TransformFeedbackSmokeParticles.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		006D72BF1995325D008149E2 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				006D72C31995325E008149E2 /* Geometry.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2163,14 +2529,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		00D716F71021335A00894269 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00D716FB1021335A00894269 /* OpenGLLighting.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		00F0B32B1039DFFD003AB416 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -2199,14 +2557,6 @@
 			isa = PBXGroup;
 			children = (
 				00F0B3561039F830003AB416 /* QuickTimeIteration.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		00F0B3581039F84C003AB416 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				00F0B35F1039F84C003AB416 /* GLSLLighting.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2306,6 +2656,14 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		B05F581919AC4852001558CB /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				B05F581D19AC4852001558CB /* ShadowMapping.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
@@ -2396,8 +2754,12 @@
 					ProjectRef = 00D494971988A0C200A44E4C /* ConvexHull.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C9A2100681CB004D82BC /* Products */;
-					ProjectRef = 0005C9A1100681CB004D82BC /* CubeMapping.xcodeproj */;
+					ProductGroup = 006D7146199528BA008149E2 /* Products */;
+					ProjectRef = 006D7145199528BA008149E2 /* Cube.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D714C199528C4008149E2 /* Products */;
+					ProjectRef = 006D714B199528C4008149E2 /* CubeMapping.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E2414C0FE040036C292 /* Products */;
@@ -2414,6 +2776,10 @@
 				{
 					ProductGroup = 009F6E3814C0FE1D0036C292 /* Products */;
 					ProjectRef = 009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D7152199528CC008149E2 /* Products */;
+					ProjectRef = 006D7151199528CC008149E2 /* DynamicCubeMapping.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9AC100681D2004D82BC /* Products */;
@@ -2436,8 +2802,8 @@
 					ProjectRef = 00D4949D1988A0E300A44E4C /* FallingGears.xcodeproj */;
 				},
 				{
-					ProductGroup = 0039FB29115AD31B00BA0BAD /* Products */;
-					ProjectRef = 0039FB28115AD31B00BA0BAD /* FBOBasic.xcodeproj */;
+					ProductGroup = 00239C5019ABF67000B652B4 /* Products */;
+					ProjectRef = 00239C4F19ABF67000B652B4 /* FBOBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 009CB648120F22810066763D /* Products */;
@@ -2464,12 +2830,20 @@
 					ProjectRef = 00712F3A1627A443005FC5A0 /* FrustumCullingRedux.xcodeproj */;
 				},
 				{
-					ProductGroup = 00F0B3581039F84C003AB416 /* Products */;
-					ProjectRef = 00F0B3571039F84C003AB416 /* GLSLLighting.xcodeproj */;
+					ProductGroup = 006D72BF1995325D008149E2 /* Products */;
+					ProjectRef = 006D72BE1995325D008149E2 /* Geometry.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D7158199528D5008149E2 /* Products */;
+					ProjectRef = 006D7157199528D5008149E2 /* GeometryShaderBasic.xcodeproj */;
 				},
 				{
 					ProductGroup = 002932B11530F57D0022B1BF /* Products */;
 					ProjectRef = 002932B01530F57D0022B1BF /* GoodNightMorning.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D715E199528DB008149E2 /* Products */;
+					ProjectRef = 006D715D199528DB008149E2 /* HighDynamicRange.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C9DA100681F2004D82BC /* Products */;
@@ -2496,8 +2870,16 @@
 					ProjectRef = 0005C9EC100681FC004D82BC /* imageWriterSample.xcodeproj */;
 				},
 				{
+					ProductGroup = 006D7164199528E1008149E2 /* Products */;
+					ProjectRef = 006D7163199528E1008149E2 /* ImmediateMode.xcodeproj */;
+				},
+				{
 					ProductGroup = 117544231935967B0075AF60 /* Products */;
 					ProjectRef = 117544221935967B0075AF60 /* InputAnalyzer.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D716A199528E7008149E2 /* Products */;
+					ProjectRef = 006D7169199528E7008149E2 /* InstancedTeapots.xcodeproj */;
 				},
 				{
 					ProductGroup = 00712F451627A45A005FC5A0 /* Products */;
@@ -2514,6 +2896,18 @@
 				{
 					ProductGroup = 0039FB39115AD33F00BA0BAD /* Products */;
 					ProjectRef = 0039FB38115AD33F00BA0BAD /* MandelbrotGLSL.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D7170199528EC008149E2 /* Products */;
+					ProjectRef = 006D716F199528EC008149E2 /* MipMap.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D7176199528F2008149E2 /* Products */;
+					ProjectRef = 006D7175199528F2008149E2 /* MotionBlurFbo.xcodeproj */;
+				},
+				{
+					ProductGroup = 00239C5719ABF78A00B652B4 /* Products */;
+					ProjectRef = 00239C5619ABF78A00B652B4 /* MotionBlurVelocityBuffer.xcodeproj */;
 				},
 				{
 					ProductGroup = 11754429193596890075AF60 /* Products */;
@@ -2536,12 +2930,12 @@
 					ProjectRef = 000B677D103CB3C5003D463F /* NormalMapping.xcodeproj */;
 				},
 				{
-					ProductGroup = 0005C9F610068200004D82BC /* Products */;
-					ProjectRef = 0005C9F510068200004D82BC /* OBJLoader.xcodeproj */;
+					ProductGroup = 006D717C199528F7008149E2 /* Products */;
+					ProjectRef = 006D717B199528F7008149E2 /* NormalMapping.xcodeproj */;
 				},
 				{
-					ProductGroup = 00D716F71021335A00894269 /* Products */;
-					ProjectRef = 00D716F61021335A00894269 /* OpenGLLighting.xcodeproj */;
+					ProductGroup = 006D7182199528FC008149E2 /* Products */;
+					ProjectRef = 006D7181199528FC008149E2 /* ObjLoader.xcodeproj */;
 				},
 				{
 					ProductGroup = 009F6E4C14C0FE430036C292 /* Products */;
@@ -2550,6 +2944,14 @@
 				{
 					ProductGroup = 00F0B32B1039DFFD003AB416 /* Products */;
 					ProjectRef = 00F0B32A1039DFFD003AB416 /* ParamsBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 00239C5D19ABF7C800B652B4 /* Products */;
+					ProjectRef = 00239C5C19ABF7C800B652B4 /* ParticleSphereCPU.xcodeproj */;
+				},
+				{
+					ProductGroup = 00239C6319ABF7D100B652B4 /* Products */;
+					ProjectRef = 00239C6219ABF7D100B652B4 /* ParticleSphereGPU.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005CA0010068206004D82BC /* Products */;
@@ -2620,6 +3022,10 @@
 					ProjectRef = 0005CA4110068230004D82BC /* shadowMap.xcodeproj */;
 				},
 				{
+					ProductGroup = B05F581919AC4852001558CB /* Products */;
+					ProjectRef = B05F581819AC4852001558CB /* ShadowMapping.xcodeproj */;
+				},
+				{
 					ProductGroup = 002932BB1530F5890022B1BF /* Products */;
 					ProjectRef = 002932BA1530F5890022B1BF /* SimpleViewer.xcodeproj */;
 				},
@@ -2650,6 +3056,14 @@
 				{
 					ProductGroup = 11754406193594480075AF60 /* Products */;
 					ProjectRef = 11754405193594480075AF60 /* TextureFont.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D718819952903008149E2 /* Products */;
+					ProjectRef = 006D718719952903008149E2 /* TransformFeedbackClothSimulation.xcodeproj */;
+				},
+				{
+					ProductGroup = 006D718E19952909008149E2 /* Products */;
+					ProjectRef = 006D718D19952909008149E2 /* TransformFeedbackSmokeParticles.xcodeproj */;
 				},
 				{
 					ProductGroup = 00886B88164DD1B9005B1855 /* Products */;
@@ -2731,13 +3145,6 @@
 			remoteRef = 0005C996100681B5004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0005C9AA100681CB004D82BC /* CubeMapping.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = CubeMapping.app;
-			remoteRef = 0005C9A9100681CB004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0005C9B4100681D2004D82BC /* Earthquake.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2778,13 +3185,6 @@
 			fileType = wrapper.application;
 			path = imageWriterSample.app;
 			remoteRef = 0005C9F3100681FC004D82BC /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0005C9FE10068200004D82BC /* OBJLoader.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = OBJLoader.app;
-			remoteRef = 0005C9FD10068200004D82BC /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0005CA0710068206004D82BC /* PerlinTest.app */ = {
@@ -2878,6 +3278,34 @@
 			remoteRef = 00236DA01130E4C7006C991F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00239C5419ABF67100B652B4 /* FBOBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = FBOBasic.app;
+			remoteRef = 00239C5319ABF67100B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C5B19ABF78A00B652B4 /* MotionBlurVelocityBuffer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MotionBlurVelocityBuffer.app;
+			remoteRef = 00239C5A19ABF78A00B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C6119ABF7C800B652B4 /* ParticleSphereCPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereCPU.app;
+			remoteRef = 00239C6019ABF7C800B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00239C6719ABF7D100B652B4 /* ParticleSphereGPU.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ParticleSphereGPU.app;
+			remoteRef = 00239C6619ABF7D100B652B4 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		002932A51530F5660022B1BF /* AnimatedReveal.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2913,13 +3341,6 @@
 			remoteRef = 002CFBD91644BE2C00C1A31D /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		0039FB32115AD31B00BA0BAD /* FBOBasic.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = FBOBasic.app;
-			remoteRef = 0039FB31115AD31B00BA0BAD /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		0039FB41115AD33F00BA0BAD /* MandelbrotGLSL.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -2946,6 +3367,104 @@
 			fileType = wrapper.application;
 			path = QuickTimeWriter.app;
 			remoteRef = 006A1FC611D7F86000941A5E /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D714A199528BB008149E2 /* Cube.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Cube.app;
+			remoteRef = 006D7149199528BB008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7150199528C4008149E2 /* CubeMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = CubeMapping.app;
+			remoteRef = 006D714F199528C4008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7156199528CD008149E2 /* DynamicCubeMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = DynamicCubeMapping.app;
+			remoteRef = 006D7155199528CD008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D715C199528D5008149E2 /* GeometryShaderBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = GeometryShaderBasic.app;
+			remoteRef = 006D715B199528D5008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7162199528DB008149E2 /* HighDynamicRange.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = HighDynamicRange.app;
+			remoteRef = 006D7161199528DB008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7168199528E1008149E2 /* ImmediateMode.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ImmediateMode.app;
+			remoteRef = 006D7167199528E1008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D716E199528E7008149E2 /* InstancedTeapots.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = InstancedTeapots.app;
+			remoteRef = 006D716D199528E7008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7174199528ED008149E2 /* MipMap.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MipMap.app;
+			remoteRef = 006D7173199528ED008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D717A199528F2008149E2 /* MotionBlurFbo.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = MotionBlurFbo.app;
+			remoteRef = 006D7179199528F2008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7180199528F7008149E2 /* NormalMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NormalMapping.app;
+			remoteRef = 006D717F199528F7008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D7186199528FD008149E2 /* ObjLoader.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ObjLoader.app;
+			remoteRef = 006D7185199528FD008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D718C19952903008149E2 /* TransformFeedbackClothSimulation.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TransformFeedbackClothSimulation.app;
+			remoteRef = 006D718B19952903008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D719219952909008149E2 /* TransformFeedbackSmokeParticles.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TransformFeedbackSmokeParticles.app;
+			remoteRef = 006D719119952909008149E2 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		006D72C31995325E008149E2 /* Geometry.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Geometry.app;
+			remoteRef = 006D72C21995325E008149E2 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		00705E741018F3F700DD615B /* ImageHeightField.app */ = {
@@ -3214,13 +3733,6 @@
 			remoteRef = 00D494B91988A22800A44E4C /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		00D716FB1021335A00894269 /* OpenGLLighting.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = OpenGLLighting.app;
-			remoteRef = 00D716FA1021335A00894269 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		00F0B3321039DFFD003AB416 /* ParamsBasic.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -3247,13 +3759,6 @@
 			fileType = wrapper.application;
 			path = QuickTimeIteration.app;
 			remoteRef = 00F0B3551039F830003AB416 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		00F0B35F1039F84C003AB416 /* GLSLLighting.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = GLSLLighting.app;
-			remoteRef = 00F0B35E1039F84C003AB416 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		1175440A193594480075AF60 /* TextureFont.app */ = {
@@ -3326,6 +3831,13 @@
 			remoteRef = 11754444193596CF0075AF60 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		B05F581D19AC4852001558CB /* ShadowMapping.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = ShadowMapping.app;
+			remoteRef = B05F581C19AC4852001558CB /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
@@ -3364,11 +3876,6 @@
 			name = fontSample;
 			targetProxy = 0005CA7E10068268004D82BC /* PBXContainerItemProxy */;
 		};
-		0005CA8110068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OBJLoader;
-			targetProxy = 0005CA8010068268004D82BC /* PBXContainerItemProxy */;
-		};
 		0005CA8510068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = flickrTest;
@@ -3398,11 +3905,6 @@
 			isa = PBXTargetDependency;
 			name = shaderTest;
 			targetProxy = 0005CA8E10068268004D82BC /* PBXContainerItemProxy */;
-		};
-		0005CA9110068268004D82BC /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = CubeMapping;
-			targetProxy = 0005CA9010068268004D82BC /* PBXContainerItemProxy */;
 		};
 		0005CA9310068268004D82BC /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3459,6 +3961,31 @@
 			name = CairoBasic;
 			targetProxy = 00236DA21130E4D8006C991F /* PBXContainerItemProxy */;
 		};
+		00239C6919ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereCPU;
+			targetProxy = 00239C6819ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6B19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ParticleSphereGPU;
+			targetProxy = 00239C6A19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6D19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MotionBlurVelocityBuffer;
+			targetProxy = 00239C6C19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C6F19ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = FBOBasic;
+			targetProxy = 00239C6E19ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
+		00239C7119ABF8B900B652B4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Geometry;
+			targetProxy = 00239C7019ABF8B900B652B4 /* PBXContainerItemProxy */;
+		};
 		002932C51530F5AD0022B1BF /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = AnimatedReveal;
@@ -3484,11 +4011,6 @@
 			name = StereoscopicRendering;
 			targetProxy = 002CFBDB1644BE4300C1A31D /* PBXContainerItemProxy */;
 		};
-		0039FB34115AD32700BA0BAD /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBOBasic;
-			targetProxy = 0039FB33115AD32700BA0BAD /* PBXContainerItemProxy */;
-		};
 		0039FB43115AD34700BA0BAD /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MandelbrotGLSL;
@@ -3508,6 +4030,71 @@
 			isa = PBXTargetDependency;
 			name = QuickTimeWriter;
 			targetProxy = 006A1FC911D7F87600941A5E /* PBXContainerItemProxy */;
+		};
+		006D71B91995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TransformFeedbackSmokeParticles;
+			targetProxy = 006D71B81995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71BB1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = TransformFeedbackClothSimulation;
+			targetProxy = 006D71BA1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71BD1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ObjLoader;
+			targetProxy = 006D71BC1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71BF1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NormalMapping;
+			targetProxy = 006D71BE1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71C11995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MotionBlurFbo;
+			targetProxy = 006D71C01995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71C31995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = MipMap;
+			targetProxy = 006D71C21995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71C51995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InstancedTeapots;
+			targetProxy = 006D71C41995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71C71995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ImmediateMode;
+			targetProxy = 006D71C61995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71C91995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = HighDynamicRange;
+			targetProxy = 006D71C81995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71CB1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = GeometryShaderBasic;
+			targetProxy = 006D71CA1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71CD1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DynamicCubeMapping;
+			targetProxy = 006D71CC1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71CF1995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = CubeMapping;
+			targetProxy = 006D71CE1995295E008149E2 /* PBXContainerItemProxy */;
+		};
+		006D71D11995295E008149E2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = Cube;
+			targetProxy = 006D71D01995295E008149E2 /* PBXContainerItemProxy */;
 		};
 		00712F2F1627A41C005FC5A0 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3699,11 +4286,6 @@
 			name = slerpBasic;
 			targetProxy = 00D494C51988A24F00A44E4C /* PBXContainerItemProxy */;
 		};
-		00D716FE1021336B00894269 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = OpenGLLighting;
-			targetProxy = 00D716FD1021336B00894269 /* PBXContainerItemProxy */;
-		};
 		00F0B3611039F869003AB416 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = ListenerBasic;
@@ -3713,11 +4295,6 @@
 			isa = PBXTargetDependency;
 			name = ParamsBasic;
 			targetProxy = 00F0B3641039F869003AB416 /* PBXContainerItemProxy */;
-		};
-		00F0B3671039F869003AB416 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = GLSLLighting;
-			targetProxy = 00F0B3661039F869003AB416 /* PBXContainerItemProxy */;
 		};
 		00F0B3691039F869003AB416 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -3778,6 +4355,11 @@
 			isa = PBXTargetDependency;
 			name = BufferPlayer;
 			targetProxy = 11754454193596DE0075AF60 /* PBXContainerItemProxy */;
+		};
+		B05F590019AC495C001558CB /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = ShadowMapping;
+			targetProxy = B05F58FF19AC495C001558CB /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

@@ -10,10 +10,10 @@
 
 class Constraint {
  public:
-	Constraint( ci::Vec3f normal, float minValue, float maxValue );
+	Constraint( ci::vec3 normal, float minValue, float maxValue );
 	virtual void apply( Emitter &aEmitter );
 	virtual void apply( std::list<Particle> &aParticles );
-	ci::Vec3f mNormal;
+	ci::vec3 mNormal;
 	float mMinValue;
 	float mMaxValue;
  protected:

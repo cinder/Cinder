@@ -1,6 +1,0 @@
-#include "..\include\Resources.h"
-
-RES_CUBE_OBJ
-RES_IMAGE
-RES_SHADER_VERT
-RES_SHADER_FRAG

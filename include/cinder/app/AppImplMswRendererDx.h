@@ -49,16 +49,16 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
  public:
  	struct LightData
 	{
-		LightData() : specular(Vec4f(0, 0, 0, 1)), constantAtt(1), linearAtt(1), quadAtt(1), type(0), spotExponent(1), spotCutoff(1) {}
-		Vec4f diffuse;
-		Vec4f specular;
-		Vec4f ambient;
+		LightData() : specular(vec4(0, 0, 0, 1)), constantAtt(1), linearAtt(1), quadAtt(1), type(0), spotExponent(1), spotCutoff(1) {}
+		vec4 diffuse;
+		vec4 specular;
+		vec4 ambient;
 		float constantAtt;
 		float linearAtt;
 		float quadAtt;
 		int type;
-		Vec4f pos;
-		Vec4f direction;
+		vec4 pos;
+		vec4 direction;
 		float spotExponent;
 		float spotCutoff;
 		float padding[2];
@@ -66,13 +66,13 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 
 	struct FixedVertex
 	{
-		FixedVertex(Vec4f POS = Vec4f(0, 0, 0, 1), Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(POS), norm(NORM), uv(UV), color(COLOR) {}
-		FixedVertex(Vec3f POS, Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(Vec4f(POS, 1)), norm(NORM), uv(UV), color(COLOR) {}
-		FixedVertex(Vec2f POS, Vec3f NORM = Vec3f(), Vec2f UV = Vec2f(), Vec4f COLOR = Vec4f()) : pos(Vec4f(POS.x, POS.y, 0, 1)), norm(NORM), uv(UV), color(COLOR) {}
-		Vec4f pos;
-		Vec3f norm;
-		Vec2f uv;
-		Vec4f color;
+		FixedVertex(vec4 POS = vec4(0, 0, 0, 1), vec3 NORM = vec3(), vec2 UV = vec2(), vec4 COLOR = vec4()) : pos(POS), norm(NORM), uv(UV), color(COLOR) {}
+		FixedVertex(vec3 POS, vec3 NORM = vec3(), vec2 UV = vec2(), vec4 COLOR = vec4()) : pos(vec4(POS, 1)), norm(NORM), uv(UV), color(COLOR) {}
+		FixedVertex(vec2 POS, vec3 NORM = vec3(), vec2 UV = vec2(), vec4 COLOR = vec4()) : pos(vec4(POS.x, POS.y, 0, 1)), norm(NORM), uv(UV), color(COLOR) {}
+		vec4 pos;
+		vec3 norm;
+		vec2 uv;
+		vec4 color;
 	};
 
 	enum RenderStateFlag
@@ -117,9 +117,9 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 	MatrixStack mModelView;
 	MatrixStack mProjection;
 
-	Vec4f mCurrentColor;
-	Vec3f mCurrentNormal;
-	Vec2f mCurrentUV;
+	vec4 mCurrentColor;
+	vec3 mCurrentNormal;
+	vec2 mCurrentUV;
 	std::vector<FixedVertex> mImmediateModeVerts;
 	GLenum mImmediateModePrimitive;
 	bool mLightingEnabled;

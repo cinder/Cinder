@@ -38,7 +38,7 @@ std::uniform_real_distribution<float> Rand::sFloatGen;
 void Rand::randomize()
 {
 #if defined( CINDER_COCOA )
-	sBase = std::mt19937( mach_absolute_time() );
+	sBase = std::mt19937( (uint32_t)( mach_absolute_time() & 0xFFFFFFFF ) );
 #elif defined( CINDER_WINRT)
 	sBase = std::mt19937( static_cast<unsigned long>(::GetTickCount64()) );
 #else
@@ -46,12 +46,12 @@ void Rand::randomize()
 #endif
 }
 
-void Rand::randSeed( unsigned long seed )
+void Rand::randSeed( uint32_t seed )
 {
 	sBase = std::mt19937( seed );
 }
 
-void Rand::seed( unsigned long seedValue )
+void Rand::seed( uint32_t seedValue )
 {
 	mBase = std::mt19937( seedValue );
 }

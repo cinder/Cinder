@@ -29,11 +29,12 @@
 #pragma once
 
 #include "cinder/WinRTUtils.h"
+#include "cinder/Exception.h"
+
 #include <math.h>
 #include <atomic>
 #include <sstream>
 #include <ppltasks.h>
-
 
 using namespace Windows::Graphics::Display;
 using namespace Windows::UI::Popups;
@@ -44,7 +45,6 @@ using namespace Concurrency;
 
 using namespace std;
 using namespace std::tr2;
-
 
 namespace cinder { 	namespace winrt {
 
@@ -102,16 +102,16 @@ Platform::String^ toPlatformString( const string &utf8 )
 {
 	int wideSize = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, NULL, 0 );
 	if( wideSize == ERROR_NO_UNICODE_TRANSLATION ) {
-		throw std::exception( "Invalid UTF-8 sequence." );
+		throw Exception( "Invalid UTF-8 sequence." );
 	}
 	else if( wideSize == 0 ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
 	}
 
 	vector<wchar_t> resultString( wideSize );
 	int convResult = ::MultiByteToWideChar( CP_UTF8, 0, utf8.c_str(), -1, &resultString[0], wideSize );
 	if( convResult != wideSize ) {
-		throw std::exception( "Error in UTF-8 to UTF-16 conversion." );
+		throw Exception( "Error in UTF-8 to UTF-16 conversion." );
 	}
 
 	return ref new Platform::String(&resultString[0]);
@@ -142,7 +142,7 @@ float getScaledDPIValue(float v) {
 void deleteFileAsync(const sys::path &path)
 {
 	if(path.empty()) {
-		throw std::exception( "Must specify path to file to delete." );
+		throw Exception( "Must specify path to file to delete." );
 	}
 
 	String^ p = toPlatformString(path);

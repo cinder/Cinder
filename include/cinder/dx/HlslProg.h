@@ -34,6 +34,8 @@
 #include "cinder/Color.h"
 #include "cinder/Matrix.h"
 #include "cinder/DataSource.h"
+#include "cinder/Exception.h"
+
 #include <d3d11.h>
 
 namespace cinder { namespace dx {
@@ -164,7 +166,7 @@ public:
 	//@}  
 };
 
-class HlslProgCompileExc : public std::exception {
+class HlslProgCompileExc : public Exception {
 public:	
 	HlslProgCompileExc( const std::string &log, GLint aShaderType ) throw();
 	virtual const char* what() const throw()
@@ -177,7 +179,7 @@ private:
 	GLint	mShaderType;
 };
 
-class HlslNullProgramExc : public std::exception {
+class HlslNullProgramExc : public Exception {
 public:	
 	virtual const char* what() const throw()
 	{
@@ -186,7 +188,7 @@ public:
 
 };
 
-class HlslDuplicateCBufferExc : public std::exception {
+class HlslDuplicateCBufferExc : public Exception {
 public:
 	virtual const char* what() const throw()
 	{

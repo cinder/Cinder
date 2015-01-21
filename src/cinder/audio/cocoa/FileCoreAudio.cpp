@@ -25,7 +25,6 @@
 #include "cinder/audio/cocoa/CinderCoreAudio.h"
 #include "cinder/cocoa/CinderCocoa.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
 
 #include <AudioToolbox/AudioFile.h>
 

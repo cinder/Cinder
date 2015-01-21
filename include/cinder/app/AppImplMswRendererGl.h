@@ -26,11 +26,16 @@
 #include "cinder/app/App.h"
 #include "cinder/app/AppImplMswRenderer.h"
 
+namespace cinder { namespace gl {
+	class Context;
+	typedef std::shared_ptr<Context>	ContextRef;
+} }
+
 namespace cinder { namespace app {
 
 class AppImplMswRendererGl : public AppImplMswRenderer {
  public:
-	AppImplMswRendererGl( App *aApp, RendererGl *aRenderer );
+	AppImplMswRendererGl( App *aApp, class RendererGl *aRenderer );
 	
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
@@ -41,13 +46,12 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	makeCurrentContext();
 
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
-	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
-	
-	RendererGl	*mRenderer;
+	class RendererGl	*mRenderer;
+	gl::ContextRef		mCinderContext;
+
 	bool		mWasFullScreen;
 	bool		mWasVerticalSynced;
-	HGLRC		mRC, mPrevRC;
+	HGLRC		mRC;
 	HDC			mDC;
 };
 

@@ -1,6 +1,5 @@
-#include <iostream>
-#include <sstream>
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 
 using namespace ci;
@@ -17,6 +16,7 @@ class EventTestApp : public AppBasic {
 	void keyDown( KeyEvent event );
 	void keyUp( KeyEvent event );
 	void fileDrop( FileDropEvent event );
+	void draw();
 };
 
 
@@ -120,5 +120,9 @@ void EventTestApp::fileDrop( FileDropEvent event )
 	console() << ss.str() << endl;
 }
 
+void EventTestApp::draw()
+{
+	gl::clear();
+}
 
 CINDER_APP_BASIC( EventTestApp, RendererGl )

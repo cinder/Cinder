@@ -46,8 +46,7 @@ struct EventCombiner {
 	const T		*mEvent;
 };
 
-class Window;
-typedef std::shared_ptr<Window>		WindowRef;
+typedef std::shared_ptr<class Window>		WindowRef;
 
 //! Base class for all Events
 class Event {
@@ -63,7 +62,7 @@ class Event {
 
   protected:
 	Event() : mHandled( false ) {}
-	Event( WindowRef window ) : mWindow( window ), mHandled( false ) {}
+	Event( const WindowRef &window ) : mWindow( window ), mHandled( false ) {}
 
   public:
 	virtual ~Event() {}

@@ -29,7 +29,7 @@
 
 namespace cinder {
 
-template<typename T>
-BSpline<T> fitBSpline( const std::vector<T> &samples, int degree, int outputSamples );
+template<int D, typename T>
+BSpline<D, T> fitBSpline( const std::vector<typename BSpline<D, T>::VecT> &samples, int degree, int outputSamples );
 
 } // namespace cinder

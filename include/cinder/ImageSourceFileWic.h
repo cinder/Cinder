@@ -26,9 +26,12 @@
 #include "cinder/ImageIO.h"
 #include "cinder/Exception.h"
 
-#ifndef GUID
-typedef struct _GUID GUID;
-#endif
+#include <guiddef.h>
+
+// WIC forward declarations
+struct IWICImagingFactory;
+struct IWICBitmapFrameDecode;
+struct IWICStream;
 
 namespace cinder {
 
@@ -46,10 +49,16 @@ class ImageSourceFileWic : public ImageSource {
   protected:
 	ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource::Options options );
 	
+	static IWICImagingFactory* getFactory();
+
 	bool	processFormat( const ::GUID &guid, ::GUID *convertGUID );
-	
-	std::shared_ptr<uint8_t>	mData;
-	int32_t						mRowBytes;
+
+	std::shared_ptr<IWICBitmapFrameDecode>	mFrame;
+	std::shared_ptr<IWICStream>				mStream;
+	Buffer									mBuffer;
+	bool									mRequiresConversion;
+	int32_t									mRowBytes;
+	::GUID									mPixelFormat, mConvertPixelFormat;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileWic )

@@ -9,7 +9,7 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc, Vec2f vel )
+Particle::Particle( vec2 loc, vec2 vel )
 {
 	mLoc			= loc;
 	mVel			= vel;
@@ -23,7 +23,7 @@ Particle::Particle( Vec2f loc, Vec2f vel )
 	mIsDead			= false;
 }	
 
-void Particle::update( const Perlin &perlin, const Channel32f &channel, const Vec2i &mouseLoc )
+void Particle::update( const Perlin &perlin, const Channel32f &channel, const ivec2 &mouseLoc )
 {	
 	// get Perlin noise value based on my location and
 	// elapsed seconds and turn this noise value into an angle.
@@ -32,7 +32,7 @@ void Particle::update( const Perlin &perlin, const Channel32f &channel, const Ve
 	float nZ = app::getElapsedSeconds() * 0.1f;
 	float noise = perlin.fBm( nX, nY, nZ );
 	float angle = noise * 15.0f;
-	Vec2f noiseVector( cos( angle ), sin( angle ) );
+	vec2 noiseVector( cos( angle ), sin( angle ) );
 
 	mVel += noiseVector * 0.2f * ( 1.0f - mAgePer );
 	mLoc += mVel;

@@ -22,17 +22,24 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
-
-#include <vector>
+#include <exception>
 #include <string>
 
 namespace cinder {
 
+//! All exceptions thrown in cinder derive from cinder::Exception
 class Exception : public std::exception {
   public:
 	Exception();
+	Exception( const std::string &description );
 	virtual ~Exception() throw() {}
+
+	virtual const char* what() const throw() override	{ return mDescription.c_str(); }
+
+  protected:
+	  void	setDescription( const std::string &description );
+  private:
+	std::string mDescription;
 };
 
 } // namespace cinder

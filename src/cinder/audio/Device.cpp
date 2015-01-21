@@ -23,7 +23,7 @@
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/Device.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )

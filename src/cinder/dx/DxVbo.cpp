@@ -173,9 +173,9 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 	if( layout.isDefaults() ) { // we need to start by preparing our layout
 		if( triMesh.hasNormals() )
 			mObj->mLayout.setStaticNormals();
-		if( triMesh.hasColorsRGB() )
+		if( triMesh.hasColorsRgb() )
 			mObj->mLayout.setStaticColorsRGB();
-		if( triMesh.hasColorsRGBA() )
+		if( triMesh.hasColorsRgba() )
 			mObj->mLayout.setStaticColorsRGBA();
 		if( triMesh.hasTexCoords() )
 			mObj->mLayout.setStaticTexCoords2d();
@@ -204,8 +204,8 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 		
 		bool copyPosition = ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticPositions() : mObj->mLayout.hasDynamicPositions();
 		bool copyNormal = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticNormals() : mObj->mLayout.hasDynamicNormals() ) && triMesh.hasNormals();
-		bool copyColorRGB = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGB() : mObj->mLayout.hasDynamicColorsRGB() ) && triMesh.hasColorsRGB();
-		bool copyColorRGBA = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRGBA() : mObj->mLayout.hasDynamicColorsRGBA() ) && triMesh.hasColorsRGBA();
+		bool copyColorRGB = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRgb() : mObj->mLayout.hasDynamicColorsRGB() ) && triMesh.hasColorsRgb();
+		bool copyColorRGBA = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticColorsRgba() : mObj->mLayout.hasDynamicColorsRGBA() ) && triMesh.hasColorsRgba();
 		bool copyTexCoord2D = ( ( buffer == STATIC_BUFFER ) ? mObj->mLayout.hasStaticTexCoords2d() : mObj->mLayout.hasDynamicTexCoords2d() ) && triMesh.hasTexCoords();
 		
 		for( size_t v = 0; v < mObj->mNumVertices; ++v ) {
@@ -218,11 +218,11 @@ VboMesh::VboMesh( const TriMesh &triMesh, Layout layout )
 				ptr += sizeof( Vec3f );
 			}
 			if( copyColorRGB ) {
-				*(reinterpret_cast<Color*>(ptr)) = triMesh.getColorsRGB()[v];
+				*(reinterpret_cast<Color*>(ptr)) = triMesh.getColorsRgb()[v];
 				ptr += sizeof( Color );
 			}
 			if( copyColorRGBA ) {
-				*(reinterpret_cast<ColorA*>(ptr)) = triMesh.getColorsRGBA()[v];
+				*(reinterpret_cast<ColorA*>(ptr)) = triMesh.getColorsRgba()[v];
 				ptr += sizeof( ColorA );
 			}
 			if( copyTexCoord2D ) {

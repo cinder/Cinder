@@ -26,16 +26,16 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\shaders\phong_vert.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-    <None Include="..\shaders\phong_frag.glsl">
-      <Filter>Shader Files</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="..\src\CullableObject.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\shaders\phong.frag">
+      <Filter>Shader Files</Filter>
+    </None>
+    <None Include="..\assets\shaders\phong.vert">
+      <Filter>Shader Files</Filter>
+    </None>
   </ItemGroup>
 </Project>

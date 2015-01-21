@@ -9,7 +9,7 @@ using namespace ci::app;
 using namespace std;
 
 Font font;
-Vec2f pos;
+vec2 pos;
 int maxWidth = 230;
 
 class LineBreakTestApp : public AppNative {
@@ -102,7 +102,7 @@ void LineBreakTestApp::draw()
 //	}
 	gl::color( ColorA( 1, 0, 0, 0.5 ) );
 	TextBox box;
-	box.setSize( Vec2i( maxWidth, TextBox::GROW ) );
+	box.setSize( ivec2( maxWidth, TextBox::GROW ) );
 	box.setFont( font );
 	box.setText( s );
 	gl::Texture t = box.render();

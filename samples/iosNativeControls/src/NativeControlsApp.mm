@@ -32,7 +32,7 @@ class NativeControlsApp : public AppNative {
 	void setupVisuals();
 	void infoTapped();
 
-	Matrix44f		mCubeRotation;
+	mat4		mCubeRotation;
 	gl::Texture 	mTex;
 	Font			mFont;
 
@@ -92,7 +92,7 @@ void NativeControlsApp::infoTapped()
 
 void NativeControlsApp::update()
 {
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
+	mCubeRotation.rotate( vec3( 1, 1, 1 ), 0.03f );
 }
 
 void NativeControlsApp::draw()
@@ -100,14 +100,14 @@ void NativeControlsApp::draw()
 	gl::clear( Color( 0, 0.0, 0.3 ) );
 
 	CameraPersp cam;
-	cam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	cam.lookAt( vec3( 3, 2, -3 ), vec3::zero() );
 	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::setMatrices( cam );
 	gl::multModelView( mCubeRotation );
 
 	gl::color( Color::white() );
 	mTex.enableAndBind();
-	gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
+	gl::drawCube( vec3::zero(), vec3( 2.0f, 2.0f, 2.0f ) );
 	mTex.unbind();
 }
 

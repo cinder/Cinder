@@ -35,11 +35,11 @@ namespace cinder { namespace ip {
 // NOTE: this leaves garbage in the top and bottom rows, as well as the left and right columns
 
 template<typename T>
-void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &dstLT, ChannelT<T> *dstChannel )
+void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
 	const Area &area( srcDst.first );
-	const Vec2i &dstOffset( srcDst.second );
+	const ivec2 &dstOffset( srcDst.second );
 	typename CHANTRAIT<T>::Sum sumX, sumY;
 
 	int32_t srcRowBytes = srcChannel.getRowBytes();
@@ -64,7 +64,7 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 }
 
 template<typename T>
-void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstLT, SurfaceT<T> *dstSurface )
+void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface )
 {
 	edgeDetectSobel( srcSurface.getChannelRed(), srcArea, dstLT, &dstSurface->getChannelRed() );
 	edgeDetectSobel( srcSurface.getChannelGreen(), srcArea, dstLT, &dstSurface->getChannelGreen() );
@@ -76,19 +76,19 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const 
 template<typename T>
 void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel )
 {
-	edgeDetectSobel( srcChannel, srcChannel.getBounds(), Vec2i::zero(), dstChannel );
+	edgeDetectSobel( srcChannel, srcChannel.getBounds(), ivec2(), dstChannel );
 }
 
 template<typename T>
 void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 {
-	edgeDetectSobel( srcSurface, srcSurface.getBounds(), Vec2i::zero(), dstSuface );
+	edgeDetectSobel( srcSurface, srcSurface.getBounds(), ivec2(), dstSuface );
 }
 
 
 #define edgeDetect_PROTOTYPES(r,data,T)\
-	template void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &dstLT, ChannelT<T> *dstChannel ); \
-	template void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstLT, SurfaceT<T> *dstSurface ); \
+	template void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel ); \
+	template void edgeDetectSobel( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface ); \
 	template void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );	\
 	template void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );	
 

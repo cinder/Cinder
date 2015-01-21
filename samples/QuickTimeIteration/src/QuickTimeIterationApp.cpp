@@ -99,8 +99,8 @@ void QTimeIterApp::loadMovieFile( const fs::path &moviePath )
 		mMovie.seekToStart();
 		mMovie.play();
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
 	}	
 }
 

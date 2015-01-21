@@ -38,7 +38,7 @@ namespace cinder { namespace cocoa {
 
 /** \brief Converts a UIImage* into a cinder::Surface8u
 	If \a assumeOwnership the result will increment the retain count on construction and decrement it upon the its own destruction. **/
-Surface8u convertUiImage( UIImage *uiImage, bool assumeOwnership = false );
+Surface8uRef convertUiImage( UIImage *uiImage, bool assumeOwnership = false );
 
 /** \brief A class which encapsulate a UIImage and an associated CGImageRef in order to work around memory ownership ambiguities in Cocoa Touch **/
 class SafeUiImage {

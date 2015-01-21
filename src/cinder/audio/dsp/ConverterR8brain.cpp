@@ -22,8 +22,6 @@
  */
 
 #include "cinder/audio/dsp/ConverterR8brain.h"
-#include "cinder/audio/Debug.h"
-
 #include "CDSPResampler.h"
 
 #include <algorithm>

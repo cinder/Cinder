@@ -1430,13 +1430,13 @@ template <typename T> void TestMatrix44( std::ostream& os )
 		int notWithinEpison = 0;
 		for( int i = 0; i < iter; ++i ) {
 			float angle = (float)i/(float)iter * 360.0f;
-			Matrix44f mat = Matrix44f::createRotation( Vec3f( angle, angle*0.5f, angle + 0.25f ) );
-			CINDER_ALIGN16_MATRIX44F( align_mat ) = Matrix44f::createRotation( Vec3f( angle, angle*0.5f, angle + 0.25f ) );
+			mat4 mat = mat4::createRotation( vec3( angle, angle*0.5f, angle + 0.25f ) );
+			CINDER_ALIGN16_MATRIX44F( align_mat ) = mat4::createRotation( vec3( angle, angle*0.5f, angle + 0.25f ) );
 
-			mat.setTranslate( Vec3f( 1, 2, 3 ) );
-			align_mat.setTranslate( Vec3f( 1, 2, 3 ) );
+			mat.setTranslate( vec3( 1, 2, 3 ) );
+			align_mat.setTranslate( vec3( 1, 2, 3 ) );
 
-			Matrix44f inv_mat = mat.inverted();
+			mat4 inv_mat = mat.inverted();
 			CINDER_ALIGN16_MATRIX44F( inv_align_mat ) = SseInvert( align_mat );
 
 			if( ! inv_mat.equalCompare( inv_align_mat, (float)EPSILON ) ) {

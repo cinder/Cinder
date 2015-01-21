@@ -37,7 +37,7 @@ class RectT;
 class Area {
  public:
 	Area() {}
-	Area( const Vec2i &UL, const Vec2i &LR );
+	Area( const ivec2 &UL, const ivec2 &LR );
 	Area( int32_t aX1, int32_t aY1, int32_t aX2, int32_t aY2 )
 		{ set( aX1, aY1, aX2, aY2 ); }
 	explicit Area( const RectT<float> &r );
@@ -46,21 +46,21 @@ class Area {
 		
 	int32_t		getWidth() const { return x2 - x1; }
 	int32_t		getHeight() const { return y2 - y1; }
-	Vec2i		getSize() const { return Vec2i( x2 - x1, y2 - y1 ); }
-	Vec2f		getCenter() const { return Vec2f( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
+	ivec2		getSize() const { return ivec2( x2 - x1, y2 - y1 ); }
+	vec2		getCenter() const { return vec2( ( x1 + x2 ) / 2.0f, ( y1 + y2 ) / 2.0f ); }
 	int32_t		calcArea() const { return getWidth() * getHeight(); }
 	
 	void			clipBy( const Area &clip );
 	Area		getClipBy( const Area &clip ) const;
 
 	//! Translates the Area by \a off
-	void			offset( const Vec2i &off );
+	void			offset( const ivec2 &off );
 	//! Returns a copy of the Area translated by \a off
-	Area		getOffset( const Vec2i &off ) const;
+	Area		getOffset( const ivec2 &off ) const;
 	//! Translates the Area so that its upper-left corner is \a newUL
-	void			moveULTo( const Vec2i &newUL );
+	void			moveULTo( const ivec2 &newUL );
 	//! Returns a copy of the Area translated so that its upper-left corner is \a newUL
-	Area		getMoveULTo( const Vec2i &newUL ) const;
+	Area		getMoveULTo( const ivec2 &newUL ) const;
 	//! Expands the Area by \a expandX horizontally and \a expandY vertically. \a expandX is subtracted from \c x1 and added to \c x2 and \a expandY is subtracted from \c y1 and added to \c y2.
 	void			expand( int32_t expandX, int32_t expandY ) { x1 -= expandX; x2 += expandX; y1 -= expandY; y2 += expandY; }
 
@@ -72,45 +72,46 @@ class Area {
 	void			setX2( int32_t aX2 ) { x2 = aX2; }
 	int32_t			getY2() const { return y2; }
 	void			setY2( int32_t aY2 ) { y2 = aY2; }
-	Vec2i			getUL() const { return Vec2i( x1, y1 ); } // left-top offset
-	Vec2i			getLR() const { return Vec2i( x2, y2 ); } // right-bottom offset
+	ivec2			getUL() const { return ivec2( x1, y1 ); } // left-top offset
+	ivec2			getLR() const { return ivec2( x2, y2 ); } // right-bottom offset
 
-	bool			contains( const Vec2i &offset ) const;
-	template<typename Y>
-	bool			contains( const Vec2<Y> &offset ) const { return contains( Vec2i( (int32_t)math<Y>::ceil( offset. x ), (int32_t)math<Y>::ceil( offset.y ) ) ); }
+	bool			contains( const ivec2 &offset ) const;
+	template<typename T>
+	bool			contains( const glm::detail::tvec2<T, glm::defaultp> &offset ) const { return contains( ivec2( (int32_t)math<T>::ceil( offset. x ), (int32_t)math<T>::ceil( offset.y ) ) ); }
 	bool			intersects( const Area &area ) const;
 
 	//! Expands the Area to include \a point in its interior
-	void		include( const Vec2i &point );
+	void		include( const ivec2 &point );
 	//! Expands the Area to include all points in \a points in its interior
-	void		include( const std::vector<Vec2i > &points );
+	void		include( const std::vector<ivec2 > &points );
 	//! Expands the Area to include \a rect in its interior
 	void		include( const Area &area );
 
-	//! Returns the distance between the point \a pt and the rectangle. Points inside the Area return \c 0.
-	template<typename Y>
-	float		distance( const Vec2<Y> &pt ) const;
-	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
-	template<typename Y>
-	float		distanceSquared( const Vec2<Y> &pt ) const;
+	float		distance( const vec2 &pt ) const;
+	float		distance( const dvec2 &pt ) const;
+	float		distance( const ivec2 &pt ) const;
 
-	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
-	template<typename Y>
-	Vec2<Y>		closestPoint( const Vec2<Y> &pt ) const;
+	float		distanceSquared( const vec2 &pt ) const;
+	float		distanceSquared( const dvec2 &pt ) const;
+	float		distanceSquared( const ivec2 &pt ) const;
+
+	vec2		closestPoint( const vec2 &pt ) const;
+	ivec2		closestPoint( const ivec2 &pt ) const;
+	dvec2		closestPoint( const dvec2 &pt ) const;
 
 	int32_t			x1, y1, x2, y2;
 
 	bool			operator==( const Area &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
 	bool			operator<( const Area &aArea ) const;
 
-	const Area		operator+( const Vec2i &o ) const { return this->getOffset( o ); }
-	const Area		operator-( const Vec2i &o ) const { return this->getOffset( -o ); }
+	const Area		operator+( const ivec2 &o ) const { return this->getOffset( o ); }
+	const Area		operator-( const ivec2 &o ) const { return this->getOffset( -o ); }
 
 	const Area		operator+( const Area& rhs ) const { return Area( x1 + rhs.x1, y1 + rhs.y1, x2 + rhs.x2, y2 + rhs.y2 ); }
 	const Area		operator-( const Area& rhs ) const { return Area( x1 - rhs.x1, y1 - rhs.y1, x2 - rhs.x2, y2 - rhs.y2 ); }
 
-	Area&		operator+=( const Vec2i &o ) { offset( o ); return *this; }
-	Area&		operator-=( const Vec2i &o ) { offset( -o ); return *this; }
+	Area&		operator+=( const ivec2 &o ) { offset( o ); return *this; }
+	Area&		operator-=( const ivec2 &o ) { offset( -o ); return *this; }
 
 	//! Constructs an Area with all values initialized to zero.
 	static	Area zero()				{ return Area( 0, 0, 0, 0 ); }
@@ -122,6 +123,6 @@ class Area {
 	}	
 };
 
-extern std::pair<Area,Vec2i> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const Vec2i &dstLT );
+extern std::pair<Area,ivec2> clippedSrcDst( const Area &srcSurfaceBounds, const Area &srcArea, const Area &dstSurfaceBounds, const ivec2 &dstLT );
 
 } // namespace cinder

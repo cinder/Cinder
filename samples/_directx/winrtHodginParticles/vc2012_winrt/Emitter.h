@@ -9,13 +9,13 @@ class Emitter {
  public:
 
 	Emitter();
-	void update( ci::Vec2i mouseLoc );
+	void update( ci::ivec2 mouseLoc );
 	void render();
 	void addParticles( int _amt );
 
 private:
 
-	void setVelToMouse( ci::Vec2i mouseLoc );
+	void setVelToMouse( ci::ivec2 mouseLoc );
 	void findVelocity();
 	void setPosition();	
 
@@ -26,9 +26,9 @@ private:
 	void renderParticles();
 	void renderParticleTrails();
 
-	ci::Vec3f loc;
-	ci::Vec3f vel;
-	ci::Vec3f velToMouse;
+	ci::vec3 loc;
+	ci::vec3 vel;
+	ci::vec3 velToMouse;
 	ci::Color myColor;
 	std::vector<Particle>	particles;	
 
