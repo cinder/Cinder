@@ -2037,7 +2037,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 		vec3* normals = reinterpret_cast<vec3*>( ctx->getAttribData( NORMAL ) );
 		mat3 normalsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
 		for( size_t v = 0; v < numVertices; ++v )
-			normals[v] = normalsTransform * normals[v];
+			normals[v] = normalize( normalsTransform * normals[v] );
 	}
 	else if( ctx->getAttribDims( NORMAL ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::NORMAL passed to geom::Transform" );
@@ -2048,7 +2048,7 @@ void Transform::process( SourceModsContext *ctx, const AttribSet &requestedAttri
 		vec3* tangents = reinterpret_cast<vec3*>( ctx->getAttribData( TANGENT ) );
 		mat3 tangentsTransform = glm::transpose( inverse( mat3( mTransform ) ) );
 		for( size_t v = 0; v < numVertices; ++v )
-			tangents[v] = tangentsTransform * tangents[v];
+			tangents[v] = normalize( tangentsTransform * tangents[v] );
 	}
 	else if( ctx->getAttribDims( TANGENT ) != 0 )
 		CI_LOG_W( "Unsupported dimension for geom::TANGENT passed to geom::Transform" );
@@ -2227,6 +2227,9 @@ void Lines::process( SourceModsContext *ctx, const AttribSet &requestedAttribs )
 			
 			ctx->copyIndices( geom::LINES, outIndices.data(), outIndices.size(), 4 );
 		}
+		break;
+		default:
+			CI_LOG_E( "geom::Lines unsupported primitive: " << primitiveToString( ctx->getPrimitive() ) );
 		break;
 	}
 }
@@ -3192,6 +3195,108 @@ void Bounds::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
+// PhongTessellate
+size_t PhongTessellate::getNumVertices( const Modifier::Params &upstreamParams ) const
+{
+	if( upstreamParams.getPrimitive() == Primitive::TRIANGLES ) {
+		size_t numTriangles = upstreamParams.getNumIndices() / 3;
+		return upstreamParams.getNumVertices() + numTriangles;
+	}
+	else
+		return upstreamParams.getNumVertices();
+}
+
+size_t PhongTessellate::getNumIndices( const Modifier::Params &upstreamParams ) const
+{
+	if( upstreamParams.getPrimitive() == Primitive::TRIANGLES ) {
+		size_t numTriangles = upstreamParams.getNumIndices() / 3;
+		return numTriangles * 9;
+	}
+	else
+		return upstreamParams.getNumIndices();
+}
+
+namespace {
+vec3 phongPosition( vec3 lerpPosition, vec3 vertPosition, vec3 vertNormal )
+{
+	float projection = dot( ( lerpPosition - vertPosition ), vertNormal );
+	return ( lerpPosition - vertNormal * projection );
+}
+} // anonymous namespace
+
+void PhongTessellate::process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const
+{
+	AttribSet request = requestedAttribs;
+	request.insert( POSITION );
+	request.insert( NORMAL );
+	ctx->processUpstream( request );
+	
+	if( ctx->getPrimitive() != Primitive::TRIANGLES ) {
+		CI_LOG_E( "geom::PhongTessellate only supports TRIANGLES primitive." );
+		return;
+	}
+
+	if( ( ctx->getAttribDims( POSITION ) != 3 ) || ( ctx->getAttribDims( NORMAL ) != 3 ) ) {
+		CI_LOG_E( "geom::PhongTessellate requires 3D POSITION and NORMAL." );
+		return;
+	}
+	
+	const size_t numInVertices = ctx->getNumVertices();
+	const size_t numInIndices = ctx->getNumIndices();
+	
+	const uint32_t *inIndices = ctx->getIndicesData();
+	const vec3 *inPositions = reinterpret_cast<const vec3*>( ctx->getAttribData( POSITION ) );
+	const vec3 *inNormals = reinterpret_cast<const vec3*>( ctx->getAttribData( NORMAL ) );
+	
+	vector<vec3> outPositions, outNormals;
+	vector<uint32_t> outIndices;
+	
+	for( size_t idx = 0; idx < numInIndices; idx += 3 ) {
+		vec3 lerpPos = (inPositions[inIndices[idx+0]] + inPositions[inIndices[idx+1]] +
+						inPositions[inIndices[idx+2]] ) / 3.0f;
+		vec3 finalPos = phongPosition( lerpPos, inPositions[inIndices[idx+0]], inNormals[inIndices[idx+0]] );
+		finalPos += phongPosition( lerpPos, inPositions[inIndices[idx+1]], inNormals[inIndices[idx+1]] );
+		finalPos += phongPosition( lerpPos, inPositions[inIndices[idx+2]], inNormals[inIndices[idx+2]] );
+		finalPos *= 0.333333f;
+		outPositions.push_back( finalPos );
+		outNormals.push_back( normalize(inNormals[inIndices[idx+0]] + inNormals[inIndices[idx+1]] +
+						inNormals[inIndices[idx+2]] ) );
+
+		uint32_t newIdx = (uint32_t)(outPositions.size() + numInVertices - 1);
+		// 0-new-2
+		outIndices.push_back( inIndices[idx+0] ); outIndices.push_back( newIdx ); outIndices.push_back( inIndices[idx+2] );
+		// 0-1-new
+		outIndices.push_back( inIndices[idx+0] ); outIndices.push_back( inIndices[idx+1] ); outIndices.push_back( newIdx );
+		// new-1-2
+		outIndices.push_back( newIdx ); outIndices.push_back( inIndices[idx+1] ); outIndices.push_back( inIndices[idx+2] );
+	}
+	
+	// iterate the attributes and lerp
+	for( const auto &attr : ctx->getAvailableAttribs() ) {
+		// we processed POSITION and NORMAL in the previous loop
+		if( ( attr == POSITION ) || ( attr == NORMAL ) )
+			continue;
+	
+		vector<float> outData;
+		const float *inData = ctx->getAttribData( attr );
+		uint8_t dims = ctx->getAttribDims( attr );
+
+		for( size_t idx = 0; idx < numInIndices; idx += 3 ) {
+			for( uint8_t dim = 0; dim < dims; ++dim )
+				outData.push_back( (inData[inIndices[idx+0]*dims + dim] +
+									inData[inIndices[idx+1]*dims + dim] +
+									inData[inIndices[idx+2]*dims + dim]) / 3.0f );
+		}
+
+		ctx->appendAttrib( attr, dims, outData.data(), outData.size() / dims );
+	}
+	
+	ctx->appendAttrib( POSITION, 3, (const float*)outPositions.data(), outPositions.size() );
+	ctx->appendAttrib( NORMAL, 3, (const float*)outNormals.data(), outNormals.size() );
+	ctx->copyIndices( ctx->getPrimitive(), outIndices.data(), outIndices.size(), 4 );
+}
+
+//////////////////////////////////////////////////////////////////////////////////////
 // SourceModsBase
 size_t SourceModsBase::getNumVertices() const
 {
@@ -3263,10 +3368,6 @@ void SourceModsBase::cacheVariables() const
 		mParamsStack.back().mPrimitive = primitive;
 		mParamsStack.back().mAvaliableAttribs = availableAttribs;
 	}
-	
-	for( size_t p = 0; p < mParamsStack.size(); ++p ) {
-		std::cout << mParamsStack[p].getNumIndices() << " " << primitiveToString( mParamsStack[p].getPrimitive() ) << std::endl;
-	}
 }
 
 void SourceModsBase::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3321,9 +3422,9 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 		// We've finished processing all Modifiers and the Source. Now iterate all the attribute data and the indices
 		// and copy them to the target.
 		
-		// first let's verify that all counts on our attributes are the same. If not, we'll continue to process but with an error
+		// first let's verify that all counts on our requested attributes are the same. If not, we'll continue to process but with an error
 		for( const auto &attribCount : mAttribCount )
-			if( attribCount.second != mNumVertices )
+			if( attribCount.second != mNumVertices && ( requestedAttribs.count( attribCount.first ) > 0 ) )
 				CI_LOG_E( "Attribute " << attribToString( attribCount.first ) << " count is " << attribCount.first << " instead of " << mNumVertices );
 		
 		for( const auto &attribInfoPair : mAttribInfo ) {
@@ -3388,6 +3489,14 @@ float* SourceModsContext::getAttribData( Attrib attr )
 		return nullptr;
 }
 
+AttribSet SourceModsContext::getAvailableAttribs() const
+{
+	AttribSet result;
+	for( const auto &attribInfo : mAttribInfo )
+		result.insert( attribInfo.first );
+	return result;
+}
+
 uint32_t* SourceModsContext::getIndicesData()
 {
 	return mIndices.get();
@@ -3418,6 +3527,34 @@ void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideByte
 	copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
 }
 
+void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count )
+{
+	// if we don't have any data for this attribute, just call copyAttrib
+	if( mAttribInfo.count( attr ) == 0 ) {
+		copyAttrib( attr, dims, 0, srcData, count );
+		return;
+	}
+	auto attribInfoIt = mAttribInfo.at( attr );
+	uint8_t existingDims = attribInfoIt.getDims();
+	if( existingDims != dims ) {
+		CI_LOG_E( "Attribute dimensions don't match" );
+		return;
+	}
+	size_t existingCount = mAttribCount[attr];
+	const float *existingData = mAttribData[attr].get();
+
+	auto newData = unique_ptr<float[]>( new float[(existingCount + count) * existingDims] );
+	// copy old data
+	memcpy( newData.get(), existingData, sizeof(float) * existingCount * existingDims );
+	// append new data
+	memcpy( newData.get() + existingCount * existingDims, srcData, sizeof(float) * count * existingDims );
+	// reassign data
+	mAttribData[attr] = std::move( newData );
+	mAttribCount[attr] = existingCount + count;
+
+	mNumVertices = existingCount + count;
+}
+
 void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
 	mPrimitive = primitive;
@@ -3427,6 +3564,24 @@ void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source
 		mIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices] );
 	}
 	memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
+}
+
+void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices )
+{
+	if( mPrimitive != primitive )
+		CI_LOG_E( "Primitive types don't match" );
+	
+	auto newIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices + mNumIndices] );
+
+	// copy old index data
+	if( mNumIndices && mIndices.get() )
+		memcpy( newIndices.get(), mIndices.get(), sizeof(uint32_t) * mNumIndices );
+	// and append new index data
+	memcpy( newIndices.get() + mNumIndices, source, sizeof(uint32_t) * numIndices );
+	// total indices += new number of indices
+	mNumIndices = mNumIndices + numIndices;
+	
+	mIndices = std::move( newIndices );
 }
 
 void SourceModsContext::clearAttrib( Attrib attr )

@@ -900,6 +900,24 @@ class Bounds : public Modifier {
 	Attrib				mAttrib;
 };
 
+//! Calculates a single level of Phong tessellation, per "Phong Tessellation", by Tamy Boubekeur & Marc Alexa, SIGGRAPH Asia, 2008 Proceedings
+class PhongTessellate : public Modifier {
+  public:
+	PhongTessellate( float alpha = 0.75f )
+		: mAlpha( alpha )
+	{}
+	
+	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	
+	Modifier*	clone() const override { return new PhongTessellate( mAlpha ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	float		mAlpha;
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////
 //! Base class for SourceMods<> and SourceModsPtr<>
 //! Used by Modifiers to process Source -> Target
@@ -917,12 +935,17 @@ class SourceModsContext : public Target {
 	void			copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
 	void			copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
+	//! Appends vertex data to existing data for \a attr. \a dims must match existing data.
+	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
 	void			clearAttrib( Attrib attr );
+	//! Appends index data to existing index data. \a primitive must match existing data.
+	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices );
 	void			clearIndices();
 
 	size_t			getNumVertices() const;
 	size_t			getNumIndices() const;
 	Primitive		getPrimitive() const;
+	AttribSet		getAvailableAttribs() const;
 	
 	void			processUpstream( const AttribSet &requestedAttribs );
 
@@ -990,7 +1013,7 @@ class SourceModsPtr : public SourceModsBase {
 	}
 
 	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
-		: SourceModsPtr( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
+		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
 	{
 		for( auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::move( rhsMod ) );
