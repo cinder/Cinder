@@ -90,19 +90,29 @@ div.contents {
 }
 
 /* remove gradient bg */
+.tabs, .tabs2, .tabs3, .tablist li, .navpath ul, .tablist a:hover, .tablist a {
+    background-image: none;  
+}
+
 .tabs, .tabs2, .tabs3, .tablist li, .navpath ul {
-    background-image: none;
-    background-color: #232323;
+  background-color: #232323;
 }
 
 .tablist a {
   color: #ffffff;
   text-shadow: none;
+  border-bottom: 2px solid #232323;
+}
+
+.tablist a:hover {
+  color: #ffffff;
+  border-bottom: 2px solid #c64b24;
 }
 
 .tablist li.current a {
   background-image: none;
   background-color: #c64b24;
+  border-bottom: 2px solid #c64b24;
 }
 
 .navpath ul {
