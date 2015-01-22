@@ -132,7 +132,14 @@ void OscListener::ProcessMessage( const ::osc::ReceivedMessage &m, const IpEndpo
 			message->addFloatArg(arg->AsFloatUnchecked());
 		else if (arg->IsString())
 			message->addStringArg(arg->AsStringUnchecked());
-		else {
+        else if(arg->IsBlob()){
+            const char *data;
+            ::osc::osc_bundle_element_size_t size = 0;
+            arg->AsBlobUnchecked((const void *&) data, size);
+            ci::Buffer buffer(&data, size);
+            message->addBlobArg(buffer);
+        }
+        else {
 			assert(false && "message argument type unknown");
 		}
 	}
