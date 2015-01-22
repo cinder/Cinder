@@ -51,8 +51,6 @@ void AppTestApp::prepareSettings( Settings *settings )
 
 void AppTestApp::setup()
 {
-	mTexStartup = gl::Texture::create( surface );
-
 	auto asset = loadAsset( "mustache-green.png" );
 	mTexAsset = gl::Texture::create( loadImage( asset ) );
 
