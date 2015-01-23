@@ -1173,7 +1173,8 @@ Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 	}
 	
 	if( ! mTopDown ) {
-		std::swap( result.y1, result.y2 );
+		result.y1 = 1.0f - result.y1;
+		result.y2 = 1.0f - result.y2;
 	}
 	
 	return result;
