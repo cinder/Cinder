@@ -3,6 +3,8 @@
 
 #include "Resources.h"
 
+#include "jsoncpp/json/json.h"
+
 class JsonTestApp : public ci::app::AppBasic {
   public:
 	void mouseDown( ci::app::MouseEvent event );
@@ -18,7 +20,8 @@ using namespace std;
 
 void JsonTestApp::setup()
 {
-    
+	console() << "jsoncpp version: " << JSONCPP_VERSION_STRING << endl;
+
     JsonTree value( "key", "value" );
     console() << value << endl;
 
@@ -83,6 +86,8 @@ void JsonTestApp::setup()
 	console() << test64.getValue() << endl;
 
 	testComments();
+
+	console() << "complete." << endl;
 }
 
 void JsonTestApp::mouseDown( MouseEvent event )

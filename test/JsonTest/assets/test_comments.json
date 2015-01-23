@@ -16,7 +16,7 @@
 	},
 	"array-test" : [
 	    // comment at beginning of array
-		"one",
-		"two"
+		"one", // comment for 'one'
+		"two" // // comment for 'two'
 	]
 }
