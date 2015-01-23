@@ -41,11 +41,7 @@ AppBasicMac::AppBasicMac()
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );
 
-	// -----------------------
-
 	@autoreleasepool {
-		NSApplication * application = [NSApplication sharedApplication];
-
 		mImpl = [[AppImplCocoaBasic alloc] init:this];
 
 		// must set the Platform's executable path after mImpl has been constructed
@@ -66,6 +62,7 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 		mCommandLineArgs.push_back( std::string( argv[arg] ) );
 
 	mSettings.setTitle( title );
+	// -----------------------
 
 	@autoreleasepool {
 		NSApplication * application = [NSApplication sharedApplication];
