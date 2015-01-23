@@ -141,7 +141,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)hideKeyboard;
 - (const std::string &)getKeyboardString;
 - (void)setKeyboardString:(const std::string &)keyboardString;
-- (UITextView *)getkeyboardTextView;
+- (UITextView *)getKeyboardTextView;
 - (void)showStatusBar:(UIStatusBarAnimation)anim;
 - (void)hideStatusBar:(UIStatusBarAnimation)anim;
 - (void)displayLinkDraw:(id)sender;
@@ -398,7 +398,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 		[mWindows.front() setKeyboardString:&keyboardString];
 }
 
-- (UITextView *)getkeyboardTextView
+- (UITextView *)getKeyboardTextView
 {
 	if( ! mWindows.empty() )
 		return mWindows.front().keyboardTextView;
@@ -550,11 +550,10 @@ void AppCocoaTouch::setKeyboardString( const std::string &keyboardString )
 	[mImpl setKeyboardString:keyboardString];
 }
 
-::UITextView* AppCocoaTouch::getkeyboardTextView() const
+::UITextView* AppCocoaTouch::getKeyboardTextView() const
 {
-	return [mImpl getkeyboardTextView];
+	return [mImpl getKeyboardTextView];
 }
-
 
 void AppCocoaTouch::showStatusBar( AppCocoaTouch::StatusBarAnimation animation )
 {

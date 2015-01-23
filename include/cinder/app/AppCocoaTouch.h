@@ -180,8 +180,8 @@ class AppCocoaTouch : public App {
 	std::string	getKeyboardString() const;
 	//! Sets the current text string that the keyboard is manipulating, overwriting any previous content.
 	void setKeyboardString( const std::string &keyboardString );
-	//! Retuens a pointer to the native UITextView, which can be used for further customization.
-	::UITextView	*getkeyboardTextView() const;
+	//! Retuens a pointer to the native UITextView, which can be used to customize the virtual keyboard.
+	::UITextView	*getKeyboardTextView() const;
 
 	typedef enum StatusBarAnimation { NONE, FADE, SLIDE } StatusBarAnimation;
 	//! Shows the system status bar
