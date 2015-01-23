@@ -52,8 +52,8 @@
 
 @property(retain, nonatomic) NSMutableArray *windows;
 
-- (id)init:(cinder::app::AppBasic*)aApp;
-- (void)setApplicationMenu: (NSString*) applicationName;
+- (id)init:(cinder::app::AppBasic*)app;
+- (void)setApplicationMenu:(NSString *)applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
 - (void)applicationDidBecomeActive:(NSNotification *)notification;
@@ -63,7 +63,7 @@
 - (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
 
 - (float)getFrameRate;
-- (void)setFrameRate:(float)aFrameRate;
+- (void)setFrameRate:(float)frameRate;
 - (void)disableFrameRate;
 - (bool)isFrameRateEnabled;
 - (std::string)getAppPath;
@@ -117,8 +117,8 @@
 - (cinder::app::RendererRef)getRenderer;
 - (void*)getNative;
 
-- (void)windowMovedNotification:(NSNotification*)inNotification;
-- (void)windowWillCloseNotification:(NSNotification*)inNotification;
+- (void)windowMovedNotification:(NSNotification*)notification;
+- (void)windowWillCloseNotification:(NSNotification*)notification;
 
 // CinderViewDelegate methods
 - (void)resize;

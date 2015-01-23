@@ -48,7 +48,7 @@
 
 @synthesize windows = mWindows;
 
-- (id)init:(cinder::app::AppBasic*)aApp
+- (id)init:(cinder::app::AppBasic*)app
 {	
 	self = [super init];
 	
@@ -57,12 +57,12 @@
 	
 	self.windows = [NSMutableArray array];
 	
-	const std::string& applicationName = aApp->getSettings().getTitle();
+	const std::string& applicationName = app->getSettings().getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
 	
 	[(NSApplication*)NSApp setDelegate:self];
 	
-	mApp = aApp;
+	mApp = app;
 	mNeedsUpdate = YES;
 
 	// build our list of requested formats; an empty list implies we should make the default window format
@@ -86,7 +86,7 @@
     return self;
 }
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+- (void)applicationDidFinishLaunching:(NSNotification *)notification
 {
 	mApp->getRenderer()->makeCurrentContext();
 
@@ -212,7 +212,7 @@
 	mActiveWindow = win;
 }
 
-- (WindowImplBasicCocoa*)findWindowImpl:(NSWindow*)window
+- (WindowImplBasicCocoa*)findWindowImpl:(NSWindow *)window
 {
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
 		if( winIt->mWin == window )
@@ -222,7 +222,7 @@
 	return nil;
 }
 
-- (void)releaseWindow:(WindowImplBasicCocoa*)windowImpl
+- (void)releaseWindow:(WindowImplBasicCocoa *)windowImpl
 {
 	if( mActiveWindow == windowImpl ) {
 		if( [mWindows count] == 1 ) // we're about to release the last window; set the active window to be NULL
@@ -247,7 +247,7 @@
 
 // This is all necessary because we don't use NIBs in Cinder apps
 // and we have to generate our menu programmatically
-- (void)setApplicationMenu: (NSString*) applicationName
+- (void)setApplicationMenu:(NSString *)applicationName
 {
 	NSMenu *appleMenu;
 	NSMenuItem *menuItem;
@@ -346,9 +346,9 @@
 	return mFrameRate;
 }
 
-- (void)setFrameRate:(float)aFrameRate
+- (void)setFrameRate:(float)frameRate
 {
-    mFrameRate = aFrameRate;
+    mFrameRate = frameRate;
 	mFrameRateEnabled = YES;
     [mAnimationTimer invalidate];
     [self startAnimationTimer];
@@ -366,9 +366,9 @@
 	return mFrameRateEnabled;
 }
 
-- (void)windowDidResignKey:(NSNotification*)aNotification
+- (void)windowDidResignKey:(NSNotification*)notification
 {
-//TODO	[cinderView applicationWillResignActive:aNotification];
+//TODO	[cinderView applicationWillResignActive:notification];
 }
 
 - (void)touchesEndedWithEvent:(NSEvent *)event
@@ -565,7 +565,7 @@
 	mWindowRef->emitMove();
 }
 
-- (void)windowWillCloseNotification:(NSNotification*)inNotification
+- (void)windowWillCloseNotification:(NSNotification*)notification
 {
 	// if this is the last window and we're set to terminate on last window, invalidate the timer
 	if( [mAppImpl getNumWindows] == 1 && mAppImpl->mApp->getSettings().isQuitOnLastWindowCloseEnabled() ) {
