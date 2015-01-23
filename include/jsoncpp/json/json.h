@@ -88,9 +88,9 @@ license you like.
 #ifndef JSON_VERSION_H_INCLUDED
 # define JSON_VERSION_H_INCLUDED
 
-# define JSONCPP_VERSION_STRING "0.7.0"
-# define JSONCPP_VERSION_MAJOR 0
-# define JSONCPP_VERSION_MINOR 7
+# define JSONCPP_VERSION_STRING "1.3.0"
+# define JSONCPP_VERSION_MAJOR 1
+# define JSONCPP_VERSION_MINOR 3
 # define JSONCPP_VERSION_PATCH 0
 # define JSONCPP_VERSION_QUALIFIER
 # define JSONCPP_VERSION_HEXA ((JSONCPP_VERSION_MAJOR << 24) | (JSONCPP_VERSION_MINOR << 16) | (JSONCPP_VERSION_PATCH << 8))
@@ -537,7 +537,7 @@ private:
     CZString(const char* cstr, DuplicationPolicy allocate);
     CZString(const CZString& other);
     ~CZString();
-    CZString &operator=(const CZString &other);
+    CZString& operator=(CZString other);
     bool operator<(const CZString& other) const;
     bool operator==(const CZString& other) const;
     ArrayIndex index() const;
@@ -601,25 +601,26 @@ Json::Value obj_value(Json::objectValue); // {}
   Value(const CppTL::ConstString& value);
 #endif
   Value(bool value);
+  /// Deep copy.
   Value(const Value& other);
   ~Value();
 
-  Value &operator=(const Value &other);
-  /// Swap values.
-  /// \note Currently, comments are intentionally not swapped, for
-  /// both logic and efficiency.
+  // Deep copy, then swap(other).
+  Value& operator=(Value other);
+  /// Swap everything.
   void swap(Value& other);
+  /// Swap values but leave comments and source offsets in place.
+  void swapPayload(Value& other);
 
   ValueType type() const;
 
+  /// Compare payload only, not comments etc.
   bool operator<(const Value& other) const;
   bool operator<=(const Value& other) const;
   bool operator>=(const Value& other) const;
   bool operator>(const Value& other) const;
-
   bool operator==(const Value& other) const;
   bool operator!=(const Value& other) const;
-
   int compare(const Value& other) const;
 
   const char* asCString() const;
@@ -757,9 +758,24 @@ Json::Value obj_value(Json::objectValue); // {}
   /// \return the removed Value, or null.
   /// \pre type() is objectValue or nullValue
   /// \post type() is unchanged
+  /// \deprecated
   Value removeMember(const char* key);
   /// Same as removeMember(const char*)
+  /// \deprecated
   Value removeMember(const std::string& key);
+  /** \brief Remove the named map member.
+
+      Update 'removed' iff removed.
+      \return true iff removed (no exceptions)
+  */
+  bool removeMember(const char* key, Value* removed);
+  /** \brief Remove the indexed array element.
+
+      O(n) expensive operations.
+      Update 'removed' iff removed.
+      \return true iff removed (no exceptions)
+  */
+  bool removeIndex(ArrayIndex i, Value* removed);
 
   /// Return true if the object has a member named key.
   bool isMember(const char* key) const;
@@ -806,6 +822,8 @@ Json::Value obj_value(Json::objectValue); // {}
   size_t getOffsetLimit() const;
 
 private:
+  void initBasic(ValueType type, bool allocated = false);
+
   Value& resolveReference(const char* key, bool isStatic);
 
 #ifdef JSON_VALUE_USE_INTERNAL_MAP
@@ -1445,6 +1463,14 @@ public:
 
 } // namespace Json
 
+
+namespace std {
+/// Specialize std::swap() for Json::Value.
+template<>
+inline void swap(Json::Value& a, Json::Value& b) { a.swap(b); }
+}
+
+
 #if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
 #pragma warning(pop)
 #endif // if defined(JSONCPP_DISABLE_DLL_INTERFACE_WARNING)
@@ -1653,7 +1679,6 @@ private:
 
   typedef std::deque<ErrorInfo> Errors;
 
-  bool expectToken(TokenType type, Token& token, const char* message);
   bool readToken(Token& token);
   void skipSpaces();
   bool match(Location pattern, int patternLength);
@@ -1990,6 +2015,7 @@ JSON_API std::ostream& operator<<(std::ostream&, const Value& root);
 #define CPPTL_JSON_ASSERTIONS_H_INCLUDED
 
 #include <stdlib.h>
+#include <sstream>
 
 #if !defined(JSON_IS_AMALGAMATION)
 #include "config.h"
@@ -1999,26 +2025,26 @@ JSON_API std::ostream& operator<<(std::ostream&, const Value& root);
 #include <stdexcept>
 #define JSON_ASSERT(condition)                                                 \
   assert(condition); // @todo <= change this into an exception throw
-#define JSON_FAIL_MESSAGE(message) throw std::runtime_error(message);
+#define JSON_FAIL_MESSAGE(message) do{std::ostringstream oss; oss << message; throw std::runtime_error(oss.str());}while(0)
+//#define JSON_FAIL_MESSAGE(message) throw std::runtime_error(message)
 #else // JSON_USE_EXCEPTION
 #define JSON_ASSERT(condition) assert(condition);
 
 // The call to assert() will show the failure message in debug builds. In
-// release bugs we write to invalid memory in order to crash hard, so that a
-// debugger or crash reporter gets the chance to take over. We still call exit()
-// afterward in order to tell the compiler that this macro doesn't return.
+// release bugs we abort, for a core-dump or debugger.
 #define JSON_FAIL_MESSAGE(message)                                             \
   {                                                                            \
-    assert(false&& message);                                                   \
-    strcpy(reinterpret_cast<char*>(666), message);                             \
-    exit(123);                                                                 \
+    std::ostringstream oss; oss << message;                                    \
+    assert(false && oss.str().c_str());                                        \
+    abort();                                                                   \
   }
+
 
 #endif
 
 #define JSON_ASSERT_MESSAGE(condition, message)                                \
   if (!(condition)) {                                                          \
-    JSON_FAIL_MESSAGE(message)                                                 \
+    JSON_FAIL_MESSAGE(message);                                                \
   }
 
 #endif // CPPTL_JSON_ASSERTIONS_H_INCLUDED

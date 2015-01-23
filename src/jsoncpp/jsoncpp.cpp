@@ -230,23 +230,6 @@ Features Features::strictMode() {
 // Implementation of class Reader
 // ////////////////////////////////
 
-static inline bool in(Reader::Char c,
-                      Reader::Char c1,
-                      Reader::Char c2,
-                      Reader::Char c3,
-                      Reader::Char c4) {
-  return c == c1 || c == c2 || c == c3 || c == c4;
-}
-
-static inline bool in(Reader::Char c,
-                      Reader::Char c1,
-                      Reader::Char c2,
-                      Reader::Char c3,
-                      Reader::Char c4,
-                      Reader::Char c5) {
-  return c == c1 || c == c2 || c == c3 || c == c4 || c == c5;
-}
-
 static bool containsNewLine(Reader::Location begin, Reader::Location end) {
   for (; begin < end; ++begin)
     if (*begin == '\n' || *begin == '\r')
@@ -335,14 +318,9 @@ bool Reader::readValue() {
   bool successful = true;
 
   if (collectComments_ && !commentsBefore_.empty()) {
-    // Remove newline characters at the end of the comments
-    size_t lastNonNewline = commentsBefore_.find_last_not_of("\r\n");
-    if (lastNonNewline != std::string::npos) {
-      commentsBefore_.erase(lastNonNewline + 1);
-    } else {
-      commentsBefore_.clear();
-    }
-
+    // Remove newline at the end of the comment
+    if (commentsBefore_[commentsBefore_.size() - 1] == '\n')
+      commentsBefore_.resize(commentsBefore_.size() - 1);
     currentValue().setComment(commentsBefore_, commentBefore);
     commentsBefore_ = "";
   }
@@ -363,26 +341,36 @@ bool Reader::readValue() {
     successful = decodeString(token);
     break;
   case tokenTrue:
-    currentValue() = true;
+    {
+    Value v(true);
+    currentValue().swapPayload(v);
     currentValue().setOffsetStart(token.start_ - begin_);
     currentValue().setOffsetLimit(token.end_ - begin_);
+    }
     break;
   case tokenFalse:
-    currentValue() = false;
+    {
+    Value v(false);
+    currentValue().swapPayload(v);
     currentValue().setOffsetStart(token.start_ - begin_);
     currentValue().setOffsetLimit(token.end_ - begin_);
+    }
     break;
   case tokenNull:
-    currentValue() = Value();
+    {
+    Value v;
+    currentValue().swapPayload(v);
     currentValue().setOffsetStart(token.start_ - begin_);
     currentValue().setOffsetLimit(token.end_ - begin_);
+    }
     break;
   case tokenArraySeparator:
     if (features_.allowDroppedNullPlaceholders_) {
       // "Un-read" the current token and mark the current value as a null
       // token.
       current_--;
-      currentValue() = Value();
+      Value v;
+      currentValue().swapPayload(v);
       currentValue().setOffsetStart(current_ - begin_ - 1);
       currentValue().setOffsetLimit(current_ - begin_);
       break;
@@ -410,13 +398,6 @@ void Reader::skipCommentTokens(Token& token) {
   } else {
     readToken(token);
   }
-}
-
-bool Reader::expectToken(TokenType type, Token& token, const char* message) {
-  readToken(token);
-  if (token.type_ != type)
-    return addError(message, token);
-  return true;
 }
 
 bool Reader::readToken(Token& token) {
@@ -534,14 +515,34 @@ bool Reader::readComment() {
   return true;
 }
 
+static std::string normalizeEOL(Reader::Location begin, Reader::Location end) {
+  std::string normalized;
+  normalized.reserve(end - begin);
+  Reader::Location current = begin;
+  while (current != end) {
+    char c = *current++;
+    if (c == '\r') {
+      if (current != end && *current == '\n')
+         // convert dos EOL
+         ++current;
+      // convert Mac EOL
+      normalized += '\n';
+    } else {
+      normalized += c;
+    }
+  }
+  return normalized;
+}
+
 void
 Reader::addComment(Location begin, Location end, CommentPlacement placement) {
   assert(collectComments_);
+  const std::string& normalized = normalizeEOL(begin, end);
   if (placement == commentAfterOnSameLine) {
     assert(lastValue_ != 0);
-    lastValue_->setComment(std::string(begin, end), placement);
+    lastValue_->setComment(normalized, placement);
   } else {
-    commentsBefore_ += std::string(begin, end);
+    commentsBefore_ += normalized;
   }
 }
 
@@ -557,18 +558,38 @@ bool Reader::readCStyleComment() {
 bool Reader::readCppStyleComment() {
   while (current_ != end_) {
     Char c = getNextChar();
-    if (c == '\r' || c == '\n')
+    if (c == '\n')
       break;
+    if (c == '\r') {
+      // Consume DOS EOL. It will be normalized in addComment.
+      if (current_ != end_ && *current_ == '\n')
+        getNextChar();
+      // Break on Moc OS 9 EOL.
+      break;
+    }
   }
   return true;
 }
 
 void Reader::readNumber() {
-  while (current_ != end_) {
-    if (!(*current_ >= '0' && *current_ <= '9') &&
-        !in(*current_, '.', 'e', 'E', '+', '-'))
-      break;
-    ++current_;
+  const char *p = current_;
+  char c = '0'; // stopgap for already consumed character
+  // integral part
+  while (c >= '0' && c <= '9')
+    c = (current_ = p) < end_ ? *p++ : 0;
+  // fractional part
+  if (c == '.') {
+    c = (current_ = p) < end_ ? *p++ : 0;
+    while (c >= '0' && c <= '9')
+      c = (current_ = p) < end_ ? *p++ : 0;
+  }
+  // exponential part
+  if (c == 'e' || c == 'E') {
+    c = (current_ = p) < end_ ? *p++ : 0;
+    if (c == '+' || c == '-')
+      c = (current_ = p) < end_ ? *p++ : 0;
+    while (c >= '0' && c <= '9')
+      c = (current_ = p) < end_ ? *p++ : 0;
   }
 }
 
@@ -587,7 +608,8 @@ bool Reader::readString() {
 bool Reader::readObject(Token& tokenStart) {
   Token tokenName;
   std::string name;
-  currentValue() = Value(objectValue);
+  Value init(objectValue);
+  currentValue().swapPayload(init);
   currentValue().setOffsetStart(tokenStart.start_ - begin_);
   while (readToken(tokenName)) {
     bool initialTokenOk = true;
@@ -640,7 +662,8 @@ bool Reader::readObject(Token& tokenStart) {
 }
 
 bool Reader::readArray(Token& tokenStart) {
-  currentValue() = Value(arrayValue);
+  Value init(arrayValue);
+  currentValue().swapPayload(init);
   currentValue().setOffsetStart(tokenStart.start_ - begin_);
   skipSpaces();
   if (*current_ == ']') // empty array
@@ -680,20 +703,13 @@ bool Reader::decodeNumber(Token& token) {
   Value decoded;
   if (!decodeNumber(token, decoded))
     return false;
-  currentValue() = decoded;
+  currentValue().swapPayload(decoded);
   currentValue().setOffsetStart(token.start_ - begin_);
   currentValue().setOffsetLimit(token.end_ - begin_);
   return true;
 }
 
 bool Reader::decodeNumber(Token& token, Value& decoded) {
-  bool isDouble = false;
-  for (Location inspect = token.start_; inspect != token.end_; ++inspect) {
-    isDouble = isDouble || in(*inspect, '.', 'e', 'E', '+') ||
-               (*inspect == '-' && inspect != token.start_);
-  }
-  if (isDouble)
-    return decodeDouble(token, decoded);
   // Attempts to parse the number as an integer. If the number is
   // larger than the maximum supported value of an integer then
   // we decode the number as a double.
@@ -701,6 +717,7 @@ bool Reader::decodeNumber(Token& token, Value& decoded) {
   bool isNegative = *current == '-';
   if (isNegative)
     ++current;
+  // TODO: Help the compiler do the div and mod at compile time or get rid of them.
   Value::LargestUInt maxIntegerValue =
       isNegative ? Value::LargestUInt(-Value::minLargestInt)
                  : Value::maxLargestUInt;
@@ -709,9 +726,7 @@ bool Reader::decodeNumber(Token& token, Value& decoded) {
   while (current < token.end_) {
     Char c = *current++;
     if (c < '0' || c > '9')
-      return addError("'" + std::string(token.start_, token.end_) +
-                          "' is not a number.",
-                      token);
+      return decodeDouble(token, decoded);
     Value::UInt digit(c - '0');
     if (value >= threshold) {
       // We've hit or exceeded the max value divided by 10 (rounded down). If
@@ -738,7 +753,7 @@ bool Reader::decodeDouble(Token& token) {
   Value decoded;
   if (!decodeDouble(token, decoded))
     return false;
-  currentValue() = decoded;
+  currentValue().swapPayload(decoded);
   currentValue().setOffsetStart(token.start_ - begin_);
   currentValue().setOffsetLimit(token.end_ - begin_);
   return true;
@@ -781,10 +796,11 @@ bool Reader::decodeDouble(Token& token, Value& decoded) {
 }
 
 bool Reader::decodeString(Token& token) {
-  std::string decoded;
-  if (!decodeString(token, decoded))
+  std::string decoded_string;
+  if (!decodeString(token, decoded_string))
     return false;
-  currentValue() = decoded;
+  Value decoded(decoded_string);
+  currentValue().swapPayload(decoded);
   currentValue().setOffsetStart(token.start_ - begin_);
   currentValue().setOffsetLimit(token.end_ - begin_);
   return true;
@@ -1014,8 +1030,9 @@ std::vector<Reader::StructuredError> Reader::getStructuredErrors() const {
 }
 
 bool Reader::pushError(const Value& value, const std::string& message) {
-  if(value.getOffsetStart() > end_ - begin_
-    || value.getOffsetLimit() > end_ - begin_)
+  size_t length = end_ - begin_;
+  if(value.getOffsetStart() > length
+    || value.getOffsetLimit() > length)
     return false;
   Token token;
   token.type_ = tokenError;
@@ -1030,9 +1047,10 @@ bool Reader::pushError(const Value& value, const std::string& message) {
 }
 
 bool Reader::pushError(const Value& value, const std::string& message, const Value& extra) {
-  if(value.getOffsetStart() > end_ - begin_
-    || value.getOffsetLimit() > end_ - begin_
-    || extra.getOffsetLimit() > end_ - begin_)
+  size_t length = end_ - begin_;
+  if(value.getOffsetStart() > length
+    || value.getOffsetLimit() > length
+    || extra.getOffsetLimit() > length)
     return false;
   Token token;
   token.type_ = tokenError;
@@ -1645,7 +1663,8 @@ Value::CZString::CZString(const CZString& other)
                 ? duplicateStringValue(other.cstr_)
                 : other.cstr_),
       index_(other.cstr_
-                 ? (other.index_ == noDuplication ? noDuplication : duplicate)
+                 ? static_cast<ArrayIndex>(other.index_ == noDuplication
+                     ? noDuplication : duplicate)
                  : other.index_) {}
 
 Value::CZString::~CZString() {
@@ -1658,9 +1677,8 @@ void Value::CZString::swap(CZString& other) {
   std::swap(index_, other.index_);
 }
 
-Value::CZString &Value::CZString::operator=(const CZString &other) {
-  CZString temp(other);
-  swap(temp);
+Value::CZString& Value::CZString::operator=(CZString other) {
+  swap(other);
   return *this;
 }
 
@@ -1696,14 +1714,8 @@ bool Value::CZString::isStaticString() const { return index_ == noDuplication; }
  * memset( this, 0, sizeof(Value) )
  * This optimization is used in ValueInternalMap fast allocator.
  */
-Value::Value(ValueType type)
-    : type_(type), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(ValueType type) {
+  initBasic(type);
   switch (type) {
   case nullValue:
     break;
@@ -1738,130 +1750,62 @@ Value::Value(ValueType type)
   }
 }
 
-Value::Value(UInt value)
-    : type_(uintValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(Int value) {
+  initBasic(intValue);
+  value_.int_ = value;
+}
+
+Value::Value(UInt value) {
+  initBasic(uintValue);
   value_.uint_ = value;
 }
-
-Value::Value(Int value)
-    : type_(intValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
-  value_.int_ = value;
-}
-
 #if defined(JSON_HAS_INT64)
-Value::Value(Int64 value)
-    : type_(intValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(Int64 value) {
+  initBasic(intValue);
   value_.int_ = value;
 }
-
-Value::Value(UInt64 value)
-    : type_(uintValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(UInt64 value) {
+  initBasic(uintValue);
   value_.uint_ = value;
 }
 #endif // defined(JSON_HAS_INT64)
 
-Value::Value(double value)
-    : type_(realValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(double value) {
+  initBasic(realValue);
   value_.real_ = value;
 }
 
-Value::Value(const char* value)
-    : type_(stringValue), allocated_(true)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(const char* value) {
+  initBasic(stringValue, true);
   value_.string_ = duplicateStringValue(value);
 }
 
-Value::Value(const char* beginValue, const char* endValue)
-    : type_(stringValue), allocated_(true)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(const char* beginValue, const char* endValue) {
+  initBasic(stringValue, true);
   value_.string_ =
       duplicateStringValue(beginValue, (unsigned int)(endValue - beginValue));
 }
 
-Value::Value(const std::string& value)
-    : type_(stringValue), allocated_(true)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(const std::string& value) {
+  initBasic(stringValue, true);
   value_.string_ =
       duplicateStringValue(value.c_str(), (unsigned int)value.length());
 }
 
-Value::Value(const StaticString& value)
-    : type_(stringValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(const StaticString& value) {
+  initBasic(stringValue);
   value_.string_ = const_cast<char*>(value.c_str());
 }
 
 #ifdef JSON_USE_CPPTL
-Value::Value(const CppTL::ConstString& value)
-    : type_(stringValue), allocated_(true)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(const CppTL::ConstString& value) {
+  initBasic(stringValue, true);
   value_.string_ = duplicateStringValue(value, value.length());
 }
 #endif
 
-Value::Value(bool value)
-    : type_(booleanValue), allocated_(false)
-#ifdef JSON_VALUE_USE_INTERNAL_MAP
-      ,
-      itemIsUsed_(0)
-#endif
-      ,
-      comments_(0), start_(0), limit_(0) {
+Value::Value(bool value) {
+  initBasic(booleanValue);
   value_.bool_ = value;
 }
 
@@ -1884,7 +1828,7 @@ Value::Value(const Value& other)
   case stringValue:
     if (other.value_.string_) {
       value_.string_ = duplicateStringValue(other.value_.string_);
-      allocated_ = true;
+      allocated_ |= true;
     } else {
       value_.string_ = 0;
       allocated_ = false;
@@ -1949,13 +1893,12 @@ Value::~Value() {
     delete[] comments_;
 }
 
-Value &Value::operator=(const Value &other) {
-  Value temp(other);
-  swap(temp);
+Value& Value::operator=(Value other) {
+  swap(other);
   return *this;
 }
 
-void Value::swap(Value& other) {
+void Value::swapPayload(Value& other) {
   ValueType temp = type_;
   type_ = other.type_;
   other.type_ = temp;
@@ -1963,6 +1906,11 @@ void Value::swap(Value& other) {
   int temp2 = allocated_;
   allocated_ = other.allocated_;
   other.allocated_ = temp2;
+}
+
+void Value::swap(Value& other) {
+  swapPayload(other);
+  std::swap(comments_, other.comments_);
   std::swap(start_, other.start_);
   std::swap(limit_, other.limit_);
 }
@@ -2438,6 +2386,17 @@ Value& Value::operator[](const char* key) {
   return resolveReference(key, false);
 }
 
+void Value::initBasic(ValueType type, bool allocated) {
+  type_ = type;
+  allocated_ = allocated;
+#ifdef JSON_VALUE_USE_INTERNAL_MAP
+  itemIsUsed_ = 0;
+#endif
+  comments_ = 0;
+  start_ = 0;
+  limit_ = 0;
+}
+
 Value& Value::resolveReference(const char* key, bool isStatic) {
   JSON_ASSERT_MESSAGE(
       type_ == nullValue || type_ == objectValue,
@@ -2518,33 +2477,72 @@ Value Value::get(const std::string& key, const Value& defaultValue) const {
   return get(key.c_str(), defaultValue);
 }
 
+
+bool Value::removeMember(const char* key, Value* removed) {
+  if (type_ != objectValue) {
+    return false;
+  }
+#ifndef JSON_VALUE_USE_INTERNAL_MAP
+  CZString actualKey(key, CZString::noDuplication);
+  ObjectValues::iterator it = value_.map_->find(actualKey);
+  if (it == value_.map_->end())
+    return false;
+  *removed = it->second;
+  value_.map_->erase(it);
+  return true;
+#else
+  Value* value = value_.map_->find(key);
+  if (value) {
+    *removed = *value;
+    value_.map_.remove(key);
+    return true;
+  } else {
+    return false;
+  }
+#endif
+}
+
 Value Value::removeMember(const char* key) {
   JSON_ASSERT_MESSAGE(type_ == nullValue || type_ == objectValue,
                       "in Json::Value::removeMember(): requires objectValue");
   if (type_ == nullValue)
     return null;
-#ifndef JSON_VALUE_USE_INTERNAL_MAP
-  CZString actualKey(key, CZString::noDuplication);
-  ObjectValues::iterator it = value_.map_->find(actualKey);
-  if (it == value_.map_->end())
-    return null;
-  Value old(it->second);
-  value_.map_->erase(it);
-  return old;
-#else
-  Value* value = value_.map_->find(key);
-  if (value) {
-    Value old(*value);
-    value_.map_.remove(key);
-    return old;
-  } else {
-    return null;
-  }
-#endif
+
+  Value removed;  // null
+  removeMember(key, &removed);
+  return removed; // still null if removeMember() did nothing
 }
 
 Value Value::removeMember(const std::string& key) {
   return removeMember(key.c_str());
+}
+
+bool Value::removeIndex(ArrayIndex index, Value* removed) {
+  if (type_ != arrayValue) {
+    return false;
+  }
+#ifdef JSON_VALUE_USE_INTERNAL_MAP
+  JSON_FAIL_MESSAGE("removeIndex is not implemented for ValueInternalArray.");
+  return false;
+#else
+  CZString key(index);
+  ObjectValues::iterator it = value_.map_->find(key);
+  if (it == value_.map_->end()) {
+    return false;
+  }
+  *removed = it->second;
+  ArrayIndex oldSize = size();
+  // shift left all items left, into the place of the "removed"
+  for (ArrayIndex i = index; i < (oldSize - 1); ++i){
+    CZString key(i);
+    (*value_.map_)[key] = (*this)[i + 1];
+  }
+  // erase the last one ("leftover")
+  CZString keyLast(oldSize - 1);
+  ObjectValues::iterator itLast = value_.map_->find(keyLast);
+  value_.map_->erase(itLast);
+  return true;
+#endif
 }
 
 #ifdef JSON_USE_CPPTL
@@ -3052,6 +3050,11 @@ Value& Path::make(Value& root) const {
 #pragma warning(disable : 4996)
 #endif
 
+#if defined(__sun) && defined(__SVR4) //Solaris
+#include <ieeefp.h>
+#define isfinite finite
+#endif
+
 namespace Json {
 
 static bool containsControlCharacter(const char* str) {
@@ -3108,13 +3111,13 @@ std::string valueToString(double value) {
                                                       // visual studio 2005 to
                                                       // avoid warning.
 #if defined(WINCE)
-  len = _snprintf(buffer, sizeof(buffer), "%.16g", value);
+  len = _snprintf(buffer, sizeof(buffer), "%.17g", value);
 #else
-  len = sprintf_s(buffer, sizeof(buffer), "%.16g", value);
+  len = sprintf_s(buffer, sizeof(buffer), "%.17g", value);
 #endif
 #else
   if (isfinite(value)) {
-    len = snprintf(buffer, sizeof(buffer), "%.16g", value);
+    len = snprintf(buffer, sizeof(buffer), "%.17g", value);
   } else {
     // IEEE standard states that NaN values will not compare to themselves
     if (value != value) {
@@ -3243,28 +3246,28 @@ void FastWriter::writeValue(const Value& value) {
     document_ += valueToString(value.asBool());
     break;
   case arrayValue: {
-    document_ += "[";
+    document_ += '[';
     int size = value.size();
     for (int index = 0; index < size; ++index) {
       if (index > 0)
-        document_ += ",";
+        document_ += ',';
       writeValue(value[index]);
     }
-    document_ += "]";
+    document_ += ']';
   } break;
   case objectValue: {
     Value::Members members(value.getMemberNames());
-    document_ += "{";
+    document_ += '{';
     for (Value::Members::iterator it = members.begin(); it != members.end();
          ++it) {
       const std::string& name = *it;
       if (it != members.begin())
-        document_ += ",";
+        document_ += ',';
       document_ += valueToQuotedString(name.c_str());
       document_ += yamlCompatiblityEnabled_ ? ": " : ":";
       writeValue(value[name]);
     }
-    document_ += "}";
+    document_ += '}';
   } break;
   }
 }
@@ -3328,7 +3331,7 @@ void StyledWriter::writeValue(const Value& value) {
           writeCommentAfterValueOnSameLine(childValue);
           break;
         }
-        document_ += ",";
+        document_ += ',';
         writeCommentAfterValueOnSameLine(childValue);
       }
       unindent();
@@ -3362,7 +3365,7 @@ void StyledWriter::writeArrayValue(const Value& value) {
           writeCommentAfterValueOnSameLine(childValue);
           break;
         }
-        document_ += ",";
+        document_ += ',';
         writeCommentAfterValueOnSameLine(childValue);
       }
       unindent();
@@ -3442,26 +3445,27 @@ void StyledWriter::writeCommentBeforeValue(const Value& root) {
 
   document_ += "\n";
   writeIndent();
-  std::string normalizedComment = normalizeEOL(root.getComment(commentBefore));
-  std::string::const_iterator iter = normalizedComment.begin();
-  while (iter != normalizedComment.end()) {
+  const std::string& comment = root.getComment(commentBefore);
+  std::string::const_iterator iter = comment.begin();
+  while (iter != comment.end()) {
     document_ += *iter;
-    if (*iter == '\n' && *(iter + 1) == '/')
+    if (*iter == '\n' &&
+       (iter != comment.end() && *(iter + 1) == '/'))
       writeIndent();
     ++iter;
   }
 
-  // Comments are stripped of newlines, so add one here
+  // Comments are stripped of trailing newlines, so add one here
   document_ += "\n";
 }
 
 void StyledWriter::writeCommentAfterValueOnSameLine(const Value& root) {
   if (root.hasComment(commentAfterOnSameLine))
-    document_ += " " + normalizeEOL(root.getComment(commentAfterOnSameLine));
+    document_ += " " + root.getComment(commentAfterOnSameLine);
 
   if (root.hasComment(commentAfter)) {
     document_ += "\n";
-    document_ += normalizeEOL(root.getComment(commentAfter));
+    document_ += root.getComment(commentAfter);
     document_ += "\n";
   }
 }
@@ -3470,25 +3474,6 @@ bool StyledWriter::hasCommentForValue(const Value& value) {
   return value.hasComment(commentBefore) ||
          value.hasComment(commentAfterOnSameLine) ||
          value.hasComment(commentAfter);
-}
-
-std::string StyledWriter::normalizeEOL(const std::string& text) {
-  std::string normalized;
-  normalized.reserve(text.length());
-  const char* begin = text.c_str();
-  const char* end = begin + text.length();
-  const char* current = begin;
-  while (current != end) {
-    char c = *current++;
-    if (c == '\r') // mac or dos EOL
-    {
-      if (*current == '\n') // convert dos EOL
-        ++current;
-      normalized += '\n';
-    } else // handle unix EOL & other char
-      normalized += c;
-  }
-  return normalized;
 }
 
 // Class StyledStreamWriter
@@ -3667,17 +3652,17 @@ void StyledStreamWriter::unindent() {
 void StyledStreamWriter::writeCommentBeforeValue(const Value& root) {
   if (!root.hasComment(commentBefore))
     return;
-  *document_ << normalizeEOL(root.getComment(commentBefore));
+  *document_ << root.getComment(commentBefore);
   *document_ << "\n";
 }
 
 void StyledStreamWriter::writeCommentAfterValueOnSameLine(const Value& root) {
   if (root.hasComment(commentAfterOnSameLine))
-    *document_ << " " + normalizeEOL(root.getComment(commentAfterOnSameLine));
+    *document_ << " " + root.getComment(commentAfterOnSameLine);
 
   if (root.hasComment(commentAfter)) {
     *document_ << "\n";
-    *document_ << normalizeEOL(root.getComment(commentAfter));
+    *document_ << root.getComment(commentAfter);
     *document_ << "\n";
   }
 }
@@ -3686,25 +3671,6 @@ bool StyledStreamWriter::hasCommentForValue(const Value& value) {
   return value.hasComment(commentBefore) ||
          value.hasComment(commentAfterOnSameLine) ||
          value.hasComment(commentAfter);
-}
-
-std::string StyledStreamWriter::normalizeEOL(const std::string& text) {
-  std::string normalized;
-  normalized.reserve(text.length());
-  const char* begin = text.c_str();
-  const char* end = begin + text.length();
-  const char* current = begin;
-  while (current != end) {
-    char c = *current++;
-    if (c == '\r') // mac or dos EOL
-    {
-      if (*current == '\n') // convert dos EOL
-        ++current;
-      normalized += '\n';
-    } else // handle unix EOL & other char
-      normalized += c;
-  }
-  return normalized;
 }
 
 std::ostream& operator<<(std::ostream& sout, const Value& root) {
