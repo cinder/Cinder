@@ -28,12 +28,12 @@
 namespace cinder { namespace app {
 
 // Global singleton
-AppBasic*	AppBasic::sInstance;
+AppBasic*	AppBasic::sBasicInstance;
 
 AppBasic::AppBasic()
 	: App()
 {
-	sInstance = this;
+	sBasicInstance = this;
 }
 
 AppBasic::~AppBasic()

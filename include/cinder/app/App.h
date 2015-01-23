@@ -56,10 +56,7 @@ class io_service;
 } } // namespace boost::asio
 >>>>>>> remove some remaining WinRT ifdef’s for asio and custom file path handling that have already been removed elsewhere
 
-extern cinder::app::RendererRef gDefaultRenderer;
-
-namespace cinder { namespace app { 
-
+namespace cinder { namespace app {
 
 //! Returns true if any slots return true, else false. Does not short-circuit. Returns true if there are no slots.
 struct BooleanOrEventCombiner {
@@ -400,7 +397,7 @@ class App {
 	typename std::result_of<T()>::type dispatchSync( T fn );
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
-	RendererRef	getDefaultRenderer() const { return gDefaultRenderer; }
+	RendererRef	getDefaultRenderer() const { return sDefaultRenderer; }
 	/** \return a copy of the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
 	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
@@ -428,12 +425,15 @@ class App {
 
 	//! Returns a pointer to the active App
 	static App*			get() { return sInstance; }
-static App*					sInstance;
+
+	static void initialize( const RendererRef &defaultRenderer );
+	static void executeLaunch( const char *title, int argc, char * const argv[] );
+
   protected:
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch();
-	static void		executeLaunch( App *app, RendererRef defaultRenderer, const char *title, int argc, char * const argv[] );
+//	static void		executeLaunch( App *app, RendererRef defaultRenderer, const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
@@ -461,7 +461,8 @@ static App*					sInstance;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 
   protected:
-	RendererRef					mDefaultRenderer;
+	static App*					sInstance;
+	static RendererRef			sDefaultRenderer;
 	bool						mPowerManagement;
 };
 

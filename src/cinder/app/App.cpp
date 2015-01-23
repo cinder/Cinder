@@ -42,8 +42,8 @@ namespace cinder { namespace app {
 	void*	App::sAutoReleasePool = 0;
 #endif
 
-// Static instance of App, effectively a singleton
-App*	App::sInstance;
+App*					App::sInstance;			// Static instance of App, effectively a singleton
+RendererRef				App::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
 static std::thread::id	sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -83,6 +83,8 @@ void App::Settings::prepareWindow( const Window::Format &format )
 App::App()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() )
 {
+	sInstance = this;
+
 	mFpsLastSampleFrame = 0;
 	mFpsLastSampleTime = 0;
 
@@ -199,6 +201,7 @@ RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
 }
 
 // These are called by application instantiation macros
+// static
 void App::prepareLaunch()
 {
 #if defined( CINDER_COCOA )
@@ -206,13 +209,23 @@ void App::prepareLaunch()
 #endif
 }
 
-void App::executeLaunch( App *app, RendererRef defaultRenderer, const char *title, int argc, char * const argv[] )
+// static
+void App::initialize( const RendererRef &defaultRenderer )
 {
-	sInstance = app;
-	app->mDefaultRenderer = defaultRenderer;
+	sDefaultRenderer = defaultRenderer;
+}
+
+
+// TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
+// - need to get through windows updates first
+// static
+void App::executeLaunch( const char *title, int argc, char * const argv[] )
+{
+	CI_ASSERT( sInstance );
+	CI_ASSERT( sDefaultRenderer );
 
 	try {
-		app->launch( title, argc, argv );
+		sInstance->launch( title, argc, argv );
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "Uncaught exception, type: " << ci::System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
@@ -220,6 +233,7 @@ void App::executeLaunch( App *app, RendererRef defaultRenderer, const char *titl
 	}
 }
 
+// static
 void App::cleanupLaunch()
 {
 #if defined( CINDER_COCOA )

@@ -136,7 +136,7 @@ class AppBasic : public App {
 	//! \endcond
 	
 	//! Returns a pointer to the current global AppBasic
-	static AppBasic*	get()	{ return sInstance; }
+	static AppBasic*	get()	{ return sBasicInstance; }
 
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
@@ -145,13 +145,10 @@ class AppBasic : public App {
 	//! \endcond
 
   protected:
-	static AppBasic*	sInstance;
-
-	EventSignalShouldQuit	mSignalShouldQuit;
-
+	static AppBasic*			sBasicInstance;
+	EventSignalShouldQuit		mSignalShouldQuit;
 	std::vector<std::string>	mCommandLineArgs;
-
-	Settings		mSettings;
+	Settings					mSettings;
 };
 
 } } // namespace cinder::app

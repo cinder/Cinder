@@ -64,7 +64,7 @@ class AppBasicMac : public AppBasic {
 
 	//! \cond
 	// Called by app instantiation macro during launch process
-	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
+//	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
 	//! \endcond
 
   protected:
@@ -75,14 +75,13 @@ class AppBasicMac : public AppBasic {
 };
 
 #define CINDER_APP_BASIC_MAC( APP, RENDERER )								\
-cinder::app::RendererRef gDefaultRenderer;									\
 int main( int argc, char * const argv[] )									\
 {																			\
 	cinder::app::AppBasic::prepareLaunch();									\
-	gDefaultRenderer = cinder::app::RendererRef( new RENDERER );			\
+	cinder::app::RendererRef defaultRenderer( new RENDERER );				\
+	cinder::app::App::initialize( defaultRenderer );						\
 	cinder::app::AppBasic *app = new APP;									\
-	cinder::app::App::sInstance = app;										\
-	cinder::app::AppBasicMac::executeLaunch( app, gDefaultRenderer, #APP, argc, argv );	\
+	cinder::app::App::executeLaunch( #APP, argc, argv );					\
 	cinder::app::AppBasic::cleanupLaunch();									\
 	return 0;																\
 }
