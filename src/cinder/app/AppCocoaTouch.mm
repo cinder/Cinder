@@ -65,29 +65,29 @@
 
 // WindowImplCocoa Protocol Methods
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options;
+- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions *)options;
 - (cinder::ivec2)getSize;
 - (void)setSize:(cinder::ivec2)size;
 - (cinder::ivec2)getPos;
 - (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
-- (NSString*)getTitle;
+- (NSString *)getTitle;
 - (BOOL)isBorderless;
 - (void)setBorderless:(BOOL)borderless;
 - (BOOL)isAlwaysOnTop;
 - (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
 - (cinder::DisplayRef)getDisplay;
 - (cinder::app::RendererRef)getRenderer;
-- (void*)getNative;
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+- (void *)getNative;
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches;
 
 // CinderViewCocoaTouchDelegate Protocol methods
 - (void)draw;
-- (void)mouseDown:(cinder::app::MouseEvent*)event;
-- (void)mouseDrag:(cinder::app::MouseEvent*)event;
-- (void)mouseUp:(cinder::app::MouseEvent*)event;
-- (void)keyDown:(cinder::app::KeyEvent*)event;
+- (void)mouseDown:(cinder::app::MouseEvent *)event;
+- (void)mouseDrag:(cinder::app::MouseEvent *)event;
+- (void)mouseUp:(cinder::app::MouseEvent *)event;
+- (void)keyDown:(cinder::app::KeyEvent *)event;
 
 @property (nonatomic, readonly) UITextView *keyboardTextView; // lazy-loaded in getter
 
@@ -129,11 +129,11 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback
 }
 
-- (AppImplCocoaTouch*)init;
+- (AppImplCocoaTouch *)init;
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
-- (WindowImplCocoaTouch*)getDeviceWindow;
+- (WindowImplCocoaTouch *)getDeviceWindow;
 - (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
-- (void)setActiveWindow:(WindowImplCocoaTouch*)win;
+- (void)setActiveWindow:(WindowImplCocoaTouch *)win;
 - (void)updatePowerManagement;
 - (void)setFrameRate:(float)frameRate;
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
@@ -153,7 +153,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 
 @implementation AppImplCocoaTouch
 
-- (AppImplCocoaTouch*)init
+- (AppImplCocoaTouch *)init
 {
 	self = [super init];
 	
@@ -227,15 +227,15 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	}
 }
 
-- (void)screenDidConnect:(NSNotification *)aNotification
+- (void)screenDidConnect:(NSNotification *)notification
 {
-	NSLog(@"A new screen got connected: %@", [aNotification object]);
+	NSLog(@"A new screen got connected: %@", [notification object]);
 	//cinder::Display::markDisplaysDirty();
 }
 
-- (void)screenDidDisconnect:(NSNotification *)aNotification
+- (void)screenDidDisconnect:(NSNotification *)notification
 {
-    NSLog(@"A screen got disconnected: %@", [aNotification object]);
+    NSLog(@"A screen got disconnected: %@", [notification object]);
 //	cinder::Display::markDisplaysDirty();
 }
 
@@ -972,7 +972,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return YES;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions*)options
+- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions *)options
 { // NO-OP
 }
 
@@ -1059,7 +1059,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return self;
 }
 
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches
 {
 	return [mCinderView getActiveTouches];
 }
@@ -1086,42 +1086,42 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	}
 }
 
-- (void)mouseDown:(cinder::app::MouseEvent*)event
+- (void)mouseDown:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDown( event );
 }
 
-- (void)mouseDrag:(cinder::app::MouseEvent*)event
+- (void)mouseDrag:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDrag( event );
 }
 
-- (void)mouseUp:(cinder::app::MouseEvent*)event
+- (void)mouseUp:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseUp( event );
 }
 
-- (void)touchesBegan:(cinder::app::TouchEvent*)event
+- (void)touchesBegan:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesBegan( event );
 }
 
-- (void)touchesMoved:(cinder::app::TouchEvent*)event
+- (void)touchesMoved:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesMoved( event );
 }
 
-- (void)touchesEnded:(cinder::app::TouchEvent*)event
+- (void)touchesEnded:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
@@ -1133,7 +1133,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	return mWindowRef;
 }
 
-- (void)keyDown:(cinder::app::KeyEvent*)event
+- (void)keyDown:(cinder::app::KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
