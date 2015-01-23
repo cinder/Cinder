@@ -30,20 +30,9 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-AppBasicMac::~AppBasicMac()
+AppBasicMac::AppBasicMac()
+	: AppBasic()
 {
-	[mImpl release];
-}
-
-void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
-{
-	// -----------------------
-	// TODO: consider moving this to a common AppBasic method, or doing in App
-	for( int arg = 0; arg < argc; ++arg )
-		mCommandLineArgs.push_back( std::string( argv[arg] ) );
-
-	mSettings.setTitle( title );
-
 	prepareSettings( &mSettings );
 	if( ! mSettings.isPrepared() ) {
 		return;
@@ -61,8 +50,27 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 
 		// must set the Platform's executable path after mImpl has been constructed
 		Platform::get()->setExecutablePath( getAppPath() );
+	}
+}
 
+AppBasicMac::~AppBasicMac()
+{
+	[mImpl release];
+}
+
+void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
+{
+	// -----------------------
+	// TODO: consider moving this to a common AppBasic method, or doing in App
+	for( int arg = 0; arg < argc; ++arg )
+		mCommandLineArgs.push_back( std::string( argv[arg] ) );
+
+	mSettings.setTitle( title );
+
+	@autoreleasepool {
+		NSApplication * application = [NSApplication sharedApplication];
 		[application setDelegate:mImpl];
+		
 		[application run];
 	}
 }

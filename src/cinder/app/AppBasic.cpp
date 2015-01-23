@@ -33,6 +33,7 @@ AppBasic*	AppBasic::sInstance;
 AppBasic::AppBasic()
 	: App()
 {
+	sInstance = this;
 }
 
 AppBasic::~AppBasic()

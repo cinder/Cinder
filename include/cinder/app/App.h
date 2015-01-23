@@ -56,6 +56,8 @@ class io_service;
 } } // namespace boost::asio
 >>>>>>> remove some remaining WinRT ifdef’s for asio and custom file path handling that have already been removed elsewhere
 
+extern cinder::app::RendererRef gDefaultRenderer;
+
 namespace cinder { namespace app { 
 
 
@@ -398,7 +400,7 @@ class App {
 	typename std::result_of<T()>::type dispatchSync( T fn );
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
-	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
+	RendererRef	getDefaultRenderer() const { return gDefaultRenderer; }
 	/** \return a copy of the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
 	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
@@ -426,7 +428,7 @@ class App {
 
 	//! Returns a pointer to the active App
 	static App*			get() { return sInstance; }
-
+static App*					sInstance;
   protected:
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
@@ -459,7 +461,6 @@ class App {
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 
   protected:
-	static App*					sInstance;
 	RendererRef					mDefaultRenderer;
 	bool						mPowerManagement;
 };

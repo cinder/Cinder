@@ -35,6 +35,8 @@ namespace cinder { namespace app {
 
 class AppBasicMac : public AppBasic {
   public:
+	AppBasicMac();
+	
 	virtual ~AppBasicMac();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
@@ -73,12 +75,14 @@ class AppBasicMac : public AppBasic {
 };
 
 #define CINDER_APP_BASIC_MAC( APP, RENDERER )								\
+cinder::app::RendererRef gDefaultRenderer;									\
 int main( int argc, char * const argv[] )									\
 {																			\
 	cinder::app::AppBasic::prepareLaunch();									\
+	gDefaultRenderer = cinder::app::RendererRef( new RENDERER );			\
 	cinder::app::AppBasic *app = new APP;									\
-	cinder::app::RendererRef ren( new RENDERER );							\
-	cinder::app::AppBasicMac::executeLaunch( app, ren, #APP, argc, argv );	\
+	cinder::app::App::sInstance = app;										\
+	cinder::app::AppBasicMac::executeLaunch( app, gDefaultRenderer, #APP, argc, argv );	\
 	cinder::app::AppBasic::cleanupLaunch();									\
 	return 0;																\
 }

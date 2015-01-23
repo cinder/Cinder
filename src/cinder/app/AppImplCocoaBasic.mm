@@ -64,12 +64,7 @@
 	
 	mApp = aApp;
 	mNeedsUpdate = YES;
-	
-    return self;
-}
 
-- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
-{
 	// build our list of requested formats; an empty list implies we should make the default window format
 	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
 	if( formats.empty() )
@@ -86,7 +81,15 @@
 	mFrameRate = mApp->getSettings().getFrameRate();
 	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
 
+	[((WindowImplBasicCocoa*)[mWindows firstObject])->mCinderView makeCurrentContext];
+
+    return self;
+}
+
+- (void)applicationDidFinishLaunching:(NSNotification *)aNotification
+{
 	mApp->getRenderer()->makeCurrentContext();
+
 	mApp->privateSetup__();
 	
 	// give all windows initial resizes
@@ -121,7 +124,7 @@
 	// note: this would not work if the frame rate were set to something absurdly low
 	if( ! mApp->isPowerManagementEnabled() ) {
 		static double lastSystemActivity = 0;
-		double curTime = cinder::app::getElapsedSeconds();
+		double curTime = mApp->getElapsedSeconds();
 		if( curTime - lastSystemActivity >= 30 ) { // every thirty seconds call this to prevent sleep
 			::UpdateSystemActivity( OverallAct );
 			lastSystemActivity = curTime;
