@@ -13,6 +13,27 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+struct SomeMemberObj {
+	gl::TextureRef mTex;
+
+	SomeMemberObj()
+	{
+		CI_LOG_I( "bang" );
+
+		Surface8u surface( 256, 256, false );
+		Surface8u::Iter iter = surface.getIter();
+		while( iter.line() ) {
+			while( iter.pixel() ) {
+				iter.r() = iter.x();
+				iter.g() = 0;
+				iter.b() = iter.y();
+			}
+		}
+
+		mTex = gl::Texture::create( surface );
+	}
+};
+
 class AppTestApp : public AppNative {
   public:
 	AppTestApp();
@@ -23,13 +44,15 @@ class AppTestApp : public AppNative {
 	void update() override;
 	void draw() override;
 
+	SomeMemberObj mSomeMemberObj;
+
 	gl::TextureRef mTexStartup, mTexAsset, mTexResource;
 
 };
 
 AppTestApp::AppTestApp()
 {
-	CI_LOG_V( "bang" );
+	CI_LOG_I( "bang" );
 
 	Surface8u surface( 256, 256, false );
 	Surface8u::Iter iter = surface.getIter();
@@ -46,7 +69,7 @@ AppTestApp::AppTestApp()
 
 void AppTestApp::prepareSettings( Settings *settings )
 {
-	CI_LOG_V( "bang" );
+	CI_LOG_I( "bang" );
 }
 
 void AppTestApp::setup()
@@ -88,10 +111,14 @@ void AppTestApp::draw()
 	if( mTexStartup ) {
 		offset.x = 0;
 		offset.y += mTexStartup->getHeight();
-
-		// draws wrong, probably because the renderer's gl context changes before we use it
 		gl::draw( mTexStartup, offset );
 	}
+
+	if( mSomeMemberObj.mTex ) {
+		offset.x += mSomeMemberObj.mTex->getWidth();
+		gl::draw( mSomeMemberObj.mTex, offset );
+	}
+
 }
 
 CINDER_APP_NATIVE( AppTestApp, RendererGl )
