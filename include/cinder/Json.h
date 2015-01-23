@@ -263,6 +263,17 @@ private:
 
 	explicit JsonTree( const std::string &key, const Json::Value &value );
 	
+	template<typename Arg>
+	static void pushType( JsonTree & parent, const Arg &argument, std::true_type )
+	{
+		parent.pushBack( argument );
+	}
+	template<typename Arg>
+	static void pushType( JsonTree & parent, const Arg &argument, std::false_type )
+	{
+		parent.pushBack( JsonTree( "", argument ) );
+	}
+	
 	static void initVariadic( JsonTree & parent ) {}
 	
 	template<typename Arg1, typename... Args>
@@ -383,7 +394,9 @@ JsonTree JsonTree::makeArray( const std::string &key, std::initializer_list<Json
 template<typename Arg1, typename... Args>
 void JsonTree::initVariadic( JsonTree &parent, const Arg1 &argument, const Args&... arguments )
 {
-	parent.pushBack( JsonTree( "", argument ) );
+	typedef typename std::is_same<JsonTree, Arg1>::type isJsonTree;
+	isJsonTree result;
+	pushType( parent, argument, result );
 	initVariadic( parent, arguments... );
 }
 
