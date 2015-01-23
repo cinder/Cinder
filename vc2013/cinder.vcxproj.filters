@@ -67,9 +67,6 @@
     <Filter Include="Source Files\jsoncpp">
       <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\json">
-      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
     </Filter>
@@ -135,6 +132,12 @@
     </Filter>
     <Filter Include="Source Files\oggvorbis\vorbis\modes">
       <UniqueIdentifier>{54a3930c-e7ed-418e-83b6-977db7fadc51}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\jsoncpp">
+      <UniqueIdentifier>{89f1b95b-57f6-4a4d-8cec-0c0b6d1cd298}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\jsoncpp\json">
+      <UniqueIdentifier>{aecdcab0-b410-4781-a321-a61b4e0cdcc8}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -435,15 +438,6 @@
     <ClCompile Include="..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_reader.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_value.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_writer.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -692,6 +686,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\CinderAssert.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1100,35 +1097,8 @@
     <ClInclude Include="..\include\cinder\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\json\autolink.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\config.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\features.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\forwards.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\json.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\reader.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\value.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\writer.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Json.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
-      <Filter>Source Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\svg\Svg.h">
       <Filter>Header Files\svg</Filter>
@@ -1478,16 +1448,11 @@
     <ClInclude Include="..\include\cinder\CurrentFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\jsoncpp\json_internalarray.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
-    <None Include="..\src\jsoncpp\json_internalmap.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
-    <None Include="..\src\jsoncpp\json_valueiterator.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
+    <ClInclude Include="..\include\jsoncpp\json\json.h">
+      <Filter>Header Files\jsoncpp\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
+      <Filter>Header Files\jsoncpp\json</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
