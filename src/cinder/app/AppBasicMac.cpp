@@ -41,12 +41,10 @@ AppBasicMac::AppBasicMac()
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );
 
-	@autoreleasepool {
-		mImpl = [[AppImplCocoaBasic alloc] init:this];
+	mImpl = [[AppImplCocoaBasic alloc] init:this];
 
-		// must set the Platform's executable path after mImpl has been constructed
-		Platform::get()->setExecutablePath( getAppPath() );
-	}
+	// must set the Platform's executable path after mImpl has been constructed
+	Platform::get()->setExecutablePath( getAppPath() );
 }
 
 AppBasicMac::~AppBasicMac()
@@ -64,12 +62,10 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 	mSettings.setTitle( title );
 	// -----------------------
 
-	@autoreleasepool {
-		NSApplication * application = [NSApplication sharedApplication];
-		[application setDelegate:mImpl];
-		
-		[application run];
-	}
+	NSApplication * application = [NSApplication sharedApplication];
+	[application setDelegate:mImpl];
+
+	[application run];
 }
 
 WindowRef AppBasicMac::createWindow( const Window::Format &format )

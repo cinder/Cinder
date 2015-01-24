@@ -121,37 +121,34 @@ void Display::enumerateDisplays()
 	if( sDisplaysInitialized )
 		return;
 	
-	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
-	@autoreleasepool {
-		NSArray *screens = [NSScreen screens];
-		Area primaryScreenArea;
-		size_t screenCount = [screens count];
-		for( size_t i = 0; i < screenCount; ++i ) {
-			::NSScreen *screen = [screens objectAtIndex:i];
-			[screen retain]; // this is released in the destructor for Display
-			NSRect frame = [screen frame];
+	NSArray *screens = [NSScreen screens];
+	Area primaryScreenArea;
+	size_t screenCount = [screens count];
+	for( size_t i = 0; i < screenCount; ++i ) {
+		::NSScreen *screen = [screens objectAtIndex:i];
+		[screen retain]; // this is released in the destructor for Display
+		NSRect frame = [screen frame];
 
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
-			newDisplay->mScreen = screen;
-			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
-			newDisplay->mContentScale = [screen backingScaleFactor];
+		DisplayRef newDisplay = DisplayRef( new Display );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+		newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
+		newDisplay->mScreen = screen;
+		newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
+		newDisplay->mContentScale = [screen backingScaleFactor];
 
-			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
-			if( i == 0 ) {
-				primaryScreenArea = newDisplay->mArea;
-			}
-			else {
-				int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
-				newDisplay->mArea.offset( ivec2( 0, heightDelta ) );
-			}
-
-			sDisplays.push_back( newDisplay );
+		// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
+		if( i == 0 ) {
+			primaryScreenArea = newDisplay->mArea;
+		}
+		else {
+			int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
+			newDisplay->mArea.offset( ivec2( 0, heightDelta ) );
 		}
 
-		sDisplaysInitialized = true;
+		sDisplays.push_back( newDisplay );
 	}
+
+	sDisplaysInitialized = true;
 }
 
 #elif defined( CINDER_COCOA_TOUCH )
@@ -161,52 +158,49 @@ void Display::enumerateDisplays()
 	if( sDisplaysInitialized )
 		return;
 
-	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
-	@autoreleasepool {
-		NSArray *screens = [UIScreen screens];
-		for( UIScreen *screen in screens ) {
-			[screen retain]; // this is released in the destructor for Display
-			CGRect frame = [screen bounds];
+	NSArray *screens = [UIScreen screens];
+	for( UIScreen *screen in screens ) {
+		[screen retain]; // this is released in the destructor for Display
+		CGRect frame = [screen bounds];
 
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
+		DisplayRef newDisplay = DisplayRef( new Display );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+		newDisplay->mUiScreen = screen;
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = screen.scale;
 
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
-			sDisplays.push_back( newDisplay );
+		NSArray *resolutions = [screen availableModes];
+		for( int i = 0; i < [resolutions count]; ++i ) {
+			::UIScreenMode *mode = [resolutions objectAtIndex:i];
+			newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
 		}
 
-		// <TEMPORARY>
-		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
-		if( [screens count] == 0 ) {
-			UIScreen *screen = [UIScreen mainScreen];
-			[screen retain];
-			CGRect frame = [screen bounds];
-
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
-
-			NSArray *modes = [screen availableModes];
-			for( UIScreenMode *mode in modes ) {
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
-			sDisplays.push_back( newDisplay );
-		}
-		// </TEMPORARY>
-		
-		sDisplaysInitialized = true;
+		sDisplays.push_back( newDisplay );
 	}
+
+	// <TEMPORARY>
+	// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
+	if( [screens count] == 0 ) {
+		UIScreen *screen = [UIScreen mainScreen];
+		[screen retain];
+		CGRect frame = [screen bounds];
+
+		DisplayRef newDisplay = DisplayRef( new Display );
+		newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+		newDisplay->mUiScreen = screen;
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = screen.scale;
+
+		NSArray *modes = [screen availableModes];
+		for( UIScreenMode *mode in modes ) {
+			newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+		}
+
+		sDisplays.push_back( newDisplay );
+	}
+	// </TEMPORARY>
+
+	sDisplaysInitialized = true;
 }
 
 //! Sets the resolution of the Display. Rounds to the nearest supported resolution.
