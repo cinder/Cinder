@@ -66,10 +66,10 @@ size_t AppCocoaTouch::getNumWindows() const
 
 WindowRef AppCocoaTouch::getWindowIndex( size_t index ) const
 {
-	if( index >= mImpl->mWindows.size() )
+	if( index >= getNumWindows() )
 		throw cinder::app::ExcInvalidWindow();
 
-	std::list<WindowImplCocoaTouch*>::iterator iter = mImpl->mWindows.begin();
+	auto iter = mImpl->mWindows.begin();
 	std::advance( iter, index );
 	return (*iter)->mWindowRef;
 }
