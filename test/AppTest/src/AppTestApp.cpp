@@ -20,7 +20,7 @@ struct SomeMemberObj {
 	{
 		CI_LOG_I( "bang" );
 
-		Surface8u surface( 256, 256, false );
+		Surface8u surface( 140, 140, false );
 		Surface8u::Iter iter = surface.getIter();
 		while( iter.line() ) {
 			while( iter.pixel() ) {
@@ -31,6 +31,7 @@ struct SomeMemberObj {
 		}
 
 		mTex = gl::Texture::create( surface );
+		CI_CHECK_GL();
 	}
 };
 
@@ -54,7 +55,7 @@ AppTestApp::AppTestApp()
 {
 	CI_LOG_I( "bang" );
 
-	Surface8u surface( 256, 256, false );
+	Surface8u surface( 140, 140, false );
 	Surface8u::Iter iter = surface.getIter();
 	while( iter.line() ) {
 		while( iter.pixel() ) {
@@ -65,6 +66,7 @@ AppTestApp::AppTestApp()
 	}
 
 	mTexStartup = gl::Texture::create( surface );
+	CI_CHECK_GL();
 }
 
 void AppTestApp::prepareSettings( Settings *settings )
@@ -81,12 +83,15 @@ void AppTestApp::setup()
 	mTexResource = gl::Texture::create( loadImage( resource ) );
 
 	gl::enableAlphaBlending();
-	
+
+	CI_CHECK_GL();
+
 	CI_LOG_I( "complete" );
 }
 
 void AppTestApp::mouseDown( MouseEvent event )
 {
+	CI_LOG_I( "mouse pos: " << event.getPos() );
 }
 
 void AppTestApp::update()
@@ -110,7 +115,7 @@ void AppTestApp::draw()
 
 	if( mTexStartup ) {
 		offset.x = 0;
-		offset.y += mTexStartup->getHeight();
+		offset.y += 200;
 		gl::draw( mTexStartup, offset );
 	}
 
@@ -119,6 +124,7 @@ void AppTestApp::draw()
 		gl::draw( mSomeMemberObj.mTex, offset );
 	}
 
+	CI_CHECK_GL();
 }
 
 CINDER_APP_NATIVE( AppTestApp, RendererGl )
