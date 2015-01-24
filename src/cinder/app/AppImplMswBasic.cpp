@@ -39,10 +39,7 @@ AppImplMswBasic::AppImplMswBasic( AppBasic *aApp )
 	: AppImplMsw( aApp ), mApp( aApp )
 {
 	mShouldQuit = false;
-}
 
-void AppImplMswBasic::run()
-{
 	mFrameRate = mApp->getSettings().getFrameRate();
 	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
 
@@ -54,7 +51,10 @@ void AppImplMswBasic::run()
 			format->setTitle( mApp->getSettings().getTitle() );
 		createWindow( *format );
 	}
+}
 
+void AppImplMswBasic::run()
+{
 	mApp->privateSetup__();
 	mSetupHasBeenCalled = true;
 
@@ -143,7 +143,7 @@ WindowRef AppImplMswBasic::createWindow( Window::Format format )
 	if( ! format.getRenderer() )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 
-	mWindows.push_back( new WindowImplMswBasic( format, mApp->findSharedRenderer( format.getRenderer() ), this ) );
+	mWindows.push_back( new WindowImplMswBasic( format, nullptr/*mApp->findSharedRenderer( format.getRenderer() )*/, this ) );
 
 	// emit initial resize if we have fired setup
 	if( mSetupHasBeenCalled )

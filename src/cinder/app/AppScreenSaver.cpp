@@ -51,7 +51,7 @@ void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, c
 {
 	App::sInstance = sInstance = app;
 	app->mImpl = 0; // initially we have no implementation; necessary for determining whether we can call impl->eventHandler() yet
-	App::executeLaunch( app, renderer, title, 0, 0 );
+	App::executeLaunch( title, 0, 0 );
 
 	app->launch( hwnd );
 }

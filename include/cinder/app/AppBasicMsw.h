@@ -31,6 +31,7 @@ class AppImplMswBasic;
 
 class AppBasicMsw : public AppBasic {
   public:
+	AppBasicMsw();
 	virtual ~AppBasicMsw();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
@@ -73,9 +74,10 @@ class AppBasicMsw : public AppBasic {
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
 {																									\
 	cinder::app::AppBasic::prepareLaunch();															\
+	cinder::app::RendererRef defaultRenderer( new RENDERER );										\
+	cinder::app::App::initialize( defaultRenderer );												\
 	cinder::app::AppBasic *app = new APP;															\
-	cinder::app::RendererRef ren( new RENDERER );													\
-	cinder::app::AppBasicMsw::executeLaunch( app, ren, #APP );										\
+	cinder::app::App::executeLaunch( #APP, 0, nullptr );											\
 	cinder::app::AppBasic::cleanupLaunch();															\
 	return 0;																						\
 }

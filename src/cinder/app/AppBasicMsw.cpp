@@ -36,11 +36,15 @@ AppBasicMsw::~AppBasicMsw()
 	delete mImpl;
 }
 
+AppBasicMsw::AppBasicMsw()
+{
+	sInstance = this;
+	mImpl = new AppImplMswBasic( this );
+}
+
 // static
 void AppBasicMsw::executeLaunch( AppBasic *app, RendererRef renderer, const char *title )
 {
-	sInstance = app;
-
 	// MSW sends it arguments as widestrings, so we'll convert them to utf8 array and pass that
 	LPWSTR *szArglist;
 	int nArgs;
@@ -53,11 +57,11 @@ void AppBasicMsw::executeLaunch( AppBasic *app, RendererRef renderer, const char
 			utf8Args.push_back( toUtf8( (char16_t*)szArglist[i] ) );
 		for( int i = 0; i < nArgs; ++i )
 			utf8ArgPointers[i] = const_cast<char *>( utf8Args[i].c_str() );
-		App::executeLaunch( app, renderer, title, nArgs, utf8ArgPointers );
+		App::executeLaunch( title, nArgs, utf8ArgPointers );
 		free( utf8ArgPointers );
 	}
 	else
-		App::executeLaunch( app, renderer, title, 0, NULL );
+		App::executeLaunch( title, 0, NULL );
 
 	// Free memory allocated for CommandLineToArgvW arguments.
 	::LocalFree( szArglist );
@@ -96,7 +100,6 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 		platformMsw->directConsoleToCout(  true );
 	}
 
-	mImpl = new AppImplMswBasic( this );
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl->run();
 }
