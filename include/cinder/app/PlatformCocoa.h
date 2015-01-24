@@ -27,14 +27,19 @@
 
 #if defined __OBJC__
 	@class NSBundle;
+	@class NSAutoreleasePool;
 #else
 	class NSBundle;
+	class NSAutoreleasePool;
 #endif
 
 namespace cinder { namespace app {
 
 class PlatformCocoa : public Platform {
   public:
+
+	void prepareLaunch() override;
+	void cleanupLaunch() override;
 
 	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
 
@@ -46,9 +51,8 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
-  protected:
-
   private:
+	NSAutoreleasePool *mAutoReleasePool;
 };
 
 } } // namespace cinder::app

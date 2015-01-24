@@ -38,10 +38,6 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-#if defined( CINDER_COCOA )
-	void*	App::sAutoReleasePool = 0;
-#endif
-
 App*					App::sInstance;			// Static instance of App, effectively a singleton
 RendererRef				App::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
 static std::thread::id	sPrimaryThreadId = std::this_thread::get_id();
@@ -204,9 +200,7 @@ RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
 // static
 void App::prepareLaunch()
 {
-#if defined( CINDER_COCOA )
-    sAutoReleasePool = [[NSAutoreleasePool alloc] init];
-#endif
+	Platform::get()->prepareLaunch();
 }
 
 // static
@@ -236,9 +230,7 @@ void App::executeLaunch( const char *title, int argc, char * const argv[] )
 // static
 void App::cleanupLaunch()
 {
-#if defined( CINDER_COCOA )
-    sAutoReleasePool = [[NSAutoreleasePool alloc] init];
-#endif
+	Platform::get()->cleanupLaunch();
 }
 
 } } // namespace cinder::app

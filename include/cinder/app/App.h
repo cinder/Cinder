@@ -442,10 +442,6 @@ class App {
 
   private:
 
-#if defined( CINDER_COCOA )
-	static void				*sAutoReleasePool;
-#endif
-
 	Timer					mTimer;
 	uint32_t				mFrameCount;
 	float					mAverageFps;

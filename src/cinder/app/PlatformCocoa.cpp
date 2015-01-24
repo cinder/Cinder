@@ -33,6 +33,16 @@ using namespace std;
 
 namespace cinder { namespace app {
 
+void PlatformCocoa::prepareLaunch()
+{
+	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
+}
+
+void PlatformCocoa::cleanupLaunch()
+{
+	[mAutoReleasePool drain];
+}
+
 // TODO: this will need to accomodate Screensavers, which used to override App::getBundle() to return a different user bundle
 // - probably app needs to set the bundle instance
 NSBundle* PlatformCocoa::getBundle() const

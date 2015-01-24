@@ -38,6 +38,11 @@ class Platform {
 	//! Sets the current Platform.
 	static void set( Platform *platform );
 
+	//! Called at the beginning of a launch, can be overridden for platform-specifc preparation.
+	virtual void prepareLaunch()		{}
+	//! Called at the end of a launch, can be overridden for platform-specifc preparation.
+	virtual void cleanupLaunch()		{}
+
 	// Assets
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
 	DataSourceRef			loadAsset( const fs::path &relativePath );
