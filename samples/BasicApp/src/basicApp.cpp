@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include <list>
 
@@ -7,7 +7,7 @@ using namespace ci::app;
 using namespace std;
 
 // We'll create a new Cinder Application by deriving from the AppBasic class
-class BasicApp : public AppBasic {
+class BasicApp : public AppNative {
   public:
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -41,4 +41,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererGl )
+CINDER_APP_NATIVE( BasicApp, RendererGl )

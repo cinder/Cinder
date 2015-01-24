@@ -1,4 +1,4 @@
-﻿#include "cinder/app/AppBasic.h"
+﻿#include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ImageFileBasicApp : public AppBasic {
+class ImageFileBasicApp : public AppNative {
   public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -74,4 +74,4 @@ void ImageFileBasicApp::draw()
 		gl::draw( mTexture, vec2( 0, 0 ) );
 }
 
-CINDER_APP_BASIC( ImageFileBasicApp, RendererGl )
+CINDER_APP_NATIVE( ImageFileBasicApp, RendererGl )
