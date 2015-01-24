@@ -27,24 +27,20 @@
 
 #include "cinder/Cinder.h"
 
+// these are placeholder log functions, replaced in 0.9.0 with those from cinder/Log.h
 #if( CINDER_VERSION < 807 )
 
 #include "cinder/CurrentFunction.h"
-
-#if ! defined( NDEBUG )
-
 #include "cinder/app/App.h"
 
-	#define CI_LOG_V( stream )			do{ ci::app::console() << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
-	#define CI_LOG_W( warningStream )	do{ CI_LOG_V( __LINE__ << " | WARNING | " << warningStream ); } while( 0 )
-	#define CI_LOG_E( errorStream )		do{ CI_LOG_V( __LINE__ << " | ERROR | " << errorStream ); } while( 0 )
-
+#if ! defined( NDEBUG )
+#define CI_LOG_V( stream )		do{ ci::app::console() << " |verbose| " << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
 #else
-
-	#define CI_LOG_V( stream )			do{} while( 0 )
-	#define CI_LOG_W( warningStream )	do{} while( 0 )
-	#define CI_LOG_E( errorStream )		do{} while( 0 )
-
+#define CI_LOG_V( stream )		do{} while( 0 )
 #endif // ! defined( NDEBUG )
+
+#define CI_LOG_I( stream )		do{ ci::app::console() << " |info   | " << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
+#define CI_LOG_W( stream )		do{ ci::app::console() << " |warning| " << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
+#define CI_LOG_E( stream )		do{ ci::app::console() << " |error  | " << CINDER_CURRENT_FUNCTION << " | " << stream << std::endl; } while( 0 )
 
 #endif // CINDER_VERSION < 807
