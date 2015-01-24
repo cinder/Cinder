@@ -256,9 +256,9 @@ class AppCocoaTouch : public App {
 };
 
 //! Stream \t InterfacefaceOrientation enum to std::ostream
-extern std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
+extern	std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs );
 //! returns the degrees rotation from Portrait for the provided \a orientation
-float getOrientationDegrees( InterfaceOrientation orientation );
+float	getOrientationDegrees( InterfaceOrientation orientation );
 
 } } // namespace cinder::app
 
