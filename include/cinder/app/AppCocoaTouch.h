@@ -223,7 +223,7 @@ class AppCocoaTouch : public App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
-	static void		executeLaunch( AppCocoaTouch *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
+//	static void		executeLaunch( AppCocoaTouch *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
 	static void		cleanupLaunch() { App::cleanupLaunch(); }
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
@@ -234,13 +234,15 @@ class AppCocoaTouch : public App {
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 	void		privatePrepareSettings__();
 	void		privateSetImpl__( AppImplCocoaTouch	*impl ) { mImpl = impl; }
+
+	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 	//! \endcond
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
 	
 	
-	static AppCocoaTouch	*sInstance;	
+	static AppCocoaTouch	*sInstance;
 	AppImplCocoaTouch		*mImpl;
 	Settings				mSettings;
 
@@ -260,12 +262,14 @@ float getOrientationDegrees( InterfaceOrientation orientation );
 
 } } // namespace cinder::app
 
-#define CINDER_APP_COCOA_TOUCH( APP, RENDERER )								\
-int main( int argc, char *argv[] ) {										\
-	cinder::app::AppCocoaTouch::prepareLaunch();							\
-	cinder::app::AppCocoaTouch *app = new APP;								\
-	cinder::app::RendererRef ren( new RENDERER );							\
-	cinder::app::AppCocoaTouch::executeLaunch( app, ren, #APP, argc, argv );\
-	cinder::app::AppCocoaTouch::cleanupLaunch();							\
-    return 0;																\
+#define CINDER_APP_COCOA_TOUCH( APP, RENDERER )							\
+int main( int argc, char *argv[] )										\
+{																		\
+	cinder::app::AppCocoaTouch::prepareLaunch();						\
+	cinder::app::RendererRef defaultRenderer( new RENDERER );			\
+	cinder::app::App::initialize( defaultRenderer );					\
+	cinder::app::AppCocoaTouch *app = new APP;							\
+	cinder::app::App::executeLaunch( #APP, argc, argv );				\
+	cinder::app::AppCocoaTouch::cleanupLaunch();						\
+    return 0;															\
 }

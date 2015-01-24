@@ -23,6 +23,7 @@
 #include "cinder/app/AppCocoaTouch.h"
 #include "cinder/app/CinderViewCocoaTouch.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
+#include "cinder/Log.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -49,6 +50,7 @@
 
 - (void)loadView;
 - (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (void)finishLoad;
 
 // virtual keyboard management
 - (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
@@ -110,7 +112,7 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 
 } } // namespace cinder::app
 
-@interface AppImplCocoaTouch : NSObject <UIApplicationDelegate> {
+@interface AppImplCocoaTouch : NSObject {
   @public
 	cinder::app::AppCocoaTouch			*mApp;
 	std::list<WindowImplCocoaTouch*>	mWindows;
@@ -148,8 +150,82 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 - (void)proximityStateChange:(NSNotificationCenter *)notification;
 - (void)batteryStateChange:(NSNotificationCenter *)notification;
 - (void)batteryLevelChange:(NSNotificationCenter *)notification;
+- (void)startAnimation;
+- (void)stopAnimation;
 
 @end
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - AppDelegateImpl
+// ----------------------------------------------------------------------------------------------------
+
+@interface AppDelegateImpl : NSObject <UIApplicationDelegate> {
+  @public
+	cinder::app::AppCocoaTouch*		mApp;
+	AppImplCocoaTouch*				mAppImpl;
+}
+
+@end
+
+@implementation AppDelegateImpl
+
+// TODO: this is deprecated, use:
+//- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions NS_AVAILABLE_IOS(3_0);
+- (void)applicationDidFinishLaunching:(UIApplication *)application
+{
+	mApp = cinder::app::AppCocoaTouch::get();
+	mAppImpl = mApp->privateGetImpl();
+
+	CI_LOG_V( "num windows: " << mAppImpl->mWindows.size() );
+
+	for( auto &windowImpl : mAppImpl->mWindows )
+		[windowImpl finishLoad];
+
+	mApp->privateSetup__();
+	mAppImpl->mSetupHasFired = YES;
+
+	[mAppImpl startAnimation];
+}
+
+- (void)applicationDidEnterBackground:(UIApplication *)application
+{
+	[mAppImpl stopAnimation];
+	mApp->emitDidEnterBackground();
+}
+
+- (void)applicationWillEnterForeground:(UIApplication *)application
+{
+	[mAppImpl startAnimation];
+	mApp->emitWillEnterForeground();
+}
+
+- (void)applicationWillResignActive:(UIApplication *)application
+{
+	[mAppImpl stopAnimation];
+	mApp->emitWillResignActive();
+}
+
+- (void)applicationDidBecomeActive:(UIApplication *)application
+{
+	[mAppImpl startAnimation];
+	mApp->emitDidBecomeActive();
+}
+
+- (void)applicationWillTerminate:(UIApplication *)application
+{
+	mApp->emitShutdown();
+}
+
+- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
+{
+	mApp->emitMemoryWarning();
+}
+
+@end
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - AppImplCocoaTouch
+// ----------------------------------------------------------------------------------------------------
 
 @implementation AppImplCocoaTouch
 
@@ -166,7 +242,33 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	mProximityStateIsClose = NO;
 	mIsUnplugged = NO;
 	mBatteryLevel = -1.0f;
-	
+
+	mApp->enablePowerManagement( mApp->getSettings().isPowerManagementEnabled() );
+
+	if( ! mApp->getSettings().isStatusBarEnabled() ) {
+		[UIApplication sharedApplication].statusBarHidden = YES;
+	}
+
+	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
+	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
+	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
+
+	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / mApp->getSettings().getFrameRate() + 0.5f ) );
+
+	// build our list of requested formats; an empty list implies we should make the default window format
+	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
+	if( formats.empty() )
+		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
+
+	for( auto &format : formats )
+		[self createWindow:format];
+
+	[self setActiveWindow:mWindows.front()];
+
+	// TODO: Is it necessary to call a makeCurrentContext here?
+//	auto renderer = [mWindows.front()->mCinderView getRenderer];
+//	renderer->startDraw();
+
 	return self;
 }
 
@@ -247,73 +349,6 @@ static InterfaceOrientation convertInterfaceOrientation( UIInterfaceOrientation 
 	}
 	else
 		[UIApplication sharedApplication].idleTimerDisabled = NO;
-}
-
-- (void)applicationDidFinishLaunching:(UIApplication *)application
-{
-	mApp->privatePrepareSettings__();
-
-	// Calling this will invoke [self updatePowerManagement]
-	mApp->enablePowerManagement( mApp->getSettings().isPowerManagementEnabled() );
-
-	if( ! mApp->getSettings().isStatusBarEnabled() ) {
-		[UIApplication sharedApplication].statusBarHidden = YES;
-	}
-
-	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
-	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
-	
-	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / mApp->getSettings().getFrameRate() + 0.5f ) );
-	
-	// build our list of requested formats; an empty list implies we should make the default window format
-	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
-	if( formats.empty() )
-		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
-	
-	for( auto &format : formats )
-		[self createWindow:format];
-
-	[self setActiveWindow:mWindows.front()];
-	
-	mApp->privateSetup__();
-	mSetupHasFired = YES;
-	
-	[self startAnimation];	
-}
-
-- (void)applicationDidEnterBackground:(UIApplication *)application
-{
-	[self stopAnimation];
-	mApp->emitDidEnterBackground();
-}
-
-- (void)applicationWillEnterForeground:(UIApplication *)application
-{
-	[self startAnimation];
-	mApp->emitWillEnterForeground();
-}
-
-- (void)applicationWillResignActive:(UIApplication *)application
-{
-	[self stopAnimation];
-    mApp->emitWillResignActive();
-}
-
-- (void)applicationDidBecomeActive:(UIApplication *)application
-{
-	[self startAnimation];
-	mApp->emitDidBecomeActive();
-}
-
-- (void)applicationWillTerminate:(UIApplication *)application
-{
-	mApp->emitShutdown();
-}
-
-- (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
-{
-	mApp->emitMemoryWarning();
 }
 
 - (void)dealloc
@@ -433,13 +468,15 @@ AppCocoaTouch::AppCocoaTouch()
 	: App()
 {
 	AppCocoaTouch::sInstance = this;
+
+	mImpl = [[AppImplCocoaTouch alloc] init];
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
 	Platform::get()->setExecutablePath( getAppPath() );
 
-	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, NSStringFromClass([AppImplCocoaTouch class]) );
+	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
 }
 
 WindowRef AppCocoaTouch::createWindow( const Window::Format &format )
@@ -688,6 +725,10 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 
 } } // namespace cinder::app
 
+ // ----------------------------------------------------------------------------------------------------
+ // MARK: - WindowImplCocoaTouch
+ // ----------------------------------------------------------------------------------------------------
+
 @implementation WindowImplCocoaTouch;
 
 @synthesize keyboardTextView = mKeyboardTextView;
@@ -701,15 +742,12 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	mAppImpl = appImpl;
 	mResizeHasFired = NO;
 	mKeyboardVisible = NO;
+	mUiWindow = NULL; // this will be set in finishLoad
 
 	mDisplay = format.getDisplay();
 	if( ! mDisplay ) // a NULL display implies the main display
 		mDisplay = cinder::Display::getMainDisplay();
 
-	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
-	
-	mUiWindow.screen = mDisplay->getUiScreen();
-	
 	cinder::Area screenBounds = mDisplay->getBounds();
 	CGRect screenBoundsCgRect;
 	screenBoundsCgRect.origin.x = 0;
@@ -717,25 +755,34 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	screenBoundsCgRect.size.width = screenBounds.getWidth();
 	screenBoundsCgRect.size.height = screenBounds.getHeight();
 	
-	mContentScale = 1.0f;
-	
-	if( mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() )
-		mContentScale = mUiWindow.screen.scale;
+	mContentScale = 1.0f; // TODO: why is mContentScale needed?
 	
 	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer contentScale:mContentScale];
 	[mCinderView setDelegate:self];
 	mSize = cinder::ivec2( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
 	mPos = cinder::ivec2( 0, 0 );
-	mUiWindow.rootViewController = format.getRootViewController() ? format.getRootViewController() : self;
 	mWindowRef = cinder::app::Window::privateCreate__( self, mAppImpl->mApp );
 
-	// this needs to be last
-	if( mDisplay != cinder::Display::getMainDisplay() )
-		mUiWindow.hidden = NO;
-	else
-		[mUiWindow makeKeyAndVisible];
-	
 	return self;
+}
+
+- (void)finishLoad
+{
+	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
+	mUiWindow.screen = mDisplay->getUiScreen();
+
+	if( mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() )
+		mContentScale = mUiWindow.screen.scale;
+
+	// TODO: re-enable format.getRootViewController()
+//	mUiWindow.rootViewController = format.getRootViewController() ? format.getRootViewController() : self;
+	mUiWindow.rootViewController = self;
+
+	// this needs to be last
+	if( mDisplay == cinder::Display::getMainDisplay() )
+		[mUiWindow makeKeyAndVisible];
+	else
+		mUiWindow.hidden = NO;
 }
 
 - (void)dealloc
@@ -746,6 +793,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 		[mKeyboardTextView release];
 	}
 
+	[mUiWindow release];
 	[super dealloc];
 }
 
