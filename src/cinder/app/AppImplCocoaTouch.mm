@@ -31,9 +31,7 @@ using namespace ci::app;
 
 @implementation AppDelegateImpl
 
-// TODO: this is deprecated, use:
-//- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions NS_AVAILABLE_IOS(3_0);
-- (void)applicationDidFinishLaunching:(UIApplication *)application
+- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
 	mApp = cinder::app::AppCocoaTouch::get();
 	mAppImpl = mApp->privateGetImpl();
@@ -47,6 +45,8 @@ using namespace ci::app;
 	mAppImpl->mSetupHasFired = YES;
 
 	[mAppImpl startAnimation];
+
+	return YES;
 }
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
