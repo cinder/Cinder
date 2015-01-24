@@ -79,6 +79,7 @@ div.contents {
   clear: both;
 }
 
+
 /* NAV AREA */
 #top ul.tablist {
     width: 100%;
@@ -147,6 +148,16 @@ div.contents {
 }
 
 /* HEADER */
+.navbar-header {
+  display: table;
+}
+
+.navbar-header .cinder-version {
+  display: table-cell;
+  vertical-align: bottom;
+  padding-bottom: 2px;
+}
+
 div.header {
   background-image: none;
   background-repeat: no-repeat;
