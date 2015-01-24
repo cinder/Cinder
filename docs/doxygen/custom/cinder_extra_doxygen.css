@@ -1,17 +1,34 @@
 body {
-        background-color: #0c0000;
-        color: #333;
-        margin: 0;
+  background-color: #0c0000;
+  color: #333;
+  margin: 0;
 }
 
+/** Universal style reset */
+body, table, div, p, dl {
+  font-family: 'Open Sans', sans-serif;
+  line-height: 1.5em;
+  color: inherit;
+}
+
+p {
+  font-family: 'adobe-caslon-pro', Georgia, "Times New Roman", Times, serif;
+}
+
+h1 {
+  color: #333333;
+  font-weight: 300 !important;
+}
+
+
 div.contents {
-        margin-bottom: 10px;
-        padding: 12px;
-        margin-left: auto;
-        margin-right: auto;
-        width: 960px;
-        background-color: white;
-        border-radius: 8px;
+  margin-bottom: 10px;
+  padding: 12px;
+  margin-left: auto;
+  margin-right: auto;
+  /*width: 960px;*/
+  background-color: white;
+  border-radius: 8px;
 }
 
 #projectname {
@@ -117,16 +134,54 @@ div.contents {
 
 .navpath ul {
   background-color: #e7e7e7;
+  border: none;
+  border-bottom: solid 1px #999999;
+}
+
+.navpath li {
+  background-image: url('../images/docs/orange_chevron.png');
+}
+  
+.navpath li.navelem a:hover {
+  color: #c64b24;
+}
+
+/* HEADER */
+div.header {
+  background-image: none;
+  background-repeat: no-repeat;
+  background-color: #e7e7e7;
+  border-bottom: 1px solid #999999;
+}
+
+.title {
+  color: #333333;
+  font-size: 1.5em;
+  font-weight: 300;
 }
 
 
+.memproto, dl.reflist dt {
+  background-image: none;
+  background-repeat: no-repeat;
+  background-color: #e7e7e7;
+}
+
+.mdescLeft, .mdescRight, .memItemLeft, .memItemRight, .memTemplItemLeft, .memTemplItemRight, .memTemplParams {
+  background-color: #FAFAFA;
+}
+
+span.mlabel {
+  background-color: #c64b24;
+  border: 1px solid #c64b24;
+}
 
 hr.footer {
         display: none;
 }
 
 .footer {
-        background-color: #0c0000;
+    background-color: #0c0000;
 }
 
 a {
@@ -147,8 +202,19 @@ a {
     color: #58363C;
 }
 
+/* footer */
+address.footer {
+  background-color: #232323;
+  color: #fff;
+  margin-bottom: 0;
+  padding: 15px 20px;
+}
 
-/* STYLES FROM THE WEBSITE */
+/* +–––––––––––––––––––––––+
+    STYLES FROM THE WEBSITE 
+   +–––––––––––––––––––––––+
+*/
+
 .code_block {
   margin-bottom: 50px;
 }
