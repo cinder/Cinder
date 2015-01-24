@@ -73,7 +73,7 @@ float midiToFreq( float midi )
 
 uint64_t timeToFrame( double timeSeconds, double sampleRate )
 {
-	return static_cast<uint64_t>( lround( timeSeconds * sampleRate ) );
+	return static_cast<uint64_t>( std::lround( timeSeconds * sampleRate ) );
 }
 
 bool thresholdBuffer( const Buffer &buffer, float threshold, size_t *recordFrame )

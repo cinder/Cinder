@@ -99,8 +99,7 @@ SourceFileMediaFoundation::SourceFileMediaFoundation( const DataSourceRef &dataS
 
 SourceFileRef SourceFileMediaFoundation::cloneWithSampleRate( size_t sampleRate ) const
 {
-	shared_ptr<SourceFileMediaFoundation> result( new SourceFileMediaFoundation );
-	result->mDataSource = mDataSource;
+	auto result = make_shared<SourceFileMediaFoundation>( mDataSource, sampleRate );
 	result->initReader();
 	result->setupSampleRateConversion();
 

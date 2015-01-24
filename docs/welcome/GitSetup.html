@@ -10,18 +10,6 @@
 </head>
 <body>
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html>
-<head>
-	<link rel="stylesheet" href="stylesheets/cinder.css" type="text/css" media="screen" />
-	<script type="text/javascript" src="stylesheets/jquery-1.4.2.min.js"></script>
-	<script type="text/javascript" src="stylesheets/jquery.lightbox-0.5.pack.js"></script>
-	<link rel="stylesheet" type="text/css" href="stylesheets/jquery.lightbox-0.5.css" media="screen" />
-	<meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
-	<title>Cinder + Git</title>
-</head>
-<body>
-
 <script type="text/javascript">
 $(function() {
 	$('#macgit_image a').lightBox({imageBtnPrev:"stylesheets/prev.png", imageBtnNext:"stylesheets/next.png", imageBtnClose:"stylesheets/close.png", containerResizeSpeed: 150});
@@ -39,9 +27,9 @@ $(function() {
 
 	<div class="contents">
 		<h1>Cinder + Git</h1>
-		<p>If you're interested in keeping up with the latest Cinder development you'll want to setup a clone of Cinder's git repository. Cinder's home on Github is at <a href="http://github.com/cinder">http://github.com/cinder</a>.</p>
+		<p>If you're interested in keeping up with the latest Cinder development you'll want to setup a clone of Cinder's git repository. Cinder's home on GitHub is at <a href="http://github.com/cinder">http://github.com/cinder</a>.</p>
 		<br>
-		<p>In general Cinder's active development is done in the <em>dev</em> branch, so that's the one we'll setup below. The <em>master</em> branch is designed to reflect minor updates to the latest official release.</p>
+		<p>In general Cinder's active development is done in branches and the <em>master</em> branch is designed to reflect minor updates to the latest official release.</p>
 
 		<h2>Installing Git on Mac OS X</h2>
 		<p>If you don't already have Git installed on your Mac, start by downloading the <a href="http://code.google.com/p/git-osx-installer/downloads/list">Git installer here</a> (at the time of this writing, the file <em>git-1.8.2-intel-universal-snow-leopard.dmg</em> was the latest installer).</p>
@@ -49,7 +37,7 @@ $(function() {
 		<p>Run the installer with the default settings and then launch Terminal. Navigate to the directory where you'd like to create the repository and run this command:</p>
 		<br />
 		<code>
-		git clone -b dev --recursive git://github.com/cinder/Cinder.git cinder_master
+		git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 		</code>
 		<br /><br />
 		<center>
@@ -58,7 +46,7 @@ $(function() {
 				<img src="git_images/mac_images/step1_thumb.png" /></a>
 			<a href="git_images/mac_images/step2.png" title="The default installer options are good choices.">
 				<img src="git_images/mac_images/step2_thumb.png" /></a>
-			<a href="git_images/mac_images/step3.png" title="Cinder's home on Github provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
+			<a href="git_images/mac_images/step3.png" title="Cinder's home on GitHub provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
 				<img src="git_images/mac_images/step3_thumb.png" /></a>
 			<a href="git_images/mac_images/step4.png" title="After launching Terminal, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
 				<img src="git_images/mac_images/step4_thumb.png" /></a>
@@ -72,7 +60,7 @@ $(function() {
 		<p>When prompted by the installer, we recommend that you select the <em>Use Git Bash only</em> option for <em>Adjusting your PATH environment</em>. For line-ending configurations, we also recommend the default, <em>Checkut windows-style, commit Unix-style</em>. Once you've got Git installed, launch the <em>Git Bash</em> application. Navigate to the directory where you would like to setup Cinder, and execute the command:</p>
 		<br />
 		<code>
-		git clone -b dev --recursive git://github.com/cinder/Cinder.git cinder_master
+		git clone --recursive git://github.com/cinder/Cinder.git cinder_master
 		</code>
 		<br /><br />
 		<center>
@@ -83,7 +71,7 @@ $(function() {
 				<img src="git_images/msw_images/step2_thumb.png" /></a>
 			<a href="git_images/msw_images/step3.png" title="When prompted about <em>Configuring line ending conversions</em> we recommend you select <em>Checkut windows-style, commit Unix-style</em>.">
 				<img src="git_images/msw_images/step3_thumb.png" /></a>
-			<a href="git_images/msw_images/step4.png" title="Cinder's home on Github provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
+			<a href="git_images/msw_images/step4.png" title="Cinder's home on GitHub provides a path for checking out the repository, <code>git://github.com/cinder/Cinder.git</code>">
 				<img src="git_images/msw_images/step4_thumb.png" /></a>
 			<a href="git_images/msw_images/step5.png" title="After launching Git Bash, execute the command<br /> <code>git clone git://github.com/cinder/Cinder.git cinder_master</code>">
 				<img src="git_images/msw_images/step5_thumb.png" /></a>

@@ -20,9 +20,10 @@ using namespace std;
 
 class VoiceTestApp : public AppNative {
 public:
-	void setup();
-	void resize();
-	void draw();
+	void setup() override;
+	void fileDrop( FileDropEvent event ) override;
+	void resize() override;
+	void draw() override;
 
 	void setupBasic();
 	void setupBasicStereo();
@@ -49,10 +50,19 @@ void VoiceTestApp::setup()
 	mVolumeSlider.set( DEFAULT_VOLUME );
 
 	setupBasic();
+	setupUI();
 
 	PRINT_GRAPH( audio::master() );
+	CI_LOG_I( "complete. context samplerate: " << audio::master()->getSampleRate() );
+}
 
-	setupUI();
+void VoiceTestApp::fileDrop( FileDropEvent event )
+{
+	const fs::path &filePath = event.getFile( 0 );
+	CI_LOG_I( "File dropped: " << filePath );
+
+	mVoice = audio::Voice::create( audio::load( loadFile( filePath ) ) );
+	mVoice->setVolume( mVolumeSlider.mValueScaled );
 }
 
 void VoiceTestApp::setupBasic()
