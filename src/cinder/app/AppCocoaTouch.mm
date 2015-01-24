@@ -35,6 +35,7 @@
   @public
 	AppImplCocoaTouch							*mAppImpl;
 	UIWindow									*mUiWindow;
+	UIViewController							*mRootViewController;
 	CinderViewCocoaTouch						*mCinderView;
 	cinder::app::WindowRef						mWindowRef;
 	cinder::DisplayRef							mDisplay;
@@ -743,6 +744,7 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 	mResizeHasFired = NO;
 	mKeyboardVisible = NO;
 	mUiWindow = NULL; // this will be set in finishLoad
+	mRootViewController = format.getRootViewController() ? format.getRootViewController() : self;
 
 	mDisplay = format.getDisplay();
 	if( ! mDisplay ) // a NULL display implies the main display
@@ -770,13 +772,10 @@ float getOrientationDegrees( InterfaceOrientation orientation )
 {
 	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
 	mUiWindow.screen = mDisplay->getUiScreen();
+	mUiWindow.rootViewController = mRootViewController;
 
 	if( mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() )
 		mContentScale = mUiWindow.screen.scale;
-
-	// TODO: re-enable format.getRootViewController()
-//	mUiWindow.rootViewController = format.getRootViewController() ? format.getRootViewController() : self;
-	mUiWindow.rootViewController = self;
 
 	// this needs to be last
 	if( mDisplay == cinder::Display::getMainDisplay() )
