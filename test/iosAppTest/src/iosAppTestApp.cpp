@@ -58,7 +58,7 @@ struct TestCallbackOrder {
 		if( mDone ) return;
 		
 		if( mState != state - 1 )
-			CI_LOG_V( "Fail at state: " << mState << "->" << state );
+			CI_LOG_E( "Fail at state: " << mState << "->" << state );
 		else
 			mState = state;
 		if( mState == DRAW )
@@ -137,7 +137,7 @@ void iosAppTestApp::prepareSettings( Settings *settings )
 		CI_LOG_V( *display );
 
 	settings->enableMultiTouch( true );
-	settings->enableHighDensityDisplay( true );
+//	settings->enableHighDensityDisplay( false ); // current doesn't do anything
 	settings->enablePowerManagement( false );
 	settings->enableStatusBar( true );
 	
@@ -181,8 +181,8 @@ void iosAppTestApp::setup()
 	}
 
 	mTex = gl::Texture::create( surface );
-	
-	CI_LOG_V( "window size: " << getWindowSize() );
+
+	CI_LOG_V( "window size: " << getWindowSize() << ", window content scale: " << getWindowContentScale() );
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
 

@@ -101,7 +101,6 @@
 	ci::DisplayRef				mDisplay;
 
 	ci::ivec2					mSize, mPos;
-	float						mContentScale;
 	BOOL						mResizeHasFired;
 	BOOL						mHidden;
 	BOOL						mKeyboardVisible;

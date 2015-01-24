@@ -39,7 +39,7 @@ static Boolean sIsEaglLayer;
 		return [CALayer class];
 }
 
-- (id)initWithFrame:(CGRect)frame app:(ci::app::AppCocoaTouch*)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer contentScale:(float)contentScale
+- (id)initWithFrame:(CGRect)frame app:(ci::app::AppCocoaTouch*)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer
 {
 	// This needs to get setup immediately as +layerClass will be called when the view is initialized
 	sIsEaglLayer = renderer->isEaglLayer();
@@ -140,8 +140,6 @@ static Boolean sIsEaglLayer;
 
 - (void)updateActiveTouches
 {
-	// const float contentScale = [self contentScaleFactor];
-
 	mActiveTouches.clear();
 	for( const auto &touch : mTouchIdMap ) {
 		CGPoint pt = [touch.first locationInView:self];
@@ -180,8 +178,6 @@ static Boolean sIsEaglLayer;
 
 - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	// const float contentScale = [self contentScaleFactor];
-
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
@@ -208,8 +204,6 @@ static Boolean sIsEaglLayer;
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	// const float contentScale = [self contentScaleFactor];
-
 	if( mApp->getSettings().isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {

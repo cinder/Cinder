@@ -36,8 +36,6 @@ using namespace ci::app;
 	mApp = cinder::app::AppCocoaTouch::get();
 	mAppImpl = mApp->privateGetImpl();
 
-	CI_LOG_V( "num windows: " << mAppImpl->mWindows.size() );
-
 	for( auto &windowImpl : mAppImpl->mWindows )
 		[windowImpl finishLoad];
 
@@ -365,9 +363,7 @@ using namespace ci::app;
 	screenBoundsCgRect.size.width = screenBounds.getWidth();
 	screenBoundsCgRect.size.height = screenBounds.getHeight();
 
-	mContentScale = 1.0f; // TODO: why is mContentScale needed?
-
-	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer contentScale:mContentScale];
+	mCinderView = [[CinderViewCocoaTouch alloc] initWithFrame:screenBoundsCgRect app:mAppImpl->mApp renderer:format.getRenderer() sharedRenderer:sharedRenderer];
 	[mCinderView setDelegate:self];
 	mSize = cinder::ivec2( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
 	mPos = cinder::ivec2( 0, 0 );
@@ -381,9 +377,6 @@ using namespace ci::app;
 	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
 	mUiWindow.screen = mDisplay->getUiScreen();
 	mUiWindow.rootViewController = mRootViewController;
-
-	if( mAppImpl->mApp->getSettings().isHighDensityDisplayEnabled() )
-		mContentScale = mUiWindow.screen.scale;
 
 	// this needs to be last
 	if( mDisplay == cinder::Display::getMainDisplay() )
@@ -650,7 +643,7 @@ using namespace ci::app;
 
 - (float)getContentScale
 {
-	return mContentScale;
+	return [mCinderView contentScaleFactor];
 }
 
 - (void)close;

@@ -54,7 +54,7 @@
 	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
 }
 
-- (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer contentScale:(float)contentScale;
+- (id)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch*)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)setDelegate:(id<CinderViewCocoaTouchDelegate>)delegate;
 - (ci::app::RendererRef)getRenderer;
 
