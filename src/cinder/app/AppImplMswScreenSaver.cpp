@@ -31,8 +31,8 @@ namespace cinder { namespace app {
 
 static const int TIMER_ID = 1;
 
-AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *aApp )
-	: AppImplMsw( aApp ), mApp( aApp )
+AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *app )
+	: AppImplMsw( app ), mApp( app )
 {
 }
 

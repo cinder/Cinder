@@ -36,7 +36,7 @@ class WindowImplMswScreenSaver;
 
 class AppImplMswScreenSaver : public AppImplMsw {
  public:
-	AppImplMswScreenSaver( class AppScreenSaver *aApp );
+	AppImplMswScreenSaver( class AppScreenSaver *app );
 	virtual ~AppImplMswScreenSaver() {}
 	
 	void		init( HWND aWnd );
