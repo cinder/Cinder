@@ -402,15 +402,6 @@
     <ClCompile Include="..\src\cinder\Base64.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_reader.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_value.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\jsoncpp\json_writer.cpp">
-      <Filter>Source Files\jsoncpp</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Json.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -746,6 +737,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
       <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
+      <Filter>Source Files\jsoncpp</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1118,35 +1112,8 @@
     <ClInclude Include="..\include\cinder\Plane.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\json\autolink.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\config.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\features.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\forwards.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\json.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\reader.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\value.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\json\writer.h">
-      <Filter>Header Files\json</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Json.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\jsoncpp\json_batchallocator.h">
-      <Filter>Source Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\svg\Svg.h">
       <Filter>Header Files\svg</Filter>
@@ -1592,16 +1559,11 @@
     <ClInclude Include="..\include\cinder\gl\Ubo.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\src\jsoncpp\json_internalarray.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
-    <None Include="..\src\jsoncpp\json_internalmap.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
-    <None Include="..\src\jsoncpp\json_valueiterator.inl">
-      <Filter>Source Files\jsoncpp</Filter>
-    </None>
+    <ClInclude Include="..\include\jsoncpp\json\json.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
