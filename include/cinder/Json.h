@@ -56,16 +56,17 @@ class JsonTree {
 	  public:
 		//! Default options. Enables parsing errors.
 		ParseOptions();
-		//! Sets if JSON parse errors are ignored. Default \c true.
+		//! Sets if JSON parse errors are ignored. Default \c false.
 		ParseOptions& ignoreErrors( bool ignore = true );
 		//! Returns whether JSON parse errors are ignored.
 		bool	getIgnoreErrors() const;
-		
+		//! Sets if comments are allowed. Default \c true.
+		ParseOptions& allowComments( bool allow = true );
+		//! Returns whether comments are allowed or not.
+		bool	getAllowComments() const;
+
 	  private:
-		//! \cond
-		bool	mIgnoreErrors;
-		//! \endcond
-		
+		bool	mIgnoreErrors, mAllowComments;
 	};
 	
 	//! Options for JSON writing. Passed to the \c write method.
