@@ -1,38 +1,44 @@
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/AppNative.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/Timeline.h"
 #include "cinder/MotionManager.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class MotionBasicApp : public AppCocoaTouch {
+class MotionBasicApp : public AppNative {
   public:
 	virtual void	setup();
 	virtual void	update();
 	virtual void	draw();
 	
-	mat4		mModelView;
+	mat4			mModelMatrix;
 	CameraPersp		mCam;
 	Anim<Color>		mBackgroundColor;
 };
 
 void MotionBasicApp::setup()
 {
-	console() << "gyro available: " << MotionManager::isGyroAvailable() << std::endl;
+	CI_LOG_V( "gyro available: " << MotionManager::isGyroAvailable() );
 	
 	MotionManager::enable( 60.0f/*, MotionManager::SensorMode::Accelerometer*/ );
 
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	mCam.lookAt( vec3( 0, 0, 3 ), vec3::zero() );
+	mCam.lookAt( vec3( 0, 0, 3 ), vec3( 0 ) );
 }
 
 void MotionBasicApp::update()
 {
-	mModelView = MotionManager::getRotationMatrix().inverted();
+	if( ! MotionManager::isEnabled() )
+		return;
+
+//	mModelView = MotionManager::getRotationMatrix().inverted();
+	mModelMatrix = inverse( MotionManager::getRotationMatrix() );
 
     if( MotionManager::isShaking( 1.5f ) ) {
-		std::cout << "isShaking!\n";
+		CI_LOG_V( "isShaking!" );
 		mBackgroundColor = Color::gray( MotionManager::getShakeDelta() / 10.0f );
 		timeline().apply( &mBackgroundColor, Color::black(), 0.5f, EaseInQuad() );
     }
@@ -44,10 +50,10 @@ void MotionBasicApp::draw()
 	gl::enableDepthRead();
 
 	gl::setMatrices( mCam );
-	gl::multModelView( mModelView );
+	gl::multModelMatrix( mModelMatrix );
 
-//	gl::drawColorCube( vec3::zero(), vec3( 1, 1, 1 ) );
 	gl::drawCoordinateFrame();
+//	gl::drawColorCube( vec3::zero(), vec3( 1, 1, 1 ) );
 }
 
-CINDER_APP_COCOA_TOUCH( MotionBasicApp, RendererGl )
+CINDER_APP_NATIVE( MotionBasicApp, RendererGl )

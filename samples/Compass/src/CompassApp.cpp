@@ -1,8 +1,10 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 #include "cinder/MotionManager.h"
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #include <map>
 
@@ -39,7 +41,7 @@ void CompassApp::setup()
 	getSignalSupportedOrientations().connect( [] { return InterfaceOrientation::All; } );
 
 	if( ! MotionManager::isNorthReliable() )
-		console() << "Warning, North is not dependable on your device.\n";
+		CI_LOG_W( "North is not dependable on your device." );
 
     MotionManager::enable( 60.0f );
 
