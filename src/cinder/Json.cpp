@@ -39,7 +39,7 @@ using namespace std;
 namespace cinder {
 	
 JsonTree::ParseOptions::ParseOptions() 
-: mIgnoreErrors( false ) 
+	: mIgnoreErrors( false ), mAllowComments( true )
 {
 }
 	
@@ -52,6 +52,17 @@ JsonTree::ParseOptions& JsonTree::ParseOptions::ignoreErrors( bool ignore )
 bool JsonTree::ParseOptions::getIgnoreErrors() const 
 { 
 	return mIgnoreErrors; 
+}
+
+JsonTree::ParseOptions& JsonTree::ParseOptions::allowComments( bool allow )
+{
+	mAllowComments = allow;
+	return *this;
+}
+
+bool JsonTree::ParseOptions::getAllowComments() const
+{
+	return mAllowComments;
 }
 
 JsonTree::WriteOptions::WriteOptions()
@@ -267,8 +278,8 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions parseOptions )
 {
 	Json::Features features;
-	features.allowComments_ = false;
 	features.strictRoot_ = !parseOptions.getIgnoreErrors();
+	features.allowComments_ = parseOptions.getAllowComments();
 	Json::Reader reader( features );
 	Json::Value value;
     try {
