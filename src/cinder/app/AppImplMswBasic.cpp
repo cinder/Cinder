@@ -35,8 +35,8 @@ using std::string;
 
 namespace cinder { namespace app {
 
-AppImplMswBasic::AppImplMswBasic( AppBasic *aApp )
-	: AppImplMsw( aApp ), mApp( aApp )
+AppImplMswBasic::AppImplMswBasic( AppBasic *app )
+	: AppImplMsw( app ), mApp( app )
 {
 	mShouldQuit = false;
 
@@ -221,12 +221,12 @@ void AppImplMswBasic::quit()
 	mShouldQuit = true;
 }
 
-float AppImplMswBasic::setFrameRate( float aFrameRate )
+float AppImplMswBasic::setFrameRate( float frameRate )
 {
-	mFrameRate = aFrameRate;
+	mFrameRate = frameRate;
 	mFrameRateEnabled = true;
 	mNextFrameTime = mApp->getElapsedSeconds();
-	return aFrameRate;
+	return frameRate;
 }
 
 void AppImplMswBasic::disableFrameRate()

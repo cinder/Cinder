@@ -38,14 +38,14 @@ class WindowImplMswBasic;
 
 class AppImplMswBasic : public AppImplMsw {
   public:
-	AppImplMswBasic( class AppBasic *aApp  );
+	AppImplMswBasic( class AppBasic *app  );
 	void	run();
 
 	class AppBasic*		getApp() { return mApp; }
 	
 	void	quit();
 
-	float	setFrameRate( float aFrameRate );
+	float	setFrameRate( float frameRate );
 	void	disableFrameRate();
 	bool	isFrameRateEnabled() const;
 
