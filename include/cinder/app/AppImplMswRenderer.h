@@ -36,7 +36,7 @@ class AppImplMswBasic;
 
 class AppImplMswRenderer {
  public:
-	AppImplMswRenderer( App *aApp ) : mApp( aApp ) {}
+	AppImplMswRenderer( App *app ) : mApp( app ) {}
 	
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;

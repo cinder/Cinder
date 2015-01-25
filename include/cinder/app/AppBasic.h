@@ -125,9 +125,6 @@ class AppBasic : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-#if defined( CINDER_MAC )
-//	void		privateSetImpl__( AppImplCocoaBasic *aImpl );
-#endif
 	bool		privateShouldQuit();
 	
 	//! \endcond
@@ -136,7 +133,7 @@ class AppBasic : public App {
 	static AppBasic*	get()	{ return sBasicInstance; }
 
 	//! \cond
-	// These are called by application instantation macros and are only used in the launch process
+	// These are called by application instantiation macros and are only used in the launch process
 	static void		prepareLaunch() { App::prepareLaunch(); }
 	static void		cleanupLaunch() { App::cleanupLaunch(); }
 	//! \endcond
