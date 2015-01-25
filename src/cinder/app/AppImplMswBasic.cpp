@@ -224,12 +224,11 @@ void AppImplMswBasic::quit()
 	mShouldQuit = true;
 }
 
-float AppImplMswBasic::setFrameRate( float frameRate )
+void AppImplMswBasic::setFrameRate( float frameRate )
 {
 	mFrameRate = frameRate;
 	mFrameRateEnabled = true;
 	mNextFrameTime = mApp->getElapsedSeconds();
-	return frameRate;
 }
 
 void AppImplMswBasic::disableFrameRate()

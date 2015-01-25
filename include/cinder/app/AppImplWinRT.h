@@ -54,7 +54,7 @@ class AppImplWinRT {
 	class App*		getApp() { return mApp; }
 
 	float			getFrameRate() const { return mFrameRate; }
-	virtual float	setFrameRate( float aFrameRate ) { return -1.0f; }
+	virtual void	setFrameRate( float frameRate ) = 0;
 	virtual void	quit() = 0;
 
 	virtual WindowRef	getWindow() const { return mActiveWindow; }

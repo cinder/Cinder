@@ -208,12 +208,11 @@ void AppImplWinRTBasic::setForegroundWindow( WindowRef window )
 	//mForegroundWindow = window;
 }
 
-float AppImplWinRTBasic::setFrameRate( float aFrameRate )
+void AppImplWinRTBasic::setFrameRate( float frameRate )
 {
-	mFrameRate = aFrameRate;
+	mFrameRate = frameRate;
 	mFrameRateEnabled = true;
 	mNextFrameTime = mApp->getElapsedSeconds();
-	return aFrameRate;
 }
 
 void AppImplWinRTBasic::disableFrameRate()

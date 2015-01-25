@@ -42,6 +42,8 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	void		init( HWND aWnd );
 	void		run();
 	void		quit() {} // we can't really force a quit
+	//! do nothing, can't control frame rate
+	void        setFrameRate( float frameRate ) override {}
 		
 	LRESULT eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 	

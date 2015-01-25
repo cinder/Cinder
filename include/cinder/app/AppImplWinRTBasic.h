@@ -57,7 +57,7 @@ public:
 	
 	void	quit() { mShouldQuit = true; }
 
-	float	setFrameRate( float aFrameRate );
+	void	setFrameRate( float frameRate ) override;
 	void	disableFrameRate();
 	bool	isFrameRateEnabled() const;
 
