@@ -46,10 +46,12 @@ AppImplMswBasic::AppImplMswBasic( AppBasic *app )
 	auto formats = mApp->getSettings().getWindowFormats();
 	if( formats.empty() )
 		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
-	for( auto format = formats.begin(); format != formats.end(); ++format ) {
-		if( ! format->isTitleSpecified() )
-			format->setTitle( mApp->getSettings().getTitle() );
-		createWindow( *format );
+
+	for( auto &format : formats ) {
+		if( ! format.isTitleSpecified() )
+			format.setTitle( mApp->getSettings().getTitle() );
+
+		createWindow( format );
 	}
 }
 
@@ -61,8 +63,8 @@ void AppImplMswBasic::run()
 	// issue initial app activation event
 	mApp->emitDidBecomeActive();
 
-	for( auto windowIt = mWindows.begin(); windowIt != mWindows.end(); ++windowIt )
-		(*windowIt)->resize();
+	for( auto &window : mWindows )
+		window->resize();
 
 	// initialize our next frame time
 	mNextFrameTime = getElapsedSeconds();
@@ -71,8 +73,8 @@ void AppImplMswBasic::run()
 	while( ! mShouldQuit ) {
 		// update and draw
 		mApp->privateUpdate__();
-		for( auto windowIt = mWindows.begin(); windowIt != mWindows.end(); ++windowIt )
-			(*windowIt)->redraw();
+		for( auto &window : mWindows )
+			window->redraw();
 
 		// get current time in seconds
 		double currentSeconds = mApp->getElapsedSeconds();
@@ -176,9 +178,9 @@ WindowRef AppImplMswBasic::getWindowIndex( size_t index )
 	if( index >= mWindows.size() )
 		return cinder::app::WindowRef();
 	
-	std::list<WindowImplMswBasic*>::iterator iter = mWindows.begin();
-	std::advance( iter, index );
-	return (*iter)->mWindowRef;
+	auto winIt = mWindows.begin();
+	std::advance( winIt, index );
+	return (*winIt)->mWindowRef;
 }
 
 WindowRef AppImplMswBasic::getForegroundWindow() const
@@ -196,17 +198,18 @@ void AppImplMswBasic::setupBlankingWindows( DisplayRef fullScreenDisplay )
 {
 	destroyBlankingWindows();
 
-	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt ) {
-		if( *displayIt == fullScreenDisplay )
+	for( auto &display : Display::getDisplays() ) {
+		if( display == fullScreenDisplay )
 			continue;
-		mBlankingWindows.push_back( BlankingWindowRef( new BlankingWindow( *displayIt ) ) );
+
+		mBlankingWindows.push_back( BlankingWindowRef( new BlankingWindow( display ) ) );
 	}
 }
 
 void AppImplMswBasic::destroyBlankingWindows()
 {
-	for( auto winIt = mBlankingWindows.begin(); winIt != mBlankingWindows.end(); ++winIt )
-		(*winIt)->destroy();
+	for( auto &win : mBlankingWindows )
+		win->destroy();
 
 	mBlankingWindows.clear();
 }
