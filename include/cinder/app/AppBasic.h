@@ -130,9 +130,6 @@ class AppBasic : public App {
 #endif
 	bool		privateShouldQuit();
 	
-#if defined( CINDER_MSW )
-	bool		getsWindowsPaintEvents() override { return true; }
-#endif
 	//! \endcond
 	
 	//! Returns a pointer to the current global AppBasic

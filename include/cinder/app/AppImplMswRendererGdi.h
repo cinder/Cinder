@@ -36,7 +36,7 @@ class App;
 
 class AppImplMswRendererGdi : public AppImplMswRenderer {
  public:
-	AppImplMswRendererGdi( App *aApp, bool doubleBuffer );
+	 AppImplMswRendererGdi( App *app, bool doubleBuffer, bool paintEvents );
 
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill() {}
@@ -52,6 +52,8 @@ class AppImplMswRendererGdi : public AppImplMswRenderer {
 	::PAINTSTRUCT	mPaintStruct;
 	
 	bool			mDoubleBuffer;
+	bool 			mPaintEvents;
+
 	::HDC			mDoubleBufferDc;
 	::HBITMAP		mDoubleBufferBitmap, mDoubleBufferOldBitmap;
 	ivec2			mDoubleBufferBitmapSize;

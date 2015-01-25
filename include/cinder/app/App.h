@@ -415,12 +415,6 @@ class App {
 	virtual void	privateUpdate__();
 	//! \endcond
 
-#if defined( CINDER_MSW )
-	// Not all Windows target types receive paint events, and the AppImplMswRenderer* needs to know that.
-	// TODO: remove and pass bool in to renderer for each platform (see andrew's suggestion in email)
-	virtual bool        getsWindowsPaintEvents() = 0;
-#endif
-
 	virtual bool		receivesEvents() const { return true; }
 
 	//! Returns a pointer to the active App

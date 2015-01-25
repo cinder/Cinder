@@ -30,8 +30,8 @@
 
 namespace cinder { namespace app {
 
-AppImplMswRendererGdi::AppImplMswRendererGdi( App *aApp, bool doubleBuffer )
-	: AppImplMswRenderer( aApp ), mDoubleBuffer( doubleBuffer ), mDoubleBufferBitmap( 0 )
+AppImplMswRendererGdi::AppImplMswRendererGdi( App *app, bool doubleBuffer, bool paintEvents )
+	: AppImplMswRenderer( app ), mDoubleBuffer( doubleBuffer ), mPaintEvents( paintEvents ), mDoubleBufferBitmap( 0 )
 {
 }
 
@@ -48,7 +48,7 @@ void AppImplMswRendererGdi::swapBuffers() const
 		::DeleteDC( mDoubleBufferDc );		
 	}
 
-	if( mApp->getsWindowsPaintEvents() )
+	if( mPaintEvents )
 		::EndPaint( mWnd, &mPaintStruct );
 	else
 		::ReleaseDC( mWnd, mPaintDc );
@@ -56,7 +56,7 @@ void AppImplMswRendererGdi::swapBuffers() const
 
 void AppImplMswRendererGdi::makeCurrentContext()
 {
-	if( mApp->getsWindowsPaintEvents() )
+	if( mPaintEvents )
 		mPaintDc = ::BeginPaint( mWnd, &mPaintStruct );
 	else
 		mPaintDc = ::GetDC( mWnd );

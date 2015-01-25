@@ -147,8 +147,8 @@ Surface Renderer2d::copyWindowSurface( const Area &area )
 
 #if defined( CINDER_MSW )
 
-Renderer2d::Renderer2d( bool doubleBuffer )
-	: Renderer(), mDoubleBuffer( doubleBuffer )
+Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
+	: Renderer(), mDoubleBuffer(doubleBuffer), mPaintEvents( paintEvents )
 {
 }
 
@@ -156,7 +156,7 @@ void Renderer2d::setup( App *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer
 {
 	mApp = app;
 	mWnd = wnd;
-	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer );
+	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer, mPaintEvents );
 	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 

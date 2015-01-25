@@ -172,12 +172,12 @@ class Renderer2d : public Renderer {
 
 class Renderer2d : public Renderer {
  public:
-	Renderer2d( bool doubleBuffer = true ); 
+	 Renderer2d( bool doubleBuffer = true, bool paintEvents = true );
  
-	static Renderer2dRef	create( bool doubleBuffer = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer ) ); }
+	static Renderer2dRef	create( bool doubleBuffer = true, bool paintEvents = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer, paintEvents ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 	
-	void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
+	void setup( App *app, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	void kill();
 	
 	HWND	getHwnd() { return mWnd; }
@@ -196,7 +196,7 @@ class Renderer2d : public Renderer {
  
 	class AppImplMswRendererGdi	*mImpl;
 
-	bool			mDoubleBuffer;
+	bool			mDoubleBuffer, mPaintEvents;
 	HWND			mWnd;
 	HDC				mDC;
 };
