@@ -66,7 +66,7 @@ bool JsonTree::ParseOptions::getAllowComments() const
 }
 
 JsonTree::WriteOptions::WriteOptions()
-: mCreateDocument( false ), mIndented( true )
+	: mCreateDocument( false ), mIndented( true )
 {
 }
 
@@ -278,8 +278,8 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions parseOptions )
 {
 	Json::Features features;
-	features.strictRoot_ = !parseOptions.getIgnoreErrors();
 	features.allowComments_ = parseOptions.getAllowComments();
+	features.strictRoot_ = ! parseOptions.getIgnoreErrors();
 	Json::Reader reader( features );
 	Json::Value value;
     try {
@@ -288,7 +288,7 @@ Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions 
 	catch ( ... ) {
 		throw ExcJsonParserError( "Unknown error." );
     }
-	if( !parseOptions.getIgnoreErrors() ) {
+	if( ! parseOptions.getIgnoreErrors() ) {
 		string errorMessage = reader.getFormattedErrorMessages();
 		if( errorMessage.length() > 0 ) {
 			throw ExcJsonParserError( errorMessage );
