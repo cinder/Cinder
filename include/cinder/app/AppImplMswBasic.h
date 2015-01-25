@@ -43,7 +43,7 @@ class AppImplMswBasic : public AppImplMsw {
 
 	class AppBasic*		getApp() { return mApp; }
 	
-	void	quit();
+	void	quit() override;
 
 	void	setFrameRate( float frameRate ) override;
 	void	disableFrameRate();

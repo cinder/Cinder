@@ -41,24 +41,25 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	
 	void		init( HWND aWnd );
 	void		run();
-	void		quit() {} // we can't really force a quit
+	//! do nothing, we can't really force a quit
+	void		quit() override {}
 	//! do nothing, can't control frame rate
 	void        setFrameRate( float frameRate ) override {}
 		
 	LRESULT eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 	
-	virtual WindowRef	getWindow() const;
+	WindowRef	getWindow() const override;
 	//! Returns the number of Windows the app has open
-	virtual size_t		getNumWindows() const;
+	size_t		getNumWindows() const;
 	//! Gets a Window by index, in the range [0, getNumWindows()).
-	virtual WindowRef	getWindowIndex( size_t index ) const;
+	WindowRef	getWindowIndex( size_t index ) const;
 
 	bool				isPreview() const;
 
 	// ignore
-	virtual void			closeWindow( class WindowImplMsw *windowImpl ) {}
+	void		closeWindow( class WindowImplMsw *windowImpl ) override {}
 	// ignore
-	virtual void			setForegroundWindow( WindowRef window ) {}
+	void		setForegroundWindow( WindowRef window ) override {}
 
  protected:
 	class AppScreenSaver						*mApp;
