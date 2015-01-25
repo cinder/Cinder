@@ -28,7 +28,7 @@
 
 #include <vector>
 
-#if !defined( CINDER_WINRT )
+#if ! defined( CINDER_WINRT ) && ( _MSC_VER < 1900 )
 #include <boost/thread/tss.hpp>
 #endif
 
@@ -277,6 +277,14 @@ struct ComInitializer {
 void initializeCom( DWORD params )
 {
 	::CoInitializeEx( NULL, params );
+}
+#elif ( _MSC_VER >= 1900 )
+thread_local ComInitializer *threadComInitializer = nullptr;
+
+void initializeCom(DWORD params)
+{
+	if( ! threadComInitializer )
+		threadComInitializer = new ComInitializer(params);
 }
 #else
 boost::thread_specific_ptr<ComInitializer> threadComInitializer;
