@@ -35,8 +35,9 @@ namespace cinder { namespace app {
 
 class AppBasicMac : public AppBasic {
   public:
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
+
 	AppBasicMac();
-	
 	virtual ~AppBasicMac();
 
 	WindowRef	createWindow( const Window::Format &format ) override;
@@ -62,10 +63,23 @@ class AppBasicMac : public AppBasic {
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
-	//! \cond
-	// Called by app instantiation macro during launch process
-//	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
-	//! \endcond
+	template<typename AppT, typename RendererT>
+	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
+	{
+		AppBasic::prepareLaunch();
+
+		AppBasic::Settings settings;
+		settingsFn( &settings );
+
+		RendererRef defaultRenderer( new RendererT );
+		App::initialize( defaultRenderer );
+
+		AppBasic *app = new AppT;
+		#pragma unused( app )
+
+		App::executeLaunch( title, argc, argv );
+		AppBasic::cleanupLaunch();
+	}
 
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
@@ -74,16 +88,11 @@ class AppBasicMac : public AppBasic {
 	AppImplCocoaBasic *mImpl;
 };
 
-#define CINDER_APP_BASIC_MAC( APP, RENDERER )								\
-int main( int argc, char * const argv[] )									\
-{																			\
-	cinder::app::AppBasic::prepareLaunch();									\
-	cinder::app::RendererRef defaultRenderer( new RENDERER );				\
-	cinder::app::App::initialize( defaultRenderer );						\
-	cinder::app::AppBasic *app = new APP;									\
-	cinder::app::App::executeLaunch( #APP, argc, argv );					\
-	cinder::app::AppBasic::cleanupLaunch();									\
-	return 0;																\
+#define CINDER_APP_BASIC_MAC( APP, RENDERER, ... )										\
+int main( int argc, char * const argv[] )												\
+{																						\
+	cinder::app::AppBasicMac::main<APP, RENDERER>( #APP, argc, argv, ##__VA_ARGS__ );	\
+	return 0;																			\
 }
 
 } } // namespace cinder::app

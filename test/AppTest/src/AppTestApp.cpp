@@ -13,6 +13,11 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+void settingsFn( AppNative::Settings *settings )
+{
+	CI_LOG_I( "bang" );
+}
+
 struct SomeMemberObj {
 	gl::TextureRef mTex;
 
@@ -127,4 +132,13 @@ void AppTestApp::draw()
 	CI_CHECK_GL();
 }
 
-CINDER_APP_NATIVE( AppTestApp, RendererGl )
+// no settings fn:
+//CINDER_APP_NATIVE( AppTestApp, RendererGl )
+
+// settings fn from top of file:
+CINDER_APP_NATIVE( AppTestApp, RendererGl, settingsFn )
+
+// settings fn by lambda
+//CINDER_APP_NATIVE( AppTestApp, RendererGl, []( AppTestApp::Settings *settings ) {
+//	CI_LOG_I( "bang" );
+//} )

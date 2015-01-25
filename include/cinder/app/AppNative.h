@@ -30,7 +30,7 @@
 	namespace cinder { namespace app {
 		typedef AppBasicMac		AppNative;
 	} } // namespace cinder::app
-	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC_MAC( APP, RENDERER )
+	#define CINDER_APP_NATIVE( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_COCOA_TOUCH )
 	#include "cinder/app/AppCocoaTouch.h"
 	namespace cinder { namespace app {
