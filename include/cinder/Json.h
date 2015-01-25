@@ -56,7 +56,7 @@ class JsonTree {
 	  public:
 		//! Default options. Enables parsing errors.
 		ParseOptions();
-		//! Sets if JSON parse errors are ignored. Default \c true.
+		//! Sets if JSON parse errors are ignored. Default \c false.
 		ParseOptions& ignoreErrors( bool ignore = true );
 		//! Returns whether JSON parse errors are ignored.
 		bool	getIgnoreErrors() const;
