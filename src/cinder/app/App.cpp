@@ -22,6 +22,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#define ASIO_STANDALONE 1
 #include "asio/asio.hpp"
 
 #include "cinder/app/App.h"
