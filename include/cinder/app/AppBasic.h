@@ -132,12 +132,6 @@ class AppBasic : public App {
 	//! Returns a pointer to the current global AppBasic
 	static AppBasic*	get()	{ return sBasicInstance; }
 
-	//! \cond
-	// These are called by application instantiation macros and are only used in the launch process
-	static void		prepareLaunch() { App::prepareLaunch(); }
-	static void		cleanupLaunch() { App::cleanupLaunch(); }
-	//! \endcond
-
   protected:
 	static AppBasic*			sBasicInstance;
 	EventSignalShouldQuit		mSignalShouldQuit;

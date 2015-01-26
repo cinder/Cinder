@@ -420,18 +420,16 @@ class App {
 	//! Returns a pointer to the active App
 	static App*			get() { return sInstance; }
 
-	static void initialize( const RendererRef &defaultRenderer );
-	static void executeLaunch( const char *title, int argc, char * const argv[] );
 
   protected:
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch();
-//	static void		executeLaunch( App *app, RendererRef defaultRenderer, const char *title, int argc, char * const argv[] );
+	static void		initialize( const RendererRef &defaultRenderer );
+	static void		executeLaunch( const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	
 	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
-	
 	//! \endcond
 
   private:
