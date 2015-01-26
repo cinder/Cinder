@@ -114,7 +114,7 @@ class AppBasic : public App {
 	//! Shows the mouse cursor
 	virtual void		showCursor() = 0;
 	//! Returns AppBasic::Settings that were set during prepareSettings() (or the defaults)
-	const Settings&		getSettings() const { return mSettings; }
+	const Settings&		getSettings() const override { return mSettings; }
 
 	//! Returns a vector of the command line arguments passed to the app
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }

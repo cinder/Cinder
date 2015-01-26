@@ -216,9 +216,8 @@ class AppCocoaTouch : public App {
 
 	//! Returns a pointer to the current global AppBasic
 	static AppCocoaTouch*	get() { return sInstance; }
-	//! Returns a pointer to the current global AppBasic
-	virtual const Settings&	getSettings() const { return mSettings; }
 
+	virtual const Settings&	getSettings() const override { return mSettings; }
 
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
