@@ -40,7 +40,7 @@ class Platform {
 
 	//! Called at the beginning of a launch, can be overridden for platform-specifc preparation.
 	virtual void prepareLaunch()		{}
-	//! Called at the end of a launch, can be overridden for platform-specifc preparation.
+	//! Called at the end of a launch, can be overridden for platform-specifc cleanup.
 	virtual void cleanupLaunch()		{}
 
 	// Assets

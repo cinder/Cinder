@@ -155,8 +155,8 @@ class App {
 		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
 
 		void		prepareWindow( const Window::Format &format );
-		std::vector<Window::Format>&		getWindowFormats() { return mWindowFormats; }
-		const std::vector<Window::Format>&	getWindowFormats() const { return mWindowFormats; }\
+		std::vector<Window::Format>&		getWindowFormats()			{ return mWindowFormats; }
+		const std::vector<Window::Format>&	getWindowFormats() const	{ return mWindowFormats; }
 
 		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
 		void		enableHighDensityDisplay( bool enable = true ) { mEnableHighDensityDisplay = enable; }
