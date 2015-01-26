@@ -36,11 +36,11 @@
 	namespace cinder { namespace app {
 		typedef AppCocoaTouch	AppNative;
 	} }
-	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_COCOA_TOUCH( APP, RENDERER )	
+	#define CINDER_APP_NATIVE( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_MSW )
 	#include "cinder/app/AppBasicMsw.h"
 	namespace cinder { namespace app {
 		typedef AppBasicMsw	AppNative;
 	} } // namespace cinder::app		
-	#define CINDER_APP_NATIVE( APP, RENDERER )	CINDER_APP_BASIC_MSW( APP, RENDERER )
+	#define CINDER_APP_NATIVE( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #endif
