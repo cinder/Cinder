@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,49 +30,36 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#include "../mat2x2.hpp"
-#include "../mat3x3.hpp"
-#include "../mat4x4.hpp"
-
 namespace glm
 {
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> affineInverse
-	(
-		detail::tmat3x3<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat3x3<T, P> affineInverse(tmat3x3<T, P> const & m)
 	{
-		detail::tmat3x3<T, P> Result(m);
-		Result[2] = detail::tvec3<T, P>(0, 0, 1);
+		tmat3x3<T, P> Result(m);
+		Result[2] = tvec3<T, P>(0, 0, 1);
 		Result = transpose(Result);
-		detail::tvec3<T, P> Translation = Result * detail::tvec3<T, P>(-detail::tvec2<T, P>(m[2]), m[2][2]);
+		tvec3<T, P> Translation = Result * tvec3<T, P>(-tvec2<T, P>(m[2]), m[2][2]);
 		Result[2] = Translation;
 		return Result;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> affineInverse
-	(
-		detail::tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> affineInverse(tmat4x4<T, P> const & m)
 	{
-		detail::tmat4x4<T, P> Result(m);
-		Result[3] = detail::tvec4<T, P>(0, 0, 0, 1);
+		tmat4x4<T, P> Result(m);
+		Result[3] = tvec4<T, P>(0, 0, 0, 1);
 		Result = transpose(Result);
-		detail::tvec4<T, P> Translation = Result * detail::tvec4<T, P>(-detail::tvec3<T, P>(m[3]), m[3][3]);
+		tvec4<T, P> Translation = Result * tvec4<T, P>(-tvec3<T, P>(m[3]), m[3][3]);
 		Result[3] = Translation;
 		return Result;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat2x2<T, P> inverseTranspose
-	(
-		detail::tmat2x2<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat2x2<T, P> inverseTranspose(tmat2x2<T, P> const & m)
 	{
 		T Determinant = m[0][0] * m[1][1] - m[1][0] * m[0][1];
 
-		detail::tmat2x2<T, P> Inverse(
+		tmat2x2<T, P> Inverse(
 			+ m[1][1] / Determinant,
 			- m[0][1] / Determinant,
 			- m[1][0] / Determinant,
@@ -78,17 +69,14 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat3x3<T, P> inverseTranspose
-	(
-		detail::tmat3x3<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat3x3<T, P> inverseTranspose(tmat3x3<T, P> const & m)
 	{
 		T Determinant =
 			+ m[0][0] * (m[1][1] * m[2][2] - m[1][2] * m[2][1])
 			- m[0][1] * (m[1][0] * m[2][2] - m[1][2] * m[2][0])
 			+ m[0][2] * (m[1][0] * m[2][1] - m[1][1] * m[2][0]);
 
-		detail::tmat3x3<T, P> Inverse;
+		tmat3x3<T, P> Inverse(uninitialize);
 		Inverse[0][0] = + (m[1][1] * m[2][2] - m[2][1] * m[1][2]);
 		Inverse[0][1] = - (m[1][0] * m[2][2] - m[2][0] * m[1][2]);
 		Inverse[0][2] = + (m[1][0] * m[2][1] - m[2][0] * m[1][1]);
@@ -104,10 +92,7 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> inverseTranspose
-	(
-		detail::tmat4x4<T, P> const & m
-	)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> inverseTranspose(tmat4x4<T, P> const & m)
 	{
 		T SubFactor00 = m[2][2] * m[3][3] - m[3][2] * m[2][3];
 		T SubFactor01 = m[2][1] * m[3][3] - m[3][1] * m[2][3];
@@ -129,7 +114,7 @@ namespace glm
 		T SubFactor17 = m[1][0] * m[2][2] - m[2][0] * m[1][2];
 		T SubFactor18 = m[1][0] * m[2][1] - m[2][0] * m[1][1];
 
-		detail::tmat4x4<T, P> Inverse;
+		tmat4x4<T, P> Inverse(uninitialize);
 		Inverse[0][0] = + (m[1][1] * SubFactor00 - m[1][2] * SubFactor01 + m[1][3] * SubFactor02);
 		Inverse[0][1] = - (m[1][0] * SubFactor00 - m[1][2] * SubFactor03 + m[1][3] * SubFactor04);
 		Inverse[0][2] = + (m[1][0] * SubFactor01 - m[1][1] * SubFactor03 + m[1][3] * SubFactor05);

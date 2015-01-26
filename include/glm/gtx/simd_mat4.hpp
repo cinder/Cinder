@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -20,8 +24,8 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 /// THE SOFTWARE.
 ///
-/// @ref gtx_simd_vec4
-/// @file glm/gtx/simd_vec4.hpp
+/// @ref gtx_simd_mat4
+/// @file glm/gtx/simd_mat4.hpp
 /// @date 2009-05-07 / 2011-06-07
 /// @author Christophe Riccio
 ///
@@ -35,8 +39,7 @@
 /// <glm/gtx/simd_mat4.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_simd_mat4
-#define GLM_GTX_simd_mat4
+#pragma once
 
 // Dependencies
 #include "../detail/setup.hpp"
@@ -61,7 +64,6 @@ namespace detail
 	/// \ingroup gtx_simd_mat4
 	GLM_ALIGNED_STRUCT(16) fmat4x4SIMD
 	{
-		enum ctor{_null};
 		typedef float value_type;
 		typedef fvec4SIMD col_type;
 		typedef fvec4SIMD row_type;
@@ -201,5 +203,3 @@ namespace detail
 #include "simd_mat4.inl"
 
 #endif//(GLM_ARCH != GLM_ARCH_PURE)
-
-#endif//GLM_GTX_simd_mat4

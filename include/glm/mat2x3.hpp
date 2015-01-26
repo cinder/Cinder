@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,8 +30,7 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_MAT2X3_INCLUDED
-#define GLM_MAT2X3_INCLUDED
+#pragma once
 
 #include "detail/type_mat2x3.hpp"
 
@@ -38,22 +41,21 @@ namespace glm
 	///
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.6 Matrices</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
-	typedef detail::tmat2x3<float, lowp>		lowp_mat2x3;
+	typedef tmat2x3<float, lowp>		lowp_mat2x3;
 
 	/// 2 columns of 3 components matrix of medium precision floating-point numbers.
 	/// There is no guarantee on the actual precision.
 	///
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.6 Matrices</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
-	typedef detail::tmat2x3<float, mediump>		mediump_mat2x3;
+	typedef tmat2x3<float, mediump>		mediump_mat2x3;
 
 	/// 2 columns of 3 components matrix of high precision floating-point numbers.
 	/// There is no guarantee on the actual precision.
 	///
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.1.6 Matrices</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 4.7.2 Precision Qualifier</a>
-	typedef detail::tmat2x3<float, highp>		highp_mat2x3;
+	typedef tmat2x3<float, highp>		highp_mat2x3;
 
 }//namespace glm
 
-#endif//GLM_MAT2X3_INCLUDED

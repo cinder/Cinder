@@ -11,7 +11,7 @@ namespace glm{
 namespace detail{
 
 template <int Value>
-struct mask
+struct shuffle_mask
 {
 	enum{value = Value};
 };
@@ -20,9 +20,9 @@ struct mask
 // Implicit basic constructors
 
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD()
-#ifdef GLM_SIMD_ENABLE_DEFAULT_INIT
-    : Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
-#endif
+#	ifdef GLM_FORCE_NO_CTOR_INIT
+		: Data(_mm_set_ps(0.0f, 0.0f, 0.0f, 0.0f))
+#	endif
 {}
 
 GLM_FUNC_QUALIFIER fvec4SIMD::fvec4SIMD(__m128 const & Data) :
@@ -166,7 +166,7 @@ GLM_FUNC_QUALIFIER fvec4SIMD fvec4SIMD::swizzle() const
 {
 	__m128 Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
 	return fvec4SIMD(Data);
 }
 
@@ -175,7 +175,7 @@ GLM_FUNC_QUALIFIER fvec4SIMD& fvec4SIMD::swizzle()
 {
 	this->Data = _mm_shuffle_ps(
 		this->Data, this->Data, 
-		mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
+		shuffle_mask<(W << 6) | (Z << 4) | (Y << 2) | (X << 0)>::value);
 	return *this;
 }
 

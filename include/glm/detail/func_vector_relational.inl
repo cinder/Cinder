@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/func_vector_relational.inl
+/// @file glm/detail/func_vector_relational.inl
 /// @date 2008-08-03 / 2011-09-09
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
@@ -31,100 +35,68 @@
 namespace glm
 {
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type lessThan
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> lessThan(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || std::numeric_limits<T>::is_integer,
-			"Invalid template instantiation of 'lessThan', GLM vector types required floating-point or integer value types vectors");
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] < y[i];
 
 		return Result;
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type lessThanEqual
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> lessThanEqual(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || std::numeric_limits<T>::is_integer,
-			"Invalid template instantiation of 'lessThanEqual', GLM vector types required floating-point or integer value types vectors");
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] <= y[i];
 		return Result;
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type greaterThan
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> greaterThan(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || std::numeric_limits<T>::is_integer,
-			"Invalid template instantiation of 'greaterThan', GLM vector types required floating-point or integer value types vectors");
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] > y[i];
 		return Result;
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type greaterThanEqual
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> greaterThanEqual(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		GLM_STATIC_ASSERT(std::numeric_limits<T>::is_iec559 || std::numeric_limits<T>::is_integer,
-			"Invalid template instantiation of 'greaterThanEqual', GLM vector types required floating-point or integer value types vectors");
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] >= y[i];
 		return Result;
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type equal
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> equal(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] == y[i];
 		return Result;
 	}
 
 	template <typename T, precision P, template <typename, precision> class vecType>
-	GLM_FUNC_QUALIFIER typename vecType<T, P>::bool_type notEqual
-	(
-		vecType<T, P> const & x,
-		vecType<T, P> const & y
-	)
+	GLM_FUNC_QUALIFIER vecType<bool, P> notEqual(vecType<T, P> const & x, vecType<T, P> const & y)
 	{
-		assert(x.length() == y.length());
+		assert(detail::component_count(x) == detail::component_count(y));
 
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < x.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(x); ++i)
 			Result[i] = x[i] != y[i];
 		return Result;
 	}
@@ -133,7 +105,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER bool any(vecType<bool, P> const & v)
 	{
 		bool Result = false;
-		for(int i = 0; i < v.length(); ++i)
+		for(detail::component_count_t i = 0; i < detail::component_count(v); ++i)
 			Result = Result || v[i];
 		return Result;
 	}
@@ -142,7 +114,7 @@ namespace glm
 	GLM_FUNC_QUALIFIER bool all(vecType<bool, P> const & v)
 	{
 		bool Result = true;
-		for(int i = 0; i < v.length(); ++i)
+		for(detail::component_count_t i = 0; i < detail::component_count(v); ++i)
 			Result = Result && v[i];
 		return Result;
 	}
@@ -150,8 +122,8 @@ namespace glm
 	template <precision P, template <typename, precision> class vecType>
 	GLM_FUNC_QUALIFIER vecType<bool, P> not_(vecType<bool, P> const & v)
 	{
-		typename vecType<bool, P>::bool_type Result(vecType<bool, P>::_null);
-		for(int i = 0; i < v.length(); ++i)
+		vecType<bool, P> Result(uninitialize);
+		for(detail::component_count_t i = 0; i < detail::component_count(v); ++i)
 			Result[i] = !v[i];
 		return Result;
 	}

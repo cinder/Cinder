@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/func_noise.hpp
+/// @file glm/detail/func_noise.hpp
 /// @date 2008-08-01 / 2011-06-18
 /// @author Christophe Riccio
 ///
@@ -35,8 +39,7 @@
 /// appearance of randomness, but are not truly random.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_core_func_noise
-#define glm_core_func_noise
+#pragma once
 
 #include "type_vec1.hpp"
 #include "type_vec2.hpp"
@@ -64,7 +67,7 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/noise2.xml">GLSL noise2 man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.13 Noise Functions</a>
 	template <typename genType>
-	GLM_FUNC_DECL detail::tvec2<typename genType::value_type, defaultp> noise2(genType const & x);
+	GLM_FUNC_DECL tvec2<typename genType::value_type, defaultp> noise2(genType const & x);
 
 	/// Returns a 3D noise value based on the input value x.
 	///
@@ -73,7 +76,7 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/noise3.xml">GLSL noise3 man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.13 Noise Functions</a>
 	template <typename genType>
-	GLM_FUNC_DECL detail::tvec3<typename genType::value_type, defaultp> noise3(genType const & x);
+	GLM_FUNC_DECL tvec3<typename genType::value_type, defaultp> noise3(genType const & x);
 
 	/// Returns a 4D noise value based on the input value x.
 	///
@@ -82,11 +85,9 @@ namespace glm
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/noise4.xml">GLSL noise4 man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.13 Noise Functions</a>
 	template <typename genType>
-	GLM_FUNC_DECL detail::tvec4<typename genType::value_type, defaultp> noise4(genType const & x);
+	GLM_FUNC_DECL tvec4<typename genType::value_type, defaultp> noise4(genType const & x);
 
 	/// @}
 }//namespace glm
 
 #include "func_noise.inl"
-
-#endif//glm_core_func_noise

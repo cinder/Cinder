@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,13 +25,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/type_half.hpp
+/// @file glm/detail/type_half.hpp
 /// @date 2008-08-17 / 2011-09-20
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_core_type_half
-#define glm_core_type_half
+#pragma once
 
 #include "setup.hpp"
 
@@ -40,12 +43,6 @@ namespace detail
 	GLM_FUNC_DECL hdata toFloat16(float const & value);
 
 }//namespace detail
-
-	/// half-precision floating-point numbers.
-	//typedef detail::hdata		half;
-		
 }//namespace glm
 
 #include "type_half.inl"
-
-#endif//glm_core_type_half

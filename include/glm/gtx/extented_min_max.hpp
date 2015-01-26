@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,8 +40,7 @@
 /// <glm/gtx/extented_min_max.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_extented_min_max
-#define GLM_GTX_extented_min_max
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -157,5 +160,3 @@ namespace glm
 }//namespace glm
 
 #include "extented_min_max.inl"
-
-#endif//GLM_GTX_extented_min_max

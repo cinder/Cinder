@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -27,7 +31,7 @@
 ///
 /// @see core (dependence)
 ///
-/// @defgroup gtx_extend GLM_GTX_scalar_relational
+/// @defgroup gtx_scalar_relational GLM_GTX_scalar_relational
 /// @ingroup gtx
 /// 
 /// @brief Extend a position from a source to a position at a defined length.
@@ -35,8 +39,7 @@
 /// <glm/gtx/scalar_relational.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_scalar_relational
-#define GLM_GTX_scalar_relational
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -56,5 +59,3 @@ namespace glm
 }//namespace glm
 
 #include "scalar_relational.inl"
-
-#endif//GLM_GTX_scalar_relational

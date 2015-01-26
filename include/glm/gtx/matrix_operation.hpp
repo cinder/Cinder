@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,8 +39,7 @@
 /// <glm/gtx/matrix_operation.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_matrix_operation
-#define GLM_GTX_matrix_operation
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -53,60 +56,58 @@ namespace glm
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat2x2<T, P> diagonal2x2(
-		detail::tvec2<T, P> const & v);
+	GLM_FUNC_DECL tmat2x2<T, P> diagonal2x2(
+		tvec2<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat2x3<T, P> diagonal2x3(
-		detail::tvec2<T, P> const & v);
+	GLM_FUNC_DECL tmat2x3<T, P> diagonal2x3(
+		tvec2<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat2x4<T, P> diagonal2x4(
-		detail::tvec2<T, P> const & v);
+	GLM_FUNC_DECL tmat2x4<T, P> diagonal2x4(
+		tvec2<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat3x2<T, P> diagonal3x2(
-		detail::tvec2<T, P> const & v);
+	GLM_FUNC_DECL tmat3x2<T, P> diagonal3x2(
+		tvec2<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat3x3<T, P> diagonal3x3(
-		detail::tvec3<T, P> const & v);
+	GLM_FUNC_DECL tmat3x3<T, P> diagonal3x3(
+		tvec3<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat3x4<T, P> diagonal3x4(
-		detail::tvec3<T, P> const & v);
+	GLM_FUNC_DECL tmat3x4<T, P> diagonal3x4(
+		tvec3<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat4x2<T, P> diagonal4x2(
-		detail::tvec2<T, P> const & v);
+	GLM_FUNC_DECL tmat4x2<T, P> diagonal4x2(
+		tvec2<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat4x3<T, P> diagonal4x3(
-		detail::tvec3<T, P> const & v);
+	GLM_FUNC_DECL tmat4x3<T, P> diagonal4x3(
+		tvec3<T, P> const & v);
 
 	//! Build a diagonal matrix.
 	//! From GLM_GTX_matrix_operation extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat4x4<T, P> diagonal4x4(
-		detail::tvec4<T, P> const & v);
+	GLM_FUNC_DECL tmat4x4<T, P> diagonal4x4(
+		tvec4<T, P> const & v);
 
 	/// @}
 }//namespace glm
 
 #include "matrix_operation.inl"
-
-#endif//GLM_GTX_matrix_operation

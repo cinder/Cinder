@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 ///
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,13 +25,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/precision.hpp
+/// @file glm/detail/precision.hpp
 /// @date 2013-04-01 / 2013-04-01
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_CORE_PRECISION_INCLUDED
-#define GLM_CORE_PRECISION_INCLUDED
+#pragma once
 
 namespace glm
 {
@@ -39,5 +42,3 @@ namespace glm
 		defaultp = highp
 	};
 }//namespace glm
-
-#endif//GLM_CORE_PRECISION_INCLUDED

@@ -1,10 +1,33 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2009-05-19
-// Updated : 2009-05-19
-// Licence : This source is under MIT License
-// File    : glm/gtx/simd_mat4.hpp
+///////////////////////////////////////////////////////////////////////////////////
+/// OpenGL Mathematics (glm.g-truc.net)
+///
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+/// THE SOFTWARE.
+///
+/// @ref gtx_simd_mat4
+/// @file glm/gtx/simd_mat4.inl
+/// @date 2009-05-07 / 2011-06-07
+/// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 
 namespace glm{
@@ -43,12 +66,12 @@ GLM_FUNC_QUALIFIER fvec4SIMD const & fmat4x4SIMD::operator[]
 
 GLM_FUNC_QUALIFIER fmat4x4SIMD::fmat4x4SIMD()
 {
-#ifndef GLM_SIMD_ENABLE_DEFAULT_INIT
-	this->Data[0] = fvec4SIMD(1.0f, 0, 0, 0);
-	this->Data[1] = fvec4SIMD(0, 1.0f, 0, 0);
-	this->Data[2] = fvec4SIMD(0, 0, 1.0f, 0);
-	this->Data[3] = fvec4SIMD(0, 0, 0, 1.0f);
-#endif
+#	ifndef GLM_FORCE_NO_CTOR_INIT
+		this->Data[0] = fvec4SIMD(1, 0, 0, 0);
+		this->Data[1] = fvec4SIMD(0, 1, 0, 0);
+		this->Data[2] = fvec4SIMD(0, 0, 1, 0);
+		this->Data[3] = fvec4SIMD(0, 0, 0, 1);
+#	endif
 }
 
 GLM_FUNC_QUALIFIER fmat4x4SIMD::fmat4x4SIMD(float const & s)
@@ -554,7 +577,7 @@ GLM_FUNC_QUALIFIER detail::fmat4x4SIMD outerProduct
 	__m128 Shu2 = _mm_shuffle_ps(r.Data, r.Data, _MM_SHUFFLE(2, 2, 2, 2));
 	__m128 Shu3 = _mm_shuffle_ps(r.Data, r.Data, _MM_SHUFFLE(3, 3, 3, 3));
 
-	detail::fmat4x4SIMD result(detail::fmat4x4SIMD::_null);
+	detail::fmat4x4SIMD result(uninitialize);
 	result[0].Data = _mm_mul_ps(c.Data, Shu0);
 	result[1].Data = _mm_mul_ps(c.Data, Shu1);
 	result[2].Data = _mm_mul_ps(c.Data, Shu2);

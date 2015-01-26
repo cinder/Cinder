@@ -21,17 +21,17 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_vector_relational.inl
+/// @file glm/detail/intrinsic_vector_relational.inl
 /// @date 2009-06-09 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 //
 //// lessThan
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type lessThan
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type lessThan
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -39,14 +39,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//    return typename detail::tvec2<bool>::bool_type(x.x < y.x, x.y < y.y);
+//    return typename tvec2<bool>::bool_type(x.x < y.x, x.y < y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type lessThan
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type lessThan
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -54,14 +54,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //	
-//	return typename detail::tvec3<bool>::bool_type(x.x < y.x, x.y < y.y, x.z < y.z);
+//	return typename tvec3<bool>::bool_type(x.x < y.x, x.y < y.y, x.z < y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type lessThan
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type lessThan
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -69,15 +69,15 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec4<bool>::bool_type(x.x < y.x, x.y < y.y, x.z < y.z, x.w < y.w);
+//	return typename tvec4<bool>::bool_type(x.x < y.x, x.y < y.y, x.z < y.z, x.w < y.w);
 //}
 //
 //// lessThanEqual
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type lessThanEqual
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type lessThanEqual
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -85,14 +85,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec2<bool>::bool_type(x.x <= y.x, x.y <= y.y);
+//	return typename tvec2<bool>::bool_type(x.x <= y.x, x.y <= y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type lessThanEqual
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type lessThanEqual
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -100,14 +100,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //	
-//	return typename detail::tvec3<bool>::bool_type(x.x <= y.x, x.y <= y.y, x.z <= y.z);
+//	return typename tvec3<bool>::bool_type(x.x <= y.x, x.y <= y.y, x.z <= y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type lessThanEqual
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type lessThanEqual
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -115,15 +115,15 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //	
-//	return typename detail::tvec4<bool>::bool_type(x.x <= y.x, x.y <= y.y, x.z <= y.z, x.w <= y.w);
+//	return typename tvec4<bool>::bool_type(x.x <= y.x, x.y <= y.y, x.z <= y.z, x.w <= y.w);
 //}
 //
 //// greaterThan
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type greaterThan
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type greaterThan
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -131,14 +131,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec2<bool>::bool_type(x.x > y.x, x.y > y.y);
+//	return typename tvec2<bool>::bool_type(x.x > y.x, x.y > y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type greaterThan
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type greaterThan
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -146,14 +146,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //	
-//	return typename detail::tvec3<bool>::bool_type(x.x > y.x, x.y > y.y, x.z > y.z);
+//	return typename tvec3<bool>::bool_type(x.x > y.x, x.y > y.y, x.z > y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type greaterThan
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type greaterThan
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -161,15 +161,15 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //	
-//	return typename detail::tvec4<bool>::bool_type(x.x > y.x, x.y > y.y, x.z > y.z, x.w > y.w);
+//	return typename tvec4<bool>::bool_type(x.x > y.x, x.y > y.y, x.z > y.z, x.w > y.w);
 //}
 //
 //// greaterThanEqual
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type greaterThanEqual
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type greaterThanEqual
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -177,14 +177,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec2<bool>::bool_type(x.x >= y.x, x.y >= y.y);
+//	return typename tvec2<bool>::bool_type(x.x >= y.x, x.y >= y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type greaterThanEqual
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type greaterThanEqual
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -192,14 +192,14 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec3<bool>::bool_type(x.x >= y.x, x.y >= y.y, x.z >= y.z);
+//	return typename tvec3<bool>::bool_type(x.x >= y.x, x.y >= y.y, x.z >= y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type greaterThanEqual
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type greaterThanEqual
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -207,15 +207,15 @@
 //		detail::type<valType>::is_int || 
 //		detail::type<valType>::is_uint);
 //
-//	return typename detail::tvec4<bool>::bool_type(x.x >= y.x, x.y >= y.y, x.z >= y.z, x.w >= y.w);
+//	return typename tvec4<bool>::bool_type(x.x >= y.x, x.y >= y.y, x.z >= y.z, x.w >= y.w);
 //}
 //
 //// equal
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type equal
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type equal
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -224,14 +224,14 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec2<T, P>::bool_type(x.x == y.x, x.y == y.y);
+//	return typename tvec2<T, P>::bool_type(x.x == y.x, x.y == y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type equal
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type equal
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -240,14 +240,14 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec3<T, P>::bool_type(x.x == y.x, x.y == y.y, x.z == y.z);
+//	return typename tvec3<T, P>::bool_type(x.x == y.x, x.y == y.y, x.z == y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type equal
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type equal
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -256,15 +256,15 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec4<T, P>::bool_type(x.x == y.x, x.y == y.y, x.z == y.z, x.w == y.w);
+//	return typename tvec4<T, P>::bool_type(x.x == y.x, x.y == y.y, x.z == y.z, x.w == y.w);
 //}
 //
 //// notEqual
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec2<T, P>::bool_type notEqual
+//GLM_FUNC_QUALIFIER typename tvec2<T, P>::bool_type notEqual
 //(
-//	detail::tvec2<T, P> const & x, 
-//	detail::tvec2<T, P> const & y
+//	tvec2<T, P> const & x, 
+//	tvec2<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -273,14 +273,14 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec2<T, P>::bool_type(x.x != y.x, x.y != y.y);
+//	return typename tvec2<T, P>::bool_type(x.x != y.x, x.y != y.y);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec3<T, P>::bool_type notEqual
+//GLM_FUNC_QUALIFIER typename tvec3<T, P>::bool_type notEqual
 //(
-//	detail::tvec3<T, P> const & x, 
-//	detail::tvec3<T, P> const & y
+//	tvec3<T, P> const & x, 
+//	tvec3<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -289,14 +289,14 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec3<T, P>::bool_type(x.x != y.x, x.y != y.y, x.z != y.z);
+//	return typename tvec3<T, P>::bool_type(x.x != y.x, x.y != y.y, x.z != y.z);
 //}
 //
 //template <typename valType>
-//GLM_FUNC_QUALIFIER typename detail::tvec4<T, P>::bool_type notEqual
+//GLM_FUNC_QUALIFIER typename tvec4<T, P>::bool_type notEqual
 //(
-//	detail::tvec4<T, P> const & x, 
-//	detail::tvec4<T, P> const & y
+//	tvec4<T, P> const & x, 
+//	tvec4<T, P> const & y
 //)
 //{
 //	GLM_STATIC_ASSERT(
@@ -305,62 +305,62 @@
 //		detail::type<valType>::is_uint || 
 //		detail::type<valType>::is_bool);
 //
-//	return typename detail::tvec4<T, P>::bool_type(x.x != y.x, x.y != y.y, x.z != y.z, x.w != y.w);
+//	return typename tvec4<T, P>::bool_type(x.x != y.x, x.y != y.y, x.z != y.z, x.w != y.w);
 //}
 //
 //// any
-//GLM_FUNC_QUALIFIER bool any(detail::tvec2<bool> const & x)
+//GLM_FUNC_QUALIFIER bool any(tvec2<bool> const & x)
 //{
 //	return x.x || x.y;
 //}
 //
-//GLM_FUNC_QUALIFIER bool any(detail::tvec3<bool> const & x)
+//GLM_FUNC_QUALIFIER bool any(tvec3<bool> const & x)
 //{
 //    return x.x || x.y || x.z;
 //}
 //
-//GLM_FUNC_QUALIFIER bool any(detail::tvec4<bool> const & x)
+//GLM_FUNC_QUALIFIER bool any(tvec4<bool> const & x)
 //{
 //    return x.x || x.y || x.z || x.w;
 //}
 //
 //// all
-//GLM_FUNC_QUALIFIER bool all(const detail::tvec2<bool>& x)
+//GLM_FUNC_QUALIFIER bool all(const tvec2<bool>& x)
 //{
 //    return x.x && x.y;
 //}
 //
-//GLM_FUNC_QUALIFIER bool all(const detail::tvec3<bool>& x)
+//GLM_FUNC_QUALIFIER bool all(const tvec3<bool>& x)
 //{
 //    return x.x && x.y && x.z;
 //}
 //
-//GLM_FUNC_QUALIFIER bool all(const detail::tvec4<bool>& x)
+//GLM_FUNC_QUALIFIER bool all(const tvec4<bool>& x)
 //{
 //    return x.x && x.y && x.z && x.w;
 //}
 //
 //// not
-//GLM_FUNC_QUALIFIER detail::tvec2<bool>::bool_type not_
+//GLM_FUNC_QUALIFIER tvec2<bool>::bool_type not_
 //(
-//	detail::tvec2<bool> const & v
+//	tvec2<bool> const & v
 //)
 //{
-//    return detail::tvec2<bool>::bool_type(!v.x, !v.y);
+//    return tvec2<bool>::bool_type(!v.x, !v.y);
 //}
 //
-//GLM_FUNC_QUALIFIER detail::tvec3<bool>::bool_type not_
+//GLM_FUNC_QUALIFIER tvec3<bool>::bool_type not_
 //(
-//	detail::tvec3<bool> const & v
+//	tvec3<bool> const & v
 //)
 //{
-//    return detail::tvec3<bool>::bool_type(!v.x, !v.y, !v.z);
+//    return tvec3<bool>::bool_type(!v.x, !v.y, !v.z);
 //}
 //
-//GLM_FUNC_QUALIFIER detail::tvec4<bool>::bool_type not_
+//GLM_FUNC_QUALIFIER tvec4<bool>::bool_type not_
 //(
-//	detail::tvec4<bool> const & v
+//	tvec4<bool> const & v
 //)
 //{
-//    return detail::tvec4<bool>::bool_type(!v.x, !v.y, !v.z, !v.w);
+//    return tvec4<bool>::bool_type(!v.x, !v.y, !v.z, !v.w);
 //}

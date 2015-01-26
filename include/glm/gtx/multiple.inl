@@ -1,152 +1,64 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2009-10-26
-// Updated : 2011-06-07
-// Licence : This source is under MIT License
-// File    : glm/gtx/multiple.inl
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Dependency:
-// - GLM core
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+/// OpenGL Mathematics (glm.g-truc.net)
+///
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+/// THE SOFTWARE.
+///
+/// @ref gtx_multiple
+/// @file glm/gtx/multiple.inl
+/// @date 2009-10-26 / 2011-06-07
+/// @author Christophe Riccio
+///////////////////////////////////////////////////////////////////////////////////
 
-namespace glm{
-namespace detail
+namespace glm
 {
-	template <bool Signed>
-	struct higherMultiple
-	{
-		template <typename genType>
-		GLM_FUNC_QUALIFIER genType operator()
-		(
-			genType const & Source,
-			genType const & Multiple
-		)
-		{
-			if (Source > genType(0))
-			{
-				genType Tmp = Source - genType(1);
-				return Tmp + (Multiple - (Tmp % Multiple));
-			}
-			else
-				return Source + (-Source % Multiple);
-		}
-	};
-
-	template <>
-	struct higherMultiple<false>
-	{
-		template <typename genType>
-		GLM_FUNC_QUALIFIER genType operator()
-		(
-			genType const & Source,
-			genType const & Multiple
-		)
-		{
-			genType Tmp = Source - genType(1);
-			return Tmp + (Multiple - (Tmp % Multiple));
-		}
-	};
-}//namespace detail
-
 	//////////////////////
 	// higherMultiple
 
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType higherMultiple
-	(
-		genType const & Source,
-		genType const & Multiple
-	)
+	GLM_FUNC_QUALIFIER genType higherMultiple(genType Source, genType Multiple)
 	{
-		detail::higherMultiple<std::numeric_limits<genType>::is_signed> Compute;
-		return Compute(Source, Multiple);
+		return detail::compute_ceilMultiple<std::numeric_limits<genType>::is_iec559, std::numeric_limits<genType>::is_signed>::call(Source, Multiple);
 	}
 
-	template <>
-	GLM_FUNC_QUALIFIER float higherMultiple
-	(	
-		float const & Source,
-		float const & Multiple
-	)
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> higherMultiple(vecType<T, P> const & Source, vecType<T, P> const & Multiple)
 	{
-		if (Source > float(0))
-		{
-			float Tmp = Source - float(1);
-			return Tmp + (Multiple - std::fmod(Tmp, Multiple));
-		}
-		else
-			return Source + std::fmod(-Source, Multiple);
+		return detail::functor2<T, P, vecType>::call(higherMultiple, Source, Multiple);
 	}
-
-	template <>
-	GLM_FUNC_QUALIFIER double higherMultiple
-	(
-		double const & Source,
-		double const & Multiple
-	)
-	{
-		if (Source > double(0))
-		{
-			double Tmp = Source - double(1);
-			return Tmp + (Multiple - std::fmod(Tmp, Multiple));
-		}
-		else
-			return Source + std::fmod(-Source, Multiple);
-	}
-
-	VECTORIZE_VEC_VEC(higherMultiple)
 
 	//////////////////////
 	// lowerMultiple
 
 	template <typename genType>
-	GLM_FUNC_QUALIFIER genType lowerMultiple
-	(
-		genType const & Source,
-		genType const & Multiple
-	)
+	GLM_FUNC_QUALIFIER genType lowerMultiple(genType Source, genType Multiple)
 	{
-		if (Source >= genType(0))
-			return Source - Source % Multiple;
-		else
-		{
-			genType Tmp = Source + genType(1);
-			return Tmp - Tmp % Multiple - Multiple;
-		}
+		return detail::compute_floorMultiple<std::numeric_limits<genType>::is_iec559, std::numeric_limits<genType>::is_signed>::call(Source, Multiple);
 	}
 
-	template <>
-	GLM_FUNC_QUALIFIER float lowerMultiple
-	(
-		float const & Source,
-		float const & Multiple
-	)
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> lowerMultiple(vecType<T, P> const & Source, vecType<T, P> const & Multiple)
 	{
-		if (Source >= float(0))
-			return Source - std::fmod(Source, Multiple);
-		else
-		{
-			float Tmp = Source + float(1);
-			return Tmp - std::fmod(Tmp, Multiple) - Multiple;
-		}
+		return detail::functor2<T, P, vecType>::call(lowerMultiple, Source, Multiple);
 	}
-
-	template <>
-	GLM_FUNC_QUALIFIER double lowerMultiple
-	(
-		double const & Source,
-		double const & Multiple
-	)
-	{
-		if (Source >= double(0))
-			return Source - std::fmod(Source, Multiple);
-		else
-		{
-			double Tmp = Source + double(1);
-			return Tmp - std::fmod(Tmp, Multiple) - Multiple;
-		}
-	}
-
-	VECTORIZE_VEC_VEC(lowerMultiple)
 }//namespace glm

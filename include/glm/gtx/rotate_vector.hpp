@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,8 +40,7 @@
 /// <glm/gtx/rotate_vector.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_rotate_vector
-#define GLM_GTX_rotate_vector
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -52,81 +55,92 @@ namespace glm
 	/// @addtogroup gtx_rotate_vector
 	/// @{
 
+	/// Returns Spherical interpolation between two vectors
+	/// 
+	/// @param x A first vector
+	/// @param y A second vector
+	/// @param a Interpolation factor. The interpolation is defined beyond the range [0, 1].
+	/// 
+	/// @see gtx_rotate_vector
+	template <typename T, precision P>
+	GLM_FUNC_DECL tvec3<T, P> slerp(
+		tvec3<T, P> const & x,
+		tvec3<T, P> const & y,
+		T const & a);
+
 	//! Rotate a two dimensional vector.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec2<T, P> rotate(
-		detail::tvec2<T, P> const & v,
+	GLM_FUNC_DECL tvec2<T, P> rotate(
+		tvec2<T, P> const & v,
 		T const & angle);
 		
 	//! Rotate a three dimensional vector around an axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec3<T, P> rotate(
-		detail::tvec3<T, P> const & v,
+	GLM_FUNC_DECL tvec3<T, P> rotate(
+		tvec3<T, P> const & v,
 		T const & angle,
-		detail::tvec3<T, P> const & normal);
+		tvec3<T, P> const & normal);
 		
 	//! Rotate a four dimensional vector around an axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec4<T, P> rotate(
-		detail::tvec4<T, P> const & v,
+	GLM_FUNC_DECL tvec4<T, P> rotate(
+		tvec4<T, P> const & v,
 		T const & angle,
-		detail::tvec3<T, P> const & normal);
+		tvec3<T, P> const & normal);
 		
 	//! Rotate a three dimensional vector around the X axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec3<T, P> rotateX(
-		detail::tvec3<T, P> const & v,
+	GLM_FUNC_DECL tvec3<T, P> rotateX(
+		tvec3<T, P> const & v,
 		T const & angle);
 
 	//! Rotate a three dimensional vector around the Y axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec3<T, P> rotateY(
-		detail::tvec3<T, P> const & v,
+	GLM_FUNC_DECL tvec3<T, P> rotateY(
+		tvec3<T, P> const & v,
 		T const & angle);
 		
 	//! Rotate a three dimensional vector around the Z axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec3<T, P> rotateZ(
-		detail::tvec3<T, P> const & v,
+	GLM_FUNC_DECL tvec3<T, P> rotateZ(
+		tvec3<T, P> const & v,
 		T const & angle);
 		
 	//! Rotate a four dimentionnals vector around the X axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec4<T, P> rotateX(
-		detail::tvec4<T, P> const & v,
+	GLM_FUNC_DECL tvec4<T, P> rotateX(
+		tvec4<T, P> const & v,
 		T const & angle);
 		
 	//! Rotate a four dimensional vector around the X axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec4<T, P> rotateY(
-		detail::tvec4<T, P> const & v,
+	GLM_FUNC_DECL tvec4<T, P> rotateY(
+		tvec4<T, P> const & v,
 		T const & angle);
 		
 	//! Rotate a four dimensional vector around the X axis.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tvec4<T, P> rotateZ(
-		detail::tvec4<T, P> const & v,
+	GLM_FUNC_DECL tvec4<T, P> rotateZ(
+		tvec4<T, P> const & v,
 		T const & angle);
 		
 	//! Build a rotation matrix from a normal and a up vector.
 	//! From GLM_GTX_rotate_vector extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat4x4<T, P> orientation(
-		detail::tvec3<T, P> const & Normal,
-		detail::tvec3<T, P> const & Up);
+	GLM_FUNC_DECL tmat4x4<T, P> orientation(
+		tvec3<T, P> const & Normal,
+		tvec3<T, P> const & Up);
 
 	/// @}
 }//namespace glm
 
 #include "rotate_vector.inl"
-
-#endif//GLM_GTX_rotate_vector

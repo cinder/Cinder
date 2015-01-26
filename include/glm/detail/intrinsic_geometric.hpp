@@ -21,13 +21,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_geometric.hpp
+/// @file glm/detail/intrinsic_geometric.hpp
 /// @date 2009-05-08 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_core_intrinsic_geometric
-#define glm_core_intrinsic_geometric
+#pragma once
 
 #include "setup.hpp"
 
@@ -73,4 +72,3 @@ namespace detail
 #include "intrinsic_geometric.inl"
 
 #endif//GLM_ARCH
-#endif//glm_core_intrinsic_geometric
