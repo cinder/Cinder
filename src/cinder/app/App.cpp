@@ -40,6 +40,7 @@ namespace cinder { namespace app {
 
 App*					App::sInstance;			// Static instance of App, effectively a singleton
 RendererRef				App::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
+App::Settings*			App::sSettingsFromMain;
 static std::thread::id	sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,11 +205,11 @@ void App::prepareLaunch()
 }
 
 // static
-void App::initialize( const RendererRef &defaultRenderer )
+void App::initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain )
 {
 	sDefaultRenderer = defaultRenderer;
+	sSettingsFromMain = settingsFromMain;
 }
-
 
 // TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
 // - need to get through windows updates first

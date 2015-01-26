@@ -33,10 +33,12 @@ namespace cinder { namespace app {
 AppBasicMac::AppBasicMac()
 	: AppBasic()
 {
-	prepareSettings( &mSettings );
-	if( ! mSettings.isPrepared() ) {
+	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settingsPtr );
+	mSettings = *settingsPtr;
+
+	if( ! mSettings.isPrepared() )
 		return;
-	}
 
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );

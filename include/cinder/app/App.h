@@ -425,7 +425,7 @@ class App {
 	//! \cond
 	// These are called by application instantation macros and are only used in the launch process
 	static void		prepareLaunch();
-	static void		initialize( const RendererRef &defaultRenderer );
+	static void		initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain );
 	static void		executeLaunch( const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	
@@ -450,6 +450,7 @@ class App {
 
   protected:
 	static App*					sInstance;
+	static Settings*			sSettingsFromMain;
 	static RendererRef			sDefaultRenderer;
 	bool						mPowerManagement;
 };

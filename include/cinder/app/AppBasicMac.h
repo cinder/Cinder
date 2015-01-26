@@ -74,7 +74,7 @@ class AppBasicMac : public AppBasic {
 		settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
-		App::initialize( defaultRenderer );
+		App::initialize( defaultRenderer, &settings );
 
 		AppBasic *app = new AppT;
 		#pragma unused( app )
