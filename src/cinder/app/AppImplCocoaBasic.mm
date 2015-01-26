@@ -319,16 +319,16 @@
 	return ( shouldQuit ) ? NSTerminateNow : NSTerminateCancel;
 }
 
-- (BOOL)acceptsFirstMouse:(NSEvent *)theEvent
+- (BOOL)acceptsFirstMouse:(NSEvent *)event
 {
 	return YES;
 }
 
-- (void)rightMouseDown:(NSEvent *)theEvent
+- (void)rightMouseDown:(NSEvent *)event
 {
 //TODO
 //	if( cinderView )
-//		[cinderView rightMouseDown:theEvent];
+//		[cinderView rightMouseDown:event];
 }
 
 - (void)quit
@@ -546,9 +546,9 @@
 	return mCinderView;
 }
 
-- (void)windowMovedNotification:(NSNotification *)inNotification
+- (void)windowMovedNotification:(NSNotification *)notification
 {
-	NSWindow *window = [inNotification object];
+	NSWindow *window = [notification object];
 	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 
 	NSRect frame = [mWin frame];
@@ -685,7 +685,7 @@
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 
@@ -696,6 +696,7 @@
 	winImpl->mResizable = winFormat.isResizable();
 	winImpl->mBorderless = winFormat.isBorderless();
 	winImpl->mAlwaysOnTop = winFormat.isAlwaysOnTop();
+
 	int offsetX, offsetY;
 	if( ! winFormat.isPosSpecified() ) {
 		offsetX = ( winImpl->mDisplay->getWidth() - winFormat.getSize().x ) / 2;
@@ -705,29 +706,30 @@
 		offsetX = winFormat.getPos().x;
 		offsetY = cinder::Display::getMainDisplay()->getHeight() - winFormat.getPos().y - winFormat.getSize().y;
 	}
+
 	NSRect winRect = NSMakeRect( offsetX, offsetY, winFormat.getSize().x, winFormat.getSize().y );
 	unsigned int styleMask;
 	
 	if( winImpl->mBorderless )
 		styleMask = ( winImpl->mResizable ) ? ( NSBorderlessWindowMask | NSResizableWindowMask ) : ( NSBorderlessWindowMask );
 	else if( winImpl->mResizable )
-		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	else
 		styleMask = NSTitledWindowMask;
+
 	winImpl->mWin = [[CinderWindow alloc] initWithContentRect:winRect
-									  styleMask:styleMask
-										backing:NSBackingStoreBuffered
-										  defer:NO
-										 screen:winImpl->mDisplay->getNsScreen()];
+													styleMask:styleMask
+													  backing:NSBackingStoreBuffered
+														defer:NO
+													   screen:winImpl->mDisplay->getNsScreen()];
 
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;
 	winImpl->mSize.y = (int)contentRect.size.height;
 	winImpl->mPos = ci::ivec2( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
 
-	[winImpl->mWin setLevel:(winImpl->mAlwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
+	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 
-	// title
 	if( ! winFormat.getTitle().empty() )
 		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
 
@@ -736,6 +738,7 @@
 	
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
+
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first
 	cinder::app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
 	
