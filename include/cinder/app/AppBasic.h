@@ -113,8 +113,6 @@ class AppBasic : public App {
 	virtual void		hideCursor() = 0;
 	//! Shows the mouse cursor
 	virtual void		showCursor() = 0;
-	//! Returns AppBasic::Settings that were set during prepareSettings() (or the defaults)
-	const Settings&		getSettings() const override { return mSettings; }
 
 	//! Returns a vector of the command line arguments passed to the app
 	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
@@ -136,7 +134,6 @@ class AppBasic : public App {
 	static AppBasic*			sBasicInstance;
 	EventSignalShouldQuit		mSignalShouldQuit;
 	std::vector<std::string>	mCommandLineArgs;
-	Settings					mSettings;
 };
 
 } } // namespace cinder::app

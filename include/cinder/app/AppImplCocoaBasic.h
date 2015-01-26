@@ -25,7 +25,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "cinder/app/AppBasic.h"
+#import "cinder/app/AppBasicMac.h"
 #import "cinder/app/CinderView.h"
 #import "cinder/Stream.h"
 #import "cinder/Display.h"
@@ -39,8 +39,8 @@
 
 @interface AppImplCocoaBasic : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
-	class cinder::app::AppBasic		*mApp;
 	NSTimer*						mAnimationTimer;
+	class cinder::app::AppBasicMac*	mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mFrameRateEnabled;

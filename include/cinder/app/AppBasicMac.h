@@ -63,12 +63,14 @@ class AppBasicMac : public AppBasic {
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
+	const Settings&		getSettings() const override { return mSettings; }
+
 	template<typename AppT, typename RendererT>
 	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
 	{
 		App::prepareLaunch();
 
-		AppBasic::Settings settings;
+		Settings settings;
 		settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
@@ -85,7 +87,8 @@ class AppBasicMac : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	AppImplCocoaBasic *mImpl;
+	AppImplCocoaBasic*	mImpl;
+	Settings			mSettings;
 };
 
 #define CINDER_APP_BASIC_MAC( APP, RENDERER, ... )										\
