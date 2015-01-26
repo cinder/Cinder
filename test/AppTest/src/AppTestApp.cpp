@@ -13,9 +13,11 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-void settingsFn( AppNative::Settings *settings )
+void prepareSettings( AppNative::Settings *settings )
 {
 	CI_LOG_I( "bang" );
+	settings->setWindowPos( 0, 0 );
+//	settings->setBorderless(); // FIXME: causes an NSException on [CinderWindow alloc] initWithContentRect...], AppImplCocoaBasic:719
 }
 
 struct SomeMemberObj {
@@ -114,7 +116,7 @@ void AppTestApp::draw()
 	}
 
 	if( mTexResource ) {
-		offset.x += mTexAsset->getWidth();
+		offset.x += 256;
 		gl::draw( mTexResource, offset );
 	}
 
@@ -136,7 +138,7 @@ void AppTestApp::draw()
 //CINDER_APP_NATIVE( AppTestApp, RendererGl )
 
 // settings fn from top of file:
-CINDER_APP_NATIVE( AppTestApp, RendererGl, settingsFn )
+CINDER_APP_NATIVE( AppTestApp, RendererGl, prepareSettings )
 
 // settings fn by lambda
 //CINDER_APP_NATIVE( AppTestApp, RendererGl, []( AppTestApp::Settings *settings ) {
