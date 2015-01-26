@@ -71,7 +71,8 @@ class AppBasicMac : public AppBasic {
 		App::prepareLaunch();
 
 		Settings settings;
-		settingsFn( &settings );
+		if( settingsFn )
+			settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
 		App::initialize( defaultRenderer, &settings );
