@@ -30,7 +30,7 @@
 
 // This seems to be missing for unknown reasons
 @interface NSApplication(MissingFunction)
-	- (void)setAppleMenu:(NSMenu *)menu;
+- (void)setAppleMenu:(NSMenu *)menu;
 @end 
 
 // CinderWindow - necessary to enable a borderless window to receive keyboard events
@@ -48,7 +48,7 @@
 
 @synthesize windows = mWindows;
 
-- (id)init:(cinder::app::AppBasic*)app
+- (id)init:(cinder::app::AppBasicMac *)app
 {	
 	self = [super init];
 	
@@ -60,7 +60,7 @@
 	const std::string& applicationName = app->getSettings().getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
 	
-	[(NSApplication*)NSApp setDelegate:self];
+	[(NSApplication *)NSApp setDelegate:self];
 	
 	mApp = app;
 	mNeedsUpdate = YES;
@@ -81,7 +81,7 @@
 	mFrameRate = mApp->getSettings().getFrameRate();
 	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
 
-	[((WindowImplBasicCocoa*)[mWindows firstObject])->mCinderView makeCurrentContext];
+	[((WindowImplBasicCocoa *)[mWindows firstObject])->mCinderView makeCurrentContext];
 
     return self;
 }
@@ -207,12 +207,12 @@
 	return winImpl->mWindowRef;
 }
 
-- (void)setActiveWindow:(WindowImplBasicCocoa*)win
+- (void)setActiveWindow:(WindowImplBasicCocoa *)win
 {
 	mActiveWindow = win;
 }
 
-- (WindowImplBasicCocoa*)findWindowImpl:(NSWindow *)window
+- (WindowImplBasicCocoa *)findWindowImpl:(NSWindow *)window
 {
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
 		if( winIt->mWin == window )
@@ -366,7 +366,7 @@
 	return mFrameRateEnabled;
 }
 
-- (void)windowDidResignKey:(NSNotification*)notification
+- (void)windowDidResignKey:(NSNotification *)notification
 {
 //TODO	[cinderView applicationWillResignActive:notification];
 }
@@ -541,12 +541,12 @@
 		return cinder::app::RendererRef();
 }
 
-- (void*)getNative
+- (void *)getNative
 {
 	return mCinderView;
 }
 
-- (void)windowMovedNotification:(NSNotification*)inNotification
+- (void)windowMovedNotification:(NSNotification *)inNotification
 {
 	NSWindow *window = [inNotification object];
 	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
@@ -565,7 +565,7 @@
 	mWindowRef->emitMove();
 }
 
-- (void)windowWillCloseNotification:(NSNotification*)notification
+- (void)windowWillCloseNotification:(NSNotification *)notification
 {
 	// if this is the last window and we're set to terminate on last window, invalidate the timer
 	if( [mAppImpl getNumWindows] == 1 && mAppImpl->mApp->getSettings().isQuitOnLastWindowCloseEnabled() ) {
@@ -598,82 +598,82 @@
 	mWindowRef->emitDraw();
 }
 
-- (void)mouseDown:(cinder::app::MouseEvent*)event
+- (void)mouseDown:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDown( event );
 }
 
-- (void)mouseDrag:(cinder::app::MouseEvent*)event
+- (void)mouseDrag:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDrag( event );
 }
 
-- (void)mouseUp:(cinder::app::MouseEvent*)event
+- (void)mouseUp:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseUp( event );
 }
 
-- (void)mouseMove:(cinder::app::MouseEvent*)event
+- (void)mouseMove:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseMove( event );
 }
 
-- (void)mouseWheel:(cinder::app::MouseEvent*)event
+- (void)mouseWheel:(cinder::app::MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseWheel( event );
 }
 
-- (void)keyDown:(cinder::app::KeyEvent*)event
+- (void)keyDown:(cinder::app::KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitKeyDown( event );
 }
 
-- (void)keyUp:(cinder::app::KeyEvent*)event
+- (void)keyUp:(cinder::app::KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitKeyUp( event );
 }
 
-- (void)touchesBegan:(cinder::app::TouchEvent*)event
+- (void)touchesBegan:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesBegan( event );
 }
 
-- (void)touchesMoved:(cinder::app::TouchEvent*)event
+- (void)touchesMoved:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesMoved( event );
 }
 
-- (void)touchesEnded:(cinder::app::TouchEvent*)event
+- (void)touchesEnded:(cinder::app::TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesEnded( event );
 }
 
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches
 {
 	return [mCinderView getActiveTouches];
 }
 
-- (void)fileDrop:(cinder::app::FileDropEvent*)event
+- (void)fileDrop:(cinder::app::FileDropEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
@@ -685,7 +685,7 @@
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa*)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic*)appImpl withRetina:(BOOL)retinaEnabled;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled;
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 

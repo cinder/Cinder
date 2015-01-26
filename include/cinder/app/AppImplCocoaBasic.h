@@ -37,22 +37,22 @@
 @class CinderWindow; // inherits from NSWindow
 @class WindowImplBasicCocoa;
 
-@interface AppImplCocoaBasic : NSObject <NSApplicationDelegate,NSWindowDelegate> {
+@interface AppImplCocoaBasic : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
-	NSTimer							*mAnimationTimer;
 	class cinder::app::AppBasic		*mApp;
+	NSTimer*						mAnimationTimer;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mFrameRateEnabled;
 	float							mFrameRate;
 	
-	NSMutableArray					*mWindows;
-	WindowImplBasicCocoa			*mActiveWindow;
+	NSMutableArray*					mWindows;
+	WindowImplBasicCocoa*			mActiveWindow;
 }
 
 @property(retain, nonatomic) NSMutableArray *windows;
 
-- (id)init:(cinder::app::AppBasic*)app;
+- (id)init:(cinder::app::AppBasicMac *)app;
 - (void)setApplicationMenu:(NSString *)applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -74,22 +74,22 @@
 - (cinder::app::WindowRef)getForegroundWindow;
 - (size_t)getNumWindows;
 - (cinder::app::WindowRef)getWindowIndex:(size_t)index;
-- (void)setActiveWindow:(WindowImplBasicCocoa*)win;
+- (void)setActiveWindow:(WindowImplBasicCocoa *)win;
 - (WindowImplBasicCocoa*)findWindowImpl:(NSWindow*)window;
 
 @end
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-@interface WindowImplBasicCocoa : NSObject<NSWindowDelegate,CinderViewDelegate,WindowImplCocoa> {
+@interface WindowImplBasicCocoa : NSObject<NSWindowDelegate, CinderViewDelegate, WindowImplCocoa> {
   @public
-	AppImplCocoaBasic					*mAppImpl;
-	NSWindow							*mWin;
-	CinderView							*mCinderView;
-	cinder::app::WindowRef				mWindowRef;
-	cinder::DisplayRef					mDisplay;
-	cinder::ivec2						mSize, mPos;
-	BOOL								mResizable, mBorderless, mAlwaysOnTop, mHidden;
+	AppImplCocoaBasic*			mAppImpl;
+	NSWindow*					mWin;
+	CinderView*					mCinderView;
+	cinder::app::WindowRef		mWindowRef;
+	cinder::DisplayRef			mDisplay;
+	cinder::ivec2				mSize, mPos;
+	BOOL						mResizable, mBorderless, mAlwaysOnTop, mHidden;
 }
 
 
@@ -117,26 +117,26 @@
 - (cinder::app::RendererRef)getRenderer;
 - (void*)getNative;
 
-- (void)windowMovedNotification:(NSNotification*)notification;
-- (void)windowWillCloseNotification:(NSNotification*)notification;
+- (void)windowMovedNotification:(NSNotification *)notification;
+- (void)windowWillCloseNotification:(NSNotification *)notification;
 
 // CinderViewDelegate methods
 - (void)resize;
 - (void)draw;
-- (void)mouseDown:(cinder::app::MouseEvent*)event;
-- (void)mouseDrag:(cinder::app::MouseEvent*)event;
-- (void)mouseUp:(cinder::app::MouseEvent*)event;
-- (void)mouseMove:(cinder::app::MouseEvent*)event;
-- (void)mouseWheel:(cinder::app::MouseEvent*)event;
-- (void)keyDown:(cinder::app::KeyEvent*)event;
-- (void)keyUp:(cinder::app::KeyEvent*)event;
-- (void)touchesBegan:(cinder::app::TouchEvent*)event;
-- (void)touchesMoved:(cinder::app::TouchEvent*)event;
-- (void)touchesEnded:(cinder::app::TouchEvent*)event;
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
-- (void)fileDrop:(cinder::app::FileDropEvent*)event;
+- (void)mouseDown:(cinder::app::MouseEvent *)event;
+- (void)mouseDrag:(cinder::app::MouseEvent *)event;
+- (void)mouseUp:(cinder::app::MouseEvent *)event;
+- (void)mouseMove:(cinder::app::MouseEvent *)event;
+- (void)mouseWheel:(cinder::app::MouseEvent *)event;
+- (void)keyDown:(cinder::app::KeyEvent *)event;
+- (void)keyUp:(cinder::app::KeyEvent *)event;
+- (void)touchesBegan:(cinder::app::TouchEvent *)event;
+- (void)touchesMoved:(cinder::app::TouchEvent *)event;
+- (void)touchesEnded:(cinder::app::TouchEvent *)event;
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches;
+- (void)fileDrop:(cinder::app::FileDropEvent *)event;
 - (cinder::app::WindowRef)getWindowRef;
 
-+ (WindowImplBasicCocoa*)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic*)appImpl withRetina:(BOOL)retinaEnabled;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled;
 
 @end
