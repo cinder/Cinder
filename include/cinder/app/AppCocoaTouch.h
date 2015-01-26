@@ -219,12 +219,6 @@ class AppCocoaTouch : public App {
 
 	virtual const Settings&	getSettings() const override { return mSettings; }
 
-	//! \cond
-	// These are called by application instantation macros and are only used in the launch process
-	static void		prepareLaunch() { App::prepareLaunch(); }
-//	static void		executeLaunch( AppCocoaTouch *app, RendererRef renderer, const char *title, int argc, char * const argv[] ) { App::sInstance = sInstance = app; App::executeLaunch( app, renderer, title, argc, argv ); }
-	static void		cleanupLaunch() { App::cleanupLaunch(); }
-	
 	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
 	//! \endcond
 
@@ -236,6 +230,27 @@ class AppCocoaTouch : public App {
 
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 	//! \endcond
+
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
+
+	template<typename AppT, typename RendererT>
+	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
+	{
+		App::prepareLaunch();
+
+		Settings settings;
+		if( settingsFn )
+			settingsFn( &settings );
+
+		RendererRef defaultRenderer( new RendererT );
+		App::initialize( defaultRenderer, &settings );
+
+		AppCocoaTouch *app = new AppT;
+		#pragma unused( app )
+
+		App::executeLaunch( title, argc, argv );
+		App::cleanupLaunch();
+	}
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
@@ -261,14 +276,9 @@ float	getOrientationDegrees( InterfaceOrientation orientation );
 
 } } // namespace cinder::app
 
-#define CINDER_APP_COCOA_TOUCH( APP, RENDERER )							\
-int main( int argc, char *argv[] )										\
-{																		\
-	cinder::app::AppCocoaTouch::prepareLaunch();						\
-	cinder::app::RendererRef defaultRenderer( new RENDERER );			\
-	cinder::app::App::initialize( defaultRenderer );					\
-	cinder::app::AppCocoaTouch *app = new APP;							\
-	cinder::app::App::executeLaunch( #APP, argc, argv );				\
-	cinder::app::AppCocoaTouch::cleanupLaunch();						\
-    return 0;															\
+#define CINDER_APP_COCOA_TOUCH( APP, RENDERER, ... )									\
+int main( int argc, char * const argv[] )												\
+{																						\
+	cinder::app::AppCocoaTouch::main<APP, RENDERER>( #APP, argc, argv, ##__VA_ARGS__ );	\
+	return 0;																			\
 }

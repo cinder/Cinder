@@ -31,16 +31,20 @@ AppCocoaTouch*	AppCocoaTouch::sInstance = 0;
 AppCocoaTouch::AppCocoaTouch()
 	: App()
 {
-	CI_LOG_V( "bang" );
 	AppCocoaTouch::sInstance = this;
+
+	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settingsPtr );
+	mSettings = *settingsPtr;
+
+	if( ! mSettings.isPrepared() )
+		return;
 
 	mImpl = [[AppImplCocoaTouch alloc] init];
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
-	CI_LOG_V( "bang" );
-
 	Platform::get()->setExecutablePath( getAppPath() );
 
 	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
