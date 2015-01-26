@@ -28,7 +28,6 @@
 	#endif
 #endif
 
-#define GLM_FORCE_RADIANS
 #include "glm/fwd.hpp"
 
 #include <cstdint>
