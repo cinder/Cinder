@@ -39,6 +39,13 @@ AppBasicMsw::~AppBasicMsw()
 AppBasicMsw::AppBasicMsw()
 {
 	sInstance = this;
+
+	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settingsPtr );
+	mSettings = *settingsPtr;
+
+	if( ! mSettings.isPrepared() )
+		return;
 	mImpl = new AppImplMswBasic( this );
 }
 
