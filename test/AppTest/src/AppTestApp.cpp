@@ -1,13 +1,15 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"
-
 #include "cinder/ImageIo.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/Text.h"
 
 #include "Resources.h"
+
+#include <boost/format.hpp>
 
 using namespace ci;
 using namespace ci::app;
@@ -16,8 +18,19 @@ using namespace std;
 void prepareSettings( AppNative::Settings *settings )
 {
 	CI_LOG_I( "bang" );
-	settings->setWindowPos( 0, 0 );
-//	settings->setBorderless(); // FIXME: causes an NSException on [CinderWindow alloc] initWithContentRect...], AppImplCocoaBasic:719
+	settings->setWindowPos( 50, 50 );
+	settings->setWindowSize( 900, 500 );
+//	settings->setResizable( false );
+//	settings->setBorderless();
+//	settings->setAlwaysOnTop();
+//	settings->enableMultiTouch();
+//	settings->enableMultiTouch( false );
+//	settings->disableFrameRate();
+//	settings->setFrameRate( 20 );
+
+//	settings->enableStatusBar( false ); // FIXME: status bar is always visible?
+//	settings->setTitle( "Blarg" ); // FIXME: seems broken on mac, but did it ever work?
+//	settings->setShouldQuit(); // FIXME: currently broken, since member objects continue to try to init
 }
 
 struct SomeMemberObj {
@@ -49,8 +62,13 @@ class AppTestApp : public AppNative {
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
+	void touchesBegan( TouchEvent event ) override;
+	void touchesMoved( TouchEvent event ) override;
+	void touchesEnded( TouchEvent event ) override;
 	void update() override;
 	void draw() override;
+
+	void drawInfo();
 
 	SomeMemberObj mSomeMemberObj;
 
@@ -91,14 +109,42 @@ void AppTestApp::setup()
 
 	gl::enableAlphaBlending();
 
-	CI_CHECK_GL();
+	CI_LOG_I( "target fps: " << getFrameRate() );
 
+	CI_CHECK_GL();
 	CI_LOG_I( "complete" );
 }
 
 void AppTestApp::mouseDown( MouseEvent event )
 {
 	CI_LOG_I( "mouse pos: " << event.getPos() );
+}
+
+void AppTestApp::touchesBegan( TouchEvent event )
+{
+	const auto &touches = event.getTouches();
+	CI_LOG_I( "num touches:" << touches.size() );
+
+	for( size_t i = 0; i < touches.size(); i++ )
+		console() << "\t\t[" << i << "] pos: " << touches.at( i ).getPos() << endl;
+}
+
+void AppTestApp::touchesMoved( TouchEvent event )
+{
+	const auto &touches = event.getTouches();
+	CI_LOG_I( "num touches:" << touches.size() );
+
+	for( size_t i = 0; i < touches.size(); i++ )
+		console() << "\t\t[" << i << "] pos: " << touches.at( i ).getPos() << endl;
+}
+
+void AppTestApp::touchesEnded( TouchEvent event )
+{
+	const auto &touches = event.getTouches();
+	CI_LOG_I( "num touches: " << touches.size() );
+
+	for( size_t i = 0; i < touches.size(); i++ )
+		console() << "\t\t[" << i << "] pos: " << touches.at( i ).getPos() << endl;
 }
 
 void AppTestApp::update()
@@ -131,7 +177,27 @@ void AppTestApp::draw()
 		gl::draw( mSomeMemberObj.mTex, offset );
 	}
 
+	drawInfo();
+
 	CI_CHECK_GL();
+}
+
+void AppTestApp::drawInfo()
+{
+	TextLayout layout;
+	layout.setFont( Font( "Arial", 16 ) );
+	layout.setColor( ColorA::gray( 0.9f, 0.75f ) );
+
+	auto fps = boost::format( "%0.2f" ) % getAverageFps();
+	layout.addLine( "fps: " + fps.str() );
+	layout.addLine( "v-sync enabled: " + string( gl::isVerticalSyncEnabled() ? "true" : "false" ) );
+
+	auto tex = gl::Texture::create( layout.render( true ) );
+
+	vec2 offset( 6, getWindowHeight() - tex->getHeight() - 6 ); // bottom left
+
+	gl::color( Color::white() );
+	gl::draw( tex, offset );
 }
 
 // no settings fn:
