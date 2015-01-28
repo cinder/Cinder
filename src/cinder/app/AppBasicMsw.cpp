@@ -51,7 +51,7 @@ AppBasicMsw::AppBasicMsw()
 }
 
 // static
-void AppBasicMsw::executeLaunch( AppBasic *app, RendererRef renderer, const char *title )
+void AppBasicMsw::executeLaunch( const char *title )
 {
 	// MSW sends it arguments as widestrings, so we'll convert them to utf8 array and pass that
 	LPWSTR *szArglist;

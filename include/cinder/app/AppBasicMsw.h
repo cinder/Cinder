@@ -45,6 +45,8 @@ class AppBasicMsw : public AppBasic {
 		bool		mEnableMswConsole;
 	};
 
+	typedef std::function<void( Settings *settings )>	SettingsFn;
+
 	AppBasicMsw();
 	virtual ~AppBasicMsw();
 
@@ -74,8 +76,11 @@ class AppBasicMsw : public AppBasic {
 	const Settings&	getSettings() const override	{ return mSettings; }
 
 	//! \cond
-	// Called by app instantiation macro during launch process
-	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
+	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
+	template<typename AppT, typename RendererT>
+	static void main( const char *title, const SettingsFn &settingsFn = SettingsFn() );
+	// Called during instantiation to begin actual launch process
+	static void	executeLaunch( const char *title );
 	//! \endcond
 
   protected:
@@ -86,15 +91,27 @@ class AppBasicMsw : public AppBasic {
 	Settings			mSettings;
 };
 
-#define CINDER_APP_BASIC_MSW( APP, RENDERER )														\
+template<typename AppT, typename RendererT>
+static void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
+{
+	App::prepareLaunch();
+
+	Settings settings;
+	if( settingsFn )
+		settingsFn( &settings );
+
+	App::initialize( RendererRef( new RendererT ), &settings );
+
+	AppBasic *app = new AppT;
+
+	AppBasicMsw::executeLaunch( title ); // need to parse args using msw-specific api
+	App::cleanupLaunch();
+}
+
+#define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
 {																									\
-	cinder::app::AppBasic::prepareLaunch();															\
-	cinder::app::RendererRef defaultRenderer( new RENDERER );										\
-	cinder::app::App::initialize( defaultRenderer );												\
-	cinder::app::AppBasic *app = new APP;															\
-	cinder::app::App::executeLaunch( #APP, 0, nullptr );											\
-	cinder::app::AppBasic::cleanupLaunch();															\
+	cinder::app::AppBasicMsw::main<APP, RENDERER>( #APP, ##__VA_ARGS__ );							\
 	return 0;																						\
 }
 
