@@ -514,7 +514,7 @@ AppCocoaView::Settings::Settings()
 void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )
 {
 	App::sInstance = this;
-	prepareSettings( &mSettings );
+//	prepareSettings( &mSettings );
 	mImpl = [[AppImplCocoaView alloc] init:this defaultRenderer:defaultRenderer];
 }
 
