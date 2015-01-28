@@ -309,12 +309,12 @@
 	mApp->emitWillResignActive();
 }
 
-- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)theApplication
+- (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
 {
 	return mApp->getSettings().isQuitOnLastWindowCloseEnabled();
 }
 
-- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)theApplication
+- (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)application
 {
 	bool shouldQuit = mApp->privateShouldQuit();
 	return ( shouldQuit ) ? NSTerminateNow : NSTerminateCancel;
