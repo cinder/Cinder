@@ -45,9 +45,7 @@ class AppCocoaView : public App {
 	};
   
 	AppCocoaView();
-	
-	virtual void	prepareSettings( Settings *settings ) {}
-	
+		
 	void			prepareLaunch( RendererRef defaultRenderer = RendererRef() );
 	virtual void	setupCinderView( CinderView *cinderView, RendererRef renderer );
 	virtual void	launch( const char *title = 0, int argc = 0, char * const argv[] = 0 );

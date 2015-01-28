@@ -220,11 +220,6 @@ void AppCocoaTouch::quit()
 	return; // no effect on iOS
 }
 
-void AppCocoaTouch::privatePrepareSettings__()
-{
-	prepareSettings( &mSettings );
-}
-
 void AppCocoaTouch::enablePowerManagement( bool powerManagement )
 {
 	mPowerManagement = powerManagement;

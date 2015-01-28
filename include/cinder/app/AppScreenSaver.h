@@ -87,7 +87,6 @@ class AppScreenSaver : public App {
 
 	void	launch( const char *title, int argc, char * const argv[] ) { /* do nothing - this gets handled a weirder way for screensavers */ }
 
-	virtual void		prepareSettings( Settings *settings ) {}
 	const Settings&		getSettings() const { return mSettings; }
 
 	//! Returns the maximum frame-rate the App will attempt to maintain.

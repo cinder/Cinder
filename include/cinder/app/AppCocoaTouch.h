@@ -77,8 +77,6 @@ class AppCocoaTouch : public App {
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
-	virtual void		prepareSettings( Settings *settings ) {}
-
 	signals::signal<void()>&	getSignalDidEnterBackground() { return mSignalDidEnterBackground; }
 	void						emitDidEnterBackground();
 	signals::signal<void()>&	getSignalWillEnterForeground() { return mSignalWillEnterForeground; }
@@ -225,7 +223,6 @@ class AppCocoaTouch : public App {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	void		privatePrepareSettings__();
 	void		privateSetImpl__( AppImplCocoaTouch	*impl ) { mImpl = impl; }
 
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }

@@ -59,7 +59,6 @@ class AppTestApp : public AppNative {
   public:
 	AppTestApp();
 
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void touchesBegan( TouchEvent event ) override;
@@ -92,11 +91,6 @@ AppTestApp::AppTestApp()
 
 	mTexStartup = gl::Texture::create( surface );
 	CI_CHECK_GL();
-}
-
-void AppTestApp::prepareSettings( Settings *settings )
-{
-	CI_LOG_I( "bang" );
 }
 
 void AppTestApp::setup()

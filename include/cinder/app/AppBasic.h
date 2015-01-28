@@ -94,8 +94,6 @@ class AppBasic : public App {
 	AppBasic();
 	virtual ~AppBasic();
 
-	virtual void		prepareSettings( Settings *settings ) {}
-
 	//! This is fired before the app is quit. If any slots return false then the app quitting is canceled.
 	EventSignalShouldQuit&	getSignalShouldQuit() { return mSignalShouldQuit; }
 
