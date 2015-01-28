@@ -46,6 +46,7 @@ AppBasicMsw::AppBasicMsw()
 
 	if( ! mSettings.isPrepared() )
 		return;
+
 	mImpl = new AppImplMswBasic( this );
 }
 
@@ -81,16 +82,11 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 	for( int arg = 0; arg < argc; ++arg )
 		mCommandLineArgs.push_back( std::string( argv[arg] ) );
 
-	mSettings.setTitle( title );
-
-	prepareSettings( &mSettings );
-	if( ! mSettings.isPrepared() ) {
-		return;
-	}
+	if( ! mSettings.getTitle() )
+		mSettings.setTitle( title );
 
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );
-
 	// -----------------------
 
 	// allocate and redirect the console if requested
