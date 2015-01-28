@@ -42,7 +42,7 @@ class AppBasic : public App {
   	  public:
 		Settings();
 
-		void	setShouldQuit ( bool aShouldQuit = true );
+		void	setShouldQuit ( bool shouldQuit = true );
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
 
 		//! Returns whether the default window is resizable
