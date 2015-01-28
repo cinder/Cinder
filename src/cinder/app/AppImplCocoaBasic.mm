@@ -51,7 +51,10 @@
 - (id)init:(cinder::app::AppBasicMac *)app
 {	
 	self = [super init];
-	
+
+	// This needs to be called before creating any windows, as it internall constructs the shared NSApplication
+	[[NSApplication sharedApplication] setDelegate:self];
+
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	[NSApp setMainMenu:mainMenu];
 	
@@ -59,8 +62,6 @@
 	
 	const std::string& applicationName = app->getSettings().getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
-	
-	[(NSApplication *)NSApp setDelegate:self];
 	
 	mApp = app;
 	mNeedsUpdate = YES;
