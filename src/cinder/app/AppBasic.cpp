@@ -55,9 +55,6 @@ bool AppBasic::privateShouldQuit()
 AppBasic::Settings::Settings()
 	: App::Settings(), mQuitOnLastWindowClose( true )
 {
-#if defined( CINDER_MSW )
-	mEnableMswConsole = false;
-#endif
 }
 
 void AppBasic::Settings::setShouldQuit( bool shouldQuit )

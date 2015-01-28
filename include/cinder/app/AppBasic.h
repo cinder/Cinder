@@ -63,13 +63,6 @@ class AppBasic : public App {
 		//! Sets the display for the default window
 		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
 
-#if defined( CINDER_MSW )
-		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		void	enableConsoleWindow( bool enable = true ) { mEnableMswConsole = enable; }
-		//! Returns whether MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		bool	isConsoleWindowEnabled() const { return mEnableMswConsole; }
-#endif
-
 		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on WinRT, Windows 7/8 and Mac OS X trackpad.
 		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
 		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
@@ -82,9 +75,6 @@ class AppBasic : public App {
 
 	 private:
 		bool		mQuitOnLastWindowClose;
-#if defined( CINDER_MSW )
-		bool		mEnableMswConsole;
-#endif
 	};
 
 	// This is really just here to disambiguate app::WindowRef from the WindowRef found in QuickDraw (so that client code doesn't have to invoke cinder::app::WindowRef explicitly)	

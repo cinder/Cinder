@@ -31,6 +31,10 @@ void prepareSettings( AppNative::Settings *settings )
 //	settings->enableStatusBar( false ); // FIXME: status bar is always visible?
 //	settings->setTitle( "Blarg" ); // FIXME: seems broken on mac, but did it ever work?
 //	settings->setShouldQuit(); // FIXME: currently broken, since member objects continue to try to init
+
+#if defined( CINDER_MSW )
+	settings->enableConsoleWindow();
+#endif
 }
 
 struct SomeMemberObj {
