@@ -31,12 +31,12 @@
 
 namespace cinder { namespace app {
 
-class App;
+class AppBase;
 class AppImplMswBasic;
 
 class AppImplMswRenderer {
  public:
-	AppImplMswRenderer( App *app ) : mApp( app ) {}
+	AppImplMswRenderer( AppBase *app ) : mApp( app ) {}
 	
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
@@ -52,7 +52,7 @@ class AppImplMswRenderer {
 
  protected:
 	DX_WINDOW_TYPE		mWnd;
-	App					*mApp;
+	AppBase					*mApp;
 };
 
 } } // namespace cinder::app

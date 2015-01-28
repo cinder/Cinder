@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/app/Window.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( CINDER_MSW )
 	#include "cinder/app/AppImplMsw.h"

@@ -26,7 +26,7 @@
 #include "cinder/app/AppImplMswRendererAngle.h"
 #include "cinder/app/RendererGl.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
 #include <signal.h>
 
@@ -45,7 +45,7 @@ void checkGlStatus();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AppImplMswRendererAngle
-AppImplMswRendererAngle::AppImplMswRendererAngle( App *app, RendererGl *renderer )
+AppImplMswRendererAngle::AppImplMswRendererAngle( AppBase *app, RendererGl *renderer )
 	: AppImplMswRenderer( app ), mRenderer( renderer )
 {
 	

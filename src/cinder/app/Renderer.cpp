@@ -27,7 +27,7 @@
 	#include "cinder/gl/gl.h"
 #endif
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
@@ -77,7 +77,7 @@ Renderer2d::~Renderer2d()
 	::CFRelease( mImpl );
 }
 
-void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
+void Renderer2d::setup( AppBase *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
 	mApp = aApp;
 	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp];
@@ -87,7 +87,7 @@ void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef
 
 #else
 
-void Renderer2d::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( AppBase *aApp, const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
 {
 	mApp = aApp;
 	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView app:mApp];
@@ -152,7 +152,7 @@ Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 {
 }
 
-void Renderer2d::setup( App *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( AppBase *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mApp = app;
 	mWnd = wnd;

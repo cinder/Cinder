@@ -94,18 +94,18 @@ class AppBasicMsw : public AppBasic {
 template<typename AppT, typename RendererT>
 static void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 {
-	App::prepareLaunch();
+	AppBase::prepareLaunch();
 
 	Settings settings;
 	if( settingsFn )
 		settingsFn( &settings );
 
-	App::initialize( RendererRef( new RendererT ), &settings );
+	AppBase::initialize( RendererRef( new RendererT ), &settings );
 
 	AppBasic *app = new AppT;
 
 	AppBasicMsw::executeLaunch( title ); // need to parse args using msw-specific api
-	App::cleanupLaunch();
+	AppBase::cleanupLaunch();
 }
 
 #define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\

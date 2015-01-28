@@ -160,18 +160,18 @@ class RendererGl : public Renderer {
  
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
+		virtual void setup( AppBase *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
 		virtual CGLContextObj			getCglContext();
 		virtual CGLPixelFormatObj		getCglPixelFormat();
 		virtual NSOpenGLContext*		getNsOpenGlContext();		
 	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void 	setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
+		virtual void 	setup( AppBase *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
 		virtual bool 	isEaglLayer() const { return true; }
 		EAGLContext*	getEaglContext() const;
 	#endif
 	virtual void	setFrameSize( int width, int height );
 #elif defined( CINDER_MSW )
-	virtual void	setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill();
 	virtual HWND	getHwnd() { return mWnd; }
 	virtual void	prepareToggleFullScreen();

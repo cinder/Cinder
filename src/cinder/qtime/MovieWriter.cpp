@@ -27,7 +27,7 @@
 	#error "This file must be compiled as Objective-C++ on the Mac"
 #endif
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Utilities.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"

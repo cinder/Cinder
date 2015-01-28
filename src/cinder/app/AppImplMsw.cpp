@@ -22,7 +22,7 @@
 */
 
 #include "cinder/app/AppImplMsw.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
 #include "cinder/Display.h"
@@ -53,7 +53,7 @@ LRESULT CALLBACK BlankingWndProc( HWND mWnd, UINT uMsg, WPARAM wParam, LPARAM lP
 static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
 static const wchar_t *BLANKING_WINDOW_CLASS_NAME = TEXT("CinderBlankingWindow");
 
-AppImplMsw::AppImplMsw( App *aApp )
+AppImplMsw::AppImplMsw( AppBase *aApp )
 	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true )
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
@@ -119,7 +119,7 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	// Initialize OPENFILENAME
 	::ZeroMemory( &ofn, sizeof(ofn) );
 	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = App::get()->getRenderer()->getHwnd();
+	ofn.hwndOwner = AppBase::get()->getRenderer()->getHwnd();
 	ofn.lpstrFile = szFile;
 	
 	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
@@ -234,7 +234,7 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	// Initialize OPENFILENAME
 	ZeroMemory( &ofn, sizeof(ofn) );
 	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = App::get()->getRenderer()->getHwnd();
+	ofn.hwndOwner = AppBase::get()->getRenderer()->getHwnd();
 	ofn.lpstrFile = szFile;
 
 	// Set lpstrFile[0] to '\0' so that GetSaveFileName does not

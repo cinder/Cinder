@@ -513,7 +513,7 @@
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
     <ClCompile Include="..\src\cinder\Xml.cpp" />
-    <ClCompile Include="..\src\cinder\app\App.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp" />
     <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp" />
     <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp" />
@@ -596,7 +596,7 @@
     <ClInclude Include="..\include\cinder\app\AppBasicMsw.h" />
     <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h" />
     <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h" />
-    <ClInclude Include="..\include\cinder\app\AppNative.h" />
+    <ClInclude Include="..\include\cinder\app\App.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\Platform.h" />
     <ClInclude Include="..\include\cinder\app\PlatformMsw.h" />
@@ -781,7 +781,7 @@
     <ClInclude Include="..\include\cinder\Utilities.h" />
     <ClInclude Include="..\include\cinder\Vector.h" />
     <ClInclude Include="..\include\cinder\Xml.h" />
-    <ClInclude Include="..\include\cinder\app\App.h" />
+    <ClInclude Include="..\include\cinder\app\AppBase.h" />
     <ClInclude Include="..\include\cinder\app\AppBasic.h" />
     <ClInclude Include="..\include\cinder\app\AppDialog.h" />
     <ClInclude Include="..\include\cinder\app\AppImplMsw.h" />

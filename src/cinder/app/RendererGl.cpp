@@ -66,7 +66,7 @@ RendererGl::~RendererGl()
 		::CFRelease( mImpl );
 }
 
-void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
+void RendererGl::setup( AppBase *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
 	mApp = aApp;
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
@@ -144,7 +144,7 @@ RendererGl::~RendererGl()
 {
 }
 
-void RendererGl::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
+void RendererGl::setup( AppBase *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
 {
 	mApp = aApp;
 
@@ -207,7 +207,7 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
+void RendererGl::setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	mApp = aApp;

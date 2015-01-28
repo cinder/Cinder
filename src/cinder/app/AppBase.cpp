@@ -25,7 +25,7 @@
 #define ASIO_STANDALONE 1
 #include "asio/asio.hpp"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Camera.h"
 #include "cinder/System.h"
@@ -38,14 +38,14 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-App*					App::sInstance;			// Static instance of App, effectively a singleton
-RendererRef				App::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
-App::Settings*			App::sSettingsFromMain;
+AppBase*					AppBase::sInstance;			// Static instance of App, effectively a singleton
+RendererRef				AppBase::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
+AppBase::Settings*			AppBase::sSettingsFromMain;
 static std::thread::id	sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App::Settings
-App::Settings::Settings()
+AppBase::Settings::Settings()
 {
 	mShouldQuit = false;
 	mPowerManagement = false;
@@ -55,29 +55,29 @@ App::Settings::Settings()
 	mEnableMultiTouch = false;	
 }
 
-void App::Settings::disableFrameRate()
+void AppBase::Settings::disableFrameRate()
 {
 	mFrameRateEnabled = false;
 }
 
-void App::Settings::setFrameRate( float frameRate )
+void AppBase::Settings::setFrameRate( float frameRate )
 {
 	mFrameRate = frameRate;
 }
 
-void App::Settings::enablePowerManagement( bool powerManagement )
+void AppBase::Settings::enablePowerManagement( bool powerManagement )
 {
 	mPowerManagement = powerManagement;
 }
 
-void App::Settings::prepareWindow( const Window::Format &format )
+void AppBase::Settings::prepareWindow( const Window::Format &format )
 {
 	mWindowFormats.push_back( format );
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App::App
-App::App()
+AppBase::AppBase()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() )
 {
 	sInstance = this;
@@ -95,19 +95,19 @@ App::App()
 #endif
 }
 
-App::~App()
+AppBase::~AppBase()
 {
 	mIo->stop();
 }
 
-void App::privateSetup__()
+void AppBase::privateSetup__()
 {
 	mTimeline->stepTo( static_cast<float>( getElapsedSeconds() ) );
 
 	setup();
 }
 
-void App::privateUpdate__()
+void AppBase::privateUpdate__()
 {
 	mFrameCount++;
 
@@ -141,49 +141,49 @@ void App::privateUpdate__()
 	}
 }
 
-void App::emitShutdown()
+void AppBase::emitShutdown()
 {
 	mSignalShutdown();
 	shutdown();
 }
 
-void App::emitWillResignActive()
+void AppBase::emitWillResignActive()
 {
 	mSignalWillResignActive();
 }
 
-void App::emitDidBecomeActive()
+void AppBase::emitDidBecomeActive()
 {
 	mSignalDidBecomeActive();
 }
 
-std::ostream& App::console()
+std::ostream& AppBase::console()
 {
 	return Platform::get()->console();
 }
 
-bool App::isPrimaryThread()
+bool AppBase::isPrimaryThread()
 {
 	return std::this_thread::get_id() == sPrimaryThreadId;
 }
 
-void App::dispatchAsync( const std::function<void()> &fn )
+void AppBase::dispatchAsync( const std::function<void()> &fn )
 {
 	io_service().post( fn );
 }
 
-Surface	App::copyWindowSurface()
+Surface	AppBase::copyWindowSurface()
 {
 	return getWindow()->getRenderer()->copyWindowSurface( getWindow()->toPixels( getWindow()->getBounds() ) );
 }
 
-Surface	App::copyWindowSurface( const Area &area )
+Surface	AppBase::copyWindowSurface( const Area &area )
 {
 	Area clippedArea = area.getClipBy( getWindowBounds() );
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea );
 }
 
-RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
+RendererRef AppBase::findSharedRenderer( RendererRef searchRenderer ) const
 {
 	if( ! searchRenderer )
 		return RendererRef();
@@ -199,13 +199,13 @@ RendererRef App::findSharedRenderer( RendererRef searchRenderer ) const
 
 // These are called by application instantiation macros
 // static
-void App::prepareLaunch()
+void AppBase::prepareLaunch()
 {
 	Platform::get()->prepareLaunch();
 }
 
 // static
-void App::initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain )
+void AppBase::initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain )
 {
 	sDefaultRenderer = defaultRenderer;
 	sSettingsFromMain = settingsFromMain;
@@ -214,7 +214,7 @@ void App::initialize( const RendererRef &defaultRenderer, Settings *settingsFrom
 // TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
 // - need to get through windows updates first
 // static
-void App::executeLaunch( const char *title, int argc, char * const argv[] )
+void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
 {
 	CI_ASSERT( sInstance );
 	CI_ASSERT( sDefaultRenderer );
@@ -229,7 +229,7 @@ void App::executeLaunch( const char *title, int argc, char * const argv[] )
 }
 
 // static
-void App::cleanupLaunch()
+void AppBase::cleanupLaunch()
 {
 	Platform::get()->cleanupLaunch();
 }

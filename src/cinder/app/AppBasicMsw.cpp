@@ -65,11 +65,11 @@ void AppBasicMsw::executeLaunch( const char *title )
 			utf8Args.push_back( toUtf8( (char16_t*)szArglist[i] ) );
 		for( int i = 0; i < nArgs; ++i )
 			utf8ArgPointers[i] = const_cast<char *>( utf8Args[i].c_str() );
-		App::executeLaunch( title, nArgs, utf8ArgPointers );
+		AppBase::executeLaunch( title, nArgs, utf8ArgPointers );
 		free( utf8ArgPointers );
 	}
 	else
-		App::executeLaunch( title, 0, NULL );
+		AppBase::executeLaunch( title, 0, NULL );
 
 	// Free memory allocated for CommandLineToArgvW arguments.
 	::LocalFree( szArglist );

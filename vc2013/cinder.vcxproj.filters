@@ -258,9 +258,6 @@
     <ClCompile Include="..\src\cinder\Xml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\App.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\AppBasic.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
@@ -749,6 +746,9 @@
     <ClCompile Include="..\src\cinder\app\PlatformMsw.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -940,9 +940,6 @@
     <ClInclude Include="..\include\cinder\Xml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\App.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppBasic.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
@@ -1056,9 +1053,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Clipboard.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppNative.h">
-      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\src\libtess2\bucketalloc.h">
       <Filter>Source Files\libtess2</Filter>
@@ -1580,6 +1574,12 @@
       <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\PlatformMsw.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBase.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\App.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>

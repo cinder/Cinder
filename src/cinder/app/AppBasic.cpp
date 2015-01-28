@@ -31,7 +31,7 @@ namespace cinder { namespace app {
 AppBasic*	AppBasic::sBasicInstance;
 
 AppBasic::AppBasic()
-	: App()
+	: AppBase()
 {
 	sBasicInstance = this;
 }
@@ -53,7 +53,7 @@ bool AppBasic::privateShouldQuit()
 //////////////////////////////////////////////////////////////////////////////////////////////
 // AppBasic::Settings
 AppBasic::Settings::Settings()
-	: App::Settings(), mQuitOnLastWindowClose( true )
+	: AppBase::Settings(), mQuitOnLastWindowClose( true )
 {
 }
 

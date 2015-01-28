@@ -62,10 +62,10 @@ namespace cinder { namespace app {
 
 class AppImplMsw {
  public:
-	AppImplMsw( class App *aApp );
+	AppImplMsw( class AppBase *aApp );
 	virtual ~AppImplMsw();
 	
-	class App*		getApp() { return mApp; }
+	class AppBase*		getApp() { return mApp; }
 
 	float			getFrameRate() const { return mFrameRate; }
 	virtual void	setFrameRate( float aFrameRate ) = 0;
@@ -87,7 +87,7 @@ class AppImplMsw {
 	virtual void			closeWindow( class WindowImplMsw *windowImpl ) = 0;
 	virtual void			setForegroundWindow( WindowRef window ) = 0;
 
-	class App				*mApp;
+	class AppBase				*mApp;
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;

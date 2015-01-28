@@ -25,7 +25,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Display.h"
 #include "cinder/Function.h"
 
@@ -36,9 +36,9 @@ namespace cinder { namespace app {
 typedef	signals::signal<bool (),BooleanAndEventCombiner>				EventSignalShouldQuit;
 
 //! Abstract class that defines the interface for a 'basic' app (ex. desktop, installation, 'normal').
-class AppBasic : public App {
+class AppBasic : public AppBase {
   public:
-	class Settings : public App::Settings {
+	class Settings : public AppBase::Settings {
   	  public:
 		Settings();
 

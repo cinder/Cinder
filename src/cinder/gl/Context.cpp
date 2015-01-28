@@ -34,7 +34,7 @@
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 using namespace std;
 

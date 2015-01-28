@@ -29,7 +29,7 @@
 #include "cinder/gl/Environment.h"
 #include "glload/wgl_all.h"
 #include "glload/wgl_load.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Camera.h"
 #include "cinder/Log.h"
 #include <windowsx.h>
@@ -41,7 +41,7 @@ int sArbMultisampleFormat;
 typedef HGLRC (__stdcall * PFNWGLCREATECONTEXTATTRIBSARB) (HDC hDC, HGLRC hShareContext, const int *attribList);
 typedef BOOL (__stdcall * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int * piAttribIList, const FLOAT * pfAttribFList, UINT nMaxFormats, int * piFormats, UINT * nNumFormats);
 
-AppImplMswRendererGl::AppImplMswRendererGl( App *aApp, RendererGl *aRenderer )
+AppImplMswRendererGl::AppImplMswRendererGl( AppBase *aApp, RendererGl *aRenderer )
 	: AppImplMswRenderer( aApp ), mRenderer( aRenderer )
 {
 	mRC = 0;

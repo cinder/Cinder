@@ -32,11 +32,11 @@
 
 namespace cinder { namespace app {
 
-class App;
+class AppBase;
 
 class AppImplMswRendererGdi : public AppImplMswRenderer {
  public:
-	 AppImplMswRendererGdi( App *app, bool doubleBuffer, bool paintEvents );
+	 AppImplMswRendererGdi( AppBase *app, bool doubleBuffer, bool paintEvents );
 
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill() {}

@@ -23,14 +23,14 @@
 
 #include "cinder/app/AppImplMswRendererGdi.h"
 #include "cinder/gl/gl.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/Log.h"
 #include <windowsx.h>
 
 namespace cinder { namespace app {
 
-AppImplMswRendererGdi::AppImplMswRendererGdi( App *app, bool doubleBuffer, bool paintEvents )
+AppImplMswRendererGdi::AppImplMswRendererGdi( AppBase *app, bool doubleBuffer, bool paintEvents )
 	: AppImplMswRenderer( app ), mDoubleBuffer( doubleBuffer ), mPaintEvents( paintEvents ), mDoubleBufferBitmap( 0 )
 {
 }

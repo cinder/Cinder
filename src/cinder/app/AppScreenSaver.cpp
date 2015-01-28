@@ -39,8 +39,8 @@ namespace cinder { namespace app {
 
 void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title )
 {
-	App::sInstance = sInstance = app;
-	App::executeLaunch( app, renderer, title, 0, 0 );
+	AppBase::sInstance = sInstance = app;
+	AppBase::executeLaunch( app, renderer, title, 0, 0 );
 	
 	app->prepareSettings( &app->mSettings );
 }
@@ -49,9 +49,9 @@ void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, c
 #elif defined( CINDER_MSW )
 void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd )
 {
-	App::sInstance = sInstance = app;
+	AppBase::sInstance = sInstance = app;
 	app->mImpl = 0; // initially we have no implementation; necessary for determining whether we can call impl->eventHandler() yet
-	App::executeLaunch( title, 0, 0 );
+	AppBase::executeLaunch( title, 0, 0 );
 
 	app->launch( hwnd );
 }

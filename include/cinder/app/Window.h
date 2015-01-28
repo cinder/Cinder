@@ -456,13 +456,13 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! \cond
 	// This should not be called except by App implementations
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
-	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, App *app )
+	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, AppBase *app )
 #elif defined( CINDER_MSW )
-	static WindowRef		privateCreate__( WindowImplMsw *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplMsw *impl, AppBase *app )
 #elif defined( CINDER_WINRT )
-	static WindowRef		privateCreate__( WindowImplWinRT *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplWinRT *impl, AppBase *app )
 #else
-	static WindowRef		privateCreate__( WindowImplCocoa *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplCocoa *impl, AppBase *app )
 #endif
 	{
 		WindowRef result( new Window );
@@ -473,7 +473,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	}
 	//! \endcond
 
-	App*			getApp() const { return mApp; }
+	AppBase*			getApp() const { return mApp; }
 	
   protected:
 	Window() : mValid( true ), mImpl( 0 ) {}
@@ -483,7 +483,7 @@ class Window : public std::enable_shared_from_this<Window> {
 			throw ExcInvalidWindow();
 	}
 
-	void		setApp( App *app ) { mApp = app; }	
+	void		setApp( AppBase *app ) { mApp = app; }	
 
 #if defined( CINDER_COCOA )
   #if defined( __OBJC__ )
@@ -497,7 +497,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
 #endif
 
-	App							*mApp;
+	AppBase							*mApp;
 	bool						mValid;
 	std::shared_ptr<void>		mUserData;
 	

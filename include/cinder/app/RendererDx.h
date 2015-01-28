@@ -39,10 +39,10 @@ class RendererDx : public Renderer {
 	virtual RendererType	getRendererType() const override { return RENDERER_DX; }
 
 #if defined ( CINDER_MSW )
-	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual HWND	getHwnd() { return mWnd; }
 #elif defined( CINDER_WINRT )
-	virtual void	setup( App *aApp, DX_WINDOW_TYPE wnd);
+	virtual void	setup( AppBase *aApp, DX_WINDOW_TYPE wnd);
 #endif
 
 	virtual void	kill();

@@ -25,7 +25,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/gl/gl.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( CINDER_MAC )
 	#ifdef __OBJC__
@@ -46,12 +46,12 @@
 
 namespace cinder { namespace app {
 
-class AppScreenSaver : public App {
+class AppScreenSaver : public AppBase {
  public:
-	class Settings : public App::Settings {
+	class Settings : public AppBase::Settings {
 	  public:
 		Settings()
-			: App::Settings(),
+			: AppBase::Settings(),
 #if defined( CINDER_MAC )
 			mEnableSecondaryDisplayBlanking( false ),
 			mProvidesMacConfigDialog( false ),

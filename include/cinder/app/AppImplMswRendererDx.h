@@ -29,7 +29,7 @@
 
 #pragma once
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/AppImplMswRenderer.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
@@ -81,7 +81,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 		CUSTOM_SHADER_ACTIVE = 2
 	};
 
-	AppImplMswRendererDx( App *aApp, RendererDx *aRenderer );
+	AppImplMswRendererDx( AppBase *aApp, RendererDx *aRenderer );
 	
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc,  RendererRef sharedRenderer );
