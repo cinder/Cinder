@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -15,7 +15,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-void prepareSettings( AppNative::Settings *settings )
+void prepareSettings( App::Settings *settings )
 {
 	CI_LOG_I( "bang" );
 	settings->setWindowPos( 50, 50 );
@@ -59,7 +59,7 @@ struct SomeMemberObj {
 	}
 };
 
-class AppTestApp : public AppNative {
+class AppTestApp : public App {
   public:
 	AppTestApp();
 
@@ -199,12 +199,12 @@ void AppTestApp::drawInfo()
 }
 
 // no settings fn:
-//CINDER_APP_NATIVE( AppTestApp, RendererGl )
+//CINDER_APP( AppTestApp, RendererGl )
 
 // settings fn from top of file:
-CINDER_APP_NATIVE( AppTestApp, RendererGl, prepareSettings )
+CINDER_APP( AppTestApp, RendererGl, prepareSettings )
 
 // settings fn by lambda
-//CINDER_APP_NATIVE( AppTestApp, RendererGl, []( AppTestApp::Settings *settings ) {
+//CINDER_APP( AppTestApp, RendererGl, []( AppTestApp::Settings *settings ) {
 //	CI_LOG_I( "bang" );
 //} )
