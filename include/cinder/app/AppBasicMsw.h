@@ -57,6 +57,8 @@ class AppBasicMsw : public AppBasic {
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
+	const Settings&	getSettings() const override	{ return mSettings; }
+
 	//! \cond
 	// Called by app instantiation macro during launch process
 	static void	executeLaunch( AppBasic *app, RendererRef renderer, const char *title );
@@ -66,8 +68,8 @@ class AppBasicMsw : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-
-	AppImplMswBasic *mImpl;
+	AppImplMswBasic*	mImpl;
+	Settings			mSettings;
 };
 
 #define CINDER_APP_BASIC_MSW( APP, RENDERER )														\

@@ -22,9 +22,7 @@
 */
 
 #include "cinder/app/AppImplMswBasic.h"
-#include "cinder/app/AppBasic.h"
 #include "cinder/app/AppImplMswRenderer.h"
-#include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
 
 #include <windowsx.h>
@@ -35,7 +33,7 @@ using std::string;
 
 namespace cinder { namespace app {
 
-AppImplMswBasic::AppImplMswBasic( AppBasic *app )
+AppImplMswBasic::AppImplMswBasic( AppBasicMsw *app )
 	: AppImplMsw( app ), mApp( app )
 {
 	mShouldQuit = false;

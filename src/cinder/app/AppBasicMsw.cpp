@@ -82,7 +82,7 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 	for( int arg = 0; arg < argc; ++arg )
 		mCommandLineArgs.push_back( std::string( argv[arg] ) );
 
-	if( ! mSettings.getTitle() )
+	if( mSettings.getTitle().empty() )
 		mSettings.setTitle( title );
 
 	// pull out app-level variables

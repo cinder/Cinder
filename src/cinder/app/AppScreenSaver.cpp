@@ -58,8 +58,6 @@ void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, c
 
 void AppScreenSaver::launch( HWND hWnd )
 {
-	prepareSettings( &mSettings );
-
 	mImpl = new AppImplMswScreenSaver( this );
 	mImpl->init( hWnd );
 	mImpl->run();

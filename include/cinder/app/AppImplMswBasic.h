@@ -28,9 +28,9 @@
 #undef max
 
 #include "cinder/app/AppImplMsw.h"
-#include "cinder/app/AppImplMswRenderer.h"
-#include "cinder/Display.h"
+#include "cinder/app/AppBasicMsw.h"
 #include "cinder/app/Window.h"
+#include "cinder/Display.h"
 
 namespace cinder { namespace app {
 
@@ -38,10 +38,10 @@ class WindowImplMswBasic;
 
 class AppImplMswBasic : public AppImplMsw {
   public:
-	AppImplMswBasic( class AppBasic *app  );
+	AppImplMswBasic( AppBasicMsw *app  );
 	void	run();
 
-	class AppBasic*		getApp() { return mApp; }
+	AppBasicMsw*	getApp() { return mApp; }
 	
 	void	quit() override;
 
@@ -64,13 +64,11 @@ class AppImplMswBasic : public AppImplMsw {
 	virtual void	closeWindow( class WindowImplMsw *windowImpl ) override;
 	virtual void	setForegroundWindow( WindowRef window ) override;
 	
-	bool		mShouldQuit;
-	class AppBasic	*mApp;
-	
-
-	HINSTANCE				mInstance;
-	double					mNextFrameTime;
-	bool					mFrameRateEnabled;
+	AppBasicMsw*	mApp;
+	HINSTANCE		mInstance;
+	double			mNextFrameTime;
+	bool			mFrameRateEnabled;
+	bool			mShouldQuit;
 
 	std::list<class WindowImplMswBasic*>	mWindows;
 	std::list<BlankingWindowRef>			mBlankingWindows;
