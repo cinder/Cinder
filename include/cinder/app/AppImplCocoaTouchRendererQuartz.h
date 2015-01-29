@@ -20,17 +20,17 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/App.h"
+#import "cinder/app/AppBase.h"
 #import <UIKit/UIKit.h>
 
 @interface AppImplCocoaTouchRendererQuartz : NSObject
 {
 	CGContextRef				mCurrentRef;
 	UIView						*view;
-	cinder::app::App			*app;
+	cinder::app::AppBase		*app;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView app:(cinder::app::AppBase *)app;
 - (UIView*)view;
 
 - (UIImage*)getContents:(cinder::Area)area;

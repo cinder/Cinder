@@ -68,20 +68,20 @@ class AppBasicMac : public AppBasic {
 	template<typename AppT, typename RendererT>
 	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
 	{
-		App::prepareLaunch();
+		AppBase::prepareLaunch();
 
 		Settings settings;
 		if( settingsFn )
 			settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
-		App::initialize( defaultRenderer, &settings );
+		AppBase::initialize( defaultRenderer, &settings );
 
 		AppBasic *app = new AppT;
 		#pragma unused( app )
 
-		App::executeLaunch( title, argc, argv );
-		App::cleanupLaunch();
+		AppBase::executeLaunch( title, argc, argv );
+		AppBase::cleanupLaunch();
 	}
 
   protected:

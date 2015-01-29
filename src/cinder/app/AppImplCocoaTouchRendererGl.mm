@@ -41,10 +41,10 @@
 
 @implementation AppImplCocoaTouchRendererGl
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer
 {
-	mCinderView = aCinderView;
-	mApp = aApp;
+	mCinderView = cinderView;
+	mApp = app;
 	// Get the layer
 	CAEAGLLayer *eaglLayer = (CAEAGLLayer *)mCinderView.layer;
 	

@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/App.h"
+#import "cinder/app/AppBase.h"
 #import "cinder/app/RendererGl.h"
 
 @class AppImplCocoa;
@@ -36,7 +36,7 @@
 	cinder::gl::ContextRef			mContext;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView app:(cinder::app::App *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
 - (NSOpenGLView*)view;
 
 - (void)makeCurrentContext;

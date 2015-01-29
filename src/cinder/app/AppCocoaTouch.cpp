@@ -29,7 +29,7 @@ namespace cinder { namespace app {
 AppCocoaTouch*	AppCocoaTouch::sInstance = 0;
 
 AppCocoaTouch::AppCocoaTouch()
-	: App()
+	: AppBase()
 {
 	AppCocoaTouch::sInstance = this;
 

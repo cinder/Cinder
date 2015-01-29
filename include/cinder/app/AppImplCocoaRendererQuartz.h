@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/App.h"
+#import "cinder/app/AppBase.h"
 #import <Cocoa/Cocoa.h>
 
 @class AppImplCocoa;
@@ -32,10 +32,10 @@
 	CGContextRef				currentRef;
 	NSView						*view;
 	NSGraphicsContext			*currentGraphicsContext;
-	cinder::app::App			*app;	
+	cinder::app::AppBase		*app;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)aCinderView app:(cinder::app::App*)aApp;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView app:(cinder::app::AppBase *)app;
 - (NSView*)view;
 
 - (NSBitmapImageRep*)getContents:(cinder::Area)area;

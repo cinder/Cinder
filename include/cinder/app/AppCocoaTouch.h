@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/cocoa/CinderCocoaTouch.h"
 #include "cinder/app/Window.h"
 #include "cinder/app/TouchEvent.h"
@@ -53,12 +53,12 @@ enum InterfaceOrientation {
 //! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
 typedef	signals::signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
 
-class AppCocoaTouch : public App {
+class AppCocoaTouch : public AppBase {
   public:
-	class Settings : public App::Settings {
+	class Settings : public AppBase::Settings {
 	  public:
 		Settings()
-			: App::Settings(), mEnableStatusBar( false )
+			: AppBase::Settings(), mEnableStatusBar( false )
 		{
 			mPowerManagement = true;
 			mEnableHighDensityDisplay = true;
@@ -233,20 +233,20 @@ class AppCocoaTouch : public App {
 	template<typename AppT, typename RendererT>
 	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
 	{
-		App::prepareLaunch();
+		AppBase::prepareLaunch();
 
 		Settings settings;
 		if( settingsFn )
 			settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
-		App::initialize( defaultRenderer, &settings );
+		AppBase::initialize( defaultRenderer, &settings );
 
 		AppCocoaTouch *app = new AppT;
 		#pragma unused( app )
 
-		App::executeLaunch( title, argc, argv );
-		App::cleanupLaunch();
+		AppBase::executeLaunch( title, argc, argv );
+		AppBase::cleanupLaunch();
 	}
 
   private:

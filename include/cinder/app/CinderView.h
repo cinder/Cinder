@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #import <AppKit/NSView.h>
 #import <Foundation/Foundation.h>
@@ -53,7 +53,7 @@
 
 @interface CinderView : NSView {
   @private
-	cinder::app::App			*mApp;
+	cinder::app::AppBase*		mApp;
 	BOOL						mFullScreen;
 	BOOL						mFullScreenModeKiosk;
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
@@ -71,7 +71,7 @@
 @property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (id)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;
 
@@ -81,8 +81,7 @@
 - (void)draw;
 - (void)makeCurrentContext;
 
-//- (void)setup:(cinder::app::App *)aApp;
-- (void)setApp:(cinder::app::App *)aApp;
+- (void)setApp:(cinder::app::AppBase *)app;
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification;
 

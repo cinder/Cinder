@@ -52,10 +52,10 @@
 	return self;
 }
 
-- (id)initWithFrame:(NSRect)frame app:(cinder::app::App*)aApp renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (id)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 {
 	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
-	mApp = aApp;
+	mApp = app;
 
 	self = [super initWithFrame:frame];
 	mRenderer = aRenderer;
@@ -645,7 +645,7 @@
 	}
 }
 
-- (void)setApp:(cinder::app::App *)app
+- (void)setApp:(cinder::app::AppBase *)app
 {
 	mApp = app;
 }

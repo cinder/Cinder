@@ -22,13 +22,13 @@
 
 #import <UIKit/UIKit.h>
 
-#import "cinder/app/App.h"
+#import "cinder/app/AppBase.h"
 #import "cinder/app/RendererGl.h"
 
 @interface AppImplCocoaTouchRendererGl : NSObject
 {
 	cinder::app::RendererGl			*mRenderer; // equivalent of a weak_ptr; 'renderer' owns this // TODO: remove, this is unused
-	cinder::app::App				*mApp;
+	cinder::app::AppBase			*mApp;
 	UIView							*mCinderView;
 	EAGLContext						*mContext;
 	cinder::gl::ContextRef			mCinderContext;
@@ -49,7 +49,7 @@
 	int				mMsaaSamples;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp renderer:(cinder::app::RendererGl*)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
 
 - (EAGLContext*)getEaglContext;
 - (void)makeCurrentContext;

@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( __OBJC__ )
 	@class AppImplCocoaView;
@@ -35,9 +35,9 @@
 
 namespace cinder { namespace app {
 
-class AppCocoaView : public App {
+class AppCocoaView : public AppBase {
   public:
-	class Settings : public App::Settings {
+	class Settings : public AppBase::Settings {
   	  public:
 		Settings();
 

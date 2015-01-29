@@ -28,7 +28,7 @@
 #if defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )
 
 #include "cinder/gl/gl.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Url.h"
 

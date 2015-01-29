@@ -502,18 +502,18 @@
 namespace cinder { namespace app {
 
 AppCocoaView::AppCocoaView()
-	: App()
+	: AppBase()
 {
 }
 
 AppCocoaView::Settings::Settings()
-	: App::Settings()
+	: AppBase::Settings()
 {
 }
 
 void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )
 {
-	App::sInstance = this;
+	AppBase::sInstance = this;
 //	prepareSettings( &mSettings );
 	mImpl = [[AppImplCocoaView alloc] init:this defaultRenderer:defaultRenderer];
 }

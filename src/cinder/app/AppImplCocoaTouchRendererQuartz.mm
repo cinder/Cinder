@@ -27,12 +27,12 @@
 
 @implementation AppImplCocoaTouchRendererQuartz
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView*)aCinderView app:(cinder::app::App*)aApp
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView app:(cinder::app::AppBase *)aApp
 {
 	self = [super init];
 	app = aApp;
 	
-	view = aCinderView;
+	view = cinderView;
 	mCurrentRef = nil;
 	
 	return self;
