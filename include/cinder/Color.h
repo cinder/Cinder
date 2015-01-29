@@ -38,17 +38,21 @@ typedef	enum {
 } ColorModel;
 
 template<typename T>
-class ColorT 
+class ColorT : public glm::tvec3<T,glm::defaultp>
 {
   public:
-	T r,g,b;
-
-	ColorT() : r( 0 ), g( 0 ), b( 0 ) {}
-	ColorT( T aR, T aG, T aB ) 
-		: r( aR ), g( aG ), b( aB )
+	typedef glm::tvec3<T,glm::defaultp>		TVec3;
+	
+	using TVec3::r;
+	using TVec3::g;
+	using TVec3::b;
+	
+	ColorT() : TVec3() {}
+	ColorT( T red, T green, T blue )
+		: TVec3( red, green, blue )
 	{}
-	ColorT( const ColorT<T> &src ) 
-		: r( src.r ), g( src.g ), b( src.b )
+	ColorT( const ColorT<T> &src )
+		: TVec3( src )
 	{}
 	ColorT( const char *svgColorName );
 
@@ -57,29 +61,16 @@ class ColorT
 
 	template<typename FromT>
 	ColorT( const ColorT<FromT> &src ) 
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ) 
+		: TVec3( CHANTRAIT<T>::convert( src.r ), CHANTRAIT<T>::convert( src.g ), CHANTRAIT<T>::convert( src.b ) )
 	{}
 	
-	void set( T ar, T ag, T ab )
+	void set( T red, T green, T blue )
 	{
-		r = ar; g = ag; b = ab;
+		r = red; g = green; b = blue;
 	}
 	
-	void set( const ColorT<T> &rhs )
-	{
-		r = rhs.r; g = rhs.g; b = rhs.b;
-	}
-
-	void	set( ColorModel cm, const vec3 &v );
-
-	ColorT<T> operator=( const ColorT<T> &rhs ) 
-	{
-		r = rhs.r;
-		g = rhs.g;
-		b = rhs.b;
-		return * this;
-	}
-
+	void set( ColorModel cm, const vec3 &v );
+	
 	template<class FromT>
 	ColorT<T> operator=( const ColorT<FromT> &rhs )
 	{
@@ -104,79 +95,6 @@ class ColorT
 	}
 
 	T*  ptr() const { return &(const_cast<ColorT*>( this )->r); }
-
-	ColorT<T>		operator+( const ColorT<T> &rhs ) const { return ColorT<T>( r + rhs.r, g + rhs.g, b + rhs.b ); }
-	ColorT<T>		operator-( const ColorT<T> &rhs ) const { return ColorT<T>( r - rhs.r, g - rhs.g, b - rhs.b ); }
-	ColorT<T>		operator*( const ColorT<T> &rhs ) const { return ColorT<T>( r * rhs.r, g * rhs.g, b * rhs.b ); }
-	ColorT<T>		operator/( const ColorT<T> &rhs ) const { return ColorT<T>( r / rhs.r, g / rhs.g, b / rhs.b ); }
-	const ColorT<T>&	operator+=( const ColorT<T> &rhs ) { r += rhs.r; g += rhs.g; b += rhs.b; return *this; }
-	const ColorT<T>&	operator-=( const ColorT<T> &rhs ) { r -= rhs.r; g -= rhs.g; b -= rhs.b; return *this; }
-	const ColorT<T>&	operator*=( const ColorT<T> &rhs ) { r *= rhs.r; g *= rhs.g; b *= rhs.b; return *this; }
-	const ColorT<T>&	operator/=( const ColorT<T> &rhs ) { r /= rhs.r; g /= rhs.g; b /= rhs.b; return *this; }
-	ColorT<T>		operator+( T rhs ) const { return ColorT<T>( r + rhs, g + rhs, b + rhs ); }
-	ColorT<T>		operator-( T rhs ) const { return ColorT<T>( r - rhs, g - rhs, b - rhs ); }
-	ColorT<T>		operator*( T rhs ) const { return ColorT<T>( r * rhs, g * rhs, b * rhs ); }
-	ColorT<T>		operator/( T rhs ) const { return ColorT<T>( r / rhs, g / rhs, b / rhs ); }
-	const ColorT<T>&	operator+=( T rhs ) { r += rhs; g += rhs; b += rhs; return *this; }
-	const ColorT<T>&	operator-=( T rhs ) { r -= rhs; g -= rhs; b -= rhs; return *this; }
-	const ColorT<T>&	operator*=( T rhs ) { r *= rhs; g *= rhs; b *= rhs; return *this; }
-	const ColorT<T>&	operator/=( T rhs ) { r /= rhs; g /= rhs; b /= rhs; return *this; }
-
-	bool operator==( const ColorT<T>& rhs ) const
-	{
-		return ( r == rhs.r ) && ( g == rhs.g ) && ( b == rhs.b );
-	}
-
-	bool operator!=( const ColorT<T>& rhs ) const
-	{
-		return ! ( *this == rhs );
-	}
-
-	typename CHANTRAIT<T>::Accum dot( const ColorT<T> &rhs ) const
-	{
-		return r*rhs.r + g*rhs.g + b*rhs.b;
-	}
-
-	float distance( const ColorT<T> &rhs ) const
-	{
-		return math<float>::sqrt( static_cast<float>( (r - rhs.r)*(r - rhs.r) + (g - rhs.g)*(g - rhs.g) + (b - rhs.b)*(b - rhs.b)) );
-	}
-
-	typename CHANTRAIT<T>::Accum distanceSquared( const ColorT<T> &rhs ) const
-	{
-		return (r - rhs.r) * (r - rhs.r) + (g - rhs.g) * (g - rhs.g) + (b - rhs.b) * (b - rhs.b);
-	}
-
-	float length() const 
-	{
-		return math<float>::sqrt( static_cast<float>( r*r + g*g + b*b ) );
-	}
-
-	typename CHANTRAIT<T>::Accum lengthSquared() const 
-	{
-		return r*r + g*g + b*b;
-	}
-
-	// tests for zero-length
-	void normalize()
-	{
-		float s = length();
-		if( s > 0.0f ) {
-			r = static_cast<T>( r / s );
-			g = static_cast<T>( g / s );
-			b = static_cast<T>( b / s );
-		}
-	}
-
-	ColorT<T> lerp( float fact, const ColorT<T> &d ) const
-	{
-		return ColorT<T>( r + ( d.r - r ) * fact, g + ( d.g - g ) * fact, b + ( d.b - b ) * fact );
-	}
-
-	static ColorT<T> max()
-	{
-		return ColorT<T>( std::numeric_limits<T>::max(), std::numeric_limits<T>::max(), std::numeric_limits<T>::max() );
-	}
 
 	static ColorT<T> black()
 	{
@@ -402,8 +320,8 @@ extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs );
 
-typedef ColorT<float>		Color;
 typedef ColorT<float>		Colorf;
+typedef Colorf				Color;
 typedef ColorT<uint8_t>		Color8u;
 typedef ColorAT<float>		ColorA;
 typedef ColorAT<float>		ColorAf;
