@@ -59,8 +59,6 @@ class TextureBase {
   public:
 	virtual ~TextureBase();
 
-	//! Determines whether the Texture will call glDeleteTextures() to free the associated texture objects on destruction
-	void			setDoNotDispose( bool aDoNotDispose = true ) { mDoNotDispose = aDoNotDispose; }
 	//! the Texture's internal format, which is the format that OpenGL stores the texture data in memory. Common values include \c GL_RGB, \c GL_RGBA and \c GL_LUMINANCE
 	GLint			getInternalFormat() const;
 	//! the ID number for the texture, appropriate to pass to calls like \c glBindTexture()
@@ -239,6 +237,13 @@ class TextureBase {
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
+
+		//! Returns whether the texture uses a custom deleter.
+		bool				hasDeleter() const { return (bool) mDeleter; }
+		//! Allows you to specify a custom \a deleter for the shared pointer.
+		void				setDeleter( const std::function<void( TextureBase* )> &deleter ) { mDeleter = deleter; }
+		//! Allows you to specify a custom \a deleter for the shared pointer.
+		Format&				deleter( const std::function<void( TextureBase* )> &deleter ) { setDeleter( deleter ); return *this; }
 		
 	protected:
 		Format();
@@ -260,6 +265,9 @@ class TextureBase {
 		bool				mBorderSpecified;
 		std::array<GLfloat,4>	mBorderColor;
 		std::string			mLabel; // debug label
+
+		
+		std::function<void( TextureBase* )>	mDeleter;
 
 #if ! defined( CINDER_GL_ES )		
 		PboRef				mIntermediatePbo;
