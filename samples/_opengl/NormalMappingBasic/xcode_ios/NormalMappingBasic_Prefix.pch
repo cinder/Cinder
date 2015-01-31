@@ -1,0 +1,17 @@
+#if defined( __OBJC__ )
+	#import <UIKit/UIKit.h>
+	#import <Foundation/Foundation.h>
+#endif
+
+#if defined( __cplusplus )
+	#include "cinder/Cinder.h"
+	
+	#include "cinder/app/AppCocoaTouch.h"
+	
+	#include "cinder/gl/gl.h"
+	
+	#include "cinder/CinderMath.h"
+	#include "cinder/Matrix.h"
+	#include "cinder/Vector.h"
+	#include "cinder/Quaternion.h"
+#endif

@@ -114,6 +114,11 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 	}
 	CI_ASSERT( dstData );
 	
+	if( count != mVboMesh->mNumVertices ) {
+		CI_LOG_E( "copyAttrib() called with " << count << " elements. " << mVboMesh->mNumVertices << " expected." );
+		return;
+	}
+	
 	if( dstData )
 		geom::copyData( dims, srcData, count, dstDims, dstStride, reinterpret_cast<float*>( dstData ) );
 }

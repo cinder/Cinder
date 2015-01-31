@@ -29,6 +29,7 @@
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
 #include "cinder/Color.h"
+#include "cinder/AxisAlignedBox.h"
 
 #include <set>
 #include <vector>
@@ -46,6 +47,8 @@ namespace cinder {
 namespace cinder { namespace geom {
 
 class Target;
+class SourceModsBase;
+class SourceModsContext;
 typedef std::shared_ptr<class Source>	SourceRef;
 
 // keep this incrementing by 1 only; some code relies on that for iterating; add corresponding entry to sAttribNames
@@ -56,14 +59,20 @@ enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_
 typedef	std::set<Attrib>	AttribSet;
 extern std::string			sAttribNames[(int)Attrib::NUM_ATTRIBS];
 
-enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN };
+enum Primitive { LINES, LINE_STRIP, TRIANGLES, TRIANGLE_STRIP, TRIANGLE_FAN, NUM_PRIMITIVES };
 enum DataType { FLOAT, INTEGER, DOUBLE };
 
 
 //! Debug utility which returns the name of \a attrib as a std::string
 std::string attribToString( Attrib attrib );
+//! Debug utility which returns the name of \a primitive as a std::string
+std::string primitiveToString( Primitive primitive );
 //! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
+//! Utility function for calculating tangents and bitangents from indexed geometry. \a resultBitangents may be NULL if not needed.
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec2 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
+//! Utility function for calculating tangents and bitangents from indexed geometry and 3D texture coordinates. \a resultBitangents may be NULL if not needed.
+void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec3 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
 
 struct AttribInfo {
 	AttribInfo( const Attrib &attrib, uint8_t dims, size_t stride, size_t offset, uint32_t instanceDivisor = 0 )
@@ -162,6 +171,36 @@ class Target {
 	void copyIndexDataForceTriangles( Primitive primitive, const uint32_t *source, size_t numIndices, uint16_t *target );
 };
 
+class Modifier {
+  public:
+	//! Expresses the upstream parameters for a Modifier such as # vertices
+	class Params {
+	  public:
+		size_t		getNumVertices() const { return mNumVertices; }
+		size_t		getNumIndices() const { return mNumIndices; }
+		Primitive	getPrimitive() const { return mPrimitive; }
+		AttribSet	getAvailableAttribs() const { return mAvaliableAttribs; }
+		
+		size_t		mNumVertices, mNumIndices;
+		Primitive	mPrimitive;
+		AttribSet	mAvaliableAttribs;
+		
+		friend class SourceModsBase;
+	};
+	
+	virtual ~Modifier() {}
+	
+	virtual Modifier*	clone() const = 0;
+	
+	virtual size_t		getNumVertices( const Modifier::Params &upstreamParams ) const;
+	virtual size_t		getNumIndices( const Modifier::Params &upstreamParams ) const;
+	virtual Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const;
+	virtual uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const;
+	virtual AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const;
+	
+	virtual void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const = 0;
+};
+
 class Rect : public Source {
   public:
 	//! Equivalent to Rectf( -0.5, -0.5, 0.5, 0.5 )
@@ -185,7 +224,7 @@ class Rect : public Source {
 	std::array<vec2,4>		mPositions, mTexCoords;
 	std::array<ColorAf,4>	mColors;
 
-	static float	sNormals[4*3];
+	static const float	sNormals[4*3], sTangents[4*3];
 };
 
 class Cube : public Source {
@@ -552,166 +591,6 @@ class Plane : public Source {
 	vec3		mOrigin, mAxisU, mAxisV;
 };
 
-//////////////////////////////////////////////////////////////////////////////////////
-// Modifiers
-
-// By default, attributes pass through the Modifier from the input source -> target
-// READ attributes values are captured from mSource, typically to derive other attributes from, and then are passed through
-// WRITE attributes prevent the passing of the attribute data from source -> target, to allow the owner of the Modifier to write it later
-// READ_WRITE attributes are captured but not passed through to the target
-class Modifier : public geom::Target {
-  public:
-	typedef enum { READ, WRITE, READ_WRITE, IGNORED } Access;
-
-	Modifier( const geom::Source &source, geom::Target *target, const std::map<Attrib,Access> &attribs, Access indicesAccess )
-		: mSource( source ), mTarget( target ), mAttribs( attribs ), mIndicesAccess( indicesAccess ), mNumIndices( 0 )
-	{}
-
-	uint8_t		getAttribDims( geom::Attrib attr ) const override;
-	
-	void copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	void copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
-	
-	uint8_t	getReadAttribDims( Attrib attr ) const;
-	// not const because consumer is allowed to overwrite this data
-	float* getReadAttribData( Attrib attr ) const;
-
-	size_t			getNumIndices() const { return mNumIndices; }
-	const uint32_t*	getIndicesData() const { return mIndices.get(); }
-		
-  protected:
-	const geom::Source		&mSource;
-	geom::Target			*mTarget;
-	
-	std::map<Attrib,Access>						mAttribs;
-	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
-	std::map<Attrib,uint8_t>					mAttribDims;
-	
-	Access									mIndicesAccess;
-	std::unique_ptr<uint32_t[]>				mIndices;
-	size_t									mNumIndices;
-	geom::Primitive							mPrimitive;
-};
-
-//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
-class Transform : public Source {
-  public:
-	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
-	Transform( const geom::Source &source, const mat4 &transform )
-		: mSource( source ), mTransform( transform )
-	{}
-
-	const mat4&			getMatrix() const { return mTransform; }
-	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
-  
-  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-	const geom::Source&		mSource;
-	mat4					mTransform;
-};
-
-//! Twists a geom::Source around a given axis
-class Twist : public Source {
-  public:
-	Twist( const geom::Source &source )
-		: mSource( source ), mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ),
-			mStartAngle( (float)-M_PI ), mEndAngle( (float)M_PI )
-	{}
-
-	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
-	Twist&		axisEnd( const vec3 &end ) { mAxisEnd = end; return *this; }
-	Twist&		axis( const vec3 &start, const vec3 &end ) { mAxisStart = start; mAxisEnd = end; return *this; }
-	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
-	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
-  
-  	size_t		getNumVertices() const override		{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override		{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override		{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	const geom::Source&		mSource;
-	vec3					mAxisStart, mAxisEnd;
-	float					mStartAngle, mEndAngle;
-};
-
-//! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
-class Lines : public Source {
-  public:
-	Lines( const geom::Source &source )
-		: mSource( source )
-	{}
-
-	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override;
-	Primitive	getPrimitive() const override				{ return geom::LINES; }
-	uint8_t		getAttribDims( Attrib attr ) const override	{ return mSource.getAttribDims( attr ); }
-	AttribSet	getAvailableAttribs() const override		{ return mSource.getAvailableAttribs(); }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	const geom::Source&		mSource;
-};
-
-//! Modifiers the color of a geom::Source as a function of a 2D or 3D input attribute
-class ColorFromAttrib : public Source {
-  public:
-	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec2)> &fn )
-		: mSource( source ), mAttrib( attrib ), mFnColor2( fn )
-	{}
-	ColorFromAttrib( const geom::Source &source, Attrib attrib, const std::function<Colorf(vec3)> &fn )
-		: mSource( source ), mAttrib( attrib ), mFnColor3( fn )
-	{}
-	
-	Attrib				getAttrib() const { return mAttrib; }
-	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
-
-	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	const geom::Source&				mSource;
-	Attrib							mAttrib;
-	std::function<Colorf(vec2)>		mFnColor2;
-	std::function<Colorf(vec3)>		mFnColor3;
-};
-
-//! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
-template<typename S, typename D>
-class AttribFn : public Source {
-  public:
-	typedef typename std::function<D(S)> FN;
-	static const int SRCDIM = sizeof(S)/ sizeof(float);
-	static const int DSTDIM = sizeof(D)/ sizeof(float);
-	
-	AttribFn( const Source &source, Attrib src, Attrib dst, const FN &fn )
-		: mSource( source ), mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
-	{}
-	
-	size_t		getNumVertices() const override				{ return mSource.getNumVertices(); }
-	size_t		getNumIndices() const override				{ return mSource.getNumIndices(); }
-	Primitive	getPrimitive() const override				{ return mSource.getPrimitive(); }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	const geom::Source	&mSource;
-	geom::Attrib		mSrcAttrib, mDstAttrib;
-	FN					mFn;
-};
-
 class Extrude : public Source {
   public:
 	Extrude( const Shape2d &shape, float distance, float approximationScale = 1.0f );
@@ -785,25 +664,7 @@ class ExtrudeSpline : public Source {
 	std::vector<std::vector<vec2>>	mPathSubdivisionPositions, mPathSubdivisionTangents;
 };
 
-//! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0. Prevents pass-through of NORMAL and COLOR. Passes CI_TEX_COORD_0
-class VertexNormalLines : public Source {
-  public:
-	VertexNormalLines( const geom::Source &source, float length );
-
-	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
-
-	size_t		getNumVertices() const override;
-	size_t		getNumIndices() const override				{ return 0; }
-	Primitive	getPrimitive() const override				{ return geom::LINES; }
-	uint8_t		getAttribDims( Attrib attr ) const override;
-	AttribSet	getAvailableAttribs() const override;
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-	
-  protected:
-	const geom::Source&		mSource;
-	float					mLength;
-};
-
+//! Converts a BSpline into a \c LINE_STRIP
 class BSpline : public Source {
   public:
 	template<int D, typename T>
@@ -829,6 +690,463 @@ class BSpline : public Source {
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Modifiers
+//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
+class Transform : public Modifier {
+  public:
+	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
+	Transform( const mat4 &transform )
+		: mTransform( transform )
+	{}
+
+	const mat4&			getMatrix() const { return mTransform; }
+	void				setMatrix( const mat4 &transform ) { mTransform = transform; }
+	
+	// Inherited from Modifier
+	Modifier*			clone() const override { return new Transform( mTransform ); }
+	uint8_t				getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	void				process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+	mat4		mTransform;
+};
+
+//! Twists a geom::Source around a given axis
+class Twist : public Modifier {
+  public:
+	Twist()
+		: mAxisStart( 0, -1, 0 ), mAxisEnd( 0, 1, 0 ), mStartAngle( (float)-M_PI ), mEndAngle( (float)M_PI )
+	{}
+
+	Twist&		axisStart( const vec3 &start ) { mAxisStart = start; return *this; }
+	Twist&		axisEnd( const vec3 &end ) { mAxisEnd = end; return *this; }
+	Twist&		axis( const vec3 &start, const vec3 &end ) { mAxisStart = start; mAxisEnd = end; return *this; }
+	Twist&		startAngle( float radians ) { mStartAngle = radians; return *this; }
+	Twist&		endAngle( float radians ) { mEndAngle = radians; return *this; }
+
+	Modifier*	clone() const override { return new Twist( *this ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	vec3					mAxisStart, mAxisEnd;
+	float					mStartAngle, mEndAngle;
+};
+
+//! Converts any geom::Source to equivalent vertices connected by lines. Output primitive type is always geom::Primitive::LINES.
+class Lines : public Modifier {
+  public:
+	Modifier*	clone() const override { return new Lines(); }
+	
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override { return geom::LINES; }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	static size_t	calcNumIndices( Primitive primitive, size_t upstreamNumIndices, size_t upstreamNumVertices );
+};
+
+//! Modifies the color of a geom::Source as a function of a 2D or 3D input attribute
+class ColorFromAttrib : public Modifier {
+  public:
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec2)> &fn )
+		: mAttrib( attrib ), mFnColor2( fn )
+	{}
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec3)> &fn )
+		: mAttrib( attrib ), mFnColor3( fn )
+	{}
+	
+	Attrib				getAttrib() const { return mAttrib; }
+	ColorFromAttrib&	attrib( Attrib attrib ) { mAttrib = attrib; return *this; }
+
+	Modifier*	clone() const override { return new ColorFromAttrib( mAttrib, mFnColor2, mFnColor3 ); }
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	ColorFromAttrib( Attrib attrib, const std::function<Colorf(vec2)> &fn2, const std::function<Colorf(vec3)> &fn3 )
+		: mAttrib( attrib ), mFnColor2( fn2 ), mFnColor3( fn3 )
+	{}
+
+	Attrib							mAttrib;
+	std::function<Colorf(vec2)>		mFnColor2;
+	std::function<Colorf(vec3)>		mFnColor3;
+};
+
+//! Maps an attribute as a function of another attribute. Valid types are: float, vec2, vec3, vec4
+template<typename S, typename D>
+class AttribFn : public Modifier {
+  public:
+	typedef typename std::function<D(S)> FN;
+	static const int SRCDIM = sizeof(S)/ sizeof(float);
+	static const int DSTDIM = sizeof(D)/ sizeof(float);
+	
+	AttribFn( Attrib src, Attrib dst, const FN &fn )
+		: mSrcAttrib( src ), mDstAttrib( dst ), mFn( fn )
+	{}
+
+	AttribFn( Attrib attrib, const FN &fn )
+		: mSrcAttrib( attrib ), mDstAttrib( attrib ), mFn( fn )
+	{}
+	
+	Modifier*	clone() const override { return new AttribFn( mSrcAttrib, mDstAttrib, mFn ); }
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	geom::Attrib		mSrcAttrib, mDstAttrib;
+	FN					mFn;
+};
+
+//! Draws lines representing the Attrib::NORMALs for a geom::Source. Encodes 0 for base and 1 for normal into CUSTOM_0
+class VertexNormalLines : public Modifier {
+  public:
+	VertexNormalLines( float length, Attrib attrib = Attrib::NORMAL );
+
+	VertexNormalLines&	length( float len ) { mLength = len; return *this; }
+
+	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override				{ return 0; }
+	Primitive	getPrimitive( const Modifier::Params &upstreamParams ) const override				{ return geom::LINES; }
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	Modifier*	clone() const override { return new VertexNormalLines( mLength, mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	float					mLength;
+	Attrib					mAttrib;
+};
+
+//! Creates TANGENT and BITANGENT attributes based on POSITIONS, NORMALS and TEX_COORD_0. Requires indexed geometry.
+class Tangents : public Modifier {
+  public:
+	Tangents() {}
+
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;
+	
+	Modifier*	clone() const override { return new Tangents; }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+};
+
+//! Inverts the value of an attribute. Works for any dimension.
+class Invert : public Modifier {
+  public:
+	Invert( Attrib attrib )
+		: mAttrib( attrib )
+	{}
+
+	Modifier*	clone() const override { return new Invert( mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	Attrib		mAttrib;
+};
+
+//! Removes an attribute entirely
+class Remove : public Modifier {
+  public:
+	Remove( Attrib attrib )
+		: mAttrib( attrib )
+	{}
+	
+	uint8_t		getAttribDims( Attrib attr, uint8_t upstreamDims ) const override;
+	AttribSet	getAvailableAttribs( const Modifier::Params &upstreamParams ) const override;	
+	
+	Modifier*	clone() const override { return new Remove( mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	Attrib		mAttrib;
+};
+
+//! Combines an additional Source. Requires the Primitive types to match. Attributes not available on Source will be filled with \c 0
+class Combine : public Modifier {
+  public:
+	Combine( const Source *source )
+		: mSource( source )
+	{}
+	
+	Modifier*	clone() const override { return new Combine( mSource ); }
+	
+	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	const Source		*mSource;
+};
+
+//! Calculates the 3D bounding box of the geometry.
+class Bounds : public Modifier {
+  public:
+	Bounds( AxisAlignedBox3f *result, Attrib attrib = POSITION )
+		: mResult( result ), mAttrib( attrib )
+	{}
+	
+	
+	Modifier*	clone() const override { return new Bounds( mResult, mAttrib ); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	AxisAlignedBox3f	*mResult;
+	Attrib				mAttrib;
+};
+
+//! Calculates a single level of subdivision of triangles by inserting a single vertex in the center of each triangle.
+//! Interpolates all attributes and normalizes 3D NORMAL, TANGENT and BITANGENT attributes.
+class Subdivide : public Modifier {
+  public:
+	Subdivide()
+	{}
+	
+	size_t		getNumVertices( const Modifier::Params &upstreamParams ) const override;
+	size_t		getNumIndices( const Modifier::Params &upstreamParams ) const override;
+	
+	Modifier*	clone() const override { return new Subdivide(); }
+	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
+};
+
+
+////////////////////////////////////////////////////////////////////////////////
+//! Base class for SourceMods<> and SourceModsPtr<>
+//! Used by Modifiers to process Source -> Target
+class SourceModsContext : public Target {
+  public:
+	SourceModsContext( const SourceModsBase *sourceMods );
+	//! Can be used to capture a Source. Calling loadInto() in this case is an error.
+	SourceModsContext();
+
+	// called by SourceModsBase::loadInto()
+	void			loadInto( Target *target, const AttribSet &requestedAttribs );
+	
+	// Target virtuals; also used by Modifiers
+	uint8_t			getAttribDims( Attrib attr ) const override;
+	void			copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void			copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	
+	//! Appends vertex data to existing data for \a attr. \a dims must match existing data.
+	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
+	void			clearAttrib( Attrib attr );
+	//! Appends index data to existing index data. \a primitive must match existing data.
+	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices );
+	void			clearIndices();
+
+	size_t			getNumVertices() const;
+	size_t			getNumIndices() const;
+	Primitive		getPrimitive() const;
+	AttribSet		getAvailableAttribs() const;
+	
+	void			processUpstream( const AttribSet &requestedAttribs );
+
+	float*			getAttribData( Attrib attr );
+	uint32_t*		getIndicesData();
+	
+  private:
+	const Source					*mSource;
+	std::vector<Modifier*>			mModiferStack;
+	
+	size_t										mNumVertices;
+	std::map<Attrib,AttribInfo>					mAttribInfo;
+	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
+	std::map<Attrib,size_t>						mAttribCount;
+	
+	std::unique_ptr<uint32_t[]>				mIndices;
+	size_t									mNumIndices;
+	geom::Primitive							mPrimitive;
+};
+
+class SourceModsBase : public Source {
+  public:
+	SourceModsBase( const Source *sourceBase )
+		: mSourceBase( sourceBase ), mVariablesCached( false )
+	{}
+
+	// geom::Source methods
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override;
+	Primitive	getPrimitive() const override;
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+	void	addModifier( const Modifier &modifier );
+	
+	const Source*		getSource() const { return mSourceBase; }
+
+  protected:
+	void		cacheVariables() const;
+	
+	const Source* 							mSourceBase;
+	std::vector<std::unique_ptr<Modifier>>	mModifiers;
+	
+	mutable bool				mVariablesCached;
+	mutable std::vector<Modifier::Params>	mParamsStack;
+	
+	friend class SourceModsContext;
+};
+
+//! In general you should not return this as the result of a function or even instantiate it directly
+//! Similar to SourceMods<> but stores a pointer to the SOURCE rather than a copy of it
+template<typename SOURCE>
+class SourceModsPtr : public SourceModsBase {
+  public:
+	SourceModsPtr( const SOURCE *srcPtr )
+		: SourceModsBase( srcPtr ), mSrcPtr( srcPtr )
+	{}
+
+	SourceModsPtr( const SourceModsPtr<SOURCE> &rhs )
+		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+
+	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
+		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
+	{
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+	}
+	
+	SourceModsPtr& operator=( const SourceModsPtr<SOURCE> &rhs )
+	{
+		mSourceBase = rhs.mSrcPtr;
+		mSrcPtr = rhs.mSrcPtr;
+		
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+
+		return *this;
+	}
+	
+	SourceModsPtr& operator=( SourceModsPtr<SOURCE> &&rhs )
+	{
+		mSourceBase = rhs.mSrcPtr;
+		mSrcPtr = std::move( rhs.mSrc );
+		
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+
+		return *this;
+	}
+	
+	const SOURCE		*mSrcPtr;
+};
+
+template<typename SOURCE>
+class SourceMods : public SourceModsBase {
+  public:
+	SourceMods( const SOURCE &src )
+		: SourceModsBase( &mSrc ), mSrc( src )
+	{}
+	
+	SourceMods( SOURCE &&src )
+		: SourceModsBase( &mSrc ), mSrc( std::move( src ) )
+	{}
+
+	SourceMods( const SourceMods<SOURCE> &rhs )
+		: SourceModsBase( &mSrc ), mSrc( rhs.mSrc )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+
+	SourceMods( SourceMods<SOURCE> &&rhs )
+		: SourceModsBase( &mSrc ), mSrc( std::move( rhs.mSrc ) )
+	{
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+	}
+
+	SourceMods( const SourceModsPtr<SOURCE> &rhs )
+		: SourceModsBase( &mSrc ), mSrc( *rhs.mSrcPtr )
+	{
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+	
+	SourceMods& operator=( const SourceMods<SOURCE> &rhs )
+	{
+		mSourceBase = &mSrc;
+		mSrc = rhs.mSrc;
+		
+		for( const auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+
+		return *this;
+	}
+	
+	SourceMods& operator=( SourceMods<SOURCE> &&rhs )
+	{
+		mSourceBase = &mSrc;
+		mSrc = std::move( rhs.mSrc );
+		
+		for( auto &rhsMod : rhs.mModifiers )
+			mModifiers.push_back( std::move( rhsMod ) );
+
+		return *this;
+	}
+	
+	SOURCE		mSrc;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Source
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( SourceMods<SOURCE> &sourceMod, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( &sourceMod.mSrc );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+SourceMods<SOURCE>&& operator>>( SourceMods<SOURCE> &&sourceMod, const Modifier &modifier )
+{
+	sourceMod.addModifier( modifier );
+	return std::move(sourceMod);
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( SourceModsPtr<SOURCE> &sourceMod, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( sourceMod );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE>&& operator>>( SourceModsPtr<SOURCE> &&sourceMod, const Modifier &modifier )
+{
+	sourceMod.addModifier( modifier );
+	return std::move(sourceMod);
+}
+
+template<typename SOURCE>
+SourceModsPtr<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
+{
+	SourceModsPtr<SOURCE> result( &source );
+	result.addModifier( modifier );
+	return result;
+}
+
+template<typename SOURCE>
+typename std::enable_if<std::is_base_of<Source,SOURCE>::value, SourceMods<SOURCE>>::type operator>>( SOURCE &&source, const Modifier &modifier )
+{
+	SourceMods<SOURCE> result( std::forward<SOURCE>( source ) );
+	result.addModifier( modifier );
+	return result;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 class Exc : public Exception {
 };

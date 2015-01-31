@@ -25,7 +25,6 @@
 				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
-				0087D33912CD82C2002CD69F /* PBXTargetDependency */,
 			);
 			name = AllSamples_iOS;
 			productName = AllSamples_iOS;
@@ -46,13 +45,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = ClipboardBasic_iOS;
-		};
-		0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
-			remoteInfo = FBOBasic_iOS;
 		};
 		0087D32912CD828A002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -81,13 +73,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = ClipboardBasic_iOS;
-		};
-		0087D33812CD82C2002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
-			remoteInfo = FBOBasic_iOS;
 		};
 		009545281680E9E5008ECA02 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -283,7 +268,6 @@
 /* Begin PBXFileReference section */
 		0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_iOS.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MotionBasic.xcodeproj; path = ../../MotionBasic/xcode_ios/MotionBasic.xcodeproj; sourceTree = "<group>"; };
 		009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureBasic.xcodeproj; path = ../../CaptureBasic/xcode_ios/CaptureBasic.xcodeproj; sourceTree = "<group>"; };
@@ -315,7 +299,6 @@
 				009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */,
 				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
 				00D494FF1988A35200A44E4C /* Compass.xcodeproj */,
-				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
 				00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */,
 				00D495111988A3A700A44E4C /* Instascope.xcodeproj */,
 				00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */,
@@ -342,14 +325,6 @@
 			isa = PBXGroup;
 			children = (
 				0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0087D2D412CD81D3002CD69F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0087D2D812CD81D3002CD69F /* FBOBasic_iOS.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -571,10 +546,6 @@
 					ProjectRef = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
 				},
 				{
-					ProductGroup = 0087D2D412CD81D3002CD69F /* Products */;
-					ProjectRef = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
-				},
-				{
 					ProductGroup = 00D494D81988A2CD00A44E4C /* Products */;
 					ProjectRef = 00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */;
 				},
@@ -655,13 +626,6 @@
 			fileType = wrapper.application;
 			path = ClipboardBasic_iOS.app;
 			remoteRef = 0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0087D2D812CD81D3002CD69F /* FBOBasic_iOS.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = FBOBasic_iOS.app;
-			remoteRef = 0087D2D712CD81D3002CD69F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0087D32A12CD828A002CD69F /* TextTest_iOS.app */ = {
@@ -814,11 +778,6 @@
 			isa = PBXTargetDependency;
 			name = ClipboardBasic_iOS;
 			targetProxy = 0087D33412CD82C2002CD69F /* PBXContainerItemProxy */;
-		};
-		0087D33912CD82C2002CD69F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = FBOBasic_iOS;
-			targetProxy = 0087D33812CD82C2002CD69F /* PBXContainerItemProxy */;
 		};
 		0095452B1680EA00008ECA02 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

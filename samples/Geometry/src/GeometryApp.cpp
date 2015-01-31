@@ -52,7 +52,7 @@ class GeometryApp : public AppNative {
 	int					mTexturingMode;
 
 	bool				mShowColors;
-	bool				mShowNormals;
+	bool				mShowNormals, mShowTangents;
 	bool				mShowGrid;
 	bool				mEnableFaceFulling;
 
@@ -66,7 +66,7 @@ class GeometryApp : public AppNative {
 
 	gl::BatchRef		mPrimitive;
 	gl::BatchRef		mPrimitiveWireframe;
-	gl::BatchRef		mPrimitiveNormalLines;
+	gl::BatchRef		mPrimitiveNormalLines, mPrimitiveTangentLines;
 
 	gl::GlslProgRef		mPhongShader;
 	gl::GlslProgRef		mWireframeShader;
@@ -95,6 +95,7 @@ void GeometryApp::setup()
 	mLastMouseDownTime = 0;
 	mShowColors = false;
 	mShowNormals = false;
+	mShowTangents = false;
 	mShowGrid = true;
 	mEnableFaceFulling = false;
 
@@ -170,6 +171,12 @@ void GeometryApp::draw()
 		if( mShowNormals && mPrimitiveNormalLines ) {
 			gl::ScopedColor colorScope( Color( 1, 1, 0 ) );
 			mPrimitiveNormalLines->draw();
+		}
+
+		// Draw the tangents.
+		if( mShowTangents && mPrimitiveTangentLines ) {
+			gl::ScopedColor colorScope( Color( 0, 1, 0 ) );
+			mPrimitiveTangentLines->draw();
 		}
 
 		// Draw the primitive.
@@ -287,6 +294,7 @@ void GeometryApp::createParams()
 
 	mParams->addParam( "Show Grid", &mShowGrid );
 	mParams->addParam( "Show Normals", &mShowNormals );
+	mParams->addParam( "Show Tangents", &mShowTangents );
 	mParams->addParam( "Show Colors", &mShowColors ).updateFn( [this] { createGeometry(); } );
 	mParams->addParam( "Face Culling", &mEnableFaceFulling ).updateFn( [this] { gl::enableFaceCulling( mEnableFaceFulling ); } );
 #endif
@@ -408,7 +416,7 @@ void GeometryApp::createGeometry()
 void GeometryApp::loadGeomSource( const geom::Source &source )
 {
 	// The purpose of the TriMesh is to capture a bounding box; without that need we could just instantiate the Batch directly using primitive
-	TriMesh::Format fmt = TriMesh::Format().positions().normals().texCoords();
+	TriMesh::Format fmt = TriMesh::Format().positions().normals().texCoords().tangents();
 	if( mShowColors && source.getAvailableAttribs().count( geom::COLOR ) > 0 )
 		fmt.colors();
 
@@ -428,7 +436,8 @@ void GeometryApp::loadGeomSource( const geom::Source &source )
 
 	vec3 size = bbox.getMax() - bbox.getMin();
 	float scale = std::max( std::max( size.x, size.y ), size.z ) / 25.0f;
-	mPrimitiveNormalLines = gl::Batch::create( geom::VertexNormalLines( mesh, scale ), gl::getStockShader( gl::ShaderDef().color() ) );
+	mPrimitiveNormalLines = gl::Batch::create( mesh >> geom::VertexNormalLines( scale ), gl::getStockShader( gl::ShaderDef().color() ) );
+	mPrimitiveTangentLines = gl::Batch::create( mesh >> geom::VertexNormalLines( scale, geom::TANGENT ), gl::getStockShader( gl::ShaderDef().color() ) );
 
 	getWindow()->setTitle( "Geometry - " + to_string( mesh.getNumVertices() ) + " vertices" );
 }
