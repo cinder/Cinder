@@ -215,9 +215,6 @@ class AppBase {
 
 	//! Override to perform any application setup after the Renderer has been initialized.
 	virtual void	setup() {}
-	//! Override to perform any application cleanup before exiting.
-	virtual void	shutdown() {}
-
 	//! Override to perform any once-per-loop computation.
 	virtual void	update() {}
 	//! Override to perform any rendering once-per-loop or in response to OS-prompted requests for refreshes.

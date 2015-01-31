@@ -144,7 +144,6 @@ void AppBase::privateUpdate__()
 void AppBase::emitShutdown()
 {
 	mSignalShutdown();
-	shutdown();
 }
 
 void AppBase::emitWillResignActive()
