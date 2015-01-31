@@ -28,7 +28,7 @@
 namespace cinder { namespace app {
 
 // Global singleton
-AppBasic*	AppBasic::sBasicInstance;
+AppBasic*	AppBasic::sBasicInstance = nullptr;
 
 AppBasic::AppBasic()
 	: AppBase()

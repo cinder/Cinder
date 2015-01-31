@@ -38,10 +38,10 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-AppBase*					AppBase::sInstance;			// Static instance of App, effectively a singleton
+AppBase*					AppBase::sInstance = nullptr;			// Static instance of App, effectively a singleton
 RendererRef				AppBase::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
 AppBase::Settings*			AppBase::sSettingsFromMain;
-static std::thread::id	sPrimaryThreadId = std::this_thread::get_id();
+static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App::Settings
