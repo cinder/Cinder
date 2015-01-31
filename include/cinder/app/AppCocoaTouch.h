@@ -240,6 +240,9 @@ class AppCocoaTouch : public AppBase {
 			settingsFn( &settings );
 
 		RendererRef defaultRenderer( new RendererT );
+		if( settings.shouldQuit() )
+			return;
+
 		AppBase::initialize( defaultRenderer, &settings );
 
 		AppCocoaTouch *app = new AppT;

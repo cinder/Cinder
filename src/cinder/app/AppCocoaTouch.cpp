@@ -37,9 +37,6 @@ AppCocoaTouch::AppCocoaTouch()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
-	if( ! mSettings.isPrepared() )
-		return;
-
 	mImpl = [[AppImplCocoaTouch alloc] init];
 }
 

@@ -100,6 +100,9 @@ static void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 	if( settingsFn )
 		settingsFn( &settings );
 
+	if( settings.shouldQuit() )
+		return;
+
 	AppBase::initialize( RendererRef( new RendererT ), &settings );
 
 	AppBasic *app = new AppT;

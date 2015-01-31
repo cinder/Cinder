@@ -100,12 +100,14 @@ struct BitwiseAndEventCombiner {
 	}
 };
 
+//! Base class that all apps derive from.
 class AppBase {
  public:
+	//! Startup settings, used during App construction. Can be modified by passing a SettingsFn to the app instanciation macros.
 	class Settings {
 	  public:
-	    // whether or not the app should terminate prior to launching
-		bool	isPrepared() const { return ! mShouldQuit; }
+		Settings();
+		virtual ~Settings() {}
 
 		//! Sets the size of the default window measured in pixels
 		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
@@ -183,15 +185,13 @@ class AppBase {
 		void	disableFrameRate();
 		//! Returns whether frameRate limiting is enabled. On by default, at 60 FPS.
 		bool	isFrameRateEnabled() const { return mFrameRateEnabled; }
-		//! maximum frameRate of the application specified in frames per second
+		//! Maximum frameRate of the application specified in frames per second
 		float	getFrameRate() const { return mFrameRate; }
-		
-		Settings();
-		virtual ~Settings() {}	  
+
+		//! Whether or not the app should terminate prior to launching
+		bool	shouldQuit() const			{ return mShouldQuit; }
 
 	  protected:
-		bool			mShouldQuit; // defaults to false, facilitates early termination
-
 		// A vector of Windows which have been requested using prepareWindow. An empty vector implies defaults.
 		std::vector<Window::Format>		mWindowFormats;
 		// The Window format which will be used if prepareWindow is not called
@@ -203,8 +203,7 @@ class AppBase {
 		bool			mEnableHighDensityDisplay;
 		bool			mEnableMultiTouch;
 		std::string		mTitle;
-		
-		friend class AppBase;
+		bool			mShouldQuit; // defaults to false, facilitates early termination
 	};
 
 

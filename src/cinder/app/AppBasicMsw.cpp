@@ -44,9 +44,6 @@ AppBasicMsw::AppBasicMsw()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
-	if( ! mSettings.isPrepared() )
-		return;
-
 	mImpl = new AppImplMswBasic( this );
 }
 

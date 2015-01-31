@@ -37,9 +37,6 @@ AppBasicMac::AppBasicMac()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
-	if( ! mSettings.isPrepared() )
-		return;
-
 	mImpl = [[AppImplCocoaBasic alloc] init:this];
 
 	// must set the Platform's executable path after mImpl has been constructed
