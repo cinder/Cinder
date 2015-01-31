@@ -65,27 +65,11 @@ class AppBasicMac : public AppBasic {
 
 	const Settings&		getSettings() const override { return mSettings; }
 
+	//! \cond
+	// Called during application instanciation via CINDER_APP_BASIC_MAC macro
 	template<typename AppT, typename RendererT>
-	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
-	{
-		AppBase::prepareLaunch();
-
-		Settings settings;
-		settings.setDefaultRenderer( std::make_shared<RendererT>() );
-		if( settingsFn )
-			settingsFn( &settings );
-
-		if( settings.shouldQuit() )
-			return;
-
-		AppBase::initialize( &settings );
-
-		AppBasic *app = new AppT;
-		#pragma unused( app )
-
-		AppBase::executeLaunch( title, argc, argv );
-		AppBase::cleanupLaunch();
-	}
+	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	//! \endcond
 
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
@@ -94,6 +78,28 @@ class AppBasicMac : public AppBasic {
 	AppImplCocoaBasic*	mImpl;
 	Settings			mSettings;
 };
+
+template<typename AppT, typename RendererT>
+void AppBasicMac::main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+{
+	AppBase::prepareLaunch();
+
+	Settings settings;
+	settings.setDefaultRenderer( std::make_shared<RendererT>() );
+	if( settingsFn )
+		settingsFn( &settings );
+
+	if( settings.shouldQuit() )
+		return;
+
+	AppBase::initialize( &settings );
+
+	AppBasic *app = new AppT;
+	#pragma unused( app )
+
+	AppBase::executeLaunch( title, argc, argv );
+	AppBase::cleanupLaunch();
+}
 
 #define CINDER_APP_BASIC_MAC( APP, RENDERER, ... )										\
 int main( int argc, char * const argv[] )												\

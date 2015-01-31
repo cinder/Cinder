@@ -74,6 +74,8 @@ class AppCocoaTouch : public AppBase {
 		bool		mEnableStatusBar;
 	};
 
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
+
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch() {}
 
@@ -225,31 +227,11 @@ class AppCocoaTouch : public AppBase {
 	void		privateSetImpl__( AppImplCocoaTouch	*impl ) { mImpl = impl; }
 
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
-	//! \endcond
 
-	typedef std::function<void ( Settings *settings )>	SettingsFn;
-
+	// Called during application instanciation via CINDER_APP_COCOA_TOUCH macro
 	template<typename AppT, typename RendererT>
-	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() )
-	{
-		AppBase::prepareLaunch();
-
-		Settings settings;
-		settings.setDefaultRenderer( std::make_shared<RendererT>() );
-		if( settingsFn )
-			settingsFn( &settings );
-
-		if( settings.shouldQuit() )
-			return;
-
-		AppBase::initialize( &settings );
-
-		AppCocoaTouch *app = new AppT;
-		#pragma unused( app )
-
-		AppBase::executeLaunch( title, argc, argv );
-		AppBase::cleanupLaunch();
-	}
+	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	//! \endcond
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
@@ -273,7 +255,27 @@ extern	std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &
 //! returns the degrees rotation from Portrait for the provided \a orientation
 float	getOrientationDegrees( InterfaceOrientation orientation );
 
-} } // namespace cinder::app
+template<typename AppT, typename RendererT>
+void AppCocoaTouch::main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+{
+	AppBase::prepareLaunch();
+
+	Settings settings;
+	settings.setDefaultRenderer( std::make_shared<RendererT>() );
+	if( settingsFn )
+		settingsFn( &settings );
+
+	if( settings.shouldQuit() )
+		return;
+
+	AppBase::initialize( &settings );
+
+	AppCocoaTouch *app = new AppT;
+	#pragma unused( app )
+
+	AppBase::executeLaunch( title, argc, argv );
+	AppBase::cleanupLaunch();
+}
 
 #define CINDER_APP_COCOA_TOUCH( APP, RENDERER, ... )									\
 int main( int argc, char * const argv[] )												\
@@ -281,3 +283,5 @@ int main( int argc, char * const argv[] )												\
 	cinder::app::AppCocoaTouch::main<APP, RENDERER>( #APP, argc, argv, ##__VA_ARGS__ );	\
 	return 0;																			\
 }
+
+} } // namespace cinder::app

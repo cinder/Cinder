@@ -92,7 +92,7 @@ class AppBasicMsw : public AppBasic {
 };
 
 template<typename AppT, typename RendererT>
-static void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
+void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
