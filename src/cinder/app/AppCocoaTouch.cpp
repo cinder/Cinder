@@ -37,13 +37,12 @@ AppCocoaTouch::AppCocoaTouch()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
+	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaTouch alloc] init];
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
-	Platform::get()->setExecutablePath( getAppPath() );
-
 	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
 }
 

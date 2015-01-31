@@ -238,14 +238,6 @@
 	[mWindows removeObject:windowImpl];
 }
 
-- (std::string)getAppPath
-{
-	NSString *resultPath = [[NSBundle mainBundle] bundlePath];
-	std::string result;
-	result = [resultPath cStringUsingEncoding:NSUTF8StringEncoding];
-	return result;
-}
-
 // This is all necessary because we don't use NIBs in Cinder apps
 // and we have to generate our menu programmatically
 - (void)setApplicationMenu:(NSString *)applicationName

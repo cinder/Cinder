@@ -66,7 +66,6 @@
 - (void)setFrameRate:(float)frameRate;
 - (void)disableFrameRate;
 - (bool)isFrameRateEnabled;
-- (std::string)getAppPath;
 - (void)quit;
 
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;

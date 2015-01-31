@@ -37,10 +37,8 @@ AppBasicMac::AppBasicMac()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
-	mImpl = [[AppImplCocoaBasic alloc] init:this];
-
-	// must set the Platform's executable path after mImpl has been constructed
 	Platform::get()->setExecutablePath( getAppPath() );
+	mImpl = [[AppImplCocoaBasic alloc] init:this];
 }
 
 AppBasicMac::~AppBasicMac()
@@ -97,7 +95,7 @@ bool AppBasicMac::isFrameRateEnabled() const
 
 fs::path AppBasicMac::getAppPath() const
 {
-	return [mImpl getAppPath];
+	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
 WindowRef AppBasicMac::getWindow() const
