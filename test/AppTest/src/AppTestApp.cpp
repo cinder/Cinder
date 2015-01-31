@@ -44,17 +44,9 @@ struct SomeMemberObj {
 	{
 		CI_LOG_I( "bang" );
 
-		Surface8u surface( 140, 140, false );
-		Surface8u::Iter iter = surface.getIter();
-		while( iter.line() ) {
-			while( iter.pixel() ) {
-				iter.r() = iter.x();
-				iter.g() = 0;
-				iter.b() = iter.y();
-			}
-		}
+		auto resource = loadResource( RES_IMAGE );
+		mTex = gl::Texture::create( loadImage( resource ) );
 
-		mTex = gl::Texture::create( surface );
 		CI_CHECK_GL();
 	}
 };
@@ -83,17 +75,21 @@ AppTestApp::AppTestApp()
 {
 	CI_LOG_I( "bang" );
 
-	Surface8u surface( 140, 140, false );
-	Surface8u::Iter iter = surface.getIter();
-	while( iter.line() ) {
-		while( iter.pixel() ) {
-			iter.r() = 0;
-			iter.g() = iter.x();
-			iter.b() = iter.y();
-		}
-	}
+//	Surface8u surface( 140, 140, false );
+//	Surface8u::Iter iter = surface.getIter();
+//	while( iter.line() ) {
+//		while( iter.pixel() ) {
+//			iter.r() = 0;
+//			iter.g() = iter.x();
+//			iter.b() = iter.y();
+//		}
+//	}
 
-	mTexStartup = gl::Texture::create( surface );
+//	mTexStartup = gl::Texture::create( surface );
+
+	auto asset = loadAsset( "mustache-green.png" );
+	mTexStartup = gl::Texture::create( loadImage( asset ) );
+
 	CI_CHECK_GL();
 }
 
