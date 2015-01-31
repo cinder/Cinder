@@ -71,14 +71,14 @@ class AppBasicMac : public AppBasic {
 		AppBase::prepareLaunch();
 
 		Settings settings;
+		settings.setDefaultRenderer( std::make_shared<RendererT>() );
 		if( settingsFn )
 			settingsFn( &settings );
 
 		if( settings.shouldQuit() )
 			return;
 
-		RendererRef defaultRenderer( new RendererT );
-		AppBase::initialize( defaultRenderer, &settings );
+		AppBase::initialize( &settings );
 
 		AppBasic *app = new AppT;
 		#pragma unused( app )

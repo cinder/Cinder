@@ -204,10 +204,10 @@ void AppBase::prepareLaunch()
 }
 
 // static
-void AppBase::initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain )
+void AppBase::initialize( Settings *settingsFromMain )
 {
-	sDefaultRenderer = defaultRenderer;
 	sSettingsFromMain = settingsFromMain;
+	sDefaultRenderer = settingsFromMain->getDefaultRenderer();
 }
 
 // TODO: try to make this non-static, just calls launch() that is wrapped in try/catch

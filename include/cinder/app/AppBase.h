@@ -150,6 +150,11 @@ class AppBase {
 		//! Sets the display for the default window
 		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
 
+		//! Sets the default Renderer, overridding what was passed in during app instanciation.
+		void		setDefaultRenderer( const RendererRef &renderer )	{ mDefaultRenderer = renderer; }
+		//! Returns the default Renderer.
+		RendererRef	getDefaultRenderer() const							{ return mDefaultRenderer; }
+
 		void		prepareWindow( const Window::Format &format );
 		std::vector<Window::Format>&		getWindowFormats()			{ return mWindowFormats; }
 		const std::vector<Window::Format>&	getWindowFormats() const	{ return mWindowFormats; }
@@ -196,6 +201,7 @@ class AppBase {
 		std::vector<Window::Format>		mWindowFormats;
 		// The Window format which will be used if prepareWindow is not called
 		Window::Format					mDefaultWindowFormat;
+		RendererRef						mDefaultRenderer;
             
 		bool			mFrameRateEnabled;
 		float			mFrameRate;
@@ -415,7 +421,7 @@ class AppBase {
 	//! \cond
 	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
-	static void		initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain );
+	static void		initialize( Settings *settingsFromMain );
 	static void		executeLaunch( const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	

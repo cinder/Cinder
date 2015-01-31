@@ -217,12 +217,11 @@ class AppCocoaTouch : public AppBase {
 
 	virtual const Settings&	getSettings() const override { return mSettings; }
 
-	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
-	//! \endcond
-
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
+	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
+
 	void		privateSetImpl__( AppImplCocoaTouch	*impl ) { mImpl = impl; }
 
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
@@ -236,14 +235,14 @@ class AppCocoaTouch : public AppBase {
 		AppBase::prepareLaunch();
 
 		Settings settings;
+		settings.setDefaultRenderer( std::make_shared<RendererT>() );
 		if( settingsFn )
 			settingsFn( &settings );
 
-		RendererRef defaultRenderer( new RendererT );
 		if( settings.shouldQuit() )
 			return;
 
-		AppBase::initialize( defaultRenderer, &settings );
+		AppBase::initialize( &settings );
 
 		AppCocoaTouch *app = new AppT;
 		#pragma unused( app )
