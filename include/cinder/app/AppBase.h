@@ -208,8 +208,6 @@ class AppBase {
 
 
  public:
-	// interface
-	AppBase();
 	virtual ~AppBase();
 
 	//! Override to perform any application setup after the Renderer has been initialized.
@@ -412,8 +410,10 @@ class AppBase {
 
 
   protected:
+	AppBase();
+
 	//! \cond
-	// These are called by application instantation macros and are only used in the launch process
+	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
 	static void		initialize( const RendererRef &defaultRenderer, Settings *settingsFromMain );
 	static void		executeLaunch( const char *title, int argc, char * const argv[] );
