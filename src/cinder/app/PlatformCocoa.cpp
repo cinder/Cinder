@@ -88,7 +88,7 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 void PlatformCocoa::prepareAssetLoading()
 {
 	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = Platform::get()->getResourcePath() / "assets";
+	fs::path bundleAssetsPath = getResourcePath() / "assets";
 	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
 		addAssetDirectory( bundleAssetsPath );
 	}
