@@ -1,9 +1,11 @@
-#include "cinder/Cinder.h"
-#include "cinder/Utilities.h"
 #include "cinder/app/AppScreenSaver.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/Utilities.h"
 #include "cinder/Color.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
+#include "cinder/System.h"
 
 #include "Resources.h"
 #include "Configuration.h"
@@ -18,19 +20,21 @@ using namespace ci::app;
 
 class ScreenSaverTestApp : public AppScreenSaver {
   public:
-	virtual void prepareSettings( Settings *settings );
-	virtual void setup();
-	virtual void resize();
-	virtual void update();
-	virtual void draw();
-	virtual void shutdown();
+	virtual void prepareSettings( Settings *settings ) override;
+	virtual void setup() override;
+	virtual void resize() override;
+	virtual void update() override;
+	virtual void draw() override;
+	virtual void shutdown() override;
 
 #if defined( CINDER_MAC )
-	virtual NSWindow* createMacConfigDialog() override {
+	virtual NSWindow* createMacConfigDialog() override
+	{
 		return getConfigDialogMac( this, &mConfig ); // defined in MacConfigDialog.cpp
 	}
 #elif defined( CINDER_MSW )
-	static BOOL doConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam ) {
+	static BOOL doConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+	{
 		return mswDoConfigureDialog( hDlg, message, wParam, lParam ); // defined in WindowsConfig.cpp
 	}
 #endif
@@ -39,13 +43,13 @@ class ScreenSaverTestApp : public AppScreenSaver {
 	Configuration	mConfig;
 	ci::Color		mColor, mBackgroundColor;
 	float			mRadius;
-	gl::Texture		mLogo;
+	gl::TextureRef	mLogo;
 };
 
 
 void ScreenSaverTestApp::prepareSettings( Settings *settings )
 {
-console() << "prepareSettings() called in " << getAppPath() << std::endl;
+	CI_LOG_I( "called in " << getAppPath() );
 //	settings->setFrameRate( 1 );
 #if defined( CINDER_MAC )
 	settings->setProvidesMacConfigDialog();
@@ -55,7 +59,8 @@ console() << "prepareSettings() called in " << getAppPath() << std::endl;
 
 void ScreenSaverTestApp::setup()
 {
-	console() << "setup" << std::endl;
+	CI_LOG_I( "bang" );
+
 #if defined( CINDER_MAC )
 	loadConfigMac( this, &mConfig );
 #else
@@ -65,23 +70,16 @@ void ScreenSaverTestApp::setup()
 	mBackgroundColor = Color( 0.7f, 0.0f, 0.8f );
 	
 	try {
-		mLogo = loadImage( loadResource( RES_CINDER_LOGO ) );
+		mLogo = gl::Texture::create( loadImage( loadResource( RES_CINDER_LOGO ) ) );
 	}
-	catch( std::exception &e ) {
-#if defined( CINDER_MAC )
-NSLog( @"setup exc: %s", e.what() );
-#endif
-throw e;
+	catch( std::exception &exc ) {
+		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
 	}
 }
 
 void windowClosedCallback()
 {
-#if defined( CINDER_MAC )
-	NSLog( @"Closing window." );
-#else
-	console() << "Closing window: " << app::getWindow() << std::endl;
-#endif
+	CI_LOG_I( "closing window: " << app::getWindow() );
 }
 
 void ScreenSaverTestApp::resize()
@@ -92,29 +90,27 @@ void ScreenSaverTestApp::resize()
 
 void ScreenSaverTestApp::update()
 {
-#if defined( CINDER_MAC )
-	NSLog( @"update " );
-#endif
 	mRadius = (float)abs( cos( getElapsedSeconds() ) * getWindowHeight() / 2 );
 }
 
 void ScreenSaverTestApp::draw()
 {
-//NSLog( @"draw: %dx%d (%d) [%d]", getWindowWidth(), getWindowHeight(), getNumWindows(), isPreview() );
+//NSLog( @"draw: %dx%d (%d) [%d]", getWindowWidth(), getWindowHeight(), getNumWindows(), isPreview() ); // TODO: update
 	gl::enableAlphaBlending();
 		
-//console() << "Drawing: " << *getDisplay() << std::endl;
+//console() << "Drawing: " << *getDisplay() << std::endl; // TODO: update
 	if( isPreview() )
 		gl::clear( Color( 0, 0.5f, 1.0f ) );
 	else
 		gl::clear( mBackgroundColor );
+
 	gl::color( mColor );
 	//gl::drawSolidCircle( getWindowCenter(), mRadius );
 	gl::drawSolidRect( Rectf( getWindowCenter() - vec2( mRadius, mRadius ), getWindowCenter() + vec2( mRadius, mRadius ) ) );
 	
 	if( mConfig.mDrawCinderLogo ) {
 		gl::color( Color::white() );
-		gl::draw( mLogo, getWindowCenter() - mLogo.getSize() / 2 );
+		gl::draw( mLogo, getWindowCenter() - vec2( mLogo->getSize() / 2 ) );
 	}
 }
 
