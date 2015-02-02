@@ -737,6 +737,10 @@
     </ClCompile>
     <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
       <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\app\AppBasicMsw.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
@@ -744,9 +748,6 @@
       <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\PlatformMsw.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
   </ItemGroup>
@@ -939,6 +940,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Xml.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\App.h">
+      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppBasic.h">
       <Filter>Header Files\app</Filter>
@@ -1567,6 +1571,9 @@
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
       <Filter>Header Files\json</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBase.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppBasicMsw.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
@@ -1574,12 +1581,6 @@
       <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\PlatformMsw.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppBase.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\App.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
   </ItemGroup>
