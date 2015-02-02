@@ -211,6 +211,16 @@ void AppImplMswBasic::destroyBlankingWindows()
 	mBlankingWindows.clear();
 }
 
+void AppImplMswBasic::quit()
+{
+	// Close all windows, forcing the application to quit.
+	while( !mWindows.empty() )
+		mWindows.back()->close();
+
+	// Always quit, even if !isQuitOnLastWindowCloseEnabled()
+	mShouldQuit = true;
+}
+
 float AppImplMswBasic::setFrameRate( float aFrameRate )
 {
 	mFrameRate = aFrameRate;
