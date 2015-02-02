@@ -44,6 +44,7 @@ AppBasicMsw::AppBasicMsw()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
+	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = new AppImplMswBasic( this );
 }
 
@@ -100,7 +101,6 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 		platformMsw->directConsoleToCout(  true );
 	}
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl->run();
 }
 
