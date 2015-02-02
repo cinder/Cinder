@@ -183,7 +183,6 @@
 		001F520A0FCF99A10021731E /* Path2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 001F52090FCF99A10021731E /* Path2d.cpp */; };
 		002419D00E8035D3004D34EB /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CD0E8035D3004D34EB /* App.h */; };
 		002419D10E8035D3004D34EB /* AppImplCocoaBasic.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */; };
-		002419D60E8035E1004D34EB /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002419D30E8035E1004D34EB /* App.cpp */; };
 		002419D70E8035E1004D34EB /* AppImplCocoaBasic.mm in Sources */ = {isa = PBXBuildFile; fileRef = 002419D40E8035E1004D34EB /* AppImplCocoaBasic.mm */; };
 		002419FB0E8036A7004D34EB /* AppImplCocoaRendererGl.h in Headers */ = {isa = PBXBuildFile; fileRef = 002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */; };
 		00241A0D0E80375A004D34EB /* Cinder.h in Headers */ = {isa = PBXBuildFile; fileRef = 00241A0C0E80375A004D34EB /* Cinder.h */; };
@@ -254,9 +253,6 @@
 		003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FAAA21290CCB1002D6860 /* Clipboard.h */; };
 		003FAAB81290E01D002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
 		003FAAB91290E01E002D6860 /* Clipboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 003FAA9E1290CC90002D6860 /* Clipboard.cpp */; };
-		003FABA71290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
-		003FABA81290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
-		003FABA91290ED38002D6860 /* AppNative.h in Headers */ = {isa = PBXBuildFile; fileRef = 003FABA61290ED38002D6860 /* AppNative.h */; };
 		004172FA14C9BE520070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
 		004172FC14C9BE580070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
 		004172FD14C9BE580070C0D1 /* Frustum.h in Headers */ = {isa = PBXBuildFile; fileRef = 004172F914C9BE520070C0D1 /* Frustum.h */; };
@@ -540,8 +536,6 @@
 		009D6B021157FCA60037C77C /* CinderViewCocoaTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */; };
 		009D6B171157FCFB0037C77C /* AppCocoaTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6B161157FCFB0037C77C /* AppCocoaTouch.h */; };
 		009D6B181157FCFB0037C77C /* AppCocoaTouch.h in Headers */ = {isa = PBXBuildFile; fileRef = 009D6B161157FCFB0037C77C /* AppCocoaTouch.h */; };
-		009D6B1C1157FD3A0037C77C /* AppCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */; };
-		009D6B1D1157FD3A0037C77C /* AppCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */; };
 		009EE46E0F7A9F6700F17CB1 /* PolyLine.h in Headers */ = {isa = PBXBuildFile; fileRef = 009EE46D0F7A9F6700F17CB1 /* PolyLine.h */; };
 		009EE4720F7A9FAC00F17CB1 /* PolyLine.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009EE4710F7A9FAC00F17CB1 /* PolyLine.cpp */; };
 		009EE56D0F803F5600F17CB1 /* BandedMatrix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */; };
@@ -761,8 +755,6 @@
 		00CFD9DB1135C3520091E310 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA40880FA8C13A00AADC07 /* AudioToolbox.framework */; };
 		00CFD9DC1135C3520091E310 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408A0FA8C13A00AADC07 /* AudioUnit.framework */; };
 		00CFD9DD1135C3520091E310 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
-		00CFDD8811363AF50091E310 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002419D30E8035E1004D34EB /* App.cpp */; };
-		00CFDD8911363AF60091E310 /* App.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 002419D30E8035E1004D34EB /* App.cpp */; };
 		00CFE37D113B85F60091E310 /* Path2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 00CFE37B113B85F60091E310 /* Path2d.h */; };
 		00CFE37E113B85F60091E310 /* Thread.h in Headers */ = {isa = PBXBuildFile; fileRef = 00CFE37C113B85F60091E310 /* Thread.h */; };
 		00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00D23A530EAEB4C00002BF91 /* Color.cpp */; };
@@ -1068,6 +1060,14 @@
 		1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
 		1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
+		1181F7C81A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
+		1181F7C91A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
+		1181F7CA1A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
+		1181F7CC1A7F87A4001BBFA2 /* AppBasicMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7CB1A7F87A4001BBFA2 /* AppBasicMac.cpp */; };
+		1181F7D11A7F87CB001BBFA2 /* AppCocoaTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7CF1A7F87CB001BBFA2 /* AppCocoaTouch.cpp */; };
+		1181F7D21A7F87CB001BBFA2 /* AppCocoaTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7CF1A7F87CB001BBFA2 /* AppCocoaTouch.cpp */; };
+		1181F7D31A7F87CB001BBFA2 /* AppImplCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7D01A7F87CB001BBFA2 /* AppImplCocoaTouch.mm */; };
+		1181F7D41A7F87CB001BBFA2 /* AppImplCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7D01A7F87CB001BBFA2 /* AppImplCocoaTouch.mm */; };
 		11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
@@ -1194,7 +1194,6 @@
 		001F52090FCF99A10021731E /* Path2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Path2d.cpp; sourceTree = "<group>"; };
 		002419CD0E8035D3004D34EB /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = App.h; path = app/App.h; sourceTree = "<group>"; };
 		002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaBasic.h; path = app/AppImplCocoaBasic.h; sourceTree = "<group>"; };
-		002419D30E8035E1004D34EB /* App.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = App.cpp; path = app/App.cpp; sourceTree = "<group>"; };
 		002419D40E8035E1004D34EB /* AppImplCocoaBasic.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaBasic.mm; path = app/AppImplCocoaBasic.mm; sourceTree = "<group>"; };
 		002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaRendererGl.h; path = app/AppImplCocoaRendererGl.h; sourceTree = "<group>"; };
 		00241A0C0E80375A004D34EB /* Cinder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Cinder.h; sourceTree = "<group>"; };
@@ -1247,7 +1246,6 @@
 		003C0CE615A34D3F00FF29F5 /* AppCocoaView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppCocoaView.h; path = app/AppCocoaView.h; sourceTree = "<group>"; };
 		003FAA9E1290CC90002D6860 /* Clipboard.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Clipboard.cpp; sourceTree = "<group>"; };
 		003FAAA21290CCB1002D6860 /* Clipboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Clipboard.h; sourceTree = "<group>"; };
-		003FABA61290ED38002D6860 /* AppNative.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppNative.h; path = app/AppNative.h; sourceTree = "<group>"; };
 		004172F914C9BE520070C0D1 /* Frustum.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Frustum.h; sourceTree = "<group>"; };
 		004172FE14C9BE760070C0D1 /* Frustum.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Frustum.cpp; sourceTree = "<group>"; };
 		0041730214C9BE8E0070C0D1 /* Plane.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Plane.cpp; sourceTree = "<group>"; };
@@ -1341,7 +1339,6 @@
 		009D6AFD1157FC8B0037C77C /* CinderViewCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = CinderViewCocoaTouch.mm; path = app/CinderViewCocoaTouch.mm; sourceTree = "<group>"; };
 		009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CinderViewCocoaTouch.h; path = app/CinderViewCocoaTouch.h; sourceTree = "<group>"; };
 		009D6B161157FCFB0037C77C /* AppCocoaTouch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppCocoaTouch.h; path = app/AppCocoaTouch.h; sourceTree = "<group>"; };
-		009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppCocoaTouch.mm; path = app/AppCocoaTouch.mm; sourceTree = "<group>"; };
 		009EE46D0F7A9F6700F17CB1 /* PolyLine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PolyLine.h; sourceTree = "<group>"; };
 		009EE4710F7A9FAC00F17CB1 /* PolyLine.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = PolyLine.cpp; sourceTree = "<group>"; };
 		009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = BandedMatrix.cpp; sourceTree = "<group>"; };
@@ -1601,6 +1598,15 @@
 		1146757E1A2128E200C616B6 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswScreenSaver.h; path = app/AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
+		1181F7C31A7F8760001BBFA2 /* AppBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBase.h; path = app/AppBase.h; sourceTree = "<group>"; };
+		1181F7C41A7F8760001BBFA2 /* AppBasicMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBasicMac.h; path = app/AppBasicMac.h; sourceTree = "<group>"; };
+		1181F7C51A7F8760001BBFA2 /* AppBasicMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBasicMsw.h; path = app/AppBasicMsw.h; sourceTree = "<group>"; };
+		1181F7C61A7F8760001BBFA2 /* AppImplCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplCocoaTouch.h; path = app/AppImplCocoaTouch.h; sourceTree = "<group>"; };
+		1181F7C71A7F8792001BBFA2 /* AppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppBase.cpp; path = app/AppBase.cpp; sourceTree = "<group>"; };
+		1181F7CB1A7F87A4001BBFA2 /* AppBasicMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppBasicMac.cpp; path = app/AppBasicMac.cpp; sourceTree = "<group>"; };
+		1181F7CD1A7F87B4001BBFA2 /* AppBasicMsw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppBasicMsw.cpp; path = app/AppBasicMsw.cpp; sourceTree = "<group>"; };
+		1181F7CF1A7F87CB001BBFA2 /* AppCocoaTouch.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppCocoaTouch.cpp; path = app/AppCocoaTouch.cpp; sourceTree = "<group>"; };
+		1181F7D01A7F87CB001BBFA2 /* AppImplCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AppImplCocoaTouch.mm; path = app/AppImplCocoaTouch.mm; sourceTree = "<group>"; };
 		11C102931A1FA7FE002850A2 /* AppImplMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMsw.cpp; path = app/AppImplMsw.cpp; sourceTree = "<group>"; };
 		11C102941A1FA7FE002850A2 /* AppImplMswBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswBasic.cpp; path = app/AppImplMswBasic.cpp; sourceTree = "<group>"; };
 		11C102951A1FA7FE002850A2 /* AppImplMswRendererAngle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswRendererAngle.cpp; path = app/AppImplMswRendererAngle.cpp; sourceTree = "<group>"; };
@@ -1704,13 +1710,17 @@
 			isa = PBXGroup;
 			children = (
 				002419CD0E8035D3004D34EB /* App.h */,
+				1181F7C31A7F8760001BBFA2 /* AppBase.h */,
 				00B4F3E00F5394C500B75296 /* AppBasic.h */,
+				1181F7C41A7F8760001BBFA2 /* AppBasicMac.h */,
+				1181F7C51A7F8760001BBFA2 /* AppBasicMsw.h */,
 				009D6B161157FCFB0037C77C /* AppCocoaTouch.h */,
 				003C0CE615A34D3F00FF29F5 /* AppCocoaView.h */,
 				002419CE0E8035D3004D34EB /* AppImplCocoaBasic.h */,
 				002419FA0E8036A7004D34EB /* AppImplCocoaRendererGl.h */,
 				00E0B49E0F604FCF002C8FBD /* AppImplCocoaRendererQuartz.h */,
 				00A3A9210F681AF4008DE5DC /* AppImplCocoaScreenSaver.h */,
+				1181F7C61A7F8760001BBFA2 /* AppImplCocoaTouch.h */,
 				009D6AED1157FB340037C77C /* AppImplCocoaTouchRendererGl.h */,
 				0005630611513B1D00ECFD91 /* AppImplCocoaTouchRendererQuartz.h */,
 				114675781A2128E200C616B6 /* AppImplMsw.h */,
@@ -1720,7 +1730,6 @@
 				1146757C1A2128E200C616B6 /* AppImplMswRendererGdi.h */,
 				1146757D1A2128E200C616B6 /* AppImplMswRendererGl.h */,
 				1146757E1A2128E200C616B6 /* AppImplMswScreenSaver.h */,
-				003FABA61290ED38002D6860 /* AppNative.h */,
 				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
 				00C05B970F4A03660046CC99 /* CinderView.h */,
 				009D6B001157FCA60037C77C /* CinderViewCocoaTouch.h */,
@@ -1742,14 +1751,17 @@
 		00241A0A0E803708004D34EB /* app */ = {
 			isa = PBXGroup;
 			children = (
-				002419D30E8035E1004D34EB /* App.cpp */,
+				1181F7C71A7F8792001BBFA2 /* AppBase.cpp */,
 				00B4F3E60F53955000B75296 /* AppBasic.cpp */,
-				009D6B1B1157FD3A0037C77C /* AppCocoaTouch.mm */,
+				1181F7CB1A7F87A4001BBFA2 /* AppBasicMac.cpp */,
+				1181F7CD1A7F87B4001BBFA2 /* AppBasicMsw.cpp */,
+				1181F7CF1A7F87CB001BBFA2 /* AppCocoaTouch.cpp */,
 				00BBBDF815A34F49006B9BBE /* AppCocoaView.mm */,
 				002419D40E8035E1004D34EB /* AppImplCocoaBasic.mm */,
 				00DCBE260F7986B800D88D86 /* AppImplCocoaRendererGl.mm */,
 				00A9CF000F8AC1F100B0FF8A /* AppImplCocoaRendererQuartz.mm */,
 				00F976ED0F9D182D00F92D65 /* AppImplCocoaScreenSaver.mm */,
+				1181F7D01A7F87CB001BBFA2 /* AppImplCocoaTouch.mm */,
 				009D6AF01157FB860037C77C /* AppImplCocoaTouchRendererGl.mm */,
 				0005630A11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm */,
 				11C102931A1FA7FE002850A2 /* AppImplMsw.cpp */,
@@ -2752,7 +2764,6 @@
 				111A5F53191F7286005C3166 /* backends.h in Headers */,
 				007CE1F9127BB13B00799071 /* rapidxml_print.hpp in Headers */,
 				007CE1FA127BB13B00799071 /* rapidxml.hpp in Headers */,
-				003FABA81290ED38002D6860 /* AppNative.h in Headers */,
 				003133A5129EB85D009DC098 /* Blend.h in Headers */,
 				111A5F55191F7286005C3166 /* bitrate.h in Headers */,
 				111A5F68191F7286005C3166 /* masking.h in Headers */,
@@ -2913,7 +2924,6 @@
 				00624854122F607500039A7A /* Function.h in Headers */,
 				007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */,
 				007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */,
-				003FABA91290ED38002D6860 /* AppNative.h in Headers */,
 				003133A6129EB85D009DC098 /* Blend.h in Headers */,
 				00A113DB1355363B00081873 /* Triangulate.h in Headers */,
 				00A114241355369A00081873 /* bucketalloc.h in Headers */,
@@ -3114,7 +3124,6 @@
 				007CE1F8127BB13B00799071 /* rapidxml.hpp in Headers */,
 				111A5EC9191F703D005C3166 /* residue_16.h in Headers */,
 				003FAAA31290CCB1002D6860 /* Clipboard.h in Headers */,
-				003FABA71290ED38002D6860 /* AppNative.h in Headers */,
 				003133A4129EB85D009DC098 /* Blend.h in Headers */,
 				0003F4661992D67300647C8B /* TransformFeedbackObj.h in Headers */,
 				008FCFF81A7497DA00A86EC4 /* json-forwards.h in Headers */,
@@ -3298,6 +3307,7 @@
 				007050531114F93F003FCAE4 /* Stream.cpp in Sources */,
 				111A5FA8191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F26191F727A005C3166 /* framing.c in Sources */,
+				1181F7C91A7F8792001BBFA2 /* AppBase.cpp in Sources */,
 				007050571114F93F003FCAE4 /* Color.cpp in Sources */,
 				111A5FC0191F72AE005C3166 /* Device.cpp in Sources */,
 				007050581114F93F003FCAE4 /* Rect.cpp in Sources */,
@@ -3326,6 +3336,7 @@
 				0070509B1114F93F003FCAE4 /* System.cpp in Sources */,
 				0070509C1114F93F003FCAE4 /* Buffer.cpp in Sources */,
 				0070509D1114F93F003FCAE4 /* Exception.cpp in Sources */,
+				1181F7D11A7F87CB001BBFA2 /* AppCocoaTouch.cpp in Sources */,
 				0070509E1114F93F003FCAE4 /* DataSource.cpp in Sources */,
 				0070509F1114F93F003FCAE4 /* ImageIo.cpp in Sources */,
 				111A5F57191F7286005C3166 /* codebook.c in Sources */,
@@ -3362,12 +3373,10 @@
 				0003F4061992D64100647C8B /* TextureFont.cpp in Sources */,
 				008FCFF41A7497C600A86EC4 /* jsoncpp.cpp in Sources */,
 				111A5F6F191F7286005C3166 /* registry.c in Sources */,
-				00CFDD8811363AF50091E310 /* App.cpp in Sources */,
 				000F468F114FE1CE00421982 /* Renderer.cpp in Sources */,
 				0005630B11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm in Sources */,
 				009D6AF21157FB860037C77C /* AppImplCocoaTouchRendererGl.mm in Sources */,
 				009D6AFF1157FC8B0037C77C /* CinderViewCocoaTouch.mm in Sources */,
-				009D6B1D1157FD3A0037C77C /* AppCocoaTouch.mm in Sources */,
 				111A5FD2191F72AE005C3166 /* fftsg.cpp in Sources */,
 				111A5FB7191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				006D704B19942BF5008149E2 /* AvfUtils.mm in Sources */,
@@ -3423,6 +3432,7 @@
 				0041730414C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				114B7554192B2F9800E30153 /* MonitorNode.cpp in Sources */,
 				111A5FCC191F72AE005C3166 /* Dsp.cpp in Sources */,
+				1181F7D31A7F87CB001BBFA2 /* AppImplCocoaTouch.mm in Sources */,
 				43F78EF31516DAB700EB63B5 /* Json.cpp in Sources */,
 				008B43A914F5F8F800B55B07 /* Svg.cpp in Sources */,
 				006D704119940F25008149E2 /* RendererGl.cpp in Sources */,
@@ -3480,6 +3490,7 @@
 				00CFD9A41135C3520091E310 /* Stream.cpp in Sources */,
 				111A5FA9191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5F28191F727B005C3166 /* framing.c in Sources */,
+				1181F7CA1A7F8792001BBFA2 /* AppBase.cpp in Sources */,
 				00CFD9A51135C3520091E310 /* Color.cpp in Sources */,
 				111A5FC1191F72AE005C3166 /* Device.cpp in Sources */,
 				00CFD9A61135C3520091E310 /* Rect.cpp in Sources */,
@@ -3508,6 +3519,7 @@
 				00CFD9C51135C3520091E310 /* System.cpp in Sources */,
 				00CFD9C61135C3520091E310 /* Buffer.cpp in Sources */,
 				00CFD9C71135C3520091E310 /* Exception.cpp in Sources */,
+				1181F7D21A7F87CB001BBFA2 /* AppCocoaTouch.cpp in Sources */,
 				00CFD9C81135C3520091E310 /* DataSource.cpp in Sources */,
 				00CFD9C91135C3520091E310 /* ImageIo.cpp in Sources */,
 				111A5F2E191F7285005C3166 /* codebook.c in Sources */,
@@ -3544,12 +3556,10 @@
 				0003F4071992D64100647C8B /* TextureFont.cpp in Sources */,
 				008FCFF51A7497C600A86EC4 /* jsoncpp.cpp in Sources */,
 				111A5F46191F7285005C3166 /* registry.c in Sources */,
-				00CFDD8911363AF60091E310 /* App.cpp in Sources */,
 				000F4690114FE1CF00421982 /* Renderer.cpp in Sources */,
 				0005630C11513B9400ECFD91 /* AppImplCocoaTouchRendererQuartz.mm in Sources */,
 				009D6AF11157FB860037C77C /* AppImplCocoaTouchRendererGl.mm in Sources */,
 				009D6AFE1157FC8B0037C77C /* CinderViewCocoaTouch.mm in Sources */,
-				009D6B1C1157FD3A0037C77C /* AppCocoaTouch.mm in Sources */,
 				111A5FD3191F72AE005C3166 /* fftsg.cpp in Sources */,
 				111A5FB8191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				006D704C19942BF5008149E2 /* AvfUtils.mm in Sources */,
@@ -3605,6 +3615,7 @@
 				008B43AA14F5F8F800B55B07 /* Svg.cpp in Sources */,
 				114B7555192B2F9800E30153 /* MonitorNode.cpp in Sources */,
 				111A5FCD191F72AE005C3166 /* Dsp.cpp in Sources */,
+				1181F7D41A7F87CB001BBFA2 /* AppImplCocoaTouch.mm in Sources */,
 				0034C31A151A5B7F003F2E30 /* Unicode.cpp in Sources */,
 				0034C323151A5B9F003F2E30 /* linebreak.c in Sources */,
 				006D704219940F25008149E2 /* RendererGl.cpp in Sources */,
@@ -3638,7 +3649,6 @@
 			files = (
 				D8A5A81A19BFDE8700811132 /* CaptureImplAvFoundation.mm in Sources */,
 				111A5EBB191F703D005C3166 /* lpc.c in Sources */,
-				002419D60E8035E1004D34EB /* App.cpp in Sources */,
 				002419D70E8035E1004D34EB /* AppImplCocoaBasic.mm in Sources */,
 				00241ABF0E830DD5004D34EB /* Camera.cpp in Sources */,
 				00241AC00E830DD5004D34EB /* Matrix.cpp in Sources */,
@@ -3657,6 +3667,7 @@
 				0003F3F01992D64100647C8B /* Fbo.cpp in Sources */,
 				00D23A540EAEB4C00002BF91 /* Color.cpp in Sources */,
 				111A5EBF191F703D005C3166 /* mapping0.c in Sources */,
+				1181F7C81A7F8792001BBFA2 /* AppBase.cpp in Sources */,
 				009EEF1A0EB79C89003AB86B /* Rect.cpp in Sources */,
 				00D92FB80EB8AE5200EE9D75 /* Url.cpp in Sources */,
 				111A5FD4191F72AE005C3166 /* FileOggVorbis.cpp in Sources */,
@@ -3677,6 +3688,7 @@
 				0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */,
 				111A5EED191F703D005C3166 /* r8bbase.cpp in Sources */,
 				111A5EC1191F703D005C3166 /* mdct.c in Sources */,
+				1181F7CC1A7F87A4001BBFA2 /* AppBasicMac.cpp in Sources */,
 				009EE4720F7A9FAC00F17CB1 /* PolyLine.cpp in Sources */,
 				0003F4891992EA5900647C8B /* gl_load_cpp.cpp in Sources */,
 				111A5EE3191F703D005C3166 /* vorbisfile.c in Sources */,
