@@ -89,20 +89,20 @@ class AppScreenSaver : public AppBase {
 
 	typedef std::function<void ( Settings *settings )>	SettingsFn;
 
-	void	launch( const char *title, int argc, char * const argv[] ) { /* do nothing - this gets handled a weirder way for screensavers */ }
+	void	launch( const char *title, int argc, char * const argv[] ) override { /* do nothing - this gets handled a weirder way for screensavers */ }
 
-	const Settings&		getSettings() const { return mSettings; }
+	const Settings&		getSettings() const override	{ return mSettings; }
 
 	//! Returns the maximum frame-rate the App will attempt to maintain.
-	virtual float		getFrameRate() const;
+	float		getFrameRate() const override;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
-	virtual void		setFrameRate( float frameRate );
+	void		setFrameRate( float frameRate ) override;
 
 	//! Returns whether the ScreenSaver is running in preview mode or not
-	bool				isPreview() const;
+	bool		isPreview() const;
 
 	//! Ignored for ScreenSavers
-	virtual void			quit() {}
+	void		quit() override {}
 
 	ivec2		getMousePos() override	{ return ivec2( 0 ); }
 
@@ -121,12 +121,11 @@ class AppScreenSaver : public AppBase {
 	}
 #endif
 
-	virtual fs::path		getAppPath() const;
+	fs::path		getAppPath() const override;
+
 #if defined( CINDER_COCOA )
 	NSBundle*		getBundle() const;
 #endif
-
-	virtual void	launch( RendererRef defaultRenderer, const char *title, int argc, char * const argv[] ) {}
 
 	virtual size_t		getNumWindows() const override;
 	virtual WindowRef	getWindow() const override;
@@ -171,7 +170,7 @@ class AppScreenSaver : public AppBase {
 	class AppImplMswScreenSaver*	getImpl() { return mImpl; }
 #endif
 
-	virtual bool		receivesEvents() const { return false; }
+	bool		receivesEvents() const override { return false; }
 
  private:
 	static AppScreenSaver		*sInstance;
