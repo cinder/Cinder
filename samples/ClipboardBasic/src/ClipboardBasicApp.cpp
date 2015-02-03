@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Clipboard.h"
 #include "cinder/Utilities.h"
+#include "cinder/gl/Texture.h"
 
 #include "Resources.h"
 
