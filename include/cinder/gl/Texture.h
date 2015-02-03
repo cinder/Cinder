@@ -591,6 +591,16 @@ class Texture3d : public TextureBase {
 class TextureCubeMap : public TextureBase
 {
   public:
+
+  	typedef std::function<std::pair<ci::Area, ci::ivec2> (const ImageSourceRef&, GLenum)>	LayoutFn;
+		
+	struct Layout {
+		static LayoutFn HORIZONTAL_CROSS;
+		static LayoutFn VERTICAL_CROSS;
+		static LayoutFn HORIZONTAL;
+		static LayoutFn VERTICAL;
+	};
+
   	struct Format : public TextureBase::Format {
 		//! Default constructor, sets the target to \c GL_TEXTURE_CUBE_MAP, wrap to \c GL_CLAMP_TO_EDGE, disables mipmapping, the internal format to "automatic"
 		Format();
@@ -618,6 +628,7 @@ class TextureCubeMap : public TextureBase
 	};
   
 	static TextureCubeMapRef	create( int32_t width, int32_t height, const Format &format = Format() );
+	static TextureCubeMapRef	create( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format = Format() );
 	static TextureCubeMapRef	createHorizontalCross( const ImageSourceRef &imageSource, const Format &format = Format() );
 	//! Expects images ordered { +X, -X, +Y, -Y, +Z, -Z }
 	static TextureCubeMapRef	create( const ImageSourceRef images[6], const Format &format = Format() );
@@ -635,7 +646,7 @@ class TextureCubeMap : public TextureBase
 	TextureCubeMap( const SurfaceT<T> images[6], Format format );
 
 	template<typename T>
-	static TextureCubeMapRef createHorizontalCrossImpl( const ImageSourceRef &imageSource, const Format &format );
+		static TextureCubeMapRef createTextureCubeMapImpl( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 	

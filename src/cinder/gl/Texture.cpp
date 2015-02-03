@@ -1432,6 +1432,104 @@ void Texture3d::printDims( std::ostream &os ) const
 
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
+TextureCubeMap::LayoutFn TextureCubeMap::Layout::HORIZONTAL_CROSS = []( const ImageSourceRef &imageSource, GLenum face )
+{
+	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
+	Area faceArea( 0, 0, faceSize.x, faceSize.y );
+	
+	Area result;
+	ivec2 offset;
+		
+	switch( face ) {
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_X :
+			result = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_X :
+			result = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_Y :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_Z :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z :
+			result = faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 3, faceSize.y * 1 );
+			break;
+	}
+		
+	return std::make_pair( result, offset );
+};
+	
+TextureCubeMap::LayoutFn TextureCubeMap::Layout::VERTICAL_CROSS = []( const ImageSourceRef &imageSource, GLenum face )
+{
+	ivec2 faceSize( imageSource->getWidth() / 3, imageSource->getHeight() / 4 );
+	Area faceArea( 0, 0, faceSize.x, faceSize.y );
+	
+	Area result;
+	ivec2 offset;
+	
+	switch( face ) {
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_X :
+			result = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_X :
+			result = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_Y :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_POSITIVE_Z :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
+			break;
+		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z :
+			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 3 );
+			offset = -ivec2( faceSize.x * 1, faceSize.y * 3 );
+			break;
+	}
+	
+	return std::make_pair( result, offset );
+};
+	
+TextureCubeMap::LayoutFn TextureCubeMap::Layout::HORIZONTAL = []( const ImageSourceRef &imageSource, GLenum face )
+{
+	ivec2 faceSize( imageSource->getHeight(), imageSource->getHeight() );
+	uint8_t index = face - GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+
+	Area result( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
+	ivec2 offset( -index * faceSize.x, 0.0f );
+
+	return std::make_pair( result, offset );
+};
+	
+TextureCubeMap::LayoutFn TextureCubeMap::Layout::VERTICAL = []( const ImageSourceRef &imageSource, GLenum face )
+{
+	ivec2 faceSize( imageSource->getWidth(), imageSource->getWidth() );
+	uint8_t index = face - GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+	
+	Area result( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );;
+	ivec2 offset( 0.0f, -index * faceSize.y );
+
+	return std::make_pair( result, offset );
+};
+
 TextureCubeMap::Format::Format()
 	: TextureBase::Format()
 {
@@ -1445,42 +1543,38 @@ TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const F
 	return TextureCubeMapRef( new TextureCubeMap( width, height, format ) );
 }
 
-TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &imageSource, const Format &format )
+TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format )
 {
-	if( imageSource->getDataType() == ImageIo::UINT8 )
-		return createHorizontalCrossImpl<uint8_t>( imageSource, format );
+	if ( imageSource->getDataType() == ImageIo::UINT8 )
+		return createTextureCubeMapImpl<uint8_t>( imageSource, layoutFn, format );
 	else
-		return createHorizontalCrossImpl<float>( imageSource, format );
+		return createTextureCubeMapImpl<float>( imageSource, layoutFn, format );
 }
-
+	
 template<typename T>
-TextureCubeMapRef TextureCubeMap::createHorizontalCrossImpl( const ImageSourceRef &imageSource, const Format &format )
+TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format )
 {
-	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
-	Area faceArea( 0, 0, faceSize.x, faceSize.y );
+	auto faceData = layoutFn( imageSource, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
+	Area faceArea = faceData.first;
+	ivec2 faceSize = faceArea.getSize();
 	
 	SurfaceT<T> masterSurface( imageSource, SurfaceConstraintsDefault() );
-	
-	// allocate the individual face's Surfaces, ensuring rowbytes == faceSize.x * 3 through default SurfaceConstraints
 	SurfaceT<T> images[6];
+	
 	for( uint8_t f = 0; f < 6; ++f )
+	{
+		auto faceData = layoutFn( imageSource, GL_TEXTURE_CUBE_MAP_POSITIVE_X + f );
 		images[f] = SurfaceT<T>( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
-
-	// copy out each individual face
-	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
-	images[0].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 ), -ivec2( faceSize.x * 2, faceSize.y * 1 ) );
-	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
-	images[1].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 ), -ivec2( faceSize.x * 0, faceSize.y * 1 ) );
-	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
-	images[2].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 ), -ivec2( faceSize.x * 1, faceSize.y * 0 ) );
-	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
-	images[3].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 ), -ivec2( faceSize.x * 1, faceSize.y * 2 ) );
-	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
-	images[4].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 ), -ivec2( faceSize.x * 1, faceSize.y * 1 ) );
-	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
-	images[5].copyFrom( masterSurface, faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 ), -ivec2( faceSize.x * 3, faceSize.y * 1 ) );
-		
+		images[f].copyFrom( masterSurface, faceData.first, faceData.second );
+	}
+	
 	return TextureCubeMapRef( new TextureCubeMap( images, format ) );
+}
+
+
+TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &imageSource, const Format &format )
+{
+	return create( imageSource, Layout::HORIZONTAL_CROSS, format );
 }
 
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const Format &format )
