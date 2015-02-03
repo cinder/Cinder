@@ -14,12 +14,11 @@ using namespace std;
 
 class CubeMapLayoutApp : public AppNative
 {
-public:
+  public:
 	void prepareSettings ( Settings * settings );
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
-	void update() override;
 	void draw() override;
 	
 	std::vector<gl::TextureCubeMapRef> mCubeMaps;
@@ -39,20 +38,20 @@ void CubeMapLayoutApp::setup()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 					
-	mParams = params::InterfaceGl::create("Settings", ivec2(200, 200));
-	mParams->addParam("Cubemap", { "Horizontal Cross", "Vertical Cross", "Vertical Cross", "Horizontal", "Vertical" }, &mSelectedCubeMap );
+	mParams = params::InterfaceGl::create( "Settings", ivec2(200, 200) );
+	mParams->addParam( "Cubemap", { "Horizontal Cross", "Vertical Cross", "Vertical Cross Layout", "Horizontal", "Vertical" }, &mSelectedCubeMap );
 	
-	gl::GlslProgRef shader = gl::GlslProg::create ( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
+	gl::GlslProgRef shader = gl::GlslProg::create( loadAsset( "sky_box.vert" ), loadAsset( "sky_box.frag" ) );
 	shader->uniform( "uCubeMapTex", 0 );
 	
 	mCube = gl::Batch::create( geom::Cube().size( vec3( 100.0f ) ), shader );
 	
 	mSelectedCubeMap = 0;
-	mCubeMaps.push_back( gl::TextureCubeMap::createHorizontalCross( loadImage( loadAsset( "horizontal_cross.jpg" ) ) ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross.png" ) ), gl::TextureCubeMap::Layout::VERTICAL_CROSS ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross_layout.png" ) ), gl::TextureCubeMap::Layout::VERTICAL_CROSS ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "horizontal.png" ) ), gl::TextureCubeMap::Layout::HORIZONTAL ) );
-	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical.hdr" ) ), gl::TextureCubeMap::Layout::VERTICAL ) );
+	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "horizontal_cross.jpg" ) ) ) );
+	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross.png" ) ) ) );
+	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical_cross_layout.png" ) ) ) );
+	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "horizontal.png" ) ) ) );
+	mCubeMaps.push_back( gl::TextureCubeMap::create( loadImage( loadAsset( "vertical.hdr" ) ) ) );
 	
 	CameraPersp cam( getWindowWidth(), getWindowHeight(), 60.0, 0.1f, 1000.0f );
 	cam.setEyePoint( vec3( 0, 0, 10 ) );
@@ -69,10 +68,6 @@ void CubeMapLayoutApp::mouseDown( MouseEvent event )
 void CubeMapLayoutApp::mouseDrag( MouseEvent event )
 {
 	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() || event.isShiftDown() );
-}
-
-void CubeMapLayoutApp::update()
-{
 }
 
 void CubeMapLayoutApp::draw()
