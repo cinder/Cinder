@@ -48,7 +48,7 @@
 
 @interface AppImplCocoaTouch : NSObject {
   @public
-	ci::app::AppCocoaTouch*			mApp;
+	ci::app::AppCocoaTouch*				mApp;
 	std::list<WindowImplCocoaTouch*>	mWindows;
 	WindowImplCocoaTouch*				mActiveWindow;
 	CADisplayLink*						mDisplayLink;
@@ -64,7 +64,7 @@
 	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback
 }
 
-- (AppImplCocoaTouch *)init;
+- (AppImplCocoaTouch *)init:(ci::app::AppCocoaTouch *)app;
 - (ci::app::RendererRef)findSharedRenderer:(ci::app::RendererRef)match;
 - (WindowImplCocoaTouch *)getDeviceWindow;
 - (ci::app::WindowRef)createWindow:(ci::app::Window::Format)format;

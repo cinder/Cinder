@@ -89,12 +89,11 @@ using namespace ci::app;
 
 @implementation AppImplCocoaTouch
 
-- (AppImplCocoaTouch *)init
+- (AppImplCocoaTouch *)init:(AppCocoaTouch *)app
 {
 	self = [super init];
 
-	mApp = cinder::app::AppCocoaTouch::get();
-	mApp->privateSetImpl__( self );
+	mApp = app;
 	mAnimationFrameInterval = 1;
 	mAnimating = NO;
 	mUpdateHasFired = NO;
@@ -102,8 +101,6 @@ using namespace ci::app;
 	mProximityStateIsClose = NO;
 	mIsUnplugged = NO;
 	mBatteryLevel = -1.0f;
-
-	mApp->enablePowerManagement( mApp->getSettings().isPowerManagementEnabled() );
 
 	if( ! mApp->getSettings().isStatusBarEnabled() ) {
 		[UIApplication sharedApplication].statusBarHidden = YES;

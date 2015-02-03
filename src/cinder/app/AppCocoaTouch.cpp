@@ -38,7 +38,9 @@ AppCocoaTouch::AppCocoaTouch()
 	mSettings = *settingsPtr;
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = [[AppImplCocoaTouch alloc] init];
+	mImpl = [[AppImplCocoaTouch alloc] init:this];
+
+	enablePowerManagement( getSettings().isPowerManagementEnabled() );
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
