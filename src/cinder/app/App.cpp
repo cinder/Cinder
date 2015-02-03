@@ -22,10 +22,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if ! defined ( CINDER_WINRT )
-	#define BOOST_REGEX_NO_LIB
-	#include <boost/asio.hpp>
-#endif
+#define ASIO_STANDALONE 1
+#include "asio/asio.hpp"
 
 #include "cinder/app/App.h"
 #include "cinder/app/Renderer.h"
@@ -110,8 +108,8 @@ App::App()
 	mAssetDirectoriesInitialized = false;
 
 #if !defined( CINDER_WINRT )
-	mIo = shared_ptr<boost::asio::io_service>( new boost::asio::io_service() );
-	mIoWork = shared_ptr<boost::asio::io_service::work>( new boost::asio::io_service::work( *mIo ) );
+	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
+	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );
 #endif
 
 	// due to an issue with boost::filesystem's static initialization on Windows, 
@@ -140,7 +138,7 @@ void App::privateUpdate__()
 	mFrameCount++;
 
 #if !defined( CINDER_WINRT )
-	// service boost::asio::io_service
+	// service asio::io_service
 	mIo->poll();
 #endif
 
