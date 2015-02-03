@@ -1432,103 +1432,111 @@ void Texture3d::printDims( std::ostream &os ) const
 
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
-TextureCubeMap::LayoutFn TextureCubeMap::Layout::HORIZONTAL_CROSS = []( const ImageSourceRef &imageSource, GLenum face )
+namespace {
+std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalCrossRegions( const ImageSourceRef &imageSource )
 {
+	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+
 	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
 	
-	Area result;
+	Area area;
 	ivec2 offset;
+
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
+	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
+	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	area = faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 3, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
 		
-	switch( face ) {
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_X :
-			result = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_X :
-			result = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_Y :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_Z :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z :
-			result = faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 3, faceSize.y * 1 );
-			break;
-	}
-		
-	return std::make_pair( result, offset );
+	return result;
 };
 	
-TextureCubeMap::LayoutFn TextureCubeMap::Layout::VERTICAL_CROSS = []( const ImageSourceRef &imageSource, GLenum face )
+std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalCrossRegions( const ImageSourceRef &imageSource )
 {
+	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	
 	ivec2 faceSize( imageSource->getWidth() / 3, imageSource->getHeight() / 4 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
 	
-	Area result;
+	Area area;
 	ivec2 offset;
+
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
+	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
+	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	//  GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
+	result.push_back( make_pair( area, offset ) );
+	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
+	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 3 );
+	offset = -ivec2( faceSize.x * 1, faceSize.y * 3 );
+	result.push_back( make_pair( area, offset ) );
 	
-	switch( face ) {
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_X :
-			result = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_X :
-			result = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_Y :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_POSITIVE_Z :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-			break;
-		case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z :
-			result = faceArea + ivec2( faceSize.x * 1, faceSize.y * 3 );
-			offset = -ivec2( faceSize.x * 1, faceSize.y * 3 );
-			break;
-	}
-	
-	return std::make_pair( result, offset );
+	return result;
 };
 	
-TextureCubeMap::LayoutFn TextureCubeMap::Layout::HORIZONTAL = []( const ImageSourceRef &imageSource, GLenum face )
+std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalRegions( const ImageSourceRef &imageSource )
 {
+	std::vector<std::pair<ci::Area, ci::ivec2>> result;
 	ivec2 faceSize( imageSource->getHeight(), imageSource->getHeight() );
-	uint8_t index = face - GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 
-	Area result( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
-	ivec2 offset( -index * faceSize.x, 0.0f );
+	for( uint8_t index = 0; index < 6; ++index ) {
+		Area area( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
+		ivec2 offset( -index * faceSize.x, 0.0f );
+		result.push_back( make_pair( area, offset ) );
+	}
 
-	return std::make_pair( result, offset );
+	return result;
 };
 	
-TextureCubeMap::LayoutFn TextureCubeMap::Layout::VERTICAL = []( const ImageSourceRef &imageSource, GLenum face )
+std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalRegions( const ImageSourceRef &imageSource )
 {
+	std::vector<std::pair<ci::Area, ci::ivec2>> result;
 	ivec2 faceSize( imageSource->getWidth(), imageSource->getWidth() );
-	uint8_t index = face - GL_TEXTURE_CUBE_MAP_POSITIVE_X;
 	
-	Area result( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );;
-	ivec2 offset( 0.0f, -index * faceSize.y );
+	for( uint8_t index = 0; index < 6; ++index ) {
+		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );;
+		ivec2 offset( 0.0f, -index * faceSize.y );
+		result.push_back( make_pair( area, offset ) );
+	}
 
-	return std::make_pair( result, offset );
+	return result;
 };
+} // anonymous namespace
 
 TextureCubeMap::Format::Format()
 	: TextureBase::Format()
@@ -1543,38 +1551,43 @@ TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const F
 	return TextureCubeMapRef( new TextureCubeMap( width, height, format ) );
 }
 
-TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format )
+TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, const Format &format )
 {
 	if ( imageSource->getDataType() == ImageIo::UINT8 )
-		return createTextureCubeMapImpl<uint8_t>( imageSource, layoutFn, format );
+		return createTextureCubeMapImpl<uint8_t>( imageSource, format );
 	else
-		return createTextureCubeMapImpl<float>( imageSource, layoutFn, format );
+		return createTextureCubeMapImpl<float>( imageSource, format );
 }
 	
 template<typename T>
-TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const LayoutFn &layoutFn, const Format &format )
+TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format )
 {
-	auto faceData = layoutFn( imageSource, GL_TEXTURE_CUBE_MAP_POSITIVE_X );
-	Area faceArea = faceData.first;
+	std::vector<std::pair<ci::Area, ci::ivec2>> faceRegions;
+
+	// Infer the layout based on image aspect ratio
+	ivec2 imageSize( imageSource->getWidth(), imageSource->getHeight() );
+	float minDim = (float)std::min( imageSize.x, imageSize.y );
+	float maxDim = (float)std::max( imageSize.x, imageSize.y );
+	float aspect = minDim / maxDim;
+	if( abs( aspect - 1 / 6.0f ) < abs( aspect - 3 / 4.0f ) ) { // closer to 1:6 than to 4:3, so row or column
+		faceRegions = ( imageSize.x > imageSize.y ) ? calcCubeMapHorizontalRegions( imageSource ) : calcCubeMapVerticalRegions( imageSource );
+	}
+	else { // else, horizontal or vertical cross
+		faceRegions = ( imageSize.x > imageSize.y ) ? calcCubeMapHorizontalCrossRegions( imageSource ) : calcCubeMapVerticalCrossRegions( imageSource );
+	}
+
+	Area faceArea = faceRegions.front().first;
 	ivec2 faceSize = faceArea.getSize();
 	
 	SurfaceT<T> masterSurface( imageSource, SurfaceConstraintsDefault() );
 	SurfaceT<T> images[6];
 	
-	for( uint8_t f = 0; f < 6; ++f )
-	{
-		auto faceData = layoutFn( imageSource, GL_TEXTURE_CUBE_MAP_POSITIVE_X + f );
+	for( uint8_t f = 0; f < 6; ++f ) {
 		images[f] = SurfaceT<T>( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
-		images[f].copyFrom( masterSurface, faceData.first, faceData.second );
+		images[f].copyFrom( masterSurface, faceRegions[f].first, faceRegions[f].second );
 	}
 	
 	return TextureCubeMapRef( new TextureCubeMap( images, format ) );
-}
-
-
-TextureCubeMapRef TextureCubeMap::createHorizontalCross( const ImageSourceRef &imageSource, const Format &format )
-{
-	return create( imageSource, Layout::HORIZONTAL_CROSS, format );
 }
 
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const Format &format )
