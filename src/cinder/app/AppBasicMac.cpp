@@ -22,9 +22,8 @@
  */
 
 #include "cinder/app/AppBasicMac.h"
+#include "cinder/app/AppImplCocoaBasic.h"
 #include "cinder/Log.h"
-
-#import "cinder/app/AppImplCocoaBasic.h"
 
 using namespace std;
 

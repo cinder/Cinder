@@ -21,7 +21,9 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/gl.h" // necessary to give GLee the jump on Cocoa.h
+#pragma once
+
+#include "cinder/gl/gl.h" // necessary to give GLee the jump on Cocoa.h // TODO: still necessary?
 
 #import <Cocoa/Cocoa.h>
 
