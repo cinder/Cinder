@@ -15,15 +15,21 @@
 	#include "WindowsConfig.h"
 #endif
 
+#define LOAD_LOGO_IN_CONSTRUCTOR 0
+
 using namespace ci;
 using namespace ci::app;
 
 class ScreenSaverTestApp : public AppScreenSaver {
   public:
+	ScreenSaverTestApp();
+
 	virtual void setup() override;
 	virtual void resize() override;
 	virtual void update() override;
 	virtual void draw() override;
+
+	void loadLogo();
 
 #if defined( CINDER_MAC )
 	virtual NSWindow* createMacConfigDialog() override
@@ -54,6 +60,14 @@ void prepareSettings( AppScreenSaver::Settings *settings )
 //	settings->enableSecondaryDisplayBlanking();
 }
 
+ScreenSaverTestApp::ScreenSaverTestApp()
+{
+#if LOAD_LOGO_IN_CONSTRUCTOR
+	log::manager()->enableSystemLogging();
+	loadLogo();
+#endif
+}
+
 void ScreenSaverTestApp::setup()
 {
 	log::manager()->enableSystemLogging();
@@ -70,10 +84,17 @@ void ScreenSaverTestApp::setup()
 	getSignalShutdown().connect( [this] {
 		CI_LOG_I( "shutting down" );
 	} );
-	
+
+#if ! LOAD_LOGO_IN_CONSTRUCTOR
+	loadLogo();
+#endif
+}
+
+void ScreenSaverTestApp::loadLogo()
+{
 	try {
 		mLogo = gl::Texture::create( loadImage( loadResource( RES_CINDER_LOGO ) ) );
-		CI_LOG_I( "logo loaded." );
+		CI_LOG_I( "loaded." );
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
