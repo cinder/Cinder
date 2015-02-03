@@ -1,6 +1,7 @@
 #include "cinder/app/AppNative.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/Xml.h"
 #include "cinder/Timeline.h"
 #include "cinder/ImageIo.h"
