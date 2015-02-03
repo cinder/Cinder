@@ -3,6 +3,7 @@
 #include "cinder/Url.h"
 #include "cinder/Xml.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
