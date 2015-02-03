@@ -201,67 +201,6 @@ void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 	}
 }
 
-//////////////////////////////////////////////////////////////
-// uint8_t * operators
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( const ColorAT<uint8_t> &rhs )
-{ 
-	r = r * rhs.r / 255; g = g * rhs.g / 255; b = b * rhs.b / 255; a = a * rhs.r; return *this;
-}
-
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( uint8_t rhs ) 
-{ 
-	r = r * rhs / 255; g = g * rhs / 255; b = b * rhs / 255; return *this;
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator*( const ColorAT<uint8_t> &rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * rhs.r / 255, g * rhs.g / 255, b * rhs.b / 255 );
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator*( uint8_t rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * rhs / 255, g * rhs / 255, b * rhs / 255 );
-}
-
-
-//////////////////////////////////////////////////////////////
-// uint8_t / operators
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( const ColorAT<uint8_t> &rhs )
-{ 
-	r = r * 255 / rhs.r; g = g * 255 / rhs.g; b = b / 255 * rhs.b; return *this;
-}
-
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( uint8_t rhs ) 
-{ 
-	r = r * 255 / rhs; g = g * 255 / rhs; b = b / 255 * rhs; return *this;
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator/( const ColorAT<uint8_t> &rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * 255 / rhs.r, g * 255 / rhs.g, b * 255 / rhs.b, a );
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator/( uint8_t rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * 255 / rhs, g * 255 / rhs, b * 255 / rhs, a );
-}
-
-//////////////////////////////////////////////////////////////
-// uint8_t additional
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::lerp( uint8_t fact, const ColorAT<uint8_t> &d ) const
-{
-	return ColorAT<uint8_t>( r + ( d.r - r ) * fact / 255, g + ( d.g - g ) * fact / 255, b + ( d.b - b ) * fact / 255, a + ( d.a - a ) * fact / 255 );
-}
-
 std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs ) 
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "," << rhs.a << "]";

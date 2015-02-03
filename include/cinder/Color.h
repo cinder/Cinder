@@ -318,8 +318,8 @@ class ColorAT {
 };
 
 // Operators
-template <typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT<T>& c )  { return ColorT<T>( s*c.r, s*c.g, s*c.b ); }
-template <typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
+template<typename T, typename Y> inline ColorT<T>  operator*( Y s, const ColorT<T>& c )  { return ColorT<T>( s*c.r, s*c.g, s*c.b ); }
+template<typename T, typename Y> inline ColorAT<T> operator*( Y s, const ColorAT<T>& c ) { return ColorAT<T>( s*c.r, s*c.g, s*c.b, s*c.a ); }
 
 // Free Functions
 extern ColorT<float> hsvToRgb( const vec3 &hsv );
@@ -329,67 +329,67 @@ extern ColorT<uint8_t> svgNameToRgb( const char *svgName, bool *found = NULL );
 
 // These are designed to mimic GLM
 template<typename T>
-typename CHANTRAIT<T>::Accum distance( const ColorT<T> &c0, const ColorT<T> &c1 )
+inline float distance( const ColorT<T> &c0, const ColorT<T> &c1 )
 {
 	return (typename CHANTRAIT<T>::Accum)sqrt( (float)( (c0.r - c1.r)*(c0.r - c1.r) + (c0.g - c1.g)*(c0.g - c1.g) + (c0.b - c1.b)*(c0.b - c1.b) ) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum distance( const ColorAT<T> &c0, const ColorAT<T> &c1 )
+inline float distance( const ColorAT<T> &c0, const ColorAT<T> &c1 )
 {
 	return (typename CHANTRAIT<T>::Accum)sqrt( (float)( (c0.r - c1.r)*(c0.r - c1.r) + (c0.g - c1.g)*(c0.g - c1.g) + (c0.b - c1.b)*(c0.b - c1.b) + (c0.a - c1.a)*(c0.a - c1.a) ) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum distance2( const ColorT<T> &c0, const ColorT<T> &c1 )
+inline typename CHANTRAIT<T>::Accum distance2( const ColorT<T> &c0, const ColorT<T> &c1 )
 {
 	return (typename CHANTRAIT<T>::Accum)( (c0.r - c1.r)*(c0.r - c1.r) + (c0.g - c1.g)*(c0.g - c1.g) + (c0.b - c1.b)*(c0.b - c1.b) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum distance2( const ColorAT<T> &c0, const ColorAT<T> &c1 )
+inline typename CHANTRAIT<T>::Accum distance2( const ColorAT<T> &c0, const ColorAT<T> &c1 )
 {
 	return (typename CHANTRAIT<T>::Accum)( (c0.r - c1.r)*(c0.r - c1.r) + (c0.g - c1.g)*(c0.g - c1.g) + (c0.b - c1.b)*(c0.b - c1.b) + (c0.a - c1.a)*(c0.a - c1.a) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum length( const ColorT<T> &c )
+inline float length( const ColorT<T> &c )
 {
 	return (typename CHANTRAIT<T>::Accum)sqrt( (float)( c.r * c.r + c.g * c.g + c.b * c.b ) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum length( const ColorAT<T> &c )
+inline float length( const ColorAT<T> &c )
 {
 	return (typename CHANTRAIT<T>::Accum)sqrt( (float)( c.r * c.r + c.g * c.g + c.b * c.b + c.a * c.a ) );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum length2( const ColorT<T> &c )
+inline typename CHANTRAIT<T>::Accum length2( const ColorT<T> &c )
 {
 	return (typename CHANTRAIT<T>::Accum)( c.r * c.r + c.g * c.g + c.b * c.b );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum length2( const ColorAT<T> &c )
+inline typename CHANTRAIT<T>::Accum length2( const ColorAT<T> &c )
 {
 	return (typename CHANTRAIT<T>::Accum)( c.r * c.r + c.g * c.g + c.b * c.b + c.a * c.a );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum dot( const ColorT<T> &c0, const ColorT<T> &c1 )
+inline typename CHANTRAIT<T>::Accum dot( const ColorT<T> &c0, const ColorT<T> &c1 )
 {
 	return (CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b );
 }
 
 template<typename T>
-typename CHANTRAIT<T>::Accum dot( const ColorAT<T> &c0, const ColorAT<T> &c1 )
+inline typename CHANTRAIT<T>::Accum dot( const ColorAT<T> &c0, const ColorAT<T> &c1 )
 {
 	return (CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b + c0.a * c1.a );
 }
 
 template<typename T>
-ColorT<T> normalize( const ColorT<T> &c0 )
+inline ColorT<T> normalize( const ColorT<T> &c0 )
 {
 	float s = length( c0 );
 	if( s > 0 )
@@ -399,7 +399,7 @@ ColorT<T> normalize( const ColorT<T> &c0 )
 }
 
 template<typename T>
-ColorAT<T> normalize( const ColorAT<T> &c0 )
+inline ColorAT<T> normalize( const ColorAT<T> &c0 )
 {
 	float s = length( c0 );
 	if( s > 0 )
@@ -407,6 +407,68 @@ ColorAT<T> normalize( const ColorAT<T> &c0 )
 	else
 		return ColorAT<T>( 0, 0, 0, 0 );
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+// uint8_t * operators specializations
+template<>
+inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( const ColorAT<uint8_t> &rhs )
+{ 
+	r = r * rhs.r / 255; g = g * rhs.g / 255; b = b * rhs.b / 255; a = a * rhs.r; return *this;
+}
+
+template<>
+inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( uint8_t rhs )
+{ 
+	r = r * rhs / 255; g = g * rhs / 255; b = b * rhs / 255; return *this;
+}
+
+template<>
+inline ColorAT<uint8_t> ColorAT<uint8_t>::operator*( const ColorAT<uint8_t> &rhs ) const
+{ 
+	return ColorAT<uint8_t>( r * rhs.r / 255, g * rhs.g / 255, b * rhs.b / 255 );
+}
+
+template<>
+inline ColorAT<uint8_t> ColorAT<uint8_t>::operator*( uint8_t rhs ) const
+{ 
+	return ColorAT<uint8_t>( r * rhs / 255, g * rhs / 255, b * rhs / 255 );
+}
+
+
+//////////////////////////////////////////////////////////////////////////////////
+// uint8_t / operators specializations
+template<>
+inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( const ColorAT<uint8_t> &rhs )
+{ 
+	r = r * 255 / rhs.r; g = g * 255 / rhs.g; b = b / 255 * rhs.b; return *this;
+}
+
+template<>
+inline const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( uint8_t rhs )
+{ 
+	r = r * 255 / rhs; g = g * 255 / rhs; b = b / 255 * rhs; return *this;
+}
+
+template<>
+inline ColorAT<uint8_t> ColorAT<uint8_t>::operator/( const ColorAT<uint8_t> &rhs ) const
+{ 
+	return ColorAT<uint8_t>( r * 255 / rhs.r, g * 255 / rhs.g, b * 255 / rhs.b, a );
+}
+
+template<>
+inline ColorAT<uint8_t> ColorAT<uint8_t>::operator/( uint8_t rhs ) const
+{ 
+	return ColorAT<uint8_t>( r * 255 / rhs, g * 255 / rhs, b * 255 / rhs, a );
+}
+
+//////////////////////////////////////////////////////////////////////////////////
+// uint8_t additional specializations
+template<>
+inline ColorAT<uint8_t> ColorAT<uint8_t>::lerp( uint8_t fact, const ColorAT<uint8_t> &d ) const
+{
+	return ColorAT<uint8_t>( r + ( d.r - r ) * fact / 255, g + ( d.g - g ) * fact / 255, b + ( d.b - b ) * fact / 255, a + ( d.a - a ) * fact / 255 );
+}
+
 
 extern std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs );
 extern std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs );
