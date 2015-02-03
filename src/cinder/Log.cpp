@@ -315,7 +315,7 @@ void LoggerNSLog::write( const Metadata &meta, const string &text )
 {
 	NSString *textNs = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
 	NSString *metaDataNs = [NSString stringWithCString:meta.toString().c_str() encoding:NSUTF8StringEncoding];
-	NSLog( @"%@%@", metaDataNs, textNs );
+	NSLog( @"%@ %@", metaDataNs, textNs );
 }
 
 #endif

@@ -7,6 +7,7 @@
 //
 
 #include "cinder/Cinder.h"
+#include "cinder/app/RendererGl.h"
 #import "AppDelegate.h"
 
 @implementation AppDelegate
