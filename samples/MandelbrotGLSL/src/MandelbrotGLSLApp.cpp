@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
 
 #include "Resources.h"
