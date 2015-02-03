@@ -23,11 +23,13 @@
 
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/CinderAssert.h"
 
 #if defined( CINDER_MAC )
-#	import "cinder/app/AppImplCocoaScreenSaver.h"
+	#import "cinder/app/AppImplCocoaScreenSaver.h"
+	#include "cinder/app/PlatformCocoa.h"
 #elif defined( CINDER_MSW )
-#	include "cinder/app/AppImplMswScreenSaver.h"
+	#include "cinder/app/AppImplMswScreenSaver.h"
 #endif
 
 cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = 0;
@@ -37,14 +39,17 @@ namespace cinder { namespace app {
 #if defined( CINDER_MAC )
 //static cinder::app::AppScreenSaverFactory *CINDER_SCREENSAVER_FACTORY = 0;
 
-void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title )
+AppScreenSaver::AppScreenSaver()
+	: mImpl( nullptr )
 {
-	AppBase::sInstance = sInstance = app;
-	AppBase::executeLaunch( app, renderer, title, 0, 0 );
-	
-	app->prepareSettings( &app->mSettings );
-}
+	AppBase::sInstance = sInstance = this;
 
+	auto platform = dynamic_cast<PlatformCocoa *>( Platform::get() );
+	CI_ASSERT_MSG( platform, "expected global Platform object to be of type PlatformCocoa" );
+
+	platform->setBundle( getBundle() );
+	platform->setExecutablePath( getAppPath() );
+}
 
 #elif defined( CINDER_MSW )
 void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd )
@@ -104,7 +109,7 @@ fs::path AppScreenSaver::getAppPath() const
 #if defined( CINDER_COCOA )
 NSBundle* AppScreenSaver::getBundle() const
 {
-	return [NSBundle bundleForClass:[mImpl class]];
+	return [NSBundle bundleForClass:[AppImplCocoaScreenSaver class]];
 }
 #endif
 

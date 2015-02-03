@@ -85,6 +85,10 @@ class AppScreenSaver : public AppBase {
 		bool	mEnableDebug;
 	};
 
+	AppScreenSaver();
+
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
+
 	void	launch( const char *title, int argc, char * const argv[] ) { /* do nothing - this gets handled a weirder way for screensavers */ }
 
 	const Settings&		getSettings() const { return mSettings; }
@@ -100,6 +104,13 @@ class AppScreenSaver : public AppBase {
 	//! Ignored for ScreenSavers
 	virtual void			quit() {}
 
+	ivec2		getMousePos() override	{ return ivec2( 0 ); }
+
+	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override	{ return fs::path(); }
+	fs::path getFolderPath( const fs::path &initialPath ) override													{ return fs::path(); }
+	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override	{ return fs::path(); }
+
+
 #if defined( CINDER_MAC )
 	//! Should return a NSWindow* on Mac OS implementing a custom configuration dialog. Requires settings->setProvidesMacConfigDialog() in prepareSettings().
 	virtual NSWindow*		createMacConfigDialog() { return NULL; }
@@ -112,7 +123,7 @@ class AppScreenSaver : public AppBase {
 
 	virtual fs::path		getAppPath() const;
 #if defined( CINDER_COCOA )
-	virtual NSBundle*		getBundle() const;
+	NSBundle*		getBundle() const;
 #endif
 
 	virtual void	launch( RendererRef defaultRenderer, const char *title, int argc, char * const argv[] ) {}
@@ -122,13 +133,38 @@ class AppScreenSaver : public AppBase {
 	virtual WindowRef	getWindowIndex( size_t index ) const override;
 
 #if defined( CINDER_MAC )
-	static void	executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title );
+//	static void	executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title );
 #elif defined( CINDER_MSW )
 	static void	executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd );
 #endif
 
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplCocoaScreenSaver*>( impl ); }
+
+	template<typename AppT, typename RendererT>
+	static AppScreenSaver* main( void *impl, const char *title, const SettingsFn &settingsFn = SettingsFn() )
+	{
+		AppBase::prepareLaunch();
+
+		Settings settings;
+		settings.setDefaultRenderer( std::make_shared<RendererT>() );
+		if( settingsFn )
+			settingsFn( &settings );
+
+		if( settings.shouldQuit() )
+			return nullptr; // TODO: is this safe for screensavers?
+
+		AppBase::initialize( &settings );
+
+		AppScreenSaver *app = new AppT;
+		app->privateSetImpl__( impl ); // TODO: can impl be set during app constructor, or does it need to be?
+
+		AppBase::executeLaunch( title, 0, nullptr );
+		AppBase::cleanupLaunch();
+
+		return app;
+	}
+
 #elif defined( CINDER_MSW )
 	void							launch( ::HWND hwnd );
 	virtual bool					getsWindowsPaintEvents() { return false; }
@@ -150,16 +186,15 @@ class AppScreenSaver : public AppBase {
 } } // namespace cinder::app
 
 #if defined( CINDER_MAC )
-	extern "C" cinder::app::AppScreenSaver*	ScreenSaverFactoryMethod( void *impl );
-	#define CINDER_APP_SCREENSAVER( APP, RENDERER ) \
-		extern "C" { \
-		cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl ) { \
-			cinder::app::AppScreenSaver *app = new APP; \
-			app->privateSetImpl__( impl ); \
-			cinder::app::AppScreenSaver::executeLaunch( app, RendererRef( new RENDERER ), #APP );  \
-			return app; \
-			} \
-		}
+extern "C" cinder::app::AppScreenSaver*	ScreenSaverFactoryMethod( void *impl );
+#define CINDER_APP_SCREENSAVER( APP, RENDERER, ... )												\
+extern "C" {																						\
+	cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl )								\
+	{																								\
+		return cinder::app::AppScreenSaver::main<APP, RENDERER>( impl, #APP, ##__VA_ARGS__ );		\
+	}																								\
+}
+
 #elif defined( CINDER_MSW )
 	#define CINDER_APP_SCREENSAVER( APP, RENDERER ) \
 		cinder::app::AppScreenSaver *sScreenSaverMswInstance = 0; \

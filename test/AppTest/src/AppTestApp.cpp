@@ -95,6 +95,8 @@ AppTestApp::AppTestApp()
 
 void AppTestApp::setup()
 {
+	CI_LOG_I( "bang" );
+
 	auto asset = loadAsset( "mustache-green.png" );
 	mTexAsset = gl::Texture::create( loadImage( asset ) );
 
