@@ -98,6 +98,11 @@ static Boolean sIsEaglLayer;
 		[self performSelectorOnMainThread:@selector(setNeedsDisplay) withObject:self waitUntilDone:NO];
 }
 
+- (void)makeCurrentContext
+{
+	mRenderer->startDraw();
+}
+
 - (uint32_t)addTouchToMap:(UITouch*)touch
 {
 	uint32_t candidateId = 0;

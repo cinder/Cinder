@@ -82,6 +82,7 @@
 	mFrameRate = mApp->getSettings().getFrameRate();
 	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
 
+	// lastly, ensure the first window is the currently active context
 	[((WindowImplBasicCocoa *)[mWindows firstObject])->mCinderView makeCurrentContext];
 
     return self;

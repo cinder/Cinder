@@ -122,9 +122,8 @@ using namespace ci::app;
 
 	[self setActiveWindow:mWindows.front()];
 
-	// TODO: Is it necessary to call a makeCurrentContext here?
-	//	auto renderer = [mWindows.front()->mCinderView getRenderer];
-	//	renderer->startDraw();
+	// lastly, ensure the first window is the currently active context
+	[mWindows.front()->mCinderView makeCurrentContext];
 
 	return self;
 }

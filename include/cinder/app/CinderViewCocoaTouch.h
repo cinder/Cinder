@@ -59,6 +59,7 @@
 - (ci::app::RendererRef)getRenderer;
 
 - (void)drawView;
+- (void)makeCurrentContext;
 
 - (uint32_t)addTouchToMap:(UITouch*)touch;
 - (void)removeTouchFromMap:(UITouch*)touch;
