@@ -22,12 +22,13 @@
 
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
+#include "cinder/ImageIo.h"
 #include <boost/algorithm/string/case_conv.hpp>
 
 namespace cinder {
 
-Colorf hsvToRGB( const vec3 &hsv );
-vec3 rgbToHSV( const Colorf &c );
+Colorf hsvToRgb( const vec3 &hsv );
+vec3 rgbToHsv( const Colorf &c );
 
 namespace {
 const int sTotalColors = 147;
@@ -88,9 +89,9 @@ const uint8_t sColorValues[sTotalColors][3] = {
 /////////////////////////////////////////////////////////////////////////////
 // ColorT
 template<typename T>
-ColorT<T>::ColorT( ColorModel cm, float x, float y, float z )
+ColorT<T>::ColorT( ColorModel cm, float c0, float c1, float c2 )
 {
-	set( cm, vec3( x, y, z ) );
+	set( cm, vec3( c0, c1, c2 ) );
 }
 
 template<typename T>
@@ -109,11 +110,26 @@ ColorT<T>::ColorT( const char *svgColorName )
 }
 
 template<typename T>
+vec3 ColorT<T>::get( ColorModel cm ) const
+{
+	switch( cm ) {
+		case CM_HSV:
+			return rgbToHsv( Colorf( *this ) );
+		break;
+		case CM_RGB:
+			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
+		break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
+	}
+}
+
+template<typename T>
 void ColorT<T>::set( ColorModel cm, const vec3 &v )
 {
 	switch( cm ) {
 		case CM_HSV: {
-			Colorf rgb = hsvToRGB( v );
+			Colorf rgb = hsvToRgb( v );
 			r = CHANTRAIT<T>::convert( rgb.r );
 			g = CHANTRAIT<T>::convert( rgb.g );
 			b = CHANTRAIT<T>::convert( rgb.b );
@@ -129,25 +145,14 @@ void ColorT<T>::set( ColorModel cm, const vec3 &v )
 	}
 }
 
-template<typename T>
-vec3 ColorT<T>::get( ColorModel cm ) const
-{
-	switch( cm ) {
-		case CM_HSV: {
-			return rgbToHSV( Colorf( *this ) );
-		}
-		break;
-		case CM_RGB: {
-			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
-		}
-		break;
-		default:
-			throw;
-	}
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // ColorAT
+template<typename T>
+ColorAT<T>::ColorAT( ColorModel cm, float c0, float c1, float c2, float alpha )
+{
+	set( cm, vec4( c0, c1, c2, alpha ) );
+}
+
 template<typename T>
 ColorAT<T>::ColorAT( const char *svgColorName, T aA )
 	: a( aA )
@@ -159,24 +164,40 @@ ColorAT<T>::ColorAT( const char *svgColorName, T aA )
 }
 
 template<typename T>
-ColorAT<T>::ColorAT( ColorModel cm, float c1, float c2, float c3, float aA )
-	: a( CHANTRAIT<T>::convert( aA ) )
+vec3 ColorAT<T>::get( ColorModel cm ) const
 {
 	switch( cm ) {
+		case CM_HSV:
+			return rgbToHsv( Colorf( r, g, b ) );
+		break;
+		case CM_RGB:
+			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
+		break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
+	}
+}
+
+template<typename T>
+void ColorAT<T>::set( ColorModel cm, const vec4 &v )
+{
+	a = v.w;
+
+	switch( cm ) {
 		case CM_HSV: {
-			Colorf rgb = hsvToRGB( vec3( c1, c2, c3 ) );
+			Colorf rgb = hsvToRgb( vec3( v ) );
 			r = CHANTRAIT<T>::convert( rgb.r );
 			g = CHANTRAIT<T>::convert( rgb.g );
 			b = CHANTRAIT<T>::convert( rgb.b );
 		}
 		break;
 		case CM_RGB:
-			r = CHANTRAIT<T>::convert( c1 );
-			g = CHANTRAIT<T>::convert( c2 );
-			b = CHANTRAIT<T>::convert( c3 );
+			r = CHANTRAIT<T>::convert( v.r );
+			g = CHANTRAIT<T>::convert( v.g );
+			b = CHANTRAIT<T>::convert( v.b );
 		break;
 		default:
-			throw;
+			throw ImageIoExceptionIllegalColorModel();
 	}
 }
 
@@ -255,7 +276,7 @@ std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs )
 
 /////////////////////////////////////////////////////////////////////////////
 // Utilities
-Colorf hsvToRGB( const vec3 &hsv )
+Colorf hsvToRgb( const vec3 &hsv )
 {
     float hue = hsv.x;
     float sat = hsv.y;
@@ -285,7 +306,7 @@ Colorf hsvToRGB( const vec3 &hsv )
     return Colorf( x, y, z );
 }
 
-vec3 rgbToHSV( const Colorf &c )
+vec3 rgbToHsv( const Colorf &c )
 {
     const float &x = c.r;
     const float &y = c.g;
