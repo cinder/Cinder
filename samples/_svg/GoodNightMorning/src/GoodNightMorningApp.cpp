@@ -7,6 +7,7 @@
 #include "cinder/Timeline.h"
 #include "cinder/ip/Fill.h"
 #include "cinder/ip/Blend.h"
+#include "cinder/gl/Texture.h"
 
 #include "TweetStream.h"
 
