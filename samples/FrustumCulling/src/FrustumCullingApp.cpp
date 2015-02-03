@@ -91,13 +91,8 @@ void FrustumCullingApp::setup()
 	
 	auto glsl = gl::getStockShader( gl::ShaderDef().color() );
 	
-	mSphere = gl::Batch::create( geom::Sphere()
-										.subdivisions( 60 )
-										.disable( geom::NORMAL )
-										.disable( geom::COLOR ), glsl );
-	mCube = gl::Batch::create( geom::Cube()
-										.disable( geom::NORMAL )
-										.disable( geom::COLOR ), glsl );
+	mSphere = gl::Batch::create( geom::Sphere().subdivisions( 60 ), glsl );
+	mCube = gl::Batch::create( geom::Cube(), glsl );
 
 	gl::clearColor( ColorA( 0.1f, 0.1f, 0.1f, 1.0f ) );
 	gl::enableDepthRead( true );
