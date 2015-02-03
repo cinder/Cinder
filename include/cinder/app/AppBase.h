@@ -46,9 +46,9 @@ namespace cinder {
 class Timeline;
 } // namespace cinder
 
-namespace boost { namespace asio {
+namespace asio {
 class io_service;
-} } // namespace boost::asio
+} // namespace asio
 
 namespace cinder { namespace app {
 
@@ -382,7 +382,7 @@ class AppBase {
 	static bool		isPrimaryThread();
 
 	//! Returns a reference to the App's boost::asio::io_service()
-	boost::asio::io_service&	io_service() { return *mIo; }
+	asio::io_service&	io_service() { return *mIo; }
 
 	//! Executes a std::function on the App's primary thread ahead of the next update()
 	void	dispatchAsync( const std::function<void()> &fn );
@@ -441,8 +441,8 @@ class AppBase {
 
 	signals::signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
 
-	std::shared_ptr<boost::asio::io_service>	mIo;
-	std::shared_ptr<void>						mIoWork; // boost::asio::io_service::work, but can't fwd declare member class
+	std::shared_ptr<asio::io_service>	mIo;
+	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 
   protected:
 	static AppBase*					sInstance;

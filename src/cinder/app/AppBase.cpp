@@ -111,11 +111,7 @@ void AppBase::privateUpdate__()
 {
 	mFrameCount++;
 
-<<<<<<< HEAD
-#if !defined( CINDER_WINRT )
 	// service asio::io_service
-=======
->>>>>>> removed #if guards for boost::asio::io_service on WinRT, it should be possible to support now.
 	mIo->poll();
 
 	if( getNumWindows() > 0 ) {
