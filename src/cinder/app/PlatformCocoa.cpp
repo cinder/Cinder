@@ -68,7 +68,7 @@ fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) cons
 	fs::path fileName = rsrcRelativePath.filename();
 
 	if( fileName.empty() )
-		return string();
+		return fs::path();
 
 	NSString *pathNS = NULL;
 	if( ( ! path.empty() ) && ( path != rsrcRelativePath ) )
@@ -76,7 +76,7 @@ fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) cons
 
 	NSString *resultPath = [getBundle() pathForResource:[NSString stringWithUTF8String:fileName.c_str()] ofType:NULL inDirectory:pathNS];
 	if( ! resultPath )
-		return string();
+		return fs::path();
 
 	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
 }
