@@ -37,6 +37,7 @@ namespace cinder { namespace app {
 
 class PlatformCocoa : public Platform {
   public:
+	PlatformCocoa();
 
 	void prepareLaunch() override;
 	void cleanupLaunch() override;
@@ -46,13 +47,16 @@ class PlatformCocoa : public Platform {
 	fs::path getResourcePath() const override;
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
-	//! Returns the application's bundle (.app) or a screenSaver's bundle (.saver) for AppScreenSaver
+	//! Sets the NSBundle that should be associated with this global platform object. By default this is `[NSBundle mainBundle]`.
+	void			setBundle( NSBundle *bundle );
+	//! Returns the NSBundle associated with this global platform object. By default this is `[NSBundle mainBundle]`.
 	NSBundle*		getBundle() const;
 
 	void prepareAssetLoading() override;
 
   private:
-	NSAutoreleasePool *mAutoReleasePool;
+	NSAutoreleasePool*		mAutoReleasePool;
+	mutable NSBundle*		mBundle;
 };
 
 } } // namespace cinder::app
