@@ -36,6 +36,7 @@ namespace cinder { namespace app {
 
 namespace {
 
+const size_t ASSET_SEARCH_DEPTH = 10;
 static Platform *sInstance = nullptr;
 
 } // anonymous namespace
@@ -104,12 +105,12 @@ fs::path Platform::findAssetPath( const fs::path &relativePath )
 
 void Platform::findAndAddAssetBasePath()
 {
-	// first search the local directory, then its parent, up to 5 levels up
+	// first search the local directory, then its parent, up to ASSET_SEARCH_DEPTH levels up
 	// check at least the app path, even if it has no parent directory
 	auto execPath = getExecutablePath();
-	int parentCt = 0;
+	size_t parentCt = 0;
 	for( fs::path curPath = execPath; curPath.has_parent_path() || ( curPath == execPath ); curPath = curPath.parent_path(), ++parentCt ) {
-		if( parentCt >= 5 )
+		if( parentCt >= ASSET_SEARCH_DEPTH )
 			break;
 
 		const fs::path curAssetPath = curPath / "assets";
