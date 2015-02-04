@@ -50,7 +50,7 @@ class AppBasicMsw : public AppBasic {
 	AppBasicMsw();
 	virtual ~AppBasicMsw();
 
-	WindowRef	createWindow( const Window::Format &format ) override;
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
 
 	float		getFrameRate() const override;
