@@ -146,14 +146,13 @@ class AppScreenSaver : public AppBase {
 		AppBase::prepareLaunch();
 
 		Settings settings;
-		settings.setDefaultRenderer( std::make_shared<RendererT>() );
+		AppBase::initialize( &settings, std::make_shared<RendererT>(), title, 0, nullptr );
+
 		if( settingsFn )
 			settingsFn( &settings );
 
 		if( settings.shouldQuit() )
 			return nullptr; // TODO: is this safe for screensavers?
-
-		AppBase::initialize( &settings );
 
 		AppScreenSaver *app = new AppT;
 		app->privateSetImpl__( impl ); // TODO: can impl be set during app constructor, or does it need to be?

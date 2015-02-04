@@ -183,6 +183,8 @@ class AppBase {
 		const std::string&	getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		void				setTitle( const std::string &title ) { mTitle = title; }
+		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
+		const std::vector<std::string>&		getCommandLineArgs() const	{ return mCommandLineArgs; }
 
 		//! Sets maximum frameRate the update/draw loop will execute at, specified in frames per second. FrameRate limiting is on by default, at 60 FPS.
 		void	setFrameRate( float frameRate );
@@ -197,19 +199,22 @@ class AppBase {
 		bool	shouldQuit() const			{ return mShouldQuit; }
 
 	  protected:
-		// A vector of Windows which have been requested using prepareWindow. An empty vector implies defaults.
-		std::vector<Window::Format>		mWindowFormats;
-		// The Window format which will be used if prepareWindow is not called
-		Window::Format					mDefaultWindowFormat;
+		void init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
+
+		std::vector<Window::Format>		mWindowFormats;			// windows formats which have been requested using prepareWindow.
+		Window::Format					mDefaultWindowFormat;	// used if no format was requested by user.
 		RendererRef						mDefaultRenderer;
-            
+		std::string						mTitle;
+		std::vector<std::string>		mCommandLineArgs;
+
 		bool			mFrameRateEnabled;
 		float			mFrameRate;
 		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
 		bool			mEnableHighDensityDisplay;
 		bool			mEnableMultiTouch;
-		std::string		mTitle;
 		bool			mShouldQuit; // defaults to false, facilitates early termination
+
+		friend AppBase;
 	};
 
 
@@ -421,7 +426,7 @@ class AppBase {
 	//! \cond
 	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
-	static void		initialize( Settings *settingsFromMain );
+	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
 	static void		executeLaunch( const char *title, int argc, char * const argv[] );
 	static void		cleanupLaunch();
 	

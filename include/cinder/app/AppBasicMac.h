@@ -85,14 +85,13 @@ void AppBasicMac::main( const char *title, int argc, char * const argv[], const 
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	settings.setDefaultRenderer( std::make_shared<RendererT>() );
+	AppBase::initialize( &settings, std::make_shared<RendererT>(), title, argc, argv );
+
 	if( settingsFn )
 		settingsFn( &settings );
 
 	if( settings.shouldQuit() )
 		return;
-
-	AppBase::initialize( &settings );
 
 	AppBasic *app = new AppT;
 	#pragma unused( app )

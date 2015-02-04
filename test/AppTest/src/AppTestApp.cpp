@@ -18,6 +18,14 @@ using namespace std;
 void prepareSettings( App::Settings *settings )
 {
 	CI_LOG_I( "bang" );
+
+	const auto &args = settings->getCommandLineArgs();
+	if( ! args.empty() ) {
+		CI_LOG_I( "command line args: " );
+		for( size_t i = 0; i < args.size(); i++ )
+			console() << "\t[" << i << "] " << args[i] << endl;
+	}
+
 	settings->setWindowPos( 50, 50 );
 	settings->setWindowSize( 900, 500 );
 //	settings->setResizable( false );

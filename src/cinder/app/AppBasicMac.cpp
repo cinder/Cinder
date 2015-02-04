@@ -36,6 +36,8 @@ AppBasicMac::AppBasicMac()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
+	sDefaultRenderer = mSettings.getDefaultRenderer();
+
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaBasic alloc] init:this];
 }
@@ -49,11 +51,6 @@ void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 {
 	// -----------------------
 	// TODO: consider moving this to a common AppBasic method, or doing in App
-	for( int arg = 0; arg < argc; ++arg )
-		mCommandLineArgs.push_back( std::string( argv[arg] ) );
-
-	if( mSettings.getTitle().empty() )
-		mSettings.setTitle( title );
 
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );

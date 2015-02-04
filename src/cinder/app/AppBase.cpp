@@ -55,6 +55,15 @@ AppBase::Settings::Settings()
 	mEnableMultiTouch = false;	
 }
 
+void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
+{
+	mDefaultRenderer = defaultRenderer;
+	mTitle = title;
+
+	for( int arg = 0; arg < argc; ++arg )
+		mCommandLineArgs.push_back( argv[arg] );
+}
+
 void AppBase::Settings::disableFrameRate()
 {
 	mFrameRateEnabled = false;
@@ -200,10 +209,12 @@ void AppBase::prepareLaunch()
 }
 
 // static
-void AppBase::initialize( Settings *settingsFromMain )
+void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
 {
-	sSettingsFromMain = settingsFromMain;
-	sDefaultRenderer = settingsFromMain->getDefaultRenderer();
+	settings->init( defaultRenderer, title, argc, argv );
+
+	sSettingsFromMain = settings;
+	sDefaultRenderer = defaultRenderer;
 }
 
 // TODO: try to make this non-static, just calls launch() that is wrapped in try/catch

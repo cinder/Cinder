@@ -44,6 +44,8 @@ AppBasicMsw::AppBasicMsw()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
+	sDefaultRenderer = mSettings.getDefaultRenderer();
+
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = new AppImplMswBasic( this );
 }
@@ -77,11 +79,6 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 {
 	// -----------------------
 	// TODO: consider moving this to a common AppBasic method, or doing in App
-	for( int arg = 0; arg < argc; ++arg )
-		mCommandLineArgs.push_back( std::string( argv[arg] ) );
-
-	if( mSettings.getTitle().empty() )
-		mSettings.setTitle( title );
 
 	// pull out app-level variables
 	enablePowerManagement( mSettings.isPowerManagementEnabled() );
@@ -98,7 +95,7 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 		auto platformMsw = reinterpret_cast<PlatformMsw *>( Platform::get() );
 		CI_ASSERT_MSG( platformMsw, "expected current Platform to be of type PlatformMsw" );
 
-		platformMsw->directConsoleToCout(  true );
+		platformMsw->directConsoleToCout( true );
 	}
 
 	mImpl->run();

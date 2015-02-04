@@ -37,6 +37,8 @@ AppCocoaTouch::AppCocoaTouch()
 	CI_ASSERT( settingsPtr );
 	mSettings = *settingsPtr;
 
+	sDefaultRenderer = mSettings.getDefaultRenderer();
+
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaTouch alloc] init:this];
 
