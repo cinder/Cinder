@@ -28,6 +28,7 @@ void prepareSettings( App::Settings *settings )
 
 	settings->setWindowPos( 50, 50 );
 	settings->setWindowSize( 900, 500 );
+	settings->enableHighDensityDisplay();
 //	settings->setResizable( false );
 //	settings->setBorderless();
 //	settings->setAlwaysOnTop();
@@ -68,6 +69,7 @@ class AppTestApp : public App {
 	void touchesBegan( TouchEvent event ) override;
 	void touchesMoved( TouchEvent event ) override;
 	void touchesEnded( TouchEvent event ) override;
+	void resize() override;
 	void update() override;
 	void draw() override;
 
@@ -149,6 +151,11 @@ void AppTestApp::touchesEnded( TouchEvent event )
 
 	for( size_t i = 0; i < touches.size(); i++ )
 		console() << "\t\t[" << i << "] pos: " << touches.at( i ).getPos() << endl;
+}
+
+void AppTestApp::resize()
+{
+	CI_LOG_I( "window pos: " << getWindowPos() << ", size: " << getWindowSize() << ", pixel size: " << toPixels( getWindowSize() ) );
 }
 
 void AppTestApp::update()
