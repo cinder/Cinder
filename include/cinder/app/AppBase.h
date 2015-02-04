@@ -281,7 +281,7 @@ class AppBase {
 	//! Gets a Window by index, in the range [0, getNumWindows()). Throw ExcInvalidWindow if \a index is out of bounds.
 	virtual WindowRef	getWindowIndex( size_t index ) const = 0;
 	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
-	virtual ivec2		getMousePos() = 0;
+	virtual ivec2		getMousePos() const = 0;
 
 	//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
 	virtual void	enablePowerManagement( bool powerManagement = true ) { mPowerManagement = powerManagement; }

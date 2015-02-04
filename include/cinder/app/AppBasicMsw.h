@@ -67,7 +67,7 @@ class AppBasicMsw : public AppBasic {
 
 	void		hideCursor() override;
 	void		showCursor() override;
-	ivec2		getMousePos() override;
+	ivec2		getMousePos() const override;
 
 	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 	fs::path getFolderPath( const fs::path &initialPath ) override;

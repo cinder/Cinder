@@ -104,7 +104,7 @@ class AppScreenSaver : public AppBase {
 	//! Ignored for ScreenSavers
 	void		quit() override {}
 
-	ivec2		getMousePos() override	{ return ivec2( 0 ); }
+	ivec2		getMousePos() const override	{ return ivec2( 0 ); }
 
 	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override	{ return fs::path(); }
 	fs::path getFolderPath( const fs::path &initialPath ) override													{ return fs::path(); }

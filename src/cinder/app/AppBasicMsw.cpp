@@ -169,7 +169,7 @@ void AppBasicMsw::showCursor()
 	AppImplMsw::showCursor();
 }
 
-ivec2 AppBasicMsw::getMousePos()
+ivec2 AppBasicMsw::getMousePos() const
 {
 	POINT point;
 	::GetCursorPos( &point );

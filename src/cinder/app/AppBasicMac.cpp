@@ -127,7 +127,7 @@ void AppBasicMac::showCursor()
 	[NSCursor unhide];
 }
 
-ivec2 AppBasicMac::getMousePos()
+ivec2 AppBasicMac::getMousePos() const
 {
 	NSPoint loc = [NSEvent mouseLocation];
 	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
