@@ -22,7 +22,7 @@ struct TestCallbackOrder {
 			mDoneDraw = true;
 	}
 	
-	enum { VIRGIN, PREPARESETTINGS, SETUP, RESIZE, UPDATE, DRAW, SHUTDOWN };
+	enum { VIRGIN, SETUP, RESIZE, UPDATE, DRAW, SHUTDOWN };
 	
 	bool	mDoneDraw;
 	int		mState;
@@ -30,7 +30,7 @@ struct TestCallbackOrder {
 
 class MyCinderApp : public cinder::app::AppCocoaView {
   public:
-	void				prepareSettings( Settings *settings );
+	static void			prepareSettings( Settings *settings );
 	void				setup();
 	void				resize();
 	void				update();

@@ -24,7 +24,7 @@ using namespace cinder::app;
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
 	mApp = new MyCinderApp;
-	mApp->prepareLaunch();
+	mApp->prepareLaunch( RendererRef(), MyCinderApp::prepareSettings );
 #if defined( USE_RENDERER2D )
 	mApp->setupCinderView( cinderView, Renderer2d::create() );
 #else

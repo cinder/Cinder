@@ -514,14 +514,17 @@ AppCocoaView::Settings::Settings()
 {
 }
 
-void AppCocoaView::prepareLaunch( RendererRef defaultRenderer )
+void AppCocoaView::prepareLaunch( const RendererRef &defaultRenderer, const SettingsFn &settingsFn )
 {
-	AppBase::sInstance = this;
-//	prepareSettings( &mSettings );
+	if( settingsFn )
+		settingsFn( &mSettings );
+
+	Platform::get()->setExecutablePath( getAppPath() );
+
 	mImpl = [[AppImplCocoaView alloc] init:this defaultRenderer:defaultRenderer];
 }
 
-void AppCocoaView::setupCinderView( CinderView *cinderView, cinder::app::RendererRef renderer )
+void AppCocoaView::setupCinderView( CinderView *cinderView, const RendererRef &renderer )
 {
 	[cinderView setApp:this];
 	[mImpl setupCinderView:cinderView renderer:renderer];

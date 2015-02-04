@@ -8,9 +8,9 @@
 using namespace ci;
 using namespace ci::app;
 
+// static
 void MyCinderApp::prepareSettings( Settings *settings )
 {
-	testCbo.setState( TestCallbackOrder::PREPARESETTINGS );
 	settings->enableMultiTouch( false );
 }
 

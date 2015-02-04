@@ -43,11 +43,13 @@ class AppCocoaView : public AppBase {
 
 	  private:
 	};
-  
+
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
+
 	AppCocoaView();
 		
-	void			prepareLaunch( RendererRef defaultRenderer = RendererRef() );
-	virtual void	setupCinderView( CinderView *cinderView, RendererRef renderer );
+	void			prepareLaunch( const RendererRef &defaultRenderer = RendererRef(), const SettingsFn &settingsFn = SettingsFn() );
+	virtual void	setupCinderView( CinderView *cinderView, const RendererRef &renderer );
 	virtual void	launch( const char *title = 0, int argc = 0, char * const argv[] = 0 );
 
 	virtual void	quit() override;
