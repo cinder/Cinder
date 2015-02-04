@@ -552,13 +552,13 @@ inline fs::path		getAppPath() { return AppBase::get()->getAppPath(); }
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
-inline fs::path		getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return AppBase::get()->getOpenFilePath( initialPath, extensions ); }
+inline fs::path		getOpenFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() ) { return AppBase::get()->getOpenFilePath( initialPath, extensions ); }
 
 //! Presents the user with a file-save dialog and returns the selected file path.
 /** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
 	\return the selected file path or an empty string if the user cancelled. **/
-inline fs::path		getSaveFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>() ) { return AppBase::get()->getSaveFilePath( initialPath, extensions ); }
+inline fs::path		getSaveFilePath( const fs::path &initialPath = fs::path(), std::vector<std::string> extensions = std::vector<std::string>() ) { return AppBase::get()->getSaveFilePath( initialPath, extensions ); }
 
 //! Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW
 /** On Mac OS X all output is echoed either to the Debugger Console in XCode or the system console
