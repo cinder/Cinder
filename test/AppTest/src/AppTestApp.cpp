@@ -65,6 +65,7 @@ class AppTestApp : public App {
 	AppTestApp();
 
 	void setup() override;
+	void keyDown( KeyEvent event ) override;
 	void mouseDown( MouseEvent event ) override;
 	void touchesBegan( TouchEvent event ) override;
 	void touchesMoved( TouchEvent event ) override;
@@ -119,6 +120,25 @@ void AppTestApp::setup()
 
 	CI_CHECK_GL();
 	CI_LOG_I( "complete" );
+}
+
+void AppTestApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'f' ) {
+		setFullScreen( ! isFullScreen() );
+	}
+	else if( event.getChar() == 'o' ) {
+		auto filePath = getOpenFilePath( "", {} ); // FIXME: either App subclasses need to default the args, or it won't matter because impl will be moved to Platform
+		CI_LOG_I( "result of getOpenFilePath(): " << filePath );
+	}
+	else if( event.getChar() == 'p' ) {
+		auto filePath = getFolderPath( "" );
+		CI_LOG_I( "result of getFolderPath(): " << filePath );
+	}
+	else if( event.getChar() == 's' ) {
+		auto filePath = getSaveFilePath( "", {} );
+		CI_LOG_I( "result of getSaveFilePath(): " << filePath );
+	}
 }
 
 void AppTestApp::mouseDown( MouseEvent event )

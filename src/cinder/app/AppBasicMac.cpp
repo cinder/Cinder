@@ -124,8 +124,8 @@ ivec2 AppBasicMac::getMousePos() const
 
 fs::path AppBasicMac::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
-	bool wasFullScreen = isFullScreen();
-	setFullScreen( false );
+//	bool wasFullScreen = isFullScreen();
+//	setFullScreen( false );
 
 	NSOpenPanel *cinderOpen = [NSOpenPanel openPanel];
 	[cinderOpen setCanChooseFiles:YES];
@@ -144,8 +144,8 @@ fs::path AppBasicMac::getOpenFilePath( const fs::path &initialPath, const vector
 
 	NSInteger resultCode = [cinderOpen runModal];
 
-	setFullScreen( wasFullScreen );
-	restoreWindowContext();
+//	setFullScreen( wasFullScreen );
+//	restoreWindowContext();
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -162,8 +162,8 @@ fs::path AppBasicMac::getOpenFilePath( const fs::path &initialPath, const vector
 
 fs::path AppBasicMac::getFolderPath( const fs::path &initialPath )
 {
-	bool wasFullScreen = isFullScreen();
-	setFullScreen(false);
+//	bool wasFullScreen = isFullScreen();
+//	setFullScreen(false);
 
 	NSOpenPanel *cinderOpen = [NSOpenPanel openPanel];
 	[cinderOpen setCanChooseFiles:NO];
@@ -175,8 +175,8 @@ fs::path AppBasicMac::getFolderPath( const fs::path &initialPath )
 
 	NSInteger resultCode = [cinderOpen runModal];
 
-	setFullScreen(wasFullScreen);
-	restoreWindowContext();
+//	setFullScreen(wasFullScreen);
+//	restoreWindowContext();
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -193,8 +193,8 @@ fs::path AppBasicMac::getFolderPath( const fs::path &initialPath )
 
 fs::path AppBasicMac::getSaveFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
-	bool wasFullScreen = isFullScreen();
-	setFullScreen( false );
+//	bool wasFullScreen = isFullScreen();
+//	setFullScreen( false );
 
 	NSSavePanel *cinderSave = [NSSavePanel savePanel];
 
@@ -228,8 +228,8 @@ fs::path AppBasicMac::getSaveFilePath( const fs::path &initialPath, const vector
 
 	NSInteger resultCode = [cinderSave runModal];
 
-	setFullScreen( wasFullScreen );
-	restoreWindowContext();
+//	setFullScreen( wasFullScreen );
+//	restoreWindowContext();
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
