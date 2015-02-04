@@ -28,6 +28,8 @@
 #include "cinder/Log.h"
 
 using namespace std;
+using namespace cinder;
+using namespace cinder::app;
 
 @interface WindowImplCocoaView : NSObject<CinderViewDelegate,WindowImplCocoa> {
   @public
@@ -91,8 +93,8 @@ using namespace std;
 	float								mFrameRate;
 }
 
-- (AppImplCocoaView*)init:(cinder::app::AppCocoaView*)app defaultRenderer:(cinder::app::RendererRef)defaultRenderer;
-- (WindowImplCocoaView*)setupCinderView:(CinderView*)cinderView renderer:(cinder::app::RendererRef)renderer;
+- (AppImplCocoaView *)init:(cinder::app::AppCocoaView *)app settings:(const AppCocoaView::Settings &)settings defaultRenderer:(cinder::app::RendererRef)defaultRenderer;
+- (WindowImplCocoaView *)setupCinderView:(CinderView*)cinderView renderer:(cinder::app::RendererRef)renderer;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
 
@@ -366,15 +368,15 @@ using namespace std;
 
 @implementation AppImplCocoaView
 
-- (AppImplCocoaView*)init:(cinder::app::AppCocoaView*)app defaultRenderer:(cinder::app::RendererRef)defaultRenderer
+- (AppImplCocoaView *)init:(cinder::app::AppCocoaView *)app settings:(const AppCocoaView::Settings &)settings defaultRenderer:(cinder::app::RendererRef)defaultRenderer
 {
 	self = [super init];
 	
 	mApp = app;
 	mDefaultRenderer = defaultRenderer;
 	mAnimationTimer = nil;
-	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
-	mFrameRate = mApp->getSettings().getFrameRate();
+	mFrameRateEnabled = settings.isFrameRateEnabled();
+	mFrameRate = settings.getFrameRate();
 	
 	// register for notification of application termination
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
@@ -521,7 +523,7 @@ void AppCocoaView::prepareLaunch( const RendererRef &defaultRenderer, const Sett
 
 	Platform::get()->setExecutablePath( getAppPath() );
 
-	mImpl = [[AppImplCocoaView alloc] init:this defaultRenderer:defaultRenderer];
+	mImpl = [[AppImplCocoaView alloc] init:this settings:mSettings defaultRenderer:defaultRenderer];
 }
 
 void AppCocoaView::setupCinderView( CinderView *cinderView, const RendererRef &renderer )

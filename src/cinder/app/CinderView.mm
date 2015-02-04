@@ -27,6 +27,9 @@
 #include "cinder/cocoa/CinderCocoa.h"
 #import <Cocoa/Cocoa.h>
 
+using namespace cinder;
+using namespace cinder::app;
+
 @interface CinderView ()
 - (void)windowDidEnterFullScreen:(NSNotification *)notification;
 - (void)windowDidExitFullScreen:(NSNotification *)notification;
@@ -45,6 +48,8 @@
 	mReadyToDraw = NO;
 	mReceivesEvents = YES;
 	mFullScreen = NO;
+	mHighDensityDisplayEnabled = NO;
+	mMultiTouchEnabled = NO;
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
@@ -52,43 +57,40 @@
 	return self;
 }
 
-- (id)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (CinderView *)initWithFrame:(NSRect)frame app:(AppBase *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer highDensityEnabled:(BOOL)highDensityEnabled multiTouchEnabled:(BOOL)multiTouchEnabled
 {
 	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
 	mApp = app;
 
 	self = [super initWithFrame:frame];
-	mRenderer = aRenderer;
+	mRenderer = renderer;
+	mHighDensityDisplayEnabled = highDensityEnabled;
+	mMultiTouchEnabled = multiTouchEnabled;
 	mReadyToDraw = NO;
-	mReceivesEvents = mApp->receivesEvents();
 	mFullScreen = NO;
+	mReceivesEvents = mApp->receivesEvents();
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
 
-	[self setupRendererWithFrame:frame renderer:aRenderer sharedRenderer:sharedRenderer];
+	[self setupRendererWithFrame:frame renderer:renderer sharedRenderer:sharedRenderer];
 	
 	return self;
 }
 
-- (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (void)setupRendererWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
 	mRenderer = renderer;
-	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mApp->getSettings().isHighDensityDisplayEnabled() );
-	
-	if( mApp->getSettings().isHighDensityDisplayEnabled() ) {
-		mContentScaleFactor = self.window.backingScaleFactor;
-	}
-	else {
-		mContentScaleFactor = 1.0f;
-	}
+	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mHighDensityDisplayEnabled );
+
+	mContentScaleFactor = ( mHighDensityDisplayEnabled ? self.window.backingScaleFactor : 1 );
 
 	// register for drop events
 	if( mReceivesEvents )
 		[self registerForDraggedTypes:[NSArray arrayWithObject:NSFilenamesPboardType]];
 
 	// register for touch events
-	if( mDelegate && mApp->getSettings().isMultiTouchEnabled() ) {
+	if( mDelegate && mMultiTouchEnabled ) {
 		[self setAcceptsTouchEvents:YES];
 		[self setWantsRestingTouches:YES];
 		if( ! mTouchIdMap )
@@ -107,8 +109,7 @@
 
 - (void)viewDidChangeBackingProperties
 {
-	// note: mApp may not be set at init time, which is when this is called in some cases
-	if( mApp && mApp->getSettings().isHighDensityDisplayEnabled() ) {
+	if( mHighDensityDisplayEnabled ) {
 		mContentScaleFactor = self.window.backingScaleFactor;
 		mRenderer->defaultResize();
 	}
@@ -427,13 +428,6 @@
 	[mDelegate mouseWheel:&mouseEvent];
 }
 
-/*- (void)setup:(cinder::app::App *)aApp
-{
-	app = aApp;
-	[self setupRenderer:[self bounds]];
-//	[self addSubview:app->getRenderer()->getView()];
-}*/
-
 - (NSDragOperation)draggingEntered:(id <NSDraggingInfo>)sender
 {
 	return NSDragOperationCopy;
@@ -491,7 +485,7 @@
 - (void)setDelegate:(id<CinderViewDelegate>)delegate
 {
 	mDelegate = delegate;
-	if( delegate && mApp->getSettings().isMultiTouchEnabled() ) {
+	if( delegate && mMultiTouchEnabled ) {
 		[self setAcceptsTouchEvents:YES];
 		if( ! mTouchIdMap )
 			mTouchIdMap = [[NSMutableDictionary alloc] initWithCapacity:10];

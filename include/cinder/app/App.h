@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Cinder Project, All rights reserved.
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 

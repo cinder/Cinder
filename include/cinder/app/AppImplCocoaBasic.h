@@ -45,6 +45,9 @@
 	class cinder::app::AppBasicMac*	mApp;
 	
 	BOOL							mNeedsUpdate;
+	BOOL							mHighDensityDisplayEnabled;
+	BOOL							mMultiTouchEnabled;
+	BOOL							mQuitOnLastWindowClosed;
 	BOOL							mFrameRateEnabled;
 	float							mFrameRate;
 	
@@ -54,7 +57,7 @@
 
 @property(retain, nonatomic) NSMutableArray *windows;
 
-- (id)init:(cinder::app::AppBasicMac *)app;
+- (AppImplCocoaBasic *)init:(cinder::app::AppBasicMac *)app settings:(const cinder::app::AppBasicMac::Settings &)settings;
 - (void)setApplicationMenu:(NSString *)applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -138,6 +141,6 @@
 - (void)fileDrop:(cinder::app::FileDropEvent *)event;
 - (cinder::app::WindowRef)getWindowRef;
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled multiTouchEnabled:(BOOL)multiTouchEnabled;
 
 @end

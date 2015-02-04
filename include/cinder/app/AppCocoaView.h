@@ -54,9 +54,6 @@ class AppCocoaView : public AppBase {
 
 	virtual void	quit() override;
 
-
-	virtual const Settings&	getSettings() const override { return mSettings; }
-
 	//! Returns the maximum frame-rate the App will attempt to maintain measured in frames-per-second
 	virtual float		getFrameRate() const override;
 	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second

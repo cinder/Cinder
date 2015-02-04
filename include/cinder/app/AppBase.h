@@ -272,8 +272,6 @@ class AppBase {
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
-	//! Returns a const reference to the Settings provided at startup. \note The actual type may be more specific than App::Settings.
-	virtual const Settings&	getSettings() const = 0;
 	//! Returns the Renderer of the active Window
 	RendererRef			getRenderer() const { return getWindow()->getRenderer(); }
 	//! Returns the Display of the active Window

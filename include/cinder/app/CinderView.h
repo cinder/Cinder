@@ -58,6 +58,8 @@
 	BOOL						mFullScreenModeKiosk;
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
 	BOOL						mReceivesEvents;
+	BOOL						mHighDensityDisplayEnabled;
+	BOOL						mMultiTouchEnabled;
 	cinder::app::RendererRef	mRenderer;
 	
 	float						mContentScaleFactor;
@@ -71,8 +73,9 @@
 @property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (id)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)aRenderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (CinderView *)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer highDensityEnabled:(BOOL)highDensityEnabled multiTouchEnabled:(BOOL)multiTouchEnabled;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;
 
 - (BOOL)isFullScreen;

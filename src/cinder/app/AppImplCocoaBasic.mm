@@ -28,6 +28,9 @@
 
 #import <OpenGL/OpenGL.h>
 
+using namespace cinder;
+using namespace cinder::app;
+
 // This seems to be missing for unknown reasons
 @interface NSApplication(MissingFunction)
 - (void)setAppleMenu:(NSMenu *)menu;
@@ -48,7 +51,7 @@
 
 @synthesize windows = mWindows;
 
-- (id)init:(cinder::app::AppBasicMac *)app
+- (AppImplCocoaBasic *)init:(AppBasicMac *)app settings:(const AppBasicMac::Settings &)settings
 {	
 	self = [super init];
 
@@ -60,27 +63,30 @@
 	
 	self.windows = [NSMutableArray array];
 	
-	const std::string& applicationName = app->getSettings().getTitle();
+	const std::string& applicationName = settings.getTitle();
 	[self setApplicationMenu:[NSString stringWithUTF8String: applicationName.c_str()]];
 	
 	mApp = app;
 	mNeedsUpdate = YES;
+	mHighDensityDisplayEnabled = settings.isHighDensityDisplayEnabled();
+	mMultiTouchEnabled = settings.isMultiTouchEnabled();
+	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
 
 	// build our list of requested formats; an empty list implies we should make the default window format
-	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
+	std::vector<cinder::app::Window::Format> formats( settings.getWindowFormats() );
 	if( formats.empty() )
-		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
+		formats.push_back( settings.getDefaultWindowFormat() );
 
 	// create all the requested windows
 	for( const auto &format : formats ) {
-		WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
+		WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mHighDensityDisplayEnabled multiTouchEnabled:mMultiTouchEnabled];
 		[mWindows addObject:winImpl];
 		if( format.isFullScreen() )
 			[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
 	}
 	
-	mFrameRate = mApp->getSettings().getFrameRate();
-	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
+	mFrameRate = settings.getFrameRate();
+	mFrameRateEnabled = settings.isFrameRateEnabled();
 
 	// lastly, ensure the first window is the currently active context
 	[((WindowImplBasicCocoa *)[mWindows firstObject])->mCinderView makeCurrentContext];
@@ -149,7 +155,7 @@
 
 - (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format
 {
-	WindowImplBasicCocoa *winImpl = [ WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mApp->getSettings().isHighDensityDisplayEnabled() ];
+	WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mHighDensityDisplayEnabled multiTouchEnabled:mMultiTouchEnabled];
 	[mWindows addObject:winImpl];
 	if( format.isFullScreen() )
 		[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
@@ -304,7 +310,7 @@
 
 - (BOOL)applicationShouldTerminateAfterLastWindowClosed:(NSApplication *)application
 {
-	return mApp->getSettings().isQuitOnLastWindowCloseEnabled();
+	return mQuitOnLastWindowClosed;
 }
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)application
@@ -562,7 +568,7 @@
 - (void)windowWillCloseNotification:(NSNotification *)notification
 {
 	// if this is the last window and we're set to terminate on last window, invalidate the timer
-	if( [mAppImpl getNumWindows] == 1 && mAppImpl->mApp->getSettings().isQuitOnLastWindowCloseEnabled() ) {
+	if( [mAppImpl getNumWindows] == 1 && mAppImpl->mQuitOnLastWindowClosed ) {
 		[mAppImpl->mAnimationTimer invalidate];
 		mAppImpl->mAnimationTimer = nil;
 	}
@@ -679,7 +685,7 @@
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled multiTouchEnabled:(BOOL)multiTouchEnabled
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 
@@ -737,7 +743,8 @@
 	cinder::app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
 	
 	cinder::app::RendererRef renderer = winFormat.getRenderer();
-	winImpl->mCinderView = [[CinderView alloc] initWithFrame:NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y ) app:winImpl->mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer];
+	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
+	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame app:winImpl->mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer highDensityEnabled:retinaEnabled multiTouchEnabled:multiTouchEnabled];
 
 	[winImpl->mWin setDelegate:self];	
 	[winImpl->mWin setContentView:winImpl->mCinderView];

@@ -32,14 +32,15 @@ namespace cinder { namespace app {
 AppBasicMac::AppBasicMac()
 	: AppBasic()
 {
-	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
-	CI_ASSERT( settingsPtr );
-	mSettings = *settingsPtr;
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
 
-	sDefaultRenderer = mSettings.getDefaultRenderer();
+	sDefaultRenderer = settings->getDefaultRenderer();
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = [[AppImplCocoaBasic alloc] init:this];
+	mImpl = [[AppImplCocoaBasic alloc] init:this settings:*settings];
+
+	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 }
 
 AppBasicMac::~AppBasicMac()
@@ -49,13 +50,6 @@ AppBasicMac::~AppBasicMac()
 
 void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
 {
-	// -----------------------
-	// TODO: consider moving this to a common AppBasic method, or doing in App
-
-	// pull out app-level variables
-	enablePowerManagement( mSettings.isPowerManagementEnabled() );
-	// -----------------------
-
 	[[NSApplication sharedApplication] run];
 }
 

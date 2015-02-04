@@ -63,8 +63,6 @@ class AppBasicMac : public AppBasic {
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
-	const Settings&		getSettings() const override { return mSettings; }
-
 	//! \cond
 	// Called during application instanciation via CINDER_APP_BASIC_MAC macro
 	template<typename AppT, typename RendererT>
@@ -76,7 +74,6 @@ class AppBasicMac : public AppBasic {
 
   private:
 	AppImplCocoaBasic*	mImpl;
-	Settings			mSettings;
 };
 
 template<typename AppT, typename RendererT>
