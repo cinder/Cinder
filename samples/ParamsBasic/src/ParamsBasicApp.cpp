@@ -95,6 +95,9 @@ void TweakBarApp::draw()
 	glLightfv( GL_LIGHT0, GL_POSITION, lightPosition );
 	glMaterialfv( GL_FRONT, GL_DIFFUSE,	mColor );*/
 
+	if( getElapsedFrames() % 100 == 0 )
+		std::cout << getAverageFps() << std::endl;
+
 	gl::setMatrices( mCam );
 	gl::rotate( mObjOrientation );
 	gl::color( mColor );
