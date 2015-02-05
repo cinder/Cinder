@@ -7,11 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		00633F1B1A832B2C00FDBA53 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00633F1A1A832B2C00FDBA53 /* CoreVideo.framework */; };
 		006D72DE199532DD008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72DC199532DD008149E2 /* AVFoundation.framework */; };
 		006D72DF199532DD008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72DD199532DD008149E2 /* CoreMedia.framework */; };
 		0079DE090EC3A2E000A78B82 /* imageWriterSample.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0079DE080EC3A2E000A78B82 /* imageWriterSample.cpp */; };
 		0079DE1F0EC3A30C00A78B82 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0079DE1C0EC3A30C00A78B82 /* OpenGL.framework */; };
-		00B26A640F97D65B00CF8274 /* QuickTime.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B26A630F97D65B00CF8274 /* QuickTime.framework */; };
 		00C0757B0FF33AE3004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075770FF33AE3004801EA /* Accelerate.framework */; };
 		00C0757C0FF33AE3004801EA /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075780FF33AE3004801EA /* AudioToolbox.framework */; };
 		00C0757D0FF33AE3004801EA /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C075790FF33AE3004801EA /* AudioUnit.framework */; };
@@ -21,6 +21,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		00633F1A1A832B2C00FDBA53 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		006D72DC199532DD008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D72DD199532DD008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0079DE080EC3A2E000A78B82 /* imageWriterSample.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = imageWriterSample.cpp; path = ../imageWriterSample.cpp; sourceTree = SOURCE_ROOT; };
@@ -48,11 +49,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00633F1B1A832B2C00FDBA53 /* CoreVideo.framework in Frameworks */,
 				006D72DE199532DD008149E2 /* AVFoundation.framework in Frameworks */,
 				006D72DF199532DD008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0079DE1F0EC3A30C00A78B82 /* OpenGL.framework in Frameworks */,
-				00B26A640F97D65B00CF8274 /* QuickTime.framework in Frameworks */,
 				00C0757B0FF33AE3004801EA /* Accelerate.framework in Frameworks */,
 				00C0757C0FF33AE3004801EA /* AudioToolbox.framework in Frameworks */,
 				00C0757D0FF33AE3004801EA /* AudioUnit.framework in Frameworks */,
@@ -146,6 +147,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00633F1A1A832B2C00FDBA53 /* CoreVideo.framework */,
 				006D72DC199532DD008149E2 /* AVFoundation.framework */,
 				006D72DD199532DD008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
