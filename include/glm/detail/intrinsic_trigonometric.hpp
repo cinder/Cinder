@@ -21,13 +21,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_trigonometric.hpp
+/// @file glm/detail/intrinsic_trigonometric.hpp
 /// @date 2009-06-09 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_detail_intrinsic_trigonometric
-#define glm_detail_intrinsic_trigonometric
+#pragma once
 
 #include "setup.hpp"
 
@@ -45,4 +44,3 @@ namespace detail
 #include "intrinsic_trigonometric.inl"
 
 #endif//GLM_ARCH
-#endif//glm_detail_intrinsic_trigonometric

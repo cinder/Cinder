@@ -80,26 +80,26 @@ class ParallelTransport {
 };
 
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> firstFrame(
-	const glm::detail::tvec3<T,glm::defaultp> &firstPoint,
-	const glm::detail::tvec3<T,glm::defaultp> &secondPoint, 
-	const glm::detail::tvec3<T,glm::defaultp> &thirdPoint
+glm::tmat4x4<T,glm::defaultp> firstFrame(
+	const glm::tvec3<T,glm::defaultp> &firstPoint,
+	const glm::tvec3<T,glm::defaultp> &secondPoint, 
+	const glm::tvec3<T,glm::defaultp> &thirdPoint
 );
 
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> nextFrame( 
-	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::detail::tvec3<T,glm::defaultp> &prevPoint,
-	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
-	glm::detail::tvec3<T,glm::defaultp> prevTangent,
-	glm::detail::tvec3<T,glm::defaultp> curTangent 
+glm::tmat4x4<T,glm::defaultp> nextFrame( 
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::tvec3<T,glm::defaultp> &prevPoint,
+	const glm::tvec3<T,glm::defaultp> &curPoint,
+	glm::tvec3<T,glm::defaultp> prevTangent,
+	glm::tvec3<T,glm::defaultp> curTangent 
 );
 			
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> lastFrame( 
-	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
-	const glm::detail::tvec3<T,glm::defaultp> &lastPoint 
+glm::tmat4x4<T,glm::defaultp> lastFrame( 
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::tvec3<T,glm::defaultp> &lastPoint 
 );
 
 } // namespace cinder

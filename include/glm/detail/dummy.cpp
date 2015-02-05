@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -29,7 +33,6 @@
 /// dummy.cpp exist only a wordaround for CMake file.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#define GLM_FORCE_RADIANS
 #define GLM_MESSAGES
 #include "../glm.hpp"
 #include <limits>
@@ -41,7 +44,8 @@ struct material
 	glm::vec4 diffuse; // Dcm
 	glm::vec4 specular; // Scm
 	float shininess; // Srm
-};
+};
+
 struct light
 {
 	glm::vec4 ambient; // Acli
@@ -58,7 +62,8 @@ struct light
 	float constantAttenuation; // K0
 	float linearAttenuation; // K1
 	float quadraticAttenuation;// K2
-};
+};
+
 
 // Sample 1
 #include <glm/vec3.hpp>// glm::vec3
@@ -184,7 +189,34 @@ glm::vec3 lighting
 	return Color;
 }
 */
+
+
+template <typename T, glm::precision P, template<typename, glm::precision> class vecType>
+T normalizeDotA(vecType<T, P> const & x, vecType<T, P> const & y)
+{
+	return glm::dot(x, y) * glm::inversesqrt(glm::dot(x, x) * glm::dot(y, y));
+}
+
+#define GLM_TEMPLATE_GENTYPE typename T, glm::precision P, template<typename, glm::precision> class
+
+template <GLM_TEMPLATE_GENTYPE vecType>
+T normalizeDotB(vecType<T, P> const & x, vecType<T, P> const & y)
+{
+	return glm::dot(x, y) * glm::inversesqrt(glm::dot(x, x) * glm::dot(y, y));
+}
+
+template <typename vecType>
+typename vecType::value_type normalizeDotC(vecType const & a, vecType const & b)
+{
+	return glm::dot(a, b) * glm::inversesqrt(glm::dot(a, a) * glm::dot(b, b));
+}
+
 int main()
 {
+	glm::vec4 v(1);
+	float a = normalizeDotA(v, v);
+	float b = normalizeDotB(v, v);
+	float c = normalizeDotC(v, v);
+
 	return 0;
 }

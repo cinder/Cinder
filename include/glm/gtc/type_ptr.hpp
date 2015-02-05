@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -56,8 +60,7 @@
 /// <glm/gtc/type_ptr.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTC_type_ptr
-#define GLM_GTC_type_ptr
+#pragma once
 
 // Dependency:
 #include "../gtc/quaternion.hpp"
@@ -92,88 +95,84 @@ namespace glm
 	/// Build a vector from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tvec2<T, defaultp> make_vec2(T const * const ptr);
+	GLM_FUNC_DECL tvec2<T, defaultp> make_vec2(T const * const ptr);
 
 	/// Build a vector from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tvec3<T, defaultp> make_vec3(T const * const ptr);
+	GLM_FUNC_DECL tvec3<T, defaultp> make_vec3(T const * const ptr);
 
 	/// Build a vector from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tvec4<T, defaultp> make_vec4(T const * const ptr);
+	GLM_FUNC_DECL tvec4<T, defaultp> make_vec4(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat2x2<T, defaultp> make_mat2x2(T const * const ptr);
+	GLM_FUNC_DECL tmat2x2<T, defaultp> make_mat2x2(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat2x3<T, defaultp> make_mat2x3(T const * const ptr);
+	GLM_FUNC_DECL tmat2x3<T, defaultp> make_mat2x3(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat2x4<T, defaultp> make_mat2x4(T const * const ptr);
+	GLM_FUNC_DECL tmat2x4<T, defaultp> make_mat2x4(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat3x2<T, defaultp> make_mat3x2(T const * const ptr);
+	GLM_FUNC_DECL tmat3x2<T, defaultp> make_mat3x2(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat3x3<T, defaultp> make_mat3x3(T const * const ptr);
+	GLM_FUNC_DECL tmat3x3<T, defaultp> make_mat3x3(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat3x4<T, defaultp> make_mat3x4(T const * const ptr);
+	GLM_FUNC_DECL tmat3x4<T, defaultp> make_mat3x4(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat4x2<T, defaultp> make_mat4x2(
-		T const * const ptr);
+	GLM_FUNC_DECL tmat4x2<T, defaultp> make_mat4x2(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat4x3<T, defaultp> make_mat4x3(T const * const ptr);
+	GLM_FUNC_DECL tmat4x3<T, defaultp> make_mat4x3(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat4x4<T, defaultp> make_mat4x4(T const * const ptr);
+	GLM_FUNC_DECL tmat4x4<T, defaultp> make_mat4x4(T const * const ptr);
 	
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat2x2<T, defaultp> make_mat2(T const * const ptr);
+	GLM_FUNC_DECL tmat2x2<T, defaultp> make_mat2(T const * const ptr);
 
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat3x3<T, defaultp> make_mat3(T const * const ptr);
+	GLM_FUNC_DECL tmat3x3<T, defaultp> make_mat3(T const * const ptr);
 		
 	/// Build a matrix from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tmat4x4<T, defaultp> make_mat4(T const * const ptr);
+	GLM_FUNC_DECL tmat4x4<T, defaultp> make_mat4(T const * const ptr);
 
 	/// Build a quaternion from a pointer.
 	/// @see gtc_type_ptr
 	template<typename T>
-	GLM_FUNC_DECL detail::tquat<T, defaultp> make_quat(T const * const ptr);
+	GLM_FUNC_DECL tquat<T, defaultp> make_quat(T const * const ptr);
 
 	/// @}
 }//namespace glm
 
 #include "type_ptr.inl"
-
-#endif//GLM_GTC_type_ptr
-

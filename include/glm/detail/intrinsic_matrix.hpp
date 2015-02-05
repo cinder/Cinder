@@ -21,13 +21,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_common.hpp
+/// @file glm/detail/intrinsic_common.hpp
 /// @date 2009-06-05 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_detail_intrinsic_matrix
-#define glm_detail_intrinsic_matrix
+#pragma once
 
 #include "setup.hpp"
 
@@ -66,4 +65,3 @@ namespace detail
 #include "intrinsic_matrix.inl"
 
 #endif//GLM_ARCH
-#endif//glm_detail_intrinsic_matrix

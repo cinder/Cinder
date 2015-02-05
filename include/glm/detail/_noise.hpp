@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -26,8 +30,12 @@
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_DETAIL_NOISE_INCLUDED
-#define GLM_DETAIL_NOISE_INCLUDED
+#pragma once
+
+#include "../vec2.hpp"
+#include "../vec3.hpp"
+#include "../vec4.hpp"
+#include "../common.hpp"
 
 namespace glm{
 namespace detail
@@ -75,19 +83,19 @@ namespace detail
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> taylorInvSqrt(detail::tvec2<T, P> const & r)
+	GLM_FUNC_QUALIFIER tvec2<T, P> taylorInvSqrt(tvec2<T, P> const & r)
 	{
 		return T(1.79284291400159) - T(0.85373472095314) * r;
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> taylorInvSqrt(detail::tvec3<T, P> const & r)
+	GLM_FUNC_QUALIFIER tvec3<T, P> taylorInvSqrt(tvec3<T, P> const & r)
 	{
 		return T(1.79284291400159) - T(0.85373472095314) * r;
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> taylorInvSqrt(detail::tvec4<T, P> const & r)
+	GLM_FUNC_QUALIFIER tvec4<T, P> taylorInvSqrt(tvec4<T, P> const & r)
 	{
 		return T(1.79284291400159) - T(0.85373472095314) * r;
 	}
@@ -100,19 +108,19 @@ namespace detail
 */
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<T, P> fade(detail::tvec2<T, P> const & t)
+	GLM_FUNC_QUALIFIER tvec2<T, P> fade(tvec2<T, P> const & t)
 	{
 		return (t * t * t) * (t * (t * T(6) - T(15)) + T(10));
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> fade(detail::tvec3<T, P> const & t)
+	GLM_FUNC_QUALIFIER tvec3<T, P> fade(tvec3<T, P> const & t)
 	{
 		return (t * t * t) * (t * (t * T(6) - T(15)) + T(10));
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<T, P> fade(detail::tvec4<T, P> const & t)
+	GLM_FUNC_QUALIFIER tvec4<T, P> fade(tvec4<T, P> const & t)
 	{
 		return (t * t * t) * (t * (t * T(6) - T(15)) + T(10));
 	}
@@ -125,6 +133,4 @@ namespace detail
 */
 }//namespace detail
 }//namespace glm
-
-#endif//GLM_DETAIL_NOISE_INCLUDED
 
