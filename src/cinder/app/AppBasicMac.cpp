@@ -35,8 +35,6 @@ AppBasicMac::AppBasicMac()
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
-	sDefaultRenderer = settings->getDefaultRenderer();
-
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaBasic alloc] init:this settings:*settings];
 

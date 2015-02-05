@@ -399,7 +399,7 @@ class AppBase {
 	typename std::result_of<T()>::type dispatchSync( T fn );
 
 	//! Returns the default Renderer which will be used when creating a new Window. Set by the app instantiation macro automatically.
-	RendererRef	getDefaultRenderer() const { return sDefaultRenderer; }
+	RendererRef	getDefaultRenderer() const { return mDefaultRenderer; }
 	/** \return a copy of the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface();
 	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
@@ -445,6 +445,7 @@ class AppBase {
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
 	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
+	RendererRef				mDefaultRenderer;
 
 	std::shared_ptr<Timeline>	mTimeline;
 
@@ -454,10 +455,10 @@ class AppBase {
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
 
   protected:
-	static AppBase*					sInstance;
-	static Settings*			sSettingsFromMain;
-	static RendererRef			sDefaultRenderer;
-	bool						mPowerManagement;
+	static AppBase*			sInstance;
+	static Settings*		sSettingsFromMain;
+
+	bool					mPowerManagement;
 };
 
 /** @name App Free Functions

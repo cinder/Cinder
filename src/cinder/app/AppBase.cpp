@@ -39,7 +39,6 @@ using namespace std;
 namespace cinder { namespace app {
 
 AppBase*					AppBase::sInstance = nullptr;			// Static instance of App, effectively a singleton
-RendererRef				AppBase::sDefaultRenderer;  // Static Default Renderer, which is cloned for the real renderers when needed
 AppBase::Settings*			AppBase::sSettingsFromMain;
 static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 
@@ -93,6 +92,7 @@ AppBase::AppBase()
 	sInstance = this;
 
 	CI_ASSERT( sSettingsFromMain );
+	mDefaultRenderer = sSettingsFromMain->getDefaultRenderer();
 	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
 
@@ -216,7 +216,6 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 	settings->init( defaultRenderer, title, argc, argv );
 
 	sSettingsFromMain = settings;
-	sDefaultRenderer = defaultRenderer;
 }
 
 // TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
@@ -224,9 +223,6 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 // static
 void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
 {
-	CI_ASSERT( sInstance );
-	CI_ASSERT( sDefaultRenderer );
-
 	try {
 		sInstance->launch( title, argc, argv );
 	}

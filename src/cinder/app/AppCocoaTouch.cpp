@@ -36,8 +36,6 @@ AppCocoaTouch::AppCocoaTouch()
 	auto settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
-	sDefaultRenderer = settings->getDefaultRenderer();
-
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaTouch alloc] init:this settings:*settings];
 

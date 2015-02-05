@@ -166,6 +166,19 @@ void AppTestApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.1f, 0 ) );
 
+	// draw something animated
+	{
+		gl::ScopedColor colorScope( ColorA( 0, 0, 1, 0.5f ) );
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( getWindowCenter() );
+		gl::rotate( getElapsedSeconds() * 0.5, vec3( 0, 0, 1 ) );
+
+		const float t = 200;
+		gl::drawSolidRect( Rectf( -t, -t, t, t ) );
+	}
+
+	// draw test textures
+	
 	auto offset = vec2( 0 );
 
 	if( mTexAsset ) {
