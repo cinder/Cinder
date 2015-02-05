@@ -96,6 +96,7 @@ AppBase::AppBase()
 	mDefaultRenderer = sSettingsFromMain->getDefaultRenderer();
 	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
+	mFrameRateEnabled = sSettingsFromMain->isFrameRateEnabled();
 
 	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
 	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );

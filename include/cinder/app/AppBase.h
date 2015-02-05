@@ -348,6 +348,8 @@ class AppBase {
 	bool				isMultiTouchEnabled() const				{ return mMultiTouchEnabled; }
 	//! Returns whether Windows created on a high-density (Retina) display will have their resolution doubled, configurable via Settings at startup. Default is \c true on iOS and \c false on other platforms.
 	bool				isHighDensityDisplayEnabled() const		{ return mHighDensityDisplayEnabled; }
+	//! Returns whether frameRate limiting is enabledm, configurable via Settings at startup. On by default, at 60 FPS.
+	bool				isFrameRateEnabled() const				{ return mFrameRateEnabled; }
 
 	// utilities
 #if defined( CINDER_MSW )
@@ -443,7 +445,7 @@ class AppBase {
 	uint32_t				mFpsLastSampleFrame;
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
-	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
+	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled, mFrameRateEnabled;
 	RendererRef				mDefaultRenderer;
 
 	std::shared_ptr<Timeline>	mTimeline;
