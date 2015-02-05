@@ -42,7 +42,6 @@
 #include "cinder/Display.h"
 
 #if defined( CINDER_MAC )
-	#include <CoreFoundation/CoreFoundation.h>
 	#include <CoreGraphics/CGGeometry.h>
 	#if defined __OBJC__
 		@class AppImplCocoaRendererQuartz;

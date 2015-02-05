@@ -31,6 +31,7 @@
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
 #elif defined( CINDER_COCOA )
+	#include <CoreFoundation/CoreFoundation.h>
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;

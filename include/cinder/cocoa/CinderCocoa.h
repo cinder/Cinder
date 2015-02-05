@@ -34,7 +34,6 @@ namespace cinder {
 }
 
 #include <CoreGraphics/CGGeometry.h>
-#include <CoreFoundation/CoreFoundation.h>
 #if defined( __OBJC__ )
 	@class NSBitmapImageRep;
 	@class NSString;
@@ -48,6 +47,10 @@ typedef struct CGContext *CGContextRef;
 typedef struct CGColor *CGColorRef;
 typedef struct CGImage *CGImageRef;
 typedef const struct CGPath *CGPathRef;
+typedef const struct CF_BRIDGED_TYPE(NSURL) __CFURL * CFURLRef;
+typedef const struct CF_BRIDGED_TYPE(NSAttributedString) __CFAttributedString *CFAttributedStringRef;
+typedef const struct CF_BRIDGED_TYPE(NSData) __CFData * CFDataRef;
+typedef struct CF_BRIDGED_MUTABLE_TYPE(NSMutableData) __CFData * CFMutableDataRef;
 
 namespace cinder { namespace cocoa {
 
