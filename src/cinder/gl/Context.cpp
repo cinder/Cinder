@@ -67,12 +67,11 @@ namespace cinder { namespace gl {
 
 Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	: mPlatformData( platformData ),
-	mColor( ColorAf::white() )
+	mColor( ColorAf::white() ),
 #if ! defined( CINDER_GL_ES )
-	,mCachedFrontPolygonMode( GL_FILL ), mCachedBackPolygonMode( GL_FILL ),
-	mCachedTransformFeedbackObj( nullptr )
+	mCachedTransformFeedbackObj( nullptr ),
 #endif
-	,mObjectTrackingEnabled( platformData->mObjectTracking )
+	mObjectTrackingEnabled( platformData->mObjectTracking )
 {
 	// set thread's active Context to 'this' in case anything calls gl::context() (like the GlslProg constructor)
 	auto prevCtx = Context::getCurrent();
@@ -104,6 +103,11 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	mBoolStateStack[GL_DEPTH_WRITEMASK] = vector<GLboolean>();
 	mBoolStateStack[GL_DEPTH_WRITEMASK].push_back( GL_TRUE );
 	mActiveTextureStack.push_back( 0 );
+
+#if ! defined( CINDER_GL_ES )
+	// initial state for polygonMode is GL_FILL
+	mPolygonModeStack.push_back( GL_FILL );
+#endif
 
 	mImmediateMode = gl::VertBatch::create();
 	
@@ -320,7 +324,7 @@ void Context::pushViewport()
 	mViewportStack.push_back( getViewport() );
 }
 
-void Context::popViewport()
+void Context::popViewport( bool /*forceRestore*/ )
 {
 	if( mViewportStack.empty() || popStackState( mViewportStack ) ) {
 		auto viewport = getViewport();
@@ -360,8 +364,7 @@ void Context::pushScissor()
 	mScissorStack.push_back( getScissor() );
 }
 
-//! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0
-void Context::popScissor()
+void Context::popScissor( bool /*forceRestore*/ )
 {
 	if( mScissorStack.empty() || popStackState( mScissorStack ) ) {
 		auto scissor = getScissor();
@@ -384,7 +387,6 @@ std::pair<ivec2, ivec2> Context::getScissor()
 
 //////////////////////////////////////////////////////////////////
 // Face Culling
-
 void Context::cullFace( GLenum face )
 {
 	if( setStackState( mCullFaceStack, face ) ) {
@@ -404,20 +406,65 @@ void Context::pushCullFace()
 	mCullFaceStack.push_back( getCullFace() );
 }
 
-void Context::popCullFace()
+void Context::popCullFace( bool forceRestore )
 {
-	if( mCullFaceStack.empty() || popStackState( mCullFaceStack ) ) {
+	if( mCullFaceStack.empty() )
+		CI_LOG_E( "Cull face stack underflow" );
+	else if( popStackState( mCullFaceStack ) || forceRestore )
 		glCullFace( getCullFace() );
-	}
 }
 
 GLenum Context::getCullFace()
 {
 	if( mCullFaceStack.empty() ) {
-		mCullFaceStack.push_back( GL_BACK );
+		GLint queriedInt;
+		glGetIntegerv( GL_CULL_FACE_MODE, &queriedInt );
+		mCullFaceStack.push_back( queriedInt ); // push twice
+		mCullFaceStack.push_back( queriedInt );
 	}
 
 	return mCullFaceStack.back();
+}
+
+//////////////////////////////////////////////////////////////////
+// FrontFace
+void Context::frontFace( GLenum mode )
+{
+	if( setStackState( mFrontFaceStack, mode ) ) {
+		glFrontFace( mode );
+	}
+}
+
+void Context::pushFrontFace( GLenum mode )
+{
+	if( pushStackState( mFrontFaceStack, mode ) ) {
+		glFrontFace( mode );
+	}
+}
+
+void Context::pushFrontFace()
+{
+	mFrontFaceStack.push_back( getFrontFace() );
+}
+
+void Context::popFrontFace( bool forceRestore )
+{
+	if( mFrontFaceStack.empty() )
+		CI_LOG_E( "Front face stack underflow" );
+	else if( popStackState( mFrontFaceStack ) || forceRestore )
+		glFrontFace( getFrontFace() );
+}
+
+GLenum Context::getFrontFace()
+{
+	if( mFrontFaceStack.empty() ) {
+		GLint queriedInt;
+		glGetIntegerv( GL_FRONT_FACE, &queriedInt );
+		mFrontFaceStack.push_back( queriedInt ); // push twice
+		mFrontFaceStack.push_back( queriedInt );
+	}
+
+	return mFrontFaceStack.back();
 }
 
 //////////////////////////////////////////////////////////////////
@@ -732,21 +779,25 @@ void Context::pushGlslProg()
 	mGlslProgStack.push_back( getGlslProg() );
 }
 
-void Context::popGlslProg()
+void Context::popGlslProg( bool forceRestore )
 {
 	GlslProgRef prevGlsl = getGlslProg();
 
 	if( ! mGlslProgStack.empty() ) {
 		mGlslProgStack.pop_back();
 		if( ! mGlslProgStack.empty() ) {
-			if( prevGlsl != mGlslProgStack.back() ) {
+			if( forceRestore || ( prevGlsl != mGlslProgStack.back() ) ) {
 				if( mGlslProgStack.back() )
 					mGlslProgStack.back()->bindImpl();
 				else
 					glUseProgram( 0 );
 			}
 		}
+		else
+			CI_LOG_E( "Empty GlslProg stack" );			
 	}
+	else
+		CI_LOG_E( "GlslProg stack underflow" );
 }
 
 void Context::bindGlslProg( const GlslProgRef &prog )
@@ -833,7 +884,7 @@ void Context::pushTextureBinding( GLenum target, GLuint textureId, uint8_t textu
 	bindTexture( target, textureId, textureUnit );
 }
 
-void Context::popTextureBinding( GLenum target, uint8_t textureUnit )
+void Context::popTextureBinding( GLenum target, uint8_t textureUnit, bool forceRestore )
 {
 	if( mTextureBindingStack.find( textureUnit ) == mTextureBindingStack.end() )
 		mTextureBindingStack[textureUnit] = std::map<GLenum,std::vector<GLint>>();
@@ -843,11 +894,11 @@ void Context::popTextureBinding( GLenum target, uint8_t textureUnit )
 		GLint prevValue = cached->second.back();
 		cached->second.pop_back();
 		if( ! cached->second.empty() ) {
-			if( cached->second.back() != prevValue ) {
+			if( forceRestore || ( cached->second.back() != prevValue ) ) {
 				ScopedActiveTexture actScp( textureUnit );
 				glBindTexture( target, cached->second.back() );
+			}
 		}
-	}
 	}
 }
 
@@ -924,9 +975,9 @@ void Context::pushActiveTexture()
 }
 
 //! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0
-void Context::popActiveTexture()
+void Context::popActiveTexture( bool forceRefresh )
 {
-	if( mActiveTextureStack.empty() || popStackState<uint8_t>( mActiveTextureStack ) )
+	if( mActiveTextureStack.empty() || popStackState<uint8_t>( mActiveTextureStack ) || forceRefresh )
 		glActiveTexture( GL_TEXTURE0 + getActiveTexture() );
 }
 
@@ -1158,14 +1209,14 @@ void Context::pushBoolState( GLenum cap )
 	mBoolStateStack[cap].push_back( existingVal );
 }
 
-void Context::popBoolState( GLenum cap )
+void Context::popBoolState( GLenum cap, bool forceRestore )
 {
 	auto cached = mBoolStateStack.find( cap );
 	if( ( cached != mBoolStateStack.end() ) && ( ! cached->second.empty() ) ) {
 		GLboolean prevValue = cached->second.back();
 		cached->second.pop_back();
 		if( ! cached->second.empty() ) {
-			if( cached->second.back() != prevValue ) {
+			if( forceRestore || ( cached->second.back() != prevValue ) ) {
 				if( cached->second.back() )
 					glEnable( cap );
 				else
@@ -1234,12 +1285,13 @@ void Context::pushBlendFuncSeparate()
 	mBlendDstAlphaStack.push_back( resultDstAlpha );
 }
 
-void Context::popBlendFuncSeparate()
+void Context::popBlendFuncSeparate( bool forceRestore )
 {
 	bool needsChange = popStackState<GLint>( mBlendSrcRgbStack );
 	needsChange = popStackState<GLint>( mBlendDstRgbStack ) || needsChange;
 	needsChange = popStackState<GLint>( mBlendSrcAlphaStack ) || needsChange;
 	needsChange = popStackState<GLint>( mBlendDstAlphaStack ) || needsChange;
+	needsChange = forceRestore || needsChange;
 	if( needsChange && ( ! mBlendSrcRgbStack.empty() ) && ( ! mBlendSrcAlphaStack.empty() ) && ( ! mBlendDstRgbStack.empty() ) && ( ! mBlendDstAlphaStack.empty() ) )
 		glBlendFuncSeparate( mBlendSrcRgbStack.back(), mBlendDstRgbStack.back(), mBlendSrcAlphaStack.back(), mBlendDstAlphaStack.back() );
 }
@@ -1272,6 +1324,44 @@ void Context::getBlendFuncSeparate( GLenum *resultSrcRGB, GLenum *resultDstRGB, 
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////
+// LineWidth
+void Context::lineWidth( float lineWidth )
+{
+	if( setStackState<float>( mLineWidthStack, lineWidth ) )
+		glLineWidth( lineWidth );
+}
+
+void Context::pushLineWidth( float lineWidth )
+{
+	if( pushStackState<float>( mLineWidthStack, lineWidth ) )
+		glLineWidth( lineWidth );
+}
+
+void Context::pushLineWidth()
+{
+	pushStackState<float>( mLineWidthStack, getLineWidth() );
+}
+
+void Context::popLineWidth( bool forceRestore )
+{
+	if( mLineWidthStack.empty() || popStackState<float>( mLineWidthStack ) || forceRestore )
+		glLineWidth( getLineWidth() );
+}
+
+float Context::getLineWidth()
+{
+	if( mLineWidthStack.empty() ) {
+		GLfloat queriedFloat;
+		glGetFloatv( GL_LINE_WIDTH, &queriedFloat );
+		// push twice to account for inevitable pop to follow
+		mLineWidthStack.push_back( queriedFloat );
+		mLineWidthStack.push_back( queriedFloat );
+	}
+
+	return mLineWidthStack.back();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
 // DepthMask
 void Context::depthMask( GLboolean enable )
 {
@@ -1283,30 +1373,55 @@ void Context::depthMask( GLboolean enable )
 #if ! defined( CINDER_GL_ES )
 void Context::polygonMode( GLenum face, GLenum mode )
 {
-	if( face == GL_FRONT_AND_BACK ) {
-		if( mCachedFrontPolygonMode != mode || mCachedBackPolygonMode != mode ) {
-			mCachedFrontPolygonMode = mCachedBackPolygonMode = mode;
-			glPolygonMode( GL_FRONT_AND_BACK, mode );
-		}
-	}
-	else if( face == GL_FRONT ) {
-		if( mCachedFrontPolygonMode != mode ) {
-			mCachedFrontPolygonMode = mode;
-			glPolygonMode( GL_FRONT, mode );
-		}
-	}
-	else if( face == GL_BACK ) {
-		if( mCachedBackPolygonMode != mode ) {
-			mCachedBackPolygonMode = mode;
-			glPolygonMode( GL_BACK, mode );
-		}		
-	}
+	if( face != GL_FRONT_AND_BACK )
+		CI_LOG_E( "Only GL_FRONT_AND_BACK is legal for polygonMode face" );
+
+	if( setStackState( mPolygonModeStack, mode ) )
+		glPolygonMode( GL_FRONT_AND_BACK, mode );
 }
 
-GLenum Context::getPolygonMode( GLenum face ) const
+void Context::pushPolygonMode( GLenum face, GLenum mode )
 {
-	return face == GL_FRONT ? mCachedFrontPolygonMode : mCachedBackPolygonMode;
+	if( face != GL_FRONT_AND_BACK )
+		CI_LOG_E( "Only GL_FRONT_AND_BACK is legal for polygonMode face" );
+
+	if( pushStackState( mPolygonModeStack, mode ) )
+		glPolygonMode( GL_FRONT_AND_BACK, mode );
 }
+
+void Context::pushPolygonMode( GLenum face )
+{
+	if( face != GL_FRONT_AND_BACK )
+		CI_LOG_E( "Only GL_FRONT_AND_BACK is legal for polygonMode face" );
+
+	pushStackState( mPolygonModeStack, getPolygonMode( GL_FRONT_AND_BACK ) );
+}
+
+void Context::popPolygonMode( GLenum face, bool forceRefresh )
+{
+	if( face != GL_FRONT_AND_BACK )
+		CI_LOG_E( "Only GL_FRONT_AND_BACK is legal for polygonMode face" );
+
+	if( mPolygonModeStack.empty() )
+		CI_LOG_E( "Polygon mode stack underflow" );
+	else if( popStackState( mPolygonModeStack ) || forceRefresh )
+		glPolygonMode( GL_FRONT_AND_BACK, getPolygonMode( GL_FRONT_AND_BACK ) );
+}
+
+GLenum Context::getPolygonMode( GLenum face )
+{
+	if( face != GL_FRONT_AND_BACK )
+		CI_LOG_E( "Only GL_FRONT_AND_BACK is legal for polygonMode face" );
+
+	if( mPolygonModeStack.empty() ) {
+		// there appears to be no way to query the polygon mode. Warn and then punt with the default GL_FILL.
+		CI_LOG_W( "Unknown polygonMode state. Returning GL_FILL." );
+		mPolygonModeStack.push_back( GL_FILL );
+	}
+
+	return mPolygonModeStack.back();
+}
+
 #endif // ! defined( CINDER_GL_ES )
 
 //////////////////////////////////////////////////////////////////////////////////////////
@@ -1429,6 +1544,15 @@ void Context::sanityCheck()
 			assert( arrayType == attribs[matchingIdx].second.mType );
 		}
 	}
+
+	// assert the current GLSL prog is what we believe it is
+	auto curGlslProg = getGlslProg();
+	GLint curProgramId;
+	glGetIntegerv( GL_CURRENT_PROGRAM, &curProgramId );
+	if( curGlslProg )
+		CI_ASSERT( curGlslProg->getHandle() == (GLuint)curProgramId );
+	else
+		CI_ASSERT( curProgramId == 0 );
 
 	// assert the various texture bindings are correct
 /*	for( auto& cachedTextureBinding : mTextureBindingStack ) {
