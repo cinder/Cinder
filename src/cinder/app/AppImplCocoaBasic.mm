@@ -68,8 +68,6 @@ using namespace cinder::app;
 	
 	mApp = app;
 	mNeedsUpdate = YES;
-	mHighDensityDisplayEnabled = settings.isHighDensityDisplayEnabled();
-	mMultiTouchEnabled = settings.isMultiTouchEnabled();
 	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
 
 	// build our list of requested formats; an empty list implies we should make the default window format
@@ -79,7 +77,7 @@ using namespace cinder::app;
 
 	// create all the requested windows
 	for( const auto &format : formats ) {
-		WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mHighDensityDisplayEnabled multiTouchEnabled:mMultiTouchEnabled];
+		WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self];
 		[mWindows addObject:winImpl];
 		if( format.isFullScreen() )
 			[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
@@ -155,7 +153,7 @@ using namespace cinder::app;
 
 - (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format
 {
-	WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self withRetina:mHighDensityDisplayEnabled multiTouchEnabled:mMultiTouchEnabled];
+	WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self];
 	[mWindows addObject:winImpl];
 	if( format.isFullScreen() )
 		[winImpl setFullScreen:YES options:&format.getFullScreenOptions()];
@@ -685,7 +683,7 @@ using namespace cinder::app;
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled multiTouchEnabled:(BOOL)multiTouchEnabled
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 
@@ -744,7 +742,7 @@ using namespace cinder::app;
 	
 	cinder::app::RendererRef renderer = winFormat.getRenderer();
 	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
-	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame app:winImpl->mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer highDensityEnabled:retinaEnabled multiTouchEnabled:multiTouchEnabled];
+	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame app:winImpl->mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer];
 
 	[winImpl->mWin setDelegate:self];	
 	[winImpl->mWin setContentView:winImpl->mCinderView];

@@ -57,18 +57,18 @@ using namespace cinder::app;
 	return self;
 }
 
-- (CinderView *)initWithFrame:(NSRect)frame app:(AppBase *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer highDensityEnabled:(BOOL)highDensityEnabled multiTouchEnabled:(BOOL)multiTouchEnabled
+- (CinderView *)initWithFrame:(NSRect)frame app:(AppBase *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
 	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
 	mApp = app;
 
 	self = [super initWithFrame:frame];
 	mRenderer = renderer;
-	mHighDensityDisplayEnabled = highDensityEnabled;
-	mMultiTouchEnabled = multiTouchEnabled;
 	mReadyToDraw = NO;
 	mFullScreen = NO;
 	mReceivesEvents = mApp->receivesEvents();
+	mHighDensityDisplayEnabled = mApp->isHighDensityDisplayEnabled();
+	mMultiTouchEnabled = mApp->isMultiTouchEnabled();
 
 	mTouchIdMap = nil;
 	mDelegate = nil;

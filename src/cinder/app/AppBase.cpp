@@ -52,7 +52,7 @@ AppBase::Settings::Settings()
 	mFrameRateEnabled = true;
 	mFrameRate = 60.0f;
 	mEnableHighDensityDisplay = false;
-	mEnableMultiTouch = false;	
+	mEnableMultiTouch = false;
 }
 
 void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
@@ -87,12 +87,14 @@ void AppBase::Settings::prepareWindow( const Window::Format &format )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // App::App
 AppBase::AppBase()
-	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() )
+	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
+		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 )
 {
 	sInstance = this;
 
-	mFpsLastSampleFrame = 0;
-	mFpsLastSampleTime = 0;
+	CI_ASSERT( sSettingsFromMain );
+	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
+	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
 
 	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
 	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );

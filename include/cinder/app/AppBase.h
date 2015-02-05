@@ -344,6 +344,11 @@ class AppBase {
 	//! Returns the number of animation frames which have elapsed since application launch
 	uint32_t			getElapsedFrames() const { return mFrameCount; }
 
+	//! Returns whether the app is registered to receive multiTouch events from the operating system, configurable via Settings at startup. Disabled by default on desktop platforms, enabled on mobile.
+	bool				isMultiTouchEnabled() const				{ return mMultiTouchEnabled; }
+	//! Returns whether Windows created on a high-density (Retina) display will have their resolution doubled, configurable via Settings at startup. Default is \c true on iOS and \c false on other platforms.
+	bool				isHighDensityDisplayEnabled() const		{ return mHighDensityDisplayEnabled; }
+
 	// utilities
 #if defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
@@ -439,6 +444,7 @@ class AppBase {
 	uint32_t				mFpsLastSampleFrame;
 	double					mFpsLastSampleTime;
 	double					mFpsSampleInterval;
+	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled;
 
 	std::shared_ptr<Timeline>	mTimeline;
 

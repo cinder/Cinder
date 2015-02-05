@@ -45,8 +45,6 @@
 	class cinder::app::AppBasicMac*	mApp;
 	
 	BOOL							mNeedsUpdate;
-	BOOL							mHighDensityDisplayEnabled;
-	BOOL							mMultiTouchEnabled;
 	BOOL							mQuitOnLastWindowClosed;
 	BOOL							mFrameRateEnabled;
 	float							mFrameRate;
@@ -141,6 +139,6 @@
 - (void)fileDrop:(cinder::app::FileDropEvent *)event;
 - (cinder::app::WindowRef)getWindowRef;
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl withRetina:(BOOL)retinaEnabled multiTouchEnabled:(BOOL)multiTouchEnabled;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl;
 
 @end
