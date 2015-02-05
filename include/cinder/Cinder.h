@@ -43,7 +43,7 @@
 #define CINDER_VERSION		900
 #define CINDER_VERSION_STR	"9.0.0.dev"
 
-#define ASIO_STANDALONE
+#define ASIO_STANDALONE 1
 
 namespace cinder {
 using std::int8_t;

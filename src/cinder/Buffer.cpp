@@ -123,7 +123,7 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip 
 	}
 	
 	size_t inOffset = 0;
-	size_t chunkSize = 16384;
+	const uint32_t chunkSize = 16384;
 	size_t inBufferSize = aBuffer.getDataSize();
 	uint8_t * inPtr = (uint8_t *)aBuffer.getData();
 	
@@ -135,7 +135,7 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip 
 	do {
 		strm.avail_in = chunkSize;
 		if( inOffset + chunkSize > inBufferSize ) {
-			strm.avail_in = inBufferSize - inOffset;
+			strm.avail_in = (uInt)(inBufferSize - inOffset);
 		}
 		
 		if( strm.avail_in == 0 ) break;

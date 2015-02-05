@@ -434,7 +434,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures,
 		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
 		ctx->getDefaultVao()->replacementBindEnd();
 		gl::setDefaultShaderVars();
-		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
+		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
 }
 
@@ -571,7 +571,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyp
 		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
 		ctx->getDefaultVao()->replacementBindEnd();
 		gl::setDefaultShaderVars();
-		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
+		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
 }
 

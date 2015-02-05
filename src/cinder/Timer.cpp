@@ -26,7 +26,7 @@
 
 #if (defined( CINDER_MSW ) || defined( CINDER_WINRT))
 	#include <windows.h>
-#else if defined( CINDER_COCOA )
+#elif defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
 #endif
 

@@ -1518,13 +1518,13 @@ void Context::sanityCheck()
 
 	// assert that the (first 8) vertex attribute params are the same
 	auto attribs = boundVao->getLayout().getVertexAttribs();
-	for( int idx = 0; idx < std::min<int>( 8, boundVao->getLayout().getVertexAttribs().size() ); ++idx ) {
+	for( int idx = 0; idx < std::min<int>( 8, (int)boundVao->getLayout().getVertexAttribs().size() ); ++idx ) {
 		GLint enabled;
 		glGetVertexAttribiv( idx, GL_VERTEX_ATTRIB_ARRAY_ENABLED, &enabled );
 		int matchingIdx = -1;
 		for( auto ciVaoAttribIt = attribs.begin(); ciVaoAttribIt != attribs.end(); ++ciVaoAttribIt ) {
 			if( ciVaoAttribIt->first == idx ) {
-				matchingIdx = ciVaoAttribIt - attribs.begin();
+				matchingIdx = (int)(ciVaoAttribIt - attribs.begin());
 			}
 		}
 		if( matchingIdx == -1 ) {
