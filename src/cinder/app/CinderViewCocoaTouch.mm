@@ -29,7 +29,7 @@
 @implementation CinderViewCocoaTouch
 
 // Set in initWithFrame based on the renderer
-static Boolean sIsEaglLayer;
+static bool sIsEaglLayer;
 
 + (Class)layerClass
 {
