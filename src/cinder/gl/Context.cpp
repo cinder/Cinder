@@ -324,9 +324,11 @@ void Context::pushViewport()
 	mViewportStack.push_back( getViewport() );
 }
 
-void Context::popViewport( bool /*forceRestore*/ )
+void Context::popViewport( bool forceRestore )
 {
-	if( mViewportStack.empty() || popStackState( mViewportStack ) ) {
+	if( mViewportStack.empty() )
+		CI_LOG_E( "Viewport stack underflow" );
+	else if( popStackState( mViewportStack ) || forceRestore ) {
 		auto viewport = getViewport();
 		glViewport( viewport.first.x, viewport.first.y, viewport.second.x, viewport.second.y );
 	}
@@ -364,9 +366,11 @@ void Context::pushScissor()
 	mScissorStack.push_back( getScissor() );
 }
 
-void Context::popScissor( bool /*forceRestore*/ )
+void Context::popScissor( bool forceRestore )
 {
-	if( mScissorStack.empty() || popStackState( mScissorStack ) ) {
+	if( mScissorStack.empty() )
+		CI_LOG_E( "Scissor stack underflow" );
+	else if( popStackState( mScissorStack ) || forceRestore ) {
 		auto scissor = getScissor();
 		glScissor( scissor.first.x, scissor.first.y, scissor.second.x, scissor.second.y );
 	}
@@ -886,8 +890,10 @@ void Context::pushTextureBinding( GLenum target, GLuint textureId, uint8_t textu
 
 void Context::popTextureBinding( GLenum target, uint8_t textureUnit, bool forceRestore )
 {
-	if( mTextureBindingStack.find( textureUnit ) == mTextureBindingStack.end() )
+	if( mTextureBindingStack.find( textureUnit ) == mTextureBindingStack.end() ) {
 		mTextureBindingStack[textureUnit] = std::map<GLenum,std::vector<GLint>>();
+		CI_LOG_E( "Popping unencountered texture binding target:" << gl::constantToString( target ) );
+	}
 
 	auto cached = mTextureBindingStack[textureUnit].find( target );
 	if( ( cached != mTextureBindingStack[textureUnit].end() ) && ( ! cached->second.empty() ) ) {
@@ -977,7 +983,9 @@ void Context::pushActiveTexture()
 //! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0
 void Context::popActiveTexture( bool forceRefresh )
 {
-	if( mActiveTextureStack.empty() || popStackState<uint8_t>( mActiveTextureStack ) || forceRefresh )
+	if( mActiveTextureStack.empty() )
+		CI_LOG_E( "Active texture stack underflow" );
+	else if( popStackState<uint8_t>( mActiveTextureStack ) || forceRefresh )
 		glActiveTexture( GL_TEXTURE0 + getActiveTexture() );
 }
 
@@ -1224,6 +1232,9 @@ void Context::popBoolState( GLenum cap, bool forceRestore )
 			}
 		}
 	}
+	else {
+		CI_LOG_E( "Boolean state stack underflow: " << constantToString( cap ) );
+	}
 }
 
 void Context::enable( GLenum cap, GLboolean value )
@@ -1344,7 +1355,9 @@ void Context::pushLineWidth()
 
 void Context::popLineWidth( bool forceRestore )
 {
-	if( mLineWidthStack.empty() || popStackState<float>( mLineWidthStack ) || forceRestore )
+	if( mLineWidthStack.empty() )
+		CI_LOG_E( "LineWidth stack underflow" );
+	else if( popStackState<float>( mLineWidthStack ) || forceRestore )
 		glLineWidth( getLineWidth() );
 }
 
