@@ -35,9 +35,10 @@
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
 #include "cinder/Function.h"
+#include "cinder/Noncopyable.h"
 
 #include <map>
-#include <boost/noncopyable.hpp>
+
 
 namespace cinder { namespace svg {
 
@@ -728,7 +729,7 @@ class Text : public Node {
 };
 
 //! Represents a group of SVG elements. http://www.w3.org/TR/SVG/struct.html#Groups
-class Group : public Node, private boost::noncopyable {
+class Group : public Node, private Noncopyable {
   public:
 	Group( const Node *parent ) : Node( parent ) {}
 	Group( const Node *parent, const XmlTree &xml );

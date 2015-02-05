@@ -25,8 +25,8 @@
 
 #include "cinder/audio/Buffer.h"
 #include "cinder/audio/Exception.h"
+#include "cinder/Noncopyable.h"
 
-#include <boost/noncopyable.hpp>
 #include <boost/logic/tribool.hpp>
 
 #include <memory>
@@ -56,7 +56,7 @@ typedef std::shared_ptr<class Node>				NodeRef;
 //! initialize() is called, uninitialize() is called before a Node is deallocated or channel counts change.
 //!
 //! \see InputNode, OutputNode, EffectNode
-class Node : public std::enable_shared_from_this<Node>, public boost::noncopyable {
+class Node : public std::enable_shared_from_this<Node>, private Noncopyable {
   public:
 	//! Used to specifiy how the corresponding channels are to be resolved between two connected Node's,
 	//! based on either a Node's input (the default), it's output, or specified by user.

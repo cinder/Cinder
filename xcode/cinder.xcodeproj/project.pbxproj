@@ -316,6 +316,9 @@
 		00624852122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
 		00624853122F607500039A7A /* Filesystem.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484D122F607500039A7A /* Filesystem.h */; };
 		00624854122F607500039A7A /* Function.h in Headers */ = {isa = PBXBuildFile; fileRef = 0062484E122F607500039A7A /* Function.h */; };
+		00633EB01A831B0200FDBA53 /* Noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 00633EAF1A831B0200FDBA53 /* Noncopyable.h */; };
+		00633EB11A831B0200FDBA53 /* Noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 00633EAF1A831B0200FDBA53 /* Noncopyable.h */; };
+		00633EB21A831B0200FDBA53 /* Noncopyable.h in Headers */ = {isa = PBXBuildFile; fileRef = 00633EAF1A831B0200FDBA53 /* Noncopyable.h */; };
 		006D704019940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
 		006D704119940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
 		006D704219940F25008149E2 /* RendererGl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 006D703F19940F25008149E2 /* RendererGl.cpp */; };
@@ -1275,6 +1278,7 @@
 		006228E310C8273C00A8191C /* DataSource.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataSource.cpp; sourceTree = "<group>"; };
 		0062484D122F607500039A7A /* Filesystem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Filesystem.h; sourceTree = "<group>"; };
 		0062484E122F607500039A7A /* Function.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Function.h; sourceTree = "<group>"; };
+		00633EAF1A831B0200FDBA53 /* Noncopyable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Noncopyable.h; sourceTree = "<group>"; };
 		006D703F19940F25008149E2 /* RendererGl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = RendererGl.cpp; path = app/RendererGl.cpp; sourceTree = "<group>"; };
 		006D704319942BF5008149E2 /* AvfUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AvfUtils.mm; path = qtime/AvfUtils.mm; sourceTree = "<group>"; };
 		006D704419942BF5008149E2 /* MovieWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MovieWriter.cpp; path = qtime/MovieWriter.cpp; sourceTree = "<group>"; };
@@ -1976,6 +1980,7 @@
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
 				008B435C14EF426100B55B07 /* MatrixAffine2.h */,
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
+				00633EAF1A831B0200FDBA53 /* Noncopyable.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
 				00D2F1150F8D825C00A7189A /* Perlin.h */,
@@ -2638,6 +2643,7 @@
 				0070500E1114F93F003FCAE4 /* Perlin.h in Headers */,
 				0070500F1114F93F003FCAE4 /* Ray.h in Headers */,
 				111A5F61191F7286005C3166 /* lookup.h in Headers */,
+				00633EB11A831B0200FDBA53 /* Noncopyable.h in Headers */,
 				007050101114F93F003FCAE4 /* Sphere.h in Headers */,
 				007050121114F93F003FCAE4 /* Arcball.h in Headers */,
 				007050131114F93F003FCAE4 /* FileDropEvent.h in Headers */,
@@ -2761,6 +2767,7 @@
 				00CFD9321135C3520091E310 /* Camera.h in Headers */,
 				00CFD9331135C3520091E310 /* CinderMath.h in Headers */,
 				00CFD9341135C3520091E310 /* Matrix.h in Headers */,
+				00633EB21A831B0200FDBA53 /* Noncopyable.h in Headers */,
 				00CFD9351135C3520091E310 /* Quaternion.h in Headers */,
 				0003F4621992D67300647C8B /* TextureFont.h in Headers */,
 				008FCFFD1A7497DA00A86EC4 /* json.h in Headers */,
@@ -3014,6 +3021,7 @@
 				0003F43F1992D67300647C8B /* BufferTexture.h in Headers */,
 				003ADB881038973700ACF6F2 /* TwMgr.h in Headers */,
 				003ADBA01038996800ACF6F2 /* AntTweakBar.h in Headers */,
+				00633EB01A831B0200FDBA53 /* Noncopyable.h in Headers */,
 				002F8F73103AFD9A0077CB91 /* System.h in Headers */,
 				C70E19FF106AA38700E63577 /* Buffer.h in Headers */,
 				0032FD2910BB46F500C63A9D /* Exception.h in Headers */,
