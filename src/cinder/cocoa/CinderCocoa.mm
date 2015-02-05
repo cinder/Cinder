@@ -29,6 +29,7 @@
 	#import <Cocoa/Cocoa.h>
 	#import <CoreVideo/CVPixelBuffer.h>
 	#import <AppKit/AppKit.h>
+	#import <ApplicationServices/ApplicationServices.h>
 	#include <objc/objc-auto.h>
 #else
 	#import <UIKit/UIKit.h>

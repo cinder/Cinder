@@ -33,11 +33,7 @@ namespace cinder {
 	class Font;
 }
 
-#if defined( CINDER_COCOA_TOUCH )
-	#include <CoreGraphics/CoreGraphics.h>
-#else
-	#include <ApplicationServices/ApplicationServices.h>
-#endif
+#include <CoreGraphics/CGGeometry.h>
 #include <CoreFoundation/CoreFoundation.h>
 #if defined( __OBJC__ )
 	@class NSBitmapImageRep;
@@ -48,6 +44,10 @@ namespace cinder {
 	class NSString;
 	class NSData;	
 #endif
+typedef struct CGContext *CGContextRef;
+typedef struct CGColor *CGColorRef;
+typedef struct CGImage *CGImageRef;
+typedef const struct CGPath *CGPathRef;
 
 namespace cinder { namespace cocoa {
 
@@ -202,7 +202,7 @@ class ImageTargetCgImage : public ImageTarget {
 
 	::CGImageRef		mImageRef;
 	size_t				mBitsPerComponent, mBitsPerPixel, mRowBytes;
-	::CGBitmapInfo		mBitmapInfo;
+	uint32_t			mBitmapInfo; // CGBitmapInfo
 	::CFMutableDataRef	mDataRef;
 	uint8_t				*mDataPtr;
 };

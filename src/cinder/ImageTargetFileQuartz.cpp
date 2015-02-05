@@ -23,8 +23,8 @@
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
+#include <ImageIO/ImageIO.h>
 #if defined( CINDER_COCOA_TOUCH )
-	#include <ImageIO/ImageIO.h>
 	#include <MobileCoreServices/MobileCoreServices.h>
 #else
 	#include <CoreServices/CoreServices.h>

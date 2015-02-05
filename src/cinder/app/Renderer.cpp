@@ -32,6 +32,7 @@
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
+		#include <ApplicationServices/ApplicationServices.h>
 		#import <Cocoa/Cocoa.h>
 		#import "cinder/app/AppImplCocoaRendererQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )

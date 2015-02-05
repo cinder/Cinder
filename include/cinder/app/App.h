@@ -44,8 +44,6 @@
 			#import <UIKit/UIKit.h>
 			#import <CoreFoundation/CoreFoundation.h>
 		#endif
-	#else
-		#include <ApplicationServices/ApplicationServices.h>
 	#endif
 	#if defined __OBJC__
 		@class CinderView;

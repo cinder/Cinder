@@ -23,9 +23,9 @@
 #include "cinder/ImageSourceFileQuartz.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
+#include <ImageIO/ImageIO.h>
 #if defined( CINDER_COCOA_TOUCH )
 	#include <MobileCoreServices/MobileCoreServices.h>
-	#include <ImageIO/ImageIO.h>
 #else
 	#include <CoreServices/CoreServices.h>
 #endif

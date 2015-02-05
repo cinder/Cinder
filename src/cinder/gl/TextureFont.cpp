@@ -35,6 +35,8 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
+	#else
+		#include <CoreGraphics/CoreGraphics.h>
 	#endif
 #endif
 #include "cinder/Unicode.h"
