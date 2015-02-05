@@ -217,8 +217,6 @@ class AppCocoaTouch : public AppBase {
 	//! Returns a pointer to the current global AppBasic
 	static AppCocoaTouch*	get() { return sInstance; }
 
-	virtual const Settings&	getSettings() const override { return mSettings; }
-
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
@@ -233,11 +231,9 @@ class AppCocoaTouch : public AppBase {
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
-	
-	
+		
 	static AppCocoaTouch	*sInstance;
 	AppImplCocoaTouch		*mImpl;
-	Settings				mSettings;
 
 	signals::signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalMemoryWarning;
 

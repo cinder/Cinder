@@ -33,16 +33,15 @@ AppCocoaTouch::AppCocoaTouch()
 {
 	AppCocoaTouch::sInstance = this;
 
-	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
-	CI_ASSERT( settingsPtr );
-	mSettings = *settingsPtr;
+	auto settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
 
-	sDefaultRenderer = mSettings.getDefaultRenderer();
+	sDefaultRenderer = settings->getDefaultRenderer();
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = [[AppImplCocoaTouch alloc] init:this];
+	mImpl = [[AppImplCocoaTouch alloc] init:this settings:*settings];
 
-	enablePowerManagement( getSettings().isPowerManagementEnabled() );
+	enablePowerManagement( settings->isPowerManagementEnabled() );
 }
 
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )

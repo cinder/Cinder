@@ -38,7 +38,7 @@
 //! We use a separate object for the app delegate, so that AppImplCocoaTouch can be
 //! completely initialized before UIApplicationMain is called.
 @interface AppDelegateImpl : NSObject <UIApplicationDelegate> {
-@public
+  @public
 	cinder::app::AppCocoaTouch*		mApp;
 	AppImplCocoaTouch*				mAppImpl;
 }
@@ -64,7 +64,7 @@
 	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback
 }
 
-- (AppImplCocoaTouch *)init:(ci::app::AppCocoaTouch *)app;
+- (AppImplCocoaTouch *)init:(cinder::app::AppCocoaTouch *)app settings:(const cinder::app::AppCocoaTouch::Settings &)settings;
 - (ci::app::RendererRef)findSharedRenderer:(ci::app::RendererRef)match;
 - (WindowImplCocoaTouch *)getDeviceWindow;
 - (ci::app::WindowRef)createWindow:(ci::app::Window::Format)format;
@@ -88,6 +88,7 @@
 - (ci::app::InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation;
 
 @end // AppImplCocoaTouch
+
 
 @interface WindowImplCocoaTouch : UIViewController<WindowImplCocoa, CinderViewCocoaTouchDelegate, UIKeyInput, UITextViewDelegate> {
   @public

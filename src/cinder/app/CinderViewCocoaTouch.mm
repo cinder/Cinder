@@ -26,6 +26,9 @@
 
 #import <QuartzCore/QuartzCore.h>
 
+using namespace cinder;
+using namespace cinder::app;
+
 @implementation CinderViewCocoaTouch
 
 // Set in initWithFrame based on the renderer
@@ -39,7 +42,7 @@ static bool sIsEaglLayer;
 		return [CALayer class];
 }
 
-- (id)initWithFrame:(CGRect)frame app:(ci::app::AppCocoaTouch*)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer
+- (CinderViewCocoaTouch *)initWithFrame:(CGRect)frame app:(AppCocoaTouch *)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer
 {
 	// This needs to get setup immediately as +layerClass will be called when the view is initialized
 	sIsEaglLayer = renderer->isEaglLayer();
@@ -50,7 +53,7 @@ static bool sIsEaglLayer;
 
 		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self, sharedRenderer );
 		
-		self.multipleTouchEnabled = mApp->getSettings().isMultiTouchEnabled();
+		self.multipleTouchEnabled = mApp->isMultiTouchEnabled();
 	}
 
 	mDelegate = nil;
@@ -72,10 +75,10 @@ static bool sIsEaglLayer;
 {
 	[super layoutSubviews];
 	
-	CGRect bounds = [self bounds];
-	if( ! mApp->getSettings().isHighDensityDisplayEnabled() )
+	if( ! mApp->isHighDensityDisplayEnabled() )
 		self.layer.contentsScale = 1.0f;
-	mRenderer->setFrameSize( bounds.size.width, bounds.size.height );
+
+	mRenderer->setFrameSize( self.bounds.size.width, self.bounds.size.height );
 
 	[mDelegate resize];
 }
@@ -155,9 +158,10 @@ static bool sIsEaglLayer;
 
 /////////////////////////////////////////////////////////////////////////////////////////////
 // Event handlers
+
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	if( mApp->getSettings().isMultiTouchEnabled() ) {
+	if( mApp->isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
@@ -183,7 +187,7 @@ static bool sIsEaglLayer;
 
 - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	if( mApp->getSettings().isMultiTouchEnabled() ) {
+	if( mApp->isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
@@ -209,7 +213,7 @@ static bool sIsEaglLayer;
 
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
-	if( mApp->getSettings().isMultiTouchEnabled() ) {
+	if( mApp->isMultiTouchEnabled() ) {
 		std::vector<ci::app::TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];

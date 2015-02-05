@@ -89,7 +89,7 @@ using namespace ci::app;
 
 @implementation AppImplCocoaTouch
 
-- (AppImplCocoaTouch *)init:(AppCocoaTouch *)app
+- (AppImplCocoaTouch *)init:(AppCocoaTouch *)app settings:(const AppCocoaTouch::Settings &)settings
 {
 	self = [super init];
 
@@ -102,20 +102,19 @@ using namespace ci::app;
 	mIsUnplugged = NO;
 	mBatteryLevel = -1.0f;
 
-	if( ! mApp->getSettings().isStatusBarEnabled() ) {
+	if( ! settings.isStatusBarEnabled() )
 		[UIApplication sharedApplication].statusBarHidden = YES;
-	}
 
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
 	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
 
-	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / mApp->getSettings().getFrameRate() + 0.5f ) );
+	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / settings.getFrameRate() + 0.5f ) );
 
 	// build our list of requested formats; an empty list implies we should make the default window format
-	std::vector<cinder::app::Window::Format> formats( mApp->getSettings().getWindowFormats() );
+	std::vector<cinder::app::Window::Format> formats( settings.getWindowFormats() );
 	if( formats.empty() )
-		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
+		formats.push_back( settings.getDefaultWindowFormat() );
 
 	for( auto &format : formats )
 		[self createWindow:format];
@@ -233,6 +232,7 @@ using namespace ci::app;
 		if ( [win getDisplay] == cinder::Display::getMainDisplay() )
 			return win;
 	}
+	
 	return nil;
 }
 
@@ -240,6 +240,7 @@ using namespace ci::app;
 {
 	if( ! format.getRenderer() )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
+
 	cinder::app::RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
 	mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
 	return mWindows.back()->mWindowRef;
