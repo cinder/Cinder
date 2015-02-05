@@ -57,7 +57,8 @@ AppBase::Settings::Settings()
 void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
 {
 	mDefaultRenderer = defaultRenderer;
-	mTitle = title;
+	if( title )
+		mTitle = title;
 
 	for( int arg = 0; arg < argc; ++arg )
 		mCommandLineArgs.push_back( argv[arg] );

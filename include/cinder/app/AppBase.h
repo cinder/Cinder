@@ -422,7 +422,6 @@ class AppBase {
 	//! Returns a pointer to the active App
 	static AppBase*			get() { return sInstance; }
 
-
   protected:
 	AppBase();
 

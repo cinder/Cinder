@@ -44,12 +44,11 @@ class AppCocoaView : public AppBase {
 	  private:
 	};
 
-	typedef std::function<void ( Settings *settings )>	SettingsFn;
-
 	AppCocoaView();
 		
-	void			prepareLaunch( const RendererRef &defaultRenderer = RendererRef(), const SettingsFn &settingsFn = SettingsFn() );
-	virtual void	setupCinderView( CinderView *cinderView, const RendererRef &renderer );
+	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr, 0, nullptr ); }
+
+	virtual void	setupCinderView( CinderView *cinderView );
 	virtual void	launch( const char *title = 0, int argc = 0, char * const argv[] = 0 );
 
 	virtual void	quit() override;
@@ -75,7 +74,6 @@ class AppCocoaView : public AppBase {
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
   protected:
-	Settings			mSettings;
 	AppImplCocoaView	*mImpl;
 };
 

@@ -509,6 +509,12 @@ namespace cinder { namespace app {
 AppCocoaView::AppCocoaView()
 	: AppBase()
 {
+	Platform::get()->setExecutablePath( getAppPath() );
+
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
+
+	mImpl = [[AppImplCocoaView alloc] init:this settings:*settings defaultRenderer:getDefaultRenderer()];
 }
 
 AppCocoaView::Settings::Settings()
@@ -516,20 +522,10 @@ AppCocoaView::Settings::Settings()
 {
 }
 
-void AppCocoaView::prepareLaunch( const RendererRef &defaultRenderer, const SettingsFn &settingsFn )
-{
-	if( settingsFn )
-		settingsFn( &mSettings );
-
-	Platform::get()->setExecutablePath( getAppPath() );
-
-	mImpl = [[AppImplCocoaView alloc] init:this settings:mSettings defaultRenderer:defaultRenderer];
-}
-
-void AppCocoaView::setupCinderView( CinderView *cinderView, const RendererRef &renderer )
+void AppCocoaView::setupCinderView( CinderView *cinderView )
 {
 	[cinderView setApp:this];
-	[mImpl setupCinderView:cinderView renderer:renderer];
+	[mImpl setupCinderView:cinderView renderer:getDefaultRenderer()];
 }
 
 void AppCocoaView::launch( const char *title, int argc, char * const argv[] )
