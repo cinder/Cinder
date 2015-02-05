@@ -308,6 +308,7 @@ void vertex( const ci::vec3 &v );
 void vertex( const ci::vec4 &v );
 
 #if ! defined( CINDER_GL_ES )
+//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
 void polygonMode( GLenum face, GLenum mode );
 //! Enables wireframe drawing by setting the \c PolygonMode to \c GL_LINE.
 void enableWireframe();
@@ -322,7 +323,7 @@ inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWiref
 //! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
 void	lineWidth( float width );
 #if ! defined( CINDER_GL_ES )
-//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize.
+//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize().
 void	pointSize( float size );
 #endif
 
@@ -630,6 +631,41 @@ struct ScopedRenderbuffer : public boost::noncopyable
   private:
 	Context		*mCtx;
 };
+
+//! Scopes state of line width
+struct ScopedLineWidth : public boost::noncopyable
+{
+	ScopedLineWidth( float width );
+	~ScopedLineWidth();
+	
+  private:
+	Context		*mCtx;
+};
+
+#if ! defined( CINDER_GL_ES )
+//! Scopes polygon rasterization mode for \c GL_FRONT_AND_BACK
+struct ScopedPolygonMode : public boost::noncopyable
+{
+	//! Values for \a mode may be \c GL_POINT, \c GL_LINE or \c GL_FILL.
+	ScopedPolygonMode( GLenum mode );
+	~ScopedPolygonMode();
+	
+  private:
+	Context		*mCtx;
+};
+#endif // ! defined( CINDER_GL_ES )
+
+//! Scopes winding order defining front-facing polygons
+struct ScopedFrontFace : public boost::noncopyable
+{
+	//! Values for \a mode may be \c GL_CW or \c GL_CCW
+	ScopedFrontFace( GLenum mode );
+	~ScopedFrontFace();
+	
+  private:
+	Context		*mCtx;
+};
+
 
 class Exception : public cinder::Exception {
   public:
