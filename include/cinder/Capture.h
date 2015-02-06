@@ -55,11 +55,10 @@ class Capture {
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
 
+	//! Creates a new Capture requesting (but not promising) a resolution of \a width x \a height pixels.
 	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
 
 	Capture() {}
-	//! \deprecated Call Capture::create() instead
-	Capture( int32_t width, int32_t height, const DeviceRef device = DeviceRef() );
 	~Capture() {}
 
 	//! Begin capturing video
@@ -126,7 +125,9 @@ class Capture {
 		std::string		mName;
 	};
 		
- protected: 
+ protected:
+ 	Capture( int32_t width, int32_t height, const DeviceRef device );
+ 
 	struct Obj {
 		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
 		virtual ~Obj();

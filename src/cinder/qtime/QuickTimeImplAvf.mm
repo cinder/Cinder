@@ -405,15 +405,14 @@ bool MovieBase::setRate( float rate )
 	
 	bool success;
 	
-	if (rate < -1.0f) {
+	if( rate < -1.0f )
 		success = [mPlayerItem canPlayFastReverse];
-	} else if (rate < 0.0f) {
+	else if( rate < 0.0f )
 		success = [mPlayerItem canPlaySlowReverse];
-	} else if (rate > 1.0f) {
+	else if( rate > 1.0f )
 		success = [mPlayerItem canPlayFastForward];
-	} else if (rate > 0.0f) {
+	else
 		success = [mPlayerItem canPlaySlowForward];
-	}
 	
 	[mPlayer setRate:rate];
 	
@@ -428,7 +427,7 @@ void MovieBase::setVolume( float volume )
 #if defined( CINDER_COCOA_TOUCH )
 	NSArray* audioTracks = [mAsset tracksWithMediaType:AVMediaTypeAudio];
 	NSMutableArray* allAudioParams = [NSMutableArray array];
-	for (AVAssetTrack *track in audioTracks) {
+	for( AVAssetTrack *track in audioTracks ) {
 		AVMutableAudioMixInputParameters* audioInputParams =[AVMutableAudioMixInputParameters audioMixInputParameters];
 		[audioInputParams setVolume:volume atTime:kCMTimeZero];
 		[audioInputParams setTrackID:[track trackID]];
@@ -453,15 +452,16 @@ float MovieBase::getVolume() const
 	NSArray* inputParams = [mix inputParameters];
 	float startVolume, endVolume;
 	bool success = false;
-	for (AVAudioMixInputParameters* param in inputParams) {
+	for( AVAudioMixInputParameters* param in inputParams )
 		success = [param getVolumeRampForTime:[mPlayerItem currentTime] startVolume:&startVolume endVolume:&endVolume timeRange:NULL] || success;
-	}
-	if (!success) return -1;
-	else return endVolume;
+
+	if( ! success )
+		return -1;
+	else
+		return endVolume;
 	
 #elif defined( CINDER_COCOA )
 	return [mPlayer volume];
-	
 #endif
 }
 
@@ -479,8 +479,8 @@ bool MovieBase::isDone() const
 		return false;
 	
 	CMTime current_time = [mPlayerItem currentTime];
-	CMTime end_time = (mPlayingForward? [mPlayerItem duration]: kCMTimeZero);
-	return CMTimeCompare(current_time, end_time) >= 0;
+	CMTime end_time = mPlayingForward ? [mPlayerItem duration] : kCMTimeZero;
+	return ::CMTimeCompare( current_time, end_time ) >= 0;
 }
 
 void MovieBase::play(bool toggle)
@@ -568,11 +568,11 @@ void MovieBase::initFromLoader( const MovieLoader& loader )
 	mPlayerItem = [mPlayer currentItem];
 	mAsset = reinterpret_cast<AVURLAsset*>([mPlayerItem asset]);
 	
-	mResponder = new MovieResponder(this);
+	mResponder = new MovieResponder( this );
 	mPlayerDelegate = [[MovieDelegate alloc] initWithResponder:mResponder];
 
 	// process asset and prepare for playback...
-	processAssetTracks(mAsset);
+	processAssetTracks( mAsset );
 	
 	// collect asset information
 	mLoaded = true;
@@ -582,7 +582,7 @@ void MovieBase::initFromLoader( const MovieLoader& loader )
 	mPlayThroughOk = [mPlayerItem isPlaybackLikelyToKeepUp];
 	
 	// setup PlayerItemVideoOutput --from which we will obtain direct texture access
-	createPlayerItemOutput(mPlayerItem);
+	createPlayerItemOutput( mPlayerItem );
 	
 	// without this the player continues to move the playhead past the asset duration time...
 	[mPlayer setActionAtItemEnd:AVPlayerActionAtItemEndPause];
@@ -642,8 +642,8 @@ void MovieBase::loadAsset()
 void MovieBase::updateFrame()
 {
 	lock();
-	if (mPlayerVideoOutput && mPlayerItem) {
-		if ([mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayerItem currentTime]]) {
+	if( mPlayerVideoOutput && mPlayerItem ) {
+		if( [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayerItem currentTime]] ) {
 			releaseFrame();
 			
 			CVImageBufferRef buffer = nil;
@@ -663,9 +663,9 @@ uint32_t MovieBase::countFrames() const
 		return 0;
 	
 	CMTime dur = [mAsset duration];
-	CMTime one_frame = CMTimeMakeWithSeconds(1.0 / mFrameRate, dur.timescale);
-	double dur_seconds = CMTimeGetSeconds(dur);
-	double one_frame_seconds = CMTimeGetSeconds(one_frame);
+	CMTime one_frame = ::CMTimeMakeWithSeconds( 1.0 / mFrameRate, dur.timescale );
+	double dur_seconds = ::CMTimeGetSeconds( dur );
+	double one_frame_seconds = ::CMTimeGetSeconds( one_frame );
 	return static_cast<uint32_t>(dur_seconds / one_frame_seconds);
 }
 
@@ -712,7 +712,7 @@ void MovieBase::createPlayerItemOutput(const AVPlayerItem* playerItem)
 
 void MovieBase::addObservers()
 {
-	if (mPlayerDelegate && mPlayerItem) {
+	if( mPlayerDelegate && mPlayerItem ) {
 		// Determine if this is all we need out of the NotificationCenter
 		NSNotificationCenter* notification_center = [NSNotificationCenter defaultCenter];
 		[notification_center addObserver:mPlayerDelegate
@@ -952,24 +952,21 @@ void MovieLoader::updateLoadState() const
 	mLoaded = mPlayable = [playerItem status] == AVPlayerItemStatusReadyToPlay;
 	mPlayThroughOK = [playerItem isPlaybackLikelyToKeepUp];
 	mProtected = [[playerItem asset] hasProtectedContent];
-	app::console() << "  loaded: " << mLoaded << std::endl;
-	app::console() << "  protected: " << mProtected << std::endl;
-	app::console() << "  playback okay?: " << mPlayThroughOK << std::endl;
 	
-	//NSArray* loaded = [playerItem seekableTimeRanges];  // this value appears to be garbage (wtf?)
-	NSArray* loaded = [playerItem loadedTimeRanges];      // this value appears to be garbage (wtf?)
-	for (NSValue* value in loaded) {
+	//NSArray* loaded = [playerItem seekableTimeRanges];  // this value appears to be garbage
+/*	NSArray* loaded = [playerItem loadedTimeRanges];      // this value appears to be garbage
+	for( NSValue* value in loaded ) {
 		CMTimeRange range = [value CMTimeRangeValue];
-		float start = CMTimeGetSeconds(range.start);
-		float dur = CMTimeGetSeconds(range.duration);
+		float start = ::CMTimeGetSeconds( range.start );
+		float dur = ::CMTimeGetSeconds( range.duration );
 		//mLoaded = (CMTimeCompare([playerItem duration], range.duration) >= 0);
 	}
 	
 	AVPlayerItemAccessLog* log = [playerItem accessLog];
-	if (log) {
+	if( log ) {
 		NSArray* load_events = [log events];
 		for (AVPlayerItemAccessLogEvent* log_event in load_events) {
-			int segemnts = log_event.numberOfSegmentsDownloaded;
+			int segments = log_event.numberOfSegmentsDownloaded;
 			int stalls = log_event.numberOfStalls;							// only accurate if playing!
 			double segment_interval = log_event.segmentsDownloadedDuration;	// only accurate if playing!
 			double watched_interval = log_event.durationWatched;			// only accurate if playing!
@@ -978,19 +975,8 @@ void MovieLoader::updateLoadState() const
 			long long bytes_transfered = log_event.numberOfBytesTransferred;
 			double bitrate = log_event.observedBitrate;
 			int dropped_frames = log_event.numberOfDroppedVideoFrames;		// only accurate if playing!
-			
-			app::console() << "-------------------------" << std::endl;
-			app::console() << "  segments: " << segemnts << std::endl;
-			app::console() << "  stalls: " << stalls << std::endl;
-			app::console() << "  segment_interval: " << segment_interval << std::endl;
-			app::console() << "  watched_interval: " << watched_interval << std::endl;
-			app::console() << "  address: " << address << std::endl;
-			app::console() << "  bytes_transfered: " << bytes_transfered << std::endl;
-			app::console() << "  bitrate: " << bitrate << std::endl;
-			app::console() << "  dropped_frames: " << dropped_frames << std::endl;
-			app::console() << "  COMPLETLEY LOADED?: " << (segment_interval >= 0) << std::endl;
 		}
-	}
+	}*/
 }
 
 } } // namespace cinder::qtime

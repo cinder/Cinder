@@ -5,9 +5,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -120,19 +120,12 @@ static BOOL sDevicesEnumerated = false;
 
 - (bool)prepareStartCapture 
 {
-    NSError *error = nil;
+	NSError *error = nil;
 
-    mSession = [[AVCaptureSession alloc] init];
+	mSession = [[AVCaptureSession alloc] init];
 
-	if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 640, 480 ) )
-		mSession.sessionPreset = AVCaptureSessionPreset640x480;
-	else if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 1280, 720 ) )
-		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
-	else
-		mSession.sessionPreset = AVCaptureSessionPresetMedium;
-
-    // Find a suitable AVCaptureDevice
-    AVCaptureDevice *device = nil;
+	// Find a suitable AVCaptureDevice
+	AVCaptureDevice *device = nil;
 	if( ! mDeviceUniqueId ) {
 		device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 	}
@@ -144,17 +137,26 @@ static BOOL sDevicesEnumerated = false;
 		throw cinder::CaptureExcInitFail();
 	}
 
-    // Create a device input with the device and add it to the session.
-    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-    if( ! input ) {
-        throw cinder::CaptureExcInitFail();
-    }
-    [mSession addInput:input];
+	// Create a device input with the device and add it to the session.
+	AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+	if( ! input ) {
+		throw cinder::CaptureExcInitFail();
+	}
+	[mSession addInput:input];
 
-    // Create a VideoDataOutput and add it to the session
-    AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
+	// Create a VideoDataOutput and add it to the session
+	AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
 
-    [mSession addOutput:output];
+	[mSession addOutput:output];
+
+	[mSession beginConfiguration];
+	if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 640, 480 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset640x480;
+	else if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 1280, 720 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
+	else
+		mSession.sessionPreset = AVCaptureSessionPresetMedium;
+	[mSession commitConfiguration];
 	
 	//adjust connection settings
 	/*
@@ -168,17 +170,24 @@ static BOOL sDevicesEnumerated = false;
 		}
 	}*/
 
-    // Configure your output.
-    dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
-    [output setSampleBufferDelegate:self queue:queue];
-    dispatch_release(queue);
+	// Configure your output.
+	dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
+	[output setSampleBufferDelegate:self queue:queue];
+	dispatch_release(queue);
 
-    // Specify the pixel format
-    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+	// Specify the pixel format
+	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
+								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
+								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA], (id)kCVPixelBufferPixelFormatTypeKey,
+								nil];
+	output.videoSettings = options;
 
-    // If you wish to cap the frame rate to a known value, such as 15 fps, set 
-    // minFrameDuration.
-    // output.minFrameDuration = CMTimeMake(1, 15);
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(avCaptureInputPortFormatDescriptionDidChange:) name:AVCaptureInputPortFormatDescriptionDidChangeNotification object:nil];
+
+	// If you wish to cap the frame rate to a known value, such as 15 fps, set 
+	// minFrameDuration.
+	// output.minFrameDuration = CMTimeMake(1, 15);
 	return true;
 }
 
@@ -226,10 +235,25 @@ static BOOL sDevicesEnumerated = false;
 	return mIsCapturing;
 }
 
+// Called initially when the camera is instantiated and then again (hypothetically) if the resolution ever changes
+- (void)avCaptureInputPortFormatDescriptionDidChange:(NSNotification *)notification
+{
+	AVCaptureInput *input = [mSession.inputs objectAtIndex:0];
+	AVCaptureInputPort *port = [input.ports objectAtIndex:0];
+	CMFormatDescriptionRef formatDescription = port.formatDescription;
+	if( formatDescription ) {
+		CMVideoDimensions dimensions = ::CMVideoFormatDescriptionGetDimensions( formatDescription );
+		if( (dimensions.width != 0) && (dimensions.height != 0) ) {
+			mWidth = dimensions.width;
+			mHeight = dimensions.height;
+		}
+	}
+}
+
 // Delegate routine that is called when a sample buffer was written
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 { 
-    @synchronized( self ) {
+	@synchronized( self ) {
 		if( mIsCapturing ) {
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {

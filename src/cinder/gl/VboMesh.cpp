@@ -795,7 +795,7 @@ void VboMeshSource::loadInto( geom::Target *target, const geom::AttribSet &reque
 			case GL_UNSIGNED_SHORT:
 				bytesPerIndex = 2;
 			break;
-			case GL_UNSIGNED_INT:
+			default:
 				bytesPerIndex = 4;
 			break;
 		}
