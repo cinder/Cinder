@@ -87,7 +87,9 @@ void pushGlState()
 	ctx->pushTextureBinding( GL_TEXTURE_2D, 0 );
 	ctx->pushBoolState( GL_SCISSOR_TEST );
 	ctx->pushBoolState( GL_CULL_FACE );
+#if ! defined( CINDER_GL_ANGLE )
 	ctx->pushBoolState( GL_LINE_SMOOTH );
+#endif
 	ctx->pushBoolState( GL_DEPTH_TEST );
 	ctx->pushBoolState( GL_BLEND );
 	ctx->pushBoolState( GL_CULL_FACE );
@@ -100,7 +102,9 @@ void popGlState()
 	ctx->popBoolState( GL_CULL_FACE, true );
 	ctx->popBoolState( GL_BLEND, true );
 	ctx->popBoolState( GL_DEPTH_TEST, true );
-	ctx->popBoolState( GL_LINE_SMOOTH, true );
+#if ! defined( CINDER_GL_ANGLE )
+	ctx->pushBoolState( GL_LINE_SMOOTH );
+#endif
 	ctx->popBoolState( GL_CULL_FACE, true );
 	ctx->popBoolState( GL_SCISSOR_TEST, true );
 	ctx->popTextureBinding( GL_TEXTURE_2D, 0, true );
