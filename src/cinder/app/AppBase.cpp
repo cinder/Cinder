@@ -165,6 +165,21 @@ void AppBase::emitDidBecomeActive()
 	mSignalDidBecomeActive();
 }
 
+fs::path AppBase::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
+{
+	return Platform::get()->getOpenFilePath( initialPath, extensions );
+}
+
+fs::path AppBase::getFolderPath( const fs::path &initialPath )
+{
+	return Platform::get()->getFolderPath( initialPath );
+}
+
+fs::path AppBase::getSaveFilePath( const fs::path &initialPath, const vector<string> &extensions )
+{
+	return Platform::get()->getSaveFilePath( initialPath, extensions );
+}
+
 std::ostream& AppBase::console()
 {
 	return Platform::get()->console();

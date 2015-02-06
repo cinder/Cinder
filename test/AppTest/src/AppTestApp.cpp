@@ -128,15 +128,15 @@ void AppTestApp::keyDown( KeyEvent event )
 		setFullScreen( ! isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
-		auto filePath = getOpenFilePath( "", {} ); // FIXME: either App subclasses need to default the args, or it won't matter because impl will be moved to Platform
+		auto filePath = getOpenFilePath();
 		CI_LOG_I( "result of getOpenFilePath(): " << filePath );
 	}
 	else if( event.getChar() == 'p' ) {
-		auto filePath = getFolderPath( "" );
+		auto filePath = getFolderPath();
 		CI_LOG_I( "result of getFolderPath(): " << filePath );
 	}
 	else if( event.getChar() == 's' ) {
-		auto filePath = getSaveFilePath( "", {} );
+		auto filePath = getSaveFilePath();
 		CI_LOG_I( "result of getSaveFilePath(): " << filePath );
 	}
 }

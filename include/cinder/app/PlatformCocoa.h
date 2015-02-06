@@ -47,6 +47,13 @@ class PlatformCocoa : public Platform {
 	fs::path getResourcePath() const override;
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
+	//! Implemented on desktop, no-op on iOS (returns empty path ).
+	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+	//! Implemented on desktop, no-op on iOS (returns empty path ).
+	fs::path getFolderPath( const fs::path &initialPath ) override;
+	//! Implemented on desktop, no-op on iOS (returns empty path ).
+	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+
 	//! Sets the NSBundle that should be associated with this global platform object. By default this is `[NSBundle mainBundle]`.
 	void			setBundle( NSBundle *bundle );
 	//! Returns the NSBundle associated with this global platform object. By default this is `[NSBundle mainBundle]`.

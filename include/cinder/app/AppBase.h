@@ -369,18 +369,18 @@ class AppBase {
 	//! Returns the path to the application on disk
 	virtual fs::path			getAppPath() const = 0;
 
-	//! Presents the user with a file-open dialog and returns the selected file path.
-	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
-		\return the selected file path or an empty string if the user cancelled. **/
-	virtual fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) = 0;
-	//! Presents the user with a folder-open dialog and returns the selected folder.
-	virtual fs::path getFolderPath( const fs::path &initialPath = fs::path() ) = 0;
-	//! Presents the user with a file-save dialog and returns the selected file path.
-	/** The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
-		If the active app is in full-screen mode it will temporarily switch to windowed-mode to present the dialog.
-		\return the selected file path or an empty string if the user cancelled. **/
-	virtual fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) = 0;
+	//! \brief Presents the user with an open-file dialog and returns the selected file path.
+	//!
+	//! The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+	//!	\return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+	fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() );
+	//! Presents the user with an open-folder dialog. \return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+	fs::path getFolderPath( const fs::path &initialPath = fs::path() );
+	//! \brief Presents the user with a save-file dialog and returns the selected file path.
+	//!
+	//! The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
+	//!	\return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
+	fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() );
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	std::ostream&	console();

@@ -68,11 +68,6 @@ class AppCocoaView : public AppBase {
 	WindowRef	getWindowIndex( size_t index ) const override;
 	ivec2		getMousePos() const override;
 
-	// TODO: these are dupes of AppBasicMac, might not be necessary if we can move this functionality to PlatformCocoa
-	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
-	fs::path getFolderPath( const fs::path &initialPath ) override;
-	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
-
   protected:
 	AppImplCocoaView	*mImpl;
 };
