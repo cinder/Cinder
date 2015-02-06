@@ -35,29 +35,28 @@
 
 #include <string>
 
-#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH )
-	#include <CoreVideo/CoreVideo.h>
-	#include <CoreVideo/CVBase.h>
-	#if defined( __OBJC__ )
-		@class AVPlayer, AVPlayerItem, AVPlayerItemTrack, AVPlayerItemVideoOutput, AVPlayerItemOutput;
-		@class AVAsset, AVURLAsset, AVAssetTrack, AVAssetReader;
-		@class MovieDelegate;
-		@class NSURL;
-	#else
-		class AVPlayer;
-		class AVPlayerItem;
-		class AVPlayerItemTrack;
-		class AVPlayerItemOutput;
-		class AVPlayerItemVideoOutput;
-		class AVAsset;
-		class AVAssetTrack;
-		class AVAssetReader;
-		class AVURLAsset;
-		class NSArray;
-		class NSError;
-		// -- 
-		class MovieDelegate;
-	#endif
+typedef struct __CVBuffer *CVBufferRef;
+typedef CVBufferRef CVImageBufferRef;
+
+#if defined( __OBJC__ )
+	@class AVPlayer, AVPlayerItem, AVPlayerItemTrack, AVPlayerItemVideoOutput, AVPlayerItemOutput;
+	@class AVAsset, AVURLAsset, AVAssetTrack, AVAssetReader;
+	@class MovieDelegate;
+	@class NSURL;
+#else
+	class AVPlayer;
+	class AVPlayerItem;
+	class AVPlayerItemTrack;
+	class AVPlayerItemOutput;
+	class AVPlayerItemVideoOutput;
+	class AVAsset;
+	class AVAssetTrack;
+	class AVAssetReader;
+	class AVURLAsset;
+	class NSArray;
+	class NSError;
+	// -- 
+	class MovieDelegate;
 #endif
 
 namespace cinder { namespace qtime {
@@ -255,13 +254,13 @@ class MovieResponder {
 	void playerItemTimeJumpedCallback() { mParent->playerItemJumped(); }
 	void outputSequenceWasFlushedCallback(AVPlayerItemOutput* output) { mParent->outputWasFlushed(output); }
 	
-private:
+  private:
 	MovieBase* const mParent;
 };
 	
 
 class MovieLoader {
-public:
+  public:
 	MovieLoader() {}
 	MovieLoader( const Url &url );
 	~MovieLoader();
@@ -296,7 +295,7 @@ public:
 	//! Returns the native QuickTime Movie and marks itself as no longer the owner. In general you should not call this.
 	AVPlayer*		transferMovieHandle() const { mOwnsMovie = false; return mPlayer; }
 	
-protected:
+  protected:
 	void	updateLoadState() const;
 	
 	AVPlayer*		mPlayer;

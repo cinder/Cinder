@@ -30,6 +30,15 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
+#include <CoreVideo/CoreVideo.h>
+#include <CoreVideo/CVBase.h>
+#if defined( CINDER_MAC )
+	#include <CoreVideo/CVOpenGLTextureCache.h>
+	#include <CoreVideo/CVOpenGLTexture.h>
+#else
+	#include <CoreVideo/CVOpenGLESTextureCache.h>
+#endif
+
 namespace cinder { namespace qtime {
 /////////////////////////////////////////////////////////////////////////////////
 // MovieGl
