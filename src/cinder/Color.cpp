@@ -200,10 +200,22 @@ void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 			throw ImageIoExceptionIllegalColorModel();
 	}
 }
-
+	
+std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs )
+{
+	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "]";
+	return lhs;
+}
+	
 std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs ) 
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "," << rhs.a << "]";
+	return lhs;
+}
+
+std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs )
+{
+	lhs << "[" << static_cast<int>( rhs.r ) << "," << static_cast<int>( rhs.g ) << "," << static_cast<int>( rhs.b ) << "]";
 	return lhs;
 }
 
