@@ -43,7 +43,8 @@ AppBase::Settings*			AppBase::sSettingsFromMain;
 static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// App::Settings
+// AppBase::Settings
+
 AppBase::Settings::Settings()
 {
 	mShouldQuit = false;
@@ -85,7 +86,8 @@ void AppBase::Settings::prepareWindow( const Window::Format &format )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// App::App
+// AppBase
+
 AppBase::AppBase()
 	: mFrameCount( 0 ), mAverageFps( 0 ), mFpsSampleInterval( 1 ), mTimer( true ), mTimeline( Timeline::create() ),
 		mFpsLastSampleFrame( 0 ), mFpsLastSampleTime( 0 )
@@ -111,6 +113,41 @@ AppBase::AppBase()
 AppBase::~AppBase()
 {
 	mIo->stop();
+}
+
+// These are called by application instantiation main functions
+// static
+void AppBase::prepareLaunch()
+{
+	Platform::get()->prepareLaunch();
+}
+
+// static
+void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
+{
+	settings->init( defaultRenderer, title, argc, argv );
+
+	sSettingsFromMain = settings;
+}
+
+// TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
+// - need to get through windows updates first
+// static
+void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
+{
+	try {
+		sInstance->launch( title, argc, argv );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "Uncaught exception, type: " << ci::System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
+		throw;
+	}
+}
+
+// static
+void AppBase::cleanupLaunch()
+{
+	Platform::get()->cleanupLaunch();
 }
 
 void AppBase::privateSetup__()
@@ -218,41 +255,6 @@ RendererRef AppBase::findSharedRenderer( RendererRef searchRenderer ) const
 	}
 	
 	return RendererRef(); // didn't find one
-}
-
-// These are called by application instantiation macros
-// static
-void AppBase::prepareLaunch()
-{
-	Platform::get()->prepareLaunch();
-}
-
-// static
-void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
-{
-	settings->init( defaultRenderer, title, argc, argv );
-
-	sSettingsFromMain = settings;
-}
-
-// TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
-// - need to get through windows updates first
-// static
-void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
-{
-	try {
-		sInstance->launch( title, argc, argv );
-	}
-	catch( std::exception &exc ) {
-		CI_LOG_E( "Uncaught exception, type: " << ci::System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
-		throw;
-	}
-}
-
-// static
-void AppBase::cleanupLaunch()
-{
-	Platform::get()->cleanupLaunch();
 }
 
 } } // namespace cinder::app
