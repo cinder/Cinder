@@ -4,10 +4,10 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
+#include <list>
+
 using namespace ci;
 using namespace ci::app;
-
-#include <list>
 using namespace std;
 
 class WindowData {
@@ -16,21 +16,22 @@ class WindowData {
 	vector<vec2> 	mPoints;
 };
 
-class BasicApp : public App {
+class WindowTestApp : public App {
  public:
 	// this is passed into the app intantiation macro at the bottom of the file
 	static void prepareSettings( Settings *settings );
-	void mouseDrag( MouseEvent event );
-	void keyDown( KeyEvent event );
+
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void fileDrop( FileDropEvent event ) override;
+	void resize() override;
+	void update() override;
+
 	// Cinder calls this function 30 times per second by default
 	void windowDraw();
-	void fileDrop( FileDropEvent event );
-	void resize();
-
-	void setup();
-	void update();
 	void anotherTest( MouseEvent event );
-	void mouseDown( MouseEvent event );
 	void mouseDown1( MouseEvent &event );
 	bool mouseDown2( MouseEvent event );
 	void mouseDown3( MouseEvent &event );
@@ -39,13 +40,13 @@ class BasicApp : public App {
 	void windowMouseDown( MouseEvent &mouseEvt );
 	void displayChange();
 
-	bool	shouldQuit();
+	bool shouldQuit();
 
 	// This will maintain a list of points which we will draw line segments between
 	WindowRef		mSecondWindow;
 };
 
-void BasicApp::mouseDrag( MouseEvent event )
+void WindowTestApp::mouseDrag( MouseEvent event )
 {
 	vec2 v = event.getPos();
 	WindowRef w = event.getWindow();
@@ -53,7 +54,7 @@ void BasicApp::mouseDrag( MouseEvent event )
 	points.push_back( v );
 }
 
-void BasicApp::prepareSettings( Settings *settings )
+void WindowTestApp::prepareSettings( Settings *settings )
 {
 	settings->setPowerManagementEnabled( false );
 	settings->setQuitOnLastWindowCloseEnabled( false );
@@ -63,48 +64,48 @@ void BasicApp::prepareSettings( Settings *settings )
 //	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
 }
 
-void BasicApp::setup()
+void WindowTestApp::setup()
 {
 	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt )
 		CI_LOG_V( "Resolution: " << (*displayIt)->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
-	getWindow()->connectMouseDown( &BasicApp::anotherTest, this );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown1, this, std::placeholders::_1 ) );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown2, this, std::placeholders::_1 ) );
-	getWindow()->getSignalMouseDown().connect( std::bind( &BasicApp::mouseDown3, this, std::placeholders::_1 ) );
-	getSignalShouldQuit().connect( std::bind( &BasicApp::shouldQuit, this ) );
+	getWindow()->connectMouseDown( &WindowTestApp::anotherTest, this );
+	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown1, this, std::placeholders::_1 ) );
+	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) );
+	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown3, this, std::placeholders::_1 ) );
+	getSignalShouldQuit().connect( std::bind( &WindowTestApp::shouldQuit, this ) );
 	
-	getWindow()->getSignalMove().connect( std::bind( &BasicApp::windowMove, this ) );
-	getWindow()->getSignalDraw().connect( std::bind( &BasicApp::windowDraw, this ) );
-	getWindow()->getSignalDisplayChange().connect( std::bind( &BasicApp::displayChange, this ) );
-	getWindow()->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
+	getWindow()->getSignalMove().connect( std::bind( &WindowTestApp::windowMove, this ) );
+	getWindow()->getSignalDraw().connect( std::bind( &WindowTestApp::windowDraw, this ) );
+	getWindow()->getSignalDisplayChange().connect( std::bind( &WindowTestApp::displayChange, this ) );
+	getWindow()->getSignalClose().connect( std::bind( &WindowTestApp::windowClose, this ) );
 	
 	getSignalDidBecomeActive().connect( [] { CI_LOG_V( "App became active." ); } );
 	getSignalWillResignActive().connect( [] { CI_LOG_V( "App will resign active." ); } );
 }
 
-bool BasicApp::shouldQuit()
+bool WindowTestApp::shouldQuit()
 {
 	return true;
 }
 
-void BasicApp::update()
+void WindowTestApp::update()
 {
 }
 
-void BasicApp::anotherTest( MouseEvent event )
+void WindowTestApp::anotherTest( MouseEvent event )
 {
 	CI_LOG_V( "Totes." );
 }
 
-void BasicApp::mouseDown( MouseEvent event )
+void WindowTestApp::mouseDown( MouseEvent event )
 {
 	CI_LOG_V( "Main mouseDown" );
 }
 
-void BasicApp::mouseDown1( MouseEvent &event )
+void WindowTestApp::mouseDown1( MouseEvent &event )
 {
 	enablePowerManagement( ! isPowerManagementEnabled() );
 	CI_LOG_V( "Power mgmt: " << isPowerManagementEnabled() );
@@ -116,40 +117,40 @@ void BasicApp::mouseDown1( MouseEvent &event )
 //	event.setHandled();
 }
 
-void BasicApp::windowMove()
+void WindowTestApp::windowMove()
 {
 	CI_LOG_V( "window pos: " << getWindow()->getPos() );
 }
 
-void BasicApp::displayChange()
+void WindowTestApp::displayChange()
 {
 	CI_LOG_V( "window display changed: " << getWindow()->getDisplay()->getBounds() );
 }
 
-bool BasicApp::mouseDown2( MouseEvent event )
+bool WindowTestApp::mouseDown2( MouseEvent event )
 {
 	CI_LOG_V( "It worked 2!" );
 	return false;
 }
 
-void BasicApp::mouseDown3( MouseEvent &event )
+void WindowTestApp::mouseDown3( MouseEvent &event )
 {
 	CI_LOG_V( "It worked 3!" << getMousePos() );
 	event.setHandled();
 }
 
-void BasicApp::windowClose()
+void WindowTestApp::windowClose()
 {
 	WindowRef win = getWindow();
 	CI_LOG_V( "Closing " << getWindow() );
 }
 
-void BasicApp::windowMouseDown( MouseEvent &mouseEvt )
+void WindowTestApp::windowMouseDown( MouseEvent &mouseEvt )
 {
 	CI_LOG_V( "Mouse down in window" );
 }
 
-void BasicApp::keyDown( KeyEvent event )
+void WindowTestApp::keyDown( KeyEvent event )
 {
 	if( event.getCode() == KeyEvent::KEY_RSHIFT ) {
 		CI_LOG_V( "Right shift down" );
@@ -184,9 +185,9 @@ void BasicApp::keyDown( KeyEvent event )
 		Window::Format format( RendererGl::create() );
 		//format.setFullScreen( true );
 		mSecondWindow = createWindow( format );
-		mSecondWindow->getSignalClose().connect( std::bind( &BasicApp::windowClose, this ) );
-		mSecondWindow->getSignalMouseDown().connect( std::bind( &BasicApp::windowMouseDown, this, std::placeholders::_1 ) );
-		mSecondWindow->getSignalDraw().connect( std::bind( &BasicApp::windowDraw, this ) );
+		mSecondWindow->getSignalClose().connect( std::bind( &WindowTestApp::windowClose, this ) );
+		mSecondWindow->getSignalMouseDown().connect( std::bind( &WindowTestApp::windowMouseDown, this, std::placeholders::_1 ) );
+		mSecondWindow->getSignalDraw().connect( std::bind( &WindowTestApp::windowDraw, this ) );
 		mSecondWindow->setUserData( new WindowData );
 	}
 	else if( event.getChar() == 'c' ) {
@@ -216,17 +217,17 @@ void BasicApp::keyDown( KeyEvent event )
 	}
 }
 
-void BasicApp::fileDrop( FileDropEvent event )
+void WindowTestApp::fileDrop( FileDropEvent event )
 {
 	CI_LOG_V( "File drop: " << event );
 }
 
-void BasicApp::resize()
+void WindowTestApp::resize()
 {
 	CI_LOG_V( "Resized: " << getWindowSize() );
 }
 
-void BasicApp::windowDraw()
+void WindowTestApp::windowDraw()
 {
 	gl::enableAlphaBlending();
 //	glEnable(GL_MULTISAMPLE_ARB);
@@ -259,4 +260,4 @@ void BasicApp::windowDraw()
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP( BasicApp, RendererGl, BasicApp::prepareSettings )
+CINDER_APP( WindowTestApp, RendererGl, WindowTestApp::prepareSettings )
