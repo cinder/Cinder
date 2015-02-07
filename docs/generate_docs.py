@@ -12,7 +12,8 @@ class SymbolMap (object):
 		self.typedefs = {}
 
 	class Class (object):
-		def __init__( self, fileName ):
+		def __init__( self, base, fileName ):
+			self.base = base
 			self.fileName = fileName
 		
 	class Typedef (object):
@@ -34,6 +35,13 @@ class SymbolMap (object):
 
 	def findTypedef( self, name ):
 		return self.typedefs.get( name )
+
+	def getClassInheritance( self, name ):
+		class = findClass( name );
+		if class:
+			return class.base
+		else
+			return None
 
 def getText(nodelist):
 	rc = []
@@ -82,7 +90,9 @@ def getSymbolToFileMap( path ):
 		elif compound.getAttribute( "kind" ) == "class":
 			name = getText( compound.getElementsByTagName("name")[0].childNodes )
 			filePath = getText( compound.getElementsByTagName("filename")[0].childNodes )
-			symbolMap.classes[name] = SymbolMap.Class( filePath )
+			if compound.getElementsByTagName("base"):
+				baseClass = getText( compound.getElementsByTagName("base")[0].childNodes )
+			symbolMap.classes[name] = SymbolMap.Class( baseClass, filePath )
 
 	return symbolMap
 
@@ -129,6 +139,12 @@ def processHtmlDir( htmlSourceDir, symbolMap, doxygenHtmlPath ):
 			else:
 				print fileName + "->" + outPath
 				shutil.copyfile( inPath, outPath )
+
+def insertClassInheritances( symbolMap, doxygenHtmlPath ):
+	for className in symbolMap.classes:
+		inheritance = symbolMap.getClassInheritance( className )
+		if inheritance:
+			print inheritance
 
 def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
 	classNameToTypedefs = {}
@@ -182,6 +198,7 @@ if __name__ == "__main__":
 
 	if len( sys.argv ) == 1: # default; generate all docs
 		symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
+		insertClassInheritances( symbolMap, doxygenHtmlPath )
 		linkTemplatedTypedefs( symbolMap, doxygenHtmlPath )
 		processHtmlDir( htmlSourcePath, symbolMap, doxygenHtmlPath )
 	elif len( sys.argv ) == 3: # process a specific file
