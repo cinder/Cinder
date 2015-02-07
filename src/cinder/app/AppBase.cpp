@@ -48,11 +48,11 @@ static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 AppBase::Settings::Settings()
 {
 	mShouldQuit = false;
-	mPowerManagement = false;
+	mPowerManagementEnabled = false;
 	mFrameRateEnabled = true;
 	mFrameRate = 60.0f;
-	mEnableHighDensityDisplay = false;
-	mEnableMultiTouch = false;
+	mHighDensityDisplayEnabled = false;
+	mMultiTouchEnabled = false;
 }
 
 void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
@@ -73,11 +73,6 @@ void AppBase::Settings::disableFrameRate()
 void AppBase::Settings::setFrameRate( float frameRate )
 {
 	mFrameRate = frameRate;
-}
-
-void AppBase::Settings::enablePowerManagement( bool powerManagement )
-{
-	mPowerManagement = powerManagement;
 }
 
 void AppBase::Settings::prepareWindow( const Window::Format &format )

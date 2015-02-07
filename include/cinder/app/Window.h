@@ -187,7 +187,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
 		//! Unspecifies a non-default position for the window, effectively requestion the default position.
-		void		unspecifyPos() { mPosSpecified = false; }
+		void		setPosUnspecified() { mPosSpecified = false; }
 
 		//! Returns the Renderer which will be instantiated for the Window. Defaults to an instance of the App's default renderer (specified in the app-instantiation macro).
 		RendererRef	getRenderer() const { return mRenderer; }
@@ -239,7 +239,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns whether a non-default title has been requested for the Window.
 		bool		isTitleSpecified() const { return mTitleSpecified; }
 		//! Unspecifies a non-default title for the window, effectively requestion the default title.
-		void		unspecifyTitle() { mTitleSpecified = false; }
+		void		setTitleUnspecified()		{ mTitleSpecified = false; }
 
 
 	  private:

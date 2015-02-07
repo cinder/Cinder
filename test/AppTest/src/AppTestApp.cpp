@@ -28,19 +28,19 @@ void prepareSettings( App::Settings *settings )
 
 	settings->setWindowPos( 50, 50 );
 	settings->setWindowSize( 900, 500 );
-	settings->enableHighDensityDisplay();
+	settings->setHighDensityDisplayEnabled();
 //	settings->setResizable( false );
 //	settings->setBorderless();
 //	settings->setAlwaysOnTop();
-//	settings->enableMultiTouch();
-//	settings->enableMultiTouch( false );
+//	settings->setMultiTouchEnabled();
+//	settings->setMultiTouchEnabled( false );
 //	settings->disableFrameRate();
 //	settings->setFrameRate( 20 );
 //	settings->setTitle( "Blarg" ); // FIXME: seems broken on mac, but did it ever work?
 //	settings->setShouldQuit();
 
 #if defined( CINDER_COCOA_TOUCH )
-	settings->enableStatusBar( false ); // FIXME: status bar is always visible?
+	settings->setStatusBarEnabled( false ); // FIXME: status bar is always visible?
 #endif
 
 #if defined( CINDER_MSW )

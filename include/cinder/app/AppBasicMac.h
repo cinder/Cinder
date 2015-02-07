@@ -83,7 +83,7 @@ void AppBasicMac::main( const char *title, int argc, char * const argv[], const 
 	if( settingsFn )
 		settingsFn( &settings );
 
-	if( settings.shouldQuit() )
+	if( settings.getShouldQuit() )
 		return;
 
 	AppBasic *app = new AppT;

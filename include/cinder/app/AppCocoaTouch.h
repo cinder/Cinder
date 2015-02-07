@@ -57,21 +57,16 @@ class AppCocoaTouch : public AppBase {
   public:
 	class Settings : public AppBase::Settings {
 	  public:
-		Settings()
-			: AppBase::Settings(), mEnableStatusBar( false )
-		{
-			mPowerManagement = true;
-			mEnableHighDensityDisplay = true;
-			mEnableMultiTouch = true;
-		}
+		//! Customizes some AppBase::Settings, enabling power management, high density display, and multitouch by default.
+		Settings();
 
 		//! Determines whether the system status bar is visible initially. Default is \c false.
-		void		enableStatusBar( bool enable = true ) { mEnableStatusBar = enable; }
+		void		setStatusBarEnabled( bool enable = true ) { mStatusBarEnabled = enable; }
 		//! Returns whether the system status bar is visible initially. Default is \c false.
-		bool		isStatusBarEnabled() const { return mEnableStatusBar; }
+		bool		isStatusBarEnabled() const { return mStatusBarEnabled; }
 		
 	  private:
-		bool		mEnableStatusBar;
+		bool		mStatusBarEnabled;
 	};
 
 	typedef std::function<void ( Settings *settings )>	SettingsFn;
@@ -253,7 +248,7 @@ void AppCocoaTouch::main( const char *title, int argc, char * const argv[], cons
 	if( settingsFn )
 		settingsFn( &settings );
 
-	if( settings.shouldQuit() )
+	if( settings.getShouldQuit() )
 		return;
 
 	AppCocoaTouch *app = new AppT;

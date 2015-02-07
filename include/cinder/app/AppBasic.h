@@ -43,12 +43,12 @@ class AppBasic : public AppBase {
 		Settings();
 
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
-		void		enableQuitOnLastWindowClose( bool enable = true ) { mQuitOnLastWindowClose = enable; }
+		void	setQuitOnLastWindowCloseEnabled( bool enable = true )	{ mQuitOnLastWindowClose = enable; }
 		//! Returns whether the app quits automatically when its last window is closed. Enabled by default.
-		bool		isQuitOnLastWindowCloseEnabled() const { return mQuitOnLastWindowClose; }
+		bool	isQuitOnLastWindowCloseEnabled() const					{ return mQuitOnLastWindowClose; }
 
 	 private:
-		bool		mQuitOnLastWindowClose;
+		bool	mQuitOnLastWindowClose;
 	};
 
 	// This is really just here to disambiguate app::WindowRef from the WindowRef found in QuickDraw (so that client code doesn't have to invoke cinder::app::WindowRef explicitly)	

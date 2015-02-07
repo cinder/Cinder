@@ -110,22 +110,22 @@ class AppBase {
 		virtual ~Settings() {}
 
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( int windowSizeX, int windowSizeY ) { mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
+		void	setWindowSize( int windowSizeX, int windowSizeY )	{ mDefaultWindowFormat.setSize( ivec2( windowSizeX, windowSizeY ) ); }
 		//! Sets the size of the default window measured in pixels
-		void	setWindowSize( const ivec2 &size ) { mDefaultWindowFormat.setSize( size ); }
+		void	setWindowSize( const ivec2 &size )					{ mDefaultWindowFormat.setSize( size ); }
 		//! Gets the size of the default window measured in pixels
-		ivec2	getWindowSize() const { return mDefaultWindowFormat.getSize(); }
+		ivec2	getWindowSize() const								{ return mDefaultWindowFormat.getSize(); }
 		
 		//! Returns the position of the default window in screen coordinates measured in pixels
-		ivec2	getWindowPos() const { return mDefaultWindowFormat.getPos(); }
+		ivec2	getWindowPos() const								{ return mDefaultWindowFormat.getPos(); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( int windowPosX, int windowPosY ) { mDefaultWindowFormat.setPos( ivec2( windowPosX, windowPosY ) ); }
+		void    setWindowPos( int windowPosX, int windowPosY )		{ mDefaultWindowFormat.setPos( ivec2( windowPosX, windowPosY ) ); }
 		//! Sets the position of the default window in screen coordinates measured in pixels
-		void    setWindowPos( const ivec2 &windowPos ) { mDefaultWindowFormat.setPos( windowPos ); }
+		void    setWindowPos( const ivec2 &windowPos )				{ mDefaultWindowFormat.setPos( windowPos ); }
 		//! Returns whether a non-default window position has been requested
-		bool	isWindowPosSpecified() const { return mDefaultWindowFormat.isPosSpecified(); }
+		bool	isWindowPosSpecified() const						{ return mDefaultWindowFormat.isPosSpecified(); }
 		//! Marks the window position setting as unspecified, effectively requesting the default
-		void	unspecifyWindowPos() { mDefaultWindowFormat.unspecifyPos(); }
+		void	setWindowPosUnspecified()							{ mDefaultWindowFormat.setPosUnspecified(); }
 
 		//! Returns whether the default window is fullscreen
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
@@ -133,22 +133,27 @@ class AppBase {
 		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 
 		//! Returns whether the default window is resizable
-		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }
+		bool	isResizable() const									{ return mDefaultWindowFormat.isResizable(); }
 		//! Sets the default window to be resizable or not
-		void	setResizable( bool resizable = true ) { mDefaultWindowFormat.setResizable( resizable ); }
+		void	setResizable( bool resizable = true )				{ mDefaultWindowFormat.setResizable( resizable ); }
 		//! Returns whether the default window will be created without a border (chrome/frame)
-		bool	isBorderless() const { return mDefaultWindowFormat.isBorderless(); }
+		bool	isBorderless() const								{ return mDefaultWindowFormat.isBorderless(); }
 		//! Sets the default window to be created without a border (chrome/frame)
-		void	setBorderless( bool borderless = true ) { mDefaultWindowFormat.setBorderless( borderless ); }
+		void	setBorderless( bool borderless = true )				{ mDefaultWindowFormat.setBorderless( borderless ); }
 		//! Returns whether the default  window always remains above all other windows
-		bool	isAlwaysOnTop() const { return mDefaultWindowFormat.isAlwaysOnTop(); }
+		bool	isAlwaysOnTop() const								{ return mDefaultWindowFormat.isAlwaysOnTop(); }
 		//! Sets whether the default window always remains above all other windows
-		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mDefaultWindowFormat.setAlwaysOnTop( alwaysOnTop ); }
+		void	setAlwaysOnTop( bool alwaysOnTop = true )			{ mDefaultWindowFormat.setAlwaysOnTop( alwaysOnTop ); }
 
 		//! Returns the display for the default window
-		DisplayRef	getDisplay() const { return mDefaultWindowFormat.getDisplay(); }
+		DisplayRef	getDisplay() const								{ return mDefaultWindowFormat.getDisplay(); }
 		//! Sets the display for the default window
-		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
+		void		setDisplay( DisplayRef display )				{ mDefaultWindowFormat.setDisplay( display ); }
+
+		//! Returns the Window::Format which will be used if no calls are made to Settings::prepareWindow()
+		Window::Format		getDefaultWindowFormat() const							{ return mDefaultWindowFormat; }
+		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
+		void				setDefaultWindowFormat( const Window::Format &format )	{ mDefaultWindowFormat = format; }
 
 		//! Sets the default Renderer, overridding what was passed in during app instanciation.
 		void		setDefaultRenderer( const RendererRef &renderer )	{ mDefaultRenderer = renderer; }
@@ -159,46 +164,42 @@ class AppBase {
 		std::vector<Window::Format>&		getWindowFormats()			{ return mWindowFormats; }
 		const std::vector<Window::Format>&	getWindowFormats() const	{ return mWindowFormats; }
 
-		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
-		void		enableHighDensityDisplay( bool enable = true ) { mEnableHighDensityDisplay = enable; }
-		//! Returns whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
-		bool		isHighDensityDisplayEnabled() const { return mEnableHighDensityDisplay; }
+		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
+		const	std::string&	getTitle() const { return mTitle; }
+		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
+		void					setTitle( const std::string &title ) { mTitle = title; }
 
-		//! Returns the Window::Format which will be used if no calls are made to Settings::prepareWindow()
-		Window::Format		getDefaultWindowFormat() const { return mDefaultWindowFormat; }
-		//! Sets the Window::Format which will be used if no calls are made to Settings::prepareWindow()
-		void				setDefaultWindowFormat( const Window::Format &format ) { mDefaultWindowFormat = format; }
+		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
+		void	setHighDensityDisplayEnabled( bool enable = true )	{ mHighDensityDisplayEnabled = enable; }
+		//! Returns whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
+		bool	isHighDensityDisplayEnabled() const					{ return mHighDensityDisplayEnabled; }
 
 		//! Registers the app to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
+		void	setMultiTouchEnabled( bool enable = true )			{ mMultiTouchEnabled = enable; }
 		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default on desktop platforms, enabled on mobile.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
+		bool	isMultiTouchEnabled() const							{ return mMultiTouchEnabled; }
 
 		//! a value of \c true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
-		void	enablePowerManagement( bool enable = true );
+		void	setPowerManagementEnabled( bool enable = true )		{ mPowerManagementEnabled = enable; }
 		//! is power management enabled, allowing screensavers and the system's power management to hide the application
-		bool	isPowerManagementEnabled() const { return mPowerManagement; }
-
-		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		const std::string&	getTitle() const { return mTitle; }
-		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		void				setTitle( const std::string &title ) { mTitle = title; }
-		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
-		const std::vector<std::string>&		getCommandLineArgs() const	{ return mCommandLineArgs; }
+		bool	isPowerManagementEnabled() const					{ return mPowerManagementEnabled; }
 
 		//! Sets maximum frameRate the update/draw loop will execute at, specified in frames per second. FrameRate limiting is on by default, at 60 FPS.
 		void	setFrameRate( float frameRate );
 		//! Disables the frameRate limiting, which is on by default. Restore using setFrameRate(). See also enableVerticalSync().
 		void	disableFrameRate();
 		//! Returns whether frameRate limiting is enabled. On by default, at 60 FPS.
-		bool	isFrameRateEnabled() const { return mFrameRateEnabled; }
+		bool	isFrameRateEnabled() const							{ return mFrameRateEnabled; }
 		//! Maximum frameRate of the application specified in frames per second
-		float	getFrameRate() const { return mFrameRate; }
+		float	getFrameRate() const								{ return mFrameRate; }
+
+		//! Returns the command line args passed to the application from its entry point (ex. a main's argc / argv).
+		const std::vector<std::string>&	getCommandLineArgs() const	{ return mCommandLineArgs; }
 
 		//!	Set this to true if the app should terminate prior to launching.
 		void	setShouldQuit( bool shouldQuit = true );
 		//! Whether or not the app should terminate prior to launching
-		bool	shouldQuit() const			{ return mShouldQuit; }
+		bool	getShouldQuit() const								{ return mShouldQuit; }
 
 	  protected:
 		void init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
@@ -211,9 +212,9 @@ class AppBase {
 
 		bool			mFrameRateEnabled;
 		float			mFrameRate;
-		bool			mPowerManagement; // allow screensavers or power management to hide app. default: false
-		bool			mEnableHighDensityDisplay;
-		bool			mEnableMultiTouch;
+		bool			mPowerManagementEnabled; // allow screensavers or power management to hide app. default: false
+		bool			mHighDensityDisplayEnabled;
+		bool			mMultiTouchEnabled;
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 
 		friend AppBase;
@@ -367,7 +368,7 @@ class AppBase {
 	void					addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
 	
 	//! Returns the path to the application on disk
-	virtual fs::path			getAppPath() const = 0;
+	virtual fs::path		getAppPath() const = 0;
 
 	//! \brief Presents the user with an open-file dialog and returns the selected file path.
 	//!

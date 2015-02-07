@@ -37,14 +37,14 @@ class AppBasicMsw : public AppBasic {
 		Settings() : mEnableMswConsole( false )				{}
 
 		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		void	enableConsoleWindow( bool enable = true )	{ mEnableMswConsole = enable; }
+		void	setConsoleWindowEnabled( bool enable = true )	{ mMswConsoleEnabled = enable; }
 		//! Returns whether MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		bool	isConsoleWindowEnabled() const				{ return mEnableMswConsole; }
+		bool	isConsoleWindowEnabled() const					{ return mMswConsoleEnabled; }
 
 	  private:
 		void	pushBackCommandLineArg( const std::string &arg );
 
-		bool	mEnableMswConsole;
+		bool	mMswConsoleEnabled;
 
 		friend AppBasicMsw;
 	};
@@ -99,7 +99,7 @@ void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 	if( settingsFn )
 		settingsFn( &settings );
 
-	if( settings.shouldQuit() )
+	if( settings.getShouldQuit() )
 		return;
 
 	AppBasic *app = new AppT;
