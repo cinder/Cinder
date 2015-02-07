@@ -12,7 +12,8 @@ class SymbolMap (object):
 		self.typedefs = {}
 
 	class Class (object):
-		def __init__( self, base, fileName ):
+		def __init__( self, name, base, fileName ):
+			self.name = name
 			self.base = base
 			self.fileName = fileName
 		
@@ -36,12 +37,29 @@ class SymbolMap (object):
 	def findTypedef( self, name ):
 		return self.typedefs.get( name )
 
-	def getClassInheritance( self, name ):
-		class = findClass( name );
-		if class:
-			return class.base
-		else
-			return None
+	def getClassAncestors( self, name ):
+		result = []
+		existingClass = self.findClass( name )
+		while existingClass and existingClass.base:
+			result.insert( 0, existingClass )
+			existingClass = self.findClass( existingClass.base )
+		
+		if result:
+			return result
+		else:
+			return []
+
+	def getClassDescendants( self, name ):
+		result = []
+		for aClass in self.classes:
+			if self.classes[aClass].base == name:
+				result.append( self.classes[aClass] )
+		
+		if result:
+			return result
+		else:
+			return []
+
 
 def getText(nodelist):
 	rc = []
@@ -83,9 +101,10 @@ def getSymbolToFileMap( path ):
 		elif compound.getAttribute( "kind" ) == "class":
 			name = getText( compound.getElementsByTagName("name")[0].childNodes )
 			filePath = getText( compound.getElementsByTagName("filename")[0].childNodes )
+			baseClass = None
 			if compound.getElementsByTagName("base"):
 				baseClass = getText( compound.getElementsByTagName("base")[0].childNodes )
-			symbolMap.classes[name] = SymbolMap.Class( baseClass, filePath )
+			symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
 
 	return symbolMap
 
@@ -135,9 +154,36 @@ def processHtmlDir( htmlSourceDir, symbolMap, doxygenHtmlPath ):
 
 def insertClassInheritances( symbolMap, doxygenHtmlPath ):
 	for className in symbolMap.classes:
-		inheritance = symbolMap.getClassInheritance( className )
-		if inheritance:
-			print inheritance
+		ancestors = symbolMap.getClassAncestors( className )
+		descendants = symbolMap.getClassDescendants( className )
+		if not ancestors and not descendants:
+			continue
+		filePath = doxygenHtmlPath + symbolMap.classes[className].fileName
+		soup = BeautifulSoup( codecs.open( filePath, "r", "ISO-8859-1" ) )
+		contentsDiv = soup.find( 'div', attrs={"class","contents"} )
+		unorderedList = soup.new_tag( "ul" )
+		indentCount = 0
+		for ancestor in ancestors:
+			newLi = soup.new_tag( "li" )
+			newA = soup.new_tag( "a", href=ancestor.fileName )
+			newA.append( ancestor.name )
+			newLi.string = u'-' * indentCount
+			newLi.append( newA )
+			unorderedList.append( newLi )
+			indentCount = indentCount + 1
+		for descendant in descendants:
+			newLi = soup.new_tag( "li" )
+			newA = soup.new_tag( "a", href=descendant.fileName )
+			newA.append( descendant.name )
+			newLi.string = u'+' * indentCount
+			newLi.append( newA )
+			unorderedList.append( newLi )
+			
+		print unorderedList
+		contentsDiv.insert( 0, unorderedList )
+		outFile = codecs.open( filePath, "w", "utf-8" )
+		outFile.write( soup.prettify() )
+
 
 def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
 	classNameToTypedefs = {}
@@ -169,14 +215,14 @@ def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
 			filePath = doxygenHtmlPath + classInfo.fileName
 			print "Adding " + str(classNameToTypedefs[className]) + " to file " + filePath
 			soup = BeautifulSoup( codecs.open( filePath, "r", "ISO-8859-1" ) )
-			contents = soup.find( 'div', attrs={"class","contents"} )
+			contentsDiv = soup.find( 'div', attrs={"class","contents"} )
 			newContents = "Typedefs:"
 			for typedef in classNameToTypedefs[className]:
 				newContents += "[" + typedef + "]"
 			newTag = soup.new_tag( "b" )
 			newTag.append( newContents )
-			contents.insert( 0, newTag )			
-			outFile = codecs.open( filePath, "w", "ISO-8859-1" )
+			contentsDiv.insert( 0, newTag )			
+			outFile = codecs.open( filePath, "w", "utf-8" )
 			outFile.write( soup.prettify() )
 		else:
 			print "Error: couldn't find class: " + className
