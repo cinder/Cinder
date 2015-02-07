@@ -24,6 +24,8 @@
 #include "cinder/app/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 
+# include "cinder/app/AppImplMsw.h" // FIXME: this is currently needed for file dialog methods, which require an app / renderer
+
 using namespace std;
 
 namespace cinder { namespace app {
@@ -59,6 +61,21 @@ DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
 	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ) );
+}
+
+fs::path PlatformMsw::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	return AppImplMsw::getOpenFilePath( initialPath, extensions );
+}
+
+fs::path PlatformMsw::getFolderPath( const fs::path &initialPath )
+{
+	return AppImplMsw::getFolderPath( initialPath );
+}
+
+fs::path PlatformMsw::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	return AppImplMsw::getSaveFilePath( initialPath, extensions );
 }
 
 std::ostream& PlatformMsw::console()

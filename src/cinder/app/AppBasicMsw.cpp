@@ -174,19 +174,4 @@ ivec2 AppBasicMsw::getMousePos() const
 	return ivec2( point.x, point.y );
 }
 
-fs::path AppBasicMsw::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
-{
-	return AppImplMsw::getOpenFilePath( initialPath, extensions );
-}
-
-fs::path AppBasicMsw::getFolderPath( const fs::path &initialPath )
-{
-	return AppImplMsw::getFolderPath( initialPath );
-}
-
-fs::path AppBasicMsw::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
-{
-	return AppImplMsw::getSaveFilePath( initialPath, extensions );
-}
-
 } } // namespace cinder::app
