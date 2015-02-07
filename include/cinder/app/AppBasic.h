@@ -43,30 +43,6 @@ class AppBasic : public AppBase {
 		Settings();
 
 		void	setShouldQuit ( bool shouldQuit = true );
-		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
-
-		//! Returns whether the default window is resizable
-		bool	isResizable() const { return mDefaultWindowFormat.isResizable(); }
-		//! Sets the default window to be resizable or not
-		void	setResizable( bool resizable = true ) { mDefaultWindowFormat.setResizable( resizable ); }
-		//! Returns whether the default window will be created without a border (chrome/frame)
-		bool	isBorderless() const { return mDefaultWindowFormat.isBorderless(); }
-		//! Sets the default window to be created without a border (chrome/frame)
-		void	setBorderless( bool borderless = true ) { mDefaultWindowFormat.setBorderless( borderless ); }
-		//! Returns whether the default  window always remains above all other windows
-		bool	isAlwaysOnTop() const { return mDefaultWindowFormat.isAlwaysOnTop(); }
-		//! Sets whether the default window always remains above all other windows
-		void	setAlwaysOnTop( bool alwaysOnTop = true ) { mDefaultWindowFormat.setAlwaysOnTop( alwaysOnTop ); }
-
-		//! Returns the display for the default window
-		DisplayRef	getDisplay() const { return mDefaultWindowFormat.getDisplay(); }
-		//! Sets the display for the default window
-		void		setDisplay( DisplayRef display ) { mDefaultWindowFormat.setDisplay( display ); }
-
-		//! Registers the app to receive multiTouch events from the operating system. Disabled by default. Only supported on WinRT, Windows 7/8 and Mac OS X trackpad.
-		void		enableMultiTouch( bool enable = true ) { mEnableMultiTouch = enable; }
-		//! Returns whether the app is registered to receive multiTouch events from the operating system. Disabled by default. Only supported on Windows 7 and Mac OS X trackpad.
-		bool		isMultiTouchEnabled() const { return mEnableMultiTouch; }
 
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
 		void		enableQuitOnLastWindowClose( bool enable = true ) { mQuitOnLastWindowClose = enable; }
