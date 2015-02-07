@@ -77,7 +77,7 @@ class AppCocoaTouch : public AppBase {
 	typedef std::function<void ( Settings *settings )>	SettingsFn;
 
 	AppCocoaTouch();
-	virtual ~AppCocoaTouch() {}
+	virtual ~AppCocoaTouch();
 
 	signals::signal<void()>&	getSignalDidEnterBackground() { return mSignalDidEnterBackground; }
 	void						emitDidEnterBackground();

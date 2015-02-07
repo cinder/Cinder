@@ -42,6 +42,12 @@ AppCocoaTouch::AppCocoaTouch()
 	enablePowerManagement( settings->isPowerManagementEnabled() );
 }
 
+AppCocoaTouch::~AppCocoaTouch()
+{
+	[mImpl release];
+	mImpl = nil;
+}
+
 void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
 {
 	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
