@@ -63,6 +63,7 @@ struct SomeMemberObj {
 class AppTestApp : public App {
   public:
 	AppTestApp();
+	~AppTestApp();
 
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
@@ -102,6 +103,11 @@ AppTestApp::AppTestApp()
 	mTexStartup = gl::Texture::create( loadImage( asset ) );
 
 	CI_CHECK_GL();
+}
+
+AppTestApp::~AppTestApp()
+{
+	CI_LOG_I( "bang" );
 }
 
 void AppTestApp::setup()
