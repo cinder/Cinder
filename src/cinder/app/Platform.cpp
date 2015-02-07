@@ -113,9 +113,9 @@ void Platform::findAndAddAssetBasePath()
 		if( parentCt >= ASSET_SEARCH_DEPTH )
 			break;
 
-		const fs::path curAssetPath = curPath / "assets";
-		if( fs::exists( curAssetPath ) && fs::is_directory( curAssetPath ) ) {
-			mAssetPaths.push_back( curAssetPath );
+		const fs::path curAssetDir = curPath / "assets";
+		if( fs::exists( curAssetDir ) && fs::is_directory( curAssetDir ) ) {
+			addAssetDirectory( curAssetDir );
 			break;
 		}
 	}
