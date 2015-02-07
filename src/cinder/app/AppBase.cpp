@@ -39,7 +39,7 @@ using namespace std;
 namespace cinder { namespace app {
 
 AppBase*					AppBase::sInstance = nullptr;			// Static instance of App, effectively a singleton
-AppBase::Settings*			AppBase::sSettingsFromMain;
+AppBase::Settings*			AppBase::sSettingsFromMain = nullptr;
 static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -94,11 +94,11 @@ AppBase::AppBase()
 {
 	sInstance = this;
 
-	CI_ASSERT( sSettingsFromMain );
 	mDefaultRenderer = sSettingsFromMain->getDefaultRenderer();
 	mMultiTouchEnabled = sSettingsFromMain->isMultiTouchEnabled();
 	mHighDensityDisplayEnabled = sSettingsFromMain->isHighDensityDisplayEnabled();
 	mFrameRateEnabled = sSettingsFromMain->isFrameRateEnabled();
+	mCommandLineArgs = sSettingsFromMain->getCommandLineArgs();
 
 	mIo = shared_ptr<asio::io_service>( new asio::io_service() );
 	mIoWork = shared_ptr<asio::io_service::work>( new asio::io_service::work( *mIo ) );

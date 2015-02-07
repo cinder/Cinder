@@ -103,7 +103,7 @@ struct BitwiseAndEventCombiner {
 //! Base class that all apps derive from.
 class AppBase {
  public:
-	//! Startup settings, used during App construction. Can be modified by passing a SettingsFn to the app instanciation macros.
+	//! Startup settings, used during App construction. They are modified before the app is created by passing a SettingsFn to the app instanciation macros.
 	class Settings {
 	  public:
 		Settings();
@@ -384,7 +384,10 @@ class AppBase {
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	std::ostream&	console();
-	
+
+	//! Returns a vector of the command line arguments passed to the app when intantiated.
+	const std::vector<std::string>&		getCommandLineArgs() const	{ return mCommandLineArgs; }
+
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
 
@@ -448,8 +451,8 @@ class AppBase {
 	bool					mMultiTouchEnabled, mHighDensityDisplayEnabled, mFrameRateEnabled;
 	RendererRef				mDefaultRenderer;
 
+	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
-
 	signals::signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
 
 	std::shared_ptr<asio::io_service>	mIo;

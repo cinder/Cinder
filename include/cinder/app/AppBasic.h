@@ -102,9 +102,6 @@ class AppBasic : public AppBase {
 	//! Shows the mouse cursor
 	virtual void		showCursor() = 0;
 
-	//! Returns a vector of the command line arguments passed to the app
-	const std::vector<std::string>&		getArgs() const { return mCommandLineArgs; }
-
 	//! Gets the foreground Window, which has keyboard and mouse focus
 	virtual WindowRef	getForegroundWindow() const = 0;
 
@@ -121,7 +118,6 @@ class AppBasic : public AppBase {
   protected:
 	static AppBasic*			sBasicInstance;
 	EventSignalShouldQuit		mSignalShouldQuit;
-	std::vector<std::string>	mCommandLineArgs;
 };
 
 } } // namespace cinder::app
