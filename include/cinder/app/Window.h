@@ -192,7 +192,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns the Renderer which will be instantiated for the Window. Defaults to an instance of the App's default renderer (specified in the app-instantiation macro).
 		RendererRef	getRenderer() const { return mRenderer; }
 		//! Sets the Renderer which will be instantiated for the Window.
-		void		setRenderer( RendererRef renderer ) { mRenderer = renderer; }
+		void		setRenderer( const RendererRef &renderer ) { mRenderer = renderer; }
 		//! Sets the Renderer which will be instantiated for the Window.
 		Format&		renderer( RendererRef r ) { mRenderer = r; return *this; }
 
