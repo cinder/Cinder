@@ -91,8 +91,6 @@ class AppScreenSaver : public AppBase {
 
 	void	launch( const char *title, int argc, char * const argv[] ) override { /* do nothing - this gets handled a weirder way for screensavers */ }
 
-	const Settings&		getSettings() const override	{ return mSettings; }
-
 	//! Returns the maximum frame-rate the App will attempt to maintain.
 	float		getFrameRate() const override;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
@@ -105,11 +103,6 @@ class AppScreenSaver : public AppBase {
 	void		quit() override {}
 
 	ivec2		getMousePos() const override	{ return ivec2( 0 ); }
-
-	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override	{ return fs::path(); }
-	fs::path getFolderPath( const fs::path &initialPath ) override													{ return fs::path(); }
-	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override	{ return fs::path(); }
-
 
 #if defined( CINDER_MAC )
 	//! Should return a NSWindow* on Mac OS implementing a custom configuration dialog. Requires settings->setProvidesMacConfigDialog() in prepareSettings().
@@ -140,18 +133,20 @@ class AppScreenSaver : public AppBase {
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplCocoaScreenSaver*>( impl ); }
 
+	static void callSettings( Settings *settings, const SettingsFn &settingsFn = SettingsFn() )
+	{
+		if( settingsFn )
+			settingsFn( settings );
+	}
+
 	template<typename AppT, typename RendererT>
-	static AppScreenSaver* main( void *impl, const char *title, const SettingsFn &settingsFn = SettingsFn() )
+	static AppScreenSaver* main( void *impl, const char *title, Settings *settings )
 	{
 		AppBase::prepareLaunch();
 
-		Settings settings;
-		AppBase::initialize( &settings, std::make_shared<RendererT>(), title, 0, nullptr );
+		AppBase::initialize( settings, std::make_shared<RendererT>(), title, 0, nullptr );
 
-		if( settingsFn )
-			settingsFn( &settings );
-
-		if( settings.shouldQuit() )
+		if( settings->shouldQuit() )
 			return nullptr; // TODO: is this safe for screensavers?
 
 		AppScreenSaver *app = new AppT;
@@ -184,12 +179,18 @@ class AppScreenSaver : public AppBase {
 } } // namespace cinder::app
 
 #if defined( CINDER_MAC )
-extern "C" cinder::app::AppScreenSaver*	ScreenSaverFactoryMethod( void *impl );
+extern "C" void	ScreenSaverSettingsMethod( cinder::app::AppScreenSaver::Settings *settings );
+extern "C" cinder::app::AppScreenSaver*	ScreenSaverFactoryMethod( void *impl, cinder::app::AppScreenSaver::Settings *settings );
 #define CINDER_APP_SCREENSAVER( APP, RENDERER, ... )												\
 extern "C" {																						\
-	cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl )								\
+	void ScreenSaverSettingsMethod( cinder::app::AppScreenSaver::Settings *settings )				\
 	{																								\
-		return cinder::app::AppScreenSaver::main<APP, RENDERER>( impl, #APP, ##__VA_ARGS__ );		\
+		return cinder::app::AppScreenSaver::callSettings( settings, ##__VA_ARGS__ );				\
+	}																								\
+																									\
+	cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl, cinder::app::AppScreenSaver::Settings *settings )								\
+	{																								\
+		return cinder::app::AppScreenSaver::main<APP, RENDERER>( impl, #APP, settings );						\
 	}																								\
 }
 

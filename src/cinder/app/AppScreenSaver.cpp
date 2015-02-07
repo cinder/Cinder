@@ -43,7 +43,9 @@ AppScreenSaver::AppScreenSaver()
 	: mImpl( nullptr )
 {
 	AppBase::sInstance = sInstance = this;
-
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
+	
 	auto platform = dynamic_cast<PlatformCocoa *>( Platform::get() );
 	CI_ASSERT_MSG( platform, "expected global Platform object to be of type PlatformCocoa" );
 

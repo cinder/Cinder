@@ -21,12 +21,26 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+/*
+The order of operations in a Mac Screensaver are a bit convoluted. They are:
+* The ScreenSaverEngine instantiates whatever class is declared as the Principle Class in the plist; WindowImplCocoaScreenSaver_*
+* WindowImplCocoaScreenSaver:instantiateView fires; it calls getAppImpl()
+* If this is the first call to getAppImpl():
+   * sAppImplInstance is set to a new AppImplCocoaScreenSaver
+   * sAppImplInstance->mApp is set to the result of calling ScreenSaverFactoryMethod():
+     * Inside of ScreenSaverFactoryMethod() the user's Settings fn is called
+     * The user's app is constructed
+*/
+
 #import "cinder/app/AppImplCocoaScreenSaver.h"
+#include "cinder/CinderAssert.h"
 
 #import <Foundation/NSThread.h>
 
 static AppImplCocoaScreenSaver *sAppImplInstance = nil;
-AppImplCocoaScreenSaver* getAppImpl();
+static cinder::app::AppScreenSaver::Settings *sSettings = nullptr;
+static void initSettings();
+static AppImplCocoaScreenSaver* getAppImpl();
 
 @implementation WindowImplCocoaScreenSaver
 
@@ -36,12 +50,17 @@ AppImplCocoaScreenSaver* getAppImpl();
 {
 	mResizeCalled = NO;
 	mHasDrawnSinceLastUpdate = YES; // in order to force an update later
-	BOOL blankingWindow = getAppImpl()->mApp->getSettings().isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
+	
+	initSettings();
+	auto impl = getAppImpl(); // forces initialization
+	
+	BOOL blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
 
 	if( ! blankingWindow ) {
-		cinder::app::RendererRef renderer = getAppImpl()->mApp->getDefaultRenderer()->clone();
-		cinder::app::RendererRef sharedRenderer = getAppImpl()->mApp->findSharedRenderer( renderer );
-		mCinderView = [[CinderView alloc] initWithFrame:rect app:getAppImpl()->mApp renderer:renderer sharedRenderer:sharedRenderer];
+		cinder::app::RendererRef renderer = sSettings->getDefaultRenderer()->clone();
+		if(
+		cinder::app::RendererRef sharedRenderer = impl->mApp->findSharedRenderer( renderer );
+		mCinderView = [[CinderView alloc] initWithFrame:rect app:impl->mApp renderer:renderer sharedRenderer:sharedRenderer];
 		[mCinderView setDelegate:self];
 
 		[self setAutoresizesSubviews:YES];
@@ -132,15 +151,16 @@ AppImplCocoaScreenSaver* getAppImpl();
 
 - (BOOL)hasConfigureSheet
 {
-    return getAppImpl()->mApp->getSettings().getProvidesMacConfigDialog();
+	initSettings();
+	
+    return sSettings->getProvidesMacConfigDialog();
 }
 
 - (NSWindow*)configureSheet
 {
-	if( ! sAppImplInstance )
-		return nil;
+	initSettings();
 
-	if( getAppImpl()->mApp->getSettings().getProvidesMacConfigDialog() )
+	if( sSettings->getProvidesMacConfigDialog() )
 		return static_cast<NSWindow*>( getAppImpl()->mApp->createMacConfigDialog() );
 	else
 	    return nil;
@@ -317,21 +337,32 @@ AppImplCocoaScreenSaver* getAppImpl();
 
 @end
 
+static void initSettings()
+{
+	if( ! sSettings ) {
+		sSettings = new cinder::app::AppScreenSaver::Settings();
+		ScreenSaverSettingsMethod( sSettings );
+	}
+}
 
-AppImplCocoaScreenSaver* getAppImpl()
+static AppImplCocoaScreenSaver* getAppImpl()
 {
 	if( ! sAppImplInstance ) {
+		initSettings();
+		
 		sAppImplInstance = [[AppImplCocoaScreenSaver alloc] init];
-		sAppImplInstance->mApp = ScreenSaverFactoryMethod( (void*)sAppImplInstance );
-		sAppImplInstance->mFrameRate = sAppImplInstance->mApp->getSettings().getFrameRate();
+		sAppImplInstance->mApp = ScreenSaverFactoryMethod( sAppImplInstance, sSettings );
+		sAppImplInstance->mFrameRate = sSettings->getFrameRate();
 		sAppImplInstance->mSetupCalled = NO;
 	}
 	
 	return sAppImplInstance;
 }
 
-@implementation AppImplCocoaScreenSaver
+//////////////////////////////////////////////////////////////////////////////////////
+// AppImplCocoaScreenSaver
 
+@implementation AppImplCocoaScreenSaver
 
 - (AppImplCocoaScreenSaver*)init
 {

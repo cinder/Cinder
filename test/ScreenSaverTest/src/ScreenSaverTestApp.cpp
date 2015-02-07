@@ -15,7 +15,7 @@
 	#include "WindowsConfig.h"
 #endif
 
-#define LOAD_LOGO_IN_CONSTRUCTOR 0
+#define LOAD_LOGO_IN_CONSTRUCTOR 1
 
 using namespace ci;
 using namespace ci::app;
@@ -125,7 +125,7 @@ void ScreenSaverTestApp::draw()
 	gl::enableAlphaBlending();
 		
 	if( isPreview() )
-		gl::clear( Color( 0, 0.5f, 1.0f ) );
+		gl::clear( Color( 0, 0.95f, 1.0f ) );
 	else
 		gl::clear( mBackgroundColor );
 
