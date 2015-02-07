@@ -195,6 +195,8 @@ class AppBase {
 		//! Maximum frameRate of the application specified in frames per second
 		float	getFrameRate() const { return mFrameRate; }
 
+		//!	Set this to true if the app should terminate prior to launching.
+		void	setShouldQuit( bool shouldQuit = true );
 		//! Whether or not the app should terminate prior to launching
 		bool	shouldQuit() const			{ return mShouldQuit; }
 

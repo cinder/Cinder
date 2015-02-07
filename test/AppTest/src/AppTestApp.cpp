@@ -36,10 +36,12 @@ void prepareSettings( App::Settings *settings )
 //	settings->enableMultiTouch( false );
 //	settings->disableFrameRate();
 //	settings->setFrameRate( 20 );
-
-//	settings->enableStatusBar( false ); // FIXME: status bar is always visible?
 //	settings->setTitle( "Blarg" ); // FIXME: seems broken on mac, but did it ever work?
-//	settings->setShouldQuit(); // FIXME: currently broken, since member objects continue to try to init
+//	settings->setShouldQuit();
+
+#if defined( CINDER_COCOA_TOUCH )
+	settings->enableStatusBar( false ); // FIXME: status bar is always visible?
+#endif
 
 #if defined( CINDER_MSW )
 	settings->enableConsoleWindow();

@@ -57,12 +57,4 @@ AppBasic::Settings::Settings()
 {
 }
 
-void AppBasic::Settings::setShouldQuit( bool shouldQuit )
-{
-	mShouldQuit = shouldQuit;
-}
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-// AppBasic::Window
-
 } } // namespace cinder::app

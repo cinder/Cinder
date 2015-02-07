@@ -42,8 +42,6 @@ class AppBasic : public AppBase {
   	  public:
 		Settings();
 
-		void	setShouldQuit ( bool shouldQuit = true );
-
 		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
 		void		enableQuitOnLastWindowClose( bool enable = true ) { mQuitOnLastWindowClose = enable; }
 		//! Returns whether the app quits automatically when its last window is closed. Enabled by default.

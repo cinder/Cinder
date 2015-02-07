@@ -85,6 +85,11 @@ void AppBase::Settings::prepareWindow( const Window::Format &format )
 	mWindowFormats.push_back( format );
 }
 
+void AppBase::Settings::setShouldQuit( bool shouldQuit )
+{
+	mShouldQuit = shouldQuit;
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AppBase
 
