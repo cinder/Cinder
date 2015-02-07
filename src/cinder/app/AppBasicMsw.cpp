@@ -36,11 +36,6 @@ void AppBasicMsw::Settings::pushBackCommandLineArg( const std::string &arg )
 	mCommandLineArgs.push_back( arg );
 }
 
-AppBasicMsw::~AppBasicMsw()
-{
-	delete mImpl;
-}
-
 AppBasicMsw::AppBasicMsw()
 {
 	sInstance = this;
@@ -53,7 +48,7 @@ AppBasicMsw::AppBasicMsw()
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = new AppImplMswBasic( this, *settings );
+	mImpl.reset( new AppImplMswBasic( this, *settings ) );
 }
 
 // static

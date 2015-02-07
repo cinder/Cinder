@@ -52,7 +52,6 @@ class AppBasicMsw : public AppBasic {
 	typedef std::function<void( Settings *settings )>	SettingsFn;
 
 	AppBasicMsw();
-	virtual ~AppBasicMsw();
 
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
@@ -85,8 +84,8 @@ class AppBasicMsw : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	AppImplMswBasic*	mImpl;
-	bool				mConsoleWindowEnabled;
+	std::unique_ptr<AppImplMswBasic>	mImpl;
+	bool								mConsoleWindowEnabled;
 };
 
 template<typename AppT, typename RendererT>
