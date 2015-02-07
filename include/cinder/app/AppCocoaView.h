@@ -39,6 +39,7 @@ class AppCocoaView : public AppBase {
   public:
 
 	AppCocoaView();
+	~AppCocoaView();
 		
 	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr, 0, nullptr ); }
 

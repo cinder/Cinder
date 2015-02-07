@@ -94,6 +94,7 @@ using namespace cinder::app;
 }
 
 - (AppImplCocoaView *)init:(cinder::app::AppCocoaView *)app settings:(const AppCocoaView::Settings &)settings defaultRenderer:(cinder::app::RendererRef)defaultRenderer;
+- (void)dealloc;
 - (WindowImplCocoaView *)setupCinderView:(CinderView*)cinderView renderer:(cinder::app::RendererRef)renderer;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -364,7 +365,7 @@ using namespace cinder::app;
 	[super dealloc];
 }
 
-@end
+@end // WindowImplCocoaView
 
 @implementation AppImplCocoaView
 
@@ -382,6 +383,15 @@ using namespace cinder::app;
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationWillTerminate:) name:NSApplicationWillTerminateNotification object:nil];
 	
 	return self;
+}
+
+- (void)dealloc
+{
+	for( auto &window : mWindows )
+		[window release];
+
+	[[NSNotificationCenter defaultCenter] removeObserver:self];
+	[super dealloc];
 }
 
 // Returns a pointer to a Renderer of the same type if any existing Windows have one of the same type
@@ -474,6 +484,11 @@ using namespace cinder::app;
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
 	mApp->emitShutdown();
+
+	// invalidate the timer, which will release its ownership of us.
+	[mAnimationTimer invalidate];
+	mAnimationTimer = nil;
+
 	delete mApp;
 }
 
@@ -502,7 +517,7 @@ using namespace cinder::app;
 	return mFrameRateEnabled;
 }
 
-@end
+@end // AppImplCocoaView
 
 namespace cinder { namespace app {
 
@@ -515,6 +530,12 @@ AppCocoaView::AppCocoaView()
 	CI_ASSERT( settings );
 
 	mImpl = [[AppImplCocoaView alloc] init:this settings:*settings defaultRenderer:getDefaultRenderer()];
+}
+
+AppCocoaView::~AppCocoaView()
+{
+	[mImpl release];
+	mImpl = nil;
 }
 
 void AppCocoaView::setupCinderView( CinderView *cinderView )
