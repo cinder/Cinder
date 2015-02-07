@@ -1,4 +1,6 @@
 #include "MyCinderApp.h"
+#include "cinder/Log.h"
+
 #if defined( USE_RENDERER2D )
 	#include "cinder/cocoa/CinderCocoa.h"
 #else
@@ -14,9 +16,21 @@ void MyCinderApp::prepareSettings( Settings *settings )
 	settings->enableMultiTouch( false );
 }
 
+MyCinderApp::MyCinderApp()
+{
+	CI_LOG_I( "constructor" );
+}
+
+MyCinderApp::~MyCinderApp()
+{
+	CI_LOG_I( "destructor" );
+}
+
 void MyCinderApp::setup()
 {
 	testCbo.setState( TestCallbackOrder::SETUP );
+	getSignalShutdown().connect( [this] { testCbo.setState( TestCallbackOrder::SHUTDOWN ); } );
+
 	mRadius = 50;
 	mAnimatedRadius = 0;
 	mColor = cinder::Color::white();

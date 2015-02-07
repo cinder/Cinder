@@ -6,12 +6,14 @@
 
 struct TestCallbackOrder {
 	TestCallbackOrder() : mState( TestCallbackOrder::VIRGIN ), mDoneDraw( false ) {}
-	~TestCallbackOrder() {
+	~TestCallbackOrder()
+	{
 		if( mState != SHUTDOWN )
 			cinder::app::console() << "Failed to call shutdown()" << std::endl;
 	}
 	
-	void	setState( int state ) {
+	void	setState( int state )
+	{
 		if( ( ( state == UPDATE ) || ( state == DRAW ) ) && mDoneDraw )
 			;
 		else if( mState != state - 1 )
@@ -31,6 +33,9 @@ struct TestCallbackOrder {
 class MyCinderApp : public cinder::app::AppCocoaView {
   public:
 	static void			prepareSettings( Settings *settings );
+	MyCinderApp();
+	~MyCinderApp();
+
 	void				setup();
 	void				resize();
 	void				update();
