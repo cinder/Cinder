@@ -6,6 +6,35 @@ import shutil
 from xml.dom.minidom import parse
 from bs4 import BeautifulSoup
 
+class SymbolMap (object):
+	def __init__( self  ):
+		self.classes = {}
+		self.typedefs = {}
+
+	class Class (object):
+		def __init__( self, fileName ):
+			self.fileName = fileName
+		
+	class Typedef (object):
+		def __init__( self, type ):
+			self.type = type
+	
+	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
+	def findClass( self, name ):
+		# replace leading ci:: with cinder:: instead
+		if name.find( "ci::" ) == 0:
+			name.replace( "ci::", "cinder::" )
+
+		if name in self.classes:
+			return self.classes[name]
+		elif ("cinder::" + name) in self.classes:
+			return self.classes["cinder::"+name]
+		else:
+			return None
+
+	def findTypedef( self, name ):
+		return self.typedefs.get( name )
+
 def getText(nodelist):
 	rc = []
 	for node in nodelist:
@@ -20,7 +49,7 @@ def getSymbolToFileMap( path ):
 	tagDom = parse( f )
 	
 	# iterate all <compound>s looking for classes or namespaces
-	symbolMap = {}
+	symbolMap = SymbolMap()
 	compounds = tagDom.getElementsByTagName( "compound" )
 	for compound in compounds:
 		# found a namespace
@@ -41,8 +70,9 @@ def getSymbolToFileMap( path ):
 					name = namespaceName+"::"+name
 					type = namespaceName+"::"+type
 					print "Adding " + name + " AS " + type
-					symbolMap[name] = ("typedef",type)
+					symbolMap.typedefs[name] = SymbolMap.Typedef( type )
 				
+				# find functions and add to symbol map
 				if member.getAttribute( "kind" ) == "function":
 					name = getText( member.getElementsByTagName("name")[0].childNodes )
 					anchor = getText( member.getElementsByTagName("anchor")[0].childNodes )
@@ -52,24 +82,9 @@ def getSymbolToFileMap( path ):
 		elif compound.getAttribute( "kind" ) == "class":
 			name = getText( compound.getElementsByTagName("name")[0].childNodes )
 			filePath = getText( compound.getElementsByTagName("filename")[0].childNodes )
-			symbolMap[name] = ("class",filePath)
+			symbolMap.classes[name] = SymbolMap.Class( filePath )
 
 	return symbolMap
-
-# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
-def getFilePathForSymbol( symbolMap, symbolName ):
-	# replace ci:: with cinder::
-	if symbolName.find( "ci::" ) == 0:
-		symbolName.replace( "ci::", "cinder::" )
-	# if starst with 'cinder::'
-	if symbolName.find( "ci::" ) == 0:
-		return symbolMap[symbolName][1]
-	elif symbolName in symbolMap:
-		return symbolMap[symbolName][1]
-	elif ("cinder::" + symbolName) in symbolMap:
-		return symbolMap["cinder::"+symbolName][1]
-	else:
-		return None
 
 # replace all <d> tags in HTML string 'html' based on Doxygen symbols
 # in 'symbolMap', making the paths relative to 'doxyHtmlPath'
@@ -81,12 +96,12 @@ def processHtml( html, symbolMap, doxyHtmlPath ):
 			searchString = link.get( 'dox' )
 		else:
 			searchString = link.contents[0]
-		fileName = getFilePathForSymbol( symbolMap, searchString )
-		if fileName == None:
+		existingClass = symbolMap.findClass( searchString )
+		if not existingClass:
 			print "   ** Warning: Could not find Doxygen tag for " + searchString
 		else:
 			link.name = 'a'
-			link['href'] = doxyHtmlPath + fileName
+			link['href'] = doxyHtmlPath + existingClass.fileName
 			
 	return soup.prettify()
 
@@ -117,30 +132,32 @@ def processHtmlDir( htmlSourceDir, symbolMap, doxygenHtmlPath ):
 
 def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
 	classNameToTypedefs = {}
-	for symbol in symbolMap:
-		# iterate all typedefs; we're focused on the templated ones
-		if symbolMap[symbol][0] == "typedef":
-			resolvesTo = symbolMap[symbol][1]
-			firstLeftAngle = resolvesTo.find( "<" )
-			# is this typedef's type templated?
-			if firstLeftAngle != -1:
-				className = resolvesTo[0:firstLeftAngle]
-				# see if we have a class that matches the template
-				classInfo = symbolMap.get( className )
-				if classInfo != None: # found one
+	# iterate all typedefs; we're focused on the templated ones
+	# Ex: typedef SurfaceT<uint_t> Surface;
+	#    resolvesTo = "SurfaceT<uint_t>"
+	#    className = "SurfaceT"
+	#    classInfo
+	for typedef in symbolMap.typedefs:
+		resolvesTo = symbolMap.typedefs[typedef].type
+		firstLeftAngle = resolvesTo.find( "<" )
+		# is this typedef's type templated?
+		if firstLeftAngle != -1:
+			className = resolvesTo[0:firstLeftAngle]
+			# see if we have a class that matches the template
+			classInfo = symbolMap.findClass( className )
+			if classInfo: # found one
 #					print symbol + " -> " + symbolMap[symbol][1] + " @ " + classInfo[1]
-					if classNameToTypedefs.get( className ) == None:
-						classNameToTypedefs[className] = [symbol]
-					else:
-						classNameToTypedefs[className].append( symbol )
-				else:
-					print "No info for " + className
+				if not classNameToTypedefs.get( className ):
+					classNameToTypedefs[className] = []
+				classNameToTypedefs[className].append( typedef )
+			else:
+				print "No info for " + className
 					
 	# Iterate the templated classes for which we have typedefs
 	for className in classNameToTypedefs:
-		classInfo = symbolMap.get( className )
-		if classInfo != None:
-			filePath = doxygenHtmlPath + classInfo[1]
+		classInfo = symbolMap.classes.get( className )
+		if classInfo:
+			filePath = doxygenHtmlPath + classInfo.fileName
 			print "Adding " + str(classNameToTypedefs[className]) + " to file " + filePath
 			soup = BeautifulSoup( codecs.open( filePath, "r", "ISO-8859-1" ) )
 			contents = soup.find( 'div', attrs={"class","contents"} )
@@ -155,15 +172,20 @@ def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
 		else:
 			print "Error: couldn't find class: " + className
 
-doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
-htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 
-if len( sys.argv ) == 1: # default; generate all docs
-	symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
-	linkTemplatedTypedefs( symbolMap, doxygenHtmlPath )
-	processHtmlDir( htmlSourcePath, symbolMap, doxygenHtmlPath )
-elif len( sys.argv ) == 3: # process a specific file
-	symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
-	processHtmlFile( sys.argv[1], symbolMap, doxygenHtmlPath, sys.argv[2] )
-else:
-	print "Unknown usage"
+
+if __name__ == "__main__":
+	doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
+	htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
+
+	symbols = SymbolMap()
+
+	if len( sys.argv ) == 1: # default; generate all docs
+		symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
+		linkTemplatedTypedefs( symbolMap, doxygenHtmlPath )
+		processHtmlDir( htmlSourcePath, symbolMap, doxygenHtmlPath )
+	elif len( sys.argv ) == 3: # process a specific file
+		symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
+		processHtmlFile( sys.argv[1], symbolMap, doxygenHtmlPath, sys.argv[2] )
+	else:
+		print "Unknown usage"
