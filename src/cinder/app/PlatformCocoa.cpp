@@ -123,8 +123,9 @@ fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vect
 
 	if( ! extensions.empty() ) {
 		NSMutableArray *typesArray = [NSMutableArray arrayWithCapacity:extensions.size()];
-		for( vector<string>::const_iterator extIt = extensions.begin(); extIt != extensions.end(); ++extIt )
-			[typesArray addObject:[NSString stringWithUTF8String:extIt->c_str()]];
+		for( const auto &ext : extensions )
+			[typesArray addObject:[NSString stringWithUTF8String:ext.c_str()]];
+
 		[cinderOpen setAllowedFileTypes:typesArray];
 	}
 
@@ -182,8 +183,9 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 	NSMutableArray *typesArray = nil;
 	if( ! extensions.empty() ) {
 		typesArray = [NSMutableArray arrayWithCapacity:extensions.size()];
-		for( vector<string>::const_iterator extIt = extensions.begin(); extIt != extensions.end(); ++extIt )
-			[typesArray addObject:[NSString stringWithUTF8String:extIt->c_str()]];
+		for( const auto &ext : extensions )
+			[typesArray addObject:[NSString stringWithUTF8String:ext.c_str()]];
+
 		[cinderSave setAllowedFileTypes:typesArray];
 	}
 
