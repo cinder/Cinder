@@ -33,21 +33,22 @@ using std::string;
 
 namespace cinder { namespace app {
 
-AppImplMswBasic::AppImplMswBasic( AppBasicMsw *app )
+AppImplMswBasic::AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings )
 	: AppImplMsw( app ), mApp( app )
 {
 	mShouldQuit = false;
 
-	mFrameRate = mApp->getSettings().getFrameRate();
-	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
+	mFrameRate = settings.getFrameRate();
+	mFrameRateEnabled = settings.isFrameRateEnabled();
+	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
 
-	auto formats = mApp->getSettings().getWindowFormats();
+	auto formats = settings.getWindowFormats();
 	if( formats.empty() )
-		formats.push_back( mApp->getSettings().getDefaultWindowFormat() );
+		formats.push_back( settings.getDefaultWindowFormat() );
 
 	for( auto &format : formats ) {
 		if( ! format.isTitleSpecified() )
-			format.setTitle( mApp->getSettings().getTitle() );
+			format.setTitle( settings.getTitle() );
 
 		createWindow( format );
 	}
@@ -162,7 +163,7 @@ void AppImplMswBasic::closeWindow( WindowImplMsw *windowImpl )
 		mWindows.erase( winIt );
 	}
 
-	if( mWindows.empty() && mApp->getSettings().isQuitOnLastWindowCloseEnabled() )
+	if( mWindows.empty() && mQuitOnLastWindowClosed )
 		mShouldQuit = true;
 }
 

@@ -40,14 +40,15 @@ AppBasicMsw::AppBasicMsw()
 {
 	sInstance = this;
 
-	auto settingsPtr = dynamic_cast<Settings *>( sSettingsFromMain );
-	CI_ASSERT( settingsPtr );
-	mSettings = *settingsPtr;
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
 
-	sDefaultRenderer = mSettings.getDefaultRenderer();
+	// pull out app-level variables
+	mConsoleWindowEnabled = settings->isConsoleWindowEnabled();
+	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = new AppImplMswBasic( this );
+	mImpl = new AppImplMswBasic( this, *settings );
 }
 
 // static
@@ -77,15 +78,8 @@ void AppBasicMsw::executeLaunch( const char *title )
 
 void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 {
-	// -----------------------
-	// TODO: consider moving this to a common AppBasic method, or doing in App
-
-	// pull out app-level variables
-	enablePowerManagement( mSettings.isPowerManagementEnabled() );
-	// -----------------------
-
 	// allocate and redirect the console if requested
-	if( mSettings.isConsoleWindowEnabled() ) {
+	if( mConsoleWindowEnabled ) {
 		::AllocConsole();
 		freopen( "CONIN$", "r", stdin );
 		freopen( "CONOUT$", "w", stdout );

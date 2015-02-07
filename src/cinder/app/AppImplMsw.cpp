@@ -419,7 +419,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 void WindowImplMsw::completeCreation()
 {
 	::DragAcceptFiles( mWnd, TRUE );
-	if( mAppImpl->mApp->getSettings().isMultiTouchEnabled() )
+	if( mAppImpl->mApp->isMultiTouchEnabled() )
 		enableMultiTouch();
 
 	::ShowWindow( mWnd, SW_SHOW );

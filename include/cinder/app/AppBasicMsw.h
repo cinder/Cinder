@@ -69,8 +69,6 @@ class AppBasicMsw : public AppBasic {
 	void		showCursor() override;
 	ivec2		getMousePos() const override;
 
-	const Settings&	getSettings() const override	{ return mSettings; }
-
 	//! \cond
 	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
 	template<typename AppT, typename RendererT>
@@ -84,7 +82,7 @@ class AppBasicMsw : public AppBasic {
 
   private:
 	AppImplMswBasic*	mImpl;
-	Settings			mSettings;
+	bool				mConsoleWindowEnabled;
 };
 
 template<typename AppT, typename RendererT>

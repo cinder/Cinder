@@ -38,7 +38,7 @@ class WindowImplMswBasic;
 
 class AppImplMswBasic : public AppImplMsw {
   public:
-	AppImplMswBasic( AppBasicMsw *app  );
+	AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings );
 	void	run();
 
 	AppBasicMsw*	getApp() { return mApp; }
@@ -69,6 +69,7 @@ class AppImplMswBasic : public AppImplMsw {
 	double			mNextFrameTime;
 	bool			mFrameRateEnabled;
 	bool			mShouldQuit;
+	bool			mQuitOnLastWindowClosed;
 
 	std::list<class WindowImplMswBasic*>	mWindows;
 	std::list<BlankingWindowRef>			mBlankingWindows;
