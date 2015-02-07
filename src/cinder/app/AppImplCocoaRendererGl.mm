@@ -151,7 +151,7 @@
 {
 	NSSize nsSize = [mView frame].size;
 	NSSize backingSize = [mView convertSizeToBacking:nsSize];
-	ci::gl::viewport( 0, 0, backingSize.width, backingSize.height );
+	cinder::gl::viewport( 0, 0, backingSize.width, backingSize.height );
 	cinder::gl::setMatricesWindow( nsSize.width, nsSize.height );
 }
 

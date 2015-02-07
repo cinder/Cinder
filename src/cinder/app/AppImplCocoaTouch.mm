@@ -22,8 +22,8 @@
 
 #import "cinder/app/AppImplCocoaTouch.h"
 
-using namespace ci;
-using namespace ci::app;
+using namespace cinder;
+using namespace cinder::app;
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - AppDelegateImpl
@@ -33,7 +33,7 @@ using namespace ci::app;
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-	mApp = cinder::app::AppCocoaTouch::get();
+	mApp = AppCocoaTouch::get();
 	mAppImpl = mApp->privateGetImpl();
 
 	for( auto &windowImpl : mAppImpl->mWindows )
@@ -112,7 +112,7 @@ using namespace ci::app;
 	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / settings.getFrameRate() + 0.5f ) );
 
 	// build our list of requested formats; an empty list implies we should make the default window format
-	std::vector<cinder::app::Window::Format> formats( settings.getWindowFormats() );
+	std::vector<Window::Format> formats( settings.getWindowFormats() );
 	if( formats.empty() )
 		formats.push_back( settings.getDefaultWindowFormat() );
 
@@ -215,15 +215,15 @@ using namespace ci::app;
 }
 
 // Returns a pointer to a Renderer of the same type if any existing Windows have one of the same type
-- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match
+- (RendererRef)findSharedRenderer:(RendererRef)match
 {
 	for( auto &win : mWindows ) {
-		cinder::app::RendererRef renderer = [win->mCinderView getRenderer];
+		RendererRef renderer = [win->mCinderView getRenderer];
 		if( typeid(renderer) == typeid(match) )
 			return renderer;
 	}
 
-	return cinder::app::RendererRef();
+	return RendererRef();
 }
 
 - (WindowImplCocoaTouch*)getDeviceWindow
@@ -236,12 +236,12 @@ using namespace ci::app;
 	return nil;
 }
 
-- (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format
+- (WindowRef)createWindow:(Window::Format)format
 {
 	if( ! format.getRenderer() )
 		format.setRenderer( mApp->getDefaultRenderer()->clone() );
 
-	cinder::app::RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
+	RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
 	mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
 	return mWindows.back()->mWindowRef;
 }
@@ -258,7 +258,7 @@ using namespace ci::app;
 		[mDisplayLink setFrameInterval:mAnimationFrameInterval];
 }
 
-- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
+- (void)showKeyboard:(const AppCocoaTouch::KeyboardOptions &)options
 {
 	if( ! mWindows.empty() )
 		[mWindows.front() showKeyboard:options];
@@ -316,7 +316,7 @@ using namespace ci::app;
 	}
 }
 
-- (ci::app::InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation
+- (InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation
 {
 	switch( orientation ) {
 		case		UIInterfaceOrientationPortrait:				return InterfaceOrientation::Portrait;
@@ -337,7 +337,7 @@ using namespace ci::app;
 
 @synthesize keyboardTextView = mKeyboardTextView;
 
-- (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (WindowImplCocoaTouch *)initWithFormat:(const Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(RendererRef)sharedRenderer
 {
 	self = [super initWithNibName:nil bundle:nil];
 
@@ -364,7 +364,7 @@ using namespace ci::app;
 	[mCinderView setDelegate:self];
 	mSize = cinder::ivec2( screenBoundsCgRect.size.width, screenBoundsCgRect.size.height );
 	mPos = cinder::ivec2( 0, 0 );
-	mWindowRef = cinder::app::Window::privateCreate__( self, mAppImpl->mApp );
+	mWindowRef = Window::privateCreate__( self, mAppImpl->mApp );
 
 	return self;
 }
@@ -408,7 +408,7 @@ using namespace ci::app;
 		return ( toInterfaceOrientation == UIInterfaceOrientationPortrait );
 	}
 
-	ci::app::InterfaceOrientation orientation = [mAppImpl convertInterfaceOrientation:toInterfaceOrientation];
+	InterfaceOrientation orientation = [mAppImpl convertInterfaceOrientation:toInterfaceOrientation];
 	uint32_t supportedOrientations = mAppImpl->mApp->emitSupportedOrientations();
 
 	return ( ( supportedOrientations & orientation ) != 0 );
@@ -425,13 +425,13 @@ using namespace ci::app;
 
 	uint32_t supportedOrientations = mAppImpl->mApp->emitSupportedOrientations();
 	NSUInteger result = 0;
-	if( supportedOrientations & ci::app::InterfaceOrientation::Portrait )
+	if( supportedOrientations & InterfaceOrientation::Portrait )
 		result |= UIInterfaceOrientationMaskPortrait;
-	if( supportedOrientations & ci::app::InterfaceOrientation::PortraitUpsideDown )
+	if( supportedOrientations & InterfaceOrientation::PortraitUpsideDown )
 		result |= UIInterfaceOrientationMaskPortraitUpsideDown;
-	if( supportedOrientations & ci::app::InterfaceOrientation::LandscapeLeft )
+	if( supportedOrientations & InterfaceOrientation::LandscapeLeft )
 		result |= UIInterfaceOrientationMaskLandscapeLeft;
-	if( supportedOrientations & ci::app::InterfaceOrientation::LandscapeRight )
+	if( supportedOrientations & InterfaceOrientation::LandscapeRight )
 		result |= UIInterfaceOrientationMaskLandscapeRight;
 
 	return result;
@@ -451,7 +451,7 @@ using namespace ci::app;
 ///////////////////////////////////////////////////////////////////////////////////////
 // Keyboard Management
 
-- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options
+- (void)showKeyboard:(const AppCocoaTouch::KeyboardOptions &)options
 {
 	if( mKeyboardVisible )
 		[self.keyboardTextView resignFirstResponder];
@@ -534,7 +534,7 @@ using namespace ci::app;
 - (void)insertText:(NSString *)text
 {
 	if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
-		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		KeyEvent keyEvent( mWindowRef, KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
 		[self keyDown:&keyEvent];
 		[self hideKeyboard];
 		return;
@@ -545,15 +545,15 @@ using namespace ci::app;
 		unichar c = [text characterAtIndex:i];
 
 		// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
-		int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
-		cinder::app::KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
+		int keyCode = ( c < 127 ? c : KeyEvent::KEY_UNKNOWN );
+		KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
 		[self keyDown:&keyEvent];
 	}
 }
 
 - (void)deleteBackward
 {
-	cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
+	KeyEvent keyEvent( mWindowRef, KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
 	[self keyDown:&keyEvent];
 }
 
@@ -577,7 +577,7 @@ using namespace ci::app;
 		}
 	}
 	else if( mKeyboardClosesOnReturn && [text isEqualToString:@"\n"] ) {
-		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
+		KeyEvent keyEvent( mWindowRef, KeyEvent::KEY_RETURN, '\r', '\r', 0, 0 );
 		[self keyDown:&keyEvent];
 		[self hideKeyboard];
 		return NO;
@@ -591,7 +591,7 @@ using namespace ci::app;
 		mAppImpl->mKeyboardString = std::string( utf8KeyboardChar );
 
 	if( [text length] == 0 ) {
-		cinder::app::KeyEvent keyEvent( mWindowRef, cinder::app::KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
+		KeyEvent keyEvent( mWindowRef, KeyEvent::KEY_BACKSPACE, '\b', '\b', 0, 0 );
 		[self keyDown:&keyEvent];
 	}
 	else {
@@ -599,8 +599,8 @@ using namespace ci::app;
 			unichar c = [text characterAtIndex:i];
 
 			// For now, use ASCII key codes on iOS, which is already mapped out in KeyEvent's enum.
-			int keyCode = ( c < 127 ? c : cinder::app::KeyEvent::KEY_UNKNOWN );
-			cinder::app::KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
+			int keyCode = ( c < 127 ? c : KeyEvent::KEY_UNKNOWN );
+			KeyEvent keyEvent( mWindowRef, keyCode, c, c, 0, 0 );
 			[self keyDown:&keyEvent];
 		}
 	}
@@ -616,25 +616,25 @@ using namespace ci::app;
 	return YES;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions *)options
+- (void)setFullScreen:(BOOL)fullScreen options:(FullScreenOptions *)options
 { // NO-OP
 }
 
-- (cinder::ivec2)getSize;
+- (ivec2)getSize;
 {
 	return mSize;
 }
 
-- (void)setSize:(cinder::ivec2)size
+- (void)setSize:(ivec2)size
 { // NO-OP
 }
 
-- (cinder::ivec2)getPos;
+- (ivec2)getPos;
 {
 	return mPos;
 }
 
-- (void)setPos:(cinder::ivec2)pos;
+- (void)setPos:(ivec2)pos;
 { // NO-OP
 }
 
@@ -683,12 +683,12 @@ using namespace ci::app;
 	return NO;
 }
 
-- (cinder::DisplayRef)getDisplay;
+- (DisplayRef)getDisplay;
 {
 	return mDisplay;
 }
 
-- (cinder::app::RendererRef)getRenderer;
+- (RendererRef)getRenderer;
 {
 	return [mCinderView getRenderer];
 }
@@ -703,7 +703,7 @@ using namespace ci::app;
 	return self;
 }
 
-- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches
+- (const std::vector<TouchEvent::Touch> &)getActiveTouches
 {
 	return [mCinderView getActiveTouches];
 }
@@ -730,54 +730,54 @@ using namespace ci::app;
 	}
 }
 
-- (void)mouseDown:(cinder::app::MouseEvent *)event
+- (void)mouseDown:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDown( event );
 }
 
-- (void)mouseDrag:(cinder::app::MouseEvent *)event
+- (void)mouseDrag:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDrag( event );
 }
 
-- (void)mouseUp:(cinder::app::MouseEvent *)event
+- (void)mouseUp:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseUp( event );
 }
 
-- (void)touchesBegan:(cinder::app::TouchEvent *)event
+- (void)touchesBegan:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesBegan( event );
 }
 
-- (void)touchesMoved:(cinder::app::TouchEvent *)event
+- (void)touchesMoved:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesMoved( event );
 }
 
-- (void)touchesEnded:(cinder::app::TouchEvent *)event
+- (void)touchesEnded:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesEnded( event );
 }
 
-- (cinder::app::WindowRef)getWindowRef
+- (WindowRef)getWindowRef
 {
 	return mWindowRef;
 }
 
-- (void)keyDown:(cinder::app::KeyEvent *)event
+- (void)keyDown:(KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );

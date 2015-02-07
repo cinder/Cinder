@@ -63,7 +63,7 @@
 - (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)quit;
 
-- (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
+- (cinder::app::WindowRef)createWindow:(const cinder::app::Window::Format &)format;
 
 - (float)getFrameRate;
 - (void)setFrameRate:(float)frameRate;

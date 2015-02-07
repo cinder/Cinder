@@ -46,26 +46,26 @@
 
 @interface CinderViewCocoaTouch : UIView
 {
-	ci::app::AppCocoaTouch						*mApp;
+	cinder::app::AppCocoaTouch					*mApp;
 	id<CinderViewCocoaTouchDelegate>			mDelegate;
 
-	ci::app::RendererRef						mRenderer;
+	cinder::app::RendererRef					mRenderer;
 	std::map<UITouch*,uint32_t>					mTouchIdMap;
 	std::vector<cinder::app::TouchEvent::Touch> mActiveTouches;
 }
 
 - (CinderViewCocoaTouch *)initWithFrame:(CGRect)frame app:(cinder::app::AppCocoaTouch *)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)setDelegate:(id<CinderViewCocoaTouchDelegate>)delegate;
-- (ci::app::RendererRef)getRenderer;
+- (cinder::app::RendererRef)getRenderer;
 
 - (void)drawView;
 - (void)makeCurrentContext;
 
-- (uint32_t)addTouchToMap:(UITouch*)touch;
-- (void)removeTouchFromMap:(UITouch*)touch;
-- (uint32_t)findTouchInMap:(UITouch*)touch;
+- (uint32_t)addTouchToMap:(UITouch *)touch;
+- (void)removeTouchFromMap:(UITouch *)touch;
+- (uint32_t)findTouchInMap:(UITouch *)touch;
 - (void)updateActiveTouches;
-- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event;
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
+- (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent *)event;
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches;
 
 @end

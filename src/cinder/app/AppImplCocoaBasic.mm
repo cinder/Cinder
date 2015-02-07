@@ -68,10 +68,10 @@ using namespace cinder::app;
 	
 	mApp = app;
 	mNeedsUpdate = YES;
-	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
+	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled(); // TODO: consider storing this in AppBasic. it is also needed by AppBasicMsw's impl
 
 	// build our list of requested formats; an empty list implies we should make the default window format
-	std::vector<cinder::app::Window::Format> formats( settings.getWindowFormats() );
+	std::vector<Window::Format> formats( settings.getWindowFormats() );
 	if( formats.empty() )
 		formats.push_back( settings.getDefaultWindowFormat() );
 
@@ -151,7 +151,7 @@ using namespace cinder::app;
 	}
 }
 
-- (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format
+- (app::WindowRef)createWindow:(const Window::Format &)format
 {
 	WindowImplBasicCocoa *winImpl = [WindowImplBasicCocoa instantiate:format withAppImpl:self];
 	[mWindows addObject:winImpl];
@@ -170,33 +170,33 @@ using namespace cinder::app;
 }
 
 // Returns a pointer to a Renderer of the same type if any existing Windows have one of the same type
-- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match
+- (RendererRef)findSharedRenderer:(RendererRef)match
 {
 	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		cinder::app::RendererRef renderer = [winIt->mCinderView getRenderer];
+		RendererRef renderer = [winIt->mCinderView getRenderer];
 		if( typeid(renderer) == typeid(match) )
 			return renderer;
 	}
 	
-	return cinder::app::RendererRef();
+	return RendererRef();
 }
 
-- (cinder::app::WindowRef)getWindow
+- (app::WindowRef)getWindow
 {
 	if( ! mActiveWindow )
-		throw cinder::app::ExcInvalidWindow();
+		throw ExcInvalidWindow();
 	else
 		return mActiveWindow->mWindowRef;
 }
 
-- (cinder::app::WindowRef)getForegroundWindow
+- (app::WindowRef)getForegroundWindow
 {
 	NSWindow *mainWin = [NSApp mainWindow];
 	WindowImplBasicCocoa *winImpl = [self findWindowImpl:mainWin];
 	if( winImpl )
 		return winImpl->mWindowRef;
 	else
-		return cinder::app::WindowRef();
+		return app::WindowRef();
 }
 
 - (size_t)getNumWindows
@@ -204,10 +204,10 @@ using namespace cinder::app;
 	return [mWindows count];
 }
 
-- (cinder::app::WindowRef)getWindowIndex:(size_t)index
+- (app::WindowRef)getWindowIndex:(size_t)index
 {
 	if( index >= [mWindows count] )
-		throw cinder::app::ExcInvalidWindow();
+		throw ExcInvalidWindow();
 	
 	WindowImplBasicCocoa *winImpl = [mWindows objectAtIndex:index];
 	return winImpl->mWindowRef;
@@ -394,7 +394,7 @@ using namespace cinder::app;
 	return [mCinderView isFullScreen];
 }
 
-- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+- (void)setFullScreen:(BOOL)fullScreen options:(const FullScreenOptions *)options;
 {
 	if( fullScreen == [mCinderView isFullScreen] )
 		return;
@@ -421,7 +421,7 @@ using namespace cinder::app;
 - (void)setSize:(cinder::ivec2)size
 {
 	// this compensates for the Mac wanting to resize from the lower-left corner
-	ci::ivec2 sizeDelta = size - mSize;
+	ivec2 sizeDelta = size - mSize;
 	NSRect r = [mWin frame];
 	r.size.width += sizeDelta.x;
 	r.size.height += sizeDelta.y;
@@ -531,12 +531,12 @@ using namespace cinder::app;
 	return mDisplay;
 }
 
-- (cinder::app::RendererRef)getRenderer
+- (RendererRef)getRenderer
 {
 	if( mCinderView )
 		return [mCinderView getRenderer];
 	else
-		return cinder::app::RendererRef();
+		return RendererRef();
 }
 
 - (void *)getNative
@@ -551,7 +551,7 @@ using namespace cinder::app;
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ci::ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
+	mPos = ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
 
 	[mAppImpl setActiveWindow:self];
 
@@ -596,99 +596,99 @@ using namespace cinder::app;
 	mWindowRef->emitDraw();
 }
 
-- (void)mouseDown:(cinder::app::MouseEvent *)event
+- (void)mouseDown:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDown( event );
 }
 
-- (void)mouseDrag:(cinder::app::MouseEvent *)event
+- (void)mouseDrag:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseDrag( event );
 }
 
-- (void)mouseUp:(cinder::app::MouseEvent *)event
+- (void)mouseUp:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseUp( event );
 }
 
-- (void)mouseMove:(cinder::app::MouseEvent *)event
+- (void)mouseMove:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseMove( event );
 }
 
-- (void)mouseWheel:(cinder::app::MouseEvent *)event
+- (void)mouseWheel:(MouseEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitMouseWheel( event );
 }
 
-- (void)keyDown:(cinder::app::KeyEvent *)event
+- (void)keyDown:(KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitKeyDown( event );
 }
 
-- (void)keyUp:(cinder::app::KeyEvent *)event
+- (void)keyUp:(KeyEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitKeyUp( event );
 }
 
-- (void)touchesBegan:(cinder::app::TouchEvent *)event
+- (void)touchesBegan:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesBegan( event );
 }
 
-- (void)touchesMoved:(cinder::app::TouchEvent *)event
+- (void)touchesMoved:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesMoved( event );
 }
 
-- (void)touchesEnded:(cinder::app::TouchEvent *)event
+- (void)touchesEnded:(TouchEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitTouchesEnded( event );
 }
 
-- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches
+- (const std::vector<TouchEvent::Touch> &)getActiveTouches
 {
 	return [mCinderView getActiveTouches];
 }
 
-- (void)fileDrop:(cinder::app::FileDropEvent *)event
+- (void)fileDrop:(FileDropEvent *)event
 {
 	[mAppImpl setActiveWindow:self];
 	event->setWindow( mWindowRef );
 	mWindowRef->emitFileDrop( event );
 }
 
-- (cinder::app::WindowRef)getWindowRef
+- (app::WindowRef)getWindowRef
 {
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl
++ (WindowImplBasicCocoa *)instantiate:(Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 
 	winImpl->mAppImpl = appImpl;
-	winImpl->mWindowRef = cinder::app::Window::privateCreate__( winImpl, winImpl->mAppImpl->mApp );
+	winImpl->mWindowRef = app::Window::privateCreate__( winImpl, winImpl->mAppImpl->mApp );
 	winImpl->mDisplay = winFormat.getDisplay();
 	winImpl->mHidden = NO;
 	winImpl->mResizable = winFormat.isResizable();
@@ -724,7 +724,7 @@ using namespace cinder::app;
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;
 	winImpl->mSize.y = (int)contentRect.size.height;
-	winImpl->mPos = ci::ivec2( contentRect.origin.x, cinder::Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
+	winImpl->mPos = ivec2( contentRect.origin.x, Display::getMainDisplay()->getHeight() - [winImpl->mWin frame].origin.y - contentRect.size.height );
 
 	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 
@@ -738,9 +738,9 @@ using namespace cinder::app;
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
 
 	// for some renderers, ok really just GL, we want an existing renderer so we can steal its context to share with. If this comes back with NULL that's fine - we're first
-	cinder::app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
+	app::RendererRef sharedRenderer = [appImpl findSharedRenderer:winFormat.getRenderer()];
 	
-	cinder::app::RendererRef renderer = winFormat.getRenderer();
+	app::RendererRef renderer = winFormat.getRenderer();
 	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
 	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame app:winImpl->mAppImpl->mApp renderer:renderer sharedRenderer:sharedRenderer];
 

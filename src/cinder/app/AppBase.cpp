@@ -138,7 +138,7 @@ void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
 		sInstance->launch( title, argc, argv );
 	}
 	catch( std::exception &exc ) {
-		CI_LOG_E( "Uncaught exception, type: " << ci::System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
+		CI_LOG_E( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
 		throw;
 	}
 }

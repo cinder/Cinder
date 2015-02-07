@@ -48,7 +48,7 @@
 
 @interface AppImplCocoaTouch : NSObject {
   @public
-	ci::app::AppCocoaTouch*				mApp;
+	cinder::app::AppCocoaTouch*			mApp;
 	std::list<WindowImplCocoaTouch*>	mWindows;
 	WindowImplCocoaTouch*				mActiveWindow;
 	CADisplayLink*						mDisplayLink;
@@ -65,13 +65,13 @@
 }
 
 - (AppImplCocoaTouch *)init:(cinder::app::AppCocoaTouch *)app settings:(const cinder::app::AppCocoaTouch::Settings &)settings;
-- (ci::app::RendererRef)findSharedRenderer:(ci::app::RendererRef)match;
+- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
 - (WindowImplCocoaTouch *)getDeviceWindow;
-- (ci::app::WindowRef)createWindow:(ci::app::Window::Format)format;
+- (cinder::app::WindowRef)createWindow:(cinder::app::Window::Format)format;
 - (void)setActiveWindow:(WindowImplCocoaTouch *)win;
 - (void)updatePowerManagement;
 - (void)setFrameRate:(float)frameRate;
-- (void)showKeyboard:(const ci::app::AppCocoaTouch::KeyboardOptions &)options;
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (bool)isKeyboardVisible;
 - (void)hideKeyboard;
 - (const std::string &)getKeyboardString;
@@ -85,7 +85,7 @@
 - (void)batteryLevelChange:(NSNotificationCenter *)notification;
 - (void)startAnimation;
 - (void)stopAnimation;
-- (ci::app::InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation;
+- (cinder::app::InterfaceOrientation)convertInterfaceOrientation:(UIInterfaceOrientation)orientation;
 
 @end // AppImplCocoaTouch
 
@@ -98,10 +98,10 @@
 	CinderViewCocoaTouch*		mCinderView;
 	UITextView*					mKeyboardTextView;
 
-	ci::app::WindowRef			mWindowRef;
-	ci::DisplayRef				mDisplay;
+	cinder::app::WindowRef		mWindowRef;
+	cinder::DisplayRef			mDisplay;
 
-	ci::ivec2					mSize, mPos;
+	cinder::ivec2				mSize, mPos;
 	BOOL						mResizeHasFired;
 	BOOL						mHidden;
 	BOOL						mKeyboardVisible;
@@ -109,11 +109,11 @@
 }
 
 - (void)loadView;
-- (WindowImplCocoaTouch *)initWithFormat:(const ci::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(ci::app::RendererRef)sharedRenderer;
+- (WindowImplCocoaTouch *)initWithFormat:(const cinder::app::Window::Format &)format withAppImpl:(AppImplCocoaTouch *)appImpl sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)finishLoad;
 
 // virtual keyboard management
-- (void)showKeyboard:(const ci::app::AppCocoaTouch::KeyboardOptions &)options;
+- (void)showKeyboard:(const cinder::app::AppCocoaTouch::KeyboardOptions &)options;
 - (void)hideKeyboard;
 - (bool)isKeyboardVisible;
 - (void)setKeyboardString:(const std::string *)keyboardString;
@@ -127,11 +127,11 @@
 
 // WindowImplCocoa Protocol Methods
 - (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen options:(ci::app::FullScreenOptions *)options;
-- (ci::ivec2)getSize;
-- (void)setSize:(ci::ivec2)size;
-- (ci::ivec2)getPos;
-- (void)setPos:(ci::ivec2)pos;
+- (void)setFullScreen:(BOOL)fullScreen options:(cinder::app::FullScreenOptions *)options;
+- (cinder::ivec2)getSize;
+- (void)setSize:(cinder::ivec2)size;
+- (cinder::ivec2)getPos;
+- (void)setPos:(cinder::ivec2)pos;
 - (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
@@ -139,17 +139,17 @@
 - (void)setBorderless:(BOOL)borderless;
 - (BOOL)isAlwaysOnTop;
 - (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
-- (ci::DisplayRef)getDisplay;
-- (ci::app::RendererRef)getRenderer;
+- (cinder::DisplayRef)getDisplay;
+- (cinder::app::RendererRef)getRenderer;
 - (void *)getNative;
-- (const std::vector<ci::app::TouchEvent::Touch> &)getActiveTouches;
+- (const std::vector<cinder::app::TouchEvent::Touch> &)getActiveTouches;
 
 // CinderViewCocoaTouchDelegate Protocol methods
 - (void)draw;
-- (void)mouseDown:(ci::app::MouseEvent *)event;
-- (void)mouseDrag:(ci::app::MouseEvent *)event;
-- (void)mouseUp:(ci::app::MouseEvent *)event;
-- (void)keyDown:(ci::app::KeyEvent *)event;
+- (void)mouseDown:(cinder::app::MouseEvent *)event;
+- (void)mouseDrag:(cinder::app::MouseEvent *)event;
+- (void)mouseUp:(cinder::app::MouseEvent *)event;
+- (void)keyDown:(cinder::app::KeyEvent *)event;
 
 @property (nonatomic, readonly) UITextView *keyboardTextView; // lazy-loaded in getter
 

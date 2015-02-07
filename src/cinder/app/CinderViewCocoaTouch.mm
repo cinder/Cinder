@@ -42,7 +42,7 @@ static bool sIsEaglLayer;
 		return [CALayer class];
 }
 
-- (CinderViewCocoaTouch *)initWithFrame:(CGRect)frame app:(AppCocoaTouch *)app renderer:(ci::app::RendererRef)renderer sharedRenderer:(ci::app::RendererRef)sharedRenderer
+- (CinderViewCocoaTouch *)initWithFrame:(CGRect)frame app:(AppCocoaTouch *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
 	// This needs to get setup immediately as +layerClass will be called when the view is initialized
 	sIsEaglLayer = renderer->isEaglLayer();
@@ -51,7 +51,7 @@ static bool sIsEaglLayer;
 		mApp = app;
 		mRenderer = renderer;
 
-		renderer->setup( mApp, ci::cocoa::CgRectToArea( frame ), self, sharedRenderer );
+		renderer->setup( mApp, cocoa::CgRectToArea( frame ), self, sharedRenderer );
 		
 		self.multipleTouchEnabled = mApp->isMultiTouchEnabled();
 	}
@@ -66,7 +66,7 @@ static bool sIsEaglLayer;
 	mDelegate = delegate;
 }
 
-- (ci::app::RendererRef)getRenderer
+- (RendererRef)getRenderer
 {
 	return mRenderer;
 }
@@ -152,7 +152,7 @@ static bool sIsEaglLayer;
 	for( const auto &touch : mTouchIdMap ) {
 		CGPoint pt = [touch.first locationInView:self];
 		CGPoint prevPt = [touch.first previousLocationInView:self];
-		mActiveTouches.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), touch.second, [touch.first timestamp], touch.first ) );
+		mActiveTouches.push_back( TouchEvent::Touch( vec2( pt.x, pt.y ), vec2( prevPt.x, prevPt.y ), touch.second, [touch.first timestamp], touch.first ) );
 	}
 }
 
@@ -162,15 +162,15 @@ static bool sIsEaglLayer;
 - (void)touchesBegan:(NSSet*)touches withEvent:(UIEvent*)event
 {
 	if( mApp->isMultiTouchEnabled() ) {
-		std::vector<ci::app::TouchEvent::Touch> touchList;
+		std::vector<TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( TouchEvent::Touch( vec2( pt.x, pt.y ), vec2( prevPt.x, prevPt.y ), [self addTouchToMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
 			[mDelegate touchesBegan:&touchEvent];
 		}
 	}
@@ -178,8 +178,8 @@ static bool sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
-			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
+			mods |= MouseEvent::LEFT_DOWN;
+			MouseEvent mouseEvent( [mDelegate getWindowRef], MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
 			[mDelegate mouseDown:&mouseEvent];
 		}
 	}
@@ -188,15 +188,15 @@ static bool sIsEaglLayer;
 - (void)touchesMoved:(NSSet*)touches withEvent:(UIEvent*)event
 {
 	if( mApp->isMultiTouchEnabled() ) {
-		std::vector<ci::app::TouchEvent::Touch> touchList;
+		std::vector<TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];			
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( TouchEvent::Touch( vec2( pt.x, pt.y ), vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
 			[mDelegate touchesMoved:&touchEvent];
 		}
 	}
@@ -204,8 +204,8 @@ static bool sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			int mods = 0;
-			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
+			mods |= MouseEvent::LEFT_DOWN;
+			MouseEvent mouseEvent( [mDelegate getWindowRef], MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
 			[mDelegate mouseDrag:&mouseEvent];
 		}
 	}
@@ -214,16 +214,16 @@ static bool sIsEaglLayer;
 - (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event
 {
 	if( mApp->isMultiTouchEnabled() ) {
-		std::vector<ci::app::TouchEvent::Touch> touchList;
+		std::vector<TouchEvent::Touch> touchList;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];
 			CGPoint prevPt = [touch previousLocationInView:self];
-			touchList.push_back( ci::app::TouchEvent::Touch( ci::vec2( pt.x, pt.y ), ci::vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
+			touchList.push_back( TouchEvent::Touch( vec2( pt.x, pt.y ), vec2( prevPt.x, prevPt.y ), [self findTouchInMap:touch], [touch timestamp], touch ) );
 			[self removeTouchFromMap:touch];
 		}
 		[self updateActiveTouches];
 		if( ! touchList.empty() ) {
-			ci::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
+			TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
 			[mDelegate touchesEnded:&touchEvent];
 		}
 	}
@@ -231,8 +231,8 @@ static bool sIsEaglLayer;
 		for( UITouch *touch in touches ) {
 			CGPoint pt = [touch locationInView:self];		
 			int mods = 0;
-			mods |= cinder::app::MouseEvent::LEFT_DOWN;
-			cinder::app::MouseEvent mouseEvent( [mDelegate getWindowRef], cinder::app::MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
+			mods |= MouseEvent::LEFT_DOWN;
+			MouseEvent mouseEvent( [mDelegate getWindowRef], MouseEvent::LEFT_DOWN, pt.x, pt.y, mods, 0.0f, 0 );
 			[mDelegate mouseUp:&mouseEvent];
 		}
 	}
@@ -243,7 +243,7 @@ static bool sIsEaglLayer;
 	[self touchesEnded:touches withEvent:event];
 }
 
-- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches
+- (const std::vector<TouchEvent::Touch>&)getActiveTouches
 {
 	return mActiveTouches;
 }
