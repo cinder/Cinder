@@ -19,24 +19,49 @@ def getSymbolToFileMap( path ):
 	f = open( path )
 	tagDom = parse( f )
 	
-	classDict = {}
+	# iterate all <compound>s looking for classes or namespaces
+	symbolMap = {}
 	compounds = tagDom.getElementsByTagName( "compound" )
 	for compound in compounds:
-		if compound.getAttribute( "kind" ) == "class":
-			className = getText( compound.getElementsByTagName("name")[0].childNodes )
+		# found a namespace
+		if compound.getAttribute( "kind" ) == "namespace":
+			namespaceName = getText( compound.getElementsByTagName("name")[0].childNodes )
+			# we're only interested in cinder's namespaces
+			if namespaceName.find( "cinder" ) != 0:
+				print "Ignoring namespace " + namespaceName
+				continue				
+			else:
+				print "Processing namespace " + namespaceName
+			# iterate the namespace's symbols; we'll pull out member typedefs
+			members = compound.getElementsByTagName("member")
+			for member in members:
+				if member.getAttribute( "kind" ) == "typedef":
+					name = getText( member.getElementsByTagName("name")[0].childNodes )
+					type = getText( member.getElementsByTagName("type")[0].childNodes )
+					name = namespaceName+"::"+name
+					type = namespaceName+"::"+type
+					print "Adding " + name + " AS " + type
+					symbolMap[name] = ("typedef",type)
+		# found a class
+		elif compound.getAttribute( "kind" ) == "class":
+			name = getText( compound.getElementsByTagName("name")[0].childNodes )
 			filePath = getText( compound.getElementsByTagName("filename")[0].childNodes )
-			classDict[className] = filePath
+			symbolMap[name] = ("class",filePath)
 
-	return classDict
+	return symbolMap
 
-# searches the classMap for a given symbol, prepending cinder:: if not found as-is
-def getFilePathForSymbol( classMap, className ):
-	if className.find( "ci::" ) == 0:
-		return classMap[className.replace( "ci::", "cinder::" )]
-	elif className in classMap:
-		return classMap[className]
-	elif ("cinder::" + className) in classMap:
-		return classMap["cinder::"+className]
+# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
+def getFilePathForSymbol( symbolMap, symbolName ):
+	# replace ci:: with cinder::
+	if symbolName.find( "ci::" ) == 0:
+		symbolName.replace( "ci::", "cinder::" )
+	# if starst with 'cinder::'
+	if symbolName.find( "ci::" ) == 0:
+		return symbolMap[symbolName][1]
+	elif symbolName in symbolMap:
+		return symbolMap[symbolName][1]
+	elif ("cinder::" + symbolName) in symbolMap:
+		return symbolMap["cinder::"+symbolName][1]
 	else:
 		return None
 
@@ -84,13 +109,54 @@ def processHtmlDir( htmlSourceDir, symbolMap, doxygenHtmlPath ):
 				print fileName + "->" + outPath
 				shutil.copyfile( inPath, outPath )
 
+def linkTemplatedTypedefs( symbolMap, doxygenHtmlPath ):
+	classNameToTypedefs = {}
+	for symbol in symbolMap:
+		# iterate all typedefs; we're focused on the templated ones
+		if symbolMap[symbol][0] == "typedef":
+			resolvesTo = symbolMap[symbol][1]
+			firstLeftAngle = resolvesTo.find( "<" )
+			# is this typedef's type templated?
+			if firstLeftAngle != -1:
+				className = resolvesTo[0:firstLeftAngle]
+				# see if we have a class that matches the template
+				classInfo = symbolMap.get( className )
+				if classInfo != None: # found one
+#					print symbol + " -> " + symbolMap[symbol][1] + " @ " + classInfo[1]
+					if classNameToTypedefs.get( className ) == None:
+						classNameToTypedefs[className] = [symbol]
+					else:
+						classNameToTypedefs[className].append( symbol )
+				else:
+					print "No info for " + className
+					
+	# Iterate the templated classes for which we have typedefs
+	for className in classNameToTypedefs:
+		classInfo = symbolMap.get( className )
+		if classInfo != None:
+			filePath = doxygenHtmlPath + classInfo[1]
+			print "Adding " + str(classNameToTypedefs[className]) + " to file " + filePath
+			soup = BeautifulSoup( codecs.open( filePath, "r", "ISO-8859-1" ) )
+			contents = soup.find( 'div', attrs={"class","contents"} )
+			newContents = "Typedefs:"
+			for typedef in classNameToTypedefs[className]:
+				newContents += "[" + typedef + "]"
+			newTag = soup.new_tag( "b" )
+			newTag.append( newContents )
+			contents.insert( 0, newTag )			
+			outFile = codecs.open( filePath, "w", "ISO-8859-1" )
+			outFile.write( soup.prettify() )
+		else:
+			print "Error: couldn't find class: " + className
+
 doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
 htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 
 if len( sys.argv ) == 1: # default; generate all docs
 	symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
+	linkTemplatedTypedefs( symbolMap, doxygenHtmlPath )
 	processHtmlDir( htmlSourcePath, symbolMap, doxygenHtmlPath )
-elif len( sys.argv ) == 3:
+elif len( sys.argv ) == 3: # process a specific file
 	symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
 	processHtmlFile( sys.argv[1], symbolMap, doxygenHtmlPath, sys.argv[2] )
 else:
