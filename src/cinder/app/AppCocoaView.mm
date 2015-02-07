@@ -517,11 +517,6 @@ AppCocoaView::AppCocoaView()
 	mImpl = [[AppImplCocoaView alloc] init:this settings:*settings defaultRenderer:getDefaultRenderer()];
 }
 
-AppCocoaView::Settings::Settings()
-	: AppBase::Settings()
-{
-}
-
 void AppCocoaView::setupCinderView( CinderView *cinderView )
 {
 	[cinderView setApp:this];

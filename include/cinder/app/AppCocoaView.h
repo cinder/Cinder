@@ -37,12 +37,6 @@ namespace cinder { namespace app {
 
 class AppCocoaView : public AppBase {
   public:
-	class Settings : public AppBase::Settings {
-  	  public:
-		Settings();
-
-	  private:
-	};
 
 	AppCocoaView();
 		
