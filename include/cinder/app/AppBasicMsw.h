@@ -42,7 +42,11 @@ class AppBasicMsw : public AppBasic {
 		bool	isConsoleWindowEnabled() const				{ return mEnableMswConsole; }
 
 	  private:
-		bool		mEnableMswConsole;
+		void	pushBackCommandLineArg( const std::string &arg );
+
+		bool	mEnableMswConsole;
+
+		friend AppBasicMsw;
 	};
 
 	typedef std::function<void( Settings *settings )>	SettingsFn;
@@ -73,8 +77,8 @@ class AppBasicMsw : public AppBasic {
 	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
 	template<typename AppT, typename RendererT>
 	static void main( const char *title, const SettingsFn &settingsFn = SettingsFn() );
-	// Called during instantiation to begin actual launch process
-	static void	executeLaunch( const char *title );
+	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
+	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	//! \endcond
 
   protected:
@@ -91,7 +95,7 @@ void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, std::make_shared<RendererT>(), title, 0, nullptr ); // TODO: need to parse command line args into settings some other way
+	AppBasicMsw::initialize( &settings, std::make_shared<RendererT>(), title ); // AppBasicMsw variant to parse args using msw-specific api
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -101,7 +105,7 @@ void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 
 	AppBasic *app = new AppT;
 
-	AppBasicMsw::executeLaunch( title ); // need to parse args using msw-specific api
+	AppBase::executeLaunch( title, 0, nullptr );
 	AppBase::cleanupLaunch();
 }
 

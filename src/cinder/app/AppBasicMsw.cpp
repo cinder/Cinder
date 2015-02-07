@@ -31,6 +31,11 @@ using namespace std;
 
 namespace cinder { namespace app {
 
+void AppBasicMsw::Settings::pushBackCommandLineArg( const std::string &arg )
+{
+	mCommandLineArgs.push_back( arg );
+}
+
 AppBasicMsw::~AppBasicMsw()
 {
 	delete mImpl;
@@ -52,25 +57,19 @@ AppBasicMsw::AppBasicMsw()
 }
 
 // static
-void AppBasicMsw::executeLaunch( const char *title )
+void AppBasicMsw::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {
-	// MSW sends it arguments as widestrings, so we'll convert them to utf8 array and pass that
+	AppBase::initialize( settings, defaultRenderer, title, 0, nullptr );
+
+	// MSW sends it arguments as wide strings, so convert them to utf8 and store those in settings
 	LPWSTR *szArglist;
 	int nArgs;
 
 	szArglist = ::CommandLineToArgvW( ::GetCommandLineW(), &nArgs );
 	if( szArglist && nArgs ) {
-		std::vector<std::string> utf8Args;
-		char **utf8ArgPointers = (char **)malloc( sizeof(char*) * nArgs );
 		for( int i = 0; i < nArgs; ++i )
-			utf8Args.push_back( toUtf8( (char16_t*)szArglist[i] ) );
-		for( int i = 0; i < nArgs; ++i )
-			utf8ArgPointers[i] = const_cast<char *>( utf8Args[i].c_str() );
-		AppBase::executeLaunch( title, nArgs, utf8ArgPointers );
-		free( utf8ArgPointers );
+			settings->pushBackCommandLineArg( toUtf8( (char16_t*) szArglist[i] ) );
 	}
-	else
-		AppBase::executeLaunch( title, 0, NULL );
 
 	// Free memory allocated for CommandLineToArgvW arguments.
 	::LocalFree( szArglist );
