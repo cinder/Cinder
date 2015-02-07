@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
@@ -16,11 +16,10 @@ class WindowData {
 	vector<vec2> 	mPoints;
 };
 
-// We'll create a new Cinder Application by deriving from the BasicApp class
-class BasicApp : public AppNative {
+class BasicApp : public App {
  public:
-	// Cinder will always call this function whenever the user drags the mouse
-	void prepareSettings( Settings *settings ) override;
+	// this is passed into the app intantiation macro at the bottom of the file
+	static void prepareSettings( Settings *settings );
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
 	// Cinder calls this function 30 times per second by default
@@ -56,8 +55,8 @@ void BasicApp::mouseDrag( MouseEvent event )
 
 void BasicApp::prepareSettings( Settings *settings )
 {
-	settings->enablePowerManagement( false );
-	settings->enableQuitOnLastWindowClose( false );
+	settings->setPowerManagementEnabled( false );
+	settings->setQuitOnLastWindowCloseEnabled( false );
 //	settings->setFullScreen( false );
 	settings->setWindowSize( 800, 500 );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
@@ -260,4 +259,4 @@ void BasicApp::windowDraw()
 }
 
 // This line tells Flint to actually create the application
-CINDER_APP_NATIVE( BasicApp, RendererGl )
+CINDER_APP( BasicApp, RendererGl, BasicApp::prepareSettings )
