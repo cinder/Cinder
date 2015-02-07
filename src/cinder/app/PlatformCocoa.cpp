@@ -106,9 +106,9 @@ void PlatformCocoa::prepareAssetLoading()
 		addAssetDirectory( bundleAssetsPath );
 	}
 	else {
-		fs::path appAssetPath = getExecutablePath() / "assets";
-		if( fs::exists( appAssetPath ) && fs::is_directory( appAssetPath ) ) {
-			addAssetDirectory( appAssetPath );
+		fs::path appAssetsPath = getExecutablePath() / "assets";
+		if( fs::exists( appAssetsPath ) && fs::is_directory( appAssetsPath ) ) {
+			addAssetDirectory( appAssetsPath );
 		}
 	}
 }
