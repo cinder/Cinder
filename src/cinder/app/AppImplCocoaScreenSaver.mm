@@ -52,15 +52,17 @@ static AppImplCocoaScreenSaver* getAppImpl();
 	mHasDrawnSinceLastUpdate = YES; // in order to force an update later
 	
 	initSettings();
-	auto impl = getAppImpl(); // forces initialization
 	
-	BOOL blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
+//	BOOL blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
+bool blankingWindow = false;
 
 	if( ! blankingWindow ) {
 		cinder::app::RendererRef renderer = sSettings->getDefaultRenderer()->clone();
-		if(
-		cinder::app::RendererRef sharedRenderer = impl->mApp->findSharedRenderer( renderer );
-		mCinderView = [[CinderView alloc] initWithFrame:rect app:impl->mApp renderer:renderer sharedRenderer:sharedRenderer];
+		// we only want to look for a shared renderer if we're not the first window
+		cinder::app::RendererRef sharedRenderer;
+		if( sAppImplInstance )
+			sharedRenderer = sAppImplInstance->mApp->findSharedRenderer( renderer );
+		mCinderView = [[CinderView alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer];
 		[mCinderView setDelegate:self];
 
 		[self setAutoresizesSubviews:YES];
@@ -68,13 +70,16 @@ static AppImplCocoaScreenSaver* getAppImpl();
 
 		[mCinderView release]; // addSubview incs the retainCount and the parent assumes ownership
 		
-		[self setAnimationTimeInterval:1 / [getAppImpl() getFrameRate]];
+		[self setAnimationTimeInterval:1 / sSettings->getFrameRate()];
 	}
 	else {
 		// a blanking window is just a black window with no CinderView
 		mCinderView = nil;
 		[self setAnimationTimeInterval:-1];
 	}
+	
+	// now that we've initialized the window, for impl instantiation
+	getAppImpl();
 }
 
 - (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
@@ -125,6 +130,10 @@ static AppImplCocoaScreenSaver* getAppImpl();
 
 - (void)startAnimation
 {
+	NSRect newFrame = [self frame];
+	newFrame.origin = NSZeroPoint;
+	[self instantiateView:newFrame];
+	
 	mWindowRef = cinder::app::Window::privateCreate__( self, getAppImpl()->mApp );
 	[getAppImpl() addWindow:self];
 
@@ -135,10 +144,6 @@ static AppImplCocoaScreenSaver* getAppImpl();
 			found = true;
 	if( ! found )
 		mIsMainView = YES;
-
-	NSRect newFrame = [self frame];
-	newFrame.origin = NSZeroPoint;
-	[self instantiateView:newFrame];
 
 	[super startAnimation];
 }

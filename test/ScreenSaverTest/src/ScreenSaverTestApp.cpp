@@ -15,7 +15,7 @@
 	#include "WindowsConfig.h"
 #endif
 
-#define LOAD_LOGO_IN_CONSTRUCTOR 1
+#define LOAD_LOGO_IN_CONSTRUCTOR 0
 
 using namespace ci;
 using namespace ci::app;

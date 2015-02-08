@@ -32,10 +32,9 @@
 	CGContextRef				currentRef;
 	NSView						*view;
 	NSGraphicsContext			*currentGraphicsContext;
-	cinder::app::AppBase		*app;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView app:(cinder::app::AppBase *)app;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView;
 - (NSView*)view;
 
 - (NSBitmapImageRep*)getContents:(cinder::Area)area;

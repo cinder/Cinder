@@ -73,7 +73,7 @@
 @property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (CinderView *)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (CinderView *)initWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;

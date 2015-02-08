@@ -133,19 +133,19 @@ class AppScreenSaver : public AppBase {
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplCocoaScreenSaver*>( impl ); }
 
-	static void callSettings( Settings *settings, const SettingsFn &settingsFn = SettingsFn() )
+	template<typename RendererT>
+	static void callSettings( Settings *settings, const char *title, const SettingsFn &settingsFn = SettingsFn() )
 	{
+		AppBase::prepareLaunch();
+		AppBase::initialize( settings, std::make_shared<RendererT>(), title, 0, nullptr );
+	
 		if( settingsFn )
 			settingsFn( settings );
 	}
 
-	template<typename AppT, typename RendererT>
+	template<typename AppT>
 	static AppScreenSaver* main( void *impl, const char *title, Settings *settings )
 	{
-		AppBase::prepareLaunch();
-
-		AppBase::initialize( settings, std::make_shared<RendererT>(), title, 0, nullptr );
-
 		if( settings->shouldQuit() )
 			return nullptr; // TODO: is this safe for screensavers?
 
@@ -185,12 +185,12 @@ extern "C" cinder::app::AppScreenSaver*	ScreenSaverFactoryMethod( void *impl, ci
 extern "C" {																						\
 	void ScreenSaverSettingsMethod( cinder::app::AppScreenSaver::Settings *settings )				\
 	{																								\
-		return cinder::app::AppScreenSaver::callSettings( settings, ##__VA_ARGS__ );				\
+		return cinder::app::AppScreenSaver::callSettings<RENDERER>( settings, #APP, ##__VA_ARGS__ );\
 	}																								\
 																									\
-	cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl, cinder::app::AppScreenSaver::Settings *settings )								\
+	cinder::app::AppScreenSaver* ScreenSaverFactoryMethod( void *impl, cinder::app::AppScreenSaver::Settings *settings )	\
 	{																								\
-		return cinder::app::AppScreenSaver::main<APP, RENDERER>( impl, #APP, settings );						\
+		return cinder::app::AppScreenSaver::main<APP>( impl, #APP, settings );						\
 	}																								\
 }
 

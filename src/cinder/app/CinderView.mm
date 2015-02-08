@@ -57,18 +57,18 @@ using namespace cinder::app;
 	return self;
 }
 
-- (CinderView *)initWithFrame:(NSRect)frame app:(AppBase *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
+- (CinderView *)initWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
-	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
-	mApp = app;
-
 	self = [super initWithFrame:frame];
 	mRenderer = renderer;
 	mReadyToDraw = NO;
 	mFullScreen = NO;
-	mReceivesEvents = mApp->receivesEvents();
-	mHighDensityDisplayEnabled = mApp->isHighDensityDisplayEnabled();
-	mMultiTouchEnabled = mApp->isMultiTouchEnabled();
+//mReceivesEvents = mApp->receivesEvents();
+mReceivesEvents = true;
+//mHighDensityDisplayEnabled = mApp->isHighDensityDisplayEnabled();
+mHighDensityDisplayEnabled = false;
+//mMultiTouchEnabled = mApp->isMultiTouchEnabled();
+mMultiTouchEnabled = false;
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
@@ -81,7 +81,7 @@ using namespace cinder::app;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
 	mRenderer = renderer;
-	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mHighDensityDisplayEnabled );
+	mRenderer->setup( NSRectToCGRect( frame ), self, sharedRenderer, mHighDensityDisplayEnabled );
 
 	mContentScaleFactor = ( mHighDensityDisplayEnabled ? self.window.backingScaleFactor : 1 );
 
