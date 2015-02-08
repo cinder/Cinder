@@ -204,15 +204,14 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
+void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
-	mApp = aApp;
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
-		mImpl = new AppImplMswRendererAngle( mApp, this );
+		mImpl = new AppImplMswRendererAngle( this );
 #else
-		mImpl = new AppImplMswRendererGl( mApp, this );
+		mImpl = new AppImplMswRendererGl( this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
 		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );

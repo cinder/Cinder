@@ -149,11 +149,10 @@ Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 {
 }
 
-void Renderer2d::setup( AppBase *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
-	mApp = app;
 	mWnd = wnd;
-	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer, mPaintEvents );
+	mImpl = new AppImplMswRendererGdi( mDoubleBuffer, mPaintEvents );
 	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 

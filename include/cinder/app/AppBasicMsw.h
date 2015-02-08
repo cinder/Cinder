@@ -84,7 +84,7 @@ class AppBasicMsw : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	std::unique_ptr<AppImplMswBasic>	mImpl;
+	std::shared_ptr<AppImplMswBasic>	mImpl;
 	bool								mConsoleWindowEnabled;
 };
 

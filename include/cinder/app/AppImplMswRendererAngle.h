@@ -38,7 +38,7 @@ namespace cinder { namespace app {
 
 class AppImplMswRendererAngle : public AppImplMswRenderer {
  public:
-	AppImplMswRendererAngle( AppBase *app, class RendererGl *renderer );
+	AppImplMswRendererAngle( class RendererGl *renderer );
 	
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 	virtual void	prepareToggleFullScreen() override;

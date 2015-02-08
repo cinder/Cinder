@@ -45,8 +45,8 @@ void checkGlStatus();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AppImplMswRendererAngle
-AppImplMswRendererAngle::AppImplMswRendererAngle( AppBase *app, RendererGl *renderer )
-	: AppImplMswRenderer( app ), mRenderer( renderer )
+AppImplMswRendererAngle::AppImplMswRendererAngle( RendererGl *renderer )
+	: mRenderer( renderer )
 {
 	
 }

@@ -41,8 +41,8 @@ int sArbMultisampleFormat;
 typedef HGLRC (__stdcall * PFNWGLCREATECONTEXTATTRIBSARB) (HDC hDC, HGLRC hShareContext, const int *attribList);
 typedef BOOL (__stdcall * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int * piAttribIList, const FLOAT * pfAttribFList, UINT nMaxFormats, int * piFormats, UINT * nNumFormats);
 
-AppImplMswRendererGl::AppImplMswRendererGl( AppBase *aApp, RendererGl *aRenderer )
-	: AppImplMswRenderer( aApp ), mRenderer( aRenderer )
+AppImplMswRendererGl::AppImplMswRendererGl( RendererGl *aRenderer )
+	: mRenderer( aRenderer )
 {
 	mRC = 0;
 }

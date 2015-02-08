@@ -30,8 +30,8 @@
 
 namespace cinder { namespace app {
 
-AppImplMswRendererGdi::AppImplMswRendererGdi( AppBase *app, bool doubleBuffer, bool paintEvents )
-	: AppImplMswRenderer( app ), mDoubleBuffer( doubleBuffer ), mPaintEvents( paintEvents ), mDoubleBufferBitmap( 0 )
+AppImplMswRendererGdi::AppImplMswRendererGdi( bool doubleBuffer, bool paintEvents )
+	: mDoubleBuffer( doubleBuffer ), mPaintEvents( paintEvents ), mDoubleBufferBitmap( 0 )
 {
 }
 
