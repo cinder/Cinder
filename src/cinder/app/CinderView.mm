@@ -41,9 +41,6 @@ using namespace cinder::app;
 
 - (id)initWithFrame:(NSRect)frame
 {
-	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
-	mApp = NULL;
-	
 	self = [super initWithFrame:frame];
 	mReadyToDraw = NO;
 	mReceivesEvents = YES;
@@ -58,17 +55,15 @@ using namespace cinder::app;
 }
 
 - (CinderView *)initWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
+			appReceivesEvents:(BOOL)appReceivesEvents highDensityDisplay:(BOOL)highDensityDisplay enableMultiTouch:(BOOL)enableMultiTouch
 {
 	self = [super initWithFrame:frame];
 	mRenderer = renderer;
 	mReadyToDraw = NO;
 	mFullScreen = NO;
-//mReceivesEvents = mApp->receivesEvents();
-mReceivesEvents = true;
-//mHighDensityDisplayEnabled = mApp->isHighDensityDisplayEnabled();
-mHighDensityDisplayEnabled = false;
-//mMultiTouchEnabled = mApp->isMultiTouchEnabled();
-mMultiTouchEnabled = false;
+	mReceivesEvents = appReceivesEvents;
+	mHighDensityDisplayEnabled = highDensityDisplay;
+	mMultiTouchEnabled = enableMultiTouch;
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
@@ -208,7 +203,7 @@ mMultiTouchEnabled = false;
 
 - (BOOL)isOpaque
 {
-	return NO;
+	return YES;
 }
 
 - (void)dealloc
@@ -461,7 +456,7 @@ mMultiTouchEnabled = false;
 - (void)applicationWillResignActive:(NSNotification *)aNotification
 {
    	std::vector<cinder::app::TouchEvent::Touch> touchList;
-	double eventTime = mApp->getElapsedSeconds();
+	double eventTime = cinder::app::getElapsedSeconds();
 	for( const auto &prevPt : mTouchPrevPointMap ) {
 		touchList.push_back( cinder::app::TouchEvent::Touch( prevPt.second, prevPt.second, prevPt.first, eventTime, nil ) );
 	}
@@ -637,11 +632,6 @@ mMultiTouchEnabled = false;
 		cinder::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
 		[mDelegate touchesEnded:&touchEvent];
 	}
-}
-
-- (void)setApp:(cinder::app::AppBase *)app
-{
-	mApp = app;
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification *)notification

@@ -540,7 +540,6 @@ AppCocoaView::~AppCocoaView()
 
 void AppCocoaView::setupCinderView( CinderView *cinderView )
 {
-	[cinderView setApp:this];
 	[mImpl setupCinderView:cinderView renderer:getDefaultRenderer()];
 }
 

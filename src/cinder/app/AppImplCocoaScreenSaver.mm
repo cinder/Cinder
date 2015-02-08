@@ -62,7 +62,8 @@ bool blankingWindow = false;
 		cinder::app::RendererRef sharedRenderer;
 		if( sAppImplInstance )
 			sharedRenderer = sAppImplInstance->mApp->findSharedRenderer( renderer );
-		mCinderView = [[CinderView alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer];
+		mCinderView = [[CinderView alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer
+										appReceivesEvents:NO highDensityDisplay:sSettings->isHighDensityDisplayEnabled() enableMultiTouch:NO];
 		[mCinderView setDelegate:self];
 
 		[self setAutoresizesSubviews:YES];

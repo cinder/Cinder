@@ -742,8 +742,10 @@ using namespace cinder::app;
 	
 	app::RendererRef renderer = winFormat.getRenderer();
 	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
-	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame renderer:renderer sharedRenderer:sharedRenderer];
-	[winImpl->mCinderView setApp:winImpl->mAppImpl->mApp];
+	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame renderer:renderer sharedRenderer:sharedRenderer
+															appReceivesEvents:YES
+															highDensityDisplay:appImpl->mApp->isHighDensityDisplayEnabled()
+															enableMultiTouch:appImpl->mApp->isMultiTouchEnabled()];
 
 	[winImpl->mWin setDelegate:self];	
 	[winImpl->mWin setContentView:winImpl->mCinderView];
