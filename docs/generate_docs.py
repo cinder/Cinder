@@ -23,11 +23,23 @@ def getSymbolToFileMap( path ):
 	compounds = tagDom.getElementsByTagName( "compound" )
 	for compound in compounds:
 		if compound.getAttribute( "kind" ) == "class":
+			
+
 			className = getText( compound.getElementsByTagName("name")[0].childNodes )
 			filePath = getText( compound.getElementsByTagName("filename")[0].childNodes )
 			classDict[className] = filePath
 
+			# parse the functions
+			functions = compound.getElementsByTagName( "member" )
+			for function in functions:
+				if function.getAttribute( "kind") == "function":
+					funcName = getText( function.getElementsByTagName("name")[0].childNodes )
+					anchor = getText( function.getElementsByTagName("anchor")[0].childNodes )
+					filePath = getText( function.getElementsByTagName("anchorfile")[0].childNodes ) + "#" + anchor
+					classDict[className + "::" + funcName] = filePath
+
 	return classDict
+
 
 # searches the classMap for a given symbol, prepending cinder:: if not found as-is
 def getFilePathForSymbol( classMap, className ):
@@ -46,11 +58,16 @@ def processHtml( html, symbolMap, doxyHtmlPath ):
 	soup = BeautifulSoup( html )
 	for link in soup.find_all('d'):
 		searchString = ''
+
 		if link.get( 'dox' ) != None:
 			searchString = link.get( 'dox' )
 		else:
 			searchString = link.contents[0]
+
 		fileName = getFilePathForSymbol( symbolMap, searchString )
+
+		#if no class found, look for function
+
 		if fileName == None:
 			print "   ** Warning: Could not find Doxygen tag for " + searchString
 		else:
