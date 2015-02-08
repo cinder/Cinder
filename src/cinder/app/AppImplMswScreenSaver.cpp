@@ -31,12 +31,8 @@ namespace cinder { namespace app {
 
 static const int TIMER_ID = 1;
 
-AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *app )
+AppImplMswScreenSaver::AppImplMswScreenSaver( AppScreenSaver *app, HWND wnd, const AppScreenSaver::Settings &settings )
 	: AppImplMsw( app ), mApp( app )
-{
-}
-
-void AppImplMswScreenSaver::init( HWND aWnd )
 {
 	// determine if this is a preview, which will be signified by /p:(HWND as integer)
 	LPWSTR *szArglist;
@@ -52,35 +48,35 @@ void AppImplMswScreenSaver::init( HWND aWnd )
 		OutputDebugStringA( "}" );
 	}
 
-	mDebugMode = mApp->getSettings().isDebugEnabled();
-
+	mDebugMode = settings.isDebugEnabled();
+	mFrameRate = settings.getFrameRate();
 	mPreview = ( utf8Args.size() > 2 ) && ( utf8Args[1] == "/p" );
 
 	if( mPreview ) {
-		mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), mApp->findSharedRenderer( mApp->getDefaultRenderer() ), this ) );
+		mWindows.push_back( new WindowImplMswScreenSaver( wnd, settings.getDefaultRenderer()->clone(), nullptr /*no shared renderers with preview*/, this ) );
 	}
 	else {
 		for( auto dispIt = Display::getDisplays().begin(); dispIt != Display::getDisplays().end(); ++dispIt ) {
 			if( *dispIt == Display::getMainDisplay() ) {
-				if( mApp->getSettings().isSecondaryDisplayBlankingEnabled() ) {
+				if( settings.isSecondaryDisplayBlankingEnabled() ) {
 					// reset the window to be the size of main display only
 					Area displayArea = Display::getMainDisplay()->getBounds();
-					::SetWindowPos( aWnd, NULL, displayArea.getX1(), displayArea.getY1(), displayArea.getWidth(), displayArea.getHeight(), SWP_NOOWNERZORDER );
+					::SetWindowPos( wnd, NULL, displayArea.getX1(), displayArea.getY1(), displayArea.getWidth(), displayArea.getHeight(), SWP_NOOWNERZORDER );
 				}
-				mWindows.push_back( new WindowImplMswScreenSaver( aWnd, mApp->getDefaultRenderer()->clone(), mApp->findSharedRenderer( mApp->getDefaultRenderer() ), this ) );
+				mWindows.push_back( new WindowImplMswScreenSaver( wnd, settings.getDefaultRenderer()->clone(), nullptr /* shared renderer not implemented */, this ) );
 				if( mDebugMode ) {
 					// make the window bottom-most rather than top-most
-					long style = ::GetWindowLong( aWnd, GWL_STYLE );
+					long style = ::GetWindowLong( wnd, GWL_STYLE );
 					style &= ~WS_POPUP;
 					style |= WS_OVERLAPPEDWINDOW;
-					::SetWindowLongA( aWnd, GWL_STYLE, style );
-					::SetWindowLongA( aWnd, GWL_EXSTYLE, ::GetWindowLongA( aWnd, GWL_EXSTYLE ) & (~WS_EX_TOPMOST) );
-					::SetWindowPos( aWnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
+					::SetWindowLongA( wnd, GWL_STYLE, style );
+					::SetWindowLongA( wnd, GWL_EXSTYLE, ::GetWindowLongA( wnd, GWL_EXSTYLE ) & (~WS_EX_TOPMOST) );
+					::SetWindowPos( wnd, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE );
 					Area displayArea = Display::getMainDisplay()->getBounds();
-					::SetWindowPos( aWnd, NULL, displayArea.getX1() + 5, displayArea.getY1() + 5, displayArea.getWidth() - 5, displayArea.getHeight() - 5, SWP_NOOWNERZORDER );
+					::SetWindowPos( wnd, NULL, displayArea.getX1() + 5, displayArea.getY1() + 5, displayArea.getWidth() - 5, displayArea.getHeight() - 5, SWP_NOOWNERZORDER );
 				}
 			}
-			else if( mApp->getSettings().isSecondaryDisplayBlankingEnabled() )
+			else if( settings.isSecondaryDisplayBlankingEnabled() )
 				mBlankingWindows.push_back( BlankingWindow::create( *dispIt ) );
 		}
 	}
@@ -94,7 +90,7 @@ void AppImplMswScreenSaver::run()
 	for( auto winIt = mWindows.begin(); winIt != mWindows.end(); ++winIt )
 		(*winIt)->getWindow()->emitResize();
 	
-	::SetTimer( mWindows.back()->mWnd, TIMER_ID, (UINT)(1000 / mApp->getSettings().getFrameRate()), NULL );
+	::SetTimer( mWindows.back()->mWnd, TIMER_ID, (UINT)(1000 / mFrameRate), NULL );
 }
 
 WindowRef AppImplMswScreenSaver::getWindow() const

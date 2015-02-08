@@ -36,7 +36,7 @@ class WindowImplMswScreenSaver;
 
 class AppImplMswScreenSaver : public AppImplMsw {
  public:
-	AppImplMswScreenSaver( class AppScreenSaver *app );
+	AppImplMswScreenSaver( AppScreenSaver *app, HWND wnd, const AppScreenSaver::Settings &settings );
 	virtual ~AppImplMswScreenSaver() {}
 	
 	void		init( HWND aWnd );
@@ -62,8 +62,9 @@ class AppImplMswScreenSaver : public AppImplMsw {
 	void		setForegroundWindow( WindowRef window ) override {}
 
  protected:
-	class AppScreenSaver						*mApp;
+	AppScreenSaver								*mApp;
 	bool										mPreview;
+	float										mFrameRate;
 	bool										mDebugMode;
 	std::list<WindowImplMswScreenSaver*>		mWindows;
 	std::list<BlankingWindowRef>				mBlankingWindows;

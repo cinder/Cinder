@@ -32,7 +32,10 @@
 	#include "cinder/app/AppImplMswScreenSaver.h"
 #endif
 
-cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = 0;
+cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = nullptr;
+#if defined( CINDER_MSW )
+HWND cinder::app::AppScreenSaver::sMainHwnd = 0;
+#endif
 
 namespace cinder { namespace app {
 
@@ -54,21 +57,23 @@ AppScreenSaver::AppScreenSaver()
 }
 
 #elif defined( CINDER_MSW )
-void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd )
+AppScreenSaver::AppScreenSaver()
 {
-	AppBase::sInstance = sInstance = app;
-	app->mImpl = 0; // initially we have no implementation; necessary for determining whether we can call impl->eventHandler() yet
-	AppBase::executeLaunch( title, 0, 0 );
+	AppBase::sInstance = sInstance = this;
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 
-	app->launch( hwnd );
+	mImpl = new AppImplMswScreenSaver( this, sMainHwnd, *settings );
 }
 
-void AppScreenSaver::launch( HWND hWnd )
+void AppScreenSaver::launch( const char *title, int argc, char * const argv[] )
 {
-	mImpl = new AppImplMswScreenSaver( this );
-	mImpl->init( hWnd );
 	mImpl->run();
 // NOTHING AFTER THIS LINE RUNS
+}
+
+LRESULT AppScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	return mImpl->eventHandler( hWnd, message, wParam, lParam );
 }
 #endif
 

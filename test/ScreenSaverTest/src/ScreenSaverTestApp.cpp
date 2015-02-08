@@ -15,7 +15,7 @@
 	#include "WindowsConfig.h"
 #endif
 
-#define LOAD_LOGO_IN_CONSTRUCTOR 0
+#define LOAD_LOGO_IN_CONSTRUCTOR 1
 
 using namespace ci;
 using namespace ci::app;
@@ -56,6 +56,8 @@ void prepareSettings( AppScreenSaver::Settings *settings )
 //	settings->setFrameRate( 1 );
 #if defined( CINDER_MAC )
 	settings->setProvidesMacConfigDialog();
+#elif defined( CINDER_MSW )
+//	settings->enableDebug();
 #endif
 //	settings->enableSecondaryDisplayBlanking();
 }
