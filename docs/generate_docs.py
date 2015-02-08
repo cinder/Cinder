@@ -10,6 +10,7 @@ class SymbolMap (object):
 	def __init__( self  ):
 		self.classes = {}
 		self.typedefs = {}
+		self.functions = {}
 
 	class Class (object):
 		def __init__( self, name, base, fileName ):
@@ -20,6 +21,12 @@ class SymbolMap (object):
 	class Typedef (object):
 		def __init__( self, type ):
 			self.type = type
+
+	class Function (object):
+		def __init__( self, name, base, path ):
+			self.name = name
+			self.base = base
+			self.path = path
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
@@ -36,6 +43,10 @@ class SymbolMap (object):
 
 	def findTypedef( self, name ):
 		return self.typedefs.get( name )
+
+	def findFunction( self, name ):
+		# find class
+		return self.functions.get( name )
 
 	def getClassAncestors( self, name ):
 		result = []
@@ -98,12 +109,6 @@ def getSymbolToFileMap( path ):
 					print "Adding " + name + " AS " + type
 					symbolMap.typedefs[name] = SymbolMap.Typedef( type )
 				
-				# find functions and add to symbol map
-				if member.getAttribute( "kind" ) == "function":
-					name = getText( member.getElementsByTagName("name")[0].childNodes )
-					anchor = getText( member.getElementsByTagName("anchor")[0].childNodes )
-					filePath = getText( member.getElementsByTagName("anchorfile")[0].childNodes ) + "#" + anchor
-					symbolMap[name + "::" + name] = filePath
 		# found a class
 		elif compound.getAttribute( "kind" ) == "class":
 			name = getText( compound.getElementsByTagName("name")[0].childNodes )
@@ -111,7 +116,18 @@ def getSymbolToFileMap( path ):
 			baseClass = None
 			if compound.getElementsByTagName("base"):
 				baseClass = getText( compound.getElementsByTagName("base")[0].childNodes )
+			print "CLASS: " + name
 			symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
+
+			# find functions and add to symbol map
+			members = compound.getElementsByTagName("member")
+			for member in members:
+				if member.getAttribute( "kind" ) == "function":
+					fnName = getText( member.getElementsByTagName("name")[0].childNodes )
+					anchor = getText( member.getElementsByTagName("anchor")[0].childNodes )
+					filePath = getText( member.getElementsByTagName("anchorfile")[0].childNodes ) + "#" + anchor
+					symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+					# print "PATH:" + symbolMap.functions[fnName].path;
 
 	return symbolMap
 
@@ -131,6 +147,13 @@ def processHtml( html, symbolMap, doxyHtmlPath ):
 		else:
 			link.name = 'a'
 			link['href'] = doxyHtmlPath + existingClass.fileName
+
+		# look for function
+		existingFn = symbolMap.findFunction( searchString )
+		if not existingClass and existingFn != None:
+			link.name = 'a'
+			link['href'] = doxyHtmlPath + existingFn.path
+			print "Found a function, here's the path: " + link['href']
 			
 	return soup.prettify()
 
