@@ -47,10 +47,14 @@ typedef struct CGContext *CGContextRef;
 typedef struct CGColor *CGColorRef;
 typedef struct CGImage *CGImageRef;
 typedef const struct CGPath *CGPathRef;
-typedef const struct CF_BRIDGED_TYPE(NSURL) __CFURL * CFURLRef;
-typedef const struct CF_BRIDGED_TYPE(NSAttributedString) __CFAttributedString *CFAttributedStringRef;
-typedef const struct CF_BRIDGED_TYPE(NSData) __CFData * CFDataRef;
-typedef struct CF_BRIDGED_MUTABLE_TYPE(NSMutableData) __CFData * CFMutableDataRef;
+typedef const struct __CFURL * CFURLRef;
+typedef const struct __CFAttributedString *CFAttributedStringRef;
+typedef const struct __CFData * CFDataRef;
+#if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
+	typedef struct CF_BRIDGED_MUTABLE_TYPE(NSMutableData) __CFData * CFMutableDataRef;
+#else
+	typedef struct __CFData * CFMutableDataRef;
+#endif
 
 namespace cinder { namespace cocoa {
 
