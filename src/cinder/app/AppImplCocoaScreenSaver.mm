@@ -86,7 +86,7 @@ bool blankingWindow = false;
 - (id)initWithFrame:(NSRect)frame isPreview:(BOOL)isPreview
 {
 	self = [super initWithFrame:frame isPreview:isPreview];
-
+	
 	mPreview = isPreview;
 	mCinderView = nil;
 
@@ -118,6 +118,7 @@ bool blankingWindow = false;
 
 - (void)animateOneFrame
 {
+
 	if( ! sAppImplInstance ) // ignore until we have an instance
 		return;
 
@@ -503,6 +504,7 @@ static AppImplCocoaScreenSaver* getAppImpl()
 	
 	if( ! foundACinderView ) {
 		[self finalCleanup];
+		return;
 	}
 	else { // if we're not going away, let's make sure we have a main view
 		for( auto &win : mWindows ) {

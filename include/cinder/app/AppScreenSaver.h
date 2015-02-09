@@ -143,7 +143,6 @@ class AppScreenSaver : public AppBase {
 		app->privateSetImpl__( impl ); // TODO: can impl be set during app constructor, or does it need to be?
 
 		AppBase::executeLaunch( title, 0, nullptr );
-		AppBase::cleanupLaunch();
 
 		return app;
 	}
