@@ -35,6 +35,8 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
+	#else
+		#include <CoreGraphics/CoreGraphics.h>
 	#endif
 #endif
 #include "cinder/Unicode.h"
@@ -432,7 +434,7 @@ void TextureFont::drawGlyphs( const vector<pair<uint16_t,vec2> > &glyphMeasures,
 		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
 		ctx->getDefaultVao()->replacementBindEnd();
 		gl::setDefaultShaderVars();
-		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
+		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
 }
 
@@ -569,7 +571,7 @@ void TextureFont::drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyp
 		defaultElementVbo->bufferSubData( 0, indices.size() * sizeof(curIdx), indices.data() );
 		ctx->getDefaultVao()->replacementBindEnd();
 		gl::setDefaultShaderVars();
-		ctx->drawElements( GL_TRIANGLES, indices.size(), indexType, 0 );
+		ctx->drawElements( GL_TRIANGLES, (GLsizei)indices.size(), indexType, 0 );
 	}
 }
 

@@ -60,7 +60,7 @@
 		#include <OpenGLES/ES3/glext.h>
 	#endif
 #endif
-#include <boost/noncopyable.hpp>
+#include "Cinder/Noncopyable.h"
 
 #include "cinder/Area.h"
 #include "cinder/Rect.h"
@@ -308,6 +308,7 @@ void vertex( const ci::vec3 &v );
 void vertex( const ci::vec4 &v );
 
 #if ! defined( CINDER_GL_ES )
+//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
 void polygonMode( GLenum face, GLenum mode );
 //! Enables wireframe drawing by setting the \c PolygonMode to \c GL_LINE.
 void enableWireframe();
@@ -322,7 +323,7 @@ inline void setWireframeEnabled( bool enable = true )	{ if( enable ) enableWiref
 //! Sets the width of rasterized lines to \a width. The initial value is 1. Analogous to glLineWidth(). 
 void	lineWidth( float width );
 #if ! defined( CINDER_GL_ES )
-//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize.
+//! Specifies the rasterized diameter of points. If point size mode is disabled (via gl::disable \c GL_PROGRAM_POINT_SIZE), this value will be used to rasterize points. Otherwise, the value written to the shading language built-in variable \c gl_PointSize will be used. Analogous to glPointSize().
 void	pointSize( float size );
 #endif
 
@@ -446,7 +447,7 @@ std::string getErrorString( GLenum err );
 void checkError();
 
 
-struct ScopedVao : public boost::noncopyable {
+struct ScopedVao : private Noncopyable {
 	ScopedVao( const VaoRef &vao );
 	~ScopedVao();
 
@@ -454,7 +455,7 @@ struct ScopedVao : public boost::noncopyable {
 	Context		*mCtx;
 };
 
-struct ScopedBuffer : public boost::noncopyable {
+struct ScopedBuffer : public Noncopyable {
 	ScopedBuffer( const BufferObjRef &bufferObj );
 	ScopedBuffer( GLenum target, GLuint id );
 	~ScopedBuffer();
@@ -464,7 +465,7 @@ struct ScopedBuffer : public boost::noncopyable {
 	GLenum		mTarget;
 };
 
-struct ScopedState : public boost::noncopyable {
+struct ScopedState : private Noncopyable {
 	ScopedState( GLenum cap, GLboolean value );
 	~ScopedState();
 
@@ -473,7 +474,7 @@ struct ScopedState : public boost::noncopyable {
 	GLenum		mCap;
 };
 
-struct ScopedColor : public boost::noncopyable {
+struct ScopedColor : private Noncopyable {
 	ScopedColor();
 	ScopedColor( const ColorAf &color );
 	~ScopedColor();
@@ -483,8 +484,7 @@ struct ScopedColor : public boost::noncopyable {
 	ColorAf		mColor;
 };
 
-struct ScopedBlend : public boost::noncopyable
-{
+struct ScopedBlend : private Noncopyable {
 	ScopedBlend( GLboolean enable );
 	//! Parallels glBlendFunc(), and implicitly enables blending
 	ScopedBlend( GLenum sfactor, GLenum dfactor );
@@ -497,8 +497,7 @@ struct ScopedBlend : public boost::noncopyable
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
 };
 
-struct ScopedAlphaBlend : public ScopedBlend
-{
+struct ScopedAlphaBlend : private ScopedBlend {
 	ScopedAlphaBlend( bool premultipliedAlpha )
 		: ScopedBlend( premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
 	{}
@@ -511,8 +510,7 @@ struct ScopedAdditiveBlend : public ScopedBlend
 	{}
 };
 
-struct ScopedGlslProg : public boost::noncopyable
-{
+struct ScopedGlslProg : private Noncopyable {
 	ScopedGlslProg( const GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
 	~ScopedGlslProg();
@@ -521,8 +519,7 @@ struct ScopedGlslProg : public boost::noncopyable
 	Context		*mCtx;
 };
 
-struct ScopedFramebuffer : public boost::noncopyable
-{
+struct ScopedFramebuffer : private Noncopyable {
 	ScopedFramebuffer( const FboRef &fbo, GLenum target = GL_FRAMEBUFFER );
 	//! Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
 	ScopedFramebuffer( GLenum target, GLuint framebufferId );
@@ -533,8 +530,7 @@ struct ScopedFramebuffer : public boost::noncopyable
 	GLenum		mTarget;
 };
 
-struct ScopedActiveTexture : public boost::noncopyable
-{
+struct ScopedActiveTexture : private Noncopyable {
 	//! Sets the currently active texture through glActiveTexture. Expects values relative to \c 0, \em not GL_TEXTURE0
 	ScopedActiveTexture( uint8_t textureUnit );
 	~ScopedActiveTexture();
@@ -543,8 +539,7 @@ struct ScopedActiveTexture : public boost::noncopyable
 	Context		*mCtx;
 };
 
-struct ScopedTextureBind : public boost::noncopyable
-{
+struct ScopedTextureBind : private Noncopyable {
 	ScopedTextureBind( GLenum target, GLuint textureId );
 	ScopedTextureBind( GLenum target, GLuint textureId, uint8_t textureUnit );
 	ScopedTextureBind( const TextureBaseRef &texture );
@@ -568,8 +563,7 @@ struct ScopedTextureBind : public boost::noncopyable
 	uint8_t		mTextureUnit;
 };
 	
-struct ScopedScissor : public boost::noncopyable
-{
+struct ScopedScissor : private Noncopyable {
 	//! Implicitly enables scissor test
 	ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
 	//! Implicitly enables scissor test	
@@ -580,8 +574,7 @@ struct ScopedScissor : public boost::noncopyable
 	Context					*mCtx;
 };
 
-struct ScopedViewport : public boost::noncopyable
-{
+struct ScopedViewport : private Noncopyable {
 	ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
 	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedViewport();
@@ -590,25 +583,24 @@ struct ScopedViewport : public boost::noncopyable
 	Context					*mCtx;
 };
 
-struct ScopedModelMatrix : public boost::noncopyable {
+struct ScopedModelMatrix : private Noncopyable {
 	ScopedModelMatrix()	{ gl::pushModelMatrix(); }
 	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
 };
 
-struct ScopedProjectionMatrix : public boost::noncopyable {
+struct ScopedProjectionMatrix : private Noncopyable {
 	ScopedProjectionMatrix()			{ gl::pushProjectionMatrix(); }
 	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
 };
 
 //! Preserves all
-struct ScopedMatrices : public boost::noncopyable {
+struct ScopedMatrices : private Noncopyable {
 	ScopedMatrices()		{ gl::pushMatrices(); }
 	~ScopedMatrices()	{ gl::popMatrices(); }
 };
 
 //! Scopes state of face culling.
-struct ScopedFaceCulling : public boost::noncopyable
-{
+struct ScopedFaceCulling : private Noncopyable {
 	//! Enables or disables polygon culling based on \a cull
 	ScopedFaceCulling( bool cull );
 	//! Enables or disables polygon culling based on \a cull and specifies a mode, either \c GL_BACK or GL_FRONT
@@ -621,8 +613,7 @@ struct ScopedFaceCulling : public boost::noncopyable
 };
 
 //! Scopes state of Renderbuffer binding
-struct ScopedRenderbuffer : public boost::noncopyable
-{
+struct ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &rb );
 	ScopedRenderbuffer( GLenum target, GLuint id );
 	~ScopedRenderbuffer();
@@ -630,6 +621,38 @@ struct ScopedRenderbuffer : public boost::noncopyable
   private:
 	Context		*mCtx;
 };
+
+//! Scopes state of line width
+struct ScopedLineWidth : private Noncopyable {
+	ScopedLineWidth( float width );
+	~ScopedLineWidth();
+	
+  private:
+	Context		*mCtx;
+};
+
+#if ! defined( CINDER_GL_ES )
+//! Scopes polygon rasterization mode for \c GL_FRONT_AND_BACK
+struct ScopedPolygonMode : private Noncopyable {
+	//! Values for \a mode may be \c GL_POINT, \c GL_LINE or \c GL_FILL.
+	ScopedPolygonMode( GLenum mode );
+	~ScopedPolygonMode();
+	
+  private:
+	Context		*mCtx;
+};
+#endif // ! defined( CINDER_GL_ES )
+
+//! Scopes winding order defining front-facing polygons
+struct ScopedFrontFace : private Noncopyable {
+	//! Values for \a mode may be \c GL_CW or \c GL_CCW
+	ScopedFrontFace( GLenum mode );
+	~ScopedFrontFace();
+	
+  private:
+	Context		*mCtx;
+};
+
 
 class Exception : public cinder::Exception {
   public:

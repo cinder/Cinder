@@ -26,8 +26,7 @@
 #include "cinder/Buffer.h"
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
-
-#include <boost/noncopyable.hpp>
+#include "cinder/Noncopyable.h"
 
 #include <string>
 #ifndef __OBJC__
@@ -37,7 +36,7 @@
 
 namespace cinder {
 
-class StreamBase : private boost::noncopyable {
+class StreamBase : private Noncopyable {
  public:
 	virtual ~StreamBase() {}
 	

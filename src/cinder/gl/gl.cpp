@@ -794,7 +794,7 @@ bool isWireframeEnabled()
 
 void lineWidth( float width )
 {
-	glLineWidth( width );
+	gl::context()->lineWidth( width );
 }
 
 #if ! defined( CINDER_GL_ES )
@@ -2201,6 +2201,47 @@ ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int h
 ScopedViewport::~ScopedViewport()
 {
 	mCtx->popViewport();
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedLineWidth
+ScopedLineWidth::ScopedLineWidth( float width )
+	: mCtx( gl::context() )
+{
+	mCtx->pushLineWidth( width );
+}
+
+ScopedLineWidth::~ScopedLineWidth()
+{
+	mCtx->popLineWidth();
+}
+
+#if ! defined( CINDER_GL_ES )
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedPolygonMode
+ScopedPolygonMode::ScopedPolygonMode( GLenum mode )
+	: mCtx( gl::context() )
+{
+	mCtx->pushPolygonMode( GL_FRONT_AND_BACK, mode );
+}
+
+ScopedPolygonMode::~ScopedPolygonMode()
+{
+	mCtx->popPolygonMode( GL_FRONT_AND_BACK );
+}
+#endif
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedFrontFace
+ScopedFrontFace::ScopedFrontFace( GLenum mode )
+	: mCtx( gl::context() )
+{
+	mCtx->pushFrontFace( mode );
+}
+
+ScopedFrontFace::~ScopedFrontFace()
+{
+	mCtx->popFrontFace();
 }
 
 } } // namespace cinder::gl

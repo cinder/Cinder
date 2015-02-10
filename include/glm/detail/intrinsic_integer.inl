@@ -21,7 +21,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_integer.inl
+/// @file glm/detail/intrinsic_integer.inl
 /// @date 2009-05-08 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////

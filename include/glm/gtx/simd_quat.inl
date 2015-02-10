@@ -1,12 +1,34 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2013-04-22
-// Updated : 2013-04-22
-// Licence : This source is under MIT License
-// File    : glm/gtx/simd_quat.inl
-///////////////////////////////////////////////////////////////////////////////////////////////////
-
+///////////////////////////////////////////////////////////////////////////////////
+/// OpenGL Mathematics (glm.g-truc.net)
+///
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+/// THE SOFTWARE.
+///
+/// @ref gtx_simd_quat
+/// @file glm/gtx/simd_quat.inl
+/// @date 2013-04-22 / 2014-11-25
+/// @author Christophe Riccio
+///////////////////////////////////////////////////////////////////////////////////
 
 namespace glm{
 namespace detail{
@@ -34,9 +56,9 @@ void print(const fvec4SIMD &v)
 // Implicit basic constructors
 
 GLM_FUNC_QUALIFIER fquatSIMD::fquatSIMD()
-#ifdef GLM_SIMD_ENABLE_DEFAULT_INIT
-    : Data(_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f))
-#endif
+#	ifdef GLM_FORCE_NO_CTOR_INIT
+		: Data(_mm_set_ps(1.0f, 0.0f, 0.0f, 0.0f))
+#	endif
 {}
 
 GLM_FUNC_QUALIFIER fquatSIMD::fquatSIMD(__m128 const & Data) :
@@ -305,7 +327,7 @@ GLM_FUNC_QUALIFIER detail::fquatSIMD quatSIMD_cast
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER detail::fquatSIMD quatSIMD_cast
 (
-    detail::tmat4x4<T, P> const & m
+    tmat4x4<T, P> const & m
 )
 {
     return quatSIMD_cast_impl(&m[0][0], &m[1][0], &m[2][0]);
@@ -314,7 +336,7 @@ GLM_FUNC_QUALIFIER detail::fquatSIMD quatSIMD_cast
 template <typename T, precision P>
 GLM_FUNC_QUALIFIER detail::fquatSIMD quatSIMD_cast
 (
-    detail::tmat3x3<T, P> const & m
+    tmat3x3<T, P> const & m
 )
 {
     return quatSIMD_cast_impl(&m[0][0], &m[1][0], &m[2][0]);
@@ -581,16 +603,10 @@ GLM_FUNC_QUALIFIER detail::fquatSIMD angleAxisSIMD
 	vec3 const & v
 )
 {
-#ifdef GLM_FORCE_RADIANS
-	float a(angle);
-#else
-#	pragma message("GLM: rotateZ function taking degrees as parameters is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-	float a(glm::radians(angle));
-#endif
-	float s = glm::sin(a * 0.5f);
+	float s = glm::sin(angle * 0.5f);
 
 	return _mm_set_ps(
-		glm::cos(a * 0.5f),
+		glm::cos(angle * 0.5f),
 		v.z * s,
 		v.y * s,
 		v.x * s);
@@ -610,19 +626,19 @@ GLM_FUNC_QUALIFIER detail::fquatSIMD angleAxisSIMD
 
 GLM_FUNC_QUALIFIER __m128 fastSin(__m128 x)
 {
-    static const __m128 c0 = _mm_set1_ps(0.16666666666666666666666666666667f);
-    static const __m128 c1 = _mm_set1_ps(0.00833333333333333333333333333333f);
-    static const __m128 c2 = _mm_set1_ps(0.00019841269841269841269841269841f);
+	static const __m128 c0 = _mm_set1_ps(0.16666666666666666666666666666667f);
+	static const __m128 c1 = _mm_set1_ps(0.00833333333333333333333333333333f);
+	static const __m128 c2 = _mm_set1_ps(0.00019841269841269841269841269841f);
 
-    __m128 x3 = _mm_mul_ps(x,  _mm_mul_ps(x, x));
-    __m128 x5 = _mm_mul_ps(x3, _mm_mul_ps(x, x));
-    __m128 x7 = _mm_mul_ps(x5, _mm_mul_ps(x, x));
+	__m128 x3 = _mm_mul_ps(x,  _mm_mul_ps(x, x));
+	__m128 x5 = _mm_mul_ps(x3, _mm_mul_ps(x, x));
+	__m128 x7 = _mm_mul_ps(x5, _mm_mul_ps(x, x));
 
-    __m128 y0 = _mm_mul_ps(x3, c0);
-    __m128 y1 = _mm_mul_ps(x5, c1);
-    __m128 y2 = _mm_mul_ps(x7, c2);
-        
-    return _mm_sub_ps(_mm_add_ps(_mm_sub_ps(x, y0), y1), y2);
+	__m128 y0 = _mm_mul_ps(x3, c0);
+	__m128 y1 = _mm_mul_ps(x5, c1);
+	__m128 y2 = _mm_mul_ps(x7, c2);
+
+	return _mm_sub_ps(_mm_add_ps(_mm_sub_ps(x, y0), y1), y2);
 }
 
 

@@ -1,5 +1,7 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Color.h"
+
 #include <list>
 #include <utility>
 

@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,8 +40,7 @@
 /// <glm/gtx/matrix_cross_product.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_matrix_cross_product
-#define GLM_GTX_matrix_cross_product
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -54,18 +57,16 @@ namespace glm
 	//! Build a cross product matrix.
 	//! From GLM_GTX_matrix_cross_product extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat3x3<T, P> matrixCross3(
-		detail::tvec3<T, P> const & x);
+	GLM_FUNC_DECL tmat3x3<T, P> matrixCross3(
+		tvec3<T, P> const & x);
 		
 	//! Build a cross product matrix.
 	//! From GLM_GTX_matrix_cross_product extension.
 	template <typename T, precision P>
-	GLM_FUNC_DECL detail::tmat4x4<T, P> matrixCross4(
-		detail::tvec3<T, P> const & x);
+	GLM_FUNC_DECL tmat4x4<T, P> matrixCross4(
+		tvec3<T, P> const & x);
 
 	/// @}
 }//namespace glm
 
 #include "matrix_cross_product.inl"
-
-#endif//GLM_GTX_matrix_cross_product

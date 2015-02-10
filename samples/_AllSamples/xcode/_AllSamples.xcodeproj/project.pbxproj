@@ -73,7 +73,6 @@
 				009F6E7014C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7214C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7414C0FE790036C292 /* PBXTargetDependency */,
-				009F6E7814C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7C14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E7E14C0FE790036C292 /* PBXTargetDependency */,
 				009F6E8214C0FE790036C292 /* PBXTargetDependency */,
@@ -1047,13 +1046,6 @@
 			remoteGlobalIDString = 8D1107320486CEB800E47090;
 			remoteInfo = BasicAppendTween;
 		};
-		009F6E2114C0FDF90036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 8D1107320486CEB800E47090;
-			remoteInfo = BasicTween;
-		};
 		009F6E2B14C0FE040036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */;
@@ -1137,13 +1129,6 @@
 			proxyType = 1;
 			remoteGlobalIDString = 8D1107260486CEB800E47090;
 			remoteInfo = TextInputTween;
-		};
-		009F6E7714C0FE790036C292 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 8D1107260486CEB800E47090;
-			remoteInfo = BasicTween;
 		};
 		009F6E7B14C0FE790036C292 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -1635,7 +1620,7 @@
 		009CB647120F22810066763D /* FBOMultipleTargets.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOMultipleTargets.xcodeproj; path = ../../FBOMultipleTargets/xcode/FBOMultipleTargets.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F01FA1136D23400636E3C /* ImageFileBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ImageFileBasic.xcodeproj; path = ../../ImageFileBasic/xcode/ImageFileBasic.xcodeproj; sourceTree = SOURCE_ROOT; };
 		009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicAppendTween.xcodeproj; path = ../../_timeline/BasicAppendTween/xcode/BasicAppendTween.xcodeproj; sourceTree = "<group>"; };
-		009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BasicTween.xcodeproj; path = ../../_timeline/BasicTween/xcode/BasicTween.xcodeproj; sourceTree = "<group>"; };
+		009F6E1914C0FDF80036C292 /* data */ = {isa = PBXFileReference; lastKnownFileType = folder; name = data; path = ../../data; sourceTree = "<group>"; };
 		009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CustomCallback.xcodeproj; path = ../../_timeline/CustomCallback/xcode/CustomCallback.xcodeproj; sourceTree = "<group>"; };
 		009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CustomLerp.xcodeproj; path = ../../_timeline/CustomLerp/xcode/CustomLerp.xcodeproj; sourceTree = "<group>"; };
 		009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode/DragTween.xcodeproj; sourceTree = "<group>"; };
@@ -2322,7 +2307,7 @@
 				009F6E3714C0FE1D0036C292 /* DragTween.xcodeproj */,
 				009F6E2D14C0FE120036C292 /* CustomLerp.xcodeproj */,
 				009F6E2314C0FE040036C292 /* CustomCallback.xcodeproj */,
-				009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */,
+				009F6E1914C0FDF80036C292 /* data */,
 				009F6E0F14C0FDE90036C292 /* BasicAppendTween.xcodeproj */,
 			);
 			name = _timeline;
@@ -2332,14 +2317,6 @@
 			isa = PBXGroup;
 			children = (
 				009F6E1814C0FDEA0036C292 /* BasicAppendTween.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		009F6E1A14C0FDF80036C292 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				009F6E2214C0FDF90036C292 /* BasicTween.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -2683,10 +2660,6 @@
 				{
 					ProductGroup = 0005C95F1006804E004D82BC /* Products */;
 					ProjectRef = 0005C95E1006804E004D82BC /* BasicParticle.xcodeproj */;
-				},
-				{
-					ProductGroup = 009F6E1A14C0FDF80036C292 /* Products */;
-					ProjectRef = 009F6E1914C0FDF80036C292 /* BasicTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0005C986100681AF004D82BC /* Products */;
@@ -3550,13 +3523,6 @@
 			remoteRef = 009F6E1714C0FDEA0036C292 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
-		009F6E2214C0FDF90036C292 /* BasicTween.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = BasicTween.app;
-			remoteRef = 009F6E2114C0FDF90036C292 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
 		009F6E2C14C0FE040036C292 /* CustomCallback.app */ = {
 			isa = PBXReferenceProxy;
 			fileType = wrapper.application;
@@ -4154,11 +4120,6 @@
 			isa = PBXTargetDependency;
 			name = TextInputTween;
 			targetProxy = 009F6E7314C0FE790036C292 /* PBXContainerItemProxy */;
-		};
-		009F6E7814C0FE790036C292 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = BasicTween;
-			targetProxy = 009F6E7714C0FE790036C292 /* PBXContainerItemProxy */;
 		};
 		009F6E7C14C0FE790036C292 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;

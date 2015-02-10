@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -22,7 +26,7 @@
 ///
 /// @ref gtx_string_cast
 /// @file glm/gtx/string_cast.hpp
-/// @date 2008-04-26 / 2011-06-07
+/// @date 2008-04-26 / 2014-05-10
 /// @author Christophe Riccio
 ///
 /// @see core (dependence)
@@ -39,13 +43,11 @@
 /// This extension is not supported with CUDA
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_string_cast
-#define GLM_GTX_string_cast
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
-#include "../gtx/integer.hpp"
-#include "../gtx/quaternion.hpp"
+#include "../gtc/type_precision.hpp"
 #include <string>
 
 #if(GLM_COMPILER & GLM_COMPILER_CUDA)
@@ -61,14 +63,12 @@ namespace glm
 	/// @addtogroup gtx_string_cast
 	/// @{
 
-	/// Create a string from a GLM type value.
+	/// Create a string from a GLM vector or matrix typed variable.
 	/// @see gtx_string_cast extension.
-	template <typename genType> 
-	GLM_FUNC_DECL std::string to_string(genType const & x);
+	template <template <typename, precision> class matType, typename T, precision P>
+	GLM_FUNC_DECL std::string to_string(matType<T, P> const & x);
 
 	/// @}
 }//namespace glm
 
 #include "string_cast.inl"
-
-#endif//GLM_GTX_string_cast

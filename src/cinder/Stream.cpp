@@ -218,7 +218,7 @@ size_t IStreamFile::readDataImpl( void *t, size_t size )
 void IStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
@@ -289,7 +289,7 @@ off_t OStreamFile::tell() const
 void OStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 }
@@ -338,7 +338,7 @@ size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )
 void IoStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
@@ -403,7 +403,7 @@ size_t IoStreamFile::readDataImpl( void *t, size_t size )
 	else { // outside the current buffer, but not too big
 		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
 		mBufferFileOffset = mBufferOffset;
-		mBufferSize = fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
+		mBufferSize = (int32_t)fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
 		memcpy( t, mBuffer.get(), size );
 		mBufferOffset = mBufferFileOffset + size;
 		return size;

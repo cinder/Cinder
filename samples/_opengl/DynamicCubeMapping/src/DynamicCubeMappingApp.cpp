@@ -42,7 +42,7 @@ const int SKY_BOX_SIZE = 500;
 
 void DynamicCubeMappingApp::setup()
 {
-	mSkyBoxCubeMap = gl::TextureCubeMap::createHorizontalCross( loadImage( loadAsset( "env_map.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
+	mSkyBoxCubeMap = gl::TextureCubeMap::create( loadImage( loadAsset( "env_map.jpg" ) ), gl::TextureCubeMap::Format().mipmap() );
 
 #if defined( CINDER_GL_ES )
 	auto envMapGlsl = gl::GlslProg::create( loadAsset( "env_map_es2.vert" ), loadAsset( "env_map_es2.frag" ) );

@@ -26,6 +26,8 @@
 
 #if (defined( CINDER_MSW ) || defined( CINDER_WINRT))
 	#include <windows.h>
+#elif defined( CINDER_COCOA )
+	#include <CoreFoundation/CoreFoundation.h>
 #endif
 
 namespace cinder {

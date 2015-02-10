@@ -21,7 +21,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_trigonometric.inl
+/// @file glm/detail/intrinsic_trigonometric.inl
 /// @date 2011-06-15 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////

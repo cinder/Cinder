@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -37,8 +41,7 @@
 /// <glm/gtx/vector_angle.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_vector_angle
-#define GLM_GTX_vector_angle
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -68,21 +71,19 @@ namespace glm
 	/// @see gtx_vector_angle extension.
 	template <typename T, precision P>
 	GLM_FUNC_DECL T orientedAngle(
-		detail::tvec2<T, P> const & x,
-		detail::tvec2<T, P> const & y);
+		tvec2<T, P> const & x,
+		tvec2<T, P> const & y);
 
 	//! Returns the oriented angle between two 3d vectors based from a reference axis.
 	//! Parameters need to be normalized.
 	/// @see gtx_vector_angle extension.
 	template <typename T, precision P>
 	GLM_FUNC_DECL T orientedAngle(
-		detail::tvec3<T, P> const & x,
-		detail::tvec3<T, P> const & y,
-		detail::tvec3<T, P> const & ref);
+		tvec3<T, P> const & x,
+		tvec3<T, P> const & y,
+		tvec3<T, P> const & ref);
 
 	/// @}
 }// namespace glm
 
 #include "vector_angle.inl"
-
-#endif//GLM_GTX_vector_angle

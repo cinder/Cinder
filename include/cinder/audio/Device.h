@@ -24,19 +24,18 @@
 #pragma once
 
 #include "cinder/Function.h"
+#include "cinder/Noncopyable.h"
 
 #include <memory>
 #include <string>
 #include <vector>
-
-#include <boost/noncopyable.hpp>
 
 namespace cinder { namespace audio {
 
 typedef std::shared_ptr<class Device> DeviceRef;
 
 //! Object representing a hardware audio device. There is only ever one device per hardware device reported by the system, for both input and output.
-class Device : public std::enable_shared_from_this<Device>, boost::noncopyable {
+class Device : public std::enable_shared_from_this<Device>, Noncopyable {
   public:
 	virtual ~Device() {}
 
@@ -107,7 +106,7 @@ class Device : public std::enable_shared_from_this<Device>, boost::noncopyable {
 };
 
 //! Platform-specific Singleton for managing hardware devices. Applications normally should not need to use this, but instead should use the equivalent methods from \a Device.
-class DeviceManager : public boost::noncopyable {
+class DeviceManager : private Noncopyable {
   public:
 	virtual ~DeviceManager() {}
 

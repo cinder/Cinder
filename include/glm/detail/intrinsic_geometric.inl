@@ -21,7 +21,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_geometric.inl
+/// @file glm/detail/intrinsic_geometric.inl
 /// @date 2009-05-08 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
@@ -32,32 +32,33 @@ namespace detail{
 //length
 GLM_FUNC_QUALIFIER __m128 sse_len_ps(__m128 x)
 {
-    __m128 dot0 = sse_dot_ps(x, x);
+	__m128 dot0 = sse_dot_ps(x, x);
 	__m128 sqt0 = _mm_sqrt_ps(dot0);
-    return sqt0;
+	return sqt0;
 }
 
 //distance
 GLM_FUNC_QUALIFIER __m128 sse_dst_ps(__m128 p0, __m128 p1)
 {
 	__m128 sub0 = _mm_sub_ps(p0, p1);
-    __m128 len0 = sse_len_ps(sub0);
-    return len0;
+	__m128 len0 = sse_len_ps(sub0);
+	return len0;
 }
 
 //dot
 GLM_FUNC_QUALIFIER __m128 sse_dot_ps(__m128 v1, __m128 v2)
 {
-#   if((GLM_ARCH & GLM_ARCH_AVX) == GLM_ARCH_AVX)
-        return _mm_dp_ps(v1, v2, 0xff);
-#   else
-        __m128 mul0 = _mm_mul_ps(v1, v2);
-        __m128 swp0 = _mm_shuffle_ps(mul0, mul0, _MM_SHUFFLE(2, 3, 0, 1));
-        __m128 add0 = _mm_add_ps(mul0, swp0);
-        __m128 swp1 = _mm_shuffle_ps(add0, add0, _MM_SHUFFLE(0, 1, 2, 3));
-        __m128 add1 = _mm_add_ps(add0, swp1);
-        return add1;
-#   endif
+
+#	if(GLM_ARCH & GLM_ARCH_AVX)
+		return _mm_dp_ps(v1, v2, 0xff);
+#	else
+		__m128 mul0 = _mm_mul_ps(v1, v2);
+		__m128 swp0 = _mm_shuffle_ps(mul0, mul0, _MM_SHUFFLE(2, 3, 0, 1));
+		__m128 add0 = _mm_add_ps(mul0, swp0);
+		__m128 swp1 = _mm_shuffle_ps(add0, add0, _MM_SHUFFLE(0, 1, 2, 3));
+		__m128 add1 = _mm_add_ps(add0, swp1);
+		return add1;
+#	endif
 }
 
 // SSE1

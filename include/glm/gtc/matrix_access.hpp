@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -34,8 +38,7 @@
 /// <glm/gtc/matrix_access.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTC_matrix_access
-#define GLM_GTC_matrix_access
+#pragma once
 
 // Dependency:
 #include "../detail/setup.hpp"
@@ -53,15 +56,15 @@ namespace glm
 	/// @see gtc_matrix_access
 	template <typename genType>
 	GLM_FUNC_DECL typename genType::row_type row(
-		genType const & m, 
-		length_t const & index);
+		genType const & m,
+		length_t index);
 
 	/// Set a specific row to a matrix.
 	/// @see gtc_matrix_access
 	template <typename genType>
 	GLM_FUNC_DECL genType row(
 		genType const & m,
-		length_t const & index,
+		length_t index,
 		typename genType::row_type const & x);
 
 	/// Get a specific column of a matrix.
@@ -69,19 +72,17 @@ namespace glm
 	template <typename genType>
 	GLM_FUNC_DECL typename genType::col_type column(
 		genType const & m,
-		length_t const & index);
+		length_t index);
 
 	/// Set a specific column to a matrix.
 	/// @see gtc_matrix_access
 	template <typename genType>
 	GLM_FUNC_DECL genType column(
 		genType const & m,
-		length_t const & index,
+		length_t index,
 		typename genType::col_type const & x);
 
 	/// @}
 }//namespace glm
 
 #include "matrix_access.inl"
-
-#endif//GLM_GTC_matrix_access

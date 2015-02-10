@@ -65,7 +65,7 @@ VaoRef createVaoImplSoftware()
 	
 VaoImplSoftware::VaoImplSoftware()
 {
-	mId = ++sIdCounter; // is this adequate? 4billion VAO allocations seems remote; the ID is not really necessary except for debugging
+	mId = (GLuint)++sIdCounter; // is this adequate? 4billion VAO allocations seems remote; the ID is not really necessary except for debugging
 }
 
 VaoImplSoftware::~VaoImplSoftware()

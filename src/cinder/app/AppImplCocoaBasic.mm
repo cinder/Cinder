@@ -547,7 +547,6 @@ using namespace cinder::app;
 - (void)windowMovedNotification:(NSNotification *)notification
 {
 	NSWindow *window = [notification object];
-	CGDirectDisplayID displayID = (CGDirectDisplayID)[[[[window screen] deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
@@ -555,9 +554,18 @@ using namespace cinder::app;
 
 	[mAppImpl setActiveWindow:self];
 
-	if( displayID != mDisplay->getCgDirectDisplayId() ) {
-		mDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
-		mWindowRef->emitDisplayChange();
+	// This appears to be NULL in some scenarios
+	NSScreen *screen = [window screen];
+	if( screen ) {
+		NSDictionary *dict = [screen deviceDescription];
+		CGDirectDisplayID displayID = (CGDirectDisplayID)[[dict objectForKey:@"NSScreenNumber"] intValue];
+		if( displayID != mDisplay->getCgDirectDisplayId() ) {
+			auto newDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
+			if( newDisplay ) {
+				mDisplay = newDisplay;
+				mWindowRef->emitDisplayChange();
+			}
+		}
 	}
 	
 	mWindowRef->emitMove();

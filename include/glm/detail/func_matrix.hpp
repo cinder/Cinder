@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -21,7 +25,7 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/func_matrix.hpp
+/// @file glm/detail/func_matrix.hpp
 /// @date 2008-08-03 / 2011-06-15
 /// @author Christophe Riccio
 ///
@@ -37,8 +41,7 @@
 /// floating point version is shown.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_CORE_func_matrix
-#define GLM_CORE_func_matrix
+#pragma once
 
 // Dependencies
 #include "../detail/precision.hpp"
@@ -137,8 +140,6 @@ namespace detail
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/outerProduct.xml">GLSL outerProduct man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.6 Matrix Functions</a>
-	/// 
-	/// @todo Clarify the declaration to specify that matType doesn't have to be provided when used.
 	template <typename T, precision P, template <typename, precision> class vecTypeA, template <typename, precision> class vecTypeB>
 	GLM_FUNC_DECL typename detail::outerProduct_trait<T, P, vecTypeA, vecTypeB>::type outerProduct(vecTypeA<T, P> const & c, vecTypeB<T, P> const & r);
 
@@ -148,7 +149,7 @@ namespace detail
 	///
 	/// @see <a href="http://www.opengl.org/sdk/docs/manglsl/xhtml/transpose.xml">GLSL transpose man page</a>
 	/// @see <a href="http://www.opengl.org/registry/doc/GLSLangSpec.4.20.8.pdf">GLSL 4.20.8 specification, section 8.6 Matrix Functions</a>
-#	if((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC11))
+#	if((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC2012))
 		template <typename T, precision P, template <typename, precision> class matType>
 		GLM_FUNC_DECL typename matType<T, P>::transpose_type transpose(matType<T, P> const & x);
 #	endif
@@ -175,5 +176,3 @@ namespace detail
 }//namespace glm
 
 #include "func_matrix.inl"
-
-#endif//GLM_CORE_func_matrix

@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -36,11 +40,12 @@
 /// <glm/gtx/orthonormalize.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_orthonormalize
-#define GLM_GTX_orthonormalize
+#pragma once
 
 // Dependency:
-#include "../glm.hpp"
+#include "../vec3.hpp"
+#include "../mat3x3.hpp"
+#include "../geometric.hpp"
 
 #if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_orthonormalize extension included")
@@ -51,22 +56,19 @@ namespace glm
 	/// @addtogroup gtx_orthonormalize
 	/// @{
 
-	//! Returns the orthonormalized matrix of m.
-	//! From GLM_GTX_orthonormalize extension.
+	/// Returns the orthonormalized matrix of m.
+	///
+	/// @see gtx_orthonormalize
 	template <typename T, precision P> 
-	GLM_FUNC_DECL detail::tmat3x3<T, P> orthonormalize(
-		const detail::tmat3x3<T, P>& m);
+	GLM_FUNC_DECL tmat3x3<T, P> orthonormalize(tmat3x3<T, P> const & m);
 		
-	//! Orthonormalizes x according y.
-	//! From GLM_GTX_orthonormalize extension.
+	/// Orthonormalizes x according y.
+	///
+	/// @see gtx_orthonormalize
 	template <typename T, precision P> 
-	GLM_FUNC_DECL detail::tvec3<T, P> orthonormalize(
-		const detail::tvec3<T, P>& x, 
-		const detail::tvec3<T, P>& y);
+	GLM_FUNC_DECL tvec3<T, P> orthonormalize(tvec3<T, P> const & x, tvec3<T, P> const & y);
 
 	/// @}
 }//namespace glm
 
 #include "orthonormalize.inl"
-
-#endif//GLM_GTX_orthonormalize

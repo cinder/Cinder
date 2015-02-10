@@ -28,16 +28,18 @@
 #include "cinder/qtime/QuickTimeImplAvf.h"
 #include "cinder/gl/gl.h"
 
-namespace cinder { namespace qtime {
-
-#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH )
-	#include <CoreVideo/CoreVideo.h>
-	#include <CoreVideo/CVBase.h>
-	#if defined( CINDER_MAC )
-		#include <CoreVideo/CVOpenGLTextureCache.h>
-		#include <CoreVideo/CVOpenGLTexture.h>
-	#endif
+// Forward declarations of CoreVideo types
+typedef struct __CVBuffer *CVBufferRef;
+typedef CVBufferRef CVImageBufferRef;
+#if defined( CINDER_COCOA_TOUCH )
+	typedef struct __CVOpenGLESTextureCache *CVOpenGLESTextureCacheRef;
+	typedef CVImageBufferRef CVOpenGLESTextureRef;
+#elif defined( CINDER_MAC )
+	typedef struct __CVOpenGLTextureCache *CVOpenGLTextureCacheRef;
+	typedef CVImageBufferRef CVOpenGLTextureRef;
 #endif
+
+namespace cinder { namespace qtime {
 	
 typedef std::shared_ptr<class MovieGl>	MovieGlRef;
 /** \brief QuickTime movie playback as OpenGL textures
@@ -69,14 +71,12 @@ class MovieGl : public MovieBase {
 	virtual void		newFrame( CVImageBufferRef cvImage ) override;
 	virtual void		releaseFrame() override;
 	
-#if defined( CINDER_COCOA )
 #if defined( CINDER_COCOA_TOUCH )
 	CVOpenGLESTextureCacheRef mVideoTextureCacheRef;
 	CVOpenGLESTextureRef mVideoTextureRef;
 #else
 	CVOpenGLTextureCacheRef mVideoTextureCacheRef;
 	CVOpenGLTextureRef mVideoTextureRef;
-#endif
 #endif
 	
 	gl::TextureRef		mTexture;

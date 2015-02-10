@@ -1,14 +1,34 @@
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// OpenGL Mathematics Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Created : 2007-03-05
-// Updated : 2010-02-16
-// Licence : This source is under MIT License
-// File    : glm/gtx/vector_query.inl
-///////////////////////////////////////////////////////////////////////////////////////////////////
-// Dependency:
-// - GLM core
-///////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////
+/// OpenGL Mathematics (glm.g-truc.net)
+///
+/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Permission is hereby granted, free of charge, to any person obtaining a copy
+/// of this software and associated documentation files (the "Software"), to deal
+/// in the Software without restriction, including without limitation the rights
+/// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+/// copies of the Software, and to permit persons to whom the Software is
+/// furnished to do so, subject to the following conditions:
+/// 
+/// The above copyright notice and this permission notice shall be included in
+/// all copies or substantial portions of the Software.
+/// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
+/// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+/// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+/// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+/// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+/// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+/// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+/// THE SOFTWARE.
+///
+/// @ref gtx_vector_query
+/// @file glm/gtx/vector_query.inl
+/// @date 2008-03-10 / 2011-06-07
+/// @author Christophe Riccio
+///////////////////////////////////////////////////////////////////////////////////
 
 #include <cassert>
 
@@ -21,16 +41,16 @@ namespace detail
 	template <typename T, precision P>
 	struct compute_areCollinear<T, P, tvec2>
 	{
-		GLM_FUNC_QUALIFIER static bool call(detail::tvec2<T, P> const & v0, detail::tvec2<T, P> const & v1, T const & epsilon)
+		GLM_FUNC_QUALIFIER static bool call(tvec2<T, P> const & v0, tvec2<T, P> const & v1, T const & epsilon)
 		{
-			return length(cross(detail::tvec3<T, P>(v0, static_cast<T>(0)), detail::tvec3<T, P>(v1, static_cast<T>(0)))) < epsilon;
+			return length(cross(tvec3<T, P>(v0, static_cast<T>(0)), tvec3<T, P>(v1, static_cast<T>(0)))) < epsilon;
 		}
 	};
 
 	template <typename T, precision P>
 	struct compute_areCollinear<T, P, tvec3>
 	{
-		GLM_FUNC_QUALIFIER static bool call(detail::tvec3<T, P> const & v0, detail::tvec3<T, P> const & v1, T const & epsilon)
+		GLM_FUNC_QUALIFIER static bool call(tvec3<T, P> const & v0, tvec3<T, P> const & v1, T const & epsilon)
 		{
 			return length(cross(v0, v1)) < epsilon;
 		}
@@ -39,9 +59,9 @@ namespace detail
 	template <typename T, precision P>
 	struct compute_areCollinear<T, P, tvec4>
 	{
-		GLM_FUNC_QUALIFIER static bool call(detail::tvec4<T, P> const & v0, detail::tvec4<T, P> const & v1, T const & epsilon)
+		GLM_FUNC_QUALIFIER static bool call(tvec4<T, P> const & v0, tvec4<T, P> const & v1, T const & epsilon)
 		{
-			return length(cross(detail::tvec3<T, P>(v0), detail::tvec3<T, P>(v1))) < epsilon;
+			return length(cross(tvec3<T, P>(v0), tvec3<T, P>(v1))) < epsilon;
 		}
 	};
 
@@ -51,9 +71,9 @@ namespace detail
 	template <typename T, precision P>
 	struct compute_isCompNull<T, P, tvec2>
 	{
-		GLM_FUNC_QUALIFIER static detail::tvec2<bool, P> call(detail::tvec2<T, P> const & v, T const & epsilon)
+		GLM_FUNC_QUALIFIER static tvec2<bool, P> call(tvec2<T, P> const & v, T const & epsilon)
 		{
-			return detail::tvec2<bool, P>(
+			return tvec2<bool, P>(
 				(abs(v.x) < epsilon),
 				(abs(v.y) < epsilon));
 		}
@@ -62,9 +82,9 @@ namespace detail
 	template <typename T, precision P>
 	struct compute_isCompNull<T, P, tvec3>
 	{
-		GLM_FUNC_QUALIFIER static detail::tvec3<bool, P> call(detail::tvec3<T, P> const & v, T const & epsilon)
+		GLM_FUNC_QUALIFIER static tvec3<bool, P> call(tvec3<T, P> const & v, T const & epsilon)
 		{
-			return detail::tvec3<bool, P>(
+			return tvec3<bool, P>(
 				(abs(v.x) < epsilon),
 				(abs(v.y) < epsilon),
 				(abs(v.z) < epsilon));
@@ -74,9 +94,9 @@ namespace detail
 	template <typename T, precision P>
 	struct compute_isCompNull<T, P, tvec4>
 	{
-		GLM_FUNC_QUALIFIER static detail::tvec4<bool, P> call(detail::tvec4<T, P> const & v, T const & epsilon)
+		GLM_FUNC_QUALIFIER static tvec4<bool, P> call(tvec4<T, P> const & v, T const & epsilon)
 		{
-			return detail::tvec4<bool, P>(
+			return tvec4<bool, P>(
 				(abs(v.x) < epsilon),
 				(abs(v.y) < epsilon),
 				(abs(v.z) < epsilon),
@@ -151,37 +171,37 @@ namespace detail
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec2<bool, P> isCompNull
+	GLM_FUNC_QUALIFIER tvec2<bool, P> isCompNull
 	(
-		detail::tvec2<T, P> const & v,
+		tvec2<T, P> const & v,
 		T const & epsilon)
 	{
-		return detail::tvec2<bool, P>(
+		return tvec2<bool, P>(
 			abs(v.x) < epsilon,
 			abs(v.y) < epsilon);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<bool, P> isCompNull
+	GLM_FUNC_QUALIFIER tvec3<bool, P> isCompNull
 	(
-		detail::tvec3<T, P> const & v,
+		tvec3<T, P> const & v,
 		T const & epsilon
 	)
 	{
-		return detail::tvec3<bool, P>(
+		return tvec3<bool, P>(
 			abs(v.x) < epsilon,
 			abs(v.y) < epsilon,
 			abs(v.z) < epsilon);
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec4<bool, P> isCompNull
+	GLM_FUNC_QUALIFIER tvec4<bool, P> isCompNull
 	(
-		detail::tvec4<T, P> const & v,
+		tvec4<T, P> const & v,
 		T const & epsilon
 	)
 	{
-		return detail::tvec4<bool, P>(
+		return tvec4<bool, P>(
 			abs(v.x) < epsilon,
 			abs(v.y) < epsilon,
 			abs(v.z) < epsilon,

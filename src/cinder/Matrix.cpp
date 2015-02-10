@@ -36,30 +36,30 @@ namespace cinder {
 //  vectors <firstPoint,secondPoint> and <firstPoint,thirdPoint> are co-linears, an arbitrary twist value will
 //  be chosen.
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> firstFrame( 
-	const glm::detail::tvec3<T,glm::defaultp> &firstPoint, 
-	const glm::detail::tvec3<T,glm::defaultp> &secondPoint,
-	const glm::detail::tvec3<T,glm::defaultp> &thirdPoint 
+glm::tmat4x4<T,glm::defaultp> firstFrame(
+	const glm::tvec3<T,glm::defaultp> &firstPoint, 
+	const glm::tvec3<T,glm::defaultp> &secondPoint,
+	const glm::tvec3<T,glm::defaultp> &thirdPoint 
 )
 {
-    glm::detail::tvec3<T,glm::defaultp> t = normalize( secondPoint - firstPoint );
+    glm::tvec3<T,glm::defaultp> t = normalize( secondPoint - firstPoint );
 
-    glm::detail::tvec3<T,glm::defaultp> n = normalize( cross( t, thirdPoint - firstPoint ) );
+    glm::tvec3<T,glm::defaultp> n = normalize( cross( t, thirdPoint - firstPoint ) );
     if( length( n ) == 0.0f ) {
         int i = fabs( t[0] ) < fabs( t[1] ) ? 0 : 1;
         if( fabs( t[2] ) < fabs( t[i] ) ) i = 2;
 
-        glm::detail::tvec3<T,glm::defaultp> v( (T)0.0, (T)0.0, (T)0.0 ); v[i] = (T)1.0;
+        glm::tvec3<T,glm::defaultp> v( (T)0.0, (T)0.0, (T)0.0 ); v[i] = (T)1.0;
         n = normalize( cross( t, v ) );
     }
 
-    glm::detail::tvec3<T,glm::defaultp> b = cross( t, n );
+    glm::tvec3<T,glm::defaultp> b = cross( t, n );
 
-    glm::detail::tmat4x4<T,glm::defaultp> M;
-	M[0] = glm::detail::tvec4<T,glm::defaultp>( b, 0 );
-	M[1] = glm::detail::tvec4<T,glm::defaultp>( n, 0 );
-	M[2] = glm::detail::tvec4<T,glm::defaultp>( t, 0 );
-	M[3] = glm::detail::tvec4<T,glm::defaultp>( firstPoint, 1 );
+    glm::tmat4x4<T,glm::defaultp> M;
+	M[0] = glm::tvec4<T,glm::defaultp>( b, 0 );
+	M[1] = glm::tvec4<T,glm::defaultp>( n, 0 );
+	M[2] = glm::tvec4<T,glm::defaultp>( t, 0 );
+	M[3] = glm::tvec4<T,glm::defaultp>( firstPoint, 1 );
 
     return M;
 
@@ -71,15 +71,15 @@ glm::detail::tmat4x4<T,glm::defaultp> firstFrame(
 //  frame defined by the previously computed transformation matrix and the
 //  new point and tangent vector along the curve.
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> nextFrame( 
-	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
-	const glm::detail::tvec3<T,glm::defaultp> &curPoint,
-	glm::detail::tvec3<T,glm::defaultp> prevTangent,
-	glm::detail::tvec3<T,glm::defaultp> curTangent 
+glm::tmat4x4<T,glm::defaultp> nextFrame( 
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::tvec3<T,glm::defaultp> &curPoint,
+	glm::tvec3<T,glm::defaultp> prevTangent,
+	glm::tvec3<T,glm::defaultp> curTangent 
 )
 {
-    glm::detail::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
+    glm::tvec3<T,glm::defaultp> axis( 0 );	// Rotation axis.
     T r = 0;										// Rotation angle.
 
     if( ( length( prevTangent ) != 0 ) && ( length( curTangent ) != 0 ) ) {
@@ -95,14 +95,14 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
     }
 
     if( ( length( axis ) != 0 ) && ( r != 0 ) ) {
-        glm::detail::tmat4x4<T,glm::defaultp> R  = glm::rotate( r, axis );
-        glm::detail::tmat4x4<T,glm::defaultp> Tj = glm::translate( curPoint );
-        glm::detail::tmat4x4<T,glm::defaultp> Ti = glm::translate( -prevPoint );
+        glm::tmat4x4<T,glm::defaultp> R  = glm::rotate( r, axis );
+        glm::tmat4x4<T,glm::defaultp> Tj = glm::translate( curPoint );
+        glm::tmat4x4<T,glm::defaultp> Ti = glm::translate( -prevPoint );
 
         return Tj * R * Ti * prevMatrix;
     }
     else {
-        glm::detail::tmat4x4<T,glm::defaultp> Tr = glm::translate( curPoint - prevPoint );
+        glm::tmat4x4<T,glm::defaultp> Tr = glm::translate( curPoint - prevPoint );
 
         return Tr * prevMatrix;
     }
@@ -114,10 +114,10 @@ glm::detail::tmat4x4<T,glm::defaultp> nextFrame(
 //  frame defined by the previously computed transformation matrix and the
 //  last point along the curve.
 template<typename T>
-glm::detail::tmat4x4<T,glm::defaultp> lastFrame( 
-	const glm::detail::tmat4x4<T,glm::defaultp> &prevMatrix, 
-	const glm::detail::tvec3<T,glm::defaultp> &prevPoint, 
-	const glm::detail::tvec3<T,glm::defaultp> &lastPoint 
+glm::tmat4x4<T,glm::defaultp> lastFrame( 
+	const glm::tmat4x4<T,glm::defaultp> &prevMatrix, 
+	const glm::tvec3<T,glm::defaultp> &prevPoint, 
+	const glm::tvec3<T,glm::defaultp> &lastPoint 
 )
 {
     return glm::translate( lastPoint - prevPoint ) * prevMatrix;

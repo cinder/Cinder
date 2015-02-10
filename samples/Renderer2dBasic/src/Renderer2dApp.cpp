@@ -2,6 +2,7 @@
 #include "cinder/ImageIo.h"
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
+	#include <CoreGraphics/CoreGraphics.h>
 #elif defined( CINDER_MSW )
 	#include "cinder/msw/CinderMswGdiplus.h"
 #endif

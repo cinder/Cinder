@@ -5,9 +5,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -119,10 +119,10 @@ class Context {
 	void					pushViewport( const std::pair<ivec2, ivec2> &viewport );
 	//! Duplicates and pushes the top of the Viewport stack
 	void					pushViewport();
-	//! Pops the viewport
-	void					popViewport();
+	//! Pops the viewport. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void					popViewport( bool forceRestore = false );
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the viewport
-	std::pair<ivec2, ivec2>	getViewport();
+	std::pair<ivec2,ivec2>	getViewport();
 
 	//! Sets the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
 	void					setScissor( const std::pair<ivec2, ivec2> &scissor );
@@ -130,8 +130,8 @@ class Context {
 	void					pushScissor( const std::pair<ivec2, ivec2> &scissor );
 	//! Duplicates and pushes the top of the Scissor box stack
 	void					pushScissor();
-	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively	
-	void					popScissor();
+	//! Pushes the scissor box based on a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void					popScissor( bool forceRestore = false );
 	//! Returns a pair<ivec2,ivec2> representing the position of the lower-left corner and the size, respectively of the scissor box
 	std::pair<ivec2, ivec2>	getScissor();
 
@@ -141,10 +141,21 @@ class Context {
 	void					pushCullFace( GLenum face );
 	//! Duplicates and pushes the top of the Cull Face stack.
 	void					pushCullFace();
-	//! Pops the top of the Cull Face stack.
-	void					popCullFace();
+	//! Pops the top of the Cull Face stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void					popCullFace( bool forceRestore = false );
 	//! Returns a GLenum representing the current cull face. Either \c GL_FRONT or \c GL_BACK.
 	GLenum					getCullFace();
+
+	//! Set the winding order defining front-facing polygons. Valid arguments are \c GL_CW and \c GL_CCW. Default is \c GL_CCW.
+	void					frontFace( GLenum mode );
+	//! Push the winding order defining front-facing polygons. Valid arguments are \c GL_CW and \c GL_CCW. Default is \c GL_CCW.
+	void					pushFrontFace( GLenum mode );
+	//! Push the winding order defining front-facing polygons.
+	void					pushFrontFace();
+	//! Pops the winding order defining front-facing polygons. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void					popFrontFace( bool forceRestore = false );
+	//! Returns the winding order defining front-facing polygons, either \c GL_CW or \c GL_CCW (the default).
+	GLenum					getFrontFace();
 
 	//! Analogous to glBindBuffer( \a target, \a id )
 	void		bindBuffer( GLenum target, GLuint id );
@@ -186,8 +197,8 @@ class Context {
 	void			pushGlslProg( const GlslProgRef &prog );
 	//! Duplicates and pushes the top of the GlslProg stack.
 	void			pushGlslProg();
-	//! Pops the GlslProg stack
-	void			popGlslProg();
+	//! Pops the GlslProg stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void			popGlslProg( bool forceRestore = false );
 	//! Returns the currently bound GlslProg
 	GlslProgRef		getGlslProg();
 	//! Used by object tracking.
@@ -225,8 +236,8 @@ class Context {
 	void		pushTextureBinding( GLenum target, uint8_t textureUnit );
 	//! Pushes and binds \a textureId for the target \a target for texture unit \a textureUnit
 	void		pushTextureBinding( GLenum target, GLuint textureId, uint8_t textureUnit );
-	//! Pops the texture binding for the target \a target for texture unit \a textureUnit
-	void		popTextureBinding( GLenum target, uint8_t textureUnit );
+	//! Pops the texture binding for the target \a target for texture unit \a textureUnit. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popTextureBinding( GLenum target, uint8_t textureUnit, bool forceRestore = false );
 	//! Returns the current texture binding for \a target for the active texture unit. If not cached, queries the GL for the current value (and caches it).
 	GLuint		getTextureBinding( GLenum target );
 	//! Returns the current texture binding for \a target for texture unit \a textureUnit. If not cached, queries the GL for the current value (and caches it).
@@ -242,8 +253,8 @@ class Context {
 	void		pushActiveTexture( uint8_t textureUnit );
 	//! Duplicates and pushes the active texture unit
 	void		pushActiveTexture();
-	//! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0
-	void		popActiveTexture();	
+	//! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popActiveTexture( bool forceRestore = false );	
 	//! Returns the active texture unit with values relative to \c 0, \em not GL_TEXTURE0
 	uint8_t		getActiveTexture();
 
@@ -272,10 +283,10 @@ class Context {
 	void		setBoolState( GLenum cap, GLboolean value );
 	//! Pushes and sets the state stack for OpenGL capability \a cap to \a value.
 	void		pushBoolState( GLenum cap, GLboolean value );
-	//! Duplicates and pushes the state stack for OpenGL capability \a cap
+	//! Duplicates and pushes the state stack for OpenGL capability \a cap.
 	void		pushBoolState( GLenum cap );
-	//! Pops the state stack for OpenGL capability \a cap
-	void		popBoolState( GLenum cap );
+	//! Pops the state stack for OpenGL capability \a cap. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popBoolState( GLenum cap, bool forceRestore = false );
 	//! Synonym for setBoolState(). Enables or disables OpenGL capability \a cap.
 	void		enable( GLenum cap, GLboolean value = true );
 	//! Analogous to glIsEnabled(). Returns whether a given OpenGL capability is enabled or not
@@ -291,18 +302,36 @@ class Context {
 	void		pushBlendFuncSeparate( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	//! Duplicates and pushes the glBlendFunc state stack.
 	void		pushBlendFuncSeparate();
-	//! Analogous to glBlendFuncSeparate, but pushes values rather than replaces them
-	void		popBlendFuncSeparate();
+	//! Pops the current blend functions. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popBlendFuncSeparate( bool forceRestore = false );
 	//! Returns the current values for glBendFuncs
 	void		getBlendFuncSeparate( GLenum *resultSrcRGB, GLenum *resultDstRGB, GLenum *resultSrcAlpha, GLenum *resultDstAlpha );
+
+	//! Sets the current line width
+	void		lineWidth( float lineWidth );
+	//! Pushes and sets the current line width
+	void		pushLineWidth( float lineWidth );
+	//! Duplicates and pushes the current line width.
+	void		pushLineWidth();
+	//! Sets the current line width. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popLineWidth( bool forceRestore = false );	
+	//! Returns the current line width.
+	float		getLineWidth();
 
 	//! Analogous to glDepthMask()
 	void		depthMask( GLboolean enable );
 
 #if ! defined( CINDER_GL_ES )
-	//! Parallels glPolygonMode()
+	//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
 	void		polygonMode( GLenum face, GLenum mode );
-	GLenum		getPolygonMode( GLenum face ) const;
+	//! Pushes the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
+	void		pushPolygonMode( GLenum face, GLenum mode );
+	//! Pushes the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK.
+	void		pushPolygonMode( GLenum face );
+	//! Pops the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popPolygonMode( GLenum face, bool forceRestore = false );
+	//! Returns the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK.
+	GLenum		getPolygonMode( GLenum face );
 #endif
 	
 	void		sanityCheck();
@@ -414,14 +443,14 @@ class Context {
 	std::vector<GLint>			mReadFramebufferStack, mDrawFramebufferStack;
 #endif
 
-	// Face culling stack.
 	std::vector<GLenum>			mCullFaceStack;
+	std::vector<GLenum>			mFrontFaceStack;
+	std::vector<GLenum>			mPolygonModeStack;
 	
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>
 	std::map<uint8_t,std::map<GLenum,std::vector<GLint>>>	mTextureBindingStack;
 	std::vector<uint8_t>					mActiveTextureStack;
-	GLenum						mCachedFrontPolygonMode, mCachedBackPolygonMode;
 	
 	VaoRef						mDefaultVao;
 	VboRef						mDefaultArrayVbo[4], mDefaultElementVbo;
@@ -432,7 +461,7 @@ class Context {
 
   private:
 	Context( const std::shared_ptr<PlatformData> &platformData );
-  
+
 	void	allocateDrawTextureVboAndVao();
 
 	std::shared_ptr<PlatformData>	mPlatformData;
@@ -447,6 +476,7 @@ class Context {
 	std::vector<mat4>		mModelMatrixStack;
 	std::vector<mat4>		mViewMatrixStack;	
 	std::vector<mat4>		mProjectionMatrixStack;
+	std::vector<float>		mLineWidthStack;
 
 	// Debug
 	GLenum						mDebugLogSeverity;

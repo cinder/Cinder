@@ -26,6 +26,7 @@
 #include "cinder/ip/Fill.h"
 #include "cinder/ip/Premultiply.h"
 #include "cinder/Utilities.h"
+#include "cinder/Noncopyable.h"
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
@@ -49,7 +50,6 @@ static const float MAX_SIZE = 1000000.0f;
 
 #endif
 
-#include <boost/noncopyable.hpp>
 #include <limits.h>
 
 using namespace std;
@@ -58,7 +58,7 @@ namespace cinder {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // TextManager
-class TextManager : private boost::noncopyable
+class TextManager : private Noncopyable
 {
  public:
 	TextManager();

@@ -41,10 +41,8 @@
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
 
-
 #if defined( CINDER_MAC )
-	#include <ApplicationServices/ApplicationServices.h>
-	#include <CoreFoundation/CoreFoundation.h>
+	#include <CoreGraphics/CGGeometry.h>
 	#if defined __OBJC__
 		@class AppImplCocoaRendererQuartz;
 		@class NSView;
@@ -54,6 +52,7 @@
 	#endif
 	typedef struct _CGLContextObject       *CGLContextObj;
 	typedef struct _CGLPixelFormatObject   *CGLPixelFormatObj;
+	typedef struct CGContext				*CGContextRef;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined __OBJC__
 		typedef struct CGContext * CGContextRef;

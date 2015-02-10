@@ -26,10 +26,6 @@
 
 #include "cinder/Cinder.h"
 
-#if defined( CINDER_COCOA )
-	#include <CoreFoundation/CoreFoundation.h>
-#endif
-
 namespace cinder {
 
 /** \brief A high-resolution timer class **/
@@ -53,7 +49,7 @@ class Timer {
   private:
 	bool	mIsStopped;
 #if defined( CINDER_COCOA )
-	::CFAbsoluteTime	mStartTime, mEndTime;
+	double	mStartTime, mEndTime;
 #elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	double				mStartTime, mEndTime, mInvNativeFreq;
 #endif

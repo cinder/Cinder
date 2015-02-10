@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -33,38 +37,33 @@
 namespace glm
 {
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> translate
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> translate
 	(
-		detail::tmat4x4<T, P> const & m,
-		detail::tvec3<T, P> const & v
+		tmat4x4<T, P> const & m,
+		tvec3<T, P> const & v
 	)
 	{
-		detail::tmat4x4<T, P> Result(m);
+		tmat4x4<T, P> Result(m);
 		Result[3] = m[0] * v[0] + m[1] * v[1] + m[2] * v[2] + m[3];
 		return Result;
 	}
 	
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> rotate
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> rotate
 	(
-		detail::tmat4x4<T, P> const & m,
-		T const & angle,
-		detail::tvec3<T, P> const & v
+		tmat4x4<T, P> const & m,
+		T angle,
+		tvec3<T, P> const & v
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		T a = angle;
-#else
-#		pragma message("GLM: rotate function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T a = radians(angle);
-#endif
-		T c = cos(a);
-		T s = sin(a);
+		T const a = angle;
+		T const c = cos(a);
+		T const s = sin(a);
 
-		detail::tvec3<T, P> axis(normalize(v));
-		detail::tvec3<T, P> temp((T(1) - c) * axis);
+		tvec3<T, P> axis(normalize(v));
+		tvec3<T, P> temp((T(1) - c) * axis);
 
-		detail::tmat4x4<T, P> Rotate(detail::tmat4x4<T, P>::_null);
+		tmat4x4<T, P> Rotate(uninitialize);
 		Rotate[0][0] = c + temp[0] * axis[0];
 		Rotate[0][1] = 0 + temp[0] * axis[1] + s * axis[2];
 		Rotate[0][2] = 0 + temp[0] * axis[2] - s * axis[1];
@@ -77,7 +76,7 @@ namespace glm
 		Rotate[2][1] = 0 + temp[2] * axis[1] - s * axis[0];
 		Rotate[2][2] = c + temp[2] * axis[2];
 
-		detail::tmat4x4<T, P> Result(detail::tmat4x4<T, P>::_null);
+		tmat4x4<T, P> Result(uninitialize);
 		Result[0] = m[0] * Rotate[0][0] + m[1] * Rotate[0][1] + m[2] * Rotate[0][2];
 		Result[1] = m[0] * Rotate[1][0] + m[1] * Rotate[1][1] + m[2] * Rotate[1][2];
 		Result[2] = m[0] * Rotate[2][0] + m[1] * Rotate[2][1] + m[2] * Rotate[2][2];
@@ -86,24 +85,19 @@ namespace glm
 	}
 		
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> rotate_slow
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> rotate_slow
 	(
-		detail::tmat4x4<T, P> const & m,
-		T const & angle, 
-		detail::tvec3<T, P> const & v
+		tmat4x4<T, P> const & m,
+		T angle, 
+		tvec3<T, P> const & v
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
 		T const a = angle;
-#else
-#		pragma message("GLM: rotate_slow function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T const a = radians(angle);
-#endif
-		T c = cos(a);
-		T s = sin(a);
-		detail::tmat4x4<T, P> Result;
+		T const c = cos(a);
+		T const s = sin(a);
+		tmat4x4<T, P> Result;
 
-		detail::tvec3<T, P> axis = normalize(v);
+		tvec3<T, P> axis = normalize(v);
 
 		Result[0][0] = c + (1 - c)      * axis.x     * axis.x;
 		Result[0][1] = (1 - c) * axis.x * axis.y + s * axis.z;
@@ -120,18 +114,18 @@ namespace glm
 		Result[2][2] = c + (1 - c) * axis.z * axis.z;
 		Result[2][3] = 0;
 
-		Result[3] = detail::tvec4<T, P>(0, 0, 0, 1);
+		Result[3] = tvec4<T, P>(0, 0, 0, 1);
 		return m * Result;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> scale
-		(
-		detail::tmat4x4<T, P> const & m,
-		detail::tvec3<T, P> const & v
-		)
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> scale
+	(
+		tmat4x4<T, P> const & m,
+		tvec3<T, P> const & v
+	)
 	{
-		detail::tmat4x4<T, P> Result(detail::tmat4x4<T, P>::_null);
+		tmat4x4<T, P> Result(uninitialize);
 		Result[0] = m[0] * v[0];
 		Result[1] = m[1] * v[1];
 		Result[2] = m[2] * v[2];
@@ -140,13 +134,13 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> scale_slow
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> scale_slow
 	(
-		detail::tmat4x4<T, P> const & m,
-		detail::tvec3<T, P> const & v
+		tmat4x4<T, P> const & m,
+		tvec3<T, P> const & v
 	)
 	{
-		detail::tmat4x4<T, P> Result(T(1));
+		tmat4x4<T, P> Result(T(1));
 		Result[0][0] = v.x;
 		Result[1][1] = v.y;
 		Result[2][2] = v.z;
@@ -154,20 +148,20 @@ namespace glm
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> ortho
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> ortho
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top,
-		T const & zNear,
-		T const & zFar
+		T left,
+		T right,
+		T bottom,
+		T top,
+		T zNear,
+		T zFar
 	)
 	{
-		detail::tmat4x4<T, defaultp> Result(1);
+		tmat4x4<T, defaultp> Result(1);
 		Result[0][0] = static_cast<T>(2) / (right - left);
 		Result[1][1] = static_cast<T>(2) / (top - bottom);
-		Result[2][2] = - T(2) / (zFar - zNear);
+		Result[2][2] = - static_cast<T>(2) / (zFar - zNear);
 		Result[3][0] = - (right + left) / (right - left);
 		Result[3][1] = - (top + bottom) / (top - bottom);
 		Result[3][2] = - (zFar + zNear) / (zFar - zNear);
@@ -175,35 +169,35 @@ namespace glm
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> ortho
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> ortho
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top
+		T left,
+		T right,
+		T bottom,
+		T top
 	)
 	{
-		detail::tmat4x4<T, defaultp> Result(1);
+		tmat4x4<T, defaultp> Result(1);
 		Result[0][0] = static_cast<T>(2) / (right - left);
 		Result[1][1] = static_cast<T>(2) / (top - bottom);
-		Result[2][2] = - T(1);
+		Result[2][2] = - static_cast<T>(1);
 		Result[3][0] = - (right + left) / (right - left);
 		Result[3][1] = - (top + bottom) / (top - bottom);
 		return Result;
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> frustum
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> frustum
 	(
-		T const & left,
-		T const & right,
-		T const & bottom,
-		T const & top,
-		T const & nearVal,
-		T const & farVal
+		T left,
+		T right,
+		T bottom,
+		T top,
+		T nearVal,
+		T farVal
 	)
 	{
-		detail::tmat4x4<T, defaultp> Result(0);
+		tmat4x4<T, defaultp> Result(0);
 		Result[0][0] = (static_cast<T>(2) * nearVal) / (right - left);
 		Result[1][1] = (static_cast<T>(2) * nearVal) / (top - bottom);
 		Result[2][0] = (right + left) / (right - left);
@@ -215,27 +209,20 @@ namespace glm
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> perspective
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspective
 	(
-		T const & fovy,
-		T const & aspect,
-		T const & zNear,
-		T const & zFar
+		T fovy,
+		T aspect,
+		T zNear,
+		T zFar
 	)
 	{
-		assert(aspect != static_cast<T>(0));
-		assert(zFar != zNear);
+		assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+		assert(zFar > zNear);
 
-#ifdef GLM_FORCE_RADIANS
-		T const rad = fovy;
-#else
-#		pragma message("GLM: perspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T const rad = glm::radians(fovy);
-#endif
+		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
 
-		T tanHalfFovy = tan(rad / static_cast<T>(2));
-
-		detail::tmat4x4<T, defaultp> Result(static_cast<T>(0));
+		tmat4x4<T, defaultp> Result(static_cast<T>(0));
 		Result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
 		Result[1][1] = static_cast<T>(1) / (tanHalfFovy);
 		Result[2][2] = - (zFar + zNear) / (zFar - zNear);
@@ -245,29 +232,24 @@ namespace glm
 	}
 	
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> perspectiveFov
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveFov
 	(
-		T const & fov,
-		T const & width,
-		T const & height,
-		T const & zNear,
-		T const & zFar
+		T fov,
+		T width,
+		T height,
+		T zNear,
+		T zFar
 	)
 	{
 		assert(width > static_cast<T>(0));
 		assert(height > static_cast<T>(0));
 		assert(fov > static_cast<T>(0));
 	
-#ifdef GLM_FORCE_RADIANS
-		T rad = fov;
-#else
-#		pragma message("GLM: perspectiveFov function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T rad = glm::radians(fov);
-#endif
-		T h = glm::cos(static_cast<T>(0.5) * rad) / glm::sin(static_cast<T>(0.5) * rad);
-		T w = h * height / width; ///todo max(width , Height) / min(width , Height)?
+		T const rad = fov;
+		T const h = glm::cos(static_cast<T>(0.5) * rad) / glm::sin(static_cast<T>(0.5) * rad);
+		T const w = h * height / width; ///todo max(width , Height) / min(width , Height)?
 
-		detail::tmat4x4<T, defaultp> Result(static_cast<T>(0));
+		tmat4x4<T, defaultp> Result(static_cast<T>(0));
 		Result[0][0] = w;
 		Result[1][1] = h;
 		Result[2][2] = - (zFar + zNear) / (zFar - zNear);
@@ -277,25 +259,20 @@ namespace glm
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> infinitePerspective
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> infinitePerspective
 	(
 		T fovy,
 		T aspect,
 		T zNear
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		T const range = tan(fovy / T(2)) * zNear;	
-#else
-#		pragma message("GLM: infinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T const range = tan(radians(fovy / T(2))) * zNear;	
-#endif
-		T left = -range * aspect;
-		T right = range * aspect;
-		T bottom = -range;
-		T top = range;
+		T const range = tan(fovy / T(2)) * zNear;
+		T const left = -range * aspect;
+		T const right = range * aspect;
+		T const bottom = -range;
+		T const top = range;
 
-		detail::tmat4x4<T, defaultp> Result(T(0));
+		tmat4x4<T, defaultp> Result(T(0));
 		Result[0][0] = (T(2) * zNear) / (right - left);
 		Result[1][1] = (T(2) * zNear) / (top - bottom);
 		Result[2][2] = - T(1);
@@ -306,7 +283,7 @@ namespace glm
 
 	// Infinite projection matrix: http://www.terathon.com/gdc07_lengyel.pdf
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> tweakedInfinitePerspective
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> tweakedInfinitePerspective
 	(
 		T fovy,
 		T aspect,
@@ -314,18 +291,13 @@ namespace glm
 		T ep
 	)
 	{
-#ifdef GLM_FORCE_RADIANS
-		T range = tan(fovy / T(2)) * zNear;	
-#else
-#		pragma message("GLM: tweakedInfinitePerspective function taking degrees as a parameter is deprecated. #define GLM_FORCE_RADIANS before including GLM headers to remove this message.")
-		T range = tan(radians(fovy / T(2))) * zNear;	
-#endif
-		T left = -range * aspect;
-		T right = range * aspect;
-		T bottom = -range;
-		T top = range;
+		T const range = tan(fovy / T(2)) * zNear;	
+		T const left = -range * aspect;
+		T const right = range * aspect;
+		T const bottom = -range;
+		T const top = range;
 
-		detail::tmat4x4<T, defaultp> Result(T(0));
+		tmat4x4<T, defaultp> Result(T(0));
 		Result[0][0] = (static_cast<T>(2) * zNear) / (right - left);
 		Result[1][1] = (static_cast<T>(2) * zNear) / (top - bottom);
 		Result[2][2] = ep - static_cast<T>(1);
@@ -335,7 +307,7 @@ namespace glm
 	}
 
 	template <typename T>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, defaultp> tweakedInfinitePerspective
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> tweakedInfinitePerspective
 	(
 		T fovy,
 		T aspect,
@@ -346,15 +318,15 @@ namespace glm
 	}
 
 	template <typename T, typename U, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> project
+	GLM_FUNC_QUALIFIER tvec3<T, P> project
 	(
-		detail::tvec3<T, P> const & obj,
-		detail::tmat4x4<T, P> const & model,
-		detail::tmat4x4<T, P> const & proj,
-		detail::tvec4<U, P> const & viewport
+		tvec3<T, P> const & obj,
+		tmat4x4<T, P> const & model,
+		tmat4x4<T, P> const & proj,
+		tvec4<U, P> const & viewport
 	)
 	{
-		detail::tvec4<T, P> tmp = detail::tvec4<T, P>(obj, T(1));
+		tvec4<T, P> tmp = tvec4<T, P>(obj, T(1));
 		tmp = model * tmp;
 		tmp = proj * tmp;
 
@@ -363,68 +335,68 @@ namespace glm
 		tmp[0] = tmp[0] * T(viewport[2]) + T(viewport[0]);
 		tmp[1] = tmp[1] * T(viewport[3]) + T(viewport[1]);
 
-		return detail::tvec3<T, P>(tmp);
+		return tvec3<T, P>(tmp);
 	}
 
 	template <typename T, typename U, precision P>
-	GLM_FUNC_QUALIFIER detail::tvec3<T, P> unProject
+	GLM_FUNC_QUALIFIER tvec3<T, P> unProject
 	(
-		detail::tvec3<T, P> const & win,
-		detail::tmat4x4<T, P> const & model,
-		detail::tmat4x4<T, P> const & proj,
-		detail::tvec4<U, P> const & viewport
+		tvec3<T, P> const & win,
+		tmat4x4<T, P> const & model,
+		tmat4x4<T, P> const & proj,
+		tvec4<U, P> const & viewport
 	)
 	{
-		detail::tmat4x4<T, P> Inverse = inverse(proj * model);
+		tmat4x4<T, P> Inverse = inverse(proj * model);
 
-		detail::tvec4<T, P> tmp = detail::tvec4<T, P>(win, T(1));
+		tvec4<T, P> tmp = tvec4<T, P>(win, T(1));
 		tmp.x = (tmp.x - T(viewport[0])) / T(viewport[2]);
 		tmp.y = (tmp.y - T(viewport[1])) / T(viewport[3]);
 		tmp = tmp * T(2) - T(1);
 
-		detail::tvec4<T, P> obj = Inverse * tmp;
+		tvec4<T, P> obj = Inverse * tmp;
 		obj /= obj.w;
 
-		return detail::tvec3<T, P>(obj);
+		return tvec3<T, P>(obj);
 	}
 
 	template <typename T, precision P, typename U>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> pickMatrix
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> pickMatrix
 	(
-		detail::tvec2<T, P> const & center,
-		detail::tvec2<T, P> const & delta,
-		detail::tvec4<U, P> const & viewport
+		tvec2<T, P> const & center,
+		tvec2<T, P> const & delta,
+		tvec4<U, P> const & viewport
 	)
 	{
 		assert(delta.x > T(0) && delta.y > T(0));
-		detail::tmat4x4<T, P> Result(1.0f);
+		tmat4x4<T, P> Result(1.0f);
 
 		if(!(delta.x > T(0) && delta.y > T(0)))
 			return Result; // Error
 
-		detail::tvec3<T, P> Temp(
+		tvec3<T, P> Temp(
 			(T(viewport[2]) - T(2) * (center.x - T(viewport[0]))) / delta.x,
 			(T(viewport[3]) - T(2) * (center.y - T(viewport[1]))) / delta.y,
 			T(0));
 
 		// Translate and scale the picked region to the entire window
 		Result = translate(Result, Temp);
-		return scale(Result, detail::tvec3<T, P>(T(viewport[2]) / delta.x, T(viewport[3]) / delta.y, T(1)));
+		return scale(Result, tvec3<T, P>(T(viewport[2]) / delta.x, T(viewport[3]) / delta.y, T(1)));
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER detail::tmat4x4<T, P> lookAt
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> lookAt
 	(
-		detail::tvec3<T, P> const & eye,
-		detail::tvec3<T, P> const & center,
-		detail::tvec3<T, P> const & up
+		tvec3<T, P> const & eye,
+		tvec3<T, P> const & center,
+		tvec3<T, P> const & up
 	)
 	{
-		detail::tvec3<T, P> f(normalize(center - eye));
-		detail::tvec3<T, P> s(normalize(cross(f, up)));
-		detail::tvec3<T, P> u(cross(s, f));
+		tvec3<T, P> const f(normalize(center - eye));
+		tvec3<T, P> const s(normalize(cross(f, up)));
+		tvec3<T, P> const u(cross(s, f));
 
-		detail::tmat4x4<T, P> Result(1);
+		tmat4x4<T, P> Result(1);
 		Result[0][0] = s.x;
 		Result[1][0] = s.y;
 		Result[2][0] = s.z;

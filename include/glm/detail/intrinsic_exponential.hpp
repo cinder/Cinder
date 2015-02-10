@@ -21,13 +21,12 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/core/intrinsic_exponential.hpp
+/// @file glm/detail/intrinsic_exponential.hpp
 /// @date 2009-05-11 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef glm_detail_intrinsic_exponential
-#define glm_detail_intrinsic_exponential
+#pragma once
 
 #include "setup.hpp"
 
@@ -76,4 +75,3 @@ GLM_FUNC_QUALIFIER __m128 sse_normalize_fast_ps(  float * RESTRICT vOut, float *
 }//namespace glm
 
 #endif//GLM_ARCH
-#endif//glm_detail_intrinsic_exponential

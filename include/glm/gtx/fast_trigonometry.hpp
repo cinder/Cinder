@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,11 +39,10 @@
 /// <glm/gtx/fast_trigonometry.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_fast_trigonometry
-#define GLM_GTX_fast_trigonometry
+#pragma once
 
 // Dependency:
-#include "../glm.hpp"
+#include "../gtc/constants.hpp"
 
 #if(defined(GLM_MESSAGES) && !defined(GLM_EXT_INCLUDED))
 #	pragma message("GLM: GLM_GTX_fast_trigonometry extension included")
@@ -50,51 +53,52 @@ namespace glm
 	/// @addtogroup gtx_fast_trigonometry
 	/// @{
 
-	//! Faster than the common sin function but less accurate. 
-	//! Defined between -2pi and 2pi. 
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Wrap an angle to [0 2pi[
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastSin(const T& angle);
+	GLM_FUNC_DECL T wrapAngle(T angle);
 
-	//! Faster than the common cos function but less accurate.
-	//! Defined between -2pi and 2pi.
-	//! From GLM_GTX_fast_trigonometry extension.
-	template <typename T> 
-	GLM_FUNC_DECL T fastCos(const T& angle);
+	/// Faster than the common sin function but less accurate.
+	/// From GLM_GTX_fast_trigonometry extension.
+	template <typename T>
+	GLM_FUNC_DECL T fastSin(T angle);
 
-	//! Faster than the common tan function but less accurate. 
-	//! Defined between -2pi and 2pi. 
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Faster than the common cos function but less accurate.
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastTan(const T& angle);
+	GLM_FUNC_DECL T fastCos(T angle);
 
-	//! Faster than the common asin function but less accurate. 
-	//! Defined between -2pi and 2pi.
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Faster than the common tan function but less accurate. 
+	/// Defined between -2pi and 2pi. 
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastAsin(const T& angle);
+	GLM_FUNC_DECL T fastTan(T angle);
 
-	//! Faster than the common acos function but less accurate. 
-	//! Defined between -2pi and 2pi. 
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Faster than the common asin function but less accurate. 
+	/// Defined between -2pi and 2pi.
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastAcos(const T& angle);
+	GLM_FUNC_DECL T fastAsin(T angle);
 
-	//! Faster than the common atan function but less accurate.
-	//! Defined between -2pi and 2pi. 
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Faster than the common acos function but less accurate. 
+	/// Defined between -2pi and 2pi. 
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastAtan(const T& y, const T& x);
+	GLM_FUNC_DECL T fastAcos(T angle);
 
-	//! Faster than the common atan function but less accurate. 
-	//! Defined between -2pi and 2pi.
-	//! From GLM_GTX_fast_trigonometry extension.
+	/// Faster than the common atan function but less accurate.
+	/// Defined between -2pi and 2pi. 
+	/// From GLM_GTX_fast_trigonometry extension.
 	template <typename T> 
-	GLM_FUNC_DECL T fastAtan(const T& angle);
+	GLM_FUNC_DECL T fastAtan(T y, T x);
+
+	/// Faster than the common atan function but less accurate. 
+	/// Defined between -2pi and 2pi.
+	/// From GLM_GTX_fast_trigonometry extension.
+	template <typename T> 
+	GLM_FUNC_DECL T fastAtan(T angle);
 
 	/// @}
 }//namespace glm
 
 #include "fast_trigonometry.inl"
-
-#endif//GLM_GTX_fast_trigonometry

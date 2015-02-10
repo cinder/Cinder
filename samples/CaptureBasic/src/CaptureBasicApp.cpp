@@ -52,7 +52,13 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 void CaptureBasicApp::update()
 {
 	if( mCapture && mCapture->checkNewFrame() ) {
-		mTexture = gl::Texture::create( *mCapture->getSurface() );
+		if( ! mTexture ) {
+			// Capture images come back as top-down, and it's more efficient to keep them that way
+			mTexture = gl::Texture::create( *mCapture->getSurface(), gl::Texture::Format().loadTopDown() );
+		}
+		else {
+			mTexture->update( *mCapture->getSurface() );
+		}
 	}
 }
 

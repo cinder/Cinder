@@ -12,6 +12,10 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
+/// Restrictions:
+///		By making use of the Software for military purposes, you choose to make
+///		a Bunny unhappy.
+/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -35,8 +39,7 @@
 /// <glm/gtx/gradient_paint.hpp> need to be included to use these functionalities.
 ///////////////////////////////////////////////////////////////////////////////////
 
-#ifndef GLM_GTX_gradient_paint
-#define GLM_GTX_gradient_paint
+#pragma once
 
 // Dependency:
 #include "../glm.hpp"
@@ -55,22 +58,20 @@ namespace glm
 	/// @see - gtx_gradient_paint
 	template <typename T, precision P>
 	GLM_FUNC_DECL T radialGradient(
-		detail::tvec2<T, P> const & Center,
+		tvec2<T, P> const & Center,
 		T const & Radius,
-		detail::tvec2<T, P> const & Focal,
-		detail::tvec2<T, P> const & Position);
+		tvec2<T, P> const & Focal,
+		tvec2<T, P> const & Position);
 
 	/// Return a color from a linear gradient.
 	/// @see - gtx_gradient_paint
 	template <typename T, precision P>
 	GLM_FUNC_DECL T linearGradient(
-		detail::tvec2<T, P> const & Point0,
-		detail::tvec2<T, P> const & Point1,
-		detail::tvec2<T, P> const & Position);
+		tvec2<T, P> const & Point0,
+		tvec2<T, P> const & Point1,
+		tvec2<T, P> const & Position);
 
 	/// @}
 }// namespace glm
 
 #include "gradient_paint.inl"
-
-#endif//GLM_GTX_gradient_paint

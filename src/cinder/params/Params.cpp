@@ -71,8 +71,62 @@ namespace {
 #undef SYNONYM
 #undef HOMONYM
 
+namespace {
+void pushGlState()
+{
+	auto ctx = gl::context();
+	
+	ctx->pushGlslProg();
+	ctx->pushViewport();
+	ctx->pushScissor();
+	ctx->pushLineWidth();
+	ctx->pushActiveTexture();
+	ctx->pushBlendFuncSeparate();
+	ctx->pushCullFace();
+	ctx->pushFrontFace();
+	ctx->pushTextureBinding( GL_TEXTURE_2D, 0 );
+	ctx->pushBoolState( GL_SCISSOR_TEST );
+	ctx->pushBoolState( GL_CULL_FACE );
+#if ! defined( CINDER_GL_ANGLE )
+	ctx->pushBoolState( GL_LINE_SMOOTH );
+#endif
+	ctx->pushBoolState( GL_DEPTH_TEST );
+	ctx->pushBoolState( GL_BLEND );
+	ctx->pushBoolState( GL_CULL_FACE );
+}
+
+void popGlState()
+{
+	auto ctx = gl::context();
+	
+	ctx->popBoolState( GL_CULL_FACE, true );
+	ctx->popBoolState( GL_BLEND, true );
+	ctx->popBoolState( GL_DEPTH_TEST, true );
+#if ! defined( CINDER_GL_ANGLE )
+	ctx->pushBoolState( GL_LINE_SMOOTH );
+#endif
+	ctx->popBoolState( GL_CULL_FACE, true );
+	ctx->popBoolState( GL_SCISSOR_TEST, true );
+	ctx->popTextureBinding( GL_TEXTURE_2D, 0, true );
+	ctx->popFrontFace( true );
+	ctx->popCullFace( true );
+	ctx->popBlendFuncSeparate( true );
+	ctx->popActiveTexture( true );
+	ctx->popLineWidth( true );
+	ctx->popScissor( true );
+	ctx->popViewport( true );
+	ctx->popGlslProg( true );
+	
+	ctx->restoreInvalidatedVao();
+	ctx->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
+	ctx->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );	
+}
+} // anonymous namespace
+
 void mouseDown( int twWindowId, app::MouseEvent &event )
 {
+	pushGlState();
+	
 	TwSetCurrentWindow( twWindowId );
 
 	TwMouseButtonID button;
@@ -83,10 +137,14 @@ void mouseDown( int twWindowId, app::MouseEvent &event )
 	else
 		button = TW_MOUSE_MIDDLE;
 	event.setHandled( TwMouseButton( TW_MOUSE_PRESSED, button ) != 0 );
+	
+	popGlState();
 }
 
 void mouseUp( int twWindowId, app::MouseEvent &event )
 {
+	pushGlState();
+	
 	TwSetCurrentWindow( twWindowId );
 
 	TwMouseButtonID button;
@@ -97,29 +155,41 @@ void mouseUp( int twWindowId, app::MouseEvent &event )
 	else
 		button = TW_MOUSE_MIDDLE;
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
+	
+	popGlState();
 }
 
 void mouseWheel( int twWindowId, app::MouseEvent &event )
 {
+	pushGlState();
+
 	TwSetCurrentWindow( twWindowId );
 
 	static float sWheelPos = 0;
 	sWheelPos += event.getWheelIncrement();
 	event.setHandled( TwMouseWheel( (int)(sWheelPos) ) != 0 );
+
+	popGlState();
 }
 
 void mouseMove( weak_ptr<app::Window> winWeak, int twWindowId, app::MouseEvent &event )
 {
+	pushGlState();
+	
 	TwSetCurrentWindow( twWindowId );
 
 	auto win = winWeak.lock();
 	if( win ) {
 		event.setHandled( TwMouseMotion( win->toPixels( event.getX() ), win->toPixels( event.getY() ) ) != 0 );
 	}
+	
+	popGlState();
 }
 
 void keyDown( int twWindowId, app::KeyEvent &event )
 {
+	pushGlState();
+
 	TwSetCurrentWindow( twWindowId );
 
 	int kmod = 0;
@@ -134,15 +204,21 @@ void keyDown( int twWindowId, app::KeyEvent &event )
                 ? specialKeys[event.getCode()]
                 : event.getChar(),
             kmod ) != 0 );
+
+	popGlState();
 }
 
 void resize( weak_ptr<app::Window> winWeak, int twWindowId )
 {
+	pushGlState();
+
 	TwSetCurrentWindow( twWindowId );
 
 	auto win = winWeak.lock();
 	if( win )
 		TwWindowSize( win->toPixels( win->getWidth() ), win->toPixels( win->getHeight() ) );
+		
+	popGlState();
 }
 
 void TW_CALL implStdStringToClient( std::string& destinationClientString, const std::string& sourceLibraryString )
@@ -297,12 +373,10 @@ void InterfaceGl::init( app::WindowRef window, const std::string &title, const i
 void InterfaceGl::draw()
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
+	pushGlState();
 	TwDraw();
-	// due to a bug in Ant we need to restore the currently bound VAO as well as the buffer bindings
-	gl::context()->restoreInvalidatedVao();
-	gl::context()->restoreInvalidatedBufferBinding( GL_ARRAY_BUFFER );
-	gl::context()->restoreInvalidatedBufferBinding( GL_ELEMENT_ARRAY_BUFFER );	
+	popGlState();
 }
 
 void InterfaceGl::show( bool visible )

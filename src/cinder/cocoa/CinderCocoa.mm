@@ -29,6 +29,7 @@
 	#import <Cocoa/Cocoa.h>
 	#import <CoreVideo/CVPixelBuffer.h>
 	#import <AppKit/AppKit.h>
+	#import <ApplicationServices/ApplicationServices.h>
 	#include <objc/objc-auto.h>
 #else
 	#import <UIKit/UIKit.h>
@@ -407,7 +408,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 	::CGImageRetain( imageRef );
 	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
 	
-	setSize( ::CGImageGetWidth( mImageRef.get() ), ::CGImageGetHeight( mImageRef.get() ) );
+	setSize( (int32_t)::CGImageGetWidth( mImageRef.get() ), (int32_t)::CGImageGetHeight( mImageRef.get() ) );
 	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef.get() );
 	size_t bpp = ::CGImageGetBitsPerPixel( mImageRef.get() );
 
@@ -496,7 +497,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 
 void ImageSourceCgImage::load( ImageTargetRef target )
 {
-	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef.get() );
+	int32_t rowBytes = (int32_t)::CGImageGetBytesPerRow( mImageRef.get() );
 	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
 	if( ! pixels )
@@ -550,7 +551,7 @@ ImageTargetCgImageRef ImageTargetCgImage::createRef( ImageSourceRef imageSource,
 ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options )
 	: ImageTarget(), mImageRef( 0 )
 {
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	setSize( (int32_t)imageSource->getWidth(), (int32_t)imageSource->getHeight() );
 	mBitsPerComponent = 32;
 	bool writingAlpha = imageSource->hasAlpha();
 	bool isFloat = true;
