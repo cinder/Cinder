@@ -21,17 +21,6 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-/*
-The order of operations in a Mac Screensaver are a bit convoluted. They are:
-* The ScreenSaverEngine instantiates whatever class is declared as the Principle Class in the plist; WindowImplCocoaScreenSaver_*
-* WindowImplCocoaScreenSaver:instantiateView fires; it calls getAppImpl()
-* If this is the first call to getAppImpl():
-   * sAppImplInstance is set to a new AppImplCocoaScreenSaver
-   * sAppImplInstance->mApp is set to the result of calling ScreenSaverFactoryMethod():
-     * Inside of ScreenSaverFactoryMethod() the user's Settings fn is called
-     * The user's app is constructed
-*/
-
 #import "cinder/app/AppImplCocoaScreenSaver.h"
 #include "cinder/CinderAssert.h"
 
@@ -41,6 +30,7 @@ static AppImplCocoaScreenSaver *sAppImplInstance = nil;
 static std::unique_ptr<cinder::app::AppScreenSaver::Settings> sSettings;
 static void initSettings();
 static AppImplCocoaScreenSaver* getAppImpl();
+static bool sFirstView = true; // records whether a call is the first to initView; reset to true at stop animation
 
 @implementation WindowImplCocoaScreenSaver
 
@@ -53,8 +43,7 @@ static AppImplCocoaScreenSaver* getAppImpl();
 	
 	initSettings();
 	
-//	BOOL blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
-bool blankingWindow = false;
+	bool blankingWindow = sSettings->isSecondaryDisplayBlankingEnabled() && ( ! mIsMainView );
 
 	if( ! blankingWindow ) {
 		cinder::app::RendererRef renderer = sSettings->getDefaultRenderer()->clone();
@@ -134,18 +123,13 @@ bool blankingWindow = false;
 {
 	NSRect newFrame = [self frame];
 	newFrame.origin = NSZeroPoint;
+	mIsMainView = sFirstView;
+	sFirstView = false;
 	[self instantiateView:newFrame];
 	
 	mWindowRef = cinder::app::Window::privateCreate__( self, getAppImpl()->mApp );
+	// this needs to be called after instantiateView
 	[getAppImpl() addWindow:self];
-
-	// determine if this is the main view
-	bool found = false;
-	for( std::list<WindowImplCocoaScreenSaver*>::const_iterator winIt = sAppImplInstance->mWindows.begin(); winIt != sAppImplInstance->mWindows.end(); ++winIt )
-		if( (*winIt)->mIsMainView )
-			found = true;
-	if( ! found )
-		mIsMainView = YES;
 
 	[super startAnimation];
 }
@@ -154,6 +138,7 @@ bool blankingWindow = false;
 {
 	[super stopAnimation];
 	[getAppImpl() removeCinderView:self];
+	sFirstView = true;
 }
 
 - (BOOL)hasConfigureSheet
@@ -414,6 +399,16 @@ static AppImplCocoaScreenSaver* getAppImpl()
 		return mActiveWindow->mWindowRef;
 }
 
+- (void)setActiveWindowToMain
+{
+	for( auto &win : mWindows ) {
+		if( win->mIsMainView ) {
+			[self setActiveWindow:win];
+			break;
+		}
+	}
+}
+
 - (void)setActiveWindow:(WindowImplCocoaScreenSaver*)activeWindow
 {
 	mActiveWindow = activeWindow;
@@ -472,7 +467,7 @@ static AppImplCocoaScreenSaver* getAppImpl()
 	}
 
 	if( allWindowsDrawn ) {
-		[self setActiveWindow:callee];
+		[getAppImpl() setActiveWindowToMain];
 		mApp->privateUpdate__();
 		for( auto &win : mWindows )
 			win->mHasDrawnSinceLastUpdate = NO;

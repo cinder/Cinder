@@ -51,6 +51,7 @@
 - (size_t)getNumWindows;
 - (cinder::app::WindowRef)getWindowIndex:(size_t)index;
 - (cinder::app::WindowRef)getWindow;
+- (void)setActiveWindowToMain;
 - (void)setActiveWindow:(WindowImplCocoaScreenSaver*)activeWindow;
 
 - (void)animateOneFrame:(WindowImplCocoaScreenSaver*)callee;
