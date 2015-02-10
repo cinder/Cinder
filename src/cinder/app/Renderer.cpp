@@ -49,7 +49,6 @@ namespace cinder { namespace app {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer
 Renderer::Renderer( const Renderer &renderer )
-	: mApp( renderer.mApp )
 {
 }
 
@@ -77,20 +76,18 @@ Renderer2d::~Renderer2d()
 	::CFRelease( mImpl );
 }
 
-void Renderer2d::setup( AppBase *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
+void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
-	mApp = aApp;
-	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp];
+	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
 
 #else
 
-void Renderer2d::setup( AppBase *aApp, const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
 {
-	mApp = aApp;
-	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView app:mApp];
+	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView];
 }
 
 #endif
@@ -127,7 +124,7 @@ void Renderer2d::makeCurrentContext()
 	[mImpl makeCurrentContext];
 }
 
-Surface Renderer2d::copyWindowSurface( const Area &area )
+Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 #if defined( CINDER_MAC )
 	NSBitmapImageRep *rep = [mImpl getContents:area];
@@ -152,11 +149,10 @@ Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 {
 }
 
-void Renderer2d::setup( AppBase *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
-	mApp = app;
 	mWnd = wnd;
-	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer, mPaintEvents );
+	mImpl = new AppImplMswRendererGdi( mDoubleBuffer, mPaintEvents );
 	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 
@@ -195,7 +191,7 @@ void Renderer2d::defaultResize()
 	mImpl->defaultResize();
 }
 
-Surface	Renderer2d::copyWindowSurface( const Area &area )
+Surface	Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	return mImpl->copyWindowContents( area );
 }

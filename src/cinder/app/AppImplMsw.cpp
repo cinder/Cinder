@@ -336,7 +336,7 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 
 	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC, sharedRenderer );
+	mRenderer->setup( mWnd, mDC, sharedRenderer );
 
 	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
 }
@@ -413,7 +413,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	// update display
 	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd, mDC, sharedRenderer );
+	mRenderer->setup( mWnd, mDC, sharedRenderer );
 }
 
 void WindowImplMsw::completeCreation()

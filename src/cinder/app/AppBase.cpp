@@ -233,13 +233,14 @@ void AppBase::dispatchAsync( const std::function<void()> &fn )
 
 Surface	AppBase::copyWindowSurface()
 {
-	return getWindow()->getRenderer()->copyWindowSurface( getWindow()->toPixels( getWindow()->getBounds() ) );
+	return getWindow()->getRenderer()->copyWindowSurface(
+			getWindow()->toPixels( getWindow()->getBounds() ), getWindow()->toPixels( getWindow()->getHeight() ) );
 }
 
 Surface	AppBase::copyWindowSurface( const Area &area )
 {
 	Area clippedArea = area.getClipBy( getWindowBounds() );
-	return getWindow()->getRenderer()->copyWindowSurface( clippedArea );
+	return getWindow()->getRenderer()->copyWindowSurface( clippedArea, getWindow()->toPixels( getWindow()->getHeight() ) );
 }
 
 RendererRef AppBase::findSharedRenderer( RendererRef searchRenderer ) const

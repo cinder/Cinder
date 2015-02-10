@@ -27,10 +27,9 @@
 {
 	CGContextRef				mCurrentRef;
 	UIView						*view;
-	cinder::app::AppBase		*app;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView app:(cinder::app::AppBase *)app;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView;
 - (UIView*)view;
 
 - (UIImage*)getContents:(cinder::Area)area;

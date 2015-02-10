@@ -41,9 +41,6 @@ using namespace cinder::app;
 
 - (id)initWithFrame:(NSRect)frame
 {
-	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
-	mApp = NULL;
-	
 	self = [super initWithFrame:frame];
 	mReadyToDraw = NO;
 	mReceivesEvents = YES;
@@ -57,18 +54,16 @@ using namespace cinder::app;
 	return self;
 }
 
-- (CinderView *)initWithFrame:(NSRect)frame app:(AppBase *)app renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
+- (CinderView *)initWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
+			appReceivesEvents:(BOOL)appReceivesEvents highDensityDisplay:(BOOL)highDensityDisplay enableMultiTouch:(BOOL)enableMultiTouch
 {
-	// setting this first so that when viewDidChangeBackingProperties fires we have a valid mApp
-	mApp = app;
-
 	self = [super initWithFrame:frame];
 	mRenderer = renderer;
 	mReadyToDraw = NO;
 	mFullScreen = NO;
-	mReceivesEvents = mApp->receivesEvents();
-	mHighDensityDisplayEnabled = mApp->isHighDensityDisplayEnabled();
-	mMultiTouchEnabled = mApp->isMultiTouchEnabled();
+	mReceivesEvents = appReceivesEvents;
+	mHighDensityDisplayEnabled = highDensityDisplay;
+	mMultiTouchEnabled = enableMultiTouch;
 
 	mTouchIdMap = nil;
 	mDelegate = nil;
@@ -81,7 +76,7 @@ using namespace cinder::app;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 {
 	mRenderer = renderer;
-	mRenderer->setup( mApp, NSRectToCGRect( frame ), self, sharedRenderer, mHighDensityDisplayEnabled );
+	mRenderer->setup( NSRectToCGRect( frame ), self, sharedRenderer, mHighDensityDisplayEnabled );
 
 	mContentScaleFactor = ( mHighDensityDisplayEnabled ? self.window.backingScaleFactor : 1 );
 
@@ -208,7 +203,7 @@ using namespace cinder::app;
 
 - (BOOL)isOpaque
 {
-	return NO;
+	return YES;
 }
 
 - (void)dealloc
@@ -461,7 +456,7 @@ using namespace cinder::app;
 - (void)applicationWillResignActive:(NSNotification *)aNotification
 {
    	std::vector<cinder::app::TouchEvent::Touch> touchList;
-	double eventTime = mApp->getElapsedSeconds();
+	double eventTime = cinder::app::getElapsedSeconds();
 	for( const auto &prevPt : mTouchPrevPointMap ) {
 		touchList.push_back( cinder::app::TouchEvent::Touch( prevPt.second, prevPt.second, prevPt.first, eventTime, nil ) );
 	}
@@ -637,11 +632,6 @@ using namespace cinder::app;
 		cinder::app::TouchEvent touchEvent( [mDelegate getWindowRef], touchList );
 		[mDelegate touchesEnded:&touchEvent];
 	}
-}
-
-- (void)setApp:(cinder::app::AppBase *)app
-{
-	mApp = app;
 }
 
 - (void)windowDidEnterFullScreen:(NSNotification *)notification

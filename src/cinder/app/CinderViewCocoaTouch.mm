@@ -51,7 +51,7 @@ static bool sIsEaglLayer;
 		mApp = app;
 		mRenderer = renderer;
 
-		renderer->setup( mApp, cocoa::CgRectToArea( frame ), self, sharedRenderer );
+		renderer->setup( cocoa::CgRectToArea( frame ), self, sharedRenderer );
 		
 		self.multipleTouchEnabled = mApp->isMultiTouchEnabled();
 	}

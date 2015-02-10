@@ -11,7 +11,6 @@ using namespace std;
 
 class RetinaSampleApp : public AppNative {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
 	void displayChange();
@@ -24,7 +23,7 @@ class RetinaSampleApp : public AppNative {
 	gl::TextureFontRef	mFont;
 };
 
-void RetinaSampleApp::prepareSettings( Settings *settings )
+void prepareSettings( RetinaSampleApp::Settings *settings )
 {
 	settings->enableHighDensityDisplay(); // try removing this line
 	settings->enableMultiTouch( false );
@@ -91,4 +90,4 @@ void RetinaSampleApp::draw()
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )
+CINDER_APP_NATIVE( RetinaSampleApp, RendererGl, prepareSettings )

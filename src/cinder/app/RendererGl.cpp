@@ -66,11 +66,10 @@ RendererGl::~RendererGl()
 		::CFRelease( mImpl );
 }
 
-void RendererGl::setup( AppBase *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
+void RendererGl::setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
-	mApp = aApp;
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
+	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -101,14 +100,14 @@ void RendererGl::defaultResize()
 	[mImpl defaultResize];
 }
 
-Surface RendererGl::copyWindowSurface( const Area &area )
+Surface RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), false );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );		
 	ip::flipVertical( &s );
 	return s;
@@ -144,12 +143,10 @@ RendererGl::~RendererGl()
 {
 }
 
-void RendererGl::setup( AppBase *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
+void RendererGl::setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
 {
-	mApp = aApp;
-
 	RendererGlRef sharedRendererGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView app:mApp renderer:this sharedRenderer:sharedRendererGl];
+	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView renderer:this sharedRenderer:sharedRendererGl];
 }
 
 EAGLContext* RendererGl::getEaglContext() const
@@ -187,14 +184,14 @@ void RendererGl::swapBuffers()
 	[mImpl flushBuffer];
 }
 
-Surface	RendererGl::copyWindowSurface( const Area &area )
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), true );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 
@@ -207,15 +204,14 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
+void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
-	mApp = aApp;
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
-		mImpl = new AppImplMswRendererAngle( mApp, this );
+		mImpl = new AppImplMswRendererAngle( this );
 #else
-		mImpl = new AppImplMswRendererGl( mApp, this );
+		mImpl = new AppImplMswRendererGl( this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
 		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );
@@ -267,14 +263,14 @@ void RendererGl::defaultResize()
 	mImpl->defaultResize();
 }
 
-Surface	RendererGl::copyWindowSurface( const Area &area )
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), false );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 	return s;

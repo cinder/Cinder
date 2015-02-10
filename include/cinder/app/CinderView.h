@@ -53,7 +53,6 @@
 
 @interface CinderView : NSView {
   @private
-	cinder::app::AppBase*		mApp;
 	BOOL						mFullScreen;
 	BOOL						mFullScreenModeKiosk;
 	BOOL						mReadyToDraw; // don't allow draw until setup() and resize() have been called
@@ -73,7 +72,8 @@
 @property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (CinderView *)initWithFrame:(NSRect)frame app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
+- (CinderView *)initWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+			appReceivesEvents:(BOOL)appReceivesEvents highDensityDisplay:(BOOL)highDensityDisplay enableMultiTouch:(BOOL)enableMultiTouch;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 
 - (void)setDelegate:(id<CinderViewDelegate>)delegate;
@@ -83,8 +83,6 @@
 
 - (void)draw;
 - (void)makeCurrentContext;
-
-- (void)setApp:(cinder::app::AppBase *)app;
 
 - (void)applicationWillResignActive:(NSNotification *)aNotification;
 

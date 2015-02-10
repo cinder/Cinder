@@ -42,8 +42,6 @@ struct TouchPoint {
 // We'll create a new Cinder Application by deriving from the BasicApp class
 class MultiTouchApp : public AppNative {
  public:
-	void	prepareSettings( Settings *settings );
-
 	void	mouseDown( MouseEvent event );
 	void	mouseDrag( MouseEvent event );	
 
@@ -64,7 +62,7 @@ void MultiTouchApp::setup()
 	console() << "MT: " << System::hasMultiTouch() << " Max points: " << System::getMaxMultiTouchPoints() << std::endl;
 }
 
-void MultiTouchApp::prepareSettings( Settings *settings )
+void prepareSettings( MultiTouchApp::Settings *settings )
 {
 	settings->enableMultiTouch();
 }
@@ -102,7 +100,7 @@ void MultiTouchApp::mouseDown( MouseEvent event )
 
 void MultiTouchApp::mouseDrag( MouseEvent event )
 {
-	console() << "Mouse drag: " << std::endl;	
+	console() << "Mouse drag: " << std::endl;
 }
 
 void MultiTouchApp::draw()
@@ -129,4 +127,4 @@ void MultiTouchApp::draw()
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP_NATIVE( MultiTouchApp, RendererGl )
+CINDER_APP_NATIVE( MultiTouchApp, RendererGl, prepareSettings )

@@ -56,6 +56,8 @@ void prepareSettings( AppScreenSaver::Settings *settings )
 //	settings->setFrameRate( 1 );
 #if defined( CINDER_MAC )
 	settings->setProvidesMacConfigDialog();
+#elif defined( CINDER_MSW )
+//	settings->enableDebug();
 #endif
 //	settings->enableSecondaryDisplayBlanking();
 }
@@ -125,7 +127,7 @@ void ScreenSaverTestApp::draw()
 	gl::enableAlphaBlending();
 		
 	if( isPreview() )
-		gl::clear( Color( 0, 0.5f, 1.0f ) );
+		gl::clear( Color( 0, 0.95f, 1.0f ) );
 	else
 		gl::clear( mBackgroundColor );
 

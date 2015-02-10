@@ -36,7 +36,7 @@
 	cinder::gl::ContextRef			mContext;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView app:(cinder::app::AppBase *)app renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
 - (NSOpenGLView*)view;
 
 - (void)makeCurrentContext;

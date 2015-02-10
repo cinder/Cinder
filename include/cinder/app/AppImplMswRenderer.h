@@ -36,8 +36,6 @@ class AppImplMswBasic;
 
 class AppImplMswRenderer {
  public:
-	AppImplMswRenderer( AppBase *app ) : mApp( app ) {}
-	
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDERT_WINRT)
@@ -52,7 +50,6 @@ class AppImplMswRenderer {
 
  protected:
 	DX_WINDOW_TYPE		mWnd;
-	AppBase					*mApp;
 };
 
 } } // namespace cinder::app

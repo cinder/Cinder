@@ -42,12 +42,11 @@
 
 @implementation AppImplCocoaRendererQuartz
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView app:(cinder::app::AppBase *)aApp
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView
 {
 	self = [super init];
 	
 	view = [[CocoaRendererQuartzView alloc] initWithFrame:frame];
-	app = aApp;
 	currentRef = nil;
 	[cinderView addSubview:view];
 	
