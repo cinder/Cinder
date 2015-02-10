@@ -153,13 +153,15 @@ class AppScreenSaver : public AppBase {
 	LRESULT							eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 
 	template<typename AppT, typename RendererT>
-	static AppScreenSaver* main( Settings *settings, HWND mainHwnd, const char *title, const SettingsFn &settingsFn = SettingsFn() )
+	static AppScreenSaver* main( HWND mainHwnd, const char *title, const SettingsFn &settingsFn = SettingsFn() )
 	{
+		static Settings settings;
+
 		if( settingsFn )
-			settingsFn( settings );
+			settingsFn( &settings );
 
 		// AppBase::prepareLaunch(); We don't call this because we rely on the ScreenSaverEngine's autorelease pool
-		AppBase::initialize( settings, std::make_shared<RendererT>(), title, 0, nullptr );
+		AppBase::initialize( &settings, std::make_shared<RendererT>(), title, 0, nullptr );
 
 		AppScreenSaver::sMainHwnd = mainHwnd;
 		AppScreenSaver *app = new AppT;
@@ -204,11 +206,10 @@ extern "C" {																						\
 #elif defined( CINDER_MSW )
 	#define CINDER_APP_SCREENSAVER( APP, RENDERER, ... ) \
 		cinder::app::AppScreenSaver *sScreenSaverMswInstance = 0; \
-		Settings settings; \
 		LRESULT CALLBACK ScreenSaverProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam ) { \
 			switch( message ) { \
 				case WM_CREATE: \
-					sScreenSaverMswInstance = cinder::app::AppScreenSaver::main<APP,RENDERER>( &settings, hWnd, #APP, ##__VA_ARGS__ ); return 0; break; \
+					sScreenSaverMswInstance = cinder::app::AppScreenSaver::main<APP,RENDERER>( hWnd, #APP, ##__VA_ARGS__ ); return 0; break; \
 				default: if( sScreenSaverMswInstance ) return sScreenSaverMswInstance->eventHandler( hWnd, message, wParam, lParam ); \
 				else return ::DefScreenSaverProc( hWnd, message, wParam, lParam ); \
 			} \
