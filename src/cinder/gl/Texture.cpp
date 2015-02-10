@@ -1423,6 +1423,14 @@ void Texture3d::update( const Surface8u &surface, int depth, int mipLevel )
 		mipMapSize.x, mipMapSize.y, 1, dataFormat, type, surface.getData() );
 }
 
+void Texture3d::update( GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum dataFormat, const uint8_t *data, int mipLevel )
+{
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexSubImage3D( mTarget, mipLevel,
+					xoffset, yoffset, zoffset, // offsets
+					width, height, depth, dataFormat, GL_UNSIGNED_BYTE, data );
+}
+
 void Texture3d::printDims( std::ostream &os ) const
 {
 	os << mWidth << " x " << mHeight << " x " << mDepth;
