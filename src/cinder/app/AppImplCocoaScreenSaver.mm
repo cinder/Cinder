@@ -38,7 +38,7 @@ The order of operations in a Mac Screensaver are a bit convoluted. They are:
 #import <Foundation/NSThread.h>
 
 static AppImplCocoaScreenSaver *sAppImplInstance = nil;
-static cinder::app::AppScreenSaver::Settings *sSettings = nullptr;
+static std::unique_ptr<cinder::app::AppScreenSaver::Settings> sSettings;
 static void initSettings();
 static AppImplCocoaScreenSaver* getAppImpl();
 
@@ -347,8 +347,8 @@ bool blankingWindow = false;
 static void initSettings()
 {
 	if( ! sSettings ) {
-		sSettings = new cinder::app::AppScreenSaver::Settings();
-		ScreenSaverSettingsMethod( sSettings );
+		sSettings = std::unique_ptr<cinder::app::AppScreenSaver::Settings>( new cinder::app::AppScreenSaver::Settings() );
+		ScreenSaverSettingsMethod( sSettings.get() );
 	}
 }
 
@@ -358,7 +358,7 @@ static AppImplCocoaScreenSaver* getAppImpl()
 		initSettings();
 		
 		sAppImplInstance = [[AppImplCocoaScreenSaver alloc] init];
-		sAppImplInstance->mApp = ScreenSaverFactoryMethod( sAppImplInstance, sSettings );
+		sAppImplInstance->mApp = ScreenSaverFactoryMethod( sAppImplInstance, sSettings.get() );
 		sAppImplInstance->mFrameRate = sSettings->getFrameRate();
 		sAppImplInstance->mSetupCalled = NO;
 	}
