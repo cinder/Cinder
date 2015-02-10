@@ -122,14 +122,18 @@ class JsonTree {
 	//! Creates a JsonTree with key \a key and uint64_t \a value .
 	explicit JsonTree( const std::string &key, uint64_t value );
 	
+	//! Creates a JsonTree with key \a key and an array with values \a argument -> \a arguments
 	template<typename Arg1, typename... Args>
 	JsonTree( const std::string &key, const Arg1 &argument, const Args&... arguments );
-	
 	/**! Creates a JsonTree with key \a key and an empty array. **/
+	static JsonTree					makeArray( const std::string &key = "" );
+	//! Creates a JsonTree with key \a key and an array with values \a argument -> \a arguments
 	template<typename Arg1, typename... Args>
 	static JsonTree					makeArray( const std::string &key, const Arg1 &argument, const Args&... arguments );
+	//! Creates a JsonTree with key \a key and an array with \a arguments as the values of the array.
 	template<typename T>
-	static JsonTree					makeArray( const std::string &key, std::initializer_list<T> arguments );
+	static JsonTree					makeArray( const std::string &key, const std::initializer_list<T> &arguments );
+	
 	/**! Creates a JsonTree with key \a key as an empty object. **/
 	static JsonTree					makeObject( const std::string &key = "" );
 	
@@ -263,23 +267,27 @@ private:
 
 	explicit JsonTree( const std::string &key, const Json::Value &value );
 	
+	template<typename Arg1, typename... Args>
+	static void initVariadic( JsonTree &parent, const Arg1 &argument, const Args&... arguments )
+	{
+		typedef typename std::is_same<JsonTree, Arg1>::type isJsonTree;
+		isJsonTree result;
+		pushType( parent, argument, result );
+		initVariadic( parent, arguments... );
+	}
+	static void initVariadic( JsonTree & parent ) {}
+	
 	template<typename Arg>
 	static void pushType( JsonTree & parent, const Arg &argument, std::true_type )
 	{
-		parent.pushBack( argument );
+		parent.pushBack( JsonTree::makeObject().addChild( argument ) );
 	}
+	
 	template<typename Arg>
 	static void pushType( JsonTree & parent, const Arg &argument, std::false_type )
 	{
 		parent.pushBack( JsonTree( "", argument ) );
 	}
-	
-	static void initVariadic( JsonTree & parent ) {}
-	
-	template<typename Arg1, typename... Args>
-	static void initVariadic( JsonTree & parent, const Arg1 &first, const Args&... rest );
-	template<typename Object>
-	static bool isJsonTree( const Object &object );
 
 	Json::Value						createNativeDoc( WriteOptions writeOptions = WriteOptions() ) const;
 	static Json::Value				deserializeNative( const std::string &jsonString, ParseOptions parseOptions );
@@ -368,36 +376,17 @@ JsonTree JsonTree::makeArray( const std::string &key, const Arg1 &argument, cons
 }
 
 template<typename T>
-JsonTree JsonTree::makeArray( const std::string &key, std::initializer_list<T> arguments )
+JsonTree JsonTree::makeArray( const std::string &key, const std::initializer_list<T> &arguments )
 {
 	JsonTree result;
 	result.mNodeType = NODE_ARRAY;
 	result.mKey = key;
+	typedef typename std::is_same<JsonTree, T>::type IsJsonTree;
+	IsJsonTree isJsonTree;
 	for( auto & arg : arguments ) {
-		result.pushBack( JsonTree( "", arg ) );
+		pushType( result, arg, isJsonTree );
 	}
 	return result;
-}
-	
-template<>
-JsonTree JsonTree::makeArray( const std::string &key, std::initializer_list<JsonTree> arguments )
-{
-	JsonTree result;
-	result.mNodeType = NODE_ARRAY;
-	result.mKey = key;
-	for( auto & arg : arguments ) {
-		result.pushBack( arg );
-	}
-	return result;
-}
-
-template<typename Arg1, typename... Args>
-void JsonTree::initVariadic( JsonTree &parent, const Arg1 &argument, const Args&... arguments )
-{
-	typedef typename std::is_same<JsonTree, Arg1>::type isJsonTree;
-	isJsonTree result;
-	pushType( parent, argument, result );
-	initVariadic( parent, arguments... );
 }
 
 std::ostream&						operator<<( std::ostream &out, const JsonTree &json );

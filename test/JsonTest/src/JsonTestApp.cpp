@@ -85,8 +85,18 @@ void JsonTestApp::setup()
 	console() << test64;
 	console() << test64.getValue() << endl;
 
+	JsonTree variadicArray1( "variadicArray1", JsonTree( "object", 2 ), JsonTree::makeArray("hello").addChild( JsonTree( "", 2 ) ), 3 );
+	console() << variadicArray1 << endl;
+	auto variadicArray2 = JsonTree::makeArray( "variadicArray2", 1, 1.2, 1.8, "stuff", JsonTree( "object", 1 ) );
+	console() << variadicArray2 << endl;
+	
+	auto initializerArray1 = JsonTree::makeArray( "initializerArray1", { 1.0f, 1.32f, 1.08f } );
+	console() << initializerArray1 << endl;
+	auto initializerArray2 = JsonTree::makeArray( "initializerArray2", { JsonTree( "value", 1.2 ), JsonTree( "object", 35 ), JsonTree( "", 3 ) } );
+	console() << initializerArray2 << endl;
+	
 	testComments();
-
+	
 	console() << "complete." << endl;
 }
 
