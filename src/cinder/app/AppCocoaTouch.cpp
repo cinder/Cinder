@@ -28,10 +28,10 @@ namespace cinder { namespace app {
 
 AppCocoaTouch*	AppCocoaTouch::sInstance = nullptr;
 
-AppCocoaTouch::Settings()
+AppCocoaTouch::Settings::Settings()
 	: AppBase::Settings(), mStatusBarEnabled( false )
 {
-	mPowerManagement = true;
+	mPowerManagementEnabled = true;
 	mHighDensityDisplayEnabled = true;
 	mMultiTouchEnabled = true;
 }
