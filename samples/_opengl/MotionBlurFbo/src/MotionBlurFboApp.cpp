@@ -20,7 +20,6 @@ using namespace ci::app;
 
 class MotionBlurFboApp : public App {
   public:	
-	void prepareSettings( Settings *settings ) { settings->setResizable( false ); settings->enableHighDensityDisplay( false ); }
 	void setup();
 	void keyDown( KeyEvent event );
 	void updateCubeRotation( double time );
@@ -111,4 +110,7 @@ void MotionBlurFboApp::draw()
 	gl::draw( mAccumFbo->getColorTexture() );
 }
 
-CINDER_APP( MotionBlurFboApp, RendererGl )
+CINDER_APP( MotionBlurFboApp, RendererGl, []( App::Settings *settings ) {
+	settings->setResizable( false );
+	settings->setHighDensityDisplayEnabled( false );
+} )

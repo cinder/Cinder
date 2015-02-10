@@ -114,7 +114,6 @@ struct LightData {
 
 class ShadowMappingApp : public App {
 public:
-	void prepareSettings( AppBasic::Settings *settings ) override;
 	void setup() override;
 	void resize() override;
 	void update() override;
@@ -152,12 +151,6 @@ private:
 	int							mNumRandomSamples;
 	float						mPolygonOffsetFactor, mPolygonOffsetUnits;
 };
-
-void ShadowMappingApp::prepareSettings( AppBasic::Settings *settings )
-{
-//	settings->enableHighDensityDisplay();
-	settings->setWindowSize( 900, 900 );
-}
 
 void ShadowMappingApp::setup()
 {
@@ -372,4 +365,7 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP( ShadowMappingApp, RendererGl )
+CINDER_APP( ShadowMappingApp, RendererGl, []( App::Settings *settings ) {
+//	settings->enableHighDensityDisplay();
+	settings->setWindowSize( 900, 900 );
+} )

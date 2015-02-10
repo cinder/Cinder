@@ -72,7 +72,6 @@ typedef std::shared_ptr<FilterControl> FilterControlRef;
 
 class TextureMipmappingApp : public App {
   public:
-	void	prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void	setup();
 	void	update();
 	void	draw();
@@ -443,4 +442,6 @@ void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &f
 	}
 }
 
-CINDER_APP( TextureMipmappingApp, RendererGl )
+CINDER_APP( TextureMipmappingApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

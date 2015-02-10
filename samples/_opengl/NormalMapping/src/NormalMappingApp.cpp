@@ -53,6 +53,14 @@ struct LightSource
 	ColorA specular;
 };
 
+static void prepareSettings( App::Settings *settings )
+{
+	settings->disableFrameRate();
+
+	settings->setWindowSize( 1024, 768 );
+	settings->setTitle( "OpenGL Core Profile - Normal Mapping Demo" );
+}
+
 class NormalMappingApp : public App {
 
 #if ! defined( CINDER_GL_ES )
@@ -62,8 +70,6 @@ class NormalMappingApp : public App {
 #endif
 
 public:
-	void	prepareSettings( Settings *settings );
-
 	void	setup();
 	void	shutdown();
 
@@ -125,14 +131,6 @@ private:
 	params::InterfaceGlRef	mParams;
 #endif
 };
-
-void NormalMappingApp::prepareSettings( Settings *settings )
-{
-	settings->disableFrameRate();
-
-	settings->setWindowSize( 1024, 768 );
-	settings->setTitle( "OpenGL Core Profile - Normal Mapping Demo" );
-}
 
 void NormalMappingApp::setup()
 {
@@ -439,4 +437,4 @@ gl::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-CINDER_APP( NormalMappingApp, RendererGl )
+CINDER_APP( NormalMappingApp, RendererGl, prepareSettings )

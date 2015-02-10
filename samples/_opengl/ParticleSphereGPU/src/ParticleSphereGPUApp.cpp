@@ -53,7 +53,6 @@ const int NUM_PARTICLES = 600e3;
  */
 class ParticleSphereGPUApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -76,14 +75,6 @@ class ParticleSphereGPUApp : public App {
 	float			mMouseForce = 0.0f;
 	vec3			mMousePos = vec3( 0, 0, 0 );
 };
-
-void ParticleSphereGPUApp::prepareSettings( Settings *settings )
-{
-#if ! defined( CINDER_GL_ES )
-	settings->setWindowSize( 1280, 720 );
-#endif
-	settings->enableMultiTouch( false );
-}
 
 void ParticleSphereGPUApp::setup()
 {
@@ -212,4 +203,7 @@ void ParticleSphereGPUApp::draw()
 	gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
 }
 
-CINDER_APP( ParticleSphereGPUApp, RendererGl )
+CINDER_APP( ParticleSphereGPUApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+	settings->setMultiTouchEnabled( false );
+} )

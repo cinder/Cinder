@@ -46,7 +46,6 @@ const int NUM_PARTICLES = 200e3;
 
 class ParticleSphereCPUApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -61,12 +60,6 @@ class ParticleSphereCPUApp : public App {
 	// Batch for rendering particles with default shader.
 	gl::BatchRef		mParticleBatch;
 };
-
-void ParticleSphereCPUApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1280, 720 );
-	settings->enableMultiTouch( false );
-}
 
 void ParticleSphereCPUApp::setup()
 {
@@ -157,4 +150,7 @@ void ParticleSphereCPUApp::draw()
 	mParticleBatch->draw();
 }
 
-CINDER_APP( ParticleSphereCPUApp, RendererGl )
+CINDER_APP( ParticleSphereCPUApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+	settings->setMultiTouchEnabled( false );
+} )
