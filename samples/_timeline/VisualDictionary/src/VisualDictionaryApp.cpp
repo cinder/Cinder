@@ -3,7 +3,7 @@
  * Used with permission for the Cinder Project ( http://libcinder.org )
  */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
@@ -23,7 +23,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class VisualDictionaryApp : public AppBasic {
+class VisualDictionaryApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void layoutWords( vector<string> words, float radius );	
@@ -280,4 +280,4 @@ void VisualDictionaryApp::draw()
 }
 
 
-CINDER_APP_BASIC( VisualDictionaryApp, RendererGl )
+CINDER_APP( VisualDictionaryApp, RendererGl )

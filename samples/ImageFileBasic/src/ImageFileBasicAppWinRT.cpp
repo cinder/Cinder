@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
@@ -17,7 +17,7 @@ using namespace std;
 
 
 
-class ImageFileBasicApp : public AppBasic {
+class ImageFileBasicApp : public App {
   public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -103,4 +103,4 @@ void ImageFileBasicApp::draw()
 
 
 
-CINDER_APP_BASIC( ImageFileBasicApp, RendererDx )
+CINDER_APP( ImageFileBasicApp, RendererDx )

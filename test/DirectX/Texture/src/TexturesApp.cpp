@@ -1,6 +1,6 @@
 #define USE_DIRECTX
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #if defined( USE_DIRECTX )
   #include "cinder/app/RendererDx.h"
   #include "cinder/dx/DxTexture.h"
@@ -30,7 +30,7 @@ enum Mode {
 	SURFACE32F
 };
 
-class TexturesApp : public AppNative {
+class TexturesApp : public App {
 public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -235,7 +235,7 @@ void TexturesApp::draw()
 }
 
 #if defined( USE_DIRECTX )
-  CINDER_APP_NATIVE( TexturesApp, RendererDx )
+  CINDER_APP( TexturesApp, RendererDx )
 #else 
-  CINDER_APP_NATIVE( TexturesApp, RendererGl )
+  CINDER_APP( TexturesApp, RendererGl )
 #endif 

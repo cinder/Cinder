@@ -1,7 +1,7 @@
 #include <vector>
 using std::vector;
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Path2d.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/ip/Fill.h"
@@ -50,7 +50,7 @@ class Flower {
 	ColorA		mColor;
 };
 
-class CairoBasicApp : public AppBasic {
+class CairoBasicApp : public App {
   public:
 	void mouseDown( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -116,4 +116,4 @@ void CairoBasicApp::draw()
 	renderScene( ctx );
 }
 
-CINDER_APP_BASIC( CairoBasicApp, Renderer2d )
+CINDER_APP( CairoBasicApp, Renderer2d )

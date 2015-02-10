@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/GlslProg.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class MandelbrotGLSLApp : public AppBasic {
+class MandelbrotGLSLApp : public App {
   public:
 	void			prepareSettings( Settings *settings );
 	virtual void	setup();
@@ -65,4 +65,4 @@ void MandelbrotGLSLApp::draw()
 	gl::drawSolidRect( getWindowBounds() );
 }
 
-CINDER_APP_BASIC( MandelbrotGLSLApp, RendererGl )
+CINDER_APP( MandelbrotGLSLApp, RendererGl )

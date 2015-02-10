@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TextBoxApp : public AppNative {
+class TextBoxApp : public App {
   public:
 	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup();
@@ -66,4 +66,4 @@ void TextBoxApp::draw()
 }
 
 
-CINDER_APP_NATIVE( TextBoxApp, RendererGl )
+CINDER_APP( TextBoxApp, RendererGl )

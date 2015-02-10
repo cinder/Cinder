@@ -5,7 +5,7 @@
  * author: Richard Eakin (2014)
  */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
@@ -38,7 +38,7 @@ struct Splash {
 	Anim<float>	mRadius, mAlpha;
 };
 
-class DelayFeedback : public AppNative {
+class DelayFeedback : public App {
 public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -253,4 +253,4 @@ void DelayFeedback::loadBatch()
 	mBatch = gl::Batch::create( mesh, glsl );
 }
 
-CINDER_APP_NATIVE( DelayFeedback, RendererGl )
+CINDER_APP( DelayFeedback, RendererGl )

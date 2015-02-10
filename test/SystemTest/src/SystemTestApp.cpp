@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/System.h"
 #include "cinder/qtime/QuickTime.h"
 
@@ -6,7 +6,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class SystemTestApp : public AppBasic {
+class SystemTestApp : public App {
  public:
 	void	setup();
 };
@@ -35,4 +35,4 @@ void SystemTestApp::setup()
 	console() << "IP Address: " << System::getIpAddress() << std::endl;
 }
 
-CINDER_APP_BASIC( SystemTestApp, RendererGl )
+CINDER_APP( SystemTestApp, RendererGl )

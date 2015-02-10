@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class RetinaSampleApp : public AppNative {
+class RetinaSampleApp : public App {
   public:
 	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
@@ -90,4 +90,4 @@ void RetinaSampleApp::draw()
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP_NATIVE( RetinaSampleApp, RendererGl, prepareSettings )
+CINDER_APP( RetinaSampleApp, RendererGl, prepareSettings )

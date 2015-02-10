@@ -1,12 +1,12 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// We'll create a new Cinder Application by deriving from the AppBasic class
-class cmdLineArgsApp : public AppBasic {
+// We'll create a new Cinder Application by deriving from the App class
+class cmdLineArgsApp : public App {
  public:
 	void setup();
 	void draw();
@@ -28,4 +28,4 @@ void cmdLineArgsApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( cmdLineArgsApp, RendererGl )
+CINDER_APP( cmdLineArgsApp, RendererGl )

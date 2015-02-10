@@ -1,5 +1,5 @@
 #include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 #include "cinder/dx/dx.h"
@@ -42,7 +42,7 @@ struct TouchPoint {
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppNative {
+class MultiTouchApp : public App {
  public:
 	void	prepareSettings( Settings *settings );
 
@@ -131,4 +131,4 @@ void MultiTouchApp::draw()
 		dx::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP_NATIVE( MultiTouchApp, RendererDx )
+CINDER_APP( MultiTouchApp, RendererDx )

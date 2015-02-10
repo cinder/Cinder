@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Vector.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIO.h"
@@ -14,7 +14,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class FlockingApp : public AppBasic {
+class FlockingApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -134,4 +134,4 @@ void FlockingApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP_BASIC( FlockingApp, RendererGl )
+CINDER_APP( FlockingApp, RendererGl )

@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Surface.h"
 #include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/Thread.h"

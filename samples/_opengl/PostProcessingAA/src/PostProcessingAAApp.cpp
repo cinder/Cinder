@@ -32,7 +32,7 @@ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVE
 POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
@@ -49,7 +49,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class PostProcessingAAApp : public AppNative {
+class PostProcessingAAApp : public App {
 public:
 	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
 	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL1, MODE_FXAA, MODE_SMAA, MODE_ORIGINAL2, MODE_COUNT };
@@ -378,4 +378,4 @@ void PostProcessingAAApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_NATIVE( PostProcessingAAApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
+CINDER_APP( PostProcessingAAApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )

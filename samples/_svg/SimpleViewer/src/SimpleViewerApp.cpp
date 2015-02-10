@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class SimpleViewerApp : public AppBasic {
+class SimpleViewerApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );
@@ -91,4 +91,4 @@ void SimpleViewerApp::draw()
 }
 
 
-CINDER_APP_BASIC( SimpleViewerApp, RendererGl )
+CINDER_APP( SimpleViewerApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ObjectTrackingApp : public AppNative {
+class ObjectTrackingApp : public App {
   public:
 	void setup();
 	void draw();
@@ -149,4 +149,4 @@ void ObjectTrackingApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
 }
 
-CINDER_APP_NATIVE( ObjectTrackingApp, RendererGl( RendererGl::Options().objectTracking() ) )
+CINDER_APP( ObjectTrackingApp, RendererGl( RendererGl::Options().objectTracking() ) )

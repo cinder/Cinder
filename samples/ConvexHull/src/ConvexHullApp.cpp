@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ConvexHull.h"
 #include "cinder/Rand.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ConvexHullApp : public AppNative {
+class ConvexHullApp : public App {
   public:
 	void setup();
 	void makeNewLetter();
@@ -102,4 +102,4 @@ void ConvexHullApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP_NATIVE( ConvexHullApp, RendererGl )
+CINDER_APP( ConvexHullApp, RendererGl )

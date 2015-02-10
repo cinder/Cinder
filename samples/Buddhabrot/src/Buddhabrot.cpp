@@ -5,7 +5,7 @@
  */
 
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
@@ -21,7 +21,7 @@ using namespace std;
 const int TEXTURE_WIDTH = 1024, TEXTURE_HEIGHT = 1024;
 const double TWOPI = 6.28318531;
 
-class BuddhabrotApp : public AppBasic {
+class BuddhabrotApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -477,4 +477,4 @@ double BuddhabrotApp::transitionProbability( int n1, int n2 )
 	return ( 1 - ( ( double )n1/mMaxIterations ) ) / ( 1 - ( ( double )n2/mMaxIterations ) );
 }
 
-CINDER_APP_BASIC( BuddhabrotApp, RendererGl );
+CINDER_APP( BuddhabrotApp, RendererGl );

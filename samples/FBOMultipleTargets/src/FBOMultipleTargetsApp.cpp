@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
@@ -13,7 +13,7 @@ using namespace ci::app;
 // is rendered as green, while the second attachment receives blue.
 // This is controlled by the shader, which is integral for using multiple attachments
 // see multipleOut_frag.glsl for the relevant bit
-class FBOMultipleTargetsApp : public AppBasic {
+class FBOMultipleTargetsApp : public App {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -95,4 +95,4 @@ void FBOMultipleTargetsApp::draw()
 	gl::draw( mFbo.getTexture(1), mFbo.getTexture(1).getBounds() + vec2(mFbo.getTexture(0).getWidth(),0) );
 }
 
-CINDER_APP_BASIC( FBOMultipleTargetsApp, RendererGl )
+CINDER_APP( FBOMultipleTargetsApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Voice.h"
@@ -8,7 +8,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class VoiceBasicProcessingApp : public AppNative {
+class VoiceBasicProcessingApp : public App {
 public:
 	void setup();
 	void mouseDown( MouseEvent );
@@ -79,4 +79,4 @@ void VoiceBasicProcessingApp::draw()
 	gl::clear( backgroundColor );
 }
 
-CINDER_APP_NATIVE( VoiceBasicProcessingApp, RendererGl )
+CINDER_APP( VoiceBasicProcessingApp, RendererGl )

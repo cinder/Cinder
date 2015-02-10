@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class SurfaceBasicApp : public AppBasic {
+class SurfaceBasicApp : public App {
   public:
 	void	setup();
 	void	draw();	
@@ -109,4 +109,4 @@ void SurfaceBasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( SurfaceBasicApp, RendererGl )
+CINDER_APP( SurfaceBasicApp, RendererGl )

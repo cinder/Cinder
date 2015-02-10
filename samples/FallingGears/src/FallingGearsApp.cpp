@@ -12,7 +12,7 @@
 // through the circle of fifths.  The SceneController class maintains a Box2D physics world, which
 // triggers the interaction between visuals and audio.
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -32,7 +32,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FallingGearsApp : public AppNative {
+class FallingGearsApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -232,4 +232,4 @@ void FallingGearsApp::drawInfo()
 	gl::disableAlphaBlending();
 }
 
-CINDER_APP_NATIVE( FallingGearsApp, RendererGl )
+CINDER_APP( FallingGearsApp, RendererGl )

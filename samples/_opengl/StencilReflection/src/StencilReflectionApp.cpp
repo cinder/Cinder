@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
@@ -13,7 +13,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class StencilReflectionApp : public AppNative {
+class StencilReflectionApp : public App {
   public:
 	void setup();
 	void update();
@@ -127,4 +127,4 @@ void StencilReflectionApp::drawScene()
 // Enabling stencil on the system framebuffer
 auto options = RendererGl::Options().stencil();
 
-CINDER_APP_NATIVE( StencilReflectionApp, RendererGl( options ) )
+CINDER_APP( StencilReflectionApp, RendererGl( options ) )

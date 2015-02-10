@@ -8,7 +8,7 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/Rand.h"
@@ -44,7 +44,7 @@ const int NUM_PARTICLES = 200e3;
 	Designed to have the same behavior as ParticleSphereGPU.
  */
 
-class ParticleSphereCPUApp : public AppNative {
+class ParticleSphereCPUApp : public App {
   public:
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
@@ -157,4 +157,4 @@ void ParticleSphereCPUApp::draw()
 	mParticleBatch->draw();
 }
 
-CINDER_APP_NATIVE( ParticleSphereCPUApp, RendererGl )
+CINDER_APP( ParticleSphereCPUApp, RendererGl )

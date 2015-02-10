@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -62,7 +62,7 @@ struct EaseBox {
 	gl::TextureRef					mLabelTex;
 };
 
-class EaseGalleryApp : public AppBasic {
+class EaseGalleryApp : public App {
   public:
 	void setup();
 	void draw();
@@ -165,4 +165,4 @@ void EaseGalleryApp::draw()
 		easeIt->draw( time );
 }
 
-CINDER_APP_BASIC( EaseGalleryApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
+CINDER_APP( EaseGalleryApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

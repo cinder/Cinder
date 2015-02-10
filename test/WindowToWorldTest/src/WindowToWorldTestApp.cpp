@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
@@ -31,7 +31,7 @@ struct EditableRect {
 	}
 };
 
-class WindowToWorldTestApp : public AppNative {
+class WindowToWorldTestApp : public App {
 public:
 	void setup() override;
 	void update() override;
@@ -171,4 +171,4 @@ void WindowToWorldTestApp::resize()
 	mRectangle.position = getWindowSize() / 2;
 }
 
-CINDER_APP_NATIVE( WindowToWorldTestApp, RendererGl )
+CINDER_APP( WindowToWorldTestApp, RendererGl )

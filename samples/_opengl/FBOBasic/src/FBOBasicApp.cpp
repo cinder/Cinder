@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Shader.h"
@@ -10,7 +10,7 @@ using namespace std;
 
 // This sample shows a very basic use case for FBOs - it renders a spinning colored cube
 // into an FBO, and uses that as a Texture onto the sides of a blue cube.
-class FBOBasicApp : public AppNative {
+class FBOBasicApp : public App {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -98,4 +98,4 @@ void FBOBasicApp::draw()
 	gl::draw( mFbo->getDepthTexture(), Rectf( 128, 0, 256, 128 ) );
 }
 
-CINDER_APP_NATIVE( FBOBasicApp, RendererGl )
+CINDER_APP( FBOBasicApp, RendererGl )

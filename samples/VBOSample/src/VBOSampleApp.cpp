@@ -1,6 +1,6 @@
 #include "Resources.h"
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Texture.h"
@@ -17,7 +17,7 @@ using std::vector;
  * The mesh has static indices and texture coordinates, but its vertex positions are dynamic.
  * It also creates a second mesh which shares static and index buffers, but has its own dynamic buffer ***/
 
-class VboSampleApp : public AppBasic {
+class VboSampleApp : public App {
  public:
 	void setup();
 	void update();
@@ -110,4 +110,4 @@ void VboSampleApp::draw()
 }
 
 
-CINDER_APP_BASIC( VboSampleApp, RendererGl )
+CINDER_APP( VboSampleApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Context.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeBasic : public AppNative {
+class NodeBasic : public App {
   public:
 	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
 	void setup();
@@ -51,4 +51,4 @@ void NodeBasic::draw()
 	gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
 }
 
-CINDER_APP_NATIVE( NodeBasic, RendererGl )
+CINDER_APP( NodeBasic, RendererGl )

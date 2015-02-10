@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
 #include "cinder/Utilities.h"
@@ -15,7 +15,7 @@ using std::list;
 
 static const bool PREMULT = false;
 
-class TextTestApp : public AppNative {
+class TextTestApp : public App {
  public:
 	void setup();
 	void draw();
@@ -99,4 +99,4 @@ void TextTestApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_NATIVE( TextTestApp, RendererGl )
+CINDER_APP( TextTestApp, RendererGl )

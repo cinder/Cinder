@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ArcBall.h"
 #include "cinder/Camera.h"
@@ -11,7 +11,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ImageHFApp : public AppBasic {
+class ImageHFApp : public App {
  public:
 	void    setup();
 	void    resize();
@@ -163,4 +163,4 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 	vertColorIter.unmap();
 }
 
-CINDER_APP_BASIC( ImageHFApp, RendererGl )
+CINDER_APP( ImageHFApp, RendererGl )

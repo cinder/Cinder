@@ -3,7 +3,7 @@
  * Used with permission for the Cinder Project ( http://libcinder.org )
  */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/ImageIo.h"
@@ -24,7 +24,7 @@ using namespace ci::app;
 using namespace std;
 
 
-class PaletteBrowserApp : public AppBasic {
+class PaletteBrowserApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -229,4 +229,4 @@ void PaletteBrowserApp::draw()
 }
 
 
-CINDER_APP_BASIC( PaletteBrowserApp, RendererGl )
+CINDER_APP( PaletteBrowserApp, RendererGl )

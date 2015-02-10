@@ -2,7 +2,7 @@
 #include "Resources.h"
 
 #include "cinder/Cinder.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -25,7 +25,7 @@ static const int SHADOW_MAP_RESOLUTION = 1024;
 static const Color BLUE( 0.25f, 0.25f, 1.0f ), RED( 1.0f, 0.55f, 0.55f );
 
 
-class ShadowMapSample : public AppBasic {
+class ShadowMapSample : public App {
  public:
 	void setup();
 	void drawQuad( const float size );
@@ -231,4 +231,4 @@ void ShadowMapSample::draw()
 }
 
 
-CINDER_APP_BASIC( ShadowMapSample, RendererGl )
+CINDER_APP( ShadowMapSample, RendererGl )

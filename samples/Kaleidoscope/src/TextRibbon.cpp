@@ -6,7 +6,7 @@
 //	Copyright (c) 2012 The Barbarian Group. All rights reserved.
 //
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/Text.h"

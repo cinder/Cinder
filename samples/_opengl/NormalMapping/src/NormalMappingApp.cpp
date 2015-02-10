@@ -24,7 +24,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -53,7 +53,7 @@ struct LightSource
 	ColorA specular;
 };
 
-class NormalMappingApp : public AppNative {
+class NormalMappingApp : public App {
 
 #if ! defined( CINDER_GL_ES )
 	typedef enum { Default, Glossy, Normals, Lighting, Mesh } ViewMode;
@@ -439,4 +439,4 @@ gl::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-CINDER_APP_NATIVE( NormalMappingApp, RendererGl )
+CINDER_APP( NormalMappingApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class slerpBasicApp : public AppBasic {
+class slerpBasicApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -100,4 +100,4 @@ void slerpBasicApp::draw()
 	gl::drawSphere( slerp( mVecA, mVecB, mSlerpAmt ), smallSphereRadius, smallSphereSegments );
 }
 
-CINDER_APP_BASIC( slerpBasicApp, RendererGl )
+CINDER_APP( slerpBasicApp, RendererGl )

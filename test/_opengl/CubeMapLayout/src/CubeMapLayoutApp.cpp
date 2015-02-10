@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/params/Params.h"
 #include "cinder/MayaCamUI.h"
@@ -12,8 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class CubeMapLayoutApp : public AppNative
-{
+class CubeMapLayoutApp : public App {
   public:
 	void prepareSettings ( Settings * settings );
 	void setup() override;
@@ -83,4 +82,4 @@ void CubeMapLayoutApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP_NATIVE( CubeMapLayoutApp, RendererGl )
+CINDER_APP( CubeMapLayoutApp, RendererGl )

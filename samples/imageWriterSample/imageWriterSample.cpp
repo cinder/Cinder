@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ImageWriterSampleApp : public AppBasic {
+class ImageWriterSampleApp : public App {
  public:	
 	void setup()
 	{
@@ -29,4 +29,4 @@ class ImageWriterSampleApp : public AppBasic {
 };
 
 
-CINDER_APP_BASIC( ImageWriterSampleApp, RendererGl )
+CINDER_APP( ImageWriterSampleApp, RendererGl )

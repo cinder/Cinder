@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ip/Fill.h"
@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TextureUploadApp : public AppNative {
+class TextureUploadApp : public App {
   public:
 	void prepareSettings( Settings *settings ) override { settings->enableMultiTouch( false ); }
 	void setup();
@@ -188,4 +188,4 @@ void TextureUploadApp::draw()
 	gl::draw( mCurTex );
 }
 
-CINDER_APP_NATIVE( TextureUploadApp, RendererGl )
+CINDER_APP( TextureUploadApp, RendererGl )

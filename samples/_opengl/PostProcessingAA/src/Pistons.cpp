@@ -22,7 +22,7 @@
 
 #include "Pistons.h"
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"

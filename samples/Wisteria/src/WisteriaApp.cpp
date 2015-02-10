@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
@@ -17,7 +17,7 @@ int IDLE_RESTART_FRAMES = 72;
 const int WIDTH = 640;
 const int HEIGHT = 480;
 
-class WisteriaApp : public AppBasic {
+class WisteriaApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -123,4 +123,4 @@ void WisteriaApp::draw()
 	ctx.copySurface( mOffscreenBuffer, mOffscreenBuffer.getBounds() );
 }
 
-CINDER_APP_BASIC( WisteriaApp, Renderer2d )
+CINDER_APP( WisteriaApp, Renderer2d )

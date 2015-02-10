@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 
@@ -14,7 +14,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeAdvancedApp : public AppNative {
+class NodeAdvancedApp : public App {
   public:
 	void setup();
 	void mouseMove( MouseEvent event );
@@ -118,4 +118,4 @@ void NodeAdvancedApp::draw()
 	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
-CINDER_APP_NATIVE( NodeAdvancedApp, RendererGl )
+CINDER_APP( NodeAdvancedApp, RendererGl )

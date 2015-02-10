@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Triangulate.h"
 #include "cinder/TriMesh.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class PolygonBooleanApp : public AppBasic {
+class PolygonBooleanApp : public App {
   public:
 	void setup() override;
 	void draw() override;
@@ -136,4 +136,4 @@ void PolygonBooleanApp::draw()
 	mParams.draw();
 }
 
-CINDER_APP_BASIC( PolygonBooleanApp, RendererGl )
+CINDER_APP( PolygonBooleanApp, RendererGl )

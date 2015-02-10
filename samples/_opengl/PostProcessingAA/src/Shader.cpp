@@ -23,7 +23,7 @@
 #include "Shader.h"
 
 #include "cinder/Utilities.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 
 // Required to parse contents of shader files.
 #include <regex>

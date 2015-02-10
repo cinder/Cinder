@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 
 #include "cinder/Camera.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class CameraLensShiftTestApp : public AppBasic {
+class CameraLensShiftTestApp : public App {
 public:
 	void prepareSettings( Settings *settings );
 
@@ -181,4 +181,4 @@ void CameraLensShiftTestApp::render()
 
 }
 
-CINDER_APP_BASIC( CameraLensShiftTestApp, RendererGl )
+CINDER_APP( CameraLensShiftTestApp, RendererGl )

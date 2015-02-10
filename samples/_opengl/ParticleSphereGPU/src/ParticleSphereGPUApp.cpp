@@ -8,7 +8,7 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/Rand.h"
@@ -51,7 +51,7 @@ const int NUM_PARTICLES = 600e3;
 	particleUpdate.vs defines the simulation update step.
 	Designed to have the same behavior as ParticleSphereCPU.
  */
-class ParticleSphereGPUApp : public AppNative {
+class ParticleSphereGPUApp : public App {
   public:
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
@@ -212,4 +212,4 @@ void ParticleSphereGPUApp::draw()
 	gl::drawArrays( GL_POINTS, 0, NUM_PARTICLES );
 }
 
-CINDER_APP_NATIVE( ParticleSphereGPUApp, RendererGl )
+CINDER_APP( ParticleSphereGPUApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/svg/Svg.h"
@@ -15,7 +15,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class GoodNightMorningApp : public AppBasic {
+class GoodNightMorningApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -163,4 +163,4 @@ void GoodNightMorningApp::draw()
 		gl::draw( mForegroundTex, mDrawBounds );
 }
 
-CINDER_APP_BASIC( GoodNightMorningApp, RendererGl )
+CINDER_APP( GoodNightMorningApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 
@@ -6,7 +6,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class EventTestApp : public AppBasic {
+class EventTestApp : public App {
  public:	
 	void mouseDown( MouseEvent event );
 	void mouseUp( MouseEvent event );
@@ -125,4 +125,4 @@ void EventTestApp::draw()
 	gl::clear();
 }
 
-CINDER_APP_BASIC( EventTestApp, RendererGl )
+CINDER_APP( EventTestApp, RendererGl )

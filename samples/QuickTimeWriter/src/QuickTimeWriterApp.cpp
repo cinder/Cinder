@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/ip/Fill.h"
 
@@ -9,8 +9,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// We'll create a new Cinder Application by deriving from the AppBasic class
-class QuickTimeWriterApp : public AppBasic {
+// We'll create a new Cinder Application by deriving from the App class
+class QuickTimeWriterApp : public App {
  public:
 	void setup();
 	void mouseDrag( MouseEvent event );
@@ -64,4 +64,4 @@ void QuickTimeWriterApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( QuickTimeWriterApp, RendererGl )
+CINDER_APP( QuickTimeWriterApp, RendererGl )

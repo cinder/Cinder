@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
@@ -10,7 +10,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class NormalMappingBasicApp : public AppNative {
+class NormalMappingBasicApp : public App {
   public:	
 	void	setup() override;
 	void	resize() override;
@@ -74,4 +74,4 @@ void NormalMappingBasicApp::draw()
 	mBatch->draw();
 }
 
-CINDER_APP_NATIVE( NormalMappingBasicApp, RendererGl )
+CINDER_APP( NormalMappingBasicApp, RendererGl )

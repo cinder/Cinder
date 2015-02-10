@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
@@ -32,7 +32,7 @@ using namespace ci::app;
 using namespace std;
 
 
-class SamplePlayerNodeTestApp : public AppNative {
+class SamplePlayerNodeTestApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -645,4 +645,4 @@ void SamplePlayerNodeTestApp::testWrite()
 	}
 }
 
-CINDER_APP_NATIVE( SamplePlayerNodeTestApp, RendererGl )
+CINDER_APP( SamplePlayerNodeTestApp, RendererGl )

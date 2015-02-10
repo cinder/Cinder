@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TriangulationApp : public AppBasic {
+class TriangulationApp : public App {
   public:
 	void		setup();
 	void		draw();
@@ -107,4 +107,4 @@ void TriangulationApp::draw()
 }
 
 
-CINDER_APP_BASIC( TriangulationApp, RendererGl )
+CINDER_APP( TriangulationApp, RendererGl )

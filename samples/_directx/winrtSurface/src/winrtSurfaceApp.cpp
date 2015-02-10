@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/ImageIo.h"
 #include "cinder/dx/dx.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicApp : public AppBasic {
+class BasicApp : public App {
   public:
 	void setup();
 	void draw();	
@@ -113,4 +113,4 @@ void BasicApp::draw()
 	dx::draw( mProcessedImageTex, mImageCenter );
 }
 
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

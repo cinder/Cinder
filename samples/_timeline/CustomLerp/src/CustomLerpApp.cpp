@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
@@ -31,7 +31,7 @@ Box boxLerp( const Box &start, const Box &end, float t )
 }
 
 
-class CustomLerpApp : public AppBasic {
+class CustomLerpApp : public App {
   public:
 	void	setup();
 	void	mouseDown( MouseEvent event );	
@@ -68,4 +68,4 @@ void CustomLerpApp::draw()
 }
 
 
-CINDER_APP_BASIC( CustomLerpApp, RendererGl )
+CINDER_APP( CustomLerpApp, RendererGl )

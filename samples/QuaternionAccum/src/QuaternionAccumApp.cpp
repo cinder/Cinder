@@ -1,6 +1,6 @@
 #include "Resources.h"
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Shader.h"
@@ -17,7 +17,7 @@ using namespace std;
 
 const float BALL_RADIUS = 1.0f;
 
-class QuaternionAccumApp : public AppBasic {
+class QuaternionAccumApp : public App {
   public:
 	void setup() override;
 	void update() override;
@@ -147,4 +147,4 @@ void QuaternionAccumApp::draw()
 	drawBall();
 }
 
-CINDER_APP_BASIC( QuaternionAccumApp, RendererGl )
+CINDER_APP( QuaternionAccumApp, RendererGl )

@@ -3,7 +3,7 @@
 // * The completion callback sets the background to blue using a free function
 // * The update callback makes the radius of the circle the distance to the nearest edge using a member function
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 
@@ -44,7 +44,7 @@ struct ColorToGreenFunctor {
 	Color		*mColorPtr;
 };
 
-class CustomCallbackApp : public AppBasic {
+class CustomCallbackApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -82,4 +82,4 @@ void CustomCallbackApp::draw()
 }
 
 
-CINDER_APP_BASIC( CustomCallbackApp, RendererGl )
+CINDER_APP( CustomCallbackApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/Perlin.h"
 #include "cinder/ImageIo.h"
@@ -28,7 +28,7 @@ bool			ALLOWTRAILS = false;
 vec3		gravity( 0, 0.35f, 0 );
 const int	CINDER_FACTOR = 5; // how many times more particles than the Java version
 
-class BasicApp : public AppBasic {
+class BasicApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -152,4 +152,4 @@ void renderImage( vec3 _loc, float _diam, Color _col, float _alpha )
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

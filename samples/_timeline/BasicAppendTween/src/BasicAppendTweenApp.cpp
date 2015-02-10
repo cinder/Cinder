@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Rand.h"
@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicAppendTweenApp : public AppBasic {
+class BasicAppendTweenApp : public App {
   public:
 	void setup();
 	void setDestinations();
@@ -77,4 +77,4 @@ void BasicAppendTweenApp::draw()
 }
 
 
-CINDER_APP_BASIC( BasicAppendTweenApp, RendererGl )
+CINDER_APP( BasicAppendTweenApp, RendererGl )

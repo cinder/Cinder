@@ -36,7 +36,7 @@
 	The CameraStereo class is based on the Off-Axis method described in this article.
 	*/
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/gl/gl.h"
@@ -63,7 +63,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class StereoscopicRenderingApp : public AppBasic {
+class StereoscopicRenderingApp : public App {
 public:
 	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
 	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL } RenderMethod;
@@ -638,4 +638,4 @@ void StereoscopicRenderingApp::renderUI()
 #endif
 }
 
-CINDER_APP_BASIC( StereoscopicRenderingApp, RendererGl( RendererGl::Options() ) )
+CINDER_APP( StereoscopicRenderingApp, RendererGl( RendererGl::Options() ) )

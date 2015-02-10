@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/Surface.h"
@@ -9,8 +9,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// We'll create a new Cinder Application by deriving from the AppBasic class
-class BasicApp : public AppBasic {
+// We'll create a new Cinder Application by deriving from the App class
+class BasicApp : public App {
   public:
 	void mouseDrag( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -50,4 +50,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/dx/DxRenderTarget.h"
@@ -6,7 +6,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FboApp : public AppNative {
+class FboApp : public App {
 public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -51,4 +51,4 @@ void FboApp::draw()
 	dx::draw( mRenderTarget->getTexture() );
 }
 
-CINDER_APP_NATIVE( FboApp, RendererDx )
+CINDER_APP( FboApp, RendererDx )

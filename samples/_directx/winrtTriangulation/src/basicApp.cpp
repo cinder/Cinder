@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
@@ -18,7 +18,7 @@ using namespace std;
 const int	MAX_ZOOM = 3;
 const int	MAX_PRECISION = 6;
 
-class BasicApp : public AppBasic {
+class BasicApp : public App {
 
   public:
 
@@ -210,4 +210,4 @@ void BasicApp::draw()
 	mParams.draw();
 }
 
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

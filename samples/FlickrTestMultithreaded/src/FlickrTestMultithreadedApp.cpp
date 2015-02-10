@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Texture.h"
@@ -18,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FlickrTestMTApp : public AppNative {
+class FlickrTestMTApp : public App {
   public:		
 	void setup();
 	void update();
@@ -114,4 +114,4 @@ void FlickrTestMTApp::shutdown()
 	mThread->join();
 }
 
-CINDER_APP_NATIVE( FlickrTestMTApp, RendererGl )
+CINDER_APP( FlickrTestMTApp, RendererGl )

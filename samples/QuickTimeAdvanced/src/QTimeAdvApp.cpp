@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class QTimeAdvApp : public AppBasic {
+class QTimeAdvApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -168,4 +168,4 @@ void QTimeAdvApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( QTimeAdvApp, RendererGl )
+CINDER_APP( QTimeAdvApp, RendererGl )

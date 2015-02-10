@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Stream.h"
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class streamFileTestApp : public AppBasic {
+class streamFileTestApp : public App {
   public:
 	void setup();
 	fs::path	createReadTestFile();
@@ -121,4 +121,4 @@ void streamFileTestApp::setup()
 	readTest<IoStreamFile>( testPath );
 }
 
-CINDER_APP_BASIC( streamFileTestApp, RendererGl )
+CINDER_APP( streamFileTestApp, RendererGl )

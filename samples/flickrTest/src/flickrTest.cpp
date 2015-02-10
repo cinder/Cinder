@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Url.h"
 #include "cinder/Xml.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FlickrTestApp : public AppBasic {
+class FlickrTestApp : public App {
   public:		
 	void setup();
 	void update();
@@ -63,4 +63,4 @@ void FlickrTestApp::createTextureFromUrl()
 	mTextures.push_back( tex );
 }
 
-CINDER_APP_BASIC( FlickrTestApp, RendererGl )
+CINDER_APP( FlickrTestApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Pbo.h"
@@ -12,7 +12,7 @@ using namespace std;
 static const int IMAGE_WIDTH = 1920;
 static const int IMAGE_HEIGHT = 1080 * 12;
 
-class ImageSourcePboApp : public AppNative {
+class ImageSourcePboApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -77,4 +77,4 @@ void ImageSourcePboApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( ImageSourcePboApp, RendererGl )
+CINDER_APP( ImageSourcePboApp, RendererGl )

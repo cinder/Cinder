@@ -11,7 +11,7 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/gl/gl.h"
@@ -33,7 +33,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class MotionBlurVelocityBufferApp : public AppNative {
+class MotionBlurVelocityBufferApp : public App {
   public:
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
@@ -310,4 +310,4 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	gl::drawSolidRect( rect );
 }
 
-CINDER_APP_NATIVE( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
+CINDER_APP( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )

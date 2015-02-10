@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class QueryTestApp : public AppNative {
+class QueryTestApp : public App {
 public:
 	void prepareSettings( Settings * settings ) override;
 	void setup() override;
@@ -80,4 +80,4 @@ void QueryTestApp::draw()
 	
 }
 
-CINDER_APP_NATIVE( QueryTestApp, RendererGl )
+CINDER_APP( QueryTestApp, RendererGl )

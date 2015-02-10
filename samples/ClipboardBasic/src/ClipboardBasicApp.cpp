@@ -1,4 +1,4 @@
-﻿#include "cinder/app/AppNative.h"
+﻿#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Clipboard.h"
 #include "cinder/Utilities.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ClipboardBasicApp : public AppNative {
+class ClipboardBasicApp : public App {
   public:
 	void keyDown( KeyEvent event );	
 	void draw();
@@ -41,4 +41,4 @@ void ClipboardBasicApp::draw()
 		gl::drawString( "Clipboard contents unknown", vec2( 0, getWindowCenter().y ) );
 }
 
-CINDER_APP_NATIVE( ClipboardBasicApp, RendererGl )
+CINDER_APP( ClipboardBasicApp, RendererGl )

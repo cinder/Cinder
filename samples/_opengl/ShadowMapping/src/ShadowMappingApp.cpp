@@ -46,7 +46,7 @@
  */
 
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/params/Params.h"
 #include "cinder/gl/gl.h"
@@ -112,7 +112,7 @@ struct LightData {
 	vec3						target;
 };
 
-class ShadowMappingApp : public AppNative {
+class ShadowMappingApp : public App {
 public:
 	void prepareSettings( AppBasic::Settings *settings ) override;
 	void setup() override;
@@ -372,4 +372,4 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_NATIVE( ShadowMappingApp, RendererGl )
+CINDER_APP( ShadowMappingApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Xml.h"
 #include "cinder/Utilities.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class XMLTestApp : public AppBasic {
+class XMLTestApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -117,4 +117,4 @@ void XMLTestApp::draw()
 }
 
 
-CINDER_APP_BASIC( XMLTestApp, RendererGl )
+CINDER_APP( XMLTestApp, RendererGl )

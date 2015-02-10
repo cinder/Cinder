@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -15,7 +15,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class AnimatedRevealApp : public AppBasic {
+class AnimatedRevealApp : public App {
   public:
 	void update();
 	void draw();
@@ -150,4 +150,4 @@ void AnimatedRevealApp::draw()
 }
 
 
-CINDER_APP_BASIC( AnimatedRevealApp, RendererGl )
+CINDER_APP( AnimatedRevealApp, RendererGl )

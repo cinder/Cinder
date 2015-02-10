@@ -14,7 +14,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
@@ -64,8 +64,7 @@ class Bubble
 };
 
 // our main application
-class Picking3DApp : public AppBasic 
-{
+class Picking3DApp : public App {
   public:
 	void setup() override;
 	void update() override;
@@ -311,4 +310,4 @@ void Picking3DApp::resize()
 }
 
 
-CINDER_APP_BASIC( Picking3DApp, ci::app::RendererGl )
+CINDER_APP( Picking3DApp, ci::app::RendererGl )

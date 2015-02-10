@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Texture.h"
@@ -15,7 +15,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class LocationApp : public AppNative {
+class LocationApp : public App {
   public:
  	virtual void	setup(); 
 	virtual void	draw();
@@ -146,4 +146,4 @@ void LocationApp::locationChanged( LocationEvent event )
 	mLocation = vec3( x, y, z );
 }
 
-CINDER_APP_NATIVE( LocationApp, RendererGl )
+CINDER_APP( LocationApp, RendererGl )
