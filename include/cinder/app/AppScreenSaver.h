@@ -31,9 +31,11 @@
 	#ifdef __OBJC__
 		@class AppImplCocoaScreenSaver;
 		@class NSWindow;
+		@class NSBundle;
 	#else
 		class AppImplCocoaScreenSaver;
 		class NSWindow;
+		class NSBundle;
 	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
