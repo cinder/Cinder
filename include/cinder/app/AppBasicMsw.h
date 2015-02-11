@@ -34,7 +34,7 @@ class AppBasicMsw : public AppBasic {
 	//! MSW-specific settings
 	class Settings : public AppBasic::Settings {
 	  public:
-		Settings() : mEnableMswConsole( false )				{}
+		Settings() : mMswConsoleEnabled( false )				{}
 
 		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
 		void	setConsoleWindowEnabled( bool enable = true )	{ mMswConsoleEnabled = enable; }
