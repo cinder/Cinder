@@ -61,6 +61,7 @@ class PolyLine {
 	bool	contains( const Vec2f &pt ) const;
 
 	double	area() const;
+	T		centroid() const;
 
 	//! Calculates the boolean union of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
 	static std::vector<PolyLine> 	calcUnion( const std::vector<PolyLine> &a, std::vector<PolyLine> &b );

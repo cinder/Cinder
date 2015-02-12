@@ -173,6 +173,14 @@ double PolyLine<T>::area() const
 }
 
 template<typename T>
+T PolyLine<T>::centroid() const
+{
+	point p = boost::geometry::return_centroid<point>( convertPolyLineToBoostGeometry ( *this ) );
+	return T( p.x(), p.y() );
+}
+
+
+template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcUnion( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
 	if( a.empty() )
