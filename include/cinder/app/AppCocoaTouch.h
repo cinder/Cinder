@@ -213,8 +213,8 @@ class AppCocoaTouch : public AppBase {
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 
 	// Called during application instanciation via CINDER_APP_COCOA_TOUCH macro
-	template<typename AppT, typename RendererT>
-	static void main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	template<typename AppT>
+	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
 
   private:
@@ -237,13 +237,13 @@ extern	std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &
 //! returns the degrees rotation from Portrait for the provided \a orientation
 float	getOrientationDegrees( InterfaceOrientation orientation );
 
-template<typename AppT, typename RendererT>
-void AppCocoaTouch::main( const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+template<typename AppT>
+void AppCocoaTouch::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, std::make_shared<RendererT>(), title, argc, argv );
+	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -261,7 +261,8 @@ void AppCocoaTouch::main( const char *title, int argc, char * const argv[], cons
 #define CINDER_APP_COCOA_TOUCH( APP, RENDERER, ... )									\
 int main( int argc, char * const argv[] )												\
 {																						\
-	cinder::app::AppCocoaTouch::main<APP, RENDERER>( #APP, argc, argv, ##__VA_ARGS__ );	\
+	cinder::app::RendererRef renderer( new RENDERER );									\
+	cinder::app::AppCocoaTouch::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
 	return 0;																			\
 }
 

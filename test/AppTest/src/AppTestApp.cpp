@@ -258,6 +258,9 @@ void AppTestApp::drawInfo()
 // settings fn from top of file:
 CINDER_APP( AppTestApp, RendererGl, prepareSettings )
 
+// passing in options to Renderer
+//CINDER_APP( AppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ), prepareSettings )
+
 // settings fn by lambda
 //CINDER_APP( AppTestApp, RendererGl, []( AppTestApp::Settings *settings ) {
 //	CI_LOG_I( "bang" );

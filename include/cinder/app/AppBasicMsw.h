@@ -74,7 +74,7 @@ class AppBasicMsw : public AppBasic {
 
 	//! \cond
 	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
-	template<typename AppT, typename RendererT>
+	template<typename AppT>
 	static void main( const char *title, const SettingsFn &settingsFn = SettingsFn() );
 	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
 	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
@@ -88,13 +88,13 @@ class AppBasicMsw : public AppBasic {
 	bool								mConsoleWindowEnabled;
 };
 
-template<typename AppT, typename RendererT>
-void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
+template<typename AppT>
+void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBasicMsw::initialize( &settings, std::make_shared<RendererT>(), title ); // AppBasicMsw variant to parse args using msw-specific api
+	AppBasicMsw::initialize( &settings, defaultRenderer, title ); // AppBasicMsw variant to parse args using msw-specific api
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -111,7 +111,8 @@ void AppBasicMsw::main( const char *title, const SettingsFn &settingsFn )
 #define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\
 int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
 {																									\
-	cinder::app::AppBasicMsw::main<APP, RENDERER>( #APP, ##__VA_ARGS__ );							\
+	cinder::app::RendererRef renderer( new RENDERER );												\
+	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
 	return 0;																						\
 }
 
