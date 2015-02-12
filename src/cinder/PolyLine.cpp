@@ -157,8 +157,6 @@ polygon convertPolyLinesToBoostGeometry( const std::vector<PolyLine<T> > &a )
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcUnion( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
@@ -176,8 +174,6 @@ std::vector<PolyLine<T> > PolyLine<T>::calcUnion( const std::vector<PolyLine<T> 
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcIntersection( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
@@ -195,8 +191,6 @@ std::vector<PolyLine<T> > PolyLine<T>::calcIntersection( const std::vector<PolyL
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcXor( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
