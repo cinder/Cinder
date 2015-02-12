@@ -35,7 +35,6 @@ using namespace std;
 
 class MotionBlurVelocityBufferApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
 	void update() override;
@@ -71,15 +70,6 @@ class MotionBlurVelocityBufferApp : public App {
 	bool					mDisplayVelocityBuffers = true;
 };
 
-void MotionBlurVelocityBufferApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1280, 720 );
-
-	#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_COCOA_TOUCH_SIMULATOR )
-		getSignalSupportedOrientations().connect( [] { return InterfaceOrientation::LandscapeAll; } );
-	#endif // COCOA_TOUCH
-}
-
 void MotionBlurVelocityBufferApp::setup()
 {
 	mBackground = gl::Texture::create( loadImage( loadAsset( "background.jpg" ) ) );
@@ -96,6 +86,9 @@ void MotionBlurVelocityBufferApp::setup()
 	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
 	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
 
+#if defined( CINDER_COCOA_TOUCH )
+	getSignalSupportedOrientations().connect( [] { return InterfaceOrientation::LandscapeAll; } );
+#endif
 }
 
 void MotionBlurVelocityBufferApp::createGeometry()
@@ -310,4 +303,6 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	gl::drawSolidRect( rect );
 }
 
-CINDER_APP( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
+CINDER_APP( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ), []( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+} )
