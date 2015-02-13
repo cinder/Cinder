@@ -276,34 +276,34 @@ UIViewController* Window::getNativeViewController()
 // Signal Emitters
 void Window::emitClose()
 {
-	mSignalClose();
+	mSignalClose.emit();
 }
 
 void Window::emitMove()
 {
 	getRenderer()->makeCurrentContext();
-	mSignalMove();
+	mSignalMove.emit();
 }
 
 void Window::emitResize()
 {
 	getRenderer()->makeCurrentContext();
 	getRenderer()->defaultResize();
-	mSignalResize();
+	mSignalResize.emit();
 	getApp()->resize();
 }
 
 void Window::emitDisplayChange()
 {
 	getRenderer()->makeCurrentContext();
-	mSignalDisplayChange();
+	mSignalDisplayChange.emit();
 }
 
 void Window::emitMouseDown( MouseEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMouseDown.set_combiner( EventCombiner<cinder::app::MouseEvent>( event ) );
-	mSignalMouseDown( *event );
+	mSignalMouseDown.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->mouseDown( *event );
 }
@@ -312,7 +312,7 @@ void Window::emitMouseDrag( MouseEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMouseDrag.set_combiner( EventCombiner<cinder::app::MouseEvent>( event ) );
-	mSignalMouseDrag( *event );
+	mSignalMouseDrag.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->mouseDrag( *event );
 }
@@ -321,7 +321,7 @@ void Window::emitMouseUp( MouseEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMouseUp.set_combiner( EventCombiner<cinder::app::MouseEvent>( event ) );
-	mSignalMouseUp( *event );
+	mSignalMouseUp.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->mouseUp( *event );
 }
@@ -330,7 +330,7 @@ void Window::emitMouseWheel( MouseEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMouseWheel.set_combiner( EventCombiner<cinder::app::MouseEvent>( event ) );
-	mSignalMouseWheel( *event );
+	mSignalMouseWheel.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->mouseWheel( *event );
 }
@@ -339,7 +339,7 @@ void Window::emitMouseMove( MouseEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalMouseMove.set_combiner( EventCombiner<cinder::app::MouseEvent>( event ) );
-	mSignalMouseMove( *event );
+	mSignalMouseMove.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->mouseMove( *event );
 }
@@ -348,7 +348,7 @@ void Window::emitTouchesBegan( TouchEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalTouchesBegan.set_combiner( EventCombiner<cinder::app::TouchEvent>( event ) );
-	mSignalTouchesBegan( *event );
+	mSignalTouchesBegan.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->touchesBegan( *event );
 }
@@ -357,7 +357,7 @@ void Window::emitTouchesMoved( TouchEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalTouchesMoved.set_combiner( EventCombiner<cinder::app::TouchEvent>( event ) );
-	mSignalTouchesMoved( *event );
+	mSignalTouchesMoved.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->touchesMoved( *event );
 }
@@ -366,7 +366,7 @@ void Window::emitTouchesEnded( TouchEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalTouchesEnded.set_combiner( EventCombiner<cinder::app::TouchEvent>( event ) );
-	mSignalTouchesEnded( *event );
+	mSignalTouchesEnded.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->touchesEnded( *event );
 }
@@ -389,7 +389,7 @@ void Window::emitKeyDown( KeyEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalKeyDown.set_combiner( EventCombiner<cinder::app::KeyEvent>( event ) );
-	mSignalKeyDown( *event );
+	mSignalKeyDown.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->keyDown( *event );
 }
@@ -398,23 +398,23 @@ void Window::emitKeyUp( KeyEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalKeyUp.set_combiner( EventCombiner<cinder::app::KeyEvent>( event ) );
-	mSignalKeyUp( *event );
+	mSignalKeyUp.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->keyUp( *event );
 }
 
 void Window::emitDraw()
 {
-	mSignalDraw();
+	mSignalDraw.emit();
 	getApp()->draw();
-	mSignalPostDraw();
+	mSignalPostDraw.emit();
 }
 
 void Window::emitFileDrop( FileDropEvent *event )
 {
 	getRenderer()->makeCurrentContext();
 	mSignalFileDrop.set_combiner( EventCombiner<cinder::app::FileDropEvent>( event ) );
-	mSignalFileDrop( *event );
+	mSignalFileDrop.emit( *event );
 	if( ! event->isHandled() )
 		getApp()->fileDrop( *event );
 }

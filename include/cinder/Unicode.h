@@ -25,9 +25,10 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/Function.h"
 
 #include <string>
+#include <functional>
+#include <vector>
 
 namespace cinder {
 

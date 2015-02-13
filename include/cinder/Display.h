@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 
 #if defined( CINDER_MAC )
 	#if defined( __OBJC__ )
@@ -114,7 +114,7 @@ class Display {
 	
 #if defined( CINDER_COCOA_TOUCH )
 	//! Returns the signal emitted when a display is connected or disconnected
-	signals::signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
+	signals::Signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
 	template<typename T, typename Y>
 	void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
 #endif
@@ -129,7 +129,7 @@ class Display {
 #elif defined( CINDER_COCOA_TOUCH )
 	UIScreen				*mUiScreen;
 	std::vector<ivec2>		mSupportedResolutions;
-	signals::signal<void()>	mSignalDisplaysChanged;
+	signals::Signal<void()>	mSignalDisplaysChanged;
 #elif defined( CINDER_MSW )
 	HMONITOR			mMonitor;
 #endif

@@ -51,7 +51,7 @@ enum InterfaceOrientation {
 };
 
 //! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
+typedef	signals::Signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
 
 class AppCocoaTouch : public AppBase {
   public:
@@ -74,11 +74,11 @@ class AppCocoaTouch : public AppBase {
 	AppCocoaTouch();
 	virtual ~AppCocoaTouch();
 
-	signals::signal<void()>&	getSignalDidEnterBackground() { return mSignalDidEnterBackground; }
+	signals::Signal<void()>&	getSignalDidEnterBackground() { return mSignalDidEnterBackground; }
 	void						emitDidEnterBackground();
-	signals::signal<void()>&	getSignalWillEnterForeground() { return mSignalWillEnterForeground; }
+	signals::Signal<void()>&	getSignalWillEnterForeground() { return mSignalWillEnterForeground; }
 	void						emitWillEnterForeground();
-	signals::signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
+	signals::Signal<void()>&	getSignalMemoryWarning() { return mSignalMemoryWarning; }
 	void 						emitMemoryWarning();
 
 	//! Returns the signal emitted when an orientation change may occur, allowing the user to specify which orientations are permitted (any connection can forbid a given orientation).  The connected std::function must return an \t InterfaceOrientation bitmask. 
@@ -86,19 +86,19 @@ class AppCocoaTouch : public AppBase {
 	//! Emits a signal to ask the user what orientations are supported.
 	uint32_t							emitSupportedOrientations();
 	//! Returns the signal emitted when the interface is about to rotate to a new orientation. At this time, the Window's bounds and orientation have already been updated.
-	signals::signal<void()>&			getSignalWillRotate() { return mSignalWillRotate; }
+	signals::Signal<void()>&			getSignalWillRotate() { return mSignalWillRotate; }
 	//! Emits the signal to notify the user that the orientation will change.
 	void								emitWillRotate();
 	//! Returns the signal emitted when the interface is finished rotating to a new orientation.
-	signals::signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
+	signals::Signal<void()>&			getSignalDidRotate() { return mSignalDidRotate; }
 	//! Emits the signal to notify the user that the orientation did change.
 	void								emitDidRotate();
 	//! Returns the signal emitted when the virtual keyboard is about to animate on screen.
-	signals::signal<void()>&			getSignalKeyboardWillShow() { return mSignalKeyboardWillShow; }
+	signals::Signal<void()>&			getSignalKeyboardWillShow() { return mSignalKeyboardWillShow; }
 	//! Emits the signal used to notify when the virtual keyboard is about to animate on screen.
 	void								emitKeyboardWillShow();
 	//! Returns the signal emitted when the virtual keyboard is about to animate off screen.
-	signals::signal<void()>&			getSignalKeyboardWillHide() { return mSignalKeyboardWillHide; }
+	signals::Signal<void()>&			getSignalKeyboardWillHide() { return mSignalKeyboardWillHide; }
 	//! Emits the signal used to notify when the virtual keyboard is about to animate off screen.
 	void								emitKeyboardWillHide();
 
@@ -121,7 +121,7 @@ class AppCocoaTouch : public AppBase {
 	//! Returns whether the device is close to the user or not. Must call \a enableProximitySensor() before using.
 	bool proximityIsClose() const;
 	//! Signal emitted when the device becomes close (\c true) or far (\c false). Must call \a enableProximitySensor() before using.
-	signals::signal<void(bool)>&	getSignalProximitySensor() { return mSignalProximitySensor; }
+	signals::Signal<void(bool)>&	getSignalProximitySensor() { return mSignalProximitySensor; }
 	void							emitSignalProximitySensor( bool isClose ) { mSignalProximitySensor( isClose ); }
 
 	//! Enables the device's battery monitor. Use in conjunction with \a getBatteryLevel(), \a isUnplugged() and \a getSignalBatteryState()
@@ -133,7 +133,7 @@ class AppCocoaTouch : public AppBase {
 	//! Returns \c true when the device is not plugged into power
 	bool 	isUnplugged() const;
 	//! Signal emitted when the device is unplugged (\c true) or plugged in (\c false). Use in place of polling \a isUnplugged().
-	signals::signal<void(bool)>&	getSignalBatteryState() { return mSignalBatteryState; }
+	signals::Signal<void(bool)>&	getSignalBatteryState() { return mSignalBatteryState; }
 	void							emitSignalBatteryState( bool isUnplugged ) { mSignalBatteryState( isUnplugged ); }
 
 	//! When disabled, the device will not sleep even after the idling threshold.
@@ -223,13 +223,13 @@ class AppCocoaTouch : public AppBase {
 	static AppCocoaTouch	*sInstance;
 	AppImplCocoaTouch		*mImpl;
 
-	signals::signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalMemoryWarning;
+	signals::Signal<void()>		mSignalDidEnterBackground, mSignalWillEnterForeground, mSignalMemoryWarning;
 
-	signals::signal<void(bool)>		mSignalProximitySensor, mSignalBatteryState;
+	signals::Signal<void(bool)>		mSignalProximitySensor, mSignalBatteryState;
 
 	EventSignalSupportedOrientations		mSignalSupportedOrientations;
-	signals::signal<void()>					mSignalWillRotate, mSignalDidRotate;
-	signals::signal<void(void)>				mSignalKeyboardWillShow, mSignalKeyboardWillHide;
+	signals::Signal<void()>					mSignalWillRotate, mSignalDidRotate;
+	signals::Signal<void(void)>				mSignalKeyboardWillShow, mSignalKeyboardWillHide;
 };
 
 //! Stream \t InterfacefaceOrientation enum to std::ostream

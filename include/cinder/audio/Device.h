@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 #include "cinder/Noncopyable.h"
 
 #include <memory>
@@ -88,9 +88,9 @@ class Device : public std::enable_shared_from_this<Device>, Noncopyable {
 	//! Configures the format properties of this Device. This effects the hardware on your system. \note Update is asynchronous on some platforms (mac desktop).
 	void updateFormat( const Format &format );
 	//! Returns a signal that notifies connected slots before the format of this Device will change. This can occur from a call to updateFormat() or by the system.
-	signals::signal<void()>& getSignalParamsWillChange()	{ return mSignalParamsWillChange; }
+	signals::Signal<void()>& getSignalParamsWillChange()	{ return mSignalParamsWillChange; }
 	//! Returns a signal that notifies connected slots after the format of this Device has changed. This can occur from a call to updateFormat() or by the system.
-	signals::signal<void()>& getSignalParamsDidChange()		{ return mSignalParamsDidChange; }
+	signals::Signal<void()>& getSignalParamsDidChange()		{ return mSignalParamsDidChange; }
 
 	//! Returns a string representation of all devices for debugging purposes.
 	static std::string printDevicesToString();
@@ -100,7 +100,7 @@ class Device : public std::enable_shared_from_this<Device>, Noncopyable {
 
 	std::string mKey, mName;
 	size_t mSampleRate, mFramesPerBlock;
-	signals::signal<void()> mSignalParamsWillChange, mSignalParamsDidChange;
+	signals::Signal<void()> mSignalParamsWillChange, mSignalParamsDidChange;
 
 	friend class DeviceManager;
 };

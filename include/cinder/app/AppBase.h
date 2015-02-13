@@ -36,7 +36,7 @@
 #include "cinder/Display.h"
 #include "cinder/DataSource.h"
 #include "cinder/Timer.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 #include "cinder/Thread.h"
 
 #include <vector>
@@ -51,54 +51,6 @@ class io_service;
 } // namespace asio
 
 namespace cinder { namespace app {
-
-//! Returns true if any slots return true, else false. Does not short-circuit. Returns true if there are no slots.
-struct BooleanOrEventCombiner {
-	typedef bool	result_type;
-
-	template<typename InputIterator>
-	bool	operator()( InputIterator first, InputIterator last ) const
-	{
-		bool handled = ( first == last ) ? true : false;
-		while( first != last )
-			handled = *first++ || handled;
-		
-		return handled;
-	}
-};
-
-//! Returns true if all slots return true, else false. Does not short-circuit. Returns true if there are no slots.
-struct BooleanAndEventCombiner {
-	typedef bool	result_type;
-
-	template<typename InputIterator>
-	bool	operator()( InputIterator first, InputIterator last ) const
-	{
-		bool result = true;
-		while( first != last )
-			result = *first++ && result;
-		
-		return result;
-	}
-};
-
-//! Returns a bitmask where in order for the bit in type T to be be 1, it has to be 1 from all slot.  Returns 0 if there are no slots.
-template<typename T>
-struct BitwiseAndEventCombiner {
-	typedef T	result_type;
-
-	template<typename InputIterator>
-	T	operator()( InputIterator first, InputIterator last ) const
-	{
-		if( first == last )
-			return 0;
-		T mask = *first++;
-		while( first != last )
-			mask &= *first++;
-
-		return mask;
-	}
-};
 
 //! Base class that all apps derive from.
 class AppBase {
@@ -262,15 +214,15 @@ class AppBase {
 	virtual void	quit() = 0;
 
 	//! Emitted at the start of each application update cycle
-	signals::signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
+	signals::Signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
 
 	//! Emitted prior to the application shutting down
-	signals::signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
+	signals::Signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
 
-	signals::signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
+	signals::Signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
     void 						emitWillResignActive();
-	signals::signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
+	signals::Signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
 	void 						emitDidBecomeActive();
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
@@ -454,7 +406,7 @@ class AppBase {
 
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
-	signals::signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
 
 	std::shared_ptr<asio::io_service>	mIo;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class
