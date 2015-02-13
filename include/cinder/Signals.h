@@ -263,14 +263,18 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 		auto link = head->addBefore( callback );
 		return Connection( mDisconnector, link, priority );
 	}
-	//! Emit a signal, i.e. invoke all its callbacks and collect return types with the Collector.
+
+	//! Emit a signal, i.e. invoke all its callbacks and collect return types with Collector. \return the CollectorResult from the collector.
 	CollectorResult	emit( Args... args )
 	{
 		Collector collector;
+		emit( collector, args... );
+		return collector.result();
+	}
 
-		if( mLinks.empty() )
-			return collector.result();
-
+	//! Emit a signal, i.e. invoke all its callbacks and collect return types with \a collector.
+	void emit( Collector &collector, Args... args )
+	{
 		for( auto &lp : mLinks ) {
 			SignalLink *link = lp.second;
 			link->incrRef();
@@ -291,9 +295,8 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 			
 			link->decrRef();
 		}
-
-		return collector.result();
 	}
+
 	//! Returns the number of connected slots.
 	size_t getNumSlots() const
 	{
