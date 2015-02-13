@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		115FF5A41A8E6F08002DF368 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 115FF5A31A8E6F08002DF368 /* System.cpp */; };
+		115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 115FF5A51A8E6F1E002DF368 /* Exception.cpp */; };
 		1168DB4B1A8D937800660ED3 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB451A8D937800660ED3 /* AudioToolbox.framework */; };
 		1168DB4C1A8D937800660ED3 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB461A8D937800660ED3 /* AudioUnit.framework */; };
 		1168DB4D1A8D937800660ED3 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB471A8D937800660ED3 /* AVFoundation.framework */; };
@@ -45,6 +47,8 @@
 
 /* Begin PBXFileReference section */
 		1118C09619AD3AC500F0D18B /* SignalsTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SignalsTest; sourceTree = BUILT_PRODUCTS_DIR; };
+		115FF5A31A8E6F08002DF368 /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../../src/cinder/System.cpp; sourceTree = "<group>"; };
+		115FF5A51A8E6F1E002DF368 /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = ../../../src/cinder/Exception.cpp; sourceTree = "<group>"; };
 		1168DB451A8D937800660ED3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		1168DB461A8D937800660ED3 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		1168DB471A8D937800660ED3 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -93,18 +97,8 @@
 		1118C08D19AD3AC500F0D18B = {
 			isa = PBXGroup;
 			children = (
-				1168DB591A8D93C100660ED3 /* Accelerate.framework */,
-				1168DB571A8D93B400660ED3 /* CoreAudio.framework */,
-				1168DB551A8D93AB00660ED3 /* QTKit.framework */,
-				1168DB531A8D93A400660ED3 /* OpenGL.framework */,
-				1168DB511A8D938C00660ED3 /* QuartzCore.framework */,
-				1168DB451A8D937800660ED3 /* AudioToolbox.framework */,
-				1168DB461A8D937800660ED3 /* AudioUnit.framework */,
-				1168DB471A8D937800660ED3 /* AVFoundation.framework */,
-				1168DB481A8D937800660ED3 /* Cocoa.framework */,
-				1168DB491A8D937800660ED3 /* CoreMedia.framework */,
-				1168DB4A1A8D937800660ED3 /* CoreText.framework */,
 				1118C0A219AD3CC300F0D18B /* src */,
+				1168DB5B1A8D9B5200660ED3 /* Frameworks */,
 				1118C09719AD3AC500F0D18B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -121,10 +115,38 @@
 		1118C0A219AD3CC300F0D18B /* src */ = {
 			isa = PBXGroup;
 			children = (
+				115FF5A21A8E6EEA002DF368 /* cinder */,
 				11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */,
 				11FD61241A89A2B0006F42CC /* SignalsTest.cpp */,
 			);
 			name = src;
+			sourceTree = "<group>";
+		};
+		115FF5A21A8E6EEA002DF368 /* cinder */ = {
+			isa = PBXGroup;
+			children = (
+				115FF5A51A8E6F1E002DF368 /* Exception.cpp */,
+				115FF5A31A8E6F08002DF368 /* System.cpp */,
+			);
+			name = cinder;
+			sourceTree = "<group>";
+		};
+		1168DB5B1A8D9B5200660ED3 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				1168DB591A8D93C100660ED3 /* Accelerate.framework */,
+				1168DB571A8D93B400660ED3 /* CoreAudio.framework */,
+				1168DB551A8D93AB00660ED3 /* QTKit.framework */,
+				1168DB531A8D93A400660ED3 /* OpenGL.framework */,
+				1168DB511A8D938C00660ED3 /* QuartzCore.framework */,
+				1168DB451A8D937800660ED3 /* AudioToolbox.framework */,
+				1168DB461A8D937800660ED3 /* AudioUnit.framework */,
+				1168DB471A8D937800660ED3 /* AVFoundation.framework */,
+				1168DB481A8D937800660ED3 /* Cocoa.framework */,
+				1168DB491A8D937800660ED3 /* CoreMedia.framework */,
+				1168DB4A1A8D937800660ED3 /* CoreText.framework */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -196,6 +218,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				115FF5A41A8E6F08002DF368 /* System.cpp in Sources */,
+				115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */,
 				11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,7 +271,6 @@
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
@@ -284,7 +307,6 @@
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
-				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
