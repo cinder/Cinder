@@ -73,7 +73,7 @@ void WindowTestApp::setup()
 
 	getWindow()->connectMouseDown( &WindowTestApp::anotherTest, this );
 	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown1, this, std::placeholders::_1 ) );
-	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) );
+//	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) ); // This shouldn't build because it has the wrong signature (<bool( MouseEvent )>)
 	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown3, this, std::placeholders::_1 ) );
 	getSignalShouldQuit().connect( std::bind( &WindowTestApp::shouldQuit, this ) );
 	
@@ -129,7 +129,7 @@ void WindowTestApp::displayChange()
 
 bool WindowTestApp::mouseDown2( MouseEvent event )
 {
-	CI_LOG_V( "It worked 2!" );
+	CI_ASSERT_MSG( 0, "getSignalMouseDown() called with wrong signature (should be <void( MouseEvent &event)>" );
 	return false;
 }
 
