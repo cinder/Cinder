@@ -24,6 +24,7 @@
 
 #include "cinder/Timeline.h"
 
+#include <algorithm>
 #include <vector>
 
 using namespace std;

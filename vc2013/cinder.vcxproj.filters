@@ -1583,5 +1583,8 @@
     <ClInclude Include="..\include\cinder\app\PlatformMsw.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\Signals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

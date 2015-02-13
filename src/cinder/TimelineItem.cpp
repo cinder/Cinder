@@ -25,7 +25,9 @@
 #include "cinder/TimelineItem.h"
 #include "cinder/Timeline.h"
 #include "cinder/CinderMath.h"
-	
+
+#include <algorithm>
+
 namespace cinder {
 
 TimelineItem::TimelineItem( class Timeline *parent )

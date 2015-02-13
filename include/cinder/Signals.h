@@ -30,8 +30,9 @@
 #include "cinder/Noncopyable.h"
 
 #include <functional>
-#include <vector>
+#include <memory>
 #include <map>
+#include <vector>
 
 namespace cinder { namespace signals {
 
@@ -75,7 +76,7 @@ struct SignalBase : private Noncopyable {
 	//! abstract method to disconnect \a link from the callback chain, which resides in the priority group \a priority.
 	virtual bool disconnect( SignalLinkBase *link, int priority ) = 0;
 
-	friend class Disconnector;
+	friend struct Disconnector;
 };
 
 //! Helper class for disconnecting Connections.
