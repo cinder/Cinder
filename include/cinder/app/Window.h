@@ -95,11 +95,11 @@ typedef std::shared_ptr<Window>		WindowRef;
 
 namespace cinder { namespace app {
 
-typedef	 signals::signal<void(MouseEvent&),EventCombiner<MouseEvent> >		EventSignalMouse;
-typedef	 signals::signal<void(TouchEvent&),EventCombiner<TouchEvent> >		EventSignalTouch;
-typedef	 signals::signal<void(KeyEvent&),EventCombiner<KeyEvent> >			EventSignalKey;
-typedef	 signals::signal<void(FileDropEvent&),EventCombiner<FileDropEvent> > EventSignalFileDrop;
-typedef	 signals::signal<void()>											EventSignalWindow;
+typedef	 signals::Signal<void( MouseEvent & ),		CollectorEvent<MouseEvent> >		EventSignalMouse;
+typedef	 signals::Signal<void( TouchEvent & ),		CollectorEvent<TouchEvent> >		EventSignalTouch;
+typedef	 signals::Signal<void( KeyEvent & ),		CollectorEvent<KeyEvent> >			EventSignalKey;
+typedef	 signals::Signal<void( FileDropEvent & ),	CollectorEvent<FileDropEvent> >		EventSignalFileDrop;
+typedef	 signals::Signal<void()>														EventSignalWindow;
 
 //! Thrown when an operation is performed on a WindowRef which refers to an invalid Window
 class ExcInvalidWindow : public cinder::Exception {

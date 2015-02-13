@@ -1,6 +1,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Signals.h"
 #include "cinder/System.h"
+#include "cinder/app/Event.h"
 
 #include <iostream>
 
@@ -472,6 +473,33 @@ struct TestCollectorBitwiseAnd {
 	}
 };
 
+struct TestCollectorAppEvent {
+
+	struct TestEvent : public app::Event {
+	};
+
+	static void	run()
+	{
+		Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
+
+		bool check1 = false;
+		bool check2 = false;
+		bool check3 = false;
+
+		sig.connect( [&]( TestEvent &event ) { check1 = true; } );
+		sig.connect( [&]( TestEvent &event ) { check2 = true; event.setHandled(); } );
+		sig.connect( [&]( TestEvent &event ) { check3 = true; } );
+
+		TestEvent event;
+		app::CollectorEvent<TestEvent> collector( &event );
+		sig.emit( collector, event );
+
+		assert( check1 );
+		assert( check2 );
+		assert( ! check3 );
+	}
+};
+
 template <typename TestT>
 void runTest()
 {
@@ -493,5 +521,6 @@ int main()
 	runTest<TestCollectorWhile0>();
 	runTest<TestCollectorBooleanAnd>();
 	runTest<TestCollectorBitwiseAnd>();
+	runTest<TestCollectorAppEvent>();
 	return 0;
 }
