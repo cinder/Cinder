@@ -1598,6 +1598,7 @@
 		1146757E1A2128E200C616B6 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplMswScreenSaver.h; path = app/AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
+		1168DB441A8D90C900660ED3 /* Signals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Signals.h; sourceTree = "<group>"; };
 		1181F7C31A7F8760001BBFA2 /* AppBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBase.h; path = app/AppBase.h; sourceTree = "<group>"; };
 		1181F7C41A7F8760001BBFA2 /* AppBasicMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBasicMac.h; path = app/AppBasicMac.h; sourceTree = "<group>"; };
 		1181F7C51A7F8760001BBFA2 /* AppBasicMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBasicMsw.h; path = app/AppBasicMsw.h; sourceTree = "<group>"; };
@@ -2043,6 +2044,7 @@
 				009EEF160EB79C45003AB86B /* Rect.h */,
 				EAC3D1A81011F2E700FFBC9E /* Serial.h */,
 				00B1337610FBBB8900AC7369 /* Shape2d.h */,
+				1168DB441A8D90C900660ED3 /* Signals.h */,
 				00D2F6F30F9188FD00A7189A /* Sphere.h */,
 				003832DE0E9C03CB00ACB120 /* Stream.h */,
 				008CE8370E9466F300644A05 /* Surface.h */,
