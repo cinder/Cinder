@@ -51,6 +51,10 @@ AppBasicMsw::AppBasicMsw()
 	mImpl.reset( new AppImplMswBasic( this, *settings ) );
 }
 
+AppBasicMsw::~AppBasicMsw()
+{
+}
+
 // static
 void AppBasicMsw::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {

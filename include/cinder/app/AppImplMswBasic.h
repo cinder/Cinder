@@ -39,6 +39,7 @@ class WindowImplMswBasic;
 class AppImplMswBasic : public AppImplMsw {
   public:
 	AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings );
+
 	void	run();
 
 	AppBasicMsw*	getApp() { return mApp; }

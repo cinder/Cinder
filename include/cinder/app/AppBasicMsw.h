@@ -52,6 +52,7 @@ class AppBasicMsw : public AppBasic {
 	typedef std::function<void( Settings *settings )>	SettingsFn;
 
 	AppBasicMsw();
+	virtual ~AppBasicMsw();
 
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
