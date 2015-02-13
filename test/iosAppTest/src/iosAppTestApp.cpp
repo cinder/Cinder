@@ -82,21 +82,25 @@ static string orientationString( InterfaceOrientation orientation )
 	}
 }
 
+TestCallbackOrder	sOrderTester;
+
 class iosAppTestApp : public AppCocoaTouch {
   public:
-	void 			prepareSettings( Settings *settings );
-	virtual void	setup();
-	virtual void	resize();
-	virtual void	update();
-	void 			draw();
-	
-	virtual void	mouseDown( MouseEvent event );
-	virtual void	mouseUp( MouseEvent event );
-	virtual void	mouseDrag( MouseEvent event );
+	static 	void prepareSettings( AppCocoaTouch::Settings *settings );
 
-	virtual void	touchesBegan( TouchEvent event );
-	virtual void	touchesMoved( TouchEvent event );
-	virtual void	touchesEnded( TouchEvent event );	
+	void	setup()								override;
+	void	resize()							override;
+	void	update()							override;
+	void 	draw()								override;
+	
+	void	keyDown( KeyEvent event )			override;
+	void	mouseDown( MouseEvent event )		override;
+	void	mouseUp( MouseEvent event )			override;
+	void	mouseDrag( MouseEvent event )		override;
+
+	void	touchesBegan( TouchEvent event )	override;
+	void	touchesMoved( TouchEvent event )	override;
+	void	touchesEnded( TouchEvent event )	override;
 
 	void didEnterBackground();
 	void willEnterForeground();
@@ -104,7 +108,6 @@ class iosAppTestApp : public AppCocoaTouch {
 	void didBecomeActive();
 	void shuttingDown();
 	
-	void keyDown( KeyEvent event );
 	void proximitySensor( bool isClose );
 	void batteryStateChange( bool isUnplugged );
 	void memoryWarning();
@@ -114,32 +117,31 @@ class iosAppTestApp : public AppCocoaTouch {
 	void		willRotate();
 	void		didRotate();
 
-	TestCallbackOrder	tester;
-					
-	mat4		mCubeRotation;
-	gl::TextureRef 	mTex;
+	mat4				mCubeRotation;
+	gl::TextureRef		mTex;
 	gl::TextureRef		mTextTex;
 	gl::TextureFontRef	mFont;
-	CameraPersp		mCam;
-	WindowRef		mSecondWindow;
-	string			mSecondWindowMessage;
+	CameraPersp			mCam;
+	WindowRef			mSecondWindow;
+	string				mSecondWindowMessage;
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
 	int							mMouseTouchId; // gives a unique ID to each click to emulate multitouch
 };
 
-void iosAppTestApp::prepareSettings( Settings *settings )
+// static
+void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 {
-	tester.setState( TestCallbackOrder::PREPARESETTINGS );
+	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
 
 	for( auto &display : Display::getDisplays() )
 		CI_LOG_V( *display );
 
-	settings->enableMultiTouch( true );
-//	settings->enableHighDensityDisplay( false ); // current doesn't do anything
-	settings->enablePowerManagement( false );
-	settings->enableStatusBar( true );
+//	settings->setMultiTouchEnabled( false );
+//	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
+	settings->setPowerManagementEnabled( false );
+	settings->setStatusBarEnabled( false );
 	
 	settings->prepareWindow( Window::Format() );
 	if( Display::getDisplays().size() > 1 )
@@ -159,7 +161,7 @@ void iosAppTestApp::setup()
 	[cinderView addSubview:btn];
 
 	mMouseTouchId = 0;
-	tester.setState( TestCallbackOrder::SETUP );
+	sOrderTester.setState( TestCallbackOrder::SETUP );
 
 	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::placeholders::_1 ) );
 	enableProximitySensor();
@@ -265,7 +267,7 @@ void iosAppTestApp::didRotate()
 
 void iosAppTestApp::resize()
 {
-	tester.setState( TestCallbackOrder::RESIZE );
+	sOrderTester.setState( TestCallbackOrder::RESIZE );
 	CI_LOG_V( "Resize!" );
 
 	CI_LOG_V( "window size: " << getWindowSize() );
@@ -353,7 +355,7 @@ void iosAppTestApp::batteryStateChange( bool isUnplugged )
 
 void iosAppTestApp::update()
 {
-	tester.setState( TestCallbackOrder::UPDATE );
+	sOrderTester.setState( TestCallbackOrder::UPDATE );
 
 	mCubeRotation *= rotate( 0.03f, vec3( 1 ) );
 }
@@ -362,7 +364,7 @@ void iosAppTestApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	tester.setState( TestCallbackOrder::DRAW );
+	sOrderTester.setState( TestCallbackOrder::DRAW );
 	CameraPersp mCam;
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
@@ -425,4 +427,4 @@ void iosAppTestApp::draw()
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
 }
 
-CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
+CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ), iosAppTestApp::prepareSettings )
