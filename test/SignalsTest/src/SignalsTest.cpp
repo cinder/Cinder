@@ -9,6 +9,8 @@ using namespace std;
 using namespace ci;
 using namespace ci::signals;
 
+#if ! defined( CINDER_MSW )
+
 static string string_printf( const char *format, ... ) __attribute__ ( ( __format__ ( __printf__, 1, 2 ) ) );
 
 static string string_printf( const char *format, ... )
@@ -22,6 +24,13 @@ static string string_printf( const char *format, ... )
 	va_end( args );
 	return result;
 }
+
+#else
+//TODO: implement using something cross platform so tests pass
+static string string_printf( const char *format, ... ) {}
+
+#endif
+
 
 struct BasicSignalTests {
 
