@@ -44,7 +44,7 @@ void prepareSettings( App::Settings *settings )
 #endif
 
 #if defined( CINDER_MSW )
-	settings->enableConsoleWindow();
+	settings->setConsoleWindowEnabled();
 #endif
 }
 
@@ -199,7 +199,7 @@ void AppTestApp::draw()
 		gl::ScopedColor colorScope( ColorA( 0, 0, 1, 0.5f ) );
 		gl::ScopedModelMatrix modelScope;
 		gl::translate( getWindowCenter() );
-		gl::rotate( getElapsedSeconds() * 0.5, vec3( 0, 0, 1 ) );
+		gl::rotate( getElapsedSeconds() * 0.5f, vec3( 0, 0, 1 ) );
 
 		const float t = 200;
 		gl::drawSolidRect( Rectf( -t, -t, t, t ) );

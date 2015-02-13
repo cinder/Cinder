@@ -75,7 +75,7 @@ class AppBasicMsw : public AppBasic {
 	//! \cond
 	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
 	template<typename AppT>
-	static void main( const char *title, const SettingsFn &settingsFn = SettingsFn() );
+	static void main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn = SettingsFn() );
 	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
 	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	//! \endcond
