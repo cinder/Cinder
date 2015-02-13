@@ -222,7 +222,7 @@ struct CollectorInvocation<Collector, void( Args... )> : public SignalBase {
 	}
 };
 
-//! SignalProto template specialised for the callback signature and collector.
+//! SignalProto template, the parent class of Signal, specialised for the callback signature and collector.
 template<class Collector, class R, class... Args>
 class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collector, R ( Args... )> {
   protected:
@@ -235,6 +235,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 	SignalProto()
 		: mDisconnector( new Disconnector( this ) )
 	{}
+
 	//! Destructor releases all resources associated with this signal.
 	~SignalProto()
 	{
@@ -251,11 +252,13 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 			}
 		}
 	}
-	//! Connects \a callback to the signal, assigned to the default priority group (`0`). \return a Connection, which can be used to disconnect this callback slot.
+
+	//! Connects \a callback to the signal, assigned to the default priority group (priority = 0). \return a Connection, which can be used to disconnect this callback slot.
 	Connection connect( const CallbackFn &callback )
 	{
 		return connect( 0, callback );
 	}
+
 	//! Connects \a callback to the signal, assigned to the priority group \a priority. \return a Connection, which can be used to disconnect this callback slot.
 	Connection connect( int priority, const CallbackFn &callback )
 	{
@@ -390,7 +393,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 		return it->second->removeSibling( link );
 	}
 
-	// returns the head link for this priority group
+	//! returns the head link for this priority group
 	SignalLink* ensureLinkGroup( int priority )
 	{
 		auto it = mLinks.find( priority );
@@ -473,7 +476,7 @@ std::function<R ( Args... )> slot( Class *object, R ( Class::*method )( Args... 
 // MARK: - Collectors
 // ----------------------------------------------------------------------------------------------------
 
-//! Keep signal emissions going until any handler returns 0 (false).
+//! Keep signal emissions going until any handler returns false.
 template<typename ResultT>
 struct CollectorUntil0 {
 	typedef ResultT	CollectorResult;
@@ -492,7 +495,7 @@ private:
 	CollectorResult mResult;
 };
 
-//! Keep signal emissions going while all handlers return 0 (false).
+//! Keep signal emissions going while all handlers return 0 false.
 template<typename ResultT>
 struct CollectorWhile0 {
 	typedef ResultT CollectorResult;
@@ -560,7 +563,7 @@ template<typename ResultT>
 struct CollectorVector {
 	typedef std::vector<ResultT> CollectorResult;
 
-	const CollectorResult& result() { return mResult; }
+	const CollectorResult& result()	{ return mResult; }
 
 	inline bool	operator()( ResultT r )
 	{
