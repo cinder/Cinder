@@ -239,42 +239,52 @@ void AppCocoaTouch::enablePowerManagement( bool powerManagement )
 
 void AppCocoaTouch::emitDidEnterBackground()
 {
-	mSignalDidEnterBackground();
+	mSignalDidEnterBackground.emit();
 }
 
 void AppCocoaTouch::emitWillEnterForeground()
 {
-	mSignalWillEnterForeground();
+	mSignalWillEnterForeground.emit();
 }
 
 void AppCocoaTouch::emitMemoryWarning()
 {
-	mSignalMemoryWarning();
+	mSignalMemoryWarning.emit();
 }
 
 uint32_t AppCocoaTouch::emitSupportedOrientations()
 {
-	return mSignalSupportedOrientations();
+	return mSignalSupportedOrientations.emit();
 }
 
 void AppCocoaTouch::emitWillRotate()
 {
-	mSignalWillRotate();
+	mSignalWillRotate.emit();
 }
 
 void AppCocoaTouch::emitDidRotate()
 {
-	mSignalDidRotate();
+	mSignalDidRotate.emit();
 }
 
 void AppCocoaTouch::emitKeyboardWillShow()
 {
-	mSignalKeyboardWillShow();
+	mSignalKeyboardWillShow.emit();
 }
 
 void AppCocoaTouch::emitKeyboardWillHide()
 {
-	mSignalKeyboardWillHide();
+	mSignalKeyboardWillHide.emit();
+}
+
+void AppCocoaTouch::emitSignalProximitySensor( bool isClose )
+{
+	mSignalProximitySensor.emit( isClose );
+}
+
+void AppCocoaTouch::emitSignalBatteryState( bool isUnplugged )
+{
+	mSignalBatteryState.emit( isUnplugged );
 }
 
 std::ostream& operator<<( std::ostream &lhs, const InterfaceOrientation &rhs )

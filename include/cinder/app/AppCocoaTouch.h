@@ -51,7 +51,7 @@ enum InterfaceOrientation {
 };
 
 //! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::Signal<uint32_t (), BitwiseAndEventCombiner<uint32_t> >		EventSignalSupportedOrientations;
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t> >		EventSignalSupportedOrientations;
 
 class AppCocoaTouch : public AppBase {
   public:
@@ -121,8 +121,8 @@ class AppCocoaTouch : public AppBase {
 	//! Returns whether the device is close to the user or not. Must call \a enableProximitySensor() before using.
 	bool proximityIsClose() const;
 	//! Signal emitted when the device becomes close (\c true) or far (\c false). Must call \a enableProximitySensor() before using.
-	signals::Signal<void(bool)>&	getSignalProximitySensor() { return mSignalProximitySensor; }
-	void							emitSignalProximitySensor( bool isClose ) { mSignalProximitySensor( isClose ); }
+	signals::Signal<void( bool )>&	getSignalProximitySensor()	{ return mSignalProximitySensor; }
+	void							emitSignalProximitySensor( bool isClose );
 
 	//! Enables the device's battery monitor. Use in conjunction with \a getBatteryLevel(), \a isUnplugged() and \a getSignalBatteryState()
 	void 	enableBatteryMonitoring();
@@ -133,8 +133,8 @@ class AppCocoaTouch : public AppBase {
 	//! Returns \c true when the device is not plugged into power
 	bool 	isUnplugged() const;
 	//! Signal emitted when the device is unplugged (\c true) or plugged in (\c false). Use in place of polling \a isUnplugged().
-	signals::Signal<void(bool)>&	getSignalBatteryState() { return mSignalBatteryState; }
-	void							emitSignalBatteryState( bool isUnplugged ) { mSignalBatteryState( isUnplugged ); }
+	signals::Signal<void( bool )>&	getSignalBatteryState()	{ return mSignalBatteryState; }
+	void							emitSignalBatteryState( bool isUnplugged );
 
 	//! When disabled, the device will not sleep even after the idling threshold.
 	void enablePowerManagement( bool powerManagement = true ) override;
