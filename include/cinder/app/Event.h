@@ -52,7 +52,7 @@ class Event {
 	WindowRef		mWindow;
 };
 
-//! A Collector for use with signals::Signal, which will keep the emission chain running until Event::isHandled() returns \a true.
+//! A Collector for use with signals::Signal, which will keep the callback chain running until Event::isHandled() returns \a true.
 template<typename EventT>
 struct CollectorEvent {
 	typedef void	CollectorResult;
@@ -72,7 +72,7 @@ struct CollectorEvent {
 		return ! mEvent->isHandled();
 	}
 	//! This Collector does not return a result.
-	CollectorResult result() const
+	CollectorResult getResult() const
 	{}
 
   private:

@@ -197,8 +197,8 @@ template<>
 struct CollectorDefault<void> {
 	typedef void CollectorResult;
 
-	void result()   {}
-	inline bool operator()()       { return true; }
+	void getResult() const		{}
+	inline bool operator()()	{ return true; }
 };
 
 //! CollectorInvocation specialisation for regular signals.
@@ -272,7 +272,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 	{
 		Collector collector;
 		emit( collector, args... );
-		return collector.result();
+		return collector.getResult();
 	}
 
 	//! Emit a signal, i.e. invoke all its callbacks and collect return types with \a collector.
@@ -483,7 +483,7 @@ struct CollectorUntil0 {
 
 	explicit CollectorUntil0() : mResult() {}
 
-	const CollectorResult& result()	{ return mResult; }
+	const CollectorResult& getResult() const	{ return mResult; }
 
 	inline bool	operator()( ResultT r )
 	{
@@ -502,7 +502,7 @@ struct CollectorWhile0 {
 
 	explicit CollectorWhile0() : mResult() {}
 
-	const CollectorResult& result()	{ return mResult; }
+	const CollectorResult& getResult() const	{ return mResult; }
 
 	inline bool	operator()( ResultT r )
 	{
@@ -520,7 +520,7 @@ struct CollectorBooleanAnd {
 
 	explicit CollectorBooleanAnd() : mResult( true ) {}
 
-	const CollectorResult& result()	{ return mResult; }
+	const CollectorResult& getResult() const	{ return mResult; }
 
 	inline bool	operator()( bool r )
 	{
@@ -539,7 +539,7 @@ struct CollectorBitwiseAnd {
 
 	explicit CollectorBitwiseAnd() : mResult( 0 ), mFirst( true ) {}
 
-	const CollectorResult& result()	{ return mResult; }
+	const CollectorResult& getResult() const	{ return mResult; }
 
 	inline bool	operator()( ResultT r )
 	{
@@ -563,7 +563,7 @@ template<typename ResultT>
 struct CollectorVector {
 	typedef std::vector<ResultT> CollectorResult;
 
-	const CollectorResult& result()	{ return mResult; }
+	const CollectorResult& getResult() const	{ return mResult; }
 
 	inline bool	operator()( ResultT r )
 	{
