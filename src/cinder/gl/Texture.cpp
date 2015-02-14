@@ -881,19 +881,20 @@ Texture2d::Texture2d( const TextureData &data, Format format )
 template<typename T>
 void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mipLevel, const ivec2 &destOffset )
 {
-	SurfaceT<T> source;
+	SurfaceT<T> intermediate;
+	bool useIntermediate = false;
 	
 	// we need an intermediate format for not top-down, certain channel orders, and rowBytes != numChannels * width
 	if( ( ! mTopDown ) || surfaceRequiresIntermediate<T>( original.getWidth(), original.getPixelBytes(), original.getRowBytes(), original.getChannelOrder() ) ) {
-		SurfaceT<T> intermediate( original.getWidth(), original.getHeight(), original.hasAlpha(), original.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
+		intermediate = SurfaceT<T>( original.getWidth(), original.getHeight(), original.hasAlpha(), original.hasAlpha() ? SurfaceChannelOrder::RGBA : SurfaceChannelOrder::RGB );
 		if( mTopDown )
 			intermediate.copyFrom( original, original.getBounds() );
 		else
 			ip::flipVertical( original, &intermediate );
-		source = intermediate;
+		useIntermediate = true;
 	}
-	else
-		source = original;
+	
+	const SurfaceT<T> &source = ( useIntermediate ) ? intermediate : original;
 		
 	GLint dataFormat;
 	GLenum type;
@@ -914,19 +915,21 @@ void Texture2d::setData( const SurfaceT<T> &original, bool createStorage, int mi
 template<typename T>
 void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mipLevel, const ivec2 &destOffset )
 {
-	ChannelT<T> source;
+	ChannelT<T> intermediate;
+	bool useIntermediate = false;
 	
 	// we need an intermediate format for not top-down or non-planar
 	if( ( ! mTopDown ) || ( ! original.isPlanar() ) ) {
-		ChannelT<T> intermediate( original.getWidth(), original.getHeight() );
+		intermediate = ChannelT<T>( original.getWidth(), original.getHeight() );
 		if( mTopDown )
 			intermediate.copyFrom( original, original.getBounds() );
 		else
 			ip::flipVertical( original, &intermediate );
-		source = intermediate;
+		useIntermediate = true;
 	}
-	else
-		source = original;
+
+	const ChannelT<T> &source = ( useIntermediate ) ? intermediate : original;
+
 #if defined( CINDER_GL_ES )
 	GLint dataFormat = GL_LUMINANCE;
 #else
