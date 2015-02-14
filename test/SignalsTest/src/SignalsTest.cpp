@@ -453,7 +453,7 @@ struct TestCollectorBitwiseAnd {
 	static void	run()
 	{
 		TestCollectorBitwiseAnd self;
-		Signal<bool (), CollectorBitwiseAnd<uint8_t> > sig;
+		Signal<uint8_t (), CollectorBitwiseAnd<uint8_t> > sig;
 
 		sig.connect( slot( self, &TestCollectorBitwiseAnd::handler1 ) );
 		sig.connect( slot( self, &TestCollectorBitwiseAnd::handler2 ) );

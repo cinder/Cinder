@@ -2,6 +2,7 @@
 #include "cinder/Signals.h"
 
 #include <iostream>
+#include <ctime>
 
 using namespace std;
 using namespace cinder::signals;
