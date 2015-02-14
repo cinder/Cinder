@@ -115,8 +115,6 @@ class Display {
 #if defined( CINDER_COCOA_TOUCH )
 	//! Returns the signal emitted when a display is connected or disconnected
 	signals::Signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
-	template<typename T, typename Y>
-	void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
 #endif
 	
   private:
