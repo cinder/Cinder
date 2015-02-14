@@ -526,7 +526,7 @@ using namespace cinder::app;
 ///////////////////////////////////////////////////////////////////////////////////////
 // UIKeyInput Protocol Methods
 
-- (BOOL)canBecomeFirstResponder
+- (bool)canBecomeFirstResponder
 {
 	return NO;
 }
@@ -611,12 +611,12 @@ using namespace cinder::app;
 ///////////////////////////////////////////////////////////////////////////////////////
 // WindowImplCocoa Protocol Methods
 
-- (BOOL)isFullScreen
+- (bool)isFullScreen
 {
 	return YES;
 }
 
-- (void)setFullScreen:(BOOL)fullScreen options:(FullScreenOptions *)options
+- (void)setFullScreen:(bool)fullScreen options:(FullScreenOptions *)options
 { // NO-OP
 }
 
@@ -652,21 +652,21 @@ using namespace cinder::app;
 	return self.title;
 }
 
-- (BOOL)isBorderless
+- (bool)isBorderless
 {
 	return YES;
 }
 
-- (void)setBorderless:(BOOL)borderless
+- (void)setBorderless:(bool)borderless
 { // NO-OP
 }
 
-- (BOOL)isAlwaysOnTop
+- (bool)isAlwaysOnTop
 {
 	return YES;
 }
 
-- (void)setAlwaysOnTop:(BOOL)alwaysOnTop
+- (void)setAlwaysOnTop:(bool)alwaysOnTop
 { // NO-OP
 }
 
@@ -678,7 +678,7 @@ using namespace cinder::app;
 { // NO-OP
 }
 
-- (BOOL)isHidden
+- (bool)isHidden
 {
 	return NO;
 }

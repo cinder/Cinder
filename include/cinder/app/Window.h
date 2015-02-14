@@ -46,15 +46,15 @@ typedef std::shared_ptr<Window>		WindowRef;
 } } // namespace cinder::app
 
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
-	#import <Foundation/Foundation.h>
 	#if defined( CINDER_COCOA_TOUCH )
+		@class NSString;
 		@class UIViewController;
 	#endif
 
 	@protocol WindowImplCocoa
 		@required
-		- (BOOL)isFullScreen;
-		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+		- (bool)isFullScreen;
+		- (void)setFullScreen:(bool)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 		- (cinder::ivec2)getSize;
 		- (void)setSize:(cinder::ivec2)size;
 		- (cinder::ivec2)getPos;
@@ -63,13 +63,13 @@ typedef std::shared_ptr<Window>		WindowRef;
 		- (void)close;
 		- (NSString *)getTitle;
 		- (void)setTitle:(NSString *)title;
-		- (BOOL)isBorderless;
-		- (void)setBorderless:(BOOL)borderless;
-		- (BOOL)isAlwaysOnTop;
-		- (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
+		- (bool)isBorderless;
+		- (void)setBorderless:(bool)borderless;
+		- (bool)isAlwaysOnTop;
+		- (void)setAlwaysOnTop:(bool)alwaysOnTop;
 		- (void)hide;
 		- (void)show;
-		- (BOOL)isHidden;
+		- (bool)isHidden;
 		- (cinder::DisplayRef)getDisplay;
 		- (cinder::app::RendererRef)getRenderer;
 		- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;

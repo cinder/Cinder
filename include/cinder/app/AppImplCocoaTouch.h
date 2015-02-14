@@ -53,12 +53,12 @@
 	WindowImplCocoaTouch*				mActiveWindow;
 	CADisplayLink*						mDisplayLink;
 
-	BOOL								mSetupHasFired;
-	BOOL								mUpdateHasFired;
-	BOOL								mAnimating;
+	bool								mSetupHasFired;
+	bool								mUpdateHasFired;
+	bool								mAnimating;
 	NSInteger 							mAnimationFrameInterval;
-	BOOL								mProximityStateIsClose;
-	BOOL								mIsUnplugged;
+	bool								mProximityStateIsClose;
+	bool								mIsUnplugged;
 	float								mBatteryLevel;
 
 	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback
@@ -102,10 +102,10 @@
 	cinder::DisplayRef			mDisplay;
 
 	cinder::ivec2				mSize, mPos;
-	BOOL						mResizeHasFired;
-	BOOL						mHidden;
-	BOOL						mKeyboardVisible;
-	BOOL						mKeyboardClosesOnReturn;
+	bool						mResizeHasFired;
+	bool						mHidden;
+	bool						mKeyboardVisible;
+	bool						mKeyboardClosesOnReturn;
 }
 
 - (void)loadView;
@@ -121,13 +121,13 @@
 - (void)keyboardWillHide:(NSNotification *)notification;
 
 // UIKeyInput Protocol Methods
-- (BOOL)canBecomeFirstResponder;
+- (bool)canBecomeFirstResponder;
 - (void)insertText:(NSString *)text;
 - (void)deleteBackward;
 
 // WindowImplCocoa Protocol Methods
-- (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen options:(cinder::app::FullScreenOptions *)options;
+- (bool)isFullScreen;
+- (void)setFullScreen:(bool)fullScreen options:(cinder::app::FullScreenOptions *)options;
 - (cinder::ivec2)getSize;
 - (void)setSize:(cinder::ivec2)size;
 - (cinder::ivec2)getPos;
@@ -135,10 +135,10 @@
 - (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
-- (BOOL)isBorderless;
-- (void)setBorderless:(BOOL)borderless;
-- (BOOL)isAlwaysOnTop;
-- (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
+- (bool)isBorderless;
+- (void)setBorderless:(bool)borderless;
+- (bool)isAlwaysOnTop;
+- (void)setAlwaysOnTop:(bool)alwaysOnTop;
 - (cinder::DisplayRef)getDisplay;
 - (cinder::app::RendererRef)getRenderer;
 - (void *)getNative;

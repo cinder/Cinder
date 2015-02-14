@@ -24,6 +24,8 @@
 #import "cinder/app/AppBase.h"
 #import "cinder/app/RendererGl.h"
 
+#import <Foundation/Foundation.h>
+
 @class AppImplCocoa;
 @class CinderView;
 @class NSOpenGLView;

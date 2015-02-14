@@ -38,13 +38,13 @@ using namespace cinder::app;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 	cinder::ivec2						mSize, mPos;
-	BOOL								mBorderless, mAlwaysOnTop, mIsHidden;
+	bool								mBorderless, mAlwaysOnTop, mIsHidden;
 }
 
 - (WindowImplCocoaView*)init:(CinderView*)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView*)appImpl;
 - (void)dealloc;
-- (BOOL)isFullScreen;
-- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+- (bool)isFullScreen;
+- (void)setFullScreen:(bool)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 - (cinder::ivec2)getSize;
 - (void)setSize:(cinder::ivec2)size;
 - (cinder::ivec2)getPos;
@@ -53,10 +53,10 @@ using namespace cinder::app;
 - (void)close;
 - (NSString *)getTitle;
 - (void)setTitle:(NSString *)title;
-- (BOOL)isBorderless;
-- (void)setBorderless:(BOOL)borderless;
-- (BOOL)isAlwaysOnTop;
-- (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
+- (bool)isBorderless;
+- (void)setBorderless:(bool)borderless;
+- (bool)isAlwaysOnTop;
+- (void)setAlwaysOnTop:(bool)alwaysOnTop;
 - (cinder::DisplayRef)getDisplay;
 - (cinder::app::RendererRef)getRenderer;
 - (void*)getNative;
@@ -88,8 +88,8 @@ using namespace cinder::app;
 	std::list<WindowImplCocoaView*>		mWindows;
 	WindowImplCocoaView					*mActiveWindow;
 	
-	BOOL								mNeedsUpdate;
-	BOOL								mFrameRateEnabled;
+	bool								mNeedsUpdate;
+	bool								mFrameRateEnabled;
 	float								mFrameRate;
 }
 
@@ -207,12 +207,12 @@ using namespace cinder::app;
 	return [mCinderView getActiveTouches];
 }
 
-- (BOOL)isFullScreen
+- (bool)isFullScreen
 {
 	return [mCinderView isFullScreen];
 }
 
-- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options
+- (void)setFullScreen:(bool)fullScreen options:(const cinder::app::FullScreenOptions *)options
 {
 	[mCinderView setFullScreen:fullScreen options:options];
 }
@@ -241,21 +241,21 @@ using namespace cinder::app;
 	[[mCinderView window] setTitle:title];
 }
 
-- (BOOL)isBorderless
+- (bool)isBorderless
 {
 	return [[mCinderView window] styleMask] == NSBorderlessWindowMask;
 }
 
-- (void)setBorderless:(BOOL)borderless
+- (void)setBorderless:(bool)borderless
 { // NO-OP
 }
 
-- (BOOL)isAlwaysOnTop
+- (bool)isAlwaysOnTop
 {
 	return [[mCinderView window] level] == NSNormalWindowLevel;
 }
 
-- (void)setAlwaysOnTop:(BOOL)alwaysOnTop
+- (void)setAlwaysOnTop:(bool)alwaysOnTop
 {
 	[[mCinderView window] setLevel:(alwaysOnTop)?NSScreenSaverWindowLevel:NSNormalWindowLevel];
 }
@@ -317,7 +317,7 @@ using namespace cinder::app;
 	[mCinderView setHidden:NO];
 }
 
-- (BOOL)isHidden
+- (bool)isHidden
 {
 	return [mCinderView isHidden];
 }
