@@ -4,33 +4,19 @@
 #include "cinder/app/Event.h"
 
 #include <iostream>
+#include <iomanip>
+#include <sstream>
 
 using namespace std;
 using namespace ci;
 using namespace ci::signals;
 
-#if ! defined( CINDER_MSW )
-
-static string string_printf( const char *format, ... ) __attribute__ ( ( __format__ ( __printf__, 1, 2 ) ) );
-
-static string string_printf( const char *format, ... )
+std::string toString( float value, int precision )
 {
-	string result;
-	char str[1000];
-	va_list args;
-	va_start( args, format );
-	if( vsnprintf( str, sizeof str, format, args ) >= 0 )
-		result = str;
-	va_end( args );
-	return result;
+	std::ostringstream out;
+	out << std::fixed << std::setprecision( precision ) << value;
+	return out.str();
 }
-
-#else
-//TODO: implement using something cross platform so tests pass
-static string string_printf( const char *format, ... ) {}
-
-#endif
-
 
 struct BasicSignalTests {
 
@@ -39,14 +25,14 @@ struct BasicSignalTests {
 	struct Foo {
 		char fooBool( float f, int i, string s )
 		{
-			sAccum += string_printf( "Foo: %.2f\n", f + i + s.size() );
+			sAccum += "Foo: " + toString( f + i + s.size(), 2 ) + "\n";
 			return true;
 		}
 	};
 
 	static char floatCallback( float f, int, string )
 	{
-		sAccum += string_printf( "float: %.2f\n", f );
+		sAccum += "float: " + toString( f, 2 ) + "\n";
 		return 0;
 	}
 
@@ -59,8 +45,8 @@ struct BasicSignalTests {
 
 		Signal<char (float, int, string)> sig1;
 		auto conn1 = sig1.connect( floatCallback );
-		auto conn2 = sig1.connect( [] ( float, int i, string ) { sAccum += string_printf( "int: %d\n", i ); return 0; } );
-		auto conn3 = sig1.connect( [] ( float, int, const string &s ) { sAccum += string_printf( "string: %s\n", s.c_str() ); return 0; } );
+		auto conn2 = sig1.connect( [] ( float, int i, string ) { sAccum += "int: " + to_string( i ) + "\n"; return 0; } );
+		auto conn3 = sig1.connect( [] ( float, int, const string &s ) { sAccum += "string: " + s + "\n"; return 0; } );
 
 		assert( sig1.getNumSlots() == 3 );
 		assert( conn1.isConnected() && conn2.isConnected() && conn3.isConnected() );
@@ -86,8 +72,8 @@ struct BasicSignalTests {
 		sig1.emit( 0.5f, 1, "12" );
 
 		Signal<void (string, int)> sig2;
-		sig2.connect( [] ( string msg, int ) { sAccum += string_printf( "msg: %s", msg.c_str() ); } );
-		sig2.connect( [] ( string, int d )   { sAccum += string_printf( " *%d*\n", d ); } );
+		sig2.connect( [] ( string msg, int ) { sAccum += "msg: " + msg; } );
+		sig2.connect( [] ( string, int d )   { sAccum += " *" + to_string( d ) + "*\n"; } );
 		sig2.emit( "in sig2", 17 );
 
 		sAccum += "DONE";
@@ -102,6 +88,7 @@ struct BasicSignalTests {
 			"msg: in sig2 *17*\n"
 			"DONE";
 
+		cout << "sAccum: " << sAccum << endl;
 		assert( sAccum == expected );
 	}
 };
