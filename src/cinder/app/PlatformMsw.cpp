@@ -35,7 +35,7 @@ PlatformMsw::PlatformMsw()
 {
 }
 
-DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
+DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )
 {
 	HRSRC resInfoHandle;
 	HGLOBAL resHandle;
@@ -60,7 +60,7 @@ DataSourceRef PlatformMsw::loadResource( int mswID, const std::string &mswType )
 		throw ResourceLoadExcMsw( mswID, mswType );
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ) );
+	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ), resourcePath );
 }
 
 fs::path PlatformMsw::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )

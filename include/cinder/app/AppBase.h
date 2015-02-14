@@ -307,7 +307,7 @@ class AppBase {
 	// utilities
 #if defined( CINDER_MSW )
 	//! Returns a DataSourceRef to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	DataSourceRef		loadResource( int mswID, const std::string &mswType ) const		{ return Platform::get()->loadResource( mswID, mswType ); }
+	DataSourceRef		loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) const { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else
 	DataSourceRef		loadResource( const fs::path &resourcePath ) const				{ return Platform::get()->loadResource( resourcePath ); }
 #endif
@@ -489,7 +489,7 @@ inline uint32_t	getElapsedFrames() { return AppBase::get()->getElapsedFrames(); 
 
 #if defined( CINDER_MSW )
 //! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-inline DataSourceRef	loadResource( int mswID, const std::string &mswType ) { return Platform::get()->loadResource( mswID, mswType ); }
+inline DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) { return Platform::get()->loadResource( resourcePath, mswID, mswType ); }
 #else
 //! Returns a DataSource to an application resource. \a resourcePath is defined on a per-platform basis. \sa \ref CinderResources
 inline DataSourceRef	loadResource( const fs::path &resourcePath )		{ return Platform::get()->loadResource( resourcePath ); }

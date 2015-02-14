@@ -54,7 +54,7 @@ class Platform {
 	// Resources
 #if defined( CINDER_MSW )
 	//! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
-	virtual DataSourceRef	loadResource( int mswID, const std::string &mswType ) = 0;
+	virtual DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) = 0;
 #else
 	//! Returns a DataSource to an application resource. \a resourcePath is defined on a per-platform basis. \sa \ref CinderResources
 	virtual DataSourceRef	loadResource( const fs::path &resourcePath ) = 0;
