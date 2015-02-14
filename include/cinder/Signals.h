@@ -209,7 +209,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 				while( link->mNext != link )
 					link->mNext->unlink();
 
-				assert( link->getRefCount() >= 2 );
+				CI_ASSERT( link->getRefCount() >= 2 );
 
 				link->decrRef();
 				link->decrRef();
