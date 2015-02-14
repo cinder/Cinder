@@ -1,0 +1,68 @@
+                <!DOCTYPE html>
+<html class="no-js">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title></title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+            
+        <link href='//fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
+        <link href='//fonts.googleapis.com/css?family=Merriweather' rel='stylesheet' type='text/css'>
+
+        <!-- <link rel="stylesheet" href="css/prism.css"> -->
+        <link rel="stylesheet" href="path2d.css">
+
+        <!--[if lt IE 9]>
+            <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+            <script>window.html5 || document.write('<script src="js/vendor/html5shiv.js"><\/script>')</script>
+        <![endif]-->
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+        <div class="content">
+                <h1>Part 3: Advanced Functions</h1>
+                <p>Advanced functions blah blah blah</p>
+                <ul>
+                    <li><strong><d dox="cinder::Path2d::calcBoundingBox">calcBoundingBox()</d></strong>: Calculates the bounding box of the path.</li>
+                    <li><strong><d dox="cinder::Path2d::calcPreciseBoundingBox">calcPreciseBoundingBox()</d></strong>: Calculates the bounding box of the path.</li>
+                    <li><strong><d dox="cinder::Path2d::contains">contains()</d></strong>: Determines if a given point is within the area of the path.</li>
+                    <li><strong><d dox="cinder::Path2d::transformCopy">transformCopy()</d></strong>: Returns a copy of the path with the specified matrix applied.</li>
+                    <li><strong><d dox="cinder::Path2d::subdivide">subdivide()</d></strong>: Returns an array of points subdividing the path's curves based on the given tolerance.</li>
+                </ul>
+                
+                <div id="tutorial">
+                    <ul id="sketchLinks"></ul>
+                    <div class="canvases">
+                        <canvas id="calcbounds"     data-name="calcBoundBox" class="active" width="500" height="300"></canvas>
+                        <canvas id="calcprecise"    data-name="calcPreciseBoundBox" width="500" height="300"></canvas>
+                        <canvas id="contains"       data-name="contains" width="500" height="300"></canvas>
+                        <canvas id="transformcopy"  data-name="transformCopy" width="500" height="300"></canvas>
+                        <canvas id="subdivide"      data-name="subdivide" width="500" height="300"></canvas>
+
+                        <div class="canvasButtons">
+                            <div class="left">
+                                <button id="handle-toggle" >Toggle Handles</button>
+                            </div>
+                            <div class="right">
+                                <button id="reset" >Reset</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="codeModule">
+                        <pre><code id="output" class="language-cpp"></code></pre>
+                        <a id="copy-button" href="#">copy to clipboard</a>
+                    </div>
+                </div>
+
+                <div id="bottomNav">
+                    &laquo; <a href="part2.html">Part 2: Path2d Functions</a>
+                </div>
+                
+                <script src="path2dpart3.js"></script>
+                                              
+            </div>
+    </body>
+</html>

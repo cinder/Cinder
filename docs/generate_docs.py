@@ -97,6 +97,13 @@ def getSymbolToFileMap( path ):
 					type = namespaceName+"::"+type
 					print "Adding " + name + " AS " + type
 					symbolMap.typedefs[name] = SymbolMap.Typedef( type )
+				
+				# find functions and add to symbol map
+				if member.getAttribute( "kind" ) == "function":
+					name = getText( member.getElementsByTagName("name")[0].childNodes )
+					anchor = getText( member.getElementsByTagName("anchor")[0].childNodes )
+					filePath = getText( member.getElementsByTagName("anchorfile")[0].childNodes ) + "#" + anchor
+					symbolMap[name + "::" + name] = filePath
 		# found a class
 		elif compound.getAttribute( "kind" ) == "class":
 			name = getText( compound.getElementsByTagName("name")[0].childNodes )
