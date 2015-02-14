@@ -183,7 +183,7 @@ struct CollectorLast {
 
 	inline bool operator()( ResultT r )    { mLast = r; return true; }
 
-	CollectorResult result() const        { return mLast; }
+	CollectorResult getResult() const        { return mLast; }
 private:
 	ResultT mLast;
 };
