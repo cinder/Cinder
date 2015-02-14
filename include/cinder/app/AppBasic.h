@@ -27,13 +27,12 @@
 #include "cinder/Cinder.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/Display.h"
-#include "cinder/Function.h"
 
 #include "cinder/app/TouchEvent.h"
 
 namespace cinder { namespace app {
 
-typedef	signals::signal<bool (),BooleanAndEventCombiner>				EventSignalShouldQuit;
+typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>				EventSignalShouldQuit;
 
 //! Abstract class that defines the interface for a 'basic' app (ex. desktop, installation, 'normal').
 class AppBasic : public AppBase {

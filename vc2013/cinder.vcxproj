@@ -702,6 +702,7 @@
     <ClInclude Include="..\include\cinder\qtime\QuickTimeGlImplLegacy.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeImplLegacy.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
+    <ClInclude Include="..\include\cinder\Signals.h" />
     <ClInclude Include="..\include\cinder\svg\Svg.h" />
     <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
     <ClInclude Include="..\include\cinder\Timeline.h" />

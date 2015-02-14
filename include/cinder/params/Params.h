@@ -24,7 +24,7 @@
 
 #include "cinder/Color.h"
 #include "cinder/Quaternion.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 
 #include <string>
 #include <map>

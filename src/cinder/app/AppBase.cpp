@@ -169,7 +169,7 @@ void AppBase::privateUpdate__()
 			mainWin->getRenderer()->makeCurrentContext();
 	}
 
-	mSignalUpdate();
+	mSignalUpdate.emit();
 
 	update();
 
@@ -188,17 +188,17 @@ void AppBase::privateUpdate__()
 
 void AppBase::emitShutdown()
 {
-	mSignalShutdown();
+	mSignalShutdown.emit();
 }
 
 void AppBase::emitWillResignActive()
 {
-	mSignalWillResignActive();
+	mSignalWillResignActive.emit();
 }
 
 void AppBase::emitDidBecomeActive()
 {
-	mSignalDidBecomeActive();
+	mSignalDidBecomeActive.emit();
 }
 
 fs::path AppBase::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )

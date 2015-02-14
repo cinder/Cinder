@@ -650,7 +650,7 @@ void MovieBase::updateFrame()
 			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
 			if( buffer ) {
 				newFrame( buffer );
-				mSignalNewFrame();
+				mSignalNewFrame.emit();
 			}
 		}
 	}
@@ -760,7 +760,7 @@ void MovieBase::removeObservers()
 	
 void MovieBase::playerReady()
 {
-	mSignalReady();
+	mSignalReady.emit();
 	
 	if( mPlaying )
 		play();
@@ -778,22 +778,22 @@ void MovieBase::playerItemEnded()
 		this->play();
 	}
 	
-	mSignalEnded();
+	mSignalEnded.emit();
 }
 	
 void MovieBase::playerItemCancelled()
 {
-	mSignalCancelled();
+	mSignalCancelled.emit();
 }
 	
 void MovieBase::playerItemJumped()
 {
-	mSignalJumped();
+	mSignalJumped.emit();
 }
 
 void MovieBase::outputWasFlushed( AVPlayerItemOutput* output )
 {
-	mSignalOutputWasFlushed();
+	mSignalOutputWasFlushed.emit();
 }
 
 /////////////////////////////////////////////////////////////////////////////////

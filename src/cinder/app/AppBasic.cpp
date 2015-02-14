@@ -47,7 +47,7 @@ void AppBasic::restoreWindowContext()
 
 bool AppBasic::privateShouldQuit()
 {
-	return mSignalShouldQuit();
+	return mSignalShouldQuit.emit();
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
