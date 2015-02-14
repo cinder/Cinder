@@ -476,6 +476,7 @@
 
 - (void)setBorderless:(BOOL)borderless
 {
+	bool isReturningFromBorderless = mBorderless && !borderless;
 	mBorderless = borderless;
 
 	unsigned int styleMask;
@@ -490,6 +491,14 @@
 	[mWin makeKeyWindow];
 	[mWin makeMainWindow];
 	[mWin setHasShadow:(! mBorderless)];
+	
+	if ( isReturningFromBorderless )
+	{
+		// Trigger the title bar buttons to re-appear
+		ci::ivec2 currentSize = [self getSize];
+		[self setSize:currentSize + ci::ivec2(0, 1)];
+		[self setSize:currentSize];
+	}
 }
 
 - (bool)isAlwaysOnTop
