@@ -497,6 +497,7 @@
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Serial.cpp" />
     <ClCompile Include="..\src\cinder\Shape2d.cpp" />
+    <ClCompile Include="..\src\cinder\Signals.cpp" />
     <ClCompile Include="..\src\cinder\Sphere.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />

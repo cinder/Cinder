@@ -750,6 +750,9 @@
     <ClCompile Include="..\src\cinder\app\PlatformMsw.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\Signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
