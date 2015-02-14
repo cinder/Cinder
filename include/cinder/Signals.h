@@ -41,8 +41,9 @@ namespace detail {
 //! Base class for signal links, which manages reference counting and provides a concrete type to be passed to Connection
 struct SignalLinkBase {
   public:
-	SignalLinkBase() : mRefCount( 1 )	{}
-
+	SignalLinkBase()
+		: mRefCount( 1 )
+	{}
 	virtual ~SignalLinkBase()
 	{
 		CI_ASSERT( mRefCount == 0 );
@@ -65,7 +66,10 @@ struct SignalLinkBase {
 			CI_ASSERT( mRefCount > 0 );
 	}
 
-	int getRefCount() const	{ return mRefCount; }
+	int getRefCount() const
+	{
+		return mRefCount;
+	}
 
   private:
 	int	mRefCount;
@@ -82,14 +86,9 @@ struct SignalBase : private Noncopyable {
 //! Helper class for disconnecting Connections.
 struct Disconnector : private Noncopyable {
 	//! Constructs a new Disconnector, which is owned by \a signal.
-	Disconnector( SignalBase *signal )
-		: mSignal( signal )
-	{}
+	Disconnector( SignalBase *signal );
 	//! Instructs the owning signal to disconnect \a link, which resides within priority group \a priority.
-	bool disconnect( SignalLinkBase *link, int priority )
-	{
-		return mSignal->disconnect( link, priority );
-	}
+	bool disconnect( SignalLinkBase *link, int priority );
 
   private:
 	SignalBase*	mSignal;
@@ -104,30 +103,13 @@ struct Disconnector : private Noncopyable {
 //! Connection is returned from Signal::connect(), which can be used to disconnect the callback slot.
 class Connection {
   public:
-	Connection()
-		: mLink( nullptr ), mPriority( 0 )
-	{}
-	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority )
-		: mDisconnector( disconnector ), mLink( link ), mPriority( priority )
-	{}
+	Connection();
+	Connection( const std::shared_ptr<detail::Disconnector> &disconnector, detail::SignalLinkBase *link, int priority );
 
 	//! Disconnects this Connection from the callback chain. \a return true if a disconnection was made, false otherwise.
-	bool disconnect()
-	{
-		auto disconnector = mDisconnector.lock();
-		if( disconnector ) {
-			auto link = mLink;
-			mLink = nullptr;
-			return disconnector->disconnect( link, mPriority );
-		}
-
-		return false;
-	}
+	bool disconnect();
 	//! Returns whether or not this Connection is still connected to the callback chain.
-	bool isConnected() const
-	{
-		return ! mDisconnector.expired() && mLink;
-	}
+	bool isConnected() const;
 
   private:
 	std::weak_ptr<detail::Disconnector>		mDisconnector;
@@ -138,32 +120,13 @@ class Connection {
 //! ScopedConnection can be captured from Signal::connect() to limit the connection lifetime to the current scope, after which Connection::disconnect() will be called.
 class ScopedConnection : public Connection, private Noncopyable {
   public:
-	ScopedConnection()
-	{}
-	ScopedConnection( const Connection &other )
-		: Connection( other )
-	{}
-	ScopedConnection( ScopedConnection &&other )
-		: Connection( std::move( other ) )
-	{}
-	ScopedConnection( Connection &&other )
-		: Connection( std::move( other ) )
-	{}
-	ScopedConnection& operator=( const Connection &rhs )
-	{
-		disconnect();
-		Connection::operator=( rhs );
-		return *this;
-	}
-	ScopedConnection& operator=( ScopedConnection &&rhs )
-	{
-		Connection::operator=( std::move( rhs ) );
-		return *this;
-	}
-	~ScopedConnection()
-	{
-		disconnect();
-	}
+	ScopedConnection();
+	~ScopedConnection();
+	ScopedConnection( const Connection &other );
+	ScopedConnection( ScopedConnection &&other );
+	ScopedConnection( Connection &&other );
+	ScopedConnection& operator=( const Connection &rhs );
+	ScopedConnection& operator=( ScopedConnection &&rhs );
 };
 
 namespace detail {

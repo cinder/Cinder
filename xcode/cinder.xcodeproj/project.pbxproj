@@ -1070,6 +1070,9 @@
 		1181F7D41A7F87CB001BBFA2 /* AppImplCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7D01A7F87CB001BBFA2 /* AppImplCocoaTouch.mm */; };
 		11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
+		11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */; };
+		11FD37E51A8EDB9E002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */; };
+		11FD37E61A8EDB9E002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */; };
 		277C2CF01366632B00178A29 /* Matrix22.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEC1366632B00178A29 /* Matrix22.h */; };
 		277C2CF11366632B00178A29 /* Matrix33.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CED1366632B00178A29 /* Matrix33.h */; };
 		277C2CF21366632B00178A29 /* Matrix44.h in Headers */ = {isa = PBXBuildFile; fileRef = 277C2CEE1366632B00178A29 /* Matrix44.h */; };
@@ -1615,6 +1618,7 @@
 		11C102971A1FA7FE002850A2 /* AppImplMswRendererGl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswRendererGl.cpp; path = app/AppImplMswRendererGl.cpp; sourceTree = "<group>"; };
 		11C102981A1FA7FE002850A2 /* AppImplMswScreenSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplMswScreenSaver.cpp; path = app/AppImplMswScreenSaver.cpp; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
+		11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signals.cpp; sourceTree = "<group>"; };
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
 		277C2CED1366632B00178A29 /* Matrix33.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix33.h; sourceTree = "<group>"; };
 		277C2CEE1366632B00178A29 /* Matrix44.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = Matrix44.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
@@ -2122,6 +2126,7 @@
 				009EEF190EB79C89003AB86B /* Rect.cpp */,
 				EAC3D1AB1011F3AC00FFBC9E /* Serial.cpp */,
 				00B1337810FBBBCC00AC7369 /* Shape2d.cpp */,
+				11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */,
 				00D2F6F60F9189C000A7189A /* Sphere.cpp */,
 				003832E30E9C04AD00ACB120 /* Stream.cpp */,
 				008CE83B0E94672E00644A05 /* Surface.cpp */,
@@ -3448,6 +3453,7 @@
 				0034C328151A5B9F003F2E30 /* linebreakdata.c in Sources */,
 				0003F4091992D64100647C8B /* TextureFormatParsers.cpp in Sources */,
 				111A5FF3191F72AE005C3166 /* NodeMath.cpp in Sources */,
+				11FD37E51A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
 				111A5F5A191F7286005C3166 /* envelope.c in Sources */,
 				0034C32B151A5B9F003F2E30 /* linebreakdef.c in Sources */,
 				0003F3E51992D64100647C8B /* Context.cpp in Sources */,
@@ -3631,6 +3637,7 @@
 				0003F40A1992D64100647C8B /* TextureFormatParsers.cpp in Sources */,
 				111A5FF4191F72AE005C3166 /* NodeMath.cpp in Sources */,
 				111A5F31191F7285005C3166 /* envelope.c in Sources */,
+				11FD37E61A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
 				007A7B15158D098D00BEAD18 /* Window.cpp in Sources */,
 				0003F3E61992D64100647C8B /* Context.cpp in Sources */,
 				00131436159E331000C8D927 /* Display.cpp in Sources */,
@@ -3798,6 +3805,7 @@
 				00A1140B1355369A00081873 /* mesh.c in Sources */,
 				00FFAED119DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */,
 				0003F4141992D64100647C8B /* Vao.cpp in Sources */,
+				11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
 				00A1140D1355369A00081873 /* priorityq.c in Sources */,
 				111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				00A1140F1355369A00081873 /* sweep.c in Sources */,

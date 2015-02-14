@@ -20,6 +20,8 @@
 		1168DB561A8D93AB00660ED3 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB551A8D93AB00660ED3 /* QTKit.framework */; };
 		1168DB581A8D93B400660ED3 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB571A8D93B400660ED3 /* CoreAudio.framework */; };
 		1168DB5A1A8D93C100660ED3 /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1168DB591A8D93C100660ED3 /* Accelerate.framework */; };
+		11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
+		11FD37E91A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
 		11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD61241A89A2B0006F42CC /* SignalsTest.cpp */; };
 		11FD61341A8A7FC8006F42CC /* SignalsBenchmark.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */; };
 /* End PBXBuildFile section */
@@ -60,6 +62,7 @@
 		1168DB551A8D93AB00660ED3 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		1168DB571A8D93B400660ED3 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1168DB591A8D93C100660ED3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		11FD37E71A8EDD10002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signals.cpp; path = ../../../src/cinder/Signals.cpp; sourceTree = "<group>"; };
 		11FD61241A89A2B0006F42CC /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsTest.cpp; path = ../src/SignalsTest.cpp; sourceTree = "<group>"; };
 		11FD61311A8A7F63006F42CC /* SignalsBenchmarks */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SignalsBenchmarks; sourceTree = BUILT_PRODUCTS_DIR; };
 		11FD61331A8A7FC8006F42CC /* SignalsBenchmark.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsBenchmark.cpp; path = ../src/SignalsBenchmark.cpp; sourceTree = "<group>"; };
@@ -126,6 +129,7 @@
 			isa = PBXGroup;
 			children = (
 				115FF5A51A8E6F1E002DF368 /* Exception.cpp */,
+				11FD37E71A8EDD10002B6EA9 /* Signals.cpp */,
 				115FF5A31A8E6F08002DF368 /* System.cpp */,
 			);
 			name = cinder;
@@ -219,6 +223,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				115FF5A41A8E6F08002DF368 /* System.cpp in Sources */,
+				11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */,
 				115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */,
 				11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */,
 			);
@@ -229,6 +234,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				11FD61341A8A7FC8006F42CC /* SignalsBenchmark.cpp in Sources */,
+				11FD37E91A8EDD10002B6EA9 /* Signals.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
