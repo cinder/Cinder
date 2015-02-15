@@ -71,9 +71,9 @@ void WindowTestApp::setup()
 
 	getWindow()->setUserData( new WindowData );
 
-	getWindow()->connectMouseDown( &WindowTestApp::anotherTest, this );
+	signals::slot( this, &WindowTestApp::anotherTest );
 	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown1, this, std::placeholders::_1 ) );
-//	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) ); // This shouldn't build because it has the wrong signature (<bool( MouseEvent )>)
+//	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown2, this, std::placeholders::_1 ) ); // This shouldn't build because it has the wrong signature (<bool( MouseEvent )>) - to note, the reference is not the problem, just the return value is different.
 	getWindow()->getSignalMouseDown().connect( std::bind( &WindowTestApp::mouseDown3, this, std::placeholders::_1 ) );
 	getSignalShouldQuit().connect( std::bind( &WindowTestApp::shouldQuit, this ) );
 	
