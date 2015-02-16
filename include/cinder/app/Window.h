@@ -91,6 +91,10 @@ typedef std::shared_ptr<Window>		WindowRef;
 	namespace cinder { namespace app {
 		class WindowImplMsw;
 	} } // namespace cinder::app
+#elif defined( CINDER_ANDROID )
+    namespace cinder { namespace app {
+        class WindowImplAndroid;
+    } } // namespace cinder::app
 #endif
 
 namespace cinder { namespace app {
@@ -427,6 +431,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	static WindowRef		privateCreate__( WindowImplMsw *impl, AppBase *app )
 #elif defined( CINDER_WINRT )
 	static WindowRef		privateCreate__( WindowImplWinRT *impl, AppBase *app )
+#elif defined( CINDER_ANDROID )
+    static WindowRef        privateCreate__( WindowImplAndroid *impl, AppBase *app )
 #else
 	static WindowRef		privateCreate__( WindowImplCocoa *impl, AppBase *app )
 #endif
@@ -461,6 +467,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
 #elif defined( CINDER_WINRT )
 	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
+#elif defined( CINDER_ANDROID )
+    void        setImpl( WindowImplAndroid *impl ) { mImpl = impl; }
 #endif
 
 	AppBase							*mApp;
@@ -482,7 +490,9 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
 #elif defined( CINDER_WINRT )
-	WindowImplWinRT *mImpl;
+	WindowImplWinRT     *mImpl;
+#elif defined( CINDER_ANDROID )
+    WindowImplAndroid   *mImpl;
 #endif
 };
 

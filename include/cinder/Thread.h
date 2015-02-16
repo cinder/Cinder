@@ -41,6 +41,11 @@
 	#include <mutex>
 	#include <condition_variable>
 	#include <future>
+#elif defined( CINDER_ANDROID )
+	#include <thread>
+	#include <mutex>
+	#include <condition_variable>
+	#include <future>    
 #else
 	#include <boost/thread/mutex.hpp>
 	#include <boost/thread/recursive_mutex.hpp>

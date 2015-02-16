@@ -35,6 +35,8 @@
 	#import <OpenGLES/EAGL.h>
 #elif defined( CINDER_GL_ANGLE )
 	#include "EGL/egl.h"
+#elif defined( CINDER_ANDROID )
+    #include "EGL/egl.h"
 #endif
 
 #include "cinder/Log.h"
@@ -140,6 +142,16 @@ ContextRef Environment::createSharedContext( const Context *sharedContext )
 	}
 	::wglMakeCurrent( sharedContextDc, rc );
 	shared_ptr<Context::PlatformData> platformData = shared_ptr<Context::PlatformData>( new PlatformDataMsw( sharedContextPlatformData, rc, sharedContextDc ), destroyPlatformData );
+#elif defined( CINDER_ANDROID )
+	auto sharedContextPlatformData = dynamic_pointer_cast<PlatformDataAndroid>( sharedContext->getPlatformData() );
+	EGLContext prevEglContext = ::eglGetCurrentContext();
+	EGLDisplay prevEglDisplay = ::eglGetCurrentDisplay();
+	EGLSurface prevEglSurface = ::eglGetCurrentSurface( EGL_DRAW );
+
+	EGLint surfaceAttribList[] = { EGL_NONE, EGL_NONE };
+	EGLContext eglContext = ::eglCreateContext( prevEglDisplay, sharedContextPlatformData->mConfig, prevEglContext, surfaceAttribList );
+
+	shared_ptr<Context::PlatformData> platformData( new PlatformDataAndroid( eglContext, sharedContextPlatformData->mDisplay, sharedContextPlatformData->mSurface, sharedContextPlatformData->mConfig ), destroyPlatformData );
 #endif
 
 	ContextRef result( new Context( platformData ) );

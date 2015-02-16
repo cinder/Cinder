@@ -32,6 +32,8 @@
 	#include "cinder/app/AppImplWinRT.h"
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
+#elif defined( CINDER_ANDROID )
+    #include "cinder/app/AppImplAndroid.h"
 #endif
 
 namespace cinder { namespace app {

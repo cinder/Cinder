@@ -40,6 +40,11 @@
 	typedef void*		EGLDisplay;
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
+#elif defined( CINDER_ANDROID )
+	typedef void*		EGLContext;
+	typedef void*		EGLDisplay;
+	typedef void*		EGLSurface;
+	typedef void*		EGLConfig;
 #endif
 
 namespace cinder { namespace gl {
@@ -122,6 +127,17 @@ struct PlatformDataMsw : public Context::PlatformData {
 
 	HGLRC	mGlrc;
 	HDC		mDc;
+};
+#elif defined( CINDER_ANDROID )
+struct PlatformDataAndroid : public Context::PlatformData {
+	PlatformDataAndroid( EGLContext context, EGLDisplay display, EGLSurface surface, EGLConfig eglConfig )
+		: mContext( context ), mDisplay( display ), mSurface( surface ), mConfig( eglConfig )
+	{}
+
+	EGLContext		mContext;
+	EGLDisplay		mDisplay;
+	EGLSurface		mSurface;
+	EGLConfig		mConfig;
 };
 #endif
 

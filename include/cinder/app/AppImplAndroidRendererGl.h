@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, The Cinder Project, All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -23,29 +23,16 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
+namespace cinder { namespace app {
 
-#if defined( CINDER_MAC )
-	#include "cinder/app/AppBasicMac.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
-	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/AppCocoaTouch.h"
-	namespace cinder { namespace app {
-		typedef AppCocoaTouch	App;
-	} }
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
-	#include "cinder/app/AppBasicMsw.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
-	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_ANDROID )
-    #include "cinder/app/AppBasicAndroid.h"
-    namespace cinder { namespace app {
-        typedef AppBasicAndroid App;
-    } } // namespace cinder::app
-#endif
+class AppImplAndroidRendererGl {
+ public:
+
+    AppImplAndroidRendererGl() {}
+    virtual ~AppImplAndroidRendererGl() {}
+
+};
+
+} } // namespace cinder::app
+
+

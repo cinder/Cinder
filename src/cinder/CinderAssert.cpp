@@ -25,6 +25,7 @@
 
 #include <iostream>
 #include <csignal>
+#include <cstdlib>
 
 namespace cinder { namespace detail {
 

@@ -198,6 +198,18 @@ class Renderer2d : public Renderer {
 	HDC				mDC;
 };
 
+#elif defined( CINDER_ANDROID )
+
+class Renderer2d : public Renderer {
+ public:
+    Renderer2d();
+
+ protected:
+	Renderer2d( const Renderer2d &renderer );
+    
+    class ApplImplAndroidRenderer2d *mImpl;
+};
+
 #endif
 
 class ExcRenderer : public Exception {

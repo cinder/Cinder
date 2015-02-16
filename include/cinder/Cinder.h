@@ -70,7 +70,7 @@ using std::uint64_t;
 	#else
 		#define CINDER_MSW
 	#endif
-#elif defined(linux) || defined(__linux) || defined(__linux__)
+#elif (defined(linux) || defined(__linux) || defined(__linux__)) && ! defined(__ANDROID__)
 	#define CINDER_LINUX
 #elif defined(macintosh) || defined(__APPLE__) || defined(__APPLE_CC__)
 	#define CINDER_COCOA
@@ -88,6 +88,8 @@ using std::uint64_t;
 	#endif
 	// This is defined to prevent the inclusion of some unfortunate macros in <AssertMacros.h>
 	#define __ASSERTMACROS__
+#elif defined(__ANDROID__) && (defined(linux) || defined(__linux) || defined(__linux__))
+    #define CINDER_ANDROID
 #else
 	#error "cinder compile error: Unknown platform"
 #endif
@@ -110,8 +112,10 @@ using std::uint64_t;
 	#include <memory>
 #elif defined( CINDER_COCOA ) // libstdc++
 	#error "Cinder requires libc++ on Mac OS X and iOS"
+#elif defined( CINDER_ANDROID )
+    #include <memory> 
 #else
-	#error "Unkown platform configuration"
+	#error "Unknown platform configuration"
 #endif
 
 // Create a namepace alias as shorthand for cinder::

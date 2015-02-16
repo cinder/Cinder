@@ -209,6 +209,8 @@ protected:
 		friend class					AppImplMswRendererGl;
 	#endif
 	HWND						mWnd;
+#elif defined( CINDER_ANDROID )
+    class AppImplAndroidRendererGl  *mImpl;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;
