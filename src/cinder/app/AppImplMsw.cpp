@@ -119,7 +119,11 @@ fs::path AppImplMsw::getOpenFilePath( const fs::path &initialPath, vector<string
 	// Initialize OPENFILENAME
 	::ZeroMemory( &ofn, sizeof(ofn) );
 	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = AppBase::get()->getRenderer()->getHwnd();
+	auto app = AppBase::get();
+	if( app && app->getRenderer() )
+		ofn.hwndOwner = app->getRenderer()->getHwnd();
+	else
+		ofn.hwndOwner = 0;
 	ofn.lpstrFile = szFile;
 	
 	// Set lpstrFile[0] to '\0' so that GetOpenFileName does not
@@ -234,7 +238,11 @@ fs::path AppImplMsw::getSaveFilePath( const fs::path &initialPath, vector<string
 	// Initialize OPENFILENAME
 	ZeroMemory( &ofn, sizeof(ofn) );
 	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = AppBase::get()->getRenderer()->getHwnd();
+	auto app = AppBase::get();
+	if( app && app->getRenderer() )
+		ofn.hwndOwner = app->getRenderer()->getHwnd();
+	else
+		ofn.hwndOwner = 0;
 	ofn.lpstrFile = szFile;
 
 	// Set lpstrFile[0] to '\0' so that GetSaveFileName does not
