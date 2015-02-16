@@ -30,6 +30,10 @@ using namespace std;
 	#include <Cocoa/Cocoa.h>
 #elif defined( CINDER_COCOA_TOUCH )
 	#include <UIKit/UIKit.h>
+#elif defined( CINDER_MSW )
+	#include <Windows.h>
+	#undef min
+	#undef max
 #elif defined( CINDER_WINRT)
 	#include "cinder/WinRTUtils.h"
 	using namespace cinder::winrt;

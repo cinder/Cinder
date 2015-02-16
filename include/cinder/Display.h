@@ -40,9 +40,7 @@
 		class UIScreen;
 	#endif
 #elif defined( CINDER_MSW )
-	#include <windows.h>
-	#undef min
-	#undef max
+	#include "cinder/msw/CinderWindowsFwd.h"
 #endif
 
 #include <map>
