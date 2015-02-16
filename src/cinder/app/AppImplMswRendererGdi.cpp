@@ -25,6 +25,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/msw/CinderMswGdiPlus.h"
 #include "cinder/Log.h"
 #include <windowsx.h>
 

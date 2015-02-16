@@ -58,3 +58,6 @@ typedef struct tagRECT *LPRECT;
 #endif
 
 typedef LONG_PTR LPARAM;
+
+struct HFONT__;
+typedef HFONT__ *HFONT;
