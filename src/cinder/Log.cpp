@@ -28,6 +28,7 @@
 
 #if defined( CINDER_COCOA )
 	#import <Foundation/Foundation.h>
+	#include <syslog.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -75,6 +76,25 @@ const std::string getCurrentDateTimeString()
 
 	char result[100];
 	strftime( result, sizeof( result ), "%Y-%m-%d.%X", now );
+
+	return result;
+}
+
+int getCurrentYearDay()
+{
+	time_t timeSinceEpoch = time( NULL );
+	struct tm *now = localtime( &timeSinceEpoch );
+
+	return now->tm_year * 1000 + now->tm_yday;
+}
+
+const std::string getDailyLogString(const std::string& format)
+{
+	time_t timeSinceEpoch = time( NULL );
+	struct tm *now = localtime( &timeSinceEpoch );
+
+	char result[100];
+	strftime( result, sizeof( result ), format.c_str(), now );
 
 	return result;
 }
@@ -140,6 +160,15 @@ void LogManager::restoreToDefault()
 	mConsoleLoggingEnabled = true;
 	mFileLoggingEnabled = false;
 	mSystemLoggingEnabled = false;
+
+	switch( CI_MAX_LOG_LEVEL ) {
+		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
+		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
+		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
+		case 2: mSystemLoggingLevel = LEVEL_ERROR;		break;
+		case 1: mSystemLoggingLevel = LEVEL_FATAL;		break;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
 }
 
 vector<Logger *> LogManager::getAllLoggers()
@@ -164,19 +193,37 @@ void LogManager::enableConsoleLogging()
 	addLogger( new LoggerConsoleThreadSafe );
 	mConsoleLoggingEnabled = true;
 }
-	
-void LogManager::enableFileLogging( const fs::path &path )
+
+bool LogManager::initFileLogging()
 {
 	if( mFileLoggingEnabled ) {
-		// if path has changed, destroy previous file logger and make a new one
+		// destroys previous file logger to prepare for changes
 		auto logger = mLoggerMulti->findType<LoggerFile>();
 		if( logger )
 			disableFileLogging();
 		else
-			return;
+			return false;
+	}
+	return true;
+}
+
+void LogManager::enableFileLogging( const fs::path &path, bool append )
+{
+	if( ! initFileLogging() ) {
+		return;
 	}
 
-	addLogger( new LoggerFileThreadSafe( path ) );
+	addLogger( new LoggerFileThreadSafe( path, append ) );
+	mFileLoggingEnabled = true;
+}
+
+void LogManager::enableFileLogging( const fs::path &folder, const std::string& formatStr, bool append )
+{
+	if( ! initFileLogging() ) {
+		return;
+	}
+
+	addLogger( new LoggerFileThreadSafe( folder, formatStr, append ) );
 	mFileLoggingEnabled = true;
 }
 
@@ -186,8 +233,30 @@ void LogManager::enableSystemLogging()
 		return;
 
 #if defined( CINDER_COCOA )
-	addLogger( new LoggerNSLog );
+	addLogger( new LoggerSysLog );
+	setSystemLoggingLevel( mSystemLoggingLevel );
 	mSystemLoggingEnabled = true;
+#endif
+}
+
+void LogManager::setSystemLoggingLevel( Level level )
+{
+	mSystemLoggingLevel = level;
+
+#if defined( CINDER_COCOA )
+	// TODO: code duplication
+	int sysLevel;
+	switch ( level ) {
+		// VERBOSE and INFO are likely to be ignored in syslog due to /etc/asl.conf
+		case LEVEL_VERBOSE:		sysLevel = LOG_DEBUG;	break;
+		case LEVEL_INFO:		sysLevel = LOG_INFO;	break;
+
+		case LEVEL_WARNING:		sysLevel = LOG_WARNING;	break;
+		case LEVEL_ERROR:		sysLevel = LOG_ERR;		break;
+		case LEVEL_FATAL:		sysLevel = LOG_CRIT;	break;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
+	setlogmask(LOG_UPTO(sysLevel));
 #endif
 }
 
@@ -282,11 +351,23 @@ void LoggerImplMulti::write( const Metadata &meta, const string &text )
 // MARK: - LoggerFile
 // ----------------------------------------------------------------------------------------------------
 
-LoggerFile::LoggerFile( const fs::path &filePath )
-	: mFilePath( filePath )
+LoggerFile::LoggerFile( const fs::path &filePath, bool append )
+	: mFilePath( filePath ), mAppend(append), mRotating(false)
 {
 	if( mFilePath.empty() )
 		mFilePath = DEFAULT_FILE_LOG_PATH;
+
+	setTimestampEnabled();
+}
+
+LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool append )
+	: mFolderPath(folder), mDailyFormatStr(formatStr), mAppend(append), mRotating(true), mFilePath("")
+{
+	if( mFolderPath.empty() || mDailyFormatStr.empty() )
+		return;
+
+	mYearDay = getCurrentYearDay();
+	mFilePath = mFolderPath / getDailyLogString(mDailyFormatStr);
 
 	setTimestampEnabled();
 }
@@ -299,8 +380,18 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
-	if( ! mStream.is_open() )
-		mStream.open( mFilePath.string() );
+
+	if( mRotating && mYearDay != getCurrentYearDay() ) {
+		mFilePath = mFolderPath / getDailyLogString(mDailyFormatStr);
+		mYearDay = getCurrentYearDay();
+
+		if( mStream.is_open() )
+			mStream.close();
+	}
+
+	if( ! mStream.is_open() ) {
+		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
+	}
 	
 	writeDefault( mStream, meta, text );
 }
@@ -316,6 +407,44 @@ void LoggerNSLog::write( const Metadata &meta, const string &text )
 	NSString *textNs = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
 	NSString *metaDataNs = [NSString stringWithCString:meta.toString().c_str() encoding:NSUTF8StringEncoding];
 	NSLog( @"%@ %@", metaDataNs, textNs );
+}
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerNSLog
+// ----------------------------------------------------------------------------------------------------
+
+LoggerSysLog::LoggerSysLog()
+{
+	// Most general approach for determining app name.  Perhaps there is something more cinder specific?
+	// https://developer.apple.com/library/mac/qa/qa1544/_index.html
+
+	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
+
+	const char *cAppName = [appName UTF8String];
+	openlog( cAppName, ( LOG_CONS | LOG_PID), LOG_USER );
+}
+
+LoggerSysLog::~LoggerSysLog()
+{
+	closelog();
+}
+
+void LoggerSysLog::write( const Metadata &meta, const string &text )
+{
+	// TODO: code duplication
+	int sysLevel;
+	switch ( meta.mLevel ) {
+		case LEVEL_VERBOSE:		sysLevel = LOG_DEBUG;	break;
+		case LEVEL_INFO:		sysLevel = LOG_INFO;	break;
+		case LEVEL_WARNING:		sysLevel = LOG_WARNING;	break;
+		case LEVEL_ERROR:		sysLevel = LOG_ERR;		break;
+
+		// debatable if FATAL is a LOG_CRIT or LOG_ALERT
+		case LEVEL_FATAL:		sysLevel = LOG_CRIT;	break;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
+	syslog(sysLevel, "%s %s", meta.toString().c_str(), text.c_str());
 }
 
 #endif
