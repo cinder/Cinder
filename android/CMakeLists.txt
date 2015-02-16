@@ -26,10 +26,14 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
-set( CMAKE_C_COMPILER   $ENV{NDK_ROOT}/bin/arm-linux-androideabi-gcc )
-set( CMAKE_CXX_COMPILER $ENV{NDK_ROOT}/bin/arm-linux-androideabi-g++ )
-#set( CMAKE_C_COMPILER   $ENV{NDK_ROOT}/bin/clang )
-#set( CMAKE_CXX_COMPILER $ENV{NDK_ROOT}/bin/clang++ )
+set( TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+set( CMAKE_C_COMPILER   $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
+set( CMAKE_CXX_COMPILER $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
+SET( CMAKE_AR           $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
+SET( CMAKE_LINKER       $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
+SET( CMAKE_NM           $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
+SET( CMAKE_RANLIB       $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
+SET( CMAKE_STRIP        $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
 
 project( cinder )
 
@@ -38,11 +42,26 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
+set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
+message( "" )
+message( " ${BoldGreen}LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH}${ColorReset}" )
+message( "" )
+message( "${BoldGreen}CMAKE_C_COMPILER  : ${CMAKE_C_COMPILER}${ColorReset}" )
+message( "${BoldGreen}CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}${ColorReset}" )
+message( "${BoldGreen}CMAKE_AR          : ${CMAKE_AR}${ColorReset}" ) 
+message( "${BoldGreen}CMAKE_LINKER      : ${CMAKE_LINKER}${ColorReset}" ) 
+message( "${BoldGreen}CMAKE_NM          : ${CMAKE_NM}${ColorReset}" ) 
+message( "${BoldGreen}CMAKE_RANLIB      : ${CMAKE_RANLIB}${ColorReset}" ) 
+message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
+message( "" )
 
 include_directories( ${CINDER_INC_DIR} ${BOOST_INC_DIR} )
+
+set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3" )
 
 
 set( CINDER_SRC_FILES
@@ -53,7 +72,34 @@ set( CINDER_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppImplAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppBasicAndroid.cpp
+
+    ${CINDER_SRC_DIR}/cinder/gl/gl.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/BufferObj.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/BufferTexture.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/ConstantStrings.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Context.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/EnvironmentCore.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/EnvironmentEs.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Fbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/GlslProg.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Query.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
+    #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObjImplHardware.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObjImplSoftware.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplEs.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp
     ${CINDER_SRC_DIR}/cinder/AxisAlignedBox.cpp
@@ -64,14 +110,35 @@ set( CINDER_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Channel.cpp
     ${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
     ${CINDER_SRC_DIR}/cinder/CinderMath.cpp
+    ${CINDER_SRC_DIR}/cinder/Color.cpp
+    ${CINDER_SRC_DIR}/cinder/ConvexHull.cpp
+    ${CINDER_SRC_DIR}/cinder/DataSource.cpp
+    ${CINDER_SRC_DIR}/cinder/DataTarget.cpp
     ${CINDER_SRC_DIR}/cinder/Display.cpp
     ${CINDER_SRC_DIR}/cinder/Exception.cpp
     ${CINDER_SRC_DIR}/cinder/Frustum.cpp
+    ${CINDER_SRC_DIR}/cinder/GeomIo.cpp
+    ${CINDER_SRC_DIR}/cinder/Matrix.cpp
+    ${CINDER_SRC_DIR}/cinder/MatrixStack.cpp
+    ${CINDER_SRC_DIR}/cinder/Path2d.cpp
+    ${CINDER_SRC_DIR}/cinder/Perlin.cpp
+    ${CINDER_SRC_DIR}/cinder/Plane.cpp
+    ${CINDER_SRC_DIR}/cinder/PolyLine.cpp
+    #${CINDER_SRC_DIR}/cinder/Rand.cpp
+    ${CINDER_SRC_DIR}/cinder/Ray.cpp
+    ${CINDER_SRC_DIR}/cinder/Rect.cpp
+    ${CINDER_SRC_DIR}/cinder/Shape2d.cpp
+    ${CINDER_SRC_DIR}/cinder/Signals.cpp
+    ${CINDER_SRC_DIR}/cinder/Sphere.cpp
+    ${CINDER_SRC_DIR}/cinder/Stream.cpp
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
+    ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
+    ${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 
 set_source_files_properties( ${CINDER_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
 
+set( CMAKE_DEBUG_POSTFIX "_d" )
 add_library( cinder STATIC ${CINDER_SRC_FILES} )
 
 

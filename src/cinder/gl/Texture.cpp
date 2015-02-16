@@ -35,6 +35,16 @@
 #include <memory>
 #include <type_traits>
 
+#if defined( CINDER_ANDROID )
+namespace std {
+
+double log2( double x ) {
+    return ::log2( x );
+}
+
+} // namespace std
+#endif
+
 using namespace std;
 
 namespace cinder { namespace gl {

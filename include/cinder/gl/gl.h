@@ -39,6 +39,14 @@
 	#endif
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
+#elif defined( CINDER_ANDROID )
+   	//#define GL_GLEXT_PROTOTYPES
+	#define CINDER_GL_ES
+    // Force ES3 for now
+    #include "GLES3/gl3.h"
+	#include "GLES3/gl3ext.h"
+	#include "GLES2/gl2ext.h"
+	#define CINDER_GL_ES_3    
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push
