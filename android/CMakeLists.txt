@@ -60,9 +60,9 @@ message( "" )
 
 include_directories( ${CINDER_INC_DIR} ${BOOST_INC_DIR} )
 
-set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3" )
-
+set( CXX_FLAGS "-march=armv7-a -mfpu=neon" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g ${CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math ${CXX_FLAGS}" )
 
 set( CINDER_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
