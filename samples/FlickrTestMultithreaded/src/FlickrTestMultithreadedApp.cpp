@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Sync.h"
 #include "cinder/Xml.h"
 #include "cinder/Timeline.h"
 #include "cinder/ImageIo.h"
@@ -20,10 +21,11 @@ using namespace std;
 
 class FlickrTestMTApp : public App {
   public:		
-	void setup();
-	void update();
-	void draw();
-	void shutdown();
+	~FlickrTestMTApp();
+
+	void setup() override;
+	void update() override;
+	void draw() override;
 	void loadImagesThreadFn( gl::ContextRef sharedGlContext );
 
 	ConcurrentCircularBuffer<gl::TextureRef>	*mImages;
@@ -63,10 +65,14 @@ void FlickrTestMTApp::loadImagesThreadFn( gl::ContextRef context )
 	}
 
 	// load images as Textures into our ConcurrentCircularBuffer
-	// don't create gl::Textures on a background thread
 	while( ( ! mShouldQuit ) && ( ! urls.empty() ) ) {
 		try {
-			mImages->pushFront( gl::Texture::create( loadImage( loadUrl( urls.back() ) ) ) );
+			// we need to wait on a fence before alerting the primary thread that the Texture is ready
+			auto fence = gl::Sync::create();
+			auto tex = gl::Texture::create( loadImage( loadUrl( urls.back() ) ) );
+			// wait on the fence
+			fence->clientWaitSync();
+			mImages->pushFront( tex );
 			urls.pop_back();
 		}
 		catch( ci::Exception &exc ) {
@@ -107,7 +113,7 @@ void FlickrTestMTApp::draw()
 	}
 }
 
-void FlickrTestMTApp::shutdown()
+FlickrTestMTApp::~FlickrTestMTApp()
 {
 	mShouldQuit = true;
 	mImages->cancel();
