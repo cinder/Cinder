@@ -29,10 +29,6 @@
 #include "cinder/Noncopyable.h"
 
 #include <string>
-#ifndef __OBJC__
-#	include <boost/iostreams/concepts.hpp>
-#	include <boost/iostreams/stream.hpp>
-#endif
 
 namespace cinder {
 
@@ -339,85 +335,5 @@ class StreamExc : public Exception {
 class StreamExcOutOfMemory : public StreamExc {
 };
 
-#ifndef __OBJC__
-class cinder_stream_source {
- public:
-	typedef char char_type;
-    typedef boost::iostreams::source_tag category;
-
-	cinder_stream_source( cinder::IStreamRef aStream ) : mStream( aStream ) {}
-
-	std::streamsize read( char *s, std::streamsize n )
-	{
-		if( mStream->isEof() )
-			return -1;
-		
-		return (std::streamsize)mStream->readDataAvailable( s, (size_t)n );
-	}
-
- protected:
-	IStreamRef		mStream; // a little kludgy but this is for convenience
-};
-
-typedef boost::iostreams::stream<cinder_stream_source> cinder_istream;
-
-class cinder_stream_sink {
- public:
-	typedef char char_type;
-    typedef boost::iostreams::sink_tag category;
-
-	cinder_stream_sink( OStreamRef aStream ) : mStream( aStream ) {}
-
-	std::streamsize write( const char *s, std::streamsize n )
-	{
-		mStream->writeData( s, (size_t)n );
-		return n;
-	}
-
- protected:
-	OStreamRef		mStream;
-};
-
-typedef boost::iostreams::stream<cinder_stream_sink> cinder_ostream;
-
-class cinder_stream_bidirectional_device {
- public:
-	typedef char char_type;
-    typedef boost::iostreams::seekable_device_tag category;
-
-	cinder_stream_bidirectional_device( cinder::IoStreamRef aStream ) : mStream( aStream ) {}
-
-	std::streamsize read( char *s, std::streamsize n )
-	{
-		return static_cast<std::streamsize>( mStream->readDataAvailable( s, (size_t)n ) );
-	}
-
-	std::streamsize write( const char *s, std::streamsize n )
-	{
-		mStream->writeData( s, (size_t)n );
-		return n;
-	}
-
-	boost::iostreams::stream_offset seek( boost::iostreams::stream_offset off, std::ios_base::seekdir way)
-	{
-		if( way == std::ios_base::beg ) {
-			mStream->seekAbsolute( (off_t)off );
-		}
-		else if( way == std::ios_base::cur ) {
-			mStream->seekRelative( (off_t)off );
-		}
-		else { // way == std::ios_base::end
-			mStream->seekAbsolute( -(off_t)off );
-		}
-		return mStream->tell();
-	}
-
- protected:
-	IoStreamRef		mStream;
-};
-
-typedef boost::iostreams::stream<cinder_stream_bidirectional_device> cinder_iostream;
-
-#endif // ! __OBJC__
 
 } // namespace cinder
