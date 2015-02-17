@@ -110,7 +110,7 @@ void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, c
 }
 
 #define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\
-int WINAPI WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )	\
+int __stdcall WinMain( void *hInstance, void *hPrevInstance, void *lpCmdLine, int nCmdShow )	\
 {																									\
 	cinder::app::RendererRef renderer( new RENDERER );												\
 	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\

@@ -36,6 +36,10 @@
 
 #include "cinder/app/AppBase.h"
 
+#if defined( CINDER_MSW )
+	#include <Windows.h>
+#endif
+
 using namespace std;
 
 // ES 2 Multisampling is available on iOS and ANGLE via an extension
