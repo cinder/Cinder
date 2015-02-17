@@ -50,7 +50,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		// we only want to look for a shared renderer if we're not the first window
 		cinder::app::RendererRef sharedRenderer;
 		if( sAppImplInstance )
-			sharedRenderer = sAppImplInstance->mApp->findSharedRenderer( renderer );
+			sharedRenderer = [sAppImplInstance findSharedRenderer:renderer];
 		mCinderView = [[CinderView alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer
 										appReceivesEvents:NO highDensityDisplay:sSettings->isHighDensityDisplayEnabled() enableMultiTouch:NO];
 		[mCinderView setDelegate:self];
@@ -369,6 +369,20 @@ static AppImplCocoaScreenSaver* getAppImpl()
 {
 	[windowImpl retain];
 	mWindows.push_back( windowImpl );	
+}
+
+- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)sharedRenderer
+{
+	if( ! sharedRenderer )
+		return cinder::app::RendererRef();
+	
+	for( const auto &win : mWindows ) {
+		auto ren = win->mWindowRef->getRenderer();
+		if( ren && ( typeid(*ren) == typeid(*sharedRenderer) ) )
+			return ren;
+	}
+
+	return cinder::app::RendererRef();
 }
 
 - (BOOL)isPreview

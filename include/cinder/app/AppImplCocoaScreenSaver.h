@@ -46,6 +46,7 @@
 
 - (AppImplCocoaScreenSaver*)init;
 - (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl;
+- (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (BOOL)isPreview;
 
 - (size_t)getNumWindows;
