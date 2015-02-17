@@ -28,6 +28,8 @@
 #if defined( CINDER_MAC )
 	#import "cinder/app/AppImplCocoaScreenSaver.h"
 	#include "cinder/app/PlatformCocoa.h"
+	#include "cinder/ImageSourceFileQuartz.h"
+	#include "cinder/ImageTargetFileQuartz.h"	
 #elif defined( CINDER_MSW )
 	#include "cinder/app/AppImplMswScreenSaver.h"
 #endif
@@ -54,6 +56,9 @@ AppScreenSaver::AppScreenSaver()
 
 	platform->setBundle( getBundle() );
 	platform->setExecutablePath( getAppPath() );
+	
+	ImageSourceFileQuartz::registerSelf();
+	ImageTargetFileQuartz::registerSelf();	
 }
 
 #elif defined( CINDER_MSW )
