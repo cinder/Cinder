@@ -29,6 +29,7 @@
 #include "cinder/msw/CinderMsw.h"
 
 #include <Windows.h>
+#include <windowsx.h>
 #include <CommDlg.h>
 #include <ShellAPI.h>
 #include <Shlobj.h>
@@ -905,7 +906,9 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		}
 		break;
 		case WM_MOUSEWHEEL: {
-			MouseEvent event( impl->getWindow(), 0, LOSHORT(lParam), HISHORT(lParam), prepMouseEventModifiers( wParam ),
+			POINT pt = { ((int)(short)LOWORD(lParam)), ((int)(short)HIWORD(lParam)) };
+			::MapWindowPoints( NULL, mWnd, &pt, 1 );
+			MouseEvent event( impl->getWindow(), 0, pt.x, pt.y, prepMouseEventModifiers( wParam ),
 								GET_WHEEL_DELTA_WPARAM( wParam ) / 120.0f, static_cast<unsigned int>( wParam ) );
 			impl->getWindow()->emitMouseWheel( &event );
 		}
