@@ -365,9 +365,6 @@ class AppBase {
 	//! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has displayed a dialog box or some other external window.
 	virtual void	restoreWindowContext()	{}
 
-	//! Finds any Renderer of the same type as \a searchRenderer among existing windows. This is generally not necessary and used to enable context sharing between Windows. Returns NULL on failure.
-	RendererRef		findSharedRenderer( RendererRef searchRenderer ) const;
-	
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.

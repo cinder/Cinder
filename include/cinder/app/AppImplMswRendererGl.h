@@ -45,6 +45,8 @@ class AppImplMswRendererGl : public AppImplMswRenderer {
 	virtual void	swapBuffers() const;
 	virtual void	makeCurrentContext();
 
+	HDC				getDc() const { return mDC; }
+
  protected:
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;

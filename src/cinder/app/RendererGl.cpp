@@ -263,6 +263,11 @@ void RendererGl::defaultResize()
 	mImpl->defaultResize();
 }
 
+HDC RendererGl::getDc()
+{
+	return mImpl->getDc();
+}
+
 Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), false );

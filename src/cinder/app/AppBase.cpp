@@ -243,18 +243,4 @@ Surface	AppBase::copyWindowSurface( const Area &area )
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea, getWindow()->toPixels( getWindow()->getHeight() ) );
 }
 
-RendererRef AppBase::findSharedRenderer( RendererRef searchRenderer ) const
-{
-	if( ! searchRenderer )
-		return RendererRef();
-
-	for( size_t winIdx = 0; winIdx < getNumWindows(); ++winIdx ) {
-		RendererRef thisRenderer = getWindowIndex( winIdx )->getRenderer();
-		if( thisRenderer && (typeid( *thisRenderer ) == typeid(*searchRenderer)) )
-			return getWindowIndex( winIdx )->getRenderer();
-	}
-	
-	return RendererRef(); // didn't find one
-}
-
 } } // namespace cinder::app

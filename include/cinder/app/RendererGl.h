@@ -173,7 +173,8 @@ class RendererGl : public Renderer {
 #elif defined( CINDER_MSW )
 	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill();
-	virtual HWND	getHwnd() { return mWnd; }
+	virtual HWND	getHwnd() override { return mWnd; }
+	virtual HDC		getDc() override;
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 #endif

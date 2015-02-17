@@ -313,6 +313,10 @@ void AppImplMswRendererGl::kill()
 		::wglDeleteContext( mRC );						// delete The RC
 	}
 
+	mCinderContext.reset();
+
+	gl::Context::reflectCurrent( nullptr );
+
 	mRC = 0;
 }
 
