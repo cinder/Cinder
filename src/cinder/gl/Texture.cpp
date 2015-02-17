@@ -300,7 +300,7 @@ void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLen
 		default:
 			CI_LOG_W( "Unknown internalFormat:" << gl::constantToString( internalFormat ) );
 			*resultDataFormat = GL_RGBA;
-			*resultDataFormat = GL_UNSIGNED_BYTE;
+			*resultDataType = GL_UNSIGNED_BYTE;
 	}
 }
 
