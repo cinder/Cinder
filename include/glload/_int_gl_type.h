@@ -42,7 +42,8 @@
 			#define NOMINMAX
 		#endif
 //		#include <windows.h>
-		#define APIENTRY  __stdcall
+		#define WINAPI      __stdcall
+		#define APIENTRY    WINAPI
 	#else
 		#define APIENTRY
 	#endif
