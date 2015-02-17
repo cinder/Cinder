@@ -28,6 +28,8 @@
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
 
+#include <algorithm>
+
 namespace cinder {
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
