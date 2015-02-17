@@ -36,6 +36,8 @@ typedef HMONITOR__ *HMONITOR;
 typedef int BOOL;
 #define CALLBACK __stdcall
 typedef struct tagRECT *LPRECT;
+struct HINSTANCE__;
+typedef HINSTANCE__ *HINSTANCE;
 
 #if defined(_WIN64)
     typedef __int64 INT_PTR, *PINT_PTR;
@@ -58,6 +60,8 @@ typedef struct tagRECT *LPRECT;
 #endif
 
 typedef LONG_PTR LPARAM;
+typedef char CHAR;
+typedef _Null_terminated_ CHAR *NPSTR, *LPSTR, *PSTR;
 
 struct HFONT__;
 typedef HFONT__ *HFONT;

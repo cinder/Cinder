@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/msw/CinderWindowsFwd.h"
 
 namespace cinder { namespace app {
 
@@ -110,7 +111,7 @@ void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, c
 }
 
 #define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\
-int __stdcall WinMain( void *hInstance, void *hPrevInstance, void *lpCmdLine, int nCmdShow )	\
+int __stdcall WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )\
 {																									\
 	cinder::app::RendererRef renderer( new RENDERER );												\
 	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
