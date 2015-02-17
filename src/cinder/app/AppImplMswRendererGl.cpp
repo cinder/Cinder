@@ -257,7 +257,7 @@ bool initializeGl( HWND wnd, HDC dc, HGLRC sharedRC, const RendererGl::Options &
 	if( ! setPixelFormat( dc, options ) )
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );
 
-	if( ! ( *resultRc = createContext( dc, options.getDebug(), options.getCoreProfile(), options.getVersion().first, options.getVersion().second ) ) ) {
+	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second ) ) ) {
 		return false;								
 	}
 
