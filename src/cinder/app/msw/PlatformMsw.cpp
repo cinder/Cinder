@@ -24,7 +24,7 @@
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 
-# include "cinder/app/AppImplMsw.h" // FIXME: this is currently needed for file dialog methods, which require an app / renderer
+# include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
 
 using namespace std;
 

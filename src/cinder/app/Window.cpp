@@ -27,9 +27,9 @@
 #include "cinder/app/AppBase.h"
 
 #if defined( CINDER_MSW )
-	#include "cinder/app/AppImplMsw.h"
+	#include "cinder/app/msw/AppImplMsw.h"
 #elif defined( CINDER_WINRT )
-	#include "cinder/app/AppImplWinRT.h"
+	#include "cinder/app/msw/AppImplWinRT.h"
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
 #endif

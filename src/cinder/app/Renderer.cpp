@@ -41,8 +41,8 @@
 	#endif
 
 #elif defined( CINDER_MSW )
-	#include "cinder/app/AppImplMsw.h"
-	#include "cinder/app/AppImplMswRendererGdi.h"
+	#include "cinder/app/msw/AppImplMsw.h"
+	#include "cinder/app/msw/AppImplMswRendererGdi.h"
 #endif
 
 namespace cinder { namespace app {

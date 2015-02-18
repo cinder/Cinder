@@ -31,7 +31,7 @@
 	#include "cinder/ImageSourceFileQuartz.h"
 	#include "cinder/ImageTargetFileQuartz.h"	
 #elif defined( CINDER_MSW )
-	#include "cinder/app/AppImplMswScreenSaver.h"
+	#include "cinder/app/msw/AppImplMswScreenSaver.h"
 #endif
 
 cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = nullptr;
