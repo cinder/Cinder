@@ -22,7 +22,7 @@
  */
 
 #include "cinder/app/cocoa/AppBasicMac.h"
-#include "cinder/app/cocoa/AppImplCocoaBasic.h"
+#include "cinder/app/cocoa/AppImplMac.h"
 #include "cinder/Log.h"
 
 using namespace std;
@@ -36,7 +36,7 @@ AppBasicMac::AppBasicMac()
 	CI_ASSERT( settings );
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl = [[AppImplCocoaBasic alloc] init:this settings:*settings];
+	mImpl = [[AppImplMac alloc] init:this settings:*settings];
 
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 }

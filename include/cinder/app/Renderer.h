@@ -44,10 +44,10 @@
 #if defined( CINDER_MAC )
 	#include <CoreGraphics/CGGeometry.h>
 	#if defined __OBJC__
-		@class AppImplCocoaRendererQuartz;
+		@class RendererImpl2dMacQuartz;
 		@class NSView;
 	#else
-		class AppImplCocoaRendererQuartz;
+		class RendererImpl2dMacQuartz;
 		class NSView;
 	#endif
 	typedef struct _CGLContextObject       *CGLContextObj;
@@ -56,11 +56,11 @@
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined __OBJC__
 		typedef struct CGContext * CGContextRef;
-		@class AppImplCocoaTouchRendererQuartz;
+		@class RendererImpl2dCocoaTouchQuartz;
 		@class UIView;
 	#else
 		typedef struct CGContext * CGContextRef;
-		class AppImplCocoaTouchRendererQuartz;
+		class RendererImpl2dCocoaTouchQuartz;
 		class UIView;
 	#endif
 #endif
@@ -158,9 +158,9 @@ class Renderer2d : public Renderer {
 	Renderer2d( const Renderer2d &renderer );
 
 #if defined( CINDER_MAC )
-	AppImplCocoaRendererQuartz		*mImpl;
+	RendererImpl2dMacQuartz		*mImpl;
 #else
-	AppImplCocoaTouchRendererQuartz	*mImpl;
+	RendererImpl2dCocoaTouchQuartz	*mImpl;
 #endif
 	CGContextRef					mCGContext;
 };

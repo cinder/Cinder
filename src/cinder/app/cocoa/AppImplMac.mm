@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/cocoa/AppImplCocoaBasic.h"
+#include "cinder/app/cocoa/AppImplMac.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
 #import "cinder/cocoa/CinderCocoa.h"
@@ -47,11 +47,11 @@ using namespace cinder::app;
 - (BOOL)canBecomeKeyWindow { return YES; }
 @end
 
-@implementation AppImplCocoaBasic
+@implementation AppImplMac
 
 @synthesize windows = mWindows;
 
-- (AppImplCocoaBasic *)init:(AppBasicMac *)app settings:(const AppBasicMac::Settings &)settings
+- (AppImplMac *)init:(AppBasicMac *)app settings:(const AppBasicMac::Settings &)settings
 {	
 	self = [super init];
 
@@ -691,7 +691,7 @@ using namespace cinder::app;
 	return mWindowRef;
 }
 
-+ (WindowImplBasicCocoa *)instantiate:(Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl
++ (WindowImplBasicCocoa *)instantiate:(Window::Format)winFormat withAppImpl:(AppImplMac *)appImpl
 {
 	WindowImplBasicCocoa *winImpl = [[WindowImplBasicCocoa alloc] init];
 
@@ -750,7 +750,7 @@ using namespace cinder::app;
 	
 	app::RendererRef renderer = winFormat.getRenderer();
 	NSRect viewFrame = NSMakeRect( 0, 0, winImpl->mSize.x, winImpl->mSize.y );
-	winImpl->mCinderView = [[CinderView alloc] initWithFrame:viewFrame renderer:renderer sharedRenderer:sharedRenderer
+	winImpl->mCinderView = [[CinderViewMac alloc] initWithFrame:viewFrame renderer:renderer sharedRenderer:sharedRenderer
 															appReceivesEvents:YES
 															highDensityDisplay:appImpl->mApp->isHighDensityDisplayEnabled()
 															enableMultiTouch:appImpl->mApp->isMultiTouchEnabled()];

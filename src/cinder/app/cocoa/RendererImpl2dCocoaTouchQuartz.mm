@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -20,24 +21,69 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/AppBase.h"
-#import <UIKit/UIKit.h>
+#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"
+#import <QuartzCore/QuartzCore.h>
+#include "cinder/cocoa/CinderCocoa.h"
 
-@interface AppImplCocoaTouchRendererQuartz : NSObject
+@implementation RendererImpl2dCocoaTouchQuartz
+
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
 {
-	CGContextRef				mCurrentRef;
-	UIView						*view;
+	self = [super init];
+	
+	view = cinderView;
+	mCurrentRef = nil;
+	
+	return self;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView;
-- (UIView*)view;
+- (void)dealloc
+{
+	[super dealloc];
+}
 
-- (UIImage*)getContents:(cinder::Area)area;
+- (UIView*)view
+{
+	return view;
+}
 
-- (void)makeCurrentContext;
-- (void)flushBuffer;
-- (void)defaultResize;
+- (UIImage*)getContents:(cinder::Area)area
+{
+	::UIGraphicsBeginImageContext( cinder::cocoa::createCgSize( area.getSize() ) );
+	CALayer *layer = view.layer;
+	[layer renderInContext:UIGraphicsGetCurrentContext()];
+	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
+	::UIGraphicsEndImageContext();
+	return viewImage;
+}
 
-- (CGContextRef)getCGContextRef;
+- (void)makeCurrentContext
+{
+	mCurrentRef = ::UIGraphicsGetCurrentContext();
+	if( ! mCurrentRef )
+		return;
+
+	::CGContextRetain( mCurrentRef );
+}
+
+- (void)flushBuffer
+{
+	if( mCurrentRef )
+		::CGContextRelease( mCurrentRef );
+}
+
+- (void)defaultResize
+{
+}
+
+- (CGContextRef)getCGContextRef
+{
+	return mCurrentRef;
+}
+
+- (BOOL)isFlipped
+{
+	return YES;
+}
 
 @end

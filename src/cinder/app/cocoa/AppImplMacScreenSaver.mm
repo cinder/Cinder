@@ -21,15 +21,15 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/AppImplCocoaScreenSaver.h"
+#import "cinder/app/AppImplMacScreenSaver.h"
 #include "cinder/CinderAssert.h"
 
 #import <Foundation/NSThread.h>
 
-static AppImplCocoaScreenSaver *sAppImplInstance = nil;
+static AppImplMacScreenSaver *sAppImplInstance = nil;
 static std::unique_ptr<cinder::app::AppScreenSaver::Settings> sSettings;
 static void initSettings();
-static AppImplCocoaScreenSaver* getAppImpl();
+static AppImplMacScreenSaver* getAppImpl();
 static bool sFirstView = true; // records whether a call is the first to initView; reset to true at stop animation
 
 @implementation WindowImplCocoaScreenSaver
@@ -337,12 +337,12 @@ static void initSettings()
 	}
 }
 
-static AppImplCocoaScreenSaver* getAppImpl()
+static AppImplMacScreenSaver* getAppImpl()
 {
 	if( ! sAppImplInstance ) {
 		initSettings();
 		
-		sAppImplInstance = [[AppImplCocoaScreenSaver alloc] init];
+		sAppImplInstance = [[AppImplMacScreenSaver alloc] init];
 		sAppImplInstance->mApp = ScreenSaverFactoryMethod( sAppImplInstance, sSettings.get() );
 		sAppImplInstance->mFrameRate = sSettings->getFrameRate();
 		sAppImplInstance->mSetupCalled = NO;
@@ -352,11 +352,11 @@ static AppImplCocoaScreenSaver* getAppImpl()
 }
 
 //////////////////////////////////////////////////////////////////////////////////////
-// AppImplCocoaScreenSaver
+// AppImplMacScreenSaver
 
-@implementation AppImplCocoaScreenSaver
+@implementation AppImplMacScreenSaver
 
-- (AppImplCocoaScreenSaver*)init
+- (AppImplMacScreenSaver*)init
 {
 	self = [super init];
 	

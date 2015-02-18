@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/cocoa/CinderView.h"
+#include "cinder/app/cocoa/CinderViewMac.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/cocoa/CinderCocoa.h"
@@ -31,12 +31,13 @@
 using namespace cinder;
 using namespace cinder::app;
 
-@interface CinderView ()
+@interface CinderViewMac ()
 - (void)windowDidEnterFullScreen:(NSNotification *)notification;
 - (void)windowDidExitFullScreen:(NSNotification *)notification;
 @end
 
-@implementation CinderView
+@implementation CinderViewMac
+
 @synthesize readyToDraw = mReadyToDraw;
 @synthesize receivesEvents = mReceivesEvents;
 
@@ -55,7 +56,7 @@ using namespace cinder::app;
 	return self;
 }
 
-- (CinderView *)initWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
+- (CinderViewMac *)initWithFrame:(NSRect)frame renderer:(RendererRef)renderer sharedRenderer:(RendererRef)sharedRenderer
 			appReceivesEvents:(BOOL)appReceivesEvents highDensityDisplay:(BOOL)highDensityDisplay enableMultiTouch:(BOOL)enableMultiTouch
 {
 	self = [super initWithFrame:frame];

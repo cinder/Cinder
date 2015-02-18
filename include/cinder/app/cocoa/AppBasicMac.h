@@ -26,9 +26,9 @@
 #include "cinder/app/AppBasic.h"
 
 #if defined( __OBJC__ )
-	@class AppImplCocoaBasic;
+	@class AppImplMac;
 #else
-	class AppImplCocoaBasic;
+	class AppImplMac;
 #endif
 
 namespace cinder { namespace app {
@@ -69,7 +69,7 @@ class AppBasicMac : public AppBasic {
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	AppImplCocoaBasic*	mImpl;
+	AppImplMac*	mImpl;
 };
 
 template<typename AppT>

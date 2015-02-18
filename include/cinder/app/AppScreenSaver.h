@@ -29,11 +29,11 @@
 
 #if defined( CINDER_MAC )
 	#ifdef __OBJC__
-		@class AppImplCocoaScreenSaver;
+		@class AppImplMacScreenSaver;
 		@class NSWindow;
 		@class NSBundle;
 	#else
-		class AppImplCocoaScreenSaver;
+		class AppImplMacScreenSaver;
 		class NSWindow;
 		class NSBundle;
 	#endif
@@ -125,7 +125,7 @@ class AppScreenSaver : public AppBase {
 	virtual WindowRef	getWindowIndex( size_t index ) const override;
 
 #if defined( CINDER_MAC )
-	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplCocoaScreenSaver*>( impl ); }
+	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplMacScreenSaver*>( impl ); }
 	void			launch( const char *title, int argc, char * const argv[] ) override { /* do nothing - this gets handled a weirder way for screensavers */ }
 
 	template<typename RendererT>
@@ -179,7 +179,7 @@ class AppScreenSaver : public AppBase {
  private:
 	static AppScreenSaver		*sInstance;
 #if defined( CINDER_MAC )
-	AppImplCocoaScreenSaver		*mImpl;
+	AppImplMacScreenSaver		*mImpl;
 #elif defined( CINDER_MSW )
 	class AppImplMswScreenSaver	*mImpl;
 	static HWND					sMainHwnd;

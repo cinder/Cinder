@@ -34,10 +34,10 @@
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
 		#import <Cocoa/Cocoa.h>
-		#import "cinder/app/cocoa/AppImplCocoaRendererQuartz.h"
+		#import "cinder/app/cocoa/RendererImpl2dMacQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/cocoa/AppImplCocoaTouchRendererQuartz.h"		
+		#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"		
 	#endif
 
 #elif defined( CINDER_MSW )
@@ -79,7 +79,7 @@ Renderer2d::~Renderer2d()
 
 void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
-	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
+	mImpl = [[RendererImpl2dMacQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -88,7 +88,7 @@ void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRe
 
 void Renderer2d::setup( const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
 {
-	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView];
+	mImpl = [[RendererImpl2dCocoaTouchQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView];
 }
 
 #endif

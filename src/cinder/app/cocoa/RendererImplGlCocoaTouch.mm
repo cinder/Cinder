@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import "AppImplCocoaTouchRendererGl.h"
+#import "RendererImplGlCocoaTouch.h"
 #import <QuartzCore/QuartzCore.h>
 
 #include "cinder/gl/gl.h"
@@ -39,7 +39,7 @@
 	#define GL_MAX_SAMPLES								GL_MAX_SAMPLES_APPLE
 #endif
 
-@implementation AppImplCocoaTouchRendererGl
+@implementation RendererImplGlCocoaTouch
 
 - (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer
 {

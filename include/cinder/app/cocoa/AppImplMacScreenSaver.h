@@ -34,7 +34,7 @@
 
 @class WindowImplCocoaScreenSaver;
 
-@interface AppImplCocoaScreenSaver : NSObject {
+@interface AppImplMacScreenSaver : NSObject {
   @public
 	cinder::app::AppScreenSaver					*mApp;
 	std::list<WindowImplCocoaScreenSaver*>		mWindows;
@@ -44,7 +44,7 @@
 	BOOL										mSetupCalled;
 }
 
-- (AppImplCocoaScreenSaver*)init;
+- (AppImplMacScreenSaver*)init;
 - (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl;
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (BOOL)isPreview;

@@ -21,69 +21,36 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/cocoa/AppImplCocoaTouchRendererQuartz.h"
-#import <QuartzCore/QuartzCore.h>
-#include "cinder/cocoa/CinderCocoa.h"
+#import "cinder/app/AppBase.h"
+#import "cinder/app/RendererGl.h"
 
-@implementation AppImplCocoaTouchRendererQuartz
+#import <Foundation/Foundation.h>
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
-{
-	self = [super init];
-	
-	view = cinderView;
-	mCurrentRef = nil;
-	
-	return self;
+@class AppImplMac;
+@class CinderViewMac;
+@class NSOpenGLView;
+@class NSOpenGLPixelFormat;
+
+@interface RendererImplGlMac : NSObject {
+	NSOpenGLView*					mView;
+	cinder::app::RendererGl*		mRenderer;		// equivalent of a weak_ptr; 'renderer' actually owns us
+	NSView*							mCinderView;
+	cinder::gl::ContextRef			mContext;
 }
 
-- (void)dealloc
-{
-	[super dealloc];
-}
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
+- (NSOpenGLView*)view;
 
-- (UIView*)view
-{
-	return view;
-}
+- (void)makeCurrentContext;
+- (CGLContextObj)getCglContext;
+- (CGLPixelFormatObj)getCglPixelFormat;
+- (NSOpenGLContext*)getNsOpenGlContext;
+- (void)flushBuffer;
+- (void)setFrameSize:(CGSize)newSize;
+- (void)defaultResize;
 
-- (UIImage*)getContents:(cinder::Area)area
-{
-	::UIGraphicsBeginImageContext( cinder::cocoa::createCgSize( area.getSize() ) );
-	CALayer *layer = view.layer;
-	[layer renderInContext:UIGraphicsGetCurrentContext()];
-	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
-	::UIGraphicsEndImageContext();
-	return viewImage;
-}
+- (BOOL)needsDrawRect;
 
-- (void)makeCurrentContext
-{
-	mCurrentRef = ::UIGraphicsGetCurrentContext();
-	if( ! mCurrentRef )
-		return;
-
-	::CGContextRetain( mCurrentRef );
-}
-
-- (void)flushBuffer
-{
-	if( mCurrentRef )
-		::CGContextRelease( mCurrentRef );
-}
-
-- (void)defaultResize
-{
-}
-
-- (CGContextRef)getCGContextRef
-{
-	return mCurrentRef;
-}
-
-- (BOOL)isFlipped
-{
-	return YES;
-}
++ (NSOpenGLPixelFormat*)defaultPixelFormat: (cinder::app::RendererGl::Options)rendererOptions;
 
 @end

@@ -26,7 +26,7 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_MAC )
-	#import "cinder/app/AppImplCocoaScreenSaver.h"
+	#import "cinder/app/AppImplMacScreenSaver.h"
 	#include "cinder/app/PlatformCocoa.h"
 	#include "cinder/ImageSourceFileQuartz.h"
 	#include "cinder/ImageTargetFileQuartz.h"	
@@ -121,7 +121,7 @@ fs::path AppScreenSaver::getAppPath() const
 #if defined( CINDER_COCOA )
 NSBundle* AppScreenSaver::getBundle() const
 {
-	return [NSBundle bundleForClass:[AppImplCocoaScreenSaver class]];
+	return [NSBundle bundleForClass:[AppImplMacScreenSaver class]];
 }
 #endif
 

@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -20,42 +21,29 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import <UIKit/UIKit.h>
-
 #import "cinder/app/AppBase.h"
-#import "cinder/app/RendererGl.h"
+#import <Cocoa/Cocoa.h>
 
-@interface AppImplCocoaTouchRendererGl : NSObject
+@class AppImplCocoaMac;
+@class CinderViewMac;
+
+@interface RendererImpl2dMacQuartz : NSObject
 {
-	cinder::app::RendererGl			*mRenderer; // equivalent of a weak_ptr; 'renderer' owns this // TODO: remove, this is unused
-	UIView							*mCinderView;
-	EAGLContext						*mContext;
-	cinder::gl::ContextRef			mCinderContext;
-
-	// The pixel dimensions of the CAEAGLLayer
-	GLint 			mBackingWidth, mBackingHeight;
-	
-	// The dimensions of the CAEAGLLayer in points
-	GLint			mPointsWidth, mPointsHeight;
-	
-	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
-	GLuint 			mViewFramebuffer, mViewRenderbuffer, mDepthRenderbuffer;
-	GLuint			mMsaaFramebuffer, mMsaaRenderbuffer;
-	GLint			mColorInternalFormat, mDepthInternalFormat;
-	BOOL			mUsingMsaa;
-    BOOL            mUsingStencil;
-	BOOL			mObjectTracking;
-	int				mMsaaSamples;
+	CGContextRef				currentRef;
+	NSView						*view;
+	NSGraphicsContext			*currentGraphicsContext;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView;
+- (NSView*)view;
 
-- (EAGLContext*)getEaglContext;
+- (NSBitmapImageRep*)getContents:(cinder::Area)area;
+
 - (void)makeCurrentContext;
 - (void)flushBuffer;
 - (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
 
-- (BOOL)needsDrawRect;
+- (CGContextRef)getCGContextRef;
 
 @end

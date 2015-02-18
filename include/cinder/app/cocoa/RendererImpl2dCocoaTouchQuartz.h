@@ -1,7 +1,6 @@
 /*
- Copyright (c) 2012, The Cinder Project, All rights reserved.
-
- This code is intended for use with the Cinder C++ library: http://libcinder.org
+ Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -22,35 +21,23 @@
 */
 
 #import "cinder/app/AppBase.h"
-#import "cinder/app/RendererGl.h"
+#import <UIKit/UIKit.h>
 
-#import <Foundation/Foundation.h>
-
-@class AppImplCocoa;
-@class CinderView;
-@class NSOpenGLView;
-@class NSOpenGLPixelFormat;
-
-@interface AppImplCocoaRendererGl : NSObject {
-	NSOpenGLView*					mView;
-	cinder::app::RendererGl*		mRenderer;		// equivalent of a weak_ptr; 'renderer' actually owns us
-	NSView*							mCinderView;
-	cinder::gl::ContextRef			mContext;
+@interface RendererImpl2dCocoaTouchQuartz : NSObject
+{
+	CGContextRef				mCurrentRef;
+	UIView						*view;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
-- (NSOpenGLView*)view;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView;
+- (UIView*)view;
+
+- (UIImage*)getContents:(cinder::Area)area;
 
 - (void)makeCurrentContext;
-- (CGLContextObj)getCglContext;
-- (CGLPixelFormatObj)getCglPixelFormat;
-- (NSOpenGLContext*)getNsOpenGlContext;
 - (void)flushBuffer;
-- (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
 
-- (BOOL)needsDrawRect;
-
-+ (NSOpenGLPixelFormat*)defaultPixelFormat: (cinder::app::RendererGl::Options)rendererOptions;
+- (CGContextRef)getCGContextRef;
 
 @end
