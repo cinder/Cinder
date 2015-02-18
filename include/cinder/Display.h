@@ -77,19 +77,10 @@ class Display {
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
 	}	
 
-#if defined( CINDER_MSW )
-	//! Finds a Display based on its HMONITOR. Returns the primary display if it's not found
-	static DisplayRef			findFromHmonitor( HMONITOR hMonitor );
-	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
-#endif
-
   protected:
 	Area		mArea;
 	int			mBitsPerPixel;
 	float		mContentScale;
-#if defined( CINDER_MSW )
-	HMONITOR			mMonitor;
-#endif	
 };
 
 } // namespace cinder

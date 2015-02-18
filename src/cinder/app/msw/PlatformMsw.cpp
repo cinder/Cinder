@@ -31,7 +31,7 @@ using namespace std;
 namespace cinder { namespace app {
 
 PlatformMsw::PlatformMsw()
-	: mDirectConsoleToCout( false )
+	: mDirectConsoleToCout( false ), mDisplaysInitialized( false )
 {
 }
 
@@ -96,3 +96,65 @@ ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
 }
 
 } } // namespace cinder::app
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// DisplayMsw
+namespace cinder {
+
+DisplayRef app::PlatformMsw::findDisplayFromHmonitor( HMONITOR hMonitor )
+{
+	const vector<DisplayRef>& displays = reinterpret_cast<PlatformMsw*>( get() )->getDisplays();
+	for( auto &display : displays )
+		if( std::dynamic_pointer_cast<DisplayMsw>(display)->mMonitor == hMonitor )
+			return display;
+
+	if( ! displays.empty() )
+		return displays[0];
+	else
+		return DisplayRef(); // failure
+}
+
+BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
+{
+	vector<DisplayRef> *displaysVector = reinterpret_cast<vector<DisplayRef>*>( lParam );
+	DisplayMsw *newDisplay = new DisplayMsw();
+	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
+	newDisplay->mMonitor = hMonitor;
+	newDisplay->mContentScale = 1.0f;
+
+	// retrieve the depth of the display
+	MONITORINFOEX mix;
+	memset( &mix, 0, sizeof( MONITORINFOEX ) );
+	mix.cbSize = sizeof( MONITORINFOEX );
+	HDC hMonitorDC = CreateDC( TEXT("DISPLAY"), mix.szDevice, NULL, NULL );
+	if( hMonitorDC ) {
+		newDisplay->mBitsPerPixel = ::GetDeviceCaps( hMonitorDC, BITSPIXEL );
+		::DeleteDC( hMonitorDC );
+	}
+	
+	displaysVector->push_back( DisplayRef( newDisplay ) );
+	return TRUE;
+}
+
+const std::vector<DisplayRef>& app::PlatformMsw::getDisplays( bool forceRefresh )
+{
+	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
+		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
+	
+		// ensure that the primary display is sDisplay[0]
+		const POINT ptZero = { 0, 0 };
+		HMONITOR primMon = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+	
+		size_t m;
+		for( m = 0; m < mDisplays.size(); ++m )
+			if( dynamic_pointer_cast<DisplayMsw>( mDisplays[m] )->mMonitor == primMon )
+				break;
+
+		if( ( m != 0 ) && ( m < mDisplays.size() ) )
+			std::swap( mDisplays[0], mDisplays[m] );
+	}
+
+	return mDisplays;
+}
+
+} // namespace cinder

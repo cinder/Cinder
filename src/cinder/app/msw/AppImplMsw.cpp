@@ -27,6 +27,7 @@
 #include "cinder/Unicode.h"
 #include "cinder/Display.h"
 #include "cinder/msw/CinderMsw.h"
+#include "cinder/app/msw/PlatformMsw.h"
 
 #include <Windows.h>
 #include <windowsx.h>
@@ -343,7 +344,7 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	mWindowWidth = rect.right - rect.left;
 	mWindowHeight = rect.bottom - rect.top;
 
-	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+	mDisplay = app::PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
 	mRenderer->setup( mWnd, mDC, sharedRenderer );
 
@@ -420,7 +421,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	}
 
 	// update display
-	mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+	mDisplay = PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
 	mRenderer->setup( mWnd, mDC, sharedRenderer );
 }
@@ -944,7 +945,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			impl->mWindowOffset = ivec2( LOSHORT(lParam), HISHORT(lParam) );
 			if( impl->getWindow() ) {
 				DisplayRef oldDisplay = impl->mDisplay;
-				impl->mDisplay = Display::findFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+				impl->mDisplay = PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 				// signal display change as appropriate
 				if( oldDisplay != impl->mDisplay ) {
 					impl->getWindow()->emitDisplayChange();

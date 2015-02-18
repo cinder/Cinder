@@ -31,10 +31,6 @@ using namespace std;
 #if defined( CINDER_COCOA_TOUCH )
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include <UIKit/UIKit.h>
-#elif defined( CINDER_MSW )
-	#include <Windows.h>
-	#undef min
-	#undef max
 #elif defined( CINDER_WINRT)
 	#include "cinder/WinRTUtils.h"
 	using namespace cinder::winrt;
@@ -101,58 +97,6 @@ void Display::enumerateDisplays()
 }
 #elif defined( CINDER_MSW )
 
-DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )
-{
-	const vector<DisplayRef>& displays = getDisplays();
-	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt )
-		if( (*displayIt)->mMonitor == hMonitor )
-			return *displayIt;
-
-	return getMainDisplay(); // failure
-}
-
-BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
-{
-	vector<DisplayRef > *displaysVector = reinterpret_cast<vector<DisplayRef >*>( lParam );
-	DisplayRef newDisplay( new Display );
-	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
-	newDisplay->mMonitor = hMonitor;
-	newDisplay->mContentScale = 1.0f;
-
-	// retrieve the depth of the display
-	MONITORINFOEX mix;
-	memset( &mix, 0, sizeof( MONITORINFOEX ) );
-	mix.cbSize = sizeof( MONITORINFOEX );
-	HDC hMonitorDC = CreateDC( TEXT("DISPLAY"), mix.szDevice, NULL, NULL );
-	if (hMonitorDC) {
-		newDisplay->mBitsPerPixel = ::GetDeviceCaps( hMonitorDC, BITSPIXEL );
-		::DeleteDC( hMonitorDC );
-	}
-	
-	displaysVector->push_back( newDisplay );
-	return TRUE;
-}
-
-void Display::enumerateDisplays()
-{
-	if( sDisplaysInitialized )
-		return;
-
-	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
-	
-	// ensure that the primary display is sDisplay[0]
-	const POINT ptZero = { 0, 0 };
-	HMONITOR primMon = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-	
-	size_t m;
-	for( m = 0; m < sDisplays.size(); ++m )
-		if( sDisplays[m]->mMonitor == primMon )
-			break;
-	if( ( m != 0 ) && ( m < sDisplays.size() ) )
-		std::swap( sDisplays[0], sDisplays[m] );
-	
-	sDisplaysInitialized = true;
-}
 #endif // defined( CINDER_MSW )
 
 ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const
