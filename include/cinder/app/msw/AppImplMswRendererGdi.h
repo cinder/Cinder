@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, The Cinder Project, All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -23,24 +23,40 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
+#include <windows.h>
+#undef min
+#undef max
 
-#if defined( CINDER_MAC )
-	#include "cinder/app/cocoa/AppBasicMac.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
-	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/cocoa/AppCocoaTouch.h"
-	namespace cinder { namespace app {
-		typedef AppCocoaTouch	App;
-	} }
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
-	#include "cinder/app/msw/AppBasicMsw.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
-	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#endif
+#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/Surface.h"
+
+namespace cinder { namespace app {
+
+class AppBase;
+
+class AppImplMswRendererGdi : public AppImplMswRenderer {
+ public:
+	 AppImplMswRendererGdi( bool doubleBuffer, bool paintEvents );
+
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	kill() {}
+	virtual void	defaultResize() const;
+	virtual void	swapBuffers() const;
+	virtual void	makeCurrentContext();
+	
+	virtual HDC		getDc() const { return ( mDoubleBuffer ) ? mDoubleBufferDc : mPaintDc; }
+	Surface8u		copyWindowContents( const Area &area );
+	
+ protected:
+	::HDC			mPaintDc;
+	::PAINTSTRUCT	mPaintStruct;
+	
+	bool			mDoubleBuffer;
+	bool 			mPaintEvents;
+
+	::HDC			mDoubleBufferDc;
+	::HBITMAP		mDoubleBufferBitmap, mDoubleBufferOldBitmap;
+	ivec2			mDoubleBufferBitmapSize;
+};
+
+} } // namespace cinder::app

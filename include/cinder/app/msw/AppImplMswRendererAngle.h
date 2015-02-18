@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, The Cinder Project, All rights reserved.
+ Copyright (c) 2014, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -23,24 +23,46 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
+#include "cinder/app/AppBase.h"
+#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "EGL/egl.h"
+#include "EGL/eglext.h"
+#include "EGL/eglplatform.h"
 
-#if defined( CINDER_MAC )
-	#include "cinder/app/cocoa/AppBasicMac.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
-	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/cocoa/AppCocoaTouch.h"
-	namespace cinder { namespace app {
-		typedef AppCocoaTouch	App;
-	} }
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
-	#include "cinder/app/msw/AppBasicMsw.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
-	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#endif
+namespace cinder { namespace gl {
+	class Context;
+	typedef std::shared_ptr<Context>	ContextRef;
+} }
+
+namespace cinder { namespace app {
+
+class AppImplMswRendererAngle : public AppImplMswRenderer {
+ public:
+	AppImplMswRendererAngle( class RendererGl *renderer );
+	
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
+	virtual void	prepareToggleFullScreen() override;
+	virtual void	finishToggleFullScreen() override;
+	virtual void	kill() override;
+	virtual void	defaultResize() const override;
+	virtual void	swapBuffers() const override;
+	virtual void	makeCurrentContext() override;
+
+ protected:
+	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
+	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
+	
+	class RendererGl	*mRenderer;
+	gl::ContextRef		mCinderContext;
+
+	EGLContext		mContext;
+	EGLDisplay		mDisplay;
+	EGLSurface		mSurface;
+
+	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
+	HGLRC		mRC, mPrevRC;
+	HDC			mDC;
+};
+
+} } // namespace cinder::app

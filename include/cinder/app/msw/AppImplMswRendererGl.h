@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, The Cinder Project, All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -23,24 +23,38 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
+#include "cinder/app/AppBase.h"
+#include "cinder/app/msw/AppImplMswRenderer.h"
 
-#if defined( CINDER_MAC )
-	#include "cinder/app/cocoa/AppBasicMac.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
-	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/cocoa/AppCocoaTouch.h"
-	namespace cinder { namespace app {
-		typedef AppCocoaTouch	App;
-	} }
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
-	#include "cinder/app/msw/AppBasicMsw.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
-	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#endif
+namespace cinder { namespace gl {
+	class Context;
+	typedef std::shared_ptr<Context>	ContextRef;
+} }
+
+namespace cinder { namespace app {
+
+class AppImplMswRendererGl : public AppImplMswRenderer {
+ public:
+	AppImplMswRendererGl( class RendererGl *aRenderer );
+	
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	prepareToggleFullScreen();
+	virtual void	finishToggleFullScreen();
+	virtual void	kill();
+	virtual void	defaultResize() const;
+	virtual void	swapBuffers() const;
+	virtual void	makeCurrentContext();
+
+	HDC				getDc() const { return mDC; }
+
+ protected:
+	class RendererGl	*mRenderer;
+	gl::ContextRef		mCinderContext;
+
+	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
+	HGLRC		mRC;
+	HDC			mDC;
+};
+
+} } // namespace cinder::app

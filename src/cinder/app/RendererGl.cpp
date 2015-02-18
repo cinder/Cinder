@@ -30,15 +30,15 @@
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		#import "cinder/app/AppImplCocoaRendererGl.h"
+		#import "cinder/app/cocoa/AppImplCocoaRendererGl.h"
 	#elif defined( CINDER_COCOA_TOUCH )
-		#import "cinder/app/AppImplCocoaTouchRendererGl.h"
+		#import "cinder/app/cocoa/AppImplCocoaTouchRendererGl.h"
 	#endif
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		#include "cinder/app/AppImplMswRendererAngle.h"
+		#include "cinder/app/msw/AppImplMswRendererAngle.h"
 	#else
-		#include "cinder/app/AppImplMswRendererGl.h"
+		#include "cinder/app/msw/AppImplMswRendererGl.h"
 	#endif
 #endif
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2015, The Cinder Project, All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -21,26 +21,69 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#import "cinder/app/cocoa/AppImplCocoaTouchRendererQuartz.h"
+#import <QuartzCore/QuartzCore.h>
+#include "cinder/cocoa/CinderCocoa.h"
 
-#include "cinder/Cinder.h"
+@implementation AppImplCocoaTouchRendererQuartz
 
-#if defined( CINDER_MAC )
-	#include "cinder/app/cocoa/AppBasicMac.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
-	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/cocoa/AppCocoaTouch.h"
-	namespace cinder { namespace app {
-		typedef AppCocoaTouch	App;
-	} }
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
-#elif defined( CINDER_MSW )
-	#include "cinder/app/msw/AppBasicMsw.h"
-	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
-	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
-#endif
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
+{
+	self = [super init];
+	
+	view = cinderView;
+	mCurrentRef = nil;
+	
+	return self;
+}
+
+- (void)dealloc
+{
+	[super dealloc];
+}
+
+- (UIView*)view
+{
+	return view;
+}
+
+- (UIImage*)getContents:(cinder::Area)area
+{
+	::UIGraphicsBeginImageContext( cinder::cocoa::createCgSize( area.getSize() ) );
+	CALayer *layer = view.layer;
+	[layer renderInContext:UIGraphicsGetCurrentContext()];
+	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
+	::UIGraphicsEndImageContext();
+	return viewImage;
+}
+
+- (void)makeCurrentContext
+{
+	mCurrentRef = ::UIGraphicsGetCurrentContext();
+	if( ! mCurrentRef )
+		return;
+
+	::CGContextRetain( mCurrentRef );
+}
+
+- (void)flushBuffer
+{
+	if( mCurrentRef )
+		::CGContextRelease( mCurrentRef );
+}
+
+- (void)defaultResize
+{
+}
+
+- (CGContextRef)getCGContextRef
+{
+	return mCurrentRef;
+}
+
+- (BOOL)isFlipped
+{
+	return YES;
+}
+
+@end

@@ -34,10 +34,10 @@
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
 		#import <Cocoa/Cocoa.h>
-		#import "cinder/app/AppImplCocoaRendererQuartz.h"
+		#import "cinder/app/cocoa/AppImplCocoaRendererQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/AppImplCocoaTouchRendererQuartz.h"		
+		#import "cinder/app/cocoa/AppImplCocoaTouchRendererQuartz.h"		
 	#endif
 
 #elif defined( CINDER_MSW )

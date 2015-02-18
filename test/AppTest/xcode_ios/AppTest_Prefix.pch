@@ -6,7 +6,7 @@
 #if defined( __cplusplus )
 	#include "cinder/Cinder.h"
 	
-	#include "cinder/app/AppCocoaTouch.h"
+	#include "cinder/app/App.h"
 	
 	#include "cinder/gl/gl.h"
 	
