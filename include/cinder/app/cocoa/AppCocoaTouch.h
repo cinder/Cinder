@@ -105,6 +105,7 @@ class AppCocoaTouch : public AppBase {
 	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
 	WindowRef		getWindow() const override;
+	WindowRef		getForegroundWindow() const	{ return getWindow(); }
 	size_t			getNumWindows() const override;
 	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
@@ -112,6 +113,15 @@ class AppCocoaTouch : public AppBase {
 	InterfaceOrientation	getOrientation() const;
 	//! Returns the current \t InterfaceOrientation for the active \t Window.
 	InterfaceOrientation	getWindowOrientation() const;
+
+	//! no-op, no cursor on this platform
+	void	hideCursor() override {}
+	//! no-op, no cursor on this platform
+	void	showCursor() override {}
+	//! no-op, cannot disable framerate on this platform
+	void	disableFrameRate() override {}
+	//! always false, cannot disable framerate on this platform
+	bool	isFrameRateEnabled() const override { return false; }
 
 	//! Enables the device's proximity sensor, which can return whether the device is close to the user or not. Use in conjunction with proximityIsClose() or getSignalProximitySensor()
 	void enableProximitySensor();
