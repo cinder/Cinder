@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/cocoa/AppBasicMac.h"
+#include "cinder/app/cocoa/AppMac.h"
 #include "cinder/app/cocoa/AppImplMac.h"
 #include "cinder/Log.h"
 
@@ -29,7 +29,7 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-AppBasicMac::AppBasicMac()
+AppMac::AppMac()
 	: AppBase()
 {
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
@@ -41,82 +41,82 @@ AppBasicMac::AppBasicMac()
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 }
 
-AppBasicMac::~AppBasicMac()
+AppMac::~AppMac()
 {
 	[mImpl release];
 }
 
-void AppBasicMac::launch( const char *title, int argc, char * const argv[] )
+void AppMac::launch( const char *title, int argc, char * const argv[] )
 {
 	[[NSApplication sharedApplication] run];
 }
 
-WindowRef AppBasicMac::createWindow( const Window::Format &format )
+WindowRef AppMac::createWindow( const Window::Format &format )
 {
 	return [mImpl createWindow:format];
 }
 
-void AppBasicMac::quit()
+void AppMac::quit()
 {
 	[mImpl quit];
 }
 
-float AppBasicMac::getFrameRate() const
+float AppMac::getFrameRate() const
 {
 	return [mImpl getFrameRate];
 }
 
-void AppBasicMac::setFrameRate( float frameRate )
+void AppMac::setFrameRate( float frameRate )
 {
 	[mImpl setFrameRate:frameRate];
 }
 
-void AppBasicMac::disableFrameRate()
+void AppMac::disableFrameRate()
 {
 	[mImpl disableFrameRate];
 }
 
-bool AppBasicMac::isFrameRateEnabled() const
+bool AppMac::isFrameRateEnabled() const
 {
 	return [mImpl isFrameRateEnabled];
 }
 
-fs::path AppBasicMac::getAppPath() const
+fs::path AppMac::getAppPath() const
 {
 	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
-WindowRef AppBasicMac::getWindow() const
+WindowRef AppMac::getWindow() const
 {
 	return [mImpl getWindow];
 }
 
-WindowRef AppBasicMac::getWindowIndex( size_t index ) const
+WindowRef AppMac::getWindowIndex( size_t index ) const
 {
 	return [mImpl getWindowIndex:index];
 }
 
-size_t AppBasicMac::getNumWindows() const
+size_t AppMac::getNumWindows() const
 {
 	return [mImpl getNumWindows];
 }
 
-WindowRef AppBasicMac::getForegroundWindow() const
+WindowRef AppMac::getForegroundWindow() const
 {
 	return [mImpl getForegroundWindow];
 }
 
-void AppBasicMac::hideCursor()
+void AppMac::hideCursor()
 {
 	[NSCursor hide];
 }
 
-void AppBasicMac::showCursor()
+void AppMac::showCursor()
 {
 	[NSCursor unhide];
 }
 
-ivec2 AppBasicMac::getMousePos() const
+ivec2 AppMac::getMousePos() const
 {
 	NSPoint loc = [NSEvent mouseLocation];
 	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );

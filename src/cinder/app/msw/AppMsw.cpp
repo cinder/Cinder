@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/msw/AppBasicMsw.h"
+#include "cinder/app/msw/AppMsw.h"
 #include "cinder/app/msw/AppImplMswBasic.h"
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/Unicode.h"

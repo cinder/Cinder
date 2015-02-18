@@ -27,7 +27,7 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "cinder/app/cocoa/AppBasicMac.h"
+#import "cinder/app/cocoa/AppMac.h"
 #import "cinder/app/cocoa/CinderViewMac.h"
 #import "cinder/Stream.h"
 #import "cinder/Display.h"
@@ -42,7 +42,7 @@
 @interface AppImplMac : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
 	NSTimer*						mAnimationTimer;
-	class cinder::app::AppBasicMac*	mApp;
+	class cinder::app::AppMac*	mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
@@ -55,7 +55,7 @@
 
 @property(retain, nonatomic) NSMutableArray *windows;
 
-- (AppImplMac *)init:(cinder::app::AppBasicMac *)app settings:(const cinder::app::AppBasicMac::Settings &)settings;
+- (AppImplMac *)init:(cinder::app::AppMac *)app settings:(const cinder::app::AppMac::Settings &)settings;
 - (void)setApplicationMenu:(NSString *)applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;

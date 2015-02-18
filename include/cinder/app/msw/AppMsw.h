@@ -23,22 +23,37 @@
 
 #pragma once
 
-#include "cinder/app/AppBase.h"
-
-#if defined( __OBJC__ )
-	@class AppImplMac;
-#else
-	class AppImplMac;
-#endif
+#include "cinder/app/AppBasic.h"
+#include "cinder/msw/CinderWindowsFwd.h"
 
 namespace cinder { namespace app {
 
-class AppBasicMac : public AppBase {
-  public:
-	typedef std::function<void ( Settings *settings )>	SettingsFn;
+class AppImplMswBasic;
 
-	AppBasicMac();
-	virtual ~AppBasicMac();
+class AppBasicMsw : public AppBasic {
+  public:
+	//! MSW-specific settings
+	class Settings : public AppBasic::Settings {
+	  public:
+		Settings() : mMswConsoleEnabled( false )				{}
+
+		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
+		void	setConsoleWindowEnabled( bool enable = true )	{ mMswConsoleEnabled = enable; }
+		//! Returns whether MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
+		bool	isConsoleWindowEnabled() const					{ return mMswConsoleEnabled; }
+
+	  private:
+		void	pushBackCommandLineArg( const std::string &arg );
+
+		bool	mMswConsoleEnabled;
+
+		friend AppBasicMsw;
+	};
+
+	typedef std::function<void( Settings *settings )>	SettingsFn;
+
+	AppBasicMsw();
+	virtual ~AppBasicMsw();
 
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
@@ -60,25 +75,28 @@ class AppBasicMac : public AppBase {
 	ivec2		getMousePos() const override;
 
 	//! \cond
-	// Called during application instanciation via CINDER_APP_BASIC_MAC macro
+	// Called from WinMain (in CINDER_APP_MSW macro)
 	template<typename AppT>
-	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	static void main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn = SettingsFn() );
+	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
+	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	//! \endcond
 
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	AppImplMac*	mImpl;
+	std::unique_ptr<AppImplMswBasic>	mImpl;
+	bool								mConsoleWindowEnabled;
 };
 
 template<typename AppT>
-void AppBasicMac::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+	AppBasicMsw::initialize( &settings, defaultRenderer, title ); // AppBasicMsw variant to parse args using msw-specific api
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -86,19 +104,18 @@ void AppBasicMac::main( const RendererRef &defaultRenderer, const char *title, i
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBase *app = new AppT;
-	#pragma unused( app )
+	AppBasic *app = new AppT;
 
-	AppBase::executeLaunch( title, argc, argv );
+	AppBase::executeLaunch( title, 0, nullptr );
 	AppBase::cleanupLaunch();
 }
 
-#define CINDER_APP_BASIC_MAC( APP, RENDERER, ... )										\
-int main( int argc, char * const argv[] )												\
-{																						\
-	cinder::app::RendererRef renderer( new RENDERER );									\
-	cinder::app::AppBasicMac::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
-	return 0;																			\
+#define CINDER_APP_MSW( APP, RENDERER, ... )													\
+int __stdcall WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )\
+{																									\
+	cinder::app::RendererRef renderer( new RENDERER );												\
+	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
+	return 0;																						\
 }
 
 } } // namespace cinder::app

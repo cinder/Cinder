@@ -28,7 +28,7 @@
 #undef max
 
 #include "cinder/app/msw/AppImplMsw.h"
-#include "cinder/app/msw/AppBasicMsw.h"
+#include "cinder/app/msw/AppMsw.h"
 #include "cinder/app/Window.h"
 #include "cinder/Display.h"
 

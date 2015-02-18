@@ -23,37 +23,22 @@
 
 #pragma once
 
-#include "cinder/app/AppBasic.h"
-#include "cinder/msw/CinderWindowsFwd.h"
+#include "cinder/app/AppBase.h"
+
+#if defined( __OBJC__ )
+	@class AppImplMac;
+#else
+	class AppImplMac;
+#endif
 
 namespace cinder { namespace app {
 
-class AppImplMswBasic;
-
-class AppBasicMsw : public AppBasic {
+class AppMac : public AppBase {
   public:
-	//! MSW-specific settings
-	class Settings : public AppBasic::Settings {
-	  public:
-		Settings() : mMswConsoleEnabled( false )				{}
+	typedef std::function<void ( Settings *settings )>	SettingsFn;
 
-		//! If enabled MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		void	setConsoleWindowEnabled( bool enable = true )	{ mMswConsoleEnabled = enable; }
-		//! Returns whether MSW apps will display a secondary window which captures all cout, cerr, cin and App::console() output. Default is \c false.
-		bool	isConsoleWindowEnabled() const					{ return mMswConsoleEnabled; }
-
-	  private:
-		void	pushBackCommandLineArg( const std::string &arg );
-
-		bool	mMswConsoleEnabled;
-
-		friend AppBasicMsw;
-	};
-
-	typedef std::function<void( Settings *settings )>	SettingsFn;
-
-	AppBasicMsw();
-	virtual ~AppBasicMsw();
+	AppMac();
+	virtual ~AppMac();
 
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
@@ -75,28 +60,25 @@ class AppBasicMsw : public AppBasic {
 	ivec2		getMousePos() const override;
 
 	//! \cond
-	// Called from WinMain (in CINDER_APP_BASIC_MSW macro)
+	// Called during application instanciation via CINDER_APP_MAC macro
 	template<typename AppT>
-	static void main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn = SettingsFn() );
-	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
-	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
+	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
 
   protected:
 	void	launch( const char *title, int argc, char * const argv[] ) override;
 
   private:
-	std::unique_ptr<AppImplMswBasic>	mImpl;
-	bool								mConsoleWindowEnabled;
+	AppImplMac*	mImpl;
 };
 
 template<typename AppT>
-void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
+void AppMac::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBasicMsw::initialize( &settings, defaultRenderer, title ); // AppBasicMsw variant to parse args using msw-specific api
+	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -104,18 +86,19 @@ void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, c
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBasic *app = new AppT;
+	AppBase *app = new AppT;
+	#pragma unused( app )
 
-	AppBase::executeLaunch( title, 0, nullptr );
+	AppBase::executeLaunch( title, argc, argv );
 	AppBase::cleanupLaunch();
 }
 
-#define CINDER_APP_BASIC_MSW( APP, RENDERER, ... )													\
-int __stdcall WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )\
-{																									\
-	cinder::app::RendererRef renderer( new RENDERER );												\
-	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
-	return 0;																						\
+#define CINDER_APP_MAC( APP, RENDERER, ... )										\
+int main( int argc, char * const argv[] )											\
+{																					\
+	cinder::app::RendererRef renderer( new RENDERER );								\
+	cinder::app::AppMac::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
+	return 0;																		\
 }
 
 } } // namespace cinder::app

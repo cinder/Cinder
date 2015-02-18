@@ -51,7 +51,7 @@ using namespace cinder::app;
 
 @synthesize windows = mWindows;
 
-- (AppImplMac *)init:(AppBasicMac *)app settings:(const AppBasicMac::Settings &)settings
+- (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
 {	
 	self = [super init];
 
