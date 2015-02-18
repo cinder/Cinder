@@ -102,12 +102,11 @@ class AppCocoaTouch : public AppBase {
 	//! Emits the signal used to notify when the virtual keyboard is about to animate off screen.
 	void								emitKeyboardWillHide();
 
-	WindowRef 		createWindow( const Window::Format &format = Window::Format() );
+	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
-	virtual WindowRef getWindow() const override;
-	virtual size_t getNumWindows() const override;
-	//! Gets a Window by index, in the range [0, getNumWindows()).
-	virtual app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
+	WindowRef		getWindow() const override;
+	size_t			getNumWindows() const override;
+	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
 	//! Returns the  \t InterfaceOrientation for the device \t Window.
 	InterfaceOrientation	getOrientation() const;

@@ -30,7 +30,7 @@ using namespace std;
 namespace cinder { namespace app {
 
 AppBasicMac::AppBasicMac()
-	: AppBasic()
+	: AppBase()
 {
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );

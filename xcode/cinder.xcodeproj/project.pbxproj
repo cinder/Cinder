@@ -583,7 +583,6 @@
 		00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
 		00B1337710FBBB8900AC7369 /* Shape2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B1337610FBBB8900AC7369 /* Shape2d.h */; };
 		00B1337910FBBBCC00AC7369 /* Shape2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B1337810FBBBCC00AC7369 /* Shape2d.cpp */; };
-		00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B4F3E60F53955000B75296 /* AppBasic.cpp */; };
 		00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
 		00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
 		00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
@@ -1317,8 +1316,6 @@
 		00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs.cpp; path = gl/EnvironmentEs.cpp; sourceTree = "<group>"; };
 		00B1337610FBBB8900AC7369 /* Shape2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape2d.h; sourceTree = "<group>"; };
 		00B1337810FBBBCC00AC7369 /* Shape2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2d.cpp; sourceTree = "<group>"; };
-		00B4F3E00F5394C500B75296 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppBasic.h; path = app/AppBasic.h; sourceTree = "<group>"; };
-		00B4F3E60F53955000B75296 /* AppBasic.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppBasic.cpp; path = app/AppBasic.cpp; sourceTree = "<group>"; };
 		00B729E2115DABD800CD71B9 /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timer.cpp; sourceTree = "<group>"; };
 		00B729E7115DAC2B00CD71B9 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
 		00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataTarget.cpp; sourceTree = "<group>"; };
@@ -1669,7 +1666,6 @@
 				118CA45C1A9428BE00841458 /* msw */,
 				002419CD0E8035D3004D34EB /* App.h */,
 				1181F7C31A7F8760001BBFA2 /* AppBase.h */,
-				00B4F3E00F5394C500B75296 /* AppBasic.h */,
 				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
 				0053819915A8CDF90019BA91 /* Event.h */,
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
@@ -1690,7 +1686,6 @@
 				118CA4071A9427F700841458 /* cocoa */,
 				118CA43C1A94280600841458 /* msw */,
 				1181F7C71A7F8792001BBFA2 /* AppBase.cpp */,
-				00B4F3E60F53955000B75296 /* AppBasic.cpp */,
 				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
 				007B09830E957B9A0052257E /* KeyEvent.cpp */,
 				1116CC4A1A5F154000023856 /* Platform.cpp */,
@@ -3624,7 +3619,6 @@
 				111A5FA7191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5EBD191F703D005C3166 /* lsp.c in Sources */,
 				006D705919942BF5008149E2 /* QuickTimeImplLegacy.cpp in Sources */,
-				00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */,
 				0003F49D1995DEF000647C8B /* LoadOGL.cpp in Sources */,
 				118CA41E1A9427F700841458 /* AppImplMac.mm in Sources */,
 				0003F3EA1992D64100647C8B /* EnvironmentCore.cpp in Sources */,

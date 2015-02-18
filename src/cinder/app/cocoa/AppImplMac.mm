@@ -313,7 +313,7 @@ using namespace cinder::app;
 
 - (NSApplicationTerminateReply)applicationShouldTerminate:(NSApplication *)application
 {
-	bool shouldQuit = mApp->privateShouldQuit();
+	bool shouldQuit = mApp->privateEmitShouldQuit();
 	return ( shouldQuit ) ? NSTerminateNow : NSTerminateCancel;
 }
 
@@ -333,7 +333,7 @@ using namespace cinder::app;
 {
 	// in certain scenarios self seems to have be deallocated inside terminate:
 	// so we call this here and then pass nil to terminate: instead
-	if( ! mApp->privateShouldQuit() )
+	if( ! mApp->privateEmitShouldQuit() )
 		return;
 
 	[NSApp terminate:nil];

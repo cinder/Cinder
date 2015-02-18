@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( __OBJC__ )
 	@class AppImplMac;
@@ -33,7 +33,7 @@
 
 namespace cinder { namespace app {
 
-class AppBasicMac : public AppBasic {
+class AppBasicMac : public AppBase {
   public:
 	typedef std::function<void ( Settings *settings )>	SettingsFn;
 
@@ -86,7 +86,7 @@ void AppBasicMac::main( const RendererRef &defaultRenderer, const char *title, i
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBasic *app = new AppT;
+	AppBase *app = new AppT;
 	#pragma unused( app )
 
 	AppBase::executeLaunch( title, argc, argv );
