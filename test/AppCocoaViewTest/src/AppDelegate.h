@@ -1,6 +1,6 @@
 #include "MyCinderApp.h"
 
-#include "cinder/app/CinderView.h"
+#include "cinder/app/cocoa/CinderView.h"
 
 #import <Cocoa/Cocoa.h>
 
