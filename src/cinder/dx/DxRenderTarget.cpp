@@ -29,7 +29,7 @@
 
 #include "cinder/dx/dx.h" // must be first
 #include "cinder/dx/DxRenderTarget.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 
 using namespace std;
 

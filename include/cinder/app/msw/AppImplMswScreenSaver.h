@@ -25,7 +25,7 @@
 
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/msw/AppImplMsw.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include <windows.h>
 #undef min
 #undef max

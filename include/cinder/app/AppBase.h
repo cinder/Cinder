@@ -52,6 +52,8 @@ class io_service;
 
 namespace cinder { namespace app {
 
+typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>				EventSignalShouldQuit;
+
 //! Base class that all apps derive from.
 class AppBase {
  public:
@@ -78,6 +80,10 @@ class AppBase {
 		bool	isWindowPosSpecified() const						{ return mDefaultWindowFormat.isPosSpecified(); }
 		//! Marks the window position setting as unspecified, effectively requesting the default
 		void	setWindowPosUnspecified()							{ mDefaultWindowFormat.setPosUnspecified(); }
+		//! Sets whether the app quits automatically when its last window is closed. Enabled by default.
+		void	setQuitOnLastWindowCloseEnabled( bool enable = true )	{ mQuitOnLastWindowClose = enable; }
+		//! Returns whether the app quits automatically when its last window is closed. Enabled by default.
+		bool	isQuitOnLastWindowCloseEnabled() const					{ return mQuitOnLastWindowClose; }
 
 		//! Returns whether the default window is fullscreen
 		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
@@ -167,6 +173,7 @@ class AppBase {
 		bool			mPowerManagementEnabled; // allow screensavers or power management to hide app. default: false
 		bool			mHighDensityDisplayEnabled;
 		bool			mMultiTouchEnabled;
+		bool			mQuitOnLastWindowClose;
 		bool			mShouldQuit; // defaults to false, facilitates early termination
 
 		friend AppBase;
@@ -232,14 +239,22 @@ class AppBase {
 	//! Returns the Display of the active Window
 	DisplayRef			getDisplay() const { return getWindow()->getDisplay(); }
 
+	//! Creates and returns a reference to a new Window, adhering to \a format.
+	virtual WindowRef	createWindow( const Window::Format &format = Window::Format() ) = 0;
 	//! Returns the the currently active Window. Throws ExcInvalidWindow if called with no active window.
 	virtual WindowRef	getWindow() const = 0;
+	//! Gets the foreground Window, which has keyboard and mouse focus
+	virtual WindowRef	getForegroundWindow() const = 0;
 	//! Returns the number of Windows the app has open
 	virtual size_t		getNumWindows() const = 0;
 	//! Gets a Window by index, in the range [0, getNumWindows()). Throw ExcInvalidWindow if \a index is out of bounds.
 	virtual WindowRef	getWindowIndex( size_t index ) const = 0;
 	//! Returns the current location of the mouse in screen coordinates measured in points. Can be called outside the normal event loop.
 	virtual ivec2		getMousePos() const = 0;
+	//! Hides the mouse cursor
+	virtual void		hideCursor() = 0;
+	//! Shows the mouse cursor
+	virtual void		showCursor() = 0;
 
 	//! a value of true allows screensavers or the system's power management to hide the app. Default value is \c false on desktop, and \c true on mobile
 	virtual void	enablePowerManagement( bool powerManagement = true ) { mPowerManagement = powerManagement; }
@@ -282,6 +297,10 @@ class AppBase {
 	virtual float		getFrameRate() const = 0;
 	//! Sets the maximum frame-rate the App will attempt to maintain.
 	virtual void		setFrameRate( float frameRate ) = 0;
+	//! Disables frameRate limiting.
+	virtual void		disableFrameRate() = 0;
+	//! Returns whether frameRate limiting is enabled.
+	virtual bool		isFrameRateEnabled() const = 0;
 	//! Returns the average frame-rate attained by the App as measured in frames-per-second
 	float				getAverageFps() const { return mAverageFps; }
 	//! Returns the sampling rate in seconds for measuring the average frame-per-second as returned by getAverageFps()
@@ -363,13 +382,14 @@ class AppBase {
 	/** \return a copy of the Area \a area (measured in pixels) from the current window's contents as a Surface8u **/
 	Surface	copyWindowSurface( const Area &area );
 	//! Restores the current rendering context to be the App's window or the screen in full-screen mode. Generally this is only necessary if the app has displayed a dialog box or some other external window.
-	virtual void	restoreWindowContext()	{}
+	virtual void	restoreWindowContext();
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
 	virtual void	privateSetup__();
 	virtual void	privateUpdate__();
+	bool			privateEmitShouldQuit()		{ return mSignalShouldQuit.emit(); }
 	//! \endcond
 
 	virtual bool		receivesEvents() const { return true; }
@@ -404,6 +424,7 @@ class AppBase {
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
 	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+	EventSignalShouldQuit		mSignalShouldQuit;
 
 	std::shared_ptr<asio::io_service>	mIo;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class

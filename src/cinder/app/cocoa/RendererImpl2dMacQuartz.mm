@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/cocoa/AppImplCocoaRendererQuartz.h"
+#import "cinder/app/cocoa/RendererImpl2dMacQuartz.h"
 
 
 // This is only here so that we can override rightMouseDown
@@ -40,7 +40,7 @@
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-@implementation AppImplCocoaRendererQuartz
+@implementation RendererImpl2dMacQuartz
 
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView
 {

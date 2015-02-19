@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014, The Cinder Project, All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -23,46 +23,40 @@
 
 #pragma once
 
-#include "cinder/app/AppBase.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
-#include "EGL/egl.h"
-#include "EGL/eglext.h"
-#include "EGL/eglplatform.h"
+#include <windows.h>
+#undef min
+#undef max
 
-namespace cinder { namespace gl {
-	class Context;
-	typedef std::shared_ptr<Context>	ContextRef;
-} }
+#include "cinder/app/msw/RendererImplMsw.h"
+#include "cinder/Surface.h"
 
 namespace cinder { namespace app {
 
-class AppImplMswRendererAngle : public AppImplMswRenderer {
+class AppBase;
+
+class RendererImpl2dGdi : public RendererImplMsw {
  public:
-	AppImplMswRendererAngle( class RendererGl *renderer );
-	
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
-	virtual void	prepareToggleFullScreen() override;
-	virtual void	finishToggleFullScreen() override;
-	virtual void	kill() override;
-	virtual void	defaultResize() const override;
-	virtual void	swapBuffers() const override;
-	virtual void	makeCurrentContext() override;
+	 RendererImpl2dGdi( bool doubleBuffer, bool paintEvents );
 
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	kill() {}
+	virtual void	defaultResize() const;
+	virtual void	swapBuffers() const;
+	virtual void	makeCurrentContext();
+	
+	virtual HDC		getDc() const { return ( mDoubleBuffer ) ? mDoubleBufferDc : mPaintDc; }
+	Surface8u		copyWindowContents( const Area &area );
+	
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
-	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
+	::HDC			mPaintDc;
+	::PAINTSTRUCT	mPaintStruct;
 	
-	class RendererGl	*mRenderer;
-	gl::ContextRef		mCinderContext;
+	bool			mDoubleBuffer;
+	bool 			mPaintEvents;
 
-	EGLContext		mContext;
-	EGLDisplay		mDisplay;
-	EGLSurface		mSurface;
-
-	bool		mWasFullScreen;
-	bool		mWasVerticalSynced;
-	HGLRC		mRC, mPrevRC;
-	HDC			mDC;
+	::HDC			mDoubleBufferDc;
+	::HBITMAP		mDoubleBufferBitmap, mDoubleBufferOldBitmap;
+	ivec2			mDoubleBufferBitmapSize;
 };
 
 } } // namespace cinder::app

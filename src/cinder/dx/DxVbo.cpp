@@ -28,7 +28,7 @@
 
 
 #include "cinder/dx/DxVbo.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 #include <sstream>
 
 namespace Shaders

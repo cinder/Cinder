@@ -27,7 +27,7 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 #include "cinder/app/msw/WinRTApp.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/msw/AppImplWinRTBasic.h"
 #include <wrl/client.h>
 #include <agile.h>
@@ -136,7 +136,7 @@ void WinRTApp::Load(Platform::String^ entryPoint)
 void WinRTApp::Run()
 {
 	// call Cinder runReady and pass our CoreWindow to it.
-	cinder::app::AppBasic* app = cinder::app::AppBasic::get();
+	auto app = cinder::app::AppBase::get();
 	mApp = app->getImpl();
 	mApp->runReady(CoreWindow::GetForCurrentThread());
 

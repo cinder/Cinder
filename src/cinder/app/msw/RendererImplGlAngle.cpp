@@ -23,7 +23,7 @@
 
 #if defined( CINDER_GL_ANGLE )
 
-#include "cinder/app/msw/AppImplMswRendererAngle.h"
+#include "cinder/app/msw/RendererImplGlAngle.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/app/AppBase.h"
@@ -44,14 +44,14 @@ namespace cinder { namespace app {
 void checkGlStatus();
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// AppImplMswRendererAngle
-AppImplMswRendererAngle::AppImplMswRendererAngle( RendererGl *renderer )
+// RendererImplGlAngle
+RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 	: mRenderer( renderer )
 {
 	
 }
 
-bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
+bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	
@@ -139,21 +139,21 @@ bool AppImplMswRendererAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRe
 	return true;
 }
 
-void AppImplMswRendererAngle::kill()
+void RendererImplGlAngle::kill()
 {
 }
 
-void AppImplMswRendererAngle::prepareToggleFullScreen()
+void RendererImplGlAngle::prepareToggleFullScreen()
 {
 //	mImpl->prepareToggleFullScreen();
 }
 
-void AppImplMswRendererAngle::finishToggleFullScreen()
+void RendererImplGlAngle::finishToggleFullScreen()
 {
 //	mImpl->finishToggleFullScreen();
 }
 
-void AppImplMswRendererAngle::defaultResize() const
+void RendererImplGlAngle::defaultResize() const
 {
 	checkGlStatus();
 
@@ -166,7 +166,7 @@ void AppImplMswRendererAngle::defaultResize() const
 	gl::setMatricesWindow( width, height );
 }
 
-void AppImplMswRendererAngle::swapBuffers() const
+void RendererImplGlAngle::swapBuffers() const
 {
 	auto status = ::eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	assert( status );
@@ -174,7 +174,7 @@ void AppImplMswRendererAngle::swapBuffers() const
 	assert( result );
 }
 
-void AppImplMswRendererAngle::makeCurrentContext()
+void RendererImplGlAngle::makeCurrentContext()
 {
 	mCinderContext->makeCurrent();
 }

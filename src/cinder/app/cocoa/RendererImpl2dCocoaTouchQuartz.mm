@@ -1,6 +1,5 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
- Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -22,39 +21,69 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppBasic.h"
-#include "cinder/app/Renderer.h"
+#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"
+#import <QuartzCore/QuartzCore.h>
+#include "cinder/cocoa/CinderCocoa.h"
 
-namespace cinder { namespace app {
+@implementation RendererImpl2dCocoaTouchQuartz
 
-// Global singleton
-AppBasic*	AppBasic::sBasicInstance = nullptr;
-
-AppBasic::AppBasic()
-	: AppBase()
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
 {
-	sBasicInstance = this;
+	self = [super init];
+	
+	view = cinderView;
+	mCurrentRef = nil;
+	
+	return self;
 }
 
-AppBasic::~AppBasic()
+- (void)dealloc
+{
+	[super dealloc];
+}
+
+- (UIView*)view
+{
+	return view;
+}
+
+- (UIImage*)getContents:(cinder::Area)area
+{
+	::UIGraphicsBeginImageContext( cinder::cocoa::createCgSize( area.getSize() ) );
+	CALayer *layer = view.layer;
+	[layer renderInContext:UIGraphicsGetCurrentContext()];
+	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
+	::UIGraphicsEndImageContext();
+	return viewImage;
+}
+
+- (void)makeCurrentContext
+{
+	mCurrentRef = ::UIGraphicsGetCurrentContext();
+	if( ! mCurrentRef )
+		return;
+
+	::CGContextRetain( mCurrentRef );
+}
+
+- (void)flushBuffer
+{
+	if( mCurrentRef )
+		::CGContextRelease( mCurrentRef );
+}
+
+- (void)defaultResize
 {
 }
 
-void AppBasic::restoreWindowContext()
+- (CGContextRef)getCGContextRef
 {
-	getWindow()->getRenderer()->makeCurrentContext();
+	return mCurrentRef;
 }
 
-bool AppBasic::privateShouldQuit()
+- (BOOL)isFlipped
 {
-	return mSignalShouldQuit.emit();
+	return YES;
 }
 
-//////////////////////////////////////////////////////////////////////////////////////////////
-// AppBasic::Settings
-AppBasic::Settings::Settings()
-	: AppBase::Settings(), mQuitOnLastWindowClose( true )
-{
-}
-
-} } // namespace cinder::app
+@end

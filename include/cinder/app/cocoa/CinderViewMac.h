@@ -51,7 +51,7 @@
 - (cinder::app::WindowRef)getWindowRef;
 @end
 
-@interface CinderView : NSView {
+@interface CinderViewMac : NSView {
   @private
 	BOOL						mFullScreen;
 	BOOL						mFullScreenModeKiosk;
@@ -72,7 +72,7 @@
 @property (readwrite) BOOL readyToDraw;
 @property (readwrite) BOOL receivesEvents;
 
-- (CinderView *)initWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
+- (CinderViewMac *)initWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer
 			appReceivesEvents:(BOOL)appReceivesEvents highDensityDisplay:(BOOL)highDensityDisplay enableMultiTouch:(BOOL)enableMultiTouch;
 - (void)setupRendererWithFrame:(NSRect)frame renderer:(cinder::app::RendererRef)renderer sharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 

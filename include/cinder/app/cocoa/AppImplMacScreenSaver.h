@@ -27,14 +27,14 @@
 #import <ScreenSaver/ScreenSaver.h>
 
 #include "cinder/app/AppScreenSaver.h"
-#import "cinder/app/CinderView.h"
+#import "cinder/app/cocoa/CinderViewMac.h"
 #import "cinder/app/Window.h"
 
 #include <string>
 
 @class WindowImplCocoaScreenSaver;
 
-@interface AppImplCocoaScreenSaver : NSObject {
+@interface AppImplMacScreenSaver : NSObject {
   @public
 	cinder::app::AppScreenSaver					*mApp;
 	std::list<WindowImplCocoaScreenSaver*>		mWindows;
@@ -44,7 +44,7 @@
 	BOOL										mSetupCalled;
 }
 
-- (AppImplCocoaScreenSaver*)init;
+- (AppImplMacScreenSaver*)init;
 - (void)addWindow:(WindowImplCocoaScreenSaver*)windowImpl;
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)sharedRenderer;
 - (BOOL)isPreview;
@@ -67,7 +67,7 @@
 
 @interface WindowImplCocoaScreenSaver : ScreenSaverView<WindowImplCocoa,CinderViewDelegate> {
   @public
-	CinderView							*mCinderView;	
+	CinderViewMac						*mCinderView;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 

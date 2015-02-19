@@ -24,24 +24,24 @@
 #import <Cocoa/Cocoa.h>
 
 #include "cinder/app/cocoa/AppCocoaView.h"
-#include "cinder/app/cocoa/CinderView.h"
+#include "cinder/app/cocoa/CinderViewMac.h"
 #include "cinder/Log.h"
 
 using namespace std;
 using namespace cinder;
 using namespace cinder::app;
 
-@interface WindowImplCocoaView : NSObject<CinderViewDelegate,WindowImplCocoa> {
+@interface WindowImplCocoaView : NSObject<CinderViewDelegate, WindowImplCocoa> {
   @public
-	AppImplCocoaView					*mAppImpl;
-	CinderView							*mCinderView;
-	cinder::app::WindowRef				mWindowRef;
-	cinder::DisplayRef					mDisplay;
-	cinder::ivec2						mSize, mPos;
-	bool								mBorderless, mAlwaysOnTop, mIsHidden;
+	AppImplCocoaView*		mAppImpl;
+	CinderViewMac*			mCinderView;
+	cinder::app::WindowRef	mWindowRef;
+	cinder::DisplayRef		mDisplay;
+	cinder::ivec2			mSize, mPos;
+	bool					mBorderless, mAlwaysOnTop, mIsHidden;
 }
 
-- (WindowImplCocoaView*)init:(CinderView*)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView*)appImpl;
+- (WindowImplCocoaView *)init:(CinderViewMac *)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView *)appImpl;
 - (void)dealloc;
 - (bool)isFullScreen;
 - (void)setFullScreen:(bool)fullScreen options:(const cinder::app::FullScreenOptions *)options;
@@ -95,7 +95,7 @@ using namespace cinder::app;
 
 - (AppImplCocoaView *)init:(cinder::app::AppCocoaView *)app settings:(const AppCocoaView::Settings &)settings defaultRenderer:(cinder::app::RendererRef)defaultRenderer;
 - (void)dealloc;
-- (WindowImplCocoaView *)setupCinderView:(CinderView*)cinderView renderer:(cinder::app::RendererRef)renderer;
+- (WindowImplCocoaView *)setupCinderView:(CinderViewMac *)cinderView renderer:(cinder::app::RendererRef)renderer;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
 
@@ -330,12 +330,12 @@ using namespace cinder::app;
 		return cinder::app::RendererRef();
 }
 
-- (void*)getNative
+- (void *)getNative
 {
 	return mCinderView;
 }
 
-- (WindowImplCocoaView*)init:(CinderView*)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView*)appImpl
+- (WindowImplCocoaView *)init:(CinderViewMac *)cinderView format:(cinder::app::Window::Format)winFormat appImpl:(AppImplCocoaView *)appImpl
 {
 	self = [super init];
 
@@ -406,7 +406,7 @@ using namespace cinder::app;
 	return cinder::app::RendererRef();
 }
 
-- (WindowImplCocoaView*)setupCinderView:(CinderView*)cinderView renderer:(cinder::app::RendererRef)renderer
+- (WindowImplCocoaView *)setupCinderView:(CinderViewMac *)cinderView renderer:(cinder::app::RendererRef)renderer
 {
 	cinder::app::Window::Format format( renderer );
 	//WindowImplCocoaView*)init:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaView*)appImpl;
@@ -538,7 +538,7 @@ AppCocoaView::~AppCocoaView()
 	mImpl = nil;
 }
 
-void AppCocoaView::setupCinderView( CinderView *cinderView )
+void AppCocoaView::setupCinderView( CinderViewMac *cinderView )
 {
 	[mImpl setupCinderView:cinderView renderer:getDefaultRenderer()];
 }
@@ -613,6 +613,16 @@ ivec2 AppCocoaView::getMousePos() const
 {
 	NSPoint loc = [NSEvent mouseLocation];
 	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
+}
+
+void AppCocoaView::hideCursor()
+{
+	[NSCursor hide];
+}
+
+void AppCocoaView::showCursor()
+{
+	[NSCursor unhide];
 }
 
 } } // namespace cinder::app

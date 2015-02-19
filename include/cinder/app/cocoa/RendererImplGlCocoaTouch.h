@@ -1,7 +1,6 @@
 /*
- Copyright (c) 2012, The Cinder Project, All rights reserved.
-
- This code is intended for use with the Cinder C++ library: http://libcinder.org
+ Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -21,36 +20,42 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#import <UIKit/UIKit.h>
+
 #import "cinder/app/AppBase.h"
 #import "cinder/app/RendererGl.h"
 
-#import <Foundation/Foundation.h>
+@interface RendererImplGlCocoaTouch : NSObject
+{
+	cinder::app::RendererGl			*mRenderer; // equivalent of a weak_ptr; 'renderer' owns this // TODO: remove, this is unused
+	UIView							*mCinderView;
+	EAGLContext						*mContext;
+	cinder::gl::ContextRef			mCinderContext;
 
-@class AppImplCocoa;
-@class CinderView;
-@class NSOpenGLView;
-@class NSOpenGLPixelFormat;
-
-@interface AppImplCocoaRendererGl : NSObject {
-	NSOpenGLView*					mView;
-	cinder::app::RendererGl*		mRenderer;		// equivalent of a weak_ptr; 'renderer' actually owns us
-	NSView*							mCinderView;
-	cinder::gl::ContextRef			mContext;
+	// The pixel dimensions of the CAEAGLLayer
+	GLint 			mBackingWidth, mBackingHeight;
+	
+	// The dimensions of the CAEAGLLayer in points
+	GLint			mPointsWidth, mPointsHeight;
+	
+	// The OpenGL names for the framebuffer and renderbuffer used to render to this view
+	GLuint 			mViewFramebuffer, mViewRenderbuffer, mDepthRenderbuffer;
+	GLuint			mMsaaFramebuffer, mMsaaRenderbuffer;
+	GLint			mColorInternalFormat, mDepthInternalFormat;
+	BOOL			mUsingMsaa;
+    BOOL            mUsingStencil;
+	BOOL			mObjectTracking;
+	int				mMsaaSamples;
 }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
-- (NSOpenGLView*)view;
+- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
 
+- (EAGLContext*)getEaglContext;
 - (void)makeCurrentContext;
-- (CGLContextObj)getCglContext;
-- (CGLPixelFormatObj)getCglPixelFormat;
-- (NSOpenGLContext*)getNsOpenGlContext;
 - (void)flushBuffer;
 - (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
 
 - (BOOL)needsDrawRect;
-
-+ (NSOpenGLPixelFormat*)defaultPixelFormat: (cinder::app::RendererGl::Options)rendererOptions;
 
 @end

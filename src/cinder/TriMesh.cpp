@@ -1,5 +1,4 @@
 #include "cinder/TriMesh.h"
-#include "cinder/app/AppBasic.h"
 
 using std::vector;
 

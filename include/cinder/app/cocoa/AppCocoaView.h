@@ -27,10 +27,10 @@
 
 #if defined( __OBJC__ )
 	@class AppImplCocoaView;
-	@class CinderView;
+	@class CinderViewMac;
 #else
 	class AppImplCocoaView;
-	class CinderView;
+	class CinderViewMac;
 #endif
 
 namespace cinder { namespace app {
@@ -43,7 +43,7 @@ class AppCocoaView : public AppBase {
 		
 	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr, 0, nullptr ); }
 
-	virtual void	setupCinderView( CinderView *cinderView );
+	virtual void	setupCinderView( CinderViewMac *cinderView );
 	virtual void	launch( const char *title = 0, int argc = 0, char * const argv[] = 0 );
 
 	virtual void	quit() override;
@@ -62,6 +62,13 @@ class AppCocoaView : public AppBase {
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;
 	ivec2		getMousePos() const override;
+
+	//! \note no-op and returns an empty WindowRef, user is expected to create new windows using NSWindow API directly
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override	{ return WindowRef(); }
+	WindowRef	getForegroundWindow() const override	{ return getWindow(); }
+
+	void		hideCursor() override;
+	void		showCursor() override;
 
   protected:
 	AppImplCocoaView	*mImpl;

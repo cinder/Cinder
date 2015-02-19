@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/msw/AppBasicMsw.h"
+#include "cinder/app/msw/AppMsw.h"
 #include "cinder/app/msw/AppImplMswBasic.h"
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/Unicode.h"
@@ -31,12 +31,12 @@ using namespace std;
 
 namespace cinder { namespace app {
 
-void AppBasicMsw::Settings::pushBackCommandLineArg( const std::string &arg )
+void AppMsw::Settings::pushBackCommandLineArg( const std::string &arg )
 {
 	mCommandLineArgs.push_back( arg );
 }
 
-AppBasicMsw::AppBasicMsw()
+AppMsw::AppMsw()
 {
 	sInstance = this;
 
@@ -51,12 +51,12 @@ AppBasicMsw::AppBasicMsw()
 	mImpl.reset( new AppImplMswBasic( this, *settings ) );
 }
 
-AppBasicMsw::~AppBasicMsw()
+AppMsw::~AppMsw()
 {
 }
 
 // static
-void AppBasicMsw::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
+void AppMsw::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {
 	AppBase::initialize( settings, defaultRenderer, title, 0, nullptr );
 
@@ -74,7 +74,7 @@ void AppBasicMsw::initialize( Settings *settings, const RendererRef &defaultRend
 	::LocalFree( szArglist );
 }
 
-void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
+void AppMsw::launch( const char *title, int argc, char * const argv[] )
 {
 	// allocate and redirect the console if requested
 	if( mConsoleWindowEnabled ) {
@@ -93,72 +93,72 @@ void AppBasicMsw::launch( const char *title, int argc, char * const argv[] )
 	mImpl->run();
 }
 
-WindowRef AppBasicMsw::createWindow( const Window::Format &format )
+WindowRef AppMsw::createWindow( const Window::Format &format )
 {
 	return mImpl->createWindow( format );
 }
 
-void AppBasicMsw::quit()
+void AppMsw::quit()
 {
 	mImpl->quit();
 }
 
-float AppBasicMsw::getFrameRate() const
+float AppMsw::getFrameRate() const
 {
 	return mImpl->getFrameRate();
 }
 
-void AppBasicMsw::setFrameRate( float frameRate )
+void AppMsw::setFrameRate( float frameRate )
 {
 	mImpl->setFrameRate( frameRate );
 }
 
-void AppBasicMsw::disableFrameRate()
+void AppMsw::disableFrameRate()
 {
 	mImpl->disableFrameRate();
 }
 
-bool AppBasicMsw::isFrameRateEnabled() const
+bool AppMsw::isFrameRateEnabled() const
 {
 	return mImpl->isFrameRateEnabled();
 }
 
-fs::path AppBasicMsw::getAppPath() const
+fs::path AppMsw::getAppPath() const
 {
 	return AppImplMsw::getAppPath();
 }
 
-WindowRef AppBasicMsw::getWindow() const
+WindowRef AppMsw::getWindow() const
 {
 	return mImpl->getWindow();
 }
 
-WindowRef AppBasicMsw::getWindowIndex( size_t index ) const
+WindowRef AppMsw::getWindowIndex( size_t index ) const
 {
 	return mImpl->getWindowIndex( index );
 }
 
-size_t AppBasicMsw::getNumWindows() const
+size_t AppMsw::getNumWindows() const
 {
 	return mImpl->getNumWindows();
 }
 
-WindowRef AppBasicMsw::getForegroundWindow() const
+WindowRef AppMsw::getForegroundWindow() const
 {
 	return mImpl->getForegroundWindow();
 }
 
-void AppBasicMsw::hideCursor()
+void AppMsw::hideCursor()
 {
 	AppImplMsw::hideCursor();
 }
 
-void AppBasicMsw::showCursor()
+void AppMsw::showCursor()
 {
 	AppImplMsw::showCursor();
 }
 
-ivec2 AppBasicMsw::getMousePos() const
+ivec2 AppMsw::getMousePos() const
 {
 	POINT point;
 	::GetCursorPos( &point );

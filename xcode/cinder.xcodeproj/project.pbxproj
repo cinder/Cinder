@@ -583,7 +583,6 @@
 		00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */; };
 		00B1337710FBBB8900AC7369 /* Shape2d.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B1337610FBBB8900AC7369 /* Shape2d.h */; };
 		00B1337910FBBBCC00AC7369 /* Shape2d.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B1337810FBBBCC00AC7369 /* Shape2d.cpp */; };
-		00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B4F3E60F53955000B75296 /* AppBasic.cpp */; };
 		00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
 		00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
 		00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B729E2115DABD800CD71B9 /* Timer.cpp */; };
@@ -996,20 +995,20 @@
 		1181F7C81A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
 		1181F7C91A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
 		1181F7CA1A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
-		118CA4151A9427F700841458 /* AppBasicMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4081A9427F700841458 /* AppBasicMac.cpp */; };
+		118CA4151A9427F700841458 /* AppMac.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4081A9427F700841458 /* AppMac.cpp */; };
 		118CA4191A9427F700841458 /* AppCocoaTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4091A9427F700841458 /* AppCocoaTouch.cpp */; };
 		118CA41A1A9427F700841458 /* AppCocoaTouch.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4091A9427F700841458 /* AppCocoaTouch.cpp */; };
 		118CA41B1A9427F700841458 /* AppCocoaView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40A1A9427F700841458 /* AppCocoaView.mm */; };
-		118CA41E1A9427F700841458 /* AppImplCocoaBasic.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40B1A9427F700841458 /* AppImplCocoaBasic.mm */; };
-		118CA4211A9427F700841458 /* AppImplCocoaRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40C1A9427F700841458 /* AppImplCocoaRendererGl.mm */; };
-		118CA4241A9427F700841458 /* AppImplCocoaRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40D1A9427F700841458 /* AppImplCocoaRendererQuartz.mm */; };
+		118CA41E1A9427F700841458 /* AppImplMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40B1A9427F700841458 /* AppImplMac.mm */; };
+		118CA4211A9427F700841458 /* RendererImplGlMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40C1A9427F700841458 /* RendererImplGlMac.mm */; };
+		118CA4241A9427F700841458 /* RendererImpl2dMacQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40D1A9427F700841458 /* RendererImpl2dMacQuartz.mm */; };
 		118CA42B1A9427F700841458 /* AppImplCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40F1A9427F700841458 /* AppImplCocoaTouch.mm */; };
 		118CA42C1A9427F700841458 /* AppImplCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA40F1A9427F700841458 /* AppImplCocoaTouch.mm */; };
-		118CA42E1A9427F700841458 /* AppImplCocoaTouchRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4101A9427F700841458 /* AppImplCocoaTouchRendererGl.mm */; };
-		118CA42F1A9427F700841458 /* AppImplCocoaTouchRendererGl.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4101A9427F700841458 /* AppImplCocoaTouchRendererGl.mm */; };
-		118CA4311A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4111A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm */; };
-		118CA4321A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4111A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm */; };
-		118CA4331A9427F700841458 /* CinderView.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4121A9427F700841458 /* CinderView.mm */; };
+		118CA42E1A9427F700841458 /* RendererImplGlCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4101A9427F700841458 /* RendererImplGlCocoaTouch.mm */; };
+		118CA42F1A9427F700841458 /* RendererImplGlCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4101A9427F700841458 /* RendererImplGlCocoaTouch.mm */; };
+		118CA4311A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4111A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm */; };
+		118CA4321A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4111A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm */; };
+		118CA4331A9427F700841458 /* CinderViewMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4121A9427F700841458 /* CinderViewMac.mm */; };
 		118CA4371A9427F700841458 /* CinderViewCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4131A9427F700841458 /* CinderViewCocoaTouch.mm */; };
 		118CA4381A9427F700841458 /* CinderViewCocoaTouch.mm in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4131A9427F700841458 /* CinderViewCocoaTouch.mm */; };
 		118CA4391A9427F700841458 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4141A9427F700841458 /* PlatformCocoa.cpp */; };
@@ -1317,8 +1316,6 @@
 		00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentEs.cpp; path = gl/EnvironmentEs.cpp; sourceTree = "<group>"; };
 		00B1337610FBBB8900AC7369 /* Shape2d.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Shape2d.h; sourceTree = "<group>"; };
 		00B1337810FBBBCC00AC7369 /* Shape2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2d.cpp; sourceTree = "<group>"; };
-		00B4F3E00F5394C500B75296 /* AppBasic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppBasic.h; path = app/AppBasic.h; sourceTree = "<group>"; };
-		00B4F3E60F53955000B75296 /* AppBasic.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = AppBasic.cpp; path = app/AppBasic.cpp; sourceTree = "<group>"; };
 		00B729E2115DABD800CD71B9 /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timer.cpp; sourceTree = "<group>"; };
 		00B729E7115DAC2B00CD71B9 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
 		00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataTarget.cpp; sourceTree = "<group>"; };
@@ -1517,57 +1514,57 @@
 		1168DB441A8D90C900660ED3 /* Signals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Signals.h; sourceTree = "<group>"; };
 		1181F7C31A7F8760001BBFA2 /* AppBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBase.h; path = app/AppBase.h; sourceTree = "<group>"; };
 		1181F7C71A7F8792001BBFA2 /* AppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppBase.cpp; path = app/AppBase.cpp; sourceTree = "<group>"; };
-		118CA4081A9427F700841458 /* AppBasicMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = AppBasicMac.cpp; sourceTree = "<group>"; };
+		118CA4081A9427F700841458 /* AppMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = AppMac.cpp; sourceTree = "<group>"; };
 		118CA4091A9427F700841458 /* AppCocoaTouch.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = AppCocoaTouch.cpp; sourceTree = "<group>"; };
 		118CA40A1A9427F700841458 /* AppCocoaView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppCocoaView.mm; sourceTree = "<group>"; };
-		118CA40B1A9427F700841458 /* AppImplCocoaBasic.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaBasic.mm; sourceTree = "<group>"; };
-		118CA40C1A9427F700841458 /* AppImplCocoaRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaRendererGl.mm; sourceTree = "<group>"; };
-		118CA40D1A9427F700841458 /* AppImplCocoaRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaRendererQuartz.mm; sourceTree = "<group>"; };
-		118CA40E1A9427F700841458 /* AppImplCocoaScreenSaver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaScreenSaver.mm; sourceTree = "<group>"; };
+		118CA40B1A9427F700841458 /* AppImplMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplMac.mm; sourceTree = "<group>"; };
+		118CA40C1A9427F700841458 /* RendererImplGlMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererImplGlMac.mm; sourceTree = "<group>"; };
+		118CA40D1A9427F700841458 /* RendererImpl2dMacQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererImpl2dMacQuartz.mm; sourceTree = "<group>"; };
+		118CA40E1A9427F700841458 /* AppImplMacScreenSaver.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplMacScreenSaver.mm; sourceTree = "<group>"; };
 		118CA40F1A9427F700841458 /* AppImplCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaTouch.mm; sourceTree = "<group>"; };
-		118CA4101A9427F700841458 /* AppImplCocoaTouchRendererGl.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaTouchRendererGl.mm; sourceTree = "<group>"; };
-		118CA4111A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AppImplCocoaTouchRendererQuartz.mm; sourceTree = "<group>"; };
-		118CA4121A9427F700841458 /* CinderView.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CinderView.mm; sourceTree = "<group>"; };
+		118CA4101A9427F700841458 /* RendererImplGlCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererImplGlCocoaTouch.mm; sourceTree = "<group>"; };
+		118CA4111A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = RendererImpl2dCocoaTouchQuartz.mm; sourceTree = "<group>"; };
+		118CA4121A9427F700841458 /* CinderViewMac.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CinderViewMac.mm; sourceTree = "<group>"; };
 		118CA4131A9427F700841458 /* CinderViewCocoaTouch.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CinderViewCocoaTouch.mm; sourceTree = "<group>"; };
 		118CA4141A9427F700841458 /* PlatformCocoa.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = PlatformCocoa.cpp; sourceTree = "<group>"; };
-		118CA43D1A94280600841458 /* AppBasicMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppBasicMsw.cpp; sourceTree = "<group>"; };
+		118CA43D1A94280600841458 /* AppMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppMsw.cpp; sourceTree = "<group>"; };
 		118CA43E1A94280600841458 /* AppImplMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMsw.cpp; sourceTree = "<group>"; };
 		118CA43F1A94280600841458 /* AppImplMswBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswBasic.cpp; sourceTree = "<group>"; };
-		118CA4401A94280600841458 /* AppImplMswRendererAngle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswRendererAngle.cpp; sourceTree = "<group>"; };
-		118CA4411A94280600841458 /* AppImplMswRendererDx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswRendererDx.cpp; sourceTree = "<group>"; };
-		118CA4421A94280600841458 /* AppImplMswRendererGdi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswRendererGdi.cpp; sourceTree = "<group>"; };
-		118CA4431A94280600841458 /* AppImplMswRendererGl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswRendererGl.cpp; sourceTree = "<group>"; };
+		118CA4401A94280600841458 /* RendererImplGlAngle.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImplGlAngle.cpp; sourceTree = "<group>"; };
+		118CA4411A94280600841458 /* RendererImplDx.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImplDx.cpp; sourceTree = "<group>"; };
+		118CA4421A94280600841458 /* RendererImpl2dGdi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImpl2dGdi.cpp; sourceTree = "<group>"; };
+		118CA4431A94280600841458 /* RendererImplGlMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImplGlMsw.cpp; sourceTree = "<group>"; };
 		118CA4441A94280600841458 /* AppImplMswScreenSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswScreenSaver.cpp; sourceTree = "<group>"; };
 		118CA4451A94280600841458 /* AppImplWinRT.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplWinRT.cpp; sourceTree = "<group>"; };
 		118CA4461A94280600841458 /* AppImplWinRTBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplWinRTBasic.cpp; sourceTree = "<group>"; };
 		118CA4471A94280600841458 /* PlatformMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformMsw.cpp; sourceTree = "<group>"; };
 		118CA4481A94280600841458 /* WinRTApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WinRTApp.cpp; sourceTree = "<group>"; };
-		118CA4501A9428BE00841458 /* AppBasicMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppBasicMac.h; sourceTree = "<group>"; };
+		118CA4501A9428BE00841458 /* AppMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppMac.h; sourceTree = "<group>"; };
 		118CA4511A9428BE00841458 /* AppCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppCocoaTouch.h; sourceTree = "<group>"; };
 		118CA4521A9428BE00841458 /* AppCocoaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppCocoaView.h; sourceTree = "<group>"; };
-		118CA4531A9428BE00841458 /* AppImplCocoaBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaBasic.h; sourceTree = "<group>"; };
-		118CA4541A9428BE00841458 /* AppImplCocoaRendererGl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaRendererGl.h; sourceTree = "<group>"; };
-		118CA4551A9428BE00841458 /* AppImplCocoaRendererQuartz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaRendererQuartz.h; sourceTree = "<group>"; };
-		118CA4561A9428BE00841458 /* AppImplCocoaScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaScreenSaver.h; sourceTree = "<group>"; };
+		118CA4531A9428BE00841458 /* AppImplMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMac.h; sourceTree = "<group>"; };
+		118CA4541A9428BE00841458 /* RendererImplGlMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplGlMac.h; sourceTree = "<group>"; };
+		118CA4551A9428BE00841458 /* RendererImpl2dMacQuartz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImpl2dMacQuartz.h; sourceTree = "<group>"; };
+		118CA4561A9428BE00841458 /* AppImplMacScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMacScreenSaver.h; sourceTree = "<group>"; };
 		118CA4571A9428BE00841458 /* AppImplCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaTouch.h; sourceTree = "<group>"; };
-		118CA4581A9428BE00841458 /* AppImplCocoaTouchRendererGl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaTouchRendererGl.h; sourceTree = "<group>"; };
-		118CA4591A9428BE00841458 /* AppImplCocoaTouchRendererQuartz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplCocoaTouchRendererQuartz.h; sourceTree = "<group>"; };
+		118CA4581A9428BE00841458 /* RendererImplGlCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplGlCocoaTouch.h; sourceTree = "<group>"; };
+		118CA4591A9428BE00841458 /* RendererImpl2dCocoaTouchQuartz.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImpl2dCocoaTouchQuartz.h; sourceTree = "<group>"; };
 		118CA45A1A9428BE00841458 /* CinderViewCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CinderViewCocoaTouch.h; sourceTree = "<group>"; };
 		118CA45B1A9428BE00841458 /* PlatformCocoa.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformCocoa.h; sourceTree = "<group>"; };
-		118CA45D1A9428BE00841458 /* AppBasicMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppBasicMsw.h; sourceTree = "<group>"; };
+		118CA45D1A9428BE00841458 /* AppMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppMsw.h; sourceTree = "<group>"; };
 		118CA45E1A9428BE00841458 /* AppImplMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMsw.h; sourceTree = "<group>"; };
 		118CA45F1A9428BE00841458 /* AppImplMswBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswBasic.h; sourceTree = "<group>"; };
-		118CA4601A9428BE00841458 /* AppImplMswRenderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswRenderer.h; sourceTree = "<group>"; };
-		118CA4611A9428BE00841458 /* AppImplMswRendererAngle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswRendererAngle.h; sourceTree = "<group>"; };
-		118CA4621A9428BE00841458 /* AppImplMswRendererDx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswRendererDx.h; sourceTree = "<group>"; };
-		118CA4631A9428BE00841458 /* AppImplMswRendererGdi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswRendererGdi.h; sourceTree = "<group>"; };
-		118CA4641A9428BE00841458 /* AppImplMswRendererGl.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswRendererGl.h; sourceTree = "<group>"; };
+		118CA4601A9428BE00841458 /* RendererImplMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplMsw.h; sourceTree = "<group>"; };
+		118CA4611A9428BE00841458 /* RendererImplGlAngle.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplGlAngle.h; sourceTree = "<group>"; };
+		118CA4621A9428BE00841458 /* RendererImplDx.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplDx.h; sourceTree = "<group>"; };
+		118CA4631A9428BE00841458 /* RendererImpl2dGdi.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImpl2dGdi.h; sourceTree = "<group>"; };
+		118CA4641A9428BE00841458 /* RendererImplGlMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RendererImplGlMsw.h; sourceTree = "<group>"; };
 		118CA4651A9428BE00841458 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		118CA4661A9428BE00841458 /* AppImplWinRT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplWinRT.h; sourceTree = "<group>"; };
 		118CA4671A9428BE00841458 /* AppImplWinRTBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplWinRTBasic.h; sourceTree = "<group>"; };
 		118CA4681A9428BE00841458 /* PlatformMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformMsw.h; sourceTree = "<group>"; };
 		118CA4691A9428BE00841458 /* WinRTApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WinRTApp.h; sourceTree = "<group>"; };
-		118CA46A1A94296900841458 /* CinderView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CinderView.h; sourceTree = "<group>"; };
+		118CA46A1A94296900841458 /* CinderViewMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CinderViewMac.h; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
 		11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signals.cpp; sourceTree = "<group>"; };
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
@@ -1669,7 +1666,6 @@
 				118CA45C1A9428BE00841458 /* msw */,
 				002419CD0E8035D3004D34EB /* App.h */,
 				1181F7C31A7F8760001BBFA2 /* AppBase.h */,
-				00B4F3E00F5394C500B75296 /* AppBasic.h */,
 				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
 				0053819915A8CDF90019BA91 /* Event.h */,
 				0088773B0F96671600FD55C5 /* FileDropEvent.h */,
@@ -1690,7 +1686,6 @@
 				118CA4071A9427F700841458 /* cocoa */,
 				118CA43C1A94280600841458 /* msw */,
 				1181F7C71A7F8792001BBFA2 /* AppBase.cpp */,
-				00B4F3E60F53955000B75296 /* AppBasic.cpp */,
 				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
 				007B09830E957B9A0052257E /* KeyEvent.cpp */,
 				1116CC4A1A5F154000023856 /* Platform.cpp */,
@@ -2470,19 +2465,19 @@
 		118CA4071A9427F700841458 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				118CA4081A9427F700841458 /* AppBasicMac.cpp */,
+				118CA4081A9427F700841458 /* AppMac.cpp */,
 				118CA4091A9427F700841458 /* AppCocoaTouch.cpp */,
 				118CA40A1A9427F700841458 /* AppCocoaView.mm */,
-				118CA40B1A9427F700841458 /* AppImplCocoaBasic.mm */,
-				118CA40C1A9427F700841458 /* AppImplCocoaRendererGl.mm */,
-				118CA40D1A9427F700841458 /* AppImplCocoaRendererQuartz.mm */,
-				118CA40E1A9427F700841458 /* AppImplCocoaScreenSaver.mm */,
 				118CA40F1A9427F700841458 /* AppImplCocoaTouch.mm */,
-				118CA4101A9427F700841458 /* AppImplCocoaTouchRendererGl.mm */,
-				118CA4111A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm */,
-				118CA4121A9427F700841458 /* CinderView.mm */,
+				118CA40B1A9427F700841458 /* AppImplMac.mm */,
+				118CA40E1A9427F700841458 /* AppImplMacScreenSaver.mm */,
 				118CA4131A9427F700841458 /* CinderViewCocoaTouch.mm */,
+				118CA4121A9427F700841458 /* CinderViewMac.mm */,
 				118CA4141A9427F700841458 /* PlatformCocoa.cpp */,
+				118CA4111A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm */,
+				118CA40D1A9427F700841458 /* RendererImpl2dMacQuartz.mm */,
+				118CA4101A9427F700841458 /* RendererImplGlCocoaTouch.mm */,
+				118CA40C1A9427F700841458 /* RendererImplGlMac.mm */,
 			);
 			name = cocoa;
 			path = app/cocoa;
@@ -2491,17 +2486,17 @@
 		118CA43C1A94280600841458 /* msw */ = {
 			isa = PBXGroup;
 			children = (
-				118CA43D1A94280600841458 /* AppBasicMsw.cpp */,
+				118CA43D1A94280600841458 /* AppMsw.cpp */,
 				118CA43E1A94280600841458 /* AppImplMsw.cpp */,
 				118CA43F1A94280600841458 /* AppImplMswBasic.cpp */,
-				118CA4401A94280600841458 /* AppImplMswRendererAngle.cpp */,
-				118CA4411A94280600841458 /* AppImplMswRendererDx.cpp */,
-				118CA4421A94280600841458 /* AppImplMswRendererGdi.cpp */,
-				118CA4431A94280600841458 /* AppImplMswRendererGl.cpp */,
 				118CA4441A94280600841458 /* AppImplMswScreenSaver.cpp */,
 				118CA4451A94280600841458 /* AppImplWinRT.cpp */,
 				118CA4461A94280600841458 /* AppImplWinRTBasic.cpp */,
 				118CA4471A94280600841458 /* PlatformMsw.cpp */,
+				118CA4421A94280600841458 /* RendererImpl2dGdi.cpp */,
+				118CA4411A94280600841458 /* RendererImplDx.cpp */,
+				118CA4401A94280600841458 /* RendererImplGlAngle.cpp */,
+				118CA4431A94280600841458 /* RendererImplGlMsw.cpp */,
 				118CA4481A94280600841458 /* WinRTApp.cpp */,
 			);
 			name = msw;
@@ -2511,19 +2506,19 @@
 		118CA44F1A9428BE00841458 /* cocoa */ = {
 			isa = PBXGroup;
 			children = (
-				118CA4501A9428BE00841458 /* AppBasicMac.h */,
 				118CA4511A9428BE00841458 /* AppCocoaTouch.h */,
 				118CA4521A9428BE00841458 /* AppCocoaView.h */,
-				118CA4531A9428BE00841458 /* AppImplCocoaBasic.h */,
-				118CA4541A9428BE00841458 /* AppImplCocoaRendererGl.h */,
-				118CA4551A9428BE00841458 /* AppImplCocoaRendererQuartz.h */,
-				118CA4561A9428BE00841458 /* AppImplCocoaScreenSaver.h */,
 				118CA4571A9428BE00841458 /* AppImplCocoaTouch.h */,
-				118CA4581A9428BE00841458 /* AppImplCocoaTouchRendererGl.h */,
-				118CA4591A9428BE00841458 /* AppImplCocoaTouchRendererQuartz.h */,
-				118CA46A1A94296900841458 /* CinderView.h */,
+				118CA4531A9428BE00841458 /* AppImplMac.h */,
+				118CA4561A9428BE00841458 /* AppImplMacScreenSaver.h */,
+				118CA4501A9428BE00841458 /* AppMac.h */,
 				118CA45A1A9428BE00841458 /* CinderViewCocoaTouch.h */,
+				118CA46A1A94296900841458 /* CinderViewMac.h */,
 				118CA45B1A9428BE00841458 /* PlatformCocoa.h */,
+				118CA4591A9428BE00841458 /* RendererImpl2dCocoaTouchQuartz.h */,
+				118CA4551A9428BE00841458 /* RendererImpl2dMacQuartz.h */,
+				118CA4581A9428BE00841458 /* RendererImplGlCocoaTouch.h */,
+				118CA4541A9428BE00841458 /* RendererImplGlMac.h */,
 			);
 			name = cocoa;
 			path = app/cocoa;
@@ -2532,18 +2527,18 @@
 		118CA45C1A9428BE00841458 /* msw */ = {
 			isa = PBXGroup;
 			children = (
-				118CA45D1A9428BE00841458 /* AppBasicMsw.h */,
+				118CA45D1A9428BE00841458 /* AppMsw.h */,
 				118CA45E1A9428BE00841458 /* AppImplMsw.h */,
 				118CA45F1A9428BE00841458 /* AppImplMswBasic.h */,
-				118CA4601A9428BE00841458 /* AppImplMswRenderer.h */,
-				118CA4611A9428BE00841458 /* AppImplMswRendererAngle.h */,
-				118CA4621A9428BE00841458 /* AppImplMswRendererDx.h */,
-				118CA4631A9428BE00841458 /* AppImplMswRendererGdi.h */,
-				118CA4641A9428BE00841458 /* AppImplMswRendererGl.h */,
 				118CA4651A9428BE00841458 /* AppImplMswScreenSaver.h */,
 				118CA4661A9428BE00841458 /* AppImplWinRT.h */,
 				118CA4671A9428BE00841458 /* AppImplWinRTBasic.h */,
 				118CA4681A9428BE00841458 /* PlatformMsw.h */,
+				118CA4631A9428BE00841458 /* RendererImpl2dGdi.h */,
+				118CA4621A9428BE00841458 /* RendererImplDx.h */,
+				118CA4611A9428BE00841458 /* RendererImplGlAngle.h */,
+				118CA4641A9428BE00841458 /* RendererImplGlMsw.h */,
+				118CA4601A9428BE00841458 /* RendererImplMsw.h */,
 				118CA4691A9428BE00841458 /* WinRTApp.h */,
 			);
 			name = msw;
@@ -3229,7 +3224,7 @@
 				111A5FB1191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */,
 				111A5FBA191F72AE005C3166 /* Context.cpp in Sources */,
 				007050491114F93F003FCAE4 /* Camera.cpp in Sources */,
-				118CA42E1A9427F700841458 /* AppImplCocoaTouchRendererGl.mm in Sources */,
+				118CA42E1A9427F700841458 /* RendererImplGlCocoaTouch.mm in Sources */,
 				0003F3DC1992D64100647C8B /* BufferObj.cpp in Sources */,
 				0070504A1114F93F003FCAE4 /* Matrix.cpp in Sources */,
 				0070504D1114F93F003FCAE4 /* Surface.cpp in Sources */,
@@ -3306,7 +3301,7 @@
 				007050A91114F93F003FCAE4 /* Hdr.cpp in Sources */,
 				0003F40C1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				118CA43A1A9427F700841458 /* PlatformCocoa.cpp in Sources */,
-				118CA4311A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm in Sources */,
+				118CA4311A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */,
 				007050AA1114F93F003FCAE4 /* Premultiply.cpp in Sources */,
 				111A5FC6191F72AE005C3166 /* Converter.cpp in Sources */,
 				0003F3D91992D64100647C8B /* Batch.cpp in Sources */,
@@ -3413,7 +3408,7 @@
 				111A5FB2191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */,
 				111A5FBB191F72AE005C3166 /* Context.cpp in Sources */,
 				00CFD99D1135C3520091E310 /* Camera.cpp in Sources */,
-				118CA42F1A9427F700841458 /* AppImplCocoaTouchRendererGl.mm in Sources */,
+				118CA42F1A9427F700841458 /* RendererImplGlCocoaTouch.mm in Sources */,
 				0003F3DD1992D64100647C8B /* BufferObj.cpp in Sources */,
 				00CFD99E1135C3520091E310 /* Matrix.cpp in Sources */,
 				00CFD99F1135C3520091E310 /* Surface.cpp in Sources */,
@@ -3490,7 +3485,7 @@
 				00CFD9D01135C3520091E310 /* Hdr.cpp in Sources */,
 				0003F40D1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				118CA43B1A9427F700841458 /* PlatformCocoa.cpp in Sources */,
-				118CA4321A9427F700841458 /* AppImplCocoaTouchRendererQuartz.mm in Sources */,
+				118CA4321A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */,
 				00CFD9D11135C3520091E310 /* Premultiply.cpp in Sources */,
 				111A5FC7191F72AE005C3166 /* Converter.cpp in Sources */,
 				0003F3DA1992D64100647C8B /* Batch.cpp in Sources */,
@@ -3595,7 +3590,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				D8A5A81A19BFDE8700811132 /* CaptureImplAvFoundation.mm in Sources */,
-				118CA4241A9427F700841458 /* AppImplCocoaRendererQuartz.mm in Sources */,
+				118CA4241A9427F700841458 /* RendererImpl2dMacQuartz.mm in Sources */,
 				111A5EBB191F703D005C3166 /* lpc.c in Sources */,
 				00241ABF0E830DD5004D34EB /* Camera.cpp in Sources */,
 				118CA4391A9427F700841458 /* PlatformCocoa.cpp in Sources */,
@@ -3624,9 +3619,8 @@
 				111A5FA7191F72AE005C3166 /* ChannelRouterNode.cpp in Sources */,
 				111A5EBD191F703D005C3166 /* lsp.c in Sources */,
 				006D705919942BF5008149E2 /* QuickTimeImplLegacy.cpp in Sources */,
-				00B4F3E70F53955000B75296 /* AppBasic.cpp in Sources */,
 				0003F49D1995DEF000647C8B /* LoadOGL.cpp in Sources */,
-				118CA41E1A9427F700841458 /* AppImplCocoaBasic.mm in Sources */,
+				118CA41E1A9427F700841458 /* AppImplMac.mm in Sources */,
 				0003F3EA1992D64100647C8B /* EnvironmentCore.cpp in Sources */,
 				0003F40E1992D64100647C8B /* TransformFeedbackObjImplHardware.cpp in Sources */,
 				111A5EA8191F703D005C3166 /* bitrate.c in Sources */,
@@ -3669,7 +3663,7 @@
 				111A5FDA191F72AE005C3166 /* GenNode.cpp in Sources */,
 				111A5FD7191F72AE005C3166 /* FilterNode.cpp in Sources */,
 				111A5FC5191F72AE005C3166 /* Converter.cpp in Sources */,
-				118CA4331A9427F700841458 /* CinderView.mm in Sources */,
+				118CA4331A9427F700841458 /* CinderViewMac.mm in Sources */,
 				0049C1B71010E5B10015B4B9 /* Renderer.cpp in Sources */,
 				006D705619942BF5008149E2 /* QuickTimeImplAvf.mm in Sources */,
 				EAC3D1AD1011F3AC00FFBC9E /* Serial.cpp in Sources */,
@@ -3754,7 +3748,7 @@
 				00A121F11362778200081873 /* Tween.cpp in Sources */,
 				006D704A19942BF5008149E2 /* AvfUtils.mm in Sources */,
 				0003F3FC1992D64100647C8B /* Shader.cpp in Sources */,
-				118CA4151A9427F700841458 /* AppBasicMac.cpp in Sources */,
+				118CA4151A9427F700841458 /* AppMac.cpp in Sources */,
 				111A5FAA191F72AE005C3166 /* CinderCoreAudio.cpp in Sources */,
 				111A5EB5191F703D005C3166 /* floor1.c in Sources */,
 				0003F3F61992D64100647C8B /* GlslProg.cpp in Sources */,
@@ -3765,7 +3759,7 @@
 				111A5ED8191F703D005C3166 /* psy.c in Sources */,
 				43F78EF21516DAB700EB63B5 /* Json.cpp in Sources */,
 				111A5EE2191F703D005C3166 /* vorbisenc.c in Sources */,
-				118CA4211A9427F700841458 /* AppImplCocoaRendererGl.mm in Sources */,
+				118CA4211A9427F700841458 /* RendererImplGlMac.mm in Sources */,
 				0003F3DB1992D64100647C8B /* BufferObj.cpp in Sources */,
 				111A5FF8191F72AE005C3166 /* PanNode.cpp in Sources */,
 				008B43A814F5F8F800B55B07 /* Svg.cpp in Sources */,

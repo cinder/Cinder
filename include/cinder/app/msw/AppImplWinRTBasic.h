@@ -34,7 +34,7 @@
 #undef max
 
 #include "cinder/app/msw/AppImplWinRT.h"
-#include "cinder/app/msw/AppImplMSWRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Display.h"
 #include "cinder/app/Window.h"
 
@@ -44,7 +44,7 @@ class WindowImplWinRTBasic;
 
 class AppImplWinRTBasic : public AppImplWinRT {
 public:
-	AppImplWinRTBasic( class AppBasic *aApp  );
+	AppImplWinRTBasic( class AppBase *app  );
 	void	run();
 	void	runReady(Windows::UI::Core::CoreWindow^ window);
 	void	handlePointerDown(Windows::UI::Core::PointerEventArgs^ args);
@@ -53,7 +53,7 @@ public:
 	void	setVisible(bool isVisible) { mIsVisible = isVisible; };
 	void	UpdateForWindowSizeChange(Windows::UI::Core::CoreWindow^ window);
 
-	class AppBasic*		getApp() { return mApp; }
+	class AppBase*		getApp() { return mApp; }
 	
 	void	quit() { mShouldQuit = true; }
 
@@ -76,7 +76,7 @@ private:
 	virtual void	setForegroundWindow( WindowRef window ) override;
 	
 	bool			mShouldQuit;
-	class AppBasic	*mApp;
+	class AppBase	*mApp;
 	DX_WINDOW_TYPE	mWnd;
 
 	HINSTANCE	mInstance;
@@ -89,7 +89,7 @@ private:
 	std::map<DWORD,vec2>			mMultiTouchPrev;
 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
-	friend class AppBasic;
+	friend class AppBase;
 };
 
 class WindowImplWinRTBasic : public WindowImplWinRT {

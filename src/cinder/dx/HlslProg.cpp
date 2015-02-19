@@ -29,7 +29,7 @@
 
 #include "cinder/dx/dx.h"
 #include "cinder/dx/HlslProg.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 
 using namespace std;
 
@@ -186,7 +186,7 @@ void HlslProg::bind() const
 		dx->mDeviceContext->GSSetConstantBuffers(mObj->mCBuffersGeometry[i]->mSlot, 1, &mObj->mCBuffersGeometry[i]->mCBuffer);
 
 	
-	dx->setRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE);
+	dx->setRenderFlag(app::RendererImplDx::CUSTOM_SHADER_ACTIVE);
 }
 
 void HlslProg::unbind()
@@ -195,7 +195,7 @@ void HlslProg::unbind()
 	dx->mDeviceContext->VSSetShader(NULL, NULL, 0);
 	dx->mDeviceContext->PSSetShader(NULL, NULL, 0);
 	dx->mDeviceContext->GSSetShader(NULL, NULL, 0);
-	dx->clearRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE);
+	dx->clearRenderFlag(app::RendererImplDx::CUSTOM_SHADER_ACTIVE);
 }
 
 void HlslProg::CreateCBufferVertex(UINT slot, UINT size)

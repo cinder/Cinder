@@ -21,29 +21,40 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/AppBase.h"
-#import <Cocoa/Cocoa.h>
+#pragma once
 
-@class AppImplCocoa;
-@class CinderView;
+#include "cinder/app/AppBase.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 
-@interface AppImplCocoaRendererQuartz : NSObject
-{
-	CGContextRef				currentRef;
-	NSView						*view;
-	NSGraphicsContext			*currentGraphicsContext;
-}
+namespace cinder { namespace gl {
+	class Context;
+	typedef std::shared_ptr<Context>	ContextRef;
+} }
 
-- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView;
-- (NSView*)view;
+namespace cinder { namespace app {
 
-- (NSBitmapImageRep*)getContents:(cinder::Area)area;
+class RendererImplGlMsw : public RendererImplMsw {
+ public:
+	RendererImplGlMsw( class RendererGl *aRenderer );
+	
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void	prepareToggleFullScreen();
+	virtual void	finishToggleFullScreen();
+	virtual void	kill();
+	virtual void	defaultResize() const;
+	virtual void	swapBuffers() const;
+	virtual void	makeCurrentContext();
 
-- (void)makeCurrentContext;
-- (void)flushBuffer;
-- (void)setFrameSize:(CGSize)newSize;
-- (void)defaultResize;
+	HDC				getDc() const { return mDC; }
 
-- (CGContextRef)getCGContextRef;
+ protected:
+	class RendererGl	*mRenderer;
+	gl::ContextRef		mCinderContext;
 
-@end
+	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
+	HGLRC		mRC;
+	HDC			mDC;
+};
+
+} } // namespace cinder::app

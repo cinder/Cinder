@@ -27,8 +27,8 @@
 
 #import <Cocoa/Cocoa.h>
 
-#import "cinder/app/cocoa/AppBasicMac.h"
-#import "cinder/app/cocoa/CinderView.h"
+#import "cinder/app/cocoa/AppMac.h"
+#import "cinder/app/cocoa/CinderViewMac.h"
 #import "cinder/Stream.h"
 #import "cinder/Display.h"
 
@@ -39,10 +39,10 @@
 @class CinderWindow; // inherits from NSWindow
 @class WindowImplBasicCocoa;
 
-@interface AppImplCocoaBasic : NSObject<NSApplicationDelegate, NSWindowDelegate> {
+@interface AppImplMac : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
 	NSTimer*						mAnimationTimer;
-	class cinder::app::AppBasicMac*	mApp;
+	class cinder::app::AppMac*	mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
@@ -55,7 +55,7 @@
 
 @property(retain, nonatomic) NSMutableArray *windows;
 
-- (AppImplCocoaBasic *)init:(cinder::app::AppBasicMac *)app settings:(const cinder::app::AppBasicMac::Settings &)settings;
+- (AppImplMac *)init:(cinder::app::AppMac *)app settings:(const cinder::app::AppMac::Settings &)settings;
 - (void)setApplicationMenu:(NSString *)applicationName;
 - (void)startAnimationTimer;
 - (void)applicationWillTerminate:(NSNotification *)notification;
@@ -85,9 +85,9 @@
 
 @interface WindowImplBasicCocoa : NSObject<NSWindowDelegate, CinderViewDelegate, WindowImplCocoa> {
   @public
-	AppImplCocoaBasic*			mAppImpl;
+	AppImplMac*					mAppImpl;
 	NSWindow*					mWin;
-	CinderView*					mCinderView;
+	CinderViewMac*				mCinderView;
 	cinder::app::WindowRef		mWindowRef;
 	cinder::DisplayRef			mDisplay;
 	cinder::ivec2				mSize, mPos;
@@ -139,6 +139,6 @@
 - (void)fileDrop:(cinder::app::FileDropEvent *)event;
 - (cinder::app::WindowRef)getWindowRef;
 
-+ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplCocoaBasic *)appImpl;
++ (WindowImplBasicCocoa *)instantiate:(cinder::app::Window::Format)winFormat withAppImpl:(AppImplMac *)appImpl;
 
 @end

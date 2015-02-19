@@ -28,8 +28,8 @@
 
 
 #include "cinder/app/msw/AppImplWinRTBasic.h"
-#include "cinder/app/AppBasic.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/AppBase.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
 #include "cinder/app/WinRTApp.h"
@@ -51,8 +51,8 @@ using namespace cinder::winrt;
 
 namespace cinder { namespace app {
 
-AppImplWinRTBasic::AppImplWinRTBasic( AppBasic *aApp )
-	: AppImplWinRT( aApp ), mApp( aApp )
+AppImplWinRTBasic::AppImplWinRTBasic( AppBase *app )
+	: AppImplWinRT( app ), mApp( app )
 {
 	mShouldQuit = false;
 }

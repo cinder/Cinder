@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -21,21 +22,26 @@
 */
 
 #import "cinder/app/AppBase.h"
-#import <UIKit/UIKit.h>
+#import <Cocoa/Cocoa.h>
 
-@interface AppImplCocoaTouchRendererQuartz : NSObject
+@class AppImplCocoaMac;
+@class CinderViewMac;
+
+@interface RendererImpl2dMacQuartz : NSObject
 {
-	CGContextRef				mCurrentRef;
-	UIView						*view;
+	CGContextRef				currentRef;
+	NSView						*view;
+	NSGraphicsContext			*currentGraphicsContext;
 }
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView;
-- (UIView*)view;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView *)cinderView;
+- (NSView*)view;
 
-- (UIImage*)getContents:(cinder::Area)area;
+- (NSBitmapImageRep*)getContents:(cinder::Area)area;
 
 - (void)makeCurrentContext;
 - (void)flushBuffer;
+- (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
 
 - (CGContextRef)getCGContextRef;

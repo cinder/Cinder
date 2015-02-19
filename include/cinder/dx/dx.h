@@ -63,14 +63,14 @@ namespace cinder {
 		class Light;
 	}
 	namespace app {
-		class AppImplMswRendererDx;
+		class RendererImplDx;
 	}
 } // namespace cinder
 
 namespace cinder { namespace dx {
 
 //#if defined( CINDER_MSW )
-app::AppImplMswRendererDx *getDxRenderer();
+app::RendererImplDx *getDxRenderer();
 //#endif
 
 //! Returns whether a particular OpenGL extension is available. Caches results

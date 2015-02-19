@@ -28,7 +28,7 @@
 #undef max
 
 #include "cinder/app/msw/AppImplMsw.h"
-#include "cinder/app/msw/AppBasicMsw.h"
+#include "cinder/app/msw/AppMsw.h"
 #include "cinder/app/Window.h"
 #include "cinder/Display.h"
 
@@ -38,11 +38,11 @@ class WindowImplMswBasic;
 
 class AppImplMswBasic : public AppImplMsw {
   public:
-	AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings );
+	AppImplMswBasic( AppMsw *app, const AppMsw::Settings &settings );
 
 	void	run();
 
-	AppBasicMsw*	getApp() { return mApp; }
+	AppMsw*	getApp() { return mApp; }
 	
 	void	quit() override;
 
@@ -66,7 +66,7 @@ class AppImplMswBasic : public AppImplMsw {
 	virtual void	closeWindow( class WindowImplMsw *windowImpl ) override;
 	virtual void	setForegroundWindow( WindowRef window ) override;
 	
-	AppBasicMsw*	mApp;
+	AppMsw*	mApp;
 	HINSTANCE		mInstance;
 	double			mNextFrameTime;
 	bool			mFrameRateEnabled;
@@ -78,7 +78,7 @@ class AppImplMswBasic : public AppImplMsw {
 	WindowRef								mForegroundWindow;
 
 	friend LRESULT CALLBACK WndProc( HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam );
-	friend class AppBasicMsw;
+	friend class AppMsw;
 };
 
 class WindowImplMswBasic : public WindowImplMsw {

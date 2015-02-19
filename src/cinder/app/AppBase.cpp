@@ -46,13 +46,9 @@ static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 // AppBase::Settings
 
 AppBase::Settings::Settings()
+	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
+		mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
 {
-	mShouldQuit = false;
-	mPowerManagementEnabled = false;
-	mFrameRateEnabled = true;
-	mFrameRate = 60.0f;
-	mHighDensityDisplayEnabled = false;
-	mMultiTouchEnabled = false;
 }
 
 void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
@@ -241,6 +237,11 @@ Surface	AppBase::copyWindowSurface( const Area &area )
 {
 	Area clippedArea = area.getClipBy( getWindowBounds() );
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea, getWindow()->toPixels( getWindow()->getHeight() ) );
+}
+
+void AppBase::restoreWindowContext()
+{
+	getWindow()->getRenderer()->makeCurrentContext();
 }
 
 } } // namespace cinder::app

@@ -28,10 +28,10 @@
 
 #if defined( CINDER_MAC )
 	#if defined __OBJC__
-		@class AppImplCocoaRendererGl;
+		@class RendererImplGlMac;
 		@class NSOpenGLContext;
 	#else
-		class AppImplCocoaRendererGl;
+		class RendererImplGlMac;
 		class NSOpenGLContext;
 	#endif
 	typedef struct _CGLContextObject       *CGLContextObj;
@@ -39,11 +39,11 @@
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined __OBJC__
 		typedef struct CGContext * CGContextRef;
-		@class AppImplCocoaTouchRendererGl;
+		@class RendererImplGlCocoaTouch;
 		@class EAGLContext;
 	#else
 		typedef struct CGContext * CGContextRef;
-		class AppImplCocoaTouchRendererGl;
+		class RendererImplGlCocoaTouch;
 		class EAGLContext;
 	#endif
 #endif
@@ -198,16 +198,16 @@ protected:
 
 	Options		mOptions;
 #if defined( CINDER_MAC )
-	AppImplCocoaRendererGl		*mImpl;
+	RendererImplGlMac		*mImpl;
 #elif defined( CINDER_COCOA_TOUCH )
-	AppImplCocoaTouchRendererGl	*mImpl;
+	RendererImplGlCocoaTouch	*mImpl;
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		class AppImplMswRendererAngle	*mImpl;
-		friend class					AppImplMswRendererAngle;
+		class RendererImplGlAngle	*mImpl;
+		friend class					RendererImplGlAngle;
 	#else
-		class AppImplMswRendererGl		*mImpl;
-		friend class					AppImplMswRendererGl;
+		class RendererImplGlMsw		*mImpl;
+		friend class					RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
 #endif

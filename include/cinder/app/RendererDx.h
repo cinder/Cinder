@@ -63,7 +63,7 @@ class RendererDx : public Renderer {
 	MatrixStack &getModelView() { return mModelView; }
 	MatrixStack &getProjection() { return mProjection; }
 
-	class AppImplMswRendererDx	*mImpl;
+	class RendererImplDx	*mImpl;
 	
  protected:
 	RendererDx( const RendererDx &renderer );

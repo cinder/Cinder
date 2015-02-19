@@ -30,7 +30,7 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include <d3dcompiler.h>
@@ -45,7 +45,7 @@ class Texture;
 
 namespace cinder { namespace app {
 
-class AppImplMswRendererDx : public AppImplMswRenderer {
+class RendererImplDx : public RendererImplMsw {
  public:
  	struct LightData
 	{
@@ -81,7 +81,7 @@ class AppImplMswRendererDx : public AppImplMswRenderer {
 		CUSTOM_SHADER_ACTIVE = 2
 	};
 
-	AppImplMswRendererDx( AppBase *aApp, RendererDx *aRenderer );
+	RendererImplDx( AppBase *aApp, RendererDx *aRenderer );
 	
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc,  RendererRef sharedRenderer );

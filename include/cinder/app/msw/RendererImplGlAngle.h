@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) 2014, The Cinder Project, All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -21,69 +21,48 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/cocoa/AppImplCocoaTouchRendererQuartz.h"
-#import <QuartzCore/QuartzCore.h>
-#include "cinder/cocoa/CinderCocoa.h"
+#pragma once
 
-@implementation AppImplCocoaTouchRendererQuartz
+#include "cinder/app/AppBase.h"
+#include "cinder/app/msw/RendererImplMsw.h"
+#include "EGL/egl.h"
+#include "EGL/eglext.h"
+#include "EGL/eglplatform.h"
 
-- (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView
-{
-	self = [super init];
+namespace cinder { namespace gl {
+	class Context;
+	typedef std::shared_ptr<Context>	ContextRef;
+} }
+
+namespace cinder { namespace app {
+
+class RendererImplGlAngle : public RendererImplMsw {
+ public:
+	RendererImplGlAngle( class RendererGl *renderer );
 	
-	view = cinderView;
-	mCurrentRef = nil;
+	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
+	virtual void	prepareToggleFullScreen() override;
+	virtual void	finishToggleFullScreen() override;
+	virtual void	kill() override;
+	virtual void	defaultResize() const override;
+	virtual void	swapBuffers() const override;
+	virtual void	makeCurrentContext() override;
+
+ protected:
+	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
+	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
 	
-	return self;
-}
+	class RendererGl	*mRenderer;
+	gl::ContextRef		mCinderContext;
 
-- (void)dealloc
-{
-	[super dealloc];
-}
+	EGLContext		mContext;
+	EGLDisplay		mDisplay;
+	EGLSurface		mSurface;
 
-- (UIView*)view
-{
-	return view;
-}
+	bool		mWasFullScreen;
+	bool		mWasVerticalSynced;
+	HGLRC		mRC, mPrevRC;
+	HDC			mDC;
+};
 
-- (UIImage*)getContents:(cinder::Area)area
-{
-	::UIGraphicsBeginImageContext( cinder::cocoa::createCgSize( area.getSize() ) );
-	CALayer *layer = view.layer;
-	[layer renderInContext:UIGraphicsGetCurrentContext()];
-	UIImage *viewImage = ::UIGraphicsGetImageFromCurrentImageContext();
-	::UIGraphicsEndImageContext();
-	return viewImage;
-}
-
-- (void)makeCurrentContext
-{
-	mCurrentRef = ::UIGraphicsGetCurrentContext();
-	if( ! mCurrentRef )
-		return;
-
-	::CGContextRetain( mCurrentRef );
-}
-
-- (void)flushBuffer
-{
-	if( mCurrentRef )
-		::CGContextRelease( mCurrentRef );
-}
-
-- (void)defaultResize
-{
-}
-
-- (CGContextRef)getCGContextRef
-{
-	return mCurrentRef;
-}
-
-- (BOOL)isFlipped
-{
-	return YES;
-}
-
-@end
+} } // namespace cinder::app

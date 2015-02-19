@@ -102,17 +102,26 @@ class AppCocoaTouch : public AppBase {
 	//! Emits the signal used to notify when the virtual keyboard is about to animate off screen.
 	void								emitKeyboardWillHide();
 
-	WindowRef 		createWindow( const Window::Format &format = Window::Format() );
+	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
-	virtual WindowRef getWindow() const override;
-	virtual size_t getNumWindows() const override;
-	//! Gets a Window by index, in the range [0, getNumWindows()).
-	virtual app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
+	WindowRef		getWindow() const override;
+	WindowRef		getForegroundWindow() const	{ return getWindow(); }
+	size_t			getNumWindows() const override;
+	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
 	//! Returns the  \t InterfaceOrientation for the device \t Window.
 	InterfaceOrientation	getOrientation() const;
 	//! Returns the current \t InterfaceOrientation for the active \t Window.
 	InterfaceOrientation	getWindowOrientation() const;
+
+	//! no-op, no cursor on this platform
+	void	hideCursor() override {}
+	//! no-op, no cursor on this platform
+	void	showCursor() override {}
+	//! no-op, cannot disable framerate on this platform
+	void	disableFrameRate() override {}
+	//! always false, cannot disable framerate on this platform
+	bool	isFrameRateEnabled() const override { return false; }
 
 	//! Enables the device's proximity sensor, which can return whether the device is close to the user or not. Use in conjunction with proximityIsClose() or getSignalProximitySensor()
 	void enableProximitySensor();
@@ -202,7 +211,7 @@ class AppCocoaTouch : public AppBase {
 	//! No-op on iOS
 	void quit() override;
 
-	//! Returns a pointer to the current global AppBasic
+	//! Returns a pointer to the current global AppCocoaTouch
 	static AppCocoaTouch*	get() { return sInstance; }
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons

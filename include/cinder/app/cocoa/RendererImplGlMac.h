@@ -21,42 +21,36 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
+#import "cinder/app/AppBase.h"
+#import "cinder/app/RendererGl.h"
 
-#include <windows.h>
-#undef min
-#undef max
+#import <Foundation/Foundation.h>
 
-#include "cinder/app/msw/AppImplMswRenderer.h"
-#include "cinder/Surface.h"
+@class AppImplMac;
+@class CinderViewMac;
+@class NSOpenGLView;
+@class NSOpenGLPixelFormat;
 
-namespace cinder { namespace app {
+@interface RendererImplGlMac : NSObject {
+	NSOpenGLView*					mView;
+	cinder::app::RendererGl*		mRenderer;		// equivalent of a weak_ptr; 'renderer' actually owns us
+	NSView*							mCinderView;
+	cinder::gl::ContextRef			mContext;
+}
 
-class AppBase;
+- (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
+- (NSOpenGLView*)view;
 
-class AppImplMswRendererGdi : public AppImplMswRenderer {
- public:
-	 AppImplMswRendererGdi( bool doubleBuffer, bool paintEvents );
+- (void)makeCurrentContext;
+- (CGLContextObj)getCglContext;
+- (CGLPixelFormatObj)getCglPixelFormat;
+- (NSOpenGLContext*)getNsOpenGlContext;
+- (void)flushBuffer;
+- (void)setFrameSize:(CGSize)newSize;
+- (void)defaultResize;
 
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
-	virtual void	kill() {}
-	virtual void	defaultResize() const;
-	virtual void	swapBuffers() const;
-	virtual void	makeCurrentContext();
-	
-	virtual HDC		getDc() const { return ( mDoubleBuffer ) ? mDoubleBufferDc : mPaintDc; }
-	Surface8u		copyWindowContents( const Area &area );
-	
- protected:
-	::HDC			mPaintDc;
-	::PAINTSTRUCT	mPaintStruct;
-	
-	bool			mDoubleBuffer;
-	bool 			mPaintEvents;
+- (BOOL)needsDrawRect;
 
-	::HDC			mDoubleBufferDc;
-	::HBITMAP		mDoubleBufferBitmap, mDoubleBufferOldBitmap;
-	ivec2			mDoubleBufferBitmapSize;
-};
++ (NSOpenGLPixelFormat*)defaultPixelFormat: (cinder::app::RendererGl::Options)rendererOptions;
 
-} } // namespace cinder::app
+@end

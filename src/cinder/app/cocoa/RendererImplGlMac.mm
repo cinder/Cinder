@@ -22,8 +22,8 @@
 */
 
 #include "cinder/gl/gl.h"
-#import "cinder/app/cocoa/AppImplCocoaRendererGl.h"
-#import "cinder/app/cocoa/CinderView.h"
+#import "cinder/app/cocoa/RendererImplGlMac.h"
+#import "cinder/app/cocoa/CinderViewMac.h"
 
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
@@ -36,10 +36,10 @@
 
 // This is only here so that we can override isOpaque, which is necessary
 // for the ScreenSaverView to show it
-@interface AppImplCocoaTransparentGlView : NSOpenGLView 
+@interface RendererImplGlMacTransparentView : NSOpenGLView 
 @end
 
-@implementation AppImplCocoaTransparentGlView
+@implementation RendererImplGlMacTransparentView
 
 - (BOOL)isOpaque
 {
@@ -54,7 +54,7 @@
 
 @end
 
-@implementation AppImplCocoaRendererGl
+@implementation RendererImplGlMac
 
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled
 {
@@ -64,12 +64,12 @@
 	mRenderer = renderer;
 
 	cinder::app::RendererGl::Options options = mRenderer->getOptions();
-	NSOpenGLPixelFormat* fmt = [AppImplCocoaRendererGl defaultPixelFormat:options];
+	NSOpenGLPixelFormat* fmt = [RendererImplGlMac defaultPixelFormat:options];
 	GLint aaSamples;
 	[fmt getValues:&aaSamples forAttribute:NSOpenGLPFASamples forVirtualScreen:0];
 
 	NSRect bounds = NSMakeRect( 0, 0, frame.size.width, frame.size.height );
-	mView = [[AppImplCocoaTransparentGlView alloc] initWithFrame:bounds pixelFormat:fmt];
+	mView = [[RendererImplGlMacTransparentView alloc] initWithFrame:bounds pixelFormat:fmt];
 	if( ! mView )
 		CI_LOG_E( "Unable to allocate GL view" );
 

@@ -30,15 +30,15 @@
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		#import "cinder/app/cocoa/AppImplCocoaRendererGl.h"
+		#import "cinder/app/cocoa/RendererImplGlMac.h"
 	#elif defined( CINDER_COCOA_TOUCH )
-		#import "cinder/app/cocoa/AppImplCocoaTouchRendererGl.h"
+		#import "cinder/app/cocoa/RendererImplGlCocoaTouch.h"
 	#endif
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		#include "cinder/app/msw/AppImplMswRendererAngle.h"
+		#include "cinder/app/msw/RendererImplGlAngle.h"
 	#else
-		#include "cinder/app/msw/AppImplMswRendererGl.h"
+		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
 #endif
 
@@ -69,7 +69,7 @@ RendererGl::~RendererGl()
 void RendererGl::setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
+	mImpl = [[RendererImplGlMac alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -146,7 +146,7 @@ RendererGl::~RendererGl()
 void RendererGl::setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
 {
 	RendererGlRef sharedRendererGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView renderer:this sharedRenderer:sharedRendererGl];
+	mImpl = [[RendererImplGlCocoaTouch alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView renderer:this sharedRenderer:sharedRendererGl];
 }
 
 EAGLContext* RendererGl::getEaglContext() const
@@ -209,12 +209,12 @@ void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	mWnd = wnd;
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
-		mImpl = new AppImplMswRendererAngle( this );
+		mImpl = new RendererImplGlAngle( this );
 #else
-		mImpl = new AppImplMswRendererGl( this );
+		mImpl = new RendererImplGlMsw( this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
-		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
 }
 
 void RendererGl::kill()
