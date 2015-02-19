@@ -43,7 +43,16 @@
 		class UIScreen;
 	#endif
 #endif
+typedef uint32_t CGDisplayChangeSummaryFlags;
 typedef uint32_t CGDirectDisplayID;
+
+namespace cinder {
+#if defined( CINDER_MAC )
+	class DisplayMac;
+#else
+	class DisplayCocoaTouch;
+#endif
+}
 
 namespace cinder { namespace app {
 
@@ -91,6 +100,18 @@ class PlatformCocoa : public Platform {
 	
 	bool					mDisplaysInitialized;
 	std::vector<DisplayRef>	mDisplays;
+
+	// Display-specific callbacks
+	//! Makes a record of \a display and signals appropriately
+	void		addDisplay( const DisplayRef &display );
+	//! Removes record of \a display from mDisplays and signals appropriately
+	void		removeDisplay( const DisplayRef &display );
+
+#if defined( CINDER_MAC )
+	friend DisplayMac;
+#else
+	friend DisplayCocoaTouch;
+#endif
 };
 
 } } // namespace cinder::app
@@ -107,6 +128,8 @@ class DisplayMac : public Display {
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
 
   protected:	
+	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
+
 	NSScreen			*mScreen;
 	CGDirectDisplayID	mDirectDisplayID;
 	
