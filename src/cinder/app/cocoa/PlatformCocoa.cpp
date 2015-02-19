@@ -394,6 +394,35 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefres
 
 #else // COCOA_TOUCH
 
+DisplayRef app::PlatformCocoa::findDisplayFromUiScreen( UIScreen *uiScreen )
+{
+	for( auto &display : mDisplays ) {
+		const DisplayCocoaTouch* cocoaTouchDisplay( dynamic_cast<const DisplayCocoaTouch*>( display.get() ) );
+		if( cocoaTouchDisplay->getUiScreen() == uiScreen )
+			return display;
+	}
+
+	// couldn't find it, so return nullptr
+	return nullptr;
+}
+
+DisplayCocoaTouch::DisplayCocoaTouch( UIScreen *screen )
+{
+	[screen retain]; // this is released in the destructor for Display
+	CGRect frame = [screen bounds];
+
+	mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+	mUiScreen = screen;
+	mBitsPerPixel = 24;
+	mContentScale = screen.scale;
+
+	NSArray *resolutions = [screen availableModes];
+	for( int i = 0; i < [resolutions count]; ++i ) {
+		::UIScreenMode *mode = [resolutions objectAtIndex:i];
+		mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+	}
+}
+
 DisplayCocoaTouch::~DisplayCocoaTouch()
 {
 	[mUiScreen release];
@@ -402,44 +431,18 @@ DisplayCocoaTouch::~DisplayCocoaTouch()
 const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefresh )
 {
 	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
+		mDisplays.clear();
+		
 		NSArray *screens = [UIScreen screens];
-		for( UIScreen *screen in screens ) {
-			[screen retain]; // this is released in the destructor for Display
-			CGRect frame = [screen bounds];
-
-			DisplayCocoaTouch *newDisplay = new DisplayCocoaTouch();
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
-
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
-			mDisplays.push_back( DisplayRef( newDisplay ) );
+		size_t screenCount = [screens count];
+		for( size_t i = 0; i < screenCount; ++i ) {
+			mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [screens objectAtIndex:i] ) ) );
 		}
 
 		// <TEMPORARY>
 		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
 		if( [screens count] == 0 ) {
-			UIScreen *screen = [UIScreen mainScreen];
-			[screen retain];
-			CGRect frame = [screen bounds];
-
-			DisplayCocoaTouch *newDisplay = new DisplayCocoaTouch();
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
-
-			NSArray *modes = [screen availableModes];
-			for( UIScreenMode *mode in modes ) {
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
+			DisplayCocoaTouch *newDisplay = new DisplayCocoaTouch( [UIScreen mainScreen] );
 			mDisplays.push_back( DisplayRef( newDisplay ) );
 		}
 		// </TEMPORARY>

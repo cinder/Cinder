@@ -86,13 +86,19 @@ class PlatformCocoa : public Platform {
 	const std::vector<DisplayRef>& getDisplays( bool forceRefresh = false ) override;
 
 #if defined( CINDER_MAC )
-	//! Finds a Display based on its CGDirectDisplayID
+	//! Finds a Display based on its CGDirectDisplayID. Returns \c nullptr on failure.
 	DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
-	//! Finds a Display based on its NSScreen
+	//! Finds a Display based on its NSScreen. Returns \c nullptr on failure.
 	DisplayRef			findFromNsScreen( NSScreen *nsScreen );
 #else
-
+	//! Finds a Display based on its UISScreen. Returns \c nullptr on failure.
+	DisplayRef			findDisplayFromUiScreen( UIScreen *uiScreen );
 #endif
+	// Display-specific callbacks
+	//! Makes a record of \a display and signals appropriately. Generally only useful for Cinder internals.
+	void		addDisplay( const DisplayRef &display );
+	//! Removes record of \a display from mDisplays and signals appropriately. Generally only useful for Cinder internals.
+	void		removeDisplay( const DisplayRef &display );
 
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
@@ -100,12 +106,6 @@ class PlatformCocoa : public Platform {
 	
 	bool					mDisplaysInitialized;
 	std::vector<DisplayRef>	mDisplays;
-
-	// Display-specific callbacks
-	//! Makes a record of \a display and signals appropriately
-	void		addDisplay( const DisplayRef &display );
-	//! Removes record of \a display from mDisplays and signals appropriately
-	void		removeDisplay( const DisplayRef &display );
 
 #if defined( CINDER_MAC )
 	friend DisplayMac;
@@ -141,6 +141,7 @@ class DisplayMac : public Display {
 //! Represents a monitor/display on iOS
 class DisplayCocoaTouch : public Display {
   public:
+	DisplayCocoaTouch( UIScreen *screen );
 	~DisplayCocoaTouch();
 	
 	UIScreen*	getUiScreen() const { return mUiScreen; }
@@ -149,13 +150,9 @@ class DisplayCocoaTouch : public Display {
 	//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
 	void						setResolution( const ivec2 &resolution );
 
-	//! Returns the signal emitted when a display is connected or disconnected
-	signals::Signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
-
-  protected:	
+  protected:
 	UIScreen				*mUiScreen;
 	std::vector<ivec2>		mSupportedResolutions;
-	signals::Signal<void()>	mSignalDisplaysChanged;
 	
 	friend app::PlatformCocoa;	
 };

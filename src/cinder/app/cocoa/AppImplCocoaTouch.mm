@@ -109,6 +109,7 @@ using namespace cinder::app;
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
 	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
+	[center addObserver:self selector:@selector(screenModeDidChange:) name:	UIScreenModeDidChangeNotification object:nil];
 
 	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / settings.getFrameRate() + 0.5f ) );
 
@@ -187,11 +188,17 @@ using namespace cinder::app;
 
 - (void)screenDidConnect:(NSNotification *)notification
 {
-	NSLog(@"A new screen got connected: %@", [notification object]);
-	//cinder::Display::markDisplaysDirty();
+	DisplayRef connected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
+	app::PlatformCocoa::get()->addDisplay( connected );
 }
 
 - (void)screenDidDisconnect:(NSNotification *)notification
+{
+	DisplayRef disconnected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
+	app::PlatformCocoa::get()->removeDisplay( disconnected );
+}
+
+- (void)screenModeDidChange:(NSNotification *)notification
 {
 	NSLog(@"A screen got disconnected: %@", [notification object]);
 	//	cinder::Display::markDisplaysDirty();
