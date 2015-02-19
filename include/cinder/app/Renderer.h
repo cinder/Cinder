@@ -191,7 +191,7 @@ class Renderer2d : public Renderer {
  protected:
 	Renderer2d( const Renderer2d &renderer );
  
-	class AppImplMswRendererGdi	*mImpl;
+	class RendererImpl2dGdi	*mImpl;
 
 	bool			mDoubleBuffer, mPaintEvents;
 	HWND			mWnd;

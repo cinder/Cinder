@@ -34,7 +34,7 @@
 #undef max
 
 #include "cinder/app/msw/AppImplWinRT.h"
-#include "cinder/app/msw/AppImplMSWRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Display.h"
 #include "cinder/app/Window.h"
 

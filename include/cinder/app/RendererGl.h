@@ -203,11 +203,11 @@ protected:
 	RendererImplGlCocoaTouch	*mImpl;
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		class AppImplMswRendererAngle	*mImpl;
-		friend class					AppImplMswRendererAngle;
+		class RendererImplGlAngle	*mImpl;
+		friend class					RendererImplGlAngle;
 	#else
-		class AppImplMswRendererGl		*mImpl;
-		friend class					AppImplMswRendererGl;
+		class RendererImplGlMsw		*mImpl;
+		friend class					RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
 #endif

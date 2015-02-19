@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "EGL/egl.h"
 #include "EGL/eglext.h"
 #include "EGL/eglplatform.h"
@@ -36,9 +36,9 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace app {
 
-class AppImplMswRendererAngle : public AppImplMswRenderer {
+class RendererImplGlAngle : public RendererImplMsw {
  public:
-	AppImplMswRendererAngle( class RendererGl *renderer );
+	RendererImplGlAngle( class RendererGl *renderer );
 	
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 	virtual void	prepareToggleFullScreen() override;

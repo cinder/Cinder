@@ -27,7 +27,7 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "cinder/app/msw/AppImplMswRendererDx.h"
+#include "cinder/app/msw/RendererImplDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/app/App.h"
 #include "cinder/Camera.h"
@@ -173,8 +173,8 @@ namespace cinder { namespace app {
 //bool sMultisampleSupported = false;
 //int sArbMultisampleFormat;
 
-AppImplMswRendererDx::AppImplMswRendererDx( App *aApp, RendererDx *aRenderer )
-: AppImplMswRenderer( aApp ),
+RendererImplDx::RendererImplDx( App *aApp, RendererDx *aRenderer )
+: RendererImplMsw( aApp ),
   mCurrentBatchTexture(NULL),
   mCurrentColor(1, 1, 1, 1),
   mCurrentNormal(0, 0, 1),
@@ -226,12 +226,12 @@ AppImplMswRendererDx::AppImplMswRendererDx( App *aApp, RendererDx *aRenderer )
 {
 }
 
-void AppImplMswRendererDx::prepareToggleFullScreen()
+void RendererImplDx::prepareToggleFullScreen()
 {
 	releaseNonDeviceResources();
 }
 
-void AppImplMswRendererDx::finishToggleFullScreen()
+void RendererImplDx::finishToggleFullScreen()
 {
 	mFullScreen = !mFullScreen;
 	if(mFullScreen)
@@ -244,7 +244,7 @@ void AppImplMswRendererDx::finishToggleFullScreen()
 	}
 }
 
-void AppImplMswRendererDx::getPlatformWindowDimensions(DX_WINDOW_TYPE wnd, float* width, float* height) const {
+void RendererImplDx::getPlatformWindowDimensions(DX_WINDOW_TYPE wnd, float* width, float* height) const {
 
 #if defined( CINDER_MSW ) 
 	RECT rect;
@@ -257,7 +257,7 @@ void AppImplMswRendererDx::getPlatformWindowDimensions(DX_WINDOW_TYPE wnd, float
 #endif
 }
 
-void AppImplMswRendererDx::releaseNonDeviceResources()
+void RendererImplDx::releaseNonDeviceResources()
 {
 	if(mFixedColorVertexShader) mFixedColorVertexShader->Release(); mFixedColorVertexShader = NULL;
 	if(mFixedColorPixelShader) mFixedColorPixelShader->Release(); mFixedColorPixelShader = NULL;
@@ -296,7 +296,7 @@ void AppImplMswRendererDx::releaseNonDeviceResources()
 	if(mSwapChain) mSwapChain->Release(); mSwapChain = NULL;
 }
 
-void AppImplMswRendererDx::defaultResize() const
+void RendererImplDx::defaultResize() const
 {
 	if(!mSwapChain)
 		return;
@@ -310,7 +310,7 @@ void AppImplMswRendererDx::defaultResize() const
 	mDepthStencilTexture->Release();
 	mDepthStencilView->Release();
 	mDeviceContext->Flush();
-	const_cast<AppImplMswRendererDx*>(this)->createFramebufferResources();
+	const_cast<RendererImplDx*>(this)->createFramebufferResources();
 
 	cinder::CameraPersp cam( static_cast<int>(width), static_cast<int>(height), 60.0f );
 
@@ -322,7 +322,7 @@ void AppImplMswRendererDx::defaultResize() const
 	dx::multModelView(Matrix44f::createTranslation(Vec3f(0, -height, 0)));
 }
 
-void AppImplMswRendererDx::swapBuffers() const
+void RendererImplDx::swapBuffers() const
 {
 	DXGI_PRESENT_PARAMETERS parameters = {0};
 	parameters.DirtyRectsCount = 0;
@@ -344,19 +344,19 @@ void AppImplMswRendererDx::swapBuffers() const
 #endif
 	//handle device lost
 	if(hr == DXGI_ERROR_DEVICE_REMOVED)
-		const_cast<AppImplMswRendererDx*>(this)->handleLostDevice();
+		const_cast<RendererImplDx*>(this)->handleLostDevice();
 #if defined( CINDER_WINRT ) || ( _WIN32_WINNT >= 0x0602 )
 	mDeviceContext->DiscardView( mMainFramebuffer );
 	mDeviceContext->DiscardView( mDepthStencilView );
 #endif
 }
 
-void AppImplMswRendererDx::makeCurrentContext()
+void RendererImplDx::makeCurrentContext()
 {
 	mDeviceContext->OMSetRenderTargets(1, &mMainFramebuffer, mDepthStencilView);
 }
 
-void AppImplMswRendererDx::setViewport(int x, int y, int width, int height) const
+void RendererImplDx::setViewport(int x, int y, int width, int height) const
 {
     D3D11_VIEWPORT vp;
     vp.Width = (FLOAT)width;
@@ -368,7 +368,7 @@ void AppImplMswRendererDx::setViewport(int x, int y, int width, int height) cons
 	mDeviceContext->RSSetViewports( 1, &vp );
 }
 
-void AppImplMswRendererDx::enableDepthTesting(bool enable)
+void RendererImplDx::enableDepthTesting(bool enable)
 {
 	mDepthStencilDesc.DepthEnable = enable == true;
 	if(mDepthStencilState) mDepthStencilState->Release();
@@ -376,7 +376,7 @@ void AppImplMswRendererDx::enableDepthTesting(bool enable)
 	mDeviceContext->OMSetDepthStencilState(mDepthStencilState, 0xff);
 }
 
-void AppImplMswRendererDx::enableAlphaBlending(bool premultiplied)
+void RendererImplDx::enableAlphaBlending(bool premultiplied)
 {
 	if(mBlendState) mBlendState->Release();
 	mBlendDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -397,7 +397,7 @@ void AppImplMswRendererDx::enableAlphaBlending(bool premultiplied)
 	mDeviceContext->OMSetBlendState(mBlendState, 0, 0xffffffff);
 }
 
-void AppImplMswRendererDx::disableAlphaBlending()
+void RendererImplDx::disableAlphaBlending()
 {
 	if(mBlendState) mBlendState->Release();
 	mBlendDesc.RenderTarget[0].BlendEnable = FALSE;
@@ -405,7 +405,7 @@ void AppImplMswRendererDx::disableAlphaBlending()
 	mDeviceContext->OMSetBlendState(mBlendState, 0, 0xffffffff);
 }
 
-void AppImplMswRendererDx::enableAdditiveBlending()
+void RendererImplDx::enableAdditiveBlending()
 {
 	if(mBlendState) mBlendState->Release();
 	mBlendDesc.RenderTarget[0].BlendEnable = TRUE;
@@ -418,7 +418,7 @@ void AppImplMswRendererDx::enableAdditiveBlending()
 	mDeviceContext->OMSetBlendState(mBlendState, 0, 0xffffffff);
 }
 
-void AppImplMswRendererDx::enableDepthWriting(bool enable)
+void RendererImplDx::enableDepthWriting(bool enable)
 {
 	mDepthStencilDesc.DepthWriteMask = (enable) ? D3D11_DEPTH_WRITE_MASK_ALL : D3D11_DEPTH_WRITE_MASK_ZERO;
 	if(mDepthStencilState) mDepthStencilState->Release();
@@ -426,7 +426,7 @@ void AppImplMswRendererDx::enableDepthWriting(bool enable)
 }
 
 #if defined( CINDER_MSW )
-bool AppImplMswRendererDx::initialize( HWND wnd, HDC,  RendererRef sharedRenderer )
+bool RendererImplDx::initialize( HWND wnd, HDC,  RendererRef sharedRenderer )
 {
 	// TODO: see if DX can do antialiasing automatically
 	bool success = initializeInternal( wnd );
@@ -438,7 +438,7 @@ bool AppImplMswRendererDx::initialize( HWND wnd, HDC,  RendererRef sharedRendere
 	return success;
 }
 #elif defined( CINDER_WINRT )
-bool AppImplMswRendererDx::initialize( DX_WINDOW_TYPE wnd)
+bool RendererImplDx::initialize( DX_WINDOW_TYPE wnd)
 {
 	// TODO: see if DX can do antialiasing automatically
 	bool success = initializeInternal( wnd );
@@ -451,7 +451,7 @@ bool AppImplMswRendererDx::initialize( DX_WINDOW_TYPE wnd)
 }
 #endif
 
-bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
+bool RendererImplDx::initializeInternal( DX_WINDOW_TYPE wnd )
 {
 	mWnd = wnd;
 	
@@ -616,13 +616,13 @@ bool AppImplMswRendererDx::initializeInternal( DX_WINDOW_TYPE wnd )
 	return true;									// Success
 }
 
-int AppImplMswRendererDx::initMultisample( int requestedLevelIdx )
+int RendererImplDx::initMultisample( int requestedLevelIdx )
 {
 	// Return failure if we hit level 0
 	return 0;
 }
 
-bool AppImplMswRendererDx::createDevice( UINT createDeviceFlags )
+bool RendererImplDx::createDevice( UINT createDeviceFlags )
 {
 	D3D_FEATURE_LEVEL featureLevels[] =
     {
@@ -680,7 +680,7 @@ bool AppImplMswRendererDx::createDevice( UINT createDeviceFlags )
 
 
 
-bool AppImplMswRendererDx::createDeviceResources()
+bool RendererImplDx::createDeviceResources()
 {
 	UINT createDeviceFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 	
@@ -698,7 +698,7 @@ bool AppImplMswRendererDx::createDeviceResources()
 	return ok;
 }
 
-bool AppImplMswRendererDx::createFramebufferResources()
+bool RendererImplDx::createFramebufferResources()
 {
 	float width, height;
 	getPlatformWindowDimensions(mWnd, &width, &height);
@@ -849,7 +849,7 @@ bool AppImplMswRendererDx::createFramebufferResources()
 	return true;
 }
 
-bool AppImplMswRendererDx::createShadersFeatureLevel_9_1()
+bool RendererImplDx::createShadersFeatureLevel_9_1()
 {
 	HRESULT hr;
 
@@ -932,7 +932,7 @@ bool AppImplMswRendererDx::createShadersFeatureLevel_9_1()
 	return true;
 }
 
-bool AppImplMswRendererDx::createShadersFeatureLevel_9_3()
+bool RendererImplDx::createShadersFeatureLevel_9_3()
 {
 	HRESULT hr;
 
@@ -1015,7 +1015,7 @@ bool AppImplMswRendererDx::createShadersFeatureLevel_9_3()
 	return true;
 }
 
-bool AppImplMswRendererDx::createShadersFeatureLevel_10_1()
+bool RendererImplDx::createShadersFeatureLevel_10_1()
 {
 	HRESULT hr;
 
@@ -1098,7 +1098,7 @@ bool AppImplMswRendererDx::createShadersFeatureLevel_10_1()
 	return true;
 }
 
-bool AppImplMswRendererDx::createShadersFeatureLevel_11_0()
+bool RendererImplDx::createShadersFeatureLevel_11_0()
 {
 	HRESULT hr;
 
@@ -1181,12 +1181,12 @@ bool AppImplMswRendererDx::createShadersFeatureLevel_11_0()
 	return true;
 }
 
-bool AppImplMswRendererDx::createShadersFeatureLevel_11_1()
+bool RendererImplDx::createShadersFeatureLevel_11_1()
 {
 	return createShadersFeatureLevel_11_0();
 }
 
-void AppImplMswRendererDx::handleLostDevice()
+void RendererImplDx::handleLostDevice()
 {
 	mSwapChain->Release();
 	mSwapChain = NULL;
@@ -1195,7 +1195,7 @@ void AppImplMswRendererDx::handleLostDevice()
 	defaultResize();
 }
 
-void AppImplMswRendererDx::kill()
+void RendererImplDx::kill()
 {
 	if(mDeviceContext) mDeviceContext->ClearState(); mDeviceContext = NULL;
 	releaseNonDeviceResources();

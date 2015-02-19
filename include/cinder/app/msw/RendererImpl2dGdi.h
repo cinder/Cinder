@@ -27,16 +27,16 @@
 #undef min
 #undef max
 
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Surface.h"
 
 namespace cinder { namespace app {
 
 class AppBase;
 
-class AppImplMswRendererGdi : public AppImplMswRenderer {
+class RendererImpl2dGdi : public RendererImplMsw {
  public:
-	 AppImplMswRendererGdi( bool doubleBuffer, bool paintEvents );
+	 RendererImpl2dGdi( bool doubleBuffer, bool paintEvents );
 
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill() {}

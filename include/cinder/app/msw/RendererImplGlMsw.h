@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 
 namespace cinder { namespace gl {
 	class Context;
@@ -33,9 +33,9 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace app {
 
-class AppImplMswRendererGl : public AppImplMswRenderer {
+class RendererImplGlMsw : public RendererImplMsw {
  public:
-	AppImplMswRendererGl( class RendererGl *aRenderer );
+	RendererImplGlMsw( class RendererGl *aRenderer );
 	
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();

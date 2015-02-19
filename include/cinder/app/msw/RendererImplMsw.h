@@ -34,7 +34,7 @@ namespace cinder { namespace app {
 class AppBase;
 class AppImplMswBasic;
 
-class AppImplMswRenderer {
+class RendererImplMsw {
  public:
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;

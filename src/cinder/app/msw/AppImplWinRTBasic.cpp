@@ -29,7 +29,7 @@
 
 #include "cinder/app/msw/AppImplWinRTBasic.h"
 #include "cinder/app/AppBasic.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
 #include "cinder/app/WinRTApp.h"

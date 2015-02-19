@@ -43,7 +43,7 @@
 #include <cmath>
 #include <map>
 #include "cinder/app/AppBasic.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 #include "cinder/dx/DxLight.h"
 #include "cinder/MatrixStack.h"
 
@@ -66,8 +66,8 @@ namespace cinder { namespace dx {
 //	Vec4f color;
 //};
 
-typedef app::AppImplMswRendererDx::FixedVertex FixedVertex;
-typedef app::AppImplMswRendererDx::LightData LightData;
+typedef app::RendererImplDx::FixedVertex FixedVertex;
+typedef app::RendererImplDx::LightData LightData;
 
 //static Vec4f getDxRenderer()->mCurrentColor(1, 1, 1, 1);
 //static Vec3f getDxRenderer()->mCurrentNormal(0, 0, 1);
@@ -77,7 +77,7 @@ typedef app::AppImplMswRendererDx::LightData LightData;
 //static bool getDxRenderer()->mLightingEnabled = false;
 //static LightData getDxRenderer()->mLights[8];
 
-app::AppImplMswRendererDx *getDxRenderer()
+app::RendererImplDx *getDxRenderer()
 {
 	return ((app::RendererDx*)(&*app::App::get()->getRenderer()))->mImpl;
 }
@@ -184,7 +184,7 @@ static void applyDxFixedPipeline(const FixedVertex *verts, UINT elements, ID3D11
 	if(dx->mLightingEnabled) {
 		dx->mDeviceContext->VSSetConstantBuffers(1, 1, &dx->mCBLights);
 	}
-	if( ! dx->getRenderFlag( app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE ) ) {
+	if( ! dx->getRenderFlag( app::RendererImplDx::CUSTOM_SHADER_ACTIVE ) ) {
 		dx->mDeviceContext->VSSetShader(vs, NULL, 0);
 		dx->mDeviceContext->PSSetShader(ps, NULL, 0);
 	}
@@ -2432,7 +2432,7 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 	if( vertexEnd < 0 ) vertexEnd = vbo.getNumVertices();
 
 	auto dx = getDxRenderer();
-	if(!dx->getRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE))
+	if(!dx->getRenderFlag(app::RendererImplDx::CUSTOM_SHADER_ACTIVE))
 	{
 		ID3D11ShaderResourceView *view;
 		dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
@@ -2493,7 +2493,7 @@ void drawArrays( const VboMesh &vbo, GLint first, GLsizei count )
 	if( count < 0 ) count = vbo.getNumVertices();
 
 	auto dx = getDxRenderer();
-	if(!dx->getRenderFlag(app::AppImplMswRendererDx::CUSTOM_SHADER_ACTIVE))
+	if(!dx->getRenderFlag(app::RendererImplDx::CUSTOM_SHADER_ACTIVE))
 	{
 		ID3D11ShaderResourceView *view;
 		dx->mDeviceContext->PSGetShaderResources(0, 1, &view);
@@ -2647,7 +2647,7 @@ void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect
 		auto dx = getDxRenderer();
 		const Rectf srcCoords = texture->getAreaTexCoords( srcArea );
 		
-		if(dx->getRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE))
+		if(dx->getRenderFlag(app::RendererImplDx::BATCH_TEXTURE))
 		{
 			FixedVertex verts[6] = {
 				FixedVertex(Vec3f(destRect.getX2(), destRect.getY1(), 0), dx->mCurrentNormal, Vec2f(srcCoords.getX2(), srcCoords.getY1()), dx->mCurrentColor),
@@ -2687,7 +2687,7 @@ void draw( const TextureRef &texture, const Area &srcArea, const Rectf &destRect
 
 void batchTextureBegin()
 {
-	getDxRenderer()->setRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE);
+	getDxRenderer()->setRenderFlag(app::RendererImplDx::BATCH_TEXTURE);
 }
 
 void batchTextureEnd()
@@ -2707,7 +2707,7 @@ void batchTextureEnd()
 	}
 	dx->mBatchedTextures.clear();
 	dx->mCurrentBatchTexture = nullptr;
-	dx->clearRenderFlag(app::AppImplMswRendererDx::BATCH_TEXTURE);
+	dx->clearRenderFlag(app::RendererImplDx::BATCH_TEXTURE);
 }
 
 namespace {

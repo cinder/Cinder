@@ -32,7 +32,7 @@
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/dx/DxTexture.h"
 #include <stdio.h>
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 #include "cinder/dx/DDSTextureLoader.h"
 
 #if defined( CINDER_WINRT )
@@ -967,7 +967,7 @@ uint32_t Texture::dataFormatNumChannels( DXGI_FORMAT dataFormat )
 TextureRef Texture::loadDds( IStreamRef ddsStream, Format format )
 {
 	TextureRef texture( new Texture() );
-	app::AppImplMswRendererDx *dxRenderer = reinterpret_cast<app::AppImplMswRendererDx*>(reinterpret_cast<app::RendererDx*>(&*app::App::get()->getRenderer())->mImpl);
+	app::RendererImplDx *dxRenderer = reinterpret_cast<app::RendererImplDx*>(reinterpret_cast<app::RendererDx*>(&*app::App::get()->getRenderer())->mImpl);
 	uint8_t *data = (uint8_t*)malloc(ddsStream->size());
 	if( ! data ) {
 		throw TextureDataExc("Not enough memory to load DDS");

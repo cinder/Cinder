@@ -42,7 +42,7 @@
 
 #elif defined( CINDER_MSW )
 	#include "cinder/app/msw/AppImplMsw.h"
-	#include "cinder/app/msw/AppImplMswRendererGdi.h"
+	#include "cinder/app/msw/RendererImpl2dGdi.h"
 #endif
 
 namespace cinder { namespace app {
@@ -153,7 +153,7 @@ Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 void Renderer2d::setup( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mWnd = wnd;
-	mImpl = new AppImplMswRendererGdi( mDoubleBuffer, mPaintEvents );
+	mImpl = new RendererImpl2dGdi( mDoubleBuffer, mPaintEvents );
 	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 

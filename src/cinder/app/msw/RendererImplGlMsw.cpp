@@ -22,7 +22,7 @@
 */
 
 #if ! defined( CINDER_GL_ANGLE )
-#include "cinder/app/msw/AppImplMswRendererGl.h"
+#include "cinder/app/msw/RendererImplGlMsw.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
@@ -41,21 +41,21 @@ int sArbMultisampleFormat;
 typedef HGLRC (__stdcall * PFNWGLCREATECONTEXTATTRIBSARB) (HDC hDC, HGLRC hShareContext, const int *attribList);
 typedef BOOL (__stdcall * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int * piAttribIList, const FLOAT * pfAttribFList, UINT nMaxFormats, int * piFormats, UINT * nNumFormats);
 
-AppImplMswRendererGl::AppImplMswRendererGl( RendererGl *aRenderer )
+RendererImplGlMsw::RendererImplGlMsw( RendererGl *aRenderer )
 	: mRenderer( aRenderer )
 {
 	mRC = 0;
 }
 
-void AppImplMswRendererGl::prepareToggleFullScreen()
+void RendererImplGlMsw::prepareToggleFullScreen()
 {
 }
 
-void AppImplMswRendererGl::finishToggleFullScreen()
+void RendererImplGlMsw::finishToggleFullScreen()
 {
 }
 
-void AppImplMswRendererGl::defaultResize() const
+void RendererImplGlMsw::defaultResize() const
 {
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
@@ -66,12 +66,12 @@ void AppImplMswRendererGl::defaultResize() const
 	gl::setMatricesWindow( width, height );
 }
 
-void AppImplMswRendererGl::swapBuffers() const
+void RendererImplGlMsw::swapBuffers() const
 {
 	::SwapBuffers( mDC );
 }
 
-void AppImplMswRendererGl::makeCurrentContext()
+void RendererImplGlMsw::makeCurrentContext()
 {
 	mCinderContext->makeCurrent();
 }
@@ -281,7 +281,7 @@ bool initializeGl( HWND wnd, HDC dc, HGLRC sharedRC, const RendererGl::Options &
 }
 } // anonymous namespace
 
-bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
+bool RendererImplGlMsw::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
 	mDC = dc;
@@ -306,7 +306,7 @@ bool AppImplMswRendererGl::initialize( HWND wnd, HDC dc, RendererRef sharedRende
 }
 
 
-void AppImplMswRendererGl::kill()
+void RendererImplGlMsw::kill()
 {
 	if( mRC ) {											// Do We Have A Rendering Context?
 		::wglMakeCurrent( NULL, NULL );					// release The DC And RC Contexts

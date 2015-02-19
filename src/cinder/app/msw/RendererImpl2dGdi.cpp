@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/msw/AppImplMswRendererGdi.h"
+#include "cinder/app/msw/RendererImpl2dGdi.h"
 #include "cinder/gl/gl.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/msw/CinderMsw.h"
@@ -31,15 +31,15 @@
 
 namespace cinder { namespace app {
 
-AppImplMswRendererGdi::AppImplMswRendererGdi( bool doubleBuffer, bool paintEvents )
+RendererImpl2dGdi::RendererImpl2dGdi( bool doubleBuffer, bool paintEvents )
 	: mDoubleBuffer( doubleBuffer ), mPaintEvents( paintEvents ), mDoubleBufferBitmap( 0 )
 {
 }
 
-void AppImplMswRendererGdi::defaultResize() const
+void RendererImpl2dGdi::defaultResize() const
 {}
 
-void AppImplMswRendererGdi::swapBuffers() const
+void RendererImpl2dGdi::swapBuffers() const
 {
 	if( mDoubleBuffer ) {
 		::BitBlt( mPaintDc, 0, 0, mDoubleBufferBitmapSize.x, mDoubleBufferBitmapSize.y, mDoubleBufferDc, 0, 0, SRCCOPY );
@@ -55,7 +55,7 @@ void AppImplMswRendererGdi::swapBuffers() const
 		::ReleaseDC( mWnd, mPaintDc );
 }
 
-void AppImplMswRendererGdi::makeCurrentContext()
+void RendererImpl2dGdi::makeCurrentContext()
 {
 	if( mPaintEvents )
 		mPaintDc = ::BeginPaint( mWnd, &mPaintStruct );
@@ -80,13 +80,13 @@ void AppImplMswRendererGdi::makeCurrentContext()
 	}
 }
 
-bool AppImplMswRendererGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+bool RendererImpl2dGdi::initialize( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
 	mWnd = wnd;
 	return true;
 }
 
-Surface8u AppImplMswRendererGdi::copyWindowContents( const Area &area )
+Surface8u RendererImpl2dGdi::copyWindowContents( const Area &area )
 {
 	// Warning - if you step through this code with a debugger, the image returned
 	// will be of the foreground window (presumably your IDE) instead

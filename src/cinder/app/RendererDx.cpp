@@ -28,7 +28,7 @@
 
 #include "cinder/app/RendererDx.h"
 #include "cinder/Exception.h"
-#include "cinder/app/AppImplMswRendererDx.h"
+#include "cinder/app/RendererImplDx.h"
 #include "cinder/ip/Flip.h"
 
 namespace cinder { namespace app {
@@ -54,7 +54,7 @@ void RendererDx::setup( App *aApp, HWND wnd, HDC dc,  RendererRef sharedRenderer
 	mWnd = wnd;
 	mApp = aApp;
 	if( ! mImpl )
-		mImpl = new AppImplMswRendererDx( mApp, this );
+		mImpl = new RendererImplDx( mApp, this );
 	mImpl->initialize( wnd, dc, sharedRenderer );
 }
 #elif defined( CINDER_WINRT )
@@ -63,7 +63,7 @@ void RendererDx::setup( App *aApp, DX_WINDOW_TYPE wnd)
 	mWnd = wnd;
 	mApp = aApp;
 	if( ! mImpl )
-		mImpl = new AppImplMswRendererDx( mApp, this );
+		mImpl = new RendererImplDx( mApp, this );
 	mImpl->initialize( wnd);
 
 	// enable Vertical Sync drawing on WinRT

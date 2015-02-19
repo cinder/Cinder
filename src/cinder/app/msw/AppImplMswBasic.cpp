@@ -22,7 +22,7 @@
 */
 
 #include "cinder/app/msw/AppImplMswBasic.h"
-#include "cinder/app/msw/AppImplMswRenderer.h"
+#include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Utilities.h"
 
 #include <windowsx.h>

@@ -36,9 +36,9 @@
 	#endif
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		#include "cinder/app/msw/AppImplMswRendererAngle.h"
+		#include "cinder/app/msw/RendererImplGlAngle.h"
 	#else
-		#include "cinder/app/msw/AppImplMswRendererGl.h"
+		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
 #endif
 
@@ -209,12 +209,12 @@ void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 	mWnd = wnd;
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
-		mImpl = new AppImplMswRendererAngle( this );
+		mImpl = new RendererImplGlAngle( this );
 #else
-		mImpl = new AppImplMswRendererGl( this );
+		mImpl = new RendererImplGlMsw( this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
-		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
 }
 
 void RendererGl::kill()
