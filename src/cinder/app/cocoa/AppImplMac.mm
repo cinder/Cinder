@@ -563,7 +563,7 @@ using namespace cinder::app;
 		NSDictionary *dict = [screen deviceDescription];
 		CGDirectDisplayID displayID = (CGDirectDisplayID)[[dict objectForKey:@"NSScreenNumber"] intValue];
 		if( displayID != (std::dynamic_pointer_cast<cinder::DisplayMac>( mDisplay )->getCgDirectDisplayId()) ) {
-			auto newDisplay = cinder::DisplayMac::findFromCgDirectDisplayId( displayID );
+			auto newDisplay = cinder::app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayID );
 			if( newDisplay ) {
 				mDisplay = newDisplay;
 				mWindowRef->emitDisplayChange();

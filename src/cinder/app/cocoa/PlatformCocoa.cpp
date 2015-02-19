@@ -234,30 +234,19 @@ DisplayMac::~DisplayMac()
 	[mScreen release];
 }
 
-DisplayRef DisplayMac::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
+DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
 {
-	auto displays = app::Platform::get()->getDisplays();
-
-	for( vector<DisplayRef>::iterator dispIt = displays.begin(); dispIt != displays.end(); ++dispIt ) {
+	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
 		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
 		if( macDisplay.getCgDirectDisplayId() == displayID )
 			return *dispIt;
 	}
 
-	// force refresh of displays
-	displays = app::Platform::get()->getDisplays( true );
-	
-	// and try again
-	for( vector<DisplayRef>::iterator dispIt = displays.begin(); dispIt != displays.end(); ++dispIt ) {
-		if( std::dynamic_pointer_cast<DisplayMac>( *dispIt )->getCgDirectDisplayId() == displayID )
-			return *dispIt;
-	}
-
-	// couldn't find it, so return 0
-	return DisplayRef();
+	// couldn't find it, so return nullptr
+	return nullptr;
 }
 
-DisplayRef DisplayMac::findFromNsScreen( NSScreen *nsScreen )
+DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
 {
 	return findFromCgDirectDisplayId( (CGDirectDisplayID)[[[nsScreen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] );
 }

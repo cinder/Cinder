@@ -267,7 +267,7 @@ using namespace cinder::app;
 	if( win ) {
 		NSScreen *screen = [win screen];
 		if( screen )
-			return cinder::DisplayMac::findFromNsScreen( screen );
+			return cinder::app::PlatformCocoa::get()->findFromNsScreen( screen );
 	}
 	
 	return cinder::DisplayRef();

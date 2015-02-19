@@ -50,6 +50,7 @@ namespace cinder { namespace app {
 class PlatformCocoa : public Platform {
   public:
 	PlatformCocoa();
+	static PlatformCocoa*	get() { return reinterpret_cast<PlatformCocoa*>( Platform::get() ); }
 
 	void prepareLaunch() override;
 	void cleanupLaunch() override;
@@ -75,6 +76,15 @@ class PlatformCocoa : public Platform {
 
 	const std::vector<DisplayRef>& getDisplays( bool forceRefresh = false ) override;
 
+#if defined( CINDER_MAC )
+	//! Finds a Display based on its CGDirectDisplayID
+	DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
+	//! Finds a Display based on its NSScreen
+	DisplayRef			findFromNsScreen( NSScreen *nsScreen );
+#else
+
+#endif
+
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
@@ -95,9 +105,6 @@ class DisplayMac : public Display {
 
 	NSScreen*			getNsScreen() const { return mScreen; }
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
-
-	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
-	static DisplayRef			findFromNsScreen( NSScreen *nsScreen );
 
   protected:	
 	NSScreen			*mScreen;
@@ -122,9 +129,7 @@ class DisplayCocoaTouch : public Display {
 	//! Returns the signal emitted when a display is connected or disconnected
 	signals::Signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
 
-  protected:
-	
-
+  protected:	
 	UIScreen				*mUiScreen;
 	std::vector<ivec2>		mSupportedResolutions;
 	signals::Signal<void()>	mSignalDisplaysChanged;
