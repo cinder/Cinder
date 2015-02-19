@@ -27,7 +27,7 @@
 #import <ScreenSaver/ScreenSaver.h>
 
 #include "cinder/app/AppScreenSaver.h"
-#import "cinder/app/CinderView.h"
+#import "cinder/app/cocoa/CinderViewMac.h"
 #import "cinder/app/Window.h"
 
 #include <string>
@@ -67,7 +67,7 @@
 
 @interface WindowImplCocoaScreenSaver : ScreenSaverView<WindowImplCocoa,CinderViewDelegate> {
   @public
-	CinderView							*mCinderView;	
+	CinderViewMac						*mCinderView;
 	cinder::app::WindowRef				mWindowRef;
 	cinder::DisplayRef					mDisplay;
 

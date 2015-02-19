@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#import "cinder/app/AppImplMacScreenSaver.h"
+#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
 #include "cinder/CinderAssert.h"
 
 #import <Foundation/NSThread.h>
@@ -51,7 +51,7 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 		cinder::app::RendererRef sharedRenderer;
 		if( sAppImplInstance )
 			sharedRenderer = [sAppImplInstance findSharedRenderer:renderer];
-		mCinderView = [[CinderView alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer
+		mCinderView = [[CinderViewMac alloc] initWithFrame:rect renderer:renderer sharedRenderer:sharedRenderer
 										appReceivesEvents:NO highDensityDisplay:sSettings->isHighDensityDisplayEnabled() enableMultiTouch:NO];
 		[mCinderView setDelegate:self];
 

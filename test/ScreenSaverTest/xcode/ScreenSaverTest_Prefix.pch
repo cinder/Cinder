@@ -5,7 +5,7 @@
 //   a) including all of Cinder's obj-c classes directly in the project and
 //   b) renaming them to something unique using the preprocessor. Awful.
 
-#define CinderView CinderView_ScreenSaverTest
+#define CinderViewMac CinderViewMac_ScreenSaverTest
 #define RendererImplGlMac RendererImplGlMac_ScreenSaverTest
 #define RendererImpl2dMacQuartz RendererImpl2dMacQuartz_ScreenSaverTest
 #define RendererImplGlMacTransparentView RendererImplGlMacTransparentView_ScreenSaverTest

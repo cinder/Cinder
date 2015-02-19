@@ -103,6 +103,20 @@ class AppScreenSaver : public AppBase {
 
 	ivec2		getMousePos() const override	{ return ivec2( 0 ); }
 
+	//! no-op, no cursor on this platform
+	void		hideCursor() override {}
+	//! no-op, no cursor on this platform
+	void		showCursor() override {}
+
+	//! \note no-op and returns an empty WindowRef, screensavers only have one window
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override	{ return WindowRef(); }
+	WindowRef	getForegroundWindow() const override	{ return getWindow(); }
+
+	//! ignored on screensavers
+	void		disableFrameRate() override {}
+	//! ignored on screensavers
+	bool		isFrameRateEnabled() const	{ return false; }
+
 #if defined( CINDER_MAC )
 	//! Should return a NSWindow* on Mac OS implementing a custom configuration dialog. Requires settings->setProvidesMacConfigDialog() in prepareSettings().
 	virtual NSWindow*		createMacConfigDialog() { return NULL; }

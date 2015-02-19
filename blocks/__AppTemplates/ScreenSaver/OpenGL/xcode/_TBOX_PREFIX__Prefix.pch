@@ -9,7 +9,7 @@
 //   a) including all of Cinder's obj-c classes directly in the project and
 //   b) renaming them to something unique using the preprocessor. Awful.
 
-#define CinderView CinderView_TBOX_PREFIX_
+#define CinderViewMac CinderViewMac_TBOX_PREFIX_
 #define RendererImplGlMac RendererImplGlMac_TBOX_PREFIX_
 #define RendererImpl2dMacQuartz RendererImpl2dMacQuartz_TBOX_PREFIX_
 #define RendererImplGlMacTransparentView RendererImplGlMacTransparentView_TBOX_PREFIX_
