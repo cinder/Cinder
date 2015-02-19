@@ -158,6 +158,20 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 
+
+    ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Fill.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Flip.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Grayscale.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Hdr.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Premultiply.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Resize.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Threshold.cpp
+    ${CINDER_SRC_DIR}/cinder/ip/Trim.cpp
+
+    ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
+
     ${CINDER_SRC_DIR}/cinder/Area.cpp
     ${CINDER_SRC_DIR}/cinder/AxisAlignedBox.cpp
     ${CINDER_SRC_DIR}/cinder/BSpline.cpp
@@ -189,7 +203,13 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Sphere.cpp
     ${CINDER_SRC_DIR}/cinder/Stream.cpp
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
+    ${CINDER_SRC_DIR}/cinder/Timeline.cpp
+    ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
+    ${CINDER_SRC_DIR}/cinder/Triangulate.cpp
     ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
+    ${CINDER_SRC_DIR}/cinder/Tween.cpp
+    #${CINDER_SRC_DIR}/cinder/Unicode.cpp
+    #${CINDER_SRC_DIR}/cinder/Url.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 

@@ -36,6 +36,24 @@ class AppBasicAndroid : public AppBasic {
     AppBasicAndroid();
     virtual ~AppBasicAndroid();
 
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
+	void		quit() override;
+
+	float		getFrameRate() const override;
+	void		setFrameRate( float frameRate ) override;
+	void		disableFrameRate() override;
+	bool		isFrameRateEnabled() const override;
+	fs::path	getAppPath() const override;
+
+	WindowRef	getWindow() const override;
+	WindowRef	getWindowIndex( size_t index ) const override;
+	size_t		getNumWindows() const override;
+
+	WindowRef	getForegroundWindow() const override;
+
+	void		hideCursor() override;
+	void		showCursor() override;
+	ivec2		getMousePos() const override;
 
 	//! \cond
 	// Called during application instanciation via CINDER_APP_BASIC_ANDROID macro
