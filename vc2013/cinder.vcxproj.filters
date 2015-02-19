@@ -264,9 +264,6 @@
     <ClCompile Include="..\src\cinder\Xml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
@@ -1521,9 +1518,6 @@
       <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppBase.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppBasic.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">

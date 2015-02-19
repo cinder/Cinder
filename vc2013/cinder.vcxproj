@@ -519,7 +519,6 @@
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
     <ClCompile Include="..\src\cinder\Xml.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
     <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
     <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp" />
@@ -596,7 +595,6 @@
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\App.h" />
     <ClInclude Include="..\include\cinder\app\AppBase.h" />
-    <ClInclude Include="..\include\cinder\app\AppBasic.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
     <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
