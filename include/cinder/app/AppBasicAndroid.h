@@ -27,5 +27,52 @@
 
 namespace cinder { namespace app {
 
+class AppImplAndroidBasic;
+
+class AppBasicAndroid : public AppBasic {
+ public:
+    typedef std::function<void ( Settings *settings )>	SettingsFn;
+
+    AppBasicAndroid();
+    virtual ~AppBasicAndroid();
+
+
+	//! \cond
+	// Called during application instanciation via CINDER_APP_BASIC_ANDROID macro
+	template<typename AppT>
+	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	//! \endcond
+};
+
+template<typename AppT>
+void AppBasicAndroid::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+{
+	AppBase::prepareLaunch();
+
+	Settings settings;
+	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+
+	if( settingsFn )
+		settingsFn( &settings );
+
+	if( settings.getShouldQuit() )
+		return;
+
+	AppBasic *app = new AppT;
+	#pragma unused( app )
+
+	AppBase::executeLaunch( title, argc, argv );
+	AppBase::cleanupLaunch();
+}
+
+#define CINDER_APP_BASIC_ANDROID( APP, RENDERER, ... )									    \
+void android_main( struct android_app* aAndroidApp )								        \
+{																						    \
+    app_dummpy();                                                                           \
+	cinder::app::RendererRef renderer( new RENDERER );									    \
+	cinder::app::AppBasicAndroid::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
+	return 0;																			    \
+}
+
 } } // namespace cinder::app
 

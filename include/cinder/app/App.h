@@ -48,4 +48,5 @@
     namespace cinder { namespace app {
         typedef AppBasicAndroid App;
     } } // namespace cinder::app
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_ANDROID( APP, RENDERER, ##__VA_ARGS__ )
 #endif
