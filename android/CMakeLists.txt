@@ -107,7 +107,13 @@ message( "${BoldGreen}CMAKE_RANLIB      : ${CMAKE_RANLIB}${ColorReset}" )
 message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
 message( "" )
 
-include_directories( ${CINDER_INC_DIR} ${BOOST_INC_DIR} )
+include_directories( 
+    ${CINDER_INC_DIR} 
+    ${CINDER_INC_DIR}/jsoncpp 
+    ${CINDER_SRC_DIR}/linebreak 
+    ${CINDER_SRC_DIR}/libtess2 
+    ${BOOST_INC_DIR} 
+)
 
 set( C_FLAGS "-march=armv7-a -mfpu=neon" )
 set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -g ${C_FLAGS}" )
@@ -119,6 +125,19 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math ${CXX_F
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
+
+
+    ${CINDER_SRC_DIR}/linebreak/linebreak.c
+    ${CINDER_SRC_DIR}/linebreak/linebreakdata.c
+    ${CINDER_SRC_DIR}/linebreak/linebreakdef.c
+
+    ${CINDER_SRC_DIR}/libtess2/bucketalloc.c
+    ${CINDER_SRC_DIR}/libtess2/dict.c
+    ${CINDER_SRC_DIR}/libtess2/geom.c
+    ${CINDER_SRC_DIR}/libtess2/mesh.c
+    ${CINDER_SRC_DIR}/libtess2/priorityq.c
+    ${CINDER_SRC_DIR}/libtess2/sweep.c
+    ${CINDER_SRC_DIR}/libtess2/tess.c
 )
 
 set( CINDER_CXX_SRC_FILES
@@ -157,7 +176,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplEs.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
-
 
     ${CINDER_SRC_DIR}/cinder/ip/Blend.cpp
     ${CINDER_SRC_DIR}/cinder/ip/EdgeDetect.cpp
@@ -208,9 +226,11 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Triangulate.cpp
     ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
     ${CINDER_SRC_DIR}/cinder/Tween.cpp
-    #${CINDER_SRC_DIR}/cinder/Unicode.cpp
+    ${CINDER_SRC_DIR}/cinder/Unicode.cpp
     #${CINDER_SRC_DIR}/cinder/Url.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
+
+    ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
 )
 
 set_source_files_properties( ${CINDER_CXX_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
