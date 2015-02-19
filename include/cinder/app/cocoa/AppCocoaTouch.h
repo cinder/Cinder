@@ -211,7 +211,7 @@ class AppCocoaTouch : public AppBase {
 	//! No-op on iOS
 	void quit() override;
 
-	//! Returns a pointer to the current global AppBasic
+	//! Returns a pointer to the current global AppCocoaTouch
 	static AppCocoaTouch*	get() { return sInstance; }
 
 	// DO NOT CALL - should be private but aren't for esoteric reasons

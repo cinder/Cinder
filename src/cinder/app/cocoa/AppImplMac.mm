@@ -68,7 +68,7 @@ using namespace cinder::app;
 	
 	mApp = app;
 	mNeedsUpdate = YES;
-	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled(); // TODO: consider storing this in AppBasic. it is also needed by AppMsw's impl
+	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled(); // TODO: consider storing this in AppBase. it is also needed by AppMsw's impl
 
 	// build our list of requested formats; an empty list implies we should make the default window format
 	std::vector<Window::Format> formats( settings.getWindowFormats() );

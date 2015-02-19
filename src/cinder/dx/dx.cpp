@@ -42,7 +42,7 @@
 #include "cinder/Triangulate.h"
 #include <cmath>
 #include <map>
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/RendererImplDx.h"
 #include "cinder/dx/DxLight.h"
 #include "cinder/MatrixStack.h"
@@ -201,7 +201,7 @@ static void applyDxFixedPipeline(const FixedVertex *verts, UINT elements, ID3D11
 
 void clear( const ColorA &color, bool clearDepthBuffer )
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glClearColor( color.r, color.g, color.b, color.a );
 	//	if( clearDepthBuffer ) {
@@ -320,7 +320,7 @@ void setMatrices( const Camera &cam )
 
 void pushModelView()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_MODELVIEW );
 	//	glPushMatrix();
@@ -330,7 +330,7 @@ void pushModelView()
 
 void popModelView()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_MODELVIEW );
 	//	glPopMatrix();
@@ -340,7 +340,7 @@ void popModelView()
 
 void pushModelView( const Camera &cam )
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_MODELVIEW );
 	//	glPushMatrix();
@@ -352,7 +352,7 @@ void pushModelView( const Camera &cam )
 
 void pushProjection( const Camera &cam )
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_PROJECTION );
 	//	glPushMatrix();
@@ -363,7 +363,7 @@ void pushProjection( const Camera &cam )
 
 void pushMatrices()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_PROJECTION );
 	//	glPushMatrix();
@@ -376,7 +376,7 @@ void pushMatrices()
 
 void popMatrices()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_PROJECTION );
 	//	glPopMatrix();
@@ -389,7 +389,7 @@ void popMatrices()
 
 void multModelView( const Matrix44f &mtx )
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_MODELVIEW );
 	//	glMultMatrixf( mtx );
@@ -399,7 +399,7 @@ void multModelView( const Matrix44f &mtx )
 
 void multProjection( const Matrix44f &mtx )
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	glMatrixMode( GL_PROJECTION );
 	//	glMultMatrixf( mtx );
@@ -409,7 +409,7 @@ void multProjection( const Matrix44f &mtx )
 
 Matrix44f getModelView()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	Matrix44f result;
 	//	glGetFloatv( GL_MODELVIEW_MATRIX, reinterpret_cast<GLfloat*>( &(result.m) ) );
@@ -420,7 +420,7 @@ Matrix44f getModelView()
 
 Matrix44f getProjection()
 {
-	//if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+	//if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 	//{
 	//	Matrix44f result;
 	//	glGetFloatv( GL_PROJECTION_MATRIX, reinterpret_cast<GLfloat*>( &(result.m) ) );
@@ -468,7 +468,7 @@ void setMatricesWindowPersp( int screenWidth, int screenHeight, float fovDegrees
 
 void setMatricesWindow( int screenWidth, int screenHeight, bool originUpperLeft )
 {
-//	if(app::AppBasic::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
+//	if(app::AppBase::get()->getRenderer()->GetRendererType() == app::Renderer::RENDERER_GL)
 //	{
 //		glMatrixMode( GL_PROJECTION );
 //		glLoadIdentity();
