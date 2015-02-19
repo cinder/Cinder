@@ -23,17 +23,17 @@
 
 #pragma once
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/msw/CinderWindowsFwd.h"
 
 namespace cinder { namespace app {
 
 class AppImplMswBasic;
 
-class AppBasicMsw : public AppBasic {
+class AppMsw : public AppBase {
   public:
 	//! MSW-specific settings
-	class Settings : public AppBasic::Settings {
+	class Settings : public AppBase::Settings {
 	  public:
 		Settings() : mMswConsoleEnabled( false )				{}
 
@@ -47,13 +47,13 @@ class AppBasicMsw : public AppBasic {
 
 		bool	mMswConsoleEnabled;
 
-		friend AppBasicMsw;
+		friend AppMsw;
 	};
 
 	typedef std::function<void( Settings *settings )>	SettingsFn;
 
-	AppBasicMsw();
-	virtual ~AppBasicMsw();
+	AppMsw();
+	virtual ~AppMsw();
 
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
@@ -91,12 +91,12 @@ class AppBasicMsw : public AppBasic {
 };
 
 template<typename AppT>
-void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
+void AppMsw::main( const RendererRef &defaultRenderer, const char *title, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBasicMsw::initialize( &settings, defaultRenderer, title ); // AppBasicMsw variant to parse args using msw-specific api
+	AppMsw::initialize( &settings, defaultRenderer, title ); // AppMsw variant to parse args using msw-specific api
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -104,7 +104,7 @@ void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, c
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBasic *app = new AppT;
+	AppMsw *app = new AppT;
 
 	AppBase::executeLaunch( title, 0, nullptr );
 	AppBase::cleanupLaunch();
@@ -114,7 +114,7 @@ void AppBasicMsw::main( const RendererRef &defaultRenderer, const char *title, c
 int __stdcall WinMain( HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow )\
 {																									\
 	cinder::app::RendererRef renderer( new RENDERER );												\
-	cinder::app::AppBasicMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
+	cinder::app::AppMsw::main<APP>( renderer, #APP, ##__VA_ARGS__ );							\
 	return 0;																						\
 }
 

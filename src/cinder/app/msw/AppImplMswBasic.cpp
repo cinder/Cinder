@@ -33,7 +33,7 @@ using std::string;
 
 namespace cinder { namespace app {
 
-AppImplMswBasic::AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings )
+AppImplMswBasic::AppImplMswBasic( AppMsw *app, const AppMsw::Settings &settings )
 	: AppImplMsw( app ), mApp( app )
 {
 	mShouldQuit = false;

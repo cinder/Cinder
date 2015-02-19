@@ -40,7 +40,7 @@
 #elif defined( CINDER_MSW )
 	#include "cinder/app/msw/AppMsw.h"
 	namespace cinder { namespace app {
-		typedef AppBasicMsw		App;
+		typedef AppMsw		App;
 	} } // namespace cinder::app		
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #endif
