@@ -9,19 +9,25 @@ using namespace std;
 
 struct Monitor {
   public:
-	Monitor( DisplayRef display, Colorf color )
-		: mArea( display->getBounds() ), mColor( color )
-	{}
+	Monitor( DisplayRef display, Colorf color, bool mainDisplay )
+		: mArea( display->getBounds() ), mColor( color ), mMainDisplay( mainDisplay )
+	{
+		app::console() << mArea << std::endl;	
+	}
 
 	void draw() {
 		gl::color( mColor * 0.25f );
-		gl::drawSolidRect( Rectf( mArea ).scaledCentered( 0.99f ) );
+		Rectf r = Rectf( mArea ).scaledCentered( 0.99f );
+		gl::drawSolidRect( r );
 		gl::color( mColor );
-		gl::drawStrokedRect( Rectf(mArea).scaledCentered(0.99f) );
+		gl::drawStrokedRect( r );
+		if( mMainDisplay )
+			gl::drawSolidRect( Rectf( r.x1, r.y1, r.x2, r.y1 + 40 ) );
 	}
 
-	Colorf	mColor;
-	Area	mArea;
+	bool		mMainDisplay;
+	Colorf		mColor;
+	Area		mArea;
 };
 
 class DisplayTestApp : public App {
@@ -42,10 +48,12 @@ void DisplayTestApp::populateMonitors()
 	mGlobalBounds = Rectf(0, 0, 0, 0);
 	float hueDelta = 1.0f / (Display::getDisplays().size() + 3);
 	float hue = 0;
-	for (auto &display : Display::getDisplays()) {
+	bool mainDisplay = true;
+	for( auto &display : Display::getDisplays()) {
 		mGlobalBounds.include(display->getBounds());
-		mMonitors.push_back(Monitor(display, Colorf(CM_HSV, hue, 1, 0.4f)));
+		mMonitors.push_back( Monitor( display, Colorf(CM_HSV, hue, 1, 0.4f), mainDisplay ) );
 		hue += hueDelta;
+		mainDisplay = false;
 	}
 }
 
