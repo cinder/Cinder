@@ -361,7 +361,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefres
 
 	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
 		NSArray *screens = [NSScreen screens];
-		NSScreen *mainScreen = [NSScreen mainScreen];
+		NSScreen *mainScreen = [screens objectAtIndex:0];
 		size_t screenCount = [screens count];
 		for( size_t i = 0; i < screenCount; ++i ) {
 			::NSScreen *screen = [screens objectAtIndex:i];
