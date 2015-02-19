@@ -1,3 +1,4 @@
+#include "cinder/app/cocoa/AppCocoaTouch.h"
 #include "cinder/app/cocoa/CinderViewCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
@@ -12,6 +13,7 @@
 #include "cinder/System.h"
 #include "cinder/Text.h"
 #include "cinder/Log.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 
 #import <UIKit/UIKit.h>
 
@@ -127,6 +129,7 @@ class iosAppTestApp : public AppCocoaTouch {
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
 	int							mMouseTouchId; // gives a unique ID to each click to emulate multitouch
+	bool mMultipleDisplays = false;
 };
 
 // static
@@ -134,8 +137,9 @@ void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 {
 	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
 
-	for( auto &display : Display::getDisplays() )
-		CI_LOG_V( *display );
+	// THIS DOES NOT WORK ON iOS - Can't query displays in prepareSettings
+//	for( auto &display : Display::getDisplays() )
+//		CI_LOG_V( *display );
 
 //	settings->setMultiTouchEnabled( false );
 //	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
@@ -186,6 +190,10 @@ void iosAppTestApp::setup()
 	CI_LOG_V( "window size: " << getWindowSize() << ", window content scale: " << getWindowContentScale() );
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
+
+	auto displays = app::PlatformCocoa::get()->getDisplays( true );
+	if( displays.size() > 1 )
+		createWindow( Window::Format().display( displays[1] ) );
 
 	if( getNumWindows() > 1 ) {
 		mSecondWindow = getWindowIndex( 1 );
@@ -368,8 +376,8 @@ void iosAppTestApp::draw()
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
-	if( isUnplugged() )
-		gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	if( getDisplay() == Display::getMainDisplay() )
+		gl::clear( Color( 1.2f, 0.2f, 0.3f ) );
 	else
 		gl::clear( Color( 0.4f, 0.2f, 0.2f ) );		
 
