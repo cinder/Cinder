@@ -321,17 +321,34 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 	else if( flags & kCGDisplayMovedFlag ) { // needs to be tested after add & remove
 		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
 		if( display ) {
+			bool newMainDisplay = false;
+			if( flags & kCGDisplaySetMainFlag ) {
+				DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
+				if( display && ( display != app::PlatformCocoa::get()->getDisplays()[0] ) ) {
+					newMainDisplay = true;
+					// move on up to the front of the bus; mDisplays[0] is main
+					vector<DisplayRef> &mDisplays = app::PlatformCocoa::get()->mDisplays;
+					mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), display ), mDisplays.end() );
+					mDisplays.insert( mDisplays.begin(), display );
+				}
+			}		
+		
 			// CG appears to not do the coordinate y-flip that NSScreen does
 			CGRect frame = ::CGDisplayBounds( displayId );
 			Area displayArea( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			if( display->getBounds() != displayArea ) { // changed? emit appropriately
+			bool newArea = false;
+			if( display->getBounds() != displayArea ) {
 				reinterpret_cast<DisplayMac*>( display.get() )->mArea = displayArea;
+				newArea = true;
+			}
+			
+			if( newMainDisplay || newArea ) {
 				if( app::AppBase::get() )
 					app::AppBase::get()->emitDisplayChanged( display );
 			}
 		}
 		else
-			CI_LOG_W( "Received moved from CGDisplayRegisterReconfigurationCallback() on unknown display" );
+			CI_LOG_W( "Received moved from CGDisplayRegisterReconfigurationCallback() on unknown display" );			
 	}
 }
 
