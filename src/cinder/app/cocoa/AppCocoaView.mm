@@ -615,4 +615,14 @@ ivec2 AppCocoaView::getMousePos() const
 	return ivec2( loc.x, cinder::Display::getMainDisplay()->getHeight() - loc.y );
 }
 
+void AppCocoaView::hideCursor()
+{
+	[NSCursor hide];
+}
+
+void AppCocoaView::showCursor()
+{
+	[NSCursor unhide];
+}
+
 } } // namespace cinder::app

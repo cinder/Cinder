@@ -63,6 +63,13 @@ class AppCocoaView : public AppBase {
 	WindowRef	getWindowIndex( size_t index ) const override;
 	ivec2		getMousePos() const override;
 
+	//! \note no-op and returns an empty WindowRef, user is expected to create new windows using NSWindow API directly
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override	{ return WindowRef(); }
+	WindowRef	getForegroundWindow() const override	{ return getWindow(); }
+
+	void		hideCursor() override;
+	void		showCursor() override;
+
   protected:
 	AppImplCocoaView	*mImpl;
 };
