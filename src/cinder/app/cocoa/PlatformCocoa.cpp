@@ -255,28 +255,27 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefres
 {
 	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
 		NSArray *screens = [NSScreen screens];
-		Area primaryScreenArea;
+		NSScreen *mainScreen = [NSScreen mainScreen];
 		size_t screenCount = [screens count];
 		for( size_t i = 0; i < screenCount; ++i ) {
 			::NSScreen *screen = [screens objectAtIndex:i];
 			[screen retain]; // this is released in the destructor for Display
-			NSRect frame = [screen frame];
 
 			DisplayMac *newDisplay = new DisplayMac();
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+
+			NSRect frame = [screen frame];
+			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
+			if( screen != mainScreen ) {
+				int mainScreenHeight = (int)[mainScreen frame].size.height;
+				newDisplay->mArea = Area( frame.origin.x, mainScreenHeight - frame.origin.y - frame.size.height, frame.origin.x + frame.size.width, mainScreenHeight - frame.origin.y );
+			}
+			else
+				newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+
 			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 			newDisplay->mScreen = screen;
 			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 			newDisplay->mContentScale = [screen backingScaleFactor];
-
-			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
-			if( i == 0 ) {
-				primaryScreenArea = newDisplay->mArea;
-			}
-			else {
-				int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
-				newDisplay->mArea.offset( ivec2( 0, heightDelta ) );
-			}
 
 			mDisplays.push_back( DisplayRef( newDisplay ) );
 		}
