@@ -87,10 +87,11 @@ class AppImplMsw {
 	virtual void			closeWindow( class WindowImplMsw *windowImpl ) = 0;
 	virtual void			setForegroundWindow( WindowRef window ) = 0;
 
-	class AppBase				*mApp;
+	class AppBase			*mApp;
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;
+	bool					mNeedsToRefreshDisplays;
 	bool					mActive;
 	ULONG_PTR				mGdiplusToken;
 

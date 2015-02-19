@@ -56,7 +56,7 @@ static const wchar_t *WINDOWED_WIN_CLASS_NAME = TEXT("CinderWinClass");
 static const wchar_t *BLANKING_WINDOW_CLASS_NAME = TEXT("CinderBlankingWindow");
 
 AppImplMsw::AppImplMsw( AppBase *aApp )
-	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true )
+	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true ), mNeedsToRefreshDisplays( false )
 {
 	Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 	Gdiplus::GdiplusStartup( &mGdiplusToken, &gdiplusStartupInput, NULL );
@@ -344,7 +344,7 @@ WindowImplMsw::WindowImplMsw( HWND hwnd, RendererRef renderer, RendererRef share
 	mWindowWidth = rect.right - rect.left;
 	mWindowHeight = rect.bottom - rect.top;
 
-	mDisplay = app::PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+	mDisplay = app::PlatformMsw::get()->findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
 	mRenderer->setup( mWnd, mDC, sharedRenderer );
 
@@ -421,7 +421,7 @@ void WindowImplMsw::createWindow( const ivec2 &windowSize, const std::string &ti
 	}
 
 	// update display
-	mDisplay = PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+	mDisplay = PlatformMsw::get()->findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 
 	mRenderer->setup( mWnd, mDC, sharedRenderer );
 }
@@ -945,7 +945,7 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 			impl->mWindowOffset = ivec2( LOSHORT(lParam), HISHORT(lParam) );
 			if( impl->getWindow() ) {
 				DisplayRef oldDisplay = impl->mDisplay;
-				impl->mDisplay = PlatformMsw::findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
+				impl->mDisplay = PlatformMsw::get()->findDisplayFromHmonitor( ::MonitorFromWindow( mWnd, MONITOR_DEFAULTTONEAREST ) );
 				// signal display change as appropriate
 				if( oldDisplay != impl->mDisplay ) {
 					impl->getWindow()->emitDisplayChange();
@@ -981,6 +981,12 @@ LRESULT CALLBACK WndProc(	HWND	mWnd,			// Handle For This Window
 		break;
 		case WM_TOUCH:
 			impl->onTouch( mWnd, wParam, lParam );
+		break;
+		case WM_DISPLAYCHANGE:
+			impl->mAppImpl->mNeedsToRefreshDisplays = true;
+		break;
+		case WM_DEVICECHANGE:
+			impl->mAppImpl->mNeedsToRefreshDisplays = true;
 		break;
 	}
 

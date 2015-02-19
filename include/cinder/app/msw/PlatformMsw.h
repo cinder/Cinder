@@ -32,6 +32,7 @@ namespace cinder { namespace app {
 class PlatformMsw : public Platform {
   public:
 	PlatformMsw();
+	static PlatformMsw*		get() { return reinterpret_cast<PlatformMsw*>( Platform::get() ); }
 
 	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
 
@@ -51,8 +52,9 @@ class PlatformMsw : public Platform {
 	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
 
 	const std::vector<DisplayRef>&	getDisplays( bool forceRefresh = false ) override;
+	void							refreshDisplays();
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
-	static DisplayRef	findDisplayFromHmonitor( HMONITOR hMonitor );
+	DisplayRef						findDisplayFromHmonitor( HMONITOR hMonitor );
 
   private:
 	std::unique_ptr<std::ostream>	mOutputStream;
@@ -77,6 +79,7 @@ class DisplayMsw : public Display {
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 
 	HMONITOR			mMonitor;
+	bool				mVisitedFlag;
 
 	friend app::PlatformMsw;
 };

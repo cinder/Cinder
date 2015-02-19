@@ -197,6 +197,21 @@ void AppBase::emitDidBecomeActive()
 	mSignalDidBecomeActive.emit();
 }
 
+void AppBase::emitDisplayConnected( const DisplayRef &display )
+{
+	mSignalDisplayConnected.emit( display );
+}
+
+void AppBase::emitDisplayDisconnected( const DisplayRef &display )
+{
+	mSignalDisplayDisconnected.emit( display );
+}
+
+void AppBase::emitDisplayChanged( const DisplayRef &display )
+{
+	mSignalDisplayChanged.emit( display );
+}
+
 fs::path AppBase::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
 	return Platform::get()->getOpenFilePath( initialPath, extensions );
