@@ -1,6 +1,7 @@
 #
-# Environmental variables:
-#     NDK_ROOT - should point NDK
+# Env var or param:
+#     ANDROID_NDK_ROOT - should point NDK
+#     ANDROID_NDK_STANDALONE - should point to standalone toolchain
 #
 
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
@@ -26,14 +27,62 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
+
+# ------------------------------------------------------------------------
+# NDK_ROOT
+# ------------------------------------------------------------------------
+# Check env vars for ANDROID_NDK_ROOT first
+if( DEFINED ENV{ANDROID_NDK_ROOT} )
+    set( NDK_ROOT $ENV{ANDROID_NDK_ROOT} )
+endif()
+
+# Check if ANDROID_NDK_ROOT was overriden as a param
+if( ANDROID_NDK_ROOT )
+    message( "milk! ${ANDROID_NDK_ROOT}" )
+    set( NDK_ROOT ${ANDROID_NDK_ROOT} )
+endif()
+
+# Bail if we haven't set NDK_ROOT
+if( NOT NDK_ROOT )
+    message( FATAL_ERROR "${BoldRed}ANDROID_NDK_ROOT not set!${ColorReset}" )
+endif()
+# ------------------------------------------------------------------------
+
+# ------------------------------------------------------------------------
+# NDK_STANDALONE
+# ------------------------------------------------------------------------
+# Check env vars for ANDROID_NDK_STANDALONE first
+if( DEFINED ENV{ANDROID_NDK_STANDALONE} )
+    set( NDK_STANDALONE $ENV{ANDROID_NDK_STANDALONE} )
+endif()
+
+# Check if ANDROID_NDK_STANDALONE was overriden as a parm
+if( ANDROID_NDK_STANDALONE )
+    message( "milk! ${ANDROID_NDK_STANDALONE}" )
+    set( NDK_STANDALONE ${ANDROID_NDK_STANDALONE} )
+endif()
+
+# Bail if we haven't set NDK_STANDALONE
+if( NOT NDK_STANDALONE )
+    message( FATAL_ERROR "${BoldRed}ANDROID_NDK_STANDALONE not set!${ColorReset}" )
+endif()
+# ------------------------------------------------------------------------
+
+
+message( "${BoldBlue}ANDROID_NDK_ROOT      : ${NDK_ROOT}${ColorReset}" )
+message( "${BoldBlue}ANDROID_NDK_STANDALONE: ${NDK_STANDALONE}${ColorReset}" )
+message( "" )
+
+# User this for now
 set( TOOLCHAIN_PREFIX "arm-linux-androideabi" )
-set( CMAKE_C_COMPILER   $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
-set( CMAKE_CXX_COMPILER $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
-SET( CMAKE_AR           $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
-SET( CMAKE_LINKER       $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
-SET( CMAKE_NM           $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
-SET( CMAKE_RANLIB       $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
-SET( CMAKE_STRIP        $ENV{NDK_ROOT}/bin/${TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
+
+set( CMAKE_C_COMPILER   ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
+set( CMAKE_CXX_COMPILER ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
+set( CMAKE_AR           ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
+set( CMAKE_LINKER       ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
+set( CMAKE_NM           ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
+set( CMAKE_RANLIB       ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
+set( CMAKE_STRIP        ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
 
 project( cinder )
 
@@ -47,7 +96,7 @@ set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib )
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
 message( "" )
-message( " ${BoldGreen}LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH}${ColorReset}" )
+message( "${BoldGreen}LIBRARY_OUTPUT_PATH: ${LIBRARY_OUTPUT_PATH}${ColorReset}" )
 message( "" )
 message( "${BoldGreen}CMAKE_C_COMPILER  : ${CMAKE_C_COMPILER}${ColorReset}" )
 message( "${BoldGreen}CMAKE_CXX_COMPILER: ${CMAKE_CXX_COMPILER}${ColorReset}" )
@@ -60,11 +109,19 @@ message( "" )
 
 include_directories( ${CINDER_INC_DIR} ${BOOST_INC_DIR} )
 
+set( C_FLAGS "-march=armv7-a -mfpu=neon" )
+set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -g ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math ${C_FLAGS}" )
+
 set( CXX_FLAGS "-march=armv7-a -mfpu=neon" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g ${CXX_FLAGS}" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math ${CXX_FLAGS}" )
 
-set( CINDER_SRC_FILES
+set( CINDER_C_SRC_FILES
+    ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
+)
+
+set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppBasic.cpp
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
@@ -136,9 +193,9 @@ set( CINDER_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 )
 
-set_source_files_properties( ${CINDER_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
+set_source_files_properties( ${CINDER_CXX_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
-add_library( cinder STATIC ${CINDER_SRC_FILES} )
+add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
 
 
