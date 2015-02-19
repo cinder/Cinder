@@ -102,7 +102,7 @@ void DisplayTestApp::draw()
 		monitor.draw();
 
 	// draw the window
-	gl::color( 1.0f, 1.0f, 1.0f, 0.75f );
+	gl::color( 1.0f, 1.0f, 1.0f, 0.55f );
 	gl::drawSolidRect( Rectf( getWindowBounds() + getWindowPos() ) );
 	gl::color(1.0f, 1.0f, 1.0f, 1 );
 	gl::drawStrokedRect(Rectf(getWindowBounds() + getWindowPos()));
