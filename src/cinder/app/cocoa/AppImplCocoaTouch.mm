@@ -379,8 +379,9 @@ using namespace cinder::app;
 
 - (void)finishLoad
 {
-	mUiWindow = [[UIWindow alloc] initWithFrame:[std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen() bounds]];
-	mUiWindow.screen = std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen();
+	UIScreen *screen = std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen();
+	mUiWindow = [[UIWindow alloc] initWithFrame:[screen bounds]];
+	mUiWindow.screen = screen;
 	mUiWindow.rootViewController = mRootViewController;
 
 	// this needs to be last
