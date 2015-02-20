@@ -24,7 +24,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 using namespace ci;
@@ -35,7 +35,7 @@ using namespace std;
 #include "TuioCursor.h"
 #include "OscMessage.h"
 
-class TuioClientApp : public AppNative {
+class TuioClientApp : public App {
   public:
 	void setup();
 	void update();
@@ -149,4 +149,4 @@ void TuioClientApp::draw()
 		gl::clear( Color( 0.4f, 0, 0 ) );
 }
 
-CINDER_APP_NATIVE( TuioClientApp, RendererGl )
+CINDER_APP( TuioClientApp, RendererGl )
