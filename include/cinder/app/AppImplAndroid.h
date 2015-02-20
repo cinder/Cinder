@@ -21,7 +21,6 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-
 #pragma once
 
 #include "cinder/app/TouchEvent.h"

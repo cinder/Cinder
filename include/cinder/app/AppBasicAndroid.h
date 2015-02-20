@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/app/AppBasic.h"
+#include "cinder/android/android_native_app_glue.h"
 
 namespace cinder { namespace app {
 
@@ -58,17 +59,25 @@ class AppBasicAndroid : public AppBasic {
 	//! \cond
 	// Called during application instanciation via CINDER_APP_BASIC_ANDROID macro
 	template<typename AppT>
-	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
+	static void main( const RendererRef &defaultRenderer, const char *title, struct android_app* androidApp, const SettingsFn &settingsFn = SettingsFn() );
+	// Called from WinMain, forwards to AppBase::initialize() but also fills command line args using native windows API
+	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, struct android_app* androidApp );
 	//! \endcond
+
+  protected:
+	void	launch( const char *title, int argc, char * const argv[] ) override;
+
+  private:
+	std::unique_ptr<AppImplAndroidBasic>	mImpl;
 };
 
 template<typename AppT>
-void AppBasicAndroid::main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn )
+void AppBasicAndroid::main( const RendererRef &defaultRenderer, const char *title, struct android_app* androidApp, const SettingsFn &settingsFn )
 {
 	AppBase::prepareLaunch();
 
 	Settings settings;
-	AppBase::initialize( &settings, defaultRenderer, title, argc, argv );
+	AppBasicAndroid::initialize( &settings, defaultRenderer, title, androidApp ); // AppBasicAndroid variant to parse args using msw-specific api
 
 	if( settingsFn )
 		settingsFn( &settings );
@@ -77,19 +86,18 @@ void AppBasicAndroid::main( const RendererRef &defaultRenderer, const char *titl
 		return;
 
 	AppBasic *app = new AppT;
-	#pragma unused( app )
+	//#pragma unused( app )
 
-	AppBase::executeLaunch( title, argc, argv );
+	AppBase::executeLaunch( title, 0, nullptr );
 	AppBase::cleanupLaunch();
 }
 
 #define CINDER_APP_BASIC_ANDROID( APP, RENDERER, ... )									    \
-void android_main( struct android_app* aAndroidApp )								        \
+void android_main( struct android_app* androidApp )								            \
 {																						    \
-    app_dummpy();                                                                           \
+    app_dummy();                                                                            \
 	cinder::app::RendererRef renderer( new RENDERER );									    \
-	cinder::app::AppBasicAndroid::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\
-	return 0;																			    \
+	cinder::app::AppBasicAndroid::main<APP>( renderer, #APP, androidApp, ##__VA_ARGS__ );	\
 }
 
 } } // namespace cinder::app

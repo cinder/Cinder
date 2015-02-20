@@ -146,8 +146,11 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppBasicAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidBasic.cpp
+    ${CINDER_SRC_DIR}/cinder/app/Platform.cpp
+    ${CINDER_SRC_DIR}/cinder/app/PlatformAndroid.cpp
 
     ${CINDER_SRC_DIR}/cinder/gl/gl.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
@@ -223,11 +226,13 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
     ${CINDER_SRC_DIR}/cinder/Timeline.cpp
     ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
+    ${CINDER_SRC_DIR}/cinder/Timer.cpp
     ${CINDER_SRC_DIR}/cinder/Triangulate.cpp
     ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
     ${CINDER_SRC_DIR}/cinder/Tween.cpp
     ${CINDER_SRC_DIR}/cinder/Unicode.cpp
     #${CINDER_SRC_DIR}/cinder/Url.cpp
+    ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp

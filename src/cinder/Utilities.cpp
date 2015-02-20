@@ -76,6 +76,8 @@ fs::path expandPath( const fs::path &path )
 	return fs::path( result );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	wchar_t buffer[MAX_PATH];
 	::PathCanonicalize( buffer, path.wstring().c_str() );
@@ -95,6 +97,8 @@ fs::path getHomeDirectory()
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	string result = PlatformStringToString(folder->Path);
 	return fs::path( result );
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
@@ -113,6 +117,8 @@ fs::path getDocumentsDirectory()
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
@@ -128,6 +134,8 @@ fs::path getTemporaryDirectory()
 #elif defined( CINDER_WINRT )
 	auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
 	return PlatformStringToString(folder->Path);
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	DWORD result = ::GetTempPathW( 0, L"" );
 	if( ! result )
@@ -151,6 +159,8 @@ fs::path getTemporaryFilePath( const std::string &prefix )
 	return string( mktemp( path ) );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	TCHAR tempFileName[MAX_PATH]; 
 	DWORD result = ::GetTempPathW( 0, L"" );
@@ -214,6 +224,8 @@ bool createDirectories( const fs::path &path, bool createParents )
 	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	return ::SHCreateDirectoryEx( NULL, dirPath.wstring().c_str(), NULL ) == ERROR_SUCCESS;
 #endif
@@ -226,6 +238,8 @@ void launchWebBrowser( const Url &url )
 	NSURL *nsUrl = [NSURL URLWithString:nsString];
 #elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 	std::u16string urlStr = toUtf16( url.str() );
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #endif
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -237,6 +251,8 @@ void launchWebBrowser( const Url &url )
 #elif defined( CINDER_WINRT )
 	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
 	Windows::System::Launcher::LaunchUriAsync( uri );
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #endif
 }
 
@@ -251,6 +267,8 @@ void deleteFile( const fs::path &path )
 	unlink( path.c_str() );
 #elif defined( CINDER_WINRT )
 	winrt::deleteFileAsync(path);
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	if( ! ::DeleteFileW( path.wstring().c_str() ) ) {
 		DWORD err = GetLastError();
@@ -289,6 +307,8 @@ void sleep( float milliseconds )
 	::Sleep( static_cast<int>( milliseconds ) );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	useconds_t microsecs = milliseconds * 1000;
 	::usleep( microsecs );
@@ -344,6 +364,8 @@ vector<string> stackTrace()
 	return csw.getEntries();
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#elif defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #else
 	std::vector<std::string> result;
 	static const int MAX_DEPTH = 128;
