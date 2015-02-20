@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Stream.h"
@@ -20,7 +21,7 @@ class streamFileTestApp : public App {
 
 fs::path streamFileTestApp::createReadTestFile()
 {
-	fs::path resultPath = getTemporaryFilePath( "cinder_streamFileTest" );
+	fs::path resultPath = fs::unique_path( "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
 	FILE *f = fopen( resultPath.string().c_str(), "wb" );
 	for( size_t d = 0; d < DATA_SIZE; ++d ) {
 		uint8_t b = d % 256;
