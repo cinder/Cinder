@@ -202,23 +202,6 @@ std::string getPathExtension( const std::string &path )
 		return std::string();
 }
 
-bool createDirectories( const fs::path &path, bool createParents )
-{
-	if( path.empty() )
-		return true;
-
-	fs::path dirPath = path.parent_path();
-
-#if defined( CINDER_COCOA )
-	NSString *pathNS = [NSString stringWithCString:dirPath.c_str() encoding:NSUTF8StringEncoding];
-	return static_cast<bool>( [[NSFileManager defaultManager] createDirectoryAtPath:pathNS withIntermediateDirectories:YES attributes:nil error:nil] );
-#elif defined( CINDER_WINRT )
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#else
-	return ::SHCreateDirectoryEx( NULL, dirPath.wstring().c_str(), NULL ) == ERROR_SUCCESS;
-#endif
-}
-
 void launchWebBrowser( const Url &url )
 {
 #if defined( CINDER_COCOA )

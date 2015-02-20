@@ -544,7 +544,7 @@ IStreamFileRef loadFileStream( const fs::path &path )
 std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createParents )
 {
 	if( createParents ) {
-		createDirectories( path.parent_path() );
+		fs::create_directories( path.parent_path() );
 	}
 #if defined( CINDER_MSW )
 	FILE *f = _wfopen( expandPath( path ).wstring().c_str(), L"wb" );

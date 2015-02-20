@@ -50,8 +50,6 @@ std::string getPathDirectory( const std::string &path );
 std::string getPathFileName( const std::string &path );
 //! Returns the file extension of the file located at \a path
 std::string getPathExtension( const std::string &path );
-//! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
-bool createDirectories( const fs::path &path, bool createParents = true );
 
 //! Launches a path in a web browser
 void launchWebBrowser( const Url &url );
