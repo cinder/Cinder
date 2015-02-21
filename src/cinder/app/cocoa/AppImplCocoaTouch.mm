@@ -21,6 +21,7 @@
  */
 
 #import "cinder/app/cocoa/AppImplCocoaTouch.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 
 using namespace cinder;
 using namespace cinder::app;
@@ -371,8 +372,8 @@ using namespace cinder::app;
 
 - (void)finishLoad
 {
-	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
-	mUiWindow.screen = mDisplay->getUiScreen();
+	mUiWindow = [[UIWindow alloc] initWithFrame:[std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen() bounds]];
+	mUiWindow.screen = std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen();
 	mUiWindow.rootViewController = mRootViewController;
 
 	// this needs to be last

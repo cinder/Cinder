@@ -1,5 +1,4 @@
-#include "cinder/app/AppCocoaTouch.h"
-#include "cinder/app/CinderViewCocoaTouch.h"
+#include "cinder/app/cocoa/CinderViewCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"

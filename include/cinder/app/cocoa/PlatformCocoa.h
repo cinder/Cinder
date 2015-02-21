@@ -24,14 +24,26 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/Display.h"
 
 #if defined __OBJC__
 	@class NSBundle;
 	@class NSAutoreleasePool;
+	#if defined( CINDER_MAC )
+		@class NSScreen;
+	#else
+		@class UIScreen;
+	#endif
 #else
 	class NSBundle;
 	class NSAutoreleasePool;
+	#if defined( CINDER_MAC )
+		class NSScreen;
+	#else
+		class UIScreen;
+	#endif
 #endif
+typedef uint32_t CGDirectDisplayID;
 
 namespace cinder { namespace app {
 
@@ -61,9 +73,64 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
+	const std::vector<DisplayRef>& getDisplays( bool forceRefresh = false ) override;
+
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
+	
+	bool					mDisplaysInitialized;
+	std::vector<DisplayRef>	mDisplays;
 };
 
 } } // namespace cinder::app
+
+namespace cinder {
+#if defined( CINDER_MAC )
+
+//! Represents a monitor/display on OS X
+class DisplayMac : public Display {
+  public:
+	~DisplayMac();
+
+	NSScreen*			getNsScreen() const { return mScreen; }
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
+
+	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
+	static DisplayRef			findFromNsScreen( NSScreen *nsScreen );
+
+  protected:	
+	NSScreen			*mScreen;
+	CGDirectDisplayID	mDirectDisplayID;
+	
+	friend app::PlatformCocoa;
+};
+
+#else
+
+//! Represents a monitor/display on iOS
+class DisplayCocoaTouch : public Display {
+  public:
+	~DisplayCocoaTouch();
+	
+	UIScreen*	getUiScreen() const { return mUiScreen; }
+	//! Returns a vector of resolutions the Display supports
+	const std::vector<ivec2>&	getSupportedResolutions() const { return mSupportedResolutions; }
+	//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
+	void						setResolution( const ivec2 &resolution );
+
+	//! Returns the signal emitted when a display is connected or disconnected
+	signals::Signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
+
+  protected:
+	
+
+	UIScreen				*mUiScreen;
+	std::vector<ivec2>		mSupportedResolutions;
+	signals::Signal<void()>	mSignalDisplaysChanged;
+	
+	friend app::PlatformCocoa;	
+};
+#endif
+
+} // namespace cinder

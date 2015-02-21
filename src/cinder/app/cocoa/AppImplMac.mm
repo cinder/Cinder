@@ -24,7 +24,10 @@
 #include "cinder/app/cocoa/AppImplMac.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 #import "cinder/cocoa/CinderCocoa.h"
+
+#include <memory>
 
 #import <OpenGL/OpenGL.h>
 
@@ -559,8 +562,8 @@ using namespace cinder::app;
 	if( screen ) {
 		NSDictionary *dict = [screen deviceDescription];
 		CGDirectDisplayID displayID = (CGDirectDisplayID)[[dict objectForKey:@"NSScreenNumber"] intValue];
-		if( displayID != mDisplay->getCgDirectDisplayId() ) {
-			auto newDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
+		if( displayID != (std::dynamic_pointer_cast<cinder::DisplayMac>( mDisplay )->getCgDirectDisplayId()) ) {
+			auto newDisplay = cinder::DisplayMac::findFromCgDirectDisplayId( displayID );
 			if( newDisplay ) {
 				mDisplay = newDisplay;
 				mWindowRef->emitDisplayChange();
@@ -727,7 +730,7 @@ using namespace cinder::app;
 													styleMask:styleMask
 													  backing:NSBackingStoreBuffered
 														defer:NO
-													   screen:winImpl->mDisplay->getNsScreen()];
+													   screen:std::dynamic_pointer_cast<cinder::DisplayMac>( winImpl->mDisplay )->getNsScreen()];
 
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;
