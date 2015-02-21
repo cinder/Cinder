@@ -91,8 +91,8 @@ class Platform {
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	virtual std::ostream&	console();
 
-	//! Returns a std::vector of Displays connected to the system. If \a forceRefresh then 
-	virtual const std::vector<DisplayRef>&	getDisplays( bool forceRefresh = false ) = 0;
+	//! Returns a std::vector of Displays connected to the system.
+	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 
   protected:
 	Platform() : mAssetPathsInitialized( false )	{}

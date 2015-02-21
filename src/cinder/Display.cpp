@@ -110,7 +110,7 @@ DisplayRef Display::getMainDisplay()
 	if( ! displays.empty() )
 		return displays[0];
 	else
-		return DisplayRef();
+		return nullptr;
 }
 
 } // namespace cinder

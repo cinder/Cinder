@@ -83,7 +83,7 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
-	const std::vector<DisplayRef>& getDisplays( bool forceRefresh = false ) override;
+	const std::vector<DisplayRef>& getDisplays() override;
 
 #if defined( CINDER_MAC )
 	//! Finds a Display based on its CGDirectDisplayID. Returns \c nullptr on failure.

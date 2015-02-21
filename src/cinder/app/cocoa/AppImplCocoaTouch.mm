@@ -118,8 +118,13 @@ using namespace cinder::app;
 	if( formats.empty() )
 		formats.push_back( settings.getDefaultWindowFormat() );
 
-	for( auto &format : formats )
-		[self createWindow:format];
+	for( auto format : formats ) {
+		if( ! format.getRenderer() )
+			format.setRenderer( mApp->getDefaultRenderer()->clone() );
+
+		RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
+		mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
+	}
 
 	[self setActiveWindow:mWindows.front()];
 
@@ -251,6 +256,9 @@ using namespace cinder::app;
 
 	RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
 	mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
+	
+	[mWindows.back() finishLoad];
+	
 	return mWindows.back()->mWindowRef;
 }
 

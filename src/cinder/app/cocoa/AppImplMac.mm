@@ -705,6 +705,9 @@ using namespace cinder::app;
 	winImpl->mBorderless = winFormat.isBorderless();
 	winImpl->mAlwaysOnTop = winFormat.isAlwaysOnTop();
 
+	if( ! winImpl->mDisplay )
+		winImpl->mDisplay = Display::getMainDisplay();
+
 	int offsetX, offsetY;
 	if( ! winFormat.isPosSpecified() ) {
 		offsetX = ( winImpl->mDisplay->getWidth() - winFormat.getSize().x ) / 2;

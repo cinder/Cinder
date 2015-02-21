@@ -87,6 +87,7 @@ TestCallbackOrder	sOrderTester;
 
 class iosAppTestApp : public AppCocoaTouch {
   public:
+iosAppTestApp();
 	static 	void prepareSettings( AppCocoaTouch::Settings *settings );
 
 	void	setup()								override;
@@ -133,6 +134,13 @@ class iosAppTestApp : public AppCocoaTouch {
 };
 
 // static
+iosAppTestApp::iosAppTestApp()
+{
+	CI_LOG_V( "Displays" );
+	for( auto &display : Display::getDisplays() )
+		CI_LOG_V( *display );
+}
+
 void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 {
 	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
@@ -145,10 +153,6 @@ void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 //	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
 	settings->setPowerManagementEnabled( false );
 	settings->setStatusBarEnabled( false );
-	
-	settings->prepareWindow( Window::Format() );
-	if( Display::getDisplays().size() > 1 )
-			settings->prepareWindow( Window::Format().display( Display::getDisplays()[1] ).size( 800, 600 ) );
 }
 
 void iosAppTestApp::setup()
@@ -191,7 +195,7 @@ void iosAppTestApp::setup()
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
 
-	auto displays = app::PlatformCocoa::get()->getDisplays( true );
+	auto displays = Display::getDisplays();
 	if( displays.size() > 1 )
 		createWindow( Window::Format().display( displays[1] ) );
 
@@ -322,12 +326,12 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 		mActivePoints.erase( touchIt->getId() );
 	}
 	
-	/*if( isKeyboardVisible() )
+	if( isKeyboardVisible() )
 		hideKeyboard();
 	else {
 		showKeyboard();
 		mSecondWindowMessage.clear();
-	}*/
+	}
 	
 	if( isStatusBarVisible() )
 		hideStatusBar( StatusBarAnimation::FADE );
@@ -432,6 +436,7 @@ void iosAppTestApp::draw()
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
+	mFont->drawString( "Displays " + toString( Display::getDisplays().size() ), vec2( 10.0f, 140.0f ) );	
 }
 
 CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ), iosAppTestApp::prepareSettings )

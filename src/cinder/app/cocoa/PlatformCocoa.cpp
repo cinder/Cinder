@@ -352,14 +352,14 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 	}
 }
 
-const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefresh )
+const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 {
 	if( ! mDisplaysInitialized ) {
 		// this is our first call; register a callback with CoreGraphics for any display changes. Note that this only works with a run loop
 		::CGDisplayRegisterReconfigurationCallback( DisplayMac::displayReconfiguredCallback, NULL );
 	}
 
-	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
+	if( ! mDisplaysInitialized ) {
 		NSArray *screens = [NSScreen screens];
 		NSScreen *mainScreen = [screens objectAtIndex:0];
 		size_t screenCount = [screens count];
@@ -428,26 +428,27 @@ DisplayCocoaTouch::~DisplayCocoaTouch()
 	[mUiScreen release];
 }
 
-const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays( bool forceRefresh )
+const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 {
-	if( forceRefresh || ( ! mDisplaysInitialized ) ) {
-		mDisplays.clear();
-		
+	if( ! mDisplaysInitialized ) {
 		NSArray *screens = [UIScreen screens];
-		size_t screenCount = [screens count];
-		for( size_t i = 0; i < screenCount; ++i ) {
-			mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [screens objectAtIndex:i] ) ) );
+		if( screens && [screens count] ) {
+			// see the note below; we may have aleady been through here before
+			size_t firstIndex = ( mDisplays.empty() ) ? 0 : 1;
+			for( size_t i = firstIndex; i < [screens count]; ++i )
+				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [screens objectAtIndex:i] ) ) );
+			mDisplaysInitialized = true;				
 		}
+		else {
+			if( ! cinder::app::AppBase::get() )
+				CI_LOG_E( "getDisplays() fails on iOS until application is instantiated." );
 
-		// <TEMPORARY>
-		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
-		if( [screens count] == 0 ) {
-			DisplayCocoaTouch *newDisplay = new DisplayCocoaTouch( [UIScreen mainScreen] );
-			mDisplays.push_back( DisplayRef( newDisplay ) );
+			// when [UIScreen screens] is called before the app is initialized it returns an empty array
+			// We need to work around this by not marking mDisplaysInitialized so that a future call will reevaluate
+			// However we can't have empty mDisplays, so we go ahead and put the main display in manually
+			if( mDisplays.empty() )
+				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [UIScreen mainScreen] ) ) );
 		}
-		// </TEMPORARY>
-
-		mDisplaysInitialized = true;
 	}
 	
 	return mDisplays;

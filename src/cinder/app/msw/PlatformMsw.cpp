@@ -145,12 +145,9 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT re
 	return TRUE;
 }
 
-const std::vector<DisplayRef>& app::PlatformMsw::getDisplays( bool forceRefresh )
+const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
 {
-	if( forceRefresh ) {
-		refreshDisplays();
-	}
-	else if( ! mDisplaysInitialized ) {
+	if( ! mDisplaysInitialized ) {
 		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
 	
 		// ensure that the primary display is sDisplay[0]

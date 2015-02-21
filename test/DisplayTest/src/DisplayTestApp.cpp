@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -33,8 +34,6 @@ struct Monitor {
 class DisplayTestApp : public App {
   public:
 	void setup() override;
-	void mouseDown( MouseEvent event ) override;
-	void update() override;
 	void draw() override;
 	void populateMonitors();
 
@@ -73,14 +72,6 @@ void DisplayTestApp::setup()
 		console() << "Display changed." << std::endl;
 		populateMonitors();
 	} );
-}
-
-void DisplayTestApp::mouseDown( MouseEvent event )
-{
-}
-
-void DisplayTestApp::update()
-{
 }
 
 void DisplayTestApp::draw()
