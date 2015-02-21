@@ -48,6 +48,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	virtual void	swapBuffers() const override;
 	virtual void	makeCurrentContext() override;
 
+	HDC				getDc() const { return mDC; }
  protected:
 	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
