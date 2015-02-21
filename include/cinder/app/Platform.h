@@ -27,6 +27,12 @@
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
 
+// forward declarations
+namespace cinder {
+	class Display;
+	typedef std::shared_ptr<Display> DisplayRef;
+}
+
 namespace cinder { namespace app {
 
 class Platform {
@@ -100,6 +106,9 @@ class Platform {
 
 	//! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 	virtual std::vector<std::string>		stackTrace() = 0;
+
+	//! Returns a std::vector of Displays connected to the system.
+	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 
   protected:
 	Platform() : mAssetPathsInitialized( false )	{}

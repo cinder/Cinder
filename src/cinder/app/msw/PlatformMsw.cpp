@@ -30,6 +30,8 @@
 #include <windows.h>
 #include <Shlwapi.h>
 #include <shlobj.h>
+#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include "cinder/app/AppBase.h"
 
 
 using namespace std;
@@ -37,7 +39,7 @@ using namespace std;
 namespace cinder { namespace app {
 
 PlatformMsw::PlatformMsw()
-	: mDirectConsoleToCout( false )
+	: mDirectConsoleToCout( false ), mDisplaysInitialized( false )
 {
 }
 
@@ -182,3 +184,134 @@ ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
 }
 
 } } // namespace cinder::app
+
+///////////////////////////////////////////////////////////////////////////////////////////////////
+// DisplayMsw
+namespace cinder {
+
+DisplayRef app::PlatformMsw::findDisplayFromHmonitor( HMONITOR hMonitor )
+{
+	for( auto &display : mDisplays )
+		if( std::dynamic_pointer_cast<DisplayMsw>(display)->mMonitor == hMonitor )
+			return display;
+
+	if( ! mDisplays.empty() )
+		return mDisplays[0];
+	else
+		return DisplayRef(); // failure
+}
+
+namespace {
+int getMonitorBitsPerPixel( HMONITOR hMonitor )
+{
+	int result = 0;
+	MONITORINFOEX mix;
+	memset( &mix, 0, sizeof( MONITORINFOEX ) );
+	mix.cbSize = sizeof( MONITORINFOEX );
+	HDC hMonitorDC = ::CreateDC( TEXT("DISPLAY"), mix.szDevice, NULL, NULL );
+	if( hMonitorDC ) {
+		result = ::GetDeviceCaps( hMonitorDC, BITSPIXEL );
+		::DeleteDC( hMonitorDC );
+	}
+
+	return result;
+}
+} // anonymous namespace
+
+BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
+{
+	vector<DisplayRef> *displaysVector = reinterpret_cast<vector<DisplayRef>*>( lParam );
+	
+	DisplayMsw *newDisplay = new DisplayMsw();
+	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
+	newDisplay->mMonitor = hMonitor;
+	newDisplay->mContentScale = 1.0f;
+	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
+		
+	displaysVector->push_back( DisplayRef( newDisplay ) );
+	return TRUE;
+}
+
+const std::vector<DisplayRef>& app::PlatformMsw::getDisplays()
+{
+	if( ! mDisplaysInitialized ) {
+		::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&mDisplays );
+	
+		// ensure that the primary display is sDisplay[0]
+		const POINT ptZero = { 0, 0 };
+		HMONITOR primMon = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
+	
+		size_t m;
+		for( m = 0; m < mDisplays.size(); ++m )
+			if( dynamic_pointer_cast<DisplayMsw>( mDisplays[m] )->mMonitor == primMon )
+				break;
+
+		if( ( m != 0 ) && ( m < mDisplays.size() ) )
+			std::swap( mDisplays[0], mDisplays[m] );
+
+		mDisplaysInitialized = true;
+	}
+
+	return mDisplays;
+}
+
+void app::PlatformMsw::refreshDisplays()
+{
+	// We need to do this with all this indirection so that getDisplays() is valid once we're emitting signals
+	vector<DisplayRef> newDisplays;
+
+	::EnumDisplayMonitors( NULL, NULL, DisplayMsw::enumMonitorProc, (LPARAM)&newDisplays );
+
+	vector<DisplayRef> connectedDisplays; // displays we need to issue a connected signal to
+	vector<DisplayRef> changedDisplays; // displays we need to issue a changed signal to
+	vector<DisplayRef> disconnectedDisplays; // displays we need to issue a disconnected signal to
+
+	for( auto &display : mDisplays )
+		reinterpret_cast<DisplayMsw*>( display.get() )->mVisitedFlag = false;
+
+	// find any changed or new displays
+	for( auto newDisplayIt = newDisplays.begin(); newDisplayIt != newDisplays.end(); ++newDisplayIt ) {
+		DisplayMsw *newDisplay = reinterpret_cast<DisplayMsw*>( newDisplayIt->get() );
+		// find the old display with the same mMonitor
+		bool found = false;
+		for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ++displayIt ) {	
+			DisplayMsw *oldDisplay = reinterpret_cast<DisplayMsw*>( displayIt->get() );
+			if( oldDisplay->mMonitor == newDisplay->mMonitor ) {
+				// found this display; see if anything changed
+				if( ( oldDisplay->mArea != newDisplay->mArea ) || ( oldDisplay->mBitsPerPixel != newDisplay->mBitsPerPixel ) )
+					changedDisplays.push_back( *displayIt );
+				*oldDisplay = *newDisplay;
+				oldDisplay->mVisitedFlag = true;
+				found = true;
+				break;
+			}
+		}
+		if( ! found ) {
+			newDisplay->mVisitedFlag = true; // don't want to later consider this display disconnected
+			connectedDisplays.push_back( *newDisplayIt );
+			mDisplays.push_back( *newDisplayIt );
+		}
+	}
+
+	// deal with any displays which have been disconnected
+	for( auto displayIt = mDisplays.begin(); displayIt != mDisplays.end(); ) {	
+		if( ! reinterpret_cast<DisplayMsw*>( displayIt->get() )->mVisitedFlag ) {
+			disconnectedDisplays.push_back( *displayIt );
+			displayIt = mDisplays.erase( displayIt );
+		}
+		else
+			++displayIt;
+	}
+
+	// emit signals
+	if( app::AppBase::get() ) {
+		for( auto &display : connectedDisplays )
+			app::AppBase::get()->emitDisplayConnected( display );
+		for( auto &display : changedDisplays )
+			app::AppBase::get()->emitDisplayChanged( display );
+		for( auto &display : disconnectedDisplays )
+			app::AppBase::get()->emitDisplayDisconnected( display );
+	}
+}
+
+} // namespace cinder

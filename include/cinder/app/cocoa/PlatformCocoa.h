@@ -24,20 +24,42 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/Display.h"
 
 #if defined __OBJC__
 	@class NSBundle;
 	@class NSAutoreleasePool;
+	#if defined( CINDER_MAC )
+		@class NSScreen;
+	#else
+		@class UIScreen;
+	#endif
 #else
 	class NSBundle;
 	class NSAutoreleasePool;
+	#if defined( CINDER_MAC )
+		class NSScreen;
+	#else
+		class UIScreen;
+	#endif
 #endif
+typedef uint32_t CGDisplayChangeSummaryFlags;
+typedef uint32_t CGDirectDisplayID;
+
+namespace cinder {
+#if defined( CINDER_MAC )
+	class DisplayMac;
+#else
+	class DisplayCocoaTouch;
+#endif
+}
 
 namespace cinder { namespace app {
 
 class PlatformCocoa : public Platform {
   public:
 	PlatformCocoa();
+	static PlatformCocoa*	get() { return reinterpret_cast<PlatformCocoa*>( Platform::get() ); }
 
 	void prepareLaunch() override;
 	void cleanupLaunch() override;
@@ -71,9 +93,79 @@ class PlatformCocoa : public Platform {
 
 	std::vector<std::string>		stackTrace() override;
 	
+	const std::vector<DisplayRef>& getDisplays() override;
+
+#if defined( CINDER_MAC )
+	//! Finds a Display based on its CGDirectDisplayID. Returns \c nullptr on failure.
+	DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
+	//! Finds a Display based on its NSScreen. Returns \c nullptr on failure.
+	DisplayRef			findFromNsScreen( NSScreen *nsScreen );
+#else
+	//! Finds a Display based on its UISScreen. Returns \c nullptr on failure.
+	DisplayRef			findDisplayFromUiScreen( UIScreen *uiScreen );
+#endif
+	// Display-specific callbacks
+	//! Makes a record of \a display and signals appropriately. Generally only useful for Cinder internals.
+	void		addDisplay( const DisplayRef &display );
+	//! Removes record of \a display from mDisplays and signals appropriately. Generally only useful for Cinder internals.
+	void		removeDisplay( const DisplayRef &display );
+
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
+	
+	bool					mDisplaysInitialized;
+	std::vector<DisplayRef>	mDisplays;
+
+#if defined( CINDER_MAC )
+	friend DisplayMac;
+#else
+	friend DisplayCocoaTouch;
+#endif
 };
 
 } } // namespace cinder::app
+
+namespace cinder {
+#if defined( CINDER_MAC )
+
+//! Represents a monitor/display on OS X
+class DisplayMac : public Display {
+  public:
+	~DisplayMac();
+
+	NSScreen*			getNsScreen() const { return mScreen; }
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
+
+  protected:	
+	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
+
+	NSScreen			*mScreen;
+	CGDirectDisplayID	mDirectDisplayID;
+	
+	friend app::PlatformCocoa;
+};
+
+#else
+
+//! Represents a monitor/display on iOS
+class DisplayCocoaTouch : public Display {
+  public:
+	DisplayCocoaTouch( UIScreen *screen );
+	~DisplayCocoaTouch();
+	
+	UIScreen*	getUiScreen() const { return mUiScreen; }
+	//! Returns a vector of resolutions the Display supports
+	const std::vector<ivec2>&	getSupportedResolutions() const { return mSupportedResolutions; }
+	//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
+	void						setResolution( const ivec2 &resolution );
+
+  protected:
+	UIScreen				*mUiScreen;
+	std::vector<ivec2>		mSupportedResolutions;
+	
+	friend app::PlatformCocoa;	
+};
+#endif
+
+} // namespace cinder

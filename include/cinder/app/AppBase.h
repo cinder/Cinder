@@ -223,6 +223,8 @@ class AppBase {
 	//! Emitted at the start of each application update cycle
 	signals::Signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
 
+	//! Signal that emits before the app quit process begins. If any slots return false then the app quitting is canceled.
+	EventSignalShouldQuit&		getSignalShouldQuit() { return mSignalShouldQuit; }
 	//! Emitted prior to the application shutting down
 	signals::Signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
@@ -231,6 +233,19 @@ class AppBase {
     void 						emitWillResignActive();
 	signals::Signal<void()>&	getSignalDidBecomeActive() { return mSignalDidBecomeActive; }
 	void 						emitDidBecomeActive();
+
+	//! Emitted when a new display is connected to the system
+	signals::Signal<void(const DisplayRef &display)>&	getSignalDisplayConnected() { return mSignalDisplayConnected; }
+	//! Emits a signal indicating a new display has connected to the system
+	void												emitDisplayConnected( const DisplayRef &display );
+	//! Emitted when a display is removed from the system
+	signals::Signal<void(const DisplayRef &display)>&	getSignalDisplayDisconnected() { return mSignalDisplayDisconnected; }
+	//! Emits a signal indicating a display has disconnected from the system
+	void												emitDisplayDisconnected( const DisplayRef &display );
+	//! Emitted when the resolution or some other property of a Display is changed
+	signals::Signal<void(const DisplayRef &display)>&	getSignalDisplayChanged() { return mSignalDisplayChanged; }
+	//! Emits a signal when the resolution or some other property of a Display has changed
+	void												emitDisplayChanged( const DisplayRef &display );
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
@@ -423,8 +438,11 @@ class AppBase {
 
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
+
 	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
 	EventSignalShouldQuit		mSignalShouldQuit;
+	
+	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;
 
 	std::shared_ptr<asio::io_service>	mIo;
 	std::shared_ptr<void>				mIoWork; // asio::io_service::work, but can't fwd declare member class

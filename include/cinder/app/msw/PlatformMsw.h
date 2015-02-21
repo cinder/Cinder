@@ -24,12 +24,15 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/Display.h"
+#include "cinder/msw/CinderWindowsFwd.h"
 
 namespace cinder { namespace app {
 
 class PlatformMsw : public Platform {
   public:
 	PlatformMsw();
+	static PlatformMsw*		get() { return reinterpret_cast<PlatformMsw*>( Platform::get() ); }
 
 	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
 
@@ -58,10 +61,17 @@ class PlatformMsw : public Platform {
 
 	std::vector<std::string>	stackTrace() override;
 
-  private:
+	const std::vector<DisplayRef>&	getDisplays() override;
+	void							refreshDisplays();
+	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
+	DisplayRef						findDisplayFromHmonitor( HMONITOR hMonitor );
 
+  private:
 	std::unique_ptr<std::ostream>	mOutputStream;
 	bool							mDirectConsoleToCout;
+
+	bool							mDisplaysInitialized;
+	std::vector<DisplayRef>			mDisplays;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type
@@ -71,3 +81,17 @@ class ResourceLoadExcMsw : public ResourceLoadExc {
 };
 
 } } // namespace cinder::app
+
+namespace cinder {
+
+class DisplayMsw : public Display {
+  protected:
+	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
+
+	HMONITOR			mMonitor;
+	bool				mVisitedFlag;
+
+	friend app::PlatformMsw;
+};
+
+} // namespace cinder

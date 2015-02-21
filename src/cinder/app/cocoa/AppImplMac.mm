@@ -24,7 +24,10 @@
 #include "cinder/app/cocoa/AppImplMac.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 #import "cinder/cocoa/CinderCocoa.h"
+
+#include <memory>
 
 #import <OpenGL/OpenGL.h>
 
@@ -55,7 +58,7 @@ using namespace cinder::app;
 {	
 	self = [super init];
 
-	// This needs to be called before creating any windows, as it internall constructs the shared NSApplication
+	// This needs to be called before creating any windows, as it internally constructs the shared NSApplication
 	[[NSApplication sharedApplication] setDelegate:self];
 
 	NSMenu *mainMenu = [[NSMenu alloc] init];
@@ -550,8 +553,7 @@ using namespace cinder::app;
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ivec2( content.origin.x, cinder::Display::getMainDisplay()->getHeight() - frame.origin.y - content.size.height );
-
+	mPos = ivec2( content.origin.x, [[[NSScreen screens] objectAtIndex:0] frame].size.height - frame.origin.y - content.size.height );
 	[mAppImpl setActiveWindow:self];
 
 	// This appears to be NULL in some scenarios
@@ -559,8 +561,8 @@ using namespace cinder::app;
 	if( screen ) {
 		NSDictionary *dict = [screen deviceDescription];
 		CGDirectDisplayID displayID = (CGDirectDisplayID)[[dict objectForKey:@"NSScreenNumber"] intValue];
-		if( displayID != mDisplay->getCgDirectDisplayId() ) {
-			auto newDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
+		if( displayID != (std::dynamic_pointer_cast<cinder::DisplayMac>( mDisplay )->getCgDirectDisplayId()) ) {
+			auto newDisplay = cinder::app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayID );
 			if( newDisplay ) {
 				mDisplay = newDisplay;
 				mWindowRef->emitDisplayChange();
@@ -703,6 +705,9 @@ using namespace cinder::app;
 	winImpl->mBorderless = winFormat.isBorderless();
 	winImpl->mAlwaysOnTop = winFormat.isAlwaysOnTop();
 
+	if( ! winImpl->mDisplay )
+		winImpl->mDisplay = Display::getMainDisplay();
+
 	int offsetX, offsetY;
 	if( ! winFormat.isPosSpecified() ) {
 		offsetX = ( winImpl->mDisplay->getWidth() - winFormat.getSize().x ) / 2;
@@ -727,7 +732,7 @@ using namespace cinder::app;
 													styleMask:styleMask
 													  backing:NSBackingStoreBuffered
 														defer:NO
-													   screen:winImpl->mDisplay->getNsScreen()];
+													   screen:std::dynamic_pointer_cast<cinder::DisplayMac>( winImpl->mDisplay )->getNsScreen()];
 
 	NSRect contentRect = [winImpl->mWin contentRectForFrameRect:[winImpl->mWin frame]];
 	winImpl->mSize.x = (int)contentRect.size.width;

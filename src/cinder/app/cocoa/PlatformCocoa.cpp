@@ -22,6 +22,7 @@
  */
 
 #include "cinder/app/cocoa/PlatformCocoa.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Log.h"
 #include "cinder/Filesystem.h"
 #include "cinder/cocoa/CinderCocoa.h"
@@ -29,8 +30,8 @@
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
 #else
-	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
+	#import <UIKit/UIKit.h>
 #endif
 #include <cxxabi.h>
 #include <execinfo.h>
@@ -40,7 +41,7 @@ using namespace std;
 namespace cinder { namespace app {
 
 PlatformCocoa::PlatformCocoa()
-	: mBundle( nil )
+	: mBundle( nil ), mDisplaysInitialized( false )
 {
 	// This is necessary to force the linker not to strip these symbols from libboost_filesystem.a,
 	// which in turn would force users to explicitly link to that lib from their own apps.
@@ -300,10 +301,257 @@ vector<string> PlatformCocoa::stackTrace()
 		}
 		else
 			result.push_back( std::string( strs[i] ) );
-	}
+	}	
 	free( strs );
 	
 	return result;
 }
 
-} } // namespace cinder::app
+void PlatformCocoa::addDisplay( const DisplayRef &display )
+{
+	mDisplays.push_back( display );
+
+	if( app::AppBase::get() )
+		app::AppBase::get()->emitDisplayConnected( display );
+}
+
+void PlatformCocoa::removeDisplay( const DisplayRef &display )
+{
+	DisplayRef displayCopy = display;
+	mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), displayCopy ), mDisplays.end() );
+	
+	if( app::AppBase::get() )
+		app::AppBase::get()->emitDisplayDisconnected( displayCopy );
+}
+
+} // namespace app
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// DisplayMac
+#if defined( CINDER_MAC )
+DisplayMac::~DisplayMac()
+{
+	[mScreen release];
+}
+
+DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )
+{
+	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
+		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
+		if( macDisplay.getCgDirectDisplayId() == displayId )
+			return *dispIt;
+	}
+
+	// couldn't find it, so return nullptr
+	return nullptr;
+}
+
+namespace {
+NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
+{
+	NSArray *screens = [NSScreen screens];
+	size_t screenCount = [screens count];
+	for( size_t i = 0; i < screenCount; ++i ) {
+		::NSScreen *screen = [screens objectAtIndex:i];
+		CGDirectDisplayID thisId = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
+		if( thisId == displayId )
+			return screen;
+	}
+	
+	return nil;
+}
+} // anonymous namespace
+
+DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
+{
+	return findFromCgDirectDisplayId( (CGDirectDisplayID)[[[nsScreen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] );
+}
+
+void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo )
+{
+	if( flags & kCGDisplayRemoveFlag ) {
+		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
+		if( display )
+			app::PlatformCocoa::get()->removeDisplay( display ); // this will signal
+		else
+			CI_LOG_W( "Received removed from CGDisplayRegisterReconfigurationCallback() on unknown display" );		
+	}
+	else if( flags & kCGDisplayAddFlag ) {
+		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
+		if( ! display ) {
+			CGRect frame = ::CGDisplayBounds( displayId );
+			
+			DisplayMac *newDisplay = new DisplayMac();
+			newDisplay->mDirectDisplayID = displayId;
+			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+			newDisplay->mScreen = findNsScreenForCgDirectDisplayId( displayId );			
+			if( newDisplay->mScreen ) {
+				newDisplay->mContentScale = [newDisplay->mScreen backingScaleFactor];
+				newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [newDisplay->mScreen depth] );
+			}
+			else {
+				newDisplay->mContentScale = 1.0f;
+				newDisplay->mBitsPerPixel = 24;
+				CI_LOG_E( "Unable to locate corresponding NSScreen for CGDirectDisplayID" );
+			}
+			
+			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
+		}
+		else
+			CI_LOG_W( "Received add from CGDisplayRegisterReconfigurationCallback() for already known display" );				
+	}
+	else if( flags & kCGDisplayMovedFlag ) { // needs to be tested after add & remove
+		DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
+		if( display ) {
+			bool newMainDisplay = false;
+			if( flags & kCGDisplaySetMainFlag ) {
+				DisplayRef display = app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayId );
+				if( display && ( display != app::PlatformCocoa::get()->getDisplays()[0] ) ) {
+					newMainDisplay = true;
+					// move on up to the front of the bus; mDisplays[0] is main
+					vector<DisplayRef> &mDisplays = app::PlatformCocoa::get()->mDisplays;
+					mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), display ), mDisplays.end() );
+					mDisplays.insert( mDisplays.begin(), display );
+				}
+			}		
+		
+			// CG appears to not do the coordinate y-flip that NSScreen does
+			CGRect frame = ::CGDisplayBounds( displayId );
+			Area displayArea( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+			bool newArea = false;
+			if( display->getBounds() != displayArea ) {
+				reinterpret_cast<DisplayMac*>( display.get() )->mArea = displayArea;
+				newArea = true;
+			}
+			
+			if( newMainDisplay || newArea ) {
+				if( app::AppBase::get() )
+					app::AppBase::get()->emitDisplayChanged( display );
+			}
+		}
+		else
+			CI_LOG_W( "Received moved from CGDisplayRegisterReconfigurationCallback() on unknown display" );			
+	}
+}
+
+const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
+{
+	if( ! mDisplaysInitialized ) {
+		// this is our first call; register a callback with CoreGraphics for any display changes. Note that this only works with a run loop
+		::CGDisplayRegisterReconfigurationCallback( DisplayMac::displayReconfiguredCallback, NULL );
+	}
+
+	if( ! mDisplaysInitialized ) {
+		NSArray *screens = [NSScreen screens];
+		NSScreen *mainScreen = [screens objectAtIndex:0];
+		size_t screenCount = [screens count];
+		for( size_t i = 0; i < screenCount; ++i ) {
+			::NSScreen *screen = [screens objectAtIndex:i];
+			[screen retain]; // this is released in the destructor for Display
+
+			DisplayMac *newDisplay = new DisplayMac();
+
+			NSRect frame = [screen frame];
+			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
+			if( screen != mainScreen ) {
+				int mainScreenHeight = (int)[mainScreen frame].size.height;
+				newDisplay->mArea = Area( frame.origin.x, mainScreenHeight - frame.origin.y - frame.size.height, frame.origin.x + frame.size.width, mainScreenHeight - frame.origin.y );
+			}
+			else
+				newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+
+			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
+			newDisplay->mScreen = screen;
+			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
+			newDisplay->mContentScale = [screen backingScaleFactor];
+
+			mDisplays.push_back( DisplayRef( newDisplay ) );
+		}
+
+		mDisplaysInitialized = true;	
+	}
+	
+	return mDisplays;
+}
+
+#else // COCOA_TOUCH
+
+DisplayRef app::PlatformCocoa::findDisplayFromUiScreen( UIScreen *uiScreen )
+{
+	for( auto &display : mDisplays ) {
+		const DisplayCocoaTouch* cocoaTouchDisplay( dynamic_cast<const DisplayCocoaTouch*>( display.get() ) );
+		if( cocoaTouchDisplay->getUiScreen() == uiScreen )
+			return display;
+	}
+
+	// couldn't find it, so return nullptr
+	return nullptr;
+}
+
+DisplayCocoaTouch::DisplayCocoaTouch( UIScreen *screen )
+{
+	[screen retain]; // this is released in the destructor for Display
+	CGRect frame = [screen bounds];
+
+	mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
+	mUiScreen = screen;
+	mBitsPerPixel = 24;
+	mContentScale = screen.scale;
+
+	NSArray *resolutions = [screen availableModes];
+	for( int i = 0; i < [resolutions count]; ++i ) {
+		::UIScreenMode *mode = [resolutions objectAtIndex:i];
+		mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
+	}
+}
+
+DisplayCocoaTouch::~DisplayCocoaTouch()
+{
+	[mUiScreen release];
+}
+
+const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
+{
+	if( ! mDisplaysInitialized ) {
+		NSArray *screens = [UIScreen screens];
+		if( screens && [screens count] ) {
+			// see the note below; we may have aleady been through here before
+			size_t firstIndex = ( mDisplays.empty() ) ? 0 : 1;
+			for( size_t i = firstIndex; i < [screens count]; ++i )
+				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [screens objectAtIndex:i] ) ) );
+			mDisplaysInitialized = true;				
+		}
+		else {
+			if( ! cinder::app::AppBase::get() )
+				CI_LOG_E( "getDisplays() fails on iOS until application is instantiated." );
+
+			// when [UIScreen screens] is called before the app is initialized it returns an empty array
+			// We need to work around this by not marking mDisplaysInitialized so that a future call will reevaluate
+			// However we can't have empty mDisplays, so we go ahead and put the main display in manually
+			if( mDisplays.empty() )
+				mDisplays.push_back( DisplayRef( new DisplayCocoaTouch( [UIScreen mainScreen] ) ) );
+		}
+	}
+	
+	return mDisplays;
+}
+
+void DisplayCocoaTouch::setResolution( const ivec2 &resolution )
+{
+	NSArray *modes = [mUiScreen availableModes];
+	int closestIndex = 0;
+	float closestDistance = 1000000.0f; // big distance
+	for( int i = 0; i < [modes count]; ++i ) {
+		::UIScreenMode *mode = [modes objectAtIndex:i];
+		ivec2 thisModeRes = vec2( mode.size.width, mode.size.height );
+		if( distance( vec2(resolution), vec2(thisModeRes) ) < closestDistance ) {
+			closestDistance = distance( vec2(resolution), vec2(thisModeRes) );
+			closestIndex = i;
+		}
+	}
+	
+	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
+}
+#endif
+
+} // namespace cinder

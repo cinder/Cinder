@@ -21,6 +21,7 @@
  */
 
 #import "cinder/app/cocoa/AppImplCocoaTouch.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 
 using namespace cinder;
 using namespace cinder::app;
@@ -108,6 +109,7 @@ using namespace cinder::app;
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
 	[center addObserver:self selector:@selector(screenDidDisconnect:) name:UIScreenDidDisconnectNotification object:nil];
+	[center addObserver:self selector:@selector(screenModeDidChange:) name:	UIScreenModeDidChangeNotification object:nil];
 
 	mAnimationFrameInterval = std::max<float>( 1.0f, floor( 60.0f / settings.getFrameRate() + 0.5f ) );
 
@@ -116,8 +118,13 @@ using namespace cinder::app;
 	if( formats.empty() )
 		formats.push_back( settings.getDefaultWindowFormat() );
 
-	for( auto &format : formats )
-		[self createWindow:format];
+	for( auto format : formats ) {
+		if( ! format.getRenderer() )
+			format.setRenderer( mApp->getDefaultRenderer()->clone() );
+
+		RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
+		mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
+	}
 
 	[self setActiveWindow:mWindows.front()];
 
@@ -186,11 +193,17 @@ using namespace cinder::app;
 
 - (void)screenDidConnect:(NSNotification *)notification
 {
-	NSLog(@"A new screen got connected: %@", [notification object]);
-	//cinder::Display::markDisplaysDirty();
+	DisplayRef connected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
+	app::PlatformCocoa::get()->addDisplay( connected );
 }
 
 - (void)screenDidDisconnect:(NSNotification *)notification
+{
+	DisplayRef disconnected = app::PlatformCocoa::get()->findDisplayFromUiScreen( (UIScreen*)[notification object] );
+	app::PlatformCocoa::get()->removeDisplay( disconnected );
+}
+
+- (void)screenModeDidChange:(NSNotification *)notification
 {
 	NSLog(@"A screen got disconnected: %@", [notification object]);
 	//	cinder::Display::markDisplaysDirty();
@@ -243,6 +256,9 @@ using namespace cinder::app;
 
 	RendererRef sharedRenderer = [self findSharedRenderer:format.getRenderer()];
 	mWindows.push_back( [[WindowImplCocoaTouch alloc] initWithFormat:format withAppImpl:self sharedRenderer:sharedRenderer] );
+	
+	[mWindows.back() finishLoad];
+	
 	return mWindows.back()->mWindowRef;
 }
 
@@ -371,8 +387,9 @@ using namespace cinder::app;
 
 - (void)finishLoad
 {
-	mUiWindow = [[UIWindow alloc] initWithFrame:[mDisplay->getUiScreen() bounds]];
-	mUiWindow.screen = mDisplay->getUiScreen();
+	UIScreen *screen = std::dynamic_pointer_cast<cinder::DisplayCocoaTouch>( mDisplay )->getUiScreen();
+	mUiWindow = [[UIWindow alloc] initWithFrame:[screen bounds]];
+	mUiWindow.screen = screen;
 	mUiWindow.rootViewController = mRootViewController;
 
 	// this needs to be last

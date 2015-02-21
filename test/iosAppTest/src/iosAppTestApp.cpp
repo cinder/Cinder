@@ -1,5 +1,5 @@
-#include "cinder/app/AppCocoaTouch.h"
-#include "cinder/app/CinderViewCocoaTouch.h"
+#include "cinder/app/cocoa/AppCocoaTouch.h"
+#include "cinder/app/cocoa/CinderViewCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
@@ -13,6 +13,7 @@
 #include "cinder/System.h"
 #include "cinder/Text.h"
 #include "cinder/Log.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 
 #import <UIKit/UIKit.h>
 
@@ -86,6 +87,7 @@ TestCallbackOrder	sOrderTester;
 
 class iosAppTestApp : public AppCocoaTouch {
   public:
+iosAppTestApp();
 	static 	void prepareSettings( AppCocoaTouch::Settings *settings );
 
 	void	setup()								override;
@@ -128,24 +130,29 @@ class iosAppTestApp : public AppCocoaTouch {
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
 	int							mMouseTouchId; // gives a unique ID to each click to emulate multitouch
+	bool mMultipleDisplays = false;
 };
 
 // static
+iosAppTestApp::iosAppTestApp()
+{
+	CI_LOG_V( "Displays" );
+	for( auto &display : Display::getDisplays() )
+		CI_LOG_V( *display );
+}
+
 void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 {
 	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
 
-	for( auto &display : Display::getDisplays() )
-		CI_LOG_V( *display );
+	// THIS DOES NOT WORK ON iOS - Can't query displays in prepareSettings
+//	for( auto &display : Display::getDisplays() )
+//		CI_LOG_V( *display );
 
 //	settings->setMultiTouchEnabled( false );
 //	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
 	settings->setPowerManagementEnabled( false );
 	settings->setStatusBarEnabled( false );
-	
-	settings->prepareWindow( Window::Format() );
-	if( Display::getDisplays().size() > 1 )
-			settings->prepareWindow( Window::Format().display( Display::getDisplays()[1] ).size( 800, 600 ) );
 }
 
 void iosAppTestApp::setup()
@@ -187,6 +194,10 @@ void iosAppTestApp::setup()
 	CI_LOG_V( "window size: " << getWindowSize() << ", window content scale: " << getWindowContentScale() );
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
+
+	auto displays = Display::getDisplays();
+	if( displays.size() > 1 )
+		createWindow( Window::Format().display( displays[1] ) );
 
 	if( getNumWindows() > 1 ) {
 		mSecondWindow = getWindowIndex( 1 );
@@ -315,12 +326,12 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 		mActivePoints.erase( touchIt->getId() );
 	}
 	
-	/*if( isKeyboardVisible() )
+	if( isKeyboardVisible() )
 		hideKeyboard();
 	else {
 		showKeyboard();
 		mSecondWindowMessage.clear();
-	}*/
+	}
 	
 	if( isStatusBarVisible() )
 		hideStatusBar( StatusBarAnimation::FADE );
@@ -369,8 +380,8 @@ void iosAppTestApp::draw()
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
-	if( isUnplugged() )
-		gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	if( getDisplay() == Display::getMainDisplay() )
+		gl::clear( Color( 1.2f, 0.2f, 0.3f ) );
 	else
 		gl::clear( Color( 0.4f, 0.2f, 0.2f ) );		
 
@@ -425,6 +436,7 @@ void iosAppTestApp::draw()
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
+	mFont->drawString( "Displays " + toString( Display::getDisplays().size() ), vec2( 10.0f, 140.0f ) );	
 }
 
 CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ), iosAppTestApp::prepareSettings )

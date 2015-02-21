@@ -23,6 +23,7 @@
 
 #include "cinder/app/msw/AppImplMswBasic.h"
 #include "cinder/app/msw/RendererImplMsw.h"
+#include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/Utilities.h"
 
 #include <windowsx.h>
@@ -70,6 +71,13 @@ void AppImplMswBasic::run()
 
 	// inner loop
 	while( ! mShouldQuit ) {
+		// all of our Windows will have marked this as true if the user has unplugged, plugged or modified a Monitor
+		if( mNeedsToRefreshDisplays ) {
+			mNeedsToRefreshDisplays = false;
+			PlatformMsw::get()->refreshDisplays();
+			OutputDebugString( L"Refreshing displays" );
+		}
+
 		// update and draw
 		mApp->privateUpdate__();
 		for( auto &window : mWindows )
