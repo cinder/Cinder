@@ -439,12 +439,11 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 	cocoa::SafeNsAutoreleasePool autorelease;
 #endif
 
-	if( extension.empty() )
-#if ! defined( CINDER_WINRT )
-		extension = getPathExtension( dataTarget->getFilePathHint().extension().string() );
-#else
-		extension = getPathExtension( dataTarget->getFilePathHint().extension() );
-#endif
+	if( extension.empty() ) {
+		extension = dataTarget->getFilePathHint().extension().string();
+		// strip leading .
+		extension = ( ( ! extension.empty() ) && ( extension[0] == '.' ) ) ? extension.substr( 1, string::npos ) : extension;
+	}
 
 	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {

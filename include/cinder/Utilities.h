@@ -40,12 +40,6 @@ fs::path expandPath( const fs::path &path );
 fs::path getHomeDirectory();
 //! Returns a path to the user's documents directory.
 fs::path getDocumentsDirectory();
-//! Returns the directory portion of file path \a path, the last component of which must be a file name or a terminating path separator. 
-std::string getPathDirectory( const std::string &path );
-//! Returns the file name portion of file path \a path. For example \c "C:\Images\Beyonce.jpg" returns \c "Beyonce.jpg".
-std::string getPathFileName( const std::string &path );
-//! Returns the file extension of the file located at \a path
-std::string getPathExtension( const std::string &path );
 
 //! Launches a path in a web browser
 void launchWebBrowser( const Url &url );

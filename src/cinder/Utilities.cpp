@@ -83,38 +83,6 @@ fs::path getDocumentsDirectory()
 	return app::Platform::get()->getDocumentsDirectory();
 }
 
-std::string getPathDirectory( const std::string &path )
-{
-	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
-	if( lastSlash == string::npos ) {
-		return "";
-	}
-	else
-		return path.substr( 0, lastSlash + 1 );
-}
-
-std::string getPathFileName( const std::string &path )
-{
-	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
-	if( lastSlash == string::npos )
-		return path;
-	else
-		return path.substr( lastSlash + 1, string::npos );
-}
-
-std::string getPathExtension( const std::string &path )
-{
-	size_t i = path.rfind( '.', path.length() );
-	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
-	// make sure that we found a dot, and that the dot is after the last directory separator
-	if( i != string::npos &&
-		( ( lastSlash == string::npos ) || ( i > lastSlash ) ) ) {
-		return path.substr( i+1, path.length() - i );
-	}
-	else
-		return std::string();
-}
-
 void launchWebBrowser( const Url &url )
 {
 	app::Platform::get()->launchWebBrowser( url );
