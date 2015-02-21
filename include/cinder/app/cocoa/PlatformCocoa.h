@@ -68,6 +68,8 @@ class PlatformCocoa : public Platform {
 	void sleep( float milliseconds ) override;
 
 	void launchWebBrowser( const Url &url ) override;
+
+	std::vector<std::string>		stackTrace() override;
 	
   private:
 	NSAutoreleasePool*		mAutoReleasePool;

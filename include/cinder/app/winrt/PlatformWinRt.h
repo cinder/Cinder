@@ -53,6 +53,8 @@ class PlatformWinRt : public Platform {
 	void launchWebBrowser( const Url &url ) override;
 
 	void sleep( float milliseconds ) override;
+	
+	void std::vector<std::string> stackTrace() override;
   
   private:
 

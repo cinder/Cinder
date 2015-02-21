@@ -32,6 +32,8 @@
 	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
 #endif
+#include <cxxabi.h>
+#include <execinfo.h>
 
 using namespace std;
 
@@ -264,6 +266,44 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 #endif // defined( CINDER_MAC )
 
 	return fs::path(); // return empty path on failure
+}
+
+vector<string> PlatformCocoa::stackTrace()
+{
+	std::vector<std::string> result;
+	static const int MAX_DEPTH = 128;
+	void* callstack[MAX_DEPTH];
+	int i, frames = backtrace( callstack, MAX_DEPTH );
+	char** strs = backtrace_symbols( callstack, frames );
+	for( i = 0; i < frames; ++i ) {
+		// demangle any C++ names
+		std::string mangled( strs[i] );
+		// find the beginning and the end of the useful part of the trace
+		std::string::size_type end = mangled.find_last_of( '+' ) - 1;
+		std::string::size_type begin = mangled.rfind( ' ', end - 1 ) + 1;
+
+		// if they were found, we'll go ahead and demangle
+		if( ( begin != std::string::npos ) && ( end != std::string::npos ) ) {
+			mangled = mangled.substr( begin, end - begin );
+
+			size_t MAX_NAME = 1024;
+			int demangleStatus;
+			std::string name;
+			char* demangledName = (char*)malloc( MAX_NAME );
+			if( ( demangledName = abi::__cxa_demangle( mangled.c_str(), demangledName, &MAX_NAME, &demangleStatus ) ) && ( demangleStatus == 0 ) ) {
+				name = demangledName; // the demangled name is now in our trace string
+			}
+			else
+				name = mangled;
+			free( demangledName );
+			result.push_back( std::string( strs[i] ).substr( 0, begin ) + name + std::string( strs[i] ).substr( end, std::string::npos ) );
+		}
+		else
+			result.push_back( std::string( strs[i] ) );
+	}
+	free( strs );
+	
+	return result;
 }
 
 } } // namespace cinder::app

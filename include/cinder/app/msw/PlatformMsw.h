@@ -56,6 +56,8 @@ class PlatformMsw : public Platform {
 
 	void sleep( float milliseconds ) override;
 
+	std::vector<std::string>	stackTrace() override;
+
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;

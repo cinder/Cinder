@@ -25,6 +25,7 @@
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
 #include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include "cinder/msw/StackWalker.h"
 
 #include <windows.h>
 #include <Shlwapi.h>
@@ -125,6 +126,53 @@ void PlatformMsw::launchWebBrowser( const Url &url )
 void PlatformMsw::sleep( float milliseconds )
 {
 	::Sleep( static_cast<int>( milliseconds ) );
+}
+
+namespace {
+class CinderStackWalker : public StackWalker {
+  public:
+	CinderStackWalker()
+		: StackWalker()
+	{ ShowCallstack(); }
+	
+	virtual void OnSymInit( LPCSTR szSearchPath, DWORD symOptions, LPCSTR szUserName ) {}
+	virtual void OnLoadModule( LPCSTR img, LPCSTR mod, DWORD64 baseAddr, DWORD size, DWORD result, LPCSTR symType, LPCSTR pdbName, ULONGLONG fileVersion ) {}
+	virtual void OnCallstackEntry( CallstackEntryType eType, CallstackEntry &entry )
+	{
+		CHAR buffer[STACKWALK_MAX_NAMELEN];
+		if ( (eType != lastEntry) && (entry.offset != 0) && ( eType != firstEntry ) ) {
+			if( entry.name[0] == 0 )
+				strcpy_s( entry.name, "(function-name not available)" );
+			if( entry.undName[0] != 0 )
+				strcpy_s( entry.name, entry.undName );
+			if(entry.undFullName[0] != 0 )
+				strcpy_s( entry.name, entry.undFullName );
+			if( entry.lineFileName[0] == 0 ) {
+				strcpy_s( entry.lineFileName, "(filename not available)" );
+				if (entry.moduleName[0] == 0)
+					strcpy_s( entry.moduleName, "(module-name not available)" );
+				_snprintf_s( buffer, STACKWALK_MAX_NAMELEN, "%p (%s): %s: %s", (LPVOID) entry.offset, entry.moduleName, entry.lineFileName, entry.name );
+			}
+			else
+				_snprintf_s( buffer, STACKWALK_MAX_NAMELEN, "%s (%d): %s", entry.lineFileName, entry.lineNumber, entry.name );
+			mEntries.push_back( std::string( buffer ) );
+		}
+
+	}
+	virtual void OnDbgHelpErr( LPCSTR szFuncName, DWORD gle, DWORD64 addr ) {}
+	virtual void OnOutput( LPCSTR szText ) {}
+	
+	const std::vector<std::string>&	getEntries() { return mEntries; }
+	
+  protected:
+	std::vector<std::string>	mEntries;
+};
+} // anonymous namespace
+
+vector<string> PlatformMsw::stackTrace()
+{
+	CinderStackWalker csw;
+	return csw.getEntries();
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )

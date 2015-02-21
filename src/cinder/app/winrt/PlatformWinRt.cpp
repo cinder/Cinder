@@ -96,12 +96,12 @@ std::ostream& PlatformWinRt::console()
 	return *mOutputStream;
 }
 
-fs::path PlatformMsw::expandPath( const fs::path &path )
+fs::path PlatformWinRt::expandPath( const fs::path &path )
 {
 	return fs::canonical( path );
 }
 
-fs::path PlatformMsw::getHomeDirectory()
+fs::path PlatformWinRt::getHomeDirectory()
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
@@ -109,23 +109,29 @@ fs::path PlatformMsw::getHomeDirectory()
 	return fs::path( result );
 }
 
-fs::path PlatformMsw::getDocumentsDirectory()
+fs::path PlatformWinRt::getDocumentsDirectory()
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
 }
 
-void PlatformMsw::launchWebBrowser( const Url &url )
+void PlatformWinRt::launchWebBrowser( const Url &url )
 {
 	std::u16string urlStr = toUtf16( url.str() );
 	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
 	Windows::System::Launcher::LaunchUriAsync( uri );
 }
 
-void PlatformMsw::sleep( float milliseconds )
+void PlatformWinRt::sleep( float milliseconds )
 {
 	CI_LOG_E( "sleep not implemented on WinRT" );
+}
+
+vector<string> PlatformWinRt::stackTrace()
+{
+	CI_LOG_E( "stackTrace() not implemented on WinRT" );
+	return vector<string>();
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
