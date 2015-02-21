@@ -1322,6 +1322,14 @@
 		00BC898C10D2BEA200D6DC59 /* DataTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataTarget.h; sourceTree = "<group>"; };
 		00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTargetFileQuartz.h; sourceTree = "<group>"; };
 		00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTargetFileQuartz.cpp; sourceTree = "<group>"; };
+		00BFB04C1A99170B00DDC921 /* AppImplWinRT.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplWinRT.cpp; path = app/winrt/AppImplWinRT.cpp; sourceTree = "<group>"; };
+		00BFB04D1A99170B00DDC921 /* AppImplWinRTBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = AppImplWinRTBasic.cpp; path = app/winrt/AppImplWinRTBasic.cpp; sourceTree = "<group>"; };
+		00BFB04E1A99170B00DDC921 /* PlatformWinRt.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = PlatformWinRt.cpp; path = app/winrt/PlatformWinRt.cpp; sourceTree = "<group>"; };
+		00BFB04F1A99170B00DDC921 /* WinRTApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; name = WinRTApp.cpp; path = app/winrt/WinRTApp.cpp; sourceTree = "<group>"; };
+		00BFB0511A99175F00DDC921 /* AppImplWinRT.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplWinRT.h; path = app/winrt/AppImplWinRT.h; sourceTree = "<group>"; };
+		00BFB0521A99175F00DDC921 /* AppImplWinRTBasic.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppImplWinRTBasic.h; path = app/winrt/AppImplWinRTBasic.h; sourceTree = "<group>"; };
+		00BFB0531A99175F00DDC921 /* PlatformWinRt.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = PlatformWinRt.h; path = app/winrt/PlatformWinRt.h; sourceTree = "<group>"; };
+		00BFB0541A99175F00DDC921 /* WinRTApp.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = WinRTApp.h; path = app/winrt/WinRTApp.h; sourceTree = "<group>"; };
 		00C071AF0FF16244004801EA /* Font.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Font.cpp; sourceTree = "<group>"; };
 		00C071B20FF16261004801EA /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Font.h; sourceTree = "<group>"; };
 		00CFD9E11135C3520091E310 /* libcinder-iphone-sim_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone-sim_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1535,10 +1543,7 @@
 		118CA4421A94280600841458 /* RendererImpl2dGdi.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImpl2dGdi.cpp; sourceTree = "<group>"; };
 		118CA4431A94280600841458 /* RendererImplGlMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = RendererImplGlMsw.cpp; sourceTree = "<group>"; };
 		118CA4441A94280600841458 /* AppImplMswScreenSaver.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplMswScreenSaver.cpp; sourceTree = "<group>"; };
-		118CA4451A94280600841458 /* AppImplWinRT.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplWinRT.cpp; sourceTree = "<group>"; };
-		118CA4461A94280600841458 /* AppImplWinRTBasic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = AppImplWinRTBasic.cpp; sourceTree = "<group>"; };
 		118CA4471A94280600841458 /* PlatformMsw.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = PlatformMsw.cpp; sourceTree = "<group>"; };
-		118CA4481A94280600841458 /* WinRTApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = WinRTApp.cpp; sourceTree = "<group>"; };
 		118CA4501A9428BE00841458 /* AppMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppMac.h; sourceTree = "<group>"; };
 		118CA4511A9428BE00841458 /* AppCocoaTouch.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppCocoaTouch.h; sourceTree = "<group>"; };
 		118CA4521A9428BE00841458 /* AppCocoaView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppCocoaView.h; sourceTree = "<group>"; };
@@ -1661,6 +1666,7 @@
 			children = (
 				118CA44F1A9428BE00841458 /* cocoa */,
 				118CA45C1A9428BE00841458 /* msw */,
+				00BFB0501A99175000DDC921 /* winrt */,
 				002419CD0E8035D3004D34EB /* App.h */,
 				1181F7C31A7F8760001BBFA2 /* AppBase.h */,
 				00AA5C860F64851C009CD67F /* AppScreenSaver.h */,
@@ -1682,6 +1688,7 @@
 			children = (
 				118CA4071A9427F700841458 /* cocoa */,
 				118CA43C1A94280600841458 /* msw */,
+				00BFB04B1A9916F500DDC921 /* winrt */,
 				1181F7C71A7F8792001BBFA2 /* AppBase.cpp */,
 				00A3A9070F681391008DE5DC /* AppScreenSaver.cpp */,
 				007B09830E957B9A0052257E /* KeyEvent.cpp */,
@@ -2051,6 +2058,28 @@
 			name = cinder;
 			path = ../src/cinder;
 			sourceTree = SOURCE_ROOT;
+		};
+		00BFB04B1A9916F500DDC921 /* winrt */ = {
+			isa = PBXGroup;
+			children = (
+				00BFB04C1A99170B00DDC921 /* AppImplWinRT.cpp */,
+				00BFB04D1A99170B00DDC921 /* AppImplWinRTBasic.cpp */,
+				00BFB04F1A99170B00DDC921 /* WinRTApp.cpp */,
+				00BFB04E1A99170B00DDC921 /* PlatformWinRt.cpp */,
+			);
+			name = winrt;
+			sourceTree = "<group>";
+		};
+		00BFB0501A99175000DDC921 /* winrt */ = {
+			isa = PBXGroup;
+			children = (
+				00BFB0511A99175F00DDC921 /* AppImplWinRT.h */,
+				00BFB0521A99175F00DDC921 /* AppImplWinRTBasic.h */,
+				00BFB0541A99175F00DDC921 /* WinRTApp.h */,
+				00BFB0531A99175F00DDC921 /* PlatformWinRt.h */,
+			);
+			name = winrt;
+			sourceTree = "<group>";
 		};
 		00C07D8D0FFF1E43004801EA /* ip */ = {
 			isa = PBXGroup;
@@ -2487,14 +2516,11 @@
 				118CA43E1A94280600841458 /* AppImplMsw.cpp */,
 				118CA43F1A94280600841458 /* AppImplMswBasic.cpp */,
 				118CA4441A94280600841458 /* AppImplMswScreenSaver.cpp */,
-				118CA4451A94280600841458 /* AppImplWinRT.cpp */,
-				118CA4461A94280600841458 /* AppImplWinRTBasic.cpp */,
 				118CA4471A94280600841458 /* PlatformMsw.cpp */,
 				118CA4421A94280600841458 /* RendererImpl2dGdi.cpp */,
 				118CA4411A94280600841458 /* RendererImplDx.cpp */,
 				118CA4401A94280600841458 /* RendererImplGlAngle.cpp */,
 				118CA4431A94280600841458 /* RendererImplGlMsw.cpp */,
-				118CA4481A94280600841458 /* WinRTApp.cpp */,
 			);
 			name = msw;
 			path = app/msw;
@@ -2528,12 +2554,12 @@
 				118CA45E1A9428BE00841458 /* AppImplMsw.h */,
 				118CA45F1A9428BE00841458 /* AppImplMswBasic.h */,
 				118CA4651A9428BE00841458 /* AppImplMswScreenSaver.h */,
-				118CA4681A9428BE00841458 /* PlatformMsw.h */,
 				118CA4631A9428BE00841458 /* RendererImpl2dGdi.h */,
 				118CA4621A9428BE00841458 /* RendererImplDx.h */,
 				118CA4611A9428BE00841458 /* RendererImplGlAngle.h */,
 				118CA4641A9428BE00841458 /* RendererImplGlMsw.h */,
 				118CA4601A9428BE00841458 /* RendererImplMsw.h */,
+				118CA4681A9428BE00841458 /* PlatformMsw.h */,
 			);
 			name = msw;
 			path = app/msw;
