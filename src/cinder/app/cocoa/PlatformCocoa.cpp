@@ -23,6 +23,7 @@
 
 #include "cinder/app/cocoa/PlatformCocoa.h"
 #include "cinder/Log.h"
+#include "cinder/Filesystem.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
@@ -37,7 +38,10 @@ namespace cinder { namespace app {
 PlatformCocoa::PlatformCocoa()
 	: mBundle( nil )
 {
-
+	// This is necessary to force the linker not to strip these symbols from libboost_filesystem.a,
+	// which in turn would force users to explicitly link to that lib from their own apps.
+	auto dummy = boost::filesystem::unique_path();
+	auto dummy2 = fs::temp_directory_path();
 }
 
 void PlatformCocoa::prepareLaunch()

@@ -120,56 +120,6 @@ fs::path getDocumentsDirectory()
 #endif
 }
 
-fs::path getTemporaryDirectory()
-{
-#if defined( CINDER_COCOA )
-	NSString *docDir = ::NSTemporaryDirectory();
-	return cocoa::convertNsString( docDir );
-#elif defined( CINDER_WINRT )
-	auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
-	return PlatformStringToString(folder->Path);
-#else
-	DWORD result = ::GetTempPathW( 0, L"" );
-	if( ! result )
-		throw std::runtime_error("Could not get system temp path");
-
-	std::vector<TCHAR> tempPath(result + 1);
-	result = ::GetTempPathW(static_cast<DWORD>(tempPath.size()), &tempPath[0]);
-	if( ( ! result ) || ( result >= tempPath.size() ) )
-		throw std::runtime_error("Could not get system temp path");
-
-	std::wstring wideResult( tempPath.begin(), tempPath.begin() + static_cast<std::size_t>(result) );
-	return toUtf8( (char16_t*)wideResult.c_str() );
-#endif
-}
-
-fs::path getTemporaryFilePath( const std::string &prefix )
-{
-#if defined( CINDER_COCOA )
-	char path[2048];
-	sprintf( path, "%s%sXXXXXX", getTemporaryDirectory().c_str(), prefix.c_str() );
-	return string( mktemp( path ) );
-#elif defined( CINDER_WINRT )
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#else
-	TCHAR tempFileName[MAX_PATH]; 
-	DWORD result = ::GetTempPathW( 0, L"" );
-	if( ! result )
-		throw std::runtime_error("Could not get system temp path");
-
-	std::vector<TCHAR> tempPath(result + 1);
-	result = ::GetTempPathW(static_cast<DWORD>(tempPath.size()), &tempPath[0]);
-	if( ( ! result ) || ( result >= tempPath.size() ) )
-		throw std::runtime_error( "Could not get system temp path" );
-
-	result = ::GetTempFileName( &tempPath[0], (wchar_t*)toUtf16( prefix.c_str() ).c_str(), 0, tempFileName );
-    if( result == 0)
-		throw std::runtime_error( "Could not create temporary file path" );
-
-	return toUtf8( (char16_t*)&tempFileName[0] );
-#endif
-}
-
 std::string getPathDirectory( const std::string &path )
 {
 	size_t lastSlash = path.rfind( getPathSeparator(), path.length() );
