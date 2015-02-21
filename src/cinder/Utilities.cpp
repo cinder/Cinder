@@ -27,20 +27,6 @@
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
-#if defined( CINDER_MSW )
-	#include <windows.h>
-	#include <Shlwapi.h>
-	#include <shlobj.h>
-	#include "cinder/msw/StackWalker.h"
-#elif defined( CINDER_WINRT )
-	#include "cinder/WinRTUtils.h"
-	#include <wrl/client.h>
-	#include <agile.h>
-	using namespace Windows::Storage;
-	using namespace Windows::System;
-	using namespace cinder::winrt;
-#endif
-
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
