@@ -74,10 +74,6 @@ fs::path expandPath( const fs::path &path )
 
 #if defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#elif defined( CINDER_MSW )
-	wchar_t buffer[MAX_PATH];
-	::PathCanonicalize( buffer, path.wstring().c_str() );
-	return fs::path( buffer ); 
 #endif
 }
 
@@ -90,11 +86,6 @@ fs::path getHomeDirectory()
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	string result = PlatformStringToString(folder->Path);
 	return fs::path( result );
-#elif defined( CINDER_MSW )
-	wchar_t buffer[MAX_PATH];
-	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
-	wstring result = wstring(buffer) + L"\\";
-	return fs::path( result );
 #endif
 }
 
@@ -106,10 +97,6 @@ fs::path getDocumentsDirectory()
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
-#elif defined( CINDER_MSW )
-	wchar_t buffer[MAX_PATH];
-	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
-	return fs::path( wstring(buffer) + L"\\" );
 #endif
 }
 
@@ -196,9 +183,7 @@ string loadString( DataSourceRef dataSource )
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );
-#if defined( CINDER_MSW )
-	::Sleep( static_cast<int>( milliseconds ) );
-#elif defined( CINDER_WINRT )
+#if defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
 #endif
 }

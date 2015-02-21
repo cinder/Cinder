@@ -43,12 +43,18 @@ class PlatformMsw : public Platform {
 	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
 	void prepareAssetLoading() override {}
 
+	fs::path	expandPath( const fs::path &path ) override;
+	fs::path	getHomeDirectory() override;
+	fs::path	getDocumentsDirectory()	override;
+
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
 
 	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
 
 	void launchWebBrowser( const Url &url ) override;
+
+	void sleep( float milliseconds ) override;
 
   private:
 

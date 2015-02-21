@@ -24,8 +24,12 @@
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
-
 #include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+
+#include <windows.h>
+#include <Shlwapi.h>
+#include <shlobj.h>
+
 
 using namespace std;
 
@@ -90,10 +94,37 @@ std::ostream& PlatformMsw::console()
 	return *mOutputStream;
 }
 
+fs::path PlatformMsw::expandPath( const fs::path &path )
+{
+	wchar_t buffer[MAX_PATH];
+	::PathCanonicalize( buffer, path.wstring().c_str() );
+	return fs::path( buffer ); 
+}
+
+fs::path PlatformMsw::getDocumentsDirectory()
+{
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
+	return fs::path( wstring(buffer) + L"\\" );
+}
+
+fs::path PlatformMsw::getHomeDirectory()
+{
+	wchar_t buffer[MAX_PATH];
+	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
+	wstring result = wstring(buffer) + L"\\";
+	return fs::path( result );
+}
+
 void PlatformMsw::launchWebBrowser( const Url &url )
 {
 	std::u16string urlStr = toUtf16( url.str() );
 	::ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
+}
+
+void PlatformMsw::sleep( float milliseconds )
+{
+	::Sleep( static_cast<int>( milliseconds ) );
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )
