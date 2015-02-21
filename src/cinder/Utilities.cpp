@@ -71,33 +71,16 @@ namespace cinder {
 fs::path expandPath( const fs::path &path )
 {
 	return app::Platform::get()->expandPath( path );
-
-#if defined( CINDER_WINRT )
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#endif
 }
 
 fs::path getHomeDirectory()
 {
 	return app::Platform::get()->getHomeDirectory();
-	
-#if defined( CINDER_WINRT )
-	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
-	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	string result = PlatformStringToString(folder->Path);
-	return fs::path( result );
-#endif
 }
 
 fs::path getDocumentsDirectory()
 {
 	return app::Platform::get()->getDocumentsDirectory();
-
-#if defined( CINDER_WINRT )
-	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
-	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
-	return PlatformStringToString(folder->Path);
-#endif
 }
 
 std::string getPathDirectory( const std::string &path )
@@ -183,9 +166,6 @@ string loadString( DataSourceRef dataSource )
 void sleep( float milliseconds )
 {
 	app::Platform::get()->sleep( milliseconds );
-#if defined( CINDER_WINRT )
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#endif
 }
 
 #if defined( CINDER_MSW )

@@ -46,7 +46,13 @@ class PlatformWinRt : public Platform {
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
 
+	fs::path	expandPath( const fs::path &path ) override;
+	fs::path	getHomeDirectory() override;
+	fs::path	getDocumentsDirectory()	override;
+
 	void launchWebBrowser( const Url &url ) override;
+
+	void sleep( float milliseconds ) override;
   
   private:
 
