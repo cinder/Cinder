@@ -4,6 +4,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/Stream.h"
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -21,7 +22,7 @@ class streamFileTestApp : public App {
 
 fs::path streamFileTestApp::createReadTestFile()
 {
-	fs::path resultPath = fs::unique_path( "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
+	fs::path resultPath = fs::unique_path( getAppPath() / "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
 	FILE *f = fopen( resultPath.string().c_str(), "wb" );
 	for( size_t d = 0; d < DATA_SIZE; ++d ) {
 		uint8_t b = d % 256;
