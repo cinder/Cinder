@@ -316,6 +316,9 @@ WindowImplMsw::WindowImplMsw( const Window::Format &format, RendererRef sharedRe
 	mAlwaysOnTop = format.isAlwaysOnTop();
 	mBorderless = format.isBorderless();
 
+	if( ! mDisplay )
+		mDisplay = Display::getMainDisplay();
+
 	mWindowedSize = format.getSize();
 	mWindowWidth = mWindowedSize.x;
 	mWindowHeight = mWindowedSize.y;

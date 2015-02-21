@@ -51,7 +51,7 @@ class PlatformMsw : public Platform {
 
 	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
 
-	const std::vector<DisplayRef>&	getDisplays( bool forceRefresh = false ) override;
+	const std::vector<DisplayRef>&	getDisplays() override;
 	void							refreshDisplays();
 	//! Returns the Display which corresponds to \a hMonitor. Returns main display on failure.
 	DisplayRef						findDisplayFromHmonitor( HMONITOR hMonitor );
