@@ -223,6 +223,8 @@ class AppBase {
 	//! Emitted at the start of each application update cycle
 	signals::Signal<void()>&	getSignalUpdate() { return mSignalUpdate; }
 
+	//! Signal that emits before the app quit process begins. If any slots return false then the app quitting is canceled.
+	EventSignalShouldQuit&		getSignalShouldQuit() { return mSignalShouldQuit; }
 	//! Emitted prior to the application shutting down
 	signals::Signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
 	void 						emitShutdown();
@@ -437,8 +439,8 @@ class AppBase {
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
 
-	signals::Signal<void()>								mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
-	signals::Signal<bool()>								mSignalShouldQuit;
+	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+	EventSignalShouldQuit		mSignalShouldQuit;
 	
 	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;
 
