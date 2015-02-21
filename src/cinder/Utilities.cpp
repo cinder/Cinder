@@ -88,24 +88,6 @@ void launchWebBrowser( const Url &url )
 	app::Platform::get()->launchWebBrowser( url );
 }
 
-void deleteFileAsync( const fs::path &path, std::function<void (fs::path)> callback)
-{
-
-}
-
-void deleteFile( const fs::path &path )
-{
-#if defined( CINDER_COCOA )
-	unlink( path.c_str() );
-#elif defined( CINDER_WINRT )
-	winrt::deleteFileAsync(path);
-#else
-	if( ! ::DeleteFileW( path.wstring().c_str() ) ) {
-		DWORD err = GetLastError();
-	}
-#endif
-}
-
 std::vector<std::string> split( const std::string &str, char separator, bool compress )
 {
 	return split( str, string( 1, separator ), compress );

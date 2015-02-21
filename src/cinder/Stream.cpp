@@ -178,7 +178,7 @@ IStreamFile::~IStreamFile()
 	if( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 size_t IStreamFile::readDataAvailable( void *dest, size_t maxSize )
@@ -278,7 +278,7 @@ OStreamFile::~OStreamFile()
 	if ( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 off_t OStreamFile::tell() const
@@ -327,7 +327,7 @@ IoStreamFile::~IoStreamFile()
 	if( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )
