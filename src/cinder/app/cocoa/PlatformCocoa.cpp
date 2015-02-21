@@ -28,6 +28,7 @@
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
 #else
+	#import <UIKit/UIKit.h>
 	#import <Foundation/Foundation.h>
 #endif
 
