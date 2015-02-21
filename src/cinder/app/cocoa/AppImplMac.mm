@@ -58,7 +58,7 @@ using namespace cinder::app;
 {	
 	self = [super init];
 
-	// This needs to be called before creating any windows, as it internall constructs the shared NSApplication
+	// This needs to be called before creating any windows, as it internally constructs the shared NSApplication
 	[[NSApplication sharedApplication] setDelegate:self];
 
 	NSMenu *mainMenu = [[NSMenu alloc] init];
