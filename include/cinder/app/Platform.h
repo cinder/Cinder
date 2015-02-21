@@ -85,6 +85,16 @@ class Platform {
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	virtual std::ostream&	console();
 
+	//! Returns a canonical version of \a path. Collapses '.', ".." and "//". Converts '~' on Cocoa. Expands environment variables on MSW.
+	virtual fs::path	expandPath( const fs::path &path ) = 0;
+	//! Returns the path to the user's home directory.
+	virtual fs::path	getHomeDirectory() = 0;
+	//! Returns the path to the user's documents directory.
+	virtual fs::path	getDocumentsDirectory()	= 0;
+
+	//! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on OS X.
+	virtual void sleep( float milliseconds ) = 0;
+
 	//! Launches a path in the system's default web browser
 	virtual void launchWebBrowser( const Url &url ) = 0;
 

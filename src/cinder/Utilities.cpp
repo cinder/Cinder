@@ -70,14 +70,11 @@ namespace cinder {
 
 fs::path expandPath( const fs::path &path )
 {
-#if defined( CINDER_COCOA )
-	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
-	NSString *resultPath = [pathNS stringByStandardizingPath];
-	string result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
-	return fs::path( result );
-#elif defined( CINDER_WINRT )
+	return app::Platform::get()->expandPath( path );
+
+#if defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#else
+#elif defined( CINDER_MSW )
 	wchar_t buffer[MAX_PATH];
 	::PathCanonicalize( buffer, path.wstring().c_str() );
 	return fs::path( buffer ); 
@@ -86,17 +83,14 @@ fs::path expandPath( const fs::path &path )
 
 fs::path getHomeDirectory()
 {
-#if defined( CINDER_COCOA )
-	NSString *home = ::NSHomeDirectory();
-	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
-	result += "/";
-	return fs::path( result );
-#elif defined( CINDER_WINRT )
+	return app::Platform::get()->getHomeDirectory();
+	
+#if defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	string result = PlatformStringToString(folder->Path);
 	return fs::path( result );
-#else
+#elif defined( CINDER_MSW )
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
 	wstring result = wstring(buffer) + L"\\";
@@ -106,15 +100,13 @@ fs::path getHomeDirectory()
 
 fs::path getDocumentsDirectory()
 {
-#if defined( CINDER_COCOA )
-	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
-	NSString *docDir = [arrayPaths firstObject];
-	return cocoa::convertNsString( docDir ) + "/";
-#elif defined( CINDER_WINRT )
+	return app::Platform::get()->getDocumentsDirectory();
+
+#if defined( CINDER_WINRT )
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
-#else
+#elif defined( CINDER_MSW )
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
 	return fs::path( wstring(buffer) + L"\\" );
@@ -203,13 +195,11 @@ string loadString( DataSourceRef dataSource )
 
 void sleep( float milliseconds )
 {
+	app::Platform::get()->sleep( milliseconds );
 #if defined( CINDER_MSW )
 	::Sleep( static_cast<int>( milliseconds ) );
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#else
-	useconds_t microsecs = milliseconds * 1000;
-	::usleep( microsecs );
 #endif
 }
 

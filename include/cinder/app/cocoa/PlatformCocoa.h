@@ -61,6 +61,12 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
+	fs::path	expandPath( const fs::path &path ) override;
+	fs::path	getHomeDirectory() override;
+	fs::path	getDocumentsDirectory()	override;
+
+	void sleep( float milliseconds ) override;
+
 	void launchWebBrowser( const Url &url ) override;
 	
   private:

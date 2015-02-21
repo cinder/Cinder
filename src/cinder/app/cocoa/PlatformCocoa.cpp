@@ -24,6 +24,7 @@
 #include "cinder/app/cocoa/PlatformCocoa.h"
 #include "cinder/Log.h"
 #include "cinder/Filesystem.h"
+#include "cinder/cocoa/CinderCocoa.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
@@ -118,6 +119,29 @@ void PlatformCocoa::prepareAssetLoading()
 	}
 }
 
+fs::path PlatformCocoa::expandPath( const fs::path &path )
+{
+	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
+	NSString *resultPath = [pathNS stringByStandardizingPath];
+	string result = string( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
+	return fs::path( result );
+}
+
+fs::path PlatformCocoa::getDocumentsDirectory()
+{
+	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
+	NSString *docDir = [arrayPaths firstObject];
+	return fs::path( cocoa::convertNsString( docDir ) + "/" );
+}
+
+fs::path PlatformCocoa::getHomeDirectory()
+{
+	NSString *home = ::NSHomeDirectory();
+	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
+	result += "/";
+	return fs::path( result );	
+}
+
 void PlatformCocoa::launchWebBrowser( const Url &url )
 {
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
@@ -128,6 +152,12 @@ void PlatformCocoa::launchWebBrowser( const Url &url )
 #else
 	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
 #endif
+}
+
+void PlatformCocoa::sleep( float milliseconds )
+{
+	useconds_t microsecs = milliseconds * 1000;
+	::usleep( microsecs );
 }
 
 fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
