@@ -3801,9 +3801,8 @@
 				OTHER_LDFLAGS = (
 					../lib/ios/libboost_filesystem.a,
 					../lib/ios/libboost_system.a,
-					../lib/ios/libboost_date_time.a,
 				);
-				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a ../lib/ios/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a";
 				PRODUCT_NAME = "cinder-iphone_d";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3831,9 +3830,8 @@
 				OTHER_LDFLAGS = (
 					../lib/ios/libboost_filesystem.a,
 					../lib/ios/libboost_system.a,
-					../lib/ios/libboost_date_time.a,
 				);
-				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a ../lib/ios/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/ios/libboost_filesystem.a ../lib/ios/libboost_system.a";
 				PRODUCT_NAME = "cinder-iphone";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -3860,9 +3858,8 @@
 				OTHER_LDFLAGS = (
 					"../lib/ios-sim/libboost_system.a",
 					"../lib/ios-sim/libboost_filesystem.a",
-					"../lib/ios-sim/libboost_date_time.a",
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a ../lib/ios-sim/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
 				PRODUCT_NAME = "cinder-iphone-sim_d";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphonesimulator;
@@ -3891,9 +3888,8 @@
 				OTHER_LDFLAGS = (
 					"../lib/ios-sim/libboost_system.a",
 					"../lib/ios-sim/libboost_filesystem.a",
-					"../lib/ios-sim/libboost_date_time.a",
 				);
-				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a ../lib/ios-sim/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/ios-sim/libboost_system.a ../lib/ios-sim/libboost_filesystem.a";
 				PRODUCT_NAME = "cinder-iphone-sim";
 				SDKROOT = iphoneos;
 				SUPPORTED_PLATFORMS = iphonesimulator;
@@ -3923,9 +3919,8 @@
 					../lib/macosx/libboost_filesystem.a,
 					../lib/macosx/libz.a,
 					../lib/macosx/libboost_system.a,
-					../lib/macosx/libboost_date_time.a,
 				);
-				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a";
 				PRODUCT_NAME = cinder_d;
 			};
 			name = Debug;
@@ -3955,9 +3950,8 @@
 					../lib/macosx/libboost_filesystem.a,
 					../lib/macosx/libz.a,
 					../lib/macosx/libboost_system.a,
-					../lib/macosx/libboost_date_time.a,
 				);
-				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a ../lib/macosx/libboost_date_time.a";
+				PRELINK_LIBS = "../lib/macosx/libboost_filesystem.a ../lib/macosx/libz.a ../lib/macosx/libboost_system.a";
 				PRODUCT_NAME = cinder;
 			};
 			name = Release;
