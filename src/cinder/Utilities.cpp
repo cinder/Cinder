@@ -22,26 +22,12 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
-#	error "This file must be compiled as Objective-C++ on the Mac"
-#endif
-
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
-#if defined( CINDER_COCOA_TOUCH )
-	#import <UIKit/UIKit.h>
-#elif defined( CINDER_COCOA )
-	#import <AppKit/NSWorkspace.h>
-#endif
 #if defined( CINDER_COCOA )
-	#include "cinder/cocoa/CinderCocoa.h"
-	#import <Foundation/NSString.h>
-	#import <Foundation/NSURL.h>
-	#import <Foundation/NSPathUtilities.h>
-	#import <Foundation/NSFileManager.h>
 	#include <cxxabi.h>
 	#include <execinfo.h>
 #elif defined( CINDER_MSW )
@@ -167,7 +153,7 @@ vector<string> stackTrace()
 	return csw.getEntries();
 #elif defined( CINDER_WINRT )
 	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-#else
+#elif defined( CINDER_COCOA )
 	std::vector<std::string> result;
 	static const int MAX_DEPTH = 128;
 	void* callstack[MAX_DEPTH];
