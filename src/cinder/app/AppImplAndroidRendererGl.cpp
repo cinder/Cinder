@@ -21,34 +21,55 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include "cinder/app/AppBase.h"
-
-namespace cinder { namespace gl {
-	class Context;
-	typedef std::shared_ptr<Context>	ContextRef;
-} }
+#include "cinder/app/AppImplAndroidRendererGl.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/Environment.h"
 
 namespace cinder { namespace app {
 
-class AppImplAndroidRendererGl {
- public:
+AppImplAndroidRendererGl::AppImplAndroidRendererGl( RendererGl *aRenderer )
+    : mRenderer( aRenderer )
+{
+}
 
-    AppImplAndroidRendererGl( class RendererGl *aRenderer );
-    virtual ~AppImplAndroidRendererGl();
+AppImplAndroidRendererGl::~AppImplAndroidRendererGl()
+{
+}
 
-	virtual bool	initialize( RendererRef sharedRenderer );
-	virtual void	kill();
-	virtual void	defaultResize() const;
-	virtual void	swapBuffers() const;
-	virtual void	makeCurrentContext();
+bool AppImplAndroidRendererGl::initialize( RendererRef sharedRenderer )
+{
+    return false;
+}
 
- protected:
-	class RendererGl	*mRenderer;
-	gl::ContextRef		mCinderContext;
-};
+void AppImplAndroidRendererGl::kill()
+{
+}
+
+void AppImplAndroidRendererGl::defaultResize() const
+{
+/*
+	::RECT clientRect;
+	::GetClientRect( mWnd, &clientRect );
+	int width = clientRect.right - clientRect.left;
+	int height = clientRect.bottom - clientRect.top;
+
+	gl::viewport( 0, 0, width, height );
+	gl::setMatricesWindow( width, height );
+*/
+}
+
+void AppImplAndroidRendererGl::swapBuffers() const
+{
+/*
+	::SwapBuffers( mDC );
+*/
+}
+
+void AppImplAndroidRendererGl::makeCurrentContext()
+{
+	mCinderContext->makeCurrent();
+}
 
 } } // namespace cinder::app
-
-

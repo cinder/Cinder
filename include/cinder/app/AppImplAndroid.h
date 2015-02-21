@@ -35,12 +35,42 @@ namespace cinder { namespace app {
 class AppImplAndroid {
  public:
 
+	AppImplAndroid( class AppBase *aApp );
+	virtual ~AppImplAndroid();
+
+	class AppBase*		getApp() { return mApp; }
+
+	float			getFrameRate() const { return mFrameRate; }
+	virtual void	setFrameRate( float aFrameRate ) = 0;
+	virtual void	quit() = 0;
+
+	virtual WindowRef	getWindow() const { return mActiveWindow; }
+	void				setWindow( WindowRef window ) { mActiveWindow = window; }
+	
+	static void	hideCursor();
+	static void	showCursor();
+		
+	static fs::path		getAppPath();	
+	static fs::path		getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
+	static fs::path		getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
+	static fs::path		getFolderPath( const fs::path &initialPath );
+
+  protected:
+	bool					setupHasBeenCalled() const { return mSetupHasBeenCalled; }
+	virtual void			closeWindow( class WindowImplAndroid *windowImpl ) = 0;
+	virtual void			setForegroundWindow( WindowRef window ) = 0;
+
+	class AppBase			*mApp;
+	float					mFrameRate;
+	WindowRef				mActiveWindow;
+	bool					mSetupHasBeenCalled;
+	bool					mActive;
 };
 
 class WindowImplAndroid {
  public:
     
-    WindowImplAndroid();
+    WindowImplAndroid( const Window::Format &format, RendererRef sharedRenderer, AppImplAndroid *appImpl );
     virtual ~WindowImplAndroid();
 
 	virtual bool		isFullScreen() { return true; }
@@ -65,7 +95,19 @@ class WindowImplAndroid {
 	bool			    isAlwaysOnTop() const { return true; }
 	void			    setAlwaysOnTop( bool alwaysOnTop );
 
+	AppImplAndroid*			getAppImpl() { return mAppImpl; }
+	WindowRef				getWindow() { return mWindowRef; }
+	virtual void			keyDown( const KeyEvent &event );
+	virtual void			draw();
+	virtual void			redraw();
+	virtual void			resize();
+
+	void			privateClose();
  protected:
+
+	AppImplAndroid		*mAppImpl;
+	WindowRef			mWindowRef;
+
     ivec2               mSize;
     ivec2               mPos;
 

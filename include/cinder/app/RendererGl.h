@@ -176,6 +176,9 @@ class RendererGl : public Renderer {
 	virtual HWND	getHwnd() { return mWnd; }
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
+#elif defined( CINDER_ANDROID )
+	virtual void	setup( RendererRef sharedRenderer );
+	virtual void	kill();   
 #endif
 
 	const Options&	getOptions() const { return mOptions; }

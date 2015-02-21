@@ -90,8 +90,12 @@ IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const
 IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamCinder()
 {
+#if defined( CINDER_ANDROID )
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+#else
 	setFileName( url );
 	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );
+#endif
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////

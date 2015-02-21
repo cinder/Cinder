@@ -31,7 +31,7 @@ namespace cinder {
 
 class IStreamUrlImplCurl : public IStreamUrlImpl {
   public:
-	IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password );
+	IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
 	~IStreamUrlImplCurl();
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize );

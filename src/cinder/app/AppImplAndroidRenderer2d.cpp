@@ -21,34 +21,3 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#pragma once
-
-#include "cinder/app/AppBase.h"
-
-namespace cinder { namespace gl {
-	class Context;
-	typedef std::shared_ptr<Context>	ContextRef;
-} }
-
-namespace cinder { namespace app {
-
-class AppImplAndroidRendererGl {
- public:
-
-    AppImplAndroidRendererGl( class RendererGl *aRenderer );
-    virtual ~AppImplAndroidRendererGl();
-
-	virtual bool	initialize( RendererRef sharedRenderer );
-	virtual void	kill();
-	virtual void	defaultResize() const;
-	virtual void	swapBuffers() const;
-	virtual void	makeCurrentContext();
-
- protected:
-	class RendererGl	*mRenderer;
-	gl::ContextRef		mCinderContext;
-};
-
-} } // namespace cinder::app
-
-

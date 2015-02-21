@@ -292,7 +292,12 @@ void Display::enumerateDisplays()
 	
 	sDisplaysInitialized = true;
 }
-#endif // defined( CINDER_MSW )
+
+#elif defined( CINDER_ANDROID )
+void Display::enumerateDisplays()
+{
+}
+#endif // defined( CINDER_ANDROID )
 
 ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const
 {

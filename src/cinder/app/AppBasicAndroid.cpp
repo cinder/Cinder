@@ -26,11 +26,6 @@
 
 namespace cinder { namespace app {
 
-void AppBasicAndroid::Settings::pushBackCommandLineArg( const std::string &arg )
-{
-	mCommandLineArgs.push_back( arg );
-}
-
 AppBasicAndroid::AppBasicAndroid()
 {
 	sInstance = this;
@@ -38,9 +33,11 @@ AppBasicAndroid::AppBasicAndroid()
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
+/*
 	// pull out app-level variables
 	mConsoleWindowEnabled = settings->isConsoleWindowEnabled();
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
+*/
 
 	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl.reset( new AppImplAndroidBasic( this, *settings ) );

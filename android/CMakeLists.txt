@@ -115,13 +115,13 @@ include_directories(
     ${BOOST_INC_DIR} 
 )
 
-set( C_FLAGS "-march=armv7-a -mfpu=neon" )
+set( C_FLAGS "-march=armv7-a -mfpu=neon -fvisibility=default" )
 set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -g ${C_FLAGS}" )
 set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "-march=armv7-a -mfpu=neon" )
-set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -g ${CXX_FLAGS}" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -O3 -ffast-math ${CXX_FLAGS}" )
+set( CXX_FLAGS "-march=armv7-a -mfpu=neon -fvisibility=default" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -g -fexceptions ${CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -fexceptions -O3 -ffast-math ${CXX_FLAGS}" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
@@ -149,6 +149,8 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/AppBasicAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppImplAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidBasic.cpp
+    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidRenderer2d.cpp
+    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidRendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Platform.cpp
     ${CINDER_SRC_DIR}/cinder/app/PlatformAndroid.cpp
 
@@ -210,6 +212,9 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Exception.cpp
     ${CINDER_SRC_DIR}/cinder/Frustum.cpp
     ${CINDER_SRC_DIR}/cinder/GeomIo.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageIo.cpp
+    ${CINDER_SRC_DIR}/cinder/ImageSourceFileRadiance.cpp
+    ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
     ${CINDER_SRC_DIR}/cinder/MatrixStack.cpp
     ${CINDER_SRC_DIR}/cinder/Path2d.cpp
@@ -224,6 +229,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Sphere.cpp
     ${CINDER_SRC_DIR}/cinder/Stream.cpp
     ${CINDER_SRC_DIR}/cinder/Surface.cpp
+    ${CINDER_SRC_DIR}/cinder/System.cpp
     ${CINDER_SRC_DIR}/cinder/Timeline.cpp
     ${CINDER_SRC_DIR}/cinder/TimelineItem.cpp
     ${CINDER_SRC_DIR}/cinder/Timer.cpp
@@ -231,14 +237,15 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/TriMesh.cpp
     ${CINDER_SRC_DIR}/cinder/Tween.cpp
     ${CINDER_SRC_DIR}/cinder/Unicode.cpp
-    #${CINDER_SRC_DIR}/cinder/Url.cpp
+    ${CINDER_SRC_DIR}/cinder/Url.cpp
+    #${CINDER_SRC_DIR}/cinder/UrlImplCurl.cpp
     ${CINDER_SRC_DIR}/cinder/Utilities.cpp
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
 )
 
-set_source_files_properties( ${CINDER_CXX_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
+#set_source_files_properties( ${CINDER_CXX_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
 add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )

@@ -22,10 +22,61 @@
 */
 
 #include "cinder/app/AppImplAndroid.h"
+#include "cinder/app/AppBase.h"
 
 namespace cinder { namespace app {
 
-WindowImplAndroid::WindowImplAndroid()
+AppImplAndroid::AppImplAndroid( AppBase *aApp )
+	: mApp( aApp ), mSetupHasBeenCalled( false ), mActive( true )
+{
+}
+
+AppImplAndroid::~AppImplAndroid()
+{
+}
+
+void AppImplAndroid::hideCursor()
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+}
+
+void AppImplAndroid::showCursor()
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+}
+
+fs::path AppImplAndroid::getAppPath()
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+
+	return fs::path();
+}
+
+fs::path AppImplAndroid::getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions )
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+
+	return fs::path();
+}
+
+fs::path AppImplAndroid::getFolderPath( const fs::path &initialPath )
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+
+	return fs::path();
+}
+
+fs::path AppImplAndroid::getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions )
+{
+    throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
+
+	return fs::path();
+}
+
+
+///////////////////////////////////////////////////////////////////////////////
+// WindowImplAndroid
+WindowImplAndroid::WindowImplAndroid( const Window::Format &format, RendererRef sharedRenderer, AppImplAndroid *appImpl )
 {
     mPos = ivec2( 0, 0 );
     mNativeWindow = nullptr;
@@ -69,6 +120,46 @@ void WindowImplAndroid::setBorderless( bool borderless )
 
 void WindowImplAndroid::setAlwaysOnTop( bool alwaysOnTop )
 {
+}
+
+void WindowImplAndroid::draw()
+{
+	mAppImpl->setWindow( mWindowRef );
+	mRenderer->startDraw();
+	mWindowRef->emitDraw();
+	mRenderer->finishDraw();
+}
+
+void WindowImplAndroid::resize()
+{
+	mAppImpl->setWindow( mWindowRef );
+	mWindowRef->emitResize();
+}
+
+void WindowImplAndroid::redraw()
+{
+}
+
+void WindowImplAndroid::privateClose()
+{
+/*
+	mRenderer->kill();
+
+	if( mDC )
+		::ReleaseDC( mWnd, mDC );
+
+	if( mWnd )
+		::DestroyWindow( mWnd );
+
+	mWnd = 0;
+*/
+}
+
+void WindowImplAndroid::keyDown( const KeyEvent &event )
+{
+	KeyEvent localEvent( event );
+	mAppImpl->setWindow( mWindowRef );
+	mWindowRef->emitKeyDown( &localEvent );
 }
 
 } } // namespace cinder::app

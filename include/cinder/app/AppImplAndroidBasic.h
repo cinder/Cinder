@@ -31,24 +31,57 @@
 namespace cinder { namespace app {
 
 
-class WindowImplMswBasic;
+class WindowImplAndroidBasic;
 
-class AppImplMswBasic : public AppImplMsw {
+class AppImplAndroidBasic : public AppImplAndroid {
   public:
-	AppImplMswBasic( AppBasicMsw *app, const AppBasicMsw::Settings &settings );
+	AppImplAndroidBasic( AppBasicAndroid *app, const AppBasicAndroid::Settings &settings );
+    virtual ~AppImplAndroidBasic();
 
+	void	run();
+
+	AppBasicAndroid*	getApp() { return mApp; }
+	
+	void	quit() override;
+
+	void	setFrameRate( float frameRate ) override;
+	void	disableFrameRate();
+	bool	isFrameRateEnabled() const;
+
+	size_t		getNumWindows() const;
+	WindowRef	getWindowIndex( size_t index );
+	WindowRef	getForegroundWindow() const;
+	fs::path	getAppPath() const;
+	
+  private:
+	void		    sleep( double seconds );
+
+	WindowRef		createWindow( Window::Format format );
+	virtual void	closeWindow( class WindowImplAndroid *windowImpl ) override;
+	virtual void	setForegroundWindow( WindowRef window ) override;
+	
+	AppBasicAndroid*	mApp;
+	double			    mNextFrameTime;
+	bool			    mFrameRateEnabled;
+	bool			    mShouldQuit;
+	bool			    mQuitOnLastWindowClosed;
+
+	std::list<class WindowImplAndroidBasic*>	mWindows;
+	WindowRef								    mForegroundWindow;
+
+    friend class AppBasicAndroid;
 };
 
-class WindowImplMswBasic : public WindowImplMsw {
+class WindowImplAndroidBasic : public WindowImplAndroid {
   public:
-	WindowImplMswBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplMswBasic *appImpl )
-		: WindowImplMsw( format, sharedRenderer, appImpl ), mAppImplBasic( appImpl ) {}
+	WindowImplAndroidBasic( const Window::Format &format, RendererRef sharedRenderer, AppImplAndroidBasic *appImpl )
+		: WindowImplAndroid( format, sharedRenderer, appImpl ), mAppImplBasic( appImpl ) {}
 
-	virtual void WindowImplMswBasic::toggleFullScreen( const app::FullScreenOptions &options );
+	virtual void            toggleFullScreen( const app::FullScreenOptions &options );
 
   protected:
-	AppImplMswBasic		*mAppImplBasic;
-	friend AppImplMswBasic;
+	AppImplAndroidBasic		*mAppImplBasic;
+	friend AppImplAndroidBasic;
 };
 
 

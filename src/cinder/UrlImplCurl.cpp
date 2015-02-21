@@ -63,8 +63,8 @@ CURLLib* CURLLib::instance()
 	return sInstance;
 }
 
-IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password )
-	: IStreamUrlImpl( user, password ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
+IStreamUrlImplCurl::IStreamUrlImplCurl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options ), still_running( 1 ), mSizeCached( false ), mBufferFileOffset( 0 ), mStartedRead( false ),
 	mEffectiveUrl( 0 ), mResponseCode( 0 )
 {	
 	if( ! CURLLib::instance() )
