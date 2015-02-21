@@ -61,6 +61,8 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
+	void launchWebBrowser( const Url &url ) override;
+	
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;

@@ -85,6 +85,9 @@ class Platform {
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	virtual std::ostream&	console();
 
+	//! Launches a path in the system's default web browser
+	virtual void launchWebBrowser( const Url &url ) = 0;
+
   protected:
 	Platform() : mAssetPathsInitialized( false )	{}
 

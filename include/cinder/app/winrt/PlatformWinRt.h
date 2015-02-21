@@ -46,12 +46,11 @@ class PlatformWinRt : public Platform {
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
 
-	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
-
+	void launchWebBrowser( const Url &url ) override;
+  
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;
-	bool							mDirectConsoleToCout;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type

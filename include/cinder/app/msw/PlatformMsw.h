@@ -48,6 +48,8 @@ class PlatformMsw : public Platform {
 
 	void directConsoleToCout( bool shouldDirect )	{ mDirectConsoleToCout = shouldDirect; }
 
+	void launchWebBrowser( const Url &url ) override;
+
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;

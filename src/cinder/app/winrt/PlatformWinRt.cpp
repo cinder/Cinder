@@ -23,9 +23,16 @@
 
 #include "cinder/app/winrt/PlatformWinRt.h"
 #include "cinder/msw/OutputDebugStringStream.h"
+#include "cinder/Unicode.h"
+#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include "cinder/WinRTUtils.h"
 
-# include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include <wrl/client.h>
+#include <agile.h>
 
+using namespace Windows::Storage;
+using namespace Windows::System;
+using namespace cinder::winrt;
 using namespace std;
 
 namespace cinder { namespace app {
@@ -87,6 +94,13 @@ std::ostream& PlatformWinRt::console()
 		mOutputStream.reset( new cinder::msw::dostream );
 	
 	return *mOutputStream;
+}
+
+void PlatformMsw::launchWebBrowser( const Url &url )
+{
+	std::u16string urlStr = toUtf16( url.str() );
+	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
+	Windows::System::Launcher::LaunchUriAsync( uri );
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )

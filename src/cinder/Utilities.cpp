@@ -29,6 +29,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
+#include "cinder/app/Platform.h"
 
 #if defined( CINDER_COCOA_TOUCH )
 	#import <UIKit/UIKit.h>
@@ -154,23 +155,7 @@ std::string getPathExtension( const std::string &path )
 
 void launchWebBrowser( const Url &url )
 {
-#if defined( CINDER_COCOA )
-	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
-	NSURL *nsUrl = [NSURL URLWithString:nsString];
-#elif (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
-	std::u16string urlStr = toUtf16( url.str() );
-#endif
-
-#if defined( CINDER_COCOA_TOUCH )
-	[[UIApplication sharedApplication] openURL:nsUrl ];
-#elif defined( CINDER_COCOA )
-	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
-#elif defined( CINDER_MSW )
-	ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
-#elif defined( CINDER_WINRT )
-	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
-	Windows::System::Launcher::LaunchUriAsync( uri );
-#endif
+	app::Platform::get()->launchWebBrowser( url );
 }
 
 void deleteFileAsync( const fs::path &path, std::function<void (fs::path)> callback)

@@ -23,8 +23,9 @@
 
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
+#include "cinder/Unicode.h"
 
-# include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
 
 using namespace std;
 
@@ -87,6 +88,12 @@ std::ostream& PlatformMsw::console()
 		mOutputStream.reset( new cinder::msw::dostream );
 	
 	return *mOutputStream;
+}
+
+void PlatformMsw::launchWebBrowser( const Url &url )
+{
+	std::u16string urlStr = toUtf16( url.str() );
+	::ShellExecute( NULL, L"open", (wchar_t*)urlStr.c_str(), NULL, NULL, SW_SHOWNORMAL );
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )

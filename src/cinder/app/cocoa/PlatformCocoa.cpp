@@ -117,6 +117,18 @@ void PlatformCocoa::prepareAssetLoading()
 	}
 }
 
+void PlatformCocoa::launchWebBrowser( const Url &url )
+{
+	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
+	NSURL *nsUrl = [NSURL URLWithString:nsString];
+
+#if defined( CINDER_COCOA_TOUCH )
+	[[UIApplication sharedApplication] openURL:nsUrl ];
+#else
+	[[NSWorkspace sharedWorkspace] openURL:nsUrl ];
+#endif
+}
+
 fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
 #if defined( CINDER_MAC )
