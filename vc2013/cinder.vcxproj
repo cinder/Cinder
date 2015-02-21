@@ -376,6 +376,46 @@
     <ClCompile Include="..\src\cinder\app\Platform.cpp" />
     <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Context.cpp">
@@ -603,8 +643,6 @@
     <ClInclude Include="..\include\cinder\app\msw\AppImplMsw.h" />
     <ClInclude Include="..\include\cinder\app\msw\AppImplMswBasic.h" />
     <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h" />
-    <ClInclude Include="..\include\cinder\app\msw\AppImplWinRT.h" />
-    <ClInclude Include="..\include\cinder\app\msw\AppImplWinRTBasic.h" />
     <ClInclude Include="..\include\cinder\app\msw\AppMsw.h" />
     <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h" />
     <ClInclude Include="..\include\cinder\app\msw\RendererImpl2dGdi.h" />
@@ -612,13 +650,16 @@
     <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h" />
     <ClInclude Include="..\include\cinder\app\msw\RendererImplGlMsw.h" />
     <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h" />
-    <ClInclude Include="..\include\cinder\app\msw\WinRTApp.h" />
     <ClInclude Include="..\include\cinder\app\Platform.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\RendererDx.h" />
     <ClInclude Include="..\include\cinder\app\RendererGl.h" />
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRT.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h" />
     <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
     <ClInclude Include="..\include\cinder\audio\Context.h" />

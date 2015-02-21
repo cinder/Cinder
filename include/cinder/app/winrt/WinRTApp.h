@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cinder/app/msw/AppImplWinRTBasic.h"
+#include "cinder/app/winrt/AppImplWinRTBasic.h"
 
 ref class WinRTApp sealed : public Windows::ApplicationModel::Core::IFrameworkView
 {

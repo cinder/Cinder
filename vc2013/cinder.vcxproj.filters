@@ -142,6 +142,12 @@
     <Filter Include="Source Files\app\msw">
       <UniqueIdentifier>{d87b601e-f0bc-4dc1-8cd1-624ae4de33cb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\app\winrt">
+      <UniqueIdentifier>{5310b59c-654a-431d-9860-d270bb5eab0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app\winrt">
+      <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -755,6 +761,18 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp">
       <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
+      <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1562,16 +1580,7 @@
     <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h">
       <Filter>Header Files\app\msw</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\msw\AppImplWinRT.h">
-      <Filter>Header Files\app\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\msw\AppImplWinRTBasic.h">
-      <Filter>Header Files\app\msw</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h">
-      <Filter>Header Files\app\msw</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\msw\WinRTApp.h">
       <Filter>Header Files\app\msw</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\msw\AppMsw.h">
@@ -1591,6 +1600,18 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h">
       <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRT.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
+      <Filter>Header Files\app\winrt</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
