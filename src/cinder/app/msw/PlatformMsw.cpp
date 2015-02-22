@@ -24,14 +24,16 @@
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
-#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
 #include "cinder/msw/StackWalker.h"
+#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
+#include "cinder/app/AppBase.h"
+#include "cinder/ImageSourceFileWic.h"
+#include "cinder/ImageTargetFileWic.h"
+#include "cinder/ImageSourceFileRadiance.h"
 
 #include <windows.h>
 #include <Shlwapi.h>
 #include <shlobj.h>
-#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
-#include "cinder/app/AppBase.h"
 
 
 using namespace std;
@@ -41,6 +43,9 @@ namespace cinder { namespace app {
 PlatformMsw::PlatformMsw()
 	: mDirectConsoleToCout( false ), mDisplaysInitialized( false )
 {
+	ImageSourceFileWic::registerSelf();
+	ImageTargetFileWic::registerSelf();
+	ImageSourceFileRadiance::registerSelf();
 }
 
 DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )
