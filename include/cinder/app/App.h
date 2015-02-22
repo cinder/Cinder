@@ -44,9 +44,9 @@
 	} } // namespace cinder::app		
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_ANDROID )
-    #include "cinder/app/AppBasicAndroid.h"
+    #include "cinder/app/android/AppAndroid.h"
     namespace cinder { namespace app {
-        typedef AppBasicAndroid App;
+        typedef AppAndroid App;
     } } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_ANDROID( APP, RENDERER, ##__VA_ARGS__ )
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_ANDROID( APP, RENDERER, ##__VA_ARGS__ )
 #endif
