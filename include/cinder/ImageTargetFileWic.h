@@ -58,6 +58,4 @@ class ImageTargetFileWic : public ImageTarget {
 	std::shared_ptr<IWICBitmapFrameEncode>		mBitmapFrame;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageTargetFileWic )
-
 } // namespace cinder

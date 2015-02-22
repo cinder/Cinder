@@ -48,6 +48,4 @@ class ImageTargetFileStbImage : public ImageTarget {
 	std::unique_ptr<uint8_t[]>	mData;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageTargetFileStbImage )
-
 } // namespace cinder

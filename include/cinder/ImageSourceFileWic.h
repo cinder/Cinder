@@ -61,8 +61,6 @@ class ImageSourceFileWic : public ImageSource {
 	::GUID									mPixelFormat, mConvertPixelFormat;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileWic )
-
 class ImageSourceFileWicExceptionUnsupportedData : public ImageIoException {
 };
 

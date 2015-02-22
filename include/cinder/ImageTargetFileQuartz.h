@@ -53,6 +53,4 @@ class ImageTargetFileQuartz : public cocoa::ImageTargetCgImage {
 	std::shared_ptr<uint8_t>		mData;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageTargetFileQuartz )
-
 } // namespace cinder

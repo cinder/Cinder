@@ -49,6 +49,4 @@ class ImageSourceFileStbImage : public ImageSource {
 	size_t		mRowBytes;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileStbImage )
-
 } // namespace cinder

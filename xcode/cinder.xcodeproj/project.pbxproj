@@ -2537,11 +2537,11 @@
 				118CA4501A9428BE00841458 /* AppMac.h */,
 				118CA45A1A9428BE00841458 /* CinderViewCocoaTouch.h */,
 				118CA46A1A94296900841458 /* CinderViewMac.h */,
-				118CA45B1A9428BE00841458 /* PlatformCocoa.h */,
 				118CA4591A9428BE00841458 /* RendererImpl2dCocoaTouchQuartz.h */,
 				118CA4551A9428BE00841458 /* RendererImpl2dMacQuartz.h */,
 				118CA4581A9428BE00841458 /* RendererImplGlCocoaTouch.h */,
 				118CA4541A9428BE00841458 /* RendererImplGlMac.h */,
+				118CA45B1A9428BE00841458 /* PlatformCocoa.h */,
 			);
 			name = cocoa;
 			path = app/cocoa;

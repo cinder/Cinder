@@ -49,8 +49,6 @@ class ImageSourceFileRadiance : public ImageSource {
 	std::unique_ptr<float[]>		mRgbData;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileRadiance )
-
 class ImageSourceFileRadianceException : public ImageIoException {
   public:
 	ImageSourceFileRadianceException( const std::string &description ) : ImageIoException( description ) {}
