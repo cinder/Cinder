@@ -2,7 +2,7 @@
 
 #define USE_RENDERER2D
 
-#include "cinder/app/AppCocoaView.h"
+#include "cinder/app/cocoa/AppCocoaView.h"
 
 struct TestCallbackOrder {
 	TestCallbackOrder() : mState( TestCallbackOrder::VIRGIN ), mDoneDraw( false ) {}

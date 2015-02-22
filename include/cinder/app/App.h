@@ -26,23 +26,23 @@
 #include "cinder/Cinder.h"
 
 #if defined( CINDER_MAC )
-	#include "cinder/app/AppBasicMac.h"
+	#include "cinder/app/cocoa/AppMac.h"
 	namespace cinder { namespace app {
-		typedef AppBasicMac		App;
+		typedef AppMac			App;
 	} } // namespace cinder::app
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MAC( APP, RENDERER, ##__VA_ARGS__ )
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MAC( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_COCOA_TOUCH )
-	#include "cinder/app/AppCocoaTouch.h"
+	#include "cinder/app/cocoa/AppCocoaTouch.h"
 	namespace cinder { namespace app {
 		typedef AppCocoaTouch	App;
 	} }
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_COCOA_TOUCH( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_MSW )
-	#include "cinder/app/AppBasicMsw.h"
+	#include "cinder/app/msw/AppMsw.h"
 	namespace cinder { namespace app {
-		typedef AppBasicMsw	App;
+		typedef AppMsw		App;
 	} } // namespace cinder::app		
-	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_BASIC_MSW( APP, RENDERER, ##__VA_ARGS__ )
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_ANDROID )
     #include "cinder/app/AppBasicAndroid.h"
     namespace cinder { namespace app {

@@ -29,11 +29,11 @@
 
 #if defined( CINDER_MAC )
 	#ifdef __OBJC__
-		@class AppImplCocoaScreenSaver;
+		@class AppImplMacScreenSaver;
 		@class NSWindow;
 		@class NSBundle;
 	#else
-		class AppImplCocoaScreenSaver;
+		class AppImplMacScreenSaver;
 		class NSWindow;
 		class NSBundle;
 	#endif
@@ -103,6 +103,20 @@ class AppScreenSaver : public AppBase {
 
 	ivec2		getMousePos() const override	{ return ivec2( 0 ); }
 
+	//! no-op, no cursor on this platform
+	void		hideCursor() override {}
+	//! no-op, no cursor on this platform
+	void		showCursor() override {}
+
+	//! \note no-op and returns an empty WindowRef, screensavers only have one window
+	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override	{ return WindowRef(); }
+	WindowRef	getForegroundWindow() const override	{ return getWindow(); }
+
+	//! ignored on screensavers
+	void		disableFrameRate() override {}
+	//! ignored on screensavers
+	bool		isFrameRateEnabled() const	{ return false; }
+
 #if defined( CINDER_MAC )
 	//! Should return a NSWindow* on Mac OS implementing a custom configuration dialog. Requires settings->setProvidesMacConfigDialog() in prepareSettings().
 	virtual NSWindow*		createMacConfigDialog() { return NULL; }
@@ -125,7 +139,7 @@ class AppScreenSaver : public AppBase {
 	virtual WindowRef	getWindowIndex( size_t index ) const override;
 
 #if defined( CINDER_MAC )
-	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplCocoaScreenSaver*>( impl ); }
+	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplMacScreenSaver*>( impl ); }
 	void			launch( const char *title, int argc, char * const argv[] ) override { /* do nothing - this gets handled a weirder way for screensavers */ }
 
 	template<typename RendererT>
@@ -179,7 +193,7 @@ class AppScreenSaver : public AppBase {
  private:
 	static AppScreenSaver		*sInstance;
 #if defined( CINDER_MAC )
-	AppImplCocoaScreenSaver		*mImpl;
+	AppImplMacScreenSaver		*mImpl;
 #elif defined( CINDER_MSW )
 	class AppImplMswScreenSaver	*mImpl;
 	static HWND					sMainHwnd;

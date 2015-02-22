@@ -36,6 +36,7 @@
 		#include <CoreText/CoreText.h>
 	#endif
 #elif defined( CINDER_MSW )
+	#include <Windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
 	#include <gdiplus.h>
@@ -831,7 +832,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 		}
 		
 		int xPos = 0;
-		for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
+		for( unsigned int i = 0; i < gcpResults.nGlyphs; i++ ) {
 			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
 			xPos += dx[i];
 		}
@@ -868,7 +869,7 @@ Surface	TextBox::render( vec2 offset )
 	// fill the surface with the background color
 	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
 			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
-	const Gdiplus::Font *font = mFont.getGdiplusFont();;
+	const Gdiplus::Font *font = mFont.getGdiplusFont();
 	ColorA8u nativeColor( mColor );
 	Gdiplus::StringFormat format;
 	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;

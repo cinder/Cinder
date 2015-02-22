@@ -9,9 +9,9 @@
 	<header replaceContents="true">include/Resources.h</header>
 	<platform os="macosx">
 		<outputExtension>saver</outputExtension>
-		<source cinder="true">src/cinder/app/AppImplCocoaRendererGl.mm</source>
-		<source cinder="true">src/cinder/app/CinderView.mm</source>
-		<source cinder="true">src/cinder/app/AppImplCocoaScreenSaver.mm</source>
+		<source cinder="true">src/cinder/app/RendererImplGlMac.mm</source>
+		<source cinder="true">src/cinder/app/CinderViewMac.mm</source>
+		<source cinder="true">src/cinder/app/AppImplMacScreenSaver.mm</source>
 		<source cinder="true" compileAs="mm">src/cinder/app/AppScreenSaver.cpp</source>
 		<source cinder="true">src/cinder/UrlImplCocoa.mm</source>
 		<resource replaceContents="true" buildExclude="true">xcode/Info.plist</resource>

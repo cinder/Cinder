@@ -46,13 +46,9 @@ static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 // AppBase::Settings
 
 AppBase::Settings::Settings()
+	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
+		mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
 {
-	mShouldQuit = false;
-	mPowerManagementEnabled = false;
-	mFrameRateEnabled = true;
-	mFrameRate = 60.0f;
-	mHighDensityDisplayEnabled = false;
-	mMultiTouchEnabled = false;
 }
 
 void AppBase::Settings::init( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] )
@@ -201,6 +197,21 @@ void AppBase::emitDidBecomeActive()
 	mSignalDidBecomeActive.emit();
 }
 
+void AppBase::emitDisplayConnected( const DisplayRef &display )
+{
+	mSignalDisplayConnected.emit( display );
+}
+
+void AppBase::emitDisplayDisconnected( const DisplayRef &display )
+{
+	mSignalDisplayDisconnected.emit( display );
+}
+
+void AppBase::emitDisplayChanged( const DisplayRef &display )
+{
+	mSignalDisplayChanged.emit( display );
+}
+
 fs::path AppBase::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
 	return Platform::get()->getOpenFilePath( initialPath, extensions );
@@ -243,18 +254,9 @@ Surface	AppBase::copyWindowSurface( const Area &area )
 	return getWindow()->getRenderer()->copyWindowSurface( clippedArea, getWindow()->toPixels( getWindow()->getHeight() ) );
 }
 
-RendererRef AppBase::findSharedRenderer( RendererRef searchRenderer ) const
+void AppBase::restoreWindowContext()
 {
-	if( ! searchRenderer )
-		return RendererRef();
-
-	for( size_t winIdx = 0; winIdx < getNumWindows(); ++winIdx ) {
-		RendererRef thisRenderer = getWindowIndex( winIdx )->getRenderer();
-		if( thisRenderer && (typeid( *thisRenderer ) == typeid(*searchRenderer)) )
-			return getWindowIndex( winIdx )->getRenderer();
-	}
-	
-	return RendererRef(); // didn't find one
+	getWindow()->getRenderer()->makeCurrentContext();
 }
 
 } } // namespace cinder::app

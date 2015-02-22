@@ -125,6 +125,27 @@ static void benchPlainCallbackLoop()
 	cout << "\tper round: " << double( benchDone - benchStart ) / double( i ) << "ns" << endl;
 }
 
+// the time of a std::function callback
+static void benchStdFunctionCallbackLoop()
+{
+	void *someData = nullptr;
+	std::function<void( uint64_t )> counterIncrement = [someData]( uint64_t incr ) { TestCounter::add2( someData, 1 ); };
+
+	const uint64_t startCounter = TestCounter::get();
+	const uint64_t benchStart = timestampBenchmark();
+
+	uint64_t i;
+	for( i = 0; i < 1000000; i++ )
+		counterIncrement( 1 );
+
+	const uint64_t benchDone = timestampBenchmark();
+	const uint64_t endCounter = TestCounter::get();
+	assert( endCounter - startCounter == i );
+
+	cout << "OK" << endl;
+	cout << "\tper round: " << double( benchDone - benchStart ) / double( i ) << "ns" << endl;
+}
+
 int main()
 {
 	printSize();
@@ -134,9 +155,11 @@ int main()
 	cout << "Benchmark: emmission (5 slots): ";
 	benchSignalEmission5();
 	cout << "Benchmark: emmission with groups (2 groups, 4 slots): ";
-	benchSignalEmission5();
+	benchSignalEmissionGroups();
 	cout << "Benchmark: plain callback loop: ";
 	benchPlainCallbackLoop();
+	cout << "Benchmark: std::function callback loop: ";
+	benchStdFunctionCallbackLoop();
 
 	return 0;
 }

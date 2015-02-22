@@ -126,7 +126,6 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -fexceptions
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
 
-
     ${CINDER_SRC_DIR}/linebreak/linebreak.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdata.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdef.c
@@ -141,18 +140,19 @@ set( CINDER_C_SRC_FILES
 )
 
 set( CINDER_CXX_SRC_FILES
+    ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroidRenderer2d.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroidRendererGl.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/PlatformAndroid.cpp
+
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppBasic.cpp
+    ${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
+    ${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
+    ${CINDER_SRC_DIR}/cinder/app/Platform.cpp
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppBasicAndroid.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroid.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidBasic.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidRenderer2d.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppImplAndroidRendererGl.cpp
-    ${CINDER_SRC_DIR}/cinder/app/Platform.cpp
-    ${CINDER_SRC_DIR}/cinder/app/PlatformAndroid.cpp
 
     ${CINDER_SRC_DIR}/cinder/gl/gl.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Batch.cpp

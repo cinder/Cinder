@@ -26,10 +26,12 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_MAC )
-	#import "cinder/app/AppImplCocoaScreenSaver.h"
-	#include "cinder/app/PlatformCocoa.h"
+	#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
+	#include "cinder/app/cocoa/PlatformCocoa.h"
+	#include "cinder/ImageSourceFileQuartz.h"
+	#include "cinder/ImageTargetFileQuartz.h"	
 #elif defined( CINDER_MSW )
-	#include "cinder/app/AppImplMswScreenSaver.h"
+	#include "cinder/app/msw/AppImplMswScreenSaver.h"
 #endif
 
 cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = nullptr;
@@ -54,6 +56,9 @@ AppScreenSaver::AppScreenSaver()
 
 	platform->setBundle( getBundle() );
 	platform->setExecutablePath( getAppPath() );
+	
+	ImageSourceFileQuartz::registerSelf();
+	ImageTargetFileQuartz::registerSelf();	
 }
 
 #elif defined( CINDER_MSW )
@@ -116,7 +121,7 @@ fs::path AppScreenSaver::getAppPath() const
 #if defined( CINDER_COCOA )
 NSBundle* AppScreenSaver::getBundle() const
 {
-	return [NSBundle bundleForClass:[AppImplCocoaScreenSaver class]];
+	return [NSBundle bundleForClass:[AppImplMacScreenSaver class]];
 }
 #endif
 

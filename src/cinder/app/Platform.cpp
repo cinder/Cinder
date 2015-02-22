@@ -25,9 +25,9 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_COCOA )
-#include "cinder/app/PlatformCocoa.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 #elif defined( CINDER_MSW )
-#include "cinder/app/PlatformMsw.h"
+#include "cinder/app/msw/PlatformMsw.h"
 #endif
 
 using namespace std;

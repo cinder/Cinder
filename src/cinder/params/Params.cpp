@@ -28,7 +28,7 @@
 
 #if defined( USE_DIRECTX )
 	#include "cinder/dx/dx.h"
-	#include "cinder/app/AppImplMswRendererDx.h"
+	#include "cinder/app/RendererImplDx.h"
 #else
 	#include "cinder/gl/Environment.h"
 #endif

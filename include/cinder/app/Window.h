@@ -142,7 +142,7 @@ class Window : public std::enable_shared_from_this<Window> {
   public:
 	// Parameters for a Window, which are used to create the physical window by the App
 	struct Format {
-		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, ivec2 size = ivec2( 640, 480 ), ivec2 pos = ivec2() )
+		Format( RendererRef renderer = RendererRef(), DisplayRef display = DisplayRef(), bool fullScreen = false, ivec2 size = ivec2( 640, 480 ), ivec2 pos = ivec2() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
 			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false ),
 			mTitleSpecified( false ), mTitle( "" )

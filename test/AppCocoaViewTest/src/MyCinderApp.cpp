@@ -3,6 +3,7 @@
 
 #if defined( USE_RENDERER2D )
 	#include "cinder/cocoa/CinderCocoa.h"
+	#include <QuartzCore/QuartzCore.h>
 #else
 	#include "cinder/gl/gl.h"
 #endif
@@ -13,7 +14,7 @@ using namespace ci::app;
 // static
 void MyCinderApp::prepareSettings( Settings *settings )
 {
-	settings->enableMultiTouch( false );
+	settings->setMultiTouchEnabled( false );
 }
 
 MyCinderApp::MyCinderApp()

@@ -40,6 +40,9 @@
 	typedef void*		EGLDisplay;
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
+#elif defined( CINDER_MSW )
+	struct HGLRC__;
+	typedef HGLRC__* HGLRC;
 #elif defined( CINDER_ANDROID )
 	typedef void*		EGLContext;
 	typedef void*		EGLDisplay;

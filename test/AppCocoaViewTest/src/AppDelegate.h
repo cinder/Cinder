@@ -1,12 +1,12 @@
 #include "MyCinderApp.h"
 
-#include "cinder/app/CinderView.h"
+#include "cinder/app/cocoa/CinderViewMac.h"
 
 #import <Cocoa/Cocoa.h>
 
 @interface AppDelegate : NSObject <NSApplicationDelegate>
 {
-	IBOutlet CinderView		*cinderView;
+	IBOutlet CinderViewMac	*cinderView;
 	IBOutlet NSWindow		*window;
 	IBOutlet NSColorWell	*colorWell;
 	

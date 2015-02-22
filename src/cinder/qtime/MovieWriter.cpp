@@ -394,7 +394,8 @@ void MovieWriter::Obj::createCompressionSession()
 		mDoingMultiPass = ::ICMCompressionSessionSupportsMultiPassEncoding( mCompressionSession, 0, &mMultiPassModeFlags ) != 0;
 		
 		if( mDoingMultiPass ) {
-			mMultiPassFrameCache = readWriteFileStream( getTemporaryFilePath() );
+			auto tempDir = fs::temp_directory_path();
+			mMultiPassFrameCache = readWriteFileStream( fs::unique_path( tempDir / ( "multipass_%%%%-%%%%-%%%%-%%%%" ) );
 			if( ! mMultiPassFrameCache )
 				throw MovieWriterExc();
 			mMultiPassFrameCache->setDeleteOnDestroy();

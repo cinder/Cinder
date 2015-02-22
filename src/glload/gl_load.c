@@ -51,6 +51,8 @@ static void* SunGetProcAddress (const GLubyte* name)
 
 #if defined(_WIN32)
 
+#include <Windows.h>
+
 #ifdef _MSC_VER
 #pragma warning(disable: 4055)
 #pragma warning(disable: 4054)
