@@ -36,6 +36,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Exception.h"
+#include "cinder/ShaderPreprocessor.h"
 
 //! Convenience macro that allows one to embed raw glsl code in-line. The \a VERSION parameter will be used for the glsl's '#version' define.
 //! \note Some strings will confuse different compilers, most commonly being preprocessor derictives (hence the need for \a VERSION to be a pamaeter).
@@ -286,6 +287,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	mutable std::set<std::string>			mLoggedMissingUniforms;
 
 	std::string								mLabel; // debug label
+	ShaderPreprocessor						mShaderPreprocessor;
 
 	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
 #if ! defined( CINDER_GL_ES_2 )
