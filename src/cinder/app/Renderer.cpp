@@ -44,7 +44,7 @@
 	#include "cinder/app/AppImplMsw.h"
 	#include "cinder/app/AppImplMswRendererGdi.h"
 #elif defined( CINDER_ANDROID )
-    #include "cinder/app/android/AppImplAndroidRenderer2d.h"
+    #include "cinder/app/android/Renderer2dAndroid.h"
 #endif
 
 namespace cinder { namespace app {

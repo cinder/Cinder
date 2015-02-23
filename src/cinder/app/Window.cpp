@@ -33,7 +33,7 @@
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
 #elif defined( CINDER_ANDROID )
-    #include "cinder/app/android/AppImplAndroid.h"
+    #include "cinder/app/android/WindowImplAndroid.h"
 #endif
 
 namespace cinder { namespace app {

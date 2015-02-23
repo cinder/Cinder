@@ -24,7 +24,15 @@
 #include "cinder/app/android/AppAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
+#include <android/log.h>
+
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+
 namespace cinder { namespace app {
+
+android_app *AppAndroid::sNativeApp = nullptr;
 
 AppAndroid::AppAndroid()
 	: AppBase()
@@ -35,23 +43,22 @@ AppAndroid::AppAndroid()
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
 	Platform::get()->setExecutablePath( getAppPath() );
-	mImpl.reset( new AppImplAndroid( this, *settings ) );
+
+	mImpl.reset( new AppImplAndroid( this, AppAndroid::sNativeApp, *settings ) );
 }
 
 AppAndroid::~AppAndroid()
 {
 }
 
-// static
-void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, struct android_app* androidApp )
+void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
 {
-	/// @TODO: CHECK IMPLEMENTATION
 	AppBase::initialize( settings, defaultRenderer, title, 0, nullptr );
 }
 
 void AppAndroid::launch( const char *title, int argc, char * const argv[] )
 {
-	/// @TODO: CHECK IMPLEMENTATION
+	mImpl->prepareRun();
 	mImpl->run();
 }
 
@@ -87,7 +94,7 @@ bool AppAndroid::isFrameRateEnabled() const
 
 fs::path AppAndroid::getAppPath() const
 {
-	return mImpl->getAppPath();
+	return AppImplAndroid::getAppPath();
 }
 
 WindowRef AppAndroid::getWindow() const

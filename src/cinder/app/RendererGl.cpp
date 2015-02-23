@@ -41,14 +41,15 @@
 		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
 #elif defined( CINDER_ANDROID )
-	#include "cinder/app/android/AppImplAndroidRendererGl.h"
+	#include "cinder/app/android/RendererGlAndroid.h"
 #endif
 
 namespace cinder { namespace app {
 
 RendererGl::RendererGl( const RendererGl::Options &options )
 	: Renderer(), mImpl( 0 ), mOptions( options )
-{}
+{
+}
 
 RendererGl::RendererGl( const RendererGl &renderer )
 	: Renderer( renderer ), mOptions( renderer.mOptions )
@@ -58,6 +59,8 @@ RendererGl::RendererGl( const RendererGl &renderer )
 #elif defined( CINDER_MSW )
 	mImpl = 0;
 	mWnd = renderer.mWnd;
+#elif defined( CINDER_ANDROID )
+	mImpl = 0;	
 #endif
 }
 
@@ -289,20 +292,15 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( RendererRef sharedRenderer )
+void RendererGl::setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
 {
 	if( ! mImpl ) {
-		mImpl = new AppImplAndroidRendererGl( this );
+		mImpl = new RendererGlAndroid( this );
     }
 
-	if( ! mImpl->initialize( sharedRenderer ) ) {
+	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
 		throw ExcRendererAllocation( "AppImplAnroidRendererGl initialization failed." );
     }
-}
-
-void RendererGl::kill()
-{
-	mImpl->kill();
 }
 
 void RendererGl::startDraw()

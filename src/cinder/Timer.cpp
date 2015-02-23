@@ -28,9 +28,22 @@
 	#include <windows.h>
 #elif defined( CINDER_COCOA )
 	#include <CoreFoundation/CoreFoundation.h>
+#elif defined( CINDER_ANDROID )
+ 	#include <sys/time.h>
+ 	#include <time.h>
 #endif
 
 namespace cinder {
+
+#if defined( CINDER_ANDROID )
+static double AndroidGetElapsedSeconds() 
+{
+	struct timespec now;
+    ::clock_gettime(CLOCK_MONOTONIC, &now);
+    return (double)((now.tv_sec * 1000000000LL) + now.tv_nsec)/1000000000.0;
+} 
+#endif
+
 
 Timer::Timer()
 	: mIsStopped( true )
@@ -42,6 +55,8 @@ Timer::Timer()
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
+#elif defined( CINDER_ANDROID )
+	mEndTime = mStartTime = -1;
 #endif
 }
 
@@ -55,6 +70,8 @@ Timer::Timer( bool startOnConstruction )
 	::QueryPerformanceFrequency( &nativeFreq );
 	mInvNativeFreq = 1.0 / nativeFreq.QuadPart;
 	mStartTime = mEndTime = -1;
+#elif defined( CINDER_ANDROID )
+	mEndTime = mStartTime = -1;	
 #endif
 	if( startOnConstruction ) {
 		start();
@@ -69,6 +86,8 @@ void Timer::start()
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	mStartTime = rawTime.QuadPart * mInvNativeFreq;
+#elif defined( CINDER_ANDROID )
+	mStartTime = AndroidGetElapsedSeconds();
 #endif
 
 	mIsStopped = false;
@@ -85,6 +104,8 @@ double Timer::getSeconds() const
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
 	return (rawTime.QuadPart * mInvNativeFreq) - mStartTime;
+#elif defined( CINDER_ANDROID )
+	return AndroidGetElapsedSeconds() - mStartTime;
 #endif
 	}
 }
@@ -98,6 +119,8 @@ void Timer::stop()
 		::LARGE_INTEGER rawTime;
 		::QueryPerformanceCounter( &rawTime );
 		mEndTime = rawTime.QuadPart * mInvNativeFreq;
+#elif defined( CINDER_ANDROID )
+		mEndTime = AndroidGetElapsedSeconds();
 #endif
 		mIsStopped = true;
 	}

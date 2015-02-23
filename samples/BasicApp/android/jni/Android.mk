@@ -22,7 +22,7 @@ include $(PREBUILT_STATIC_LIBRARY)
 
 include $(CLEAR_VARS)
 LOCAL_MODULE           := BasicApp 
-LOCAL_SRC_FILES        := ../../src/basicApp.cpp
+LOCAL_SRC_FILES        := ../../src/androidBasicApp.cpp
 LOCAL_C_INCLUDES       := ../../../../include ../../../../boost
 LOCAL_CPPFLAGS         += -std=c++11 -fexceptions -g -mfpu=neon
 LOCAL_LDLIBS           := -llog -landroid -lEGL -lGLESv3 -lz

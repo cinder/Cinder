@@ -178,8 +178,7 @@ class RendererGl : public Renderer {
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
 #elif defined( CINDER_ANDROID )
-	virtual void	setup( RendererRef sharedRenderer );
-	virtual void	kill();   
+	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer );
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -214,7 +213,7 @@ protected:
 	#endif
 	HWND						mWnd;
 #elif defined( CINDER_ANDROID )
-    class AppImplAndroidRendererGl  *mImpl;
+    class RendererGlAndroid  	*mImpl;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

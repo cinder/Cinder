@@ -24,6 +24,11 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
+#include "EGL/egl.h"
+#include "EGL/eglext.h"
+#include "EGL/eglplatform.h"
+
+#include <android/native_window.h>
 
 namespace cinder { namespace gl {
 	class Context;
@@ -32,13 +37,13 @@ namespace cinder { namespace gl {
 
 namespace cinder { namespace app {
 
-class AppImplAndroidRendererGl {
+class RendererGlAndroid {
  public:
 
-    AppImplAndroidRendererGl( class RendererGl *aRenderer );
-    virtual ~AppImplAndroidRendererGl();
+    RendererGlAndroid( class RendererGl *aRenderer );
+    virtual ~RendererGlAndroid();
 
-	virtual bool	initialize( RendererRef sharedRenderer );
+	virtual bool	initialize( ANativeWindow *nativeWindow, RendererRef sharedRenderer );
 	virtual void	kill();
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;
@@ -47,6 +52,14 @@ class AppImplAndroidRendererGl {
  protected:
 	class RendererGl	*mRenderer;
 	gl::ContextRef		mCinderContext;
+
+	EGLContext		mContext;
+	EGLDisplay		mDisplay;
+	EGLSurface		mSurface;
+
+ private:
+ 	static ivec2 	sSurfaceSize;
+ 	friend class WindowImplAndroid;
 };
 
 } } // namespace cinder::app

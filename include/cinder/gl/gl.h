@@ -42,6 +42,7 @@
 #elif defined( CINDER_ANDROID )
    	//#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
+ 	#include "EGL/egl.h"
     // Force ES3 for now
     #include "GLES3/gl3.h"
 	#include "GLES3/gl3ext.h"

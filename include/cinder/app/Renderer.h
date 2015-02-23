@@ -63,6 +63,8 @@
 		class RendererImpl2dCocoaTouchQuartz;
 		class UIView;
 	#endif
+#elif defined( CINDER_ANDROID )
+	struct ANativeWindow;		
 #endif
 
 
@@ -114,6 +116,8 @@ class Renderer {
 	virtual void prepareToggleFullScreen() {}
 	virtual void finishToggleFullScreen() {}
 	virtual void kill() {}
+#elif defined( CINDER_ANDROID )
+	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;

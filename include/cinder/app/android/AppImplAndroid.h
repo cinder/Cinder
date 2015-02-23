@@ -24,9 +24,7 @@
 #pragma once
 
 #include "cinder/app/android/AppAndroid.h"
-#include "cinder/Display.h"
-
-#include <android/native_window.h>
+#include <android/sensor.h>
 
 namespace cinder { namespace app {
 
@@ -35,10 +33,19 @@ class WindowImplAndroid;
 class AppImplAndroid {
  public:
 
-	AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings );
+	AppImplAndroid( AppAndroid *aApp, android_app *ndkApp, const AppAndroid::Settings &settings );
 	virtual ~AppImplAndroid();
 
-	AppAndroid*			getApp();
+private:
+	void 				initializeFromNativeWindow();
+	void 				delayedSetup();
+
+public:
+	AppAndroid 			*getApp();
+ 	android_app			*getNative();
+
+ 	// Sets startup values
+ 	void 				prepareRun();
 	void 				run();
 
  protected:
@@ -67,20 +74,37 @@ class AppImplAndroid {
 	void				showCursor();
 	ivec2				getMousePos() const;
 		
-	fs::path			getAppPath();	
+	static fs::path		getAppPath();	
 	fs::path			getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getFolderPath( const fs::path &initialPath );
 
  private:
+	static int32_t		handleInput( android_app *ndkApp, AInputEvent *event );
+	static void 		handleCmd( android_app *ndkApp, int32_t cmd );
+
+ private:
 	AppAndroid			*mApp;
-	float				mFrameRate;
+
+	android_app			*mNativeApp; 
+	ASensorManager		*mSensorManager;
+	const ASensor 		*mAccelerometerSensor;
+	const ASensor 		*mMagneticFieldSensor;
+	const ASensor 		*mGyroscopeSensor;
+	const ASensor 		*mLightSensor;
+	const ASensor 		*mProximitySensor;
+    ASensorEventQueue 	*mSensorEventQueue;
+
 	WindowRef			mActiveWindow;
 	bool				mSetupHasBeenCalled;
-	bool				mActive;
 
-	double			    mNextFrameTime;
+	bool				mActive;
+	bool 				mFocused;
+
 	bool			    mFrameRateEnabled;
+	float				mFrameRate;
+	double				mNextFrameTime;
+
 	bool			    mShouldQuit;
 	bool			    mQuitOnLastWindowClosed;	
 
@@ -91,59 +115,6 @@ class AppImplAndroid {
 	friend class WindowImplAndroid;
 };
 
-class WindowImplAndroid {
- public:
-    
-    WindowImplAndroid( const Window::Format &format, RendererRef sharedRenderer, AppImplAndroid *appImpl );
-    virtual ~WindowImplAndroid();
 
-	virtual bool		isFullScreen() { return true; }
-	virtual void		setFullScreen( bool fullScreen, const app::FullScreenOptions &options );
-	virtual ivec2		getSize() const { return mSize; }
-	virtual void		setSize( const ivec2 &size );
-	virtual ivec2		getPos() const { return mPos; }
-	virtual void		setPos( const ivec2 &pos );
-	virtual void		close();
-	virtual std::string	getTitle() const { return mTitle; }
-	virtual void		setTitle( const std::string &title );
-	virtual void		hide();
-	virtual void		show();
-	virtual bool		isHidden() const { return false; }
-	virtual DisplayRef	getDisplay() const { return mDisplay; }
-	virtual RendererRef	getRenderer() const { return mRenderer; }
-	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
-	virtual void*		getNative() { return mNativeWindow; }
-
-	bool			    isBorderless() const { return true; }
-	void			    setBorderless( bool borderless );
-	bool			    isAlwaysOnTop() const { return true; }
-	void			    setAlwaysOnTop( bool alwaysOnTop );
-
-	AppImplAndroid*		getAppImpl() { return mAppImpl; }
-	WindowRef			getWindow() { return mWindowRef; }
-	virtual void		keyDown( const KeyEvent &event );
-	virtual void		draw();
-	virtual void		redraw();
-	virtual void		resize();
-
-	void				privateClose();
- protected:
-
-	AppImplAndroid		*mAppImpl;
-	WindowRef			mWindowRef;
-
-    ivec2               mSize;
-    ivec2               mPos;
-
-    std::string         mTitle;
-    ANativeWindow       *mNativeWindow;
-
-	DisplayRef			mDisplay;
-	RendererRef			mRenderer;
-
-    std::vector<TouchEvent::Touch>	mActiveTouches;
-
-    friend class AppImplAndroid;
-};
 
 } } // namespace cinder::app

@@ -140,11 +140,14 @@ set( CINDER_C_SRC_FILES
 )
 
 set( CINDER_CXX_SRC_FILES
+    ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
+
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp
-    ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroidRenderer2d.cpp
-    ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroidRendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/PlatformAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/Renderer2dAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/RendererGlAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/WindowImplAndroid.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
     ${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp

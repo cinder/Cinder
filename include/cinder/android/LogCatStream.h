@@ -23,49 +23,59 @@
 
 #pragma once
 
-#include "cinder/app/Platform.h"
+#include <ostream>
+#include <sstream>
+#include <string>
 
-namespace cinder { namespace app {
+// This is a wrapper to make ::OutputDebugStringA behave like std::ostream
+// Derived from code written by Sven Axelsson
+// Documented: http://www.codeproject.com/KB/debug/debugout.aspx
 
-class PlatformAndroid : public Platform {
- public:
-	PlatformAndroid();
-	virtual ~PlatformAndroid();
+namespace cinder { namespace android {
 
-	static PlatformAndroid*			get();
+void LogCatOutput( const char *text );
 
-	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
+template <class CharT, class TraitsT = std::char_traits<CharT> >
+class basic_debugbuf : 
+    public std::basic_stringbuf<CharT, TraitsT>
+{
+public:
 
-	virtual fs::path				getResourcePath() const override;
-	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) const override;
+    virtual ~basic_debugbuf() {
+        sync();
+    }
 
-	virtual fs::path 				getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
-	virtual fs::path 				getFolderPath( const fs::path &initialPath ) override;
-	virtual fs::path 				getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+protected:
+    int sync() {
+        log_cat(this->str().c_str());
+        this->str(std::basic_string<CharT>());    // Clear the string buffer
 
-	// Overridden to use android log
-	virtual std::ostream&			console() override;
+        return 0;
+    }
 
-	virtual fs::path				expandPath( const fs::path &path );
-	virtual fs::path				getHomeDirectory();
-	virtual fs::path				getDocumentsDirectory();
-
-	virtual void 					sleep( float milliseconds );
-
-	virtual void 					launchWebBrowser( const Url &url );
-
-	virtual std::vector<std::string>		stackTrace();
-
-	virtual const std::vector<DisplayRef>&	getDisplays();
-
- protected:
-	virtual void 					prepareAssetLoading();	
-
- private:
-	std::unique_ptr<std::ostream>	mOutputStream;
-
-	bool							mDisplaysInitialized;
-	std::vector<DisplayRef>			mDisplays;
+    void log_cat(const CharT *text) {}
 };
 
-} } // namespace cinder::app
+template<>
+inline void basic_debugbuf<char>::log_cat(const char *text)
+{
+    LogCatOutput(text);
+}
+
+template<class CharT, class TraitsT = std::char_traits<CharT> >
+class basic_dostream : 
+    public std::basic_ostream<CharT, TraitsT>
+{
+public:
+
+    basic_dostream() : std::basic_ostream<CharT, TraitsT>
+                (new basic_debugbuf<CharT, TraitsT>()) {}
+    ~basic_dostream() 
+    {
+        delete this->rdbuf(); 
+    }
+};
+
+typedef basic_dostream<char>    dostream;
+
+} } // namespace cinder::android

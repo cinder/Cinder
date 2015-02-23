@@ -28,6 +28,8 @@
 #include "cinder/app/cocoa/PlatformCocoa.h"
 #elif defined( CINDER_MSW )
 #include "cinder/app/msw/PlatformMsw.h"
+#elif defined( CINDER_ANDROID )
+#include "cinder/app/android/PlatformAndroid.h"
 #endif
 
 using namespace std;
@@ -50,6 +52,8 @@ Platform* Platform::get()
 		sInstance = new PlatformCocoa;
 #elif defined( CINDER_MSW )
 		sInstance = new PlatformMsw;
+#elif defined( CINDER_ANDROID )
+		sInstance = new PlatformAndroid;		
 #endif
 	}
 
