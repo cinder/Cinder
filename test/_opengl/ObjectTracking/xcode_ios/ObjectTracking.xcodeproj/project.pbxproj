@@ -15,7 +15,6 @@
 		28FD15080DC6FC5B0079059D /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 28FD15070DC6FC5B0079059D /* QuartzCore.framework */; };
 		54A5DB2B6A8A41E3B0A079B3 /* ObjectTrackingApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = FA23B374C98D4EEE9EE30E10 /* ObjectTrackingApp.cpp */; };
 		5E8A8E8B8D0C457CB3DE980F /* Default-568h@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A80AF2910D2545EF92183061 /* Default-568h@2x.png */; };
-		A8ED01096D994F9A8E73D4F1 /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 50C432776F92434E889B5229 /* CinderApp_ios.png */; };
 		C725DFFE121DAC7F00FA186B /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C727C02B121B400300192073 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8F00FA186B /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C725E000121DAC8F00FA186B /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		C725E001121DAC8FFFFA18FF /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091FFFF /* ImageIO.framework */; };
@@ -26,7 +25,6 @@
 
 /* Begin PBXFileReference section */
 		00692BCF14FF149000D0A05E /* ObjectTracking.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ObjectTracking.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		00748057165D41390024B57A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		00CFDF6A1138442D0091FFFF /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -34,7 +32,6 @@
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
 		28FD14FF0DC6FC520079059D /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		28FD15070DC6FC5B0079059D /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
-		50C432776F92434E889B5229 /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderApp_ios.png; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; };
 		92B9C6E4FC334D6DA2B2AFCC /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A43342AF765041E9B234545C /* ObjectTracking_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = ObjectTracking_Prefix.pch; sourceTree = "<group>"; };
 		A80AF2910D2545EF92183061 /* Default-568h@2x.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = "Default-568h@2x.png"; sourceTree = "<group>"; };
@@ -73,7 +70,6 @@
 		00692BC414FF149000D0A05E = {
 			isa = PBXGroup;
 			children = (
-				99692BD914FF149000DFFFFF /* Blocks */,
 				99692BD914FF149000D0A05F /* Headers */,
 				00692BD914FF149000D0A05E /* Source */,
 				00692BD914FF149000D0FFFF /* Resources */,
@@ -120,8 +116,6 @@
 		00692BD914FF149000D0FFFF /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				00748057165D41390024B57A /* assets */,
-				50C432776F92434E889B5229 /* CinderApp_ios.png */,
 				A80AF2910D2545EF92183061 /* Default-568h@2x.png */,
 				92B9C6E4FC334D6DA2B2AFCC /* Info.plist */,
 			);
@@ -135,13 +129,6 @@
 				A43342AF765041E9B234545C /* ObjectTracking_Prefix.pch */,
 			);
 			name = Headers;
-			sourceTree = "<group>";
-		};
-		99692BD914FF149000DFFFFF /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Blocks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -193,7 +180,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A8ED01096D994F9A8E73D4F1 /* CinderApp_ios.png in Resources */,
 				5E8A8E8B8D0C457CB3DE980F /* Default-568h@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
