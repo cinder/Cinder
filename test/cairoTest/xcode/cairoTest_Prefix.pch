@@ -2,6 +2,3 @@
 // Prefix header for all source files of the 'cairoTest' target in the 'cairoTest' project
 //
 
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif
