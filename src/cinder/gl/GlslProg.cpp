@@ -38,8 +38,9 @@ GlslProg::AttribSemanticMap		GlslProg::sDefaultAttribNameToSemanticMap;
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
 GlslProg::Format::Format()
+	: mPreprocessingEnabled( true )
 #if ! defined( CINDER_GL_ES_2 )
-	: mTransformFormat( -1 )
+	, mTransformFormat( -1 )
 #endif
 {
 	mAttribSemanticLocMap[geom::Attrib::POSITION] = 0;
@@ -256,7 +257,8 @@ GlslProg::~GlslProg()
 GlslProg::GlslProg( const Format &format )
 	: mActiveUniformTypesCached( false ), mActiveAttribTypesCached( false ),
 	mUniformSemanticsCached( false ), mUniformNameToSemanticMap( getDefaultUniformNameToSemanticMap() ),
-	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() )
+	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() ),
+	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
 	mHandle = glCreateProgram();
 	
@@ -387,10 +389,9 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 
 void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderDirectory, GLint shaderType )
 {
-	string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderDirectory );
+	const char *cStr = ( mPreprocessingEnabled ? mShaderPreprocessor.parse( shaderSource, shaderDirectory ).c_str() : shaderSource.c_str() );
 
 	GLuint handle = glCreateShader( shaderType );
-	const char *cStr = preprocessedSource.c_str();
 	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	glCompileShader( handle );
 	

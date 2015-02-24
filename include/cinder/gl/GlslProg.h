@@ -124,7 +124,14 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::map<std::string,GLint>&	getAttribNameLocations() const { return mAttribNameLocMap; }
 		//! Returns the map between attribute semantics and specified locations
 		const std::map<geom::Attrib,GLint>&	getAttribSemanticLocations() const { return mAttribSemanticLocMap; }
-		
+
+		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
+		bool	isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		void	setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		Format&	preprocessing( bool enable )				{ mPreprocessingEnabled = enable; return *this; }
+
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
@@ -156,7 +163,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
 		std::map<std::string,geom::Attrib>		mAttribSemanticMap;
 		
-		
+		bool									mPreprocessingEnabled;
 		std::string								mLabel;
 	};
   
@@ -294,6 +301,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 
 	std::string								mLabel; // debug label
 	ShaderPreprocessor						mShaderPreprocessor;
+	bool									mPreprocessingEnabled;
 
 	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
 #if ! defined( CINDER_GL_ES_2 )
