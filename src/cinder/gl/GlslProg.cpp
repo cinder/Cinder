@@ -52,9 +52,13 @@ GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 		mVertexShader.resize( buffer.getDataSize() + 1 );
 		memcpy( (void*)mVertexShader.data(), buffer.getData(), buffer.getDataSize() );
 		mVertexShader[buffer.getDataSize()] = 0;
+		if( dataSource->isFilePath() )
+			mVertexShaderDirectory = dataSource->getFilePath().parent_path();
 	}
-	else
+	else {
 		mVertexShader.clear();
+		mVertexShaderDirectory.clear();
+	}
 
 	return *this;
 }
@@ -76,10 +80,14 @@ GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 		mFragmentShader.resize( buffer.getDataSize() + 1 );
 		memcpy( (void*)mFragmentShader.data(), buffer.getData(), buffer.getDataSize() );
 		mFragmentShader[buffer.getDataSize()] = 0;
+		if( dataSource->isFilePath() )
+			mFragmentShaderDirectory = dataSource->getFilePath().parent_path();
 	}
-	else
+	else {
 		mFragmentShader.clear();
-		
+		mFragmentShaderDirectory.clear();
+	}
+
 	return *this;
 }
 
@@ -253,16 +261,16 @@ GlslProg::GlslProg( const Format &format )
 	mHandle = glCreateProgram();
 	
 	if( ! format.getVertex().empty() )
-		loadShader( format.getVertex(), GL_VERTEX_SHADER );
+		loadShader( format.getVertex(), format.mVertexShaderDirectory, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
-		loadShader( format.getFragment(), GL_FRAGMENT_SHADER );
+		loadShader( format.getFragment(), format.mFragmentShaderDirectory, GL_FRAGMENT_SHADER );
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
+		loadShader( format.getGeometry(), fs::path(), GL_GEOMETRY_SHADER );
 	if( ! format.getTessellationCtrl().empty() )
-		loadShader( format.getTessellationCtrl(), GL_TESS_CONTROL_SHADER );
+		loadShader( format.getTessellationCtrl(), fs::path(), GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
-		loadShader( format.getTessellationEval(), GL_TESS_EVALUATION_SHADER );
+		loadShader( format.getTessellationEval(), fs::path(), GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map
@@ -377,10 +385,12 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 	return sDefaultAttribNameToSemanticMap;
 }
 
-void GlslProg::loadShader( const std::string &shaderSource, GLint shaderType )
+void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderDirectory, GLint shaderType )
 {
+	string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderDirectory );
+
 	GLuint handle = glCreateShader( shaderType );
-	const char *cStr = shaderSource.c_str();
+	const char *cStr = preprocessedSource.c_str();
 	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	glCompileShader( handle );
 	

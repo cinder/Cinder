@@ -37,10 +37,12 @@ class ShaderPreprocessor {
 	ShaderPreprocessor();
 
 	std::string		parse( const fs::path &path );
+	std::string		parse( const std::string &source, const fs::path &currentDirectory );
 
   private:
-	std::string		parseRecursive( const fs::path &path, const fs::path &parentPath, std::set<fs::path> &includeTree );
-	fs::path		findFullPath( const fs::path &path, const fs::path &parentPath );
+	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );
+	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
+	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 
 	struct Source {
 		std::string		mString;

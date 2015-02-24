@@ -40,6 +40,7 @@ namespace {
 
 ShaderPreprocessor::ShaderPreprocessor()
 {
+	// TODO: we discussed keeping this ci assets agnostic, instead adding getAssetPath() from the outside
 	mSearchPaths.push_back( app::getAssetPath( "" ) );
 }
 
@@ -50,14 +51,47 @@ string ShaderPreprocessor::parse( const fs::path &path )
 	return parseRecursive( path, fs::path(), includeTree );
 }
 
-string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &parentPath, set<fs::path> &includeTree )
+string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourceDirectory )
+{
+	return parseTopLevel( source, sourceDirectory );
+}
+
+string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )
+{
+	set<fs::path> includeTree;
+
+	stringstream output;
+	istringstream input( source );
+
+	// go through each line and process includes
+	string line;
+	smatch matches;
+
+	size_t lineNumber = 1;
+
+	while( getline( input, line ) ) {
+		if( regex_search( line, matches, sIncludeRegex ) ) {
+			output << parseRecursive( matches[1].str(), currentDirectory, includeTree );
+			output << "#line " << lineNumber << endl;
+		}
+		else
+			output << line;
+
+		output << endl;
+		lineNumber++;
+	}
+
+	return output.str();
+}
+
+string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, set<fs::path> &includeTree )
 {
 	if( includeTree.count( path ) )
 		throw ShaderPreprocessorExc( "circular include found, path: " + path.string() );
 
 	includeTree.insert( path );
 
-	const fs::path fullPath = findFullPath( path, parentPath );
+	const fs::path fullPath = findFullPath( path, currentDirectory );
 
 #if ENABLE_CACHING
 	const time_t timeLastWrite = fs::last_write_time( fullPath );
@@ -77,7 +111,6 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
 
 	// go through each line and process includes
-
 	string line;
 	smatch matches;
 
@@ -108,19 +141,19 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 #endif
 }
 
-fs::path ShaderPreprocessor::findFullPath( const fs::path &path, const fs::path &parentPath )
+fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )
 {
-	auto fullPath = parentPath / path;
+	auto fullPath = currentDirectory / includePath;
 	if( fs::exists( fullPath ) )
 		return fullPath;
 
 	for( const auto &searchPath : mSearchPaths ) {
-		fullPath = searchPath / path;
+		fullPath = searchPath / includePath;
 		if( fs::exists( fullPath ) )
 			return fullPath;
 	}
 
-	throw ShaderPreprocessorExc( "could not find shader with include path: " + path.string() );
+	throw ShaderPreprocessorExc( "could not find shader with include path: " + includePath.string() );
 }
 
 } // namespace cinder
