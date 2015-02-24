@@ -2,6 +2,3 @@
 // Prefix header for all source files of the 'shadowMap' target in the 'shadowMap' project
 //
 
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif
