@@ -32,7 +32,7 @@
 
 namespace cinder { namespace app {
 
-android_app *AppAndroid::sNativeApp = nullptr;
+//android_app *AppAndroid::sNativeApp = nullptr;
 
 AppAndroid::AppAndroid()
 	: AppBase()
@@ -44,7 +44,7 @@ AppAndroid::AppAndroid()
 
 	Platform::get()->setExecutablePath( getAppPath() );
 
-	mImpl.reset( new AppImplAndroid( this, AppAndroid::sNativeApp, *settings ) );
+	mImpl.reset( new AppImplAndroid( this, *settings ) );
 }
 
 AppAndroid::~AppAndroid()
@@ -58,8 +58,11 @@ void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRende
 
 void AppAndroid::launch( const char *title, int argc, char * const argv[] )
 {
-	mImpl->prepareRun();
-	mImpl->run();
+	mImpl->setup();
+
+	//
+	// NOTE: Don't call AppImplAndroid's event loop functions from here.
+	//
 }
 
 WindowRef AppAndroid::createWindow( const Window::Format &format )

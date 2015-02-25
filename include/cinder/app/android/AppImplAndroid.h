@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/android/AppAndroid.h"
-#include <android/sensor.h>
+//#include <android/sensor.h>
 
 namespace cinder { namespace app {
 
@@ -33,20 +33,20 @@ class WindowImplAndroid;
 class AppImplAndroid {
  public:
 
-	AppImplAndroid( AppAndroid *aApp, android_app *ndkApp, const AppAndroid::Settings &settings );
+	AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings );
 	virtual ~AppImplAndroid();
 
 private:
-	void 				initializeFromNativeWindow();
-	void 				delayedSetup();
+	//void 				initializeFromNativeWindow();
+	//void 				delayedSetup();
 
 public:
 	AppAndroid 			*getApp();
  	android_app			*getNative();
 
  	// Sets startup values
- 	void 				prepareRun();
-	void 				run();
+ 	//void 				prepareRun();
+	//void 				run();
 
  protected:
 	WindowRef			createWindow( Window::Format format );
@@ -80,32 +80,23 @@ public:
 	fs::path			getFolderPath( const fs::path &initialPath );
 
  private:
-	static int32_t		handleInput( android_app *ndkApp, AInputEvent *event );
-	static void 		handleCmd( android_app *ndkApp, int32_t cmd );
+ 	void 				setup();
+ 	void 				sleepUntilNextFrame();
+ 	void 				updateAndDraw();
 
  private:
 	AppAndroid			*mApp;
-
 	android_app			*mNativeApp; 
-	ASensorManager		*mSensorManager;
-	const ASensor 		*mAccelerometerSensor;
-	const ASensor 		*mMagneticFieldSensor;
-	const ASensor 		*mGyroscopeSensor;
-	const ASensor 		*mLightSensor;
-	const ASensor 		*mProximitySensor;
-    ASensorEventQueue 	*mSensorEventQueue;
 
 	WindowRef			mActiveWindow;
 	bool				mSetupHasBeenCalled;
+	bool 				mCanProcessEvents;
 
 	bool				mActive;
-	bool 				mFocused;
 
 	bool			    mFrameRateEnabled;
 	float				mFrameRate;
 	double				mNextFrameTime;
-
-	bool			    mShouldQuit;
 	bool			    mQuitOnLastWindowClosed;	
 
 	std::list<class WindowImplAndroid*>	mWindows;
@@ -113,6 +104,7 @@ public:
 
 	friend class AppAndroid;
 	friend class WindowImplAndroid;
+	friend class EventManagerAndroid;
 };
 
 

@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/AppBase.h"
-#include "cinder/android/android_native_app_glue.h"
+#include "cinder/app/android/EventManagerAndroid.h"
 
 namespace cinder { namespace app {
 
@@ -66,6 +66,9 @@ class AppAndroid : public AppBase {
 	// Called during application instanciation via CINDER_APP_ANDROID macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn = SettingsFn() );
+	// Called from EventManagerAndroid::NativeHandleCmd
+	template <typename AppT>
+	static void deferredMain( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn );
 	// Called from main, forwards to AppBase::initialize() and calls AndroidImplAndroid::setNdkAdroidApp
 	static void	initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title );
 	//! \endcond
@@ -75,21 +78,11 @@ class AppAndroid : public AppBase {
 
  private:
 	std::unique_ptr<AppImplAndroid>		mImpl;
-
-	// Store this here so it's accessible during the construction process 
-	static android_app 					*sNativeApp;
-
-	// Used for Android's window initialization since it happens in the event processor
-	friend class AppImplAndroid;
-	static const Settings *getSettingsFromMain() { return dynamic_cast<Settings *>( sSettingsFromMain ); }
 };
 
 template<typename AppT>
-void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn )
+void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn ) 
 {
-	// Set the static instance of this before anythign else.
-	AppAndroid::sNativeApp = nativeApp;
-
 	AppBase::prepareLaunch();
 
 	Settings settings;
@@ -105,7 +98,23 @@ void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, an
 	#pragma unused( app )
 
 	AppBase::executeLaunch( title, 0, nullptr );
-	AppBase::cleanupLaunch();
+	//
+	// NOTE: AppBase::cleanupLaunch is called in EventManagerAndroid::execute.
+	//
+	// DISABLED HERE: AppBase::cleanupLaunch();
+	//
+}
+
+template<typename AppT>
+void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, android_app *nativeApp, const SettingsFn &settingsFn )
+{
+	std::function<void()> deferredMainFn  = std::bind( &AppAndroid::deferredMain<AppT>, defaultRenderer, title, nativeApp, settingsFn );
+	std::function<void()> cleanupLaunchFn = std::bind( &AppBase::cleanupLaunch );
+
+	std::unique_ptr<EventManagerAndroid> eventManager( new EventManagerAndroid( nativeApp, deferredMainFn, cleanupLaunchFn ) );
+	if( eventManager ) {
+		eventManager->execute();
+	}
 }
 
 #define CINDER_APP_ANDROID( APP, RENDERER, ... )									\

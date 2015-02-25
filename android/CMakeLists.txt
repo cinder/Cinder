@@ -144,6 +144,7 @@ set( CINDER_CXX_SRC_FILES
 
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/app/android/EventManagerAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/PlatformAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/Renderer2dAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/RendererGlAndroid.cpp
