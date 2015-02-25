@@ -46,6 +46,7 @@ class EventManagerAndroid {
  private:
  	bool 						getShouldQuit() const;
  	void 						setShouldQuit( bool val );
+ 	void 						quit();
 
  	void 						callDeferredMain();
 

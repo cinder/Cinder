@@ -47,14 +47,18 @@ RendererGlAndroid::~RendererGlAndroid()
 bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
 {
 	std::vector<EGLint> configAttribs;
-	configAttribs.push_back( EGL_RED_SIZE       ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_GREEN_SIZE     ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_BLUE_SIZE      ); configAttribs.push_back( 8 );
-	configAttribs.push_back( EGL_ALPHA_SIZE     ); configAttribs.push_back( EGL_DONT_CARE );
-	configAttribs.push_back( EGL_DEPTH_SIZE     ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
-	configAttribs.push_back( EGL_STENCIL_SIZE   ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
-	configAttribs.push_back( EGL_SAMPLE_BUFFERS ); configAttribs.push_back( 1 );
-	configAttribs.push_back( EGL_NONE           );
+
+	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT
+	configAttribs.push_back( EGL_RENDERABLE_TYPE ); configAttribs.push_back( EGL_OPENGL_ES2_BIT );
+	configAttribs.push_back( EGL_SURFACE_TYPE    ); configAttribs.push_back( EGL_WINDOW_BIT );
+	configAttribs.push_back( EGL_RED_SIZE        ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_GREEN_SIZE      ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_BLUE_SIZE       ); configAttribs.push_back( 8 );
+	configAttribs.push_back( EGL_ALPHA_SIZE      ); configAttribs.push_back( EGL_DONT_CARE );
+	configAttribs.push_back( EGL_DEPTH_SIZE      ); configAttribs.push_back( mRenderer->getOptions().getDepthBufferDepth() );
+	configAttribs.push_back( EGL_STENCIL_SIZE    ); configAttribs.push_back( mRenderer->getOptions().getStencil() ? 8 : EGL_DONT_CARE );
+	configAttribs.push_back( EGL_SAMPLE_BUFFERS  ); configAttribs.push_back( 1 );
+	configAttribs.push_back( EGL_NONE            );
 
 	EGLint surfaceAttribList[] =
 	{
@@ -62,21 +66,25 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	};
 
 	mDisplay = eglGetDisplay( EGL_DEFAULT_DISPLAY );
-	if( mDisplay == EGL_NO_DISPLAY)
+	if( mDisplay == EGL_NO_DISPLAY) {
 		return false;
+	}
 
 	EGLint majorVersion, minorVersion;
-	if( ! eglInitialize( mDisplay, &majorVersion, &minorVersion ) )
+	if( ! eglInitialize( mDisplay, &majorVersion, &minorVersion ) ) {
 		return false;
+	}
 
 	eglBindAPI( EGL_OPENGL_ES_API );
-	if( eglGetError() != EGL_SUCCESS )
+	if( eglGetError() != EGL_SUCCESS ) {
 		return false;
+	}
 
 	EGLint configCount;
 	EGLConfig config;
-	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) )
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) ) {
 		return false;
+	}
 
 	//
     // EGL_NATIVE_VISUAL_ID is an attribute of the EGLConfig that is
@@ -91,8 +99,9 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	mSurface = eglCreateWindowSurface( mDisplay, config, nativeWindow, NULL );
  
 	auto err = eglGetError();
-	if( err != EGL_SUCCESS )
+	if( err != EGL_SUCCESS ) {
 		return false;
+	}
 
     EGLint contextAttibutes[] = {
 #if defined( CINDER_GL_ES_3 )
@@ -104,13 +113,15 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
     };
 
     mContext = eglCreateContext( mDisplay, config, NULL, contextAttibutes );
-    if( eglGetError() != EGL_SUCCESS )
+    if( eglGetError() != EGL_SUCCESS ) {
 		return false;
+    }
 	checkGlStatus();
 
 	eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
-	if( eglGetError() != EGL_SUCCESS )
+	if( eglGetError() != EGL_SUCCESS ) {
 		return false;
+	}
 	
 	checkGlStatus();
 

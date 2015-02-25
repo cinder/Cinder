@@ -95,6 +95,13 @@ void EventManagerAndroid::callDeferredMain()
 	mDeferredMainHasBeenCalled = true;
 }
 
+void EventManagerAndroid::quit()
+{
+	if( nullptr != mAppImplInst ) {
+		mAppImplInst->quit();
+	}
+}
+
 int32_t EventManagerAndroid::NativeHandleInput( android_app *ndkApp, AInputEvent *event )
 {
 	return 0;
@@ -137,7 +144,9 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * it will be set to NULL.
 		 */
 		case APP_CMD_TERM_WINDOW: {
-			LOGI( "APP_CMD_TERM_WINDOW" );			
+			LOGI( "APP_CMD_TERM_WINDOW" );	
+
+			eventMan->quit();
 		}
 		break;
 
@@ -259,6 +268,8 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 */
 		case APP_CMD_DESTROY: {
 			LOGI( "APP_CMD_DESTROY" );
+
+			eventMan->quit();
 		}
 		break;
 	}
