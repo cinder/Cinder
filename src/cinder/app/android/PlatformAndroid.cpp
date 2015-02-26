@@ -128,8 +128,10 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 
 void PlatformAndroid::prepareAssetLoading()
 {
+
+/*	
 	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = getResourcePath() / "assets";
+	fs::path bundleAssetsPath = getResourcePath() / "assets";	
 	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
 		addAssetDirectory( bundleAssetsPath );
 	}
@@ -139,6 +141,7 @@ void PlatformAndroid::prepareAssetLoading()
 			addAssetDirectory( appAssetsPath );
 		}
 	}
+*/	
 }
 
 } } // namespace cinder::app
