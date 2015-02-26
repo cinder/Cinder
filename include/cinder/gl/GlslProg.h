@@ -140,18 +140,22 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
-		std::string					mVertexShader;
-		std::string					mFragmentShader;
+		void			setShaderSource( const DataSourceRef &dataSource, std::string &shaderSourceDest, fs::path &shaderPathDest );
+		void			setShaderSource( const std::string &source, std::string &shaderSourceDest, fs::path &shaderPathDest );
 
-		// TEMP
-		fs::path mVertexShaderDirectory;
-		fs::path mFragmentShaderDirectory;
-		friend class GlslProg;
+		std::string		mVertexShader;
+		std::string		mFragmentShader;
+
+		fs::path		mVertexShaderDirectory;
+		fs::path		mFragmentShaderDirectory;
 
 #if ! defined( CINDER_GL_ES )
-		std::string								mGeometryShader;
-		std::string								mTessellationCtrlShader;
-		std::string								mTessellationEvalShader;
+		std::string		mGeometryShader;
+		std::string		mTessellationCtrlShader;
+		std::string		mTessellationEvalShader;
+		fs::path		mGeometryShaderDirectory;
+		fs::path		mTessellationCtrlShaderDirectory;
+		fs::path		mTessellationEvalShaderDirectory;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
 		GLenum									mTransformFormat;
@@ -165,6 +169,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;
+
+		friend class		GlslProg;
 	};
   
 	typedef std::map<std::string,UniformSemantic>	UniformSemanticMap;

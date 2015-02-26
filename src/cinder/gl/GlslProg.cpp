@@ -48,133 +48,90 @@ GlslProg::Format::Format()
 
 GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mVertexShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mVertexShader.data(), buffer.getData(), buffer.getDataSize() );
-		mVertexShader[buffer.getDataSize()] = 0;
-		if( dataSource->isFilePath() )
-			mVertexShaderDirectory = dataSource->getFilePath().parent_path();
-	}
-	else {
-		mVertexShader.clear();
-		mVertexShaderDirectory.clear();
-	}
-
+	setShaderSource( dataSource, mVertexShader, mVertexShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const string &vertexShader )
 {
-	if( ! vertexShader.empty() )
-		mVertexShader = vertexShader;
-	else
-		mVertexShader.clear();
-
+	setShaderSource( vertexShader, mVertexShader, mVertexShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mFragmentShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mFragmentShader.data(), buffer.getData(), buffer.getDataSize() );
-		mFragmentShader[buffer.getDataSize()] = 0;
-		if( dataSource->isFilePath() )
-			mFragmentShaderDirectory = dataSource->getFilePath().parent_path();
-	}
-	else {
-		mFragmentShader.clear();
-		mFragmentShaderDirectory.clear();
-	}
-
+	setShaderSource( dataSource, mFragmentShader, mFragmentShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 {
-	if( ! fragmentShader.empty() )
-		mFragmentShader = fragmentShader;
-	else
-		mFragmentShader.clear();
-
+	setShaderSource( fragmentShader, mFragmentShader, mFragmentShaderDirectory );
 	return *this;
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mGeometryShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mGeometryShader.data(), buffer.getData(), buffer.getDataSize() );
-		mGeometryShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mGeometryShader.clear();
-		
+	setShaderSource( dataSource, mGeometryShader, mGeometryShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 {
-	if( ! geometryShader.empty() )
-		mGeometryShader = geometryShader;
-	else
-		mGeometryShader.clear();
-
+	setShaderSource( geometryShader, mGeometryShader, mGeometryShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mTessellationCtrlShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mTessellationCtrlShader.data(), buffer.getData(), buffer.getDataSize() );
-		mTessellationCtrlShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mTessellationCtrlShader.clear();
-	
+	setShaderSource( dataSource, mTessellationCtrlShader, mTessellationCtrlShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const string &tessellationCtrlShader )
 {
-	if( ! tessellationCtrlShader.empty() )
-		mTessellationCtrlShader = tessellationCtrlShader;
-	else
-		mTessellationCtrlShader.clear();
-	
+	setShaderSource( tessellationCtrlShader, mTessellationCtrlShader, mTessellationCtrlShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mTessellationEvalShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mTessellationEvalShader.data(), buffer.getData(), buffer.getDataSize() );
-		mTessellationEvalShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mTessellationEvalShader.clear();
-	
+	setShaderSource( dataSource, mTessellationEvalShader, mTessellationEvalShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellationEvalShader )
 {
-	if( ! tessellationEvalShader.empty() )
-		mTessellationEvalShader = tessellationEvalShader;
-	else
-		mTessellationEvalShader.clear();
-	
+	setShaderSource( tessellationEvalShader, mTessellationEvalShader, mTessellationEvalShaderDirectory );
 	return *this;
 }
+
 #endif // ! defined( CINDER_GL_ES )
+
+void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string &shaderSourceDest, fs::path &shaderPathDest )
+{
+	if( dataSource ) {
+		Buffer buffer( dataSource );
+		shaderSourceDest.resize( buffer.getDataSize() + 1 );
+		memcpy( (void *)shaderSourceDest.data(), buffer.getData(), buffer.getDataSize() );
+		shaderSourceDest[buffer.getDataSize()] = 0;
+		if( dataSource->isFilePath() )
+			shaderPathDest = dataSource->getFilePath().parent_path();
+		else
+			shaderPathDest.clear();
+	}
+	else {
+		shaderSourceDest.clear();
+		shaderPathDest.clear();
+	}
+}
+
+void GlslProg::Format::setShaderSource( const std::string &source, std::string &shaderSourceDest, fs::path &shaderPathDest )
+{
+	shaderSourceDest = source;
+	shaderPathDest.clear();
+}
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
@@ -269,11 +226,11 @@ GlslProg::GlslProg( const Format &format )
 		loadShader( format.getFragment(), format.mFragmentShaderDirectory, GL_FRAGMENT_SHADER );
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), fs::path(), GL_GEOMETRY_SHADER );
+		loadShader( format.getGeometry(), format.mFragmentShaderDirectory, GL_GEOMETRY_SHADER );
 	if( ! format.getTessellationCtrl().empty() )
-		loadShader( format.getTessellationCtrl(), fs::path(), GL_TESS_CONTROL_SHADER );
+		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderDirectory, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
-		loadShader( format.getTessellationEval(), fs::path(), GL_TESS_EVALUATION_SHADER );
+		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderDirectory, GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map
