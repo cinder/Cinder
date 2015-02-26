@@ -389,10 +389,17 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 
 void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderDirectory, GLint shaderType )
 {
-	const char *cStr = ( mPreprocessingEnabled ? mShaderPreprocessor.parse( shaderSource, shaderDirectory ).c_str() : shaderSource.c_str() );
-
 	GLuint handle = glCreateShader( shaderType );
-	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	if( mPreprocessingEnabled ) {
+		string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderDirectory );
+		const char *cStr = preprocessedSource.c_str();
+		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	}
+	else {
+		const char *cStr = shaderSource.c_str();
+		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	}
+
 	glCompileShader( handle );
 	
 	GLint status;
