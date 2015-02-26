@@ -115,12 +115,13 @@ class Platform {
 
 	virtual void prepareAssetLoading() = 0;
 
-  private:
-	void		findAndAddAssetBasePath();
-	fs::path	findAssetPath( const fs::path &relativePath );
+	virtual fs::path	findAssetPath( const fs::path &relativePath );	
+	virtual void		findAndAddAssetBasePath();
 
 	std::vector<fs::path>		mAssetPaths;
 	bool						mAssetPathsInitialized;
+	
+  private:
 	fs::path					mExecutablePath;
 };
 

@@ -61,6 +61,10 @@ class PlatformAndroid : public Platform {
  protected:
 	virtual void 					prepareAssetLoading();	
 
+	// Empty folders are not copied into the APK, so this will fail on empty folders
+	virtual fs::path				findAssetPath( const fs::path &relativePath );
+	virtual void					findAndAddAssetBasePath();
+
  private:
 	std::unique_ptr<std::ostream>	mOutputStream;
 

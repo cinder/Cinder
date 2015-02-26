@@ -19,16 +19,21 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
- #include "cinder/app/android/PlatformAndroid.h"
- #include "cinder/android/LogCatStream.h"
+#include "cinder/app/android/PlatformAndroid.h"
+#include "cinder/app/android/AssetFileSystem.h"
+#include "cinder/android/LogCatStream.h"
+#include "cinder/ImageSourceFileRadiance.h"
+#include "cinder/ImageSourceFileStbImage.h"
 
- namespace cinder { namespace app {
+namespace cinder { namespace app {
 
 PlatformAndroid::PlatformAndroid()
 	: mDisplaysInitialized( false )
 {
+	ImageSourceFileRadiance::registerSelf();
+	ImageSourceFileStbImage::registerSelf();
 }
 
 PlatformAndroid::~PlatformAndroid()
@@ -128,20 +133,30 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 
 void PlatformAndroid::prepareAssetLoading()
 {
-
-/*	
-	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = getResourcePath() / "assets";	
-	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
-		addAssetDirectory( bundleAssetsPath );
-	}
-	else {
-		fs::path appAssetsPath = getExecutablePath() / "assets";
-		if( fs::exists( appAssetsPath ) && fs::is_directory( appAssetsPath ) ) {
-			addAssetDirectory( appAssetsPath );
-		}
-	}
-*/	
+	addAssetDirectory( "" );
 }
+
+fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
+{
+	if( ! mAssetPathsInitialized ) {
+		prepareAssetLoading();
+		findAndAddAssetBasePath();
+		mAssetPathsInitialized = true;
+	}
+
+	for( const auto &assetPath : mAssetPaths ) {
+		auto fullPath = assetPath / relativePath;
+		if( android::AssetFileSystem_exists( fullPath ) )
+			return fullPath;
+	}
+
+	return fs::path(); // empty implies failure	
+}
+
+void PlatformAndroid::findAndAddAssetBasePath()
+{
+	// Does nothing
+}
+
 
 } } // namespace cinder::app
