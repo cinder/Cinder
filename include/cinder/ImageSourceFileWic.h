@@ -39,8 +39,7 @@ typedef std::shared_ptr<class ImageSourceFileWic>	ImageSourceFileWicRef;
 
 class ImageSourceFileWic : public ImageSource {
   public:
-	static ImageSourceRef			createRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() ) { return createFileWicRef( dataSourceRef, options ); }
-	static ImageSourceFileWicRef	createFileWicRef( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() );
+	static ImageSourceRef			create( DataSourceRef dataSourceRef, ImageSource::Options options = ImageSource::Options() );
 
 	virtual void	load( ImageTargetRef target );
 
@@ -60,8 +59,6 @@ class ImageSourceFileWic : public ImageSource {
 	int32_t									mRowBytes;
 	::GUID									mPixelFormat, mConvertPixelFormat;
 };
-
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileWic )
 
 class ImageSourceFileWicExceptionUnsupportedData : public ImageIoException {
 };

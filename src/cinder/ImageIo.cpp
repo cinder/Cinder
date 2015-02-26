@@ -29,14 +29,9 @@
 #include <boost/type_traits/is_same.hpp>
 #include <cctype>
 
-#if defined( CINDER_MSW )
-	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-#elif defined( CINDER_COCOA )
+#if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 #elif defined( CINDER_WINRT )
-	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 	#include <ppltasks.h>
 	#include "cinder/WinRTUtils.h"
 	#include "cinder/Utilities.h"
@@ -44,7 +39,6 @@
 	using namespace Windows::Storage;
 	using namespace Concurrency;
 #endif
-#include "cinder/ImageSourceFileRadiance.h" // we use this .hdr reader on all platforms
 
 using namespace std;
 
@@ -419,7 +413,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 	cocoa::SafeNsAutoreleasePool autorelease;
 #endif
 
-	if( extension.empty() )
+	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
 #if ! defined( CINDER_WINRT )
 		extension = dataSource->getFilePathHint().extension().string();
 #else

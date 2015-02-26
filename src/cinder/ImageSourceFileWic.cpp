@@ -37,6 +37,26 @@ namespace cinder {
 
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSourceFileWic
+void ImageSourceFileWic::registerSelf()
+{
+	const int32_t SOURCE_PRIORITY = 2;
+
+	// there doesn't seem to be a way to iterate supported types on WIC, so this list was constructed
+	// based on https://msdn.microsoft.com/en-us/library/windows/desktop/gg430027(v=vs.85).aspx "Native WIC Codecs"
+	ImageIoRegistrar::registerSourceType( "bmp", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "dib", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "dds", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "gif", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "wdp", ImageSourceFileWic::create, SOURCE_PRIORITY ); // HD Photo Format
+	ImageIoRegistrar::registerSourceType( "ico", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "jpe", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "jpg", ImageSourceFileWic::create, SOURCE_PRIORITY );
+		ImageIoRegistrar::registerSourceType( "jpeg", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "jxr", ImageSourceFileWic::create, SOURCE_PRIORITY ); // JPEG XR
+	ImageIoRegistrar::registerSourceType( "png", ImageSourceFileWic::create, SOURCE_PRIORITY );
+	ImageIoRegistrar::registerSourceType( "tif", ImageSourceFileWic::create, SOURCE_PRIORITY ); ImageIoRegistrar::registerSourceType( "tiff", ImageSourceFileWic::create, SOURCE_PRIORITY );
+
+	ImageIoRegistrar::registerSourceGeneric( ImageSourceFileWic::create, SOURCE_PRIORITY );
+}
+
 IWICImagingFactory* ImageSourceFileWic::getFactory()
 {
 	static IWICImagingFactory *sIWICFactory = []() {
@@ -55,9 +75,9 @@ IWICImagingFactory* ImageSourceFileWic::getFactory()
 	return sIWICFactory;
 }
 
-ImageSourceFileWicRef ImageSourceFileWic::createFileWicRef( DataSourceRef dataSourceRef, ImageSource::Options options )
+ImageSourceRef ImageSourceFileWic::create( DataSourceRef dataSourceRef, ImageSource::Options options )
 {
-	return ImageSourceFileWicRef( new ImageSourceFileWic( dataSourceRef, options ) );
+	return ImageSourceRef( new ImageSourceFileWic( dataSourceRef, options ) );
 }
 
 ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource::Options options )
@@ -210,13 +230,6 @@ void ImageSourceFileWic::load( ImageTargetRef target )
 		((*this).*func)( target, row, dataPtr );
 		dataPtr += mRowBytes;
 	}
-}
-
-void ImageSourceFileWic::registerSelf()
-{
-	const int32_t SOURCE_PRIORITY = 2;
-	
-	ImageIoRegistrar::registerSourceGeneric( ImageSourceFileWic::createRef, SOURCE_PRIORITY );
 }
 
 } // namespace ci

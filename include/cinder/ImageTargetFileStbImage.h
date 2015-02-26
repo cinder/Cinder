@@ -1,13 +1,14 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
+ 
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -22,40 +23,29 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
 #include "cinder/ImageIo.h"
-
-#ifndef GUID
-typedef struct _GUID GUID;
-#endif
-struct IWICBitmapEncoder;
-struct IWICBitmapFrameEncode;
 
 namespace cinder {
 
-typedef std::shared_ptr<class ImageTargetFileWic> ImageTargetFileWicRef;
+typedef std::shared_ptr<class ImageTargetFileStbImage> ImageTargetFileStbImageRef;
 
-class ImageTargetFileWic : public ImageTarget {
+class ImageTargetFileStbImage : public ImageTarget {
   public:
 	static ImageTargetRef		create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
-	
+
 	void*	getRowPointer( int32_t row ) override;
 	void	finalize() override;
 	
 	static void		registerSelf();
 	
   protected:
-	ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
+	ImageTargetFileStbImage( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 	
-	void		setupPixelFormat( const GUID &guid );
-	
-	std::shared_ptr<uint8_t>	mData;
-	int32_t						mRowBytes;
-	DataTargetRef				mDataTarget;
-	const GUID					*mCodecGUID;
-	
-	std::shared_ptr<IWICBitmapEncoder>			mEncoder;
-	std::shared_ptr<IWICBitmapFrameEncode>		mBitmapFrame;
+	uint8_t						mNumComponents;
+	size_t						mRowBytes;
+	std::string					mExtension;
+	fs::path					mFilePath;
+	std::unique_ptr<uint8_t[]>	mData;
 };
 
 } // namespace cinder

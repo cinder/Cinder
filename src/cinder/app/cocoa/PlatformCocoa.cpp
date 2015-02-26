@@ -26,6 +26,9 @@
 #include "cinder/Log.h"
 #include "cinder/Filesystem.h"
 #include "cinder/cocoa/CinderCocoa.h"
+#include "cinder/ImageSourceFileQuartz.h"
+#include "cinder/ImageTargetFileQuartz.h"
+#include "cinder/ImageSourceFileRadiance.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
@@ -43,15 +46,21 @@ namespace cinder { namespace app {
 PlatformCocoa::PlatformCocoa()
 	: mBundle( nil ), mDisplaysInitialized( false )
 {
+	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
+	
 	// This is necessary to force the linker not to strip these symbols from libboost_filesystem.a,
 	// which in turn would force users to explicitly link to that lib from their own apps.
 	auto dummy = boost::filesystem::unique_path();
 	auto dummy2 = fs::temp_directory_path();
+
+	// register default ImageSources and ImageTargets
+	ImageSourceFileQuartz::registerSelf();
+	ImageTargetFileQuartz::registerSelf();	
+	ImageSourceFileRadiance::registerSelf();
 }
 
 void PlatformCocoa::prepareLaunch()
 {
-	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
 }
 
 void PlatformCocoa::cleanupLaunch()
