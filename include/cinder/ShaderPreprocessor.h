@@ -43,6 +43,8 @@ class ShaderPreprocessor {
 	void	setCachingEnabled( bool enable = true )		{ mCachingEnabled = enable; }
 	//! Returns whether or not parsed sources are cached and reused in future shader preprocessing. \default is true.
 	bool	isCachingEnabled() const					{ return mCachingEnabled; }
+	//! Clears any cache sources.
+	void	clearCache();
 
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );

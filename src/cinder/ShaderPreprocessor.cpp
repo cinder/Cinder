@@ -141,6 +141,11 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		return output.str();
 }
 
+void ShaderPreprocessor::clearCache()
+{
+	mCachedSources.clear();
+}
+
 fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )
 {
 	auto fullPath = currentDirectory / includePath;
