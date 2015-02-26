@@ -434,7 +434,11 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() ) {
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
 		extension = dataTarget->getFilePathHint().extension().string();
+#else
+		extension = dataTarget->getFilePathHint().extension();
+#endif
 		// strip leading .
 		extension = ( ( ! extension.empty() ) && ( extension[0] == '.' ) ) ? extension.substr( 1, string::npos ) : extension;
 	}

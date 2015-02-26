@@ -26,9 +26,9 @@
 // OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, 
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
-#include "cinder/app/msw/WinRTApp.h"
+#include "cinder/app/winrt/WinRTApp.h"
 #include "cinder/app/AppBase.h"
-#include "cinder/app/msw/AppImplWinRTBasic.h"
+#include "cinder/app/winrt/AppImplWinRTBasic.h"
 #include <wrl/client.h>
 #include <agile.h>
 
@@ -44,13 +44,11 @@ using namespace Windows::Graphics::Display;
 
 
 WinRTApp::WinRTApp() :
-	m_windowClosed(false),
-	m_windowVisible(true)
+	m_windowClosed( false ), m_windowVisible( true )
 {
-
 }
 
-void WinRTApp::Initialize(CoreApplicationView^ applicationView)
+void WinRTApp::Initialize( CoreApplicationView^ applicationView )
 {
 	applicationView->Activated +=
         ref new TypedEventHandler<CoreApplicationView^, IActivatedEventArgs^>(this, &WinRTApp::OnActivated);
@@ -60,7 +58,6 @@ void WinRTApp::Initialize(CoreApplicationView^ applicationView)
 
 	CoreApplication::Resuming +=
         ref new EventHandler<Platform::Object^>(this, &WinRTApp::OnResuming);
-
 }
 
 void WinRTApp::SetWindow(CoreWindow^ window)
@@ -98,9 +95,6 @@ void WinRTApp::SetWindow(CoreWindow^ window)
 #endif 
 }
 
-
-
-
 void WinRTApp::OnCharacterReceived(CoreWindow^ sender, CharacterReceivedEventArgs^ args)
 {
 	unsigned int code = args->KeyCode;
@@ -137,8 +131,9 @@ void WinRTApp::Run()
 {
 	// call Cinder runReady and pass our CoreWindow to it.
 	auto app = cinder::app::AppBase::get();
-	mApp = app->getImpl();
-	mApp->runReady(CoreWindow::GetForCurrentThread());
+// FIX
+//mApp = app->getImpl();
+//mApp->runReady( CoreWindow::GetForCurrentThread() );
 
 	// Cinder now controls the app
 #if 0

@@ -43,4 +43,10 @@
 		typedef AppMsw		App;
 	} } // namespace cinder::app		
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/winrt/WinRTApp.h"
+	namespace cinder { namespace app {
+		typedef WinRTApp	App;
+	} } // namespace cinder::app
+	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_WINRT( APP, RENDERER, ##__VA_ARGS__ )
 #endif

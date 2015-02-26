@@ -28,12 +28,8 @@
 #include "cinder/Exception.h"
 #include "cinder/MatrixStack.h"
 
-#if defined( CINDER_MSW )
-	struct HWND__;
-	typedef HWND__* DX_WINDOW_TYPE;
-#elif defined( CINDER_WINRT )
+#if defined( CINDER_WINRT )
 	#include <agile.h>
-	typedef Platform::Agile<Windows::UI::Core::CoreWindow>	DX_WINDOW_TYPE;
 	#undef min
 	#undef max
 #endif
@@ -76,15 +72,9 @@ class AppBase;
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
-	enum RendererType {
-		RENDERER_GL,
-		RENDERER_DX
-	};
-
 	virtual ~Renderer() {}
 	
 	virtual RendererRef	clone() const = 0;
-	virtual RendererType getRendererType() const { return RENDERER_GL; }
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -108,12 +98,8 @@ class Renderer {
 
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
-#elif defined( CINDER_WINRT)
-	virtual void setup( DX_WINDOW_TYPE wnd) = 0;
-
-	virtual void prepareToggleFullScreen() {}
-	virtual void finishToggleFullScreen() {}
-	virtual void kill() {}
+#elif defined( CINDER_WINRT )
+	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #endif
 
 	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;

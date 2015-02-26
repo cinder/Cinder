@@ -37,21 +37,25 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Display.h"
 #include "cinder/app/Window.h"
+#include "cinder/app/AppBase.h"
 #include <string>
 #include <vector>
 #include <list>
 #undef min
 #undef max
 
+#include <agile.h>
 
 namespace cinder { namespace app {
 
-class AppImplWinRT {
- public:
-	AppImplWinRT( class App *aApp );
+class WinRTApp;
+
+class AppImplWinRT : public AppBase {
+  public:
+	AppImplWinRT( WinRTApp *aApp );
 	virtual ~AppImplWinRT();
 	
-	class App*		getApp() { return mApp; }
+	WinRTApp*		getApp() { return mApp; }
 
 	float			getFrameRate() const { return mFrameRate; }
 	virtual void	setFrameRate( float frameRate ) = 0;
@@ -60,16 +64,7 @@ class AppImplWinRT {
 	virtual WindowRef	getWindow() const { return mActiveWindow; }
 	void				setWindow( WindowRef window ) { mActiveWindow = window; }
 	
-	static void	hideCursor();
-	static void	showCursor();
-	
-	static Buffer	loadResource( int id, const std::string &type );
-	
 	static fs::path		getAppPath();	
-	static void getOpenFilePath( const fs::path &initialPath = "", std::vector<std::string> extensions = std::vector<std::string>(), std::function<void (fs::path)> f = nullptr );
-
-	static void getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions,  std::function<void (fs::path)> f = nullptr );
-	static void getFolderPath( const fs::path &initialPath,   std::vector<std::string> extensions, std::function<void (fs::path)> f = nullptr );
 
 	virtual void	handleKeyDown(Windows::UI::Core::KeyEventArgs^ args);
 	virtual void	handleKeyUp(Windows::UI::Core::KeyEventArgs^ args);
@@ -80,7 +75,7 @@ class AppImplWinRT {
 	virtual void			setForegroundWindow( WindowRef window ) = 0;
 	unsigned int			AppImplWinRT::prepKeyEventModifiers();
 
-	class App				*mApp;
+	WinRTApp				*mApp;
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;
@@ -95,7 +90,7 @@ class AppImplWinRT {
 class WindowImplWinRT {
   public:
 	WindowImplWinRT( const Window::Format &format, AppImplWinRT *appImpl );
-	WindowImplWinRT( DX_WINDOW_TYPE DX_WINDOW_TYPE, RendererRef renderer, AppImplWinRT *appImpl );
+	WindowImplWinRT( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef renderer, AppImplWinRT *appImpl );
 
 	virtual bool		isFullScreen() { return mFullScreen; }
 	virtual void		setFullScreen( bool fullScreen, const FullScreenOptions &options );
@@ -115,7 +110,7 @@ class WindowImplWinRT {
 	virtual void*		getNative() {throw (std::string(__FUNCTION__) + "Use getNativeCoreWindow()").c_str();};
 
 
-	DX_WINDOW_TYPE getNativeCoreWindow() { return mWnd; }
+	::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow() { return mWnd; }
 
 	void			enableMultiTouch();
 	bool			isBorderless() const { return mBorderless; }
@@ -150,9 +145,10 @@ class WindowImplWinRT {
 	void	handleMouseUp(Windows::UI::Core::PointerEventArgs^ args);
 	void	updateActiveTouches();
 
-	AppImplWinRT			*mAppImpl;
-	WindowRef				mWindowRef;
-  	DX_WINDOW_TYPE			mWnd;
+	AppImplWinRT									*mAppImpl;
+	WindowRef										mWindowRef;
+	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
+
 	ivec2					mWindowOffset;
 	bool					mHidden;
 	int						mWindowWidth, mWindowHeight;

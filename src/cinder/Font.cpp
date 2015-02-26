@@ -881,6 +881,13 @@ void FontObj::finishSetup()
 #endif
 }
 
+#if defined( CINDER_WINRT )
+FT_Face Font::getFreetypeFace() const
+{
+	return mObj->mFace;
+}
+#endif
+
 #if defined( CINDER_MSW )
 HDC Font::getGlobalDc()
 {

@@ -27,16 +27,16 @@
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
 #if defined( CINDER_WINRT )
-#include <ft2build.h>
+	#include <ft2build.h>
 
-// Note: generic is a reserved word in winrt c++/cx
-// need to redefine it for freetype.h
-#define generic GenericFromFreeTypeLibrary
-#include FT_FREETYPE_H
-#include FT_OUTLINE_H
-#undef generic
+	// Note: generic is a reserved word in winrt c++/cx
+	// need to redefine it for freetype.h
+	#define generic GenericFromFreeTypeLibrary
+	#include FT_FREETYPE_H
+	#include FT_OUTLINE_H
+	#undef generic
 
-#include FT_GLYPH_H
+	#include FT_GLYPH_H
 #endif
 
 #include <string>
@@ -93,7 +93,7 @@ class Font {
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
 #if defined( CINDER_WINRT )
-	FT_Face					getFace() const { return mObj->mFace; }
+	FT_Face					getFreetypeFace() const;
 #endif
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );

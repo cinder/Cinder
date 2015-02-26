@@ -25,10 +25,15 @@
 
 #include "cinder/app/msw/RendererImplGlAngle.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/Log.h"
 
 #include "cinder/app/AppBase.h"
 #include "cinder/gl/Environment.h"
 #include <signal.h>
+
+#if defined( CINDER_WINRT )
+	#include "cinder/WinRTUtils.h"
+#endif
 
 #define DEBUG_GL 1
 
@@ -51,10 +56,17 @@ RendererImplGlAngle::RendererImplGlAngle( RendererGl *renderer )
 	
 }
 
+#if defined( CINDER_MSW )
 bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRenderer )
+#elif defined( CINDER_WINRT )
+bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
+#endif
 {
 	mWnd = wnd;
 	
+	if( sharedRenderer )
+		CI_LOG_E( "ANGLE does not currenty supported shared renderers." );
+
 	std::vector<EGLint> configAttribs;
 	configAttribs.push_back( EGL_RED_SIZE ); configAttribs.push_back( 8 );
 	configAttribs.push_back( EGL_GREEN_SIZE ); configAttribs.push_back( 8 );
@@ -77,7 +89,11 @@ bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRender
 
 	const EGLint displayAttributes[] = { EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, EGL_NONE };
 
+#if defined( CINDER_MSW )
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, dc, displayAttributes );
+#else
+	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes );
+#endif
 	if( mDisplay == EGL_NO_DISPLAY)
 		return false;
 
@@ -94,7 +110,15 @@ bool RendererImplGlAngle::initialize( HWND wnd, HDC dc, RendererRef sharedRender
 	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) )
 		return false;
 
+#if defined( CINDER_MSW )
 	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
+#else
+/*
+	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
+    surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
+
+	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );*/
+#endif
  
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS )
@@ -157,10 +181,17 @@ void RendererImplGlAngle::defaultResize() const
 {
 	checkGlStatus();
 
+#if defined( CINDER_MSW )
 	::RECT clientRect;
 	::GetClientRect( mWnd, &clientRect );
 	int width = clientRect.right - clientRect.left;
 	int height = clientRect.bottom - clientRect.top;
+#else
+	float widthf, heightf;
+	winrt::GetPlatformWindowDimensions( mWnd.Get(), &widthf, &heightf );
+	int width = (int)widthf;
+	int height = (int)heightf;
+#endif
 
 	gl::viewport( 0, 0, width, height );
 	gl::setMatricesWindow( width, height );

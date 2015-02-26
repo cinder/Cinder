@@ -28,7 +28,7 @@
 
 
 
-#include "cinder/app/msw/AppImplWinRT.h"
+#include "cinder/app/winrt/AppImplWinRT.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/Display.h"
@@ -88,168 +88,14 @@ AppImplWinRT::~AppImplWinRT()
 
 }
 
-void AppImplWinRT::hideCursor()
-{
-
-}
-
-void AppImplWinRT::showCursor()
-{
-	//getWindow()->getNativeCoreWindow()->Get()->PointerCursor = ref new CoreCursor(CoreCursorType::Arrow, 0);
-
-}
-
-Buffer AppImplWinRT::loadResource( int id, const std::string &type )
-{
-#if 0
-	HRSRC resInfoHandle;
-	HGLOBAL resHandle;
-	void *dataPtr;
-	size_t dataSize;
-
-	wchar_t unicodeType[1024]; 
-	wsprintfW( unicodeType, L"%S", type.c_str() );
-	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE(id), unicodeType );
-	if( resInfoHandle == NULL ) {
-		throw ResourceLoadExc( id, type );
-	}
-	resHandle = ::LoadResource( NULL, resInfoHandle );
-	if( resHandle == NULL ) {
-		throw ResourceLoadExc( id, type );
-	}
-	// it's not necessary to unlock resources because the system automatically deletes them when the process
-	// that created them terminates.
-	dataPtr = ::LockResource( resHandle );
-	if( dataPtr == 0 ) {
-		throw ResourceLoadExc( id, type );
-	}
-	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return Buffer( dataPtr, dataSize );
-#endif
-	return NULL;
-}
-
 fs::path AppImplWinRT::getAppPath()
 {
 	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
 	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
-	Platform::String^ output = installedLocation->Path;
+	::Platform::String^ output = installedLocation->Path;
 	std::wstring t = std::wstring(output->Data());
 	return fs::path(PlatformStringToString(output));
 }
-
-void AppImplWinRT::getFolderPath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
-{
-	if(extensions.size() == 0) {
-		throw Exception( "Must specify at least one file extension in extensions argument" );
-	}
-
-	// FilePicker APIs will not work if the application is in a snapped state.
-    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
-	if(!ensureUnsnapped()) {
-		return;
-	}
-    FolderPicker^ folderPicker = ref new FolderPicker();
-    folderPicker->SuggestedStartLocation = PickerLocationId::Desktop;
- 
-	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
-		std::wstring temp(iter->begin(), iter->end());
-		folderPicker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
-	}
-
-    create_task(folderPicker->PickSingleFolderAsync()).then([f](StorageFolder^ folder)
-    {
-        if (folder)
-        {
-			f( fs::path( msw::toUtf8String( folder->Path->Data() ) ) );
-        }
-        else
-        {
-			f(fs::path(""));
-        }
-    });
-}
-
-void AppImplWinRT::getOpenFilePath( const fs::path &initialPath,  std::vector<std::string> extensions, std::function<void (fs::path)> f)
-{
-	if(extensions.size() == 0) {
-		throw Exception( "Must specify at least one file extension in extensions argument" );
-	}
-
-	// FilePicker APIs will not work if the application is in a snapped state.
-    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
-	if(!ensureUnsnapped()) {
-		return;
-	}
-    FileOpenPicker^ picker = ref new FileOpenPicker();
-    picker->SuggestedStartLocation = PickerLocationId::Desktop;
- 
-	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
-		std::wstring temp(iter->begin(), iter->end());
-		picker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
-	}
-
-    create_task(picker->PickSingleFileAsync()).then([f](StorageFile^ file)
-    {
-        if (file)
-        {
-			f( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
-        }
-        else
-        {
-			f(fs::path(""));
-        }
-    });
-}
-
-void AppImplWinRT::getSaveFilePath( const fs::path &initialPath,std::vector<std::string> extensions,std::function<void (fs::path)> f)
-{
-	if(initialPath.empty() && extensions.size() == 0) {
-		throw Exception( "Must specify initialPath or at least one file extension" );
-	}
-
-    // FilePicker APIs will not work if the application is in a snapped state.
-    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
-	if(!ensureUnsnapped()) {
-		return;
-	}
-
-    FileSavePicker^ savePicker = ref new FileSavePicker();
-	savePicker->SuggestedStartLocation = PickerLocationId::PicturesLibrary;
-
-    auto plainTextExtensions = ref new Platform::Collections::Vector<String^>();
-	
-	if(extensions.size() > 0) {
-
-		for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
-			std::wstring temp(iter->begin(), iter->end());
-			plainTextExtensions->Append( ref new Platform::String(temp.c_str()));
-		}
-	} else if(! initialPath.empty() ) {
-		plainTextExtensions->Append( ref new Platform::String( msw::toWideString( initialPath.extension() ).c_str() ) );
-	} 
-
-    savePicker->FileTypeChoices->Insert("", plainTextExtensions);
-
-	if(! initialPath.empty() ) {
-		savePicker->SuggestedFileName = ref new Platform::String( msw::toWideString( initialPath.filename() ).c_str() );
-	} else {
-		savePicker->SuggestedFileName = "New Document";
-	}
-
-    create_task(savePicker->PickSaveFileAsync()).then([f](StorageFile^ file)
-    {
-        if (file != nullptr)
-        {
-			f( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
-        }
-        else
-        {
-			f(fs::path(""));
-        }
-    });
-}
-
 
 ///////////////////////////////////////////////////////////////////////////////
 // WindowImplWinRT
@@ -270,36 +116,36 @@ WindowImplWinRT::WindowImplWinRT( const Window::Format &format, AppImplWinRT *ap
 	if( format.isPosSpecified() )
 		mWindowOffset = mWindowedPos = format.getPos();
 	else {
-		Vec2i displaySize = mDisplay->getSize();
+		ivec2 displaySize = mDisplay->getSize();
 		mWindowOffset = mWindowedPos = ( displaySize - mWindowedSize ) / 2;
 	}
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd);
+	mRenderer->setup( mWnd, nullptr );
 	// set WindowRef and its impl pointer to this
-	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
+	mWindowRef = Window::privateCreate__( this, mAppImpl );
 	
 	completeCreation();
 }
 
-WindowImplWinRT::WindowImplWinRT( DX_WINDOW_TYPE hwnd, RendererRef renderer, AppImplWinRT *appImpl )
-	: mWnd( hwnd ), mRenderer( renderer ), mAppImpl( appImpl ), mIsDragging( false ), mTouchId(0), mIsMultiTouchEnabled(false)
+WindowImplWinRT::WindowImplWinRT( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef renderer, AppImplWinRT *appImpl )
+	: mWnd( wnd ), mRenderer( renderer ), mAppImpl( appImpl ), mIsDragging( false ), mTouchId( 0 ), mIsMultiTouchEnabled( false )
 {
 	mTitle = "";
 
 	float width, height;
-	GetPlatformWindowDimensions(hwnd.Get(), &width, &height);
-	mWindowOffset = Vec2i( 0, 0);
+	GetPlatformWindowDimensions( mWnd.Get(), &width, &height);
+	mWindowOffset = ivec2( 0, 0);
 	mWindowWidth = static_cast<int>(width);
 	mWindowHeight = static_cast<int>(height);
 
 	mDisplay = Display::getMainDisplay();
 
-	mRenderer->setup( mAppImpl->getApp(), mWnd);
+	mRenderer->setup( mWnd, nullptr );
 
-	mWindowRef = Window::privateCreate__( this, mAppImpl->getApp() );
+	mWindowRef = Window::privateCreate__( this, mAppImpl );
 }
 
-void WindowImplWinRT::createWindow( const Vec2i &windowSize, const std::string &title )
+void WindowImplWinRT::createWindow( const ivec2 &windowSize, const std::string &title )
 {
 
 }
@@ -341,7 +187,7 @@ void WindowImplWinRT::getScreenSize( int clientWidth, int clientHeight, int *res
 #endif
 }
 
-void WindowImplWinRT::setPos( const Vec2i &windowPos )
+void WindowImplWinRT::setPos( const ivec2 &windowPos )
 {
 #if 0
 	RECT clientArea;
@@ -385,7 +231,7 @@ void WindowImplWinRT::setTitle( const std::string &title )
 	mTitle = title;
 }
 
-void WindowImplWinRT::setSize( const Vec2i &windowSize )
+void WindowImplWinRT::setSize( const ivec2 &windowSize )
 {
 	mWindowWidth = windowSize.x;
 	mWindowHeight = windowSize.y;
@@ -433,19 +279,19 @@ void WindowImplWinRT::onTouch( HWND hWnd, WPARAM wParam, LPARAM lParam )
 					pt.y = TOUCH_COORD_TO_PIXEL( ti.y );
 					::ScreenToClient( hWnd, &pt );
 					if( ti.dwFlags & 0x0004/*TOUCHEVENTF_UP*/ ) {
-						Vec2f prevPos = mMultiTouchPrev[ti.dwID];
-						endTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
+						vec2 prevPos = mMultiTouchPrev[ti.dwID];
+						endTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), prevPos, ti.dwID, currentTime, &pInputs.get()[i] ) );
 						mMultiTouchPrev.erase( ti.dwID );
 					}
 					else if( ti.dwFlags & 0x0002/*TOUCHEVENTF_DOWN*/ ) {
-						beganTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), Vec2f( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
+						beganTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), vec2( (float)pt.x, (float)pt.y ), ti.dwID, currentTime, &pInputs.get()[i] ) );
+						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
 						activeTouches.push_back( beganTouches.back() );
 					}
 					else if( ti.dwFlags & 0x0001/*TOUCHEVENTF_MOVE*/ ) {
-						movedTouches.push_back( TouchEvent::Touch( Vec2f( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
+						movedTouches.push_back( TouchEvent::Touch( vec2( (float)pt.x, (float)pt.y ), mMultiTouchPrev[ti.dwID], ti.dwID, currentTime, &pInputs.get()[i] ) );
 						activeTouches.push_back( movedTouches.back() );
-						mMultiTouchPrev[ti.dwID] = Vec2f( (float)pt.x, (float)pt.y );
+						mMultiTouchPrev[ti.dwID] = vec2( (float)pt.x, (float)pt.y );
 					}
 				}
             }
@@ -644,8 +490,8 @@ void WindowImplWinRT::handleTouchDown(PointerEventArgs^ args)
 	auto id = mTouchId++;
 	mTouchIds[p->PointerId] = id;
 
-	mMultiTouchPrev[id] = Vec2f(x, y);
-	TouchEvent::Touch e( Vec2f(x, y ), Vec2f(x, y), id, app::getElapsedSeconds(), nullptr);
+	mMultiTouchPrev[id] = vec2(x, y);
+	TouchEvent::Touch e( vec2(x, y ), vec2(x, y), id, app::getElapsedSeconds(), nullptr);
 	touches.push_back(e);
 	mActiveTouches.push_back(e);
 
@@ -673,8 +519,8 @@ void WindowImplWinRT::handleTouchMoved(PointerEventArgs^ args)
 	auto id = mTouchIds[p->PointerId];
 	
 	if(mMultiTouchPrev.find(id) != mMultiTouchPrev.end()) {
-		mMultiTouchPrev[id] = Vec2f(x, y);
-		TouchEvent::Touch e(  Vec2f(x, y ), mMultiTouchPrev[id], id, app::getElapsedSeconds(), nullptr);
+		mMultiTouchPrev[id] = vec2(x, y);
+		TouchEvent::Touch e(  vec2(x, y ), mMultiTouchPrev[id], id, app::getElapsedSeconds(), nullptr);
 		mActiveTouches.erase(std::find_if(mActiveTouches.begin(), mActiveTouches.end(),[id](const TouchEvent::Touch & m) -> bool { return m.getId() == id; }));
 		mActiveTouches.push_back(e);
 		touches.push_back(e);
@@ -702,7 +548,7 @@ void WindowImplWinRT::handleTouchUp(PointerEventArgs^ args)
 	float x = getScaledDPIValue(p->Position.X);
 	float y = getScaledDPIValue(p->Position.Y);
 	auto id = mTouchIds[p->PointerId];
-	touches.push_back( TouchEvent::Touch(  Vec2f(x, y ), mMultiTouchPrev[id], id, app::getElapsedSeconds(), nullptr) );
+	touches.push_back( TouchEvent::Touch(  vec2(x, y ), mMultiTouchPrev[id], id, app::getElapsedSeconds(), nullptr) );
 	TouchEvent event( getWindow(), touches );
 	getWindow()->emitTouchesEnded( &event );
 	mActiveTouches.erase(std::find_if(mActiveTouches.begin(), mActiveTouches.end(),[id](const TouchEvent::Touch & m) -> bool { return m.getId() == id; }));
@@ -747,7 +593,7 @@ void WindowImplWinRT::redraw()
 
 void WindowImplWinRT::privateClose()
 {
-	mRenderer->kill();
+//	mRenderer->kill();
 
 	//mWnd = 0;
 }

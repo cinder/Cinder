@@ -344,7 +344,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
 #elif defined( CINDER_WINRT )
-	DX_WINDOW_TYPE getNativeCoreWindow();
+	::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.

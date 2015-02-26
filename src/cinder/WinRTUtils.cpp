@@ -151,17 +151,16 @@ void deleteFileAsync(const sys::path &path)
 	{
 		try {
 			file->DeleteAsync();
-		}  
-		catch (Exception^ ex)
-        {
-			OutputDebugString(std::wstring(ex->Message->Data()).c_str());
+		}
+		catch( ::Exception^ ex ) {
+			OutputDebugString( std::wstring(ex->Message->Data()).c_str() );
         }
 	});
 }
 
 Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
 {
-	String^ p = toPlatformString(path);
+	String^ p = toPlatformString( path );
 
 	// get the temporary StorageFolder
 
@@ -171,8 +170,6 @@ Concurrency::task<StorageFile^> copyFileToTempDirAsync(const sys::path &path)
  		auto folder = (Windows::Storage::ApplicationData::Current)->TemporaryFolder;
 		return f->CopyAsync(folder, f->Name, Windows::Storage::NameCollisionOption::GenerateUniqueName);
     });
-
-
 }
 
 std::string getUniqueIDString()

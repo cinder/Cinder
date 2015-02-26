@@ -29,7 +29,7 @@
 #if defined( CINDER_MSW )
 	#include "cinder/app/msw/AppImplMsw.h"
 #elif defined( CINDER_WINRT )
-	#include "cinder/app/msw/AppImplWinRT.h"
+	#include "cinder/app/winrt/AppImplWinRT.h"
 #elif defined( CINDER_COCOA )
 	#include <Foundation/Foundation.h>
 #endif

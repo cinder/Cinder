@@ -29,11 +29,7 @@
 
 #pragma once
 
-#include <windows.h>
-#undef min
-#undef max
-
-#include "cinder/app/msw/AppImplWinRT.h"
+#include "cinder/app/winrt/AppImplWinRT.h"
 #include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Display.h"
 #include "cinder/app/Window.h"
@@ -41,10 +37,11 @@
 namespace cinder { namespace app {
 
 class WindowImplWinRTBasic;
+class WinRTApp;
 
 class AppImplWinRTBasic : public AppImplWinRT {
 public:
-	AppImplWinRTBasic( class AppBase *app  );
+	AppImplWinRTBasic( class AppBase *app, WinRTApp *winrtApp  );
 	void	run();
 	void	runReady(Windows::UI::Core::CoreWindow^ window);
 	void	handlePointerDown(Windows::UI::Core::PointerEventArgs^ args);
@@ -77,7 +74,7 @@ private:
 	
 	bool			mShouldQuit;
 	class AppBase	*mApp;
-	DX_WINDOW_TYPE	mWnd;
+	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 
 	HINSTANCE	mInstance;
 	double		mNextFrameTime;
@@ -97,8 +94,8 @@ class WindowImplWinRTBasic : public WindowImplWinRT {
 	WindowImplWinRTBasic( const Window::Format &format, AppImplWinRTBasic *appImpl )
 		: WindowImplWinRT( format, appImpl ) {};
 
-	WindowImplWinRTBasic( DX_WINDOW_TYPE hwnd, RendererRef renderer, AppImplWinRTBasic *appImpl )
-		: WindowImplWinRT( hwnd, renderer, appImpl ) {};
+	WindowImplWinRTBasic( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef renderer, AppImplWinRTBasic *appImpl )
+		: WindowImplWinRT( wnd, renderer, appImpl ) {};
 
   protected:
 	friend AppImplWinRTBasic;

@@ -171,12 +171,14 @@ class RendererGl : public Renderer {
 	#endif
 	virtual void	setFrameSize( int width, int height );
 #elif defined( CINDER_MSW )
-	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
-	virtual void	kill();
-	virtual HWND	getHwnd() override { return mWnd; }
-	virtual HDC		getDc() override;
-	virtual void	prepareToggleFullScreen();
-	virtual void	finishToggleFullScreen();
+	void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
+	void	kill() override;
+	HWND	getHwnd() override { return mWnd; }
+	HDC		getDc() override;
+	void	prepareToggleFullScreen();
+	void	finishToggleFullScreen();
+#elif defined( CINDER_WINRT )
+	void	setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
 #endif
 
 	const Options&	getOptions() const { return mOptions; }

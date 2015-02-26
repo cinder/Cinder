@@ -39,18 +39,23 @@ namespace cinder { namespace app {
 class RendererImplGlAngle : public RendererImplMsw {
  public:
 	RendererImplGlAngle( class RendererGl *renderer );
-	
-	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
-	virtual void	prepareToggleFullScreen() override;
-	virtual void	finishToggleFullScreen() override;
-	virtual void	kill() override;
-	virtual void	defaultResize() const override;
-	virtual void	swapBuffers() const override;
-	virtual void	makeCurrentContext() override;
 
-	HDC				getDc() const { return mDC; }
+#if defined( CINDER_MSW )	
+	bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
+#elif defined( CINDER_WINRT )
+	bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+#endif
+	void	prepareToggleFullScreen() override;
+	void	finishToggleFullScreen() override;
+	void	kill() override;
+	void	defaultResize() const override;
+	void	swapBuffers() const override;
+	void	makeCurrentContext() override;
+
+#if defined( CINDER_MSW )
+	HDC		getDc() const { return mDC; }
+#endif
  protected:
-	bool	initializeInternal( HWND wnd, HDC dc, HGLRC sharedRC );
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
 	
 	class RendererGl	*mRenderer;
@@ -59,11 +64,6 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
-
-	bool		mWasFullScreen;
-	bool		mWasVerticalSynced;
-	HGLRC		mRC, mPrevRC;
-	HDC			mDC;
 };
 
 } } // namespace cinder::app

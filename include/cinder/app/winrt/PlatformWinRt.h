@@ -24,6 +24,10 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/Display.h"
+
+#include <vector>
+#include <string>
 
 namespace cinder { namespace app {
 
@@ -31,14 +35,14 @@ class PlatformWinRt : public Platform {
   public:
 	PlatformWinRt();
 
-	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
+	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
 
 	fs::path getResourcePath() const override										{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
-	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
-	fs::path getFolderPath( const fs::path &initialPath ) override;
-	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
+	void getOpenFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = {} ) override;
+	void getFolderPathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath = "" ) override;
+	void getSaveFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions = {} ) override;
 
 	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
 	void prepareAssetLoading() override {}
@@ -54,11 +58,14 @@ class PlatformWinRt : public Platform {
 
 	void sleep( float milliseconds ) override;
 	
-	void std::vector<std::string> stackTrace() override;
+	std::vector<std::string> stackTrace() override;
+
+	const std::vector<DisplayRef>&	getDisplays() override;
   
   private:
 
 	std::unique_ptr<std::ostream>	mOutputStream;
+	std::vector<DisplayRef>			mDisplays;
 };
 
 //! MSW-specific Exception for failed resource loading, reports windows resource id and type
@@ -68,3 +75,11 @@ class ResourceLoadExcMsw : public ResourceLoadExc {
 };
 
 } } // namespace cinder::app
+
+namespace cinder {
+
+class DisplayWinRt : public Display {
+	friend app::PlatformWinRt;
+};
+
+} // namespace cinder

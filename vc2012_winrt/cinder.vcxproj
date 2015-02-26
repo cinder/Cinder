@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -32,42 +32,44 @@
     <ProjectName>cinder</ProjectName>
     <RootNamespace>cinder</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
-    <PlatformToolset>v110</PlatformToolset>
+    <PlatformToolset>v120</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -131,10 +133,10 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -155,8 +157,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -178,8 +180,8 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -201,8 +203,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -222,8 +224,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -241,8 +243,8 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\dxShaders;..\src\linebreak;..\src\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);USE_DIRECTX</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -259,14 +261,44 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\App.h" />
-    <ClInclude Include="..\include\cinder\app\AppBasic.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h" />
     <ClInclude Include="..\include\cinder\app\AppImplWinRT.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplWinRTBasic.h" />
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaTouch.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaView.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppImplCocoaTouch.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppImplMac.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppImplMacScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\AppMac.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\CinderViewCocoaTouch.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\CinderViewMac.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\PlatformCocoa.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\RendererImpl2dCocoaTouchQuartz.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\RendererImpl2dMacQuartz.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\RendererImplGlCocoaTouch.h" />
+    <ClInclude Include="..\include\cinder\app\cocoa\RendererImplGlMac.h" />
+    <ClInclude Include="..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswBasic.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImpl2dGdi.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplDx.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h" />
+    <ClInclude Include="..\include\cinder\app\Platform.h" />
     <ClInclude Include="..\include\cinder\app\Renderer.h" />
+    <ClInclude Include="..\include\cinder\app\RendererDx.h" />
+    <ClInclude Include="..\include\cinder\app\RendererGl.h" />
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
-    <ClInclude Include="..\include\cinder\app\WinRTApp.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h" />
     <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
@@ -293,6 +325,27 @@
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h" />
     <ClInclude Include="..\include\cinder\Exception.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\gl\Batch.h" />
+    <ClInclude Include="..\include\cinder\gl\BufferObj.h" />
+    <ClInclude Include="..\include\cinder\gl\BufferTexture.h" />
+    <ClInclude Include="..\include\cinder\gl\ConstantStrings.h" />
+    <ClInclude Include="..\include\cinder\gl\Context.h" />
+    <ClInclude Include="..\include\cinder\gl\Environment.h" />
+    <ClInclude Include="..\include\cinder\gl\Fbo.h" />
+    <ClInclude Include="..\include\cinder\gl\gl.h" />
+    <ClInclude Include="..\include\cinder\gl\GlslProg.h" />
+    <ClInclude Include="..\include\cinder\gl\Pbo.h" />
+    <ClInclude Include="..\include\cinder\gl\Query.h" />
+    <ClInclude Include="..\include\cinder\gl\Shader.h" />
+    <ClInclude Include="..\include\cinder\gl\Sync.h" />
+    <ClInclude Include="..\include\cinder\gl\Texture.h" />
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h" />
+    <ClInclude Include="..\include\cinder\gl\TextureFormatParsers.h" />
+    <ClInclude Include="..\include\cinder\gl\TransformFeedbackObj.h" />
+    <ClInclude Include="..\include\cinder\gl\Ubo.h" />
+    <ClInclude Include="..\include\cinder\gl\Vao.h" />
+    <ClInclude Include="..\include\cinder\gl\Vbo.h" />
+    <ClInclude Include="..\include\cinder\gl\VboMesh.h" />
     <ClInclude Include="..\include\cinder\ImageIo.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
     <ClInclude Include="..\include\cinder\ip\EdgeDetect.h" />
@@ -304,6 +357,12 @@
     <ClInclude Include="..\include\cinder\ip\Resize.h" />
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderMsw.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderMswComStreams.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h" />
+    <ClInclude Include="..\include\cinder\msw\CinderWindowsFwd.h" />
+    <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />
+    <ClInclude Include="..\include\cinder\msw\StackWalker.h" />
     <ClInclude Include="..\include\cinder\params\Params.h" />
     <ClInclude Include="..\include\cinder\Path2d.h" />
     <ClInclude Include="..\include\cinder\Quaternion.h" />
@@ -353,15 +412,55 @@
     <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
-    <ClCompile Include="..\src\cinder\app\App.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplWinRT.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplWinRTBasic.cpp" />
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
-    <ClCompile Include="..\src\cinder\app\RendererDx.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswBasic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswScreenSaver.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppMsw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\PlatformMsw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImpl2dGdi.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplDx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
-    <ClCompile Include="..\src\cinder\app\WinRTApp.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
@@ -376,12 +475,35 @@
     <ClCompile Include="..\src\cinder\DataSource.cpp" />
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp" />
-    <ClCompile Include="..\src\cinder\dx\FontEnumerator.cpp" />
-    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp" />
     <ClCompile Include="..\src\cinder\Font.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Batch.cpp" />
+    <ClCompile Include="..\src\cinder\gl\BufferObj.cpp" />
+    <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp" />
+    <ClCompile Include="..\src\cinder\gl\ConstantStrings.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Context.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Environment.cpp" />
+    <ClCompile Include="..\src\cinder\gl\EnvironmentCore.cpp" />
+    <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Fbo.cpp" />
+    <ClCompile Include="..\src\cinder\gl\gl.cpp" />
+    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Pbo.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Query.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Shader.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Sync.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Texture.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TextureFormatParsers.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp" />
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Ubo.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Vao.cpp" />
+    <ClCompile Include="..\src\cinder\gl\VaoImplCore.cpp" />
+    <ClCompile Include="..\src\cinder\gl\VaoImplEs.cpp" />
+    <ClCompile Include="..\src\cinder\gl\VaoImplSoftware.cpp" />
+    <ClCompile Include="..\src\cinder\gl\Vbo.cpp" />
+    <ClCompile Include="..\src\cinder\gl\VboMesh.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
@@ -421,10 +543,6 @@
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
     <ClCompile Include="..\src\cinder\WinRTUtils.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp" />
-    <ClCompile Include="..\src\cinder\dx\dx.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxLight.cpp" />
-    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp" />
     <ClCompile Include="..\src\cinder\Exception.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Xml.cpp" />
