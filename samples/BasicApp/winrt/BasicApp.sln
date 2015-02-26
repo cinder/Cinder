@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2012
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "basicApp", "basicApp.vcxproj", "{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicApp", "BasicApp.vcxproj", "{E736DB50-AA1F-4057-AC09-F8CE5619EDB6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
