@@ -358,7 +358,6 @@
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
     <ClInclude Include="..\include\cinder\msw\CinderMsw.h" />
-    <ClInclude Include="..\include\cinder\msw\CinderMswComStreams.h" />
     <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h" />
     <ClInclude Include="..\include\cinder\msw\CinderWindowsFwd.h" />
     <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />

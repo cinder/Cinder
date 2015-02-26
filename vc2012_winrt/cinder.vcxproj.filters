@@ -379,9 +379,6 @@
     <ClInclude Include="..\include\cinder\msw\CinderMsw.h">
       <Filter>Header Files\msw</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\msw\CinderMswComStreams.h">
-      <Filter>Header Files\msw</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h">
       <Filter>Header Files\msw</Filter>
     </ClInclude>
