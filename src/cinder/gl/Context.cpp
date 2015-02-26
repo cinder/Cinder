@@ -1804,51 +1804,52 @@ void Context::setDefaultShaderVars()
 	const auto &ctx = gl::context();
 	const auto &glslProg = ctx->getGlslProg();
 	if( glslProg ) {
-		const auto &uniforms = glslProg->getUniformSemantics();
-		for( const auto &unifIt : uniforms ) {
-			switch( unifIt.second ) {
+		const auto &uniforms = glslProg->getActiveUniforms();
+		for( const auto &uniform : uniforms ) {
+			switch( uniform.mSemantic ) {
 				case UNIFORM_MODEL_MATRIX:
-					glslProg->uniform( unifIt.first, gl::getModelMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::getModelMatrix() ); break;
 				case UNIFORM_MODEL_MATRIX_INVERSE:
-					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelMatrix() ) ); break;
+					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelMatrix() ) ); break;
 				case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE:
-					glslProg->uniform( unifIt.first, gl::calcModelMatrixInverseTranspose() ); break;
+					glslProg->uniform( uniform.mLoc, gl::calcModelMatrixInverseTranspose() ); break;
 				case UNIFORM_VIEW_MATRIX:
-					glslProg->uniform( unifIt.first, gl::getViewMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::getViewMatrix() ); break;
 				case UNIFORM_VIEW_MATRIX_INVERSE:
-					glslProg->uniform( unifIt.first, gl::calcViewMatrixInverse() ); break;
+					glslProg->uniform( uniform.mLoc, gl::calcViewMatrixInverse() ); break;
 				case UNIFORM_MODEL_VIEW:
-					glslProg->uniform( unifIt.first, gl::getModelView() ); break;
+					glslProg->uniform( uniform.mLoc, gl::getModelView() ); break;
 				case UNIFORM_MODEL_VIEW_INVERSE:
-					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelView() ) ); break;
+					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelView() ) ); break;
 				case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE:
-					glslProg->uniform( unifIt.first, gl::calcNormalMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::calcNormalMatrix() ); break;
 				case UNIFORM_MODEL_VIEW_PROJECTION:
-					glslProg->uniform( unifIt.first, gl::getModelViewProjection() ); break;
+					glslProg->uniform( uniform.mLoc, gl::getModelViewProjection() ); break;
 				case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE:
-					glslProg->uniform( unifIt.first, glm::inverse( gl::getModelViewProjection() ) ); break;
+					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelViewProjection() ) ); break;
 				case UNIFORM_PROJECTION_MATRIX:
-					glslProg->uniform( unifIt.first, gl::getProjectionMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::getProjectionMatrix() ); break;
 				case UNIFORM_PROJECTION_MATRIX_INVERSE:
-					glslProg->uniform( unifIt.first, glm::inverse( gl::getProjectionMatrix() ) ); break;
+					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getProjectionMatrix() ) ); break;
 				case UNIFORM_NORMAL_MATRIX:
-					glslProg->uniform( unifIt.first, gl::calcNormalMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::calcNormalMatrix() ); break;
 				case UNIFORM_VIEWPORT_MATRIX:
-					glslProg->uniform( unifIt.first, gl::calcViewportMatrix() ); break;
+					glslProg->uniform( uniform.mLoc, gl::calcViewportMatrix() ); break;
 				case UNIFORM_WINDOW_SIZE:
-					glslProg->uniform( unifIt.first, app::getWindowSize() ); break;
+					glslProg->uniform( uniform.mLoc, app::getWindowSize() ); break;
 				case UNIFORM_ELAPSED_SECONDS:
-					glslProg->uniform( unifIt.first, float( app::getElapsedSeconds() ) ); break;
+					glslProg->uniform( uniform.mLoc, float( app::getElapsedSeconds() ) ); break;
+				default:
+					;
 			}
 		}
 
-		const auto &attribs = glslProg->getAttribSemantics();
-		for( const auto &attribIt : attribs ) {
-			switch( attribIt.second ) {
+		const auto &attribs = glslProg->getActiveAttributes();
+		for( const auto &attrib : attribs ) {
+			switch( attrib.mSemantic ) {
 				case geom::Attrib::COLOR: {
-					int loc = glslProg->getAttribLocation( attribIt.first );
 					ColorA c = ctx->getCurrentColor();
-					gl::vertexAttrib4f( loc, c.r, c.g, c.b, c.a );
+					gl::vertexAttrib4f( attrib.mLoc, c.r, c.g, c.b, c.a );
 				}
 				break;
 				default:

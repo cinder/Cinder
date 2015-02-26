@@ -137,13 +137,57 @@ void GlslProg::Format::setShaderSource( const std::string &source, std::string *
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
+    bool exists = false;
+    for( auto & attrib : mAttributes ) {
+        if( attrib.mName == attribName ) {
+            attrib.mSemantic = semantic;
+            exists = true;
+            break;
+        }
+        else if( attrib.mSemantic == semantic ) {
+            attrib.mName = attribName;
+            exists = true;
+            break;
+        }
+    }
+    if( ! exists ) {
+        Attribute attrib;
+        attrib.mName = attribName;
+        attrib.mSemantic = semantic;
+        mAttributes.push_back( attrib );
+        std::sort( mAttributes.begin(), mAttributes.end(), []( const Attribute &first, const Attribute &second ){
+            return first.mLoc > second.mLoc;
+        });
+    }
 	mAttribSemanticMap[attribName] = semantic;
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std::string &attribName )
+GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std::string &uniformName )
 {
-	mUniformSemanticMap[attribName] = semantic;
+    bool exists = false;
+    for( auto & uniform : mUniforms ) {
+        if( uniform.mName == uniformName ) {
+            uniform.mSemantic = semantic;
+            exists = true;
+            break;
+        }
+        else if( uniform.mSemantic == semantic ) {
+            uniform.mName = uniformName;
+            exists = true;
+            break;
+        }
+    }
+    if( ! exists ) {
+        Uniform uniform;
+        uniform.mName = uniformName;
+        uniform.mSemantic = semantic;
+        mUniforms.push_back( uniform );
+        std::sort( mUniforms.begin(), mUniforms.end(), []( const Uniform &first, const Uniform &second ){
+            return first.mLoc > second.mLoc;
+        });
+    }
+	mUniformSemanticMap[uniformName] = semantic;
 	return *this;
 }
 
@@ -173,13 +217,39 @@ GlslProg::Format& GlslProg::Format::version( int version )
 
 GlslProg::Format& GlslProg::Format::attribLocation( const std::string &attribName, GLint location )
 {
+    bool exists = false;
+    for( auto & attrib : mAttributes ) {
+        if( attrib.mName == attribName ) {
+            attrib.mLoc = location;
+            exists = true;
+            break;
+        }
+        else if( attrib.mLoc == location ) {
+            attrib.mName = attribName;
+            exists = true;
+            break;
+        }
+    }
+    if( ! exists ) {
+        Attribute attrib;
+        attrib.mName = attribName;
+        attrib.mLoc = location;
+        mAttributes.push_back( attrib );
+        std::sort( mAttributes.begin(), mAttributes.end(), []( const Attribute &first, const Attribute &second ){
+            return first.mLoc > second.mLoc;
+        });
+    }
 	mAttribNameLocMap[attribName] = location;
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attrib, GLint location )
+GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attribSemantic, GLint location )
 {
-	mAttribSemanticLocMap[attrib] = location;
+    Attribute attrib;
+    attrib.mSemantic = attribSemantic;
+    attrib.mLoc = location;
+    mAttributes.push_back( attrib );
+	mAttribSemanticLocMap[attribSemantic] = location;
 	return *this;
 }
 
@@ -239,8 +309,8 @@ GlslProg::~GlslProg()
 
 GlslProg::GlslProg( const Format &format )
 	: mActiveUniformTypesCached( false ), mActiveAttribTypesCached( false ),
-	mUniformSemanticsCached( false ), mUniformNameToSemanticMap( getDefaultUniformNameToSemanticMap() ),
-	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() )
+	mUniformSemanticsCached( false ), mAttribSemanticsCached( false ),
+	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
 	mHandle = glCreateProgram();
 
@@ -267,38 +337,15 @@ GlslProg::GlslProg( const Format &format )
 	if( ! format.getTessellationEval().empty() )
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
-
-	// copy the Format's attribute-semantic map
-	for( auto &attribSemantic : format.getAttribSemantics() )
-		mAttribNameToSemanticMap.insert( attribSemantic );
-
-	// copy the Format's uniform-semantic map
-	for( auto &uniformSemantic : format.getUniformSemantics() )
-		mUniformNameToSemanticMap.insert( uniformSemantic );
-
-	// THESE sections take all attribute locations which have been specified (either by their semantic or their names)
-	// and ultimately maps them via glBindAttribLocation, which must be done ahead of linking
-	auto attribLocations = format.getAttribNameLocations();
+    
+    auto & userDefinedAttribs = format.getAttributes();
 	
-	// map the locations-specified semantics to their respective attribute name locations
-	for( auto &semanticLoc : format.getAttribSemanticLocations() ) {
-		string attribName;
-		// first find if we have an attribute associated with a given semantic
-		for( auto &attribSemantic : mAttribNameToSemanticMap ) {
-			if( attribSemantic.second == semanticLoc.first ) {
-				attribName = attribSemantic.first;
-				break;
-			}
-		}
-		
-		// if we found an appropriate attribute-semantic pair, set attribLocations[attrib name] to be the semantic location
-		if( ! attribName.empty() )
-			attribLocations[attribName] = semanticLoc.second;
-	}
+	// if the user has provided a location make sure to bind that location before
+	// we go further, still don't know that this is good.
+	for( auto &attrib : userDefinedAttribs )
+		if( attrib.mLoc > -1 )
+			glBindAttribLocation( mHandle, attrib.mLoc, attrib.mName.c_str() );
 	
-	// finally, bind all location-specified attributes to their respective locations
-	for( auto &attribLoc : attribLocations )
-		glBindAttribLocation( mHandle, attribLoc.second, attribLoc.first.c_str() );
 	
 #if ! defined( CINDER_GL_ES_2 )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
@@ -328,6 +375,50 @@ GlslProg::GlslProg( const Format &format )
 #endif
 
 	link();
+	
+	cacheActiveAttribs();
+	cacheActiveUniforms();
+	
+	auto & userDefinedUniforms = format.getUniforms();
+	// check if the user thinks there's a uniform that isn't active
+	for( auto &userUniform : userDefinedUniforms ) {
+		bool foundUserDefined = false;
+		for( auto & activeUniform : mUniforms ) {
+			// if the user defined name and the active name are the same
+			if( userUniform.mName == activeUniform.mName ) {
+				foundUserDefined = true;
+				// If we've found the uniform, change the semantic to the
+				// user defined semantic.
+				activeUniform.mSemantic = userUniform.mSemantic;
+			}
+		}
+		if( ! foundUserDefined ) {
+			CI_LOG_E( "Unknown uniform: \"" << userUniform.mName << "\"" );
+			mLoggedMissingUniforms.insert( userUniform.mName );
+		}
+	}
+	
+	// make sure we get all of the semantic info correct from the user
+	for( auto &userAttrib : userDefinedAttribs ) {
+		bool active = true;
+		for( auto &activeAttrib : mAttributes ) {
+			// check if either the user defined name or user defined loc for
+			// this attrib are the same as the active attribute
+			if( userAttrib.mName == activeAttrib.mName ||
+			    userAttrib.mLoc == activeAttrib.mLoc ) {
+				// we've found the user defined attribute
+				active = true;
+				// check if the user defined attribute has cached what type
+				// of semantic this is
+				if( userAttrib.mSemantic != geom::Attrib::NUM_ATTRIBS ) {
+					activeAttrib.mSemantic = userAttrib.mSemantic;
+				}
+			}
+		}
+		if( !active ) {
+			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
+		}
+	}
 	
 	setLabel( format.getLabel() );
 	gl::context()->glslProgCreated( this );
@@ -458,6 +549,159 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 	return log;
 }
 
+GLint GlslProg::getUniformLocation( const std::string &name ) const
+{
+    for( auto & uniform : mUniforms ) {
+        if( name == uniform.mName ) {
+            return uniform.mLoc;
+        }
+    }
+    return  -1;
+}
+	
+void GlslProg::cacheActiveUniforms()
+{
+	if( ! mActiveUniformTypesCached ) {
+		GLint numActiveUniforms = 0;
+		glGetProgramiv( mHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
+		for( GLint i = 0; i < numActiveUniforms; ++i ) {
+			char name[512];
+			GLsizei nameLength;
+			GLint size;
+			GLenum type;
+			
+            glGetActiveUniform( mHandle, (GLuint)i, 511, &nameLength, &size, &type, name );
+			auto loc = glGetUniformLocation( mHandle, name );
+			
+			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+			auto foundSemantic = sDefaultUniformNameToSemanticMap.find( name );
+			if( foundSemantic != sDefaultUniformNameToSemanticMap.end() ) {
+				uniformSemantic = foundSemantic->second;
+			}
+			
+			Uniform uniform;
+			uniform.mName		= name;
+			uniform.mLoc		= loc;
+			uniform.mSize		= size;
+			uniform.mType		= type;
+			uniform.mSemantic	= uniformSemantic;
+			mUniforms.push_back( uniform );
+		}
+		mActiveUniformTypesCached = true;
+	}
+}
+	
+void GlslProg::cacheActiveAttribs()
+{
+	if( ! mActiveAttribTypesCached ) {
+		GLint numActiveAttrs = 0;
+		glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
+		for( GLint i = 0; i < numActiveAttrs; ++i ) {
+			char name[512];
+			GLsizei nameLength;
+			GLint size;
+			GLenum type;
+            
+			glGetActiveAttrib( mHandle, (GLuint)i, 511, &nameLength, &size, &type, name );
+			auto loc = glGetAttribLocation( mHandle, name );
+			
+			geom::Attrib attributeSemantic = geom::Attrib::NUM_ATTRIBS;
+			auto foundSemantic = sDefaultAttribNameToSemanticMap.find( name );
+			if( foundSemantic != sDefaultAttribNameToSemanticMap.end() ) {
+				attributeSemantic = foundSemantic->second;
+			}
+			
+			Attribute attrib;
+			attrib.mName		= name;
+			attrib.mLoc			= loc;
+			attrib.mSize		= size;
+			attrib.mType		= type;
+			attrib.mSemantic	= attributeSemantic;
+			mAttributes.push_back( attrib );
+		}
+		mActiveAttribTypesCached = true;
+	}
+}
+    
+bool GlslProg::hasAttribSemantic( geom::Attrib semantic ) const
+{
+    return find_if( mAttributes.begin(),
+                   mAttributes.end(),
+                   [ semantic ]( const Attribute & attrib ){
+                       return attrib.mSemantic == semantic;
+                   }) != mAttributes.end();
+}
+    
+GLint GlslProg::getAttribSemanticLocation( geom::Attrib semantic ) const
+{
+    auto found = find_if( mAttributes.begin(),
+                         mAttributes.end(),
+                         [ semantic ]( const Attribute &attrib ){
+                             return attrib.mSemantic == semantic;
+                         });
+    if( found != mAttributes.end() )
+        return found->mLoc;
+    else
+        return -1;
+}
+    
+GLint GlslProg::getAttribLocation( const std::string &name ) const
+{
+    auto found = find_if( mAttributes.begin(),
+                         mAttributes.end(),
+                         [ name ]( const Attribute &attrib ){
+                             return attrib.mName == name;
+                         });
+    if( found != mAttributes.end() )
+        return found->mLoc;
+    else
+        return -1;
+}
+    
+#if ! defined( CINDER_GL_ES_2 )
+    void GlslProg::uniformBlock( int loc, int binding )
+    {
+        glUniformBlockBinding( mHandle, loc, binding );
+    }
+    
+    void GlslProg::uniformBlock( const std::string &name, GLint binding )
+    {
+        GLint loc = getUniformBlockLocation( name );
+        if( loc == -1 )
+            CI_LOG_E( "Unknown uniform block: \"" << name << "\"" );
+        else
+            glUniformBlockBinding( mHandle, loc, binding );
+    }
+    
+    GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
+    {
+        auto existing = mUniformBlockLocs.find( name );
+        if( existing == mUniformBlockLocs.end() ) {
+            const GLuint loc = glGetUniformBlockIndex( mHandle, name.c_str() );
+            if( loc == GL_INVALID_INDEX )
+                return -1;
+            else
+                mUniformBlockLocs[name] = loc;
+            return loc;
+        }
+        else
+            return existing->second;
+    }
+    
+    GLint GlslProg::getUniformBlockSize( GLint blockIndex ) const
+    {
+        auto existing = mUniformBlockSizes.find( blockIndex );
+        if( existing == mUniformBlockSizes.end() ) {
+            GLint blockSize = 0;
+            glGetActiveUniformBlockiv( mHandle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize );
+            mUniformBlockSizes[blockIndex] = blockSize;
+            return blockSize;
+        }
+        else
+            return existing->second;
+    }
+#endif // ! defined( CINDER_GL_ES_2 )
+    
 // int
 void GlslProg::uniform( int location, int data ) const
 {
@@ -658,14 +902,14 @@ void GlslProg::uniform( const std::string &name, const mat4 &data, bool transpos
 {
     ScopedGlslProg shaderBind( this );
     GLint loc = getUniformLocation( name );
-	if( loc == -1 ) {
-		if( mLoggedMissingUniforms.count( name ) == 0 ) {
-			CI_LOG_E( "Unknown uniform: \"" << name << "\"" );
-			mLoggedMissingUniforms.insert( name );
-		}
-	}
-	else
-		glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
+    if( loc == -1 ) {
+        if( mLoggedMissingUniforms.count( name ) == 0 ) {
+            CI_LOG_E( "Unknown uniform: \"" << name << "\"" );
+            mLoggedMissingUniforms.insert( name );
+        }
+    }
+    else
+        glUniformMatrix4fv( loc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 // Color
@@ -836,227 +1080,43 @@ void GlslProg::uniform( const std::string &name, const mat4 *data, int count, bo
 		glUniformMatrix4fv( loc, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
-GLint GlslProg::getUniformLocation( const std::string &name ) const
-{
-	map<string,int>::const_iterator uniformIt = mUniformLocs.find( name );
-	if( uniformIt == mUniformLocs.end() ) {
-		GLint loc = glGetUniformLocation( mHandle, name.c_str() );
-		mUniformLocs[name] = loc;
-		return loc;
-	}
-	else {
-		return uniformIt->second;
-	}
-}
-
-#if ! defined( CINDER_GL_ES_2 )
-void GlslProg::uniformBlock( int loc, int binding )
-{
-	glUniformBlockBinding( mHandle, loc, binding );
-}
-
-void GlslProg::uniformBlock( const std::string &name, GLint binding )
-{
-	GLint loc = getUniformBlockLocation( name );
-	if( loc == -1 )
-		CI_LOG_E( "Unknown uniform block: \"" << name << "\"" );
-	else
-		glUniformBlockBinding( mHandle, loc, binding );
-}
-
-GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
-{
-	auto existing = mUniformBlockLocs.find( name );
-	if( existing == mUniformBlockLocs.end() ) {
-		const GLuint loc = glGetUniformBlockIndex( mHandle, name.c_str() );
-		if( loc == GL_INVALID_INDEX )
-			return -1;
-		else
-			mUniformBlockLocs[name] = loc;
-		return loc;
-	}
-	else
-		return existing->second;
-}
-
-GLint GlslProg::getUniformBlockSize( GLint blockIndex ) const
-{
-	auto existing = mUniformBlockSizes.find( blockIndex );
-	if( existing == mUniformBlockSizes.end() ) {
-		GLint blockSize = 0;
-		glGetActiveUniformBlockiv( mHandle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize );
-		mUniformBlockSizes[blockIndex] = blockSize;
-		return blockSize;
-	}
-	else
-		return existing->second;
-}
-#endif // ! defined( CINDER_GL_ES_2 )
-
-const std::map<std::string,GLenum>& GlslProg::getActiveUniformTypes() const
-{
-	if( ! mActiveUniformTypesCached ) {
-		GLint numActiveUniforms = 0;
-		glGetProgramiv( mHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
-		for( GLint i = 0; i < numActiveUniforms; ++i ) {
-			char name[512];
-			GLsizei nameLength;
-			GLint size;
-			GLenum type;
-			glGetActiveUniform( mHandle, (GLuint)i, 511, &nameLength, &size, &type, name );
-			name[nameLength] = 0;
-			mActiveUniformTypes[name] = type;
-		}
-		mActiveUniformTypesCached = true;
-	}
-	return mActiveUniformTypes;
-}
-
-const std::map<std::string,GLenum>& GlslProg::getActiveAttribTypes() const
-{
-	if( ! mActiveAttribTypesCached ) {
-		GLint numActiveAttrs = 0;
-		glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
-		for( GLint i = 0; i < numActiveAttrs; ++i ) {
-			char name[512];
-			GLsizei nameLength;
-			GLint size;
-			GLenum type;
-			glGetActiveAttrib( mHandle, (GLuint)i, 511, &nameLength, &size, &type, name );
-			name[nameLength] = 0;
-			mActiveAttribTypes[name] = type;
-		}
-		mActiveAttribTypesCached = true;
-	}
-	return mActiveAttribTypes;
-}
-
-const GlslProg::UniformSemanticMap& GlslProg::getUniformSemantics() const
-{
-	if( ! mUniformSemanticsCached ) {
-		auto activeUniformTypes = getActiveUniformTypes();
-	
-		for( auto activeUnifIt = activeUniformTypes.begin(); activeUnifIt != activeUniformTypes.end(); ++activeUnifIt ) {
-			// first find this active uniform by name in the mUniformNameToSemanticMap
-			auto semantic = mUniformNameToSemanticMap.find( activeUnifIt->first );
-			if( semantic != mUniformNameToSemanticMap.end() ) {
-				// found this semantic, add it mUniformSemantics
-				mUniformSemantics[semantic->first] = semantic->second;
-			}
-			// if this uniform starts with "ci[A-Z]" it is likely a typo
-			else if( (activeUnifIt->first.length() > 4) && (activeUnifIt->first.substr( 0, 2 ) == "ci") && (isupper(activeUnifIt->first[2]) ) ) {
-				CI_LOG_W( "\"" << activeUnifIt->first << "\" may reference a Cinder uniform but is not a known semantic" );
-			}
-		}
-	
-		mUniformSemanticsCached = true;
-	}
-	
-	return mUniformSemantics;
-}
-
-const GlslProg::AttribSemanticMap& GlslProg::getAttribSemantics() const
-{
-	if( ! mAttribSemanticsCached ) {
-		auto activeAttrTypes = getActiveAttribTypes();
-	
-		for( auto activeAttrIt = activeAttrTypes.begin(); activeAttrIt != activeAttrTypes.end(); ++activeAttrIt ) {
-			// first find this active attribute by name in the mAttrNameToSemanticMap
-			auto semantic = mAttribNameToSemanticMap.find( activeAttrIt->first );
-			if( semantic != mAttribNameToSemanticMap.end() ) {
-				// found this semantic, add it mAttrSemantics
-				mAttribSemantics[semantic->first] = semantic->second;
-			}
-			// if this attribute starts with "ci[A-Z]" it is likely a typo
-			else if( (activeAttrIt->first.length() > 4) && (activeAttrIt->first.substr( 0, 2 ) == "ci") && (isupper(activeAttrIt->first[2]) ) ) {
-				CI_LOG_W( "\"" << activeAttrIt->first << "\" may reference a Cinder attribute but is not a known semantic" );
-			}
-		}
-	
-		mAttribSemanticsCached = true;
-	}
-	
-	return mAttribSemantics;
-}
-
-bool GlslProg::hasAttribSemantic( geom::Attrib semantic ) const
-{
-	auto &semantics = getAttribSemantics();
-	for( auto semIt = semantics.begin(); semIt != semantics.end(); ++semIt ) {
-		if( semIt->second == semantic )
-			return true;
-	}
-	
-	return false;
-}
-
-GLint GlslProg::getAttribSemanticLocation( geom::Attrib semantic ) const
-{
-	auto &semantics = getAttribSemantics();
-	for( auto semIt = semantics.begin(); semIt != semantics.end(); ++semIt ) {
-		if( semIt->second == semantic )
-			return getAttribLocation( semIt->first );
-	}
-	
-	return -1;
-}
-
-GLint GlslProg::getAttribLocation( const std::string &name ) const
-{
-	auto existing = mAttribLocs.find( name );
-	if( existing == mAttribLocs.end() ) {
-		const GLint loc = glGetAttribLocation( mHandle, name.c_str() );
-		if( loc != -1 )
-			mAttribLocs[name] = loc;
-		return loc;
-	}
-	else
-		return existing->second;
-}
-
-void GlslProg::setLabel( const std::string &label )
-{
-	mLabel = label;
-#if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE )
-	env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
-  #endif
-#else
-	env()->objectLabel( GL_PROGRAM, mHandle, (GLsizei)label.size(), label.c_str() );
-#endif
-}
-
 std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 {
 	os << "ID: " << rhs.mHandle << std::endl;
 	if( ! rhs.mLabel.empty() )
 		os << "    Label: " << rhs.mLabel << std::endl;
 	os << " Uniforms: " << std::endl;
-	auto uniformTypes = rhs.getActiveUniformTypes();
-	for( auto &uni : uniformTypes ) {
-		os << "  \"" << uni.first << "\":" << std::endl;
-		os << "    Loc: " << rhs.getUniformLocation( uni.first ) << std::endl;
-		os << "    Type: " << gl::constantToString( uni.second ) << std::endl;
-		auto semIt = rhs.getUniformSemantics().find( uni.first );
-		if( semIt != rhs.getUniformSemantics().end() ) {
-			os << "    Semantic: <" << gl::uniformSemanticToString( semIt->second ) << ">" << std::endl;
-		}
+	auto & uniforms = rhs.getActiveUniforms();
+	for( auto &uniform : uniforms ) {
+		os << "  \"" << uniform.mName << "\":" << std::endl;
+		os << "    Loc: " << uniform.mLoc << std::endl;
+		os << "    Type: " << gl::constantToString( uniform.mType ) << std::endl;
+		os << "    Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
 	}
 
-	auto attribTypes = rhs.getActiveAttribTypes();
+	auto attribs = rhs.getActiveAttributes();
 	os << " Attributes: " << std::endl;
-	for( auto &attrib : attribTypes ) {
-		os << "  \"" << attrib.first << "\":" << std::endl;
-		os << "    Loc: " << rhs.getAttribLocation( attrib.first ) << std::endl;
-		os << "    Type: " << gl::constantToString( attrib.second ) << std::endl;
-		auto semIt = rhs.getAttribSemantics().find( attrib.first );
-		if( semIt != rhs.getAttribSemantics().end() ) {
-			os << "    Semantic: <" << geom::attribToString( semIt->second ) << ">" << std::endl;
-		}
+	for( auto &attrib : attribs ) {
+		os << "  \"" << attrib.mName << "\":" << std::endl;
+		os << "    Loc: " << attrib.mLoc << std::endl;
+		os << "    Type: " << gl::constantToString( attrib.mType ) << std::endl;
+		os << "    Semantic: <" << geom::attribToString( attrib.mSemantic ) << ">" << std::endl;
 	}
 
 	return os;
 }
+    
+    void GlslProg::setLabel( const std::string &label )
+    {
+        mLabel = label;
+#if defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ANGLE )
+        env()->objectLabel( GL_PROGRAM_OBJECT_EXT, mHandle, (GLsizei)label.size(), label.c_str() );
+#endif
+#else
+        env()->objectLabel( GL_PROGRAM, mHandle, (GLsizei)label.size(), label.c_str() );
+#endif
+    }
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProgCompileExc

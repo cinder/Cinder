@@ -59,9 +59,9 @@ Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const Att
 			attribs.insert( attrib.first );
 	}
 	// and then the attributes references by the GLSL
-	for( const auto &attrib : glsl->getAttribSemantics() ) {
-		if( source.getAttribDims( attrib.second ) )
-			attribs.insert( attrib.second );
+	for( const auto &attrib : glsl->getActiveAttributes() ) {
+		if( source.getAttribDims( attrib.mSemantic ) )
+			attribs.insert( attrib.mSemantic );
 	}
 	mVboMesh = gl::VboMesh::create( source, attribs );
 	initVao( attributeMapping );
@@ -102,10 +102,11 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	}
 	
 	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
-	const auto &glslActiveAttribs = mGlsl->getAttribSemantics();
+	const auto &glslActiveAttribs = mGlsl->getActiveAttributes();
 	for( auto &glslActiveAttrib : glslActiveAttribs ) {
-		if( (glslActiveAttrib.second != geom::Attrib::COLOR) && (enabledAttribs.count( glslActiveAttrib.second ) == 0) )
-			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.second ) << " but vertex data doesn't provide it." );			
+		if( (glslActiveAttrib.mSemantic != geom::Attrib::COLOR) &&
+		   (enabledAttribs.count( glslActiveAttrib.mSemantic ) == 0) )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.mSemantic ) << " but vertex data doesn't provide it." );
 	}
 	
 	if( mVboMesh->getIndexVbo() )
