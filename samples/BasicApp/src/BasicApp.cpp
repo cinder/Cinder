@@ -9,9 +9,9 @@ using namespace std;
 // We'll create a new Cinder Application by deriving from the App class
 class BasicApp : public App {
   public:
-	void mouseDrag( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void draw();
+	void mouseDrag( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+	void draw() override;
 
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
@@ -34,8 +34,8 @@ void BasicApp::draw()
 
 	gl::color( 1.0f, 0.5f, 0.25f );	
 	gl::begin( GL_LINE_STRIP );
-	for( auto pointIter = mPoints.begin(); pointIter != mPoints.end(); ++pointIter ) {
-		gl::vertex( *pointIter );
+	for( const vec2 &point : mPoints ) {
+		gl::vertex( point );
 	}
 	gl::end();
 }
