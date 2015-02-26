@@ -86,17 +86,17 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 
 string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path &currentDirectory, set<fs::path> &includeTree )
 {
-	if( includeTree.count( path ) )
-		throw ShaderPreprocessorExc( "circular include found, path: " + path.string() );
-
-	includeTree.insert( path );
-
 	const fs::path fullPath = findFullPath( path, currentDirectory );
+
+	if( includeTree.count( fullPath ) )
+		throw ShaderPreprocessorExc( "circular include found, path: " + fullPath.string() );
+
+	includeTree.insert( fullPath );
 
 #if ENABLE_CACHING
 	const time_t timeLastWrite = fs::last_write_time( fullPath );
 
-	auto cachedIt = mCachedSources.find( path );
+	auto cachedIt = mCachedSources.find( fullPath );
 	if( cachedIt != mCachedSources.end() ) {
 		if( cachedIt->second.mTimeLastWrite >= timeLastWrite ) {
 			return cachedIt->second.mString;
@@ -131,7 +131,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	input.close();
 
 #if ENABLE_CACHING
-	Source &source = mCachedSources[path];
+	Source &source = mCachedSources[fullPath];
 	source.mTimeLastWrite = timeLastWrite;
 	source.mString = output.str();
 	
@@ -145,12 +145,12 @@ fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs
 {
 	auto fullPath = currentDirectory / includePath;
 	if( fs::exists( fullPath ) )
-		return fullPath;
+		return fs::canonical( fullPath );
 
 	for( const auto &searchPath : mSearchPaths ) {
 		fullPath = searchPath / includePath;
 		if( fs::exists( fullPath ) )
-			return fullPath;
+			return fs::canonical( fullPath );
 	}
 
 	throw ShaderPreprocessorExc( "could not find shader with include path: " + includePath.string() );
