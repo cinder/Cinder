@@ -420,6 +420,8 @@ GlslProg::GlslProg( const Format &format )
 		}
 	}
 	
+    cout << *this << endl;
+    
 	setLabel( format.getLabel() );
 	gl::context()->glslProgCreated( this );
 }
@@ -564,6 +566,9 @@ void GlslProg::cacheActiveUniforms()
 	if( ! mActiveUniformTypesCached ) {
 		GLint numActiveUniforms = 0;
 		glGetProgramiv( mHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
+		
+		auto & semanticNameMap = getDefaultUniformNameToSemanticMap();
+		
 		for( GLint i = 0; i < numActiveUniforms; ++i ) {
 			char name[512];
 			GLsizei nameLength;
@@ -574,8 +579,9 @@ void GlslProg::cacheActiveUniforms()
 			auto loc = glGetUniformLocation( mHandle, name );
 			
 			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
-			auto foundSemantic = sDefaultUniformNameToSemanticMap.find( name );
-			if( foundSemantic != sDefaultUniformNameToSemanticMap.end() ) {
+			
+			auto foundSemantic = semanticNameMap.find( name );
+			if( foundSemantic != semanticNameMap.end() ) {
 				uniformSemantic = foundSemantic->second;
 			}
 			
@@ -596,6 +602,8 @@ void GlslProg::cacheActiveAttribs()
 	if( ! mActiveAttribTypesCached ) {
 		GLint numActiveAttrs = 0;
 		glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
+		
+		auto & semanticNameMap = getDefaultAttribNameToSemanticMap();
 		for( GLint i = 0; i < numActiveAttrs; ++i ) {
 			char name[512];
 			GLsizei nameLength;
@@ -606,8 +614,8 @@ void GlslProg::cacheActiveAttribs()
 			auto loc = glGetAttribLocation( mHandle, name );
 			
 			geom::Attrib attributeSemantic = geom::Attrib::NUM_ATTRIBS;
-			auto foundSemantic = sDefaultAttribNameToSemanticMap.find( name );
-			if( foundSemantic != sDefaultAttribNameToSemanticMap.end() ) {
+			auto foundSemantic = semanticNameMap.find( name );
+			if( foundSemantic != semanticNameMap.end() ) {
 				attributeSemantic = foundSemantic->second;
 			}
 			
