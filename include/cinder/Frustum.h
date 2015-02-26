@@ -77,8 +77,6 @@ class Frustum {
 	//! Returns true if the box is partially contained within frustum. See also 'contains'.
 	bool intersects( const AxisAlignedBox3f &box ) const;
 
-	//! Returns a reference to the Plane associated with /a section of the Frustum.
-	Plane<T>& getPlane( FrustumSection section ) { return mFrustumPlanes[section]; }
 	//! Returns a const reference to the Plane associated with /a section of the Frustum.
 	const Plane<T>& getPlane( FrustumSection section ) const { return mFrustumPlanes[section]; }
 	
