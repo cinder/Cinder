@@ -39,6 +39,11 @@ class ShaderPreprocessor {
 	std::string		parse( const fs::path &path );
 	std::string		parse( const std::string &source, const fs::path &currentDirectory );
 
+	//! Sets whether or not parsed sources are cached and reused in future shader preprocessing. \default is true.
+	void	setCachingEnabled( bool enable = true )		{ mCachingEnabled = enable; }
+	//! Returns whether or not parsed sources are cached and reused in future shader preprocessing. \default is true.
+	bool	isCachingEnabled() const					{ return mCachingEnabled; }
+
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
@@ -49,8 +54,9 @@ class ShaderPreprocessor {
 		std::time_t		mTimeLastWrite;
 	};
 
-	std::map<fs::path, Source>		mCachedSources;
 	std::vector<fs::path>			mSearchPaths;
+	std::map<fs::path, Source>		mCachedSources;
+	bool							mCachingEnabled;
 };
 
 class ShaderPreprocessorExc : public Exception {

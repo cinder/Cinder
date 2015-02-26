@@ -28,8 +28,6 @@
 
 #include <regex>
 
-#define ENABLE_CACHING 1
-
 using namespace std;
 
 namespace cinder {
@@ -39,6 +37,7 @@ namespace {
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
+	: mCachingEnabled( true )
 {
 	// TODO: we discussed keeping this ci assets agnostic, instead adding getAssetPath() from the outside
 	mSearchPaths.push_back( app::getAssetPath( "" ) );
@@ -93,16 +92,17 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 	includeTree.insert( fullPath );
 
-#if ENABLE_CACHING
-	const time_t timeLastWrite = fs::last_write_time( fullPath );
+	time_t timeLastWrite = 0;
+	if( mCachingEnabled ) {
+		timeLastWrite = fs::last_write_time( fullPath );
 
-	auto cachedIt = mCachedSources.find( fullPath );
-	if( cachedIt != mCachedSources.end() ) {
-		if( cachedIt->second.mTimeLastWrite >= timeLastWrite ) {
-			return cachedIt->second.mString;
+		auto cachedIt = mCachedSources.find( fullPath );
+		if( cachedIt != mCachedSources.end() ) {
+			if( cachedIt->second.mTimeLastWrite >= timeLastWrite ) {
+				return cachedIt->second.mString;
+			}
 		}
 	}
-#endif
 
 	stringstream output;
 
@@ -130,15 +130,15 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 	input.close();
 
-#if ENABLE_CACHING
-	Source &source = mCachedSources[fullPath];
-	source.mTimeLastWrite = timeLastWrite;
-	source.mString = output.str();
-	
-	return source.mString;
-#else
-	return output.str();
-#endif
+	if( mCachingEnabled ) {
+		Source &source = mCachedSources[fullPath];
+		source.mTimeLastWrite = timeLastWrite;
+		source.mString = output.str();
+
+		return source.mString;
+	}
+	else
+		return output.str();
 }
 
 fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )
