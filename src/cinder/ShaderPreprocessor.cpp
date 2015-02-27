@@ -173,8 +173,8 @@ fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs
 	if( fs::exists( fullPath ) )
 		return fs::canonical( fullPath );
 
-	for( const auto &searchDir : mSearchDirectories ) {
-		fullPath = searchDir / includePath;
+	for( auto dirIt = mSearchDirectories.rbegin(); dirIt != mSearchDirectories.rend(); ++dirIt ) {
+		fullPath = *dirIt / includePath;
 		if( fs::exists( fullPath ) )
 			return fs::canonical( fullPath );
 	}
