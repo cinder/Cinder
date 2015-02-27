@@ -140,8 +140,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
-		void			setShaderSource( const DataSourceRef &dataSource, std::string &shaderSourceDest, fs::path &shaderPathDest );
-		void			setShaderSource( const std::string &source, std::string &shaderSourceDest, fs::path &shaderPathDest );
+		void			setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest );
+		void			setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest );
 
 		std::string		mVertexShader;
 		std::string		mFragmentShader;

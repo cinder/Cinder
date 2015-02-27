@@ -48,89 +48,89 @@ GlslProg::Format::Format()
 
 GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, mVertexShader, mVertexShaderDirectory );
+	setShaderSource( dataSource, &mVertexShader, &mVertexShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const string &vertexShader )
 {
-	setShaderSource( vertexShader, mVertexShader, mVertexShaderDirectory );
+	setShaderSource( vertexShader, &mVertexShader, &mVertexShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, mFragmentShader, mFragmentShaderDirectory );
+	setShaderSource( dataSource, &mFragmentShader, &mFragmentShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 {
-	setShaderSource( fragmentShader, mFragmentShader, mFragmentShaderDirectory );
+	setShaderSource( fragmentShader, &mFragmentShader, &mFragmentShaderDirectory );
 	return *this;
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, mGeometryShader, mGeometryShaderDirectory );
+	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 {
-	setShaderSource( geometryShader, mGeometryShader, mGeometryShaderDirectory );
+	setShaderSource( geometryShader, &mGeometryShader, &mGeometryShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, mTessellationCtrlShader, mTessellationCtrlShaderDirectory );
+	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const string &tessellationCtrlShader )
 {
-	setShaderSource( tessellationCtrlShader, mTessellationCtrlShader, mTessellationCtrlShaderDirectory );
+	setShaderSource( tessellationCtrlShader, &mTessellationCtrlShader, &mTessellationCtrlShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, mTessellationEvalShader, mTessellationEvalShaderDirectory );
+	setShaderSource( dataSource, &mTessellationEvalShader, &mTessellationEvalShaderDirectory );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellationEvalShader )
 {
-	setShaderSource( tessellationEvalShader, mTessellationEvalShader, mTessellationEvalShaderDirectory );
+	setShaderSource( tessellationEvalShader, &mTessellationEvalShader, &mTessellationEvalShaderDirectory );
 	return *this;
 }
 
 #endif // ! defined( CINDER_GL_ES )
 
-void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string &shaderSourceDest, fs::path &shaderPathDest )
+void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
 	if( dataSource ) {
 		Buffer buffer( dataSource );
-		shaderSourceDest.resize( buffer.getDataSize() + 1 );
-		memcpy( (void *)shaderSourceDest.data(), buffer.getData(), buffer.getDataSize() );
-		shaderSourceDest[buffer.getDataSize()] = 0;
+		shaderSourceDest->resize( buffer.getDataSize() + 1 );
+		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getDataSize() );
+		(*shaderSourceDest)[buffer.getDataSize()] = 0;
 		if( dataSource->isFilePath() )
-			shaderPathDest = dataSource->getFilePath().parent_path();
+			*shaderPathDest = dataSource->getFilePath().parent_path();
 		else
-			shaderPathDest.clear();
+			shaderPathDest->clear();
 	}
 	else {
-		shaderSourceDest.clear();
-		shaderPathDest.clear();
+		shaderSourceDest->clear();
+		shaderPathDest->clear();
 	}
 }
 
-void GlslProg::Format::setShaderSource( const std::string &source, std::string &shaderSourceDest, fs::path &shaderPathDest )
+void GlslProg::Format::setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest )
 {
-	shaderSourceDest = source;
-	shaderPathDest.clear();
+	*shaderSourceDest = source;
+	shaderPathDest->clear();
 }
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
