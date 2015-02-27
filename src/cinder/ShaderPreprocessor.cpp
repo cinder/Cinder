@@ -145,6 +145,11 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
 {
+	if( ! fs::is_directory( directory ) ) {
+		CI_LOG_E( "Not a directory: " << directory );
+		return;
+	}
+
 	fs::path dirCanonical = fs::canonical( directory );
 	auto it = find( mSearchDirectories.begin(), mSearchDirectories.end(), dirCanonical );
 	if( it == mSearchDirectories.end() )
