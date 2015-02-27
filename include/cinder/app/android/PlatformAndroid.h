@@ -34,6 +34,8 @@ class PlatformAndroid : public Platform {
 
 	static PlatformAndroid*			get();
 
+	virtual DataSourceRef			loadAsset( const fs::path &relativePath );
+
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
 	virtual fs::path				getResourcePath() const override;
@@ -61,7 +63,7 @@ class PlatformAndroid : public Platform {
  protected:
 	virtual void 					prepareAssetLoading();	
 
-	// Empty folders are not copied into the APK, so this will fail on empty folders
+	// Empty directories are not copied into the APK, so this will fail on empty directories
 	virtual fs::path				findAssetPath( const fs::path &relativePath );
 	virtual void					findAndAddAssetBasePath();
 

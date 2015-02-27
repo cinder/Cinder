@@ -31,11 +31,11 @@ typedef AAsset AssetFileSystem_FILE;
 bool 					AssetFileSystem_exists( ci::fs::path path );
 
 AssetFileSystem_FILE *	AssetFileSystem_fopen( const char * filename, const char * mode );
-int 					AssetFileSystem_fclose( AssetFileSystem_FILE * stream )	;
+int 					AssetFileSystem_fclose( AssetFileSystem_FILE * stream );
 int 					AssetFileSystem_fseek( AssetFileSystem_FILE * stream, long int offset, int origin );
 long int 				AssetFileSystem_ftell( AssetFileSystem_FILE * stream );
 size_t 					AssetFileSystem_fread( void * ptr, size_t size, size_t count, AssetFileSystem_FILE * stream );
 int 					AssetFileSystem_feof( AssetFileSystem_FILE * stream );
-
+long int 				AssetFileSystem_flength( AssetFileSystem_FILE * stream );
 
 } } } // namespace cinder::app::android

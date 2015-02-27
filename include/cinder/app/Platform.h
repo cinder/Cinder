@@ -51,7 +51,7 @@ class Platform {
 
 	// Assets
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourceRef			loadAsset( const fs::path &relativePath );
+	virtual DataSourceRef	loadAsset( const fs::path &relativePath );
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
 	fs::path				getAssetPath( const fs::path &relativePath );
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.

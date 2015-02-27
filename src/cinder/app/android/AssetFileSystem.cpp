@@ -85,4 +85,10 @@ int AssetFileSystem_feof( AssetFileSystem_FILE * stream )
 	return (0 == n) ? 0 : -1;
 }
 
+long int AssetFileSystem_flength( AssetFileSystem_FILE * stream )
+{
+	long int n = AAsset_getLength( stream );
+	return n;
+}
+
 } } } // namespace cinder::app

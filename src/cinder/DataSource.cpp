@@ -82,10 +82,42 @@ IStreamRef DataSourcePath::createStream()
 	return loadFileStream( mFilePath );
 }
 
+
+#if defined( CINDER_ANDROID )
+/////////////////////////////////////////////////////////////////////////////
+// DataSourceAndroidAsset
+DataSourceAndroidAssetRef DataSourceAndroidAsset::create( const fs::path &path )
+{
+	return DataSourceAndroidAssetRef( new DataSourceAndroidAsset( path ) );
+}
+
+DataSourceAndroidAsset::DataSourceAndroidAsset( const fs::path &path )
+	: DataSource( path, Url() )
+{
+	setFilePathHint( path );
+}
+
+void DataSourceAndroidAsset::createBuffer()
+{
+	// no-op - we already supplied the buffer in the constructor
+	IStreamAndroidAssetRef stream = loadAndroidAssetStream( mFilePath );
+	if( ! stream )
+		throw StreamExc();
+	mBuffer = loadStreamBuffer( stream );
+}
+
+IStreamRef DataSourceAndroidAsset::createStream()
+{
+	return loadFileStream( mFilePath );
+}
+#endif // defined( CINDER_ANDROID )
+
+
 DataSourceRef loadFile( const fs::path &path )
 {
-	return DataSourcePath::create( path );
+	return DataSourceAndroidAsset::create( path );
 }
+
 
 #if !defined( CINDER_WINRT )
 /////////////////////////////////////////////////////////////////////////////

@@ -45,6 +45,18 @@ PlatformAndroid* PlatformAndroid::get()
 	return reinterpret_cast<PlatformAndroid*>( Platform::get() ); 
 }
 
+DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
+{
+	
+	fs::path assetPath = findAssetPath( relativePath );
+	if( ! assetPath.empty() ) {
+		return DataSourceAndroidAsset::create( assetPath.string() );
+	}
+	else {
+		throw AssetLoadExc( relativePath );
+	}
+}
+
 DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
 {
 	fs::path fullPath = getResourcePath( resourcePath );
