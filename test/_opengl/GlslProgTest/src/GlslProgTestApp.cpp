@@ -36,7 +36,11 @@ void GlslProgTestApp::keyDown( KeyEvent event )
 void GlslProgTestApp::testGlslProgInclude()
 {
 	try {
-		mGlslProg = gl::GlslProg::create( loadAsset( "passthrough.vert" ), loadAsset( "shaderWithInclude.frag" ) );
+		auto format = gl::GlslProg::Format()
+							.vertex(  loadAsset( "passthrough.vert" ) )
+							.fragment( loadAsset( "shaderWithInclude.frag" ) );
+
+		mGlslProg = gl::GlslProg::create( format );
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
