@@ -39,6 +39,10 @@ class ShaderPreprocessor {
 	std::string		parse( const fs::path &path );
 	std::string		parse( const std::string &source, const fs::path &currentDirectory );
 
+	//!
+	void	addSearchDirectory( const fs::path &directory );
+	//!
+	void	removeSearchDirectory( const fs::path &directory );
 	//! Sets whether or not parsed sources are cached and reused in future shader preprocessing. \default is true.
 	void	setCachingEnabled( bool enable = true )		{ mCachingEnabled = enable; }
 	//! Returns whether or not parsed sources are cached and reused in future shader preprocessing. \default is true.
@@ -56,7 +60,7 @@ class ShaderPreprocessor {
 		std::time_t		mTimeLastWrite;
 	};
 
-	std::vector<fs::path>			mSearchPaths;
+	std::vector<fs::path>			mSearchDirectories;
 	std::map<fs::path, Source>		mCachedSources;
 	bool							mCachingEnabled;
 };

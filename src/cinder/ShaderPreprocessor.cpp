@@ -40,7 +40,9 @@ ShaderPreprocessor::ShaderPreprocessor()
 	: mCachingEnabled( true )
 {
 	// TODO: we discussed keeping this ci assets agnostic, instead adding getAssetPath() from the outside
-	mSearchPaths.push_back( app::getAssetPath( "" ) );
+	// - also, we don't want GlslProg to rely on App at all.
+	//    - can it do what it needs to with Platform?
+	mSearchDirectories.push_back( app::getAssetPath( "" ) );
 }
 
 string ShaderPreprocessor::parse( const fs::path &path )
@@ -141,6 +143,20 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 		return output.str();
 }
 
+void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
+{
+	fs::path dirCanonical = fs::canonical( directory );
+	auto it = find( mSearchDirectories.begin(), mSearchDirectories.end(), dirCanonical );
+	if( it == mSearchDirectories.end() )
+		mSearchDirectories.push_back( dirCanonical );
+}
+
+void ShaderPreprocessor::removeSearchDirectory( const fs::path &directory )
+{
+	fs::path dirCanonical = fs::canonical( directory );
+	mSearchDirectories.erase( remove( mSearchDirectories.begin(), mSearchDirectories.end(), dirCanonical ), mSearchDirectories.end() );
+}
+
 void ShaderPreprocessor::clearCache()
 {
 	mCachedSources.clear();
@@ -152,8 +168,8 @@ fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs
 	if( fs::exists( fullPath ) )
 		return fs::canonical( fullPath );
 
-	for( const auto &searchPath : mSearchPaths ) {
-		fullPath = searchPath / includePath;
+	for( const auto &searchDir : mSearchDirectories ) {
+		fullPath = searchDir / includePath;
 		if( fs::exists( fullPath ) )
 			return fs::canonical( fullPath );
 	}
