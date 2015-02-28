@@ -36,7 +36,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Exception.h"
-#include "cinder/ShaderPreprocessor.h"
+#include "cinder/gl/ShaderPreprocessor.h"
 
 //! Convenience macro that allows one to embed raw glsl code in-line. The \a VERSION parameter will be used for the glsl's '#version' define.
 //! \note Some strings will confuse different compilers, most commonly being preprocessor derictives (hence the need for \a VERSION to be a pamaeter).

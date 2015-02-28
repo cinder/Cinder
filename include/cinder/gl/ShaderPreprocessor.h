@@ -30,7 +30,7 @@
 #include <set>
 #include <vector>
 
-namespace cinder {
+namespace cinder { namespace gl {
 
 class ShaderPreprocessor {
   public:
@@ -70,4 +70,4 @@ class ShaderPreprocessorExc : public Exception {
 	ShaderPreprocessorExc( const std::string &description ) : Exception( description )	{}
 };
 
-} // namespace cinder
+} } // namespace cinder::gl

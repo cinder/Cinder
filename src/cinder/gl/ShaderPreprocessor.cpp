@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/ShaderPreprocessor.h"
+#include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -30,7 +30,7 @@
 
 using namespace std;
 
-namespace cinder {
+namespace cinder { namespace gl {
 
 namespace {
 	const regex sIncludeRegex = regex( "^[ ]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
@@ -182,4 +182,4 @@ fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs
 	throw ShaderPreprocessorExc( "could not find shader with include path: " + includePath.string() );
 }
 
-} // namespace cinder
+} } // namespace cinder::gl
