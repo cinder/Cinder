@@ -85,7 +85,7 @@ class Platform {
 	//! The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	//!	\return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
 	virtual void getSaveFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions ) = 0;
-#else
+#endif
 	//! Presents the user with an open-file dialog and returns the selected file path.
 	//! The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	//!	\return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
@@ -96,7 +96,6 @@ class Platform {
 	//! The dialog optionally begins at the path \a initialPath and can be limited to allow selection of files ending in the extensions enumerated in \a extensions.
 	//!	\return the selected file path, or an empty fs::path if the user cancelled or this operation isn't supported on the current platform.
 	virtual fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) = 0;
-#endif
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	virtual std::ostream&	console();

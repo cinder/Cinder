@@ -44,6 +44,11 @@ class PlatformWinRt : public Platform {
 	void getFolderPathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath = "" ) override;
 	void getSaveFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions = {} ) override;
 
+	// Unimplemented
+	fs::path getOpenFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) override;
+	fs::path getFolderPath( const fs::path &initialPath = fs::path() ) override;
+	fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) override;
+
 	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
 	void prepareAssetLoading() override {}
 

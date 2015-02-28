@@ -23,6 +23,11 @@
 */
 
 #define ASIO_STANDALONE 1
+#if defined( _WIN32 ) || defined( __WIN32__ ) || defined( WIN32 )
+	#if ! defined( WINAPI_PARTITION_DESKTOP )
+		#define ASIO_WINDOWS_RUNTIME 1
+	#endif
+#endif
 #include "asio/asio.hpp"
 
 #include "cinder/app/AppBase.h"

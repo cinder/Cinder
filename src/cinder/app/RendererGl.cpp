@@ -40,21 +40,20 @@
 	#else
 		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/msw/RendererImplGlAngle.h"
 #endif
 
 namespace cinder { namespace app {
 
 RendererGl::RendererGl( const RendererGl::Options &options )
-	: Renderer(), mImpl( 0 ), mOptions( options )
+	: Renderer(), mImpl( nullptr ), mOptions( options )
 {}
 
 RendererGl::RendererGl( const RendererGl &renderer )
-	: Renderer( renderer ), mOptions( renderer.mOptions )
+	: Renderer( renderer ), mImpl( nullptr ), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_COCOA )
-	mImpl = 0;
-#elif defined( CINDER_MSW )
-	mImpl = 0;
+#if defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #endif
 }
@@ -266,6 +265,74 @@ void RendererGl::defaultResize()
 HDC RendererGl::getDc()
 {
 	return mImpl->getDc();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+{
+	Surface s( area.getWidth(), area.getHeight(), false );
+	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
+	GLint oldPackAlignment;
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
+	ip::flipVertical( &s );
+	return s;
+}
+#elif defined( CINDER_WINRT )
+RendererGl::~RendererGl()
+{
+	delete mImpl;
+}
+
+void RendererGl::setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
+{
+	mWnd = wnd;
+	if( ! mImpl )
+		mImpl = new RendererImplGlAngle( this );
+	if( ! mImpl->initialize( wnd, sharedRenderer ) )
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
+}
+
+void RendererGl::prepareToggleFullScreen()
+{
+	mImpl->prepareToggleFullScreen();
+}
+
+void RendererGl::finishToggleFullScreen()
+{
+	mImpl->finishToggleFullScreen();
+}
+
+void RendererGl::startDraw()
+{
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		mImpl->makeCurrentContext();
+}
+
+void RendererGl::makeCurrentContext()
+{
+	mImpl->makeCurrentContext();
+}
+
+void RendererGl::swapBuffers()
+{
+	mImpl->swapBuffers();
+}
+
+void RendererGl::finishDraw()
+{
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		mImpl->swapBuffers();
+}
+
+void RendererGl::defaultResize()
+{
+	mImpl->defaultResize();
 }
 
 Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )

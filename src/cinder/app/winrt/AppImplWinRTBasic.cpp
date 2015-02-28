@@ -33,7 +33,7 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
 #include "cinder/app/winrt/WinRTApp.h"
-#include "cinder/WinRTUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 
 using std::vector;
 using std::string;
@@ -57,7 +57,7 @@ AppImplWinRTBasic::AppImplWinRTBasic( AppBase *app, WinRTApp *winrtApp )
 	mShouldQuit = false;
 }
 
-void AppImplWinRTBasic::run()
+void AppImplWinRTBasic::launch( const char *, int, char *const [] )
 {
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource(); 
 	CoreApplication::Run( direct3DApplicationSource ); 
@@ -188,7 +188,7 @@ size_t AppImplWinRTBasic::getNumWindows() const
 	return 1;
 }
 
-WindowRef AppImplWinRTBasic::getWindowIndex( size_t index )
+WindowRef AppImplWinRTBasic::getWindowIndex( size_t index ) const
 {
 	return getWindow();
 }

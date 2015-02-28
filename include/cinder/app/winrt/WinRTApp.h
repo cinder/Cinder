@@ -32,8 +32,8 @@
 
 ref class WinRTApp sealed : public Windows::ApplicationModel::Core::IFrameworkView
 {
-public:
-	WinRTApp();
+  public:
+	WinRTApp( cinder::app::AppImplWinRTBasic *app );
 	
 	// IFrameworkView Methods.
 	virtual void Initialize(Windows::ApplicationModel::Core::CoreApplicationView^ applicationView);
@@ -44,7 +44,7 @@ public:
 
 	void EnableMultiTouch(BOOL bEnable);
 
-protected:
+  protected:
 	// Event Handlers.
 	void OnWindowSizeChanged(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::WindowSizeChangedEventArgs^ args);
 	void OnLogicalDpiChanged(Platform::Object^ sender);
@@ -60,7 +60,7 @@ protected:
 	void OnKeyUp(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::KeyEventArgs^ args);
 	void OnCharacterReceived(Windows::UI::Core::CoreWindow^ sender, Windows::UI::Core::CharacterReceivedEventArgs^ args);
 
-private:
+  private:
 	cinder::app::AppImplWinRTBasic *mApp;
 	bool m_windowClosed;
 	bool m_windowVisible;
@@ -68,7 +68,7 @@ private:
 
 ref class Direct3DApplicationSource sealed : Windows::ApplicationModel::Core::IFrameworkViewSource
 {
-public:
+  public:
 	Direct3DApplicationSource() {};
 
 	virtual Windows::ApplicationModel::Core::IFrameworkView^ CreateView();

@@ -55,16 +55,13 @@ Renderer::Renderer( const Renderer &renderer )
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer2d
+#if defined( CINDER_COCOA )
+
 Renderer2d::Renderer2d( const Renderer2d &renderer )
 	: Renderer( renderer )
 {
 	mImpl = 0;
-#if defined( CINDER_MSW )
-	mDoubleBuffer = renderer.mDoubleBuffer;
-#endif
 }
-
-#if defined( CINDER_COCOA )
 
 Renderer2d::Renderer2d()
 	: Renderer(), mImpl( 0 )
@@ -144,6 +141,13 @@ Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPix
 #endif
 
 #if defined( CINDER_MSW )
+
+Renderer2d::Renderer2d( const Renderer2d &renderer )
+	: Renderer( renderer )
+{
+	mImpl = 0;
+	mDoubleBuffer = renderer.mDoubleBuffer;
+}
 
 Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
 	: Renderer(), mDoubleBuffer(doubleBuffer), mPaintEvents( paintEvents )

@@ -179,6 +179,8 @@ class RendererGl : public Renderer {
 	void	finishToggleFullScreen();
 #elif defined( CINDER_WINRT )
 	void	setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	void	prepareToggleFullScreen();
+	void	finishToggleFullScreen();
 #endif
 
 	const Options&	getOptions() const { return mOptions; }
@@ -206,12 +208,16 @@ protected:
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
 		class RendererImplGlAngle	*mImpl;
-		friend class					RendererImplGlAngle;
+		friend class				RendererImplGlAngle;
 	#else
 		class RendererImplGlMsw		*mImpl;
-		friend class					RendererImplGlMsw;
+		friend class				RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
+#elif defined( CINDER_WINRT )
+	class RendererImplGlAngle	*mImpl;
+	friend class				RendererImplGlAngle;
+	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

@@ -26,7 +26,7 @@
 #include "cinder/Unicode.h"
 #include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
-#include "cinder/WinRTUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
@@ -64,6 +64,21 @@ DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath  )
 {
 	CI_LOG_E( "Not implemented" );
 	return nullptr;
+}
+
+fs::path PlatformWinRt::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	throw Exception( "Unimplemented on WinRT" );
+}
+
+fs::path PlatformWinRt::getFolderPath( const fs::path &initialPath )
+{
+	throw Exception( "Unimplemented on WinRT" );
+}
+
+fs::path PlatformWinRt::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	throw Exception( "Unimplemented on WinRT" );
 }
 
 void PlatformWinRt::getOpenFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions )

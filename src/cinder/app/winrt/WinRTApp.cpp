@@ -43,7 +43,7 @@ using namespace Windows::Foundation;
 using namespace Windows::Graphics::Display;
 
 
-WinRTApp::WinRTApp() :
+WinRTApp::WinRTApp( cinder::app::AppImplWinRTBasic *app ) :
 	m_windowClosed( false ), m_windowVisible( true )
 {
 }
@@ -91,7 +91,6 @@ void WinRTApp::SetWindow(CoreWindow^ window)
 #if 0
 	window->CharacterReceived += 
 		ref new TypedEventHandler<CoreWindow^, CharacterReceivedEventArgs^>(this, &WinRTApp::OnCharacterReceived);
-
 #endif 
 }
 
@@ -115,7 +114,6 @@ void WinRTApp::OnKeyDown(CoreWindow^ sender, KeyEventArgs^ args)
 		dlg->ShowAsync();
 	}  
 #endif // 0
-
 }
 
 void WinRTApp::OnKeyUp(CoreWindow^ sender, KeyEventArgs^ args)
@@ -175,9 +173,6 @@ void WinRTApp::OnWindowClosed(CoreWindow^ sender, CoreWindowEventArgs^ args)
 	m_windowClosed = true;
 }
 
-
-
-
 void WinRTApp::OnPointerPressed(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	mApp->handlePointerDown(args);
@@ -191,7 +186,6 @@ void WinRTApp::OnPointerReleased(CoreWindow^ sender, PointerEventArgs^ args)
 void WinRTApp::OnPointerMoved(CoreWindow^ sender, PointerEventArgs^ args)
 {
 	mApp->handlePointerMoved(args);
-
 }
 
 void WinRTApp::OnActivated(CoreApplicationView^ applicationView, IActivatedEventArgs^ args)

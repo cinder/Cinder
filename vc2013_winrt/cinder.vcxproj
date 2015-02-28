@@ -376,7 +376,8 @@
     <ClInclude Include="..\include\cinder\TriMesh.h" />
     <ClInclude Include="..\include\cinder\Unicode.h" />
     <ClInclude Include="..\include\cinder\Utilities.h" />
-    <ClInclude Include="..\include\cinder\WinRTUtils.h" />
+    <ClInclude Include="..\include\cinder\winrt\FontEnumerator.h" />
+    <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
     <ClInclude Include="..\src\AntTweakBar\d3d10vs2003.h" />
@@ -411,6 +412,7 @@
     <ClCompile Include="..\src\AntTweakBar\TwFonts.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwMgr.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwPrecomp.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp" />
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
     <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
@@ -447,6 +449,8 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Platform.cpp" />
+    <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
@@ -455,6 +459,7 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
     <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp" />
     <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp" />
@@ -476,6 +481,7 @@
     <ClCompile Include="..\src\cinder\DataTarget.cpp" />
     <ClCompile Include="..\src\cinder\Display.cpp" />
     <ClCompile Include="..\src\cinder\Font.cpp" />
+    <ClCompile Include="..\src\cinder\GeomIo.cpp" />
     <ClCompile Include="..\src\cinder\gl\Batch.cpp" />
     <ClCompile Include="..\src\cinder\gl\BufferObj.cpp" />
     <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp" />
@@ -529,6 +535,7 @@
     <ClCompile Include="..\src\cinder\Rand.cpp" />
     <ClCompile Include="..\src\cinder\Ray.cpp" />
     <ClCompile Include="..\src\cinder\Shape2d.cpp" />
+    <ClCompile Include="..\src\cinder\Signals.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />
     <ClCompile Include="..\src\cinder\svg\Svg.cpp" />
@@ -543,9 +550,10 @@
     <ClCompile Include="..\src\cinder\Unicode.cpp" />
     <ClCompile Include="..\src\cinder\Url.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
-    <ClCompile Include="..\src\cinder\WinRTUtils.cpp" />
     <ClCompile Include="..\src\cinder\Exception.cpp" />
     <ClCompile Include="..\src\cinder\Rect.cpp" />
+    <ClCompile Include="..\src\cinder\winrt\FontEnumerator.cpp" />
+    <ClCompile Include="..\src\cinder\winrt\WinRTUtils.cpp" />
     <ClCompile Include="..\src\cinder\Xml.cpp" />
     <ClCompile Include="..\src\freetype\autofit\autofit.c">
       <CompileAsWinRT Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</CompileAsWinRT>

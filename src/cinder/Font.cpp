@@ -44,7 +44,7 @@
 	#pragma comment(lib, "gdiplus")
 #elif defined( CINDER_WINRT )
 	#include <dwrite.h>
-	#include "cinder/dx/FontEnumerator.h"
+	#include "cinder/winrt/FontEnumerator.h"
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"

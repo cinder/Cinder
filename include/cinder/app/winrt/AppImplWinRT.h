@@ -52,22 +52,25 @@ class WinRTApp;
 
 class AppImplWinRT : public AppBase {
   public:
-	AppImplWinRT( WinRTApp *aApp );
+	AppImplWinRT();
 	virtual ~AppImplWinRT();
 	
-	WinRTApp*		getApp() { return mApp; }
-
 	float			getFrameRate() const { return mFrameRate; }
 	virtual void	setFrameRate( float frameRate ) = 0;
 	virtual void	quit() = 0;
 
 	virtual WindowRef	getWindow() const { return mActiveWindow; }
 	void				setWindow( WindowRef window ) { mActiveWindow = window; }
-	
+
 	static fs::path		getAppPath();	
 
 	virtual void	handleKeyDown(Windows::UI::Core::KeyEventArgs^ args);
 	virtual void	handleKeyUp(Windows::UI::Core::KeyEventArgs^ args);
+
+	WindowRef		createWindow( const Window::Format &format ) override;
+	ivec2			getMousePos() const override;
+	void			hideCursor() override;
+	void			showCursor() override;
 
   protected:
 	bool					setupHasBeenCalled() const { return mSetupHasBeenCalled; }
@@ -75,7 +78,7 @@ class AppImplWinRT : public AppBase {
 	virtual void			setForegroundWindow( WindowRef window ) = 0;
 	unsigned int			AppImplWinRT::prepKeyEventModifiers();
 
-	WinRTApp				*mApp;
+	WinRTApp				*mWinRtApp;
 	float					mFrameRate;
 	WindowRef				mActiveWindow;
 	bool					mSetupHasBeenCalled;

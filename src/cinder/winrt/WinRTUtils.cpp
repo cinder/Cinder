@@ -28,7 +28,7 @@
 
 #pragma once
 
-#include "cinder/WinRTUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 #include "cinder/Exception.h"
 
 #include <math.h>

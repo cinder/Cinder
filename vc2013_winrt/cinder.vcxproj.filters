@@ -89,6 +89,12 @@
     <Filter Include="Header Files\app\cocoa">
       <UniqueIdentifier>{4381790f-946b-41bb-b60a-f6357485a2dd}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\winrt">
+      <UniqueIdentifier>{f79d1eb5-4d95-4523-bba8-b1c388ca7618}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\winrt">
+      <UniqueIdentifier>{2a9c0656-8c68-4c3d-a812-258837a8f19c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\Renderer.h">
@@ -116,9 +122,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Utilities.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\WinRTUtils.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Surface.h">
@@ -520,6 +523,12 @@
     <ClInclude Include="..\include\cinder\app\cocoa\RendererImplGlMac.h">
       <Filter>Header Files\app\cocoa</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\winrt\FontEnumerator.h">
+      <Filter>Header Files\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h">
+      <Filter>Header Files\winrt</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
@@ -538,9 +547,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\CinderMath.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\WinRTUtils.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\Surface.cpp">
@@ -1049,6 +1055,30 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Log.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Platform.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererGl.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\GeomIo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Renderer.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\winrt\FontEnumerator.cpp">
+      <Filter>Source Files\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\winrt\WinRTUtils.cpp">
+      <Filter>Source Files\winrt</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

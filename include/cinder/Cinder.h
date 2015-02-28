@@ -66,6 +66,7 @@ using std::uint64_t;
 			#if BOOST_VERSION != 105500
 				#error "Incorrect Boost version See include/winrt/boost/README.txt for more info."
 			#endif
+			#define ASIO_WINDOWS_RUNTIME 1
 		#endif
 	#else
 		#define CINDER_MSW

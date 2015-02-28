@@ -32,7 +32,7 @@
 #include <signal.h>
 
 #if defined( CINDER_WINRT )
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 #endif
 
 #define DEBUG_GL 1

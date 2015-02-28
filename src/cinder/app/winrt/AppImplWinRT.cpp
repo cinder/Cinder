@@ -29,11 +29,13 @@
 
 
 #include "cinder/app/winrt/AppImplWinRT.h"
+#include "cinder/app/winrt/WinRTApp.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/Display.h"
 #include "cinder/Exception.h"
-#include "cinder/WinRTUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
+#include "cinder/Log.h"
 #include "cinder/msw/CinderMsw.h"
 
 #include <Windows.h>
@@ -74,18 +76,37 @@ using std::pair;
 
 namespace cinder { namespace app {
 
-AppImplWinRT::AppImplWinRT( App *aApp )
-	: mApp( aApp ), mSetupHasBeenCalled( false )
+AppImplWinRT::AppImplWinRT()
+	: mWinRtApp( new WinRTApp( this ) ), mSetupHasBeenCalled( false )
 {
 	mControlKey = false;
 	mAltKey = false;
 	mShiftKey = false;
-
 }
 
 AppImplWinRT::~AppImplWinRT()
 {
+}
 
+WindowRef AppImplWinRT::createWindow( const Window::Format &format )
+{
+	CI_LOG_E( "createWindow() not implemented on WinRT" );
+	return nullptr;
+}
+
+ivec2 AppImplWinRT::getMousePos() const
+{
+	return ivec2( -1 ); // not implemented
+}
+
+void AppImplWinRT::hideCursor()
+{
+	CI_LOG_W( "hideCursor() not implemented on WinRT" );
+}
+
+void AppImplWinRT::showCursor()
+{
+	CI_LOG_W( "showCursor() not implemented on WinRT" );
 }
 
 fs::path AppImplWinRT::getAppPath()
@@ -145,10 +166,6 @@ WindowImplWinRT::WindowImplWinRT( ::Platform::Agile<Windows::UI::Core::CoreWindo
 	mWindowRef = Window::privateCreate__( this, mAppImpl );
 }
 
-void WindowImplWinRT::createWindow( const ivec2 &windowSize, const std::string &title )
-{
-
-}
 
 void WindowImplWinRT::completeCreation()
 {
