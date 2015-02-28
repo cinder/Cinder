@@ -104,6 +104,75 @@ void EventManagerAndroid::quit()
 
 int32_t EventManagerAndroid::NativeHandleInput( android_app *ndkApp, AInputEvent *event )
 {
+	EventManagerAndroid *eventMan = reinterpret_cast<EventManagerAndroid*>( ndkApp->userData );
+
+	if( AINPUT_EVENT_TYPE_MOTION == AInputEvent_getType( event ) ) {
+		int32_t  action = AMotionEvent_getAction( event );
+		int32_t  index  = (action & AMOTION_EVENT_ACTION_POINTER_INDEX_MASK) >> AMOTION_EVENT_ACTION_POINTER_INDEX_SHIFT;
+		uint32_t flags  = (action & AMOTION_EVENT_ACTION_MASK);
+		int32_t  count  = AMotionEvent_getPointerCount( event );
+
+		switch( flags ) {
+			case AMOTION_EVENT_ACTION_DOWN:
+			{
+//console() << "AMOTION_EVENT_ACTION_DOWN" << std::endl;
+				int id  = AMotionEvent_getPointerId( event, 0 );
+				float x = AMotionEvent_getX( event, 0 );
+				float y = AMotionEvent_getY( event, 0 );
+				eventMan->getAppImplInst()->onTouchBegan( id, x, y );
+			}
+			break;
+
+			case AMOTION_EVENT_ACTION_MOVE:
+			{
+//console() << "AMOTION_EVENT_ACTION_MOVE" << std::endl;
+				std::vector<AppImplAndroid::TrackedTouch> moveTrackedTouches;
+			    for( int32_t i = 0; i < count; ++i ) {
+			        int id  = AMotionEvent_getPointerId( event, i );
+			        float x = AMotionEvent_getX( event, i );
+			        float y = AMotionEvent_getY( event, i );
+					moveTrackedTouches.push_back( AppImplAndroid::TrackedTouch( id, x, y ) );
+			    }
+				eventMan->getAppImplInst()->onTouchesMoved( moveTrackedTouches );
+
+			}
+			break;
+
+			case AMOTION_EVENT_ACTION_UP:
+			{
+//console() << "AMOTION_EVENT_ACTION_UP" << std::endl;
+			    int id  = AMotionEvent_getPointerId( event, 0 );
+			    float x = AMotionEvent_getX( event, 0 );
+			    float y = AMotionEvent_getY( event, 0 );
+				eventMan->getAppImplInst()->onTouchEnded( id, x, y );
+			}
+			break;
+
+			case AMOTION_EVENT_ACTION_POINTER_DOWN:
+			{
+//console() << "AMOTION_EVENT_ACTION_POINTER_DOWN" << std::endl;
+			    int id  = AMotionEvent_getPointerId( event, index );
+			    float x = AMotionEvent_getX( event, index );
+			    float y = AMotionEvent_getY( event, index );
+				eventMan->getAppImplInst()->onTouchBegan( id, x, y );
+			}
+			break;
+
+			case AMOTION_EVENT_ACTION_POINTER_UP:
+			{
+//console() << "AMOTION_EVENT_ACTION_POINTER_UP" << std::endl;
+			    int id  = AMotionEvent_getPointerId( event, index );
+			    float x = AMotionEvent_getX( event, index );
+			    float y = AMotionEvent_getY( event, index );
+				eventMan->getAppImplInst()->onTouchEnded( id, x, y );
+			}
+			break;
+
+		};
+
+		return 1;
+	}
+
 	return 0;
 }
 

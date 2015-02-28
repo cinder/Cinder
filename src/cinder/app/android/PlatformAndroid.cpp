@@ -53,6 +53,7 @@ DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 		return DataSourceAndroidAsset::create( assetPath.string() );
 	}
 	else {
+console() << "loadAsset: " << assetPath << std::endl;
 		throw AssetLoadExc( relativePath );
 	}
 }

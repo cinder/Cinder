@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/android/AppAndroid.h"
-//#include <android/sensor.h>
+
 
 namespace cinder { namespace app {
 
@@ -32,6 +32,16 @@ class WindowImplAndroid;
 
 class AppImplAndroid {
  public:
+ 	struct TrackedTouch {
+ 		int   id;
+ 		float x;
+ 		float y;
+ 		float prevX;
+ 		float prevY;
+ 		TrackedTouch( int aId = -1, float aX = 0.0f, float aY = 0.0f );
+ 		virtual ~TrackedTouch() {}
+ 		void update( float aX, float aY );
+ 	}; 	
 
 	AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings );
 	virtual ~AppImplAndroid();
@@ -79,12 +89,20 @@ public:
 	fs::path			getSaveFilePath( const fs::path &initialPath, std::vector<std::string> extensions );
 	fs::path			getFolderPath( const fs::path &initialPath );
 
+ protected:
+ 	void 				onTouchBegan( int id, float x, float y );
+ 	void 				onTouchMoved( int id, float x, float y );
+	void 				onTouchesMoved( const std::vector<AppImplAndroid::TrackedTouch>& movedTouches );
+ 	void 				onTouchEnded( int id, float x, float y );
+
  private:
  	void 				setup();
  	void 				sleepUntilNextFrame();
  	void 				updateAndDraw();
 
  private:
+ 	std::map<int, TrackedTouch>	mActiveTouches;
+
 	AppAndroid			*mApp;
 	android_app			*mNativeApp; 
 
