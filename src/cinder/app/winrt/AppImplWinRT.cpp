@@ -29,7 +29,7 @@
 
 
 #include "cinder/app/winrt/AppImplWinRT.h"
-#include "cinder/app/winrt/WinRTApp.h"
+#include "cinder/app/winrt/WinRtApp.h"
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
 #include "cinder/Display.h"
@@ -397,8 +397,6 @@ unsigned int AppImplWinRT::prepKeyEventModifiers()
 	return result;
 }
 
-
-
 void AppImplWinRT::handleKeyDown(KeyEventArgs^ e) 
 {
 	switch(e->VirtualKey) {
@@ -449,7 +447,6 @@ void AppImplWinRT::handleKeyUp(KeyEventArgs^ e)
 
 void WindowImplWinRT::setAlwaysOnTop( bool alwaysOnTop )
 {
-
 }
 
 unsigned int prepPointerEventModifiers(PointerEventArgs^ args)
@@ -477,10 +474,6 @@ unsigned int prepPointerEventModifiers(PointerEventArgs^ args)
 
 	return result;
 }
-
-
-
-
 
 void WindowImplWinRT::handlePointerDown(PointerEventArgs^ args) 
 {

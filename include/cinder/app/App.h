@@ -44,9 +44,9 @@
 	} } // namespace cinder::app		
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_MSW( APP, RENDERER, ##__VA_ARGS__ )
 #elif defined( CINDER_WINRT )
-	#include "cinder/app/winrt/AppImplWinRTBasic.h"
+	#include "cinder/app/winrt/AppWinRt.h"
 	namespace cinder { namespace app {
-		typedef AppImplWinRTBasic	App;
+		typedef AppWinRt	App;
 	} } // namespace cinder::app
 	#define CINDER_APP( APP, RENDERER, ... )	CINDER_APP_WINRT( APP, RENDERER, ##__VA_ARGS__ )
 #endif

@@ -297,8 +297,10 @@
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
     <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppWinRt.h" />
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\CinderFrameworkView.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\WindowImplWinRt.h" />
     <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
@@ -461,10 +463,16 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppWinRt.cpp" />
     <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\CinderFrameworkView.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\WindowImplWinRt.cpp" />
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
@@ -511,6 +519,7 @@
     <ClCompile Include="..\src\cinder\gl\Vbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\VboMesh.cpp" />
     <ClCompile Include="..\src\cinder\ImageIo.cpp" />
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp" />
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ip\Blend.cpp" />

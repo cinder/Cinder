@@ -376,9 +376,6 @@
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
       <Filter>Header Files\app\winrt</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h">
-      <Filter>Header Files\app\winrt</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\msw\CinderMsw.h">
       <Filter>Header Files\msw</Filter>
     </ClInclude>
@@ -528,6 +525,15 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h">
       <Filter>Header Files\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\CinderFrameworkView.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppWinRt.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\WindowImplWinRt.h">
+      <Filter>Header Files\app\winrt</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -936,9 +942,6 @@
     <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
       <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
-      <Filter>Source Files\app\winrt</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp">
       <Filter>Source Files\app\msw</Filter>
     </ClCompile>
@@ -1079,6 +1082,18 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\winrt\WinRTUtils.cpp">
       <Filter>Source Files\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\CinderFrameworkView.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppWinRt.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WindowImplWinRt.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

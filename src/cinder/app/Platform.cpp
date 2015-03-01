@@ -25,9 +25,11 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_COCOA )
-#include "cinder/app/cocoa/PlatformCocoa.h"
+	#include "cinder/app/cocoa/PlatformCocoa.h"
 #elif defined( CINDER_MSW )
-#include "cinder/app/msw/PlatformMsw.h"
+	#include "cinder/app/msw/PlatformMsw.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/winrt/PlatformWinRt.h"
 #endif
 
 using namespace std;
@@ -50,6 +52,8 @@ Platform* Platform::get()
 		sInstance = new PlatformCocoa;
 #elif defined( CINDER_MSW )
 		sInstance = new PlatformMsw;
+#elif defined( CINDER_WINRT )
+		sInstance = new PlatformWinRt;
 #endif
 	}
 

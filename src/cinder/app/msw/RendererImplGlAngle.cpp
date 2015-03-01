@@ -33,6 +33,7 @@
 
 #if defined( CINDER_WINRT )
 	#include "cinder/winrt/WinRTUtils.h"
+	#include "angle_windowsstore.h"
 #endif
 
 #define DEBUG_GL 1
@@ -87,11 +88,17 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 	if( ! eglGetPlatformDisplayEXT )
 		return false;
 
+#if defined( CINDER_MSW )
 	const EGLint displayAttributes[] = { EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE, EGL_NONE };
 
-#if defined( CINDER_MSW )
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, dc, displayAttributes );
 #else
+	const EGLint displayAttributes[] = {
+		EGL_PLATFORM_ANGLE_TYPE_ANGLE, EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE,
+		EGL_ANGLE_DISPLAY_ALLOW_RENDER_TO_BACK_BUFFER, EGL_TRUE, 
+		EGL_NONE,
+    };
+
 	mDisplay = eglGetPlatformDisplayEXT( EGL_PLATFORM_ANGLE_ANGLE, EGL_DEFAULT_DISPLAY, displayAttributes );
 #endif
 	if( mDisplay == EGL_NO_DISPLAY)
@@ -113,11 +120,10 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 #if defined( CINDER_MSW )
 	mSurface = eglCreateWindowSurface( mDisplay, config, wnd, NULL );
 #else
-/*
 	Windows::Foundation::Collections::PropertySet^ surfaceCreationProperties = ref new Windows::Foundation::Collections::PropertySet();
     surfaceCreationProperties->Insert( ref new ::Platform::String(EGLNativeWindowTypeProperty), wnd.Get() );
 
-	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );*/
+	mSurface = eglCreateWindowSurface( mDisplay, config, reinterpret_cast<IInspectable*>(surfaceCreationProperties), NULL );
 #endif
  
 	auto err = eglGetError();
