@@ -81,6 +81,16 @@ fs::path PlatformWinRt::getSaveFilePath( const fs::path &initialPath, const std:
 	throw Exception( "Unimplemented on WinRT" );
 }
 
+// Add the application path
+void PlatformWinRt::prepareAssetLoading()
+{
+	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
+	::Platform::String^ output = installedLocation->Path;
+	std::wstring t = std::wstring( output->Data() );
+	Platform::get()->addAssetDirectory( fs::path( winrt::PlatformStringToString( output ) ) );
+}
+
 void PlatformWinRt::getOpenFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
 	if( extensions.empty() )

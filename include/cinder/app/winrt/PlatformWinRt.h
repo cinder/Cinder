@@ -49,8 +49,7 @@ class PlatformWinRt : public Platform {
 	fs::path getFolderPath( const fs::path &initialPath = fs::path() ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath = fs::path(), const std::vector<std::string> &extensions = std::vector<std::string>() ) override;
 
-	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
-	void prepareAssetLoading() override {}
+	void prepareAssetLoading() override;
 
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
