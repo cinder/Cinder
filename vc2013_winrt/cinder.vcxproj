@@ -94,7 +94,7 @@
   <PropertyGroup />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <GenerateManifest>false</GenerateManifest>
-    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
@@ -102,29 +102,32 @@
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <TargetExt>.lib</TargetExt>
-    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
-    <TargetName>$(ProjectName)_d</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <GenerateManifest>false</GenerateManifest>
     <OutDir>..\lib\winrt\$(PlatformTarget)\</OutDir>
     <IntDir>$(PlatformTarget)\$(Configuration)\</IntDir>
+    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -136,7 +139,7 @@
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
-      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -158,7 +161,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -204,7 +207,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -225,7 +228,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
@@ -244,7 +247,7 @@
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
@@ -261,7 +264,6 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\App.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplWinRT.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaTouch.h" />
     <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaView.h" />
@@ -296,7 +298,6 @@
     <ClInclude Include="..\include\cinder\app\RendererGl.h" />
     <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
-    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
     <ClInclude Include="..\include\cinder\app\winrt\AppWinRt.h" />
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
     <ClInclude Include="..\include\cinder\app\winrt\CinderFrameworkView.h" />
@@ -420,26 +421,41 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\AppImplMswBasic.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\AppImplMswScreenSaver.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\AppMsw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\PlatformMsw.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\RendererImpl2dGdi.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
@@ -453,6 +469,9 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
     <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp">
@@ -475,16 +494,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
-    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\winrt\AppWinRt.cpp" />
     <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp" />
     <ClCompile Include="..\src\cinder\app\winrt\CinderFrameworkView.cpp" />
