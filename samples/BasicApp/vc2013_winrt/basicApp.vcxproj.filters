@@ -28,6 +28,9 @@
     <Filter Include="ANGLE\Win32">
       <UniqueIdentifier>{4f2f039d-89aa-4aaa-8fdd-40a9b8b33414}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{ad9bc964-15bc-4329-8e65-20d512976f3e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
@@ -48,6 +51,8 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\basicApp.cpp" />
+    <ClCompile Include="..\src\basicApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
