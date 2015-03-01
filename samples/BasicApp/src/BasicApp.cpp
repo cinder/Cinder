@@ -30,7 +30,7 @@ void BasicApp::keyDown( KeyEvent event )
 
 void BasicApp::draw()
 {
-	gl::clear( Color( 0.5f, 0.1f, 0.15f ) );
+	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 
 	gl::color( 1.0f, 0.5f, 0.25f );	
 	gl::begin( GL_LINE_STRIP );
@@ -38,6 +38,8 @@ void BasicApp::draw()
 		gl::vertex( point );
 	}
 	gl::end();
+
+	gl::drawSolidRect( Rectf( 20, 20, 200, 100 ) );
 }
 
 // This line tells Cinder to actually create the application

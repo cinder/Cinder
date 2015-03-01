@@ -19,12 +19,33 @@
     <Image Include="Assets\SplashScreen.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="ANGLE">
+      <UniqueIdentifier>{0d5f8ee4-7293-4c0d-805b-3e1c0666092e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\x64">
+      <UniqueIdentifier>{ec92b46a-91d5-4032-ad5a-1d42ac6a5c4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\Win32">
+      <UniqueIdentifier>{4f2f039d-89aa-4aaa-8fdd-40a9b8b33414}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="basicApp_TemporaryKey.pfx" />
+    <None Include="..\..\..\lib\winrt\x64\libEGL.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x64\libGLESv2.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x86\libEGL.dll">
+      <Filter>ANGLE\Win32</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x86\libGLESv2.dll">
+      <Filter>ANGLE\Win32</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\basicApp.cpp" />

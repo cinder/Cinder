@@ -92,8 +92,8 @@ void AppWinRt::run( Windows::UI::Core::CoreWindow^ window )
 
 	mActiveWindow->emitResize();
 
-//	if( mApp->getSettings().isMultiTouchEnabled() )
-//		mWindow->enableMultiTouch();
+	if( AppBase::sSettingsFromMain->isMultiTouchEnabled() )
+		mWindows.back()->enableMultiTouch();
 
 	while( ! mShouldQuit ) {
 		if( mVisible ) { // update and draw
@@ -197,6 +197,7 @@ void AppWinRt::setVisible( bool visible )
 
 void AppWinRt::windowSizeChange( Windows::UI::Core::CoreWindow^ sender )
 {
+	findWindowForCoreWindow( sender )->sizeChanged();
 }
 
 void AppWinRt::handlePointerDown( CoreWindow^ sender, PointerEventArgs^ args ) 
