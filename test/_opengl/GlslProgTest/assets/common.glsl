@@ -1,8 +1,5 @@
 
-float hash( float n )
-{
-	return fract( sin( n ) * 43758.5453 );
-}
+#include "hash.glsl"
 
 float noise( in vec2 x )
 {

@@ -1014,6 +1014,9 @@
 		118CA4391A9427F700841458 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4141A9427F700841458 /* PlatformCocoa.cpp */; };
 		118CA43A1A9427F700841458 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4141A9427F700841458 /* PlatformCocoa.cpp */; };
 		118CA43B1A9427F700841458 /* PlatformCocoa.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 118CA4141A9427F700841458 /* PlatformCocoa.cpp */; };
+		11C6F75A1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */; };
+		11C6F75B1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */; };
+		11C6F75C1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */; };
 		11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 111A5EF0191F722E005C3166 /* CinderAssert.cpp */; };
 		11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */; };
@@ -1567,6 +1570,8 @@
 		118CA4651A9428BE00841458 /* AppImplMswScreenSaver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppImplMswScreenSaver.h; sourceTree = "<group>"; };
 		118CA4681A9428BE00841458 /* PlatformMsw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = PlatformMsw.h; sourceTree = "<group>"; };
 		118CA46A1A94296900841458 /* CinderViewMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CinderViewMac.h; sourceTree = "<group>"; };
+		11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ShaderPreprocessor.cpp; path = gl/ShaderPreprocessor.cpp; sourceTree = "<group>"; };
+		11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = ShaderPreprocessor.h; path = gl/ShaderPreprocessor.h; sourceTree = "<group>"; };
 		11C97C89192F0BD700A510B5 /* CurrentFunction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CurrentFunction.h; sourceTree = "<group>"; };
 		11FD37E31A8EDB9E002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Signals.cpp; sourceTree = "<group>"; };
 		277C2CEC1366632B00178A29 /* Matrix22.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Matrix22.h; sourceTree = "<group>"; };
@@ -2130,6 +2135,7 @@
 				0003F42F1992D67300647C8B /* Pbo.h */,
 				B0245F5819BEDF3200BC878D /* Query.h */,
 				0003F4301992D67300647C8B /* Shader.h */,
+				11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */,
 				0003F4311992D67300647C8B /* Sync.h */,
 				0003F4321992D67300647C8B /* Texture.h */,
 				0003F4331992D67300647C8B /* TextureFont.h */,
@@ -2160,6 +2166,7 @@
 				0003F3C91992D64100647C8B /* Pbo.cpp */,
 				B06DE70219C74935008B9E1B /* Query.cpp */,
 				0003F3CA1992D64100647C8B /* Shader.cpp */,
+				11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */,
 				0003F3CB1992D64100647C8B /* Sync.cpp */,
 				0003F3CC1992D64100647C8B /* Texture.cpp */,
 				0003F3CD1992D64100647C8B /* TextureFont.cpp */,
@@ -3382,6 +3389,7 @@
 				00A121EC1362778200081873 /* Timeline.cpp in Sources */,
 				00A121ED1362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121EE1362778200081873 /* Tween.cpp in Sources */,
+				11C6F75B1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */,
 				0003F4151992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF0191F72AE005C3166 /* Node.cpp in Sources */,
 				00AD0D2E19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
@@ -3566,6 +3574,7 @@
 				00A121EB1362778200081873 /* Tween.cpp in Sources */,
 				005C0CEF14CBB47500A12CD2 /* Base64.cpp in Sources */,
 				0041730114C9BE760070C0D1 /* Frustum.cpp in Sources */,
+				11C6F75C1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */,
 				0003F4161992D64100647C8B /* Vao.cpp in Sources */,
 				111A5FF1191F72AE005C3166 /* Node.cpp in Sources */,
 				00AD0D2F19F051B100022D9F /* EnvironmentEs.cpp in Sources */,
@@ -3686,6 +3695,7 @@
 				118CA4331A9427F700841458 /* CinderViewMac.mm in Sources */,
 				0049C1B71010E5B10015B4B9 /* Renderer.cpp in Sources */,
 				006D705619942BF5008149E2 /* QuickTimeImplAvf.mm in Sources */,
+				11C6F75A1AA391E50001FA5C /* ShaderPreprocessor.cpp in Sources */,
 				EAC3D1AD1011F3AC00FFBC9E /* Serial.cpp in Sources */,
 				003ADB65103884C800ACF6F2 /* Params.cpp in Sources */,
 				003ADB971038974A00ACF6F2 /* TwMgr.cpp in Sources */,
