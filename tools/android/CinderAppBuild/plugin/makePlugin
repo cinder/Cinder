@@ -1,0 +1,4 @@
+#!/bin/bash
+ANDROID_STUDIO_PATH=/Applications/Android\ Studio.app
+sh "$ANDROID_STUDIO_PATH/Contents/gradle/gradle-2.2.1/bin/gradle" uploadArchives
+
