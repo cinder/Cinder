@@ -51,7 +51,6 @@ android {
         verbose = true
         moduleName = "BasicApp"
         srcFiles = ["../../../src/BasicApp.cpp"]
-        //srcDirs = ["../../../src"]
         cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
         includeDirs = ["../../../../../include", "../../../../../boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
