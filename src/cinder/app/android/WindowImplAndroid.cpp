@@ -87,6 +87,11 @@ void WindowImplAndroid::show()
 {
 }
 
+const std::vector<TouchEvent::Touch>& WindowImplAndroid::getActiveTouches() const
+{
+	return getAppImpl()->getActiveTouches();	
+}
+
 void WindowImplAndroid::setBorderless( bool borderless )
 {
 }

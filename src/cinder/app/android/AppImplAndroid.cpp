@@ -33,17 +33,18 @@
 
 namespace cinder { namespace app {
 
-AppImplAndroid::TrackedTouch::TrackedTouch( int aId, float aX, float aY )
-	: id( aId ), x( aX ), y( aY ), prevX( aX ), prevY( aY )
+AppImplAndroid::TrackedTouch::TrackedTouch( int aId, float aX, float aY, double aCurrentTime )
+	: id( aId ), x( aX ), y( aY ), prevX( aX ), prevY( aY ), currentTime( aCurrentTime )
 {
 }
 
-void AppImplAndroid::TrackedTouch::update( float aX, float aY )
+void AppImplAndroid::TrackedTouch::update( float aX, float aY, double aCurrentTime )
 {
 	prevX = x;
 	prevY = y;
 	x = aX;
 	y = aY;
+	currentTime = aCurrentTime;
 }
 
 AppImplAndroid::AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings )
@@ -144,14 +145,18 @@ void AppImplAndroid::onTouchBegan( int id, float x, float y )
 {
 	double currentTime = app::getElapsedSeconds();
 
-	TrackedTouch tt = TrackedTouch( id, x, y );
-	mActiveTouches[id] = tt;
+	TrackedTouch tt = TrackedTouch( id, x, y, currentTime );
+	mTrackedTouches[id] = tt;
 
 	vec2 pos = vec2( tt.x, tt.y );
 	vec2 prevPos = vec2( tt.prevX, tt.prevY );
 	std::vector<TouchEvent::Touch> beganTouches;
-	beganTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, currentTime, nullptr ) );
+	beganTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 
+	// Update active touches
+	updateActiveTouches();	
+
+	// Emit
 	TouchEvent event( getWindow(), beganTouches );
 	getWindow()->emitTouchesBegan( &event );		
 }
@@ -160,16 +165,20 @@ void AppImplAndroid::onTouchMoved( int id, float x, float y )
 {
 	double currentTime = app::getElapsedSeconds();
 
-	std::map<int, TrackedTouch>::iterator iter = mActiveTouches.find( id );
-	if( iter != mActiveTouches.end() ) {
+	std::map<int, TrackedTouch>::iterator iter = mTrackedTouches.find( id );
+	if( iter != mTrackedTouches.end() ) {
 		TrackedTouch& tt = iter->second;
-		tt.update( x, y );
+		tt.update( x, y, currentTime );
 
 		vec2 pos = vec2( tt.x, tt.y );
 		vec2 prevPos = vec2( tt.prevX, tt.prevY );
 		std::vector<TouchEvent::Touch> movedTouches;
-		movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, currentTime, nullptr ) );
-		
+		movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
+
+		// Update active touches
+		updateActiveTouches();	
+	
+		// Emit	
 		TouchEvent event( getWindow(), movedTouches );
 		getWindow()->emitTouchesMoved( &event );		
 	}
@@ -179,21 +188,26 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 {
 	double currentTime = app::getElapsedSeconds();
 
-	for( const AppImplAndroid::TrackedTouch& mtt : moveTrackedTouches ) {
-		std::vector<TouchEvent::Touch> movedTouches;
-	
-		std::map<int, TrackedTouch>::iterator iter = mActiveTouches.find( mtt.id );
-		if( iter != mActiveTouches.end() ) {
+	std::vector<TouchEvent::Touch> movedTouches;
+	for( const AppImplAndroid::TrackedTouch& mtt : moveTrackedTouches ) {	
+		std::map<int, TrackedTouch>::iterator iter = mTrackedTouches.find( mtt.id );
+		if( iter != mTrackedTouches.end() ) {
 			TrackedTouch& tt = iter->second;
-			tt.update( mtt.x, mtt.y );
+			tt.update( mtt.x, mtt.y, currentTime );
 
 			vec2 pos = vec2( tt.x, tt.y );
 			vec2 prevPos = vec2( tt.prevX, tt.prevY );
-			movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, currentTime, nullptr ) );
-			
-			TouchEvent event( getWindow(), movedTouches );
-			getWindow()->emitTouchesMoved( &event );		
+			movedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );			
 		}
+	}
+
+	// Update active touches
+	updateActiveTouches();
+
+	// Emit
+	if( ! movedTouches.empty() ) {
+		TouchEvent event( getWindow(), movedTouches );
+		getWindow()->emitTouchesMoved( &event );		
 	}
 }
 
@@ -201,19 +215,44 @@ void AppImplAndroid::onTouchEnded( int id, float x, float y )
 {
 	double currentTime = app::getElapsedSeconds();
 
-	std::map<int, TrackedTouch>::iterator iter = mActiveTouches.find( id );
-	if( iter != mActiveTouches.end() ) {
+	std::map<int, TrackedTouch>::iterator iter = mTrackedTouches.find( id );
+	if( iter != mTrackedTouches.end() ) {
 		TrackedTouch& tt = iter->second;
+		tt.update( x, y, currentTime );
 
 		vec2 pos = vec2( tt.x, tt.y );
 		vec2 prevPos = vec2( tt.prevX, tt.prevY );
 		std::vector<TouchEvent::Touch> endedTouches;
-		endedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, currentTime, nullptr ) );
+		endedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 		
+		// Emit
 		TouchEvent event( getWindow(), endedTouches );
 		getWindow()->emitTouchesEnded( &event );		
 
-		mActiveTouches.erase( id );	
+		// Remove the tracked touch
+		mTrackedTouches.erase( id );	
+	}
+
+	// Update active touches
+	updateActiveTouches();
+}
+
+const std::vector<TouchEvent::Touch>& AppImplAndroid::getActiveTouches() const
+{
+	return mActiveTouches;
+}
+
+void AppImplAndroid::updateActiveTouches()
+{
+	mActiveTouches.clear();
+	for( std::map<int, TrackedTouch>::iterator iter = mTrackedTouches.begin(); iter != mTrackedTouches.end(); ++iter ) {
+		TrackedTouch& tt = iter->second;
+
+		vec2 pos = vec2( tt.x, tt.y );
+		vec2 prevPos = vec2( tt.prevX, tt.prevY );
+		TouchEvent::Touch touch = TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr );
+		
+		mActiveTouches.push_back( touch );
 	}
 }
 

@@ -49,7 +49,7 @@ class WindowImplAndroid {
 	virtual bool		isHidden() const { return false; }
 	virtual DisplayRef	getDisplay() const { return mDisplay; }
 	virtual RendererRef	getRenderer() const { return mRenderer; }
-	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const { return mActiveTouches; }
+	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 	virtual void*		getNative() { return mNativeWindow; }
 
 	bool			    isBorderless() const { return true; }
@@ -57,7 +57,8 @@ class WindowImplAndroid {
 	bool			    isAlwaysOnTop() const { return true; }
 	void			    setAlwaysOnTop( bool alwaysOnTop );
 
-	AppImplAndroid*		getAppImpl() { return mAppImpl; }
+	AppImplAndroid*			getAppImpl() { return mAppImpl; }
+	const AppImplAndroid*	getAppImpl() const { return mAppImpl; }
 	WindowRef			getWindow() { return mWindowRef; }
 	virtual void		keyDown( const KeyEvent &event );
 	virtual void		draw();
@@ -74,8 +75,6 @@ class WindowImplAndroid {
 
 	DisplayRef			mDisplay;
 	RendererRef			mRenderer;
-
-    std::vector<TouchEvent::Touch>	mActiveTouches;
 
     friend class AppImplAndroid;
 };

@@ -547,6 +547,9 @@ bool System::hasMultiTouch()
 				instance()->mHasMultiTouch  = true;
 			}
 		});
+#elif defined( CINDER_ANDROID )
+		// @TODO Check to make sure all variants of Android device support multiTouch 
+		instance()->mHasMultiTouch = true;
 #else
 		throw Exception( "Not implemented" );
 #endif
@@ -575,6 +578,8 @@ int32_t System::getMaxMultiTouchPoints()
 		});
 		instance()->mMaxMultiTouchPoints = maxContacts;
 
+#elif defined( CINDER_ANDROID )
+		instance()->mMaxMultiTouchPoints = 10;
 #else
 		throw Exception( "Not implemented" );
 #endif

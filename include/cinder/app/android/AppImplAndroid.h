@@ -33,14 +33,15 @@ class WindowImplAndroid;
 class AppImplAndroid {
  public:
  	struct TrackedTouch {
- 		int   id;
- 		float x;
- 		float y;
- 		float prevX;
- 		float prevY;
- 		TrackedTouch( int aId = -1, float aX = 0.0f, float aY = 0.0f );
+ 		int    id;
+ 		float  x;
+ 		float  y;
+ 		float  prevX;
+ 		float  prevY;
+ 		double currentTime;
+ 		TrackedTouch( int aId = -1, float aX = 0.0f, float aY = 0.0f, double aCurrentTime = 0.0 );
  		virtual ~TrackedTouch() {}
- 		void update( float aX, float aY );
+ 		void update( float aX, float aY, double aCurrentTime );
  	}; 	
 
 	AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &settings );
@@ -95,13 +96,17 @@ public:
 	void 				onTouchesMoved( const std::vector<AppImplAndroid::TrackedTouch>& movedTouches );
  	void 				onTouchEnded( int id, float x, float y );
 
+ 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
+ 	void 									updateActiveTouches();
+
  private:
  	void 				setup();
  	void 				sleepUntilNextFrame();
  	void 				updateAndDraw();
 
  private:
- 	std::map<int, TrackedTouch>	mActiveTouches;
+ 	std::map<int, TrackedTouch>		mTrackedTouches;
+ 	std::vector<TouchEvent::Touch>	mActiveTouches;
 
 	AppAndroid			*mApp;
 	android_app			*mNativeApp; 

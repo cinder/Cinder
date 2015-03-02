@@ -39,8 +39,8 @@ namespace cinder {
 static double AndroidGetElapsedSeconds() 
 {
 	struct timespec now;
-    ::clock_gettime(CLOCK_MONOTONIC, &now);
-    return (double)((now.tv_sec * 1000000000LL) + now.tv_nsec)/1000000000.0;
+	::clock_gettime(CLOCK_MONOTONIC, &now);
+	return (double)((now.tv_sec * 1000000000LL) + now.tv_nsec)/1000000000.0;
 } 
 #endif
 

@@ -227,7 +227,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Perlin.cpp
     ${CINDER_SRC_DIR}/cinder/Plane.cpp
     ${CINDER_SRC_DIR}/cinder/PolyLine.cpp
-    #${CINDER_SRC_DIR}/cinder/Rand.cpp
+    ${CINDER_SRC_DIR}/cinder/Rand.cpp
     ${CINDER_SRC_DIR}/cinder/Ray.cpp
     ${CINDER_SRC_DIR}/cinder/Rect.cpp
     ${CINDER_SRC_DIR}/cinder/Shape2d.cpp

@@ -29,7 +29,6 @@ android {
             jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
             assets.srcDirs = ['src/main/assets', '../../../assets']
         }
-
     }
 
     task disableDefaultNdkBuild() {
