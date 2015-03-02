@@ -10,6 +10,9 @@ using namespace std;
 class BasicApp : public App {
   public:
 	void mouseDrag( MouseEvent event );
+#if defined( CINDER_ANDROID )
+    void touchesBegan( TouchEvent event );
+#endif
 	void keyDown( KeyEvent event );
 	void draw();
 
@@ -22,6 +25,14 @@ void BasicApp::mouseDrag( MouseEvent event )
 	mPoints.push_back( event.getPos() );
 }
 
+#if defined( CINDER_ANDROID )
+void BasicApp::touchesBegan( TouchEvent event )
+{
+	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
+        mPoints.push_back( touchIt->getPos() );
+	}
+}
+#endif
 void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )

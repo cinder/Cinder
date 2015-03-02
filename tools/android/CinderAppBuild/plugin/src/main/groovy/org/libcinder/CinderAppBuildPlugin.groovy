@@ -24,8 +24,24 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = []
-        if( ! project.cinder.srcDirs.empty ) {
+        // Files
+        if(! project.cinder.srcFiles.isEmpty()) {
             this.mSourceFiles.add("\\")
+            project.cinder.srcFiles.each {
+                def file = new File("${project.projectDir}/" + it)
+                String path = file.canonicalPath.toString()                    
+                if( ! path.startsWith( "." ) ) {
+                    String relPath = this.relativePath( cppBuildDir, path )
+                    this.mSourceFiles.add("\t" + relPath + " \\")
+                }
+            }
+        }
+        
+        // Dirs
+        if(! project.cinder.srcDirs.isEmpty()) {
+            if(this.mSourceFiles.isEmpty()) {
+                this.mSourceFiles.add("\\")
+            }
             project.cinder.srcDirs.each {
                 def dir = new File("${project.projectDir}/" + it)                                       
                 dir.eachFile() {
@@ -247,6 +263,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 class CinderAppBuildPluginExtension {
     def verbose = false
     def moduleName = ""
+    def srcFiles = []
     def srcDirs = []
     def cppFlags = ""
     def includeDirs = []
