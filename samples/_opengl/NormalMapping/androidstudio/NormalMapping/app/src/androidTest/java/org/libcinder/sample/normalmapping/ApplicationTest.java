@@ -1,4 +1,4 @@
-package org.cinder.sample;
+package org.libcinder.sample.normalmapping;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;
