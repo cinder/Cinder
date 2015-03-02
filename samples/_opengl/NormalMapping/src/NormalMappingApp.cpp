@@ -204,7 +204,7 @@ void NormalMappingApp::setup()
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		fs::path mshFile = getAssetPath("") / "leprechaun.msh";
+		fs::path mshFile = getAssetPath("leprechaun.msh");
 		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );
@@ -249,6 +249,7 @@ void NormalMappingApp::shutdown()
 
 void NormalMappingApp::update()
 {
+
 	// keep track of time
 	float fElapsed = (float)getElapsedSeconds() - mTime;
 	mTime += fElapsed;
@@ -272,14 +273,14 @@ void NormalMappingApp::update()
 	mLightAmbient.position = vec4( 0 );
 
 	// set the varying shader uniforms
-	mShaderNormalMapping->uniform( "bShowNormals", mViewMode == ViewMode::Normals );
-	mShaderNormalMapping->uniform( "bUseDiffuseMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
-	mShaderNormalMapping->uniform( "bUseSpecularMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting ) );
-	mShaderNormalMapping->uniform( "bUseEmmisiveMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
-	mShaderNormalMapping->uniform( "bUseNormalMap", mEnableNormalMap );
+	//mShaderNormalMapping->uniform( "bShowNormals", mViewMode == ViewMode::Normals );
+	//mShaderNormalMapping->uniform( "bUseDiffuseMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
+	//mShaderNormalMapping->uniform( "bUseSpecularMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Lighting ) );
+	//mShaderNormalMapping->uniform( "bUseEmmisiveMap", ( mViewMode == ViewMode::Default || mViewMode == ViewMode::Glossy ) );
+	//mShaderNormalMapping->uniform( "bUseNormalMap", mEnableNormalMap );
 
 	mShaderNormalMapping->uniform( "uLights[0].position", mLightLantern.position );
-	mShaderNormalMapping->uniform( "uLights[1].position", mLightAmbient.position );
+	//mShaderNormalMapping->uniform( "uLights[1].position", mLightAmbient.position );
 
 #if ! defined( CINDER_GL_ES )
 	if(mShaderWireframe)

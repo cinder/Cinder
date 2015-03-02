@@ -22,7 +22,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         return result.toString()
     }
 
-
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = []
         if( ! project.cinder.srcDirs.empty ) {
@@ -125,7 +124,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         def outFile = new File( "${filePath}" )
         outFile.text = lines.join("\n")
 
-        if( outFile.exists() ) {
+        if( project.cinder.verbose && outFile.exists() ) {
             println "Wrote ${filePath}"
         }
     }
@@ -169,7 +168,9 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             def outDir  = new File( "${dirPath}" )
             if( ! outDir.exists() ) {
                 outDir.mkdirs()
-                println "Created ${dirPath}"
+                if( project.cinder.verbose ) {
+                    println "Created ${dirPath}"
+                }
             }
 
             // Directory where cpp builds take place
