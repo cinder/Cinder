@@ -308,7 +308,7 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-	: mActiveUniformTypesCached( false ), mActiveAttribTypesCached( false ),
+: mActiveUniformsCached( false ), mActiveAttribsCached( false ), mActiveUniformBlocksCached( false )
 	mUniformSemanticsCached( false ), mAttribSemanticsCached( false ),
 	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
@@ -377,6 +377,7 @@ GlslProg::GlslProg( const Format &format )
 	link();
 	
 	cacheActiveAttribs();
+	cacheActiveUniformBlocks();
 	cacheActiveUniforms();
 	
 	auto & userDefinedUniforms = format.getUniforms();
@@ -419,7 +420,7 @@ GlslProg::GlslProg( const Format &format )
 			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
-	
+	cout << "uniform blocks: " << mUniformBlocks.size() << endl;
     cout << *this << endl;
     
 	setLabel( format.getLabel() );
@@ -563,7 +564,7 @@ GLint GlslProg::getUniformLocation( const std::string &name ) const
 	
 void GlslProg::cacheActiveUniforms()
 {
-	if( ! mActiveUniformTypesCached ) {
+	if( ! mActiveUniformsCached ) {
 		GLint numActiveUniforms = 0;
 		glGetProgramiv( mHandle, GL_ACTIVE_UNIFORMS, &numActiveUniforms );
 		
@@ -577,29 +578,31 @@ void GlslProg::cacheActiveUniforms()
 			
             glGetActiveUniform( mHandle, (GLuint)i, 511, &nameLength, &size, &type, name );
 			auto loc = glGetUniformLocation( mHandle, name );
+			if( loc != -1 ) {
+				UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
 			
-			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+				auto foundSemantic = semanticNameMap.find( name );
+				if( foundSemantic != semanticNameMap.end() ) {
+					uniformSemantic = foundSemantic->second;
+				}
 			
-			auto foundSemantic = semanticNameMap.find( name );
-			if( foundSemantic != semanticNameMap.end() ) {
-				uniformSemantic = foundSemantic->second;
+				Uniform uniform;
+				uniform.mName		= name;
+				uniform.mLoc		= loc;
+                uniform.mIndex      = i;
+				uniform.mSize		= size;
+				uniform.mType		= type;
+				uniform.mSemantic	= uniformSemantic;
+				mUniforms.push_back( uniform );
 			}
-			
-			Uniform uniform;
-			uniform.mName		= name;
-			uniform.mLoc		= loc;
-			uniform.mSize		= size;
-			uniform.mType		= type;
-			uniform.mSemantic	= uniformSemantic;
-			mUniforms.push_back( uniform );
 		}
-		mActiveUniformTypesCached = true;
+		mActiveUniformsCached = true;
 	}
 }
 	
 void GlslProg::cacheActiveAttribs()
 {
-	if( ! mActiveAttribTypesCached ) {
+	if( ! mActiveAttribsCached ) {
 		GLint numActiveAttrs = 0;
 		glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
 		
@@ -627,7 +630,7 @@ void GlslProg::cacheActiveAttribs()
 			attrib.mSemantic	= attributeSemantic;
 			mAttributes.push_back( attrib );
 		}
-		mActiveAttribTypesCached = true;
+		mActiveAttribsCached = true;
 	}
 }
     
@@ -667,47 +670,166 @@ GLint GlslProg::getAttribLocation( const std::string &name ) const
 }
     
 #if ! defined( CINDER_GL_ES_2 )
-    void GlslProg::uniformBlock( int loc, int binding )
-    {
-        glUniformBlockBinding( mHandle, loc, binding );
-    }
-    
-    void GlslProg::uniformBlock( const std::string &name, GLint binding )
-    {
-        GLint loc = getUniformBlockLocation( name );
-        if( loc == -1 )
-            CI_LOG_E( "Unknown uniform block: \"" << name << "\"" );
-        else
-            glUniformBlockBinding( mHandle, loc, binding );
-    }
-    
-    GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
-    {
-        auto existing = mUniformBlockLocs.find( name );
-        if( existing == mUniformBlockLocs.end() ) {
-            const GLuint loc = glGetUniformBlockIndex( mHandle, name.c_str() );
-            if( loc == GL_INVALID_INDEX )
-                return -1;
-            else
-                mUniformBlockLocs[name] = loc;
-            return loc;
-        }
-        else
-            return existing->second;
-    }
-    
-    GLint GlslProg::getUniformBlockSize( GLint blockIndex ) const
-    {
-        auto existing = mUniformBlockSizes.find( blockIndex );
-        if( existing == mUniformBlockSizes.end() ) {
-            GLint blockSize = 0;
-            glGetActiveUniformBlockiv( mHandle, blockIndex, GL_UNIFORM_BLOCK_DATA_SIZE, &blockSize );
-            mUniformBlockSizes[blockIndex] = blockSize;
-            return blockSize;
-        }
-        else
-            return existing->second;
-    }
+void GlslProg::uniformBlock( int loc, int binding )
+{
+	auto found = find_if( mUniformBlocks.begin(),
+						 mUniformBlocks.end(),
+						 [=]( const UniformBlock &block ){
+							 return block.mLoc == loc;
+						 });
+	if( found != mUniformBlocks.end() ) {
+		if( found->mBlockBinding != binding ) {
+			const_cast<UniformBlock&>(*found).mBlockBinding = binding;
+			glUniformBlockBinding( mHandle, found->mLoc, binding );
+		}
+	}
+	else {
+		CI_LOG_E("Uniform block at " << loc << " location not found");
+	}
+}
+
+void GlslProg::uniformBlock( const std::string &name, GLint binding )
+{
+	auto found = find_if( mUniformBlocks.begin(),
+						 mUniformBlocks.end(),
+						 [=]( const UniformBlock &block ){
+							 return block.mName == name;
+						 });
+	if( found != mUniformBlocks.end() ) {
+		if( found->mBlockBinding != binding ) {
+			const_cast<UniformBlock&>(*found).mBlockBinding = binding;
+			glUniformBlockBinding( mHandle, found->mLoc, binding );
+		}
+	}
+	else {
+		CI_LOG_E("Uniform block \"" << name << "\" not found");
+	}
+}
+
+GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
+{
+	auto found = find_if( mUniformBlocks.begin(),
+						 mUniformBlocks.end(),
+						 [=]( const UniformBlock &block ){
+							 return block.mName == name;
+						 });
+	if( found != mUniformBlocks.end() )
+		return found->mLoc;
+	else
+		return -1;
+}
+
+GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
+{
+	auto found = find_if( mUniformBlocks.begin(),
+						 mUniformBlocks.end(),
+						 [=]( const UniformBlock &block ){
+							 return block.mBlockBinding == blockBinding;
+						 });
+	if( found != mUniformBlocks.end() )
+		return found->mSize;
+	else
+		return -1;
+}
+	
+void GlslProg::cacheActiveUniformBlocks()
+{
+	if ( ! mActiveUniformBlocksCached ) {
+		GLint numActiveUniformBlocks = 0;
+		glGetProgramiv( mHandle, GL_ACTIVE_UNIFORM_BLOCKS, &numActiveUniformBlocks );
+		
+		auto & semanticNameMap = getDefaultUniformNameToSemanticMap();
+		cout << "Active Uniform Block: " << numActiveUniformBlocks << endl;
+		for( GLint i = 0; i < numActiveUniformBlocks; i++ ) {
+			GLchar name[500];
+			GLsizei nameLength;
+			GLint blockBinding;
+			GLint dataSize;
+			GLint numActiveUniforms;
+			
+			glGetActiveUniformBlockName( mHandle, i, 500, &nameLength, name );
+			name[nameLength] = 0;
+			
+			glGetActiveUniformBlockiv( mHandle, i, GL_UNIFORM_BLOCK_BINDING, &blockBinding );
+			glGetActiveUniformBlockiv( mHandle, i, GL_UNIFORM_BLOCK_DATA_SIZE, &dataSize );
+			glGetActiveUniformBlockiv( mHandle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORMS, &numActiveUniforms );
+			
+			const GLuint loc = glGetUniformBlockIndex( mHandle, name );
+			
+			UniformBlock uniformBlock;
+			uniformBlock.mName = name;
+			uniformBlock.mLoc = loc;
+			uniformBlock.mSize = dataSize;
+			uniformBlock.mBlockBinding = blockBinding;
+			
+			cout << "Name: " << name << " Loc: " << loc << " dataSize: " << dataSize << " blockBinding: " << blockBinding << endl;
+			
+			std::vector<GLint> uniformIndices( numActiveUniforms );
+			glGetActiveUniformBlockiv( mHandle, i, GL_UNIFORM_BLOCK_ACTIVE_UNIFORM_INDICES, uniformIndices.data() );
+            std::vector<GLuint> unSignedIndices( numActiveUniforms );
+            int j = 0;
+			for( auto & index : uniformIndices ) {
+				char name[512];
+				GLsizei nameLength;
+				GLint size;
+				GLenum type;
+				
+				glGetActiveUniform( mHandle, (GLuint)index, 511, &nameLength, &size, &type, name );
+				
+				UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+				
+				auto foundSemantic = semanticNameMap.find( name );
+				if( foundSemantic != semanticNameMap.end() ) {
+					uniformSemantic = foundSemantic->second;
+				}
+				
+				Uniform uniform;
+				uniform.mName		= name;
+				uniform.mLoc		= -1;
+                uniform.mIndex      = index;
+				uniform.mSize		= size;
+				uniform.mType		= type;
+				uniform.mSemantic	= uniformSemantic;
+                unSignedIndices[j++]= index;
+				
+				uniformBlock.mActiveUniforms.push_back( uniform );
+			}
+            
+            std::vector<GLint> uniformDataSize( numActiveUniforms );
+            glGetActiveUniformsiv( mHandle,
+                                  numActiveUniforms,
+                                  unSignedIndices.data(),
+                                  GL_UNIFORM_SIZE,
+                                  uniformDataSize.data() );
+            std::vector<GLint> uniformOffset( numActiveUniforms );
+            glGetActiveUniformsiv( mHandle,
+                                  numActiveUniforms,
+                                  unSignedIndices.data(),
+                                  GL_UNIFORM_OFFSET,
+                                  uniformOffset.data() );
+            std::vector<GLint> uniformArrayStride( numActiveUniforms );
+            glGetActiveUniformsiv( mHandle,
+                                  numActiveUniforms,
+                                  unSignedIndices.data(),
+                                  GL_UNIFORM_ARRAY_STRIDE,
+                                  uniformArrayStride.data() );
+            std::vector<GLint> uniformMatrixStride( numActiveUniforms );
+            glGetActiveUniformsiv( mHandle,
+                                  numActiveUniforms,
+                                  unSignedIndices.data(),
+                                  GL_UNIFORM_MATRIX_STRIDE,
+                                  uniformMatrixStride.data() );
+            
+            uniformBlock.mActiveUniformInfo.push_back( uniformOffset );
+            uniformBlock.mActiveUniformInfo.push_back( uniformArrayStride );
+            uniformBlock.mActiveUniformInfo.push_back( uniformMatrixStride );
+            
+            mUniformBlocks.push_back( uniformBlock );
+		}
+		
+		mActiveUniformBlocksCached = true;
+	}
+}
 #endif // ! defined( CINDER_GL_ES_2 )
     
 // int
@@ -1101,7 +1223,26 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "    Type: " << gl::constantToString( uniform.mType ) << std::endl;
 		os << "    Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
 	}
-
+	
+#if ! defined( CINDER_GL_ES_2 )
+	os << " Uniform Blocks: " << std::endl;
+	auto & uniformBlocks = rhs.getActiveUniformBlocks();
+	os << " size " << uniformBlocks.size() << endl;
+	for( auto & uniformBlock : uniformBlocks ) {
+		os << " \"" << uniformBlock.mName << "\":" << std::endl;
+		os << "   Loc: " << uniformBlock.mLoc << std::endl;
+		os << "   Size: " << uniformBlock.mSize << std::endl;
+		os << "   BlockBinding: " << uniformBlock.mBlockBinding << std::endl;
+		os << "   Active Uniforms: " << endl;
+		for( auto & uniform : uniformBlock.mActiveUniforms ) {
+			os << "  \"" << uniform.mName << "\":" << std::endl;
+			os << "    Loc: " << uniform.mLoc << std::endl;
+			os << "    Type: " << gl::constantToString( uniform.mType ) << std::endl;
+			os << "    Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
+		}
+	}
+#endif
+	
 	auto attribs = rhs.getActiveAttributes();
 	os << " Attributes: " << std::endl;
 	for( auto &attrib : attribs ) {

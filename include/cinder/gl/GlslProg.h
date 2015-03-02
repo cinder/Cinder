@@ -53,14 +53,20 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	struct Uniform {
 		std::string		mName;
-		GLint			mSize = 0, mLoc = -1;
+		GLint			mSize = 0, mLoc = -1, mIndex = -1;
+		GLint			mDataSize;
 		GLenum			mType;
 		UniformSemantic mSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
 	};
-	
+#if ! defined( CINDER_GL_ES_2 )
 	struct UniformBlock {
-		
+		std::string mName;
+		GLint mSize = 0, mLoc = -1;
+		GLint mBlockBinding;
+		std::vector<Uniform> mActiveUniforms;
+		std::vector<std::vector<GLint>> mActiveUniformInfo;
 	};
+#endif
 	
 	struct Attribute {
 		std::string		mName;
@@ -289,11 +295,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void    uniform( const std::string &name, const mat3 *data, int count, bool transpose = false ) const;
 	void    uniform( int location, const mat4 *data, int count, bool transpose = false ) const;
 	void    uniform( const std::string &name, const mat4 *data, int count, bool transpose = false ) const;
-
-//	//! Returns the map between uniform semantics and active uniforms' names
-//	const UniformSemanticMap&		getUniformSemantics() const;
-//	//! Returns the map between attribute semantics and active attributes' names
-//	const AttribSemanticMap&		getAttribSemantics() const;
 	
 	const std::vector<Attribute>&	getActiveAttributes() const { return mAttributes; }
 	const std::vector<Uniform>&		getActiveUniforms() const { return mUniforms; }
@@ -318,6 +319,11 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniformBlock( GLint loc, GLint binding );
 	GLint	getUniformBlockLocation( const std::string &name ) const;
 	GLint	getUniformBlockSize( GLint blockIndex ) const;
+	const std::vector<UniformBlock>& getActiveUniformBlocks() const { return mUniformBlocks; }
+	void	cacheActiveUniformBlocks();
+	
+	std::vector<UniformBlock>				mUniformBlocks;
+	bool									mActiveUniformBlocksCached;
 #endif
 
 	std::string		getShaderLog( GLuint handle ) const;
@@ -337,17 +343,17 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void			cacheActiveAttribs();
 	void			cacheActiveUniforms();
 	
+	
 	GLuint									mHandle;
 	
 	static UniformSemanticMap				sDefaultUniformNameToSemanticMap;
 	static AttribSemanticMap				sDefaultAttribNameToSemanticMap;
 	
 	std::vector<Attribute>					mAttributes;
-	mutable bool							mActiveAttribTypesCached;
-	mutable bool							mAttribSemanticsCached;
+	bool									mActiveAttribsCached;
 	std::vector<Uniform>					mUniforms;
-	mutable bool							mActiveUniformTypesCached;
-	mutable bool							mUniformSemanticsCached;
+	bool									mActiveUniformsCached;
+	
 	
 	// enumerates the uniforms we've already logged as missing so that we don't flood the log with the same message
 	mutable std::set<std::string>			mLoggedMissingUniforms;
