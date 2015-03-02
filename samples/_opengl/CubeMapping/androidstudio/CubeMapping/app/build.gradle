@@ -9,7 +9,7 @@ android {
     println "BUILD DIR  : ${buildDir}"
 
     defaultConfig {
-        applicationId "org.libcinder.samples.normalmapping"
+        applicationId "org.libcinder.samples.cubemapping"
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1

@@ -9,7 +9,7 @@ android {
     println "BUILD DIR  : ${buildDir}"
 
     defaultConfig {
-        applicationId "org.libcinder.samples.cube"
+        applicationId "org.libcinder.samples.multitouchbasic"
         minSdkVersion 21
         targetSdkVersion 21
         versionCode 1
@@ -49,16 +49,16 @@ android {
 
     cinder {
         verbose = true
-        moduleName = "RotatingCubeApp"
-        srcDirs = ["../../../src"]
+        moduleName = "MultiTouchApp"
+        srcFiles = ["../../../src/MultiTouchApp.cpp"]
         cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
-        includeDirs = ["../../../include", "../../../../../../include", "../../../../../../boost"]
+        includeDirs = ["../../../../../include", "../../../../../boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         staticLibs = [
-                "${projectDir}/../../../../../../lib/libcinder_d.a",
-                "${projectDir}/../../../../../../lib/android/libboost_date_time.a",
-                "${projectDir}/../../../../../../lib/android/libboost_filesystem.a",
-                "${projectDir}/../../../../../../lib/android/libboost_system.a"
+                "${projectDir}/../../../../../lib/libcinder_d.a",
+                "${projectDir}/../../../../../lib/android/libboost_date_time.a",
+                "${projectDir}/../../../../../lib/android/libboost_filesystem.a",
+                "${projectDir}/../../../../../lib/android/libboost_system.a"
         ]
     }
 
