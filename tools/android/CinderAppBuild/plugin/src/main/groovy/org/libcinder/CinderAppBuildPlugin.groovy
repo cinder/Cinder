@@ -1,7 +1,12 @@
-package org.libcinder
+package org.libcinder.gradle
 
+import org.gradle.api.GradleException
+import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Plugin
+import org.gradle.api.tasks.*
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 class CinderAppBuildPlugin implements Plugin<Project> {
     def mSourceFiles  = []
@@ -10,18 +15,28 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     def mStaticLibs   = []
     def mStaticBlocks = []
 
-    void parseSourceFiles(Project project) {
+    String relativePath( aBaseDir, aFilePath ) {
+        Path baseDir  = Paths.get(aBaseDir);
+        Path filePath = Paths.get(aFilePath);
+        Path result = baseDir.relativize(filePath);
+        return result.toString()
+    }
+
+
+    void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = []
         if( ! project.cinder.srcDirs.empty ) {
             this.mSourceFiles.add("\\")
             project.cinder.srcDirs.each {
                 def dir = new File("${project.projectDir}/" + it)                                       
                 dir.eachFile() {
-                    String path = it.canonicalPath.toString()
-                    if( ! it.name.startsWith( "." ) ) {
-                        this.mSourceFiles.add("\t" + path + " \\")
+                    String path = it.canonicalPath.toString()                    
+                    if( ! path.startsWith( "." ) ) {
+                        String relPath = this.relativePath( cppBuildDir, path )
+                        this.mSourceFiles.add("\t" + relPath + " \\")
                     }
                 }
+
             }
         }
     }
@@ -114,12 +129,28 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             println "Wrote ${filePath}"
         }
     }
-    
 
+    void ndkDirCheck(Project project) {
+        File ndkDir = project.plugins.findPlugin('com.android.application').getNdkFolder()
+        if( null == ndkDir ) {
+            throw new InvalidUserDataException("ndk.dir is null! Make sure ndk.dir in local.properties is set.")
+        }
+        //
+        if( ! ndkDir.exists() ) {
+            throw new InvalidUserDataException("ndk.dir does not exist! (ndk.dir=" + ndkDir.toString()+")")
+        }
+    }
+
+    String makeNdkArg(key, value) {
+        String result = "${key}=${value}"
+        return result
+    }
+    
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
 
-        def buildDir = project.buildDir;
+        def projectDir = project.projectDir
+        def buildDir = project.buildDir
         def buildType = 'unset' /// CHANGE TO: debug AFTER TESTING
         
         // Extract selected build type from app.iml
@@ -129,8 +160,10 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             buildType = nodes[0].@value
         }
        
-        // TASK: cinderGenerateAndroidMk 
-        project.task( 'cinderGenerateAndroidMk' ) << {
+        // TASK: cinderGenerateNdkBuild
+        project.task('cinderGenerateNdkBuild') << {
+            this.ndkDirCheck(project)
+
             def dirPath = "${buildDir}/cinder-ndk/${buildType}"
             def filePath = "${dirPath}/Android.mk" 
             def outDir  = new File( "${dirPath}" )
@@ -139,8 +172,16 @@ class CinderAppBuildPlugin implements Plugin<Project> {
                 println "Created ${dirPath}"
             }
 
+            // Directory where cpp builds take place
+            def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
+
             // Parse
-            this.parseSourceFiles(project)
+            try {
+                this.parseSourceFiles(project, cppBuildDir)
+            } catch( e ) {
+                throw new GradleException("Source files parse failed, e=" + e)
+            }
+           
             this.parseIncludeDirs(project)
             this.parseSharedLibs(project)
             this.parseStaticLibs(project)
@@ -149,20 +190,46 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             this.writeAndroidMk(project, filePath)
         }  
 
-        // TASK: cinderGenerateApplicationMk
-        project.task( 'cinderGenerateApplicationMk', dependsOn: 'cinderGenerateAndroidMk' ) << {
-        }
+        // TASK: cinderCompileNdk
+        project.task('cinderCompileNdk', dependsOn: 'cinderGenerateNdkBuild') << {
+            this.ndkDirCheck(project)
 
-        // TASK: cinderGenerateNdkBuild
-        project.task( 'cinderGenerateNdkBuild', dependsOn: 'cinderGenerateApplicationMk' ) << {
+            String ndkDir = project.plugins.findPlugin('com.android.application').getNdkFolder().toString()
+            
+            def ndkBuildCmd  = "${ndkDir}/ndk-build"
+            def ndkBuildArgs = []
+            
+            if( project.cinder.verbose ) {
+                ndkBuildArgs.add(this.makeNdkArg("V", "1"))
+            }
+            ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH", "null"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_BUILD_SCRIPT", "${buildDir}/cinder-ndk/debug/Android.mk"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_PLATFORM",     "android-21"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_OUT",          "${buildDir}/cinder-ndk/debug/obj"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_LIBS_OUT",     "${projectDir}/src/main/jniLibs"))            
+            ndkBuildArgs.add(this.makeNdkArg("APP_STL",          "gnustl_static"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_ABI",          "armeabi-v7a"))
+       
+            if( project.cinder.verbose ) {
+                def cwd = System.getProperty("user.dir")  
+                def execStr = ndkBuildCmd + " " + ndkBuildArgs.join(" ")
+                println "EXEC DIR: ${cwd}"
+                println "EXEC CMD: ${execStr}"
+            }
+ 
+            project.exec {
+                executable = ndkBuildCmd
+                args = ndkBuildArgs
+            }    
         }
     }
 }
 
 class CinderAppBuildPluginExtension {
-    def String moduleName = ""
+    def verbose = false
+    def moduleName = ""
     def srcDirs = []
-    def String cppFlags = ""
+    def cppFlags = ""
     def includeDirs = []
     def ldLibs = []
     def staticLibs = []
