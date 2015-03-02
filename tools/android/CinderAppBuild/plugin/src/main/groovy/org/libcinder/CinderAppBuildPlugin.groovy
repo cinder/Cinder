@@ -176,16 +176,34 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             // Directory where cpp builds take place
             def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
 
-            // Parse
+           
+            // Source files 
             try {
                 this.parseSourceFiles(project, cppBuildDir)
             } catch( e ) {
                 throw new GradleException("Source files parse failed, e=" + e)
             }
-           
-            this.parseIncludeDirs(project)
-            this.parseSharedLibs(project)
-            this.parseStaticLibs(project)
+                
+            // Include dirs
+            try {
+                this.parseIncludeDirs(project)
+            } catch( e ) {
+                throw new GradleException("Include dirs parse failed, e=" + e)            
+            }
+
+            // Shared libs
+            try {
+                this.parseSharedLibs(project)
+            } catch( e ) {
+                throw new GradleException("Shared libs parse failed, e=" + e)           
+            }
+
+            // Static libs
+            try {
+                this.parseStaticLibs(project)
+            } catch( e ) {
+                throw new GradleException("Static libs parse failed, e=" + e)            
+            }
 
             // Write
             this.writeAndroidMk(project, filePath)
