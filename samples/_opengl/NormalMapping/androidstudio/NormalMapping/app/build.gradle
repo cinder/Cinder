@@ -1,0 +1,75 @@
+apply plugin: 'com.android.application'
+apply plugin: org.libcinder.gradle.CinderAppBuildPlugin
+
+android {
+    compileSdkVersion 21
+    buildToolsVersion "21.1.2"
+
+    println "PROJECT DIR: ${projectDir}"
+    println "BUILD DIR  : ${buildDir}"
+
+    defaultConfig {
+        applicationId "org.libcinder.samples.normalmapping"
+        minSdkVersion 21
+        targetSdkVersion 21
+        versionCode 1
+        versionName "1.0"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    sourceSets {
+        main {
+            jni.srcDirs = ['src/main/jni', '../../../src', '../../../include']
+            jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
+            assets.srcDirs = ['src/main/assets', '../../../assets']
+        }
+
+    }
+
+    task disableDefaultNdkBuild() {
+        doFirst {
+            tasks.each {
+                if(("compileDebugNdk" ==  it.name) || ("compileReleaseNdk" ==  it.name)) {
+                    it.enabled = false
+                }
+            }
+        }
+    }
+
+    def prebuildTask = tasks.getByPath( ":app:preBuild" )
+    if( prebuildTask ) {
+        prebuildTask.dependsOn disableDefaultNdkBuild
+    }
+
+    cinder {
+        verbose = true
+        moduleName = "NormalMappingApp"
+        srcDirs = ["../../../src"]
+        cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
+        includeDirs = ["../../../include", "../../../../../../include", "../../../../../../boost"]
+        ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
+        staticLibs = [
+                "${projectDir}/../../../../../../lib/libcinder_d.a",
+                "${projectDir}/../../../../../../lib/android/libboost_date_time.a",
+                "${projectDir}/../../../../../../lib/android/libboost_filesystem.a",
+                "${projectDir}/../../../../../../lib/android/libboost_system.a"
+        ]
+    }
+
+    task ndkBuild(dependsOn: 'cinderCompileNdk') {
+    }
+
+    tasks.withType(JavaCompile) {
+        compileTask -> compileTask.dependsOn ndkBuild
+    }
+}
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
