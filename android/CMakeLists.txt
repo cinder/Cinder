@@ -5,13 +5,13 @@
 #     Android NDK, Revision 10d (December 2014)
 #
 # Supported API Levels (aka Platform):
-#     19 - API Level 19 - KitKat)
-#     21 - API Level 21 - Lollipop) [DEFAULT]
+#     19 - API Level 19 (KitKat)
+#     21 - API Level 21 (Lollipop) [DEFAULT]
 #
 # Supported architectures:
 #     arm    - ARMv7 [DEFAULT]
-#     arm64  - ARMv8
-#     x86_64 - Intel x86_64
+#     arm64  - ARMv8 (minimum platform: API Level 21)
+#     x86_64 - Intel x86_64 (minimum platform: API Level 21)
 # 
 # Supported toolchains:
 #     gcc48  - GCC 4.8 [DEFAULT on arm]
