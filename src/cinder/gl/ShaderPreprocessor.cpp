@@ -48,9 +48,11 @@ string ShaderPreprocessor::parse( const fs::path &path )
 	return parseRecursive( path, fs::path(), includeTree );
 }
 
-string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourceDirectory )
+string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath )
 {
-	return parseTopLevel( source, sourceDirectory );
+	CI_ASSERT( ! fs::is_directory( sourcePath ) );
+
+	return parseTopLevel( source, sourcePath.parent_path() );
 }
 
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )

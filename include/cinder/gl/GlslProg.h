@@ -146,16 +146,16 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::string		mVertexShader;
 		std::string		mFragmentShader;
 
-		fs::path		mVertexShaderDirectory;
-		fs::path		mFragmentShaderDirectory;
+		fs::path		mVertexShaderPath;
+		fs::path		mFragmentShaderPath;
 
 #if ! defined( CINDER_GL_ES )
 		std::string		mGeometryShader;
 		std::string		mTessellationCtrlShader;
 		std::string		mTessellationEvalShader;
-		fs::path		mGeometryShaderDirectory;
-		fs::path		mTessellationCtrlShaderDirectory;
-		fs::path		mTessellationEvalShaderDirectory;
+		fs::path		mGeometryShaderPath;
+		fs::path		mTessellationCtrlShaderPath;
+		fs::path		mTessellationEvalShaderPath;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
 		GLenum									mTransformFormat;

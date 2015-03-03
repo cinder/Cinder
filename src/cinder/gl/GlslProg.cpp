@@ -48,62 +48,62 @@ GlslProg::Format::Format()
 
 GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, &mVertexShader, &mVertexShaderDirectory );
+	setShaderSource( dataSource, &mVertexShader, &mVertexShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const string &vertexShader )
 {
-	setShaderSource( vertexShader, &mVertexShader, &mVertexShaderDirectory );
+	setShaderSource( vertexShader, &mVertexShader, &mVertexShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, &mFragmentShader, &mFragmentShaderDirectory );
+	setShaderSource( dataSource, &mFragmentShader, &mFragmentShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 {
-	setShaderSource( fragmentShader, &mFragmentShader, &mFragmentShaderDirectory );
+	setShaderSource( fragmentShader, &mFragmentShader, &mFragmentShaderPath );
 	return *this;
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderDirectory );
+	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 {
-	setShaderSource( geometryShader, &mGeometryShader, &mGeometryShaderDirectory );
+	setShaderSource( geometryShader, &mGeometryShader, &mGeometryShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderDirectory );
+	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const string &tessellationCtrlShader )
 {
-	setShaderSource( tessellationCtrlShader, &mTessellationCtrlShader, &mTessellationCtrlShaderDirectory );
+	setShaderSource( tessellationCtrlShader, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataSource )
 {
-	setShaderSource( dataSource, &mTessellationEvalShader, &mTessellationEvalShaderDirectory );
+	setShaderSource( dataSource, &mTessellationEvalShader, &mTessellationEvalShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellationEvalShader )
 {
-	setShaderSource( tessellationEvalShader, &mTessellationEvalShader, &mTessellationEvalShaderDirectory );
+	setShaderSource( tessellationEvalShader, &mTessellationEvalShader, &mTessellationEvalShaderPath );
 	return *this;
 }
 
@@ -117,7 +117,7 @@ void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string 
 		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getDataSize() );
 		(*shaderSourceDest)[buffer.getDataSize()] = 0;
 		if( dataSource->isFilePath() )
-			*shaderPathDest = dataSource->getFilePath().parent_path();
+			*shaderPathDest = dataSource->getFilePath();
 		else
 			shaderPathDest->clear();
 	}
@@ -220,16 +220,16 @@ GlslProg::GlslProg( const Format &format )
 	mHandle = glCreateProgram();
 
 	if( ! format.getVertex().empty() )
-		loadShader( format.getVertex(), format.mVertexShaderDirectory, GL_VERTEX_SHADER );
+		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
-		loadShader( format.getFragment(), format.mFragmentShaderDirectory, GL_FRAGMENT_SHADER );
+		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER );
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), format.mFragmentShaderDirectory, GL_GEOMETRY_SHADER );
+		loadShader( format.getGeometry(), format.mFragmentShaderPath, GL_GEOMETRY_SHADER );
 	if( ! format.getTessellationCtrl().empty() )
-		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderDirectory, GL_TESS_CONTROL_SHADER );
+		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
-		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderDirectory, GL_TESS_EVALUATION_SHADER );
+		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map

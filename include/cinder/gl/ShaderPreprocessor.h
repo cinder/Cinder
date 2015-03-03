@@ -37,7 +37,7 @@ class ShaderPreprocessor {
 	ShaderPreprocessor();
 
 	std::string		parse( const fs::path &path );
-	std::string		parse( const std::string &source, const fs::path &currentDirectory );
+	std::string		parse( const std::string &source, const fs::path &sourcePath );
 
 	//!
 	void	addSearchDirectory( const fs::path &directory );
