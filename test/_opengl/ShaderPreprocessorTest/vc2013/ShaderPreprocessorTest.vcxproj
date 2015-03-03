@@ -20,7 +20,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{4422021F-39DA-4B1E-808A-B729DD5BD721}</ProjectGuid>
-    <RootNamespace>GlslProgTest</RootNamespace>
+    <RootNamespace>ShaderPreprocessorTest</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -194,7 +194,7 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\GlslProgTestApp.cpp" />
+    <ClCompile Include="..\src\ShaderPreprocessorTestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h" />

@@ -14,10 +14,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\GlslProgTestApp.cpp">
+    <ClCompile Include="..\src\ShaderPreprocessorTestApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\GlslProgTestApp.cpp">
+    <ClCompile Include="..\src\ShaderPreprocessorTestApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClInclude Include="..\include\Resources.h">

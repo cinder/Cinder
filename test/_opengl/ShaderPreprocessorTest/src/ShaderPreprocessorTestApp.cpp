@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class GlslProgTestApp : public App {
+class ShaderPreprocessorTestApp : public App {
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
 	void update() override;
@@ -23,13 +23,13 @@ class GlslProgTestApp : public App {
 	gl::ShaderPreprocessor  mPreprocessor;
 };
 
-void GlslProgTestApp::setup()
+void ShaderPreprocessorTestApp::setup()
 {
 	testGlslProgInclude();
 //	testSeparateShaderPreprocessor();
 }
 
-void GlslProgTestApp::keyDown( KeyEvent event )
+void ShaderPreprocessorTestApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'r' ) {
 		CI_LOG_V( "reload" );
@@ -37,7 +37,7 @@ void GlslProgTestApp::keyDown( KeyEvent event )
 	}
 }
 
-void GlslProgTestApp::testGlslProgInclude()
+void ShaderPreprocessorTestApp::testGlslProgInclude()
 {
 	try {
 		auto format = gl::GlslProg::Format()
@@ -52,7 +52,7 @@ void GlslProgTestApp::testGlslProgInclude()
 
 }
 
-void GlslProgTestApp::testSeparateShaderPreprocessor()
+void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
@@ -71,11 +71,11 @@ void GlslProgTestApp::testSeparateShaderPreprocessor()
 
 }
 
-void GlslProgTestApp::update()
+void ShaderPreprocessorTestApp::update()
 {
 }
 
-void GlslProgTestApp::draw()
+void ShaderPreprocessorTestApp::draw()
 {
 	gl::clear( Color( 0.1, 0.2, 0.1 ) );
 
@@ -85,4 +85,4 @@ void GlslProgTestApp::draw()
 	}
 }
 
-CINDER_APP( GlslProgTestApp, RendererGl )
+CINDER_APP( ShaderPreprocessorTestApp, RendererGl )
