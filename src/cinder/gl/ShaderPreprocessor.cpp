@@ -37,7 +37,6 @@ namespace {
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
-	: mCachingEnabled( true )
 {
 	mSearchDirectories.push_back( app::Platform::get()->getAssetPath( "" ) );
 }
@@ -91,20 +90,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 
 	includeTree.insert( fullPath );
 
-	time_t timeLastWrite = 0;
-	if( mCachingEnabled ) {
-		timeLastWrite = fs::last_write_time( fullPath );
-
-		auto cachedIt = mCachedSources.find( fullPath );
-		if( cachedIt != mCachedSources.end() ) {
-			if( cachedIt->second.mTimeLastWrite >= timeLastWrite ) {
-				return cachedIt->second.mString;
-			}
-		}
-	}
-
 	stringstream output;
-
 	ifstream input( fullPath.c_str() );
 	if( ! input.is_open() )
 		throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
@@ -128,16 +114,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	}
 
 	input.close();
-
-	if( mCachingEnabled ) {
-		Source &source = mCachedSources[fullPath];
-		source.mTimeLastWrite = timeLastWrite;
-		source.mString = output.str();
-
-		return source.mString;
-	}
-	else
-		return output.str();
+	return output.str();
 }
 
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
@@ -157,11 +134,6 @@ void ShaderPreprocessor::removeSearchDirectory( const fs::path &directory )
 {
 	fs::path dirCanonical = fs::canonical( directory );
 	mSearchDirectories.erase( remove( mSearchDirectories.begin(), mSearchDirectories.end(), dirCanonical ), mSearchDirectories.end() );
-}
-
-void ShaderPreprocessor::clearCache()
-{
-	mCachedSources.clear();
 }
 
 fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )

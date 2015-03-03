@@ -218,7 +218,6 @@ GlslProg::GlslProg( const Format &format )
 	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
 	mHandle = glCreateProgram();
-	mShaderPreprocessor.setCachingEnabled( false );
 
 	if( ! format.getVertex().empty() )
 		loadShader( format.getVertex(), format.mVertexShaderDirectory, GL_VERTEX_SHADER );
