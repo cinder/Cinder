@@ -25,8 +25,8 @@ class GlslProgTestApp : public App {
 
 void GlslProgTestApp::setup()
 {
-//	testGlslProgInclude();
-	testSeparateShaderPreprocessor();
+	testGlslProgInclude();
+//	testSeparateShaderPreprocessor();
 }
 
 void GlslProgTestApp::keyDown( KeyEvent event )
@@ -55,12 +55,12 @@ void GlslProgTestApp::testGlslProgInclude()
 void GlslProgTestApp::testSeparateShaderPreprocessor()
 {
 	try {
-		string vertSource = mPreprocessor.parse( getAssetPath( "passthrough.vert" ) );
+		auto vert = loadAsset( "passthrough.vert" );
 		string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
 
 		auto format = gl::GlslProg::Format()
-							.preprocessing( false )
-							.vertex( vertSource )
+							.preprocess( false )
+							.vertex( vert )
 							.fragment( fragSource );
 
 		mGlslProg = gl::GlslProg::create( format );

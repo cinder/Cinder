@@ -130,7 +130,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
 		void	setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
-		Format&	preprocessing( bool enable )				{ mPreprocessingEnabled = enable; return *this; }
+		Format&	preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
 
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
