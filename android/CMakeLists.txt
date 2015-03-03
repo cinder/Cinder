@@ -14,8 +14,8 @@
 #     x86_64 - Intel x86_64 (minimum platform: API Level 21)
 # 
 # Supported toolchains:
-#     gcc48  - GCC 4.8 [DEFAULT on arm]
-#     gcc49  - GCC 4.9 [DEFAULT on arm64, x86_64]
+#     gcc48  - GCC 4.8
+#     gcc49  - GCC 4.9 [DEFAULT]
 #     ** Clang doesn't work yet - don't use it **
 #
 # The build process depends on 3 variables: NDK_ROOT, NDK_PLATFORM, NDK_ARCH. 
@@ -138,7 +138,7 @@ message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
 message( "" )
 
 # Toolchain, STL (gnustl, libc++)
-set( NDK_TOOLCHAIN "gcc48" )
+set( NDK_TOOLCHAIN "gcc49" )
 set( NDK_STL "gnustl" )
 # Switch to gcc49 if on arm64 or x86_64
 if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
