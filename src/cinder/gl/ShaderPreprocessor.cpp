@@ -22,7 +22,7 @@
 */
 
 #include "cinder/gl/ShaderPreprocessor.h"
-#include "cinder/app/App.h"
+#include "cinder/app/Platform.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
@@ -39,10 +39,7 @@ namespace {
 ShaderPreprocessor::ShaderPreprocessor()
 	: mCachingEnabled( true )
 {
-	// TODO: we discussed keeping this ci assets agnostic, instead adding getAssetPath() from the outside
-	// - also, we don't want GlslProg to rely on App at all.
-	//    - can it do what it needs to with Platform?
-	mSearchDirectories.push_back( app::getAssetPath( "" ) );
+	mSearchDirectories.push_back( app::Platform::get()->getAssetPath( "" ) );
 }
 
 string ShaderPreprocessor::parse( const fs::path &path )
