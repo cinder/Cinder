@@ -76,6 +76,9 @@ message( "" )
 # User this for now
 set( TOOLCHAIN_PREFIX "arm-linux-androideabi" )
 
+set( CMAKE_SYSROOT      ${NDK_ROOT}/platforms/android-21/arch-arm        CACHE FILEPATH "" FORCE )
+set( CMAKE_OSX_SYSROOT  ""                                               CACHE FILEPATH "" FORCE )
+
 set( CMAKE_C_COMPILER   ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
 set( CMAKE_CXX_COMPILER ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
 set( CMAKE_AR           ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
