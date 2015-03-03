@@ -1,11 +1,66 @@
 #
-# Env var or param:
-#     ANDROID_NDK_ROOT - should point NDK
-#     ANDROID_NDK_STANDALONE - should point to standalone toolchain
+# -- Building Cinder for Android --
+#
+# Supported versions of the NDK:
+#     Android NDK, Revision 10d (December 2014)
+#
+# Supported API Levels (aka Platform):
+#     API Level 19 - KitKat)
+#     API Level 21 - Lollipop) [DEFAULT]
+#
+# Supported architectures:
+#     arm    - ARMv7 [DEFAULT]
+#     arm64  - ARMv8
+#     x86_64 - Intel x86_64
+# 
+# Supported toolchains:
+#     gcc48  - GCC 4.8 [DEFAULT on arm]
+#     gcc49  - GCC 4.9 [DEFAULT on arm64, x86_64]
+#     ** Clang doesn't work yet - don't use it **
+#
+# The build process depends on 3 variables: NDK_ROOT, NDK_PLATFORM, NDK_ARCH. 
+# You can set all these using environment variables to pass them into CMake
+# as parameters. NDK_ROOT must be specified. NDK_PLATFORM and NDK_ARCH will
+# use their default values if they're not set. Default values are below.
+#
+# Variable description:
+#     NDK_ROOT     - Root of the installed NDK directory
+#     NDK_PLATFORM - API Level (DEFAULT: 21)
+#     NDK_ARCH     - One the following: arm, arm64, x86_64 (DEFAULT: arm)
+#
+# Building Debug (assumes that NDK_ROOT is set in envionrment variable): 
+#   Starting from the $CINDER_DIR/android 
+#   >$ mkdir build
+#   >$ cd build
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug
+#   >$ make -j 4
+#   
+# Building Release (assumes that NDK_ROOT is set in envionrment variable): 
+#   Starting from the $CINDER_DIR/android
+#   >$ mkdir build
+#   >$ cd build
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Release
+#   >$ make -j 4
+#
+# NDK_ROOT as a CMake parameter:
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ROOT=/Users/hai/code/android/android-ndk-r10d
+#
+# NDK_PLATFORM as a CMake parameter:
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_PLATFORM=21
+#
+# NDK_ARCH as a CMake parameter:
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ARCH=arm64
+#
+# Android code names, tags, versions, and API, and NDK information:
+#    https://source.android.com/source/build-numbers.html
+#
+# Android NDK releases:
+#    https://developer.android.com/tools/sdk/ndk/index.html  
 #
 
 cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
+
 
 if(NOT WIN32)
   string(ASCII 27 Esc)
@@ -27,67 +82,192 @@ if(NOT WIN32)
   set(BoldWhite     "${Esc}[1;37m" )
 endif()
 
+# Default values
+set( DEFAULT_NDK_PLATFORM 21    )
+set( DEFAULT_NDK_ARCH     "arm" )
 
 # ------------------------------------------------------------------------
 # NDK_ROOT
 # ------------------------------------------------------------------------
-# Check env vars for ANDROID_NDK_ROOT first
-if( DEFINED ENV{ANDROID_NDK_ROOT} )
-    set( NDK_ROOT $ENV{ANDROID_NDK_ROOT} )
-endif()
-
-# Check if ANDROID_NDK_ROOT was overriden as a param
-if( ANDROID_NDK_ROOT )
-    message( "milk! ${ANDROID_NDK_ROOT}" )
-    set( NDK_ROOT ${ANDROID_NDK_ROOT} )
+# If NDK_ROOT as not passed in as parameter - check environment variable.
+if( NOT NDK_ROOT )
+    if( DEFINED ENV{NDK_ROOT} )
+        set( NDK_ROOT $ENV{NDK_ROOT} )
+    endif()
 endif()
 
 # Bail if we haven't set NDK_ROOT
 if( NOT NDK_ROOT )
-    message( FATAL_ERROR "${BoldRed}ANDROID_NDK_ROOT not set!${ColorReset}" )
+    message( FATAL_ERROR "${BoldRed}NDK_ROOT not set! Set using env var or -DNDK_ROOT=<path to NDK>${ColorReset}" )
 endif()
 # ------------------------------------------------------------------------
 
 # ------------------------------------------------------------------------
-# NDK_STANDALONE
+# NDK_PLATFORM
 # ------------------------------------------------------------------------
-# Check env vars for ANDROID_NDK_STANDALONE first
-if( DEFINED ENV{ANDROID_NDK_STANDALONE} )
-    set( NDK_STANDALONE $ENV{ANDROID_NDK_STANDALONE} )
+if( NOT NDK_PLATFORM )
+    set( NDK_PLATFORM ${DEFAULT_NDK_PLATFORM} )
 endif()
 
-# Check if ANDROID_NDK_STANDALONE was overriden as a parm
-if( ANDROID_NDK_STANDALONE )
-    message( "milk! ${ANDROID_NDK_STANDALONE}" )
-    set( NDK_STANDALONE ${ANDROID_NDK_STANDALONE} )
-endif()
-
-# Bail if we haven't set NDK_STANDALONE
-if( NOT NDK_STANDALONE )
-    message( FATAL_ERROR "${BoldRed}ANDROID_NDK_STANDALONE not set!${ColorReset}" )
-endif()
 # ------------------------------------------------------------------------
+# NDK_ARCH
+# ------------------------------------------------------------------------
+if( NOT NDK_ARCH )
+    set( NDK_ARCH ${DEFAULT_NDK_ARCH} )
+endif()
 
+set( _supported_archs "arm" "arm64" "x86_64" )
+list( FIND _supported_archs "${NDK_ARCH}" _index )
+if( ${_index} LESS 0 )
+    message( FATAL_ERROR "${BoldRed}NDK_ARCH specifies unsupported architecture: ${NDK_ARCH}${ColorReset}" )
+endif()
 
-message( "${BoldBlue}ANDROID_NDK_ROOT      : ${NDK_ROOT}${ColorReset}" )
-message( "${BoldBlue}ANDROID_NDK_STANDALONE: ${NDK_STANDALONE}${ColorReset}" )
+# -- log to console --
+message( "${BoldBlue}NDK_ROOT     : ${NDK_ROOT}${ColorReset}" )
+message( "${BoldBlue}NDK_PLATFORM : ${NDK_PLATFORM}${ColorReset}" )
+message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
 message( "" )
 
-# User this for now
-set( TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+# Toolchain, STL (gnustl, libc++)
+set( NDK_TOOLCHAIN "gcc48" )
+set( NDK_STL "gnustl" )
+# Switch to gcc49 if on arm64 or x86_64
+if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+    if( "arm64" STREQUAL "${NDK_ARCH}" )
+        set( NDK_TOOLCHAIN "gcc49" )
+    elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+        set( NDK_TOOLCHAIN "gcc49" )
+    endif()
+endif()
 
-set( CMAKE_SYSROOT      ${NDK_ROOT}/platforms/android-21/arch-arm        CACHE FILEPATH "" FORCE )
-set( CMAKE_OSX_SYSROOT  ""                                               CACHE FILEPATH "" FORCE )
+# Process platform
+set( NDK_PLATFORM_DIR "android-${NDK_PLATFORM}" )
 
-set( CMAKE_C_COMPILER   ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
-set( CMAKE_CXX_COMPILER ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
-set( CMAKE_AR           ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
-set( CMAKE_LINKER       ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
-set( CMAKE_NM           ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
-set( CMAKE_RANLIB       ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
-set( CMAKE_STRIP        ${NDK_STANDALONE}/bin/${TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
+# Process arch - find tool chain params
+set( NDK_ARCH_DIR "arch-${NDK_ARCH}" )
+if( "arm" STREQUAL "${NDK_ARCH}" )
+    if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.8" )
+        set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+    elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+    if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "aarch64-linux-android-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "aarch64-linux-android" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+    if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "x86_64-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "x86_64-linux-android" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+endif()
 
-project( cinder )
+if( NOT NDK_TOOLCHAIN_DIR )
+    message( FATAL_ERROR "${BoldRed}Toolchain ${NDK_TOOLCHAIN} is not supported on ${NDK_ARCH}${ColorReset}" )
+endif()
+
+# STL
+if( "gnustl" STREQUAL "${NDK_STL}" )
+    if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+        include_directories( 
+            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include 
+            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include/backward
+        )
+        # Architecture
+        if( "arm" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include )
+        endif()
+    elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        include_directories( 
+            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include 
+            ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include/backward
+        )
+        # Architecture
+        if( "arm" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include )
+        elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arm64-v8a/include )
+        elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include )
+        endif()
+    endif()
+elseif( "libc++" STREQUAL "${NDK_STL}" )
+    include_directories( 
+        ${NDK_ROOT}/sources/cxx-stl/llvm-libc++/libcxx/include
+    )
+else()
+    message( FATAL_ERROR "${BoldRed}Unsupported STL library ${NDK_STL}${ColorReset}" )
+endif()
+
+# Toolchain host
+if( APPLE )
+    set( NDK_TOOLCHAIN_HOST "darwin-x86_64" )
+elseif( WINDOWS )
+elseif( UNIX )
+endif()
+
+if( NOT NDK_TOOLCHAIN_HOST )
+    message( FATAL_ERROR "${BoldRed}$Unsupported host platform ${CMAKE_SYSTEM_NAME}{ColorReset}" )
+endif()
+
+# Toolchain prefix
+set( NKD_TOOLCHAIN_ROOT "${NDK_ROOT}/toolchains/${NDK_TOOLCHAIN_DIR}/prebuilt/${NDK_TOOLCHAIN_HOST}" )
+message( "${BoldBlue}NKD_TOOLCHAIN_ROOT : ${NKD_TOOLCHAIN_ROOT}${ColorReset}" )
+if( NOT NDK_TOOLCHAIN_CLANG )
+    message( "${BoldBlue}NDK_TOOLCHAIN_PREFIX : ${NDK_TOOLCHAIN_PREFIX}${ColorReset}" )
+endif()
+message( "" )
+
+# sysroot
+if( "arm" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
+elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
+elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
+endif()
+#
+message( "${BoldBlue}NDK_SYSROOT : ${NDK_SYSROOT}${ColorReset}" )
+message( "" )
+
+set( CMAKE_SYSROOT ${NDK_SYSROOT} CACHE FILEPATH "" FORCE )
+if( APPLE )
+    set( CMAKE_OSX_SYSROOT "" CACHE FILEPATH "" FORCE )
+endif()
+
+# Compiler, build tool settings
+if( NDK_TOOLCHAIN_CLANG )
+    set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/clang    CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/clang++  CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/         CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/         CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/         CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/         CACHE FILEPATH "" FORCE )
+    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/         CACHE FILEPATH "" FORCE )
+else()
+    set( CMAKE_C_COMPILER   ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-gcc    CACHE FILEPATH "" FORCE )
+    set( CMAKE_CXX_COMPILER ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-g++    CACHE FILEPATH "" FORCE )
+    set( CMAKE_AR           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ar     CACHE FILEPATH "" FORCE )
+    set( CMAKE_LINKER       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ld     CACHE FILEPATH "" FORCE )
+    set( CMAKE_NM           ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-nm     CACHE FILEPATH "" FORCE )
+    set( CMAKE_RANLIB       ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-ranlib CACHE FILEPATH "" FORCE )
+    set( CMAKE_STRIP        ${NKD_TOOLCHAIN_ROOT}/bin/${NDK_TOOLCHAIN_PREFIX}-strip  CACHE FILEPATH "" FORCE )
+endif()
 
 get_filename_component( CINDER_DIR "${CMAKE_CURRENT_SOURCE_DIR}/.." ABSOLUTE )
 set( CINDER_INC_DIR ${CINDER_DIR}/include )
@@ -109,6 +289,10 @@ message( "${BoldGreen}CMAKE_NM          : ${CMAKE_NM}${ColorReset}" )
 message( "${BoldGreen}CMAKE_RANLIB      : ${CMAKE_RANLIB}${ColorReset}" ) 
 message( "${BoldGreen}CMAKE_STRIP       : ${CMAKE_STRIP}${ColorReset}" ) 
 message( "" )
+message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
+message( "" )
+
+project( cinder )
 
 include_directories( 
     ${CINDER_INC_DIR} 
@@ -118,13 +302,19 @@ include_directories(
     ${BOOST_INC_DIR} 
 )
 
-set( C_FLAGS "-march=armv7-a -mfpu=neon -fvisibility=default" )
-set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -g ${C_FLAGS}" )
-set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -O3 -ffast-math ${C_FLAGS}" )
+if( "arm" STREQUAL "${NDK_ARCH}" )
+    set( ARCH_FLAGS "-march=armv7-a -mfpu=neon" )
+elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+endif()
 
-set( CXX_FLAGS "-march=armv7-a -mfpu=neon -fvisibility=default" )
-set( CMAKE_CXX_FLAGS_DEBUG   "${CMAKE_CXX_FLAGS_DEBUG} -std=c++11 -g -fexceptions ${CXX_FLAGS}" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -std=c++11 -fexceptions -O3 -ffast-math ${CXX_FLAGS}" )
+set( C_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
+set( CMAKE_C_FLAGS_DEBUG   "-g ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math ${C_FLAGS}" )
+
+set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
+set( CMAKE_CXX_FLAGS_DEBUG   "-std=c++11 -g -fexceptions ${CXX_FLAGS}" )
+set( CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -fexceptions -O3 -ffast-math ${CXX_FLAGS}" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
@@ -253,8 +443,6 @@ set( CINDER_CXX_SRC_FILES
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
 )
-
-#set_source_files_properties( ${CINDER_CXX_SRC_FILES} COMPILE_FLAGS "-std=c++11" )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
 add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
