@@ -46,7 +46,13 @@
     // Force ES3 for now
     #include "GLES3/gl3.h"
 	#include "GLES3/gl3ext.h"
-	#include "GLES2/gl2ext.h"
+	#if ( __ANDROID_API__ >= 21 )
+		#include "GLES2/gl2ext.h"
+	#else
+		#define GL_BGRA_EXT                         0x80E1
+		#define GL_TEXTURE_MAX_ANISOTROPY_EXT       0x84FE
+		#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT   0x84FF
+	#endif
 	#define CINDER_GL_ES_3    
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )

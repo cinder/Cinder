@@ -219,7 +219,7 @@ void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
 #if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE )
+  #if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_ANDROID )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
   #endif
 #else

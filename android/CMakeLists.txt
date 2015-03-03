@@ -5,8 +5,8 @@
 #     Android NDK, Revision 10d (December 2014)
 #
 # Supported API Levels (aka Platform):
-#     API Level 19 - KitKat)
-#     API Level 21 - Lollipop) [DEFAULT]
+#     19 - API Level 19 - KitKat)
+#     21 - API Level 21 - Lollipop) [DEFAULT]
 #
 # Supported architectures:
 #     arm    - ARMv7 [DEFAULT]
@@ -109,6 +109,15 @@ if( NOT NDK_PLATFORM )
     set( NDK_PLATFORM ${DEFAULT_NDK_PLATFORM} )
 endif()
 
+if( "19" STREQUAL "${NDK_PLATFORM}" )
+    set( NDK_PLATFORM_OUT "android-19" )
+elseif( "21" STREQUAL "${NDK_PLATFORM}" )
+    set( NDK_PLATFORM_OUT "android-21" )
+else()
+    message( FATAL_ERROR "${BoldRed}Unsupported Platform (API Level) ${NDK_PLATFORM}${ColorReset}" )
+endif()
+
+
 # ------------------------------------------------------------------------
 # NDK_ARCH
 # ------------------------------------------------------------------------
@@ -157,6 +166,8 @@ if( "arm" STREQUAL "${NDK_ARCH}" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "arm" )
 elseif( "arm64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "aarch64-linux-android-4.9" )
@@ -166,6 +177,8 @@ elseif( "arm64" STREQUAL "${NDK_ARCH}" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "arm64" )
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86_64-4.9" )
@@ -175,6 +188,8 @@ elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
         set( NDK_TOOLCHAIN_PREFIX "" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "x86_64" )
 endif()
 
 if( NOT NDK_TOOLCHAIN_DIR )
@@ -274,7 +289,8 @@ set( CINDER_INC_DIR ${CINDER_DIR}/include )
 set( CINDER_SRC_DIR ${CINDER_DIR}/src )
 set( BOOST_INC_DIR ${CINDER_DIR}/boost )
 
-set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib )
+# Output path
+set( LIBRARY_OUTPUT_PATH ${CINDER_DIR}/lib/android/${NDK_PLATFORM_OUT}/${NKD_ARCH_OUT} )
 
 message( "${BoldGreen}CINDER_INC_DIR: ${CINDER_INC_DIR}${ColorReset}" )
 message( "${BoldGreen}CINDER_SRC_DIR: ${CINDER_SRC_DIR}${ColorReset}" )
@@ -302,6 +318,7 @@ include_directories(
     ${BOOST_INC_DIR} 
 )
 
+# Arch flags
 if( "arm" STREQUAL "${NDK_ARCH}" )
     set( ARCH_FLAGS "-march=armv7-a -mfpu=neon" )
 elseif( "arm64" STREQUAL "${NDK_ARCH}" )
@@ -309,12 +326,12 @@ elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
 endif()
 
 set( C_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
-set( CMAKE_C_FLAGS_DEBUG   "-g ${C_FLAGS}" )
-set( CMAKE_C_FLAGS_RELEASE "-O3 -ffast-math ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
-set( CMAKE_CXX_FLAGS_DEBUG   "-std=c++11 -g -fexceptions ${CXX_FLAGS}" )
-set( CMAKE_CXX_FLAGS_RELEASE "-std=c++11 -fexceptions -O3 -ffast-math ${CXX_FLAGS}" )
+set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11" )
+set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -O3 -fexceptions -ffast-math" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
