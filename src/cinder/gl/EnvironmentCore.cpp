@@ -246,9 +246,10 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 
 GlslProgRef	EnvironmentCore::buildShader( const ShaderDef &shader )
 {
-	GlslProg::Format fmt = GlslProg::Format().vertex( generateVertexShader( shader ).c_str() )
-												.fragment( generateFragmentShader( shader ).c_str() )
-												.attribLocation( "ciPosition", 0 );
+	GlslProg::Format fmt = GlslProg::Format().vertex( generateVertexShader( shader ) )
+												.fragment( generateFragmentShader( shader ) )
+												.attribLocation( "ciPosition", 0 )
+												.preprocess( false );
 	if( shader.mTextureMapping )
 		fmt.attribLocation( "ciTexCoord0", 1 );
 	return GlslProg::create( fmt );		
