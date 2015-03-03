@@ -35,7 +35,7 @@
 #include <memory>
 #include <type_traits>
 
-#if defined( CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9))
+#if defined( CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9)) && ! (defined( __LP64__ ) || defined( _LP64 ))
 namespace std {
 
 double log2( double x ) {
