@@ -53,7 +53,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	void	makeCurrentContext() override;
 
 #if defined( CINDER_MSW )
-	HDC		getDc() const { return mDC; }
+	HDC		getDc() const { return mDc; }
 #endif
  protected:
 	int		initMultisample( PIXELFORMATDESCRIPTOR pfd, int requestedLevelIdx, HDC dc );
@@ -64,6 +64,9 @@ class RendererImplGlAngle : public RendererImplMsw {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
+#if defined( CINDER_MSW )
+	HDC				mDc;
+#endif
 };
 
 } } // namespace cinder::app

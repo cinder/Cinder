@@ -64,7 +64,10 @@ bool RendererImplGlAngle::initialize( ::Platform::Agile<Windows::UI::Core::CoreW
 #endif
 {
 	mWnd = wnd;
-	
+#if defined( CINDER_MSW )
+	mDc = dc;
+#endif
+
 	if( sharedRenderer )
 		CI_LOG_E( "ANGLE does not currenty supported shared renderers." );
 
