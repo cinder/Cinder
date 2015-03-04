@@ -250,14 +250,14 @@ bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sam
 	size_t samplesWritten = 0;
 
 	for( auto eventIt = mEvents.begin(); eventIt != mEvents.end(); /* */ ) {
-		EventRef &event = *eventIt;
+		Event &event = **eventIt;
 
 		// first remove dead events
-		const bool cancelled = event->mIsCanceled;
-		if( event->mTimeEnd <= timeBegin || cancelled ) {
+		const bool cancelled = event.mIsCanceled;
+		if( event.mTimeEnd <= timeBegin || cancelled ) {
 			// if we skipped over the last event, record its end value before erasing.
 			if( mEvents.size() == 1 && ! cancelled )
-				mValue = event->mValueEnd;
+				mValue = event.mValueEnd;
 			
 			eventIt = mEvents.erase( eventIt );
 			continue;
@@ -265,47 +265,47 @@ bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sam
 
 		const double timeEnd = timeBegin + secondsPerBlock;
 
-		if( event->mTimeBegin < timeEnd && event->mTimeEnd > timeBegin ) {
-			size_t startIndex = timeBegin >= event->mTimeBegin ? 0 : size_t( ( event->mTimeBegin - timeBegin ) * sampleRate );
-			size_t endIndex = timeEnd < event->mTimeEnd ? arrayLength : size_t( ( event->mTimeEnd - timeBegin ) * sampleRate );
+		if( event.mTimeBegin < timeEnd && event.mTimeEnd > timeBegin ) {
+			size_t startIndex = timeBegin >= event.mTimeBegin ? 0 : size_t( ( event.mTimeBegin - timeBegin ) * sampleRate );
+			size_t endIndex = timeEnd < event.mTimeEnd ? arrayLength : size_t( ( event.mTimeEnd - timeBegin ) * sampleRate );
 
 			CI_ASSERT( startIndex <= arrayLength && endIndex <= arrayLength );
-			CI_ASSERT( event->mTimeEnd >= event->mTimeBegin );
+			CI_ASSERT( event.mTimeEnd >= event.mTimeBegin );
 
 			if( startIndex > 0 && samplesWritten == 0 )
 				dsp::fill( mValue, array, startIndex );
 
 			size_t count = size_t( endIndex - startIndex );
-			double timeBeginNormalized = ( timeBegin - event->mTimeBegin + startIndex * samplePeriod ) / event->mDuration;
-			double timeEndNormalized = ( timeBegin - event->mTimeBegin + endIndex * samplePeriod ) / event->mDuration;
+			double timeBeginNormalized = ( timeBegin - event.mTimeBegin + startIndex * samplePeriod ) / event.mDuration;
+			double timeEndNormalized = ( timeBegin - event.mTimeBegin + endIndex * samplePeriod ) / event.mDuration;
 			double timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (double)count;
 
 			// If the event has a cancel time, adjust the count if needed, but all other ramp values remain the same
-			if( event->mTimeCancel > 0 ) {
-				if( event->mTimeCancel < timeBegin ) {
+			if( event.mTimeCancel > 0 ) {
+				if( event.mTimeCancel < timeBegin ) {
 					// event should already be over
-					event->cancel();
+					event.cancel();
 					eventIt = mEvents.erase( eventIt );
 					continue;
 				}
 
-				size_t endIndexModified = timeEnd < event->mTimeCancel ? arrayLength : size_t( ( event->mTimeCancel - timeBegin ) * sampleRate );
+				size_t endIndexModified = timeEnd < event.mTimeCancel ? arrayLength : size_t( ( event.mTimeCancel - timeBegin ) * sampleRate );
 				if( endIndexModified != endIndex ) {
 					count = endIndexModified - startIndex;
-					event->cancel(); // cancel but still process. This Event will be removed from the container next block.
+					event.cancel(); // cancel but still process. This Event will be removed from the container next block.
 				}
 			}
 
-			if( event->getCopyValueOnBegin() )
-				event->setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
+			if( event.getCopyValueOnBegin() )
+				event.setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
 
-			event->mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event->mValueBegin, event->mValueEnd ) );
+			event.mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event.mValueBegin, event.mValueEnd ) );
 			samplesWritten += count;
 
 			// if this ramp ended with the current processing block, update mValue then remove event
 			if( endIndex < arrayLength ) {
-				event->mIsComplete = true;
-				mValue = event->mValueEnd;
+				event.mIsComplete = true;
+				mValue = event.mValueEnd;
 				eventIt = mEvents.erase( eventIt );
 			}
 			else if( samplesWritten == arrayLength ) {
