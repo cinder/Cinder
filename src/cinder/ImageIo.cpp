@@ -414,7 +414,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
-#if ! defined( CINDER_WINRT )
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
 		extension = dataSource->getFilePathHint().extension().string();
 #else
 		extension = dataSource->getFilePathHint().extension();
