@@ -11,6 +11,7 @@
 # Supported architectures:
 #     arm    - ARMv7 [DEFAULT]
 #     arm64  - ARMv8 (minimum platform: API Level 21)
+#     x86    - Intel x86
 #     x86_64 - Intel x86_64 (minimum platform: API Level 21)
 # 
 # Supported toolchains:
@@ -125,7 +126,7 @@ if( NOT NDK_ARCH )
     set( NDK_ARCH ${DEFAULT_NDK_ARCH} )
 endif()
 
-set( _supported_archs "arm" "arm64" "x86_64" )
+set( _supported_archs "arm" "arm64" "x86" "x86_64" )
 list( FIND _supported_archs "${NDK_ARCH}" _index )
 if( ${_index} LESS 0 )
     message( FATAL_ERROR "${BoldRed}NDK_ARCH specifies unsupported architecture: ${NDK_ARCH}${ColorReset}" )
@@ -142,9 +143,7 @@ set( NDK_TOOLCHAIN "gcc49" )
 set( NDK_STL "gnustl" )
 # Switch to gcc49 if on arm64 or x86_64
 if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
-    if( "arm64" STREQUAL "${NDK_ARCH}" )
-        set( NDK_TOOLCHAIN "gcc49" )
-    elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+    if(("arm64" STREQUAL "${NDK_ARCH}") OR ("x86_64" STREQUAL "${NDK_ARCH}"))
         set( NDK_TOOLCHAIN "gcc49" )
     endif()
 endif()
@@ -179,6 +178,20 @@ elseif( "arm64" STREQUAL "${NDK_ARCH}" )
     endif()
     # Library out dir
     set( NKD_ARCH_OUT "arm64" )
+elseif( "x86" STREQUAL "${NDK_ARCH}" )
+    if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "x86-4.8" )
+        set( NDK_TOOLCHAIN_PREFIX "i686-linux-android" )
+    elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "x86-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "i686-linux-android" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "x86" )
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86_64-4.9" )
@@ -206,6 +219,8 @@ if( "gnustl" STREQUAL "${NDK_STL}" )
         # Architecture
         if( "arm" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include )
+        elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86/include )
         endif()
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         include_directories( 
@@ -217,6 +232,8 @@ if( "gnustl" STREQUAL "${NDK_STL}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include )
         elseif( "arm64" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arm64-v8a/include )
+        elseif( "x86" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include )
         elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include )
         endif()
@@ -237,7 +254,7 @@ elseif( UNIX )
 endif()
 
 if( NOT NDK_TOOLCHAIN_HOST )
-    message( FATAL_ERROR "${BoldRed}$Unsupported host platform ${CMAKE_SYSTEM_NAME}{ColorReset}" )
+    message( FATAL_ERROR "${BoldRed}Unsupported host platform ${CMAKE_SYSTEM_NAME}{ColorReset}" )
 endif()
 
 # Toolchain prefix
@@ -253,8 +270,14 @@ if( "arm" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
 elseif( "arm64" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
+elseif( "x86" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86" )
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
+endif()
+#
+if( NOT NDK_SYSROOT )
+    message( FATAL_ERROR "${BoldRed}Unable to determine SYSROOT for ${NDK_ARCH} for platform android-${NDK_PLATFORM}${ColorReset}" )
 endif()
 #
 message( "${BoldBlue}NDK_SYSROOT : ${NDK_SYSROOT}${ColorReset}" )
@@ -362,7 +385,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/android/WindowImplAndroid.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/AppBase.cpp
-    ${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
+    #${CINDER_SRC_DIR}/cinder/app/AppScreenSaver.cpp
     ${CINDER_SRC_DIR}/cinder/app/KeyEvent.cpp
     ${CINDER_SRC_DIR}/cinder/app/Platform.cpp
     ${CINDER_SRC_DIR}/cinder/app/Renderer.cpp

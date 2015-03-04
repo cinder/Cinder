@@ -35,7 +35,25 @@
 #include <memory>
 #include <type_traits>
 
-#if defined( CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9)) && ! (defined( __LP64__ ) || defined( _LP64 ))
+// Figure out if we need std::Log2
+#if defined(CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9))
+    #if defined(__arm__)
+        #define _IS_ARM
+    #endif
+
+    #if defined(__x86_64) || defined(__amd64) || defined(__x86_64__) || defined(__amd64__)
+        #define _IS_X86_64
+    #endif
+    
+    #if defined(_IS_ARM) || ! defined(_IS_X86_64)
+        #define NEEDS_STD_LOG2
+    #endif
+
+    #undef _IS_ARM
+    #undef _IS_X86_64
+#endif
+
+#if defined(NEEDS_STD_LOG2)
 namespace std {
 
 double log2( double x ) {
@@ -44,6 +62,7 @@ double log2( double x ) {
 
 } // namespace std
 #endif
+#undef NEEDS_STD_LOG2
 
 using namespace std;
 

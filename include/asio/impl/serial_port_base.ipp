@@ -113,7 +113,11 @@ asio::error_code serial_port_base::baud_rate::store(
     ec = asio::error::invalid_argument;
     return ec;
   }
-# if defined(_BSD_SOURCE)
+
+// On x86 (32-bit) Android - _BSD_SOURCE is defined
+// for some reason. All the other build variants
+// _BSD_SOURCE is not defined.
+# if defined(_BSD_SOURCE) && ! defined(__ANDROID__)
   ::cfsetspeed(&storage, baud);
 # else
   ::cfsetispeed(&storage, baud);
