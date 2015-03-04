@@ -136,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -160,7 +160,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -183,7 +183,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
@@ -206,7 +206,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -227,7 +227,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
@@ -246,7 +246,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\winrt\boost;..\include\cinder;..\include;..\boost;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -311,8 +311,13 @@
     <ClInclude Include="..\include\cinder\Camera.h" />
     <ClInclude Include="..\include\cinder\Channel.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
+    <ClInclude Include="..\include\cinder\CinderAssert.h" />
+    <ClInclude Include="..\include\cinder\CinderGlm.h" />
     <ClInclude Include="..\include\cinder\CinderMath.h" />
     <ClInclude Include="..\include\cinder\CinderResources.h" />
+    <ClInclude Include="..\include\cinder\ConcurrentCircularBuffer.h" />
+    <ClInclude Include="..\include\cinder\ConvexHull.h" />
+    <ClInclude Include="..\include\cinder\CurrentFunction.h" />
     <ClInclude Include="..\include\cinder\DataSource.h" />
     <ClInclude Include="..\include\cinder\DataTarget.h" />
     <ClInclude Include="..\include\cinder\Display.h" />
@@ -326,8 +331,10 @@
     <ClInclude Include="..\include\cinder\dx\gldx.h" />
     <ClInclude Include="..\include\cinder\dx\HlslProg.h" />
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h" />
+    <ClInclude Include="..\include\cinder\Easing.h" />
     <ClInclude Include="..\include\cinder\Exception.h" />
     <ClInclude Include="..\include\cinder\Filesystem.h" />
+    <ClInclude Include="..\include\cinder\Frustum.h" />
     <ClInclude Include="..\include\cinder\gl\Batch.h" />
     <ClInclude Include="..\include\cinder\gl\BufferObj.h" />
     <ClInclude Include="..\include\cinder\gl\BufferTexture.h" />
@@ -360,6 +367,7 @@
     <ClInclude Include="..\include\cinder\ip\Resize.h" />
     <ClInclude Include="..\include\cinder\ip\Threshold.h" />
     <ClInclude Include="..\include\cinder\ip\Trim.h" />
+    <ClInclude Include="..\include\cinder\Log.h" />
     <ClInclude Include="..\include\cinder\msw\CinderMsw.h" />
     <ClInclude Include="..\include\cinder\msw\CinderMswGdiPlus.h" />
     <ClInclude Include="..\include\cinder\msw\CinderWindowsFwd.h" />
@@ -377,10 +385,13 @@
     <ClInclude Include="..\include\cinder\Timer.h" />
     <ClInclude Include="..\include\cinder\Triangulate.h" />
     <ClInclude Include="..\include\cinder\TriMesh.h" />
+    <ClInclude Include="..\include\cinder\Tween.h" />
     <ClInclude Include="..\include\cinder\Unicode.h" />
+    <ClInclude Include="..\include\cinder\Url.h" />
     <ClInclude Include="..\include\cinder\Utilities.h" />
     <ClInclude Include="..\include\cinder\winrt\FontEnumerator.h" />
     <ClInclude Include="..\include\cinder\winrt\WinRTUtils.h" />
+    <ClInclude Include="..\include\cinder\Xml.h" />
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h" />
     <ClInclude Include="..\src\AntTweakBar\AntTweakBar.h" />
     <ClInclude Include="..\src\AntTweakBar\d3d10vs2003.h" />
@@ -557,10 +568,12 @@
     <ClCompile Include="..\src\cinder\ip\Resize.cpp" />
     <ClCompile Include="..\src\cinder\ip\Threshold.cpp" />
     <ClCompile Include="..\src\cinder\ip\Trim.cpp" />
+    <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Log.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
     <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
+    <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\params\Params.cpp" />
     <ClCompile Include="..\src\cinder\Path2d.cpp" />
     <ClCompile Include="..\src\cinder\Perlin.cpp" />
