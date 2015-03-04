@@ -33,6 +33,9 @@ namespace cinder {
 	typedef std::shared_ptr<Display> DisplayRef;
 }
 
+#include <functional>
+#include <vector>
+
 namespace cinder { namespace app {
 
 class Platform {
