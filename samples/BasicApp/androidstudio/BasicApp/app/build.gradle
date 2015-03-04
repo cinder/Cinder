@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "org.libcinder.samples.basicapp"
-        minSdkVersion 21
+        minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"
@@ -48,6 +48,8 @@ android {
     }
 
     cinder {
+        ndkDir = "/Users/hai/DevTools/android/ndk"
+        minSdkVersion = android.defaultConfig.minSdkVersion.apiLevel
         verbose = true
         moduleName = "BasicApp"
         srcFiles = ["../../../src/BasicApp.cpp"]
@@ -55,10 +57,9 @@ android {
         includeDirs = ["../../../../../include", "../../../../../boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         staticLibs = [
-                "${projectDir}/../../../../../lib/libcinder_d.a",
-                "${projectDir}/../../../../../lib/android/libboost_date_time.a",
-                "${projectDir}/../../../../../lib/android/libboost_filesystem.a",
-                "${projectDir}/../../../../../lib/android/libboost_system.a"
+                "${projectDir}/../../../../../lib/android/android-${minSdkVersion}/arm/libcinder_d.a",
+                "${projectDir}/../../../../../lib/android/android-${minSdkVersion}/arm/libboost_filesystem.a",
+                "${projectDir}/../../../../../lib/android/android-${minSdkVersion}/arm/libboost_system.a"
         ]
     }
 

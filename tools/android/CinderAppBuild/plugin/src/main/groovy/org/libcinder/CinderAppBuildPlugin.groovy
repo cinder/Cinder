@@ -146,13 +146,13 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     }
 
     void ndkDirCheck(Project project) {
-        File ndkDir = project.plugins.findPlugin('com.android.application').getNdkFolder()
+        String ndkDir = project.cinder.ndkDir; //project.plugins.findPlugin('com.android.application').getNdkFolder()
         if( null == ndkDir ) {
-            throw new InvalidUserDataException("ndk.dir is null! Make sure ndk.dir in local.properties is set.")
+            throw new InvalidUserDataException("ndkDir is null! Make sure ndk.dir in build.gradle's cinder {} section is set.")
         }
         //
-        if( ! ndkDir.exists() ) {
-            throw new InvalidUserDataException("ndk.dir does not exist! (ndk.dir=" + ndkDir.toString()+")")
+        if( ! (new File( ndkDir )).exists() ) {
+            throw new InvalidUserDataException("ndkDir does not exist! (ndkDir=" + ndkDir.toString()+")")
         }
     }
 
@@ -229,7 +229,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         project.task('cinderCompileNdk', dependsOn: 'cinderGenerateNdkBuild') << {
             this.ndkDirCheck(project)
 
-            String ndkDir = project.plugins.findPlugin('com.android.application').getNdkFolder().toString()
+            String ndkDir = project.cinder.ndkDir; //project.plugins.findPlugin('com.android.application').getNdkFolder().toString()
+            def minSdkVersion = project.cinder.minSdkVersion;
             
             def ndkBuildCmd  = "${ndkDir}/ndk-build"
             def ndkBuildArgs = []
@@ -237,13 +238,14 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             if( project.cinder.verbose ) {
                 ndkBuildArgs.add(this.makeNdkArg("V", "1"))
             }
-            ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH", "null"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_BUILD_SCRIPT", "${buildDir}/cinder-ndk/debug/Android.mk"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_PLATFORM",     "android-21"))
-            ndkBuildArgs.add(this.makeNdkArg("NDK_OUT",          "${buildDir}/cinder-ndk/debug/obj"))
-            ndkBuildArgs.add(this.makeNdkArg("NDK_LIBS_OUT",     "${projectDir}/src/main/jniLibs"))            
-            ndkBuildArgs.add(this.makeNdkArg("APP_STL",          "gnustl_static"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_ABI",          "armeabi-v7a"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH",      "null"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_BUILD_SCRIPT",      "${buildDir}/cinder-ndk/debug/Android.mk"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_PLATFORM",          "android-${minSdkVersion}"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_OUT",               "${buildDir}/cinder-ndk/debug/obj"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_LIBS_OUT",          "${projectDir}/src/main/jniLibs"))            
+            ndkBuildArgs.add(this.makeNdkArg("APP_STL",               "gnustl_static"))
+            ndkBuildArgs.add(this.makeNdkArg("APP_ABI",               "armeabi-v7a"))
+            ndkBuildArgs.add(this.makeNdkArg("NDK_TOOLCHAIN_VERSION", "4.9"))
        
             if( project.cinder.verbose ) {
                 def cwd = System.getProperty("user.dir")  
@@ -261,6 +263,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 }
 
 class CinderAppBuildPluginExtension {
+    def ndkDir = ""
+    def minSdkVersion = 19;
     def verbose = false
     def moduleName = ""
     def srcFiles = []
