@@ -28,7 +28,7 @@
 
 namespace cinder { namespace gl { 
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ES_3 )
 
 typedef std::shared_ptr<class Sync>		SyncRef;
 
