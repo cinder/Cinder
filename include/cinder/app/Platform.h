@@ -114,7 +114,8 @@ class Platform {
   protected:
 	Platform() : mAssetDirsInitialized( false )	{}
 
-	virtual void prepareAssetLoading() = 0;
+	//! Called when asset directories are first prepared, subclasses can override to add platform specific directories.
+	virtual void prepareAssetLoading()		{}
 
   private:
 	void		findAndAddAssetBasePath();
