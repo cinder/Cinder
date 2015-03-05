@@ -69,9 +69,8 @@ class Platform {
 #endif // defined( CINDER_MSW )
 
 	//! Returns the absolute file path to the resources folder. Returns an empty fs::path on windows. \sa CinderResources
-	virtual fs::path	getResourcePath() const = 0;
+	virtual fs::path	getResourceDirectory() const = 0;
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa CinderResources
-	//! TODO: this seems unnecessary to be abstract virtual - instead can implement as getResourcePath() / relPath.
 	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
 	void				setExecutablePath( const fs::path &execPath )	{ mExecutablePath = execPath; }

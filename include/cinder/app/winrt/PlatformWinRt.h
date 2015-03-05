@@ -33,7 +33,7 @@ class PlatformWinRt : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
 
-	fs::path getResourcePath() const override										{ return fs::path(); }
+	fs::path getResourceDirectory() const override									{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
 	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;

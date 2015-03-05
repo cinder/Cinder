@@ -100,7 +100,7 @@ fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) cons
 	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
 }
 
-fs::path PlatformCocoa::getResourcePath() const
+fs::path PlatformCocoa::getResourceDirectory() const
 {
 	NSString *resultPath = [getBundle() resourcePath];
 
@@ -119,7 +119,7 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 void PlatformCocoa::prepareAssetLoading()
 {
 	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = getResourcePath() / "assets";
+	fs::path bundleAssetsPath = getResourceDirectory() / "assets";
 	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
 		addAssetDirectory( bundleAssetsPath );
 	}
