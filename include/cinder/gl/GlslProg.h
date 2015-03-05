@@ -51,9 +51,16 @@ class ShaderPreprocessor;
 class GlslProg : public std::enable_shared_from_this<GlslProg> {
   public:
 	
+	struct Attribute {
+		std::string		mName;
+		GLint			mCount = 0, mLoc = -1;
+		GLenum			mType;
+		geom::Attrib	mSemantic = geom::Attrib::NUM_ATTRIBS;
+	};
+	
 	struct Uniform {
 		std::string		mName;
-		GLint			mSize = 0, mLoc = -1, mIndex = -1;
+		GLint			mCount = 0, mLoc = -1, mIndex = -1;
 		GLint			mDataSize;
 		GLenum			mType;
 		UniformSemantic mSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
@@ -68,22 +75,23 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Includes information attached to GL_UNIFORM_OFFSET, GL_UNIFORM_ARRAY_STRIDE, GL_UNIFORM_MATRIX_STRIDE
 		std::map<GLenum, std::vector<GLint>> mActiveUniformInfo;
 	};
-#endif
-	
-	struct Attribute {
-		std::string		mName;
-		GLint			mSize = 0, mLoc = -1;
-		GLenum			mType;
-		geom::Attrib	mSemantic = geom::Attrib::NUM_ATTRIBS;
-	};
 	
 	struct TransformFeedbackVaryings {
 		std::string		mName;
-		GLint			mSize = 0;
+		GLint			mCount = 0;
 		GLenum			mType;
 		Attribute*		mAttachedAttrib;
 	};
+#endif
 	
+#if ! defined( CINDER_GL_ES )
+	struct Subroutine {
+		std::string mName;
+		GLenum		mStage;
+		std::vector<std::pair<GLint, std::string>> mIdName;
+	};
+#endif
+
 	struct Format {
 		//! Defaults to specifying location 0 for the \c geom::Attrib::POSITION semantic
 		Format();
@@ -232,8 +240,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	GLuint			getHandle() const { return mHandle; }
 	
+	void	uniform( const std::string &name, bool data ) const;
+	void	uniform( int location, bool data ) const;
 	void	uniform( const std::string &name, int data ) const;
-	void	uniform( int location, int data ) const;	
+	void	uniform( int location, int data ) const;
+	void	uniform( const std::string &name, uint32_t data ) const;
+	void	uniform( int location, uint32_t data ) const;
 	void	uniform( const std::string &name, const ivec2 &data ) const;
 	void	uniform( int location, const ivec2 &data ) const;	
 	void	uniform( const std::string &name, const int *data, int count ) const;
@@ -248,6 +260,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniform( int location, const vec3 &data ) const;
 	void	uniform( const std::string &name, const vec4 &data ) const;
 	void	uniform( int location, const vec4 &data ) const;
+	void	uniform( const std::string &name, const uvec2 &data ) const;
+	void	uniform( int location, const uvec2 &data ) const;
+	void	uniform( const std::string &name, const uvec3 &data ) const;
+	void	uniform( int location, const uvec3 &data ) const;
+	void	uniform( const std::string &name, const uvec4 &data ) const;
+	void	uniform( int location, const uvec4 &data ) const;
 	void	uniform( const std::string &name, const Color &data ) const;
 	void	uniform( int location, const Color &data ) const;
 	void	uniform( const std::string &name, const ColorA &data ) const;
@@ -269,9 +287,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void    uniform( int location, const mat4 *data, int count, bool transpose = false ) const;
 	void    uniform( const std::string &name, const mat4 *data, int count, bool transpose = false ) const;
 	
-	const std::vector<Attribute>&	getActiveAttributes() const { return mAttributes; }
-	const std::vector<Uniform>&		getActiveUniforms() const { return mUniforms; }
-	
 	bool	hasAttribSemantic( geom::Attrib semantic ) const;
 	GLint	getAttribSemanticLocation( geom::Attrib semantic ) const;
 	GLint	operator[]( geom::Attrib sem ) const { return getAttribSemanticLocation( sem ); }
@@ -281,11 +296,10 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	//! Default mapping from attribute name to semantic. Can be modified via the reference. Not thread-safe.
 	static AttribSemanticMap&		getDefaultAttribNameToSemanticMap();
 	
-	GLint	getAttribLocation( const std::string &name ) const;
-	GLint	getUniformLocation( const std::string &name ) const;
-	
-	const Uniform& getActiveUniform( const std::string &name ) const;
-	const Attribute&  getActiveAttrib( const std::string &name ) const;
+	GLint							getAttribLocation( const std::string &name ) const;
+	const std::vector<Attribute>&	getActiveAttributes() const { return mAttributes; }
+	GLint							getUniformLocation( const std::string &name ) const;
+	const std::vector<Uniform>&		getActiveUniforms() const { return mUniforms; }
 
 #if ! defined( CINDER_GL_ES_2 )
 	// Uniform blocks
@@ -296,11 +310,13 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	GLint	getUniformBlockLocation( const std::string &name ) const;
 	GLint	getUniformBlockSize( GLint blockIndex ) const;
 	const std::vector<UniformBlock>& getActiveUniformBlocks() const { return mUniformBlocks; }
-	void	cacheActiveUniformBlocks();
-	
-	std::vector<UniformBlock>				mUniformBlocks;
+	const std::vector<TransformFeedbackVaryings>& getActiveTransformFeedbackVaryings() const { return mTransformFeedbackVaryings; }
 #endif
-
+	
+#if ! defined( CINDER_GL_ES )
+	const std::vector<Subroutine> getActiveSubroutines() const { return mSubroutines; }
+#endif
+	
 	std::string		getShaderLog( GLuint handle ) const;
 
 	//! Returns the debugging label associated with the Program.
@@ -315,10 +331,24 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType );
 	void			attachShaders();
 	void			link();
-	void			cacheActiveAttribs();
-	void			cacheActiveUniforms();
-	void			cacheActiveTransformFeedbackVaryings();
 	
+	void				cacheActiveAttribs();
+	Attribute*			findAttrib( const std::string &name );
+	const Attribute*	findAttrib( const std::string &name ) const;
+	void				cacheActiveUniforms();
+	Uniform*			findUniform( const std::string &name );
+	const Uniform*		findUniform( const std::string &name ) const;
+#if ! defined( CINDER_GL_ES_2 )
+	void				cacheActiveUniformBlocks();
+	UniformBlock*		findUniformBlock( const std::string &name );
+	const UniformBlock* findUniformBlock( const std::string &name ) const;
+	void				cacheActiveTransformFeedbackVaryings();
+#endif
+	
+#if ! defined( CINDER_GL_ES )
+	void				cacheActiveSubroutines();
+	Subroutine*			findSubroutine( const std::string &name ) const;
+#endif
 	
 	GLuint									mHandle;
 	
@@ -327,8 +357,14 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	std::vector<Attribute>					mAttributes;
 	std::vector<Uniform>					mUniforms;
+#if ! defined( CINDER_GL_ES_2 )
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
+	std::vector<UniformBlock>				mUniformBlocks;
+#endif
 	
+#if ! defined( CINDER_GL_ES )
+	std::vector<Subroutine>					mSubroutines;
+#endif
 	
 	// enumerates the uniforms we've already logged as missing so that we don't flood the log with the same message
 	mutable std::set<std::string>			mLoggedUniforms;
@@ -340,8 +376,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 #if ! defined( CINDER_GL_ES_2 )
 	std::unique_ptr<std::vector<GLchar>>	mTransformFeedbackVaryingsChars;
 	std::unique_ptr<std::vector<GLchar*>>	mTransformFeedbackVaryingsCharStarts;
-	mutable std::map<std::string, GLint>	mUniformBlockLocs; // map between name and location
-	mutable std::map<GLint, GLint>			mUniformBlockSizes;
+	GLenum									mTransformFeedbackFormat;
 #endif
 
 	friend class Context;

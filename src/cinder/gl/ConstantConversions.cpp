@@ -21,7 +21,10 @@
 */
 
 
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
+#include "cinder/gl/gl.h"
+
+#include "cinder/Log.h"
 
 #include <sstream>
 #include <unordered_map>
@@ -46,6 +49,9 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_FLOAT_VEC2] = "FLOAT_VEC2";
 		sSymbols[GL_FLOAT_VEC3] = "FLOAT_VEC3";
 		sSymbols[GL_FLOAT_VEC4] = "FLOAT_VEC4";
+		sSymbols[GL_UNSIGNED_INT_VEC2] = "UNSIGNED_INT_VEC2";
+		sSymbols[GL_UNSIGNED_INT_VEC3] = "UNSIGNED_INT_VEC3";
+		sSymbols[GL_UNSIGNED_INT_VEC4] = "UNSIGNED_INT_VEC4";
 		sSymbols[GL_INT_VEC2] = "INT_VEC2";
 		sSymbols[GL_INT_VEC3] = "INT_VEC3";
 		sSymbols[GL_INT_VEC4] = "INT_VEC4";
@@ -204,6 +210,73 @@ std::string	constantToString( GLenum constant )
 		std::stringstream ss;
 		ss << "0x" << std::hex << constant;
 		return ss.str();
+	}
+}
+	
+uint8_t glTypeToDimenstion( GLenum type )
+{
+	switch (type) {
+		case GL_UNSIGNED_INT:
+		case GL_INT:
+		case GL_FLOAT:
+		case GL_BOOL:
+			return 1;
+		break;
+		case GL_UNSIGNED_INT_VEC2:
+		case GL_INT_VEC2:
+		case GL_FLOAT_VEC2:
+		case GL_BOOL_VEC2:
+			return 2;
+		break;
+		case GL_UNSIGNED_INT_VEC3:
+		case GL_INT_VEC3:
+		case GL_FLOAT_VEC3:
+		case GL_BOOL_VEC3:
+			return 3;
+		break;
+		case GL_UNSIGNED_INT_VEC4:
+		case GL_INT_VEC4:
+		case GL_FLOAT_VEC4:
+		case GL_BOOL_VEC4:
+		case GL_FLOAT_MAT2:
+			return 4;
+		case GL_FLOAT_MAT3:
+			return 9;
+		case GL_FLOAT_MAT4:
+			return 16;
+		default:
+			return 0;
+		break;
+	}
+}
+	
+uint8_t glTypeToBytes( GLenum type )
+{
+	switch (type) {
+		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
+		case GL_INT:				return sizeof(int); break;
+		case GL_SAMPLER_2D:			return sizeof(int); break;
+		case GL_FLOAT:				return sizeof(float); break;
+		case GL_BOOL:				return sizeof(bool); break;
+		case GL_UNSIGNED_INT_VEC2:	return sizeof(glm::uvec2); break;
+		case GL_INT_VEC2:			return sizeof(ivec2); break;
+		case GL_FLOAT_VEC2:			return sizeof(vec2); break;
+		case GL_BOOL_VEC2:			return sizeof(glm::bvec2); break;
+		case GL_UNSIGNED_INT_VEC3:	return sizeof(glm::uvec3); break;
+		case GL_INT_VEC3:			return sizeof(ivec3); break;
+		case GL_FLOAT_VEC3:			return sizeof(vec3); break;
+		case GL_BOOL_VEC3:			return sizeof(glm::bvec3); break;
+		case GL_UNSIGNED_INT_VEC4:	return sizeof(glm::uvec4); break;
+		case GL_INT_VEC4:			return sizeof(ivec4); break;
+		case GL_FLOAT_VEC4:			return sizeof(vec4); break;
+		case GL_BOOL_VEC4:			return sizeof(glm::bvec4); break;
+		case GL_FLOAT_MAT2:			return sizeof(mat2); break;
+		case GL_FLOAT_MAT3:			return sizeof(mat3); break;
+		case GL_FLOAT_MAT4:			return sizeof(mat4); break;
+		default:
+			CI_LOG_E("Unknown gl type constant " << constantToString( type ));
+			return 0;
+		break;
 	}
 }
 

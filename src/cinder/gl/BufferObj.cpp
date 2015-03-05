@@ -22,7 +22,7 @@
 
 #include "cinder/gl/BufferObj.h"
 #include "cinder/gl/Context.h"
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/scoped.h"
 

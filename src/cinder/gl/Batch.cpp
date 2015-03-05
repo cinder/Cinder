@@ -104,8 +104,15 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
 	const auto &glslActiveAttribs = mGlsl->getActiveAttributes();
 	for( auto &glslActiveAttrib : glslActiveAttribs ) {
+		bool attribMappingFound = false;
+		for( auto & attrib : attributeMapping ) {
+			if( glslActiveAttrib.mName == attrib.second ) {
+				attribMappingFound = true;
+			}
+		}
 		if( (glslActiveAttrib.mSemantic != geom::Attrib::COLOR) &&
-		   (enabledAttribs.count( glslActiveAttrib.mSemantic ) == 0) )
+		   (enabledAttribs.count( glslActiveAttrib.mSemantic ) == 0) &&
+		   ! attribMappingFound )
 			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.mSemantic ) << " but vertex data doesn't provide it." );
 	}
 	
