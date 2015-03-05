@@ -57,7 +57,7 @@ class Platform {
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
 	void					addAssetDirectory( const fs::path &directory );
 	//! Returns a vector of directories that are searched when looking up an asset path.
-	const std::vector<fs::path>& getAssetDirectories();
+	const std::vector<fs::path>&	getAssetDirectories();
 
 	// Resources
 #if defined( CINDER_MSW )

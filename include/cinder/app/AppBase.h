@@ -539,6 +539,8 @@ inline DataSourceRef		loadAsset( const fs::path &relativePath )		{ return Platfo
 inline fs::path				getAssetPath( const fs::path &relativePath )	{ return Platform::get()->getAssetPath( relativePath ); }
 //! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
 inline void					addAssetDirectory( const fs::path &dirPath )	{ return Platform::get()->addAssetDirectory( dirPath ); }
+//! Returns a vector of directories that are searched when looking up an asset path.
+inline const std::vector<fs::path>&	getAssetDirectories()					{ return Platform::get()->getAssetDirectories(); }
 
 //! Returns the path to the active App on disk
 inline fs::path		getAppPath() { return AppBase::get()->getAppPath(); }
