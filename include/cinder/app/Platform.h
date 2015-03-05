@@ -55,7 +55,7 @@ class Platform {
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
 	fs::path				getAssetPath( const fs::path &relativePath );
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
-	void					addAssetDirectory( const fs::path &dirPath );
+	void					addAssetDirectory( const fs::path &directory );
 
 	// Resources
 #if defined( CINDER_MSW )
@@ -111,7 +111,7 @@ class Platform {
 	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 
   protected:
-	Platform() : mAssetPathsInitialized( false )	{}
+	Platform() : mAssetDirsInitialized( false )	{}
 
 	virtual void prepareAssetLoading() = 0;
 
@@ -119,8 +119,8 @@ class Platform {
 	void		findAndAddAssetBasePath();
 	fs::path	findAssetPath( const fs::path &relativePath );
 
-	std::vector<fs::path>		mAssetPaths;
-	bool						mAssetPathsInitialized;
+	std::vector<fs::path>		mAssetDirectories;
+	bool						mAssetDirsInitialized;
 	fs::path					mExecutablePath;
 };
 

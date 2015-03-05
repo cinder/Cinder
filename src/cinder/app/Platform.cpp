@@ -79,23 +79,23 @@ fs::path Platform::getAssetPath( const fs::path &relativePath )
 	return findAssetPath( relativePath );
 }
 
-void Platform::addAssetDirectory( const fs::path &dirPath )
+void Platform::addAssetDirectory( const fs::path &directory )
 {
-	auto it = find( mAssetPaths.begin(), mAssetPaths.end(), dirPath );
-	if( it == mAssetPaths.end() )
-		mAssetPaths.push_back( dirPath );
+	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
+	if( it == mAssetDirectories.end() )
+		mAssetDirectories.push_back( directory );
 }
 
 fs::path Platform::findAssetPath( const fs::path &relativePath )
 {
-	if( ! mAssetPathsInitialized ) {
+	if( ! mAssetDirsInitialized ) {
 		prepareAssetLoading();
 		findAndAddAssetBasePath();
-		mAssetPathsInitialized = true;
+		mAssetDirsInitialized = true;
 	}
 
-	for( const auto &assetPath : mAssetPaths ) {
-		auto fullPath = assetPath / relativePath;
+	for( const auto &directory : mAssetDirectories ) {
+		auto fullPath = directory / relativePath;
 		if( fs::exists( fullPath ) )
 			return fullPath;
 	}
