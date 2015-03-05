@@ -43,7 +43,7 @@ class PlatformMsw : public Platform {
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
-	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
+	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 10 levels deep from executable
 	void prepareAssetLoading() override {}
 
 	fs::path	expandPath( const fs::path &path ) override;
