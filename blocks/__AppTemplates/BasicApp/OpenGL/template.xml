@@ -6,6 +6,7 @@
 	<supports os="macosx" />
 	<supports os="ios" />
 	<supports os="msw" />
+	<supports os="winrt" />
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
 	<platform os="macosx">
