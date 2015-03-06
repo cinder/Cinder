@@ -479,6 +479,9 @@ using namespace cinder::app;
 
 - (void)setBorderless:(BOOL)borderless
 {
+	if( mBorderless == borderless )
+		return;
+
 	mBorderless = borderless;
 
 	NSUInteger styleMask;
