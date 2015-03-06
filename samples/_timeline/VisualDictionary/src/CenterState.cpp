@@ -3,7 +3,7 @@
  * Used with permission for the Cinder Project ( http://libcinder.org )
  */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "CenterState.h"
 #include "cinder/gl/gl.h"
 

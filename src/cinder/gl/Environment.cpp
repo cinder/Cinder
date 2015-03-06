@@ -35,6 +35,8 @@
 	#import <OpenGLES/EAGL.h>
 #elif defined( CINDER_GL_ANGLE )
 	#include "EGL/egl.h"
+#elif defined( CINDER_MSW )
+	#include <windows.h>
 #endif
 
 #include "cinder/Log.h"

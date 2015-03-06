@@ -34,7 +34,11 @@
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
+
+#if defined( CINDER_MSW )
+	#include <Windows.h>
+#endif
 
 using namespace std;
 
@@ -301,7 +305,7 @@ void Context::vaoDeleted( const Vao *vao )
 		mLiveVaos.erase( vao );
 		
 	// if this was the currently bound VAO, mark the top of the stack as null
-	if( ! mVaoStack.empty() && mVaoStack.back()->getId() == vao->getId() )
+	if( ! mVaoStack.empty() && mVaoStack.back() && ( mVaoStack.back()->getId() == vao->getId() ) )
 		mVaoStack.back() = nullptr;
 }
 

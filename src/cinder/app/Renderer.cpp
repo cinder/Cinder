@@ -27,22 +27,22 @@
 	#include "cinder/gl/gl.h"
 #endif
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#if defined( CINDER_MAC )
 		#include <ApplicationServices/ApplicationServices.h>
 		#import <Cocoa/Cocoa.h>
-		#import "cinder/app/AppImplCocoaRendererQuartz.h"
+		#import "cinder/app/cocoa/RendererImpl2dMacQuartz.h"
 	#elif defined( CINDER_COCOA_TOUCH )
 		#include "cinder/cocoa/CinderCocoaTouch.h"
-		#import "cinder/app/AppImplCocoaTouchRendererQuartz.h"		
+		#import "cinder/app/cocoa/RendererImpl2dCocoaTouchQuartz.h"		
 	#endif
 
 #elif defined( CINDER_MSW )
-	#include "cinder/app/AppImplMsw.h"
-	#include "cinder/app/AppImplMswRendererGdi.h"
+	#include "cinder/app/msw/AppImplMsw.h"
+	#include "cinder/app/msw/RendererImpl2dGdi.h"
 #endif
 
 namespace cinder { namespace app {
@@ -50,22 +50,18 @@ namespace cinder { namespace app {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer
 Renderer::Renderer( const Renderer &renderer )
-	: mApp( renderer.mApp )
 {
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Renderer2d
+#if defined( CINDER_COCOA )
+
 Renderer2d::Renderer2d( const Renderer2d &renderer )
 	: Renderer( renderer )
 {
 	mImpl = 0;
-#if defined( CINDER_MSW )
-	mDoubleBuffer = renderer.mDoubleBuffer;
-#endif
 }
-
-#if defined( CINDER_COCOA )
 
 Renderer2d::Renderer2d()
 	: Renderer(), mImpl( 0 )
@@ -78,20 +74,18 @@ Renderer2d::~Renderer2d()
 	::CFRelease( mImpl );
 }
 
-void Renderer2d::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
+void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
 {
-	mApp = aApp;
-	mImpl = [[AppImplCocoaRendererQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp];
+	mImpl = [[RendererImpl2dMacQuartz alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
 
 #else
 
-void Renderer2d::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( const Area &frame, UIView *cinderView, RendererRef /*sharedRenderer*/ )
 {
-	mApp = aApp;
-	mImpl = [[AppImplCocoaTouchRendererQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView app:mApp];
+	mImpl = [[RendererImpl2dCocoaTouchQuartz alloc] initWithFrame:cinder::cocoa::createCgRect(frame) cinderView:cinderView];
 }
 
 #endif
@@ -128,7 +122,7 @@ void Renderer2d::makeCurrentContext()
 	[mImpl makeCurrentContext];
 }
 
-Surface Renderer2d::copyWindowSurface( const Area &area )
+Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 #if defined( CINDER_MAC )
 	NSBitmapImageRep *rep = [mImpl getContents:area];
@@ -148,16 +142,22 @@ Surface Renderer2d::copyWindowSurface( const Area &area )
 
 #if defined( CINDER_MSW )
 
-Renderer2d::Renderer2d( bool doubleBuffer )
-	: Renderer(), mDoubleBuffer( doubleBuffer )
+Renderer2d::Renderer2d( const Renderer2d &renderer )
+	: Renderer( renderer )
+{
+	mImpl = 0;
+	mDoubleBuffer = renderer.mDoubleBuffer;
+}
+
+Renderer2d::Renderer2d( bool doubleBuffer, bool paintEvents )
+	: Renderer(), mDoubleBuffer(doubleBuffer), mPaintEvents( paintEvents )
 {
 }
 
-void Renderer2d::setup( App *app, HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
+void Renderer2d::setup( HWND wnd, HDC dc, RendererRef /*sharedRenderer*/ )
 {
-	mApp = app;
 	mWnd = wnd;
-	mImpl = new AppImplMswRendererGdi( app, mDoubleBuffer );
+	mImpl = new RendererImpl2dGdi( mDoubleBuffer, mPaintEvents );
 	mImpl->initialize( wnd, dc, RendererRef() /* we don't use shared renderers on GDI */ );
 }
 
@@ -196,7 +196,7 @@ void Renderer2d::defaultResize()
 	mImpl->defaultResize();
 }
 
-Surface	Renderer2d::copyWindowSurface( const Area &area )
+Surface	Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	return mImpl->copyWindowContents( area );
 }

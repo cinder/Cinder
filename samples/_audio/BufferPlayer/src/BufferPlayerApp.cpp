@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Context.h"
@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BufferPlayerNodeApp : public AppNative {
+class BufferPlayerNodeApp : public App {
 public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -30,7 +30,7 @@ public:
 
 void BufferPlayerNodeApp::prepareSettings( Settings *settings )
 {
-	settings->enableMultiTouch( false );
+	settings->setMultiTouchEnabled( false );
 }
 
 void BufferPlayerNodeApp::setup()
@@ -103,4 +103,4 @@ void BufferPlayerNodeApp::draw()
 	gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ) );
 }
 
-CINDER_APP_NATIVE( BufferPlayerNodeApp, RendererGl )
+CINDER_APP( BufferPlayerNodeApp, RendererGl )

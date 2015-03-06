@@ -23,7 +23,8 @@
 
 #pragma once
 
-#if( _WIN32_WINNT < 0x0600 )
+#include "cinder/Cinder.h"
+#if ! defined( CINDER_WINRT ) && ( _WIN32_WINNT < 0x0600 )
 	#error "WASAPI only available on Windows Vista or newer"
 #endif
 

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/Font.h"
 #include "cinder/Utilities.h"
@@ -8,7 +8,7 @@ using namespace ci::app;
 using namespace std;
 #include <sstream>
 
-class fontSampleApp : public AppBasic {
+class fontSampleApp : public App {
  public:
 	void		setup();
 	void		drawCharacterVerbose( cairo::Context &ctx, vec2 where );
@@ -171,4 +171,4 @@ void fontSampleApp::draw()
 }
 
 
-CINDER_APP_BASIC( fontSampleApp, Renderer2d )
+CINDER_APP( fontSampleApp, Renderer2d )

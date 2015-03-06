@@ -21,7 +21,6 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/App/App.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"

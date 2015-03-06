@@ -24,27 +24,8 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/Function.h"
 
 namespace cinder { namespace app {
-
-template<typename T>
-struct EventCombiner {
-	typedef void	result_type;
-
-	EventCombiner() : mEvent( 0 ) {}
-	EventCombiner( const T *event ) : mEvent( event ) {}
-
-	template<typename InputIterator>
-	void	operator()( InputIterator first, InputIterator last ) const
-	{
-		while( ( first != last ) && ( ! mEvent->isHandled() ) ) {
-			*first++;
-		}
-	}
-	
-	const T		*mEvent;
-};
 
 typedef std::shared_ptr<class Window>		WindowRef;
 
@@ -69,6 +50,33 @@ class Event {
 	
 	bool			mHandled;
 	WindowRef		mWindow;
+};
+
+//! A Collector for use with signals::Signal, which will keep the callback chain running until Event::isHandled() returns \a true.
+template<typename EventT>
+struct CollectorEvent {
+	typedef void	CollectorResult;
+
+	//! Default constructor, sets the internal EventT pointer to null.
+	CollectorEvent()
+		: mEvent( nullptr )
+	{}
+	//! Constructor that takes a pointer to an EventT instance, which will be used to determine when to stop signal emission because the event has been handled.
+	CollectorEvent( const EventT *event )
+		: mEvent( event )
+	{}
+
+	//! Called by the signal's CollectorInvoker, allows emission to continue until Event::isHandled() returns \a true.
+	inline bool	operator()() const
+	{
+		return ! mEvent->isHandled();
+	}
+	//! This Collector does not return a result.
+	CollectorResult getResult() const
+	{}
+
+  private:
+	const EventT*	mEvent;
 };
 
 } } // namespace cinder::app

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -18,7 +18,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class VoiceTestApp : public AppNative {
+class VoiceTestApp : public App {
 public:
 	void setup() override;
 	void fileDrop( FileDropEvent event ) override;
@@ -183,4 +183,4 @@ void VoiceTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP_NATIVE( VoiceTestApp, RendererGl )
+CINDER_APP( VoiceTestApp, RendererGl )

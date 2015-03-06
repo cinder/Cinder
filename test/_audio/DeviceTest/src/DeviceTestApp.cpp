@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Log.h"
@@ -19,7 +19,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class DeviceTestApp : public AppNative {
+class DeviceTestApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -614,4 +614,4 @@ void DeviceTestApp::draw()
 	gl::popMatrices();
 }
 
-CINDER_APP_NATIVE( DeviceTestApp, RendererGl )
+CINDER_APP( DeviceTestApp, RendererGl )

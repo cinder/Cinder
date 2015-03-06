@@ -23,13 +23,18 @@ using namespace cinder::app;
 	
 - (void)applicationDidFinishLaunching:(NSNotification *)aNotification
 {
-	mApp = new MyCinderApp;
-	mApp->prepareLaunch();
 #if defined( USE_RENDERER2D )
-	mApp->setupCinderView( cinderView, Renderer2d::create() );
+	auto defaultRenderer = Renderer2d::create();
 #else
-	mApp->setupCinderView( cinderView, RendererGl::create() );
+	auto defaultRenderer = RendererGl::create();
 #endif
+
+	AppCocoaView::Settings settings;
+	AppCocoaView::initialize( &settings, defaultRenderer );
+	MyCinderApp::prepareSettings( &settings );
+
+	mApp = new MyCinderApp;
+	mApp->setupCinderView( cinderView );
 	mApp->launch();
 	
 	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f]; 

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
@@ -38,7 +38,7 @@ struct Circle {
 	Color	mColor;
 };
 
-class SaveImageApp : public AppBasic {
+class SaveImageApp : public App {
  public:
 	void setup();
 	void mouseDown( MouseEvent event );
@@ -79,4 +79,4 @@ void SaveImageApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( SaveImageApp, RendererGl )
+CINDER_APP( SaveImageApp, RendererGl )

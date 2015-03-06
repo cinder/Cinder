@@ -8,7 +8,7 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/Rand.h"
@@ -44,9 +44,8 @@ const int NUM_PARTICLES = 200e3;
 	Designed to have the same behavior as ParticleSphereGPU.
  */
 
-class ParticleSphereCPUApp : public AppNative {
+class ParticleSphereCPUApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -61,12 +60,6 @@ class ParticleSphereCPUApp : public AppNative {
 	// Batch for rendering particles with default shader.
 	gl::BatchRef		mParticleBatch;
 };
-
-void ParticleSphereCPUApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1280, 720 );
-	settings->enableMultiTouch( false );
-}
 
 void ParticleSphereCPUApp::setup()
 {
@@ -157,4 +150,7 @@ void ParticleSphereCPUApp::draw()
 	mParticleBatch->draw();
 }
 
-CINDER_APP_NATIVE( ParticleSphereCPUApp, RendererGl )
+CINDER_APP( ParticleSphereCPUApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+	settings->setMultiTouchEnabled( false );
+} )

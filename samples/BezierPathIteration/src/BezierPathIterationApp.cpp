@@ -2,7 +2,7 @@
 // It loads an SVG and generates a Path2dCalcCache per curve.
 // It then generates 2000 random particles which move along the paths at a constant speed
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/svg/Svg.h"
@@ -14,7 +14,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BezierPathIterationApp : public AppNative {
+class BezierPathIterationApp : public App {
   public:
 	void setup() override;
 	void loadSvg( const fs::path &fsPath );
@@ -97,4 +97,4 @@ void BezierPathIterationApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( BezierPathIterationApp, RendererGl )
+CINDER_APP( BezierPathIterationApp, RendererGl )

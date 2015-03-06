@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
@@ -11,7 +11,7 @@ using namespace std;
 
 static const int WIDTH = 640, HEIGHT = 480;
 
-class CaptureApp : public AppBasic {
+class CaptureApp : public App {
  public:	
 	void setup();
 	void keyDown( KeyEvent event );
@@ -119,4 +119,4 @@ void CaptureApp::draw()
 }
 
 
-CINDER_APP_BASIC( CaptureApp, RendererGl )
+CINDER_APP( CaptureApp, RendererGl )

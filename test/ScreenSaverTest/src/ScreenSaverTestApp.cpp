@@ -15,17 +15,21 @@
 	#include "WindowsConfig.h"
 #endif
 
+#define LOAD_LOGO_IN_CONSTRUCTOR 0
+
 using namespace ci;
 using namespace ci::app;
 
 class ScreenSaverTestApp : public AppScreenSaver {
   public:
-	virtual void prepareSettings( Settings *settings ) override;
+	ScreenSaverTestApp();
+
 	virtual void setup() override;
 	virtual void resize() override;
 	virtual void update() override;
 	virtual void draw() override;
-	virtual void shutdown() override;
+
+	void loadLogo();
 
 #if defined( CINDER_MAC )
 	virtual NSWindow* createMacConfigDialog() override
@@ -47,19 +51,29 @@ class ScreenSaverTestApp : public AppScreenSaver {
 };
 
 
-void ScreenSaverTestApp::prepareSettings( Settings *settings )
+void prepareSettings( AppScreenSaver::Settings *settings )
 {
-	CI_LOG_I( "called in " << getAppPath() );
 //	settings->setFrameRate( 1 );
 #if defined( CINDER_MAC )
 	settings->setProvidesMacConfigDialog();
+#elif defined( CINDER_MSW )
+//	settings->enableDebug();
 #endif
 //	settings->enableSecondaryDisplayBlanking();
 }
 
+ScreenSaverTestApp::ScreenSaverTestApp()
+{
+#if LOAD_LOGO_IN_CONSTRUCTOR
+	log::manager()->enableSystemLogging();
+	loadLogo();
+#endif
+}
+
 void ScreenSaverTestApp::setup()
 {
-	CI_LOG_I( "bang" );
+	log::manager()->enableSystemLogging();
+	CI_LOG_I( "called in " << getAppPath() );
 
 #if defined( CINDER_MAC )
 	loadConfigMac( this, &mConfig );
@@ -68,9 +82,21 @@ void ScreenSaverTestApp::setup()
 #endif
 	mColor = Color( 1.0f, 0.5f, 0.25f );
 	mBackgroundColor = Color( 0.7f, 0.0f, 0.8f );
-	
+
+	getSignalShutdown().connect( [this] {
+		CI_LOG_I( "shutting down" );
+	} );
+
+#if ! LOAD_LOGO_IN_CONSTRUCTOR
+	loadLogo();
+#endif
+}
+
+void ScreenSaverTestApp::loadLogo()
+{
 	try {
 		mLogo = gl::Texture::create( loadImage( loadResource( RES_CINDER_LOGO ) ) );
+		CI_LOG_I( "loaded." );
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
@@ -95,12 +121,13 @@ void ScreenSaverTestApp::update()
 
 void ScreenSaverTestApp::draw()
 {
-//NSLog( @"draw: %dx%d (%d) [%d]", getWindowWidth(), getWindowHeight(), getNumWindows(), isPreview() ); // TODO: update
+//	CI_LOG_I( "window size: " << getWindowSize() << ", num windows: " << getNumWindows() << ", preview: " << isPreview() );
+//	CI_LOG_I( "Drawing" << *getDisplay() );
+
 	gl::enableAlphaBlending();
 		
-//console() << "Drawing: " << *getDisplay() << std::endl; // TODO: update
 	if( isPreview() )
-		gl::clear( Color( 0, 0.5f, 1.0f ) );
+		gl::clear( Color( 0, 0.95f, 1.0f ) );
 	else
 		gl::clear( mBackgroundColor );
 
@@ -114,9 +141,4 @@ void ScreenSaverTestApp::draw()
 	}
 }
 
-void ScreenSaverTestApp::shutdown()
-{
-	console() << "shutting down" << std::endl;
-}
-
-CINDER_APP_SCREENSAVER( ScreenSaverTestApp, RendererGl )
+CINDER_APP_SCREENSAVER( ScreenSaverTestApp, RendererGl, prepareSettings )

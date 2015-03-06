@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
@@ -26,7 +26,7 @@ const int POINTS_Y			= 50;
 const int POINTS_TOTAL		= (POINTS_X * POINTS_Y);
 const int CONNECTIONS_TOTAL	= (POINTS_X - 1) * POINTS_Y + (POINTS_Y - 1) * POINTS_X;
 
-class TransformFeedbackClothSimulationApp : public AppNative {
+class TransformFeedbackClothSimulationApp : public App {
   public:
 	void setup();
 	void mouseDrag( MouseEvent event );
@@ -290,4 +290,4 @@ void TransformFeedbackClothSimulationApp::loadBuffers()
 	mLineElementBuffer = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(uint32_t), lineIndices.data(), GL_STATIC_DRAW );
 }
 
-CINDER_APP_NATIVE( TransformFeedbackClothSimulationApp, RendererGl )
+CINDER_APP( TransformFeedbackClothSimulationApp, RendererGl )

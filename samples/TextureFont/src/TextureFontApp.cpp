@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TextureFontApp : public AppNative {
+class TextureFontApp : public App {
   public:
 	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup();
@@ -79,4 +79,4 @@ void TextureFontApp::draw()
 }
 
 
-CINDER_APP_NATIVE( TextureFontApp, RendererGl )
+CINDER_APP( TextureFontApp, RendererGl )

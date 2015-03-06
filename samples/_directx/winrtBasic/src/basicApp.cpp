@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Font.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicApp : public AppBasic {
+class BasicApp : public App {
   public:
 	void			setup();
 	void			mouseMove( MouseEvent event );
@@ -102,4 +102,4 @@ void BasicApp::draw()
 
 // This line tells Cinder to actually create the application and use the DirectX required
 // for Windows Store apps instead of the default OpenGL renderer that comes with the framework
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

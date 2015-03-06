@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/Surface.h"
@@ -10,7 +10,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class RotatingCubeApp : public AppBasic {
+class RotatingCubeApp : public App {
   public:	
 	void	setup() override;
 	void	resize() override;
@@ -81,4 +81,4 @@ void RotatingCubeApp::draw()
 	gl::popModelMatrix();
 }
 
-CINDER_APP_BASIC( RotatingCubeApp, RendererGl )
+CINDER_APP( RotatingCubeApp, RendererGl )

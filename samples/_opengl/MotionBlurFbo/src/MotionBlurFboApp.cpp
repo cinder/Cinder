@@ -6,7 +6,7 @@
 // We achieve the accumulation by drawing the final sub-frame into the accumulation FBO using addivite blending.
 // To do the divide by SUBFRAMES at the end, we just set the color to be 1.0/SUBFRAMES and draw the final accumulation buffer color texture.
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
@@ -18,9 +18,8 @@
 using namespace ci;
 using namespace ci::app;
 
-class MotionBlurFboApp : public AppNative {
+class MotionBlurFboApp : public App {
   public:	
-	void prepareSettings( Settings *settings ) { settings->setResizable( false ); settings->enableHighDensityDisplay( false ); }
 	void setup();
 	void keyDown( KeyEvent event );
 	void updateCubeRotation( double time );
@@ -111,4 +110,7 @@ void MotionBlurFboApp::draw()
 	gl::draw( mAccumFbo->getColorTexture() );
 }
 
-CINDER_APP_NATIVE( MotionBlurFboApp, RendererGl )
+CINDER_APP( MotionBlurFboApp, RendererGl, []( App::Settings *settings ) {
+	settings->setResizable( false );
+	settings->setHighDensityDisplayEnabled( false );
+} )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
@@ -17,7 +17,7 @@ static const float kTargetDistance = 4.0f;
 static const float kHorizontalSize = kTargetSize * 4.0f;
 
 
-class CompassApp : public AppNative {
+class CompassApp : public App {
   public:
 	void setup();
 	void update();
@@ -126,4 +126,4 @@ void CompassApp::drawFps()
 	gl::disableAlphaBlending();
 }
 
-CINDER_APP_NATIVE( CompassApp, RendererGl )
+CINDER_APP( CompassApp, RendererGl )

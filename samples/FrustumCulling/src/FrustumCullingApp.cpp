@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/gl/gl.h"
@@ -26,7 +26,7 @@ const float SphereSize		= 5.0f;
 const float CubeSize		= 4.0f;
 const float PointSize		= 0.5f;
 
-class FrustumCullingApp : public AppBasic {
+class FrustumCullingApp : public App {
  private:
 	enum ShapeType { SPHERE, CUBE, POINT };
 	
@@ -236,4 +236,4 @@ void FrustumCullingApp::keyDown( KeyEvent event )
 }
 
 
-CINDER_APP_BASIC( FrustumCullingApp, RendererGl )
+CINDER_APP( FrustumCullingApp, RendererGl )

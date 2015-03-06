@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
@@ -16,7 +16,7 @@ using namespace std;
 const uint32_t	TransformIndex = 0;
 const uint32_t	NumVertices = 5;
 
-class TransformFeedbackIntroApp : public AppNative {
+class TransformFeedbackIntroApp : public App {
   public:
 	void setup();
 	
@@ -112,4 +112,4 @@ void TransformFeedbackIntroApp::runTransformFeedback()
 				<< feedback[4] << std::endl;
 }
 
-CINDER_APP_NATIVE( TransformFeedbackIntroApp, RendererGl )
+CINDER_APP( TransformFeedbackIntroApp, RendererGl )

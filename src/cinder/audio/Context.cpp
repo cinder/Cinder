@@ -27,7 +27,7 @@
 #include "cinder/audio/dsp/Converter.h"
 
 #include "cinder/Cinder.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #include <sstream>
 
@@ -62,7 +62,7 @@ void Context::registerClearStatics()
 	// dependencies are destroyed before static memory goes down - this avoids a crash at shutdown
 	// in r8brain's static processing containers.
 	// TODO: consider leaking the master context by default and providing a public clear function.
-	app::App::get()->getSignalShutdown().connect( [] {
+	app::AppBase::get()->getSignalShutdown().connect( [] {
 		sDeviceManager.reset();
 		sMasterContext.reset();
 	} );

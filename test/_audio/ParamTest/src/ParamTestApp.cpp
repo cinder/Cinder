@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
@@ -17,7 +17,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ParamTestApp : public AppNative {
+class ParamTestApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -372,4 +372,4 @@ void ParamTestApp::writeParamEval( audio::Param *param )
 	CI_LOG_V( "write complete" );
 }
 
-CINDER_APP_NATIVE( ParamTestApp, RendererGl )
+CINDER_APP( ParamTestApp, RendererGl )

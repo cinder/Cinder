@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererDx.h"
 #include "cinder/dx/dx.h"
 #include "cinder/dx/DxTexture.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicApp : public AppBasic {
+class BasicApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -91,4 +91,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicApp, RendererDx )
+CINDER_APP( BasicApp, RendererDx )

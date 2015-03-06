@@ -28,7 +28,6 @@
 #include "cinder/TimelineItem.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Easing.h"
-#include "cinder/Function.h"
 #include "cinder/Quaternion.h"
 
 #include <list>

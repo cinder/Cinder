@@ -51,8 +51,6 @@ class ImageSourceFileQuartz : public cocoa::ImageSourceCgImage {
 	std::shared_ptr<const struct __CFDictionary>		mImageProperties, mImageIndexProperties;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourceFileQuartz )
-
 class ImageSourceFileQuartzExceptionUnsupportedData : public ImageIoException {
 };
 

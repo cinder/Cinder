@@ -268,26 +268,4 @@ struct ImageIoRegistrar {
 	friend class ImageIo;
 };
 
-template<typename T>
-struct ImageIoRegistrant {
-	ImageIoRegistrant() {
-		(void) register_object;
-	}
-  private:
-	struct exec_register {
-		exec_register() {
-			T::registerSelf();
-		}
-	};
-	
-	static exec_register register_object;
-};
-
-template<typename D> typename ImageIoRegistrant<D>::exec_register ImageIoRegistrant<D>::register_object;
-
-#define REGISTER_IMAGE_IO_FILE_HANDLER( TYPE ) \
-struct ImageIoRegisterT##TYPE : public ImageIoRegistrant<TYPE> { \
-	ImageIoRegisterT##TYPE() : ImageIoRegistrant<TYPE>() {} \
-};
-
 } // namespace cinder

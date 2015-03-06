@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Fbo.h"
@@ -15,7 +15,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class RDiffusionApp : public AppBasic {
+class RDiffusionApp : public App {
   public:
 	void	prepareSettings( Settings *settings ) override;
 	void	setup() override;
@@ -170,4 +170,4 @@ void RDiffusionApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP_BASIC( RDiffusionApp, RendererGl )
+CINDER_APP( RDiffusionApp, RendererGl )

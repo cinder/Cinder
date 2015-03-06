@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/CinderAssert.h"
@@ -21,7 +21,7 @@ using namespace std;
 
 enum GenType { SINE, TRIANGLE, OSC_SINE, OSC_SAW, OSC_SQUARE, OSC_TRIANGLE };
 
-class StressTestApp : public AppNative {
+class StressTestApp : public App {
 public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -317,4 +317,4 @@ void StressTestApp::draw()
 	getTestWidgetTexFont()->drawString( countStr, vec2( mAddIncrInput.mBounds.x1, mAddIncrInput.mBounds.y2 + padding + getTestWidgetTexFont()->getFont().getAscent() + getTestWidgetTexFont()->getFont().getDescent() ) );
 }
 
-CINDER_APP_NATIVE( StressTestApp, RendererGl )
+CINDER_APP( StressTestApp, RendererGl )

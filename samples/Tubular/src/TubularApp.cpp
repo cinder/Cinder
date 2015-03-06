@@ -46,7 +46,7 @@ Check out these functions:
 	
 They each illustrate an example of how to use the frame for different scenarios. */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Arcball.h"
 #include "cinder/Camera.h"
@@ -61,7 +61,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TubularApp : public AppBasic {
+class TubularApp : public App {
   public:
     void prepareSettings();
 	void setup();
@@ -278,4 +278,4 @@ void TubularApp::draw()
 }
 
 
-CINDER_APP_BASIC( TubularApp, RendererGl )
+CINDER_APP( TubularApp, RendererGl )

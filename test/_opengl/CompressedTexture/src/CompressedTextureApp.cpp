@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class CompressedTextureApp : public AppNative {
+class CompressedTextureApp : public App {
   public:
 	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup();
@@ -96,7 +96,7 @@ void CompressedTextureApp::draw()
 }
 
 #if defined( CINDER_MSW )
-CINDER_APP_NATIVE( CompressedTextureApp, RendererGl( RendererGl::Options().version( 4, 3 ) ) )
+CINDER_APP( CompressedTextureApp, RendererGl( RendererGl::Options().version( 4, 3 ) ) )
 #else
-CINDER_APP_NATIVE( CompressedTextureApp, RendererGl )
+CINDER_APP( CompressedTextureApp, RendererGl )
 #endif

@@ -568,7 +568,9 @@ class CSyncObject
 public:
 	CSyncObject()
 	{
-		#if defined( R8B_WIN )
+		#if defined( R8B_WIN ) && ! WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
+			InitializeCriticalSectionEx( &CritSec, 4000, 0 );
+		#elif defined( R8B_WIN )
 			InitializeCriticalSectionAndSpinCount( &CritSec, 4000 );
 		#else // R8B_WIN
 			pthread_mutexattr_t MutexAttrs;

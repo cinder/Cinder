@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Perlin.h"
 #include "cinder/ImageIo.h"
 #include "Resources.h"
@@ -20,7 +20,7 @@ bool		ALLOWTRAILS = false;
 vec3		gravity( 0, 0.35f, 0 );
 const int	CINDER_FACTOR = 10; // how many times more particles than the Java version
 
-class HodginParticlesApp : public AppBasic {
+class HodginParticlesApp : public App {
  public:	
 	Renderer* prepareRenderer() { return new RendererGl( RendererGl::AA_MSAA_2 ); }
 	void prepareSettings( Settings *settings );
@@ -136,4 +136,4 @@ void renderImage( vec3 _loc, float _diam, Color _col, float _alpha )
 }
 
 
-CINDER_APP_BASIC( HodginParticlesApp, RendererGl )
+CINDER_APP( HodginParticlesApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/Perlin.h"
 #include "cinder/Rand.h"
@@ -6,7 +6,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class perlinTestApp : public AppBasic {
+class perlinTestApp : public App {
  public:	
 	void		prepareSettings( Settings *settings );
 
@@ -166,4 +166,4 @@ void perlinTestApp::draw()
 }
 
 
-CINDER_APP_BASIC( perlinTestApp, Renderer2d )
+CINDER_APP( perlinTestApp, Renderer2d )

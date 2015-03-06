@@ -29,22 +29,16 @@
 #include <boost/type_traits/is_same.hpp>
 #include <cctype>
 
-#if defined( CINDER_MSW )
-	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-#elif defined( CINDER_COCOA )
+#if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
 #elif defined( CINDER_WINRT )
-	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
-	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 	#include <ppltasks.h>
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/Utilities.h"
 	#include "cinder/msw/CinderMsw.h"
 	using namespace Windows::Storage;
 	using namespace Concurrency;
 #endif
-#include "cinder/ImageSourceFileRadiance.h" // we use this .hdr reader on all platforms
 
 using namespace std;
 
@@ -419,8 +413,8 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 	cocoa::SafeNsAutoreleasePool autorelease;
 #endif
 
-	if( extension.empty() )
-#if ! defined( CINDER_WINRT )
+	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
 		extension = dataSource->getFilePathHint().extension().string();
 #else
 		extension = dataSource->getFilePathHint().extension();
@@ -439,12 +433,15 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 	cocoa::SafeNsAutoreleasePool autorelease;
 #endif
 
-	if( extension.empty() )
-#if ! defined( CINDER_WINRT )
-		extension = getPathExtension( dataTarget->getFilePathHint().extension().string() );
+	if( extension.empty() ) {
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+		extension = dataTarget->getFilePathHint().extension().string();
 #else
-		extension = getPathExtension( dataTarget->getFilePathHint().extension() );
+		extension = dataTarget->getFilePathHint().extension();
 #endif
+		// strip leading .
+		extension = ( ( ! extension.empty() ) && ( extension[0] == '.' ) ) ? extension.substr( 1, string::npos ) : extension;
+	}
 
 	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {

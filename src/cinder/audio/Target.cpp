@@ -28,7 +28,7 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/audio/cocoa/FileCoreAudio.h"
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	#include "cinder/audio/msw/FileMediaFoundation.h"
 #endif
 
@@ -40,11 +40,16 @@ namespace cinder { namespace audio {
 
 std::unique_ptr<TargetFile> TargetFile::create( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension )
 {
-	std::string ext = ( ! extension.empty() ? extension : getPathExtension( dataTarget->getFilePathHint().extension().string() ) );
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+	std::string ext = dataTarget->getFilePathHint().extension().string();
+#else
+	std::string ext = dataTarget->getFilePathHint().extension();
+#endif
+	ext = ( ( ! ext.empty() ) && ( ext[0] == '.' ) ) ? ext.substr( 1, string::npos ) : ext;
 
 #if defined( CINDER_COCOA )
 	return std::unique_ptr<TargetFile>( new cocoa::TargetFileCoreAudio( dataTarget, sampleRate, numChannels, sampleType, ext ) );
-#elif defined( CINDER_MSW )
+#elif defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	return std::unique_ptr<TargetFile>( new msw::TargetFileMediaFoundation( dataTarget, sampleRate, numChannels, sampleType, ext ) );
 #endif
 }

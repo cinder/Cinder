@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class QuickTimeSampleApp : public AppBasic {
+class QuickTimeSampleApp : public App {
  public:
 	void setup();
 
@@ -105,4 +105,4 @@ void QuickTimeSampleApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl );
+CINDER_APP( QuickTimeSampleApp, RendererGl );

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -22,7 +22,7 @@ using namespace ci::app;
 using namespace std;
 
 
-class SpectralTestApp : public AppNative {
+class SpectralTestApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void fileDrop( FileDropEvent event );
@@ -289,4 +289,4 @@ void SpectralTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP_NATIVE( SpectralTestApp, RendererGl )
+CINDER_APP( SpectralTestApp, RendererGl )

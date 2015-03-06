@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/gl.h"
@@ -70,9 +70,8 @@ typedef std::shared_ptr<FilterControl> FilterControlRef;
 
 //////////////////////////////////////////////////////////////////////////////////////////////
 
-class TextureMipmappingApp : public AppNative {
+class TextureMipmappingApp : public App {
   public:
-	void	prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void	setup();
 	void	update();
 	void	draw();
@@ -443,4 +442,6 @@ void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &f
 	}
 }
 
-CINDER_APP_NATIVE( TextureMipmappingApp, RendererGl )
+CINDER_APP( TextureMipmappingApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )
