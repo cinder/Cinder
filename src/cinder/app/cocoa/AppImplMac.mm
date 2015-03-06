@@ -389,6 +389,9 @@ using namespace cinder::app;
 - (void)dealloc
 {
 	[mCinderView release];
+	if( mTitle )
+		[mTitle release];
+
 	[super dealloc];
 }
 
@@ -464,11 +467,12 @@ using namespace cinder::app;
 
 - (NSString *)getTitle
 {
-	return [mWin title];
+	return mTitle;
 }
 
 - (void)setTitle:(NSString *)title
 {
+	mTitle = [title copy]; // title is cached becasue sometimes we need to restore it after changing window border styles
 	[mWin setTitle:title];
 }
 
@@ -503,6 +507,10 @@ using namespace cinder::app;
 		ivec2 currentSize = mSize;
 		[self setSize:currentSize + ivec2( 0, 1 )];
 		[self setSize:currentSize];
+
+		// restore title, which also seems to disappear after coming back from borderless
+		if( mTitle )
+			[mWin setTitle:mTitle];
 	}
 }
 
@@ -753,7 +761,7 @@ using namespace cinder::app;
 	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 
 	if( ! winFormat.getTitle().empty() )
-		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+		[winImpl setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
