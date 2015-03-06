@@ -338,23 +338,6 @@ void PlatformCocoa::removeDisplay( const DisplayRef &display )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayMac
 #if defined( CINDER_MAC )
-DisplayMac::~DisplayMac()
-{
-	[mScreen release];
-}
-
-DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )
-{
-	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
-		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
-		if( macDisplay.getCgDirectDisplayId() == displayId )
-			return *dispIt;
-	}
-
-	// couldn't find it, so return nullptr
-	return nullptr;
-}
-
 namespace {
 NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 {
@@ -370,6 +353,23 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 	return nil;
 }
 } // anonymous namespace
+
+NSScreen* DisplayMac::getNsScreen() const
+{
+	return findNsScreenForCgDirectDisplayId( mDirectDisplayId );
+}
+
+DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )
+{
+	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
+		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
+		if( macDisplay.getCgDirectDisplayId() == displayId )
+			return *dispIt;
+	}
+
+	// couldn't find it, so return nullptr
+	return nullptr;
+}
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
 {
@@ -391,18 +391,17 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			CGRect frame = ::CGDisplayBounds( displayId );
 			
 			DisplayMac *newDisplay = new DisplayMac();
-			newDisplay->mDirectDisplayID = displayId;
+			newDisplay->mDirectDisplayId = displayId;
 			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mScreen = findNsScreenForCgDirectDisplayId( displayId );			
-			if( newDisplay->mScreen ) {
-				newDisplay->mContentScale = [newDisplay->mScreen backingScaleFactor];
-				newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [newDisplay->mScreen depth] );
-			}
-			else {
-				newDisplay->mContentScale = 1.0f;
-				newDisplay->mBitsPerPixel = 24;
-				CI_LOG_E( "Unable to locate corresponding NSScreen for CGDirectDisplayID" );
-			}
+#if ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 )
+			CGDisplayModeRef mode = ::CGDisplayCopyDisplayMode( displayId );
+			newDisplay->mContentScale = ::CGDisplayModeGetPixelWidth( mode ) / (float)::CGDisplayModeGetWidth( mode );
+			::CGDisplayModeRelease( mode );
+#else
+			CI_LOG_W( "Unable to determine content scale on OS X <=10.7" );
+			newDisplay->mContentScale = 1.0f;
+#endif
+			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
 			
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
@@ -469,8 +468,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			else
 				newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 
-			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
-			newDisplay->mScreen = screen;
+			newDisplay->mDirectDisplayId = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 			newDisplay->mContentScale = [screen backingScaleFactor];
 

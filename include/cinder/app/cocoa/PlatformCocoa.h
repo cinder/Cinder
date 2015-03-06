@@ -132,16 +132,13 @@ namespace cinder {
 //! Represents a monitor/display on OS X
 class DisplayMac : public Display {
   public:
-	~DisplayMac();
-
-	NSScreen*			getNsScreen() const { return mScreen; }
-	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
+	NSScreen*			getNsScreen() const;
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayId; }
 
   protected:	
 	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
 
-	NSScreen			*mScreen;
-	CGDirectDisplayID	mDirectDisplayID;
+	CGDirectDisplayID	mDirectDisplayId;
 	
 	friend app::PlatformCocoa;
 };
