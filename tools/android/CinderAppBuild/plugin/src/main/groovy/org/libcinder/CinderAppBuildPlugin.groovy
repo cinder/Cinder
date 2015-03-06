@@ -119,8 +119,25 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         this.mStaticLibs = []
         this.mStaticBlocks = []
         if( ! project.cinder.staticLibs.empty ) {
-            this.mStaticLibs.add("\\")
+            this.mStaticLibs.add("\\");
+            //
+            def libCinder = project.cinder.libCinder[this.mBuildType];            
+            def finalLibs = [];           
+            boolean insertedLibCinder = false;
             project.cinder.staticLibs.each {
+                def lib = it;
+                // Check for: $(LIBCINDER)
+                if( "\$(LIBCINDER)" == lib.toUpperCase() ) {
+                    lib = libCinder;
+                    insertedLibCinder = true;
+                }
+                finalLibs.add( lib );
+            }
+            if( ! insertedLibCinder ) {
+                finalLibs.add( 0, libCinder );
+            }               
+            //
+            finalLibs.each {
                 String path = (new File(it)).canonicalPath.toString()
 
                 // short name
@@ -373,6 +390,7 @@ class CinderAppBuildPluginExtension {
     def cppFlags = ""
     def includeDirs = []
     def ldLibs = []
+    def libCinder = []
     def staticLibs = []
     def stl = "gnustl_static"
     def toolChainVersion = "4.9"
