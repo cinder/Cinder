@@ -472,6 +472,9 @@ using namespace cinder::app;
 
 - (void)setTitle:(NSString *)title
 {
+	if( mTitle )
+		[mTitle release];
+
 	mTitle = [title copy]; // title is cached becasue sometimes we need to restore it after changing window border styles
 	[mWin setTitle:title];
 }
