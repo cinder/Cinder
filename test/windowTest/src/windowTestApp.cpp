@@ -60,6 +60,7 @@ void WindowTestApp::prepareSettings( Settings *settings )
 	settings->setQuitOnLastWindowCloseEnabled( false );
 //	settings->setFullScreen( false );
 	settings->setWindowSize( 800, 500 );
+	settings->setTitle( "title set from App::Settings" );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
 //	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
 }
