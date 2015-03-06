@@ -48,8 +48,7 @@ android {
     }
 
     cinder {
-        ndkDir = "/Users/hai/DevTools/android/ndk"
-        minSdkVersion = android.defaultConfig.minSdkVersion.apiLevel
+        ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         verbose = true
         moduleName = "RotatingCubeApp"
         srcDirs = ["../../../src"]
@@ -57,10 +56,14 @@ android {
         includeDirs = ["../../../include", "../../../../../../include", "../../../../../../boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         staticLibs = [
-                "${projectDir}/../../../../../../lib/android/android-${minSdkVersion}/arm/libcinder_d.a",
-                "${projectDir}/../../../../../../lib/android/android-${minSdkVersion}/arm/libboost_filesystem.a",
-                "${projectDir}/../../../../../../lib/android/android-${minSdkVersion}/arm/libboost_system.a"
+                "${projectDir}/../../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
+                "${projectDir}/../../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_filesystem.a",
+                "${projectDir}/../../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_system.a"
         ]
+        stl = "gnustl_static"
+        toolChainVersion = "4.9"
+        archs = ["armeabi-v7a"]
+        //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
     }
 
     task ndkBuild(dependsOn: 'cinderCompileNdk') {
