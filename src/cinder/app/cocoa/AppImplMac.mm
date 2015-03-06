@@ -497,6 +497,13 @@ using namespace cinder::app;
 	[mWin makeKeyWindow];
 	[mWin makeMainWindow];
 	[mWin setHasShadow:( ! mBorderless )];
+
+	// kludge: the titlebar buttons don't want to re-appear after coming back from borderless mode unless we resize the window.
+	if( ! mBorderless && mResizable ) {
+		ivec2 currentSize = mSize;
+		[self setSize:currentSize + ivec2( 0, 1 )];
+		[self setSize:currentSize];
+	}
 }
 
 - (bool)isAlwaysOnTop
