@@ -92,7 +92,9 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         if( ! project.cinder.includeDirs.empty ) {
             this.mIncludeDirs.add("\\")
             project.cinder.includeDirs.each {
-                String path = (new File("${project.projectDir}/" + it)).canonicalPath.toString()
+                // Add prefix if it's a relative path.
+                String pathPrefix = it.startsWith( "../" ) ? "${project.projectDir}/" : "";
+                String path = (new File( "${pathPrefix}" + it)).canonicalPath.toString()
                 this.mIncludeDirs.add("\t" + path + " \\")
             }
         }
@@ -341,6 +343,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
 class CinderAppBuildPluginExtension {
     def ndkDir = ""
+    def cinderDir = ""
     def verbose = false
     def moduleName = ""
     def srcFiles = []
