@@ -1,7 +1,7 @@
 #!/bin/sh
 SAVED_DIR=`pwd`
 NUM_PROCS=4
-ARCH=arm
+ARCH=armeabi-v7a
 
 API_LEVEL=19
 

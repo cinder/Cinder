@@ -1,7 +1,7 @@
 #!/bin/sh
 SAVED_DIR=`pwd`
 NUM_PROCS=4
-ARCH=arm64
+ARCH=arm64-v8a
 
 API_LEVEL=21
 

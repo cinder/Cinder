@@ -37,20 +37,40 @@
 
 // Figure out if we need std::Log2
 #if defined(CINDER_ANDROID ) && ((__GNUC__ == 4) && (__GNUC_MINOR__ <= 9))
-    #if defined(__arm__)
-        #define _IS_ARM
+    #if defined(__arm__) 
+        #define _IS_ARM32
     #endif
+
+   	#if defined(__aarch64__)
+        #define _IS_ARM64
+    #endif
+
+ 	#if defined(i386) || defined(__i386) || defined(__i386__)
+ 		#define _IS_X86_32
+ 	#endif
 
     #if defined(__x86_64) || defined(__amd64) || defined(__x86_64__) || defined(__amd64__)
         #define _IS_X86_64
     #endif
+
+ 	#if (defined(mips) || defined(_mips) || defined(__mips__) || defined(__mips)) && ! defined(__mips64)
+ 		#define _IS_MIPS32
+ 	#endif
+
+ 	#if defined(__mips64)
+ 		#define _IS_MIPS64 
+ 	#endif
     
-    #if defined(_IS_ARM) || ! defined(_IS_X86_64)
+    #if defined(_IS_ARM32) || defined(_IS_X86_32) || defined(_IS_MIPS32)
         #define NEEDS_STD_LOG2
     #endif
 
-    #undef _IS_ARM
+    #undef _IS_ARM32
+ 	#undef _IS_ARM64
+    #undef _IS_X86_32
     #undef _IS_X86_64
+ 	#undef _IS_MIPS32
+ 	#undef _IS_MIPS64
 #endif
 
 #if defined(NEEDS_STD_LOG2)

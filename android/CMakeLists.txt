@@ -10,7 +10,7 @@
 #
 # Supported architectures:
 #     arm    - ARMv7 [DEFAULT]
-#     arm64  - ARMv8 (minimum platform: API Level 21)
+#     arm64-v8a  - ARMv8 (minimum platform: API Level 21)
 #     x86    - Intel x86
 #     x86_64 - Intel x86_64 (minimum platform: API Level 21)
 # 
@@ -27,7 +27,7 @@
 # Variable description:
 #     NDK_ROOT     - Root of the installed NDK directory
 #     NDK_PLATFORM - API Level (DEFAULT: 21)
-#     NDK_ARCH     - One the following: arm, arm64, x86_64 (DEFAULT: arm)
+#     NDK_ARCH     - One the following: arm, arm64-v8a, x86_64 (DEFAULT: arm)
 #
 # Building Debug (assumes that NDK_ROOT is set in envionrment variable): 
 #   Starting from the $CINDER_DIR/android 
@@ -50,7 +50,7 @@
 #   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_PLATFORM=21
 #
 # NDK_ARCH as a CMake parameter:
-#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ARCH=arm64
+#   >$ cmake .. -DCMAKE_BUILD_TYPE=Debug -DNDK_ARCH=arm64-v8a
 #
 # Android code names, tags, versions, and API, and NDK information:
 #    https://source.android.com/source/build-numbers.html
@@ -85,7 +85,7 @@ endif()
 
 # Default values
 set( DEFAULT_NDK_PLATFORM 21    )
-set( DEFAULT_NDK_ARCH     "arm" )
+set( DEFAULT_NDK_ARCH     "armeabi-v7a" )
 
 # ------------------------------------------------------------------------
 # NDK_ROOT
@@ -126,7 +126,7 @@ if( NOT NDK_ARCH )
     set( NDK_ARCH ${DEFAULT_NDK_ARCH} )
 endif()
 
-set( _supported_archs "arm" "arm64" "x86" "x86_64" )
+set( _supported_archs "armeabi" "armeabi-v7a" "arm64-v8a" "x86" "x86_64" "mips" "mips64" )
 list( FIND _supported_archs "${NDK_ARCH}" _index )
 if( ${_index} LESS 0 )
     message( FATAL_ERROR "${BoldRed}NDK_ARCH specifies unsupported architecture: ${NDK_ARCH}${ColorReset}" )
@@ -141,9 +141,9 @@ message( "" )
 # Toolchain, STL (gnustl, libc++)
 set( NDK_TOOLCHAIN "gcc49" )
 set( NDK_STL "gnustl" )
-# Switch to gcc49 if on arm64 or x86_64
+# Switch to gcc49 if on arm64-v8a or x86_64
 if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
-    if(("arm64" STREQUAL "${NDK_ARCH}") OR ("x86_64" STREQUAL "${NDK_ARCH}"))
+    if(("arm64-v8a" STREQUAL "${NDK_ARCH}") OR ("x86_64" STREQUAL "${NDK_ARCH}") OR ("mips64" STREQUAL "${NDK_ARCH}"))
         set( NDK_TOOLCHAIN "gcc49" )
     endif()
 endif()
@@ -153,7 +153,8 @@ set( NDK_PLATFORM_DIR "android-${NDK_PLATFORM}" )
 
 # Process arch - find tool chain params
 set( NDK_ARCH_DIR "arch-${NDK_ARCH}" )
-if( "arm" STREQUAL "${NDK_ARCH}" )
+# >> armeabi <<
+if( "armeabi" STREQUAL "${NDK_ARCH}" )
     if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.8" )
         set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
@@ -166,8 +167,26 @@ if( "arm" STREQUAL "${NDK_ARCH}" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
     # Library out dir
-    set( NKD_ARCH_OUT "arm" )
-elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+    set( NKD_ARCH_OUT "armeabi" )
+
+# >> armeabi-v7a <<
+elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
+    if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.8" )
+        set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+    elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "arm-linux-androideabi-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "arm-linux-androideabi" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "armeabi-v7a" )
+
+# >> arm64-v8a <<
+elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "aarch64-linux-android-4.9" )
         set( NDK_TOOLCHAIN_PREFIX "aarch64-linux-android" )
@@ -177,7 +196,9 @@ elseif( "arm64" STREQUAL "${NDK_ARCH}" )
         set( NDK_TOOLCHAIN_CLANG TRUE )
     endif()
     # Library out dir
-    set( NKD_ARCH_OUT "arm64" )
+    set( NKD_ARCH_OUT "arm64-v8a" )
+
+# >> x86 <<
 elseif( "x86" STREQUAL "${NDK_ARCH}" )
     if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86-4.8" )
@@ -192,6 +213,8 @@ elseif( "x86" STREQUAL "${NDK_ARCH}" )
     endif()
     # Library out dir
     set( NKD_ARCH_OUT "x86" )
+
+# >> x86_64 <<
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         set( NDK_TOOLCHAIN_DIR "x86_64-4.9" )
@@ -203,6 +226,35 @@ elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     endif()
     # Library out dir
     set( NKD_ARCH_OUT "x86_64" )
+
+# >> mips <<
+elseif( "mips" STREQUAL "${NDK_ARCH}" )
+    if( "gcc48" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "mipsel-linux-android-4.8" )
+        set( NDK_TOOLCHAIN_PREFIX "mipsel-linux-android" )
+    elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "mipsel-linux-android-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "mipsel-linux-android" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "mips" )
+
+# >> mips64 <<
+elseif( "mips64" STREQUAL "${NDK_ARCH}" )
+    if( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "mips64el-linux-android-4.9" )
+        set( NDK_TOOLCHAIN_PREFIX "mips64el-linux-android" )
+    elseif( "clang35" STREQUAL "${NDK_TOOLCHAIN}" )
+        set( NDK_TOOLCHAIN_DIR "llvm-3.5" )
+        set( NDK_TOOLCHAIN_PREFIX "" )
+        set( NDK_TOOLCHAIN_CLANG TRUE )
+    endif()
+    # Library out dir
+    set( NKD_ARCH_OUT "mips64" )
 endif()
 
 if( NOT NDK_TOOLCHAIN_DIR )
@@ -217,10 +269,14 @@ if( "gnustl" STREQUAL "${NDK_STL}" )
             ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/include/backward
         )
         # Architecture
-        if( "arm" STREQUAL "${NDK_ARCH}" )
+        if( "armeabi" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi/include )
+        elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/armeabi-v7a/include )
-        elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+        elseif( "x86" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/x86/include )
+        elseif( "mips" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.8/libs/mips/include )
         endif()
     elseif( "gcc49" STREQUAL "${NDK_TOOLCHAIN}" )
         include_directories( 
@@ -228,14 +284,20 @@ if( "gnustl" STREQUAL "${NDK_STL}" )
             ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/include/backward
         )
         # Architecture
-        if( "arm" STREQUAL "${NDK_ARCH}" )
+        if( "armeabi" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi/include )
+        elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/armeabi-v7a/include )
-        elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+        elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/arm64-v8a/include )
         elseif( "x86" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86/include )
         elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
             include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/x86_64/include )
+        elseif( "mips" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips/include )
+        elseif( "mips64" STREQUAL "${NDK_ARCH}" )
+            include_directories( ${NDK_ROOT}/sources/cxx-stl/gnu-libstdc++/4.9/libs/mips64/include )
         endif()
     endif()
 elseif( "libc++" STREQUAL "${NDK_STL}" )
@@ -266,14 +328,18 @@ endif()
 message( "" )
 
 # sysroot
-if( "arm" STREQUAL "${NDK_ARCH}" )
+if(("armeabi" STREQUAL "${NDK_ARCH}") OR ("armeabi-v7a" STREQUAL "${NDK_ARCH}"))
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm" )
-elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-arm64" )
 elseif( "x86" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86" )
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
     set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-x86_64" )
+elseif( "mips" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-mips" )
+elseif( "mips64" STREQUAL "${NDK_ARCH}" )
+    set( NDK_SYSROOT "${NDK_ROOT}/platforms/${NDK_PLATFORM_DIR}/arch-mips64" )
 endif()
 #
 if( NOT NDK_SYSROOT )
@@ -342,19 +408,23 @@ include_directories(
 )
 
 # Arch flags
-if( "arm" STREQUAL "${NDK_ARCH}" )
-    set( ARCH_FLAGS "-march=armv7-a -mfpu=neon" )
-elseif( "arm64" STREQUAL "${NDK_ARCH}" )
+if( "armeabi" STREQUAL "${NDK_ARCH}" )
+    set( ARCH_FLAGS "-march=armv5te -mtune=xscale -msoft-float -mthumb" )
+elseif( "armeabi-v7a" STREQUAL "${NDK_ARCH}" )
+    set( ARCH_FLAGS "-march=armv7-a -mfpu=neon -mthumb" )
+elseif( "arm64-v8a" STREQUAL "${NDK_ARCH}" )
 elseif( "x86_64" STREQUAL "${NDK_ARCH}" )
+elseif( "mips" STREQUAL "${NDK_ARCH}" )
+elseif( "mips64" STREQUAL "${NDK_ARCH}" )
 endif()
 
 set( C_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
-set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -O3 -ffast-math ${C_FLAGS}" )
+set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
 set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11" )
 set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions" )
-set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -O3 -fexceptions -ffast-math" )
+set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -ffast-math" )
 
 set( CINDER_C_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
