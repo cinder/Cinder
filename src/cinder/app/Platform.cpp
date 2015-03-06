@@ -111,9 +111,9 @@ fs::path Platform::findAssetPath( const fs::path &relativePath )
 void Platform::ensureAssetDirsPrepared()
 {
 	if( ! mAssetDirsInitialized ) {
+		mAssetDirsInitialized = true;
 		prepareAssetLoading();
 		findAndAddAssetBasePath();
-		mAssetDirsInitialized = true;
 	}
 }
 
