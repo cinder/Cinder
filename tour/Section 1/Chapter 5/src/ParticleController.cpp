@@ -20,11 +20,11 @@ void ParticleController::repulseParticles()
 			
 			float thresh = ( p1->mRadius + p2->mRadius ) * 5.0f;
 			if( dir.x > -thresh && dir.x < thresh && dir.y > -thresh && dir.y < thresh ){
-				float distSqrd = dir.lengthSquared() * dir.length();
+				float distSqrd = glm::length2( dir ) * glm::length( dir );
 				
 				if( distSqrd > 0.0f ){
 					float F = 1.0f/distSqrd;
-					dir.normalize();
+					dir = glm::normalize( dir );
 
 					// acceleration = force / mass
 					p1->mAcc += ( F * dir ) / p1->mMass;
@@ -72,7 +72,7 @@ void ParticleController::addParticles( int amt, const ivec2 &mouseLoc, const vec
 {
 	for( int i=0; i<amt; i++ )
 	{
-		vec2 loc = mouseLoc + Rand::randVec2f() * Rand::randFloat( 5.0f );
+		vec2 loc = vec2( mouseLoc ) + Rand::randVec2f() * Rand::randFloat( 5.0f );
 		vec2 velOffset = Rand::randVec2f() * Rand::randFloat( 1.0f, 3.0f );
 		vec2 vel = mouseVel * 5.0f + velOffset;
 		mParticles.push_back( Particle( loc, vel ) );

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Vector.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIO.h"
@@ -67,8 +68,8 @@ void FlockingApp::setup()
 	// SETUP CAMERA
 	mCameraDistance = 350.0f;
 	mEye			= vec3( 0.0f, 0.0f, mCameraDistance );
-	mCenter			= vec3::zero();
-	mUp				= vec3::yAxis();
+	mCenter			= vec3( 0 );
+	mUp				= vec3( 0, 1, 0 );
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 5000.0f );
 
 	// SETUP PARAMS

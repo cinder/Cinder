@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
+#include "cinder/gl/gl.h"
 #include "ParticleController.h"
 
 using namespace ci;
@@ -14,7 +15,7 @@ ParticleController::ParticleController()
 void ParticleController::applyForceToParticles( float zoneRadius, float lowerThresh, float higherThresh, float attractStrength, float repelStrength, float alignStrength  )
 {
 	float twoPI = M_PI * 2.0f;
-	mParticleCentroid = vec3::zero();
+	mParticleCentroid = vec3( 0 );
 	mNumParticles = mParticles.size();
 	
 	for( list<Particle>::iterator p1 = mParticles.begin(); p1 != mParticles.end(); ++p1 ){
@@ -22,7 +23,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			vec3 dir = p1->mPos - p2->mPos;
-			float distSqrd = dir.lengthSquared();
+			float distSqrd = glm::length2( dir );
 			float zoneRadiusSqrd = zoneRadius * p1->mCrowdFactor * zoneRadius * p2->mCrowdFactor;
 			
 			if( distSqrd < zoneRadiusSqrd ){		// Neighbor is in the zone
@@ -32,7 +33,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 					
 				if( per < lowerThresh ){			// Separation
 					float F = ( lowerThresh/per - 1.0f ) * repelStrength;
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					p1->mAcc += dir;
@@ -50,7 +51,7 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 					float adjPer		= ( per - higherThresh )/threshDelta;
 					float F				= ( 1.0f - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * attractStrength;
 										
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					p1->mAcc -= dir;
@@ -80,13 +81,13 @@ void ParticleController::applyForceToParticles( float zoneRadius, float lowerThr
 		for( list<Predator>::iterator predator = mPredators.begin(); predator != mPredators.end(); ++predator ) {
 
 			vec3 dir = p1->mPos - predator->mPos[0];
-			float distSqrd = dir.lengthSquared();
+			float distSqrd = glm::length2( dir );
 			
 			if( distSqrd < predatorZoneRadiusSqrd ){
 				if( distSqrd > eatDistSqrd ){
 					float F = ( predatorZoneRadiusSqrd/distSqrd - 1.0f ) * 0.1f;
 					p1->mFear += F * 0.1f;
-					dir = dir.normalized() * F;
+					dir = glm::normalize( dir ) * F;
 					p1->mAcc += dir;
 					if( predator->mIsHungry )
 						predator->mAcc += dir * 0.04f * predator->mHunger;
@@ -111,14 +112,14 @@ void ParticleController::applyForceToPredators( float zoneRadius, float lowerThr
 		list<Predator>::iterator P2 = P1;
 		for( ++P2; P2 != mPredators.end(); ++P2 ) {
 			vec3 dir = P1->mPos[0] - P2->mPos[0];
-			float distSqrd = dir.lengthSquared();
+			float distSqrd = glm::length2( dir );
 			float zoneRadiusSqrd = zoneRadius * zoneRadius * 4.0f;
 			
 			if( distSqrd < zoneRadiusSqrd ){		// Neighbor is in the zone
 				float per = distSqrd/zoneRadiusSqrd;
 				if( per < lowerThresh ){			// Separation
 					float F = ( lowerThresh/per - 1.0f ) * 0.01f;
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					P1->mAcc += dir;
@@ -136,7 +137,7 @@ void ParticleController::applyForceToPredators( float zoneRadius, float lowerThr
 					float adjPer		= ( per - higherThresh )/threshDelta;
 					float F				= ( 1.0f - ( cos( adjPer * twoPI ) * -0.5f + 0.5f ) ) * 0.1f;
 										
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					P1->mAcc -= dir;

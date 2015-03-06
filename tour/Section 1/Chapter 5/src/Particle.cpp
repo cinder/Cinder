@@ -13,7 +13,7 @@ Particle::Particle( vec2 loc, vec2 vel )
 {
 	mLoc			= loc;
 	mVel			= vel;
-	mAcc			= vec2::zero();
+	mAcc			= vec2( 0 );
 	
 	mDecay			= Rand::randFloat( 0.95f, 0.951f );
 	mRadius			= 3.0f + Rand::randFloat( 0.1 );
@@ -48,15 +48,15 @@ void Particle::update( const Channel32f &channel, const ivec2 &mouseLoc )
 
 	float maxVel = mRadius + 0.0025f;
 	
-	float velLength = mVel.lengthSquared() + 0.1f;
+	float velLength = glm::length2( mVel ) + 0.1f;
 	if( velLength > maxVel*maxVel ){
-		mVel.normalize();
+		mVel = glm::normalize( mVel );
 		mVel *= maxVel;
 	}
 	
 	mLoc += mVel;
 	mVel *= mDecay;
-	mAcc.set( 0, 0 );
+	mAcc = vec2( 0 );
 	
 	if( mLoc.x >= 0.0f && mLoc.x <= (float)app::getWindowWidth() - 1 &&
 		mLoc.y >= 0.0f && mLoc.y <= (float)app::getWindowHeight() - 1 ){

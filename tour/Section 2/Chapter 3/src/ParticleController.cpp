@@ -18,14 +18,14 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd, float thre
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			vec3 dir = p1->mPos - p2->mPos;
-			float distSqrd = dir.lengthSquared();
+			float distSqrd = glm::length2( dir );
 			
 			if( distSqrd < zoneRadiusSqrd ){	// Neighbor is in the zone
 				float percent = distSqrd/zoneRadiusSqrd;
 				
 				if( percent < thresh ){			// Separation
 					float F = ( thresh/percent - 1.0f ) * 0.01f;
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					p1->mAcc += dir;
@@ -40,7 +40,7 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd, float thre
 					// Use this F instead and lower the thresh to 0.2 after flattening the scene ('f' key)
 					// float F = ( 0.5f - ( cos( adjustedPercent * twoPI ) * 0.5f + 0.5f ) ) * 0.15f;
 										
-					dir.normalize();
+					dir = glm::normalize( dir );
 					dir *= F;
 			
 					p1->mAcc -= dir;
@@ -73,11 +73,11 @@ void ParticleController::draw()
 		p->draw();
 	}
 	
-	glBegin( GL_LINES );
+	gl::VertBatch batch( GL_LINES );
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
-		p->drawTail();
+		p->drawTail( batch );
 	}
-	glEnd();
+	batch.draw();
 }
 
 void ParticleController::addParticles( int amt )

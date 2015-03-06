@@ -1,6 +1,7 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
+#include "cinder/gl/Batch.h"
 #include "ParticleController.h"
 
 using namespace ci;
@@ -17,11 +18,11 @@ void ParticleController::applyForceToParticles( float zoneRadiusSqrd )
 		list<Particle>::iterator p2 = p1;
 		for( ++p2; p2 != mParticles.end(); ++p2 ) {
 			vec3 dir = p1->mPos - p2->mPos;
-			float distSqrd = dir.lengthSquared();
+			float distSqrd = glm::length2( dir );
 					
 			if( distSqrd <= zoneRadiusSqrd ){	// SEPARATION
 				float F = ( zoneRadiusSqrd/distSqrd - 1.0f ) * 0.01f;
-				dir.normalize();
+				dir = glm::normalize( dir );
 				dir *= F;
 			
 				p1->mAcc += dir;
@@ -47,16 +48,16 @@ void ParticleController::update( bool flatten )
 
 void ParticleController::draw()
 {
-	gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	gl::ScopedColor color( ColorAf::white() );
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
 		p->draw();
 	}
 	
-	glBegin( GL_LINES );
+	gl::VertBatch batch( GL_LINES );
 	for( list<Particle>::iterator p = mParticles.begin(); p != mParticles.end(); ++p ){
-		p->drawTail();
+		p->drawTail( batch );
 	}
-	glEnd();
+	batch.draw();
 }
 
 void ParticleController::addParticles( int amt )

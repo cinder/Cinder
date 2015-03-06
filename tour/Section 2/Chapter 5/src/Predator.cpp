@@ -19,10 +19,10 @@ Predator::Predator( vec3 pos, vec3 vel )
 	}
 	
 	mVel			= vel;
-	mVelNormal		= vec3::yAxis();
-	mAcc			= vec3::zero();
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
-	mNeighborPos	= vec3::zero();
+	mNeighborPos	= vec3( 0 );
 	mNumNeighbors	= 0;
 	mMaxSpeed		= Rand::randFloat( 4.0f, 4.5f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -43,12 +43,12 @@ Predator::Predator( vec3 pos, vec3 vel )
 void Predator::pullToCenter( const vec3 &center )
 {
 	vec3 dirToCenter	= mPos[0] - center;
-	float distToCenter	= dirToCenter.length();
+	float distToCenter	= glm::length( dirToCenter );
 	float maxDistance	= 600.0f;
 	
 	if( distToCenter > maxDistance ){
 		float pullStrength = 0.0001f;
-		mVel -= dirToCenter.normalized() * ( ( distToCenter - maxDistance ) * pullStrength );
+		mVel -= glm::normalize( dirToCenter ) * ( ( distToCenter - maxDistance ) * pullStrength );
 	}
 }	
 
@@ -58,7 +58,8 @@ void Predator::update( bool flatten )
 	
 	if( flatten ) mAcc.z = 0.0f;
 	mVel += mAcc;
-	mVelNormal = mVel.safeNormalized();
+	if ( glm::length2( mVel ) > 0 )
+		mVelNormal = glm::normalize( mVel );
 	
 	limitSpeed();
 	
@@ -73,8 +74,8 @@ void Predator::update( bool flatten )
 	
 	mVel *= mDecay;
 	
-	mAcc = vec3::zero();
-	mNeighborPos = vec3::zero();
+	mAcc = vec3( 0 );
+	mNeighborPos = vec3( 0 );
 	mNumNeighbors = 0;
 	
 	mHunger += 0.001f;
@@ -87,7 +88,7 @@ void Predator::limitSpeed()
 {
 	float maxSpeed = mMaxSpeed + mHunger * 3.0f;
 	float maxSpeedSqrd = maxSpeed * maxSpeed;
-	float vLengthSqrd = mVel.lengthSquared();
+	float vLengthSqrd = glm::length2( mVel );
 	if( vLengthSqrd > maxSpeedSqrd ){
 		mVel = mVelNormal * maxSpeed;
 		
@@ -98,15 +99,15 @@ void Predator::limitSpeed()
 
 void Predator::draw()
 {
-	glColor4f( mColor );
+	gl::ScopedColor color( mColor );
 	vec3 vel = mVelNormal * mLength;
 	gl::drawVector( mPos[0] - mVel, mPos[0], mLength * 0.85f, 3.0f + mHunger );
 }
 
-void Predator::drawTail()
+void Predator::drawTail( gl::VertBatch& batch )
 {
-	gl::vertex( mPos[0] );
-	gl::vertex( mPos[1] );
+	batch.vertex( mPos[0] );
+	batch.vertex( mPos[1] );
 }
 
 void Predator::addNeighborPos( vec3 pos )

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ImageIO.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Perlin.h"
@@ -28,7 +29,7 @@ class TutorialApp : public AppBasic {
 	Perlin mPerlin;
 
 	Channel32f mChannel;
-	gl::Texture	mTexture;
+	gl::TextureRef mTexture;
 	
 	ivec2 mMouseLoc;
 	vec2 mMouseVel;
@@ -53,10 +54,10 @@ void TutorialApp::setup()
 	
 	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
-	mTexture = mChannel;
+	mTexture = gl::Texture::create ( mChannel );
 
 	mMouseLoc = ivec2( 0, 0 );
-	mMouseVel = vec2::zero();
+	mMouseVel = vec2( 0 );
 	mDrawParticles = true;
 	mDrawImage = false;
 	mIsPressed = false;
@@ -113,7 +114,6 @@ void TutorialApp::draw()
 	gl::clear( Color( 0, 0, 0 ), true );
 	
 	if( mDrawImage ){
-		mTexture.enableAndBind();
 		gl::draw( mTexture, getWindowBounds() );
 	}
 	

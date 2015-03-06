@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ImageIO.h"
 #include "cinder/gl/Texture.h"
 #include "ParticleController.h"
@@ -13,7 +14,7 @@ class TutorialApp : public AppBasic {
 	void update();
 	void draw();
 	
-	gl::Texture mImage;
+	gl::TextureRef mImage;
 	
 	ParticleController mParticleController;
 };
@@ -27,7 +28,7 @@ void TutorialApp::prepareSettings( Settings *settings )
 void TutorialApp::setup()
 {
 	Url url( "http://libcinder.org/media/tutorial/paris.jpg" );
-	mImage = gl::Texture( loadImage( loadUrl( url ) ) );
+	mImage = gl::Texture::create( loadImage( loadUrl( url ) ) );
 
 	mParticleController.addParticles( 250 );
 }
@@ -41,11 +42,10 @@ void TutorialApp::draw()
 {	
 	gl::clear( Color( 0, 0, 0 ), true );
 	
-	mImage.enableAndBind();
 	gl::draw( mImage, getWindowBounds() );
 	
-	glDisable( GL_TEXTURE_2D );
-	glColor3f( 1, 1, 1 );
+	gl::disable( GL_TEXTURE_2D );
+	gl::ScopedColor color( ColorAf::white() );
 	mParticleController.draw();
 }
 

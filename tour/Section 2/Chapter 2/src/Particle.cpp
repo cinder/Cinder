@@ -1,6 +1,7 @@
 #include "Particle.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/app/AppBasic.h"
 
 using namespace ci;
@@ -14,8 +15,8 @@ Particle::Particle( vec3 pos, vec3 vel )
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= vec3::yAxis();
-	mAcc			= vec3::zero();
+	mVelNormal		= vec3( 0, 1, 0 );
+	mAcc			= vec3( 0 );
 	
 	mMaxSpeed		= Rand::randFloat( 2.0f, 3.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -30,11 +31,11 @@ Particle::Particle( vec3 pos, vec3 vel )
 void Particle::pullToCenter( const vec3 &center )
 {
 	vec3 dirToCenter = mPos - center;
-	float distToCenter = dirToCenter.length();
+	float distToCenter = glm::length( dirToCenter );
 	float maxDistance = 300.0f;
 	
 	if( distToCenter > maxDistance ){
-		dirToCenter.normalize();
+		dirToCenter = glm::normalize( dirToCenter );
 		float pullStrength = 0.0001f;
 		mVel -= dirToCenter * ( ( distToCenter - maxDistance ) * pullStrength );
 	}
@@ -44,7 +45,7 @@ void Particle::update( bool flatten )
 {	
 	if( flatten ) mAcc.z = 0.0f;
 	mVel += mAcc;
-	mVelNormal = mVel.normalized();
+	mVelNormal = glm::normalize( mVel );
 	limitSpeed();
 	
 	mPos += mVel;
@@ -53,12 +54,12 @@ void Particle::update( bool flatten )
 	if( flatten ) mPos.z = 0.0f;
 		
 	mVel *= mDecay;
-	mAcc = vec3::zero();
+	mAcc = vec3( 0 );
 }
 
 void Particle::limitSpeed()
 {
-	float vLengthSqrd = mVel.lengthSquared();
+	float vLengthSqrd = glm::length2( mVel );
 	if( vLengthSqrd > mMaxSpeedSqrd ){
 		mVel = mVelNormal * mMaxSpeed;
 		
@@ -72,12 +73,12 @@ void Particle::draw()
 	gl::drawSphere( mPos, mRadius, 8 );
 }
 
-void Particle::drawTail()
+void Particle::drawTail( gl::VertBatch& batch )
 {
-	gl::color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
-	gl::vertex( mPos );
-	gl::color( ColorA( 1.0f, 0.0f, 0.0f, 1.0f ) );
-	gl::vertex( mTailPos );
+	batch.color( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	batch.vertex( mPos );
+	batch.color( ColorA( 1.0f, 0.0f, 0.0f, 1.0f ) );
+	batch.vertex( mTailPos );
 }
 
 

@@ -1,4 +1,5 @@
 #include "cinder/app/AppBasic.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Vector.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
@@ -46,8 +47,8 @@ void FlockingApp::setup()
 	// SETUP CAMERA
 	mCameraDistance = 500.0f;
 	mEye			= vec3( 0.0f, 0.0f, mCameraDistance );
-	mCenter			= vec3::zero();
-	mUp				= vec3::yAxis();
+	mCenter			= vec3( 0 );
+	mUp				= vec3( 0, 1, 0 );
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 2000.0f );
 	
 	// SETUP PARAMS
@@ -81,7 +82,7 @@ void FlockingApp::draw()
 	gl::enableDepthWrite();
 	
 	// DRAW PARTICLES
-	glColor4f( ColorA( 1.0f, 1.0f, 1.0f, 1.0f ) );
+	gl::ScopedColor color( ColorAf::white() );
 	mParticleController.draw();
 	
 	// DRAW PARAMS WINDOW
