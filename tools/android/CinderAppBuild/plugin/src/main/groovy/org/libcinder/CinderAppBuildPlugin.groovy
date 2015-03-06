@@ -39,6 +39,11 @@ class ArchTarget {
 class CinderAppBuildPlugin implements Plugin<Project> {
     static final kValidArchs = ["arm64-v8a", "armeabi", "armeabi-v7a", "mips", "mips64", "x86","x86_64"]
 
+    def mProjectDir   = "";
+    def mBuildDir     = "";
+    def mBuildType    = "";
+    def mNdkBuildDir  = "";
+
     def mSourceFiles  = []
     def mIncludeDirs  = []
     def mSharedLibs   = []
@@ -218,6 +223,108 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         String result = "${key}=${value}"
         return result
     }
+
+    void cinderGenerateNdkBuild(Project project) {
+        this.ndkDirCheck(project)
+
+        // Paths
+        def dirPath = "${this.mNdkBuildDir}"
+        def filePath = "${dirPath}/Android.mk" 
+        def outDir  = new File( "${dirPath}" )
+        if( ! outDir.exists() ) {
+            outDir.mkdirs()
+            if( project.cinder.verbose ) {
+                println "Created ${dirPath}"
+            }
+        }
+
+        // Directory where cpp builds take place
+        def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
+       
+        // Source files 
+        try {
+            this.parseSourceFiles(project, cppBuildDir)
+        } catch( e ) {
+            throw new GradleException("Source files parse failed, e=" + e)
+        }
+            
+        // Include dirs
+        try {
+            this.parseIncludeDirs(project)
+        } catch( e ) {
+            throw new GradleException("Include dirs parse failed, e=" + e)            
+        }
+
+        // Shared libs
+        try {
+            this.parseSharedLibs(project)
+        } catch( e ) {
+            throw new GradleException("Shared libs parse failed, e=" + e)           
+        }
+
+        // Static libs
+        try {
+            this.parseStaticLibs(project)
+        } catch( e ) {
+            throw new GradleException("Static libs parse failed, e=" + e)            
+        }
+
+        // Write
+        this.writeAndroidMk(project, filePath)
+    }
+
+    void cinderCompileNdk(Project project) {
+        this.ndkDirCheck(project)
+
+        String ndkDir = (new File( project.cinder.ndkDir )).getCanonicalPath(); //project.plugins.findPlugin('com.android.application').getNdkFolder().toString()
+        if( project.cinder.verbose ) {
+            println "NDK_ROOT: ${ndkDir}";
+        }
+
+        def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
+       
+        def ndkBuildCmd  = "${ndkDir}/ndk-build"
+        def ndkBuildArgs = []
+        
+        if( project.cinder.verbose ) {
+            ndkBuildArgs.add(this.makeNdkArg("V", "1"))
+        }        
+
+        try {
+            this.parseArchs( project );                
+        }
+        catch( e ) {
+            throw new GradleException("Failed parsing cinder.archs[], e=" + e)
+        } 
+
+        String archsStr = this.mArchs.join(",");
+        if( archsStr.endsWith( "," ) ) {
+            archsStr = archsStr.substring( 0, archsStr.length() - 1 );
+        }
+
+        ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH",      "null"))
+        ndkBuildArgs.add(this.makeNdkArg("APP_BUILD_SCRIPT",      "${this.mNdkBuildDir}/Android.mk"))
+        ndkBuildArgs.add(this.makeNdkArg("APP_PLATFORM",          "android-${minSdkVersion}"))
+        ndkBuildArgs.add(this.makeNdkArg("NDK_OUT",               "${this.mNdkBuildDir}/obj"))
+        ndkBuildArgs.add(this.makeNdkArg("NDK_LIBS_OUT",          "${this.mProjectDir}/src/main/jniLibs"))            
+        ndkBuildArgs.add(this.makeNdkArg("APP_STL",               "gnustl_static"))
+        ndkBuildArgs.add(this.makeNdkArg("APP_ABI",               "${archsStr}"))
+        ndkBuildArgs.add(this.makeNdkArg("NDK_TOOLCHAIN_VERSION", "${project.cinder.toolChainVersion}"))
+   
+        if( project.cinder.verbose ) {
+            def execStr = ndkBuildCmd + " " + ndkBuildArgs.join(" ")
+            println "EXEC DIR: ${this.mNdkBuildDir}"
+            println "EXEC CMD: ${execStr}"
+        }
+
+
+        project.exec {
+            workingDir = this.mNdkBuildDir
+            executable = ndkBuildCmd
+            args = ndkBuildArgs
+        }
+
+    }
     
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
@@ -226,117 +333,32 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             return archTarget
         }
 
-        def projectDir = project.projectDir
-        def buildType = 'unset' /// CHANGE TO: debug AFTER TESTING
-        
-        // Extract selected build type from app.iml
-        def parsedXml = (new XmlSlurper()).parse("${project.projectDir}/app.iml")
-        def nodes = parsedXml.depthFirst().findAll { it.name() == 'option' && it.@name == 'SELECTED_BUILD_VARIANT' }
-        if( ! nodes.empty ) {
-            buildType = nodes[0].@value
-        }
-
-        // Full build directory
-        def buildDir = "${projectDir}/cinder-ndk/${buildType}"
-       
-        // TASK: cinderGenerateNdkBuild
-        project.task('cinderGenerateNdkBuild') << {
-            this.ndkDirCheck(project)
-
-            def dirPath = "${buildDir}"
-            def filePath = "${dirPath}/Android.mk" 
-            def outDir  = new File( "${dirPath}" )
-            if( ! outDir.exists() ) {
-                outDir.mkdirs()
-                if( project.cinder.verbose ) {
-                    println "Created ${dirPath}"
-                }
-            }
-
-            // Directory where cpp builds take place
-            def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
-           
-            // Source files 
-            try {
-                this.parseSourceFiles(project, cppBuildDir)
-            } catch( e ) {
-                throw new GradleException("Source files parse failed, e=" + e)
-            }
-                
-            // Include dirs
-            try {
-                this.parseIncludeDirs(project)
-            } catch( e ) {
-                throw new GradleException("Include dirs parse failed, e=" + e)            
-            }
-
-            // Shared libs
-            try {
-                this.parseSharedLibs(project)
-            } catch( e ) {
-                throw new GradleException("Shared libs parse failed, e=" + e)           
-            }
-
-            // Static libs
-            try {
-                this.parseStaticLibs(project)
-            } catch( e ) {
-                throw new GradleException("Static libs parse failed, e=" + e)            
-            }
-
-            // Write
-            this.writeAndroidMk(project, filePath)
+        this.mProjectDir = project.projectDir;
+        this.mBuildDir  = project.buildDir;
+        this.mBuildType = 'debug';
+               
+        // TASK: cinderGenerateDebugNdkBuild
+        project.task('cinderGenerateDebugNdkBuild') << {
+            this.mBuildType = "debug";
+            this.mNdkBuildDir = "${this.mBuildDir}/cinder/${this.mBuildType}"
+            this.cinderGenerateNdkBuild(project);
         }  
 
-        // TASK: cinderCompileNdk
-        project.task('cinderCompileNdk', dependsOn: 'cinderGenerateNdkBuild') << {
-            this.ndkDirCheck(project)
+        // TASK: cinderCompileDebugNdk
+        project.task('cinderCompileDebugNdk', dependsOn: 'cinderGenerateDebugNdkBuild') << {
+            this.cinderCompileNdk(project);
+        }
 
-            String ndkDir = (new File( project.cinder.ndkDir )).getCanonicalPath(); //project.plugins.findPlugin('com.android.application').getNdkFolder().toString()
-            println "NDK_ROOT: ${ndkDir}";
+        // TASK: cinderGenerateReleaseNdkBuild
+        project.task('cinderGenerateReleaseNdkBuild') << {
+            this.mBuildType = "release";
+            this.mNdkBuildDir = "${this.mBuildDir}/cinder/${this.mBuildType}"
+            this.cinderGenerateNdkBuild(project);
+        }  
 
-            def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
-            
-            def ndkBuildCmd  = "${ndkDir}/ndk-build"
-            def ndkBuildArgs = []
-            
-            if( project.cinder.verbose ) {
-                ndkBuildArgs.add(this.makeNdkArg("V", "1"))
-            }        
-
-            try {
-                this.parseArchs( project );                
-            }
-            catch( e ) {
-                throw new GradleException("Failed parsing cinder.archs[], e=" + e)
-            } 
-
-            String archsStr = this.mArchs.join(",");
-            if( archsStr.endsWith( "," ) ) {
-                archsStr = archsStr.substring( 0, archsStr.length() - 1 );
-            }
-
-            ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH",      "null"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_BUILD_SCRIPT",      "${buildDir}/Android.mk"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_PLATFORM",          "android-${minSdkVersion}"))
-            ndkBuildArgs.add(this.makeNdkArg("NDK_OUT",               "${buildDir}/cinder-ndk/debug/obj"))
-            ndkBuildArgs.add(this.makeNdkArg("NDK_LIBS_OUT",          "${projectDir}/src/main/jniLibs"))            
-            ndkBuildArgs.add(this.makeNdkArg("APP_STL",               "gnustl_static"))
-            ndkBuildArgs.add(this.makeNdkArg("APP_ABI",               "${archsStr}"))
-            ndkBuildArgs.add(this.makeNdkArg("NDK_TOOLCHAIN_VERSION", "${project.cinder.toolChainVersion}"))
-       
-            if( project.cinder.verbose ) {
-                def cwd = buildDir 
-                def execStr = ndkBuildCmd + " " + ndkBuildArgs.join(" ")
-                println "EXEC DIR: ${cwd}"
-                println "EXEC CMD: ${execStr}"
-            }
- 
-            project.exec {
-                workingDir = buildDir
-                executable = ndkBuildCmd
-                args = ndkBuildArgs
-            }
+        // TASK: cinderCompileReleaseNdk
+        project.task('cinderCompileReleaseNdk', dependsOn: 'cinderGenerateReleaseNdkBuild') << {
+            this.cinderCompileNdk(project);
         }
     }
 }

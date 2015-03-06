@@ -49,7 +49,7 @@ android {
     cinder {
         ndkDir = "${projectDir}/../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../.."
-        verbose = true
+        verbose = false
         moduleName = "MultiTouchApp"
         srcFiles = ["../../../src/MultiTouchApp.cpp"]
         cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
@@ -66,11 +66,17 @@ android {
         //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
     }
 
-    task ndkBuild(dependsOn: 'cinderCompileNdk') {
-    }
+    task ndkBuildDebug(dependsOn: 'cinderCompileDebugNdk') {}
+    task ndkBuildRelease(dependsOn: 'cinderCompileReleaseNdk') {}
 
     tasks.withType(JavaCompile) {
-        compileTask -> compileTask.dependsOn ndkBuild
+        compileTask ->
+            if("compileDebugJava" == compileTask.name) {
+                compileTask.dependsOn ndkBuildDebug
+            }
+            else if("compileReleaseJava" == compileTask.name) {
+                compileTask.dependsOn ndkBuildRelease
+            }
     }
 }
 
