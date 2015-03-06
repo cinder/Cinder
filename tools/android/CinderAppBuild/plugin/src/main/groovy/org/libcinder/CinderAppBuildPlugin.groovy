@@ -5,8 +5,13 @@ import org.gradle.api.InvalidUserDataException
 import org.gradle.api.Project
 import org.gradle.api.Plugin
 import org.gradle.api.tasks.*
+import org.gradle.internal.reflect.Instantiator
 import java.nio.file.Path;
 import java.nio.file.Paths;
+
+class ArchTarget {
+    String name;
+}
 
 class CinderAppBuildPlugin implements Plugin<Project> {
     def mSourceFiles  = []
@@ -163,6 +168,11 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
+        project.cinder.extensions.archTargets = project.container(ArchTarget) { String name ->
+            ArchTarget archTarget = project.gradle.services.get(Instantiator).newInstance(ArchTarget, name)
+            return archTarget
+        }
+
 
         def projectDir = project.projectDir
         def buildDir = project.buildDir
