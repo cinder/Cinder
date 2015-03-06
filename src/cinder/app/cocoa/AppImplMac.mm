@@ -481,18 +481,19 @@ using namespace cinder::app;
 {
 	mBorderless = borderless;
 
-	unsigned int styleMask;
+	NSUInteger styleMask;
 	if( mBorderless )
 		styleMask = ( mResizable ) ? ( NSBorderlessWindowMask | NSResizableWindowMask ) : NSBorderlessWindowMask;
 	else if( mResizable )
-		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	else
 		styleMask = NSTitledWindowMask;
+
 	[mWin setStyleMask:styleMask];
 	[mWin makeFirstResponder:mCinderView];
 	[mWin makeKeyWindow];
 	[mWin makeMainWindow];
-	[mWin setHasShadow:(! mBorderless)];
+	[mWin setHasShadow:( ! mBorderless )];
 }
 
 - (bool)isAlwaysOnTop
