@@ -314,7 +314,6 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 		for( size_t i = 0; i < numVertices; ++i )
 			resultBitangents->emplace_back( normalize( cross( normals[i], (*resultTangents)[i] ) ) );
 	}
-ci::app::console() << "calculateTangentsImpl - end" << std::endl;		
 }
 
 } // anonymous namespace
