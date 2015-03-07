@@ -68,12 +68,11 @@ class MotionBlurVelocityBufferApp : public App {
 	gl::FboRef		mGBuffer;					// Full-resolution RGBA color and velocity.
 	gl::FboRef		mVelocityDilationBuffer;	// Dilated, downsampled velocity and dominant region velocities.
 	// Name our framebuffer attachment points.
-	struct {
-		const GLenum COLOR			= GL_COLOR_ATTACHMENT0;
-		const GLenum VELOCITY		= GL_COLOR_ATTACHMENT1;
-		const GLenum TILE_MAX		= GL_COLOR_ATTACHMENT0;
-		const GLenum NEIGHBOR_MAX	= GL_COLOR_ATTACHMENT1;
-	} Attachments;
+
+	const GLenum G_COLOR			        = GL_COLOR_ATTACHMENT0;
+	const GLenum G_VELOCITY		        = GL_COLOR_ATTACHMENT1;
+	const GLenum DILATE_TILE_MAX		  = GL_COLOR_ATTACHMENT0;
+	const GLenum DILATE_NEIGHBOR_MAX	= GL_COLOR_ATTACHMENT1;
 
 	gl::QueryTimeSwappedRef mGpuTimer;
 	Timer					mCpuTimer;
@@ -152,14 +151,14 @@ void MotionBlurVelocityBufferApp::createBuffers()
 
 	auto format = gl::Fbo::Format().depthBuffer();
 	format.enableDepthBuffer();
-	format.attachment( Attachments.COLOR, colorBuffer );
-	format.attachment( Attachments.VELOCITY, velocityBuffer );
+	format.attachment( G_COLOR, colorBuffer );
+	format.attachment( G_VELOCITY, velocityBuffer );
 
 	mGBuffer = gl::Fbo::create( bufferWidth, bufferHeight, format );
 
 	format = gl::Fbo::Format().disableDepth();
-	format.attachment( Attachments.TILE_MAX, tileMaxBuffer );
-	format.attachment( Attachments.NEIGHBOR_MAX, neighborMaxBuffer );
+	format.attachment( DILATE_TILE_MAX, tileMaxBuffer );
+	format.attachment( DILATE_NEIGHBOR_MAX, neighborMaxBuffer );
 
 	mVelocityDilationBuffer = gl::Fbo::create( tileWidth, tileHeight, format );
 }
@@ -249,7 +248,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 	gl::setMatricesWindowPersp( mVelocityDilationBuffer->getSize() );
 
 	{ // downsample velocity into tilemax
-		gl::ScopedTextureBind tex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
+		gl::ScopedTextureBind tex( mGBuffer->getTexture( G_VELOCITY ), 0 );
 		gl::ScopedGlslProg prog( mTileProg );
 
 		mTileProg->uniform( "uVelocityMap", 0 );
@@ -258,7 +257,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 		gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 	}
 	{ // build max neighbors from tilemax
-		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
+		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( DILATE_TILE_MAX ), 0 );
 		gl::ScopedGlslProg prog( mNeighborProg );
 
 		mNeighborProg->uniform( "uTileMap", 0 );
@@ -269,9 +268,9 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 
 void MotionBlurVelocityBufferApp::drawBlurredContent()
 {
-	gl::ScopedTextureBind colorTex( mGBuffer->getTexture( Attachments.COLOR ), 0 );
-	gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 1 );
-	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 2 );
+	gl::ScopedTextureBind colorTex( mGBuffer->getTexture( G_COLOR ), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture( G_VELOCITY ), 1 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( DILATE_NEIGHBOR_MAX ), 2 );
 	gl::ScopedGlslProg prog( mMotionBlurProg );
 	gl::ScopedAlphaBlend blend( true );
 
@@ -330,15 +329,15 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	float height = width / Rectf( mVelocityDilationBuffer->getBounds() ).getAspectRatio();
 	Rectf rect( 0.0f, 0.0f, width, height );
 
-	gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture( G_VELOCITY ), 0 );
 	gl::translate( getWindowWidth() - width - 10.0f, 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind tileTex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
+	gl::ScopedTextureBind tileTex( mVelocityDilationBuffer->getTexture( DILATE_TILE_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 0 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( DILATE_NEIGHBOR_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 }
