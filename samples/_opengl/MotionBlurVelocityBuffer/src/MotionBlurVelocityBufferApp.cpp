@@ -44,10 +44,15 @@ class MotionBlurVelocityBufferApp : public App {
 	void createGeometry();
 	void createBuffers();
 	void loadShaders();
-	void drawVelocityBuffers();
 
-	void drawUsingMultipleFbos();
-	void drawUSingSingleFbo();
+	// Render color and velocity into GBuffer FBO.
+	void fillGBuffer();
+	// Dilate velocity into VelocityDilationBuffer for use by blur shader.
+	void dilateVelocity();
+	// Draw final blurred content to screen.
+	void drawBlurredContent();
+	// Draw velocity buffers to screen for debugging/look under the hood.
+	void drawVelocityBuffers();
 
   private:
 	gl::TextureRef					mBackground;
@@ -89,6 +94,7 @@ void MotionBlurVelocityBufferApp::setup()
 {
 	mBackground = gl::Texture::create( loadImage( loadAsset( "background.jpg" ) ) );
 	mGpuTimer = gl::QueryTimeSwapped::create();
+	gl::enableVerticalSync();
 
 	createGeometry();
 	createBuffers();
@@ -211,75 +217,71 @@ void MotionBlurVelocityBufferApp::update()
 	}
 }
 
-void MotionBlurVelocityBufferApp::drawUSingSingleFbo()
+void MotionBlurVelocityBufferApp::fillGBuffer()
 {
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
-	{ // Render color and velocity.
-		gl::ScopedFramebuffer fbo( mGBuffer );
-		gl::ScopedAlphaBlend blend( false );
-		gl::clear( ColorA( 0.0f, 0.0f, 0.0f, 0.0f ) );
+	gl::ScopedFramebuffer fbo( mGBuffer );
+	gl::ScopedAlphaBlend blend( false );
+	gl::clear( ColorA( 0.0f, 0.0f, 0.0f, 0.0f ) );
 
-		gl::ScopedGlslProg prog( mVelocityProg );
-		mVelocityProg->uniform( "uViewProjection", gl::getProjectionMatrix() * gl::getViewMatrix() );
+	gl::ScopedGlslProg prog( mVelocityProg );
+	mVelocityProg->uniform( "uViewProjection", gl::getProjectionMatrix() * gl::getViewMatrix() );
 
-		for( auto &mesh : mMeshes )
-		{
-			gl::ScopedColor meshColor( mesh->getColor() );
-			mVelocityProg->uniform( "uModelMatrix", mesh->getTransform() );
-			mVelocityProg->uniform( "uPrevModelMatrix", mesh->getPreviousTransform() );
-			gl::draw( mesh->getMesh() );
-		}
+	for( auto &mesh : mMeshes )
+	{
+		gl::ScopedColor meshColor( mesh->getColor() );
+		mVelocityProg->uniform( "uModelMatrix", mesh->getTransform() );
+		mVelocityProg->uniform( "uPrevModelMatrix", mesh->getPreviousTransform() );
+		gl::draw( mesh->getMesh() );
 	}
 
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
+}
 
-	{ // render velocity reconstruction buffers (dilation)
-		gl::ScopedFramebuffer fbo( mVelocityDilationBuffer );
-		gl::ScopedViewport viewport( ivec2( 0, 0 ), mVelocityDilationBuffer->getSize() );
-		gl::ScopedMatrices	matrices;
-		gl::setMatricesWindowPersp( mVelocityDilationBuffer->getSize() );
+void MotionBlurVelocityBufferApp::dilateVelocity()
+{
+	gl::ScopedFramebuffer fbo( mVelocityDilationBuffer );
+	gl::ScopedViewport viewport( ivec2( 0, 0 ), mVelocityDilationBuffer->getSize() );
+	gl::ScopedMatrices	matrices;
+	gl::setMatricesWindowPersp( mVelocityDilationBuffer->getSize() );
 
-		{ // downsample velocity into tilemax
-			gl::ScopedTextureBind tex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
-			gl::ScopedGlslProg prog( mTileProg );
+	{ // downsample velocity into tilemax
+		gl::ScopedTextureBind tex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
+		gl::ScopedGlslProg prog( mTileProg );
 
-			mTileProg->uniform( "uVelocityMap", 0 );
-			mTileProg->uniform( "uTileSize", mTileSize );
+		mTileProg->uniform( "uVelocityMap", 0 );
+		mTileProg->uniform( "uTileSize", mTileSize );
 
-			gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
-		}
-		{ // find max neighbors within tilemax
-			gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
-			gl::ScopedGlslProg prog( mNeighborProg );
-
-			mNeighborProg->uniform( "uTileMap", 0 );
-
-			gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
-		}
+		gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 	}
+	{ // build max neighbors from tilemax
+		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
+		gl::ScopedGlslProg prog( mNeighborProg );
 
-	if( ! mBlurEnabled )
-	{ // draw to screen
-		gl::ScopedAlphaBlend blend( false );
-		gl::draw( mGBuffer->getColorTexture() );
+		mNeighborProg->uniform( "uTileMap", 0 );
+
+		gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 	}
-	else
-	{ // draw to screen with motion blur
-		gl::ScopedAlphaBlend blend( true );
-		gl::ScopedTextureBind colorTex( mGBuffer->getTexture( Attachments.COLOR ), 0 );
-		gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 1 );
-		gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 2 );
-		gl::ScopedGlslProg prog( mMotionBlurProg );
-		mMotionBlurProg->uniform( "uColorMap", 0 );
-		mMotionBlurProg->uniform( "uVelocityMap", 1 );
-		mMotionBlurProg->uniform( "uNeighborMaxMap", 2 );
-		mMotionBlurProg->uniform( "uNoiseFactor", mBlurNoise );
-		mMotionBlurProg->uniform( "uSamples", mSampleCount );
-		gl::drawSolidRect( getWindowBounds() );
-	}
+}
+
+void MotionBlurVelocityBufferApp::drawBlurredContent()
+{
+	gl::ScopedTextureBind colorTex( mGBuffer->getTexture( Attachments.COLOR ), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 1 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 2 );
+	gl::ScopedGlslProg prog( mMotionBlurProg );
+	gl::ScopedAlphaBlend blend( true );
+
+	mMotionBlurProg->uniform( "uColorMap", 0 );
+	mMotionBlurProg->uniform( "uVelocityMap", 1 );
+	mMotionBlurProg->uniform( "uNeighborMaxMap", 2 );
+	mMotionBlurProg->uniform( "uNoiseFactor", mBlurNoise );
+	mMotionBlurProg->uniform( "uSamples", mSampleCount );
+
+	gl::drawSolidRect( getWindowBounds() );
 }
 
 void MotionBlurVelocityBufferApp::draw()
@@ -294,7 +296,16 @@ void MotionBlurVelocityBufferApp::draw()
 
 	gl::draw( mBackground, getWindowBounds() );
 
-	drawUSingSingleFbo();
+	fillGBuffer();
+
+	if( ! mBlurEnabled ) {
+		gl::ScopedAlphaBlend blend( false );
+		gl::draw( mGBuffer->getColorTexture() );
+	}
+	else {
+		dilateVelocity();
+		drawBlurredContent();
+	}
 
 	if( mDisplayVelocityBuffers ) {
 		drawVelocityBuffers();
