@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const float cCircleRadius = 40.0f;
+const float cCircleRadius = 40;
 const float cGridStep = cCircleRadius * 2.2f;
 
 /**
@@ -21,19 +21,30 @@ const float cGridStep = cCircleRadius * 2.2f;
  */
 class ConvenienceDrawingMethodsApp : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
-private:
+	void prepareSettings( Settings *settings ) override;
+	void setup() override;
+	void update() override;
+	void draw() override;
+  private:
+	void drawBasicOverview();
+	void drawSourcesStressTest();
+
 	Path2d		mPath;
 	PolyLine2	mPolyline2D;
 	PolyLine3	mPolyline3D;
 };
 
+void ConvenienceDrawingMethodsApp::prepareSettings( Settings *settings )
+{
+	settings->setWindowPos( 0, 0 );
+	settings->setWindowSize( 960, 564 );
+
+}
+
 void ConvenienceDrawingMethodsApp::setup()
 {
-	mPath.arc( vec2( 0 ), cCircleRadius, 0.0f, M_PI * 1.66f );
+
+	mPath.arc( vec2( 0 ), cCircleRadius, 0, M_PI * 1.66f );
 	mPath.lineTo( vec2( 0 ) );
 
 	Rand r;
@@ -44,7 +55,7 @@ void ConvenienceDrawingMethodsApp::setup()
 
 	// line wrapping around a sphere
 	const int numVertices = 48;
-	const float azimuth = 12.0f * M_PI / numVertices;
+	const float azimuth = 12 * M_PI / numVertices;
 	// divide total inclination change by particles (from straight down to straight up)
 	const float inclination = M_PI / numVertices;
 	// fixed radius to generate a sphere
@@ -56,15 +67,19 @@ void ConvenienceDrawingMethodsApp::setup()
 	}
 }
 
-void ConvenienceDrawingMethodsApp::mouseDown( MouseEvent event )
-{
-}
-
 void ConvenienceDrawingMethodsApp::update()
 {
+	if( getElapsedFrames() % 30 == 0 )
+		getWindow()->setTitle( "fps: " + to_string( getAverageFps() ) );
 }
 
 void ConvenienceDrawingMethodsApp::draw()
+{
+	drawBasicOverview();
+	drawSourcesStressTest();
+}
+
+void ConvenienceDrawingMethodsApp::drawBasicOverview()
 {
 	// clear out the window with black
 	gl::clear( Color( 0, 0, 0 ) );
@@ -72,55 +87,87 @@ void ConvenienceDrawingMethodsApp::draw()
 
 	// Draw some rows of circles
 	const int numCircles = 4;
-	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
+	gl::color( Color( 1, 1, 0 ) );
 	for( int i = 0; i < numCircles; ++i ) {
-		gl::drawSolidCircle( vec2( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
+		gl::drawSolidCircle( vec2( (i + 1) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
 	}
 
-	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
+	gl::color( Color( 1, 0, 0 ) );
 	for( int i = 0; i < numCircles; ++i ) {
-		gl::drawStrokedCircle( vec2( (i + 1.0f) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
+		gl::drawStrokedCircle( vec2( (i + 1) * cGridStep, cGridStep ), cCircleRadius, i * 3 );
 	}
 
 	// Draw a line in 2D
-	gl::drawLine( vec2( 10.0f, cGridStep * 1.5f ), vec2( getWindowWidth() - 10.0f, cGridStep * 1.5f ) );
+	gl::drawLine( vec2( 10, cGridStep * 1.5f ), vec2( getWindowWidth() - 10, cGridStep * 1.5f ) );
 
 	// Draw a Path2d both stroked and filled
-	gl::pushModelMatrix();
-	gl::translate( cGridStep, cGridStep * 2.0f );
-	gl::draw( mPath );
-	gl::translate( cGridStep, 0.0f );
-	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
-	gl::drawSolid( mPath );
-	gl::popModelMatrix();
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep, cGridStep * 2 );
+		gl::draw( mPath );
+		gl::translate( cGridStep, 0 );
+		gl::color( Color( 1, 1, 0 ) );
+		gl::drawSolid( mPath );
+	}
 
 	// Draw a 2D PolyLine both stroked and filled
-	gl::pushModelMatrix();
-	gl::translate( cGridStep, cGridStep * 3.0f );
-	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
-	gl::draw( mPolyline2D );
-	gl::translate( cGridStep, 0.0f );
-	gl::color( Color( 1.0f, 1.0f, 0.0f ) );
-	gl::drawSolid( mPolyline2D );
-	gl::popModelMatrix();
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep, cGridStep * 3 );
+		gl::color( Color( 1, 0, 0 ) );
+		gl::draw( mPolyline2D );
+		gl::translate( cGridStep, 0 );
+		gl::color( Color( 1, 1, 0 ) );
+		gl::drawSolid( mPolyline2D );
+	}
 
 	// Draw a 3D PolyLine
-	gl::pushModelMatrix();
-	gl::translate( cGridStep, cGridStep * 4.0f );
-	gl::pushModelMatrix();
-	gl::rotate( getElapsedSeconds(), 0.0f, 1.0f, 0.0f );
-	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
-	gl::draw( mPolyline3D );
-	gl::popModelMatrix();
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep, cGridStep * 4 );
+		gl::rotate( getElapsedSeconds(), 0, 1, 0 );
+		gl::color( Color( 1, 0, 0 ) );
+		gl::draw( mPolyline3D );
+	}
+
 	// draw a 3D line back into space
-	gl::translate( cGridStep, 0.0f );
-	gl::pushModelMatrix();
-	gl::rotate( - getElapsedSeconds() * 2.0f, 0.0f, 0.5f, 1.0f );
-	gl::drawLine( vec3( 0.0f, 0.0f, cCircleRadius ), vec3( 0.0f, 0.0f, -cCircleRadius ) );
-	gl::drawLine( vec3( -cCircleRadius, 0.0f, 0.0f ), vec3( cCircleRadius, 0.0f, 0.0f ) );
-	gl::drawLine( vec3( 0.0f, -cCircleRadius, 0.0f ), vec3( 0.0f, cCircleRadius, 0.0f ) );
-	gl::popModelMatrix();
-	gl::popModelMatrix();
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep * 2, cGridStep * 4 );
+		gl::rotate( - getElapsedSeconds() * 2, 0, 0.5f, 1 );
+		gl::drawLine( vec3( 0, 0, cCircleRadius ), vec3( 0, 0, -cCircleRadius ) );
+		gl::drawLine( vec3( -cCircleRadius, 0, 0 ), vec3( cCircleRadius, 0, 0 ) );
+		gl::drawLine( vec3( 0, -cCircleRadius, 0 ), vec3( 0, cCircleRadius, 0 ) );
+	}
+
+	// draw a geom::Source
+	{
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep, cGridStep * 5 );
+		gl::ScopedColor color( Color( 0, 0, 1 ) );
+
+//		auto geom = geom::Rect( Rectf( -cCircleRadius, -cCircleRadius, cCircleRadius, cCircleRadius ) );
+		auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
+		gl::draw( geom );
+	}
+}
+
+void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
+{
+	const int drawCount = 1000;
+
+	vec2 incr = vec2( getWindowSize() ) / (float)drawCount;
+
+	gl::ScopedModelMatrix modelScope;
+
+	for( int i = 0; i < drawCount; i++ ) {
+		float perc = (float)i / (float)drawCount;
+		gl::translate( incr.x, incr.y );
+		gl::ScopedColor color( Color( 0, 0.5f + perc, perc ) );
+
+		auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
+		gl::draw( geom );
+	}
 }
 
 CINDER_APP( ConvenienceDrawingMethodsApp, RendererGl )
