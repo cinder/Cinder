@@ -20,6 +20,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/Query.h"
 
 #include "cinder/GeomIo.h"
 #include "cinder/Rand.h"
@@ -55,10 +56,17 @@ class MotionBlurVelocityBufferApp : public App {
 	gl::GlslProgRef		mMotionBlurProg;	// Generates final image from color and velocity buffers
 	gl::GlslProgRef		mVelocityRenderProg;// Debug rendering of velocity to screen.
 
+	gl::FboRef			mFbo;
+
 	gl::FboRef			mColorBuffer;		// full-resolution RGBA color
 	gl::FboRef			mVelocityBuffer;	// full-resolution velocity
 	gl::FboRef			mTileMaxBuffer;		// downsampled velocity
 	gl::FboRef			mNeighborMaxBuffer;	// dominant velocities in regions
+
+	gl::QueryTimeSwappedRef mGpuTimer;
+	Timer					mCpuTimer;
+	float					mAverageGpuTime = 0.0f;
+	float					mAverageCpuTime = 0.0f;
 
 	params::InterfaceGlRef	mParams;
 	int						mTileSize = 20;
@@ -73,12 +81,16 @@ class MotionBlurVelocityBufferApp : public App {
 void MotionBlurVelocityBufferApp::setup()
 {
 	mBackground = gl::Texture::create( loadImage( loadAsset( "background.jpg" ) ) );
+	mGpuTimer = gl::QueryTimeSwapped::create();
 
 	createGeometry();
 	createBuffers();
 	loadShaders();
 
 	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 250, 300 ) );
+	mParams->addParam( "Average GPU Draw (ms)", &mAverageGpuTime );
+	mParams->addParam( "Average CPU Draw (ms)", &mAverageCpuTime );
+	mParams->addSeparator();
 	mParams->addParam( "Enable Blur", &mBlurEnabled );
 	mParams->addParam( "Show Velocity Buffers", &mDisplayVelocityBuffers );
 	mParams->addParam( "Pause Animation", &mPaused );
@@ -113,6 +125,21 @@ void MotionBlurVelocityBufferApp::createBuffers()
 {
 	const int bufferWidth = getWindowWidth();
 	const int bufferHeight = getWindowHeight();
+
+	/*
+	gl::Fbo::Format format;
+	auto colorBuffer = gl::Renderbuffer::create( bufferWidth, bufferHeight, GL_RGBA );
+	auto velocityBuffer = gl::Renderbuffer::create( bufferWidth, bufferHeight, GL_RG16F );
+	auto tileMaxBuffer = gl::Renderbuffer::create( bufferWidth / mTileSize, bufferHeight / mTileSize, GL_RG16F );
+	auto neighborMaxBuffer = gl::Renderbuffer::create( bufferWidth / mTileSize, bufferHeight / mTileSize, GL_RG16F );
+
+	format.attachment( GL_COLOR_ATTACHMENT0, colorBuffer );
+	format.attachment( GL_COLOR_ATTACHMENT1, velocityBuffer );
+	format.attachment( GL_COLOR_ATTACHMENT2, tileMaxBuffer );
+	format.attachment( GL_COLOR_ATTACHMENT3, neighborMaxBuffer );
+	
+	mFbo = gl::Fbo::create( bufferWidth, bufferHeight, format );
+	*/
 
 	{ // color
 		gl::Fbo::Format format;
@@ -188,6 +215,9 @@ void MotionBlurVelocityBufferApp::update()
 
 void MotionBlurVelocityBufferApp::draw()
 {
+	mGpuTimer->begin();
+	mCpuTimer.start();
+
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 5000.0f );
 
@@ -276,6 +306,12 @@ void MotionBlurVelocityBufferApp::draw()
 	if( mDisplayVelocityBuffers ) {
 		drawVelocityBuffers();
 	}
+
+	mCpuTimer.stop();
+	mGpuTimer->end();
+
+	mAverageCpuTime = (mCpuTimer.getSeconds() * 200) + mAverageCpuTime * 0.8f;
+	mAverageGpuTime = mGpuTimer->getElapsedMilliseconds() * 0.2f + mAverageGpuTime * 0.8f;
 
 	mParams->draw();
 }
