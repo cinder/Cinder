@@ -266,11 +266,8 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 template<typename TEXTYPE>
 void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const TEXTYPE *texCoords, vector<vec3> *resultTangents, vector<vec3> *resultBitangents )
 {
-ci::app::console() << "calculateTangentsImpl - start" << std::endl;	
 	if( resultTangents )
 		resultTangents->assign( numVertices, vec3( 0 ) );
-
-ci::app::console() << "calculateTangentsImpl - mark 1" << std::endl;		
 
 	size_t numTriangles = numIndices / 3;
 	for( size_t i = 0; i < numTriangles; ++i ) {
@@ -306,16 +303,11 @@ ci::app::console() << "calculateTangentsImpl - mark 1" << std::endl;
 		(*resultTangents)[index2] += tangent;
 	}
 
-ci::app::console() << "calculateTangentsImpl - mark 2" << std::endl;		
-ci::app::console() << "numVertices: " << numVertices << ", resultTangents->size()=" << resultTangents->size() << std::endl;		
-
 	for( size_t i = 0; i < numVertices; ++i ) {
 		vec3 normal = normals[i];
 		vec3 tangent = (*resultTangents)[i];
 		(*resultTangents)[i] = normalize( tangent - normal * dot( normal, tangent ) );
 	}
-
-ci::app::console() << "calculateTangentsImpl - mark 3" << std::endl;		
 
 	if( resultBitangents ) {
 		resultBitangents->reserve( numVertices );
