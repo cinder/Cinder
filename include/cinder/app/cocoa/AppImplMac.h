@@ -87,6 +87,7 @@
   @public
 	AppImplMac*					mAppImpl;
 	NSWindow*					mWin;
+	NSString*					mTitle; // title is cached because sometimes we need to restore it after changing window border styles
 	CinderViewMac*				mCinderView;
 	cinder::app::WindowRef		mWindowRef;
 	cinder::DisplayRef			mDisplay;

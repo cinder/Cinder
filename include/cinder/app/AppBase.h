@@ -125,7 +125,7 @@ class AppBase {
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		const	std::string&	getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		void					setTitle( const std::string &title ) { mTitle = title; }
+		void					setTitle( const std::string &title ) { mTitle = title; mDefaultWindowFormat.setTitle( title ); }
 
 		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
 		void	setHighDensityDisplayEnabled( bool enable = true )	{ mHighDensityDisplayEnabled = enable; }

@@ -389,6 +389,9 @@ using namespace cinder::app;
 - (void)dealloc
 {
 	[mCinderView release];
+	if( mTitle )
+		[mTitle release];
+
 	[super dealloc];
 }
 
@@ -464,11 +467,15 @@ using namespace cinder::app;
 
 - (NSString *)getTitle
 {
-	return [mWin title];
+	return mTitle;
 }
 
 - (void)setTitle:(NSString *)title
 {
+	if( mTitle )
+		[mTitle release];
+
+	mTitle = [title copy]; // title is cached because sometimes we need to restore it after changing window border styles
 	[mWin setTitle:title];
 }
 
@@ -479,20 +486,35 @@ using namespace cinder::app;
 
 - (void)setBorderless:(BOOL)borderless
 {
+	if( mBorderless == borderless )
+		return;
+
 	mBorderless = borderless;
 
-	unsigned int styleMask;
+	NSUInteger styleMask;
 	if( mBorderless )
 		styleMask = ( mResizable ) ? ( NSBorderlessWindowMask | NSResizableWindowMask ) : NSBorderlessWindowMask;
 	else if( mResizable )
-		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	else
 		styleMask = NSTitledWindowMask;
+
 	[mWin setStyleMask:styleMask];
 	[mWin makeFirstResponder:mCinderView];
 	[mWin makeKeyWindow];
 	[mWin makeMainWindow];
-	[mWin setHasShadow:(! mBorderless)];
+	[mWin setHasShadow:( ! mBorderless )];
+
+	// kludge: the titlebar buttons don't want to re-appear after coming back from borderless mode unless we resize the window.
+	if( ! mBorderless && mResizable ) {
+		ivec2 currentSize = mSize;
+		[self setSize:currentSize + ivec2( 0, 1 )];
+		[self setSize:currentSize];
+
+		// restore title, which also seems to disappear after coming back from borderless
+		if( mTitle )
+			[mWin setTitle:mTitle];
+	}
 }
 
 - (bool)isAlwaysOnTop
@@ -742,7 +764,7 @@ using namespace cinder::app;
 	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 
 	if( ! winFormat.getTitle().empty() )
-		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+		[winImpl setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
