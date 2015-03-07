@@ -1,6 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2012 for Windows 8
+# Visual Studio 2013
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "cinder.vcxproj", "{7419A85E-0924-4AFE-B5DB-4F85D05FE1AB}"
 EndProject
 Global
