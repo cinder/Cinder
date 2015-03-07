@@ -3,7 +3,7 @@
 uniform sampler2D uVelocityMap; // full-resolution velocity
 uniform int uTileSize;
 
-layout (location = 0) out vec2 fVelocity;
+out vec2 fVelocity;
 
 void main()
 {	// texel size is dependent on our output dimensions
@@ -27,5 +27,5 @@ void main()
 		}
 	}
 
-	fVelocity.xy = maxTileVelocity;
+	fVelocity = maxTileVelocity;
 }

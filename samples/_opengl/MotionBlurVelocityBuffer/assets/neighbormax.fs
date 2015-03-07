@@ -1,7 +1,7 @@
 #version 330 core
 
 uniform sampler2D uTileMap;	// downsampled velocity
-layout (location = 1) out vec2 fVelocity;
+out vec2 fVelocity;
 
 void main() {
 	vec2 texelSize = 1.0 / vec2(textureSize(uTileMap, 0));
@@ -58,5 +58,5 @@ void main() {
 		}
 	}
 	// store screen-space velocity
-	fVelocity.xy = velocity;
+	fVelocity = velocity;
 }

@@ -68,7 +68,6 @@ class MotionBlurVelocityBufferApp : public App {
 	gl::FboRef		mGBuffer;					// Full-resolution RGBA color and velocity.
 	gl::FboRef		mVelocityDilationBuffer;	// Dilated, downsampled velocity and dominant region velocities.
 	// Name our framebuffer attachment points.
-
 	const GLenum G_COLOR			        = GL_COLOR_ATTACHMENT0;
 	const GLenum G_VELOCITY		        = GL_COLOR_ATTACHMENT1;
 	const GLenum DILATE_TILE_MAX		  = GL_COLOR_ATTACHMENT0;
@@ -250,6 +249,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 	{ // downsample velocity into tilemax
 		gl::ScopedTextureBind tex( mGBuffer->getTexture( G_VELOCITY ), 0 );
 		gl::ScopedGlslProg prog( mTileProg );
+		gl::drawBuffer( DILATE_TILE_MAX );
 
 		mTileProg->uniform( "uVelocityMap", 0 );
 		mTileProg->uniform( "uTileSize", mTileSize );
@@ -259,6 +259,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 	{ // build max neighbors from tilemax
 		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( DILATE_TILE_MAX ), 0 );
 		gl::ScopedGlslProg prog( mNeighborProg );
+		gl::drawBuffer( DILATE_NEIGHBOR_MAX );
 
 		mNeighborProg->uniform( "uTileMap", 0 );
 
