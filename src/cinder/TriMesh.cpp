@@ -1,4 +1,7 @@
 #include "cinder/TriMesh.h"
+#if defined( CINDER_ANDROID )
+  #include "cinder/app/App.h"
+#endif
 
 using std::vector;
 
@@ -581,6 +584,10 @@ bool TriMesh::recalculateTangents()
 		return false;
 
 	mTangents.clear();
+
+ci::app::console() << "mPositions.size()=" << mPositions.size() << std::endl;
+ci::app::console() << "mNormals.size()=" << mNormals.size() << std::endl;
+ci::app::console() << "mTexCoords0.size()=" << mTexCoords0.size() << std::endl;
 
 	const vec3 *positions = reinterpret_cast<const vec3*>( mPositions.data() );
 	const vec3 *normals = reinterpret_cast<const vec3*>( mNormals.data() );

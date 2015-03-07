@@ -4,7 +4,7 @@ buildscript {
     repositories {
         jcenter()
         flatDir {
-            dirs "${projectDir}../../../../../../tools/android/CinderAppBuild/repo"
+            dirs "${projectDir}/../../../../../tools/android/CinderAppBuild/repo"
         }
     }
     dependencies {
