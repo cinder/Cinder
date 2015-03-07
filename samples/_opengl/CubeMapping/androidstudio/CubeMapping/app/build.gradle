@@ -53,7 +53,18 @@ android {
         verbose = false
         moduleName = "CubeMappingApp"
         srcDirs = ["../../../src"]
-        cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
+        cFlags {
+            "all_archs" {
+                debug = "-g"
+                release = "-Os"
+            }
+        }
+        cppFlags {
+            "all_archs" {
+                debug = "-g -std=c++11"
+                release = "-Os -std=c++11"
+            }
+        }
         includeDirs = ["../../../include", "${cinderDir}/include", "${cinderDir}/boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         libCinder = [
