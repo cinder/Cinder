@@ -66,7 +66,7 @@ class PlatformCocoa : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
 
-	fs::path getResourcePath() const override;
+	fs::path getResourceDirectory() const override;
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
 	//! Implemented on desktop, no-op on iOS (returns empty path ).

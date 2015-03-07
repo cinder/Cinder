@@ -55,7 +55,9 @@ class Platform {
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
 	fs::path				getAssetPath( const fs::path &relativePath );
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
-	void					addAssetDirectory( const fs::path &dirPath );
+	void					addAssetDirectory( const fs::path &directory );
+	//! Returns a vector of directories that are searched when looking up an asset path.
+	const std::vector<fs::path>&	getAssetDirectories();
 
 	// Resources
 #if defined( CINDER_MSW )
@@ -67,9 +69,8 @@ class Platform {
 #endif // defined( CINDER_MSW )
 
 	//! Returns the absolute file path to the resources folder. Returns an empty fs::path on windows. \sa CinderResources
-	virtual fs::path	getResourcePath() const = 0;
+	virtual fs::path	getResourceDirectory() const = 0;
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa CinderResources
-	//! TODO: this seems unnecessary to be abstract virtual - instead can implement as getResourcePath() / relPath.
 	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
 	void				setExecutablePath( const fs::path &execPath )	{ mExecutablePath = execPath; }
@@ -111,16 +112,18 @@ class Platform {
 	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
 
   protected:
-	Platform() : mAssetPathsInitialized( false )	{}
+	Platform() : mAssetDirsInitialized( false )	{}
 
-	virtual void prepareAssetLoading() = 0;
+	//! Called when asset directories are first prepared, subclasses can override to add platform specific directories.
+	virtual void prepareAssetLoading()		{}
 
   private:
 	void		findAndAddAssetBasePath();
 	fs::path	findAssetPath( const fs::path &relativePath );
+	void		ensureAssetDirsPrepared();
 
-	std::vector<fs::path>		mAssetPaths;
-	bool						mAssetPathsInitialized;
+	std::vector<fs::path>		mAssetDirectories;
+	bool						mAssetDirsInitialized;
 	fs::path					mExecutablePath;
 };
 

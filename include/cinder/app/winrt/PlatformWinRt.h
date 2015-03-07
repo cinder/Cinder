@@ -33,15 +33,12 @@ class PlatformWinRt : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
 
-	fs::path getResourcePath() const override										{ return fs::path(); }
+	fs::path getResourceDirectory() const override									{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
 	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
-
-	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
-	void prepareAssetLoading() override {}
 
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;

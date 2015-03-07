@@ -100,7 +100,7 @@ fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) cons
 	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
 }
 
-fs::path PlatformCocoa::getResourcePath() const
+fs::path PlatformCocoa::getResourceDirectory() const
 {
 	NSString *resultPath = [getBundle() resourcePath];
 
@@ -119,7 +119,7 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 void PlatformCocoa::prepareAssetLoading()
 {
 	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = getResourcePath() / "assets";
+	fs::path bundleAssetsPath = getResourceDirectory() / "assets";
 	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
 		addAssetDirectory( bundleAssetsPath );
 	}
@@ -421,8 +421,8 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 					mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), display ), mDisplays.end() );
 					mDisplays.insert( mDisplays.begin(), display );
 				}
-			}		
-		
+			}
+
 			// CG appears to not do the coordinate y-flip that NSScreen does
 			CGRect frame = ::CGDisplayBounds( displayId );
 			Area displayArea( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
@@ -431,7 +431,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 				reinterpret_cast<DisplayMac*>( display.get() )->mArea = displayArea;
 				newArea = true;
 			}
-			
+
 			if( newMainDisplay || newArea ) {
 				if( app::AppBase::get() )
 					app::AppBase::get()->emitDisplayChanged( display );

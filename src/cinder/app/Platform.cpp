@@ -79,28 +79,42 @@ fs::path Platform::getAssetPath( const fs::path &relativePath )
 	return findAssetPath( relativePath );
 }
 
-void Platform::addAssetDirectory( const fs::path &dirPath )
+void Platform::addAssetDirectory( const fs::path &directory )
 {
-	auto it = find( mAssetPaths.begin(), mAssetPaths.end(), dirPath );
-	if( it == mAssetPaths.end() )
-		mAssetPaths.push_back( dirPath );
+	CI_ASSERT( fs::is_directory( directory ) );
+	ensureAssetDirsPrepared();
+
+	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
+	if( it == mAssetDirectories.end() )
+		mAssetDirectories.push_back( directory );
+}
+
+const vector<fs::path>& Platform::getAssetDirectories()
+{
+	ensureAssetDirsPrepared();
+	return mAssetDirectories;
 }
 
 fs::path Platform::findAssetPath( const fs::path &relativePath )
 {
-	if( ! mAssetPathsInitialized ) {
-		prepareAssetLoading();
-		findAndAddAssetBasePath();
-		mAssetPathsInitialized = true;
-	}
+	ensureAssetDirsPrepared();
 
-	for( const auto &assetPath : mAssetPaths ) {
-		auto fullPath = assetPath / relativePath;
+	for( const auto &directory : mAssetDirectories ) {
+		auto fullPath = directory / relativePath;
 		if( fs::exists( fullPath ) )
 			return fullPath;
 	}
 
 	return fs::path(); // empty implies failure
+}
+
+void Platform::ensureAssetDirsPrepared()
+{
+	if( ! mAssetDirsInitialized ) {
+		mAssetDirsInitialized = true;
+		prepareAssetLoading();
+		findAndAddAssetBasePath();
+	}
 }
 
 void Platform::findAndAddAssetBasePath()
