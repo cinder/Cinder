@@ -68,9 +68,9 @@ class MotionBlurVelocityBufferApp : public App {
 	gl::FboRef		mGBuffer;					// Full-resolution RGBA color and velocity.
 	gl::FboRef		mVelocityDilationBuffer;	// Dilated, downsampled velocity and dominant region velocities.
 	// Name our framebuffer attachment points.
-	const GLenum G_COLOR			        = GL_COLOR_ATTACHMENT0;
-	const GLenum G_VELOCITY		        = GL_COLOR_ATTACHMENT1;
-	const GLenum DILATE_TILE_MAX		  = GL_COLOR_ATTACHMENT0;
+	const GLenum G_COLOR				= GL_COLOR_ATTACHMENT0;
+	const GLenum G_VELOCITY				= GL_COLOR_ATTACHMENT1;
+	const GLenum DILATE_TILE_MAX		= GL_COLOR_ATTACHMENT0;
 	const GLenum DILATE_NEIGHBOR_MAX	= GL_COLOR_ATTACHMENT1;
 
 	gl::QueryTimeSwappedRef mGpuTimer;
