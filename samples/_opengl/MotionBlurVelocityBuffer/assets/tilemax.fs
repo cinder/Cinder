@@ -1,9 +1,9 @@
-#version 150 core
+#version 330 core
 
 uniform sampler2D uVelocityMap; // full-resolution velocity
 uniform int uTileSize;
 
-out vec4 fVelocity;
+layout (location = 0) out vec2 fVelocity;
 
 void main()
 {	// texel size is dependent on our output dimensions
@@ -28,7 +28,4 @@ void main()
 	}
 
 	fVelocity.xy = maxTileVelocity;
-	// observed strange behavior on OSX+AMD when only writing to rg/xy
-	// writing 1s to unused channels fixes the issue
-	fVelocity.ba = vec2( 1.0 );
 }

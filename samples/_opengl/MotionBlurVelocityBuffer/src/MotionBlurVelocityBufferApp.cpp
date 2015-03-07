@@ -46,22 +46,29 @@ class MotionBlurVelocityBufferApp : public App {
 	void loadShaders();
 	void drawVelocityBuffers();
 
+	void drawUsingMultipleFbos();
+	void drawUSingSingleFbo();
+
   private:
 	gl::TextureRef					mBackground;
 	std::vector<BlurrableMeshRef>	mMeshes;
 
-	gl::GlslProgRef		mVelocityProg;		// Renders screen-space velocity to RG channels.
-	gl::GlslProgRef		mTileProg;			// Downsamples velocity, preserving local maxima
-	gl::GlslProgRef		mNeighborProg;		// Finds dominant velocities in downsampled map
-	gl::GlslProgRef		mMotionBlurProg;	// Generates final image from color and velocity buffers
-	gl::GlslProgRef		mVelocityRenderProg;// Debug rendering of velocity to screen.
+	gl::GlslProgRef	mVelocityProg;		// Renders RGBA color and screen-space velocity.
+	gl::GlslProgRef	mTileProg;			// Downsamples velocity, preserving local maxima
+	gl::GlslProgRef	mNeighborProg;		// Finds dominant velocities in downsampled map
+	gl::GlslProgRef	mMotionBlurProg;	// Generates final image from color and velocity buffers
 
-	gl::FboRef			mFbo;
+	gl::GlslProgRef	mVelocityRenderProg;		// Debug rendering of velocity to screen.
 
-	gl::FboRef			mColorBuffer;		// full-resolution RGBA color
-	gl::FboRef			mVelocityBuffer;	// full-resolution velocity
-	gl::FboRef			mTileMaxBuffer;		// downsampled velocity
-	gl::FboRef			mNeighborMaxBuffer;	// dominant velocities in regions
+	gl::FboRef		mGBuffer;					// Full-resolution RGBA color and velocity.
+	gl::FboRef		mVelocityDilationBuffer;	// Dilated, downsampled velocity and dominant region velocities.
+	// Name our framebuffer attachment points.
+	struct {
+		const GLenum COLOR			= GL_COLOR_ATTACHMENT0;
+		const GLenum VELOCITY		= GL_COLOR_ATTACHMENT1;
+		const GLenum TILE_MAX		= GL_COLOR_ATTACHMENT0;
+		const GLenum NEIGHBOR_MAX	= GL_COLOR_ATTACHMENT1;
+	} Attachments;
 
 	gl::QueryTimeSwappedRef mGpuTimer;
 	Timer					mCpuTimer;
@@ -69,8 +76,8 @@ class MotionBlurVelocityBufferApp : public App {
 	float					mAverageCpuTime = 0.0f;
 
 	params::InterfaceGlRef	mParams;
-	int						mTileSize = 20;
-	int						mSampleCount = 31;
+	int						mTileSize = 20;		// TileMax program samples a TileSize x TileSize region of pixels for each of its output pixels.
+	int						mSampleCount = 31;	// Number of samples used when calculating motion blur. Low-movement areas skip calculation.
 	float					mAnimationSpeed = 1.0f;
 	float					mBlurNoise = 0.0f;
 	bool					mBlurEnabled = true;
@@ -125,39 +132,30 @@ void MotionBlurVelocityBufferApp::createBuffers()
 {
 	const int bufferWidth = getWindowWidth();
 	const int bufferHeight = getWindowHeight();
+	const int tileWidth = bufferWidth / mTileSize;
+	const int tileHeight = bufferHeight / mTileSize;
 
-	/*
-	gl::Fbo::Format format;
-	auto colorBuffer = gl::Renderbuffer::create( bufferWidth, bufferHeight, GL_RGBA );
-	auto velocityBuffer = gl::Renderbuffer::create( bufferWidth, bufferHeight, GL_RG16F );
-	auto tileMaxBuffer = gl::Renderbuffer::create( bufferWidth / mTileSize, bufferHeight / mTileSize, GL_RG16F );
-	auto neighborMaxBuffer = gl::Renderbuffer::create( bufferWidth / mTileSize, bufferHeight / mTileSize, GL_RG16F );
+	auto colorFormat = gl::Texture::Format().internalFormat( GL_RGBA );
+	auto velocityFormat = gl::Texture::Format().internalFormat( GL_RG16F );
+	auto colorBuffer = gl::Texture::create( bufferWidth, bufferHeight, colorFormat );
+	auto velocityBuffer = gl::Texture::create( bufferWidth, bufferHeight, velocityFormat );
 
-	format.attachment( GL_COLOR_ATTACHMENT0, colorBuffer );
-	format.attachment( GL_COLOR_ATTACHMENT1, velocityBuffer );
-	format.attachment( GL_COLOR_ATTACHMENT2, tileMaxBuffer );
-	format.attachment( GL_COLOR_ATTACHMENT3, neighborMaxBuffer );
-	
-	mFbo = gl::Fbo::create( bufferWidth, bufferHeight, format );
-	*/
+	auto tileMaxBuffer = gl::Texture::create( tileWidth, tileHeight, velocityFormat );
+	auto neighborMaxBuffer = gl::Texture::create( tileWidth, tileHeight, velocityFormat );
 
-	{ // color
-		gl::Fbo::Format format;
-		format.colorTexture( gl::Texture::Format().internalFormat( GL_RGBA ) );
-		mColorBuffer = gl::Fbo::create( bufferWidth, bufferHeight, format );
-	}
-	{ // velocity
-		gl::Fbo::Format format;
-		format.colorTexture( gl::Texture::Format().internalFormat( GL_RG16F ) );
-		mVelocityBuffer = gl::Fbo::create( bufferWidth, bufferHeight, format );
-	}
 
-	{ // neighbor tile
-		gl::Fbo::Format format;
-		format.colorTexture( gl::Texture::Format().internalFormat( GL_RG16F ) ).disableDepth();
-		mTileMaxBuffer = gl::Fbo::create( bufferWidth / mTileSize, bufferHeight / mTileSize, format );
-		mNeighborMaxBuffer = gl::Fbo::create( bufferWidth / mTileSize, bufferHeight / mTileSize, format );
-	}
+	auto format = gl::Fbo::Format().depthBuffer();
+	format.enableDepthBuffer();
+	format.attachment( Attachments.COLOR, colorBuffer );
+	format.attachment( Attachments.VELOCITY, velocityBuffer );
+
+	mGBuffer = gl::Fbo::create( bufferWidth, bufferHeight, format );
+
+	format = gl::Fbo::Format().disableDepth();
+	format.attachment( Attachments.TILE_MAX, tileMaxBuffer );
+	format.attachment( Attachments.NEIGHBOR_MAX, neighborMaxBuffer );
+
+	mVelocityDilationBuffer = gl::Fbo::create( tileWidth, tileHeight, format );
 }
 
 void MotionBlurVelocityBufferApp::loadShaders()
@@ -213,87 +211,67 @@ void MotionBlurVelocityBufferApp::update()
 	}
 }
 
-void MotionBlurVelocityBufferApp::draw()
+void MotionBlurVelocityBufferApp::drawUSingSingleFbo()
 {
-	mGpuTimer->begin();
-	mCpuTimer.start();
-
-	gl::clear( Color( 0, 0, 0 ) );
-	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 5000.0f );
-
-	gl::draw( mBackground, getWindowBounds() );
-
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
-	{ // draw into color buffer
-		gl::ScopedFramebuffer fbo( mColorBuffer );
+	{ // Render color and velocity.
+		gl::ScopedFramebuffer fbo( mGBuffer );
 		gl::ScopedAlphaBlend blend( false );
 		gl::clear( ColorA( 0.0f, 0.0f, 0.0f, 0.0f ) );
 
-		for( auto &mesh : mMeshes )
-		{
-			gl::ScopedModelMatrix model;
-			gl::ScopedColor meshColor( mesh->getColor() );
-			gl::multModelMatrix( mesh->getTransform() );
-			gl::draw( mesh->getMesh() );
-		}
-
-	}
-	{ // draw into velocity buffer
-		gl::ScopedFramebuffer fbo( mVelocityBuffer );
 		gl::ScopedGlslProg prog( mVelocityProg );
-		gl::clear( Color::black() );
 		mVelocityProg->uniform( "uViewProjection", gl::getProjectionMatrix() * gl::getViewMatrix() );
 
 		for( auto &mesh : mMeshes )
 		{
+			gl::ScopedColor meshColor( mesh->getColor() );
 			mVelocityProg->uniform( "uModelMatrix", mesh->getTransform() );
 			mVelocityProg->uniform( "uPrevModelMatrix", mesh->getPreviousTransform() );
 			gl::draw( mesh->getMesh() );
 		}
 	}
+
+	gl::disableDepthRead();
+	gl::disableDepthWrite();
+
 	{ // render velocity reconstruction buffers (dilation)
-		gl::ScopedViewport viewport( ivec2( 0, 0 ), mTileMaxBuffer->getSize() );
+		gl::ScopedFramebuffer fbo( mVelocityDilationBuffer );
+		gl::ScopedViewport viewport( ivec2( 0, 0 ), mVelocityDilationBuffer->getSize() );
 		gl::ScopedMatrices	matrices;
-		gl::setMatricesWindowPersp( mTileMaxBuffer->getSize() );
+		gl::setMatricesWindowPersp( mVelocityDilationBuffer->getSize() );
 
 		{ // downsample velocity into tilemax
-			gl::ScopedTextureBind tex( mVelocityBuffer->getColorTexture(), 0 );
+			gl::ScopedTextureBind tex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
 			gl::ScopedGlslProg prog( mTileProg );
-			gl::ScopedFramebuffer fbo( mTileMaxBuffer );
 
 			mTileProg->uniform( "uVelocityMap", 0 );
 			mTileProg->uniform( "uTileSize", mTileSize );
 
-			gl::clear( Color::black() );
-			gl::drawSolidRect( mTileMaxBuffer->getBounds() );
+			gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 		}
 		{ // find max neighbors within tilemax
-			gl::ScopedTextureBind tex( mTileMaxBuffer->getColorTexture(), 0 );
+			gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
 			gl::ScopedGlslProg prog( mNeighborProg );
-			gl::ScopedFramebuffer fbo( mNeighborMaxBuffer );
 
 			mNeighborProg->uniform( "uTileMap", 0 );
 
-			gl::clear( Color::white() );
-			gl::drawSolidRect( mNeighborMaxBuffer->getBounds() );
+			gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 		}
 	}
 
-	gl::disableDepthRead();
-	gl::disableDepthWrite();
 	if( ! mBlurEnabled )
 	{ // draw to screen
 		gl::ScopedAlphaBlend blend( false );
-		gl::draw( mColorBuffer->getColorTexture() );
+		gl::draw( mGBuffer->getColorTexture() );
 	}
 	else
 	{ // draw to screen with motion blur
 		gl::ScopedAlphaBlend blend( true );
-		gl::ScopedTextureBind colorTex( mColorBuffer->getColorTexture(), 0 );
-		gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), 1 );
-		gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), 2 );
+		gl::ScopedTextureBind colorTex( mGBuffer->getTexture( Attachments.COLOR ), 0 );
+		gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 1 );
+		gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 2 );
 		gl::ScopedGlslProg prog( mMotionBlurProg );
 		mMotionBlurProg->uniform( "uColorMap", 0 );
 		mMotionBlurProg->uniform( "uVelocityMap", 1 );
@@ -302,6 +280,21 @@ void MotionBlurVelocityBufferApp::draw()
 		mMotionBlurProg->uniform( "uSamples", mSampleCount );
 		gl::drawSolidRect( getWindowBounds() );
 	}
+}
+
+void MotionBlurVelocityBufferApp::draw()
+{
+	mGpuTimer->begin();
+	mCpuTimer.start();
+
+	gl::clear( Color( 0, 0, 0 ) );
+	gl::ScopedMatrices matrices;
+	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 5000.0f );
+	gl::ScopedViewport viewport( vec2(0), getWindowSize() );
+
+	gl::draw( mBackground, getWindowBounds() );
+
+	drawUSingSingleFbo();
 
 	if( mDisplayVelocityBuffers ) {
 		drawVelocityBuffers();
@@ -323,18 +316,18 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	gl::setDefaultShaderVars();
 
 	float width = 200.0f;
-	float height = width / Rectf( mNeighborMaxBuffer->getBounds() ).getAspectRatio();
+	float height = width / Rectf( mVelocityDilationBuffer->getBounds() ).getAspectRatio();
 	Rectf rect( 0.0f, 0.0f, width, height );
 
-	gl::ScopedTextureBind velTex( mVelocityBuffer->getColorTexture(), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture( Attachments.VELOCITY ), 0 );
 	gl::translate( getWindowWidth() - width - 10.0f, 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind tileTex( mTileMaxBuffer->getColorTexture(), 0 );
+	gl::ScopedTextureBind tileTex( mVelocityDilationBuffer->getTexture( Attachments.TILE_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind neigborTex( mNeighborMaxBuffer->getColorTexture(), 0 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( Attachments.NEIGHBOR_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 }
