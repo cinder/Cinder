@@ -4,6 +4,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Path2d.h"
+#include "cinder/Timer.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -23,6 +25,7 @@ class ConvenienceDrawingMethodsApp : public App {
   public:
 	void prepareSettings( Settings *settings ) override;
 	void setup() override;
+	void keyDown( KeyEvent event ) override;
 	void update() override;
 	void draw() override;
   private:
@@ -67,22 +70,30 @@ void ConvenienceDrawingMethodsApp::setup()
 	}
 }
 
+void ConvenienceDrawingMethodsApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'w' )
+		gl::setWireframeEnabled( ! gl::isWireframeEnabled() );
+}
+
 void ConvenienceDrawingMethodsApp::update()
 {
 	if( getElapsedFrames() % 30 == 0 )
-		getWindow()->setTitle( "fps: " + to_string( getAverageFps() ) );
+		CI_LOG_V( "fps: " << getAverageFps() );
 }
 
 void ConvenienceDrawingMethodsApp::draw()
 {
-	drawBasicOverview();
+	gl::clear( Color( 0.2f, 0.2f, 0.2f) );
+
+//	drawBasicOverview();
 	drawSourcesStressTest();
+
+	CI_CHECK_GL();
 }
 
 void ConvenienceDrawingMethodsApp::drawBasicOverview()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatricesWindowPersp( getWindowSize() );
 
 	// Draw some rows of circles
@@ -157,17 +168,22 @@ void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 	const int drawCount = 1000;
 
 	vec2 incr = vec2( getWindowSize() ) / (float)drawCount;
+	auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
 
 	gl::ScopedModelMatrix modelScope;
 
+	Timer timer( true );
 	for( int i = 0; i < drawCount; i++ ) {
 		float perc = (float)i / (float)drawCount;
 		gl::translate( incr.x, incr.y );
 		gl::ScopedColor color( Color( 0, 0.5f + perc, perc ) );
 
-		auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
 		gl::draw( geom );
+//		gl::drawSolidCircle( vec2( 0 ), cCircleRadius );
 	}
+
+	if( getElapsedFrames() % 30 == 0 )
+		CI_LOG_V( "draw cpu time (ms): " << timer.getSeconds() * 1000 );
 }
 
 CINDER_APP( ConvenienceDrawingMethodsApp, RendererGl )

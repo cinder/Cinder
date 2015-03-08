@@ -1342,7 +1342,8 @@ void draw( const TriMesh &mesh )
 
 	draw( VboMesh::create( mesh ) );
 }
-	
+
+#if 0
 void draw( const geom::Source &source )
 {
 	if( source.getNumVertices() <= 0 )
@@ -1350,6 +1351,103 @@ void draw( const geom::Source &source )
 	
 	draw( VboMesh::create( source ) );
 }
+#else
+
+namespace {
+
+class DefaultVboTarget : public geom::Target {
+  public:
+	DefaultVboTarget( const geom::Source *source )
+		: mSource( source ), mContext( context() )
+	{
+		// TODO: how can size this correctly just once?
+		// - Vbo::ensureMinimumSize() destroys existing data
+		uint8_t posDims = source->getAttribDims( geom::Attrib::POSITION );
+		size_t requestedSize = source->getNumVertices() * posDims * sizeof( float );
+
+		mVbo = mContext->getDefaultArrayVbo( requestedSize );
+		mGlslProg = mContext->getGlslProg();
+
+		CI_ASSERT_MSG( mGlslProg, "No GLSL program bounds" );
+
+		mContext->pushBufferBinding( mVbo->getTarget(), mVbo->getId() );
+	}
+
+	~DefaultVboTarget()
+	{
+		mContext->pushBufferBinding( mVbo->getTarget(), mVbo->getId() );
+	}
+
+	uint8_t	getAttribDims( geom::Attrib attr ) const override
+	{
+		return mSource->getAttribDims( attr );
+	}
+
+	// TODO: what about stride?
+	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
+	{
+		CI_CHECK_GL();
+		int loc = mGlslProg->getAttribSemanticLocation( attr );
+		CI_CHECK_GL();
+		if( loc >= 0 ) {
+			size_t sizeNeeded = count * dims * sizeof( float );
+			mVbo->bufferSubData( 0, sizeNeeded, srcData );
+
+			mContext->enableVertexAttribArray( loc );
+			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+		}
+	}
+
+	void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+	{
+		CI_ASSERT( ! "TODO" );
+	}
+
+	const geom::Source*	mSource;
+	Context*			mContext;
+	gl::VboRef			mVbo;
+	gl::GlslProgRef		mGlslProg;
+};
+
+} // anonymous namespace
+
+void draw( const geom::Source &source )
+{
+	auto ctx = context();
+	GlslProgRef curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	geom::AttribSet attribs;
+	uint8_t posDims = source.getAttribDims( geom::Attrib::POSITION );
+	if( posDims )
+		attribs.insert( geom::Attrib::POSITION );
+
+	DefaultVboTarget target( &source );
+	source.loadInto( &target, attribs );
+
+	ctx->getDefaultVao()->replacementBindEnd();
+
+	const size_t numIndices = source.getNumIndices();
+	CI_ASSERT( numIndices == 0 ); // TODO: support GL_TRIANGLES
+
+	ctx->setDefaultShaderVars();
+
+	GLenum primitive = toGl( source.getPrimitive() );
+	if( source.getNumIndices() )
+		ctx->drawElements( primitive, (GLsizei)numIndices, GL_UNSIGNED_INT, (GLvoid*)( 0 ) );
+	else
+		ctx->drawArrays( primitive, 0, (GLsizei)source.getNumVertices() );
+
+	ctx->popVao();
+}
+
+#endif
 
 void drawSolid( const Path2d &path, float approximationScale )
 {
