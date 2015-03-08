@@ -67,7 +67,7 @@ android {
     cinder {
         ndkDir = "${projectDir}/$<<CINDER_RELPATH_APP>>/../android-ndk-r10d"
         cinderDir = "${projectDir}/$<<CINDER_RELPATH_APP>>"
-        verbose = true
+        verbose = false 
         moduleName = "$<<CINDER_APPNAME>>"
         srcDirs = ["../../../src"]
         cFlags {

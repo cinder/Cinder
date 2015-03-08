@@ -82,16 +82,24 @@ android_app *EventManagerAndroid::getNativeApp()
 	return mNativeApp; 
 }
 
+void EventManagerAndroid::appLostFocus()
+{
+	mFocused = false;
+}
+
+void EventManagerAndroid::appGainedFocus()
+{
+	mFocused = true;
+}
+
 void EventManagerAndroid::appPause()
 {
 	mPaused = true;
-	LOGI( "EventManagerAndroid - APP PAUSED" );
 }
 
 void EventManagerAndroid::appResume()
 {
 	mPaused = false;
-	LOGI( "EventManagerAndroid - APP RESUMED" );
 }
 
 bool EventManagerAndroid::getShouldQuit() const
@@ -248,7 +256,9 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_TERM_WINDOW: {
 			LOGI( "APP_CMD_TERM_WINDOW" );	
 
-			//eventMan->appQuit();
+			// NOTE: Do not kill or quit here. This message is swent when 
+			//       the app is APP_CMD_PAUSE is sent. Quitting here will 
+			//       cause the app to crash when APP_CMD_RESUME is sent.
 		}
 		break;
 
@@ -288,7 +298,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_GAINED_FOCUS: {
 			LOGI( "APP_CMD_GAINED_FOCUS" );
 
-			eventMan->mFocused = true;
+			eventMan->appGainedFocus();
 		}
 		break;
 
@@ -299,7 +309,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_LOST_FOCUS: {
 			LOGI( "APP_CMD_LOST_FOCUS" );
 
-			eventMan->mFocused = false;
+			eventMan->appLostFocus();
 		}
 		break;
 

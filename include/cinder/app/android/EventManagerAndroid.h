@@ -44,6 +44,8 @@ class EventManagerAndroid {
 	void 						execute();
 
  private:
+ 	void 						appLostFocus();
+ 	void 						appGainedFocus();
  	void 						appPause();
  	void 						appResume();
 
