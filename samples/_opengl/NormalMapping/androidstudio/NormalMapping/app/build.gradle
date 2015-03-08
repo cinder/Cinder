@@ -35,6 +35,25 @@ android {
             assets.srcDirs = ['src/main/assets', '../../../assets']
         }
     }
+
+    task cinderCleanNdk() << {
+        File cinderNdkDir = new File( "${project.buildDir}/cinder-ndk" );
+        if( cinderNdkDir.exists() ) {
+            cinderNdkDir.delete();
+        }
+
+        tasks.each {
+            if(("cinderCompileDebugNdk" ==  it.name) || ("cinderCompileReleaseNdk" ==  it.name)) {
+                it.outputs.upToDateWhen {false}
+            }
+        }
+    }
+
+    def cleanBuildTask = tasks.getByPath( ":app:clean" );
+    if( cleanBuildTask ) {
+        cleanBuildTask.dependsOn cinderCleanNdk
+    }
+
     task disableDefaultNdkBuild() {
         doFirst {
             tasks.each {
@@ -44,10 +63,12 @@ android {
             }
         }
     }
+
     def prebuildTask = tasks.getByPath(":app:preBuild")
     if (prebuildTask) {
         prebuildTask.dependsOn disableDefaultNdkBuild
     }
+
     cinder {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
