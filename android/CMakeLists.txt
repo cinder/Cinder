@@ -97,6 +97,69 @@ if( NOT NDK_ROOT )
     endif()
 endif()
 
+if( "" STREQUAL "${CMAKE_BUILD_TYPE}" )
+    set( CMAKE_BUILD_TYPE "Debug" CACHE FILEPATH "" FORCE )
+endif()
+message( "${BoldGreen}CMake Build Type: ${CMAKE_BUILD_TYPE} ${ColorReset}" )
+
+# See if we can find the NDK located next to the Cinder directory
+if( NOT NDK_ROOT )
+    # Most recent first
+    set( _supported_ndks 
+        "android-ndk-r10e"
+        "android-ndk-r10d"
+        "android-ndk-r9d"
+        "android-ndk-r9c"
+    )
+
+    set( _curDirStr "${CMAKE_CURRENT_BINARY_DIR}" )
+    # If string begins with "/" - remove the first "/"
+    string( SUBSTRING "${_curDirStr}" 0 1 _firstChar )
+    if( "/" STREQUAL "${_firstChar}" )
+        string( LENGTH "${_curDirStr}" strLen )
+        string( SUBSTRING "${_curDirStr}" 1 -1 _curDirStr )
+    endif()
+
+    # Create list of path components
+    string( REPLACE "/" ";" _curDirList "${_curDirStr}" )
+    list( LENGTH _curDirList _numToks )
+    # Find Cinder directory
+    foreach( val RANGE ${_numToks} )
+        #math( EXPR _index "${_numToks} - ${val}" )
+        #list( GET _curDirList ${_index} item )
+
+        list( LENGTH _curDirList _listLen )
+
+        string( REPLACE ";" "/" _dirStr "${_curDirList}" )
+        if( ${_listLen} GREATER 0 )
+            set( _dirStr "/${_dirStr}" )
+        endif()
+
+        set( incDir "${_dirStr}/include/cinder/app/android" )
+        if( IS_DIRECTORY "${incDir}" )
+            set( CINDER_DIR "${_dirStr}" ) 
+            break()
+        endif()
+
+        if( ${_listLen} GREATER 0 )
+            math( EXPR _lastIndex "${_listLen} - 1" )
+            list( REMOVE_AT _curDirList ${_lastIndex} )
+        endif()
+    endforeach()
+
+    if( CINDER_DIR )
+        foreach( val in ${_supported_ndks} )
+            get_filename_component( ndk_dir "${CINDER_DIR}/../${val}" ABSOLUTE )
+            if( IS_DIRECTORY "${ndk_dir}" )
+                message( "${BoldGreen}Detected NDK, version: ${val}, at ${ndk_dir}${ColorReset}" )
+                message( "" )
+                set( NDK_ROOT "${ndk_dir}" )            
+                break()
+            endif() 
+        endforeach()
+    endif()
+endif()
+
 # Bail if we haven't set NDK_ROOT
 if( NOT NDK_ROOT )
     message( FATAL_ERROR "${BoldRed}NDK_ROOT not set! Set using env var or -DNDK_ROOT=<path to NDK>${ColorReset}" )
