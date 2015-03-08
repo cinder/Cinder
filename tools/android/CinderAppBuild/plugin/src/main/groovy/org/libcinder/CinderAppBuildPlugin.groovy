@@ -78,7 +78,7 @@ class CinderAppBuildPluginExtension {
     def archs = [];
 }
 
-class MyTestTask extends DefaultTask {
+class CompileNdkTask extends DefaultTask {
     CinderAppBuildPlugin plugin;
 
     @InputFiles
@@ -135,42 +135,22 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         this.mBuildDir  = project.buildDir;
         this.mBuildType = 'debug';
 
-        project.task('cinderPrepareDependencies') << {
-            println "cinderPrepareDependencies";
 
-            this.mBuildType = "debug";
-            this.mNdkBuildDir = "${this.mBuildDir}/cinder-ndk/${this.mBuildType}"
-            this.parseEverything( project );
-        }
-
-
-        project.task('cinderGenerateDebugNdkBuild', type: MyTestTask, dependsOn: 'cinderPrepareDependencies') {
-            println "cinderGenerateDebugNdkBuild::CONFIGURE";
-
+        // TASK: cinderGenerateDebugNdkBuild
+        project.task('cinderGenerateDebugNdkBuild' ) << {
             this.mBuildType = "debug";
             this.mNdkBuildDir = "${this.mBuildDir}/cinder-ndk/${this.mBuildType}";
-
-            plugin = this;
-            generatedAndroidMk = new File("${this.mNdkBuildDir}/Android.mk");
-            
-            doLast {
-                println "cinderGenerateDebugNdkBuild::EXECUTE - doLast";
-                this.cinderGenerateNdkBuild(project);                
-            }
+            this.cinderGenerateNdkBuild(project);  
         }
       
-/* 
-        // TASK: cinderGenerateDebugNdkBuild
-        project.task('cinderGenerateDebugNdkBuild', dependsOn: 'cinderPrepareDependencies') << {
-            this.mBuildType = "debug";
-            this.mNdkBuildDir = "${this.mBuildDir}/cinder-ndk/${this.mBuildType}"
-            this.cinderGenerateNdkBuild(project);
-        }  
-*/
-
         // TASK: cinderCompileDebugNdk
-        project.task('cinderCompileDebugNdk', dependsOn: 'cinderGenerateDebugNdkBuild') << {
-            this.cinderCompileNdk(project);
+        project.task('cinderCompileDebugNdk', type: CompileNdkTask, dependsOn: 'cinderGenerateDebugNdkBuild') {
+            plugin = this;
+            generatedAndroidMk = new File("${this.mNdkBuildDir}/Android.mk");
+
+            doLast {
+                this.cinderCompileNdk(project);
+            }
         }
 
         // TASK: cinderGenerateReleaseNdkBuild
@@ -183,65 +163,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         // TASK: cinderCompileReleaseNdk
         project.task('cinderCompileReleaseNdk', dependsOn: 'cinderGenerateReleaseNdkBuild') << {
             this.cinderCompileNdk(project);
-        }
-    }
-
-    void parseEverything(Project project) {
-        // Paths
-        def dirPath = "${this.mNdkBuildDir}"
-        def filePath = "${dirPath}/Android.mk" 
-        def outDir  = new File( "${dirPath}" )
-        if( ! outDir.exists() ) {
-            outDir.mkdirs()
-            if( project.cinder.verbose ) {
-                println "Created ${dirPath}"
-            }
-        }
-
-        // Directory where cpp builds take place
-        def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
-       
-        // Project archs
-        try {
-            this.parseArchs( project );                
-        }
-        catch( e ) {
-            throw new GradleException("Build archs parse failed, e=" + e)
-        } 
-
-        // Source files 
-        try {
-            this.parseSourceFiles(project, cppBuildDir)
-        } catch( e ) {
-            throw new GradleException("Source files parse failed, e=" + e)
-        }
-            
-        // Include dirs
-        try {
-            this.parseIncludeDirs(project)
-        } catch( e ) {
-            throw new GradleException("Include dirs parse failed, e=" + e)            
-        }
-
-        // Flags
-        try {
-            this.parseFlags(project)
-        } catch( e ) {
-            throw new GradleException("C/C++ Flags parse failed, e=" + e)            
-        }
-
-        // Shared libs
-        try {
-            this.parseSharedLibs(project)
-        } catch( e ) {
-            throw new GradleException("Shared libs parse failed, e=" + e)           
-        }
-
-        // Static libs
-        try {
-            this.parseStaticLibs(project)
-        } catch( e ) {
-            throw new GradleException("Static libs parse failed, e=" + e)            
         }
     }
 
@@ -290,7 +211,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
     }
 
     void generateAndroidMk(Project project) {
-
         // Paths
         def dirPath = "${this.mNdkBuildDir}"
         def filePath = "${dirPath}/Android.mk" 
@@ -302,7 +222,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             }
         }
 
-/*      
         // Directory where cpp builds take place
         def cppBuildDir = (new File(filePath)).getParentFile().getCanonicalPath();
        
@@ -348,7 +267,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         } catch( e ) {
             throw new GradleException("Static libs parse failed, e=" + e)            
         }
-*/
 
         // Write
         this.writeAndroidMk(project, filePath)
