@@ -31,3 +31,4 @@ docs/html
 docs/doxygen/cinder.tag
 
 *.swp
+.idea
