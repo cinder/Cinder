@@ -147,9 +147,9 @@ class LoggerConsole : public Logger {
 class LoggerFile : public Logger {
   public:
 	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
-	LoggerFile( const fs::path &filePath = fs::path(), bool append = true );
+	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	// daily rotating logger, if folder or format are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string& formatStr, bool append = true);
+	LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	virtual ~LoggerFile();
 
 	virtual void write( const Metadata &meta, const std::string &text ) override;
@@ -167,12 +167,6 @@ class LoggerFile : public Logger {
 };
 
 #if defined( CINDER_COCOA )
-
-//! sends output to NSLog so it can be viewed from the Mac Console app.  Currently SysLog used instead.
-class LoggerNSLog : public Logger {
-  public:
-	virtual void write( const Metadata &meta, const std::string& text ) override;
-};
 
 class LoggerSysLog : public Logger {
 public:
@@ -213,16 +207,16 @@ public:
 	void setConsoleLoggingEnabled( bool b = true )		{ b ? enableConsoleLogging() : disableConsoleLogging(); }
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
-	void enableFileLogging( const fs::path &filePath = fs::path(), bool append = true );
-	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool append = true);
+	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
+	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
-	void setFileLoggingEnabled( bool b = true, const fs::path &filePath = fs::path(), bool append = true )
-														{ b ? enableFileLogging( filePath, append )
+	void setFileLoggingEnabled( bool b = true, const fs::path &filePath = fs::path(), bool appendToExisting = true )
+														{ b ? enableFileLogging( filePath, appendToExisting )
 															: disableFileLogging(); }
 
 	void setFileLoggingEnabled( bool b = true, const fs::path &folder = fs::path(),
-								const std::string& formatStr = "", bool append = true )
-														{ b ? enableFileLogging( folder, formatStr, append )
+								const std::string& formatStr = "", bool appendToExisting = true )
+														{ b ? enableFileLogging( folder, formatStr, appendToExisting )
 															: disableFileLogging(); }
 
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
@@ -232,7 +226,7 @@ public:
 	void setSystemLoggingEnabled( bool b = true )		{ b ? enableSystemLogging() : disableSystemLogging(); }
 	bool isSystemLoggingEnabled() const					{ return mSystemLoggingEnabled; }
 	void setSystemLoggingLevel( Level level );
-	Level getSystemLoggingLevel()						{ return mSystemLoggingLevel; }
+	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
 
 protected:
 	LogManager();

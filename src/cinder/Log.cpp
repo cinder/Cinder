@@ -98,6 +98,18 @@ const std::string getDailyLogString(const std::string& format)
 
 	return result;
 }
+	
+int cinderLogLevelToSysLogLevel(Level cinderLogLevel)
+{
+	switch( cinderLogLevel ) {
+		case LEVEL_FATAL:	return LOG_CRIT;
+		case LEVEL_ERROR:	return LOG_ERR;
+		case LEVEL_WARNING:	return LOG_WARNING;
+		case LEVEL_INFO:	return LOG_NOTICE;
+		case LEVEL_VERBOSE:	return LOG_NOTICE;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
+}
 
 } // anonymous namespace
 
@@ -207,23 +219,23 @@ bool LogManager::initFileLogging()
 	return true;
 }
 
-void LogManager::enableFileLogging( const fs::path &path, bool append )
+void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting )
 {
 	if( ! initFileLogging() ) {
 		return;
 	}
 
-	addLogger( new LoggerFileThreadSafe( path, append ) );
+	addLogger( new LoggerFileThreadSafe( path, appendToExisting ) );
 	mFileLoggingEnabled = true;
 }
 
-void LogManager::enableFileLogging( const fs::path &folder, const std::string& formatStr, bool append )
+void LogManager::enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
 {
 	if( ! initFileLogging() ) {
 		return;
 	}
 
-	addLogger( new LoggerFileThreadSafe( folder, formatStr, append ) );
+	addLogger( new LoggerFileThreadSafe( folder, formatStr, appendToExisting ) );
 	mFileLoggingEnabled = true;
 }
 
@@ -244,18 +256,7 @@ void LogManager::setSystemLoggingLevel( Level level )
 	mSystemLoggingLevel = level;
 
 #if defined( CINDER_COCOA )
-	// TODO: code duplication
-	int sysLevel;
-	switch ( level ) {
-		// VERBOSE and INFO are likely to be ignored in syslog due to /etc/asl.conf
-		case LEVEL_VERBOSE:		sysLevel = LOG_DEBUG;	break;
-		case LEVEL_INFO:		sysLevel = LOG_INFO;	break;
-
-		case LEVEL_WARNING:		sysLevel = LOG_WARNING;	break;
-		case LEVEL_ERROR:		sysLevel = LOG_ERR;		break;
-		case LEVEL_FATAL:		sysLevel = LOG_CRIT;	break;
-		default: CI_ASSERT_NOT_REACHABLE();
-	}
+	int sysLevel = cinderLogLevelToSysLogLevel(level);
 	setlogmask(LOG_UPTO(sysLevel));
 #endif
 }
@@ -288,7 +289,7 @@ void LogManager::disableSystemLogging()
 		return;
 
 #if defined( CINDER_COCOA )
-	auto logger = mLoggerMulti->findType<LoggerNSLog>();
+	auto logger = mLoggerMulti->findType<LoggerSysLog>();
 	mLoggerMulti->remove( logger );
 	mSystemLoggingEnabled = false;
 #endif
@@ -351,8 +352,8 @@ void LoggerImplMulti::write( const Metadata &meta, const string &text )
 // MARK: - LoggerFile
 // ----------------------------------------------------------------------------------------------------
 
-LoggerFile::LoggerFile( const fs::path &filePath, bool append )
-	: mFilePath( filePath ), mAppend(append), mRotating(false)
+LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
+	: mFilePath( filePath ), mAppend(appendToExisting), mRotating(false)
 {
 	if( mFilePath.empty() )
 		mFilePath = DEFAULT_FILE_LOG_PATH;
@@ -360,8 +361,8 @@ LoggerFile::LoggerFile( const fs::path &filePath, bool append )
 	setTimestampEnabled();
 }
 
-LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool append )
-	: mFolderPath(folder), mDailyFormatStr(formatStr), mAppend(append), mRotating(true), mFilePath("")
+LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
+	: mFolderPath(folder), mDailyFormatStr(formatStr), mAppend(appendToExisting), mRotating(true), mFilePath("")
 {
 	if( mFolderPath.empty() || mDailyFormatStr.empty() )
 		return;
@@ -399,18 +400,7 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 #if defined( CINDER_COCOA )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerNSLog
-// ----------------------------------------------------------------------------------------------------
-
-void LoggerNSLog::write( const Metadata &meta, const string &text )
-{
-	NSString *textNs = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
-	NSString *metaDataNs = [NSString stringWithCString:meta.toString().c_str() encoding:NSUTF8StringEncoding];
-	NSLog( @"%@ %@", metaDataNs, textNs );
-}
-
-// ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerNSLog
+// MARK: - LoggerSysLog
 // ----------------------------------------------------------------------------------------------------
 
 LoggerSysLog::LoggerSysLog()
@@ -432,18 +422,7 @@ LoggerSysLog::~LoggerSysLog()
 
 void LoggerSysLog::write( const Metadata &meta, const string &text )
 {
-	// TODO: code duplication
-	int sysLevel;
-	switch ( meta.mLevel ) {
-		case LEVEL_VERBOSE:		sysLevel = LOG_DEBUG;	break;
-		case LEVEL_INFO:		sysLevel = LOG_INFO;	break;
-		case LEVEL_WARNING:		sysLevel = LOG_WARNING;	break;
-		case LEVEL_ERROR:		sysLevel = LOG_ERR;		break;
-
-		// debatable if FATAL is a LOG_CRIT or LOG_ALERT
-		case LEVEL_FATAL:		sysLevel = LOG_CRIT;	break;
-		default: CI_ASSERT_NOT_REACHABLE();
-	}
+	int sysLevel = cinderLogLevelToSysLogLevel(meta.mLevel);
 	syslog(sysLevel, "%s %s", meta.toString().c_str(), text.c_str());
 }
 
