@@ -299,8 +299,19 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
-	if( ! mStream.is_open() )
+	if( ! mStream.is_open() ) {
+		
+		fs::path dir = mFilePath.parent_path();
+		if( ! fs::is_directory( dir ) ) {
+			boost::system::error_code ec;
+			fs::create_directories( dir, ec );
+			if( ec ) {
+				cerr << "Unable to create folder \"" << dir.string() << "\", error: " << ec.message();
+			}
+		}
+		
 		mStream.open( mFilePath.string() );
+	}
 	
 	writeDefault( mStream, meta, text );
 }

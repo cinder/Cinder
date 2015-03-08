@@ -13,10 +13,12 @@ class DebugTestApp : public AppBasic {
 	void setup();
 
 	void testEnableFile();
+	void testEnableBadFilePath();
 	void testEnableDisable();
 	void testAddFile();
 	void testAddRemove();
 	void testAsserts();
+
 
 	void keyDown( KeyEvent event );
 
@@ -28,7 +30,8 @@ void DebugTestApp::setup()
 //	log::manager()->enableSystemLogging();
 
 
-	testEnableFile();
+	testEnableBadFilePath();
+	//testEnableFile();
 //	testEnableDisable();
 //	testAddRemove();
 }
@@ -47,8 +50,7 @@ void DebugTestApp::testAsserts()
 void DebugTestApp::testEnableFile()
 {
 	log::manager()->enableFileLogging();
-//	log::manager()->enableFileLogging( "/tmp/blarg/cinder.log" );  // FIXME: writing to a non-existent folder path is broken.
-
+//	log::manager()->enableFileLogging( "/tmp/blarg/cinder.log" );
 //	log::manager()->enableFileLogging( "/tmp", "loggingTests.%Y.%m.%d.log", false );
 //	log::manager()->enableFileLogging( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
 
@@ -79,6 +81,14 @@ void DebugTestApp::testAddRemove()
 	log::manager()->removeLogger( logger );
 	CI_LOG_I( "removed LoggerNSLog" );
 }
+
+void DebugTestApp::testEnableBadFilePath()
+{
+	log::manager()->enableFileLogging( "ABCDE:/Volumes/__THISDOESNOTEXIST_gf5jk313__/tmp/cinder.log" );
+	
+	CI_LOG_I( "This should hit the console but not deal with the bad files." );
+}
+
 
 void DebugTestApp::keyDown( KeyEvent event )
 {
