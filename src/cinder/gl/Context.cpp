@@ -301,7 +301,7 @@ void Context::vaoDeleted( const Vao *vao )
 		mLiveVaos.erase( vao );
 		
 	// if this was the currently bound VAO, mark the top of the stack as null
-	if( ! mVaoStack.empty() && mVaoStack.back()->getId() == vao->getId() )
+	if( ! mVaoStack.empty() && mVaoStack.back() && ( mVaoStack.back()->getId() == vao->getId() ) )
 		mVaoStack.back() = nullptr;
 }
 

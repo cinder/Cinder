@@ -201,7 +201,7 @@ HGLRC createContext( HDC dc, bool coreProfile, bool debug, int majorVersion, int
 	}
 }
 
-bool testPixelFormat( HDC dc, int colorSamples, int depthDepth, int msaaSamples, int *resultFormat )
+bool testPixelFormat( HDC dc, int colorSamples, int depthDepth, int msaaSamples, int stencilDepth, int *resultFormat )
 {
 	PFNWGLCREATECONTEXTATTRIBSARB wglCreateContextAttribsARBPtr = NULL;
 	PFNWGLCHOOSEPIXELFORMATARBPROC wglChoosePixelFormatARBPtr = NULL;
@@ -217,6 +217,7 @@ bool testPixelFormat( HDC dc, int colorSamples, int depthDepth, int msaaSamples,
 	iAttributes.push_back( WGL_GREEN_BITS_ARB ); iAttributes.push_back( colorSamples );
 	iAttributes.push_back( WGL_BLUE_BITS_ARB ); iAttributes.push_back( colorSamples );
 	iAttributes.push_back( WGL_DEPTH_BITS_ARB ); iAttributes.push_back( depthDepth );
+	iAttributes.push_back( WGL_STENCIL_BITS_ARB ); iAttributes.push_back( stencilDepth );
 	iAttributes.push_back( WGL_DOUBLE_BUFFER_ARB ); iAttributes.push_back( GL_TRUE );
 	iAttributes.push_back( WGL_SAMPLES_ARB ); iAttributes.push_back( msaaSamples );
 	iAttributes.push_back( 0 ); iAttributes.push_back( 0 );
@@ -234,11 +235,13 @@ bool setPixelFormat( HDC dc, const RendererGl::Options &options )
 	int format;
 	for( int colorDepth = options.getColorChannelDepth(); colorDepth >= 8; colorDepth -= 2 ) {
 		for( int depthDepth = options.getDepthBufferDepth(); depthDepth >= 16; depthDepth -= 8 ) {
-			for( int msaaSamples = options.getMsaa(); msaaSamples >= 0; msaaSamples >>= 1 ) {
-				if( testPixelFormat( dc, colorDepth, depthDepth, msaaSamples, &format ) )
-					goto FOUND;
-				if( msaaSamples == 0 )
-					break;
+			for( int stencilDepth = options.getStencil() ? 8 : 0; stencilDepth >= 0; stencilDepth -= 8 ) {
+				for( int msaaSamples = options.getMsaa(); msaaSamples >= 0; msaaSamples >>= 1 ) {
+					if( testPixelFormat( dc, colorDepth, depthDepth, msaaSamples, stencilDepth, &format ) )
+						goto FOUND;
+					if( msaaSamples == 0 )
+						break;
+				}
 			}
 		}
 	}
@@ -257,7 +260,7 @@ bool initializeGl( HWND wnd, HDC dc, HGLRC sharedRC, const RendererGl::Options &
 	if( ! setPixelFormat( dc, options ) )
 		throw ExcRendererAllocation( "Failed to find suitable WGL pixel format" );
 
-	if( ! ( *resultRc = createContext( dc, options.getDebug(), options.getCoreProfile(), options.getVersion().first, options.getVersion().second ) ) ) {
+	if( ! ( *resultRc = createContext( dc, options.getCoreProfile(), options.getDebug(), options.getVersion().first, options.getVersion().second ) ) ) {
 		return false;								
 	}
 

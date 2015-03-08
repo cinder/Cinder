@@ -55,24 +55,24 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Supplies the GLSL source for the vertex shader
 		Format&		vertex( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the vertex shader
-		Format&		vertex( const char *vertexShader );
+		Format&		vertex( const std::string &vertexShader );
 		//! Supplies the GLSL source for the fragment shader
 		Format&		fragment( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the fragment shader
-		Format&		fragment( const char *vertexShader );
+		Format&		fragment( const std::string &vertexShader );
 #if ! defined( CINDER_GL_ES )
 		//! Supplies the GLSL source for the geometry shader
 		Format&		geometry( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the geometry shader
-		Format&		geometry( const char *geometryShader );
+		Format&		geometry( const std::string &geometryShader );
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationCtrl( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the tessellation control shader
-		Format&		tessellationCtrl( const char *tessellationCtrlShader );
+		Format&		tessellationCtrl( const std::string &tessellationCtrlShader );
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationEval( const DataSourceRef &dataSource );
 		//! Supplies the GLSL source for the tessellation control shader
-		Format&		tessellationEval( const char *tessellationEvalShader );
+		Format&		tessellationEval( const std::string &tessellationEvalShader );
 #endif
 #if ! defined( CINDER_GL_ES_2 )		
 		//! Sets the TransformFeedback varyings
@@ -164,14 +164,14 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 								   DataSourceRef geometryShader = DataSourceRef(),
 								   DataSourceRef tessEvalShader = DataSourceRef(),
 								   DataSourceRef tessCtrlShader = DataSourceRef() );
-	static GlslProgRef create( const char *vertexShader,
-								   const char *fragmentShader = 0,
-								   const char *geometryShader = 0,
-								   const char *tessEvalShader = 0,
-								   const char *tessCtrlShader = 0 );
+	static GlslProgRef create( const std::string &vertexShader,
+								   const std::string &fragmentShader = std::string(),
+								   const std::string &geometryShader = std::string(),
+								   const std::string &tessEvalShader = std::string(),
+								   const std::string &tessCtrlShader = std::string() );
 #else
 	static GlslProgRef create( DataSourceRef vertexShader, DataSourceRef fragmentShader = DataSourceRef() );
-	static GlslProgRef create( const char *vertexShader, const char *fragmentShader = 0 );
+	static GlslProgRef create( const std::string &vertexShader, const std::string &fragmentShader = std::string() );
 #endif
 	~GlslProg();
 	

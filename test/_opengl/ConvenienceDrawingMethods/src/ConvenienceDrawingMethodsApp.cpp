@@ -9,8 +9,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-const int cCircleRadius = 40.0f;
-const int cGridStep = cCircleRadius * 2.2f;
+const float cCircleRadius = 40.0f;
+const float cGridStep = cCircleRadius * 2.2f;
 
 /**
  ConvenienceDrawingMethodsApp:
@@ -26,15 +26,15 @@ class ConvenienceDrawingMethodsApp : public AppNative {
 	void update();
 	void draw();
 private:
-	Path2d			mPath;
-	PolyLine<vec2>	mPolyline2D;
-	PolyLine<vec3>	mPolyline3D;
+	Path2d		mPath;
+	PolyLine2	mPolyline2D;
+	PolyLine3	mPolyline3D;
 };
 
 void ConvenienceDrawingMethodsApp::setup()
 {
-	mPath.arc( vec2::zero(), cCircleRadius, 0.0f, M_PI * 1.66f );
-	mPath.lineTo( vec2::zero() );
+	mPath.arc( vec2( 0 ), cCircleRadius, 0.0f, M_PI * 1.66f );
+	mPath.lineTo( vec2( 0 ) );
 
 	Rand r;
 	for( int i = 0; i < 50; ++i )
@@ -48,8 +48,7 @@ void ConvenienceDrawingMethodsApp::setup()
 	// divide total inclination change by particles (from straight down to straight up)
 	const float inclination = M_PI / numVertices;
 	// fixed radius to generate a sphere
-	for( int i = 0; i < numVertices; ++i )
-	{	// give each particle its starting values
+	for( int i = 0; i < numVertices; ++i ) {	// give each particle its starting values
 		float x = cCircleRadius * sin( inclination * i ) * cos( azimuth * i );
 		float y = cCircleRadius * cos( inclination * i );
 		float z = cCircleRadius * sin( inclination * i ) * sin( azimuth * i );
@@ -109,14 +108,14 @@ void ConvenienceDrawingMethodsApp::draw()
 	gl::pushModelMatrix();
 	gl::translate( cGridStep, cGridStep * 4.0f );
 	gl::pushModelMatrix();
-	gl::rotate( getElapsedSeconds() * 45.0f, 0.0f, 1.0f, 0.0f );
+	gl::rotate( getElapsedSeconds(), 0.0f, 1.0f, 0.0f );
 	gl::color( Color( 1.0f, 0.0f, 0.0f ) );
 	gl::draw( mPolyline3D );
 	gl::popModelMatrix();
 	// draw a 3D line back into space
 	gl::translate( cGridStep, 0.0f );
 	gl::pushModelMatrix();
-	gl::rotate( -getElapsedSeconds() * 90.0f, 0.0f, 0.5f, 1.0f );
+	gl::rotate( - getElapsedSeconds() * 2.0f, 0.0f, 0.5f, 1.0f );
 	gl::drawLine( vec3( 0.0f, 0.0f, cCircleRadius ), vec3( 0.0f, 0.0f, -cCircleRadius ) );
 	gl::drawLine( vec3( -cCircleRadius, 0.0f, 0.0f ), vec3( cCircleRadius, 0.0f, 0.0f ) );
 	gl::drawLine( vec3( 0.0f, -cCircleRadius, 0.0f ), vec3( 0.0f, cCircleRadius, 0.0f ) );

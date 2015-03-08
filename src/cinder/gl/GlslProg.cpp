@@ -59,10 +59,10 @@ GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::vertex( const char *vertexShader )
+GlslProg::Format& GlslProg::Format::vertex( const string &vertexShader )
 {
-	if( vertexShader )
-		mVertexShader = string( vertexShader );
+	if( ! vertexShader.empty() )
+		mVertexShader = vertexShader;
 	else
 		mVertexShader.clear();
 
@@ -83,10 +83,10 @@ GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::fragment( const char *fragmentShader )
+GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 {
-	if( fragmentShader )
-		mFragmentShader = string( fragmentShader );
+	if( ! fragmentShader.empty() )
+		mFragmentShader = fragmentShader;
 	else
 		mFragmentShader.clear();
 
@@ -108,10 +108,10 @@ GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::geometry( const char *geometryShader )
+GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 {
-	if( geometryShader ) {
-		mGeometryShader = string( geometryShader );	}
+	if( ! geometryShader.empty() )
+		mGeometryShader = geometryShader;
 	else
 		mGeometryShader.clear();
 
@@ -132,10 +132,10 @@ GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataS
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::tessellationCtrl( const char *tessellationCtrlShader )
+GlslProg::Format& GlslProg::Format::tessellationCtrl( const string &tessellationCtrlShader )
 {
-	if( tessellationCtrlShader ) {
-		mTessellationCtrlShader = string( tessellationCtrlShader );	}
+	if( ! tessellationCtrlShader.empty() )
+		mTessellationCtrlShader = tessellationCtrlShader;
 	else
 		mTessellationCtrlShader.clear();
 	
@@ -156,10 +156,10 @@ GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataS
 	return *this;
 }
 
-GlslProg::Format& GlslProg::Format::tessellationEval( const char *tessellationEvalShader )
+GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellationEvalShader )
 {
-	if( tessellationEvalShader ) {
-		mTessellationEvalShader = string( tessellationEvalShader );	}
+	if( ! tessellationEvalShader.empty() )
+		mTessellationEvalShader = tessellationEvalShader;
 	else
 		mTessellationEvalShader.clear();
 	
@@ -213,7 +213,7 @@ GlslProgRef GlslProg::create( DataSourceRef vertexShader, DataSourceRef fragment
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ).geometry( geometryShader ).tessellationEval( tessEvalShader ).tessellationCtrl( tessCtrlShader ) ) );
 }
 
-GlslProgRef GlslProg::create( const char *vertexShader, const char *fragmentShader, const char *geometryShader, const char *tessEvalShader, const char *tessCtrlShader )
+GlslProgRef GlslProg::create( const string &vertexShader, const string &fragmentShader, const string &geometryShader, const string &tessEvalShader, const string &tessCtrlShader )
 {
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ).geometry( geometryShader ).tessellationEval( tessEvalShader ).tessellationCtrl( tessCtrlShader ) ) );
 }
@@ -224,7 +224,7 @@ GlslProgRef GlslProg::create( DataSourceRef vertexShader, DataSourceRef fragment
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ) ) );
 }
 
-GlslProgRef GlslProg::create( const char *vertexShader, const char *fragmentShader )
+GlslProgRef GlslProg::create( const string &vertexShader, const string &fragmentShader )
 {
 	return GlslProgRef( new GlslProg( GlslProg::Format().vertex( vertexShader ).fragment( fragmentShader ) ) );
 }

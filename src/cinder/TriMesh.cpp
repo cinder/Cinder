@@ -586,7 +586,7 @@ bool TriMesh::recalculateTangents()
 	const vec3 *positions = reinterpret_cast<const vec3*>( mPositions.data() );
 	const vec3 *normals = reinterpret_cast<const vec3*>( mNormals.data() );
 	const vec2 *texCoords = reinterpret_cast<const vec2*>( mTexCoords0.data() );
-	geom::calculateTangents( mIndices.size(), mIndices.data(), mPositions.size(), positions, normals, texCoords, &mTangents, nullptr );
+	geom::calculateTangents( mIndices.size(), mIndices.data(), mPositions.size() / 3, positions, normals, texCoords, &mTangents, nullptr );
 
 	mTangentsDims = 3;
 
