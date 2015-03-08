@@ -2,10 +2,10 @@
 """asprojgen - Android Studio Project Generator
 
 Usage:
-    asprojgen --appname CinderApp --path /parent/path/of/app --domain org.mydomain.sub
+    asprojgen --appname MyCinderApp --path /parent/path/of/app --domain org.mydomain.sub
 
-    --path      Path to a directory that will contain CinderApp [Default: . ]
-    --appname   Name of application [Default: CinderApp]
+    --appname   Name of application [Default: MyCinderApp]
+    --path      Path to a directory that will contain MyCinderApp [Default: . ]
     --domain    Domain to use [Default: org.libcinder.samples]
     --help      This help message
 """
@@ -46,7 +46,7 @@ def projgen( appName, appPath, appDomain ):
     appPath = appPath.strip()
     appDomain = appDomain.strip()
 
-    appPath = os.path.join(os.path.abspath("."), appName)
+    appPath = os.path.join(os.path.abspath(appPath), appName)
     appPackage = ("%s.%s" % (appDomain, appName.lower()))
     print( "App Name   : %s" % appName)
     print( "App Path   : %s" % appPath)
@@ -92,6 +92,11 @@ def projgen( appName, appPath, appDomain ):
     dstFile = os.path.join( asProjPath, "app", "src", "main", "AndroidManifest.xml")
     lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
 
+    # Copy app/src/main/res/values/strings.xml
+    srcFile = os.path.join( templatePath, "androidstudio", "CinderApp", "app", "src", "main", "res", "values", "strings.xml")
+    dstFile = os.path.join( asProjPath, "app", "src", "main", "res", "values", "strings.xml")
+    lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
+
     # Create app/src/main/java/<appPackage>/<appName>Activity.java
     dstFile = os.path.join( asProjPath, "app", "src", "main", "java", appPackage.replace(".", "/"), "%sActivity.java" % appName)
     dirPath = os.path.dirname(dstFile)
@@ -105,33 +110,21 @@ def projgen( appName, appPath, appDomain ):
     outFile.write("public class %sActivity extends NativeActivity {\n" % appName)
     outFile.write("    static final String TAG = \"%sActivity\";\n" % appName)
     outFile.write("}\n")
-    print("Wrote %s" % dstFile)
     
-
-    #print cinderPath
-    #print templatePath
-    #print appPath
-    #print asTemplatePath
-    #print asProjPath
-    #print os.path.relpath(cinderPath, asProjPath)
-
-    ## create directory
-    #if not os.path.exists( asProjPath ):
-    #    os.makedirs( asProjPath ) 
-    ## copy tree
-    #copy_tree( templatePath, asProjPath )
-
+    print("Project generated at: %s" % appPath)
+    print("")
+    
     pass
 
 # main
 def main():
-    appName   = "CinderAppTest"
+    appName   = "MyCinderApp"
     appPath   = "."
     appDomain = "org.libcinder.samples"
     
     # parse command line options
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h", ["help"])          
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["help", "appname=", "path=", "domain="])          
     except getopt.error, msg:
         print msg
         print "for help use --help"
@@ -141,12 +134,19 @@ def main():
         if o in ("-h", "--help"):
             print __doc__
             sys.exit(0)
+        elif o in ("--appname"):
+            appName = a
+        elif o in ("--path"):
+            appPath = a
+        elif o in ("--domain"):
+            appDomain = a
     # process arguments
     for arg in args:
-        print arg        
+        pass 
     # projgen
     if (appName is not None):
         projgen( appName, appPath, appDomain )
+        pass
     pass
 
 if __name__ == "__main__":
