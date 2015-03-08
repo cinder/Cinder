@@ -61,6 +61,7 @@ public:
 
  protected:
 	WindowRef			createWindow( Window::Format format );
+	void 				reinitializeWindowSurface();
 	void				quit();
 
  	void		    	sleep( double seconds );

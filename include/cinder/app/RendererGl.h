@@ -206,14 +206,16 @@ protected:
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
 		class RendererImplGlAngle	*mImpl;
-		friend class					RendererImplGlAngle;
+		friend class				RendererImplGlAngle;
 	#else
 		class RendererImplGlMsw		*mImpl;
-		friend class					RendererImplGlMsw;
+		friend class				RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
 #elif defined( CINDER_ANDROID )
     class RendererGlAndroid  	*mImpl;
+	friend class 				WindowImplAndroid;
+	RendererGlAndroid * getImpl() { return mImpl; }
 #endif
 
 	std::function<void( Renderer* )> mStartDrawFn;

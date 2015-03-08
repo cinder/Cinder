@@ -56,6 +56,9 @@ class RendererGlAndroid {
 	EGLContext		mContext;
 	EGLDisplay		mDisplay;
 	EGLSurface		mSurface;
+	EGLConfig 		mConfig;
+
+	void 			reinitializeWindowSurface( ANativeWindow *nativeWindow );
 
  private:
  	static ivec2 	sSurfaceSize;

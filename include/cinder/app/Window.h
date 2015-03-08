@@ -468,7 +468,7 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_WINRT )
 	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
 #elif defined( CINDER_ANDROID )
-    void        setImpl( WindowImplAndroid *impl ) { mImpl = impl; }
+    void        setImpl( WindowImplAndroid *impl ) { mImpl = impl; }    
 #endif
 
 	AppBase							*mApp;
@@ -494,6 +494,12 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_ANDROID )
     WindowImplAndroid   *mImpl;
 #endif
+
+#if defined( CINDER_ANDROID )
+private:
+	friend class AppImplAndroid;
+	WindowImplAndroid * getImpl() { return mImpl; }
+#endif    
 };
 
 } } // namespace cinder::app

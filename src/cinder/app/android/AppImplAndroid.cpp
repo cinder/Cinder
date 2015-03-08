@@ -272,6 +272,15 @@ WindowRef AppImplAndroid::createWindow( Window::Format format )
 	return mWindows.back()->getWindow();
 }
 
+void AppImplAndroid::reinitializeWindowSurface()
+{
+	if( mActiveWindow ) {
+		// When the reinitialized from EnvironmentManager android_app->window (mNativeApp) will 
+		// contain a new window. Propogate that along to the WindowImplAndroid.
+		mActiveWindow->getImpl()->reinitializeWindowSurface( mNativeApp->window );
+	}
+}
+
 void AppImplAndroid::quit()
 {
 	// Close all windows, forcing the application to quit.

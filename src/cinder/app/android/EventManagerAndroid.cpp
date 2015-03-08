@@ -24,6 +24,9 @@
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
+#include <sstream>
+#include <iomanip>
+
 #include <android/log.h>
 #define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
@@ -41,6 +44,7 @@ EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, std::function<
 	  mDeferredMainFn( deferredMainFn ), 
 	  mCleanupLaunchFn( cleanupLaunchFn ),
 	  mFocused( false ),
+	  mPaused( true ),
 	  mAppImplInst( nullptr )
 {
 	sInstance = this;
@@ -78,6 +82,18 @@ android_app *EventManagerAndroid::getNativeApp()
 	return mNativeApp; 
 }
 
+void EventManagerAndroid::appPause()
+{
+	mPaused = true;
+	LOGI( "EventManagerAndroid - APP PAUSED" );
+}
+
+void EventManagerAndroid::appResume()
+{
+	mPaused = false;
+	LOGI( "EventManagerAndroid - APP RESUMED" );
+}
+
 bool EventManagerAndroid::getShouldQuit() const
 {
 	return mShouldQuit;
@@ -88,6 +104,18 @@ void EventManagerAndroid::setShouldQuit( bool val )
 	mShouldQuit = val;
 }
 
+void EventManagerAndroid::appQuit()
+{
+	if( nullptr != mAppImplInst ) {
+		mAppImplInst->quit();
+	}
+}
+
+bool EventManagerAndroid::deferredMainHasBeenCalled() const 
+{ 
+	return mDeferredMainHasBeenCalled; 
+}
+
 void EventManagerAndroid::callDeferredMain()
 {
 	/// @TODO: Add assert check to make sure mDeferredMain is not empty
@@ -95,11 +123,11 @@ void EventManagerAndroid::callDeferredMain()
 	mDeferredMainHasBeenCalled = true;
 }
 
-void EventManagerAndroid::quit()
+void EventManagerAndroid::reinitializeWindowSurface()
 {
 	if( nullptr != mAppImplInst ) {
-		mAppImplInst->quit();
-	}
+		mAppImplInst->reinitializeWindowSurface();
+	}	
 }
 
 int32_t EventManagerAndroid::NativeHandleInput( android_app *ndkApp, AInputEvent *event )
@@ -201,7 +229,12 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 			LOGI( "APP_CMD_INIT_WINDOW" );
 
 			if( nullptr != ndkApp->window ) {
-				eventMan->callDeferredMain();
+				if( ! eventMan->deferredMainHasBeenCalled() ) {
+					eventMan->callDeferredMain();
+				}
+				else {
+					eventMan->reinitializeWindowSurface();
+				}
 			}
 		}
 		break;
@@ -215,7 +248,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_TERM_WINDOW: {
 			LOGI( "APP_CMD_TERM_WINDOW" );	
 
-			eventMan->quit();
+			//eventMan->appQuit();
 		}
 		break;
 
@@ -300,6 +333,8 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 */
 		case APP_CMD_RESUME: {
 			LOGI( "APP_CMD_RESUME" );
+
+			eventMan->appResume();
 		}
 		break;
 
@@ -320,6 +355,8 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 */
 		case APP_CMD_PAUSE: {
 			LOGI( "APP_CMD_PAUSE" );
+
+			eventMan->appPause();
 		}
 		break;
 
@@ -338,7 +375,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		case APP_CMD_DESTROY: {
 			LOGI( "APP_CMD_DESTROY" );
 
-			eventMan->quit();
+			eventMan->appQuit();
 		}
 		break;
 	}
@@ -399,7 +436,10 @@ void EventManagerAndroid::execute()
 
 		// Update and draw
 		if( mAppImplInst && mAppImplInst->mCanProcessEvents ) {
-			mAppImplInst->updateAndDraw();
+			// Don't do anything if we're paused
+			if( ! mPaused ) {
+				mAppImplInst->updateAndDraw();
+			}
 		}		
 	}
 

@@ -24,6 +24,7 @@
 #include "cinder/app/android/WindowImplAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 #include "cinder/app/android/RendererGlAndroid.h"
+#include "cinder/app/RendererGl.h"
 
 namespace cinder { namespace app { 
 
@@ -100,6 +101,13 @@ void WindowImplAndroid::setAlwaysOnTop( bool alwaysOnTop )
 {
 }
 
+void WindowImplAndroid::keyDown( const KeyEvent &event )
+{
+	KeyEvent localEvent( event );
+	mAppImpl->setWindow( mWindowRef );
+	mWindowRef->emitKeyDown( &localEvent );
+}
+
 void WindowImplAndroid::draw()
 {
 	mAppImpl->setWindow( mWindowRef );
@@ -118,11 +126,14 @@ void WindowImplAndroid::privateClose()
 {
 }
 
-void WindowImplAndroid::keyDown( const KeyEvent &event )
+void WindowImplAndroid::reinitializeWindowSurface( ANativeWindow *nativeWindow )
 {
-	KeyEvent localEvent( event );
-	mAppImpl->setWindow( mWindowRef );
-	mWindowRef->emitKeyDown( &localEvent );
+	mNativeWindow = nativeWindow;
+	
+	RendererGlRef rendererGl = std::dynamic_pointer_cast<RendererGl>( mRenderer );
+	if( rendererGl ) {
+		rendererGl->getImpl()->reinitializeWindowSurface( mNativeWindow );
+	}
 }
 
 } } // namespace cinder::app

@@ -44,11 +44,17 @@ class EventManagerAndroid {
 	void 						execute();
 
  private:
+ 	void 						appPause();
+ 	void 						appResume();
+
  	bool 						getShouldQuit() const;
  	void 						setShouldQuit( bool val );
- 	void 						quit();
+ 	void 						appQuit();
 
+ 	bool 						deferredMainHasBeenCalled() const;
  	void 						callDeferredMain();
+
+ 	void 						reinitializeWindowSurface();
 
 	static int32_t 				NativeHandleInput( android_app *ndkApp, AInputEvent *event );
 	static void 				NativeHandleCmd( android_app *ndkApp, int32_t cmd );
@@ -71,6 +77,7 @@ class EventManagerAndroid {
 	std::function<void()>		mCleanupLaunchFn;
 
 	bool 						mFocused;
+	bool 						mPaused;
 
 	AppImplAndroid 				*mAppImplInst;
 	void 						setAppImplInst( AppImplAndroid* appInst );

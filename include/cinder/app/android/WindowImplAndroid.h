@@ -65,6 +65,8 @@ class WindowImplAndroid {
 	virtual void		resize();
 
 	void				privateClose();
+
+	void 				reinitializeWindowSurface( ANativeWindow *nativeWindow );
  protected:
 
 	AppImplAndroid		*mAppImpl;

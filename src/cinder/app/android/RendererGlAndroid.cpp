@@ -81,8 +81,7 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	}
 
 	EGLint configCount;
-	EGLConfig config;
-	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &config, 1, &configCount ) || (configCount != 1) ) {
+	if( ! eglChooseConfig( mDisplay, configAttribs.data(), &mConfig, 1, &configCount ) || (configCount != 1) ) {
 		return false;
 	}
 
@@ -93,10 +92,10 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
     // ANativeWindow buffers to match, using EGL_NATIVE_VISUAL_ID.
     //
     EGLint format;
-    eglGetConfigAttrib( mDisplay, config, EGL_NATIVE_VISUAL_ID, &format );
+    eglGetConfigAttrib( mDisplay, mConfig, EGL_NATIVE_VISUAL_ID, &format );
     ANativeWindow_setBuffersGeometry( nativeWindow, 0, 0, format );	
 
-	mSurface = eglCreateWindowSurface( mDisplay, config, nativeWindow, NULL );
+	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
  
 	auto err = eglGetError();
 	if( err != EGL_SUCCESS ) {
@@ -112,7 +111,7 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 		EGL_NONE
     };
 
-    mContext = eglCreateContext( mDisplay, config, NULL, contextAttibutes );
+    mContext = eglCreateContext( mDisplay, mConfig, NULL, contextAttibutes );
     if( eglGetError() != EGL_SUCCESS ) {
 		return false;
     }
@@ -128,7 +127,7 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	gl::Environment::setEs();
 	checkGlStatus();
 
-	std::shared_ptr<gl::PlatformDataAndroid> platformData( new gl::PlatformDataAndroid( mContext, mDisplay, mSurface, config ) );
+	std::shared_ptr<gl::PlatformDataAndroid> platformData( new gl::PlatformDataAndroid( mContext, mDisplay, mSurface, mConfig ) );
 	platformData->mObjectTracking = mRenderer->getOptions().getObjectTracking();
 
 	mCinderContext = gl::Context::createFromExisting( platformData );
@@ -179,6 +178,12 @@ void RendererGlAndroid::swapBuffers() const
 void RendererGlAndroid::makeCurrentContext()
 {
 	mCinderContext->makeCurrent();
+}
+
+void RendererGlAndroid::reinitializeWindowSurface( ANativeWindow *nativeWindow )
+{
+	mSurface = eglCreateWindowSurface( mDisplay, mConfig, nativeWindow, NULL );
+	makeCurrentContext();
 }
 
 EGLint getEglError()
