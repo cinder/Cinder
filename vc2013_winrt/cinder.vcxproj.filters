@@ -1359,5 +1359,8 @@
     <ClCompile Include="..\src\cinder\audio\dsp\ooura\fftsg.cpp">
       <Filter>Source Files\audio\dsp\ooura</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\Sphere.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
