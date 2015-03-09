@@ -112,7 +112,11 @@ void EnvironmentEs::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum 
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
+  #if defined( CINDER_ANDROID )
+	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
+  #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;
+  #endif
 #else
 	static auto texStorage2DFn = glTexStorage2D;
 #endif
@@ -160,7 +164,11 @@ void EnvironmentEs::allocateTexStorageCubeMap( GLsizei levels, GLenum internalFo
 #if defined( CINDER_GL_ES_2 )
 	// test at runtime for presence of 'glTexStorage2D' and just force mutable storage if it's not available
 	// both ANGLE and iOS support EXT_texture_storage
+  #if defined( CINDER_ANDROID )
+	static auto texStorage2DFn = (void (*)(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height))nullptr;
+  #else	
 	static auto texStorage2DFn = glTexStorage2DEXT;
+  #endif	
 #else
 	static auto texStorage2DFn = glTexStorage2D;
 #endif

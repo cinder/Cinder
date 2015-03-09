@@ -110,7 +110,7 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
 		else
 			glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
 #elif defined( CINDER_GL_ES )
-  #if defined( CINDER_ANDROID )
+  #if defined( CINDER_ANDROID ) && ! defined( CINDER_GL_ES_2 )
 	if( mInternalFormat == GL_RGBA )
 		mInternalFormat = GL_RGBA8;
 	else if( mInternalFormat == GL_RGB )
@@ -128,7 +128,11 @@ Renderbuffer::Renderbuffer( int width, int height, GLenum internalFormat, int ms
   #endif	
 	
 	if( mSamples )
+  #if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 )
+		glRenderbufferStorageMultisampleIMG( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
+  #else		
 		glRenderbufferStorageMultisample( GL_RENDERBUFFER, mSamples, mInternalFormat, mWidth, mHeight );
+  #endif	
 	else
 		glRenderbufferStorage( GL_RENDERBUFFER, mInternalFormat, mWidth, mHeight );
 #endif	

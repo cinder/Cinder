@@ -201,6 +201,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, format.mCompareFunc );
 	}
 #else
+  #if ! defined( CINDER_ANDROID )
 	if( format.mCompareMode > -1 ) {
 		if( supportsShadowSampler() ) {
 			glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, format.mCompareMode );
@@ -216,7 +217,8 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 		else {
 			CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_FUNC from EXT_shadow_samplers");
 		}
-	}
+	}	
+  #endif	
 #endif
 	mSwizzleMask = format.mSwizzleMask;
 	
@@ -300,6 +302,7 @@ void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLen
 		case GL_RGBA32I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_INT;							break;
 		case GL_RGBA32UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT;					break;
 #else
+  #if ! defined( CINDER_ANDROID )
 		case GL_RGB8_OES:				*resultDataFormat = GL_RGB;				*resultDataType = GL_UNSIGNED_BYTE;		break;
 		case GL_RGBA8_OES:				*resultDataFormat = GL_RGBA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
 		case GL_ALPHA8_EXT:				*resultDataFormat = GL_ALPHA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
@@ -318,6 +321,7 @@ void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLen
 		case GL_BGRA8_EXT:				*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
 		case GL_R32F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_FLOAT;				break;
 		case GL_R16F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_HALF_FLOAT_OES;	break;
+  #endif		
 #endif
 		case GL_RGB5_A1:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
 		case GL_RGBA4:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
@@ -454,8 +458,10 @@ void TextureBase::setCompareMode( GLenum compareMode )
 	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE, compareMode );
 #else
 	if( supportsShadowSampler() ) {
+  #if ! defined( CINDER_ANDROID )		
 		ScopedTextureBind tbs( mTarget, mTextureId );
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_MODE_EXT, compareMode );
+  #endif
 	}
 	else {
 		CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_MODE from EXT_shadow_samplers");
@@ -470,8 +476,10 @@ void TextureBase::setCompareFunc( GLenum compareFunc )
 	glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC, compareFunc );
 #else
 	if( supportsShadowSampler() ) {
+  #if ! defined( CINDER_ANDROID )		
 		ScopedTextureBind tbs( mTarget, mTextureId );
 		glTexParameteri( mTarget, GL_TEXTURE_COMPARE_FUNC_EXT, compareFunc );
+  #endif
 	}
 	else {
 		CI_LOG_E("This device doesn't support GL_TEXTURE_COMPARE_FUNC from EXT_shadow_samplers");

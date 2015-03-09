@@ -199,6 +199,13 @@ endif()
 message( "${BoldBlue}NDK_ROOT     : ${NDK_ROOT}${ColorReset}" )
 message( "${BoldBlue}NDK_PLATFORM : ${NDK_PLATFORM}${ColorReset}" )
 message( "${BoldBlue}NDK_ARCH     : ${NDK_ARCH}${ColorReset}" )
+if( NDK_GLES2 )
+    message( "${BoldBlue}NDK_GLES2    : TRUE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES3    : FALSE${ColorReset}" )
+else()
+    message( "${BoldBlue}NDK_GLES2    : FALSE${ColorReset}" )
+    message( "${BoldBlue}NDK_GLES3    : TRUE${ColorReset}" )
+endif()
 message( "" )
 
 # Toolchain, STL (gnustl, libc++)
@@ -482,10 +489,16 @@ elseif( "mips64" STREQUAL "${NDK_ARCH}" )
 endif()
 
 set( C_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
+if( NDK_GLES2 )
+    set( C_FLAGS "-DCINDER_GL_ES_2 ${C_FLAGS}")
+endif()
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
 set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11" )
+if( NDK_GLES2 )
+    set( CXX_FLAGS "-DCINDER_GL_ES_2 ${CXX_FLAGS}")
+endif()
 set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
@@ -619,6 +632,10 @@ set( CINDER_CXX_SRC_FILES
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )
-add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+if( NDK_GLES2 )
+    add_library( cinder-es2 STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+else()
+    add_library( cinder STATIC ${CINDER_C_SRC_FILES} ${CINDER_CXX_SRC_FILES} )
+endif()
 
 

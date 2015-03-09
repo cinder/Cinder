@@ -40,20 +40,26 @@
 	#pragma comment( lib, "libEGL.lib" )
 	#pragma comment( lib, "libGLESv2.lib" )
 #elif defined( CINDER_ANDROID )
-   	//#define GL_GLEXT_PROTOTYPES
+ 	// the default for Android is GL ES 3, but can be overridden with CINDER_GL_ES_2
 	#define CINDER_GL_ES
- 	#include "EGL/egl.h"
-    // Force ES3 for now
-    #include "GLES3/gl3.h"
-	#include "GLES3/gl3ext.h"
-	#if ( __ANDROID_API__ >= 21 )
+ 	#include "EGL/egl.h" 
+ 	#if defined( CINDER_GL_ES_2 )
+ 		#define GL_GLEXT_PROTOTYPES
+		#include "GLES2/gl2.h"
 		#include "GLES2/gl2ext.h"
-	#else
-		#define GL_BGRA_EXT                         0x80E1
-		#define GL_TEXTURE_MAX_ANISOTROPY_EXT       0x84FE
-		#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT   0x84FF
-	#endif
-	#define CINDER_GL_ES_3    
+ 	#else
+	    // Force ES3 for now
+	    #include "GLES3/gl3.h"
+		#include "GLES3/gl3ext.h"
+		#if ( __ANDROID_API__ >= 21 )
+			#include "GLES2/gl2ext.h"
+		#else
+			#define GL_BGRA_EXT                         0x80E1
+			#define GL_TEXTURE_MAX_ANISOTROPY_EXT       0x84FE
+			#define GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT   0x84FF
+		#endif
+		#define CINDER_GL_ES_3    
+ 	#endif
 #elif ! defined( CINDER_COCOA_TOUCH ) // OS X
 	#if defined( __clang__ )
 		#pragma clang diagnostic push

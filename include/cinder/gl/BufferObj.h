@@ -59,7 +59,9 @@ class BufferObj {
 #if (! defined( CINDER_GL_ANGLE )) || defined( CINDER_GL_ES_3 )
 	//! Abstracts glMapBuffer() vs. glMapBufferRange() with appropriate write-only parameters for the platform. Passing \c true for \a invalidPrevious allows the GL to flush the contents of the buffer as an optimization.
 	void*				mapWriteOnly( bool invalidatePrevious );
+#if ! defined( CINDER_ANDROID )	
 	//! Analogous to glMapBufferRange(). On iOS ES 2 only \c GL_WRITE_ONLY_OES is valid.
+#endif	
 	void*				mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const;
 	void				unmap() const;
 #endif

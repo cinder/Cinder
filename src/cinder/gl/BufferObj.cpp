@@ -142,6 +142,7 @@ void* BufferObj::mapWriteOnly( bool invalidatePrevious )
 #endif
 }
 
+#if ! defined( CINDER_ANDROID )
 void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield access ) const
 {
 	ScopedBuffer bufferBind( mTarget, mId );
@@ -151,6 +152,7 @@ void* BufferObj::mapBufferRange( GLintptr offset, GLsizeiptr length, GLbitfield 
 	return reinterpret_cast<void*>( glMapBufferRange( mTarget, offset, length, access ) );
 #endif
 }
+#endif
 
 void BufferObj::unmap() const
 {
