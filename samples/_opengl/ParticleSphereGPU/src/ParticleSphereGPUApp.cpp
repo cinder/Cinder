@@ -105,7 +105,12 @@ void ParticleSphereGPUApp::setup()
 	mParticleBuffer[mDestinationIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), nullptr, GL_STATIC_DRAW );
 
 	// Create a default color shader.
+#if ! defined( CINDER_GL_ES )
 	mRenderProg = gl::getStockShader( gl::ShaderDef().color() );
+	gl::pointSize( 1.0f );
+#else
+	mRenderProg = gl::GlslProg::create( loadAsset( "draw_es3.vert" ), loadAsset( "draw_es3.frag" ) );
+#endif
 
 	for( int i = 0; i < 2; ++i )
 	{	// Describe the particle layout for OpenGL.
