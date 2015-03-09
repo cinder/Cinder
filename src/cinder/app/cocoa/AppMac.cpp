@@ -46,7 +46,7 @@ AppMac::~AppMac()
 	[mImpl release];
 }
 
-void AppMac::launch( const char *title, int argc, char * const argv[] )
+void AppMac::launch()
 {
 	[[NSApplication sharedApplication] run];
 }

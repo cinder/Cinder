@@ -217,14 +217,15 @@ class AppCocoaTouch : public AppBase {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
-
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 
 	// Called during application instanciation via CINDER_APP_COCOA_TOUCH macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
+
+  protected:
+	virtual void	launch() override;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
@@ -260,10 +261,9 @@ void AppCocoaTouch::main( const RendererRef &defaultRenderer, const char *title,
 	if( settings.getShouldQuit() )
 		return;
 
-	AppCocoaTouch *app = new AppT;
-	#pragma unused( app )
+	AppCocoaTouch *app = static_cast<AppCocoaTouch *>( new AppT );
+	app->executeLaunch();
 
-	AppBase::executeLaunch( title, argc, argv );
 	AppBase::cleanupLaunch();
 }
 

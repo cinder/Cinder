@@ -419,10 +419,11 @@ class AppBase {
 	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
 	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
-	static void		executeLaunch( const char *title, int argc, char * const argv[] );
+	void			executeLaunch();
 	static void		cleanupLaunch();
-	
-	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
+
+	//! This is called from executeLaunch(), subclasses implement to launch the application in a platform-specific manner
+	virtual void	launch() = 0;
 	//! \endcond
 
   private:

@@ -66,7 +66,7 @@ class AppMac : public AppBase {
 	//! \endcond
 
   protected:
-	void	launch( const char *title, int argc, char * const argv[] ) override;
+	void	launch() override;
 
   private:
 	AppImplMac*	mImpl;
@@ -86,10 +86,9 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBase *app = new AppT;
-	#pragma unused( app )
+	AppMac *app = static_cast<AppMac *>( new AppT );
+	app->executeLaunch();
 
-	AppBase::executeLaunch( title, argc, argv );
 	AppBase::cleanupLaunch();
 }
 

@@ -74,7 +74,7 @@ void AppMsw::initialize( Settings *settings, const RendererRef &defaultRenderer,
 	::LocalFree( szArglist );
 }
 
-void AppMsw::launch( const char *title, int argc, char * const argv[] )
+void AppMsw::launch()
 {
 	// allocate and redirect the console if requested
 	if( mConsoleWindowEnabled ) {

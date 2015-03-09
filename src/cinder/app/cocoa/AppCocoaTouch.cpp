@@ -56,8 +56,15 @@ AppCocoaTouch::~AppCocoaTouch()
 	mImpl = nil;
 }
 
-void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
+void AppCocoaTouch::launch()
 {
+	const auto &args = getCommandLineArgs();
+	int argc = (int)args.size();
+
+	char* argv[argc];
+	for( int i = 0; i < argc; i++ )
+		argv[i] = const_cast<char *>( args[i].c_str() );
+
 	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
 }
 

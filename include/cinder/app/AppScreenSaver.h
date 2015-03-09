@@ -140,7 +140,7 @@ class AppScreenSaver : public AppBase {
 
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplMacScreenSaver*>( impl ); }
-	void			launch( const char *title, int argc, char * const argv[] ) override { /* do nothing - this gets handled a weirder way for screensavers */ }
+	void			launch() override { /* do nothing - this gets handled a weirder way for screensavers */ }
 
 	template<typename RendererT>
 	static void callSettings( Settings *settings, const char *title, const SettingsFn &settingsFn = SettingsFn() )
@@ -156,9 +156,8 @@ class AppScreenSaver : public AppBase {
 	static AppScreenSaver* main( void *impl, const char *title, Settings *settings )
 	{
 		AppScreenSaver *app = new AppT;
-		app->privateSetImpl__( impl ); // TODO: can impl be set during app constructor, or does it need to be?
-
-		AppBase::executeLaunch( title, 0, nullptr );
+		app->privateSetImpl__( impl );
+		app->executeLaunch();
 
 		return app;
 	}

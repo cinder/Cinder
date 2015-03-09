@@ -544,7 +544,7 @@ void AppCocoaView::setupCinderView( CinderViewMac *cinderView )
 	[mImpl setupCinderView:cinderView renderer:getDefaultRenderer()];
 }
 
-void AppCocoaView::launch( const char *title, int argc, char * const argv[] )
+void AppCocoaView::launch()
 {
 	if( ! mImpl->mWindows.empty() )
 		[mImpl setActiveWindow:*(mImpl->mWindows.begin())];

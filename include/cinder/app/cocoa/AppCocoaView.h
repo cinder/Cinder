@@ -44,7 +44,7 @@ class AppCocoaView : public AppBase {
 	static void		initialize( Settings *settings, const RendererRef &defaultRenderer )	{ AppBase::initialize( settings, defaultRenderer, nullptr, 0, nullptr ); }
 
 	virtual void	setupCinderView( CinderViewMac *cinderView );
-	virtual void	launch( const char *title = 0, int argc = 0, char * const argv[] = 0 );
+	void			launch() override;
 
 	virtual void	quit() override;
 

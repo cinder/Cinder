@@ -125,13 +125,10 @@ void AppBase::initialize( Settings *settings, const RendererRef &defaultRenderer
 	sSettingsFromMain = settings;
 }
 
-// TODO: try to make this non-static, just calls launch() that is wrapped in try/catch
-// - need to get through windows updates first
-// static
-void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
+void AppBase::executeLaunch()
 {
 	try {
-		sInstance->launch( title, argc, argv );
+		launch();
 	}
 	catch( std::exception &exc ) {
 		CI_LOG_E( "Uncaught exception, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what : " << exc.what() );
