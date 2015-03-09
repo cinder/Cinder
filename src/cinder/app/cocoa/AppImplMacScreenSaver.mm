@@ -22,6 +22,7 @@
 */
 
 #import "cinder/app/cocoa/AppImplMacScreenSaver.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 #include "cinder/CinderAssert.h"
 
 #import <Foundation/NSThread.h>
@@ -227,7 +228,8 @@ static bool sFirstView = true; // records whether a call is the first to initVie
 - (cinder::DisplayRef)getDisplay
 {
 	if( ! mDisplay )
-		mDisplay = cinder::Display::findFromNsScreen( [[self window] screen] );
+		mDisplay = cinder::app::PlatformCocoa::get()->findFromNsScreen( [[self window] screen] );
+	
 	return mDisplay;
 }
 
