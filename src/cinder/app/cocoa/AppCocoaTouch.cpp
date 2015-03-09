@@ -65,7 +65,7 @@ void AppCocoaTouch::launch()
 	for( int i = 0; i < argc; i++ )
 		argv[i] = const_cast<char *>( args[i].c_str() );
 
-	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
+	::UIApplicationMain( argc, argv, nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
 }
 
 WindowRef AppCocoaTouch::createWindow( const Window::Format &format )
