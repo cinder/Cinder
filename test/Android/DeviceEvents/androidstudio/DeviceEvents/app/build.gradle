@@ -67,7 +67,8 @@ android {
     cinder {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
-        verbose = false
+        verbose = true
+        gles2 = true
         moduleName = "DeviceEvents"
         srcDirs = ["../../../src"]
         cFlags {

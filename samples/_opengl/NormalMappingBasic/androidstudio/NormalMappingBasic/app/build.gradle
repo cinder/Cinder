@@ -67,7 +67,8 @@ android {
     cinder {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
-        verbose = true
+        verbose = false
+        //gles2 = true
         moduleName = "NormalMappingBasic"
         srcDirs = ["../../../src"]
         cFlags {

@@ -63,19 +63,20 @@ class CPPFlags {
 }
 
 class CinderAppBuildPluginExtension {
-    def ndkDir = ""
-    def cinderDir = ""
-    def verbose = false
-    def moduleName = ""
-    def srcFiles = []
-    def srcDirs = []
-    def includeDirs = []
-    def ldLibs = []
-    def libCinder = []
-    def staticLibs = []
-    def stl = "gnustl_static"
-    def toolChainVersion = "4.9"
-    def archs = [];
+    def ndkDir           = "";
+    def cinderDir        = "";
+    def verbose          = false;
+    def moduleName       = "";
+    def gles2            = false;
+    def srcFiles         = [];
+    def srcDirs          = [];
+    def includeDirs      = [];
+    def ldLibs           = [];
+    def libCinder        = [];
+    def staticLibs       = [];
+    def stl              = "gnustl_static";
+    def toolChainVersion = "4.9";
+    def archs            = [];
 }
 
 class CompileNdkTask extends DefaultTask {
@@ -436,17 +437,22 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         project.cinder.cppFlags.each {
             cppFlags[it.name] = it;
         }       
+
+        def gles2Flags = "";
+        if( project.cinder.gles2 ) {
+            gles2Flags = "-DCINDER_GL_ES_2";
+        }
         
         def flagGroup = cFlags["all_archs"] ?: null;
         if( flagGroup ) {
             def flags = ("debug" == this.mBuildType) ? flagGroup.debug : flagGroup.release;
-            this.mArchFlagsBlocks.add("LOCAL_CFLAGS   := ${flags}");
+            this.mArchFlagsBlocks.add("LOCAL_CFLAGS   := ${flags} ${gles2Flags}");
         }
 
         flagGroup = cppFlags["all_archs"] ?: null;
         if( flagGroup ) {
             def flags = ("debug" == this.mBuildType) ? flagGroup.debug : flagGroup.release;
-            this.mArchFlagsBlocks.add("LOCAL_CPPFLAGS := ${flags}");
+            this.mArchFlagsBlocks.add("LOCAL_CPPFLAGS := ${flags} ${gles2Flags}");
         }
 
         if( this.mArchFlagsBlocks.size() > 1 ) {
@@ -471,7 +477,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
                 this.mArchFlagsBlocks.add("\tLOCAL_CPPFLAGS += ${flags}");
             }
 
-
             useElse = true;
         }
         this.mArchFlagsBlocks.add("endif");
@@ -479,11 +484,15 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
 
     void parseSharedLibs(Project project) {
-        this.mSharedLibs = []
+        this.mSharedLibs = [];
         if( ! project.cinder.ldLibs.empty ) { 
-            mSharedLibs.add("\\")
+            mSharedLibs.add("\\");
             project.cinder.ldLibs.each {
-                mSharedLibs.add("\t" + "-l" + it + "\\")
+                def libName = it;
+                if(("GLESv3" == libName) && (true == project.cinder.gles2)) {
+                    libName = "GLESv2";
+                }
+                mSharedLibs.add("\t" + "-l" + libName + "\\");
             }
         }
     }
@@ -493,8 +502,22 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         this.mStaticBlocks = []
         if( ! project.cinder.staticLibs.empty ) {
             this.mStaticLibs.add("\\");
-            //
+
+            // libcinder
             def libCinder = project.cinder.libCinder[this.mBuildType];            
+            if( project.cinder.gles2 ) {
+                File f = new File( libCinder );
+                def libName = f.getName();
+                def libParent = f.getParent();
+                if( "libcinder.a" == libName ) {
+                    libName = "libcinder-es2.a";
+                }
+                else if( "libcinder_d.a" == libName ) {
+                    libName = "libcinder-es2_d.a";
+                }
+                libCinder = (new File( libParent, libName )).toString();
+            }            
+
             def finalLibs = [];           
             boolean insertedLibCinder = false;
             project.cinder.staticLibs.each {

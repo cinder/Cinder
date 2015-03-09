@@ -100,6 +100,25 @@
 	#define CI_CHECK_GL()	((void)0)
 #endif
 
+// Map these symbols since they're not defined on OpenGL ES2 on ARM32 and ARM64.
+#if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 ) && (defined(__arm__) || defined(__aarch64__))
+  #if __ANDROID_API__ < 21
+    #define PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMG
+  #endif
+
+  extern PFNGLGENVERTEXARRAYSOESPROC    			glGenVertexArraysOESEXT;
+  extern PFNGLBINDVERTEXARRAYOESPROC    			glBindVertexArrayOESEXT;
+  extern PFNGLDELETEVERTEXARRAYSOESPROC 			glDeleteVertexArraysOESEXT;
+  extern PFNGLISVERTEXARRAYOESPROC					glIsVertexArrayOESEXT;
+  extern PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT;
+
+  #define glGenVertexArraysOES 						glGenVertexArraysOESEXT
+  #define glBindVertexArrayOES 						glBindVertexArrayOESEXT
+  #define glDeleteVertexArraysOES 					glDeleteVertexArraysOESEXT
+  #define glIsVertexArrayOES						glIsVertexArrayOESEXT
+  #define glRenderbufferStorageMultisampleIMG		glRenderbufferStorageMultisampleIMGEXT
+#endif
+
 // forward declarations
 namespace cinder {
 	class TriMesh;

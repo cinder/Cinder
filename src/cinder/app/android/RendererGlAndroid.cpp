@@ -29,6 +29,16 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 
+// These aren't defined on ARM32 or ARM64 for OpenGL ES 2. They 
+// get loaded in RendererGlAndroid::initialize via eglGetProcAddress.
+#if defined(CINDER_ANDROID) && defined(CINDER_GL_ES_2) && (defined(__arm__) || defined(__aarch64__))
+PFNGLGENVERTEXARRAYSOESPROC 				glGenVertexArraysOESEXT = nullptr;
+PFNGLBINDVERTEXARRAYOESPROC 				glBindVertexArrayOESEXT = nullptr;
+PFNGLDELETEVERTEXARRAYSOESPROC 				glDeleteVertexArraysOESEXT = nullptr;
+PFNGLISVERTEXARRAYOESPROC 					glIsVertexArrayOESEXT = nullptr;
+PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC	glRenderbufferStorageMultisampleIMGEXT = nullptr;
+#endif
+
 namespace cinder { namespace app {
 
 void checkGlStatus();
@@ -46,6 +56,14 @@ RendererGlAndroid::~RendererGlAndroid()
 
 bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
 {
+#if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_2 ) && (defined(__arm__) || defined(__aarch64__))
+	glGenVertexArraysOESEXT = (PFNGLGENVERTEXARRAYSOESPROC)eglGetProcAddress( "glGenVertexArraysOES" );
+	glBindVertexArrayOESEXT = (PFNGLBINDVERTEXARRAYOESPROC)eglGetProcAddress( "glBindVertexArrayOES" );
+	glDeleteVertexArraysOESEXT = (PFNGLDELETEVERTEXARRAYSOESPROC)eglGetProcAddress( "glDeleteVertexArraysOES" );
+	glIsVertexArrayOESEXT = (PFNGLISVERTEXARRAYOESPROC)eglGetProcAddress( "glIsVertexArrayOES" );
+	glRenderbufferStorageMultisampleIMGEXT = (PFNGLRENDERBUFFERSTORAGEMULTISAMPLEIMGPROC)eglGetProcAddress( "glRenderbufferStorageMultisampleIMG" );
+#endif
+
 	std::vector<EGLint> configAttribs;
 
 	// OpenGL ES 3 also uses EGL_OPENGL_ES2_BIT

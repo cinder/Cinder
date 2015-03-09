@@ -564,6 +564,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplEs.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/VaoImplSoftware.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VboMesh.cpp
 

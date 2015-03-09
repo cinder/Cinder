@@ -68,6 +68,7 @@ android {
         ndkDir = "${projectDir}/../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../.."
         verbose = false
+        gles2 = true
         moduleName = "BasicApp"
         srcFiles = ["../../../src/BasicApp.cpp"]
         cFlags {
