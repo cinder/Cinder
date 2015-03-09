@@ -62,8 +62,10 @@ PlatformWinRt::PlatformWinRt()
 
 DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath  )
 {
-	CI_LOG_E( "Not implemented" );
-	return nullptr;
+	if( ! resourcePath.empty() )
+		return DataSourcePath::create( resourcePath.string() );
+	else
+		throw AssetLoadExc( resourcePath );
 }
 
 fs::path PlatformWinRt::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
