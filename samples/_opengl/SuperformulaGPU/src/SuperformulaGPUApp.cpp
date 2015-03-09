@@ -7,6 +7,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
 #include "cinder/gl/Ubo.h"
+#include "cinder/GeomIo.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -49,7 +50,7 @@ void SuperformulaGpuApp::setupGeometry()
 {
 	auto plane = geom::Plane().subdivisions( ivec2( mSubdivisions, mSubdivisions ) );
 	mBatch = gl::Batch::create( plane, mGlsl );
-	mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( plane, 0.0f ), mNormalsGlsl );
+	mNormalsBatch = gl::Batch::create( geom::Plane() >> geom::VertexNormalLines( 1.0f ), mNormalsGlsl );
 }
 
 void SuperformulaGpuApp::setup()
