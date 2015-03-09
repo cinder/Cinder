@@ -261,7 +261,7 @@ public:
     bool IsSymbol() const { return *typeTagPtr_ == SYMBOL_TYPE_TAG; }
     const char* AsSymbol() const;
     const char* AsSymbolUnchecked() const { return argumentPtr_; }
-
+    
     bool IsBlob() const { return *typeTagPtr_ == BLOB_TYPE_TAG; }
     void AsBlob( const void*& data, osc_bundle_element_size_t& size ) const;
     void AsBlobUnchecked( const void*& data, osc_bundle_element_size_t& size ) const;

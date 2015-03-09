@@ -444,9 +444,10 @@ void ReceivedMessageArgument::AsBlobUnchecked( const void*& data, osc_bundle_ele
     osc_bundle_element_size_t sizeResult = (osc_bundle_element_size_t)ToUInt32( argumentPtr_ );
     if( !IsValidElementSizeValue(sizeResult) )
         throw MalformedMessageException("invalid blob size");
-
+    
     size = sizeResult;
-	data = (void*)(argumentPtr_+ osc::OSC_SIZEOF_INT32);
+    data = (void*)(argumentPtr_+ osc::OSC_SIZEOF_INT32);
+    
 }
 
 std::size_t ReceivedMessageArgument::ComputeArrayItemCount() const

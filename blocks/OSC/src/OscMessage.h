@@ -28,7 +28,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
-
+#include "cinder/Buffer.h"
 #include "OscArg.h"
 #include <string>
 #include <vector>
@@ -58,13 +58,13 @@ namespace cinder { namespace osc {
 		int32_t getArgAsInt32( int index, bool typeConvert = false ) const;
 		float getArgAsFloat( int index, bool typeConvert = false ) const;
 		std::string getArgAsString( int index, bool typeConvert = false ) const;
-        ci::Buffer getArgAsBlob(int index, bool typeConvert = false) const;
-        
+		ci::Buffer getArgAsBlob(int index, bool typeConvert = false) const;
+	
 		void addIntArg( int32_t argument );
 		void addFloatArg( float argument );
 		void addStringArg( std::string argument );
-        void addBlobArg(ci::Buffer argument);
-        
+		void addBlobArg(const ci::Buffer &argument);
+	
 	protected:
 		std::string address;
 		std::vector<Arg*> args;

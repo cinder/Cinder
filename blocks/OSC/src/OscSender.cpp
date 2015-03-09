@@ -123,10 +123,10 @@ void OscSender::appendMessage( const Message& message, ::osc::OutboundPacketStre
 			p << message.getArgAsFloat(i);
 		}else if (message.getArgType(i) == TYPE_STRING){
 			p << message.getArgAsString(i).c_str();
-        }else if (message.getArgType(i) == TYPE_BLOB){
-            p << message.getArgAsBlob(i).getData();
-        }
-        else {
+		}else if (message.getArgType(i) == TYPE_BLOB){
+			p << message.getArgAsBlob(i).getData();
+		}
+		else {
 			throw OscExcInvalidArgumentType();
 		}
 	}

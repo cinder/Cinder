@@ -107,28 +107,25 @@ typedef enum _ArgType
 	private:
 		std::string value;
 	};
-    
-    class ArgBlob : public Arg
-    {
-    public:
-        ArgBlob( ci::Buffer _value ) { value = _value; }
-        
-        /// return the type of this argument
-        ArgType getType() const { return TYPE_BLOB; }
-        std::string getTypeName() const { return "blob"; }
-        
-        /// return value
-        ci::Buffer get() const { return value; }
-        /// set value
-        void set( ci::Buffer _value ) { value = _value; }
-        
-        void set( const char *_value, unsigned int size) {
-            ci::Buffer buff = Buffer(&value, size);
-            value = buff;
-        }
-    private:
-        ci::Buffer value;
-    };
+	
+	class ArgBlob : public Arg
+	{
+	public:
+		ArgBlob( const ci::Buffer _value ) { value = _value; }
+		/// return the type of this argument
+		ArgType getType() const { return TYPE_BLOB; }
+		std::string getTypeName() const { return "blob"; }
+		/// return value
+		ci::Buffer get() const { return value; }
+		/// set value
+		void set( ci::Buffer _value ) { value = _value; }
+		void set( const char *_value, unsigned int size) {
+			ci::Buffer buff = Buffer(&value, size);
+			value = buff;
+		}
+	private:
+		ci::Buffer value;
+	};
 
-} // namespace osc
-} // namespace cinder
+}// namespace osc
+}// namespace cinder

@@ -32,7 +32,7 @@
 namespace cinder { namespace osc {
 
 class Bundle {
-  public:
+public:
 	Bundle();
 	~Bundle();
 	Bundle(const Bundle& other){copy(other);}
@@ -51,7 +51,7 @@ class Bundle {
 	const Bundle& getBundleAt(int index) const { return bundles[index]; }
 	const Message& getMessageAt(int index) const {return messages[index];}
 	
-  private:
+private:
 	std::vector<Message> messages;
 	std::vector<Bundle> bundles;
 };	
