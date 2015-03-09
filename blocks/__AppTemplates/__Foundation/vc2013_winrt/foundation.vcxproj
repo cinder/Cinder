@@ -106,7 +106,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Release'">
     <ClCompile>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
-      <AdditionalIncludeDirectories>..\include;_TBOX_CINDER_PATH_\include;_TBOX_CINDER_PATH_\include;_TBOX_CINDER_PATH_\boost;_TBOX_CINDER_PATH_\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;_TBOX_CINDER_PATH_\include;_TBOX_CINDER_PATH_\boost;_TBOX_CINDER_PATH_\include\ANGLE;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
     </ClCompile>
     <Link>
