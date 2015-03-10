@@ -33,7 +33,7 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 #elif defined( CINDER_WINRT )
 	#include <ppltasks.h>
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/Utilities.h"
 	#include "cinder/msw/CinderMsw.h"
 	using namespace Windows::Storage;
@@ -414,7 +414,7 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() ) // this is necessary to limit the lifetime of the objc-based loader's allocations
-#if ! defined( CINDER_WINRT )
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
 		extension = dataSource->getFilePathHint().extension().string();
 #else
 		extension = dataSource->getFilePathHint().extension();
@@ -434,7 +434,11 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() ) {
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
 		extension = dataTarget->getFilePathHint().extension().string();
+#else
+		extension = dataTarget->getFilePathHint().extension();
+#endif
 		// strip leading .
 		extension = ( ( ! extension.empty() ) && ( extension[0] == '.' ) ) ? extension.substr( 1, string::npos ) : extension;
 	}

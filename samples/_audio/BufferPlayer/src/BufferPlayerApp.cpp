@@ -30,7 +30,7 @@ public:
 
 void BufferPlayerNodeApp::prepareSettings( Settings *settings )
 {
-	settings->enableMultiTouch( false );
+	settings->setMultiTouchEnabled( false );
 }
 
 void BufferPlayerNodeApp::setup()

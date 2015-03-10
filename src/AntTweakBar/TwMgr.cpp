@@ -29,6 +29,8 @@
 #   ifdef _DEBUG
 #       include <crtdbg.h>
 #   endif // _DEBUG
+#	undef min
+#	undef max
 #endif // ANT_WINDOWS
 
 #include <algorithm>

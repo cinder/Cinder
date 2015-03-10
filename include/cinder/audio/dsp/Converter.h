@@ -26,6 +26,7 @@
 #include "cinder/audio/Buffer.h"
 
 #include <memory>
+#include <algorithm>
 
 namespace cinder { namespace audio { namespace dsp {
 

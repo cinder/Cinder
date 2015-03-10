@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 
-#if defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ANGLE ) || defined( CINDER_WINRT )
 	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2

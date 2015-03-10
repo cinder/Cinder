@@ -204,7 +204,7 @@ void NormalMappingApp::setup()
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		fs::path mshFile = getAssetPath("") / "leprechaun.msh";
+		fs::path mshFile = getAssetPath( "leprechaun.msh" );
 		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );

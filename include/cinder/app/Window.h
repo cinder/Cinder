@@ -85,7 +85,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#endif
 #elif defined( CINDER_WINRT )
 	namespace cinder { namespace app {
-		class WindowImplWinRT;
+		class WindowImplWinRt;
 	} } // namespace cinder::app
 #elif defined( CINDER_MSW )
 	namespace cinder { namespace app {
@@ -344,7 +344,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
 #elif defined( CINDER_WINRT )
-	DX_WINDOW_TYPE getNativeCoreWindow();
+	::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.
@@ -426,7 +426,7 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	static WindowRef		privateCreate__( WindowImplMsw *impl, AppBase *app )
 #elif defined( CINDER_WINRT )
-	static WindowRef		privateCreate__( WindowImplWinRT *impl, AppBase *app )
+	static WindowRef		privateCreate__( WindowImplWinRt *impl, AppBase *app )
 #else
 	static WindowRef		privateCreate__( WindowImplCocoa *impl, AppBase *app )
 #endif
@@ -460,7 +460,7 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
 #elif defined( CINDER_WINRT )
-	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
+	void		setImpl( WindowImplWinRt *impl ) { mImpl = impl; }
 #endif
 
 	AppBase							*mApp;
@@ -482,7 +482,7 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
 #elif defined( CINDER_WINRT )
-	WindowImplWinRT *mImpl;
+	WindowImplWinRt *mImpl;
 #endif
 };
 

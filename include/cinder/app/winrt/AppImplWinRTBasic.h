@@ -29,11 +29,7 @@
 
 #pragma once
 
-#include <windows.h>
-#undef min
-#undef max
-
-#include "cinder/app/msw/AppImplWinRT.h"
+#include "cinder/app/winrt/AppImplWinRT.h"
 #include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/Display.h"
 #include "cinder/app/Window.h"
@@ -41,11 +37,12 @@
 namespace cinder { namespace app {
 
 class WindowImplWinRTBasic;
+class WinRTApp;
 
 class AppImplWinRTBasic : public AppImplWinRT {
 public:
-	AppImplWinRTBasic( class AppBase *app  );
-	void	run();
+	AppImplWinRTBasic();
+	void	launch( const char *, int, char *const [] );
 	void	runReady(Windows::UI::Core::CoreWindow^ window);
 	void	handlePointerDown(Windows::UI::Core::PointerEventArgs^ args);
 	void	handlePointerMoved(Windows::UI::Core::PointerEventArgs^ args);
@@ -53,31 +50,33 @@ public:
 	void	setVisible(bool isVisible) { mIsVisible = isVisible; };
 	void	UpdateForWindowSizeChange(Windows::UI::Core::CoreWindow^ window);
 
-	class AppBase*		getApp() { return mApp; }
-	
 	void	quit() { mShouldQuit = true; }
 
 	void	setFrameRate( float frameRate ) override;
 	void	disableFrameRate();
 	bool	isFrameRateEnabled() const;
 
-	size_t		getNumWindows() const;
-	WindowRef	getWindowIndex( size_t index );
+	size_t		getNumWindows() const override;
+	WindowRef	getWindowIndex( size_t index ) const override;
 	WindowRef	getForegroundWindow() const;
 	fs::path	getAppPath() const;
 
+	ivec2		getMousePos() const override;
+	void		hideCursor() override;
+	void		showCursor() override;
 
+	typedef std::function<void( Settings *settings )>		SettingsFn;
+
+	template<typename AppT>
+	static void main( const RendererRef &defaultRenderer, const SettingsFn &settingsFn = SettingsFn() );
 private:
 	void		sleep( double seconds );
-
-
 
 	virtual void	closeWindow( class WindowImplWinRT *windowImpl ) override;
 	virtual void	setForegroundWindow( WindowRef window ) override;
 	
 	bool			mShouldQuit;
-	class AppBase	*mApp;
-	DX_WINDOW_TYPE	mWnd;
+	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 
 	HINSTANCE	mInstance;
 	double		mNextFrameTime;
@@ -97,11 +96,36 @@ class WindowImplWinRTBasic : public WindowImplWinRT {
 	WindowImplWinRTBasic( const Window::Format &format, AppImplWinRTBasic *appImpl )
 		: WindowImplWinRT( format, appImpl ) {};
 
-	WindowImplWinRTBasic( DX_WINDOW_TYPE hwnd, RendererRef renderer, AppImplWinRTBasic *appImpl )
-		: WindowImplWinRT( hwnd, renderer, appImpl ) {};
+	WindowImplWinRTBasic( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef renderer, AppImplWinRTBasic *appImpl )
+		: WindowImplWinRT( wnd, renderer, appImpl ) {};
 
   protected:
 	friend AppImplWinRTBasic;
 };
 
+template<typename AppT>
+void AppImplWinRTBasic::main( const RendererRef &defaultRenderer, const SettingsFn &settingsFn )
+{
+	AppBase::prepareLaunch();
+
+	Settings settings;
+	AppImplWinRTBasic::initialize( &settings, defaultRenderer, "", 0, nullptr );
+
+	if( settingsFn )
+		settingsFn( &settings );
+
+	AppT *app = new AppT;
+
+	AppBase::executeLaunch( "", 0, nullptr );
+	AppBase::cleanupLaunch();
+}
+
 } } // namespace cinder::app
+
+#define CINDER_APP_WINRT( APP, RENDERER, ... )										\
+[::Platform::MTAThread]																			\
+int main( ::Platform::Array<::Platform::String^>^ ) {											\
+	cinder::app::RendererRef renderer( new RENDERER );											\
+	cinder::app::AppImplWinRTBasic::main<APP>( renderer, ##__VA_ARGS__ );						\
+	return 0;																					\
+}

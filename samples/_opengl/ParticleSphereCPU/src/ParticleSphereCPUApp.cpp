@@ -95,7 +95,13 @@ void ParticleSphereCPUApp::setup()
 	// Create mesh by pairing our particle layout with our particle Vbo.
 	// A VboMesh is an array of layout + vbo pairs
 	auto mesh = gl::VboMesh::create( mParticles.size(), GL_POINTS, { { particleLayout, mParticleVbo } } );
+#if ! defined( CINDER_GL_ES )
 	mParticleBatch = gl::Batch::create( mesh, gl::getStockShader( gl::ShaderDef().color() ) );
+	gl::pointSize( 1.0f );
+#else
+	mParticleBatch = gl::Batch::create( mesh, gl::GlslProg::create( loadAsset( "draw_es3.vert" ), 
+																		loadAsset( "draw_es3.frag" ) ) );
+#endif
 
 	// Disturb particles a lot on mouse down.
 	getWindow()->getSignalMouseDown().connect( [this]( MouseEvent event ) {

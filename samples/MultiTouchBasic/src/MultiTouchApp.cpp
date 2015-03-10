@@ -64,7 +64,7 @@ void MultiTouchApp::setup()
 
 void prepareSettings( MultiTouchApp::Settings *settings )
 {
-	settings->enableMultiTouch();
+	settings->setMultiTouchEnabled( true );
 }
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
