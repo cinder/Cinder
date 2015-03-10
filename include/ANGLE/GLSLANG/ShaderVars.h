@@ -28,6 +28,9 @@ enum InterpolationType
     INTERPOLATION_FLAT
 };
 
+// Validate link & SSO consistency of interpolation qualifiers
+COMPILER_EXPORT bool InterpolationTypesMatch(InterpolationType a, InterpolationType b);
+
 // Uniform block layout qualifier, see section 4.3.8.3 of the ESSL 3.00.4 spec
 enum BlockLayoutType
 {
