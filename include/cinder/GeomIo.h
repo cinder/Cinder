@@ -693,7 +693,7 @@ class BSpline : public Source {
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
-//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
+//! "Bakes" a mat4 transformation into the positions, normals and tangents of a geom::Source
 class Transform : public Modifier {
   public:
 	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
@@ -710,6 +710,29 @@ class Transform : public Modifier {
 	void				process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
 	mat4		mTransform;
+};
+
+//! "Bakes" a translation into the positions, normals and tangents of a geom::Source
+class Translate : public Transform {
+  public:
+	Translate( const vec3 &v ) : Transform( glm::translate( v ) ) {}
+	Translate( float x, float y, float z ) : Transform( glm::translate( vec3( x, y, z ) ) ) {}
+	Translate( const vec2 &v ) : Transform( glm::translate( vec3( v, 0 ) ) ) {}
+	Translate( float x, float y ) : Transform( glm::translate( vec3( x, y, 0 ) ) ) {}
+};
+
+//! "Bakes" a scale into the positions, normals and tangents of a geom::Source
+class Scale : public Transform {
+  public:
+	Scale( const vec3 &v ) : Transform( glm::scale( v ) ) {}
+	Scale( float x, float y, float z ) : Transform( glm::scale( vec3( x, y, z ) ) ) {}
+	Scale( float s ) : Transform( glm::scale( vec3( s ) ) ) {}
+};
+
+//! "Bakes" a rotation into the positions, normals and tangents of a geom::Source
+class Rotate : public Transform {
+  public:
+	Rotate( const glm::quat &q ) : Transform( glm::toMat4( q ) ) {}
 };
 
 //! Twists a geom::Source around a given axis
