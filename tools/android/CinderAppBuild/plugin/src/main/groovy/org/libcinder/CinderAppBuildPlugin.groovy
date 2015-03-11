@@ -8,7 +8,7 @@ Example cinder property struct:
         moduleName = "BasicApp"
         srcFiles = ["../../../src/BasicApp.cpp"]
         cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
-        includeDirs = ["../../../../../include", "../../../../../boost"]
+, type: CompileNdkTask,        includeDirs = ["../../../../../include", "../../../../../boost"]
         ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
         staticLibs = [
                 "${projectDir}/../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
@@ -135,13 +135,21 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             return archFlags;
         }
 
+
         this.mProjectDir = project.projectDir;
         this.mBuildDir  = project.buildDir;
         this.mBuildType = 'debug';
 
-
         // TASK: cinderGenerateDebugNdkBuild
         project.task('cinderGenerateDebugNdkBuild' ) << {
+            def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
+            if( minSdkVersion < 18 ) {
+                project.cinder.gles2 = true;
+                if( project.cinder.verbose ) {
+                    println "Forcing OpenGL ES 2 for API Level ${minSdkVersion}";
+                }
+            }
+
             this.mBuildType = "debug";
             this.mNdkBuildDir = "${this.mBuildDir}/cinder-ndk/${this.mBuildType}";
             this.cinderGenerateNdkBuild(project);  
@@ -149,7 +157,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
       
         // TASK: cinderCompileDebugNdk
         project.task('cinderCompileDebugNdk', type: CompileNdkTask, dependsOn: 'cinderGenerateDebugNdkBuild') {
-        //project.task('cinderCompileDebugNdk', dependsOn: 'cinderGenerateDebugNdkBuild') {
             plugin = this;
             doLast {
                 this.cinderCompileNdk(project);
@@ -158,13 +165,21 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
         // TASK: cinderGenerateReleaseNdkBuild
         project.task('cinderGenerateReleaseNdkBuild') << {
+            def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
+            if( minSdkVersion < 18 ) {
+                project.cinder.gles2 = true;
+                if( project.cinder.verbose ) {
+                    println "Forcing OpenGL ES 2 for API Level ${minSdkVersion}";
+                }
+            }
+
             this.mBuildType = "release";
             this.mNdkBuildDir = "${this.mBuildDir}/cinder-ndk/${this.mBuildType}"
             this.cinderGenerateNdkBuild(project);
         }  
 
         // TASK: cinderCompileReleaseNdk
-        project.task('cinderCompileReleaseNdk', dependsOn: 'cinderGenerateReleaseNdkBuild') << {
+        project.task('cinderCompileReleaseNdk', type: CompileNdkTask, dependsOn: 'cinderGenerateReleaseNdkBuild') << {
             this.cinderCompileNdk(project);
         }
     }

@@ -7,6 +7,7 @@ Usage:
     --appname   Name of application [Default: MyCinderApp]
     --path      Path to a directory that will contain MyCinderApp [Default: . ]
     --domain    Domain to use [Default: org.libcinder.samples]
+    --nocpp     Does not generate CPP src [Default: false] 
     --help      This help message
 """
 import sys
@@ -41,7 +42,7 @@ def lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFil
     pass 
 
 # projgen
-def projgen( appName, appPath, appDomain ):
+def projgen( appName, appPath, appDomain, appGenCpp ):
     appName = appName.strip()
     appPath = appPath.strip()
     appDomain = appDomain.strip()
@@ -65,11 +66,15 @@ def projgen( appName, appPath, appDomain ):
     cinderRelPathApp = os.path.relpath(cinderPath, os.path.join(appPath, "androidstudio", appName, "app"))
 
     # Copy the CPP file
-    srcCppFile = os.path.join(templatePath, "src", "CinderApp.cpp")
-    dstCppFile = os.path.join(appPath, "src", ("%s.cpp" % appName))
-    if not os.path.exists(os.path.dirname(dstCppFile)):
-        os.makedirs(os.path.dirname(dstCppFile))
-    lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcCppFile, dstCppFile)
+    if appGenCpp:
+        srcCppFile = os.path.join(templatePath, "src", "CinderApp.cpp")
+        dstCppFile = os.path.join(appPath, "src", ("%s.cpp" % appName))
+        if not os.path.exists(os.path.dirname(dstCppFile)):
+            os.makedirs(os.path.dirname(dstCppFile))
+        lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcCppFile, dstCppFile)
+    else:
+        print( "SKIPPED CPP GENERATION" )
+        pass
 
     # Copy the Android Studio project
     if not os.path.exists( asProjPath ):
@@ -121,10 +126,11 @@ def main():
     appName   = "MyCinderApp"
     appPath   = "."
     appDomain = "org.libcinder.samples"
-    
+    appGenCpp = True
+
     # parse command line options
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "h", ["help", "appname=", "path=", "domain="])          
+        opts, args = getopt.getopt(sys.argv[1:], "h", ["help", "appname=", "path=", "domain=", "nocpp"])          
     except getopt.error, msg:
         print msg
         print "for help use --help"
@@ -140,12 +146,14 @@ def main():
             appPath = a
         elif o in ("--domain"):
             appDomain = a
+        elif o in ("--nocpp"):
+            appGenCpp = False
     # process arguments
     for arg in args:
         pass 
     # projgen
     if (appName is not None):
-        projgen( appName, appPath, appDomain )
+        projgen( appName, appPath, appDomain, appGenCpp )
         pass
     pass
 

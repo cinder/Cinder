@@ -26,6 +26,8 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 
+#include "cinder/app/App.h"
+
 #if defined( CINDER_GL_ES )
 
 #include "cinder/gl/Shader.h"
@@ -95,6 +97,15 @@ bool EnvironmentEs::supportsHardwareVao()
 {
 #if defined( CINDER_COCOA_TOUCH )
 	return true;
+#elif defined( CINDER_ANDROID )
+  #if defined( CINDER_GL_ES_2 )
+ci::app::console() << "EnvironmentEs::supportsHardwareVao|ES2: " << isExtensionAvailable( "OES_vertex_array_object" ) << std::endl;
+	return isExtensionAvailable( "OES_vertex_array_object" );
+  #else
+ci::app::console() << "EnvironmentEs::supportsHardwareVao|ES3: " << true << std::endl;
+	// Assumes OpenGL ES 3 or greater
+	return true;
+  #endif	
 #else
 	return false;
 #endif

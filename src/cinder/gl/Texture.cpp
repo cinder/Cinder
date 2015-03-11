@@ -77,7 +77,11 @@
 namespace std {
 
 double log2( double x ) {
+#if __ANDROID_API__ < 18
+    return ::log( x ) / ::log( 2.0 ); 
+#else
     return ::log2( x );
+#endif
 }
 
 } // namespace std
