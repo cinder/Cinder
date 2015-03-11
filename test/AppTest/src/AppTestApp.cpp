@@ -76,6 +76,7 @@ class AppTestApp : public App {
 	void resize() override;
 	void update() override;
 	void draw() override;
+	void cleanup() override;
 
 	void drawInfo();
 
@@ -232,6 +233,11 @@ void AppTestApp::draw()
 	drawInfo();
 
 	CI_CHECK_GL();
+}
+
+void AppTestApp::cleanup()
+{
+	CI_LOG_I( "Shutdown" );
 }
 
 void AppTestApp::drawInfo()

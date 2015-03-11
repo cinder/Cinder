@@ -33,7 +33,7 @@ void GeometryShaderIntroApp::setup()
 	}
 	catch( gl::GlslProgCompileExc ex ) {
 		cout << ex.what() << endl;
-		shutdown();
+		quit();
 	}
 
 	// setup VertBatch with a single point at the origin

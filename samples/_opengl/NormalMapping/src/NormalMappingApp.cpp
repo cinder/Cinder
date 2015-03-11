@@ -71,7 +71,6 @@ class NormalMappingApp : public App {
 
 public:
 	void	setup();
-	void	shutdown();
 
 	void	update();
 	void	draw();
@@ -241,10 +240,6 @@ void NormalMappingApp::setup()
 
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
-}
-
-void NormalMappingApp::shutdown()
-{
 }
 
 void NormalMappingApp::update()

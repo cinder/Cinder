@@ -49,7 +49,7 @@ void TessellationShaderApp::setup()
 	}
 	catch( const gl::GlslProgCompileExc &ex ) {
 		cout << ex.what() << endl;
-		shutdown();
+		quit();
 	}
 	
 	mBatch = gl::VertBatch::create( GL_PATCHES );
