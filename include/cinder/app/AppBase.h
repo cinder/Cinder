@@ -217,6 +217,8 @@ class AppBase {
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
+	//! Override to cleanup any resources before app destruction
+	virtual void	cleanup() {}
 	//! Quits the application gracefully
 	virtual void	quit() = 0;
 
@@ -226,8 +228,8 @@ class AppBase {
 	//! Signal that emits before the app quit process begins. If any slots return false then the app quitting is canceled.
 	EventSignalShouldQuit&		getSignalShouldQuit() { return mSignalShouldQuit; }
 	//! Emitted prior to the application shutting down
-	signals::Signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
-	void 						emitShutdown();
+	signals::Signal<void()>&	getSignalCleanup() { return mSignalCleanup; }
+	void 						emitCleanup();
 
 	signals::Signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
     void 						emitWillResignActive();
@@ -440,7 +442,7 @@ class AppBase {
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
 
-	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+	signals::Signal<void()>		mSignalUpdate, mSignalCleanup, mSignalWillResignActive, mSignalDidBecomeActive;
 	EventSignalShouldQuit		mSignalShouldQuit;
 	
 	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;

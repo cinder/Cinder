@@ -132,7 +132,7 @@ LRESULT AppImplMswScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wPa
 		case WM_DESTROY:
 			for( auto winIt = mWindows.begin(); winIt != mWindows.end(); ++winIt )
 				(*winIt)->getWindow()->emitClose();
-			mApp->emitShutdown();
+			mApp->emitCleanup();
 /*			mApp->getRenderer()->kill();
 			::KillTimer( mWnd, TIMER_ID );
 			::ReleaseDC( mWnd, mDC );*/

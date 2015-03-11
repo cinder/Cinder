@@ -112,7 +112,7 @@ void AppImplMswBasic::run()
 	}
 
 //	killWindow( mFullScreen );
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 	delete mApp;
 }
 

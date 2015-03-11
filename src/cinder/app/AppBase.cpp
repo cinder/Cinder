@@ -185,9 +185,10 @@ void AppBase::privateUpdate__()
 	}
 }
 
-void AppBase::emitShutdown()
+void AppBase::emitCleanup()
 {
-	mSignalShutdown.emit();
+	mSignalCleanup.emit();
+	cleanup();
 }
 
 void AppBase::emitWillResignActive()

@@ -106,7 +106,7 @@ void AppWinRt::run( Windows::UI::Core::CoreWindow^ window )
 			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents( CoreProcessEventsOption::ProcessOneAndAllPending );
 		}
 	}
-	emitShutdown();
+	emitCleanup();
 //	delete mApp;
 }
 
