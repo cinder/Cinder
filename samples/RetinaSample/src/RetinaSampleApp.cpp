@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -9,9 +9,8 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class RetinaSampleApp : public AppNative {
+class RetinaSampleApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
 	void displayChange();
@@ -24,7 +23,7 @@ class RetinaSampleApp : public AppNative {
 	gl::TextureFontRef	mFont;
 };
 
-void RetinaSampleApp::prepareSettings( Settings *settings )
+void prepareSettings( RetinaSampleApp::Settings *settings )
 {
 	settings->enableHighDensityDisplay(); // try removing this line
 	settings->enableMultiTouch( false );
@@ -91,4 +90,4 @@ void RetinaSampleApp::draw()
 		gl::TextureFont::DrawOptions().scale( 0.5f ).pixelSnap( false ) );
 }
 
-CINDER_APP_NATIVE( RetinaSampleApp, RendererGl )
+CINDER_APP( RetinaSampleApp, RendererGl, prepareSettings )

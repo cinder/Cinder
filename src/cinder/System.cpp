@@ -54,7 +54,7 @@
 	}
 #elif defined( CINDER_WINRT)
 	#include <collection.h>
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	using namespace Windows::Devices::Input;
 	using namespace Windows::Foundation::Collections;
 	using namespace Windows::ApplicationModel;

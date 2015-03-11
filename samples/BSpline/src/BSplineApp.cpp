@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/BSpline.h"
 #include "cinder/cairo/Cairo.h"
@@ -11,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using std::vector;
 
-class bsplineApp : public AppBasic {
+class bsplineApp : public App {
  public:
 	bsplineApp() : mTrackedPoint( -1 ), mDegree( 3 ), mOpen( true ), mLoop( false ) {}
 	
@@ -182,4 +182,4 @@ void bsplineApp::draw()
 	drawBSpline( ctx );	
 }
 
-CINDER_APP_BASIC( bsplineApp, Renderer2d )
+CINDER_APP( bsplineApp, Renderer2d )

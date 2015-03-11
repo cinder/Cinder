@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
@@ -35,7 +35,7 @@ class Circle {
 	Anim<float>			mRadius;
 };
 
-class DragTweenApp : public AppNative {
+class DragTweenApp : public App {
   public:
     void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup();
@@ -104,4 +104,4 @@ void DragTweenApp::draw()
 }
 
 
-CINDER_APP_NATIVE( DragTweenApp, RendererGl )
+CINDER_APP( DragTweenApp, RendererGl )

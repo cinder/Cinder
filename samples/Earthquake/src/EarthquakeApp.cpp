@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "Earth.h"
 #include "POV.h"
 #include "Resources.h"
@@ -24,7 +24,7 @@ using std::istringstream;
 using std::stringstream;
 
 
-class EarthquakeApp : public AppBasic {
+class EarthquakeApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -260,4 +260,4 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 }
 
 
-CINDER_APP_BASIC( EarthquakeApp, RendererGl )
+CINDER_APP( EarthquakeApp, RendererGl )

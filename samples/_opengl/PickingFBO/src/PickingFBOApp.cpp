@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/Shader.h"
@@ -16,9 +16,8 @@
 using namespace ci;
 using namespace ci::app;
 
-class PickingFBOApp : public AppNative {
+class PickingFBOApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override { settings->enableMultiTouch( false ); }
 	void setup() override;
 	void resize() override;
 	void draw() override;
@@ -343,7 +342,7 @@ void PickingFBOApp::setupShader()
 	}
 	catch( ci::Exception &exc ) {
 		CI_LOG_E( "Shader load error: " << exc.what() );
-		shutdown();
+		quit();
 	}
 }
 
@@ -448,4 +447,5 @@ void PickingFBOApp::setSelectedColors( int selected )
 	}
 }
 
-CINDER_APP_NATIVE( PickingFBOApp, RendererGl )
+CINDER_APP( PickingFBOApp, RendererGl, []( App::Settings *settings ) {	
+							settings->setMultiTouchEnabled( false ); } )

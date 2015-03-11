@@ -34,11 +34,10 @@
 #include "cinder/MatrixAffine2.h"
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
-#include "cinder/Function.h"
 #include "cinder/Noncopyable.h"
 
+#include <functional>
 #include <map>
-
 
 namespace cinder { namespace svg {
 

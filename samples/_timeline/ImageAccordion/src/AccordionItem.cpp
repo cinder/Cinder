@@ -4,7 +4,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Text.h"
 #include "cinder/CinderMath.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Texture.h"

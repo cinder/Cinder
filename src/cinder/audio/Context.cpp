@@ -27,7 +27,7 @@
 #include "cinder/audio/dsp/Converter.h"
 
 #include "cinder/Cinder.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #include <sstream>
 
@@ -51,18 +51,18 @@ namespace cinder { namespace audio {
 std::shared_ptr<Context>		Context::sMasterContext;
 std::unique_ptr<DeviceManager>	Context::sDeviceManager;
 
-bool sIsRegisteredForShutdown = false;
+bool sIsRegisteredForCleanup = false;
 
 // static
 void Context::registerClearStatics()
 {
-	sIsRegisteredForShutdown = true;
+	sIsRegisteredForCleanup = true;
 
-	// A signal is registered for app shutdown in order to ensure that all Node's and their
-	// dependencies are destroyed before static memory goes down - this avoids a crash at shutdown
+	// A signal is registered for app cleanup in order to ensure that all Node's and their
+	// dependencies are destroyed before static memory goes down - this avoids a crash at cleanup
 	// in r8brain's static processing containers.
 	// TODO: consider leaking the master context by default and providing a public clear function.
-	app::App::get()->getSignalShutdown().connect( [] {
+	app::AppBase::get()->getSignalCleanup().connect( [] {
 		sDeviceManager.reset();
 		sMasterContext.reset();
 	} );
@@ -81,7 +81,7 @@ Context* Context::master()
 		sMasterContext.reset( new msw::ContextXAudio() );
 	#endif
 #endif
-		if( ! sIsRegisteredForShutdown )
+		if( ! sIsRegisteredForCleanup )
 			registerClearStatics();
 	}
 	return sMasterContext.get();
@@ -102,7 +102,7 @@ DeviceManager* Context::deviceManager()
 	//	CI_ASSERT( 0 && "TODO: simple DeviceManagerXp" );
 	#endif
 #endif
-		if( ! sIsRegisteredForShutdown )
+		if( ! sIsRegisteredForCleanup )
 			registerClearStatics();
 	}
 	return sDeviceManager.get();

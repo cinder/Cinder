@@ -7,7 +7,7 @@
  *
  */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/TextureFont.h"
@@ -23,7 +23,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class TextInputTweenApp : public AppBasic {
+class TextInputTweenApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -161,4 +161,4 @@ void TextInputTweenApp::draw()
 		mDyingCharacters.pop_front();
 }
 
-CINDER_APP_BASIC( TextInputTweenApp, RendererGl )
+CINDER_APP( TextInputTweenApp, RendererGl )

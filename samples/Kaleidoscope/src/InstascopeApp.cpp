@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/ImageIo.h"
@@ -25,7 +25,7 @@ static const string CLIENT_ID = "def20410b5134f7d9b828668775aee4a";
 
 static const bool PREMULT = false;
 
-class InstascopeApp : public AppNative {
+class InstascopeApp : public App {
   private:
 	void	setup();
 	void	prepareSettings( Settings *settings );
@@ -349,4 +349,4 @@ void InstascopeApp::drawMirrors( vector<TrianglePiece> *vec )
 	gl::popModelMatrix();
 }
 
-CINDER_APP_NATIVE( InstascopeApp, RendererGl )
+CINDER_APP( InstascopeApp, RendererGl )

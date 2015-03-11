@@ -1,8 +1,8 @@
 #include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
-#include "cinder/dx/dx.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -25,24 +25,24 @@ struct TouchPoint {
 	void draw() const
 	{
 		if( mTimeOfDeath > 0 ) // are we dying? then fade out
-			dx::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
+			gl::color( ColorA( mColor, ( mTimeOfDeath - getElapsedSeconds() ) / 2.0f ) );
 		else
-			dx::color( mColor );
+			gl::color( mColor );
 
-		dx::draw( mLine );
+		gl::draw( mLine );
 	}
 	
 	void startDying() { mTimeOfDeath = getElapsedSeconds() + 2.0f; } // two seconds til dead
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<vec2>	mLine;
+	PolyLine2f		mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppNative {
+class MultiTouchApp : public App {
  public:
 	void	prepareSettings( Settings *settings );
 
@@ -66,11 +66,6 @@ void MultiTouchApp::setup()
 	console() << "MT: " << System::hasMultiTouch() << " Max points: " << System::getMaxMultiTouchPoints() << std::endl;
 }
 
-void MultiTouchApp::prepareSettings( Settings *settings )
-{
-	settings->enableMultiTouch();
-}
-
 void MultiTouchApp::touchesBegan( TouchEvent event )
 {
 console() << "Began: " << event << std::endl;
@@ -82,14 +77,14 @@ console() << "Began: " << event << std::endl;
 
 void MultiTouchApp::touchesMoved( TouchEvent event )
 {
-console() << "Moved: " << event << std::endl;
+//console() << "Moved: " << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt )
 		mActivePoints[touchIt->getId()].addPoint( touchIt->getPos() );
 }
 
 void MultiTouchApp::touchesEnded( TouchEvent event )
 {
-console() << "Ended: " << event << std::endl;
+//console() << "Ended: " << event << std::endl;
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
 		mActivePoints[touchIt->getId()].startDying();
 		mDyingPoints.push_back( mActivePoints[touchIt->getId()] );
@@ -109,9 +104,10 @@ void MultiTouchApp::mouseDrag( MouseEvent event )
 
 void MultiTouchApp::draw()
 {
-	dx::enableAlphaBlending();
-	dx::setMatricesWindow( getWindowSize() );
-	dx::clear( Color( 0.1f, 0.1f, 0.1f ) );
+//console() << "Draw" << std::endl;
+	gl::enableAlphaBlending();
+	gl::setMatricesWindow( getWindowSize() );
+	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
 
 	for( map<uint32_t,TouchPoint>::const_iterator activeIt = mActivePoints.begin(); activeIt != mActivePoints.end(); ++activeIt ) {
 		activeIt->second.draw();
@@ -126,9 +122,14 @@ void MultiTouchApp::draw()
 	}
 	
 	// draw yellow circles at the active touch points
-	dx::color( Color( 1, 1, 0 ) );
+	gl::color( Color( 1, 1, 0 ) );
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = getActiveTouches().begin(); touchIt != getActiveTouches().end(); ++touchIt )
-		dx::drawStrokedCircle( touchIt->getPos(), 20.0f );
+		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP_NATIVE( MultiTouchApp, RendererDx )
+void prepareSettings( App::Settings *settings )
+{
+	settings->setMultiTouchEnabled( true );
+}
+
+CINDER_APP( MultiTouchApp, RendererGl, prepareSettings )

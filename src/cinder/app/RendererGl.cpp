@@ -30,31 +30,30 @@
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		#import "cinder/app/AppImplCocoaRendererGl.h"
+		#import "cinder/app/cocoa/RendererImplGlMac.h"
 	#elif defined( CINDER_COCOA_TOUCH )
-		#import "cinder/app/AppImplCocoaTouchRendererGl.h"
+		#import "cinder/app/cocoa/RendererImplGlCocoaTouch.h"
 	#endif
 #elif defined( CINDER_MSW )
 	#if defined( CINDER_GL_ANGLE )
-		#include "cinder/app/AppImplMswRendererAngle.h"
+		#include "cinder/app/msw/RendererImplGlAngle.h"
 	#else
-		#include "cinder/app/AppImplMswRendererGl.h"
+		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/msw/RendererImplGlAngle.h"
 #endif
 
 namespace cinder { namespace app {
 
 RendererGl::RendererGl( const RendererGl::Options &options )
-	: Renderer(), mImpl( 0 ), mOptions( options )
+	: Renderer(), mImpl( nullptr ), mOptions( options )
 {}
 
 RendererGl::RendererGl( const RendererGl &renderer )
-	: Renderer( renderer ), mOptions( renderer.mOptions )
+	: Renderer( renderer ), mImpl( nullptr ), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_COCOA )
-	mImpl = 0;
-#elif defined( CINDER_MSW )
-	mImpl = 0;
+#if defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #endif
 }
@@ -66,11 +65,10 @@ RendererGl::~RendererGl()
 		::CFRelease( mImpl );
 }
 
-void RendererGl::setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
+void RendererGl::setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled )
 {
-	mApp = aApp;
 	RendererGlRef sharedGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaRendererGl alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView app:mApp renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
+	mImpl = [[RendererImplGlMac alloc] initWithFrame:NSRectFromCGRect(frame) cinderView:cinderView renderer:this sharedRenderer:sharedGl withRetina:retinaEnabled];
 	// This is necessary for Objective-C garbage collection to do the right thing
 	::CFRetain( mImpl );
 }
@@ -101,14 +99,14 @@ void RendererGl::defaultResize()
 	[mImpl defaultResize];
 }
 
-Surface RendererGl::copyWindowSurface( const Area &area )
+Surface RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), false );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );		
 	ip::flipVertical( &s );
 	return s;
@@ -144,12 +142,10 @@ RendererGl::~RendererGl()
 {
 }
 
-void RendererGl::setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
+void RendererGl::setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer )
 {
-	mApp = aApp;
-
 	RendererGlRef sharedRendererGl = std::dynamic_pointer_cast<RendererGl>( sharedRenderer );
-	mImpl = [[AppImplCocoaTouchRendererGl alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView app:mApp renderer:this sharedRenderer:sharedRendererGl];
+	mImpl = [[RendererImplGlCocoaTouch alloc] initWithFrame:cocoa::createCgRect( frame ) cinderView:(UIView*)cinderView renderer:this sharedRenderer:sharedRendererGl];
 }
 
 EAGLContext* RendererGl::getEaglContext() const
@@ -187,14 +183,14 @@ void RendererGl::swapBuffers()
 	[mImpl flushBuffer];
 }
 
-Surface	RendererGl::copyWindowSurface( const Area &area )
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), true );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGBA, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 
@@ -207,18 +203,17 @@ RendererGl::~RendererGl()
 	delete mImpl;
 }
 
-void RendererGl::setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer )
+void RendererGl::setup( HWND wnd, HDC dc, RendererRef sharedRenderer )
 {
 	mWnd = wnd;
-	mApp = aApp;
 	if( ! mImpl )
 #if defined( CINDER_GL_ANGLE )
-		mImpl = new AppImplMswRendererAngle( mApp, this );
+		mImpl = new RendererImplGlAngle( this );
 #else
-		mImpl = new AppImplMswRendererGl( mApp, this );
+		mImpl = new RendererImplGlMsw( this );
 #endif
 	if( ! mImpl->initialize( wnd, dc, sharedRenderer ) )
-		throw ExcRendererAllocation( "AppImplMswRendererGl initialization failed." );
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
 }
 
 void RendererGl::kill()
@@ -267,14 +262,87 @@ void RendererGl::defaultResize()
 	mImpl->defaultResize();
 }
 
-Surface	RendererGl::copyWindowSurface( const Area &area )
+HDC RendererGl::getDc()
+{
+	return mImpl->getDc();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
 {
 	Surface s( area.getWidth(), area.getHeight(), false );
 	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
 	GLint oldPackAlignment;
 	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
 	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
-	glReadPixels( area.x1, mApp->getWindow()->toPixels( mApp->getWindowHeight() ) - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
+	ip::flipVertical( &s );
+	return s;
+}
+#elif defined( CINDER_WINRT )
+RendererGl::~RendererGl()
+{
+	delete mImpl;
+}
+
+void RendererGl::setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
+{
+	mWnd = wnd;
+	if( ! mImpl )
+		mImpl = new RendererImplGlAngle( this );
+	if( ! mImpl->initialize( wnd, sharedRenderer ) )
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
+}
+
+void RendererGl::prepareToggleFullScreen()
+{
+	mImpl->prepareToggleFullScreen();
+}
+
+void RendererGl::finishToggleFullScreen()
+{
+	mImpl->finishToggleFullScreen();
+}
+
+void RendererGl::startDraw()
+{
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		mImpl->makeCurrentContext();
+}
+
+void RendererGl::makeCurrentContext()
+{
+	mImpl->makeCurrentContext();
+}
+
+void RendererGl::swapBuffers()
+{
+	mImpl->swapBuffers();
+}
+
+void RendererGl::finishDraw()
+{
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		mImpl->swapBuffers();
+}
+
+void RendererGl::defaultResize()
+{
+	mImpl->defaultResize();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+{
+	Surface s( area.getWidth(), area.getHeight(), false );
+	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
+	GLint oldPackAlignment;
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
 	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
 	ip::flipVertical( &s );
 	return s;

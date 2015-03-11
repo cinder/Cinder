@@ -36,7 +36,12 @@ namespace cinder {
 // Registrar
 void ImageSourceFileQuartz::registerSelf()
 {
+	static bool alreadyRegistered = false;
 	static const int32_t SOURCE_PRIORITY = 2;
+	
+	if( alreadyRegistered )
+		return;
+	alreadyRegistered = true;
 	
 	ImageIoRegistrar::SourceCreationFunc sourceFunc = ImageSourceFileQuartz::createRef;
 	

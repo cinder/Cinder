@@ -28,10 +28,6 @@
 
 #include <vector>
 
-#if ! defined( CINDER_WINRT ) && ( _MSC_VER < 1900 )
-#include <boost/thread/tss.hpp>
-#endif
-
 namespace cinder { namespace msw {
 
 #if !defined( CINDER_WINRT )
@@ -278,21 +274,13 @@ void initializeCom( DWORD params )
 {
 	::CoInitializeEx( NULL, params );
 }
-#elif ( _MSC_VER >= 1900 )
-thread_local ComInitializer *threadComInitializer = nullptr;
+#else
+__declspec(thread) ComInitializer *threadComInitializer = nullptr;
 
 void initializeCom(DWORD params)
 {
 	if( ! threadComInitializer )
 		threadComInitializer = new ComInitializer(params);
-}
-#else
-boost::thread_specific_ptr<ComInitializer> threadComInitializer;
-
-void initializeCom( DWORD params )
-{
-	if( threadComInitializer.get() == NULL )
-		threadComInitializer.reset( new ComInitializer( params ) );
 }
 #endif
 

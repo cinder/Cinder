@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class GeometryShaderIntroApp : public AppNative {
+class GeometryShaderIntroApp : public App {
   public:
 	void setup();
 	void mouseDrag( MouseEvent event );
@@ -33,7 +33,7 @@ void GeometryShaderIntroApp::setup()
 	}
 	catch( gl::GlslProgCompileExc ex ) {
 		cout << ex.what() << endl;
-		shutdown();
+		quit();
 	}
 
 	// setup VertBatch with a single point at the origin
@@ -64,4 +64,4 @@ void GeometryShaderIntroApp::draw()
 	mBatch->draw();
 }
 
-CINDER_APP_NATIVE( GeometryShaderIntroApp, RendererGl )
+CINDER_APP( GeometryShaderIntroApp, RendererGl )

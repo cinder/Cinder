@@ -36,6 +36,7 @@
 		#include <CoreText/CoreText.h>
 	#endif
 #elif defined( CINDER_MSW )
+	#include <Windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
 	#include <gdiplus.h>
@@ -225,7 +226,7 @@ void Line::calcExtents()
 #elif defined( CINDER_WINRT )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
-		FT_Face face = runIt->mFont.getFace();
+		FT_Face face = runIt->mFont.getFreetypeFace();
 		
 		int width = 0;
 		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
@@ -284,7 +285,7 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 	else if( mJustification == RIGHT )
 		currentX = maxWidth - mWidth - xBorder;
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
-		FT_Face face = runIt->mFont.getFace();
+		FT_Face face = runIt->mFont.getFreetypeFace();
 		for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
 		{
 			FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
@@ -573,7 +574,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 #elif defined( CINDER_WINRT )
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
-	FT_Face face = font.getFace();
+	FT_Face face = font.getFreetypeFace();
 	int offset = 0;
 	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
 	{
@@ -831,7 +832,7 @@ vector<pair<uint16_t,vec2> > TextBox::measureGlyphs() const
 		}
 		
 		int xPos = 0;
-		for( int i = 0; i < gcpResults.nGlyphs; i++ ) {
+		for( unsigned int i = 0; i < gcpResults.nGlyphs; i++ ) {
 			result.push_back( std::make_pair( glyphIndices[i], vec2( xPos, curY ) ) );
 			xPos += dx[i];
 		}
@@ -868,7 +869,7 @@ Surface	TextBox::render( vec2 offset )
 	// fill the surface with the background color
 	offscreenGraphics->Clear( Gdiplus::Color( (BYTE)(mBackgroundColor.a * 255), (BYTE)(mBackgroundColor.r * 255), 
 			(BYTE)(mBackgroundColor.g * 255), (BYTE)(mBackgroundColor.b * 255) ) );
-	const Gdiplus::Font *font = mFont.getGdiplusFont();;
+	const Gdiplus::Font *font = mFont.getGdiplusFont();
 	ColorA8u nativeColor( mColor );
 	Gdiplus::StringFormat format;
 	Gdiplus::StringAlignment align = Gdiplus::StringAlignmentNear;

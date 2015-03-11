@@ -24,7 +24,7 @@
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Utilities.h"
-#include "cinder/app/App.h"
+#include "cinder/app/Platform.h"
 
 #if defined( CINDER_COCOA )
 	#import <Foundation/Foundation.h>
@@ -245,7 +245,7 @@ void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std
 
 void LoggerConsole::write( const Metadata &meta, const string &text )
 {
-	writeDefault( app::console(), meta, text );
+	writeDefault( app::Platform::get()->console(), meta, text );
 }
 
 // ----------------------------------------------------------------------------------------------------

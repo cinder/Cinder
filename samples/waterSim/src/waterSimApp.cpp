@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/Texture.h"
@@ -13,7 +13,7 @@
 using namespace ci::app;
 using namespace ci;
 
-class WaterSimApp : public AppBasic {
+class WaterSimApp : public App {
  public:	
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -278,4 +278,4 @@ void WaterSimApp::draw()
 	}	
 }
 
-CINDER_APP_BASIC( WaterSimApp, RendererGl )
+CINDER_APP( WaterSimApp, RendererGl )

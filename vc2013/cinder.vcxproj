@@ -363,11 +363,59 @@
     <ClCompile Include="..\src\AntTweakBar\LoadOGLCore.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp" />
     <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererAngle.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp" />
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswBasic.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswScreenSaver.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\AppMsw.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\PlatformMsw.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\RendererImpl2dGdi.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp" />
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp" />
+    <ClCompile Include="..\src\cinder\app\Platform.cpp" />
     <ClCompile Include="..\src\cinder\app\RendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\Window.cpp" />
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">true</ExcludedFromBuild>
+    </ClCompile>
     <ClCompile Include="..\src\cinder\Area.cpp" />
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp" />
     <ClCompile Include="..\src\cinder\audio\Context.cpp">
@@ -493,6 +541,7 @@
     <ClCompile Include="..\src\cinder\Rect.cpp" />
     <ClCompile Include="..\src\cinder\Serial.cpp" />
     <ClCompile Include="..\src\cinder\Shape2d.cpp" />
+    <ClCompile Include="..\src\cinder\Signals.cpp" />
     <ClCompile Include="..\src\cinder\Sphere.cpp" />
     <ClCompile Include="..\src\cinder\Stream.cpp" />
     <ClCompile Include="..\src\cinder\Surface.cpp" />
@@ -510,12 +559,6 @@
     <ClCompile Include="..\src\cinder\UrlImplWinInet.cpp" />
     <ClCompile Include="..\src\cinder\Utilities.cpp" />
     <ClCompile Include="..\src\cinder\Xml.cpp" />
-    <ClCompile Include="..\src\cinder\app\App.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp" />
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp" />
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp" />
     <ClCompile Include="..\src\cinder\app\Renderer.cpp" />
     <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp" />
@@ -590,14 +633,33 @@
     <ClCompile Include="..\src\videoInput\videoInput.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h" />
-    <ClInclude Include="..\include\cinder\app\AppNative.h" />
+    <ClInclude Include="..\include\cinder\app\App.h" />
+    <ClInclude Include="..\include\cinder\app\AppBase.h" />
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\Event.h" />
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswBasic.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h" />
+    <ClInclude Include="..\include\cinder\app\msw\AppMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImpl2dGdi.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplDx.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlMsw.h" />
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h" />
+    <ClInclude Include="..\include\cinder\app\Platform.h" />
+    <ClInclude Include="..\include\cinder\app\Renderer.h" />
     <ClInclude Include="..\include\cinder\app\RendererDx.h" />
     <ClInclude Include="..\include\cinder\app\RendererGl.h" />
-    <ClInclude Include="..\include\cinder\app\ResizeEvent.h" />
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\app\Window.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRT.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h" />
     <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
     <ClInclude Include="..\include\cinder\audio\Context.h" />
@@ -696,6 +758,7 @@
     <ClInclude Include="..\include\cinder\qtime\QuickTimeGlImplLegacy.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeImplLegacy.h" />
     <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h" />
+    <ClInclude Include="..\include\cinder\Signals.h" />
     <ClInclude Include="..\include\cinder\svg\Svg.h" />
     <ClInclude Include="..\include\cinder\svg\SvgGl.h" />
     <ClInclude Include="..\include\cinder\Timeline.h" />
@@ -775,21 +838,6 @@
     <ClInclude Include="..\include\cinder\Utilities.h" />
     <ClInclude Include="..\include\cinder\Vector.h" />
     <ClInclude Include="..\include\cinder\Xml.h" />
-    <ClInclude Include="..\include\cinder\app\App.h" />
-    <ClInclude Include="..\include\cinder\app\AppBasic.h" />
-    <ClInclude Include="..\include\cinder\app\AppDialog.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMsw.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswBasic.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGdi.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGl.h" />
-    <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h" />
-    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
-    <ClInclude Include="..\include\cinder\app\FileDropEvent.h" />
-    <ClInclude Include="..\include\cinder\app\KeyEvent.h" />
-    <ClInclude Include="..\include\cinder\app\MouseEvent.h" />
-    <ClInclude Include="..\include\cinder\app\Renderer.h" />
-    <ClInclude Include="..\include\cinder\app\TouchEvent.h" />
     <ClInclude Include="..\include\cinder\ip\EdgeDetect.h" />
     <ClInclude Include="..\include\cinder\ip\Fill.h" />
     <ClInclude Include="..\include\cinder\ip\Flip.h" />

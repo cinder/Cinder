@@ -40,6 +40,9 @@
 	typedef void*		EGLDisplay;
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
+#elif defined( CINDER_MSW )
+	struct HGLRC__;
+	typedef HGLRC__* HGLRC;
 #endif
 
 namespace cinder { namespace gl {
@@ -99,7 +102,7 @@ struct PlatformDataMac : public Context::PlatformData {
 	CGLContextObj		mCglContext;
 };
 
-#elif defined( CINDER_MSW ) && defined( CINDER_GL_ANGLE )
+#elif defined( CINDER_GL_ANGLE )
 struct PlatformDataAngle : public Context::PlatformData {
 	PlatformDataAngle( EGLContext context, EGLDisplay display, EGLSurface surface, EGLConfig eglConfig )
 		: mContext( context ), mDisplay( display ), mSurface( surface ), mConfig( eglConfig )

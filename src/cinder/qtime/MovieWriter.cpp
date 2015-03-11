@@ -27,7 +27,7 @@
 	#error "This file must be compiled as Objective-C++ on the Mac"
 #endif
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/Utilities.h"
 #include "cinder/qtime/MovieWriter.h"
 #include "cinder/qtime/QuickTimeUtils.h"
@@ -394,7 +394,8 @@ void MovieWriter::Obj::createCompressionSession()
 		mDoingMultiPass = ::ICMCompressionSessionSupportsMultiPassEncoding( mCompressionSession, 0, &mMultiPassModeFlags ) != 0;
 		
 		if( mDoingMultiPass ) {
-			mMultiPassFrameCache = readWriteFileStream( getTemporaryFilePath() );
+			auto tempDir = fs::temp_directory_path();
+			mMultiPassFrameCache = readWriteFileStream( fs::unique_path( tempDir / ( "multipass_%%%%-%%%%-%%%%-%%%%" ) );
 			if( ! mMultiPassFrameCache )
 				throw MovieWriterExc();
 			mMultiPassFrameCache->setDeleteOnDestroy();

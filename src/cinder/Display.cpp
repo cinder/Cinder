@@ -26,36 +26,18 @@
 #include <map>
 using namespace std;
 
-#if defined( CINDER_MAC )
-	#include <Cocoa/Cocoa.h>
-#elif defined( CINDER_COCOA_TOUCH )
+#include "cinder/app/Platform.h"
+
+#if defined( CINDER_COCOA_TOUCH )
+	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include <UIKit/UIKit.h>
-#elif defined( CINDER_WINRT)
-	#include "cinder/WinRTUtils.h"
-	using namespace cinder::winrt;
-	using namespace Windows::UI::Core;
-	using namespace Windows::Graphics::Display;
 #endif
 
 namespace cinder {
 
-std::vector<DisplayRef >	Display::sDisplays;
-bool						Display::sDisplaysInitialized = false;
-
-Display::~Display()
+const vector<DisplayRef>& Display::getDisplays()
 {
-#if defined( CINDER_MAC )
-	[mScreen release];
-#elif defined( CINDER_COCOA_TOUCH )
-	[mUiScreen release];
-#endif
-}
-
-const vector<DisplayRef>&	Display::getDisplays()
-{
-	enumerateDisplays();
-	
-	return sDisplays;
+	return app::Platform::get()->getDisplays();
 }
 
 DisplayRef Display::getDisplayForPoint( const ivec2 &pt )
@@ -83,222 +65,12 @@ Area Display::getBounds() const
 {
 #if defined( CINDER_COCOA_TOUCH )
 	// WORKAROUND for iOS 8 - mArea was cached and could be flipped if we're in landscape, so instead use UIScreen's bounds
-	CGRect frame = [mUiScreen bounds];
+	CGRect frame = [reinterpret_cast<const cinder::DisplayCocoaTouch*>( this )->getUiScreen() bounds];
 	return Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 #else
 	return mArea;
 #endif
 }
-
-#if defined( CINDER_MAC )
-DisplayRef Display::findFromCgDirectDisplayId( CGDirectDisplayID displayID )
-{
-	for( vector<DisplayRef >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
-		if( (*dispIt)->getCgDirectDisplayId() == displayID )
-			return *dispIt;
-
-	// force refresh since we didn't find it
-	sDisplaysInitialized = false;
-	sDisplays.clear();
-	enumerateDisplays();
-	
-	// and try again
-	for( vector<DisplayRef >::iterator dispIt = sDisplays.begin(); dispIt != sDisplays.end(); ++dispIt )
-		if( (*dispIt)->getCgDirectDisplayId() == displayID )
-			return *dispIt;
-
-	// couldn't find it, so return 0
-	return DisplayRef();
-}
-
-DisplayRef Display::findFromNsScreen( NSScreen *nsScreen )
-{
-	return findFromCgDirectDisplayId( (CGDirectDisplayID)[[[nsScreen deviceDescription] objectForKey:@"NSScreenNumber"] intValue] );
-}
-
-void Display::enumerateDisplays()
-{
-	if( sDisplaysInitialized )
-		return;
-	
-	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
-	@autoreleasepool {
-		NSArray *screens = [NSScreen screens];
-		Area primaryScreenArea;
-		size_t screenCount = [screens count];
-		for( size_t i = 0; i < screenCount; ++i ) {
-			::NSScreen *screen = [screens objectAtIndex:i];
-			[screen retain]; // this is released in the destructor for Display
-			NSRect frame = [screen frame];
-
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
-			newDisplay->mScreen = screen;
-			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
-			newDisplay->mContentScale = [screen backingScaleFactor];
-
-			// The Mac measures screens relative to the lower-left corner of the primary display. We need to correct for this
-			if( i == 0 ) {
-				primaryScreenArea = newDisplay->mArea;
-			}
-			else {
-				int heightDelta = primaryScreenArea.getHeight() - newDisplay->mArea.getHeight();
-				newDisplay->mArea.offset( ivec2( 0, heightDelta ) );
-			}
-
-			sDisplays.push_back( newDisplay );
-		}
-
-		sDisplaysInitialized = true;
-	}
-}
-
-#elif defined( CINDER_COCOA_TOUCH )
-
-void Display::enumerateDisplays()
-{
-	if( sDisplaysInitialized )
-		return;
-
-	// since this can be called from very early on, we can't gaurantee there's an autorelease pool yet
-	@autoreleasepool {
-		NSArray *screens = [UIScreen screens];
-		for( UIScreen *screen in screens ) {
-			[screen retain]; // this is released in the destructor for Display
-			CGRect frame = [screen bounds];
-
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
-
-			NSArray *resolutions = [screen availableModes];
-			for( int i = 0; i < [resolutions count]; ++i ) {
-				::UIScreenMode *mode = [resolutions objectAtIndex:i];
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
-			sDisplays.push_back( newDisplay );
-		}
-
-		// <TEMPORARY>
-		// This is a workaround for a beta of iOS 8 SDK, which appears to return an empty array for screens
-		if( [screens count] == 0 ) {
-			UIScreen *screen = [UIScreen mainScreen];
-			[screen retain];
-			CGRect frame = [screen bounds];
-
-			DisplayRef newDisplay = DisplayRef( new Display );
-			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mUiScreen = screen;
-			newDisplay->mBitsPerPixel = 24;
-			newDisplay->mContentScale = screen.scale;
-
-			NSArray *modes = [screen availableModes];
-			for( UIScreenMode *mode in modes ) {
-				newDisplay->mSupportedResolutions.push_back( ivec2( (int32_t)mode.size.width, (int32_t)mode.size.height ) );
-			}
-
-			sDisplays.push_back( newDisplay );
-		}
-		// </TEMPORARY>
-		
-		sDisplaysInitialized = true;
-	}
-}
-
-//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
-void Display::setResolution( const ivec2 &resolution )
-{
-	NSArray *modes = [mUiScreen availableModes];
-	int closestIndex = 0;
-	float closestDistance = 1000000.0f; // big distance
-	for( int i = 0; i < [modes count]; ++i ) {
-		::UIScreenMode *mode = [modes objectAtIndex:i];
-		ivec2 thisModeRes = vec2( mode.size.width, mode.size.height );
-		if( distance( vec2(resolution), vec2(thisModeRes) ) < closestDistance ) {
-			closestDistance = distance( vec2(resolution), vec2(thisModeRes) );
-			closestIndex = i;
-		}
-	}
-	
-	mUiScreen.currentMode = [modes objectAtIndex:closestIndex];
-}
-#elif defined( CINDER_WINRT )
-void Display::enumerateDisplays()
-{
-	CoreWindow^ window = CoreWindow::GetForCurrentThread();
-	DisplayRef newDisplay = DisplayRef( new Display );
-	if(window != nullptr)
-	{
-		float width, height;
-
-		GetPlatformWindowDimensions(window, &width,&height);
-
-		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
-		newDisplay->mBitsPerPixel = 24;
-		newDisplay->mContentScale = getScaleFactor();
-	}
-
-	sDisplays.push_back( newDisplay );
-}
-#elif defined( CINDER_MSW )
-
-DisplayRef Display::findFromHmonitor( HMONITOR hMonitor )
-{
-	const vector<DisplayRef>& displays = getDisplays();
-	for( vector<DisplayRef>::const_iterator displayIt = displays.begin(); displayIt != displays.end(); ++displayIt )
-		if( (*displayIt)->mMonitor == hMonitor )
-			return *displayIt;
-
-	return getMainDisplay(); // failure
-}
-
-BOOL CALLBACK Display::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
-{
-	vector<DisplayRef > *displaysVector = reinterpret_cast<vector<DisplayRef >*>( lParam );
-	DisplayRef newDisplay( new Display );
-	newDisplay->mArea = Area( rect->left, rect->top, rect->right, rect->bottom );
-	newDisplay->mMonitor = hMonitor;
-	newDisplay->mContentScale = 1.0f;
-
-	// retrieve the depth of the display
-	MONITORINFOEX mix;
-	memset( &mix, 0, sizeof( MONITORINFOEX ) );
-	mix.cbSize = sizeof( MONITORINFOEX );
-	HDC hMonitorDC = CreateDC( TEXT("DISPLAY"), mix.szDevice, NULL, NULL );
-	if (hMonitorDC) {
-		newDisplay->mBitsPerPixel = ::GetDeviceCaps( hMonitorDC, BITSPIXEL );
-		::DeleteDC( hMonitorDC );
-	}
-	
-	displaysVector->push_back( newDisplay );
-	return TRUE;
-}
-
-void Display::enumerateDisplays()
-{
-	if( sDisplaysInitialized )
-		return;
-
-	::EnumDisplayMonitors( NULL, NULL, enumMonitorProc, (LPARAM)&sDisplays );
-	
-	// ensure that the primary display is sDisplay[0]
-	const POINT ptZero = { 0, 0 };
-	HMONITOR primMon = MonitorFromPoint( ptZero, MONITOR_DEFAULTTOPRIMARY );
-	
-	size_t m;
-	for( m = 0; m < sDisplays.size(); ++m )
-		if( sDisplays[m]->mMonitor == primMon )
-			break;
-	if( ( m != 0 ) && ( m < sDisplays.size() ) )
-		std::swap( sDisplays[0], sDisplays[m] );
-	
-	sDisplaysInitialized = true;
-}
-#endif // defined( CINDER_MSW )
 
 ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const
 {
@@ -307,8 +79,11 @@ ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) con
 
 DisplayRef Display::getMainDisplay()
 {
-	enumerateDisplays();
-	return sDisplays[0];
+	auto displays = app::Platform::get()->getDisplays();
+	if( ! displays.empty() )
+		return displays[0];
+	else
+		return nullptr;
 }
 
 } // namespace cinder

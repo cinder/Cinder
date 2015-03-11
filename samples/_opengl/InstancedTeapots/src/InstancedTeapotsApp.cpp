@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Texture.h"
@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class InstancedTeapotsApp : public AppNative {
+class InstancedTeapotsApp : public App {
   public:	
 	void setup();
 	void resize();
@@ -38,6 +38,8 @@ void InstancedTeapotsApp::setup()
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 #if ! defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+#elif defined( CINDER_GL_ES_3 )
+	mGlsl = gl::GlslProg::create(loadAsset("shader_es3.vert"), loadAsset("shader_es3.frag"));
 #else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
 #endif
@@ -116,4 +118,4 @@ auto options = RendererGl::Options().version( 3, 3 ); // instancing functions ar
 #else
 auto options = RendererGl::Options(); // implemented as extensions in Mac OS 10.7+
 #endif
-CINDER_APP_NATIVE( InstancedTeapotsApp, RendererGl( options ) )
+CINDER_APP( InstancedTeapotsApp, RendererGl( options ) )

@@ -1,5 +1,5 @@
-#include "cinder/app/AppCocoaTouch.h"
-#include "cinder/app/CinderViewCocoaTouch.h"
+#include "cinder/app/cocoa/AppCocoaTouch.h"
+#include "cinder/app/cocoa/CinderViewCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
@@ -13,6 +13,7 @@
 #include "cinder/System.h"
 #include "cinder/Text.h"
 #include "cinder/Log.h"
+#include "cinder/app/cocoa/PlatformCocoa.h"
 
 #import <UIKit/UIKit.h>
 
@@ -58,7 +59,7 @@ struct TestCallbackOrder {
 		if( mDone ) return;
 		
 		if( mState != state - 1 )
-			CI_LOG_V( "Fail at state: " << mState << "->" << state );
+			CI_LOG_E( "Fail at state: " << mState << "->" << state );
 		else
 			mState = state;
 		if( mState == DRAW )
@@ -82,21 +83,26 @@ static string orientationString( InterfaceOrientation orientation )
 	}
 }
 
+TestCallbackOrder	sOrderTester;
+
 class iosAppTestApp : public AppCocoaTouch {
   public:
-	void 			prepareSettings( Settings *settings );
-	virtual void	setup();
-	virtual void	resize();
-	virtual void	update();
-	void 			draw();
-	
-	virtual void	mouseDown( MouseEvent event );
-	virtual void	mouseUp( MouseEvent event );
-	virtual void	mouseDrag( MouseEvent event );
+iosAppTestApp();
+	static 	void prepareSettings( AppCocoaTouch::Settings *settings );
 
-	virtual void	touchesBegan( TouchEvent event );
-	virtual void	touchesMoved( TouchEvent event );
-	virtual void	touchesEnded( TouchEvent event );	
+	void	setup()								override;
+	void	resize()							override;
+	void	update()							override;
+	void 	draw()								override;
+	
+	void	keyDown( KeyEvent event )			override;
+	void	mouseDown( MouseEvent event )		override;
+	void	mouseUp( MouseEvent event )			override;
+	void	mouseDrag( MouseEvent event )		override;
+
+	void	touchesBegan( TouchEvent event )	override;
+	void	touchesMoved( TouchEvent event )	override;
+	void	touchesEnded( TouchEvent event )	override;
 
 	void didEnterBackground();
 	void willEnterForeground();
@@ -104,7 +110,6 @@ class iosAppTestApp : public AppCocoaTouch {
 	void didBecomeActive();
 	void shuttingDown();
 	
-	void keyDown( KeyEvent event );
 	void proximitySensor( bool isClose );
 	void batteryStateChange( bool isUnplugged );
 	void memoryWarning();
@@ -114,36 +119,40 @@ class iosAppTestApp : public AppCocoaTouch {
 	void		willRotate();
 	void		didRotate();
 
-	TestCallbackOrder	tester;
-					
-	mat4		mCubeRotation;
-	gl::TextureRef 	mTex;
+	mat4				mCubeRotation;
+	gl::TextureRef		mTex;
 	gl::TextureRef		mTextTex;
 	gl::TextureFontRef	mFont;
-	CameraPersp		mCam;
-	WindowRef		mSecondWindow;
-	string			mSecondWindowMessage;
+	CameraPersp			mCam;
+	WindowRef			mSecondWindow;
+	string				mSecondWindowMessage;
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
 	int							mMouseTouchId; // gives a unique ID to each click to emulate multitouch
+	bool mMultipleDisplays = false;
 };
 
-void iosAppTestApp::prepareSettings( Settings *settings )
+// static
+iosAppTestApp::iosAppTestApp()
 {
-	tester.setState( TestCallbackOrder::PREPARESETTINGS );
-
+	CI_LOG_V( "Displays" );
 	for( auto &display : Display::getDisplays() )
 		CI_LOG_V( *display );
+}
 
-	settings->enableMultiTouch( true );
-	settings->enableHighDensityDisplay( true );
-	settings->enablePowerManagement( false );
-	settings->enableStatusBar( true );
-	
-	settings->prepareWindow( Window::Format() );
-	if( Display::getDisplays().size() > 1 )
-			settings->prepareWindow( Window::Format().display( Display::getDisplays()[1] ).size( 800, 600 ) );
+void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
+{
+	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
+
+	// THIS DOES NOT WORK ON iOS - Can't query displays in prepareSettings
+//	for( auto &display : Display::getDisplays() )
+//		CI_LOG_V( *display );
+
+//	settings->setMultiTouchEnabled( false );
+//	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
+	settings->setPowerManagementEnabled( false );
+	settings->setStatusBarEnabled( false );
 }
 
 void iosAppTestApp::setup()
@@ -159,7 +168,7 @@ void iosAppTestApp::setup()
 	[cinderView addSubview:btn];
 
 	mMouseTouchId = 0;
-	tester.setState( TestCallbackOrder::SETUP );
+	sOrderTester.setState( TestCallbackOrder::SETUP );
 
 	getSignalProximitySensor().connect( std::bind( &iosAppTestApp::proximitySensor, this, std::placeholders::_1 ) );
 	enableProximitySensor();
@@ -181,10 +190,14 @@ void iosAppTestApp::setup()
 	}
 
 	mTex = gl::Texture::create( surface );
-	
-	CI_LOG_V( "window size: " << getWindowSize() );
+
+	CI_LOG_V( "window size: " << getWindowSize() << ", window content scale: " << getWindowContentScale() );
 
 	getWindow()->getSignalDraw().connect( std::bind( &iosAppTestApp::draw, this ) );
+
+	auto displays = Display::getDisplays();
+	if( displays.size() > 1 )
+		createWindow( Window::Format().display( displays[1] ) );
 
 	if( getNumWindows() > 1 ) {
 		mSecondWindow = getWindowIndex( 1 );
@@ -265,7 +278,7 @@ void iosAppTestApp::didRotate()
 
 void iosAppTestApp::resize()
 {
-	tester.setState( TestCallbackOrder::RESIZE );
+	sOrderTester.setState( TestCallbackOrder::RESIZE );
 	CI_LOG_V( "Resize!" );
 
 	CI_LOG_V( "window size: " << getWindowSize() );
@@ -313,12 +326,12 @@ void iosAppTestApp::touchesEnded( TouchEvent event )
 		mActivePoints.erase( touchIt->getId() );
 	}
 	
-	/*if( isKeyboardVisible() )
+	if( isKeyboardVisible() )
 		hideKeyboard();
 	else {
 		showKeyboard();
 		mSecondWindowMessage.clear();
-	}*/
+	}
 	
 	if( isStatusBarVisible() )
 		hideStatusBar( StatusBarAnimation::FADE );
@@ -353,7 +366,7 @@ void iosAppTestApp::batteryStateChange( bool isUnplugged )
 
 void iosAppTestApp::update()
 {
-	tester.setState( TestCallbackOrder::UPDATE );
+	sOrderTester.setState( TestCallbackOrder::UPDATE );
 
 	mCubeRotation *= rotate( 0.03f, vec3( 1 ) );
 }
@@ -362,13 +375,13 @@ void iosAppTestApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::enableDepthRead();
-	tester.setState( TestCallbackOrder::DRAW );
+	sOrderTester.setState( TestCallbackOrder::DRAW );
 	CameraPersp mCam;
 	mCam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
-	if( isUnplugged() )
-		gl::clear( Color( 0.2f, 0.2f, 0.3f ) );
+	if( getDisplay() == Display::getMainDisplay() )
+		gl::clear( Color( 1.2f, 0.2f, 0.3f ) );
 	else
 		gl::clear( Color( 0.4f, 0.2f, 0.2f ) );		
 
@@ -423,6 +436,7 @@ void iosAppTestApp::draw()
 //	gl::drawStringCentered( "Orientation: " + orientationString( getInterfaceOrientation() ), vec2( getWindowCenter().x, 30.0f ), Color( 0.0f, 1.0f, 0.0f ), Font::getDefault() ); // ???: why not centered?
 
 	mFont->drawString( toString( floor(getAverageFps()) ) + " fps", vec2( 10.0f, 90.0f ) );
+	mFont->drawString( "Displays " + toString( Display::getDisplays().size() ), vec2( 10.0f, 140.0f ) );	
 }
 
-CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ) )
+CINDER_APP_COCOA_TOUCH( iosAppTestApp, RendererGl( RendererGl::Options().msaa( 0 ) ), iosAppTestApp::prepareSettings )

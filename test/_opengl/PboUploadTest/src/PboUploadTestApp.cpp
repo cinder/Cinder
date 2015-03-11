@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
@@ -22,7 +22,7 @@ static const int ROWS_TO_FILL = 50;
 // Enable or disable to experiment with double buffering the Texture and PBOs
 #define DOUBLE_BUFFER
 
-class PboUploadTestApp : public AppNative {
+class PboUploadTestApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -112,4 +112,4 @@ void PboUploadTestApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( PboUploadTestApp, RendererGl )
+CINDER_APP( PboUploadTestApp, RendererGl )

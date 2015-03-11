@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Path2d.h"
 #include "cinder/gl/gl.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class Path2dApp : public AppBasic {
+class Path2dApp : public App {
  public:
 	Path2dApp() : mTrackedPoint( -1 ) {}
 	
@@ -126,4 +126,4 @@ void Path2dApp::draw()
 }
 
 
-CINDER_APP_BASIC( Path2dApp, RendererGl )
+CINDER_APP( Path2dApp, RendererGl )

@@ -44,7 +44,11 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 {
 	unique_ptr<SourceFile> result;
 
-	if( getPathExtension( dataSource->getFilePathHint().extension().string() ) == "ogg" )
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+	if( dataSource->getFilePathHint().extension().string() == ".ogg" )
+#else
+	if( dataSource->getFilePathHint().extension() == ".ogg" )
+#endif
 		result.reset( new SourceFileOggVorbis( dataSource, sampleRate ) );
 	else {
 #if defined( CINDER_COCOA )

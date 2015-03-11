@@ -1,7 +1,7 @@
 #include "Resources.h"
 
 #include "cinder/ObjLoader.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Arcball.h"
 #include "cinder/MayaCamUI.h"
@@ -19,7 +19,7 @@ using namespace ci::app;
 #include <list>
 using std::list;
 
-class ObjLoaderApp : public AppNative {
+class ObjLoaderApp : public App {
   public:
 	void	setup() override;
 	void	resize() override;
@@ -122,4 +122,4 @@ void ObjLoaderApp::draw()
 }
 
 
-CINDER_APP_NATIVE( ObjLoaderApp, RendererGl )
+CINDER_APP( ObjLoaderApp, RendererGl )

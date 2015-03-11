@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class iosQuickTimeTestApp : public AppNative {
+class iosQuickTimeTestApp : public App {
   public:
 	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
 	void setup() override;
@@ -70,4 +70,4 @@ void iosQuickTimeTestApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( iosQuickTimeTestApp, RendererGl )
+CINDER_APP( iosQuickTimeTestApp, RendererGl )

@@ -27,7 +27,7 @@
 #if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) ) || defined( CINDER_COCOA_TOUCH )
 
 #include "cinder/qtime/QuickTimeGlImplAvf.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/RendererGl.h"
 
 #include <CoreVideo/CoreVideo.h>
@@ -106,7 +106,7 @@ void MovieGl::allocateVisualContext()
 	if( ! mVideoTextureCacheRef ) {
 		CVReturn err = 0;
 #if defined( CINDER_COCOA_TOUCH )
-		app::RendererGl *renderer = dynamic_cast<app::RendererGl*>( app::App::get()->getRenderer().get() );
+		app::RendererGl *renderer = dynamic_cast<app::RendererGl*>( app::AppBase::get()->getRenderer().get() );
 		if( renderer ) {
 			EAGLContext* context = renderer->getEaglContext();
 			err = ::CVOpenGLESTextureCacheCreate( kCFAllocatorDefault, NULL, context, NULL, &mVideoTextureCacheRef );
@@ -116,8 +116,8 @@ void MovieGl::allocateVisualContext()
 		}
 		
 #elif defined( CINDER_COCOA )
-		CGLContextObj context = app::App::get()->getRenderer()->getCglContext();
-		CGLPixelFormatObj pixelFormat = app::App::get()->getRenderer()->getCglPixelFormat();
+		CGLContextObj context = app::AppBase::get()->getRenderer()->getCglContext();
+		CGLPixelFormatObj pixelFormat = app::AppBase::get()->getRenderer()->getCglPixelFormat();
 		err = ::CVOpenGLTextureCacheCreate( kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef );		
 #endif
 		if( err )

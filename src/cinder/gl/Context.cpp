@@ -34,7 +34,11 @@
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
+
+#if defined( CINDER_MSW )
+	#include <Windows.h>
+#endif
 
 using namespace std;
 

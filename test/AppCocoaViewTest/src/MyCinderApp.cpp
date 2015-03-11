@@ -1,6 +1,9 @@
 #include "MyCinderApp.h"
+#include "cinder/Log.h"
+
 #if defined( USE_RENDERER2D )
 	#include "cinder/cocoa/CinderCocoa.h"
+	#include <QuartzCore/QuartzCore.h>
 #else
 	#include "cinder/gl/gl.h"
 #endif
@@ -8,15 +11,27 @@
 using namespace ci;
 using namespace ci::app;
 
+// static
 void MyCinderApp::prepareSettings( Settings *settings )
 {
-	testCbo.setState( TestCallbackOrder::PREPARESETTINGS );
-	settings->enableMultiTouch( false );
+	settings->setMultiTouchEnabled( false );
+}
+
+MyCinderApp::MyCinderApp()
+{
+	CI_LOG_I( "constructor" );
+}
+
+MyCinderApp::~MyCinderApp()
+{
+	CI_LOG_I( "destructor" );
 }
 
 void MyCinderApp::setup()
 {
 	testCbo.setState( TestCallbackOrder::SETUP );
+	getSignalShutdown().connect( [this] { testCbo.setState( TestCallbackOrder::SHUTDOWN ); } );
+
 	mRadius = 50;
 	mAnimatedRadius = 0;
 	mColor = cinder::Color::white();

@@ -136,6 +136,18 @@
     <Filter Include="Source Files\glload">
       <UniqueIdentifier>{989dc751-89fb-4b63-adb6-f745dd03ccb9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\app\msw">
+      <UniqueIdentifier>{714beaed-38b5-4cf9-b6bb-f2ed1dd5eb1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app\msw">
+      <UniqueIdentifier>{d87b601e-f0bc-4dc1-8cd1-624ae4de33cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\app\winrt">
+      <UniqueIdentifier>{5310b59c-654a-431d-9860-d270bb5eab0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app\winrt">
+      <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -257,24 +269,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Xml.cpp">
       <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\App.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp">
-      <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp">
       <Filter>Source Files\app</Filter>
@@ -421,9 +415,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\Window.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
@@ -729,9 +720,6 @@
     <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererAngle.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -740,6 +728,51 @@
     </ClCompile>
     <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
       <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Platform.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswBasic.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswScreenSaver.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\PlatformMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImpl2dGdi.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
+      <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -932,51 +965,6 @@
     <ClInclude Include="..\include\cinder\Xml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\App.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppBasic.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppDialog.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMsw.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswBasic.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGdi.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGl.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\KeyEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\MouseEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Renderer.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\TouchEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\ip\EdgeDetect.h">
       <Filter>Header Files\ip</Filter>
     </ClInclude>
@@ -1022,12 +1010,6 @@
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Event.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\ResizeEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Function.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1048,9 +1030,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Clipboard.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppNative.h">
-      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\src\libtess2\bucketalloc.h">
       <Filter>Source Files\libtess2</Filter>
@@ -1124,9 +1103,6 @@
     <ClInclude Include="..\include\cinder\Unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Window.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1159,12 +1135,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
       <Filter>Header Files\dx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\RendererDx.h">
-      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\MatrixStack.h">
       <Filter>Header Files</Filter>
@@ -1532,9 +1502,6 @@
     <ClInclude Include="..\include\cinder\GeomIo.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\RendererGl.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Log.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1553,9 +1520,6 @@
     <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererAngle.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\Ubo.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -1564,6 +1528,90 @@
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
       <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Signals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\App.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBase.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Event.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Platform.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Renderer.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererGl.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Window.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswBasic.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImpl2dGdi.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplDx.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRT.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
+      <Filter>Header Files\app\winrt</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
@@ -36,36 +36,29 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<vec2>	mLine;
-	Color			mColor;
-	float			mTimeOfDeath;
+	PolyLine2	mLine;
+	Color		mColor;
+	float		mTimeOfDeath;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppNative {
+class MultiTouchApp : public App {
  public:
-	void	prepareSettings( Settings *settings );
+	void	mouseDown( MouseEvent event ) override;
+	void	mouseDrag( MouseEvent event ) override;
 
-	void	mouseDown( MouseEvent event );
-	void	mouseDrag( MouseEvent event );	
+	void	touchesBegan( TouchEvent event ) override;
+	void	touchesMoved( TouchEvent event ) override;
+	void	touchesEnded( TouchEvent event ) override;
 
-	void	touchesBegan( TouchEvent event );
-	void	touchesMoved( TouchEvent event );
-	void	touchesEnded( TouchEvent event );
-
-	void	setup();
-	void	draw();
-	void	keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) setFullScreen( ! isFullScreen() ); }
+	void	setup() override;
+	void	draw() override;
+	void	keyDown( KeyEvent event ) override;
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
 	tuio::Client				mTuio;
 };
-
-void MultiTouchApp::prepareSettings( Settings *settings )
-{
-	settings->enableMultiTouch();
-}
 
 void MultiTouchApp::setup()
 {
@@ -98,6 +91,12 @@ console() << "Ended: " << event << std::endl;
 		mDyingPoints.push_back( mActivePoints[touchIt->getId()] );
 		mActivePoints.erase( touchIt->getId() );
 	}
+}
+
+void MultiTouchApp::keyDown( KeyEvent event )
+{
+	 if( event.getChar() == 'f' )
+		 setFullScreen( ! isFullScreen() );
 }
 
 void MultiTouchApp::mouseDown( MouseEvent event )
@@ -134,4 +133,6 @@ void MultiTouchApp::draw()
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP_NATIVE( MultiTouchApp, RendererGl )
+CINDER_APP( MultiTouchApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

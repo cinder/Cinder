@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Unicode.h"
 
@@ -6,7 +6,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class UnicodeTestApp : public AppNative {
+class UnicodeTestApp : public App {
   public:
 	void setup();
 	void draw();
@@ -51,4 +51,4 @@ void UnicodeTestApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
 }
 
-CINDER_APP_NATIVE( UnicodeTestApp, RendererGl )
+CINDER_APP( UnicodeTestApp, RendererGl )

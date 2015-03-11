@@ -28,7 +28,7 @@
 #if defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )
 
 #include "cinder/gl/gl.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Url.h"
 
@@ -650,7 +650,7 @@ void MovieBase::updateFrame()
 			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
 			if( buffer ) {
 				newFrame( buffer );
-				mSignalNewFrame();
+				mSignalNewFrame.emit();
 			}
 		}
 	}
@@ -760,7 +760,7 @@ void MovieBase::removeObservers()
 	
 void MovieBase::playerReady()
 {
-	mSignalReady();
+	mSignalReady.emit();
 	
 	if( mPlaying )
 		play();
@@ -778,22 +778,22 @@ void MovieBase::playerItemEnded()
 		this->play();
 	}
 	
-	mSignalEnded();
+	mSignalEnded.emit();
 }
 	
 void MovieBase::playerItemCancelled()
 {
-	mSignalCancelled();
+	mSignalCancelled.emit();
 }
 	
 void MovieBase::playerItemJumped()
 {
-	mSignalJumped();
+	mSignalJumped.emit();
 }
 
 void MovieBase::outputWasFlushed( AVPlayerItemOutput* output )
 {
-	mSignalOutputWasFlushed();
+	mSignalOutputWasFlushed.emit();
 }
 
 /////////////////////////////////////////////////////////////////////////////////

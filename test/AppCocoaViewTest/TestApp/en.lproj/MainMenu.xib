@@ -1332,7 +1332,7 @@
 							<string key="NSFrame">{{20, 60}, {440, 280}}</string>
 							<reference key="NSSuperview" ref="439893737"/>
 							<reference key="NSNextKeyView" ref="831025709"/>
-							<string key="NSClassName">CinderView</string>
+							<string key="NSClassName">CinderViewMac</string>
 						</object>
 						<object class="NSColorWell" id="693883754">
 							<reference key="NSNextResponder" ref="439893737"/>

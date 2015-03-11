@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/PolyLine.h"
 #include "cinder/gl/gl.h"
@@ -19,7 +19,7 @@ const float cGridStep = cCircleRadius * 2.2f;
  These are not the most CPU/GPU-efficient methods of drawing, but they
  are a quick way to get something on screen.
  */
-class ConvenienceDrawingMethodsApp : public AppNative {
+class ConvenienceDrawingMethodsApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -123,4 +123,4 @@ void ConvenienceDrawingMethodsApp::draw()
 	gl::popModelMatrix();
 }
 
-CINDER_APP_NATIVE( ConvenienceDrawingMethodsApp, RendererGl )
+CINDER_APP( ConvenienceDrawingMethodsApp, RendererGl )

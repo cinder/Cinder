@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Log.h"
 #include "cinder/audio/GenNode.h"
@@ -14,7 +14,7 @@ using namespace std;
 
 using namespace audio::cocoa;
 
-class EffectsAudioUnitTestApp : public AppNative {
+class EffectsAudioUnitTestApp : public App {
   public:
 	void setup();
 	void update();
@@ -212,4 +212,4 @@ void EffectsAudioUnitTestApp::draw()
 	mTestSelector.draw();
 }
 
-CINDER_APP_NATIVE( EffectsAudioUnitTestApp, RendererGl )
+CINDER_APP( EffectsAudioUnitTestApp, RendererGl )
