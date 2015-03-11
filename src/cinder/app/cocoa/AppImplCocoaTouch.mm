@@ -74,7 +74,7 @@ using namespace cinder::app;
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application

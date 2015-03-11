@@ -484,7 +484,7 @@ using namespace cinder::app;
 
 - (void)applicationWillTerminate:(NSNotification *)notification
 {
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 
 	// invalidate the timer, which will release its ownership of us.
 	[mAnimationTimer invalidate];

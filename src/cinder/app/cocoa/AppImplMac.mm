@@ -295,7 +295,7 @@ using namespace cinder::app;
 		[[mWindows lastObject] close];
 	}
 
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 	delete mApp;
 }
 
