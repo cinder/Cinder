@@ -60,7 +60,9 @@ class MotionBlurVelocityBufferApp : public App {
 	gl::FboRef			mTileMaxBuffer;		// downsampled velocity
 	gl::FboRef			mNeighborMaxBuffer;	// dominant velocities in regions
 
+#if ! defined( CINDER_ANDROID )
 	params::InterfaceGlRef	mParams;
+#endif
 	int						mTileSize = 20;
 	int						mSampleCount = 31;
 	float					mAnimationSpeed = 1.0f;
@@ -78,6 +80,7 @@ void MotionBlurVelocityBufferApp::setup()
 	createBuffers();
 	loadShaders();
 
+#if ! defined( CINDER_ANDROID )
 	mParams = params::InterfaceGl::create( "Motion Blur Options", ivec2( 250, 300 ) );
 	mParams->addParam( "Enable Blur", &mBlurEnabled );
 	mParams->addParam( "Show Velocity Buffers", &mDisplayVelocityBuffers );
@@ -85,6 +88,7 @@ void MotionBlurVelocityBufferApp::setup()
 	mParams->addParam( "Animation Speed", &mAnimationSpeed ).min( 0.05f ).step( 0.2f );
 	mParams->addParam( "Max Samples", &mSampleCount ).min( 1 ).step( 2 );
 	mParams->addParam( "Blur Noise", &mBlurNoise ).min( 0.0f ).step( 0.01f );
+#endif
 
 #if defined( CINDER_COCOA_TOUCH )
 	getSignalSupportedOrientations().connect( [] { return InterfaceOrientation::LandscapeAll; } );
@@ -277,7 +281,9 @@ void MotionBlurVelocityBufferApp::draw()
 		drawVelocityBuffers();
 	}
 
+#if ! defined( CINDER_ANDROID )
 	mParams->draw();
+#endif
 }
 
 void MotionBlurVelocityBufferApp::drawVelocityBuffers()

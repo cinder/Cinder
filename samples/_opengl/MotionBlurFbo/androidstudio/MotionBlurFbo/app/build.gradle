@@ -68,7 +68,7 @@ android {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
-        moduleName = "MotionBlurFbo"
+        moduleName = "MotionBlurFboApp"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {

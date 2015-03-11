@@ -68,7 +68,7 @@ android {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
-        moduleName = "ParticleSphereCPU"
+        moduleName = "ParticleSphereCPUApp"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {
