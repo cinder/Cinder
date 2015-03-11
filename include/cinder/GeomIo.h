@@ -1131,9 +1131,9 @@ SourceModsPtr<SOURCE>&& operator>>( SourceModsPtr<SOURCE> &&sourceMod, const Mod
 }
 
 template<typename SOURCE>
-SourceModsPtr<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
+SourceMods<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
 {
-	SourceModsPtr<SOURCE> result( &source );
+	SourceMods<SOURCE> result( source );
 	result.addModifier( modifier );
 	return result;
 }
