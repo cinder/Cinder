@@ -703,6 +703,9 @@
     <ClInclude Include="..\include\cinder\audio\msw\MswUtil.h">
       <Filter>Header Files\audio\msw</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBase.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">

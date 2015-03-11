@@ -264,6 +264,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="..\include\cinder\app\App.h" />
+    <ClInclude Include="..\include\cinder\app\AppBase.h" />
     <ClInclude Include="..\include\cinder\app\AppScreenSaver.h" />
     <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaTouch.h" />
     <ClInclude Include="..\include\cinder\app\cocoa\AppCocoaView.h" />
