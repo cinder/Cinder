@@ -25,6 +25,7 @@
 #include "cinder/DataSource.h"
 #if defined( CINDER_ANDROID )
   #include "cinder/app/android/AssetFileSystem.h"
+  #include "cinder/app/android/PlatformAndroid.h"
  #endif
 
 namespace cinder {
@@ -119,11 +120,7 @@ IStreamRef DataSourceAndroidAsset::createStream()
 DataSourceRef loadFile( const fs::path &path )
 {
 #if defined( CINDER_ANDROID )
-	char c0 = (path.string().size() > 0 ) ? 0 : path.string().at( 0 );
-	char c1 = (path.string().size() > 1 ) ? 0 : path.string().at( 1 );
-	bool startsWithSlash  = ( (0 != c0 ) && ( '/' != c0 ) );
-	bool startsWithDotDot = ( (0 != c0 ) && ( 0 != c1 ) && ( '.' != c0 ) && ( '.' != c1 ) );
-	if( ! ( startsWithSlash || startsWithDotDot ) ) {
+	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
 		DataSourceRef result = DataSourceAndroidAsset::create( path );
 		return result;
 	}

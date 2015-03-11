@@ -47,13 +47,11 @@ PlatformAndroid* PlatformAndroid::get()
 
 DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 {
-	
 	fs::path assetPath = findAssetPath( relativePath );
 	if( ! assetPath.empty() ) {
 		return DataSourceAndroidAsset::create( assetPath.string() );
 	}
 	else {
-console() << "loadAsset: " << assetPath << std::endl;
 		throw AssetLoadExc( relativePath );
 	}
 }
@@ -144,6 +142,15 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 	return mDisplays;
 }
 
+bool PlatformAndroid::isAssetPath( const fs::path &path )
+{
+	char c0 = (path.string().size() > 0 ) ? 0 : path.string().at( 0 );
+	char c1 = (path.string().size() > 1 ) ? 0 : path.string().at( 1 );
+	bool startsWithSlash  = ( (0 != c0 ) && ( '/' != c0 ) );
+	bool startsWithDotDot = ( (0 != c0 ) && ( 0 != c1 ) && ( '.' != c0 ) && ( '.' != c1 ) );
+	return ( ! ( startsWithSlash || startsWithDotDot ) );
+}
+
 void PlatformAndroid::prepareAssetLoading()
 {
 	addAssetDirectory( "" );
@@ -159,8 +166,9 @@ fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
 
 	for( const auto &assetPath : mAssetPaths ) {
 		auto fullPath = assetPath / relativePath;
-		if( android::AssetFileSystem_exists( fullPath ) )
+		if( android::AssetFileSystem_exists( fullPath ) ) {
 			return fullPath;
+		}
 	}
 
 	return fs::path(); // empty implies failure	

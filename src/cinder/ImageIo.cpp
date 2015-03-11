@@ -38,6 +38,8 @@
 	#include "cinder/msw/CinderMsw.h"
 	using namespace Windows::Storage;
 	using namespace Concurrency;
+#elif defined( CINDER_ANDROID )
+	#include "cinder/app/android/PlatformAndroid.h"	
 #endif
 
 using namespace std;
@@ -404,7 +406,16 @@ void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> ca
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
 {
+#if defined( CINDER_ANDROID )
+	if( ci::app::PlatformAndroid::isAssetPath( path ) ) {
+		return loadImage( (DataSourceRef)DataSourceAndroidAsset::create( path ), options, extension );			
+	}
+	else {
+		return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
+	}
+#else	
 	return loadImage( (DataSourceRef)DataSourcePath::create( path ), options, extension );
+#endif	
 }
 
 ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options, string extension )

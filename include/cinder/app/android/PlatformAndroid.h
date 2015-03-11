@@ -60,6 +60,8 @@ class PlatformAndroid : public Platform {
 
 	virtual const std::vector<DisplayRef>&	getDisplays();
 
+	static bool 					isAssetPath( const fs::path &path );
+
  protected:
 	virtual void 					prepareAssetLoading();	
 
