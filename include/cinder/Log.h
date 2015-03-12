@@ -135,7 +135,7 @@ class LoggerConsole : public Logger {
   public:
 	virtual ~LoggerConsole()	{}
 
-	virtual void write( const Metadata &meta, const std::string &text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 };
 
 class LoggerFile : public Logger {
@@ -143,10 +143,10 @@ class LoggerFile : public Logger {
 	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	// daily rotating logger, if folder or format are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true );
+	LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	virtual ~LoggerFile();
 
-	virtual void write( const Metadata &meta, const std::string &text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 
 	const fs::path&		getFilePath() const		{ return mFilePath; }
 
@@ -170,7 +170,7 @@ public:
 	LoggerSysLog();
 	virtual ~LoggerSysLog();
 
-	virtual void write( const Metadata &meta, const std::string& text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 };
 
 #endif
@@ -287,7 +287,7 @@ class ThreadSafeT : public LoggerT {
 	: LoggerT( std::forward<Args>( args )... )
 	{}
 
-	virtual void write( const Metadata &meta, const std::string &text ) override
+	void write( const Metadata &meta, const std::string &text ) override
 	{
 		std::lock_guard<std::mutex> lock( manager()->getMutex() );
 		LoggerT::write( meta, text );

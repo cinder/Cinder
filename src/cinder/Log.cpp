@@ -230,7 +230,7 @@ void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting 
 	mFileLoggingEnabled = true;
 }
 
-void LogManager::enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
+void LogManager::enableFileLogging( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
 {
 	if( ! initFileLogging() ) {
 		return;
@@ -362,8 +362,8 @@ LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
 	setTimestampEnabled();
 }
 
-LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
-	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true ), mFilePath( "" )
+LoggerFile::LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
+	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true )
 {
 	if( mFolderPath.empty() || mDailyFormatStr.empty() )
 		return;
