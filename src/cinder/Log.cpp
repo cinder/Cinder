@@ -318,7 +318,7 @@ void LoggerFile::ensureDirectoryExists()
 		fs::create_directories( dir, ec );
 		if( ec ) {
 			// not using CI_LOG_E since it could lead to recursion
-			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\", error: " << ec.message();
+			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\", error: " << ec.message() << endl;
 		}
 	}
 }
