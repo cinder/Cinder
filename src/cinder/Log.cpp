@@ -298,16 +298,7 @@ LoggerFile::~LoggerFile()
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
 	if( ! mStream.is_open() ) {
-		
-		fs::path dir = mFilePath.parent_path();
-		if( ! fs::is_directory( dir ) ) {
-			boost::system::error_code ec;
-			fs::create_directories( dir, ec );
-			if( ec ) {
-				cerr << "Unable to create folder \"" << dir.string() << "\", error: " << ec.message();
-			}
-		}
-		
+		ensureDirectoryExists();
 		mStream.open( mFilePath.string() );
 	}
 	
@@ -317,6 +308,19 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 fs::path LoggerFile::getDefaultLogFilePath() const
 {
 	return app::Platform::get()->getExecutablePath() / "cinder.log";
+}
+
+void LoggerFile::ensureDirectoryExists()
+{
+	fs::path dir = mFilePath.parent_path();
+	if( ! fs::is_directory( dir ) ) {
+		boost::system::error_code ec;
+		fs::create_directories( dir, ec );
+		if( ec ) {
+			// not using CI_LOG_E since it could lead to recursion
+			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\", error: " << ec.message();
+		}
+	}
 }
 
 #if defined( CINDER_COCOA )
