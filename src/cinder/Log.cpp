@@ -97,7 +97,8 @@ const std::string getDailyLogString( const std::string& format )
 
 	return result;
 }
-	
+
+#if defined( CINDER_COCOA )
 int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
 {
 	switch( cinderLogLevel ) {
@@ -111,6 +112,7 @@ int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
+#endif
 
 } // anonymous namespace
 
