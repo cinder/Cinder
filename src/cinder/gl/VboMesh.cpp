@@ -56,7 +56,15 @@ class VboMeshSource : public geom::Source {
 // VboMeshGeomTarget
 class VboMeshGeomTarget : public geom::Target {
   public:
-	typedef std::pair<geom::BufferLayout,std::unique_ptr<uint8_t[]>> BufferData;
+	struct BufferData {
+		BufferData( const geom::BufferLayout &layout, uint8_t *data, size_t dataSize )
+			: mLayout( layout ), mData( data ), mDataSize( dataSize )
+		{}
+	
+		geom::BufferLayout			mLayout;
+		std::unique_ptr<uint8_t[]>	mData;
+		size_t						mDataSize;
+	};
 
 	VboMeshGeomTarget( geom::Primitive prim, VboMesh *vboMesh )
 		: mPrimitive( prim ), mVboMesh( vboMesh )
@@ -65,7 +73,7 @@ class VboMeshGeomTarget : public geom::Target {
 		// create a vector of temporary data that parallels the VboMesh's vertexData
 		for( const auto &vertexArrayBuffer : mVboMesh->getVertexArrayLayoutVbos() ) {
 			size_t requiredBytes = vertexArrayBuffer.first.calcRequiredStorage( mVboMesh->mNumVertices );
-			mBufferData.push_back( BufferData( vertexArrayBuffer.first, std::unique_ptr<uint8_t[]>( new uint8_t[requiredBytes] ) ) );
+			mBufferData.push_back( BufferData( vertexArrayBuffer.first, new uint8_t[requiredBytes], requiredBytes ) );
 		}
 	}
 	
@@ -102,20 +110,29 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 	// we need to find which element of 'mBufferData' containts 'attr'
 	uint8_t *dstData = nullptr;
 	uint8_t dstDims;
-	size_t dstStride;
+	size_t dstStride, dstDataSize;
 	for( const auto &bufferData : mBufferData ) {
-		if( bufferData.first.hasAttrib( attr ) ) {
-			auto attrInfo = bufferData.first.getAttribInfo( attr );
+		if( bufferData.mLayout.hasAttrib( attr ) ) {
+			auto attrInfo = bufferData.mLayout.getAttribInfo( attr );
 			dstDims = attrInfo.getDims();
 			dstStride = attrInfo.getStride();
-			dstData = bufferData.second.get() + attrInfo.getOffset();
+			dstData = bufferData.mData.get() + attrInfo.getOffset();
+			dstDataSize = bufferData.mDataSize;
 			break;
 		}
 	}
 	CI_ASSERT( dstData );
 	
+	// verify we've been called with the number of vertices we were promised earlier
 	if( count != mVboMesh->mNumVertices ) {
 		CI_LOG_E( "copyAttrib() called with " << count << " elements. " << mVboMesh->mNumVertices << " expected." );
+		return;
+	}
+	
+	// verify we have room for this data
+	auto testDstStride = dstStride ? dstStride : ( dstDims * sizeof(float) );
+	if( dstDataSize < count * testDstStride ) {
+		CI_LOG_E( "copyAttrib() called with inadequate attrib data storage allocated" );
 		return;
 	}
 	
@@ -152,7 +169,7 @@ void VboMeshGeomTarget::copyBuffers()
 	// iterate all the buffers in mBufferData and upload them to the corresponding VBO in the VboMesh
 	for( auto bufferDataIt = mBufferData.begin(); bufferDataIt != mBufferData.end(); ++bufferDataIt ) {
 		auto vertexArrayIt = mVboMesh->mVertexArrayVbos.begin() + std::distance( bufferDataIt, mBufferData.begin() );
-		vertexArrayIt->second->copyData( vertexArrayIt->second->getSize(), bufferDataIt->second.get() );
+		vertexArrayIt->second->copyData( bufferDataIt->mDataSize, bufferDataIt->mData.get() );
 	}
 }
 
