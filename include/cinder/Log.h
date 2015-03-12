@@ -149,7 +149,7 @@ class LoggerFile : public Logger {
 	//! If \a filePath is empty, uses the default ('cinder.log' next to app binary)
 	LoggerFile( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	// daily rotating logger, if folder or format are empty, ignores request
-	LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
+	LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true );
 	virtual ~LoggerFile();
 
 	virtual void write( const Metadata &meta, const std::string &text ) override;

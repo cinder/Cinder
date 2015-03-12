@@ -88,7 +88,7 @@ int getCurrentYearDay()
 	return now->tm_year * 1000 + now->tm_yday;
 }
 
-const std::string getDailyLogString(const std::string& format)
+const std::string getDailyLogString( const std::string& format )
 {
 	time_t timeSinceEpoch = time( NULL );
 	struct tm *now = localtime( &timeSinceEpoch );
@@ -99,12 +99,14 @@ const std::string getDailyLogString(const std::string& format)
 	return result;
 }
 	
-int cinderLogLevelToSysLogLevel(Level cinderLogLevel)
+int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
 {
 	switch( cinderLogLevel ) {
 		case LEVEL_FATAL:	return LOG_CRIT;
 		case LEVEL_ERROR:	return LOG_ERR;
 		case LEVEL_WARNING:	return LOG_WARNING;
+		// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
+		// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
 		case LEVEL_INFO:	return LOG_NOTICE;
 		case LEVEL_VERBOSE:	return LOG_NOTICE;
 		default: CI_ASSERT_NOT_REACHABLE();
@@ -256,8 +258,8 @@ void LogManager::setSystemLoggingLevel( Level level )
 	mSystemLoggingLevel = level;
 
 #if defined( CINDER_COCOA )
-	int sysLevel = cinderLogLevelToSysLogLevel(level);
-	setlogmask(LOG_UPTO(sysLevel));
+	int sysLevel = cinderLogLevelToSysLogLevel( level );
+	setlogmask( LOG_UPTO( sysLevel ) );
 #endif
 }
 
@@ -353,7 +355,7 @@ void LoggerImplMulti::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
-	: mFilePath( filePath ), mAppend(appendToExisting), mRotating(false)
+	: mFilePath( filePath ), mAppend( appendToExisting ), mRotating( false )
 {
 	if( mFilePath.empty() )
 		mFilePath = DEFAULT_FILE_LOG_PATH;
@@ -362,13 +364,13 @@ LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
 }
 
 LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
-	: mFolderPath(folder), mDailyFormatStr(formatStr), mAppend(appendToExisting), mRotating(true), mFilePath("")
+	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true ), mFilePath( "" )
 {
 	if( mFolderPath.empty() || mDailyFormatStr.empty() )
 		return;
 
 	mYearDay = getCurrentYearDay();
-	mFilePath = mFolderPath / getDailyLogString(mDailyFormatStr);
+	mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
 
 	setTimestampEnabled();
 }
@@ -383,7 +385,7 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 {
 
 	if( mRotating && mYearDay != getCurrentYearDay() ) {
-		mFilePath = mFolderPath / getDailyLogString(mDailyFormatStr);
+		mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
 		mYearDay = getCurrentYearDay();
 
 		if( mStream.is_open() )
@@ -412,7 +414,7 @@ LoggerSysLog::LoggerSysLog()
 	NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
 
 	const char *cAppName = [appName UTF8String];
-	openlog( cAppName, ( LOG_CONS | LOG_PID), LOG_USER );
+	openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
 }
 
 LoggerSysLog::~LoggerSysLog()
@@ -422,8 +424,8 @@ LoggerSysLog::~LoggerSysLog()
 
 void LoggerSysLog::write( const Metadata &meta, const string &text )
 {
-	int sysLevel = cinderLogLevelToSysLogLevel(meta.mLevel);
-	syslog(sysLevel, "%s %s", meta.toString().c_str(), text.c_str());
+	int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
+	syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
 }
 
 #endif
