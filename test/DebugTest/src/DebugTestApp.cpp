@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 
 #include "cinder/Log.h"
 
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class DebugTestApp : public AppBasic {
+class DebugTestApp : public App {
 	void setup();
 
 	void testEnableFile();
@@ -96,4 +96,4 @@ void DebugTestApp::keyDown( KeyEvent event )
 	CI_LOG_I( "event char: " << event.getChar() << ", code: " << event.getCode() );
 }
 
-CINDER_APP_BASIC( DebugTestApp, Renderer2d )
+CINDER_APP( DebugTestApp, Renderer2d )
