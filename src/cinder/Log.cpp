@@ -365,8 +365,10 @@ LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
 LoggerFile::LoggerFile( const fs::path &folder, const std::string &formatStr, bool appendToExisting )
 	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true )
 {
-	if( mFolderPath.empty() || mDailyFormatStr.empty() )
-		return;
+	CI_ASSERT_MSG( ! formatStr.empty(), "cannot provide empty formatStr" );
+	
+	if( mFolderPath.empty() )
+		mFolderPath = getDefaultLogFilePath().parent_path();
 
 	mYearDay = getCurrentYearDay();
 	mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
