@@ -28,6 +28,7 @@
 
 #if defined( CINDER_COCOA )
 	#import <Foundation/Foundation.h>
+	#include <syslog.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -75,6 +76,39 @@ const std::string getCurrentDateTimeString()
 	strftime( result, sizeof( result ), "%Y-%m-%d.%X", now );
 
 	return result;
+}
+
+int getCurrentYearDay()
+{
+	time_t timeSinceEpoch = time( NULL );
+	struct tm *now = localtime( &timeSinceEpoch );
+
+	return now->tm_year * 1000 + now->tm_yday;
+}
+
+const std::string getDailyLogString( const std::string& format )
+{
+	time_t timeSinceEpoch = time( NULL );
+	struct tm *now = localtime( &timeSinceEpoch );
+
+	char result[100];
+	strftime( result, sizeof( result ), format.c_str(), now );
+
+	return result;
+}
+	
+int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
+{
+	switch( cinderLogLevel ) {
+		case LEVEL_FATAL:	return LOG_CRIT;
+		case LEVEL_ERROR:	return LOG_ERR;
+		case LEVEL_WARNING:	return LOG_WARNING;
+		// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
+		// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
+		case LEVEL_INFO:	return LOG_NOTICE;
+		case LEVEL_VERBOSE:	return LOG_NOTICE;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
 }
 
 } // anonymous namespace
@@ -138,6 +172,15 @@ void LogManager::restoreToDefault()
 	mConsoleLoggingEnabled = true;
 	mFileLoggingEnabled = false;
 	mSystemLoggingEnabled = false;
+
+	switch( CI_MAX_LOG_LEVEL ) {
+		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
+		case 4: mSystemLoggingLevel = LEVEL_INFO;		break;
+		case 3: mSystemLoggingLevel = LEVEL_WARNING;	break;
+		case 2: mSystemLoggingLevel = LEVEL_ERROR;		break;
+		case 1: mSystemLoggingLevel = LEVEL_FATAL;		break;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
 }
 
 vector<Logger *> LogManager::getAllLoggers()
@@ -162,19 +205,37 @@ void LogManager::enableConsoleLogging()
 	addLogger( new LoggerConsoleThreadSafe );
 	mConsoleLoggingEnabled = true;
 }
-	
-void LogManager::enableFileLogging( const fs::path &path )
+
+bool LogManager::initFileLogging()
 {
 	if( mFileLoggingEnabled ) {
-		// if path has changed, destroy previous file logger and make a new one
+		// destroys previous file logger to prepare for changes
 		auto logger = mLoggerMulti->findType<LoggerFile>();
 		if( logger )
 			disableFileLogging();
 		else
-			return;
+			return false;
+	}
+	return true;
+}
+
+void LogManager::enableFileLogging( const fs::path &path, bool appendToExisting )
+{
+	if( ! initFileLogging() ) {
+		return;
 	}
 
-	addLogger( new LoggerFileThreadSafe( path ) );
+	addLogger( new LoggerFileThreadSafe( path, appendToExisting ) );
+	mFileLoggingEnabled = true;
+}
+
+void LogManager::enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
+{
+	if( ! initFileLogging() ) {
+		return;
+	}
+
+	addLogger( new LoggerFileThreadSafe( folder, formatStr, appendToExisting ) );
 	mFileLoggingEnabled = true;
 }
 
@@ -184,8 +245,19 @@ void LogManager::enableSystemLogging()
 		return;
 
 #if defined( CINDER_COCOA )
-	addLogger( new LoggerNSLog );
+	addLogger( new LoggerSysLog );
+	setSystemLoggingLevel( mSystemLoggingLevel );
 	mSystemLoggingEnabled = true;
+#endif
+}
+
+void LogManager::setSystemLoggingLevel( Level level )
+{
+	mSystemLoggingLevel = level;
+
+#if defined( CINDER_COCOA )
+	int sysLevel = cinderLogLevelToSysLogLevel( level );
+	setlogmask( LOG_UPTO( sysLevel ) );
 #endif
 }
 
@@ -217,7 +289,7 @@ void LogManager::disableSystemLogging()
 		return;
 
 #if defined( CINDER_COCOA )
-	auto logger = mLoggerMulti->findType<LoggerNSLog>();
+	auto logger = mLoggerMulti->findType<LoggerSysLog>();
 	mLoggerMulti->remove( logger );
 	mSystemLoggingEnabled = false;
 #endif
@@ -280,11 +352,23 @@ void LoggerImplMulti::write( const Metadata &meta, const string &text )
 // MARK: - LoggerFile
 // ----------------------------------------------------------------------------------------------------
 
-LoggerFile::LoggerFile( const fs::path &filePath )
-	: mFilePath( filePath )
+LoggerFile::LoggerFile( const fs::path &filePath, bool appendToExisting )
+	: mFilePath( filePath ), mAppend( appendToExisting ), mRotating( false )
 {
 	if( mFilePath.empty() )
 		mFilePath = getDefaultLogFilePath();
+
+	setTimestampEnabled();
+}
+
+LoggerFile::LoggerFile( const fs::path &folder, const std::string& formatStr, bool appendToExisting )
+	: mFolderPath( folder ), mDailyFormatStr( formatStr ), mAppend( appendToExisting ), mRotating( true ), mFilePath( "" )
+{
+	if( mFolderPath.empty() || mDailyFormatStr.empty() )
+		return;
+
+	mYearDay = getCurrentYearDay();
+	mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
 
 	setTimestampEnabled();
 }
@@ -297,9 +381,17 @@ LoggerFile::~LoggerFile()
 
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
+	if( mRotating && mYearDay != getCurrentYearDay() ) {
+		mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
+		mYearDay = getCurrentYearDay();
+
+		if( mStream.is_open() )
+			mStream.close();
+	}
+
 	if( ! mStream.is_open() ) {
 		ensureDirectoryExists();
-		mStream.open( mFilePath.string() );
+		mAppend ? mStream.open( mFilePath.string(), std::ofstream::app ) : mStream.open( mFilePath.string() );
 	}
 	
 	writeDefault( mStream, meta, text );
@@ -333,14 +425,30 @@ void LoggerFile::ensureDirectoryExists()
 #if defined( CINDER_COCOA )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerNSLog
+// MARK: - LoggerSysLog
 // ----------------------------------------------------------------------------------------------------
 
-void LoggerNSLog::write( const Metadata &meta, const string &text )
+LoggerSysLog::LoggerSysLog()
 {
-	NSString *textNs = [NSString stringWithCString:text.c_str() encoding:NSUTF8StringEncoding];
-	NSString *metaDataNs = [NSString stringWithCString:meta.toString().c_str() encoding:NSUTF8StringEncoding];
-	NSLog( @"%@ %@", metaDataNs, textNs );
+	// Most general approach for determining app name.  Perhaps there is something more cinder specific?
+	// https://developer.apple.com/library/mac/qa/qa1544/_index.html
+
+	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
+
+	const char *cAppName = [appName UTF8String];
+	openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
+}
+
+LoggerSysLog::~LoggerSysLog()
+{
+	closelog();
+}
+
+void LoggerSysLog::write( const Metadata &meta, const string &text )
+{
+	int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
+	syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
 }
 
 #endif

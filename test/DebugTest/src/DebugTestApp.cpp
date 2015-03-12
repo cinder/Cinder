@@ -14,7 +14,9 @@ class DebugTestApp : public App {
 
 	void testEnableFile();
 	void testEnableBadFilePath();
+	void testRotatingFile();
 	void testEnableDisable();
+	void testSystemLevel();
 	void testAddFile();
 	void testAddRemove();
 	void testAsserts();
@@ -26,14 +28,16 @@ class DebugTestApp : public App {
 
 void DebugTestApp::setup()
 {
-//	log::manager()->resetLogger( new log::LoggerNSLog );
-//	log::manager()->enableSystemLogging();
-
-
-	testEnableBadFilePath();
+//	testEnableBadFilePath();
 	//testEnableFile();
 //	testEnableDisable();
 //	testAddRemove();
+	testRotatingFile();
+	//testEnableDisable();
+	testSystemLevel();
+	//testAddFile();
+	//testAddRemove();
+	//testAsserts();
 }
 
 void DebugTestApp::testAsserts()
@@ -50,11 +54,30 @@ void DebugTestApp::testAsserts()
 void DebugTestApp::testEnableFile()
 {
 	log::manager()->enableFileLogging();
+
 //	log::manager()->enableFileLogging( "/tmp/blarg/cinder.log" );
 //	log::manager()->enableFileLogging( "/tmp", "loggingTests.%Y.%m.%d.log", false );
 //	log::manager()->enableFileLogging( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
 
 	CI_LOG_I( "enabled file logger" );
+}
+
+void DebugTestApp::testRotatingFile()
+{
+	log::manager()->enableFileLogging( "/tmp", "loggingTests.%Y.%m.%d.log", false );
+	// also a bug
+	//log::manager()->enableFileLogging( "/tmp/cinder", "loggingTests.%Y.%m.%d.log", false );
+}
+
+void DebugTestApp::testSystemLevel()
+{
+	log::manager()->enableSystemLogging();
+	log::manager()->setSystemLoggingLevel(log::LEVEL_ERROR);
+	CI_LOG_I( "This should not show up in the sys log." );
+	CI_LOG_E( "This should show up in the sys log." );
+	log::manager()->setSystemLoggingLevel(log::LEVEL_VERBOSE);
+	CI_LOG_V( "This should show up in the sys log as well." );
+	
 }
 
 void DebugTestApp::testEnableDisable()
@@ -75,11 +98,11 @@ void DebugTestApp::testAddFile()
 
 void DebugTestApp::testAddRemove()
 {
-	auto logger = new log::LoggerNSLog;
+	auto logger = new log::LoggerSysLog;
 	log::manager()->addLogger( logger );
-	CI_LOG_I( "added LoggerNSLog" );
+	CI_LOG_I( "added LoggerSysLog" );
 	log::manager()->removeLogger( logger );
-	CI_LOG_I( "removed LoggerNSLog" );
+	CI_LOG_I( "removed LoggerSysLog" );
 }
 
 void DebugTestApp::testEnableBadFilePath()
