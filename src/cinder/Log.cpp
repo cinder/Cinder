@@ -27,6 +27,7 @@
 #include "cinder/app/Platform.h"
 
 #if defined( CINDER_COCOA )
+	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#import <Foundation/Foundation.h>
 	#include <syslog.h>
 #endif
@@ -422,10 +423,9 @@ void LoggerFile::ensureDirectoryExists()
 
 LoggerSysLog::LoggerSysLog()
 {
-	// Most general approach for determining app name.  Perhaps there is something more cinder specific?
-	// https://developer.apple.com/library/mac/qa/qa1544/_index.html
-
-	NSString *bundlePath = [[NSBundle mainBundle] bundlePath];
+	// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
+	NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
+	NSString *bundlePath = [bundle bundlePath];
 	NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
 
 	const char *cAppName = [appName UTF8String];
