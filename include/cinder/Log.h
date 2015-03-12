@@ -34,12 +34,6 @@
 #include <memory>
 #include <mutex>
 
-#if defined( CINDER_MSW ) && ( _MSC_VER < 1800 )
-	#define CINDER_NO_VARIADIC_TEMPLATES
-	#include <boost/preprocessor/repetition.hpp>
-	#include <boost/preprocessor/control/if.hpp>
-#endif
-
 #define CINDER_LOG_STREAM( level, stream ) ::cinder::log::Entry( level, ::cinder::log::Location( CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) ) << stream
 
 // CI_MAX_LOG_LEVEL is designed so that if you set it to 0, nothing logs, 1 only fatal, 2 fatal + error, etc...
@@ -288,23 +282,10 @@ private:
 template<class LoggerT>
 class ThreadSafeT : public LoggerT {
   public:
-
-#if ! defined( CINDER_NO_VARIADIC_TEMPLATES )
 	template <typename... Args>
 	ThreadSafeT( Args &&... args )
 	: LoggerT( std::forward<Args>( args )... )
 	{}
-#else
-#define CTOR(z, n, unused)														\
-	BOOST_PP_IF( n, template <, ) BOOST_PP_ENUM_PARAMS( n, typename Arg )		\
-		BOOST_PP_IF(n, >, )														\
-			ThreadSafeT( BOOST_PP_ENUM_BINARY_PARAMS( n, Arg, arg ) )			\
-				: LoggerT( BOOST_PP_ENUM_PARAMS( n, arg ) )						\
-			{}
-
-	BOOST_PP_REPEAT(5, CTOR, ~)
-#undef CTOR
-#endif
 
 	virtual void write( const Metadata &meta, const std::string &text ) override
 	{
