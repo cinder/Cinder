@@ -373,7 +373,7 @@ LoggerFile::LoggerFile( const fs::path &folder, const std::string &formatStr, bo
 		mFolderPath = getDefaultLogFilePath().parent_path();
 
 	mYearDay = getCurrentYearDay();
-	mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
+	mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
 
 	setTimestampEnabled();
 }
@@ -387,7 +387,7 @@ LoggerFile::~LoggerFile()
 void LoggerFile::write( const Metadata &meta, const string &text )
 {
 	if( mRotating && mYearDay != getCurrentYearDay() ) {
-		mFilePath = mFolderPath / getDailyLogString( mDailyFormatStr );
+		mFilePath = mFolderPath / fs::path( getDailyLogString( mDailyFormatStr ) );
 		mYearDay = getCurrentYearDay();
 
 		if( mStream.is_open() )
