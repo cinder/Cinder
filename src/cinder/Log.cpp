@@ -37,8 +37,6 @@
 #include <mutex>
 #include <time.h>
 
-#define DEFAULT_FILE_LOG_PATH "cinder.log"
-
 // TODO: consider storing Logger's as shared_ptr instead
 //	- they really aren't shared, but makes swapping them in and out and LogManager's handles easier
 
@@ -286,7 +284,7 @@ LoggerFile::LoggerFile( const fs::path &filePath )
 	: mFilePath( filePath )
 {
 	if( mFilePath.empty() )
-		mFilePath = DEFAULT_FILE_LOG_PATH;
+		mFilePath = getDefaultLogFilePath();
 
 	setTimestampEnabled();
 }
@@ -314,6 +312,11 @@ void LoggerFile::write( const Metadata &meta, const string &text )
 	}
 	
 	writeDefault( mStream, meta, text );
+}
+
+fs::path LoggerFile::getDefaultLogFilePath() const
+{
+	return app::Platform::get()->getExecutablePath() / "cinder.log";
 }
 
 #if defined( CINDER_COCOA )

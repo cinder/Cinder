@@ -155,6 +155,8 @@ class LoggerFile : public Logger {
 	const fs::path&		getFilePath() const		{ return mFilePath; }
 
   protected:
+	fs::path	getDefaultLogFilePath() const;
+
 	fs::path		mFilePath;
 	std::ofstream	mStream;
 };
