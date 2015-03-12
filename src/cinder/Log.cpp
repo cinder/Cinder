@@ -406,19 +406,11 @@ void LoggerFile::ensureDirectoryExists()
 {
 	fs::path dir = mFilePath.parent_path();
 	if( ! fs::is_directory( dir ) ) {
-#if ! defined( CINDER_WINRT )
-		boost::system::error_code ec;
-		fs::create_directories( dir, ec );
-		if( ec ) {
+		bool success = fs::create_directories( dir );
+		if( ! success ) {
 			// not using CI_LOG_E since it could lead to recursion
-			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\", error: " << ec.message() << endl;
+			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\"" << endl;
 		}
-#else
-		if( ! fs::create_directories( dir ) ) {
-			// not using CI_LOG_E since it could lead to recursion
-			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << endl;			
-		}
-#endif
 	}
 }
 
