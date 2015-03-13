@@ -51,6 +51,7 @@ class ShaderPreprocessor;
 class GlslProg : public std::enable_shared_from_this<GlslProg> {
   public:
 	
+	//! Resembles all the information Queryable of an attribute
 	struct Attribute {
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1;
@@ -65,6 +66,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		GLenum			mType;
 		UniformSemantic mSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
 	};
+	
 #if ! defined( CINDER_GL_ES_2 )
 	struct UniformBlock {
 		std::string mName;
@@ -80,15 +82,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::string		mName;
 		GLint			mCount = 0;
 		GLenum			mType;
-		Attribute*		mAttachedAttrib;
-	};
-#endif
-	
-#if ! defined( CINDER_GL_ES )
-	struct Subroutine {
-		std::string mName;
-		GLenum		mStage;
-		std::vector<std::pair<GLint, std::string>> mIdName;
 	};
 #endif
 
@@ -296,10 +289,18 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	//! Default mapping from attribute name to semantic. Can be modified via the reference. Not thread-safe.
 	static AttribSemanticMap&		getDefaultAttribNameToSemanticMap();
 	
+	//! Returns the attrib location of the Attribute that matches \a name.
 	GLint							getAttribLocation( const std::string &name ) const;
+	//! Returns a const reference to the Active Attribute cache.
 	const std::vector<Attribute>&	getActiveAttributes() const { return mAttributes; }
+	//! Returns a const pointer to the Attribute that matches \a name. Returns nullptr if the attrib doesn't exist.
+	const Attribute*	findAttrib( const std::string &name ) const;
+	//! Returns the uniform location of the Uniform that matches \a name.
 	GLint							getUniformLocation( const std::string &name ) const;
+	//! Returns a const reference to the Active Uniform cache.
 	const std::vector<Uniform>&		getActiveUniforms() const { return mUniforms; }
+	//! Returns a const pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist.
+	const Uniform*					findUniform( const std::string &name ) const;
 
 #if ! defined( CINDER_GL_ES_2 )
 	// Uniform blocks
@@ -307,14 +308,18 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniformBlock( const std::string &name, GLint binding );
 	//! Analogous to glUniformBlockBinding()
 	void	uniformBlock( GLint loc, GLint binding );
+	//!	Returns the uniform block location of the Uniform Block that matches \a name.
 	GLint	getUniformBlockLocation( const std::string &name ) const;
+	//! Returns the size of the Uniform block matching \a blockIndex.
 	GLint	getUniformBlockSize( GLint blockIndex ) const;
+	//! Returns a const pointer to the UniformBlock that matches \a name. Returns nullptr if the uniform block doesn't exist.
+	const UniformBlock* findUniformBlock( const std::string &name ) const;
+	//! Returns a const reference to the UniformBlock cache.
 	const std::vector<UniformBlock>& getActiveUniformBlocks() const { return mUniformBlocks; }
+	//! Returns a const pointer to the TransformFeedbackVarying that matches \a name. Returns nullptr if the transform feedback varying doesn't exist.
+	const TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name ) const;
+	//! Returns a const reference to the TransformFeedbackVaryings cache.
 	const std::vector<TransformFeedbackVaryings>& getActiveTransformFeedbackVaryings() const { return mTransformFeedbackVaryings; }
-#endif
-	
-#if ! defined( CINDER_GL_ES )
-	const std::vector<Subroutine> getActiveSubroutines() const { return mSubroutines; }
 #endif
 	
 	std::string		getShaderLog( GLuint handle ) const;
@@ -332,22 +337,23 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void			attachShaders();
 	void			link();
 	
+	//! Caches all active Attributes after linking.
 	void				cacheActiveAttribs();
+	//! Returns a pointer to the Attribute that matches \a name. Returns nullptr if the attrib doesn't exist.
 	Attribute*			findAttrib( const std::string &name );
-	const Attribute*	findAttrib( const std::string &name ) const;
+	//! Caches all active Uniforms after linking.
 	void				cacheActiveUniforms();
+	//! Returns a pointer to the Uniform that matches \a name. Returns nullptr if the attrib doesn't exist.
 	Uniform*			findUniform( const std::string &name );
-	const Uniform*		findUniform( const std::string &name ) const;
 #if ! defined( CINDER_GL_ES_2 )
+	//! Caches all active Uniform Blocks after linking.
 	void				cacheActiveUniformBlocks();
+	//! Returns a pointer to the Uniform Block that matches \a name. Returns nullptr if the attrib doesn't exist.
 	UniformBlock*		findUniformBlock( const std::string &name );
-	const UniformBlock* findUniformBlock( const std::string &name ) const;
+	//! Caches all active Transform Feedback Varyings after linking.
 	void				cacheActiveTransformFeedbackVaryings();
-#endif
-	
-#if ! defined( CINDER_GL_ES )
-	void				cacheActiveSubroutines();
-	Subroutine*			findSubroutine( const std::string &name ) const;
+	//! Returns a pointer to the Transform Feedback Varyings that matches \a name. Returns nullptr if the attrib doesn't exist.
+	TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name );
 #endif
 	
 	GLuint									mHandle;
@@ -358,12 +364,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	std::vector<Attribute>					mAttributes;
 	std::vector<Uniform>					mUniforms;
 #if ! defined( CINDER_GL_ES_2 )
-	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
 	std::vector<UniformBlock>				mUniformBlocks;
-#endif
-	
-#if ! defined( CINDER_GL_ES )
-	std::vector<Subroutine>					mSubroutines;
+	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
+	GLenum									mTransformFeedbackFormat;
 #endif
 	
 	// enumerates the uniforms we've already logged as missing so that we don't flood the log with the same message
@@ -371,13 +374,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 
 	std::string								mLabel; // debug label
 	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
-
-	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
-#if ! defined( CINDER_GL_ES_2 )
-	std::unique_ptr<std::vector<GLchar>>	mTransformFeedbackVaryingsChars;
-	std::unique_ptr<std::vector<GLchar*>>	mTransformFeedbackVaryingsCharStarts;
-	GLenum									mTransformFeedbackFormat;
-#endif
 
 	friend class Context;
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );

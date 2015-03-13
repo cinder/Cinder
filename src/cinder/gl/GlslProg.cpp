@@ -330,26 +330,20 @@ GlslProg::GlslProg( const Format &format )
 		if( attrib.mLoc > -1 )
 			glBindAttribLocation( mHandle, attrib.mLoc, attrib.mName.c_str() );
 	
-	
 #if ! defined( CINDER_GL_ES_2 )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
+		auto & userVaryings = format.getVaryings();
+		mTransformFeedbackVaryings.resize( format.getVaryings().size() );
+		std::vector<const GLchar*> transformFeedbackStarts;
+		int i = 0;
 		// This is a mess due to an NVidia driver bug on MSW which expects the memory passed to glTransformFeedbackVaryings
 		// to still be around after the call. We allocate the storage and put it on the GlslProg itself to be freed at destruction
-		size_t totalSizeBytes = 0;
-		for( auto &v : format.getVaryings() )
-			totalSizeBytes += v.length() + 1;
-
-		mTransformFeedbackVaryingsChars = std::unique_ptr<std::vector<GLchar>>( new vector<GLchar>() );
-		mTransformFeedbackVaryingsCharStarts = std::unique_ptr<std::vector<GLchar*>>( new vector<GLchar*>() );
-		mTransformFeedbackVaryingsChars->resize( totalSizeBytes );
-		size_t curOffset = 0;
-		for( auto &v : format.getVaryings() ) {
-			mTransformFeedbackVaryingsCharStarts->push_back( &(*mTransformFeedbackVaryingsChars)[curOffset] );
-			memcpy( &(*mTransformFeedbackVaryingsChars)[curOffset], v.c_str(), v.length() + 1 );
-			curOffset += v.length() + 1;
+		for( auto & transformFeedbackVaryings : mTransformFeedbackVaryings ) {
+			transformFeedbackVaryings.mName = userVaryings[i++];
+			transformFeedbackStarts.push_back( transformFeedbackVaryings.mName.c_str() );
 		}
 		mTransformFeedbackFormat = format.getTransformFormat();
-		glTransformFeedbackVaryings( mHandle, (GLsizei)format.getVaryings().size(), mTransformFeedbackVaryingsCharStarts->data(), mTransformFeedbackFormat );
+		glTransformFeedbackVaryings( mHandle, (GLsizei)mTransformFeedbackVaryings.size(), transformFeedbackStarts.data(), mTransformFeedbackFormat );
 	}
 #endif
 
@@ -367,9 +361,6 @@ GlslProg::GlslProg( const Format &format )
 		cacheActiveTransformFeedbackVaryings();
 	}
 	cacheActiveUniformBlocks();
-#endif
-#if ! defined( CINDER_GL_ES )
-	cacheActiveSubroutines();
 #endif
 	cacheActiveUniforms();
 	
@@ -513,6 +504,37 @@ void GlslProg::link()
 	}
 }
 	
+void GlslProg::cacheActiveAttribs()
+{
+	GLint numActiveAttrs = 0;
+	glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
+	
+	auto & semanticNameMap = getDefaultAttribNameToSemanticMap();
+	for( GLint i = 0; i < numActiveAttrs; ++i ) {
+		char name[512];
+		GLsizei nameLength;
+		GLint count;
+		GLenum type;
+		
+		glGetActiveAttrib( mHandle, (GLuint)i, 511, &nameLength, &count, &type, name );
+		auto loc = glGetAttribLocation( mHandle, name );
+		
+		geom::Attrib attributeSemantic = geom::Attrib::NUM_ATTRIBS;
+		auto foundSemantic = semanticNameMap.find( name );
+		if( foundSemantic != semanticNameMap.end() ) {
+			attributeSemantic = foundSemantic->second;
+		}
+		
+		Attribute attrib;
+		attrib.mName		= name;
+		attrib.mLoc			= loc;
+		attrib.mCount		= count;
+		attrib.mType		= type;
+		attrib.mSemantic	= attributeSemantic;
+		mAttributes.push_back( attrib );
+	}
+}
+	
 void GlslProg::cacheActiveUniforms()
 {
 	GLint numActiveUniforms = 0;
@@ -545,37 +567,6 @@ void GlslProg::cacheActiveUniforms()
 			uniform.mSemantic	= uniformSemantic;
 			mUniforms.push_back( uniform );
 		}
-	}
-}
-
-void GlslProg::cacheActiveAttribs()
-{
-	GLint numActiveAttrs = 0;
-	glGetProgramiv( mHandle, GL_ACTIVE_ATTRIBUTES, &numActiveAttrs );
-	
-	auto & semanticNameMap = getDefaultAttribNameToSemanticMap();
-	for( GLint i = 0; i < numActiveAttrs; ++i ) {
-		char name[512];
-		GLsizei nameLength;
-		GLint count;
-		GLenum type;
-		
-		glGetActiveAttrib( mHandle, (GLuint)i, 511, &nameLength, &count, &type, name );
-		auto loc = glGetAttribLocation( mHandle, name );
-		
-		geom::Attrib attributeSemantic = geom::Attrib::NUM_ATTRIBS;
-		auto foundSemantic = semanticNameMap.find( name );
-		if( foundSemantic != semanticNameMap.end() ) {
-			attributeSemantic = foundSemantic->second;
-		}
-		
-		Attribute attrib;
-		attrib.mName		= name;
-		attrib.mLoc			= loc;
-		attrib.mCount		= count;
-		attrib.mType		= type;
-		attrib.mSemantic	= attributeSemantic;
-		mAttributes.push_back( attrib );
 	}
 }
 
@@ -671,59 +662,46 @@ void GlslProg::cacheActiveTransformFeedbackVaryings()
 	GLint numActiveTransformFeedbackVaryings;
 	glGetProgramiv( mHandle, GL_TRANSFORM_FEEDBACK_VARYINGS, &numActiveTransformFeedbackVaryings );
 	
-	for( int i = 0; i < numActiveTransformFeedbackVaryings; i++ ) {
-		GLchar name[500];
-		GLint length;
-		GLsizei count;
-		GLenum type;
+	if( numActiveTransformFeedbackVaryings > 0 ) {
+		for( int i = 0; i < numActiveTransformFeedbackVaryings; i++ ) {
+			GLchar name[500];
+			GLint length;
+			GLsizei count;
+			GLenum type;
+			
+			glGetTransformFeedbackVarying( mHandle, i, 500, &length, &count, &type, name );
+			name[length] = 0;
+			
+			auto varying = findTransformFeedbackVaryings( name );
+			if( varying ) {
+				varying->mCount = count;
+				varying->mType = type;
+			}
+		}
 		
-		glGetTransformFeedbackVarying( mHandle, i, 500, &length, &count, &type, name );
-		name[length] = 0;
-		
-		TransformFeedbackVaryings varying;
-		varying.mName = name;
-		varying.mCount = count;
-		varying.mType = type;
-		// TODO: Figure out how to link the attrib in to the out using semantics and the pointer
-		// on TransformFeedbackVarying
-		mTransformFeedbackVaryings.push_back( varying );
+		// TODO: This needs to be created correctly and checked, this is where the magic will happen.
+//		static const std::string nextComponent = "glNextComponent";
+//		static const std::string nextBuffer = "glNextBuffer";
+//		
+//		// This isn't pretty but it will work to tell us about what the attributes are
+//		if( mTransformFeedbackFormat == GL_INTERLEAVED_ATTRIBS ) {
+//			for( auto & varying : mTransformFeedbackVaryings ) {
+//				// if the count is zero we must have reached a special variable, i.e. gl_Ne
+//				if( varying.mCount == 0 ) {
+//					if ( ! varying.mName.compare( 0, nextComponent.size(), nextComponent ) ) {
+//						auto dimStr = varying.mName.substr( nextComponent.size(), 1 );
+//						auto dimInt = std::stoi( dimStr );
+//						
+//					}
+//					else if( varying.mName.compare( 0, nextBuffer.size(), nextBuffer ) ) {
+//						
+//					}
+//				}
+//			}
+//		}
 	}
 }
 #endif // ! defined( CINDER_GL_ES_2 )
-	
-#if ! defined( CINDER_GL_ES )
-void GlslProg::cacheActiveSubroutines()
-{
-	int countActiveSU, len, numCompS;
-	char name[500];
-	static std::vector<GLenum> stages( { GL_VERTEX_SHADER, GL_TESS_CONTROL_SHADER, GL_TESS_EVALUATION_SHADER, GL_GEOMETRY_SHADER, GL_FRAGMENT_SHADER } );
-	
-	for( auto & stage : stages ) {
-		glGetProgramStageiv( mHandle, stage, GL_ACTIVE_SUBROUTINE_UNIFORMS, &countActiveSU );
-		
-		for (int i = 0; i < countActiveSU; ++i) {
-			
-			
-			glGetActiveSubroutineUniformName( mHandle, stage, i, 500, &len, name);
-			name[len] = 0;
-			
-			glGetActiveSubroutineUniformiv( mHandle, stage, i, GL_NUM_COMPATIBLE_SUBROUTINES, &numCompS );
-			std::vector<int> routineIds( numCompS );
-			glGetActiveSubroutineUniformiv( mHandle, stage, i, GL_COMPATIBLE_SUBROUTINES, routineIds.data() );
-			
-			Subroutine sub;
-			sub.mStage = stage;
-			sub.mName = name;
-			for ( auto & routineId : routineIds ) {
-				glGetActiveSubroutineName( mHandle, stage, routineId, 500, &len, name );
-				name[len] = 0;
-				sub.mIdName.push_back( make_pair( routineId, name ) );
-			}
-			mSubroutines.push_back( sub );
-		}
-	}
-}
-#endif // ! defined( CINDER_GL_ES )
 
 void GlslProg::bind() const
 {
@@ -816,7 +794,7 @@ GlslProg::Uniform* GlslProg::findUniform( const std::string &name )
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name ) const
 {
 	const Uniform* ret = nullptr;
-	for( auto & uniform : mUniforms ) {
+	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
 			ret = &uniform;
 			break;
@@ -935,6 +913,28 @@ GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 	else
 		return -1;
 }
+	
+const GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name ) const
+{
+	const TransformFeedbackVaryings* ret = nullptr;
+	for( const auto & varying : mTransformFeedbackVaryings ) {
+		if( varying.mName == name ) {
+			ret = &varying;
+		}
+	}
+	return ret;
+}
+	
+GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name )
+{
+	TransformFeedbackVaryings* ret = nullptr;
+	for( auto & varying : mTransformFeedbackVaryings ) {
+		if( varying.mName == name ) {
+			ret = &varying;
+		}
+	}
+	return ret;
+}
 #endif // ! defined( CINDER_GL_ES_2 )
 
 // bool
@@ -946,8 +946,6 @@ void GlslProg::uniform( int location, bool data ) const
 
 void GlslProg::uniform( const std::string &name, bool data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_BOOL && mLoggedUniforms.count( name ) == 0 ) {
@@ -955,7 +953,7 @@ void GlslProg::uniform( const std::string &name, bool data ) const
 					 << gl::constantToString(found->mType) << " and received an integer.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform1i( found->mLoc, data );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -974,8 +972,6 @@ void GlslProg::uniform( int location, uint32_t data ) const
 
 void GlslProg::uniform( const std::string &name, uint32_t data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_UNSIGNED_INT && mLoggedUniforms.count( name ) == 0 ) {
@@ -983,7 +979,7 @@ void GlslProg::uniform( const std::string &name, uint32_t data ) const
 					 << gl::constantToString(found->mType) << " and received an integer.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform1ui( found->mLoc, data );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1002,8 +998,6 @@ void GlslProg::uniform( int location, const uvec2 &data ) const
 
 void GlslProg::uniform( const std::string &name, const uvec2 &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_UNSIGNED_INT_VEC2 && mLoggedUniforms.count( name ) == 0 ) {
@@ -1011,7 +1005,7 @@ void GlslProg::uniform( const std::string &name, const uvec2 &data ) const
 					 << gl::constantToString(found->mType) << " and received an integer.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform2ui( found->mLoc, data.x, data.y );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1030,8 +1024,6 @@ void GlslProg::uniform( int location, const uvec3 &data ) const
 
 void GlslProg::uniform( const std::string &name, const uvec3 &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_UNSIGNED_INT_VEC3 && mLoggedUniforms.count( name ) == 0 ) {
@@ -1039,7 +1031,7 @@ void GlslProg::uniform( const std::string &name, const uvec3 &data ) const
 					 << gl::constantToString(found->mType) << " and received an integer.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform3ui( found->mLoc, data.x, data.y, data.z );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1058,8 +1050,6 @@ void GlslProg::uniform( int location, const uvec4 &data ) const
 
 void GlslProg::uniform( const std::string &name, const uvec4 &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_UNSIGNED_INT_VEC4 && mLoggedUniforms.count( name ) == 0 ) {
@@ -1067,7 +1057,7 @@ void GlslProg::uniform( const std::string &name, const uvec4 &data ) const
 					 << gl::constantToString(found->mType) << " and received an integer.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform4ui( found->mLoc, data.x, data.y, data.z, data.w );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1086,8 +1076,6 @@ void GlslProg::uniform( int location, int data ) const
 
 void GlslProg::uniform( const std::string &name, int data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_INT && mLoggedUniforms.count( name ) == 0 ) {
@@ -1095,7 +1083,7 @@ void GlslProg::uniform( const std::string &name, int data ) const
 						 << gl::constantToString(found->mType) << " and received an integer.");
 				mLoggedUniforms.insert( name );
 		}
-		glUniform1i( found->mLoc, data );
+		uniform( found->mLoc, data );
 	}
     else {
         if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1114,16 +1102,14 @@ void GlslProg::uniform( int location, const ivec2 &data ) const
 
 void GlslProg::uniform( const std::string &name, const ivec2 &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_INT_VEC2 && mLoggedUniforms.count( name ) == 0 ) {
 				CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 						 << gl::constantToString(found->mType) << " and received an ivec2.");
 				mLoggedUniforms.insert( name );
 		}
-		glUniform2i( found->mLoc, data.x, data.y );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1142,16 +1128,14 @@ void GlslProg::uniform( int location, const int *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const int *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-    
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_INT && mLoggedUniforms.count( name ) == 0 ) {
 				CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 						 << gl::constantToString(found->mType) << " and received an integer.");
 				mLoggedUniforms.insert( name );
 		}
-		glUniform1iv( found->mLoc, count, data );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1170,16 +1154,14 @@ void GlslProg::uniform( int location, const ivec2 *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const ivec2 *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType == GL_INT_VEC2 && mLoggedUniforms.count( name ) == 0 ) {
 				CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 						 << gl::constantToString(found->mType) << " and received an ivec2.");
 				mLoggedUniforms.insert( name );
 		}
-		glUniform2iv( found->mLoc, count, &data[0].x );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1198,16 +1180,14 @@ void GlslProg::uniform( int location, float data ) const
 
 void GlslProg::uniform( const std::string &name, float data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT && mLoggedUniforms.count( name ) == 0 ) {
 				CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 						 << gl::constantToString(found->mType) << " and received a float.");
 				mLoggedUniforms.insert( name );
 		}
-		glUniform1f( found->mLoc, data );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1226,16 +1206,14 @@ void GlslProg::uniform( int location, const vec2 &data ) const
 
 void GlslProg::uniform( const std::string &name, const vec2 &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC2 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec2.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform2f( found->mLoc, data.x, data.y );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1254,16 +1232,14 @@ void GlslProg::uniform( int location, const vec3 &data ) const
 
 void GlslProg::uniform( const std::string &name, const vec3 &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC3 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec3.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform3f( found->mLoc, data.x, data.y, data.z );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1282,16 +1258,14 @@ void GlslProg::uniform( int location, const vec4 &data ) const
 
 void GlslProg::uniform( const std::string &name, const vec4 &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC4 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec4.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform4f( found->mLoc, data.x, data.y, data.z, data.w );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1310,8 +1284,6 @@ void GlslProg::uniform( int location, const mat3 &data, bool transpose ) const
 
 void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
 	auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_MAT3 && mLoggedUniforms.count( name ) == 0 ) {
@@ -1319,7 +1291,7 @@ void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpos
 					 << gl::constantToString(found->mType) << " and received a mat3.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniformMatrix3fv( found->mLoc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
+		uniform( found->mLoc, data, transpose );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1338,16 +1310,14 @@ void GlslProg::uniform( int location, const mat4 &data, bool transpose ) const
 
 void GlslProg::uniform( const std::string &name, const mat4 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_MAT4 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a mat4.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniformMatrix4fv( found->mLoc, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
+		uniform( found->mLoc, data, transpose );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1366,16 +1336,14 @@ void GlslProg::uniform( int location, const Color &data ) const
 
 void GlslProg::uniform( const std::string &name, const Color &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC3 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a Color(vec3).");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform3f( found->mLoc, data.r, data.g, data.b );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1394,16 +1362,14 @@ void GlslProg::uniform( int location, const ColorA &data ) const
 
 void GlslProg::uniform( const std::string &name, const ColorA &data ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC4 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a ColorA(vec4).");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform4f( found->mLoc, data.r, data.g, data.b, data.a );
+		uniform( found->mLoc, data );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1422,16 +1388,14 @@ void GlslProg::uniform( int location, const float *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const float *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a float.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform1fv( found->mLoc, count, data );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1450,16 +1414,14 @@ void GlslProg::uniform( int location, const vec2 *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const vec2 *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC2 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec2.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform2fv( found->mLoc, count, &data[0].x );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1478,16 +1440,14 @@ void GlslProg::uniform( int location, const vec3 *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const vec3 *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC3 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec3.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform3fv( found->mLoc, count, &data[0].x );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1506,16 +1466,14 @@ void GlslProg::uniform( int location, const vec4 *data, int count ) const
 
 void GlslProg::uniform( const std::string &name, const vec4 *data, int count ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_VEC4 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a vec4.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniform4fv( found->mLoc, count, &data[0].x );
+		uniform( found->mLoc, data, count );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1534,16 +1492,14 @@ void GlslProg::uniform( int location, const mat3 *data, int count, bool transpos
 
 void GlslProg::uniform( const std::string &name, const mat3 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_MAT3 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a mat3.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniformMatrix3fv( found->mLoc, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
+		uniform( found->mLoc, data, count, transpose );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1562,16 +1518,14 @@ void GlslProg::uniform( int location, const mat4 *data, int count, bool transpos
 
 void GlslProg::uniform( const std::string &name, const mat4 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( this );
-	
-	auto found = findUniform( name );
+    auto found = findUniform( name );
 	if( found ) {
 		if( found->mType != GL_FLOAT_MAT4 && mLoggedUniforms.count( name ) == 0 ) {
 			CI_LOG_W("Uniform type mismatch for \"" << found->mName << "\", expected "
 					 << gl::constantToString(found->mType) << " and received a mat4.");
 			mLoggedUniforms.insert( name );
 		}
-		glUniformMatrix4fv( found->mLoc, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
+		uniform( found->mLoc, data, count, transpose );
 	}
 	else {
 		if( mLoggedUniforms.count( name ) == 0 ) {
@@ -1586,50 +1540,50 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 	os << "ID: " << rhs.mHandle << std::endl;
 	if( ! rhs.mLabel.empty() )
 		os << "    Label: " << rhs.mLabel << std::endl;
-	os << " Uniforms: " << std::endl;
+	
+	auto attribs = rhs.getActiveAttributes();
+	os << "\tAttributes: " << std::endl;
+	for( auto &attrib : attribs ) {
+		os << "\t\t\"" << attrib.mName << "\":" << std::endl;
+		os << "\t\t Loc: " << attrib.mLoc << std::endl;
+		os << "\t\t Type: " << gl::constantToString( attrib.mType ) << std::endl;
+		os << "\t\t Semantic: <" << geom::attribToString( attrib.mSemantic ) << ">" << std::endl;
+	}
+	
+	os << "\tUniforms: " << std::endl;
 	auto & uniforms = rhs.getActiveUniforms();
 	for( auto &uniform : uniforms ) {
-		os << "  \"" << uniform.mName << "\":" << std::endl;
-		os << "    Loc: " << uniform.mLoc << std::endl;
-		os << "    Type: " << gl::constantToString( uniform.mType ) << std::endl;
-		os << "    Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
+		os << "\t\t\"" << uniform.mName << "\":" << std::endl;
+		os << "\t\t Loc: " << uniform.mLoc << std::endl;
+		os << "\t\t Type: " << gl::constantToString( uniform.mType ) << std::endl;
+		os << "\t\t Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
 	}
 	
 #if ! defined( CINDER_GL_ES_2 )
-	os << " Uniform Blocks: " << std::endl;
+	os << "\tUniform Blocks: " << std::endl;
 	auto & uniformBlocks = rhs.getActiveUniformBlocks();
 	for( auto & uniformBlock : uniformBlocks ) {
-		os << " \"" << uniformBlock.mName << "\":" << std::endl;
-		os << "   Loc: " << uniformBlock.mLoc << std::endl;
-		os << "   Size: " << uniformBlock.mSize << std::endl;
-		os << "   BlockBinding: " << uniformBlock.mBlockBinding << std::endl;
-		os << "   Active Uniforms: " << endl;
+		os << "\t\t\"" << uniformBlock.mName << "\":" << std::endl;
+		os << "\t\t Loc: " << uniformBlock.mLoc << std::endl;
+		os << "\t\t Size: " << uniformBlock.mSize << std::endl;
+		os << "\t\t BlockBinding: " << uniformBlock.mBlockBinding << std::endl;
+		os << "\t\t Active Uniforms: " << endl;
 		for( auto & uniform : uniformBlock.mActiveUniforms ) {
-			os << "  \"" << uniform.mName << "\":" << std::endl;
-			os << "    Loc: " << uniform.mLoc << std::endl;
-			os << "    Type: " << gl::constantToString( uniform.mType ) << std::endl;
-			os << "    Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
+			os << "\t\t\t\"" << uniform.mName << "\":" << std::endl;
+			os << "\t\t\t Loc: " << uniform.mLoc << std::endl;
+			os << "\t\t\t Type: " << gl::constantToString( uniform.mType ) << std::endl;
+			os << "\t\t\t Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
 		}
 	}
 	
-	os << " Transform Feedback Varyings: " << std::endl;
+	os << "\tTransform Feedback Varyings: " << std::endl;
 	auto & feedbackVaryings = rhs.getActiveTransformFeedbackVaryings();
 	for( auto & varying : feedbackVaryings ) {
-		os << " \"" << varying.mName << "\":" << std::endl;
-		os << "    Type: " << gl::constantToString( varying.mType ) << std::endl;
-		os << "    Count: " << varying.mCount << std::endl;
+		os << "\t\t\"" << varying.mName << "\":" << std::endl;
+		os << "\t\t Type: " << gl::constantToString( varying.mType ) << std::endl;
+		os << "\t\t Count: " << varying.mCount << std::endl;
 	}
 #endif
-	
-	auto attribs = rhs.getActiveAttributes();
-	os << " Attributes: " << std::endl;
-	for( auto &attrib : attribs ) {
-		os << "  \"" << attrib.mName << "\":" << std::endl;
-		os << "    Loc: " << attrib.mLoc << std::endl;
-		os << "    Type: " << gl::constantToString( attrib.mType ) << std::endl;
-		os << "    Semantic: <" << geom::attribToString( attrib.mSemantic ) << ">" << std::endl;
-	}
-
 	return os;
 }
 
