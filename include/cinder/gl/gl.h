@@ -132,7 +132,7 @@ bool isExtensionAvailable( const std::string &extName );
 std::pair<GLint,GLint>	getVersion();
 std::string getVersionString();
 
-GlslProgRef	getStockShader( const class ShaderDef &shader );
+GlslProgRef& getStockShader( const class ShaderDef &shader );
 void bindStockShader( const class ShaderDef &shader );
 void setDefaultShaderVars();
 

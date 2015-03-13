@@ -192,17 +192,17 @@ class Context {
 	void		renderbufferDeleted( const Renderbuffer *buffer );
 
 	//! Binds GLSL program \a prog. Analogous to glUseProgram()
-	void				bindGlslProg( GlslProg* prog );
+	void				bindGlslProg( const GlslProg* prog );
 	void				bindGlslProg( GlslProgRef& prog ) { bindGlslProg( prog.get() ); }
 	//! Pushes and binds GLSL program \a prog.
-	void				pushGlslProg( GlslProg* prog );
-	void				pushGlslProg( const GlslProgRef& prog ) { pushGlslProg( prog.get() ); }
+	void				pushGlslProg( const GlslProg* prog );
+	void				pushGlslProg( GlslProgRef& prog ) { pushGlslProg( prog.get() ); }
 	//! Duplicates and pushes the top of the GlslProg stack.
 	void				pushGlslProg();
 	//! Pops the GlslProg stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
 	void				popGlslProg( bool forceRestore = false );
 	//! Returns the currently bound GlslProg
-	GlslProg*			getGlslProg();
+	const GlslProg*		getGlslProg();
 	//! Used by object tracking.
 	void				glslProgCreated( const GlslProg *glslProg );
 	//! Used by object tracking.
@@ -385,10 +385,10 @@ class Context {
 #endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
-	const ColorAf&	getCurrentColor() const { return mColor; }
-	void			setCurrentColor( const ColorAf &color ) { mColor = color; }
-	GlslProgRef		getStockShader( const ShaderDef &shaderDef );
-	void			setDefaultShaderVars();
+	const ColorAf&		getCurrentColor() const { return mColor; }
+	void				setCurrentColor( const ColorAf &color ) { mColor = color; }
+	GlslProgRef&		getStockShader( const ShaderDef &shaderDef );
+	void				setDefaultShaderVars();
 
 	//! Returns default VBO for vertex array data, ensuring it is at least \a requiredSize bytes. Designed for use with convenience functions.
 	VboRef			getDefaultArrayVbo( size_t requiredSize = 0 );
@@ -428,7 +428,7 @@ class Context {
 	
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
 	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
-	std::vector<GlslProg*>				mGlslProgStack;
+	std::vector<const GlslProg*>		mGlslProgStack;
 	std::vector<VaoRef>					mVaoStack;
 	
 #if ! defined( CINDER_GL_ES_2 )

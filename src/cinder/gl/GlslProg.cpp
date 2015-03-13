@@ -423,7 +423,7 @@ void GlslProg::bind() const
 }
 
 // This is called by the Context whenever a GlslProg is bound. The indirection is so that the Context can update its reference to the active shader
-void GlslProg::bindImpl()
+void GlslProg::bindImpl() const
 {
 	glUseProgram( mHandle );
 }

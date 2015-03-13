@@ -769,7 +769,7 @@ void Context::endTransformFeedback()
 
 //////////////////////////////////////////////////////////////////
 // Shader
-void Context::pushGlslProg( GlslProg* prog )
+void Context::pushGlslProg( const GlslProg* prog )
 {
 	const GlslProg* prevGlsl = getGlslProg();
 
@@ -789,7 +789,7 @@ void Context::pushGlslProg()
 
 void Context::popGlslProg( bool forceRestore )
 {
-	GlslProg* prevGlsl = getGlslProg();
+	const GlslProg* prevGlsl = getGlslProg();
 
 	if( ! mGlslProgStack.empty() ) {
 		mGlslProgStack.pop_back();
@@ -808,7 +808,7 @@ void Context::popGlslProg( bool forceRestore )
 		CI_LOG_E( "GlslProg stack underflow" );
 }
 
-void Context::bindGlslProg( GlslProg *prog )
+void Context::bindGlslProg( const GlslProg *prog )
 {
 	if( mGlslProgStack.empty() || (mGlslProgStack.back() != prog) ) {
 		if( ! mGlslProgStack.empty() )
@@ -820,7 +820,7 @@ void Context::bindGlslProg( GlslProg *prog )
 	}
 }
 
-GlslProg* Context::getGlslProg()
+const GlslProg* Context::getGlslProg()
 {
 	if( mGlslProgStack.empty() )
 		mGlslProgStack.push_back( nullptr );
@@ -1697,13 +1697,13 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
-GlslProgRef	Context::getStockShader( const ShaderDef &shaderDef )
+GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
 		auto result = gl::env()->buildShader( shaderDef );
 		mStockShaders[shaderDef] = result;
-		return result;
+		return mStockShaders[shaderDef];
 	}
 	else
 		return existing->second;

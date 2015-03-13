@@ -121,7 +121,7 @@ std::string getVersionString()
 	return std::string( reinterpret_cast<const char*>( s ) );
 }
 
-GlslProgRef	getStockShader( const class ShaderDef &shader )
+GlslProgRef& getStockShader( const class ShaderDef &shader )
 {
 	return context()->getStockShader( shader );
 }
