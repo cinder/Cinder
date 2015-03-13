@@ -46,8 +46,8 @@ typedef std::shared_ptr<Window>		WindowRef;
 } } // namespace cinder::app
 
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
+	@class NSString;
 	#if defined( CINDER_COCOA_TOUCH )
-		@class NSString;
 		@class UIViewController;
 	#endif
 
