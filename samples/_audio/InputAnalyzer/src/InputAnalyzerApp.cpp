@@ -26,10 +26,10 @@ using namespace std;
 
 class InputAnalyzer : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void drawLabels();
 	void printBinInfo( int mouseX );

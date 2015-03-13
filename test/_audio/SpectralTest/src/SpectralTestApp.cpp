@@ -24,12 +24,11 @@ using namespace std;
 
 class SpectralTestApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void fileDrop( FileDropEvent event );
-	void setup();
-	void resize();
-	void update();
-	void draw();
+	void fileDrop( FileDropEvent event ) override;
+	void setup() override;
+	void resize() override;
+	void update() override;
+	void draw() override;
 
 	void setupSine();
 	void setupSineNoOutput();
@@ -52,12 +51,6 @@ class SpectralTestApp : public App {
 	SpectrumPlot					mSpectrumPlot;
 	float							mSpectroMargin;
 };
-
-
-void SpectralTestApp::prepareSettings( Settings *settings )
-{
-    settings->setWindowSize( 1200, 500 );
-}
 
 void SpectralTestApp::setup()
 {
@@ -289,4 +282,6 @@ void SpectralTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP( SpectralTestApp, RendererGl )
+CINDER_APP( SpectralTestApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1200, 500 );
+} )

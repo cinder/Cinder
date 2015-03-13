@@ -21,10 +21,9 @@ using namespace std;
 
 class DeviceTestApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
 	void setOutputDevice( const audio::DeviceRef &device, size_t numChannels = 0 );
 	void setInputDevice( const audio::DeviceRef &device, size_t numChannels = 0 );
@@ -62,11 +61,6 @@ class DeviceTestApp : public App {
 	Anim<float> mViewYOffset; // for iOS keyboard
 	Rectf mUnderrunRect, mOverrunRect, mClipRect;
 };
-
-void DeviceTestApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 800, 600 );
-}
 
 void DeviceTestApp::setup()
 {
@@ -614,4 +608,6 @@ void DeviceTestApp::draw()
 	gl::popMatrices();
 }
 
-CINDER_APP( DeviceTestApp, RendererGl )
+CINDER_APP( DeviceTestApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 800, 600 );
+} )

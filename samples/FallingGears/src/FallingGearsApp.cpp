@@ -34,14 +34,13 @@ using namespace std;
 
 class FallingGearsApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void mouseUp( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void mouseUp( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void setupGraphics();
 	void setupParams();
@@ -58,11 +57,6 @@ class FallingGearsApp : public App {
 	float					mFps;
 	float					mMasterGain;
 };
-
-void FallingGearsApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1200, 800 );
-}
 
 void FallingGearsApp::setup()
 {
@@ -232,4 +226,6 @@ void FallingGearsApp::drawInfo()
 	gl::disableAlphaBlending();
 }
 
-CINDER_APP( FallingGearsApp, RendererGl )
+CINDER_APP( FallingGearsApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1200, 800 );
+} )

@@ -16,10 +16,10 @@ using namespace std;
 
 class NodeAdvancedApp : public App {
   public:
-	void setup();
-	void mouseMove( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseMove( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	audio::GenNodeRef				mGen;		// GenNode's generate audio signals
 	audio::FilterLowPassNodeRef		mLowpass;	// lowpass filter to reduce high frequency content.
