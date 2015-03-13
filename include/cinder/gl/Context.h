@@ -192,19 +192,21 @@ class Context {
 	void		renderbufferDeleted( const Renderbuffer *buffer );
 
 	//! Binds GLSL program \a prog. Analogous to glUseProgram()
-	void			bindGlslProg( const GlslProgRef &prog );
+	void				bindGlslProg( GlslProg* prog );
+	void				bindGlslProg( GlslProgRef& prog ) { bindGlslProg( prog.get() ); }
 	//! Pushes and binds GLSL program \a prog.
-	void			pushGlslProg( const GlslProgRef &prog );
+	void				pushGlslProg( GlslProg* prog );
+	void				pushGlslProg( const GlslProgRef& prog ) { pushGlslProg( prog.get() ); }
 	//! Duplicates and pushes the top of the GlslProg stack.
-	void			pushGlslProg();
+	void				pushGlslProg();
 	//! Pops the GlslProg stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
-	void			popGlslProg( bool forceRestore = false );
+	void				popGlslProg( bool forceRestore = false );
 	//! Returns the currently bound GlslProg
-	GlslProgRef		getGlslProg();
+	GlslProg*			getGlslProg();
 	//! Used by object tracking.
-	void			glslProgCreated( const GlslProg *glslProg );
+	void				glslProgCreated( const GlslProg *glslProg );
 	//! Used by object tracking.
-	void			glslProgDeleted( const GlslProg *glslProg );
+	void				glslProgDeleted( const GlslProg *glslProg );
 	
 #if ! defined( CINDER_GL_ES_2 )
 	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
@@ -426,7 +428,7 @@ class Context {
 	
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
 	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
-	std::vector<GlslProgRef>			mGlslProgStack;
+	std::vector<GlslProg*>				mGlslProgStack;
 	std::vector<VaoRef>					mVaoStack;
 	
 #if ! defined( CINDER_GL_ES_2 )

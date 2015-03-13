@@ -511,8 +511,9 @@ struct ScopedAdditiveBlend : public ScopedBlend
 };
 
 struct ScopedGlslProg : private Noncopyable {
-	ScopedGlslProg( const GlslProgRef &prog );
+	ScopedGlslProg( GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
+	ScopedGlslProg( const GlslProg *prog );
 	~ScopedGlslProg();
 
   private:
