@@ -60,6 +60,9 @@ class VboMeshGeomTarget : public geom::Target {
 		BufferData( const geom::BufferLayout &layout, uint8_t *data, size_t dataSize )
 			: mLayout( layout ), mData( data ), mDataSize( dataSize )
 		{}
+		BufferData( BufferData &&rhs )
+			: mLayout( rhs.mLayout ), mData( std::move( rhs.mData ) ), mDataSize( rhs.mDataSize )
+		{}
 	
 		geom::BufferLayout			mLayout;
 		std::unique_ptr<uint8_t[]>	mData;
