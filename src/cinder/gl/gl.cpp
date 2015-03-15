@@ -1365,17 +1365,23 @@ class DefaultVboTarget : public geom::Target {
 		uint8_t posDims = source->getAttribDims( geom::Attrib::POSITION );
 		size_t requestedSize = source->getNumVertices() * posDims * sizeof( float );
 
-		mVbo = mContext->getDefaultArrayVbo( requestedSize );
+		mArrayVbo = mContext->getDefaultArrayVbo( requestedSize );
 		mGlslProg = mContext->getGlslProg();
 
 		CI_ASSERT_MSG( mGlslProg, "No GLSL program bounds" );
 
-		mContext->pushBufferBinding( mVbo->getTarget(), mVbo->getId() );
+		mContext->pushBufferBinding( mArrayVbo->getTarget(), mArrayVbo->getId() );
+		if( source->getNumIndices() ) {
+			mElementVbo = mContext->getDefaultElementVbo( source->getNumIndices() * sizeof( GLint ) );
+			mContext->pushBufferBinding( mElementVbo->getTarget(), mElementVbo->getId() );
+		}
 	}
 
 	~DefaultVboTarget()
 	{
-		mContext->pushBufferBinding( mVbo->getTarget(), mVbo->getId() );
+		mContext->popBufferBinding( mArrayVbo->getTarget() );
+		if( mElementVbo )
+			mContext->popBufferBinding( mElementVbo->getTarget() );
 	}
 
 	uint8_t	getAttribDims( geom::Attrib attr ) const override
@@ -1384,28 +1390,26 @@ class DefaultVboTarget : public geom::Target {
 	}
 
 	// TODO: what about stride?
-	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override
+	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *sourceData, size_t count ) override
 	{
-		CI_CHECK_GL();
 		int loc = mGlslProg->getAttribSemanticLocation( attr );
-		CI_CHECK_GL();
 		if( loc >= 0 ) {
 			size_t sizeNeeded = count * dims * sizeof( float );
-			mVbo->bufferSubData( 0, sizeNeeded, srcData );
+			mArrayVbo->bufferSubData( 0, sizeNeeded, sourceData );
 
 			mContext->enableVertexAttribArray( loc );
 			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)0 );
 		}
 	}
 
-	void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override
+	void copyIndices( geom::Primitive primitive, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
 	{
-		CI_ASSERT( ! "TODO" );
+		mElementVbo->bufferSubData( 0, numIndices * requiredBytesPerIndex, sourceData );
 	}
 
 	const geom::Source*	mSource;
 	Context*			mContext;
-	gl::VboRef			mVbo;
+	gl::VboRef			mArrayVbo, mElementVbo;
 	gl::GlslProgRef		mGlslProg;
 };
 
@@ -1433,13 +1437,12 @@ void draw( const geom::Source &source )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 
-	const size_t numIndices = source.getNumIndices();
-	CI_ASSERT( numIndices == 0 ); // TODO: support GL_TRIANGLES
 
 	ctx->setDefaultShaderVars();
 
 	GLenum primitive = toGl( source.getPrimitive() );
-	if( source.getNumIndices() )
+	const size_t numIndices = source.getNumIndices();
+	if( numIndices )
 		ctx->drawElements( primitive, (GLsizei)numIndices, GL_UNSIGNED_INT, (GLvoid*)( 0 ) );
 	else
 		ctx->drawArrays( primitive, 0, (GLsizei)source.getNumVertices() );
