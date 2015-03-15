@@ -256,6 +256,9 @@ uint8_t glTypeToBytes( GLenum type )
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
+		case GL_SAMPLER_2D_SHADOW:	return sizeof(int); break;
+		case GL_SAMPLER_3D:			return sizeof(int); break;
+		case GL_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_FLOAT:				return sizeof(float); break;
 		case GL_BOOL:				return sizeof(bool); break;
 		case GL_UNSIGNED_INT_VEC2:	return sizeof(glm::uvec2); break;

@@ -1807,38 +1807,102 @@ void Context::setDefaultShaderVars()
 		const auto &uniforms = glslProg->getActiveUniforms();
 		for( const auto &uniform : uniforms ) {
 			switch( uniform.mSemantic ) {
-				case UNIFORM_MODEL_MATRIX:
-					glslProg->uniform( uniform.mLoc, gl::getModelMatrix() ); break;
-				case UNIFORM_MODEL_MATRIX_INVERSE:
-					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelMatrix() ) ); break;
-				case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE:
-					glslProg->uniform( uniform.mLoc, gl::calcModelMatrixInverseTranspose() ); break;
-				case UNIFORM_VIEW_MATRIX:
-					glslProg->uniform( uniform.mLoc, gl::getViewMatrix() ); break;
-				case UNIFORM_VIEW_MATRIX_INVERSE:
-					glslProg->uniform( uniform.mLoc, gl::calcViewMatrixInverse() ); break;
-				case UNIFORM_MODEL_VIEW:
-					glslProg->uniform( uniform.mLoc, gl::getModelView() ); break;
-				case UNIFORM_MODEL_VIEW_INVERSE:
-					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelView() ) ); break;
-				case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE:
-					glslProg->uniform( uniform.mLoc, gl::calcNormalMatrix() ); break;
-				case UNIFORM_MODEL_VIEW_PROJECTION:
-					glslProg->uniform( uniform.mLoc, gl::getModelViewProjection() ); break;
-				case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE:
-					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getModelViewProjection() ) ); break;
-				case UNIFORM_PROJECTION_MATRIX:
-					glslProg->uniform( uniform.mLoc, gl::getProjectionMatrix() ); break;
-				case UNIFORM_PROJECTION_MATRIX_INVERSE:
-					glslProg->uniform( uniform.mLoc, glm::inverse( gl::getProjectionMatrix() ) ); break;
-				case UNIFORM_NORMAL_MATRIX:
-					glslProg->uniform( uniform.mLoc, gl::calcNormalMatrix() ); break;
-				case UNIFORM_VIEWPORT_MATRIX:
-					glslProg->uniform( uniform.mLoc, gl::calcViewportMatrix() ); break;
-				case UNIFORM_WINDOW_SIZE:
-					glslProg->uniform( uniform.mLoc, app::getWindowSize() ); break;
-				case UNIFORM_ELAPSED_SECONDS:
-					glslProg->uniform( uniform.mLoc, float( app::getElapsedSeconds() ) ); break;
+				case UNIFORM_MODEL_MATRIX: {
+					auto model = gl::getModelMatrix();
+					if( glslProg->checkUniformValue( uniform, &model, 1 ) )
+						glslProg->uniform( uniform.mLoc, gl::getModelMatrix() );
+					break;
+				}
+				case UNIFORM_MODEL_MATRIX_INVERSE: {
+					auto inverseModel = glm::inverse( gl::getModelMatrix() );
+					if( glslProg->checkUniformValue( uniform, &inverseModel, 1 ) )
+						glslProg->uniform( uniform.mLoc, inverseModel );
+					break;
+				}
+				case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE: {
+					auto modelInverseTranspose = gl::calcModelMatrixInverseTranspose();
+					if( glslProg->checkUniformValue( uniform, &modelInverseTranspose, 1 ) )
+						glslProg->uniform( uniform.mLoc, gl::calcModelMatrixInverseTranspose() );
+					break;
+				}
+				case UNIFORM_VIEW_MATRIX: {
+					auto view = gl::getViewMatrix();
+					if( glslProg->checkUniformValue( uniform, &view, 1 ) )
+						glslProg->uniform( uniform.mLoc, view );
+					break;
+				}
+				case UNIFORM_VIEW_MATRIX_INVERSE: {
+					auto viewInverse = gl::calcViewMatrixInverse();
+					if( glslProg->checkUniformValue( uniform, &viewInverse, 1 ) )
+						glslProg->uniform( uniform.mLoc, gl::calcViewMatrixInverse() );
+					break;
+				}
+				case UNIFORM_MODEL_VIEW: {
+					auto modelView = gl::getModelView();
+					if( glslProg->checkUniformValue( uniform, &modelView, 1 ) )
+						glslProg->uniform( uniform.mLoc, gl::getModelView() );
+					break;
+				}
+				case UNIFORM_MODEL_VIEW_INVERSE: {
+					auto modelViewInverse = glm::inverse( gl::getModelView() );
+					if( glslProg->checkUniformValue( uniform, &modelViewInverse, 1 ) )
+						glslProg->uniform( uniform.mLoc, modelViewInverse );
+					break;
+				}
+				case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE: {
+					auto normalMatrix = gl::calcNormalMatrix();
+					if( glslProg->checkUniformValue( uniform, &normalMatrix, 1 ) )
+						glslProg->uniform( uniform.mLoc, normalMatrix );
+					break;
+				}
+				case UNIFORM_MODEL_VIEW_PROJECTION: {
+					auto modelViewProjection = gl::getModelViewProjection();
+					if( glslProg->checkUniformValue( uniform, &modelViewProjection, 1 ) )
+						glslProg->uniform( uniform.mLoc, modelViewProjection );
+					break;
+				}
+				case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE: {
+					auto modelViewProjectionInverse = glm::inverse( gl::getModelViewProjection() );
+					if( glslProg->checkUniformValue( uniform, &modelViewProjectionInverse, 1 ) )
+						glslProg->uniform( uniform.mLoc, modelViewProjectionInverse );
+					break;
+				}
+				case UNIFORM_PROJECTION_MATRIX: {
+					auto projection = gl::getProjectionMatrix();
+					if( glslProg->checkUniformValue( uniform, &projection, 1 ) )
+						glslProg->uniform( uniform.mLoc, projection );
+					break;
+				}
+				case UNIFORM_PROJECTION_MATRIX_INVERSE: {
+					auto projectionInverse = glm::inverse( gl::getProjectionMatrix() );
+					if( glslProg->checkUniformValue( uniform, &projectionInverse, 1 ) )
+						glslProg->uniform( uniform.mLoc, glm::inverse( gl::getProjectionMatrix() ) );
+					break;
+				}
+				case UNIFORM_NORMAL_MATRIX: {
+					auto normalMatrix = gl::calcNormalMatrix();
+					if( glslProg->checkUniformValue( uniform, &normalMatrix, 1 ) )
+						glslProg->uniform( uniform.mLoc, normalMatrix );
+					break;
+				}
+				case UNIFORM_VIEWPORT_MATRIX: {
+					auto viewport = gl::calcViewportMatrix();
+					if( glslProg->checkUniformValue( uniform, &viewport, 1 ) )
+						glslProg->uniform( uniform.mLoc, viewport );
+					break;
+				}
+				case UNIFORM_WINDOW_SIZE: {
+					auto windowSize = app::getWindowSize();
+					if( glslProg->checkUniformValue( uniform, &windowSize, 1 ) )
+						glslProg->uniform( uniform.mLoc, windowSize );
+					break;
+				}
+				case UNIFORM_ELAPSED_SECONDS: {
+					auto elapsed = float( app::getElapsedSeconds() );
+					if( glslProg->checkUniformValue( uniform, &elapsed, 1 ) )
+						glslProg->uniform( uniform.mLoc, elapsed );
+					break;
+				}
 				default:
 					;
 			}

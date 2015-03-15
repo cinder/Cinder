@@ -36,6 +36,44 @@ namespace cinder { namespace gl {
     
 static GlslProg::UniformSemanticMap	sDefaultUniformNameToSemanticMap;
 static GlslProg::AttribSemanticMap	sDefaultAttribNameToSemanticMap;
+	
+class UniformBuffer {
+public:
+	UniformBuffer( uint32_t bufferSize )
+	: mBuffer( new uint8_t[bufferSize] ),
+	mBufferSize( bufferSize )
+	{
+		memset( mBuffer, std::numeric_limits<int>::max(), mBufferSize );
+	}
+	
+	UniformBuffer( const UniformBuffer &other ) = delete;
+	UniformBuffer& operator=( const UniformBuffer &rhs ) = delete;
+	UniformBuffer( UniformBuffer &&other ) = delete;
+	UniformBuffer& operator=( UniformBuffer &&rhs ) = delete;
+	
+	~UniformBuffer()
+	{
+		auto ptr = (uint8_t*)mBuffer;
+		delete [] ptr;
+	}
+	
+	bool shouldBuffer( uint32_t beginningByte, uint32_t size, const void * valuePointer )
+	{
+		auto ptr = ((uint8_t*)mBuffer + beginningByte);
+		//std::cout << "Checking Buffer" << std::endl;
+		if( memcmp( ptr, valuePointer, size ) == 0 ) {
+			return false;
+		}
+		else {
+			memcpy( ptr, valuePointer, size );
+			return true;
+		}
+	}
+	
+private:
+	void*		mBuffer;
+	uint32_t	mBufferSize;
+};
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
@@ -294,7 +332,8 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-: mTransformFeedbackFormat( -1 ), mPreprocessingEnabled( format.isPreprocessingEnabled() )
+: mTransformFeedbackFormat( -1 ), mPreprocessingEnabled( format.isPreprocessingEnabled() ), 
+	mUniformBuffer( nullptr )
 {
 	mHandle = glCreateProgram();
 
@@ -542,6 +581,8 @@ void GlslProg::cacheActiveUniforms()
 	
 	auto & semanticNameMap = getDefaultUniformNameToSemanticMap();
 	
+	uint32_t uniformBufferSize = 0;
+	
 	for( GLint i = 0; i < numActiveUniforms; ++i ) {
 		char name[512];
 		GLsizei nameLength;
@@ -564,9 +605,16 @@ void GlslProg::cacheActiveUniforms()
 			uniform.mIndex      = i;
 			uniform.mCount		= count;
 			uniform.mType		= type;
+			uniform.mDataSize	= count * glTypeToBytes( type );
 			uniform.mSemantic	= uniformSemantic;
+			uniform.mBytePointer = uniformBufferSize;
+			uniformBufferSize	+= uniform.mDataSize;
 			mUniforms.push_back( uniform );
 		}
+	}
+	
+	if ( numActiveUniforms ) {
+		mUniformBuffer = new UniformBuffer( uniformBufferSize );
 	}
 }
 
@@ -953,6 +1001,16 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 	return ret;
 }
 #endif // ! defined( CINDER_GL_ES_2 )
+	
+bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int count ) const
+{
+	if( mUniformBuffer ) {
+		return mUniformBuffer->shouldBuffer( uniform.mBytePointer, glTypeToBytes( uniform.mType ) * count, val );
+	}
+	else {
+		return false;
+	}
+}
 
 // bool
 void GlslProg::uniform( int location, bool data ) const
