@@ -23,7 +23,6 @@ const float cGridStep = cCircleRadius * 2.2f;
  */
 class ConvenienceDrawingMethodsApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
 	void update() override;
@@ -35,14 +34,8 @@ class ConvenienceDrawingMethodsApp : public App {
 	Path2d		mPath;
 	PolyLine2	mPolyline2D;
 	PolyLine3	mPolyline3D;
+	bool		mPrintFrameRate = false;
 };
-
-void ConvenienceDrawingMethodsApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowPos( 0, 0 );
-	settings->setWindowSize( 960, 564 );
-
-}
 
 void ConvenienceDrawingMethodsApp::setup()
 {
@@ -51,8 +44,7 @@ void ConvenienceDrawingMethodsApp::setup()
 	mPath.lineTo( vec2( 0 ) );
 
 	Rand r;
-	for( int i = 0; i < 50; ++i )
-	{
+	for( int i = 0; i < 50; ++i ) {
 		mPolyline2D.push_back( r.nextVec2f() * cCircleRadius );
 	}
 
@@ -74,20 +66,22 @@ void ConvenienceDrawingMethodsApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'w' )
 		gl::setWireframeEnabled( ! gl::isWireframeEnabled() );
+	if( event.getChar() == 'f' )
+		mPrintFrameRate = ! mPrintFrameRate;
 }
 
 void ConvenienceDrawingMethodsApp::update()
 {
-	if( getElapsedFrames() % 30 == 0 )
-		CI_LOG_V( "fps: " << getAverageFps() );
+	if( mPrintFrameRate && getElapsedFrames() % 30 == 0 )
+		console() << "fps: " << getAverageFps()  << endl;
 }
 
 void ConvenienceDrawingMethodsApp::draw()
 {
-	gl::clear( Color( 0.2f, 0.2f, 0.2f) );
+	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
 
-//	drawBasicOverview();
-	drawSourcesStressTest();
+	drawBasicOverview();
+//	drawSourcesStressTest();
 
 	CI_CHECK_GL();
 }
@@ -161,6 +155,23 @@ void ConvenienceDrawingMethodsApp::drawBasicOverview()
 		auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
 		gl::draw( geom );
 	}
+
+	// draw a 3D geom::Source that uses geom::Attrib::TRIANGLES
+	{
+		gl::enableDepthRead();
+
+		gl::ScopedModelMatrix modelScope;
+		gl::translate( cGridStep * 2, cGridStep * 5, 2 );
+		gl::rotate( M_PI / 2, 0.7f, 0.3f, 0.3f );
+		gl::rotate( getElapsedSeconds(), 0, 1, 0 );
+		gl::ScopedColor color( Color( 0, 1, 1 ) );
+
+		auto geom = geom::Torus().radius( cCircleRadius, cCircleRadius * 0.7f ).colors();
+//		auto geom = geom::Sphere().radius( cCircleRadius ).colors();
+		gl::draw( geom );
+
+		gl::disableDepthRead();
+	}
 }
 
 void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
@@ -186,4 +197,7 @@ void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 		CI_LOG_V( "draw cpu time (ms): " << timer.getSeconds() * 1000 );
 }
 
-CINDER_APP( ConvenienceDrawingMethodsApp, RendererGl )
+CINDER_APP( ConvenienceDrawingMethodsApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowPos( 0, 0 );
+	settings->setWindowSize( 960, 564 );
+} )

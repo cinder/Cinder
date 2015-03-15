@@ -1358,14 +1358,17 @@ namespace {
 class DefaultVboTarget : public geom::Target {
   public:
 	DefaultVboTarget( const geom::Source *source )
-		: mSource( source ), mContext( context() )
+		: mSource( source ), mContext( context() ), mArrayVboOffset( 0 )
 	{
-		// TODO: how can size this correctly just once?
-		// - Vbo::ensureMinimumSize() destroys existing data
-		uint8_t posDims = source->getAttribDims( geom::Attrib::POSITION );
-		size_t requestedSize = source->getNumVertices() * posDims * sizeof( float );
+		size_t requiredSize = 0;
+		size_t numVertices = source->getNumVertices();
 
-		mArrayVbo = mContext->getDefaultArrayVbo( requestedSize );
+		for( const auto &attrib : source->getAvailableAttribs() ) {
+			uint8_t attribDims = source->getAttribDims( attrib );
+			requiredSize += numVertices * attribDims * sizeof( float );
+		}
+
+		mArrayVbo = mContext->getDefaultArrayVbo( requiredSize );
 		mGlslProg = mContext->getGlslProg();
 
 		CI_ASSERT_MSG( mGlslProg, "No GLSL program bounds" );
@@ -1395,10 +1398,12 @@ class DefaultVboTarget : public geom::Target {
 		int loc = mGlslProg->getAttribSemanticLocation( attr );
 		if( loc >= 0 ) {
 			size_t sizeNeeded = count * dims * sizeof( float );
-			mArrayVbo->bufferSubData( 0, sizeNeeded, sourceData );
+			mArrayVbo->bufferSubData( mArrayVboOffset, sizeNeeded, sourceData );
 
 			mContext->enableVertexAttribArray( loc );
-			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)0 );
+			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)mArrayVboOffset );
+
+			mArrayVboOffset += sizeNeeded;
 		}
 	}
 
@@ -1410,7 +1415,8 @@ class DefaultVboTarget : public geom::Target {
 	const geom::Source*	mSource;
 	Context*			mContext;
 	gl::VboRef			mArrayVbo, mElementVbo;
-	gl::GlslProgRef		mGlslProg;
+	const gl::GlslProg*	mGlslProg;
+	size_t				mArrayVboOffset;
 };
 
 } // anonymous namespace
@@ -1418,7 +1424,7 @@ class DefaultVboTarget : public geom::Target {
 void draw( const geom::Source &source )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	auto curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1427,16 +1433,10 @@ void draw( const geom::Source &source )
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 
-	geom::AttribSet attribs;
-	uint8_t posDims = source.getAttribDims( geom::Attrib::POSITION );
-	if( posDims )
-		attribs.insert( geom::Attrib::POSITION );
-
 	DefaultVboTarget target( &source );
-	source.loadInto( &target, attribs );
+	source.loadInto( &target, source.getAvailableAttribs() );
 
 	ctx->getDefaultVao()->replacementBindEnd();
-
 
 	ctx->setDefaultShaderVars();
 
