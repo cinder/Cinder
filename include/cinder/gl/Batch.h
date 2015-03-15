@@ -46,8 +46,6 @@ class Batch {
 	static BatchRef		create( const VboMeshRef &vboMesh, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	//! Builds a Batch from a geom::Source and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
 	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
-	//! Builds a Batch from a VertBatch and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
-	static BatchRef		create( const VertBatch &vertBatch, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	
 	void			draw();
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
