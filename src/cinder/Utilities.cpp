@@ -27,9 +27,13 @@
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
-	#import <Cocoa/Cocoa.h>
+	#if defined( CINDER_MAC )
+		#import <Cocoa/Cocoa.h>
+	#elif defined( CINDER_COCOA_TOUCH )
+		#import <UIKit/UIKit.h>
+	#endif
 #endif
 
 #include <vector>
@@ -62,7 +66,7 @@ void launchWebBrowser( const Url &url )
 	app::Platform::get()->launchWebBrowser( url );
 }
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 std::map<std::string, std::string> getEnvironmentVariables()
 {
 	__block std::map<std::string, std::string> result;

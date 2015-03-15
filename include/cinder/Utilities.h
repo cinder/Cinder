@@ -26,7 +26,7 @@
 
 #include <string>
 #include <vector>
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 	#include <map>
 #endif
 #include "cinder/Cinder.h"
@@ -65,7 +65,7 @@ inline char getPathSeparator() { return '\\'; }
 inline char getPathSeparator() { return '/'; }
 #endif
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_COCOA )
 //! Returns the process's environment variables.
 std::map<std::string, std::string> getEnvironmentVariables();
 #endif
