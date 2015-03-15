@@ -27,6 +27,11 @@
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
+#if defined( CINDER_MAC )
+	#include "cinder/cocoa/CinderCocoa.h"
+	#import <Cocoa/Cocoa.h>
+#endif
+
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -56,6 +61,25 @@ void launchWebBrowser( const Url &url )
 {
 	app::Platform::get()->launchWebBrowser( url );
 }
+
+#if defined( CINDER_MAC )
+std::map<std::string, std::string> getEnvironmentVariables()
+{
+	__block std::map<std::string, std::string> result;
+	NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+	[environment enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		if (![key isKindOfClass:[NSString class]] || ![obj isKindOfClass:[NSString class]]) {
+			return;
+		}
+
+		std::string k = ci::cocoa::convertNsString(key);
+		std::string v = ci::cocoa::convertNsString(obj);
+		result[k] = v;
+	}];
+
+	return result;
+}
+#endif
 
 std::vector<std::string> split( const std::string &str, char separator, bool compress )
 {

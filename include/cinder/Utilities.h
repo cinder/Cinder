@@ -26,6 +26,9 @@
 
 #include <string>
 #include <vector>
+#if defined( CINDER_MAC )
+	#include <map>
+#endif
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
@@ -60,6 +63,11 @@ void sleep( float milliseconds );
 inline char getPathSeparator() { return '\\'; }
 #else
 inline char getPathSeparator() { return '/'; }
+#endif
+
+#if defined( CINDER_MAC )
+//! Returns the process's environment variables.
+std::map<std::string, std::string> getEnvironmentVariables();
 #endif
 
 template<typename T>
