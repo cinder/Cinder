@@ -91,6 +91,7 @@ class VboMesh {
 	typedef std::map<geom::Attrib,std::string> AttribGlslMap;
 	//! Constructs a VAO (in the currently bound VAO) that matches \a this to GlslProg \a shader, overriding the mapping of a geom::Attrib to a named attribute via the 'a attributeMapping std::map
 	void		buildVao( const GlslProgRef &shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
+	void		buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping = AttribGlslMap() );
 
 	//! Returns the number of vertices in the mesh
 	uint32_t	getNumVertices() const { return mNumVertices; }

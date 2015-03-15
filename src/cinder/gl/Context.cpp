@@ -135,7 +135,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
     mModelMatrixStack.push_back( mat4() );
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4() );
-	mGlslProgStack.push_back( GlslProgRef() );
+	mGlslProgStack.push_back( nullptr );
 
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
@@ -769,9 +769,9 @@ void Context::endTransformFeedback()
 
 //////////////////////////////////////////////////////////////////
 // Shader
-void Context::pushGlslProg( const GlslProgRef &prog )
+void Context::pushGlslProg( const GlslProg* prog )
 {
-	GlslProgRef prevGlsl = getGlslProg();
+	const GlslProg* prevGlsl = getGlslProg();
 
 	mGlslProgStack.push_back( prog );
 	if( prog != prevGlsl ) {
@@ -789,7 +789,7 @@ void Context::pushGlslProg()
 
 void Context::popGlslProg( bool forceRestore )
 {
-	GlslProgRef prevGlsl = getGlslProg();
+	const GlslProg* prevGlsl = getGlslProg();
 
 	if( ! mGlslProgStack.empty() ) {
 		mGlslProgStack.pop_back();
@@ -808,7 +808,7 @@ void Context::popGlslProg( bool forceRestore )
 		CI_LOG_E( "GlslProg stack underflow" );
 }
 
-void Context::bindGlslProg( const GlslProgRef &prog )
+void Context::bindGlslProg( const GlslProg *prog )
 {
 	if( mGlslProgStack.empty() || (mGlslProgStack.back() != prog) ) {
 		if( ! mGlslProgStack.empty() )
@@ -820,10 +820,10 @@ void Context::bindGlslProg( const GlslProgRef &prog )
 	}
 }
 
-GlslProgRef Context::getGlslProg()
+const GlslProg* Context::getGlslProg()
 {
 	if( mGlslProgStack.empty() )
-		mGlslProgStack.push_back( GlslProgRef() );
+		mGlslProgStack.push_back( nullptr );
 	
 	return mGlslProgStack.back();
 }
@@ -1697,13 +1697,13 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
-GlslProgRef	Context::getStockShader( const ShaderDef &shaderDef )
+GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
 		auto result = gl::env()->buildShader( shaderDef );
 		mStockShaders[shaderDef] = result;
-		return result;
+		return mStockShaders[shaderDef];
 	}
 	else
 		return existing->second;

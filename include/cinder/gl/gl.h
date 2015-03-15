@@ -132,7 +132,7 @@ bool isExtensionAvailable( const std::string &extName );
 std::pair<GLint,GLint>	getVersion();
 std::string getVersionString();
 
-GlslProgRef	getStockShader( const class ShaderDef &shader );
+GlslProgRef& getStockShader( const class ShaderDef &shader );
 void bindStockShader( const class ShaderDef &shader );
 void setDefaultShaderVars();
 
@@ -511,8 +511,9 @@ struct ScopedAdditiveBlend : public ScopedBlend
 };
 
 struct ScopedGlslProg : private Noncopyable {
-	ScopedGlslProg( const GlslProgRef &prog );
+	ScopedGlslProg( GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
+	ScopedGlslProg( const GlslProg *prog );
 	~ScopedGlslProg();
 
   private:

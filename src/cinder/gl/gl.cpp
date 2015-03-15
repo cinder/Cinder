@@ -121,7 +121,7 @@ std::string getVersionString()
 	return std::string( reinterpret_cast<const char*>( s ) );
 }
 
-GlslProgRef	getStockShader( const class ShaderDef &shader )
+GlslProgRef& getStockShader( const class ShaderDef &shader )
 {
 	return context()->getStockShader( shader );
 }
@@ -809,7 +809,7 @@ void pointSize( float size )
 void draw( const VboMeshRef& mesh )
 {
 	auto ctx = gl::context();
-	auto curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1031,7 +1031,7 @@ void drawCubeImpl( const vec3 &c, const vec3 &size, bool faceColors )
 									20,21,22,20,22,23 };
 
 	Context *ctx = gl::context();
-	auto curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1119,7 +1119,7 @@ void drawStrokedCube( const vec3 &center, const vec3 &size )
 												0, 4, 1, 5, 2, 6, 3, 7 };	// right to left connections
 	
 	auto ctx = ci::gl::context();
-	gl::GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1187,7 +1187,7 @@ void draw( const Path2d &path, float approximationScale )
 		return;
 
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1221,7 +1221,7 @@ void draw( const Shape2d &shape, float approximationScale )
 void draw( const PolyLine2 &polyLine )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1249,7 +1249,7 @@ void draw( const PolyLine2 &polyLine )
 void draw( const PolyLine3 &polyLine )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1281,7 +1281,7 @@ void drawLine( const vec3 &a, const vec3 &b )
 	array<vec3, 2> points = { a, b };
 
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1311,7 +1311,7 @@ void drawLine( const vec2 &a, const vec2 &b )
 	const int size = sizeof( vec2 ) * 2;
 	array<vec2, 2> points = { a, b };
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1369,7 +1369,7 @@ void drawSolid( const PolyLine2 &polyLine )
 void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1418,7 +1418,7 @@ void drawStrokedRect( const Rectf &rect )
 	verts[6] = rect.x1;	verts[7] = rect.y2;
 
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1465,7 +1465,7 @@ void drawStrokedRect( const Rectf &rect, float lineWidth )
 	verts[30] = rect.x1 - halfWidth;	verts[31] = rect.y2 + halfWidth;
 
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1493,7 +1493,7 @@ void drawStrokedRect( const Rectf &rect, float lineWidth )
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1540,7 +1540,7 @@ void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1645,7 +1645,7 @@ void drawStrokedTriangle( const vec2 &pt0, const vec2 &pt1, const vec2 &pt2 )
 void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1683,7 +1683,7 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 void drawSphere( const vec3 &center, float radius, int subdivisions )
 {
 	auto ctx = gl::context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1705,7 +1705,7 @@ void drawSphere( const vec3 &center, float radius, int subdivisions )
 void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords )
 {
 	auto ctx = context();
-	GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -1782,7 +1782,7 @@ void drawFrustum( const Camera &cam )
 										5, 6, 6, 8, 8, 7, 7, 5};	// draws far rect
 	
 	auto ctx = ci::gl::context();
-	gl::GlslProgRef curGlslProg = ctx->getGlslProg();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
 		return;
@@ -2006,16 +2006,22 @@ ScopedBlend::~ScopedBlend()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedGlslProg
-ScopedGlslProg::ScopedGlslProg( const GlslProgRef &prog )
+ScopedGlslProg::ScopedGlslProg( GlslProgRef& prog )
 	: mCtx( gl::context() )
 {
-	mCtx->pushGlslProg( prog );
+	mCtx->pushGlslProg( prog.get() );
 }
 
 ScopedGlslProg::ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog )
 	: mCtx( gl::context() )
 {
-	mCtx->pushGlslProg( std::const_pointer_cast<GlslProg>( prog ) );
+	mCtx->pushGlslProg( std::const_pointer_cast<GlslProg>( prog ).get() );
+}
+
+ScopedGlslProg::ScopedGlslProg( const GlslProg* prog )
+	: mCtx( gl::context() )
+{
+	mCtx->pushGlslProg( const_cast<GlslProg*>( prog ) );
 }
 
 ScopedGlslProg::~ScopedGlslProg()

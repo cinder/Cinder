@@ -361,6 +361,11 @@ void VboMesh::allocateIndexVbo()
 
 void VboMesh::buildVao( const GlslProgRef &shader, const AttribGlslMap &attributeMapping )
 {
+	buildVao( shader.get(), attributeMapping );
+}
+
+void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping )
+{
 	auto ctx = gl::context();
 	
 	// iterate all the vertex array VBOs; map<geom::BufferLayout,VboRef>

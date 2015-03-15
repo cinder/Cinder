@@ -273,7 +273,7 @@ void VertBatch::setupBuffers()
 {
 	auto ctx = gl::context();
 	
-	GlslProgRef glslProg = ctx->getGlslProg();
+	auto glslProg = ctx->getGlslProg();
 	if( ! glslProg )
 		return;
 
