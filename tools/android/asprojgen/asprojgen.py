@@ -4,7 +4,7 @@
 Usage:
     asprojgen --appname MyCinderApp --path /parent/path/of/app --domain org.mydomain.sub
 
-    --appname   Name of application [Default: MyCinderApp]
+    --appname   Name of application [Required]
     --path      Path to a directory that will contain MyCinderApp [Default: . ]
     --domain    Domain to use [Default: org.libcinder.samples]
     --nocpp     Does not generate CPP src [Default: false] 
@@ -123,7 +123,7 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
 
 # main
 def main():
-    appName   = "MyCinderApp"
+    appName   = None
     appPath   = "."
     appDomain = "org.libcinder.samples"
     appGenCpp = True
@@ -151,10 +151,17 @@ def main():
     # process arguments
     for arg in args:
         pass 
-    # projgen
+
+    # do the project gene    
     if (appName is not None):
         projgen( appName, appPath, appDomain, appGenCpp )
         pass
+    else:
+        print __doc__
+        sys.exit(0)
+        pass    
+
+    # end of main()
     pass
 
 if __name__ == "__main__":
