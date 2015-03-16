@@ -685,6 +685,9 @@ Surface	TextBox::render( vec2 offset )
 	Surface result( (int)sizeX, (int)sizeY, true );
 	ip::fill( &result, mBackgroundColor );
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	if( ! cgContext )
+		return result;
+	
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 	
 	for( vector<pair<shared_ptr<const __CTLine>,vec2> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {
