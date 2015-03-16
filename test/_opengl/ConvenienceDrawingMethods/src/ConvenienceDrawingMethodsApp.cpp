@@ -80,8 +80,8 @@ void ConvenienceDrawingMethodsApp::draw()
 {
 	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );
 
-	drawBasicOverview();
-//	drawSourcesStressTest();
+//	drawBasicOverview();
+	drawSourcesStressTest();
 
 	CI_CHECK_GL();
 }
@@ -176,10 +176,13 @@ void ConvenienceDrawingMethodsApp::drawBasicOverview()
 
 void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 {
+	gl::setMatricesWindowPersp( getWindowSize() );
+
 	const int drawCount = 1000;
 
 	vec2 incr = vec2( getWindowSize() ) / (float)drawCount;
-	auto geom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
+//	auto circleGeom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
+	auto sphereGeom = geom::Sphere().radius( cCircleRadius ).colors();
 
 	gl::ScopedModelMatrix modelScope;
 
@@ -189,8 +192,10 @@ void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 		gl::translate( incr.x, incr.y );
 		gl::ScopedColor color( Color( 0, 0.5f + perc, perc ) );
 
-		gl::draw( geom );
+//		gl::draw( circleGeom );
 //		gl::drawSolidCircle( vec2( 0 ), cCircleRadius );
+
+		gl::draw( sphereGeom );
 	}
 
 	if( getElapsedFrames() % 30 == 0 )
