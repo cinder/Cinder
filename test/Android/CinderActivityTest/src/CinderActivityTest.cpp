@@ -50,8 +50,6 @@ void CinderActivityTest::setup()
     }
     console() << "Got environment" << std::endl;
 
-    //jclass cls = env->FindClass( "org/libcinder/samples/cinderactivitytest/CinderActivityTestActivity" );
-    //jclass cls = env->FindClass( "android/app/NativeActivity" );
     jclass cls = env->GetObjectClass( activity->clazz );
     if( NULL == cls ) {
         console() << "Unable to get class" << std::endl;
@@ -64,8 +62,8 @@ void CinderActivityTest::setup()
     }
     console() << "Got class" << std::endl;
 
-    jmethodID method = env->GetStaticMethodID( cls, "javaFunction", "()V" );
-    if( NULL == method ) {
+    jmethodID staticMethod = env->GetStaticMethodID( cls, "staticJavaFunction", "()V" );
+    if( NULL == staticMethod ) {
         console() << "Unable to get static method" << std::endl;
         jthrowable exc = env->ExceptionOccurred();
         if( exc ) {
@@ -75,8 +73,23 @@ void CinderActivityTest::setup()
         return;
     }
     console() << "Got static method" << std::endl;
+    //
+    env->CallStaticVoidMethod( cls, staticMethod );
 
-    env->CallStaticVoidMethod( cls, method );
+    jmethodID simpleMethod = env->GetMethodID( cls, "simpleJavaFunction", "()V" );
+    if( NULL == simpleMethod ) {
+        console() << "Unable to get simple method" << std::endl;
+        jthrowable exc = env->ExceptionOccurred();
+        if( exc ) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+        }
+        return;
+    }
+    console() << "Got simple method" << std::endl;
+    //
+    env->CallVoidMethod( activity->clazz, simpleMethod );
+
 }
 
 void CinderActivityTest::mouseDrag( MouseEvent event )

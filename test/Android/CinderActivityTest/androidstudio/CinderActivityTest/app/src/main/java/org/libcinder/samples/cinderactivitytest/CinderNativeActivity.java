@@ -5,8 +5,12 @@ import android.os.Bundle;
 
 public class CinderNativeActivity extends NativeActivity {
 
-    static void javaFunction() {
-        System.out.println( "CinderNativeActivity.javaFunction" );
+    static void staticJavaFunction() {
+        System.out.println( "CinderNativeActivity.staticJavaFunction" );
+    }
+
+    void simpleJavaFunction() {
+        System.out.println( "CinderNativeActivity.simpleJavaFunction" );
     }
 
     @Override
