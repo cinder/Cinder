@@ -1,26 +1,3 @@
-/*
-
-Example cinder property struct:
-
-    cinder {
-        ndkDir = "/Users/hai/DevTools/android/ndk"
-        verbose = true
-        moduleName = "BasicApp"
-        srcFiles = ["../../../src/BasicApp.cpp"]
-        cppFlags = "-std=c++11 -fexceptions -g -mfpu=neon"
-, type: CompileNdkTask,        includeDirs = ["../../../../../include", "../../../../../boost"]
-        ldLibs = ["log", "android", "EGL", "GLESv3", "z"]
-        staticLibs = [
-                "${projectDir}/../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libcinder_d.a",
-                "${projectDir}/../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_filesystem.a",
-                "${projectDir}/../../../../../lib/android/\$(TARGET_PLATFORM)/\$(TARGET_ARCH_ABI)/libboost_system.a"
-        ]
-        stl = "gnustl_static"
-        toolChainVersion = "4.9"
-        archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
-    }
-
-*/
 package org.libcinder.gradle
 
 import org.gradle.api.GradleException
@@ -33,9 +10,14 @@ import org.gradle.internal.reflect.Instantiator
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+/*
 import org.gradle.api.file.FileTree;
 import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+*/
 
+/** @class CFlags
+ *
+ */
 class CFlags {   
     String name;
     Project project;
@@ -49,6 +31,9 @@ class CFlags {
     }
 }
 
+/** @class CPPFlags
+ *
+ */
 class CPPFlags {
     String name;
     Project project;
@@ -62,6 +47,9 @@ class CPPFlags {
     }
 }
 
+/** @class CinderAppBuildPluginExtension
+ *
+ */
 class CinderAppBuildPluginExtension {
     def ndkDir           = "";
     def cinderDir        = "";
@@ -79,6 +67,9 @@ class CinderAppBuildPluginExtension {
     def archs            = [];
 }
 
+/** @class CompileNdkTask
+ *
+ */
 class CompileNdkTask extends DefaultTask {
     CinderAppBuildPlugin plugin;
 
@@ -104,7 +95,11 @@ class CompileNdkTask extends DefaultTask {
     }
 }
 
+/** @class CinderAppBuildPlugin
+ *
+ */
 class CinderAppBuildPlugin implements Plugin<Project> {
+
     static final kValidArchs = ["arm64-v8a", "armeabi", "armeabi-v7a", "mips", "mips64", "x86","x86_64"]
 
     def mProjectDir   = "";
@@ -121,7 +116,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
     def mArchFlagsBlocks = [];
     def mSourceFilesFullPath = []; // Used to for depenedency check
-
+    
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
 
@@ -134,7 +129,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             CPPFlags archFlags = project.gradle.services.get(Instantiator).newInstance(CPPFlags, name, project);
             return archFlags;
         }
-
 
         this.mProjectDir = project.projectDir;
         this.mBuildDir  = project.buildDir;
