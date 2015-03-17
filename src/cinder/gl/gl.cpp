@@ -1371,7 +1371,7 @@ class DefaultVboTarget : public geom::Target {
 		mArrayVbo = mContext->getDefaultArrayVbo( requiredSize );
 		mGlslProg = mContext->getGlslProg();
 
-		CI_ASSERT_MSG( mGlslProg, "No GLSL program bounds" );
+		CI_ASSERT_MSG( mGlslProg, "No GLSL program bound" );
 
 		mContext->pushBufferBinding( mArrayVbo->getTarget(), mArrayVbo->getId() );
 		if( source->getNumIndices() ) {
@@ -1430,11 +1430,17 @@ void draw( const geom::Source &source )
 		return;
 	}
 
+	// determine attribs requested by shader
+	geom::AttribSet requestedAttribs;
+	auto semantics = curGlslProg->getAttribSemantics();
+	for( auto &semantic : semantics )
+		requestedAttribs.insert( semantic.second );
+
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 
 	DefaultVboTarget target( &source );
-	source.loadInto( &target, source.getAvailableAttribs() );
+	source.loadInto( &target, requestedAttribs );
 
 	ctx->getDefaultVao()->replacementBindEnd();
 
@@ -1783,7 +1789,7 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 
 void drawSphere( const vec3 &center, float radius, int subdivisions )
 {
-	auto ctx = gl::context();
+/*	auto ctx = gl::context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
 	if( ! curGlslProg ) {
 		CI_LOG_E( "No GLSL program bound" );
@@ -1800,7 +1806,8 @@ void drawSphere( const vec3 &center, float radius, int subdivisions )
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
 	mesh->drawImpl();
-	ctx->popVao();
+	ctx->popVao();*/
+	draw( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ).colors() );
 }
 
 void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords )
