@@ -1343,22 +1343,12 @@ void draw( const TriMesh &mesh )
 	draw( (const geom::Source&)mesh );
 }
 
-#if 0
-void draw( const geom::Source &source )
-{
-	if( source.getNumVertices() <= 0 )
-		return;
-	
-	draw( VboMesh::create( source ) );
-}
-#else
-
 namespace {
 
 class DefaultVboTarget : public geom::Target {
   public:
 	DefaultVboTarget( const geom::Source *source )
-		: mSource( source ), mContext( context() ), mArrayVboOffset( 0 )
+		: mSource( source ), mContext( context() ), mArrayVboOffset( 0 ), mTempStorageSizeBytes( 0 )
 	{
 		size_t requiredSize = 0;
 		size_t numVertices = source->getNumVertices();
@@ -1397,13 +1387,26 @@ class DefaultVboTarget : public geom::Target {
 	{
 		int loc = mGlslProg->getAttribSemanticLocation( attr );
 		if( loc >= 0 ) {
-			size_t sizeNeeded = count * dims * sizeof( float );
-			mArrayVbo->bufferSubData( mArrayVboOffset, sizeNeeded, sourceData );
+			size_t totalBytes = count * dims * sizeof(float);
+
+			// if this is not tightly packed, we're going to need a temporary
+			if( ( strideBytes != 0 ) && ( strideBytes != dims * sizeof(float) ) ) {
+				if( totalBytes > mTempStorageSizeBytes ) {
+					// dim=4 should be the worst case; might as well allocate that much for potential next attrib
+					mTempStorageSizeBytes = count * 4 /*dims*/ * sizeof(float);
+					mTempStorage = unique_ptr<uint8_t[]>( new uint8_t[mTempStorageSizeBytes] );
+				}
+				geom::copyData( dims, strideBytes, sourceData, count, dims, 0, reinterpret_cast<float*>( mTempStorage.get() ) );
+				
+				mArrayVbo->bufferSubData( mArrayVboOffset, totalBytes, mTempStorage.get() );
+			}
+			else {
+				mArrayVbo->bufferSubData( mArrayVboOffset, totalBytes, sourceData );
+			}
 
 			mContext->enableVertexAttribArray( loc );
 			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)mArrayVboOffset );
-
-			mArrayVboOffset += sizeNeeded;
+			mArrayVboOffset += totalBytes;
 		}
 	}
 
@@ -1417,6 +1420,9 @@ class DefaultVboTarget : public geom::Target {
 	gl::VboRef			mArrayVbo, mElementVbo;
 	const gl::GlslProg*	mGlslProg;
 	size_t				mArrayVboOffset;
+	
+	std::unique_ptr<uint8_t[]>	mTempStorage;
+	size_t						mTempStorageSizeBytes;
 };
 
 } // anonymous namespace
@@ -1455,8 +1461,6 @@ void draw( const geom::Source &source )
 
 	ctx->popVao();
 }
-
-#endif
 
 void drawSolid( const Path2d &path, float approximationScale )
 {
@@ -1789,24 +1793,6 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] )
 
 void drawSphere( const vec3 &center, float radius, int subdivisions )
 {
-/*	auto ctx = gl::context();
-	const GlslProg* curGlslProg = ctx->getGlslProg();
-	if( ! curGlslProg ) {
-		CI_LOG_E( "No GLSL program bound" );
-		return;
-	}
-	//auto batch = gl::Batch::create( geom::Sphere().center( center ).radius( radius ).segments( segments ).normals().texCoords(), glslProg );
-	//batch->draw();
-
-	ctx->pushVao();
-	ctx->getDefaultVao()->replacementBindBegin();
-	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ),
-			{ { VboMesh::Layout().attrib( geom::POSITION, 3 ).attrib( geom::NORMAL, 3 ).attrib( geom::TEX_COORD_0, 2 ), ctx->getDefaultArrayVbo() } }, ctx->getDefaultElementVbo() );
-	mesh->buildVao( curGlslProg );
-	ctx->getDefaultVao()->replacementBindEnd();
-	ctx->setDefaultShaderVars();
-	mesh->drawImpl();
-	ctx->popVao();*/
 	draw( geom::Sphere().center( center ).radius( radius ).subdivisions( subdivisions ).colors() );
 }
 
