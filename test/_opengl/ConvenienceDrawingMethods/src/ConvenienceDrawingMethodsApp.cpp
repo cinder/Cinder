@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/PolyLine.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/VboMesh.h"
 #include "cinder/Rand.h"
 #include "cinder/Path2d.h"
 #include "cinder/Timer.h"
@@ -64,8 +65,10 @@ void ConvenienceDrawingMethodsApp::setup()
 
 void ConvenienceDrawingMethodsApp::keyDown( KeyEvent event )
 {
+#if ! defined( CINDER_GL_ES )
 	if( event.getChar() == 'w' )
 		gl::setWireframeEnabled( ! gl::isWireframeEnabled() );
+#endif
 	if( event.getChar() == 'f' )
 		mPrintFrameRate = ! mPrintFrameRate;
 }
@@ -178,11 +181,15 @@ void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 {
 	gl::setMatricesWindowPersp( getWindowSize() );
 
-	const int drawCount = 1000;
+	const int drawCount = 2000;
 
 	vec2 incr = vec2( getWindowSize() ) / (float)drawCount;
 //	auto circleGeom = geom::Circle().center( vec2( 0 ) ).radius( cCircleRadius );
-	auto sphereGeom = geom::Sphere().radius( cCircleRadius ).colors();
+	auto sphereGeom = geom::Sphere().radius( cCircleRadius ).subdivisions( 50 ).colors();
+	auto cubeGeom = geom::Cube().subdivisions( 10 ).colors() >> geom::Scale( 10 );
+
+gl::VboMeshRef sphereVboMesh = gl::VboMesh::create( sphereGeom );
+gl::VboMeshRef cubeVboMesh = gl::VboMesh::create( cubeGeom );
 
 	gl::ScopedModelMatrix modelScope;
 
@@ -195,7 +202,13 @@ void ConvenienceDrawingMethodsApp::drawSourcesStressTest()
 //		gl::draw( circleGeom );
 //		gl::drawSolidCircle( vec2( 0 ), cCircleRadius );
 
-		gl::draw( sphereGeom );
+//		gl::drawSphere( vec3(), cCircleRadius, 50 );
+		if( i % 2 == 0 )
+//			gl::draw( sphereGeom );
+			gl::draw( sphereVboMesh );
+		else
+//			gl::draw( cubeGeom );
+			gl::draw( cubeVboMesh );
 	}
 
 	if( getElapsedFrames() % 30 == 0 )
