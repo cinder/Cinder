@@ -43,6 +43,71 @@ void CinderActivityTest::setup()
     JavaVM* vm = activity->vm;
 
     JNIEnv* env = nullptr;
+    if( JNI_OK != vm->AttachCurrentThread( &env, NULL ) ) {
+        console() << "Unable to get environment" << std::endl;
+        return;
+    }
+    console() << "Got environment" << std::endl;
+
+    try {
+        jclass activityClass = env->FindClass( "android/app/NativeActivity" );
+        if( NULL == activityClass ) {
+            throw std::runtime_error( "Unable to get activity class" );
+        }
+        console() << "Got activity class" << std::endl;
+
+        // Get ClassLoader object
+        jmethodID getClassLoader = env->GetMethodID( activityClass, "getClassLoader", "()Ljava/lang/ClassLoader;" );
+        if( NULL == getClassLoader ) {
+            throw std::runtime_error( "Unable to get getClassLoader" );
+        }
+        console() << "Got getClassLoader" << std::endl;
+        jobject classLoaderObject = env->CallObjectMethod( activity->clazz, getClassLoader );
+
+        // Get ClassLoaderClass
+        jclass classLoaderClass = env->FindClass( "java/lang/ClassLoader" );
+        jmethodID loadClassMethod = env->GetMethodID( classLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;" );
+
+        // Get org.libcinder.SampleClass
+        jstring strClassName = env->NewStringUTF( "org/libcinder/SampleClass" );
+        jclass sampleClassClass= (jclass)env->CallObjectMethod( classLoaderObject, loadClassMethod, strClassName );
+        if( NULL == sampleClassClass ) {
+            throw std::runtime_error( "Unable to get org.libcinder.SampleClass" );
+        }
+
+        console() << "GOT org.libcinder.SampleClass" << std::endl;
+
+
+        jmethodID staticMethod = env->GetStaticMethodID( sampleClassClass, "staticFunction", "()V" );
+        env->CallStaticVoidMethod( sampleClassClass, staticMethod );
+    }
+    catch( const std::exception& e ) {
+        console() << "ERROR: " << e.what();
+    }
+
+/*
+    //jclass cls = env->GetObjectClass( activity->clazz );
+    jclass cls = env->FindClass( "org/libcinder/SampleClass" );
+    if( NULL == cls ) {
+        console() << "Unable to get class" << std::endl;
+        jthrowable exc = env->ExceptionOccurred();
+        if( exc ) {
+            env->ExceptionDescribe();
+            env->ExceptionClear();
+        }
+        return;
+    }
+    console() << "Got class" << std::endl;
+*/
+
+    vm->DetachCurrentThread();
+
+/*
+    android_app* app = EventManagerAndroid::instance()->getNativeApp();
+    ANativeActivity* activity = app->activity;
+    JavaVM* vm = activity->vm;
+
+    JNIEnv* env = nullptr;
     //if( JNI_OK != vm->GetEnv( reinterpret_cast<void**>( &env ), JNI_VERSION_1_6 ) ) {
     if( JNI_OK != vm->AttachCurrentThread( &env, NULL ) ) {
         console() << "Unable to get environment" << std::endl;
@@ -90,6 +155,8 @@ void CinderActivityTest::setup()
     //
     env->CallVoidMethod( activity->clazz, simpleMethod );
 
+    vm->DetachCurrentThread();
+*/
 }
 
 void CinderActivityTest::mouseDrag( MouseEvent event )
