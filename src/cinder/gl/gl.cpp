@@ -1340,7 +1340,7 @@ void draw( const TriMesh &mesh )
 	if( mesh.getNumVertices() <= 0 )
 		return;
 
-	draw( VboMesh::create( mesh ) );
+	draw( (const geom::Source&)mesh );
 }
 
 #if 0
