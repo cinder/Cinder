@@ -258,6 +258,15 @@ VboMeshRef VboMesh::create( const geom::Source &source, const geom::AttribSet &r
 	return VboMeshRef( new VboMesh( source, { { layout, nullptr } }, nullptr ) );
 }
 
+VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<VboMesh::Layout> &vertexArrayLayouts )
+{
+	std::vector<std::pair<VboMesh::Layout,VboRef>> layoutVbos;
+	for( const auto &vertexArrayLayout : vertexArrayLayouts )
+		layoutVbos.push_back( std::make_pair( vertexArrayLayout, (VboRef)nullptr ) );
+
+	return VboMeshRef( new VboMesh( source, layoutVbos, nullptr ) );
+}
+
 VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef>> &vertexArrayLayouts, const VboRef &indexVbo )
 {
 	return VboMeshRef( new VboMesh( source, vertexArrayLayouts, indexVbo ) );
