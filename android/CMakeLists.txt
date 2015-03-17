@@ -511,7 +511,7 @@ set( CMAKE_CXX_FLAGS_DEBUG   "${CXX_FLAGS} -g -fexceptions -frtti" )
 set( CMAKE_CXX_FLAGS_RELEASE "${CXX_FLAGS} -Os -fexceptions -frtti -ffast-math" )
 
 set( CINDER_C_SRC_FILES
-    ${CINDER_SRC_DIR}/cinder/android/android_native_app_glue.c
+    ${CINDER_SRC_DIR}/cinder/app/android/android_native_app_glue.c
 
     ${CINDER_SRC_DIR}/linebreak/linebreak.c
     ${CINDER_SRC_DIR}/linebreak/linebreakdata.c

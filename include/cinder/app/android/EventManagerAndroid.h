@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/android/android_native_app_glue.h"
+#include "cinder/app/android/android_native_app_glue.h"
 #include <android/sensor.h>
 #include <functional>
 

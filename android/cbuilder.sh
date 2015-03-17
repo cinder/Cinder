@@ -1,5 +1,25 @@
 #!/bin/bash
 
+if (( $# == 0 )); then
+    echo "cbuilder.sh - Cinder for Android wrapper script"
+    echo "usage:"
+    echo "\tcbuilder.sh -j 4 -p 19,21 -a armeabi,armeabi-v7a,x86,mips,arm64-v8a,x86_64,mips64 -b Debug -v"
+    echo ""
+    echo "options:"
+    echo "\t-p [str] Android platform, ex: -p 19"
+    echo "\t-a [str] Architecture, ex: -a armeabi,arm64-v8a"
+    echo "\t-b [str] Build type, ex: -b Debug,Release "
+    echo "\t-j [n]   Number of compile processes, ex: -j 4"
+    echo ""
+    echo "flags:"
+    echo "\t-es   2Build for OpenGL ES 2 instead of OpenGL ES 3"
+    echo "\t-r    Rebuild instead of full build"
+    echo "\t-v    Turns on verbose mode"
+    echo ""
+    exit 0
+fi
+
+
 PLATFORMS=(19 21)
 ARCHS=(armeabi armeabi-v7a x86 mips arm64-v8a x86_64 mips64)
 BUILDTYPES=(Debug Release)
