@@ -191,9 +191,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ResourceCompile Include="Resources.rc" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="..\src\ShaderPreprocessorTestApp.cpp" />
   </ItemGroup>
   <ItemGroup>
