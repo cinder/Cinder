@@ -84,7 +84,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// setup default VAO
 #if defined( SUPPORTS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
-	mVaoStack.push_back( mDefaultVao );
+	mVaoStack.push_back( mDefaultVao.get() );
 	mDefaultVao->setContext( this );
 	mDefaultVao->bindImpl( NULL );
 
@@ -230,9 +230,9 @@ void Context::reflectCurrent( Context *context )
 
 //////////////////////////////////////////////////////////////////
 // VAO
-void Context::bindVao( const VaoRef &vao )
+void Context::bindVao( Vao *vao )
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 	if( setStackState( mVaoStack, vao ) ) {
 		if( prevVao )
 			prevVao->unbindImpl( this );
@@ -241,9 +241,9 @@ void Context::bindVao( const VaoRef &vao )
 	}
 }
 
-void Context::pushVao( const VaoRef &vao )
+void Context::pushVao( Vao *vao )
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 	if( pushStackState( mVaoStack, vao ) ) {
 		if( prevVao )
 			prevVao->unbindImpl( this );
@@ -259,7 +259,7 @@ void Context::pushVao()
 
 void Context::popVao()
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 
 	if( ! mVaoStack.empty() ) {
 		mVaoStack.pop_back();
@@ -278,12 +278,12 @@ void Context::popVao()
 	}
 }
 
-VaoRef Context::getVao()
+Vao* Context::getVao()
 {
 	if( ! mVaoStack.empty() )
 		return mVaoStack.back();
 	else
-		return VaoRef();
+		return nullptr;
 }
 
 void Context::restoreInvalidatedVao()
@@ -483,7 +483,7 @@ void Context::bindBuffer( GLenum target, GLuint id )
 	if( prevValue != id ) {
 		mBufferBindingStack[target].back() = id;
 		if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-			VaoRef vao = getVao();
+			Vao* vao = getVao();
 			if( vao )
 				vao->reflectBindBufferImpl( target, id );
 			else
@@ -513,7 +513,7 @@ void Context::popBufferBinding( GLenum target )
 	cachedIt->second.pop_back();
 	if( ! cachedIt->second.empty() && cachedIt->second.back() != prevValue ) {
 		if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-			VaoRef vao = getVao();
+			Vao* vao = getVao();
 			if( vao )
 				vao->reflectBindBufferImpl( target, cachedIt->second.back() );
 			else
@@ -581,7 +581,7 @@ void Context::bufferDeleted( const BufferObj *buffer )
 			mBufferBindingStack[target].back() = 0;
 			// alert the currently bound VAO
 			if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-				VaoRef vao = getVao();
+				Vao* vao = getVao();
 				if( vao )
 					vao->reflectBindBufferImpl( target, 0 );
 	}
@@ -1506,7 +1506,7 @@ void Context::sanityCheck()
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
 #endif
 
-	VaoRef boundVao = getVao();
+	Vao* boundVao = getVao();
 	if( boundVao ) {
 		CI_ASSERT( trueVaoBinding == boundVao->mId );
 		CI_ASSERT( getBufferBinding( GL_ARRAY_BUFFER ) == boundVao->getLayout().mCachedArrayBufferBinding );
@@ -1604,21 +1604,21 @@ void Context::printState( std::ostream &os ) const
 // Vertex Attributes
 void Context::enableVertexAttribArray( GLuint index )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->enableVertexAttribArrayImpl( index );
 }
 
 void Context::disableVertexAttribArray( GLuint index )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->disableVertexAttribArrayImpl( index );
 }
 
 void Context::vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribPointerImpl( index, size, type, normalized, stride, pointer );
 }
@@ -1626,7 +1626,7 @@ void Context::vertexAttribPointer( GLuint index, GLint size, GLenum type, GLbool
 #if ! defined( CINDER_GL_ES )
 void Context::vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribIPointerImpl( index, size, type, stride, pointer );
 }
@@ -1634,7 +1634,7 @@ void Context::vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsiz
 
 void Context::vertexAttribDivisor( GLuint index, GLuint divisor )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribDivisorImpl( index, divisor );
 }
@@ -1768,13 +1768,13 @@ void Context::setDefaultShaderVars()
 	}
 }
 
-VaoRef Context::getDefaultVao()
+Vao* Context::getDefaultVao()
 {
 	if( ! mDefaultVao ) {
 		mDefaultVao = Vao::create();
 	}
 
-	return mDefaultVao;
+	return mDefaultVao.get();
 }
 
 VboRef Context::getDrawTextureVbo()
@@ -1786,13 +1786,13 @@ VboRef Context::getDrawTextureVbo()
 	return mDrawTextureVbo;
 }
 
-VaoRef Context::getDrawTextureVao()
+Vao* Context::getDrawTextureVao()
 {
 	if( ! mDrawTextureVao ) {
 		allocateDrawTextureVboAndVao();
 	}
 
-	return mDrawTextureVao;
+	return mDrawTextureVao.get();
 }
 
 void Context::allocateDrawTextureVboAndVao()
