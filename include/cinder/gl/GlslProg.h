@@ -86,15 +86,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
 		//! Specifies a uniform name to map to a specific semantic
 		Format&		uniform( UniformSemantic semantic, const std::string &attribName );
-		//! Specifies a define directive to add to the shader sources
-		Format&		define( const std::string &define );
-		//! Specifies a define directive to add to the shader sources
-		Format&		define( const std::string &define, const std::string &value );
-		//! Specifies a series of define directives to add to the shader sources
-		Format&		defineDirectives( const std::vector<std::string> &defines );
-		//! Specifies the #version directive to add to the shader sources
-		Format&		version( int version );
-
 		//! Specifies a location for a specific named attribute
 		Format&		attribLocation( const std::string &attribName, GLint location );
 		//! Specifies a location for a semantic
@@ -134,16 +125,23 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::map<geom::Attrib,GLint>&	getAttribSemanticLocations() const { return mAttribSemanticLocMap; }
 
 		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
-		bool	isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
+		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
-		void	setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
+		void		setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
-		Format&	preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
-		
-		//! Returns the list of `#define` directives.
-		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+		Format&		preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define );
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define, const std::string &value );
+		//! Specifies a series of define directives to add to the shader sources
+		Format&		defineDirectives( const std::vector<std::string> &defines );
+		//! Specifies the #version directive to add to the shader sources
+		Format&		version( int version );
 		//! Returns the version number associated with this GlslProg, or 0 if none was speciefied.
 		int	getVersion() const										{ return mVersion; }
+		//! Returns the list of `#define` directives.
+		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
 
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
