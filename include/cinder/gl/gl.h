@@ -590,6 +590,11 @@ struct ScopedModelMatrix : private Noncopyable {
 	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
 };
 
+struct ScopedViewMatrix : private Noncopyable {
+	ScopedViewMatrix()	{ gl::pushViewMatrix(); }
+	~ScopedViewMatrix()	{ gl::popViewMatrix(); }
+};
+
 struct ScopedProjectionMatrix : private Noncopyable {
 	ScopedProjectionMatrix()			{ gl::pushProjectionMatrix(); }
 	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
