@@ -51,11 +51,11 @@ ShaderPreprocessor::ShaderPreprocessor()
 #endif
 }
 
-string ShaderPreprocessor::parse( const fs::path &path )
+string ShaderPreprocessor::parse( const fs::path &sourcePath )
 {
 	set<fs::path> includeTree;
 
-	return parseDirectives( parseRecursive( path, fs::path(), includeTree ) );
+	return parseDirectives( parseRecursive( sourcePath, fs::path(), includeTree ) );
 }
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath )
@@ -197,7 +197,7 @@ void ShaderPreprocessor::addDefine( const std::string &define, const std::string
 {
 	mDefineDirectives.push_back( define + " " + value );
 }
-void ShaderPreprocessor::setDefineDirectives( const std::vector<std::string>& defines )
+void ShaderPreprocessor::setDefineDirectives( const std::vector<std::string> &defines )
 {
 	mDefineDirectives = defines;
 }
