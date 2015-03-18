@@ -961,7 +961,7 @@ class SourceModsContext : public Target {
 	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
 	void			clearAttrib( Attrib attr );
 	//! Appends index data to existing index data. \a primitive must match existing data.
-	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices );
+	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes );
 	void			clearIndices();
 
 	size_t			getNumVertices() const;
@@ -985,6 +985,7 @@ class SourceModsContext : public Target {
 	
 	std::unique_ptr<uint32_t[]>				mIndices;
 	size_t									mNumIndices;
+	uint8_t									mIndicesRequiredBytes;
 	geom::Primitive							mPrimitive;
 };
 

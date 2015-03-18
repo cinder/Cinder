@@ -3518,7 +3518,7 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 			target->copyAttrib( attrib, attribInfo.getDims(), attribInfo.getStride(), mAttribData[attrib].get(), mAttribCount[attrib] );
 		}
 
-		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, 4 );
+		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, calcIndicesRequiredBytes( mNumIndices ) );
 	}
 	else {
 		// no modifiers; in this case just call loadInto()
@@ -3640,9 +3640,10 @@ void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *sr
 	mNumVertices = existingCount + count;
 }
 
-void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes )
 {
 	mPrimitive = primitive;
+	mIndicesRequiredBytes = requiredBytes;
 	// need to reallocate storage only if this is a different number of indices
 	if( mNumIndices != numIndices ) {
 		mNumIndices = numIndices;
@@ -3651,12 +3652,13 @@ void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source
 	memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
 }
 
-void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices )
+void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes )
 {
 	if( mPrimitive != primitive )
 		CI_LOG_E( "Primitive types don't match" );
 	
 	auto newIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices + mNumIndices] );
+	mIndicesRequiredBytes = std::max( mIndicesRequiredBytes, requiredBytes );
 
 	// copy old index data
 	if( mNumIndices && mIndices.get() )

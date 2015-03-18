@@ -1382,6 +1382,11 @@ class DefaultVboTarget : public geom::Target {
 		return mSource->getAttribDims( attr );
 	}
 
+	GLenum	getIndexType() const
+	{
+		return mIndexType;
+	}
+
 	// TODO: what about stride?
 	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *sourceData, size_t count ) override
 	{
@@ -1412,6 +1417,7 @@ class DefaultVboTarget : public geom::Target {
 
 	void copyIndices( geom::Primitive primitive, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
 	{
+		mIndexType = GL_UNSIGNED_INT;
 		mElementVbo->bufferSubData( 0, numIndices * requiredBytesPerIndex, sourceData );
 	}
 
@@ -1420,6 +1426,8 @@ class DefaultVboTarget : public geom::Target {
 	gl::VboRef			mArrayVbo, mElementVbo;
 	const gl::GlslProg*	mGlslProg;
 	size_t				mArrayVboOffset;
+	
+	GLenum				mIndexType;
 	
 	std::unique_ptr<uint8_t[]>	mTempStorage;
 	size_t						mTempStorageSizeBytes;
@@ -1455,7 +1463,7 @@ void draw( const geom::Source &source )
 	GLenum primitive = toGl( source.getPrimitive() );
 	const size_t numIndices = source.getNumIndices();
 	if( numIndices )
-		ctx->drawElements( primitive, (GLsizei)numIndices, GL_UNSIGNED_INT, (GLvoid*)( 0 ) );
+		ctx->drawElements( primitive, (GLsizei)numIndices, target.getIndexType(), (GLvoid*)( 0 ) );
 	else
 		ctx->drawArrays( primitive, 0, (GLsizei)source.getNumVertices() );
 
