@@ -38,7 +38,7 @@ GlslProg::AttribSemanticMap		GlslProg::sDefaultAttribNameToSemanticMap;
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
 GlslProg::Format::Format()
-	: mPreprocessingEnabled( true )
+	: mPreprocessingEnabled( true ), mVersion( 0 )
 #if ! defined( CINDER_GL_ES_2 )
 	, mTransformFormat( -1 )
 #endif
