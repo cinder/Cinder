@@ -375,11 +375,11 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 	return sDefaultAttribNameToSemanticMap;
 }
 
-void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderDirectory, GLint shaderType )
+void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType )
 {
 	GLuint handle = glCreateShader( shaderType );
 	if( mPreprocessingEnabled ) {
-		string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderDirectory );
+		string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderPath );
 		const char *cStr = preprocessedSource.c_str();
 		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	}

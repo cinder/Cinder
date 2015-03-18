@@ -294,7 +294,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	GlslProg( const Format &format );
 
 	void			bindImpl() const;
-	void			loadShader( const std::string &shaderSource, const fs::path &shaderDirectory, GLint shaderType );
+	void			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType );
 	void			attachShaders();
 	void			link();
 	
