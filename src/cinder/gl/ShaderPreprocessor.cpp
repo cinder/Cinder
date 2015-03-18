@@ -141,7 +141,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	includeTree.insert( fullPath );
 
 	stringstream output;
-	ifstream input( fullPath.c_str() );
+	ifstream input( fullPath.string().c_str() );
 	if( ! input.is_open() )
 		throw ShaderPreprocessorExc( "Failed to open file at path: " + fullPath.string() );
 
