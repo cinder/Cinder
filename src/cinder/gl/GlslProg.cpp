@@ -160,6 +160,11 @@ GlslProg::Format& GlslProg::Format::defineDirectives( const std::vector<std::str
 	return *this;
 }
 
+GlslProg::Format& GlslProg::Format::version( int version )
+{
+	mVersion = version;
+	return *this;
+}
 
 GlslProg::Format& GlslProg::Format::attribLocation( const std::string &attribName, GLint location )
 {
@@ -238,6 +243,9 @@ GlslProg::GlslProg( const Format &format )
 	// copy the Format's define directives vector
 	for( const auto &define : format.getDefineDirectives() )
 		mShaderPreprocessor.addDefine( define );
+
+	if( format.getVersion() )
+		mShaderPreprocessor.setVersion( format.getVersion() );
 	
 	if( ! format.getVertex().empty() )
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );

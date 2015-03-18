@@ -50,6 +50,8 @@ class ShaderPreprocessor {
 	void	addDefine( const std::string &define, const std::string &value );
 	//! Specifies a series of define directives to add to the shader sources
 	void	setDefineDirectives( const std::vector<std::string>& defines );
+	//! Specifies the #version directive to add to the shader sources
+	void	setVersion( int version )	{ mVersion = version; }
 	
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );
@@ -62,6 +64,7 @@ class ShaderPreprocessor {
 		std::time_t		mTimeLastWrite;
 	};
 	
+	int								mVersion;
 	std::vector<std::string>		mDefineDirectives;
 	std::vector<fs::path>			mSearchDirectories;
 };

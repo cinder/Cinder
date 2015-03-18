@@ -22,6 +22,7 @@
 */
 
 #include "cinder/gl/ShaderPreprocessor.h"
+#include "cinder/gl/gl.h"
 #include "cinder/app/Platform.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -39,6 +40,15 @@ namespace {
 ShaderPreprocessor::ShaderPreprocessor()
 {
 	mSearchDirectories.push_back( app::Platform::get()->getAssetPath( "" ) );
+
+	// set the default version
+#if defined( CINDER_GL_ES_3 )
+	mVersion = 300;
+#elif defined( CINDER_GL_ES_2 )
+	mVersion = 110;
+#else // desktop
+	mVersion = 150;
+#endif
 }
 
 string ShaderPreprocessor::parse( const fs::path &path )
@@ -74,8 +84,12 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	}
 	
 	// if we don't have a version yet, add the default one
-	if( version.empty() ){
-		version = "#version 150\n";
+	if( version.empty() ) {
+#if defined( CINDER_GL_ES )
+		version = "#version " + to_string( mVersion ) + "es\n";
+#else
+		version = "#version " + to_string( mVersion ) + "\n";
+#endif
 	}
 	else version += "\n";
 	

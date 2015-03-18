@@ -93,6 +93,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Specifies a series of define directives to add to the shader sources
 		Format&		defineDirectives( const std::vector<std::string>& defines );
 		
+		//! Specifies the #version directive to add to the shader sources
+		Format&		version( int version );
+
 		//! Specifies a location for a specific named attribute
 		Format&		attribLocation( const std::string &attribName, GLint location );
 		//! Specifies a location for a semantic
@@ -140,6 +143,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		
 		//! Returns the list of `#define` directives.
 		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+		//! Returns the version number associated with this GlslProg, or 0 if none was speciefied.
+		int	getVersion() const										{ return mVersion; }
 
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -176,6 +181,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
 		std::map<std::string,geom::Attrib>		mAttribSemanticMap;
 		std::vector<std::string>				mDefineDirectives;
+		int										mVersion;
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;
