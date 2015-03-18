@@ -69,6 +69,8 @@ std::string attribToString( Attrib attrib );
 std::string primitiveToString( Primitive primitive );
 //! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
+//! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. Stride of \c 0 implies tightly packed data.
+void copyData( uint8_t srcDimensions, size_t srcStrideBytes, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 //! Utility function for calculating tangents and bitangents from indexed geometry. \a resultBitangents may be NULL if not needed.
 void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec2 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
 //! Utility function for calculating tangents and bitangents from indexed geometry and 3D texture coordinates. \a resultBitangents may be NULL if not needed.
@@ -959,7 +961,7 @@ class SourceModsContext : public Target {
 	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
 	void			clearAttrib( Attrib attr );
 	//! Appends index data to existing index data. \a primitive must match existing data.
-	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices );
+	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes );
 	void			clearIndices();
 
 	size_t			getNumVertices() const;
@@ -983,6 +985,7 @@ class SourceModsContext : public Target {
 	
 	std::unique_ptr<uint32_t[]>				mIndices;
 	size_t									mNumIndices;
+	uint8_t									mIndicesRequiredBytes;
 	geom::Primitive							mPrimitive;
 };
 
