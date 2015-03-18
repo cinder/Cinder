@@ -144,17 +144,20 @@ GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std
 	mUniformSemanticMap[attribName] = semantic;
 	return *this;
 }
+
 GlslProg::Format& GlslProg::Format::define( const std::string &define )
 {
 	mDefineDirectives.push_back( define );
 	return *this;
 }
+
 GlslProg::Format& GlslProg::Format::define( const std::string &define, const std::string &value )
 {
 	mDefineDirectives.push_back( define + " " + value );
 	return *this;
 }
-GlslProg::Format& GlslProg::Format::defineDirectives( const std::vector<std::string>& defines )
+
+GlslProg::Format& GlslProg::Format::defineDirectives( const std::vector<std::string> &defines )
 {
 	mDefineDirectives = defines;
 	return *this;

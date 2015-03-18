@@ -91,8 +91,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Specifies a define directive to add to the shader sources
 		Format&		define( const std::string &define, const std::string &value );
 		//! Specifies a series of define directives to add to the shader sources
-		Format&		defineDirectives( const std::vector<std::string>& defines );
-		
+		Format&		defineDirectives( const std::vector<std::string> &defines );
 		//! Specifies the #version directive to add to the shader sources
 		Format&		version( int version );
 
