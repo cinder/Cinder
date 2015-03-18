@@ -20,7 +20,7 @@
 		34954634839D4E5F80B7C972 /* BasicApp_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = C8C40AA37C82445C9A621C32 /* BasicApp_Prefix.pch */; };
 		C75C6E1D118D4AE19E03EA51 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 97C8FF649A484AA99F659A51 /* CinderApp.icns */; };
 		522DF40F2B6E4797B1EE6770 /* Resources.h in Headers */ = {isa = PBXBuildFile; fileRef = 8775F63B56DC423394B31BBC /* Resources.h */; };
-		51C6B56E2B6A410A990B40EB /* BasicAppApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E839F79959E4E7A9D3AA3D9 /* BasicAppApp.cpp */; };
+		51C6B56E2B6A410A990B40EB /* BasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 3E839F79959E4E7A9D3AA3D9 /* BasicApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -37,7 +37,7 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* BasicApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BasicApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		3E839F79959E4E7A9D3AA3D9 /* BasicAppApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/BasicAppApp.cpp; sourceTree = "<group>"; name = BasicAppApp.cpp; };
+		3E839F79959E4E7A9D3AA3D9 /* BasicApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/BasicApp.cpp; sourceTree = "<group>"; name = BasicApp.cpp; };
 		8775F63B56DC423394B31BBC /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
 		97C8FF649A484AA99F659A51 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		CD54B138009C4A3C887C6B20 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
@@ -68,7 +68,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				3E839F79959E4E7A9D3AA3D9 /* BasicAppApp.cpp */,
+				3E839F79959E4E7A9D3AA3D9 /* BasicApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -215,7 +215,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				51C6B56E2B6A410A990B40EB /* BasicAppApp.cpp in Sources */,
+				51C6B56E2B6A410A990B40EB /* BasicApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
