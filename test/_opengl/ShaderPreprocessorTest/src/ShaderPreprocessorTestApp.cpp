@@ -42,7 +42,10 @@ void ShaderPreprocessorTestApp::testGlslProgInclude()
 	try {
 		auto format = gl::GlslProg::Format()
 							.vertex(  loadAsset( "passthrough.vert" ) )
-							.fragment( loadAsset( "shaderWithInclude.frag" ) );
+							.fragment( loadAsset( "shaderWithInclude.frag" ) )
+        //                    .define( "COLOR_RED", "vec4( 0, 0, 1, 1 )" )
+        //                    .define( "WRONG_HASH" )
+        ;
 
 		mGlslProg = gl::GlslProg::create( format );
 	}
@@ -56,7 +59,7 @@ void ShaderPreprocessorTestApp::testSeparateShaderPreprocessor()
 {
 	try {
 		auto vert = loadAsset( "passthrough.vert" );
-		string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
+        string fragSource = mPreprocessor.parse( getAssetPath( "shaderWithInclude.frag" ) );
 
 		auto format = gl::GlslProg::Format()
 							.preprocess( false )

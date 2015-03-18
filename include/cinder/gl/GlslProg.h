@@ -86,6 +86,12 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
 		//! Specifies a uniform name to map to a specific semantic
 		Format&		uniform( UniformSemantic semantic, const std::string &attribName );
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define );
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define, const std::string &value );
+		//! Specifies a series of define directives to add to the shader sources
+		Format&		defineDirectives( const std::vector<std::string>& defines );
 		
 		//! Specifies a location for a specific named attribute
 		Format&		attribLocation( const std::string &attribName, GLint location );
@@ -131,6 +137,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		void	setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
 		Format&	preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
+		
+		//! Returns the list of `#define` directives.
+		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
 
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -166,6 +175,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::map<geom::Attrib,GLint>			mAttribSemanticLocMap;
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
 		std::map<std::string,geom::Attrib>		mAttribSemanticMap;
+		std::vector<std::string>				mDefineDirectives;
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;

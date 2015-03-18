@@ -45,16 +45,49 @@ string ShaderPreprocessor::parse( const fs::path &path )
 {
 	set<fs::path> includeTree;
 
-	return parseRecursive( path, fs::path(), includeTree );
+	return parseDirectives( parseRecursive( path, fs::path(), includeTree ) );
 }
 
 string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath )
 {
 	CI_ASSERT( ! fs::is_directory( sourcePath ) );
 
-	return parseTopLevel( source, sourcePath.parent_path() );
+	return parseDirectives( parseTopLevel( source, sourcePath.parent_path() ) );
 }
 
+std::string ShaderPreprocessor::parseDirectives( const std::string &source )
+{
+	stringstream output;
+	istringstream input( source );
+	
+	string version;
+	
+	// go through each line and find the #version directive
+	string line;
+	while( getline( input, line ) ) {
+		if( line.find( "#version" ) != string::npos ) {
+			version = line;
+		}
+		else
+			output << line;
+		output << endl;
+	}
+	
+	// if we don't have a version yet, add the default one
+	if( version.empty() ){
+		version = "#version 150\n";
+	}
+	else version += "\n";
+	
+	// copy the preprocessor directives to a string starting with the version
+	std::string directivesString = version;
+	for( auto define : mDefineDirectives ){
+		directivesString += "#define " + define + "\n";
+	}
+	
+	return directivesString + output.str();
+}
+	
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )
 {
 	set<fs::path> includeTree;
@@ -119,6 +152,7 @@ string ShaderPreprocessor::parseRecursive( const fs::path &path, const fs::path 
 	return output.str();
 }
 
+
 void ShaderPreprocessor::addSearchDirectory( const fs::path &directory )
 {
 	if( ! fs::is_directory( directory ) ) {
@@ -138,6 +172,21 @@ void ShaderPreprocessor::removeSearchDirectory( const fs::path &directory )
 	mSearchDirectories.erase( remove( mSearchDirectories.begin(), mSearchDirectories.end(), dirCanonical ), mSearchDirectories.end() );
 }
 
+
+void ShaderPreprocessor::addDefine( const std::string &define )
+{
+	mDefineDirectives.push_back( define );
+}
+
+void ShaderPreprocessor::addDefine( const std::string &define, const std::string &value )
+{
+	mDefineDirectives.push_back( define + " " + value );
+}
+void ShaderPreprocessor::setDefineDirectives( const std::vector<std::string>& defines )
+{
+	mDefineDirectives = defines;
+}
+	
 fs::path ShaderPreprocessor::findFullPath( const fs::path &includePath, const fs::path &currentDirectory )
 {
 	auto fullPath = currentDirectory / includePath;

@@ -1,5 +1,8 @@
-
-#include "hash.glsl"
+#ifdef WRONG_HASH
+  #include "wrong_hash.glsl"
+#else
+  #include "hash.glsl"
+#endif
 
 float noise( in vec2 x )
 {

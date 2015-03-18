@@ -43,17 +43,26 @@ class ShaderPreprocessor {
 	void	addSearchDirectory( const fs::path &directory );
 	//!
 	void	removeSearchDirectory( const fs::path &directory );
-
+	
+	//! Adds a define directive
+	void	addDefine( const std::string &define );
+	//! Adds a define directive
+	void	addDefine( const std::string &define, const std::string &value );
+	//! Specifies a series of define directives to add to the shader sources
+	void	setDefineDirectives( const std::vector<std::string>& defines );
+	
   private:
 	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
+	std::string		parseDirectives( const std::string &source );
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );
 
 	struct Source {
 		std::string		mString;
 		std::time_t		mTimeLastWrite;
 	};
-
+	
+	std::vector<std::string>		mDefineDirectives;
 	std::vector<fs::path>			mSearchDirectories;
 };
 

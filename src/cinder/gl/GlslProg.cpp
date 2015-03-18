@@ -144,6 +144,22 @@ GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std
 	mUniformSemanticMap[attribName] = semantic;
 	return *this;
 }
+GlslProg::Format& GlslProg::Format::define( const std::string &define )
+{
+	mDefineDirectives.push_back( define );
+	return *this;
+}
+GlslProg::Format& GlslProg::Format::define( const std::string &define, const std::string &value )
+{
+	mDefineDirectives.push_back( define + " " + value );
+	return *this;
+}
+GlslProg::Format& GlslProg::Format::defineDirectives( const std::vector<std::string>& defines )
+{
+	mDefineDirectives = defines;
+	return *this;
+}
+
 
 GlslProg::Format& GlslProg::Format::attribLocation( const std::string &attribName, GLint location )
 {
@@ -218,7 +234,11 @@ GlslProg::GlslProg( const Format &format )
 	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
 	mHandle = glCreateProgram();
-
+	
+	// copy the Format's define directives vector
+	for( const auto &define : format.getDefineDirectives() )
+		mShaderPreprocessor.addDefine( define );
+	
 	if( ! format.getVertex().empty() )
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
