@@ -29,6 +29,13 @@ POSSIBILITY OF SUCH DAMAGE.
 
 namespace cinder { namespace audio {
 
+// Typedefs for shared_ptr's to all MathNode types
+typedef std::shared_ptr<class MathNode>			MathNodeRef;
+typedef std::shared_ptr<class AddNode>			AddNodeRef;
+typedef std::shared_ptr<class SubtractNode>		SubtractNodeRef;
+typedef std::shared_ptr<class MultiplyNode>		MultiplyNodeRef;
+typedef std::shared_ptr<class DivideNode>		DivideNodeRef;
+
 //! Base class for an arithmetic based Node.
 class MathNode : public Node {
   public:

@@ -414,11 +414,11 @@ void GlslProg::link()
 void GlslProg::bind() const
 {
 	// this will in turn call bindImpl; this is so that the context can update its reference to the active shader
-	gl::context()->bindGlslProg( std::const_pointer_cast<GlslProg>( shared_from_this() ) );
+	gl::context()->bindGlslProg( const_cast<GlslProg*>( this ) );
 }
 
 // This is called by the Context whenever a GlslProg is bound. The indirection is so that the Context can update its reference to the active shader
-void GlslProg::bindImpl()
+void GlslProg::bindImpl() const
 {
 	glUseProgram( mHandle );
 }
@@ -445,13 +445,13 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 // int
 void GlslProg::uniform( int location, int data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform1i( location, data );
 }
 
 void GlslProg::uniform( const std::string &name, int data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -466,13 +466,13 @@ void GlslProg::uniform( const std::string &name, int data ) const
 // ivec2
 void GlslProg::uniform( int location, const ivec2 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform2i( location, data.x, data.y );
 }
 
 void GlslProg::uniform( const std::string &name, const ivec2 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -487,13 +487,13 @@ void GlslProg::uniform( const std::string &name, const ivec2 &data ) const
 // int *, count
 void GlslProg::uniform( int location, const int *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform1iv( location, count, data );
 }
 
 void GlslProg::uniform( const std::string &name, const int *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -508,13 +508,13 @@ void GlslProg::uniform( const std::string &name, const int *data, int count ) co
 // ivec2 *, count
 void GlslProg::uniform( int location, const ivec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform2iv( location, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const ivec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -529,13 +529,13 @@ void GlslProg::uniform( const std::string &name, const ivec2 *data, int count ) 
 // float
 void GlslProg::uniform( int location, float data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform1f( location, data );
 }
 
 void GlslProg::uniform( const std::string &name, float data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -550,13 +550,13 @@ void GlslProg::uniform( const std::string &name, float data ) const
 // vec2
 void GlslProg::uniform( int location, const vec2 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform2f( location, data.x, data.y );
 }
 
 void GlslProg::uniform( const std::string &name, const vec2 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -571,13 +571,13 @@ void GlslProg::uniform( const std::string &name, const vec2 &data ) const
 // vec3
 void GlslProg::uniform( int location, const vec3 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform3f( location, data.x, data.y, data.z );
 }
 
 void GlslProg::uniform( const std::string &name, const vec3 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -592,13 +592,13 @@ void GlslProg::uniform( const std::string &name, const vec3 &data ) const
 // vec4
 void GlslProg::uniform( int location, const vec4 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform4f( location, data.x, data.y, data.z, data.w );
 }
 
 void GlslProg::uniform( const std::string &name, const vec4 &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -613,13 +613,13 @@ void GlslProg::uniform( const std::string &name, const vec4 &data ) const
 // mat3
 void GlslProg::uniform( int location, const mat3 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     glUniformMatrix3fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -634,13 +634,13 @@ void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpos
 // mat4
 void GlslProg::uniform( int location, const mat4 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     glUniformMatrix4fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const mat4 &data, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -655,13 +655,13 @@ void GlslProg::uniform( const std::string &name, const mat4 &data, bool transpos
 // Color
 void GlslProg::uniform( int location, const Color &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform3f( location, data.r, data.g, data.b );
 }
 
 void GlslProg::uniform( const std::string &name, const Color &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -676,13 +676,13 @@ void GlslProg::uniform( const std::string &name, const Color &data ) const
 // ColorA
 void GlslProg::uniform( int location, const ColorA &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform4f( location, data.r, data.g, data.b, data.a );
 }
 
 void GlslProg::uniform( const std::string &name, const ColorA &data ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -697,13 +697,13 @@ void GlslProg::uniform( const std::string &name, const ColorA &data ) const
 // float*, count
 void GlslProg::uniform( int location, const float *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform1fv( location, count, data );
 }
 
 void GlslProg::uniform( const std::string &name, const float *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -718,13 +718,13 @@ void GlslProg::uniform( const std::string &name, const float *data, int count ) 
 // vec2*, count
 void GlslProg::uniform( int location, const vec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform2fv( location, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const vec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -739,13 +739,13 @@ void GlslProg::uniform( const std::string &name, const vec2 *data, int count ) c
 // vec3*, count
 void GlslProg::uniform( int location, const vec3 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform3fv( location, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const vec3 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -760,13 +760,13 @@ void GlslProg::uniform( const std::string &name, const vec3 *data, int count ) c
 // vec4*, count
 void GlslProg::uniform( int location, const vec4 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform4fv( location, count, &data[0].x );
 }
 
 void GlslProg::uniform( const std::string &name, const vec4 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -781,13 +781,13 @@ void GlslProg::uniform( const std::string &name, const vec4 *data, int count ) c
 // mat3*, count
 void GlslProg::uniform( int location, const mat3 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     glUniformMatrix3fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const mat3 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {
@@ -802,13 +802,13 @@ void GlslProg::uniform( const std::string &name, const mat3 *data, int count, bo
 // mat4*, count
 void GlslProg::uniform( int location, const mat4 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     glUniformMatrix4fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 void GlslProg::uniform( const std::string &name, const mat4 *data, int count, bool transpose ) const
 {
-    ScopedGlslProg shaderBind( shared_from_this() );
+    ScopedGlslProg shaderBind( this );
     GLint loc = getUniformLocation( name );
 	if( loc == -1 ) {
 		if( mLoggedMissingUniforms.count( name ) == 0 ) {

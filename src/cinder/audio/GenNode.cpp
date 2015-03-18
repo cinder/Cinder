@@ -61,6 +61,13 @@ void GenNode::initialize()
 	mSamplePeriod = 1.0f / (float)getSampleRate();
 }
 
+void GenNode::setPhase( float phase )
+{
+	lock_guard<mutex> lock( getContext()->getMutex() );
+
+	mPhase = phase;
+}
+
 // ----------------------------------------------------------------------------------------------------
 // MARK: - GenNoiseNode
 // ----------------------------------------------------------------------------------------------------

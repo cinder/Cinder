@@ -40,13 +40,12 @@ struct Splash {
 
 class DelayFeedback : public App {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
+	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void keyDown( KeyEvent event )	override;
-	void update();
-	void draw();
+	void update() override;
+	void draw() override;
 
 	void	setVariableDelayMod();
 	void	addSplash( const vec2 &pos );
@@ -62,12 +61,6 @@ public:
 
 	gl::BatchRef			mBatch;
 };
-
-void DelayFeedback::prepareSettings( Settings *settings )
-{
-	settings->setWindowPos( 200, 200 );
-	settings->setWindowSize( 1000, 800 );
-}
 
 void DelayFeedback::setup()
 {
@@ -253,4 +246,7 @@ void DelayFeedback::loadBatch()
 	mBatch = gl::Batch::create( mesh, glsl );
 }
 
-CINDER_APP( DelayFeedback, RendererGl )
+CINDER_APP( DelayFeedback, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowPos( 200, 200 );
+	settings->setWindowSize( 1000, 800 );
+} )

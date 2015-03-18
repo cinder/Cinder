@@ -538,7 +538,7 @@ void Fbo::resolveTextures() const
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER, mId );
 		ScopedFramebuffer readFbScp( GL_READ_FRAMEBUFFER, mMultisampleFramebufferId );
 		
-		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 	}
 #elif defined( SUPPORTS_MULTISAMPLE ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
@@ -562,7 +562,12 @@ void Fbo::resolveTextures() const
             if( colorAttachmentIt != mAttachmentsTexture.end() ) {
                 glDrawBuffers( 1, &colorAttachmentIt->first );
                 glReadBuffer( colorAttachmentIt->first );
+#if ! defined( CINDER_GL_ANGLE )
+				// ANGLE appears to error when requested to resolve a depth buffer
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+#else
+				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+#endif
 				drawBuffers.push_back( colorAttachmentIt->first );
 			}
 		}

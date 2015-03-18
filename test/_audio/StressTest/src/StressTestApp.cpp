@@ -23,14 +23,13 @@ enum GenType { SINE, TRIANGLE, OSC_SINE, OSC_SAW, OSC_SQUARE, OSC_TRIANGLE };
 
 class StressTestApp : public App {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void draw();
+	void setup() override;
+	void draw() override;
+	void keyDown( KeyEvent event ) override;
 
 	void setupUI();
 	void processDrag( ivec2 pos );
 	void processTap( ivec2 pos );
-	void keyDown( KeyEvent event );
 
 	void addGens();
 	void removeGens();
@@ -55,11 +54,6 @@ public:
 	size_t					mAddIncr;
 	GenType					mSelectedGenType;
 };
-
-void StressTestApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1000, 600 );
-}
 
 void StressTestApp::setup()
 {
@@ -317,4 +311,6 @@ void StressTestApp::draw()
 	getTestWidgetTexFont()->drawString( countStr, vec2( mAddIncrInput.mBounds.x1, mAddIncrInput.mBounds.y2 + padding + getTestWidgetTexFont()->getFont().getAscent() + getTestWidgetTexFont()->getFont().getDescent() ) );
 }
 
-CINDER_APP( StressTestApp, RendererGl )
+CINDER_APP( StressTestApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1000, 600 );
+} )

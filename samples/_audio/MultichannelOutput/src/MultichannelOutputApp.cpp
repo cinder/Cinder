@@ -21,9 +21,9 @@ const float RAMP_SECONDS	= 1.0f;
 
 class MultichannelOutputApp : public App {
   public:
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
 	void setupMultichannelDevice();
 	void rampGain();

@@ -11,11 +11,10 @@ using namespace ci::app;
 
 class VoiceBasicApp : public App {
 public:
-	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
-	void setup();
-	void mouseDown( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+	void draw() override;
 
 	audio::VoiceRef mVoice;
 };
@@ -57,4 +56,6 @@ void VoiceBasicApp::draw()
 	gl::clear( Color( 0, 0, 0.2f ) );
 }
 
-CINDER_APP( VoiceBasicApp, RendererGl )
+CINDER_APP( VoiceBasicApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

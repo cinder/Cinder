@@ -97,15 +97,19 @@ class Context {
 	const std::vector<mat4>&	getProjectionMatrixStack() const { return mProjectionMatrixStack; }
 	
 	//! Binds a VAO. Consider using a ScopedVao instead.
-	void		bindVao( const VaoRef &vao );
+	void		bindVao( Vao *vao );
+	//! Binds a VAO. Consider using a ScopedVao instead.
+	void		bindVao( VaoRef &vao ) { bindVao( vao.get() ); }
 	//! Pushes and binds the VAO \a vao
-	void		pushVao( const VaoRef &vao );
+	void		pushVao( Vao *vao );
+	//! Pushes and binds the VAO \a vao
+	void		pushVao( const VaoRef &vao ) { pushVao( vao.get() ); }
 	//! Duplicates and pushes the current VAO binding 
 	void		pushVao();
 	//! Pops the current VAO binding
 	void		popVao();
 	//! Returns the currently bound VAO
-	VaoRef		getVao();
+	Vao*		getVao();
 	//! Restores the VAO binding when code that is not caching aware has invalidated it. Not typically necessary.
 	void		restoreInvalidatedVao();
 	//! Used by object tracking.
@@ -192,19 +196,21 @@ class Context {
 	void		renderbufferDeleted( const Renderbuffer *buffer );
 
 	//! Binds GLSL program \a prog. Analogous to glUseProgram()
-	void			bindGlslProg( const GlslProgRef &prog );
+	void				bindGlslProg( const GlslProg* prog );
+	void				bindGlslProg( GlslProgRef& prog ) { bindGlslProg( prog.get() ); }
 	//! Pushes and binds GLSL program \a prog.
-	void			pushGlslProg( const GlslProgRef &prog );
+	void				pushGlslProg( const GlslProg* prog );
+	void				pushGlslProg( GlslProgRef& prog ) { pushGlslProg( prog.get() ); }
 	//! Duplicates and pushes the top of the GlslProg stack.
-	void			pushGlslProg();
+	void				pushGlslProg();
 	//! Pops the GlslProg stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
-	void			popGlslProg( bool forceRestore = false );
+	void				popGlslProg( bool forceRestore = false );
 	//! Returns the currently bound GlslProg
-	GlslProgRef		getGlslProg();
+	const GlslProg*		getGlslProg();
 	//! Used by object tracking.
-	void			glslProgCreated( const GlslProg *glslProg );
+	void				glslProgCreated( const GlslProg *glslProg );
 	//! Used by object tracking.
-	void			glslProgDeleted( const GlslProg *glslProg );
+	void				glslProgDeleted( const GlslProg *glslProg );
 	
 #if ! defined( CINDER_GL_ES_2 )
 	//! Binds \a ref to the specific \a index within \a target. Analogous to glBindBufferBase()
@@ -383,21 +389,21 @@ class Context {
 #endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 
 	//! Returns the current active color, used in immediate-mode emulation and as UNIFORM_COLOR
-	const ColorAf&	getCurrentColor() const { return mColor; }
-	void			setCurrentColor( const ColorAf &color ) { mColor = color; }
-	GlslProgRef		getStockShader( const ShaderDef &shaderDef );
-	void			setDefaultShaderVars();
+	const ColorAf&		getCurrentColor() const { return mColor; }
+	void				setCurrentColor( const ColorAf &color ) { mColor = color; }
+	GlslProgRef&		getStockShader( const ShaderDef &shaderDef );
+	void				setDefaultShaderVars();
 
 	//! Returns default VBO for vertex array data, ensuring it is at least \a requiredSize bytes. Designed for use with convenience functions.
 	VboRef			getDefaultArrayVbo( size_t requiredSize = 0 );
 	//! Returns default VBO for element array data, ensuring it is at least \a requiredSize bytes. Designed for use with convenience functions.
 	VboRef			getDefaultElementVbo( size_t requiredSize = 0 );
 	//! Returns default VAO, designed for use with convenience functions.
-	VaoRef			getDefaultVao();
+	Vao*			getDefaultVao();
 	//! Returns a VBO for drawing textured rectangles; used by gl::draw(TextureRef)
 	VboRef			getDrawTextureVbo();
 	//! Returns a VBO for drawing textured rectangles; used by gl::draw(TextureRef)
-	VaoRef			getDrawTextureVao();
+	Vao*			getDrawTextureVao();
 
 	//! Returns a reference to the immediate mode emulation structure. Generally use gl::begin() and friends instead.
 	VertBatch&		immediate() { return *mImmediateMode; }
@@ -426,8 +432,8 @@ class Context {
 	
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
 	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
-	std::vector<GlslProgRef>			mGlslProgStack;
-	std::vector<VaoRef>					mVaoStack;
+	std::vector<const GlslProg*>		mGlslProgStack;
+	std::vector<Vao*>					mVaoStack;
 	
 #if ! defined( CINDER_GL_ES_2 )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;

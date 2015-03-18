@@ -133,7 +133,7 @@
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectName)-$(PlatformToolset)_d</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">$(ProjectName)-$(PlatformToolset)-ANGLE_d</TargetName>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectName)-$(PlatformToolset)_d</TargetName>
-    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">$(ProjectName)-$(PlatformToolset)_d</TargetName>
+    <TargetName Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|x64'">$(ProjectName)-$(PlatformToolset)-ANGLE_d</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>..\lib\msw\$(PlatformTarget)\</OutDir>
@@ -235,7 +235,7 @@
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\oggvorbis;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;..\src\r8brain;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>

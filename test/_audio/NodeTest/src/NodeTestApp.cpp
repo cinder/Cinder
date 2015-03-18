@@ -21,9 +21,9 @@ using namespace std;
 
 class NodeTestApp : public App {
 public:
-	void setup();
-	void resize();
-	void draw();
+	void setup() override;
+	void resize() override;
+	void draw() override;
 
 	void setupGen();
 	void setup2to1();
