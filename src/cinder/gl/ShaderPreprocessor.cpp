@@ -34,7 +34,7 @@ using namespace std;
 namespace cinder { namespace gl {
 
 namespace {
-	const regex sIncludeRegex = regex( "^[ ]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
+	const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
