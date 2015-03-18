@@ -33,8 +33,9 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
-namespace {
-	const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
+	namespace {
+		const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
+		const regex sVersionRegex = regex( "^[ ]*#[ ]*version[ ]+([123456789][0123456789][0123456789]).*" );
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
@@ -75,7 +76,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	// go through each line and find the #version directive
 	string line;
 	while( getline( input, line ) ) {
-		if( line.find( "#version" ) != string::npos ) {
+		if( regex_search( line, sVersionRegex ) ) {
 			version = line;
 		}
 		else
