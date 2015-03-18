@@ -1825,12 +1825,12 @@ void Context::allocateDrawTextureVboAndVao()
 
 VboRef Context::getDefaultArrayVbo( size_t requiredSize )
 {
-	mDefaultArrayVboIdx = ( mDefaultArrayVboIdx + 1 ) % 4;
+	mDefaultArrayVboIdx = 0;//( mDefaultArrayVboIdx + 1 ) % 4;
 
 	if( ! mDefaultArrayVbo[mDefaultArrayVboIdx] ) {
 		mDefaultArrayVbo[mDefaultArrayVboIdx] = Vbo::create( GL_ARRAY_BUFFER, std::max<size_t>( 1, requiredSize ), NULL, GL_STREAM_DRAW );
 	}
-	else if( requiredSize > mDefaultArrayVbo[mDefaultArrayVboIdx]->getSize() ) {
+	else {
 		mDefaultArrayVbo[mDefaultArrayVboIdx]->ensureMinimumSize( std::max<size_t>( 1, requiredSize ) );
 	}
 
@@ -1839,11 +1839,11 @@ VboRef Context::getDefaultArrayVbo( size_t requiredSize )
 
 VboRef Context::getDefaultElementVbo( size_t requiredSize )
 {
-	if( ! mDefaultElementVbo ) {
+	if( ! mDefaultElementVbo || ( requiredSize > mDefaultElementVbo->getSize() ) ) {
 		mDefaultElementVbo = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, requiredSize, NULL, GL_STREAM_DRAW );
 	}
-	if( requiredSize > mDefaultElementVbo->getSize() ) {
-		mDefaultElementVbo = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, requiredSize, NULL, GL_STREAM_DRAW );
+	else {
+		mDefaultElementVbo->ensureMinimumSize( std::max<size_t>( 1, requiredSize ) );
 	}
 	
 	return mDefaultElementVbo;
