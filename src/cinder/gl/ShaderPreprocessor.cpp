@@ -33,9 +33,9 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
-	namespace {
-		const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
-		const regex sVersionRegex = regex( "^[ ]*#[ ]*version[ ]+([123456789][0123456789][0123456789]).*" );
+namespace {
+	const regex sIncludeRegex = regex( "^[ \t]*#[ ]*include[ ]+[\"<](.*)[\">].*" );
+	const regex sVersionRegex = regex( "^[ ]*#[ ]*version[ ]+([123456789][0123456789][0123456789]).*" );
 } // anonymous namespace
 
 ShaderPreprocessor::ShaderPreprocessor()
