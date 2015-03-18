@@ -97,15 +97,19 @@ class Context {
 	const std::vector<mat4>&	getProjectionMatrixStack() const { return mProjectionMatrixStack; }
 	
 	//! Binds a VAO. Consider using a ScopedVao instead.
-	void		bindVao( const VaoRef &vao );
+	void		bindVao( Vao *vao );
+	//! Binds a VAO. Consider using a ScopedVao instead.
+	void		bindVao( VaoRef &vao ) { bindVao( vao.get() ); }
 	//! Pushes and binds the VAO \a vao
-	void		pushVao( const VaoRef &vao );
+	void		pushVao( Vao *vao );
+	//! Pushes and binds the VAO \a vao
+	void		pushVao( const VaoRef &vao ) { pushVao( vao.get() ); }
 	//! Duplicates and pushes the current VAO binding 
 	void		pushVao();
 	//! Pops the current VAO binding
 	void		popVao();
 	//! Returns the currently bound VAO
-	VaoRef		getVao();
+	Vao*		getVao();
 	//! Restores the VAO binding when code that is not caching aware has invalidated it. Not typically necessary.
 	void		restoreInvalidatedVao();
 	//! Used by object tracking.
@@ -395,11 +399,11 @@ class Context {
 	//! Returns default VBO for element array data, ensuring it is at least \a requiredSize bytes. Designed for use with convenience functions.
 	VboRef			getDefaultElementVbo( size_t requiredSize = 0 );
 	//! Returns default VAO, designed for use with convenience functions.
-	VaoRef			getDefaultVao();
+	Vao*			getDefaultVao();
 	//! Returns a VBO for drawing textured rectangles; used by gl::draw(TextureRef)
 	VboRef			getDrawTextureVbo();
 	//! Returns a VBO for drawing textured rectangles; used by gl::draw(TextureRef)
-	VaoRef			getDrawTextureVao();
+	Vao*			getDrawTextureVao();
 
 	//! Returns a reference to the immediate mode emulation structure. Generally use gl::begin() and friends instead.
 	VertBatch&		immediate() { return *mImmediateMode; }
@@ -429,7 +433,7 @@ class Context {
 	std::map<GLenum,std::vector<int>>	mBufferBindingStack;
 	std::map<GLenum,std::vector<int>>	mRenderbufferBindingStack;
 	std::vector<const GlslProg*>		mGlslProgStack;
-	std::vector<VaoRef>					mVaoStack;
+	std::vector<Vao*>					mVaoStack;
 	
 #if ! defined( CINDER_GL_ES_2 )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;

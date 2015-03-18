@@ -254,7 +254,7 @@ void VertBatch::clear()
 	mColors.clear();
 	mTexCoords.clear();
 	mVbo.reset();
-	mVao.reset();
+	mVao = nullptr;
 }
 
 void VertBatch::draw()
@@ -325,7 +325,8 @@ void VertBatch::setupBuffers()
 	if( ! mOwnsBuffers )
 		mVao->replacementBindBegin();
 	else {
-		mVao = gl::Vao::create();
+		mVaoStorage = gl::Vao::create();
+		mVao = mVaoStorage.get();
 		mVao->bind();
 	}
 

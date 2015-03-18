@@ -2013,7 +2013,13 @@ void checkError()
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedVao
-ScopedVao::ScopedVao( const VaoRef &vao )
+ScopedVao::ScopedVao( Vao *vao )
+	: mCtx( gl::context() )
+{
+	mCtx->pushVao( vao );
+}
+
+ScopedVao::ScopedVao( VaoRef &vao )
 	: mCtx( gl::context() )
 {
 	mCtx->pushVao( vao );

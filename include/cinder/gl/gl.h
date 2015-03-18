@@ -448,7 +448,8 @@ void checkError();
 
 
 struct ScopedVao : private Noncopyable {
-	ScopedVao( const VaoRef &vao );
+	ScopedVao( Vao *vao );
+	ScopedVao( VaoRef &vao );
 	~ScopedVao();
 
   private:
