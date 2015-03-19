@@ -23,31 +23,28 @@
 #pragma once
 
 #include "cinder/gl/gl.h"
+#include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Texture.h"
 
-#include "Shader.h"
-
 class SMAA {
-public:
-	SMAA() {}
-	~SMAA() {}
+  public:
+	SMAA();
 
-	void setup();
-	void draw( ci::gl::Texture2dRef source, const ci::Area& bounds );
-	void apply( ci::gl::FboRef destination, ci::gl::FboRef source );
+	void draw( const ci::gl::Texture2dRef &source, const ci::Area &bounds );
+	void apply( const ci::gl::FboRef &destination, const ci::gl::FboRef &source );
 
 	ci::gl::Texture2dRef  getEdgePass();
 	ci::gl::Texture2dRef  getBlendPass();
-public:
+
+  private:
 	ci::gl::Fbo::Format   mFboFormat;
 	ci::gl::FboRef        mFboEdgePass;
 	ci::gl::FboRef        mFboBlendPass;
 
-	// The Shader class allows us to write and use shaders with support for #include.
-	ShaderRef             mSMAAFirstPass;	// edge detection
-	ShaderRef             mSMAASecondPass;	// blending weight calculation
-	ShaderRef             mSMAAThirdPass;	// neighborhood blending
+	ci::gl::GlslProgRef		mGlslFirstPass;		// edge detection
+	ci::gl::GlslProgRef		mGlslSecondPass;	// blending weight calculation
+	ci::gl::GlslProgRef		mGlslThirdPass;		// neighborhood blending
 
 	// These textures contain look-up tables that speed up the SMAA process.
 	ci::gl::Texture2dRef  mAreaTex;
@@ -55,9 +52,9 @@ public:
 
 	// Size of our buffers, to be passed to the shaders.
 	ci::vec4              mMetrics;
-private:
+
 	void                  createBuffers( int width, int height );
 
-	void                  doEdgePass( ci::gl::Texture2dRef source );
+	void                  doEdgePass( const ci::gl::Texture2dRef &source );
 	void                  doBlendPass();
 };
