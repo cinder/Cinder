@@ -171,7 +171,7 @@ void VboMeshGeomTarget::copyBuffers()
 {
 	// iterate all the buffers in mBufferData and upload them to the corresponding VBO in the VboMesh
 	for( auto bufferDataIt = mBufferData.begin(); bufferDataIt != mBufferData.end(); ++bufferDataIt ) {
-		auto vertexArrayIt = mVboMesh->mVertexArrayVbos.begin() + std::distance( bufferDataIt, mBufferData.begin() );
+		auto vertexArrayIt = mVboMesh->mVertexArrayVbos.begin() + std::distance( mBufferData.begin(), bufferDataIt );
 		vertexArrayIt->second->copyData( bufferDataIt->mDataSize, bufferDataIt->mData.get() );
 	}
 }
