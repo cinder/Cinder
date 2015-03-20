@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -227,7 +227,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png" />
-    <Image Include="..\assets\texture.jpg" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Light.h" />

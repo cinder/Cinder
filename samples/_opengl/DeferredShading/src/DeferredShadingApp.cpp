@@ -79,7 +79,9 @@ private:
 	void						drawRect( const ci::ivec2& sz );
 	void						drawRect( const ci::vec2& pos, const ci::ivec2& sz );
 
+	bool						mBloom;
 	float						mDepthScale;
+	bool						mFxaa;
 
 	ci::CameraPersp				mShadowCamera;
 	
@@ -265,7 +267,7 @@ void DeferredShadingApp::draw()
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// BLOOM
 
-	{
+	if ( mBloom ) {
 		// Set up window and clear buffers
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboBloom );
 		{	
@@ -589,16 +591,18 @@ void DeferredShadingApp::draw()
 		gl::setMatricesWindow( getWindowSize() );
 
 		// Perform FXAA
-		{
+		if ( mFxaa ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboColor, 0 );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
 			mGlslProgFxaa->uniform( "uSampler",	0 );
 			drawRect( getWindowSize() );
+		} else {
+			gl::draw( mTextureFboColor );
 		}
 
 		// Draw bloom on top
-		{
+		if ( mBloom ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomVertical, 0 );
@@ -924,15 +928,17 @@ void DeferredShadingApp::setup()
 	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 	
 	// Set default values for all properties
+	mBloom			= true;
 	mDepthScale		= 0.01f;
 	mDebugMode		= false;
+	mFxaa			= true;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
 	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mSpherePosition		= vec3( 0.0f, -4.0f, 0.0f );
-	mSphereVelocity		= -0.1f;
+	mSpherePosition	= vec3( 0.0f, -4.0f, 0.0f );
+	mSphereVelocity	= -0.1f;
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
@@ -956,12 +962,15 @@ void DeferredShadingApp::setup()
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 120 ) );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 160 ) );
 	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
 	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
 	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
 	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
+	mParams->addSeparator();
+	mParams->addParam( "Bloom",			&mBloom ).key( "b" );
+	mParams->addParam( "FXAA",			&mFxaa ).key( "a" );
 
 	// Call resize to create FBOs
 	resize();
