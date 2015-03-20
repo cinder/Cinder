@@ -210,7 +210,10 @@ class VboMesh {
 	  public:
 		T&			operator*() { return *(reinterpret_cast<T*>( mPtr )); }
 		const T&	operator*() const { return *(reinterpret_cast<const T*>( mPtr )); }
-		
+
+		T*			operator->()		{ return reinterpret_cast<T*>( mPtr ); }
+		const T*	operator->() const	{ return reinterpret_cast<const T*>( mPtr ); }
+
 		T&			operator[]( size_t i ) { return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
 		const T&	operator[]( size_t i ) const { return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
 		
