@@ -31,36 +31,36 @@ using namespace std;
 
 namespace cinder { namespace audio {
 
-void rampLinear( float *array, size_t count, float t, float tIncr, const std::pair<float, float> &valueRange )
+void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor = t;
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		float factor( t );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
 
-void rampInQuad( float *array, size_t count, float t, float tIncr, const std::pair<float, float> &valueRange )
+void rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor = t * t;
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		float factor( t * t );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
 
-void rampOutQuad( float *array, size_t count, float t, float tIncr, const std::pair<float, float> &valueRange )
+void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
-		float factor = -t * ( t - 2 );
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		float factor( -t * ( t - 2 ) );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
 
-Event::Event( float timeBegin, float timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn )
+Event::Event( double timeBegin, double timeEnd, float valueBegin, float valueEnd, bool copyValueOnBegin, const RampFn &rampFn )
 	: mTimeBegin( timeBegin ), mTimeEnd( timeEnd ), mDuration( timeEnd - timeBegin ), mCopyValueOnBegin( copyValueOnBegin ),
-		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false )
+		mValueBegin( valueBegin ), mValueEnd( valueEnd ), mRampFn( rampFn ), mIsComplete( false ), mIsCanceled( false ), mTimeCancel( -1 )
 {
 }
 
@@ -76,16 +76,19 @@ void Param::setValue( float value )
 	mValue = value;
 }
 
-EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::applyRamp( float valueEnd, double rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
 	auto ctx = getContext();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : (float)ctx->getNumProcessedSeconds() + options.getDelay() );
-	float timeEnd = timeBegin + rampSeconds;
+	double timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : ctx->getNumProcessedSeconds() + options.getDelay() );
+	double timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, mValue, valueEnd, true, options.getRampFn() ) );
 
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
+
 	lock_guard<mutex> lock( ctx->getMutex() );
 
 	removeEventsAt( timeBegin );
@@ -96,15 +99,18 @@ EventRef Param::applyRamp( float valueEnd, float rampSeconds, const Options &opt
 	return event;
 }
 
-EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::applyRamp( float valueBegin, float valueEnd, double rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
 	auto ctx = getContext();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : (float)ctx->getNumProcessedSeconds() + options.getDelay() );
-	float timeEnd = timeBegin + rampSeconds;
+	double timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : ctx->getNumProcessedSeconds() + options.getDelay() );
+	double timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
+
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 
@@ -116,32 +122,38 @@ EventRef Param::applyRamp( float valueBegin, float valueEnd, float rampSeconds, 
 	return event;
 }
 
-EventRef Param::appendRamp( float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::appendRamp( float valueEnd, double rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
 	auto ctx = getContext();
 	auto endTimeAndValue = findEndTimeAndValue();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
-	float timeEnd = timeBegin + rampSeconds;
+	double timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
+	double timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, endTimeAndValue.second, valueEnd, true, options.getRampFn() ) );
 
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
+
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
 	return event;
 }
 
-EventRef Param::appendRamp( float valueBegin, float valueEnd, float rampSeconds, const Options &options )
+EventRef Param::appendRamp( float valueBegin, float valueEnd, double rampSeconds, const Options &options )
 {
 	initInternalBuffer();
 
 	auto ctx = getContext();
 	auto endTimeAndValue = findEndTimeAndValue();
-	float timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
-	float timeEnd = timeBegin + rampSeconds;
+	double timeBegin = ( options.getBeginTime() >= 0 ? options.getBeginTime() : endTimeAndValue.first + options.getDelay() );
+	double timeEnd = timeBegin + rampSeconds;
 
 	EventRef event( new Event( timeBegin, timeEnd, valueBegin, valueEnd, false, options.getRampFn() ) );
+
+	if( ! options.getLabel().empty() )
+		event->mLabel = options.getLabel();
 
 	lock_guard<mutex> lock( ctx->getMutex() );
 	mEvents.push_back( event );
@@ -193,13 +205,13 @@ float Param::findDuration() const
 	}
 }
 
-pair<float, float> Param::findEndTimeAndValue() const
+pair<double, float> Param::findEndTimeAndValue() const
 {
 	auto ctx = getContext();
 	lock_guard<mutex> lock( ctx->getMutex() );
 
 	if( mEvents.empty() )
-		return make_pair( (float)ctx->getNumProcessedSeconds(), mValue.load() );
+		return make_pair( ctx->getNumProcessedSeconds(), mValue.load() );
 	else {
 		const EventRef &event = mEvents.back();
 		return make_pair( event->mTimeEnd, event->mValueEnd );
@@ -225,56 +237,74 @@ bool Param::eval()
 	}
 	else {
 		auto ctx = getContext();
-		mIsVaryingThisBlock = eval( (float)ctx->getNumProcessedSeconds(), mInternalBuffer.getData(), mInternalBuffer.getSize(), ctx->getSampleRate() );
+		mIsVaryingThisBlock = eval( ctx->getNumProcessedSeconds(), mInternalBuffer.getData(), mInternalBuffer.getSize(), ctx->getSampleRate() );
 		return mIsVaryingThisBlock;
 	}
 }
 
-bool Param::eval( float timeBegin, float *array, size_t arrayLength, size_t sampleRate )
+bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sampleRate )
 {
+	const double samplePeriod = 1.0 / (double)sampleRate;
+	const double secondsPerBlock = (double)arrayLength * samplePeriod;
 	size_t samplesWritten = 0;
-	const float samplePeriod = 1.0f / (float)sampleRate;
 
 	for( auto eventIt = mEvents.begin(); eventIt != mEvents.end(); /* */ ) {
-		EventRef &event = *eventIt;
+		Event &event = **eventIt;
 
 		// first remove dead events
-		const bool cancelled = event->mIsCanceled;
-		if( event->mTimeEnd <= timeBegin || cancelled ) {
+		const bool cancelled = event.mIsCanceled;
+		if( event.mTimeEnd <= timeBegin || cancelled ) {
 			// if we skipped over the last event, record its end value before erasing.
 			if( mEvents.size() == 1 && ! cancelled )
-				mValue = event->mValueEnd;
+				mValue = event.mValueEnd;
 			
 			eventIt = mEvents.erase( eventIt );
 			continue;
 		}
 
-		const float timeEnd = timeBegin + arrayLength * samplePeriod;
+		const double timeEnd = timeBegin + secondsPerBlock;
 
-		if( event->mTimeBegin < timeEnd && event->mTimeEnd > timeBegin ) {
-			size_t startIndex = timeBegin >= event->mTimeBegin ? 0 : size_t( ( event->mTimeBegin - timeBegin ) * sampleRate );
-			size_t endIndex = timeEnd < event->mTimeEnd ? arrayLength : size_t( ( event->mTimeEnd - timeBegin ) * sampleRate );
+		if( event.mTimeBegin < timeEnd && event.mTimeEnd > timeBegin ) {
+			size_t startIndex = timeBegin >= event.mTimeBegin ? 0 : size_t( ( event.mTimeBegin - timeBegin ) * sampleRate );
+			size_t endIndex = timeEnd < event.mTimeEnd ? arrayLength : size_t( ( event.mTimeEnd - timeBegin ) * sampleRate );
 
 			CI_ASSERT( startIndex <= arrayLength && endIndex <= arrayLength );
+			CI_ASSERT( event.mTimeEnd >= event.mTimeBegin );
 
 			if( startIndex > 0 && samplesWritten == 0 )
 				dsp::fill( mValue, array, startIndex );
 
 			size_t count = size_t( endIndex - startIndex );
-			float timeBeginNormalized = float( timeBegin - event->mTimeBegin + startIndex * samplePeriod ) / event->mDuration;
-			float timeEndNormalized = float( timeBegin - event->mTimeBegin + endIndex * samplePeriod ) / event->mDuration;
-			float timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (float)count;
+			double timeBeginNormalized = ( timeBegin - event.mTimeBegin + startIndex * samplePeriod ) / event.mDuration;
+			double timeEndNormalized = ( timeBegin - event.mTimeBegin + endIndex * samplePeriod ) / event.mDuration;
+			double timeIncr = ( timeEndNormalized - timeBeginNormalized ) / (double)count;
 
-			if( event->getCopyValueOnBegin() )
-				event->setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
+			// If the event has a cancel time, adjust the count if needed, but all other ramp values remain the same
+			if( event.mTimeCancel > 0 ) {
+				if( event.mTimeCancel < timeBegin ) {
+					// event should already be over
+					event.cancel();
+					eventIt = mEvents.erase( eventIt );
+					continue;
+				}
 
-			event->mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event->mValueBegin, event->mValueEnd ) );
+				size_t endIndexModified = timeEnd < event.mTimeCancel ? arrayLength : size_t( ( event.mTimeCancel - timeBegin ) * sampleRate );
+				if( endIndexModified != endIndex ) {
+					count = endIndexModified - startIndex;
+					event.cancel(); // cancel but still process. This Event will be removed from the container next block.
+				}
+			}
+
+			if( event.getCopyValueOnBegin() )
+				event.setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
+
+			event.mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, event.mValueBegin, event.mValueEnd );
 			samplesWritten += count;
 
 			// if this ramp ended with the current processing block, update mValue then remove event
 			if( endIndex < arrayLength ) {
-				event->mIsComplete = true;
-				mValue = event->mValueEnd;
+				event.mIsComplete = true;
+				mValue = event.mValueEnd;
 				eventIt = mEvents.erase( eventIt );
 			}
 			else if( samplesWritten == arrayLength ) {
@@ -313,16 +343,21 @@ void Param::resetImpl()
 	mProcessor.reset();
 }
 
-void Param::removeEventsAt( float time )
+void Param::removeEventsAt( double time )
 {
-	mEvents.remove_if( [time]( const EventRef &event ) {
-		if( event->getTimeEnd() >= time ) {
+	for( auto &event : mEvents ) {
+		if( event->getTimeBegin() >= time ) {
 			event->cancel();
-			return true;
 		}
-		else
-			return false;
-	} );
+		else if( event->getTimeEnd() >= time ) {
+			// Handle cancel later to allow the ramp to continue until the cancel point. Only reset cancel time if it is newer than a previous setting.
+			if( event->mTimeCancel > 0 ) {
+				event->mTimeCancel = min( event->mTimeCancel, time );
+			}
+			else
+				event->mTimeCancel = time;
+		}
+	}
 }
 
 void Param::initInternalBuffer()
@@ -333,7 +368,7 @@ void Param::initInternalBuffer()
 
 ContextRef Param::getContext() const
 {
-	return	mParentNode->getContext();
+	return mParentNode->getContext();
 }
 
 } } // namespace cinder::audio

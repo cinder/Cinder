@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Voice.h"
@@ -9,13 +9,12 @@
 using namespace ci;
 using namespace ci::app;
 
-class VoiceBasicApp : public AppNative {
+class VoiceBasicApp : public App {
 public:
-	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
-	void setup();
-	void mouseDown( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+	void draw() override;
 
 	audio::VoiceRef mVoice;
 };
@@ -57,4 +56,6 @@ void VoiceBasicApp::draw()
 	gl::clear( Color( 0, 0, 0.2f ) );
 }
 
-CINDER_APP_NATIVE( VoiceBasicApp, RendererGl )
+CINDER_APP( VoiceBasicApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

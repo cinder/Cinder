@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
@@ -15,7 +15,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ResizeTestApp : public AppBasic {
+class ResizeTestApp : public App {
  public:	
 	
 	void prepareSettings( Settings *settings );
@@ -55,4 +55,4 @@ void ResizeTestApp::draw()
 }
 
 
-CINDER_APP_BASIC( ResizeTestApp, RendererGl )
+CINDER_APP( ResizeTestApp, RendererGl )

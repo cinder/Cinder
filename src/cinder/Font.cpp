@@ -33,10 +33,10 @@
 		#import <Cocoa/Cocoa.h>
 	#endif
 #elif defined( CINDER_MSW )
+	#include <windows.h>
 	#define max(a, b) (((a) > (b)) ? (a) : (b))
 	#define min(a, b) (((a) < (b)) ? (a) : (b))
 	#include <gdiplus.h>
-	#include <windows.h>
 	#undef min
 	#undef max
 	#include "cinder/msw/CinderMsw.h"
@@ -44,7 +44,7 @@
 	#pragma comment(lib, "gdiplus")
 #elif defined( CINDER_WINRT )
 	#include <dwrite.h>
-	#include "cinder/dx/FontEnumerator.h"
+	#include "cinder/winrt/FontEnumerator.h"
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
@@ -100,6 +100,7 @@ class FontManager
 #endif
 
 	friend class Font;
+	friend class FontObj;
 };
 
 FontManager *FontManager::sInstance = 0;
@@ -190,14 +191,45 @@ const vector<string>& FontManager::getNames( bool forceRefresh )
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// FontObj
+class FontObj {
+	public:
+	FontObj( const std::string &aName, float aSize );
+	FontObj( DataSourceRef dataSource, float size );
+	~FontObj();
+		
+	void		finishSetup();
+		
+		
+	std::string				mName;
+	float					mSize;
+#if defined( CINDER_COCOA )
+	CGFontRef				mCGFont;
+	const struct __CTFont*	mCTFont;
+#elif defined( CINDER_MSW )
+	::TEXTMETRIC					mTextMetric;
+	::LOGFONTW						mLogFont;
+	::HFONT							mHfont;
+	std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	void *mFileData;
+#elif defined( CINDER_WINRT )
+	std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
+	void *mFileData;
+	FT_Face mFace;
+#endif 		
+	size_t					mNumGlyphs;
+};
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Font
 Font::Font( const string &name, float size )
-	: mObj( new Font::Obj( name, size ) )
+	: mObj( new FontObj( name, size ) )
 {
 }
 
 Font::Font( DataSourceRef dataSource, float size )
-	: mObj( new Font::Obj( dataSource, size ) )
+	: mObj( new FontObj( dataSource, size ) )
 {
 }
 
@@ -314,6 +346,21 @@ CTFontRef Font::getCtFontRef() const
 }
 
 #elif defined( CINDER_MSW )
+
+const ::LOGFONT& Font::getLogfont() const
+{
+	return mObj->mLogFont;
+}
+
+::HFONT Font::getHfont() const
+{
+	return mObj->mHfont;
+}
+
+const Gdiplus::Font* Font::getGdiplusFont() const
+{
+	return mObj->mGdiplusFont.get();
+}
 
 std::string Font::getFullName() const
 {
@@ -600,7 +647,7 @@ Rectf Font::getGlyphBoundingBox( Glyph glyphIndex ) const
 
 #endif
 
-Font::Obj::Obj( const string &aName, float aSize )
+FontObj::FontObj( const string &aName, float aSize )
 	: mName( aName ), mSize( aSize )
 #if defined( CINDER_MSW )
 	, mHfont( 0 )
@@ -719,7 +766,7 @@ static void releaseFontDataProviderBuffer( void *buffer, const void *data, size_
 }
 #endif
 
-Font::Obj::Obj( DataSourceRef dataSource, float size )
+FontObj::FontObj( DataSourceRef dataSource, float size )
 	: mSize( size )
 #if defined( CINDER_MSW )
 	, mHfont( 0 )
@@ -793,7 +840,7 @@ Font::Obj::Obj( DataSourceRef dataSource, float size )
 #endif
 }
 
-Font::Obj::~Obj()
+FontObj::~FontObj()
 {
 #if defined( CINDER_COCOA )
 	::CGFontRelease( mCGFont );
@@ -807,7 +854,7 @@ Font::Obj::~Obj()
 #endif
 }
 
-void Font::Obj::finishSetup()
+void FontObj::finishSetup()
 {
 #if defined( CINDER_MSW )
 	mGdiplusFont->GetLogFontW( FontManager::instance()->getGraphics(), &mLogFont );
@@ -833,6 +880,13 @@ void Font::Obj::finishSetup()
 	delete [] buffer;
 #endif
 }
+
+#if defined( CINDER_WINRT )
+FT_Face Font::getFreetypeFace() const
+{
+	return mObj->mFace;
+}
+#endif
 
 #if defined( CINDER_MSW )
 HDC Font::getGlobalDc()

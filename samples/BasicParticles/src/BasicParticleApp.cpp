@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
@@ -22,7 +22,7 @@ class Particle {
 	float mZ;
 };
 
-class BasicParticleApp : public AppBasic {
+class BasicParticleApp : public App {
  public:	
 	void	setup();
 	void	mouseDown( MouseEvent event );
@@ -128,4 +128,4 @@ void BasicParticleApp::draw()
 }
 
 
-CINDER_APP_BASIC( BasicParticleApp, RendererGl )
+CINDER_APP( BasicParticleApp, RendererGl )

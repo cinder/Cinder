@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
+  <Identity Name="e8e9cb4d-b040-4596-b749-4fea5a07b65f" Publisher="CN=cinderuser" Version="1.0.0.0" />
+  <Properties>
+    <DisplayName>ObjLoader</DisplayName>
+    <PublisherDisplayName>cinderuser</PublisherDisplayName>
+    <Logo>VisualAssets\StoreLogo.png</Logo>
+  </Properties>
+  <Prerequisites>
+    <OSMinVersion>6.2.1</OSMinVersion>
+    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+  </Prerequisites>
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="ObjLoader">
+      <VisualElements DisplayName="ObjLoader" Logo="VisualAssets\Logo.png" SmallLogo="VisualAssets\SmallLogo.png" Description="Created with Cinder." ForegroundText="light" BackgroundColor="#0c0000">
+        <DefaultTile ShowName="allLogos" />
+        <SplashScreen Image="VisualAssets\SplashScreen.png" BackgroundColor="#0c0000" />
+      </VisualElements>
+    </Application>
+  </Applications>
+  <Capabilities>
+    <Capability Name="internetClient" />
+  </Capabilities>
+</Package>

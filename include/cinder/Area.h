@@ -101,7 +101,8 @@ class Area {
 
 	int32_t			x1, y1, x2, y2;
 
-	bool			operator==( const Area &aArea ) const { return ( ( x1 == aArea.x1 ) && ( y1 == aArea.y1 ) && ( x2 == aArea.x2 ) && ( y2 == aArea.y2 ) ); }
+	bool			operator==( const Area &rhs ) const { return ( ( x1 == rhs.x1 ) && ( y1 == rhs.y1 ) && ( x2 == rhs.x2 ) && ( y2 == rhs.y2 ) ); }
+	bool			operator!=( const Area &rhs ) const { return ! ( *this == rhs ); }
 	bool			operator<( const Area &aArea ) const;
 
 	const Area		operator+( const ivec2 &o ) const { return this->getOffset( o ); }

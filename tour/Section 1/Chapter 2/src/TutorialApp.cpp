@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageIO.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Channel.h"
@@ -10,7 +10,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class TutorialApp : public AppBasic {
+class TutorialApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -77,4 +77,4 @@ void TutorialApp::keyDown( KeyEvent event )
 }
 
 
-CINDER_APP_BASIC( TutorialApp, RendererGl )
+CINDER_APP( TutorialApp, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Camera.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/TileRender.h"
@@ -6,7 +6,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class GLTileRenderTestApp : public AppBasic {
+class GLTileRenderTestApp : public App {
  public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -103,4 +103,4 @@ void GLTileRenderTestApp::draw()
 	drawFrame();
 }
 
-CINDER_APP_BASIC( GLTileRenderTestApp, RendererGL )
+CINDER_APP( GLTileRenderTestApp, RendererGL )

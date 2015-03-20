@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -17,17 +17,16 @@ using namespace ci::app;
 using namespace std;
 
 
-class WaveTableTestApp : public AppNative {
+class WaveTableTestApp : public App {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
+	void keyDown( KeyEvent event ) override;
 
 	void setupUI();
 	void processDrag( ivec2 pos );
 	void processTap( ivec2 pos );
-	void keyDown( KeyEvent event );
 
 	void setupTable();
 	void setupOsc( audio::WaveformType type );
@@ -50,11 +49,6 @@ public:
 	SpectrumPlot			mSpectrumPlot;
 
 };
-
-void WaveTableTestApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1000, 800 );
-}
 
 void WaveTableTestApp::setup()
 {
@@ -336,4 +330,6 @@ void WaveTableTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP_NATIVE( WaveTableTestApp, RendererGl )
+CINDER_APP( WaveTableTestApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1000, 800 );
+} )

@@ -28,7 +28,7 @@
 #include "cinder/Display.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Vector.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 #include "cinder/Rect.h"
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/TouchEvent.h"
@@ -46,15 +46,15 @@ typedef std::shared_ptr<Window>		WindowRef;
 } } // namespace cinder::app
 
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
-	#import <Foundation/Foundation.h>
+	@class NSString;
 	#if defined( CINDER_COCOA_TOUCH )
 		@class UIViewController;
 	#endif
 
 	@protocol WindowImplCocoa
 		@required
-		- (BOOL)isFullScreen;
-		- (void)setFullScreen:(BOOL)fullScreen options:(const cinder::app::FullScreenOptions *)options;
+		- (bool)isFullScreen;
+		- (void)setFullScreen:(bool)fullScreen options:(const cinder::app::FullScreenOptions *)options;
 		- (cinder::ivec2)getSize;
 		- (void)setSize:(cinder::ivec2)size;
 		- (cinder::ivec2)getPos;
@@ -63,13 +63,13 @@ typedef std::shared_ptr<Window>		WindowRef;
 		- (void)close;
 		- (NSString *)getTitle;
 		- (void)setTitle:(NSString *)title;
-		- (BOOL)isBorderless;
-		- (void)setBorderless:(BOOL)borderless;
-		- (BOOL)isAlwaysOnTop;
-		- (void)setAlwaysOnTop:(BOOL)alwaysOnTop;
+		- (bool)isBorderless;
+		- (void)setBorderless:(bool)borderless;
+		- (bool)isAlwaysOnTop;
+		- (void)setAlwaysOnTop:(bool)alwaysOnTop;
 		- (void)hide;
 		- (void)show;
-		- (BOOL)isHidden;
+		- (bool)isHidden;
 		- (cinder::DisplayRef)getDisplay;
 		- (cinder::app::RendererRef)getRenderer;
 		- (const std::vector<cinder::app::TouchEvent::Touch>&)getActiveTouches;
@@ -85,7 +85,7 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#endif
 #elif defined( CINDER_WINRT )
 	namespace cinder { namespace app {
-		class WindowImplWinRT;
+		class WindowImplWinRt;
 	} } // namespace cinder::app
 #elif defined( CINDER_MSW )
 	namespace cinder { namespace app {
@@ -95,11 +95,11 @@ typedef std::shared_ptr<Window>		WindowRef;
 
 namespace cinder { namespace app {
 
-typedef	 signals::signal<void(MouseEvent&),EventCombiner<MouseEvent> >		EventSignalMouse;
-typedef	 signals::signal<void(TouchEvent&),EventCombiner<TouchEvent> >		EventSignalTouch;
-typedef	 signals::signal<void(KeyEvent&),EventCombiner<KeyEvent> >			EventSignalKey;
-typedef	 signals::signal<void(FileDropEvent&),EventCombiner<FileDropEvent> > EventSignalFileDrop;
-typedef	 signals::signal<void()>											EventSignalWindow;
+typedef	 signals::Signal<void( MouseEvent & ),		CollectorEvent<MouseEvent> >		EventSignalMouse;
+typedef	 signals::Signal<void( TouchEvent & ),		CollectorEvent<TouchEvent> >		EventSignalTouch;
+typedef	 signals::Signal<void( KeyEvent & ),		CollectorEvent<KeyEvent> >			EventSignalKey;
+typedef	 signals::Signal<void( FileDropEvent & ),	CollectorEvent<FileDropEvent> >		EventSignalFileDrop;
+typedef	 signals::Signal<void()>														EventSignalWindow;
 
 //! Thrown when an operation is performed on a WindowRef which refers to an invalid Window
 class ExcInvalidWindow : public cinder::Exception {
@@ -138,7 +138,7 @@ class Window : public std::enable_shared_from_this<Window> {
   public:
 	// Parameters for a Window, which are used to create the physical window by the App
 	struct Format {
-		Format( RendererRef renderer = RendererRef(), DisplayRef display = Display::getMainDisplay(), bool fullScreen = false, ivec2 size = ivec2( 640, 480 ), ivec2 pos = ivec2() )
+		Format( RendererRef renderer = RendererRef(), DisplayRef display = DisplayRef(), bool fullScreen = false, ivec2 size = ivec2( 640, 480 ), ivec2 pos = ivec2() )
 			: mRenderer( renderer ), mFullScreen( fullScreen ), mDisplay( display ), mSize( size ), mPos( pos ), mPosSpecified( false ),
 			mResizable( true ), mBorderless( false ), mAlwaysOnTop( false ), mFullScreenButtonEnabled( false ),
 			mTitleSpecified( false ), mTitle( "" )
@@ -187,12 +187,12 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns whether a non-default position has been requested for the Window.
 		bool		isPosSpecified() const { return mPosSpecified; }
 		//! Unspecifies a non-default position for the window, effectively requestion the default position.
-		void		unspecifyPos() { mPosSpecified = false; }
+		void		setPosUnspecified() { mPosSpecified = false; }
 
 		//! Returns the Renderer which will be instantiated for the Window. Defaults to an instance of the App's default renderer (specified in the app-instantiation macro).
 		RendererRef	getRenderer() const { return mRenderer; }
 		//! Sets the Renderer which will be instantiated for the Window.
-		void		setRenderer( RendererRef renderer ) { mRenderer = renderer; }
+		void		setRenderer( const RendererRef &renderer ) { mRenderer = renderer; }
 		//! Sets the Renderer which will be instantiated for the Window.
 		Format&		renderer( RendererRef r ) { mRenderer = r; return *this; }
 
@@ -239,7 +239,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		//! Returns whether a non-default title has been requested for the Window.
 		bool		isTitleSpecified() const { return mTitleSpecified; }
 		//! Unspecifies a non-default title for the window, effectively requestion the default title.
-		void		unspecifyTitle() { mTitleSpecified = false; }
+		void		setTitleUnspecified()		{ mTitleSpecified = false; }
 
 
 	  private:
@@ -344,7 +344,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
 #elif defined( CINDER_WINRT )
-	DX_WINDOW_TYPE getNativeCoreWindow();
+	::Platform::Agile<Windows::UI::Core::CoreWindow> getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.
@@ -353,95 +353,61 @@ class Window : public std::enable_shared_from_this<Window> {
 
 	EventSignalMouse&	getSignalMouseDown() { return mSignalMouseDown; }
 	void				emitMouseDown( MouseEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectMouseDown( T fn, Y *inst ) { return getSignalMouseDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseDrag() { return mSignalMouseDrag; }
 	void				emitMouseDrag( MouseEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectMouseDrag( T fn, Y *inst ) { return getSignalMouseDrag().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseUp() { return mSignalMouseUp; }
 	void				emitMouseUp( MouseEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectMouseUp( T fn, Y *inst ) { return getSignalMouseUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseMove() { return mSignalMouseMove; }
 	void				emitMouseMove( MouseEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectMouseMove( T fn, Y *inst ) { return getSignalMouseMove().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseWheel() { return mSignalMouseWheel; }
 	void				emitMouseWheel( MouseEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectMouseWheel( T fn, Y *inst ) { return getSignalMouseWheel().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesBegan() { return mSignalTouchesBegan; }
 	void				emitTouchesBegan( TouchEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectTouchesBegan( T fn, Y *inst ) { return getSignalTouchesBegan().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesMoved() { return mSignalTouchesMoved; }
 	void				emitTouchesMoved( TouchEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectTouchesMoved( T fn, Y *inst ) { return getSignalTouchesMoved().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesEnded() { return mSignalTouchesEnded; }
 	void				emitTouchesEnded( TouchEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectTouchesEnded( T fn, Y *inst ) { return getSignalTouchesEnded().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	//! Returns a std::vector of all active touches
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 
 	EventSignalKey&		getSignalKeyDown() { return mSignalKeyDown; }
 	void				emitKeyDown( KeyEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectKeyDown( T fn, Y *inst ) { return getSignalKeyDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalKey&		getSignalKeyUp() { return mSignalKeyUp; }
 	void				emitKeyUp( KeyEvent *event );
-	template<typename T, typename Y>
-	signals::connection	connectKeyUp( T fn, Y *inst ) { return getSignalKeyUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
-	
+
 	EventSignalWindow&	getSignalDraw() { return mSignalDraw; }
 	//! Fires the 'draw' signal. Note in general this should not be called directly as it doesn't perform all necessary setup.
 	void				emitDraw();
-	template<typename T, typename Y>
-	signals::connection	connectDraw( T fn, Y *inst ) { return getSignalDraw().connect( std::bind( fn, inst ) ); }
 
 	//! Returns the signal which is emitted after the draw signal and app's draw() virtual method
 	EventSignalWindow&	getSignalPostDraw() { return mSignalPostDraw; }
-	template<typename T, typename Y>
-	signals::connection	connectPostDraw( T fn, Y *inst ) { return getSignalPostDraw().connect( std::bind( fn, inst ) ); }
 
 	EventSignalWindow&	getSignalMove() { return mSignalMove; }
 	void				emitMove();
-	template<typename T, typename Y>
-	signals::connection	connectMove( T fn, Y *inst ) { return getSignalMove().connect( std::bind( fn, inst ) ); }
 
 	EventSignalWindow&	getSignalResize() { return mSignalResize; }
 	void 				emitResize();
-	template<typename T, typename Y>
-	signals::connection	connectResize( T fn, Y *inst ) { return getSignalResize().connect( std::bind( fn, inst ) ); }
 
 	EventSignalWindow&	getSignalDisplayChange() { return mSignalDisplayChange; }
 	void				emitDisplayChange();
-	template<typename T, typename Y>
-	signals::connection	connectDisplayChange( T fn, Y *inst ) { return getSignalDisplayChange().connect( std::bind( fn, inst ) ); }
 
 	//! Returns the Signal emitted whenever a Window is closing. The WindowRef parameter is still valid at this point but its renderer is not.
 	EventSignalWindow&	getSignalClose() { return mSignalClose; }
 	//! Fires the 'close' signal.
 	void				emitClose();
-	template<typename T, typename Y>
-	signals::connection	connectClose( T fn, Y *inst ) { return getSignalClose().connect( std::bind( fn, inst ) ); }
 
 	EventSignalFileDrop&	getSignalFileDrop() { return mSignalFileDrop; }
 	void					emitFileDrop( FileDropEvent *event );
-	template<typename T, typename Y>
-	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
-	
+
 	//! Returns the window-specific data associated with this Window.
 	template<typename T>
 	T*			getUserData() { return static_cast<T*>( mUserData.get() ); }
@@ -456,13 +422,13 @@ class Window : public std::enable_shared_from_this<Window> {
 	//! \cond
 	// This should not be called except by App implementations
 #if defined( CINDER_COCOA ) && defined( __OBJC__ )
-	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, App *app )
+	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, AppBase *app )
 #elif defined( CINDER_MSW )
-	static WindowRef		privateCreate__( WindowImplMsw *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplMsw *impl, AppBase *app )
 #elif defined( CINDER_WINRT )
-	static WindowRef		privateCreate__( WindowImplWinRT *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplWinRt *impl, AppBase *app )
 #else
-	static WindowRef		privateCreate__( WindowImplCocoa *impl, App *app )
+	static WindowRef		privateCreate__( WindowImplCocoa *impl, AppBase *app )
 #endif
 	{
 		WindowRef result( new Window );
@@ -473,7 +439,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	}
 	//! \endcond
 
-	App*			getApp() const { return mApp; }
+	AppBase*			getApp() const { return mApp; }
 	
   protected:
 	Window() : mValid( true ), mImpl( 0 ) {}
@@ -483,7 +449,7 @@ class Window : public std::enable_shared_from_this<Window> {
 			throw ExcInvalidWindow();
 	}
 
-	void		setApp( App *app ) { mApp = app; }	
+	void		setApp( AppBase *app ) { mApp = app; }	
 
 #if defined( CINDER_COCOA )
   #if defined( __OBJC__ )
@@ -494,10 +460,10 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
 #elif defined( CINDER_WINRT )
-	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
+	void		setImpl( WindowImplWinRt *impl ) { mImpl = impl; }
 #endif
 
-	App							*mApp;
+	AppBase							*mApp;
 	bool						mValid;
 	std::shared_ptr<void>		mUserData;
 	
@@ -516,7 +482,7 @@ class Window : public std::enable_shared_from_this<Window> {
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
 #elif defined( CINDER_WINRT )
-	WindowImplWinRT *mImpl;
+	WindowImplWinRt *mImpl;
 #endif
 };
 

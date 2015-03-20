@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Serial.h"
 #include "cinder/Text.h"
 #include "cinder/gl/Texture.h"
@@ -14,7 +14,7 @@ using namespace std;
 
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class SerialCommunicationApp : public AppBasic {
+class SerialCommunicationApp : public App {
  public:
 	// Cinder calls this function 30 times per second by default
 	void draw();
@@ -151,4 +151,4 @@ void SerialCommunicationApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( SerialCommunicationApp, RendererGl )
+CINDER_APP( SerialCommunicationApp, RendererGl )

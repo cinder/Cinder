@@ -33,7 +33,7 @@
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 #include "cinder/Cinder.h"
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
 
 #include <sstream>
 

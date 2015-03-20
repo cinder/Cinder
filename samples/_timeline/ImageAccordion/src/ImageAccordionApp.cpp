@@ -11,7 +11,7 @@
  * Used with permission for the Cinder Project ( http://libcinder.org )
  */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIO.h"
@@ -28,7 +28,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ImageAccordionApp : public AppBasic {
+class ImageAccordionApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -200,4 +200,4 @@ void ImageAccordionApp::draw()
 }
 
 
-CINDER_APP_BASIC( ImageAccordionApp, RendererGl )
+CINDER_APP( ImageAccordionApp, RendererGl )

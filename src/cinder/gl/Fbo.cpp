@@ -301,64 +301,81 @@ Fbo::~Fbo()
 		glDeleteFramebuffers( 1, &mMultisampleFramebufferId );
 }
 
-void Fbo::initMultisamplingSettings( bool *useMsaa, bool *useCsaa )
+void Fbo::initMultisamplingSettings( bool *useMsaa, bool *useCsaa, Format *format )
 {
 #if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ES ) )
 	static bool csaaSupported = ( glext_NV_framebuffer_multisample_coverage != 0 );
 #else
 	static bool csaaSupported = false;
 #endif
-	*useCsaa = csaaSupported && ( mFormat.mCoverageSamples > mFormat.mSamples );
-	*useMsaa = ( mFormat.mCoverageSamples > 0 ) || ( mFormat.mSamples > 0 );
+	*useCsaa = csaaSupported && ( format->mCoverageSamples > format->mSamples );
+	*useMsaa = ( format->mCoverageSamples > 0 ) || ( format->mSamples > 0 );
 	if( *useCsaa )
 		*useMsaa = false;
 
-	if( mFormat.mSamples > getMaxSamples() )
-		mFormat.mSamples = getMaxSamples();
+	if( format->mSamples > getMaxSamples() )
+		format->mSamples = getMaxSamples();
 }
 
 // Iterate the Format's requested attachments and create any we don't already have attachments for
-// After calling this function, mFormat's mAttachmentsTexture and mAttachmentsBuffer should be 1:1 with what will be instantiated
-void Fbo::initFormatAttachments()
+void Fbo::prepareAttachments( const Fbo::Format &format, bool multisampling )
 {
+	mAttachmentsBuffer = format.mAttachmentsBuffer;
+	mAttachmentsTexture = format.mAttachmentsTexture;
+
 	// Create the default color attachment if there's not already something on GL_COLOR_ATTACHMENT0
-	bool preexistingColorAttachment = mFormat.mAttachmentsTexture.count( GL_COLOR_ATTACHMENT0 ) || mFormat.mAttachmentsBuffer.count( GL_COLOR_ATTACHMENT0 );
-	if( mFormat.mColorTexture && ( ! preexistingColorAttachment ) ) {
-		mFormat.mAttachmentsTexture[GL_COLOR_ATTACHMENT0] = Texture::create( mWidth, mHeight, mFormat.mColorTextureFormat );
+	bool preexistingColorAttachment = mAttachmentsTexture.count( GL_COLOR_ATTACHMENT0 ) || mAttachmentsBuffer.count( GL_COLOR_ATTACHMENT0 );
+	if( format.mColorTexture && ( ! preexistingColorAttachment ) ) {
+		mAttachmentsTexture[GL_COLOR_ATTACHMENT0] = Texture::create( mWidth, mHeight, format.mColorTextureFormat );
 	}
 	
 	// Create the default depth(+stencil) attachment if there's not already something on GL_DEPTH_ATTACHMENT || GL_DEPTH_STENCIL_ATTACHMENT
 #if defined( CINDER_GL_ES_2 )
-	bool preexistingDepthAttachment = mFormat.mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT );
+	bool preexistingDepthAttachment = mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT );
 #else
-	bool preexistingDepthAttachment = mFormat.mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT )
-										|| mFormat.mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mFormat.mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
+	bool preexistingDepthAttachment = mAttachmentsTexture.count( GL_DEPTH_ATTACHMENT ) || mAttachmentsBuffer.count( GL_DEPTH_ATTACHMENT )
+										|| mAttachmentsTexture.count( GL_DEPTH_STENCIL_ATTACHMENT ) || mAttachmentsBuffer.count( GL_DEPTH_STENCIL_ATTACHMENT );
 #endif
-	if( mFormat.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
-		mFormat.mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, mFormat.mDepthTextureFormat );
+	if( format.mDepthTexture && ( ! preexistingDepthAttachment ) ) {
+		mAttachmentsTexture[GL_DEPTH_ATTACHMENT] = Texture::create( mWidth, mHeight, format.mDepthTextureFormat );
 	}
-	else if( mFormat.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
-		if( mFormat.mStencilBuffer ) {
+	else if( format.mDepthBuffer && ( ! preexistingDepthAttachment ) ) {
+		if( format.mStencilBuffer ) {
 			GLint internalFormat;
 			GLenum pixelDataType;
-			Format::getDepthStencilFormats( mFormat.mDepthBufferInternalFormat, &internalFormat, &pixelDataType );
+			Format::getDepthStencilFormats( format.mDepthBufferInternalFormat, &internalFormat, &pixelDataType );
 			RenderbufferRef depthStencilBuffer = Renderbuffer::create( mWidth, mHeight, internalFormat );
 #if defined( CINDER_GL_ES_2 )
-			mFormat.mAttachmentsBuffer[GL_DEPTH_ATTACHMENT] = depthStencilBuffer;
-			mFormat.mAttachmentsBuffer[GL_STENCIL_ATTACHMENT] = depthStencilBuffer;
+			mAttachmentsBuffer[GL_DEPTH_ATTACHMENT] = depthStencilBuffer;
+			mAttachmentsBuffer[GL_STENCIL_ATTACHMENT] = depthStencilBuffer;
 #else
-			mFormat.mAttachmentsBuffer[GL_DEPTH_STENCIL_ATTACHMENT] = Renderbuffer::create( mWidth, mHeight, internalFormat );
+			mAttachmentsBuffer[GL_DEPTH_STENCIL_ATTACHMENT] = Renderbuffer::create( mWidth, mHeight, internalFormat );
 #endif
 		}
 		else {
-			mFormat.mAttachmentsBuffer[GL_DEPTH_ATTACHMENT] = Renderbuffer::create( mWidth, mHeight, mFormat.mDepthBufferInternalFormat );
+			mAttachmentsBuffer[GL_DEPTH_ATTACHMENT] = Renderbuffer::create( mWidth, mHeight, format.mDepthBufferInternalFormat );
 		}
 	}
-	else if( mFormat.mStencilBuffer ) { // stencil only
+	else if( format.mStencilBuffer ) { // stencil only
 		GLint internalFormat = GL_STENCIL_INDEX8;
 		RenderbufferRef stencilBuffer = Renderbuffer::create( mWidth, mHeight, internalFormat );
-		mFormat.mAttachmentsBuffer[GL_STENCIL_ATTACHMENT] = stencilBuffer;
+		mAttachmentsBuffer[GL_STENCIL_ATTACHMENT] = stencilBuffer;
 	}
+}
+
+void Fbo::attachAttachments()
+{
+	// attach Renderbuffers
+	for( auto &bufferAttachment : mAttachmentsBuffer )
+		glFramebufferRenderbuffer( GL_FRAMEBUFFER, bufferAttachment.first, GL_RENDERBUFFER, bufferAttachment.second->getId() );
+	
+	// attach Textures
+	for( auto &textureAttachment : mAttachmentsTexture ) {
+		auto textureTarget = textureAttachment.second->getTarget();
+		if( textureTarget == GL_TEXTURE_CUBE_MAP )
+			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
+		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
+	}	
 }
 
 // call glDrawBuffers against all color attachments
@@ -391,37 +408,21 @@ void Fbo::init()
 	glGenFramebuffers( 1, &mId );
 	ScopedFramebuffer fbScp( GL_FRAMEBUFFER, mId );
 
-	// After calling this function, mFormat's mAttachmentsTexture and mAttachmentsBuffer should be 1:1 with what will be instantiated
-	initFormatAttachments();
-
 	// determine multisampling settings
 	bool useMsaa, useCsaa;
-	initMultisamplingSettings( &useMsaa, &useCsaa );
+	initMultisamplingSettings( &useMsaa, &useCsaa, &mFormat );
+
+	prepareAttachments( mFormat, useMsaa || useCsaa );
+	attachAttachments();
 
 	if( useCsaa || useMsaa )
-		initMultisample( useCsaa );
-	
-	// attach Renderbuffers
-	for( auto &bufferAttachment : mFormat.mAttachmentsBuffer ) {
-		glFramebufferRenderbuffer( GL_FRAMEBUFFER, bufferAttachment.first, GL_RENDERBUFFER, bufferAttachment.second->getId() );
-		mAttachmentsBuffer[bufferAttachment.first] = bufferAttachment.second;
-	}
-	
-	// attach Textures
-	for( auto &textureAttachment : mFormat.mAttachmentsTexture ) {
-		auto textureTarget = textureAttachment.second->getTarget();
-		if( textureTarget == GL_TEXTURE_CUBE_MAP )
-			textureTarget = GL_TEXTURE_CUBE_MAP_POSITIVE_X;
-		glFramebufferTexture2D( GL_FRAMEBUFFER, textureAttachment.first, textureTarget, textureAttachment.second->getId(), 0 );
-		mAttachmentsTexture[textureAttachment.first] = textureAttachment.second;
-	}
+		initMultisample( mFormat );
 	
 	setAllDrawBuffers();
 			
 	FboExceptionInvalidSpecification exc;
-	if( ! checkStatus( &exc ) ) { // failed creation; throw
+	if( ! checkStatus( &exc ) ) // failed creation; throw
 		throw exc;
-	}
 	
 	mNeedsResolve = false;
 	mNeedsMipmapUpdate = false;
@@ -431,35 +432,36 @@ void Fbo::init()
 		env()->objectLabel( GL_FRAMEBUFFER, mId, (GLsizei)mLabel.size(), mLabel.c_str() );
 }
 
-void Fbo::initMultisample( bool csaa )
+void Fbo::initMultisample( const Format &format )
 {
 	glGenFramebuffers( 1, &mMultisampleFramebufferId );
 	ScopedFramebuffer fbScp( GL_FRAMEBUFFER, mMultisampleFramebufferId );
 
+	mAttachmentsMultisampleBuffer = format.mAttachmentsMultisampleBuffer;
+
 	// create mirror Multisample Renderbuffers for any Buffer attachments in the primary FBO
-	for( auto &bufferAttachment : mFormat.mAttachmentsBuffer ) {
-		auto existing = mFormat.mAttachmentsMultisampleBuffer.find( bufferAttachment.first );
+	for( const auto &bufferAttachment : mAttachmentsBuffer ) {
+		auto existing = mAttachmentsMultisampleBuffer.find( bufferAttachment.first );
 		// if there's no existing multisample buffer attachment or it's null
-		if( existing == mFormat.mAttachmentsMultisampleBuffer.end() || ( ! existing->second ) )
-			mFormat.mAttachmentsMultisampleBuffer[bufferAttachment.first] = Renderbuffer::create( mWidth, mHeight, bufferAttachment.second->getInternalFormat(), mFormat.mSamples, mFormat.mCoverageSamples );
+		if( existing == mAttachmentsMultisampleBuffer.end() || ( ! existing->second ) )
+			mAttachmentsMultisampleBuffer[bufferAttachment.first] = Renderbuffer::create( mWidth, mHeight, bufferAttachment.second->getInternalFormat(), format.mSamples, format.mCoverageSamples );
 	}
 
 	// create mirror Multisample Renderbuffers for any Texture attachments in the primary FBO
-	for( auto &bufferAttachment : mFormat.mAttachmentsTexture ) {
-		auto existing = mFormat.mAttachmentsMultisampleBuffer.find( bufferAttachment.first );
+	for( auto &bufferAttachment : mAttachmentsTexture ) {
+		auto existing = mAttachmentsMultisampleBuffer.find( bufferAttachment.first );
 		// if there's no existing multisample buffer attachment or it's null
-		if( existing == mFormat.mAttachmentsMultisampleBuffer.end() || ( ! existing->second ) )
-			mFormat.mAttachmentsMultisampleBuffer[bufferAttachment.first] = Renderbuffer::create( mWidth, mHeight, bufferAttachment.second->getInternalFormat(), mFormat.mSamples, mFormat.mCoverageSamples );
+		if( existing == mAttachmentsMultisampleBuffer.end() || ( ! existing->second ) )
+			mAttachmentsMultisampleBuffer[bufferAttachment.first] = Renderbuffer::create( mWidth, mHeight, bufferAttachment.second->getInternalFormat(), format.mSamples, format.mCoverageSamples );
 	}
 
-	// attach Multisample Renderbuffers as requested by the Format
-	for( auto &bufferAttachment : mFormat.mAttachmentsMultisampleBuffer ) {
+	// attach MultisampleRenderbuffers
+	for( auto &bufferAttachment : mAttachmentsMultisampleBuffer )
 		glFramebufferRenderbuffer( GL_FRAMEBUFFER, bufferAttachment.first, GL_RENDERBUFFER, bufferAttachment.second->getId() );
-		mAttachmentsMultisampleBuffer[bufferAttachment.first] = bufferAttachment.second;
-	}
 
 	FboExceptionInvalidSpecification ignoredException;
 	if( ! checkStatus( &ignoredException ) ) { // failure
+		CI_LOG_W( "Failed to initialize FBO multisampling" );
 		mAttachmentsMultisampleBuffer.clear();
 		glDeleteFramebuffers( 1, &mMultisampleFramebufferId );
 		mMultisampleFramebufferId = 0;
@@ -538,7 +540,7 @@ void Fbo::resolveTextures() const
 		ScopedFramebuffer drawFbScp( GL_DRAW_FRAMEBUFFER, mId );
 		ScopedFramebuffer readFbScp( GL_READ_FRAMEBUFFER, mMultisampleFramebufferId );
 		
-		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+		glBlitFramebufferANGLE( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
 	}
 #elif defined( SUPPORTS_MULTISAMPLE ) && defined( CINDER_GL_ES_2 )
 	// iOS-specific multisample resolution code
@@ -562,7 +564,12 @@ void Fbo::resolveTextures() const
             if( colorAttachmentIt != mAttachmentsTexture.end() ) {
                 glDrawBuffers( 1, &colorAttachmentIt->first );
                 glReadBuffer( colorAttachmentIt->first );
+#if ! defined( CINDER_GL_ANGLE )
+				// ANGLE appears to error when requested to resolve a depth buffer
 				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT, GL_NEAREST );
+#else
+				glBlitFramebuffer( 0, 0, mWidth, mHeight, 0, 0, mWidth, mHeight, GL_COLOR_BUFFER_BIT, GL_NEAREST );
+#endif
 				drawBuffers.push_back( colorAttachmentIt->first );
 			}
 		}

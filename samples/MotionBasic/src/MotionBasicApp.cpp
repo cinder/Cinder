@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/Timeline.h"
@@ -8,7 +8,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class MotionBasicApp : public AppNative {
+class MotionBasicApp : public App {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -56,4 +56,4 @@ void MotionBasicApp::draw()
 //	gl::drawColorCube( vec3::zero(), vec3( 1, 1, 1 ) );
 }
 
-CINDER_APP_NATIVE( MotionBasicApp, RendererGl )
+CINDER_APP( MotionBasicApp, RendererGl )

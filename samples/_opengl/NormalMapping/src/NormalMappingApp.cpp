@@ -24,7 +24,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -53,7 +53,15 @@ struct LightSource
 	ColorA specular;
 };
 
-class NormalMappingApp : public AppNative {
+static void prepareSettings( App::Settings *settings )
+{
+	settings->disableFrameRate();
+
+	settings->setWindowSize( 1024, 768 );
+	settings->setTitle( "OpenGL Core Profile - Normal Mapping Demo" );
+}
+
+class NormalMappingApp : public App {
 
 #if ! defined( CINDER_GL_ES )
 	typedef enum { Default, Glossy, Normals, Lighting, Mesh } ViewMode;
@@ -62,10 +70,7 @@ class NormalMappingApp : public AppNative {
 #endif
 
 public:
-	void	prepareSettings( Settings *settings );
-
 	void	setup();
-	void	shutdown();
 
 	void	update();
 	void	draw();
@@ -125,14 +130,6 @@ private:
 	params::InterfaceGlRef	mParams;
 #endif
 };
-
-void NormalMappingApp::prepareSettings( Settings *settings )
-{
-	settings->disableFrameRate();
-
-	settings->setWindowSize( 1024, 768 );
-	settings->setTitle( "OpenGL Core Profile - Normal Mapping Demo" );
-}
 
 void NormalMappingApp::setup()
 {
@@ -206,7 +203,7 @@ void NormalMappingApp::setup()
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-		fs::path mshFile = getAssetPath("") / "leprechaun.msh";
+		fs::path mshFile = getAssetPath( "leprechaun.msh" );
 		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );
@@ -243,10 +240,6 @@ void NormalMappingApp::setup()
 
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
-}
-
-void NormalMappingApp::shutdown()
-{
 }
 
 void NormalMappingApp::update()
@@ -439,4 +432,4 @@ gl::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-CINDER_APP_NATIVE( NormalMappingApp, RendererGl )
+CINDER_APP( NormalMappingApp, RendererGl, prepareSettings )

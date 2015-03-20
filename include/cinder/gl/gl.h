@@ -24,7 +24,7 @@
 
 #include "cinder/Cinder.h"
 
-#if defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_ANGLE ) || defined( CINDER_WINRT )
 	#define GL_GLEXT_PROTOTYPES
 	#define CINDER_GL_ES
 	// the default for ANGLE is GL ES 3, but can be overridden with CINDER_GL_ES_2
@@ -132,7 +132,7 @@ bool isExtensionAvailable( const std::string &extName );
 std::pair<GLint,GLint>	getVersion();
 std::string getVersionString();
 
-GlslProgRef	getStockShader( const class ShaderDef &shader );
+GlslProgRef& getStockShader( const class ShaderDef &shader );
 void bindStockShader( const class ShaderDef &shader );
 void setDefaultShaderVars();
 
@@ -448,7 +448,8 @@ void checkError();
 
 
 struct ScopedVao : private Noncopyable {
-	ScopedVao( const VaoRef &vao );
+	ScopedVao( Vao *vao );
+	ScopedVao( VaoRef &vao );
 	~ScopedVao();
 
   private:
@@ -511,8 +512,9 @@ struct ScopedAdditiveBlend : public ScopedBlend
 };
 
 struct ScopedGlslProg : private Noncopyable {
-	ScopedGlslProg( const GlslProgRef &prog );
+	ScopedGlslProg( GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
+	ScopedGlslProg( const GlslProg *prog );
 	~ScopedGlslProg();
 
   private:
@@ -586,6 +588,11 @@ struct ScopedViewport : private Noncopyable {
 struct ScopedModelMatrix : private Noncopyable {
 	ScopedModelMatrix()	{ gl::pushModelMatrix(); }
 	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
+};
+
+struct ScopedViewMatrix : private Noncopyable {
+	ScopedViewMatrix()	{ gl::pushViewMatrix(); }
+	~ScopedViewMatrix()	{ gl::popViewMatrix(); }
 };
 
 struct ScopedProjectionMatrix : private Noncopyable {

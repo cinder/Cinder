@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ip/flip.h"
@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class imageProcessingApp : public AppNative {
+class imageProcessingApp : public App {
   public:
 	void setup();
 	template<typename T>
@@ -110,4 +110,4 @@ void imageProcessingApp::draw()
 	gl::draw( mCurTex );
 }
 
-CINDER_APP_NATIVE( imageProcessingApp, RendererGl )
+CINDER_APP( imageProcessingApp, RendererGl )

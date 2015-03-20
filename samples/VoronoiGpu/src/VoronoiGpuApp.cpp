@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ip/Hdr.h"
 #include "cinder/gl/Texture.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class VoronoiGpuApp : public AppBasic {
+class VoronoiGpuApp : public App {
  public:
 	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay( true ); }
 	void setup();
@@ -93,4 +93,4 @@ void VoronoiGpuApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( VoronoiGpuApp, RendererGl )
+CINDER_APP( VoronoiGpuApp, RendererGl )

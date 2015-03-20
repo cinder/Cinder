@@ -8,7 +8,7 @@
 //
 // Note: this sample is compiled with ARC enabled
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/app/CinderViewCocoaTouch.h"
 #include "cinder/gl/gl.h"
@@ -23,7 +23,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NativeControlsApp : public AppNative {
+class NativeControlsApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -102,4 +102,4 @@ void NativeControlsApp::draw()
 	gl::drawCube( vec3( 0 ), vec3( 2 ) );
 }
 
-CINDER_APP_NATIVE( NativeControlsApp, RendererGl )
+CINDER_APP( NativeControlsApp, RendererGl )

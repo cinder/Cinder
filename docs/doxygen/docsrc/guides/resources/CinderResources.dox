@@ -26,7 +26,7 @@ mPhoto1 = loadImage( loadAsset( "pictures/photo1.jpg" ) );
 \n
 
 \subsection shippingAssets How Assets Work
-It's worth understanding a bit about how assets work under the hood. The first time you attempt to load an asset or get its path, your Cinder application automatically attempts to find its \e assets directory. It begins by searching in the same folder in which your .app bundle or .exe lives. Next it searches its parent, on up 5 levels. The reason for such a deep search is due to the somewhat remote location where XCode and Visual C++ can output executables, depending on their configuration. When you are ready to ship your application, make sure you include both your application (.app on the Mac or .exe on Windows) and its assets folder. Note that if you are not using any assets, Cinder does not require the existence of an assets folder.
+It's worth understanding a bit about how assets work under the hood. The first time you attempt to load an asset or get its path, your Cinder application automatically attempts to find its \e assets directory. It begins by searching in the same folder in which your .app bundle or .exe lives. Next it searches its parent, on up 10 levels. The reason for such a deep search is due to the somewhat remote location where XCode and Visual C++ can output executables, depending on their configuration. When you are ready to ship your application, make sure you include both your application (.app on the Mac or .exe on Windows) and its assets folder. Note that if you are not using any assets, Cinder does not require the existence of an assets folder.
 \n\n
 
 \subsection assetsIOs Assets on iOS

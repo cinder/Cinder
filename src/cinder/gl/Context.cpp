@@ -34,7 +34,11 @@
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 
-#include "cinder/app/App.h"
+#include "cinder/app/AppBase.h"
+
+#if defined( CINDER_MSW )
+	#include <Windows.h>
+#endif
 
 using namespace std;
 
@@ -80,7 +84,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// setup default VAO
 #if defined( SUPPORTS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
-	mVaoStack.push_back( mDefaultVao );
+	mVaoStack.push_back( mDefaultVao.get() );
 	mDefaultVao->setContext( this );
 	mDefaultVao->bindImpl( NULL );
 
@@ -131,7 +135,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
     mModelMatrixStack.push_back( mat4() );
     mViewMatrixStack.push_back( mat4() );
 	mProjectionMatrixStack.push_back( mat4() );
-	mGlslProgStack.push_back( GlslProgRef() );
+	mGlslProgStack.push_back( nullptr );
 
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
@@ -226,9 +230,9 @@ void Context::reflectCurrent( Context *context )
 
 //////////////////////////////////////////////////////////////////
 // VAO
-void Context::bindVao( const VaoRef &vao )
+void Context::bindVao( Vao *vao )
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 	if( setStackState( mVaoStack, vao ) ) {
 		if( prevVao )
 			prevVao->unbindImpl( this );
@@ -237,9 +241,9 @@ void Context::bindVao( const VaoRef &vao )
 	}
 }
 
-void Context::pushVao( const VaoRef &vao )
+void Context::pushVao( Vao *vao )
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 	if( pushStackState( mVaoStack, vao ) ) {
 		if( prevVao )
 			prevVao->unbindImpl( this );
@@ -255,7 +259,7 @@ void Context::pushVao()
 
 void Context::popVao()
 {
-	VaoRef prevVao = getVao();
+	Vao *prevVao = getVao();
 
 	if( ! mVaoStack.empty() ) {
 		mVaoStack.pop_back();
@@ -274,12 +278,12 @@ void Context::popVao()
 	}
 }
 
-VaoRef Context::getVao()
+Vao* Context::getVao()
 {
 	if( ! mVaoStack.empty() )
 		return mVaoStack.back();
 	else
-		return VaoRef();
+		return nullptr;
 }
 
 void Context::restoreInvalidatedVao()
@@ -301,7 +305,7 @@ void Context::vaoDeleted( const Vao *vao )
 		mLiveVaos.erase( vao );
 		
 	// if this was the currently bound VAO, mark the top of the stack as null
-	if( ! mVaoStack.empty() && mVaoStack.back()->getId() == vao->getId() )
+	if( ! mVaoStack.empty() && mVaoStack.back() && ( mVaoStack.back()->getId() == vao->getId() ) )
 		mVaoStack.back() = nullptr;
 }
 
@@ -479,7 +483,7 @@ void Context::bindBuffer( GLenum target, GLuint id )
 	if( prevValue != id ) {
 		mBufferBindingStack[target].back() = id;
 		if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-			VaoRef vao = getVao();
+			Vao* vao = getVao();
 			if( vao )
 				vao->reflectBindBufferImpl( target, id );
 			else
@@ -509,7 +513,7 @@ void Context::popBufferBinding( GLenum target )
 	cachedIt->second.pop_back();
 	if( ! cachedIt->second.empty() && cachedIt->second.back() != prevValue ) {
 		if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-			VaoRef vao = getVao();
+			Vao* vao = getVao();
 			if( vao )
 				vao->reflectBindBufferImpl( target, cachedIt->second.back() );
 			else
@@ -577,7 +581,7 @@ void Context::bufferDeleted( const BufferObj *buffer )
 			mBufferBindingStack[target].back() = 0;
 			// alert the currently bound VAO
 			if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
-				VaoRef vao = getVao();
+				Vao* vao = getVao();
 				if( vao )
 					vao->reflectBindBufferImpl( target, 0 );
 	}
@@ -765,9 +769,9 @@ void Context::endTransformFeedback()
 
 //////////////////////////////////////////////////////////////////
 // Shader
-void Context::pushGlslProg( const GlslProgRef &prog )
+void Context::pushGlslProg( const GlslProg* prog )
 {
-	GlslProgRef prevGlsl = getGlslProg();
+	const GlslProg* prevGlsl = getGlslProg();
 
 	mGlslProgStack.push_back( prog );
 	if( prog != prevGlsl ) {
@@ -785,7 +789,7 @@ void Context::pushGlslProg()
 
 void Context::popGlslProg( bool forceRestore )
 {
-	GlslProgRef prevGlsl = getGlslProg();
+	const GlslProg* prevGlsl = getGlslProg();
 
 	if( ! mGlslProgStack.empty() ) {
 		mGlslProgStack.pop_back();
@@ -804,7 +808,7 @@ void Context::popGlslProg( bool forceRestore )
 		CI_LOG_E( "GlslProg stack underflow" );
 }
 
-void Context::bindGlslProg( const GlslProgRef &prog )
+void Context::bindGlslProg( const GlslProg *prog )
 {
 	if( mGlslProgStack.empty() || (mGlslProgStack.back() != prog) ) {
 		if( ! mGlslProgStack.empty() )
@@ -816,10 +820,10 @@ void Context::bindGlslProg( const GlslProgRef &prog )
 	}
 }
 
-GlslProgRef Context::getGlslProg()
+const GlslProg* Context::getGlslProg()
 {
 	if( mGlslProgStack.empty() )
-		mGlslProgStack.push_back( GlslProgRef() );
+		mGlslProgStack.push_back( nullptr );
 	
 	return mGlslProgStack.back();
 }
@@ -1502,7 +1506,7 @@ void Context::sanityCheck()
 	glGetIntegerv( GL_VERTEX_ARRAY_BINDING, &trueVaoBinding );
 #endif
 
-	VaoRef boundVao = getVao();
+	Vao* boundVao = getVao();
 	if( boundVao ) {
 		CI_ASSERT( trueVaoBinding == boundVao->mId );
 		CI_ASSERT( getBufferBinding( GL_ARRAY_BUFFER ) == boundVao->getLayout().mCachedArrayBufferBinding );
@@ -1600,21 +1604,21 @@ void Context::printState( std::ostream &os ) const
 // Vertex Attributes
 void Context::enableVertexAttribArray( GLuint index )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->enableVertexAttribArrayImpl( index );
 }
 
 void Context::disableVertexAttribArray( GLuint index )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->disableVertexAttribArrayImpl( index );
 }
 
 void Context::vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribPointerImpl( index, size, type, normalized, stride, pointer );
 }
@@ -1622,7 +1626,7 @@ void Context::vertexAttribPointer( GLuint index, GLint size, GLenum type, GLbool
 #if ! defined( CINDER_GL_ES )
 void Context::vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribIPointerImpl( index, size, type, stride, pointer );
 }
@@ -1630,7 +1634,7 @@ void Context::vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsiz
 
 void Context::vertexAttribDivisor( GLuint index, GLuint divisor )
 {
-	VaoRef vao = getVao();
+	Vao* vao = getVao();
 	if( vao )
 		vao->vertexAttribDivisorImpl( index, divisor );
 }
@@ -1693,13 +1697,13 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
-GlslProgRef	Context::getStockShader( const ShaderDef &shaderDef )
+GlslProgRef& Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
 		auto result = gl::env()->buildShader( shaderDef );
 		mStockShaders[shaderDef] = result;
-		return result;
+		return mStockShaders[shaderDef];
 	}
 	else
 		return existing->second;
@@ -1764,13 +1768,13 @@ void Context::setDefaultShaderVars()
 	}
 }
 
-VaoRef Context::getDefaultVao()
+Vao* Context::getDefaultVao()
 {
 	if( ! mDefaultVao ) {
 		mDefaultVao = Vao::create();
 	}
 
-	return mDefaultVao;
+	return mDefaultVao.get();
 }
 
 VboRef Context::getDrawTextureVbo()
@@ -1782,13 +1786,13 @@ VboRef Context::getDrawTextureVbo()
 	return mDrawTextureVbo;
 }
 
-VaoRef Context::getDrawTextureVao()
+Vao* Context::getDrawTextureVao()
 {
 	if( ! mDrawTextureVao ) {
 		allocateDrawTextureVboAndVao();
 	}
 
-	return mDrawTextureVao;
+	return mDrawTextureVao.get();
 }
 
 void Context::allocateDrawTextureVboAndVao()
@@ -1821,12 +1825,12 @@ void Context::allocateDrawTextureVboAndVao()
 
 VboRef Context::getDefaultArrayVbo( size_t requiredSize )
 {
-	mDefaultArrayVboIdx = ( mDefaultArrayVboIdx + 1 ) % 4;
+	mDefaultArrayVboIdx = 0;//( mDefaultArrayVboIdx + 1 ) % 4;
 
 	if( ! mDefaultArrayVbo[mDefaultArrayVboIdx] ) {
 		mDefaultArrayVbo[mDefaultArrayVboIdx] = Vbo::create( GL_ARRAY_BUFFER, std::max<size_t>( 1, requiredSize ), NULL, GL_STREAM_DRAW );
 	}
-	else if( requiredSize > mDefaultArrayVbo[mDefaultArrayVboIdx]->getSize() ) {
+	else {
 		mDefaultArrayVbo[mDefaultArrayVboIdx]->ensureMinimumSize( std::max<size_t>( 1, requiredSize ) );
 	}
 
@@ -1835,11 +1839,11 @@ VboRef Context::getDefaultArrayVbo( size_t requiredSize )
 
 VboRef Context::getDefaultElementVbo( size_t requiredSize )
 {
-	if( ! mDefaultElementVbo ) {
+	if( ! mDefaultElementVbo || ( requiredSize > mDefaultElementVbo->getSize() ) ) {
 		mDefaultElementVbo = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, requiredSize, NULL, GL_STREAM_DRAW );
 	}
-	if( requiredSize > mDefaultElementVbo->getSize() ) {
-		mDefaultElementVbo = Vbo::create( GL_ELEMENT_ARRAY_BUFFER, requiredSize, NULL, GL_STREAM_DRAW );
+	else {
+		mDefaultElementVbo->ensureMinimumSize( std::max<size_t>( 1, requiredSize ) );
 	}
 	
 	return mDefaultElementVbo;

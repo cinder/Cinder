@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Arcball.h"
 #include "cinder/Rand.h"
@@ -6,7 +6,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ArcballDemoApp : public AppBasic {
+class ArcballDemoApp : public App {
  public:	
 	void setup();
 	void resize();
@@ -145,4 +145,4 @@ void ArcballDemoApp::draw()
 }
 
 
-CINDER_APP_BASIC( ArcballDemoApp, RendererGl )
+CINDER_APP( ArcballDemoApp, RendererGl )

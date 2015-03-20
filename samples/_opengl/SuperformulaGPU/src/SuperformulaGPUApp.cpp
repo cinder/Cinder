@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
@@ -7,11 +7,12 @@
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
 #include "cinder/gl/Ubo.h"
+#include "cinder/GeomIo.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class SuperformulaGpuApp : public AppNative {
+class SuperformulaGpuApp : public App {
   public:
 	void	setup() override;
 	void	resize() override;
@@ -49,7 +50,7 @@ void SuperformulaGpuApp::setupGeometry()
 {
 	auto plane = geom::Plane().subdivisions( ivec2( mSubdivisions, mSubdivisions ) );
 	mBatch = gl::Batch::create( plane, mGlsl );
-	mNormalsBatch = gl::Batch::create( geom::VertexNormalLines( plane, 0.0f ), mNormalsGlsl );
+	mNormalsBatch = gl::Batch::create( plane >> geom::VertexNormalLines( 0.0f ), mNormalsGlsl );
 }
 
 void SuperformulaGpuApp::setup()
@@ -73,14 +74,14 @@ void SuperformulaGpuApp::setup()
 	mParams->addParam( "A (1)", &mFormulaParams.mA1 ).min( 0 ).max( 5 ).step( 0.05f );
 	mParams->addParam( "B (1)", &mFormulaParams.mB1 ).min( 0 ).max( 5 ).step( 0.05f );
 	mParams->addParam( "M (1)", &mFormulaParams.mM1 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (1)", &mFormulaParams.mN11 ).min( 0 ).max( 100 ).step( 1.0 );
+	mParams->addParam( "N1 (1)", &mFormulaParams.mN11 ).min( 0 ).max( 100 ).step( 1.0f );
 	mParams->addParam( "N2 (1)", &mFormulaParams.mN21 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addParam( "N3 (1)", &mFormulaParams.mN31 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addSeparator();
 	mParams->addParam( "A (2)", &mFormulaParams.mA2 ).min( 0 ).max( 5 ).step( 0.05f );
 	mParams->addParam( "B (2)", &mFormulaParams.mB2 ).min( 0 ).max( 5 ).step( 0.05f );
 	mParams->addParam( "M (2)", &mFormulaParams.mM2 ).min( 0 ).max( 20 ).step( 0.25f );
-	mParams->addParam( "N1 (2)", &mFormulaParams.mN12 ).min( 0 ).max( 100 ).step( 1.0 );
+	mParams->addParam( "N1 (2)", &mFormulaParams.mN12 ).min( 0 ).max( 100 ).step( 1.0f );
 	mParams->addParam( "N2 (2)", &mFormulaParams.mN22 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addParam( "N3 (2)", &mFormulaParams.mN32 ).min( -50 ).max( 100 ).step( 0.5f );
 	mParams->addSeparator();
@@ -156,4 +157,4 @@ void SuperformulaGpuApp::draw()
 #endif
 }
 
-CINDER_APP_NATIVE( SuperformulaGpuApp, RendererGl )
+CINDER_APP( SuperformulaGpuApp, RendererGl )

@@ -1,14 +1,16 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Stream.h"
 #include "cinder/Rand.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class streamFileTestApp : public AppBasic {
+class streamFileTestApp : public App {
   public:
 	void setup();
 	fs::path	createReadTestFile();
@@ -20,7 +22,7 @@ class streamFileTestApp : public AppBasic {
 
 fs::path streamFileTestApp::createReadTestFile()
 {
-	fs::path resultPath = getTemporaryFilePath( "cinder_streamFileTest" );
+	fs::path resultPath = fs::unique_path( getAppPath() / "cinder_streamFileTest-%%%%-%%%%-%%%%-%%%%" );
 	FILE *f = fopen( resultPath.string().c_str(), "wb" );
 	for( size_t d = 0; d < DATA_SIZE; ++d ) {
 		uint8_t b = d % 256;
@@ -121,4 +123,4 @@ void streamFileTestApp::setup()
 	readTest<IoStreamFile>( testPath );
 }
 
-CINDER_APP_BASIC( streamFileTestApp, RendererGl )
+CINDER_APP( streamFileTestApp, RendererGl )

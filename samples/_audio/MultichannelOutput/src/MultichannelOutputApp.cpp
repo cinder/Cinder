@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/GenNode.h"
@@ -19,11 +19,11 @@ using namespace std;
 const float MAX_GAIN		= 0.4f;
 const float RAMP_SECONDS	= 1.0f;
 
-class MultichannelOutputApp : public AppNative {
+class MultichannelOutputApp : public App {
   public:
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
 	void setupMultichannelDevice();
 	void rampGain();
@@ -119,4 +119,4 @@ void MultichannelOutputApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( MultichannelOutputApp, RendererGl )
+CINDER_APP( MultichannelOutputApp, RendererGl )

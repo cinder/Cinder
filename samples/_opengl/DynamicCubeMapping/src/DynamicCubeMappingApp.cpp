@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
@@ -17,7 +17,7 @@ struct Satellite {
 	Colorf		mColor;
 };
 
-class DynamicCubeMappingApp : public AppNative {
+class DynamicCubeMappingApp : public App {
   public:
 	void setup();
 	void resize();
@@ -147,4 +147,4 @@ void DynamicCubeMappingApp::draw()
 	gl::popMatrices();
 }
 
-CINDER_APP_NATIVE( DynamicCubeMappingApp, RendererGl )
+CINDER_APP( DynamicCubeMappingApp, RendererGl )

@@ -36,7 +36,12 @@ namespace cinder {
 
 void ImageTargetFileQuartz::registerSelf()
 {
+	static bool alreadyRegistered = false;
 	const int32_t PRIORITY = 2;
+	
+	if( alreadyRegistered )
+		return;
+	alreadyRegistered = true;
 	
 	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileQuartz::createRef;
 	

@@ -2,7 +2,7 @@
 #include "cinder/GeomIo.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Batch.h"
@@ -17,14 +17,15 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class GeometryApp : public AppNative {
+void prepareSettings( App::Settings* settings );
+
+class GeometryApp : public App {
   public:
 	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE };
 	enum Quality { LOW, DEFAULT, HIGH };
 	enum ViewMode { SHADED, WIREFRAME };
 	enum TexturingMode { NONE, PROCEDURAL, SAMPLER };
 
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void resize() override;
 	void update() override;
@@ -78,11 +79,11 @@ class GeometryApp : public AppNative {
 #endif
 };
 
-void GeometryApp::prepareSettings( Settings* settings )
+void prepareSettings( App::Settings* settings )
 {
 	settings->setWindowSize(1024, 768);
-	settings->enableHighDensityDisplay();
-	settings->enableMultiTouch( false );
+	settings->setHighDensityDisplayEnabled();
+	settings->setMultiTouchEnabled( false );
 }
 
 void GeometryApp::setup()
@@ -473,4 +474,4 @@ void GeometryApp::createWireframeShader()
 #endif // ! defined( CINDER_GL_ES )
 }
 
-CINDER_APP_NATIVE( GeometryApp, RendererGl )
+CINDER_APP( GeometryApp, RendererGl, prepareSettings )

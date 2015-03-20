@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -9,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class Texture3dApp : public AppNative {
+class Texture3dApp : public App {
   public:
 	void setup();
 	void draw();
@@ -72,4 +72,4 @@ void Texture3dApp::draw()
 	mTex2dArrayBatch->draw();
 }
 
-CINDER_APP_NATIVE( Texture3dApp, RendererGl )
+CINDER_APP( Texture3dApp, RendererGl )

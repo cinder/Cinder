@@ -8,7 +8,7 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/Rand.h"
@@ -44,9 +44,8 @@ const int NUM_PARTICLES = 200e3;
 	Designed to have the same behavior as ParticleSphereGPU.
  */
 
-class ParticleSphereCPUApp : public AppNative {
+class ParticleSphereCPUApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -61,12 +60,6 @@ class ParticleSphereCPUApp : public AppNative {
 	// Batch for rendering particles with default shader.
 	gl::BatchRef		mParticleBatch;
 };
-
-void ParticleSphereCPUApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1280, 720 );
-	settings->enableMultiTouch( false );
-}
 
 void ParticleSphereCPUApp::setup()
 {
@@ -102,7 +95,13 @@ void ParticleSphereCPUApp::setup()
 	// Create mesh by pairing our particle layout with our particle Vbo.
 	// A VboMesh is an array of layout + vbo pairs
 	auto mesh = gl::VboMesh::create( mParticles.size(), GL_POINTS, { { particleLayout, mParticleVbo } } );
+#if ! defined( CINDER_GL_ES )
 	mParticleBatch = gl::Batch::create( mesh, gl::getStockShader( gl::ShaderDef().color() ) );
+	gl::pointSize( 1.0f );
+#else
+	mParticleBatch = gl::Batch::create( mesh, gl::GlslProg::create( loadAsset( "draw_es3.vert" ), 
+																		loadAsset( "draw_es3.frag" ) ) );
+#endif
 
 	// Disturb particles a lot on mouse down.
 	getWindow()->getSignalMouseDown().connect( [this]( MouseEvent event ) {
@@ -157,4 +156,7 @@ void ParticleSphereCPUApp::draw()
 	mParticleBatch->draw();
 }
 
-CINDER_APP_NATIVE( ParticleSphereCPUApp, RendererGl )
+CINDER_APP( ParticleSphereCPUApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+	settings->setMultiTouchEnabled( false );
+} )

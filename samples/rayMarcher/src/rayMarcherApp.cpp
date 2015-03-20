@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Perlin.h"
 #include "cinder/Rand.h"
@@ -14,7 +14,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class RayMarcherApp : public AppNative {
+class RayMarcherApp : public App {
  public:	
 	RayMarcherApp() : mMarcher( &mMayaCam.getCamera() ) {}
 	
@@ -142,4 +142,4 @@ void RayMarcherApp::draw()
 					   vec2( 1, 1 - mCurrentLine / float(mImageTexture->getHeight()) ) );
 }
 
-CINDER_APP_NATIVE( RayMarcherApp, RendererGl )
+CINDER_APP( RayMarcherApp, RendererGl )

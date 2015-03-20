@@ -21,7 +21,6 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/App/App.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"
@@ -139,6 +138,7 @@ size_t BufferLayout::calcRequiredStorage( size_t numVertices ) const
 // Source
 namespace { // these are helper functions for copyData() and copyDataMultAdd
 
+// Assumes source is tightly packed
 template<uint8_t SRCDIM, uint8_t DSTDIM>
 void copyDataImpl( const float *srcData, size_t numElements, size_t dstStrideBytes, float *dstData )
 {
@@ -160,12 +160,97 @@ void copyDataImpl( const float *srcData, size_t numElements, size_t dstStrideByt
 		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
 	}
 }
+
+template<uint8_t SRCDIM, uint8_t DSTDIM>
+void copyDataImpl( const float *srcData, size_t srcStrideBytes, size_t numElements, size_t dstStrideBytes, float *dstData )
+{
+	static const float sFillerData[4] = { 0, 0, 0, 1 };
+	const uint8_t MINDIM = (SRCDIM < DSTDIM) ? SRCDIM : DSTDIM;
+
+	if( dstStrideBytes == 0 )
+		dstStrideBytes = DSTDIM * sizeof(float);
+	if( srcStrideBytes == 0 )
+		srcStrideBytes = SRCDIM * sizeof(float);
+
+	for( size_t v = 0; v < numElements; ++v ) {
+		uint8_t d;
+		for( d = 0; d < MINDIM; ++d ) {
+			dstData[d] = srcData[d];
+		}
+		for( ; d < DSTDIM; ++d ) {
+			dstData[d] = sFillerData[d];
+		}
+		srcData = (float*)((uint8_t*)srcData + srcStrideBytes);
+		dstData = (float*)((uint8_t*)dstData + dstStrideBytes);
+	}
+}
 } // anonymous namespace
+
+void copyData( uint8_t srcDimensions, size_t srcStrideBytes, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData )
+{
+	if( srcStrideBytes == 0 )
+		srcStrideBytes = srcDimensions * sizeof(float);
+	if( dstStrideBytes == 0 )
+		dstStrideBytes = dstDimensions * sizeof(float);
+
+	// call equivalent method that doesn't support srcStrideBytes
+	if( srcStrideBytes == srcDimensions * sizeof(float) )
+		copyData( srcDimensions, srcData, numElements, dstDimensions, dstStrideBytes, dstData );
+	// we can get away with a memcpy
+	else if( (srcDimensions == dstDimensions) && (dstStrideBytes == dstDimensions * sizeof(float)) && (srcStrideBytes == dstStrideBytes) ) {
+		memcpy( dstData, srcData, numElements * srcDimensions * sizeof(float) );
+	}
+	else {
+		switch( srcDimensions ) {
+			case 1:
+				switch( dstDimensions ) {
+					case 1: copyDataImpl<1,1>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 2: copyDataImpl<1,2>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<1,3>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<1,4>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+			break;
+			case 2:
+				switch( dstDimensions ) {
+					case 1: copyDataImpl<2,1>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 2: copyDataImpl<2,2>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<2,3>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<2,4>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+			break;
+			case 3:
+				switch( dstDimensions ) {
+					case 1: copyDataImpl<3,1>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 2: copyDataImpl<3,2>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<3,3>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<3,4>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+			break;
+			case 4:
+				switch( dstDimensions ) {
+					case 1: copyDataImpl<4,1>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 2: copyDataImpl<4,2>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 3: copyDataImpl<4,3>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					case 4: copyDataImpl<4,4>( srcData, srcStrideBytes, numElements, dstStrideBytes, dstData ); break;
+					default: throw ExcIllegalDestDimensions();
+				}
+			break;
+			default:
+				throw ExcIllegalSourceDimensions();
+		}
+	}
+}
 
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData )
 {
+	if( dstStrideBytes == 0 )
+		dstStrideBytes = dstDimensions * sizeof(float);
+
 	// we can get away with a memcpy
-	if( (srcDimensions == dstDimensions) && (dstStrideBytes == 0) ) {
+	if( (srcDimensions == dstDimensions) && (dstStrideBytes == dstDimensions * sizeof(float)) ) {
 		memcpy( dstData, srcData, numElements * srcDimensions * sizeof(float) );
 	}
 	else {
@@ -3389,6 +3474,12 @@ SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
 {
 	mSource = sourceMods->getSource();
 	
+	if( sourceMods->mParamsStack.empty() )
+		CI_LOG_E( "SourceModsContext constructed with empty mParamsStack" );
+	else // this allows for a non-indexed Source to have never specified the primitive via copyIndices()
+		mPrimitive = sourceMods->mParamsStack.front().mPrimitive;
+	
+	
 	for( auto &modifier : sourceMods->mModifiers )
 		mModiferStack.push_back( modifier.get() );
 }
@@ -3427,7 +3518,7 @@ void SourceModsContext::loadInto( Target *target, const AttribSet &requestedAttr
 			target->copyAttrib( attrib, attribInfo.getDims(), attribInfo.getStride(), mAttribData[attrib].get(), mAttribCount[attrib] );
 		}
 
-		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, 4 );
+		target->copyIndices( mPrimitive, mIndices.get(), mNumIndices, calcIndicesRequiredBytes( mNumIndices ) );
 	}
 	else {
 		// no modifiers; in this case just call loadInto()
@@ -3514,11 +3605,11 @@ void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideByte
 		mAttribCount[attr] = count;
 		// oddly elaborate logic necessary to replace set contents w/o a default-constructible type
 		// equivalent to mAttribInfo[attr] = AttribInfo( ... )
-		auto it = mAttribInfo.insert( make_pair( attr, AttribInfo( attr, dims, strideBytes, (size_t)0 ) ) ).first;
-		it->second = AttribInfo( attr, dims, strideBytes, (size_t)0 ); // only necessary if the key already exists
+		auto it = mAttribInfo.insert( make_pair( attr, AttribInfo( attr, dims, dims * sizeof(float), (size_t)0 ) ) ).first;
+		it->second = AttribInfo( attr, dims, dims * sizeof(float), (size_t)0 ); // only necessary if the key already exists
 	}
 	
-	copyData( dims, srcData, count, dims, 0, mAttribData.at( attr ).get() );
+	copyData( dims, strideBytes, srcData, count, dims, 0, mAttribData.at( attr ).get() );
 }
 
 void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count )
@@ -3549,9 +3640,10 @@ void SourceModsContext::appendAttrib( Attrib attr, uint8_t dims, const float *sr
 	mNumVertices = existingCount + count;
 }
 
-void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
+void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes )
 {
 	mPrimitive = primitive;
+	mIndicesRequiredBytes = requiredBytes;
 	// need to reallocate storage only if this is a different number of indices
 	if( mNumIndices != numIndices ) {
 		mNumIndices = numIndices;
@@ -3560,12 +3652,13 @@ void SourceModsContext::copyIndices( Primitive primitive, const uint32_t *source
 	memcpy( mIndices.get(), source, sizeof(uint32_t) * numIndices );
 }
 
-void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices )
+void SourceModsContext::appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes )
 {
 	if( mPrimitive != primitive )
 		CI_LOG_E( "Primitive types don't match" );
 	
 	auto newIndices = unique_ptr<uint32_t[]>( new uint32_t[numIndices + mNumIndices] );
+	mIndicesRequiredBytes = std::max( mIndicesRequiredBytes, requiredBytes );
 
 	// copy old index data
 	if( mNumIndices && mIndices.get() )

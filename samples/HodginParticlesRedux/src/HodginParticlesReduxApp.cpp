@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
 #include "cinder/ImageIo.h"
@@ -17,7 +17,7 @@ using namespace ci::app;
 #include <sstream>
 using std::list;
 
-class HodginParticlesReduxApp : public AppBasic {
+class HodginParticlesReduxApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void resize();
@@ -254,4 +254,4 @@ void HodginParticlesReduxApp::draw()
 }
 
 
-CINDER_APP_BASIC( HodginParticlesReduxApp, RendererGl )
+CINDER_APP( HodginParticlesReduxApp, RendererGl )

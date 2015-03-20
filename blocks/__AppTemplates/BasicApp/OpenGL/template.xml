@@ -6,6 +6,7 @@
 	<supports os="macosx" />
 	<supports os="ios" />
 	<supports os="msw" />
+	<supports os="winrt" />
 	<source replaceContents="true" replaceName="true">src/_TBOX_PREFIX_App.cpp</source>
 	<header replaceContents="true" isResourceHeader="true">include/Resources.h</header>
 	<platform os="macosx">
@@ -22,5 +23,12 @@
 	<platform os="msw">
 		<resource type="ICON" id="1">resources/cinder_app_icon.ico</resource>
 	</platform>
+	<platform os="winrt">
+		<file replaceContents="true">vc2013_winrt/Package.appxmanifest</file>
+		<file>vc2013_winrt/VisualAssets/Logo.png</file>
+		<file>vc2013_winrt/VisualAssets/SmallLogo.png</file>
+		<file>vc2013_winrt/VisualAssets/SplashScreen.png</file>
+		<file>vc2013_winrt/VisualAssets/StoreLogo.png</file>
+	</platform>	
 </template>
 </cinder>

@@ -2,16 +2,18 @@
 
 #define USE_RENDERER2D
 
-#include "cinder/app/AppCocoaView.h"
+#include "cinder/app/cocoa/AppCocoaView.h"
 
 struct TestCallbackOrder {
 	TestCallbackOrder() : mState( TestCallbackOrder::VIRGIN ), mDoneDraw( false ) {}
-	~TestCallbackOrder() {
+	~TestCallbackOrder()
+	{
 		if( mState != SHUTDOWN )
 			cinder::app::console() << "Failed to call shutdown()" << std::endl;
 	}
 	
-	void	setState( int state ) {
+	void	setState( int state )
+	{
 		if( ( ( state == UPDATE ) || ( state == DRAW ) ) && mDoneDraw )
 			;
 		else if( mState != state - 1 )
@@ -22,7 +24,7 @@ struct TestCallbackOrder {
 			mDoneDraw = true;
 	}
 	
-	enum { VIRGIN, PREPARESETTINGS, SETUP, RESIZE, UPDATE, DRAW, SHUTDOWN };
+	enum { VIRGIN, SETUP, RESIZE, UPDATE, DRAW, SHUTDOWN };
 	
 	bool	mDoneDraw;
 	int		mState;
@@ -30,7 +32,10 @@ struct TestCallbackOrder {
 
 class MyCinderApp : public cinder::app::AppCocoaView {
   public:
-	void				prepareSettings( Settings *settings );
+	static void			prepareSettings( Settings *settings );
+	MyCinderApp();
+	~MyCinderApp();
+
 	void				setup();
 	void				resize();
 	void				update();

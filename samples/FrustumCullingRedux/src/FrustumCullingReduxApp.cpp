@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/AxisAlignedBox.h"
@@ -43,8 +43,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FrustumCullingReduxApp : public AppBasic 
-{
+class FrustumCullingReduxApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -406,4 +405,4 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	mHelp = gl::Texture::create( layout.render( true, false ) );
 }
 
-CINDER_APP_BASIC( FrustumCullingReduxApp, RendererGl )
+CINDER_APP( FrustumCullingReduxApp, RendererGl )

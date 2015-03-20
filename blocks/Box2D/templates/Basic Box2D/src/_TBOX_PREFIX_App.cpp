@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include <Box2D/Box2D.h>
@@ -9,7 +9,7 @@ using namespace std;
 
 const float BOX_SIZE = 10;
 
-class _TBOX_PREFIX_App : public AppNative {
+class _TBOX_PREFIX_App : public App {
   public:
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
@@ -90,4 +90,4 @@ void _TBOX_PREFIX_App::draw()
 	}
 }
 
-CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererGl )
+CINDER_APP( _TBOX_PREFIX_App, RendererGl )

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -12,7 +12,7 @@ using namespace std;
 
 // Reference article: http://antongerdelan.net/opengl/tessellation.html
 
-class TessellationShaderApp : public AppNative {
+class TessellationShaderApp : public App {
   public:
 	void setup() override;
 	void draw() override;
@@ -49,7 +49,7 @@ void TessellationShaderApp::setup()
 	}
 	catch( const gl::GlslProgCompileExc &ex ) {
 		cout << ex.what() << endl;
-		shutdown();
+		quit();
 	}
 	
 	mBatch = gl::VertBatch::create( GL_PATCHES );
@@ -82,4 +82,4 @@ void TessellationShaderApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP_NATIVE( TessellationShaderApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
+CINDER_APP( TessellationShaderApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )

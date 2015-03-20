@@ -27,12 +27,6 @@
 #include <algorithm>
 #include <vector>
 #include <utility>
-
-#include <boost/signals2.hpp>
-namespace cinder { namespace signals {
-	using namespace boost::signals2;
-} } // cinder::signals
-
 #include <functional>
 
 namespace cinder {

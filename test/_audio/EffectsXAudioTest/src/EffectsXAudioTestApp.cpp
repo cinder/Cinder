@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 
 #include "cinder/audio/GenNode.h"
@@ -45,7 +45,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class EffectXAudioTestApp : public AppNative {
+class EffectXAudioTestApp : public App {
 public:
 	void setup();
 	void draw();
@@ -267,4 +267,4 @@ void EffectXAudioTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP_NATIVE( EffectXAudioTestApp, RendererGl )
+CINDER_APP( EffectXAudioTestApp, RendererGl )

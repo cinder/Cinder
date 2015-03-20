@@ -34,11 +34,10 @@
 #include "cinder/MatrixAffine2.h"
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
-#include "cinder/Function.h"
 #include "cinder/Noncopyable.h"
 
+#include <functional>
 #include <map>
-
 
 namespace cinder { namespace svg {
 
@@ -742,7 +741,7 @@ class Group : public Node, private Noncopyable {
 	const Node*				findNode( const std::string &id, bool recurse = true ) const;
 	//! Recursively searches for a child element of type <tt>svg::T</tt> whose name contains \a idPartial. Returns NULL on failure to find the object or if it is not of type T.
     template<typename T>
-	const T*				findByIdContains( const std::string &idPartial ) { return dynamic_cast<const T*>( findNodeByIdContains( idPartial ) ); }
+	const T*				findByIdContains( const std::string &idPartial ) const { return dynamic_cast<const T*>( findNodeByIdContains( idPartial ) ); }
 	//! Recursively searches for a child element whose name contains \a idPartial. Returns NULL on failure. (null_ptr later?)
 	const Node*				findNodeByIdContains( const std::string &idPartial, bool recurse = true ) const;
 	virtual const Node*		findInAncestors( const std::string &elementId ) const;

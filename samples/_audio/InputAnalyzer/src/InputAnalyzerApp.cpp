@@ -10,7 +10,7 @@
  * author: Richard Eakin (2014)
  */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/TextureFont.h"
 
@@ -24,12 +24,12 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class InputAnalyzer : public AppNative {
+class InputAnalyzer : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void drawLabels();
 	void printBinInfo( int mouseX );
@@ -118,4 +118,4 @@ void InputAnalyzer::printBinInfo( int mouseX )
 	console() << "bin: " << bin << ", freqency (hertz): " << freq << " - " << freq + binFreqWidth << ", magnitude (decibels): " << mag << endl;
 }
 
-CINDER_APP_NATIVE( InputAnalyzer, RendererGl )
+CINDER_APP( InputAnalyzer, RendererGl )

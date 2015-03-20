@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
@@ -12,7 +12,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ExtrudeApp : public AppNative {
+class ExtrudeApp : public App {
   public:	
 	void	setup() override;
 	void	keyDown( KeyEvent event ) override;
@@ -157,4 +157,4 @@ void ExtrudeApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP_NATIVE( ExtrudeApp, RendererGl )
+CINDER_APP( ExtrudeApp, RendererGl )

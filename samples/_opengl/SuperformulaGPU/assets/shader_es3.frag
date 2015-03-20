@@ -1,4 +1,5 @@
 #version 300 es
+precision highp float;
 
 uniform int uCheckerFrequency;
 
@@ -9,7 +10,7 @@ in highp vec2		TexCoord;
 out highp vec4 	oColor;
 
 // Based on OpenGL Programming Guide (8th edition), p 457-459.
-highp float checkered( in vec2 uv, in int freq )
+highp float checkered( in vec2 uv, in highp float freq )
 {
 	highp vec2 checker = fract( uv * freq );
 	highp vec2 edge = fwidth( uv ) * freq;
@@ -26,5 +27,5 @@ void main( void )
 {
 	highp vec3 normal = normalize( -Normal );
 	highp float diffuse = max( dot( normal, vec3( 0, 0, -1.0 ) ), 0.0 );
-	oColor = vec4( vec3( abs(diffuse) ) * vec3( checkered( TexCoord.xy, uCheckerFrequency ) ), 1.0 );
+	oColor = vec4( vec3( abs(diffuse) ) * vec3( checkered( TexCoord.xy, float(uCheckerFrequency) ) ), 1.0 );
 }

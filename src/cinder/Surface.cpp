@@ -26,7 +26,7 @@
 
 #if defined( CINDER_WINRT )
 #include <ppltasks.h>
-#include "cinder/WinRTUtils.h"
+#include "cinder/winrt/WinRTUtils.h"
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
 using namespace Windows::Storage;

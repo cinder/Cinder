@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Timeline.h"
 
@@ -6,7 +6,7 @@ using namespace std;
 using namespace ci;
 using namespace ci::app;
 
-class BasicTweenApp : public AppBasic {
+class BasicTweenApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );
@@ -40,4 +40,4 @@ void BasicTweenApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicTweenApp, RendererGl )
+CINDER_APP( BasicTweenApp, RendererGl )

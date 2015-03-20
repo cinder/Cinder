@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -15,11 +15,11 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeEffectsTestApp : public AppNative {
+class NodeEffectsTestApp : public App {
   public:
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
 	void setupOne();
 	void setupForceStereo();
@@ -350,4 +350,4 @@ void NodeEffectsTestApp::draw()
 	drawWidgets( mWidgets );
 }
 
-CINDER_APP_NATIVE( NodeEffectsTestApp, RendererGl )
+CINDER_APP( NodeEffectsTestApp, RendererGl )
