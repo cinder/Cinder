@@ -236,7 +236,7 @@ void RendererGl::startDraw()
 	if( mStartDrawFn )
 		mStartDrawFn( this );
 	else
-		mImpl->makeCurrentContext( false );
+		mImpl->makeCurrentContext();
 }
 
 void RendererGl::makeCurrentContext( bool force )
