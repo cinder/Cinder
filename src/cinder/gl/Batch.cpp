@@ -80,22 +80,67 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	for( const auto &vertArrayVbo : mVboMesh->getVertexArrayLayoutVbos() ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
+		auto size = vertArrayVbo.first.getAttribs().size();
+		std::cout << "Size: " << size << std::endl;
 		// now iterate the attributes associated with this VBO
 		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
 			int loc = -1;
 			// first see if we have a mapping in 'attributeMapping'
 			auto attributeMappingIt = attributeMapping.find( attribInfo.getAttrib() );
+			
 			if( attributeMappingIt != attributeMapping.end() )
 				loc = mGlsl->getAttribLocation( attributeMappingIt->second );
 			// otherwise, try to get the location of the attrib semantic in the shader if it's present
 			else if( mGlsl->hasAttribSemantic( attribInfo.getAttrib() ) )
 				loc = mGlsl->getAttribSemanticLocation( attribInfo.getAttrib() );
-
+			std::cout << geom::attribToString( attribInfo.getAttrib() ) << std::endl;
 			if( loc != -1 ) {
-				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
-				if( attribInfo.getInstanceDivisor() > 0 )
-					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+				if( attribInfo.getDims() > 4 ) {
+					std::cout << "Attrib is greater than 4" << std::endl;
+					auto numDims = (int)attribInfo.getDims();
+					auto offset = attribInfo.getOffset();
+					auto stride = attribInfo.getStride();
+					uint32_t bytes = 0;
+					switch (attribInfo.getDataType()) {
+						case geom::DataType::FLOAT:
+							bytes = 4;
+							break;
+						case geom::DataType::INTEGER:
+							bytes = 4;
+							break;
+						case geom::DataType::DOUBLE:
+							bytes = 8;
+						default:
+							break;
+					}
+					int numTimes = (numDims / 4);
+					std::cout << "numTimes: " << numTimes << std::endl;
+					size_t currentOffset = offset;
+					for( int i = 0; i < numTimes && numDims > 0; i++ ) {
+						int numDimsTaken = 0;
+						int leftover = numDims / 4;
+						if( leftover >= 1 ) {
+							numDimsTaken = 4;
+						}
+						else {
+							numDimsTaken = numDims;
+						}
+						
+						numDims -= numDimsTaken;
+						ctx->enableVertexAttribArray( loc + i );
+						ctx->vertexAttribPointer( loc + i, numDimsTaken, GL_FLOAT, GL_FALSE, (GLsizei)stride, (const void*)(attribInfo.getOffset() + currentOffset) );
+						if( attribInfo.getInstanceDivisor() > 0 )
+							ctx->vertexAttribDivisor( loc + i, attribInfo.getInstanceDivisor() );
+						currentOffset += (numDimsTaken * bytes);
+					}
+
+				}
+				else if( size == 3 ){
+					ctx->enableVertexAttribArray( loc );
+					ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+					if( attribInfo.getInstanceDivisor() > 0 )
+						ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+				}
 				enabledAttribs.insert( attribInfo.getAttrib() );
 			}
 		}

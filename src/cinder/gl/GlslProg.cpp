@@ -60,7 +60,6 @@ public:
 	bool shouldBuffer( uint32_t beginningByte, uint32_t size, const void * valuePointer )
 	{
 		auto ptr = ((uint8_t*)mBuffer + beginningByte);
-		//std::cout << "Checking Buffer" << std::endl;
 		if( memcmp( ptr, valuePointer, size ) == 0 ) {
 			return false;
 		}
@@ -332,8 +331,10 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-: mTransformFeedbackFormat( -1 ), mPreprocessingEnabled( format.isPreprocessingEnabled() ), 
-	mUniformBuffer( nullptr )
+: mPreprocessingEnabled( format.isPreprocessingEnabled() ), mUniformBuffer( nullptr )
+#if ! defined( CINDER_GL_ES_2 )
+ , mTransformFeedbackFormat( -1 )
+#endif
 {
 	mHandle = glCreateProgram();
 
@@ -414,6 +415,7 @@ GlslProg::GlslProg( const Format &format )
 				// If we've found the uniform, change the semantic to the
 				// user defined semantic.
 				activeUniform.mSemantic = userUniform.mSemantic;
+				break;
 			}
 		}
 		if( ! foundUserDefined ) {
@@ -421,10 +423,9 @@ GlslProg::GlslProg( const Format &format )
 			mLoggedUniforms.insert( userUniform.mName );
 		}
 	}
-	
 	// make sure we get all of the semantic info correct from the user
 	for( auto &userAttrib : userDefinedAttribs ) {
-		bool active = true;
+		bool active = false;
 		for( auto &activeAttrib : mAttributes ) {
 			// check if either the user defined name or user defined loc for
 			// this attrib are the same as the active attribute
@@ -437,6 +438,7 @@ GlslProg::GlslProg( const Format &format )
 				if( userAttrib.mSemantic != geom::Attrib::NUM_ATTRIBS ) {
 					activeAttrib.mSemantic = userAttrib.mSemantic;
 				}
+				break;
 			}
 		}
 		if( !active ) {
@@ -1018,7 +1020,7 @@ void GlslProg::uniform( int location, bool data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform1i( location, data );
 }
-	
+#if ! defined( CINDER_GL_ES_2 )
 // uint32_t
 void GlslProg::uniform( int location, uint32_t data ) const
 {
@@ -1046,6 +1048,7 @@ void GlslProg::uniform( int location, const uvec4 &data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform4ui( location, data.x, data.y, data.z, data.w );
 }
+#endif
 	
 // int
 void GlslProg::uniform( int location, int data ) const

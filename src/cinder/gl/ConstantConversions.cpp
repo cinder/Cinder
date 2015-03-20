@@ -49,9 +49,11 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_FLOAT_VEC2] = "FLOAT_VEC2";
 		sSymbols[GL_FLOAT_VEC3] = "FLOAT_VEC3";
 		sSymbols[GL_FLOAT_VEC4] = "FLOAT_VEC4";
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_UNSIGNED_INT_VEC2] = "UNSIGNED_INT_VEC2";
 		sSymbols[GL_UNSIGNED_INT_VEC3] = "UNSIGNED_INT_VEC3";
 		sSymbols[GL_UNSIGNED_INT_VEC4] = "UNSIGNED_INT_VEC4";
+#endif
 		sSymbols[GL_INT_VEC2] = "INT_VEC2";
 		sSymbols[GL_INT_VEC3] = "INT_VEC3";
 		sSymbols[GL_INT_VEC4] = "INT_VEC4";
@@ -222,19 +224,25 @@ uint8_t glTypeToDimenstion( GLenum type )
 		case GL_BOOL:
 			return 1;
 		break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC2:
+#endif
 		case GL_INT_VEC2:
 		case GL_FLOAT_VEC2:
 		case GL_BOOL_VEC2:
 			return 2;
 		break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC3:
+#endif
 		case GL_INT_VEC3:
 		case GL_FLOAT_VEC3:
 		case GL_BOOL_VEC3:
 			return 3;
 		break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC4:
+#endif
 		case GL_INT_VEC4:
 		case GL_FLOAT_VEC4:
 		case GL_BOOL_VEC4:
@@ -256,20 +264,26 @@ uint8_t glTypeToBytes( GLenum type )
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_SHADOW:	return sizeof(int); break;
 		case GL_SAMPLER_3D:			return sizeof(int); break;
+#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
+#endif
 		case GL_SAMPLER_CUBE:		return sizeof(int); break;
 		case GL_FLOAT:				return sizeof(float); break;
 		case GL_BOOL:				return sizeof(bool); break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC2:	return sizeof(glm::uvec2); break;
+		case GL_UNSIGNED_INT_VEC3:	return sizeof(glm::uvec3); break;
+		case GL_UNSIGNED_INT_VEC4:	return sizeof(glm::uvec4); break;
+#endif
 		case GL_INT_VEC2:			return sizeof(ivec2); break;
 		case GL_FLOAT_VEC2:			return sizeof(vec2); break;
 		case GL_BOOL_VEC2:			return sizeof(glm::bvec2); break;
-		case GL_UNSIGNED_INT_VEC3:	return sizeof(glm::uvec3); break;
 		case GL_INT_VEC3:			return sizeof(ivec3); break;
 		case GL_FLOAT_VEC3:			return sizeof(vec3); break;
 		case GL_BOOL_VEC3:			return sizeof(glm::bvec3); break;
-		case GL_UNSIGNED_INT_VEC4:	return sizeof(glm::uvec4); break;
 		case GL_INT_VEC4:			return sizeof(ivec4); break;
 		case GL_FLOAT_VEC4:			return sizeof(vec4); break;
 		case GL_BOOL_VEC4:			return sizeof(glm::bvec4); break;

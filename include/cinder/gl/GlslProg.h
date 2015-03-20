@@ -238,11 +238,13 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	void	uniform( const std::string &name, bool data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, int data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, uint32_t data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, float data ) const { uniformImpl( name, data ); }
+#if ! defined( CINDER_GL_ES_2 )
+	void	uniform( const std::string &name, uint32_t data ) const { uniformImpl( name, data ); }
+	void	uniform( int location, uint32_t data ) const;
+#endif
 	void	uniform( int location, bool data ) const;
 	void	uniform( int location, int data ) const;
-	void	uniform( int location, uint32_t data ) const;
 	void	uniform( int location, float data ) const;
 	void	uniform( const std::string &name, const vec2 &data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, const vec3 &data ) const { uniformImpl( name, data ); }
@@ -256,12 +258,14 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniform( int location, const ivec2 &data ) const;
 	void	uniform( int location, const ivec3 &data ) const;
 	void	uniform( int location, const ivec4 &data ) const;
+#if ! defined( CINDER_GL_ES_2 )
 	void	uniform( const std::string &name, const uvec2 &data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, const uvec3 &data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, const uvec4 &data ) const { uniformImpl( name, data ); }
 	void	uniform( int location, const uvec2 &data ) const;
 	void	uniform( int location, const uvec3 &data ) const;
 	void	uniform( int location, const uvec4 &data ) const;
+#endif
 	void	uniform( const std::string &name, const Color &data ) const { uniformImpl( name, data ); }
 	void	uniform( const std::string &name, const ColorA &data ) const { uniformImpl( name, data ); }
 	void	uniform( int location, const Color &data ) const;
@@ -515,8 +519,12 @@ inline bool GlslProg::checkUniformType<int>( GLenum uniformType, std::string &ty
 		case GL_BOOL: return true; break;
 		case GL_INT: return true; break;
 		case GL_SAMPLER_2D: return true; break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_SHADOW: return true; break;
 		case GL_SAMPLER_3D: return true; break;
+#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return true; break;
+#endif
 		case GL_SAMPLER_CUBE: return true; break;
 		default: type = "int"; return false; break;
 	}
@@ -599,6 +607,7 @@ inline bool GlslProg::checkUniformType<ColorA>( GLenum uniformType, std::string 
 	type = "vec4 as ColorA";
 	return GL_FLOAT_VEC4 == uniformType;
 }
+#if ! defined( CINDER_GL_ES_2 )
 template<>
 inline bool GlslProg::checkUniformType<uvec2>( GLenum uniformType, std::string &type ) const
 {
@@ -617,6 +626,7 @@ inline bool GlslProg::checkUniformType<uvec4>( GLenum uniformType, std::string &
 	type = "uvec4";
 	return GL_UNSIGNED_INT_VEC4 == uniformType;
 }
+#endif
 template<>
 inline bool GlslProg::checkUniformType<mat2>( GLenum uniformType, std::string &type ) const
 {
