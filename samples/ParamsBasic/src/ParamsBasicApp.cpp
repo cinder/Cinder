@@ -8,9 +8,13 @@
 using namespace ci;
 using namespace ci::app;
 
+void prepareSettings( App::Settings *settings )
+{
+	settings->setHighDensityDisplayEnabled();
+}
+
 class TweakBarApp : public App {
   public:
-	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay(); }
 	void setup();
 	void resize();
 	void draw();
@@ -107,4 +111,4 @@ void TweakBarApp::draw()
 	mParams->draw();
 }
 
-CINDER_APP( TweakBarApp, RendererGl )
+CINDER_APP( TweakBarApp, RendererGl, prepareSettings )
