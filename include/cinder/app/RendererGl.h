@@ -188,7 +188,7 @@ class RendererGl : public Renderer {
 	void			startDraw() override;
 	void			finishDraw() override;
 	void			defaultResize() override;
-	void			makeCurrentContext() override;
+	void			makeCurrentContext( bool force = false ) override;
 	void			swapBuffers()override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 

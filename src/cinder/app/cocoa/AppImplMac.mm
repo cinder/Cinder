@@ -140,17 +140,19 @@ using namespace cinder::app;
 		}
 	}
 
-	// issue update() event
-	mApp->privateUpdate__();
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		// issue update() event
+		mApp->privateUpdate__();
 
-	// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
-	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		[winIt->mCinderView setReadyToDraw:YES];
-	}
-	
-	// walk all windows and draw them
-	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		[winIt->mCinderView draw];
+		// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
+		for( WindowImplBasicCocoa* winIt in mWindows ) {
+			[winIt->mCinderView setReadyToDraw:YES];
+		}
+		
+		// walk all windows and draw them
+		for( WindowImplBasicCocoa* winIt in mWindows ) {
+			[winIt->mCinderView draw];
+		}
 	}
 }
 
@@ -569,6 +571,11 @@ using namespace cinder::app;
 	return mCinderView;
 }
 
+- (void)windowDidBecomeMainNotification:(NSNotification *)notification
+{
+	mWindowRef->getRenderer()->makeCurrentContext( true );
+}
+
 - (void)windowMovedNotification:(NSNotification *)notification
 {
 	NSWindow *window = [notification object];
@@ -587,12 +594,16 @@ using namespace cinder::app;
 			auto newDisplay = cinder::app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayID );
 			if( newDisplay ) {
 				mDisplay = newDisplay;
-				mWindowRef->emitDisplayChange();
+				if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+					mWindowRef->emitDisplayChange();
+				}
 			}
 		}
 	}
 	
-	mWindowRef->emitMove();
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		mWindowRef->emitMove();
+	}
 }
 
 - (void)windowWillCloseNotification:(NSNotification *)notification
@@ -616,86 +627,109 @@ using namespace cinder::app;
 {
 	NSSize nsSize = [mCinderView frame].size;
 	mSize = cinder::ivec2( nsSize.width, nsSize.height );
-	
-	[mAppImpl setActiveWindow:self];
-	
-	mWindowRef->emitResize();
+
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		mWindowRef->emitResize();
+	}
 }
 
 - (void)draw
 {
-	[mAppImpl setActiveWindow:self];
-	mWindowRef->emitDraw();
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		mWindowRef->emitDraw();
+	}
 }
 
 - (void)mouseDown:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseDown( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseDown( event );
+	}
 }
 
 - (void)mouseDrag:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseDrag( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseDrag( event );
+	}
 }
 
 - (void)mouseUp:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseUp( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseUp( event );
+	}
 }
 
 - (void)mouseMove:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseMove( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseMove( event );
+	}
 }
 
 - (void)mouseWheel:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseWheel( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseWheel( event );
+	}
 }
 
 - (void)keyDown:(KeyEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitKeyDown( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitKeyDown( event );
+	}
 }
 
 - (void)keyUp:(KeyEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitKeyUp( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitKeyUp( event );
+	}
 }
 
 - (void)touchesBegan:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesBegan( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesBegan( event );
+	}
 }
 
 - (void)touchesMoved:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesMoved( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesMoved( event );
+	}
 }
 
 - (void)touchesEnded:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesEnded( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesEnded( event );
+	}
 }
 
 - (const std::vector<TouchEvent::Touch> &)getActiveTouches
@@ -705,9 +739,11 @@ using namespace cinder::app;
 
 - (void)fileDrop:(FileDropEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitFileDrop( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitFileDrop( event );
+	}
 }
 
 - (app::WindowRef)getWindowRef
@@ -792,6 +828,7 @@ using namespace cinder::app;
 	[winImpl->mWin setInitialFirstResponder:winImpl->mCinderView];
 	[winImpl->mWin setAcceptsMouseMovedEvents:YES];
 	[winImpl->mWin setOpaque:YES];
+	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowDidBecomeMainNotification:) name:NSWindowDidBecomeMainNotification object:winImpl->mWin];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowMovedNotification:) name:NSWindowDidMoveNotification object:winImpl->mWin];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowWillCloseNotification:) name:NSWindowWillCloseNotification object:winImpl->mWin];
 	[winImpl->mCinderView setNeedsDisplay:YES];

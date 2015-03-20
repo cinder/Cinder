@@ -110,6 +110,13 @@ class PlatformCocoa : public Platform {
 	//! Removes record of \a display from mDisplays and signals appropriately. Generally only useful for Cinder internals.
 	void		removeDisplay( const DisplayRef &display );
 
+#if defined( CINDER_MAC )
+	//! Returns whether the application is currently inside the event loop of modal dialog
+	bool		isInsideModalLoop() const { return mInsideModalLoop; }
+	//! Flags whether the application is currently inside the event loop of modal dialog
+	void		setInsideModalLoop( bool inside = true ) { mInsideModalLoop = inside; }
+#endif
+
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
@@ -121,6 +128,10 @@ class PlatformCocoa : public Platform {
 	friend DisplayMac;
 #else
 	friend DisplayCocoaTouch;
+#endif
+
+#if defined( CINDER_MAC )
+	bool	mInsideModalLoop;
 #endif
 };
 

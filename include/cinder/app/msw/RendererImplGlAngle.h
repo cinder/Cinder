@@ -50,7 +50,7 @@ class RendererImplGlAngle : public RendererImplMsw {
 	void	kill() override;
 	void	defaultResize() const override;
 	void	swapBuffers() const override;
-	void	makeCurrentContext() override;
+	void	makeCurrentContext( bool force = false ) override;
 
 #if defined( CINDER_MSW )
 	HDC		getDc() const { return mDc; }

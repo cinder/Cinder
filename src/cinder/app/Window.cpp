@@ -283,13 +283,13 @@ void Window::emitClose()
 
 void Window::emitMove()
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 	mSignalMove.emit();
 }
 
 void Window::emitResize()
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 	getRenderer()->defaultResize();
 	mSignalResize.emit();
 	getApp()->resize();
@@ -297,13 +297,13 @@ void Window::emitResize()
 
 void Window::emitDisplayChange()
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 	mSignalDisplayChange.emit();
 }
 
 void Window::emitMouseDown( MouseEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<MouseEvent> collector( event );
 	mSignalMouseDown.emit( collector, *event );
@@ -313,7 +313,7 @@ void Window::emitMouseDown( MouseEvent *event )
 
 void Window::emitMouseDrag( MouseEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<MouseEvent> collector( event );
 	mSignalMouseDrag.emit( collector, *event );
@@ -323,7 +323,7 @@ void Window::emitMouseDrag( MouseEvent *event )
 
 void Window::emitMouseUp( MouseEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<MouseEvent> collector( event );
 	mSignalMouseUp.emit( collector, *event );
@@ -333,7 +333,7 @@ void Window::emitMouseUp( MouseEvent *event )
 
 void Window::emitMouseWheel( MouseEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<MouseEvent> collector( event );
 	mSignalMouseWheel.emit( collector, *event );
@@ -343,7 +343,7 @@ void Window::emitMouseWheel( MouseEvent *event )
 
 void Window::emitMouseMove( MouseEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<MouseEvent> collector( event );
 	mSignalMouseMove.emit( collector, *event );
@@ -353,7 +353,7 @@ void Window::emitMouseMove( MouseEvent *event )
 
 void Window::emitTouchesBegan( TouchEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<TouchEvent> collector( event );
 	mSignalTouchesBegan.emit( collector, *event );
@@ -363,7 +363,7 @@ void Window::emitTouchesBegan( TouchEvent *event )
 
 void Window::emitTouchesMoved( TouchEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<TouchEvent> collector( event );
 	mSignalTouchesMoved.emit( collector, *event );
@@ -373,7 +373,7 @@ void Window::emitTouchesMoved( TouchEvent *event )
 
 void Window::emitTouchesEnded( TouchEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<TouchEvent> collector( event );
 	mSignalTouchesEnded.emit( collector, *event );
@@ -397,7 +397,7 @@ const std::vector<TouchEvent::Touch>& Window::getActiveTouches() const
 
 void Window::emitKeyDown( KeyEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<KeyEvent> collector( event );
 	mSignalKeyDown.emit( collector, *event );
@@ -407,7 +407,7 @@ void Window::emitKeyDown( KeyEvent *event )
 
 void Window::emitKeyUp( KeyEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<KeyEvent> collector( event );
 	mSignalKeyUp.emit( collector, *event );
@@ -417,6 +417,13 @@ void Window::emitKeyUp( KeyEvent *event )
 
 void Window::emitDraw()
 {
+	// On the Mac the active GL Context can change behind our back in some scenarios; forcing the context switch on other platforms is expensive though
+#if defined( CINDER_MAC )
+	getRenderer()->makeCurrentContext( true );
+#else
+	getRenderer()->makeCurrentContext( false );
+#endif	
+	
 	mSignalDraw.emit();
 	getApp()->draw();
 	mSignalPostDraw.emit();
@@ -424,7 +431,7 @@ void Window::emitDraw()
 
 void Window::emitFileDrop( FileDropEvent *event )
 {
-	getRenderer()->makeCurrentContext();
+	getRenderer()->makeCurrentContext( true );
 
 	CollectorEvent<FileDropEvent> collector( event );
 	mSignalFileDrop.emit( collector, *event );

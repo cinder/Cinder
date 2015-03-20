@@ -214,9 +214,9 @@ void RendererImplGlAngle::swapBuffers() const
 	assert( result );
 }
 
-void RendererImplGlAngle::makeCurrentContext()
+void RendererImplGlAngle::makeCurrentContext( bool force )
 {
-	mCinderContext->makeCurrent();
+	mCinderContext->makeCurrent( force );
 }
 
 EGLint getEglError()
