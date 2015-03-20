@@ -209,10 +209,10 @@ void DeferredShadingApp::draw()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
-		gl::ScopedState scopedState( GL_DEPTH_TEST, false );
-		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::enableDepthRead( true );
 		gl::enableDepthWrite( true );
+		gl::ScopedState scopedState( GL_DEPTH_TEST, false );
+		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
 	
