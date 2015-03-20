@@ -462,36 +462,22 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 const float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
 
-Rect::Rect()
+Rect::Rect() : mHasColors( false )
 {
 	// upper-right, upper-left, lower-right, lower-left
 	mPositions[0] = vec2(  0.5f, -0.5f );
-	mTexCoords[0] = vec2( 1, 1 );
-	mColors[0] = ColorAf( 1, 0, 1, 1 );	
 	mPositions[1] = vec2( -0.5f, -0.5f );
-	mTexCoords[1] = vec2( 0, 1 );
-	mColors[1] = ColorAf( 0, 0, 1, 1 );	
 	mPositions[2] = vec2(  0.5f,  0.5f );
-	mTexCoords[2] = vec2( 1, 0 );
-	mColors[2] = ColorAf( 1, 1, 1, 1 );
 	mPositions[3] = vec2( -0.5f,  0.5f );
-	mTexCoords[3] = vec2( 0, 0 );
-	mColors[3] = ColorAf( 0, 1, 1, 1 );
+	setDefaultColors();
+	setDefaultTexCoords();
 }
 
 Rect::Rect( const Rectf &r )
 {
 	rect( r );
-	
-	// upper-right, upper-left, lower-right, lower-left
-	mTexCoords[0] = vec2( 1, 1 );
-	mColors[0] = ColorAf( 1, 0, 1, 1 );
-	mTexCoords[1] = vec2( 0, 1 );
-	mColors[1] = ColorAf( 0, 0, 1, 1 );	
-	mTexCoords[2] = vec2( 1, 0 );
-	mColors[2] = ColorAf( 1, 1, 1, 1 );
-	mTexCoords[3] = vec2( 0, 0 );
-	mColors[3] = ColorAf( 0, 1, 1, 1 );
+	setDefaultColors();
+	setDefaultTexCoords();
 }
 
 Rect& Rect::rect( const Rectf &r )
@@ -503,12 +489,25 @@ Rect& Rect::rect( const Rectf &r )
 	return *this;
 }
 
+Rect& Rect::colors()
+{
+	mHasColors = true;
+	return *this;
+}
+
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
+	mHasColors = true;
 	mColors[0] = upperRight;
 	mColors[1] = upperLeft;
 	mColors[2] = lowerRight;
 	mColors[3] = lowerLeft;
+	return *this;
+}
+
+Rect& Rect::disableColors()
+{
+	mHasColors = false;
 	return *this;
 }
 
@@ -541,7 +540,7 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 2;
 		case Attrib::NORMAL: return 3;
 		case Attrib::TEX_COORD_0: return 2;
-		case Attrib::COLOR: return 4;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
 		case Attrib::TANGENT: return 3;
 		default:
 			return 0;
@@ -551,6 +550,24 @@ uint8_t	Rect::getAttribDims( Attrib attr ) const
 AttribSet Rect::getAvailableAttribs() const
 {
 	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
+}
+
+void Rect::setDefaultColors()
+{
+	// upper-right, upper-left, lower-right, lower-left
+	mColors[0] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f );
+	mColors[1] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f );	
+	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f );
+	mColors[3] = ColorAf( 1.0f, 1.0f, 0.0f, 1.0f );
+}
+
+void Rect::setDefaultTexCoords()
+{
+	// upper-right, upper-left, lower-right, lower-left
+	mTexCoords[0] = vec2( 1.0f, 1.0f );
+	mTexCoords[1] = vec2( 0.0f, 1.0f );
+	mTexCoords[2] = vec2( 1.0f, 0.0f );
+	mTexCoords[3] = vec2( 0.0f, 0.0f );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
