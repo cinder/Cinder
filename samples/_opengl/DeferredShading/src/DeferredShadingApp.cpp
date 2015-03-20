@@ -190,13 +190,13 @@ void DeferredShadingApp::draw()
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
 		gl::ScopedMatrices scopedMatrices;
+		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
+		gl::ScopedFrontFace scopedFrontFace( GL_CW );
 		gl::enableDepthRead( true );
 		gl::enableDepthWrite( true );
 		gl::clear();
 		gl::setMatrices( mShadowCamera );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
-		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-		gl::ScopedFrontFace scopedFrontFace( GL_CW );
 		drawCubes();
 	}
 
