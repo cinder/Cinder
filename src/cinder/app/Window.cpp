@@ -417,7 +417,12 @@ void Window::emitKeyUp( KeyEvent *event )
 
 void Window::emitDraw()
 {
+	// On the Mac the active GL Context can change behind our back in some scenarios; forcing the context switch on other platforms is expensive though
+#if defined( CINDER_MAC )
 	getRenderer()->makeCurrentContext( true );
+#else
+	getRenderer()->makeCurrentContext( false );
+#endif	
 	
 	mSignalDraw.emit();
 	getApp()->draw();
