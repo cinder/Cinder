@@ -33,7 +33,6 @@ private:
 	ci::gl::GlslProgRef			mGlslProgBlur;
 	ci::gl::GlslProgRef			mGlslProgColor;
 	ci::gl::GlslProgRef			mGlslProgComposite;
-	ci::gl::GlslProgRef			mGlslProgCubeShadow;
 	ci::gl::GlslProgRef			mGlslProgDebugGbuffer;
 	ci::gl::GlslProgRef			mGlslProgDebugMaterial;
 	ci::gl::GlslProgRef			mGlslProgDof;
