@@ -45,6 +45,9 @@ namespace cinder { namespace app {
 
 PlatformCocoa::PlatformCocoa()
 	: mBundle( nil ), mDisplaysInitialized( false )
+#if defined( CINDER_MAC )
+	, mInsideModalLoop( false )
+#endif
 {
 	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
 	
@@ -191,7 +194,9 @@ fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vect
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -218,7 +223,9 @@ fs::path PlatformCocoa::getFolderPath( const fs::path &initialPath )
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -268,8 +275,10 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 			[cinderSave setNameFieldStringValue:file];
 	}
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderSave runModal];
-
+	setInsideModalLoop( false );
+	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
 	}

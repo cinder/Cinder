@@ -165,7 +165,7 @@ using namespace cinder::app;
 	if( ! mReadyToDraw )
 		return;
 
-	[self display];
+	[self drawRect:[self bounds]];
 }
 
 - (void)makeCurrentContext

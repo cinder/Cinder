@@ -41,7 +41,7 @@
 - (id)initWithFrame:(NSRect)frame cinderView:(NSView*)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer withRetina:(BOOL)retinaEnabled;
 - (NSOpenGLView*)view;
 
-- (void)makeCurrentContext;
+- (void)makeCurrentContext:(bool)force;
 - (CGLContextObj)getCglContext;
 - (CGLPixelFormatObj)getCglPixelFormat;
 - (NSOpenGLContext*)getNsOpenGlContext;

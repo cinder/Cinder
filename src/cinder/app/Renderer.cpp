@@ -117,7 +117,7 @@ void Renderer2d::defaultResize()
 	[mImpl defaultResize];
 }
 
-void Renderer2d::makeCurrentContext()
+void Renderer2d::makeCurrentContext( bool /*force*/ )
 {
 	[mImpl makeCurrentContext];
 }
