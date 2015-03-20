@@ -22,7 +22,6 @@ public:
 private:
 	ci::MayaCamUI				mMayaCam;
 
-	std::vector<ci::mat4>		mCubes;
 	std::vector<Light>			mLights;
 	std::vector<Material>		mMaterials;
 
@@ -55,7 +54,6 @@ private:
 	ci::gl::FboRef				mFboShadowMap;
 	ci::gl::FboRef				mFboSsao;
 	
-	ci::gl::TextureRef			mTextureCube;
 	ci::gl::TextureRef			mTextureRandom;
 	ci::gl::Texture2dRef		mTextureFboBloomHorizontal;
 	ci::gl::Texture2dRef		mTextureFboBloomVertical;
@@ -85,6 +83,9 @@ private:
 
 	ci::CameraPersp				mShadowCamera;
 	
+	ci::vec3					mSpherePosition;
+	float						mSphereVelocity;
+
 	bool						mDebugMode;
 	float						mFrameRate;
 	bool						mFullScreen;
@@ -107,21 +108,33 @@ void DeferredShadingApp::draw()
 
 	const mat4 shadowMatrix = mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix();
 	vec2 winSize			= vec2( getWindowSize() );
-
-	// Draws cubes
-	auto drawCubes = [ & ]()
+	float e					= (float)getElapsedSeconds();
+	
+	auto drawSpheres = [ & ]()
 	{
-		for ( const mat4& m : mCubes ) {
+		{
 			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( vec3( 0.0f, -3.0f, 0.0 ) );
-			{
-				gl::ScopedModelMatrix scopedModelMatrix;
-				gl::multModelMatrix( m );
-				gl::draw( mMeshCube );
-			}
+			gl::translate( mSpherePosition );
+			gl::draw( mMeshSphere );
+		}
+
+		size_t numSpheres	= 4;
+		float t				= e * 0.165f;
+		float d				= ( (float)M_PI * 2.0f ) / (float)numSpheres;
+		float r				= 4.5f;
+		for ( size_t i = 0; i < numSpheres; ++i, t += d ) {
+			float x			= glm::cos( t );
+			float z			= glm::sin( t );
+			vec3 p			= vec3( x, 0.0f, z ) * r;
+			p.y				= -6.5f;
+
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::translate( p );
+			gl::scale( vec3( 0.5f ) );
+			gl::draw( mMeshSphere );
 		}
 	};
-
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// G-BUFFER
 	
@@ -148,13 +161,10 @@ void DeferredShadingApp::draw()
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
 			mGlslProgGBuffer->uniform( "uSampler",		0 );
 
-			// Draw cubes
+			// Draw shadow casters (spheres)
 			mGlslProgGBuffer->uniform( "uMaterialId",	0 );
-			mGlslProgGBuffer->uniform( "uSamplerMix",	0.7f );
-			{
-				gl::ScopedTextureBind scopedTextureBind( mTextureCube );
-				drawCubes();
-			}
+			mGlslProgGBuffer->uniform( "uSamplerMix",	0.0f );
+			drawSpheres();
 	
 			// Draw floor
 			gl::ScopedModelMatrix scopedModelMatrix;
@@ -185,7 +195,7 @@ void DeferredShadingApp::draw()
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// SHADOW MAP
 
-	// Draw cubes into FBO from view of shadow camera
+	// Draw shadow casters into FBO from view of shadow camera
 	{
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
@@ -197,7 +207,7 @@ void DeferredShadingApp::draw()
 		gl::clear();
 		gl::setMatrices( mShadowCamera );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
-		drawCubes();
+		drawSpheres();
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -318,7 +328,7 @@ void DeferredShadingApp::draw()
 		}
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSsao->getSize() );
 		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedAlphaBlend scopedAlphaBlend( false );
+		gl::ScopedAlphaBlend scopedAlphaBlend( true );
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
 		gl::clear();
@@ -861,7 +871,7 @@ void DeferredShadingApp::resize()
     glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR );
 
 	// Set up shadow camera
-	mShadowCamera.setPerspective( 150.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
 	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, -7.0f, 0.0f ) );
 }
 
@@ -914,30 +924,26 @@ void DeferredShadingApp::setup()
 	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 	
 	// Set default values for all properties
-	mDepthScale		= 0.02f;
+	mDepthScale		= 0.01f;
 	mDebugMode		= false;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
 	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mTextureCube	= gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ) );
+	mSpherePosition		= vec3( 0.0f, -4.0f, 0.0f );
+	mSphereVelocity		= -0.1f;
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
-	mLights.push_back( Light().setIntensity( 1.25f ).setPosition( vec3( 0.0f, 2.5f, 0.057f ) ).setRadius( 1.0f ).setVolume( 12.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.5f, 1.0f ) ).setIntensity( 1.0f ).setPosition( vec3(  5.0f, 0.0f, -5.0f ) ).setRadius( 0.5f ).setVolume( 8.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.5f, 1.0f ) ).setIntensity( 1.0f ).setPosition( vec3(  5.0f, 0.0f,  5.0f ) ).setRadius( 0.5f ).setVolume( 8.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.5f, 1.0f ) ).setIntensity( 1.0f ).setPosition( vec3( -5.0f, 0.0f, -5.0f ) ).setRadius( 0.5f ).setVolume( 8.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.5f, 1.0f ) ).setIntensity( 1.0f ).setPosition( vec3( -5.0f, 0.0f,  5.0f ) ).setRadius( 0.5f ).setVolume( 8.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) ).setIntensity( 0.75f ).setPosition( vec3(  10.0f, -6.0f,   0.0f ) ).setRadius( 0.25f ).setVolume( 4.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) ).setIntensity( 0.75f ).setPosition( vec3(   0.0f, -6.0f,  10.0f ) ).setRadius( 0.25f ).setVolume( 4.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) ).setIntensity( 0.75f ).setPosition( vec3( -10.0f, -6.0f,   0.0f ) ).setRadius( 0.25f ).setVolume( 4.0f ) );
-	mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) ).setIntensity( 0.75f ).setPosition( vec3(   0.0f, -6.0f, -10.0f ) ).setRadius( 0.25f ).setVolume( 4.0f ) );
+	mLights.push_back( Light().setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) ).setIntensity( 0.5f ).setPosition( vec3( 0.0f, 0.0f, 0.0f ) ).setRadius( 0.125f ).setVolume( 15.0f ) );
+	for ( size_t i = 0; i < 8; ++i ) {
+		mLights.push_back( Light().setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) ).setIntensity( 0.6f ).setRadius( 0.1f ).setVolume( 5.0f ) );
+	}
 	
 	// Set up materials
-	mMaterials.push_back( Material().setColorAmbient( ColorAf::black() ).setColorSpecular( ColorAf::gray( 0.2f ) ).setShininess( 100.0f ) ); // Cube
-	mMaterials.push_back( Material().setColorAmbient( ColorAf::black() ).setColorDiffuse( ColorAf::gray( 0.5f ) ).setColorSpecular( ColorAf::gray( 0.5f ) ).setShininess( 100.0f ) ); // Floor
+	mMaterials.push_back( Material().setColorAmbient( ColorAf::black() ).setColorDiffuse( ColorAf::white() ).setColorSpecular( ColorAf::white() ).setShininess( 300.0f ) ); // Sphere
+	mMaterials.push_back( Material().setColorAmbient( ColorAf::black() ).setColorDiffuse( ColorAf::gray( 0.5f ) ).setColorSpecular( ColorAf::white() ).setShininess( 500.0f ) ); // Floor
 	mMaterials.push_back( Material().setColorAmbient( ColorAf::black() ).setColorDiffuse( ColorAf::black() ).setColorEmission( ColorAf::white() ).setShininess( 100.0f ) ); // Light
 	mUboMaterial = gl::Ubo::create( sizeof( Material ) * mMaterials.size(), (GLvoid*)&mMaterials[ 0 ] );
 	gl::context()->bindBufferBase( mUboMaterial->getTarget(), 0, mUboMaterial );
@@ -945,23 +951,9 @@ void DeferredShadingApp::setup()
 	// Set up camera
 	ivec2 windowSize = toPixels( getWindowSize() );
 	CameraPersp cam( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( 6.0f, 3.0f, 15.0f ) );
-	cam.setCenterOfInterestPoint( vec3( 0.0f ) );
+	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
+	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
 	mMayaCam.setCurrentCam( cam );
-
-	// Create random cubes
-	for ( int32_t i = 0; i < 70; ++i ) {
-		mat4 m( 1.0f );
-		vec3 v( 
-			randFloat( 5.0f, 15.0f ), 
-			randFloat( 0.0f, 3.0f ), 
-			randFloat( 5.0f, 15.0f ) );
-		v *= randVec3f();
-		m = glm::translate( m, v );
-		m = glm::rotate( m, (float)M_PI, randVec3f() );
-		m = glm::scale( m, vec3( randFloat( 0.25f, 0.75f ) ) );
-		mCubes.push_back( m );
-	}
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 120 ) );
@@ -984,11 +976,37 @@ void DeferredShadingApp::update()
 		setFullScreen( mFullScreen );
 	}
 
-	// Update the cubes
-	float c = math<float>::cos( e );
-	float s	= math<float>::sin( e );
-	for ( mat4& m : mCubes ) {
-		m = glm::rotate( m, 0.01f, vec3( c, s, -c ) );
+	if ( !mLights.empty() ) {
+		float ground	= -6.5f;
+		float dampen	= 0.092f;
+		mSpherePosition.y		+= mSphereVelocity;
+		if ( mSphereVelocity > 0.0f ) {
+			mSphereVelocity *= ( 1.0f - dampen );
+		} else if ( mSphereVelocity < 0.0f ) {
+			mSphereVelocity *= ( 1.0f + dampen );
+		}
+		if ( mSpherePosition.y < ground ) {
+			mSpherePosition.y = ground;
+			mSphereVelocity	= -mSphereVelocity;
+		} else if ( mSphereVelocity > 0.0f && mSphereVelocity < 0.02f ) {
+			mSphereVelocity	= -mSphereVelocity;
+		}
+
+		size_t numLights	= mLights.size() - 1;
+		float t				= e;
+		float d				= ( (float)M_PI * 2.0f ) / (float)numLights;
+		float r				= 3.5f;
+		for ( size_t i = 0; i < numLights; ++i, t += d ) {
+			float ground	= -6.9f;
+			float x			= glm::cos( t );
+			float z			= glm::sin( t );
+			vec3 p			= vec3( x, 0.0f, z ) * r;
+			p.y				= ground + glm::sin( t + e * (float)M_PI ) * 2.0f;
+			if ( p.y < ground ) {
+				p.y			+= ( ground - p.y ) * 2.0f;
+			}
+			mLights.at( i + 1 ).setPosition( p );
+		}
 	}
 }
 
