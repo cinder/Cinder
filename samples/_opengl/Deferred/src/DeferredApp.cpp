@@ -200,7 +200,6 @@ void DeferredApp::draw()
 	
 			// Draw floor
 			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::ScopedColor scopedColor( ColorAf::gray( 0.5f ) );
 			mGlslProgGBuffer->uniform( "uDepthScale",	mDepthScale );
 			mGlslProgGBuffer->uniform( "uMaterialId",	1 );
 			mGlslProgGBuffer->uniform( "uTextureMix",	0.0f );
@@ -928,7 +927,7 @@ void DeferredApp::setup()
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
-	mMeshRect		= gl::VboMesh::create( geom::Rect().colors( Colorf::white(), Colorf::white(), Colorf::white(), Colorf::white() ) );
+	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
 	mTextureCube	= gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ) );
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
@@ -1001,7 +1000,7 @@ void DeferredApp::update()
 	}
 }
 
-CINDER_APP( DeferredApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 3 ) ), []( ci::app::App::Settings* settings )
+CINDER_APP( DeferredApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 3 ) ), []( App::Settings* settings )
 {
 	settings->setFrameRate( 60.0f );
 	settings->setTitle( "Deferred" );
