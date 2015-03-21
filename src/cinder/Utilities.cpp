@@ -29,11 +29,6 @@
 
 #if defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
-	#if defined( CINDER_MAC )
-		#import <Cocoa/Cocoa.h>
-	#elif defined( CINDER_COCOA_TOUCH )
-		#import <UIKit/UIKit.h>
-	#endif
 #endif
 
 #include <vector>
