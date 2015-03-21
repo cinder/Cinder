@@ -26,9 +26,8 @@
 
 #include <string>
 #include <vector>
-#if defined( CINDER_COCOA )
-	#include <map>
-#endif
+#include <map>
+
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
@@ -65,10 +64,8 @@ inline char getPathSeparator() { return '\\'; }
 inline char getPathSeparator() { return '/'; }
 #endif
 
-#if defined( CINDER_COCOA )
-//! Returns the process's environment variables.
+//! Returns a std::map of the system's environment variables. Empty on WinRT.
 std::map<std::string, std::string> getEnvironmentVariables();
-#endif
 
 template<typename T>
 inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }
