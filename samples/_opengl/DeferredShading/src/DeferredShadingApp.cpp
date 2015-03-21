@@ -80,7 +80,10 @@ private:
 	ci::gl::VboMeshRef			mMeshSphere;
 
 	bool						mEnabledBloom;
+	bool						mEnabledColor;
+	bool						mEnabledDoF;
 	bool						mEnabledFxaa;
+	bool						mEnabledSsao;
 	bool						mEnabledShadow;
 
 	float						mDepthScale;
@@ -322,7 +325,8 @@ void DeferredShadingApp::draw()
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// SSAO
 
-	{
+	if ( mEnabledSsao ) {
+		
 		// Set up window and clear buffers
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboSsao );
 		{
@@ -394,19 +398,24 @@ void DeferredShadingApp::draw()
 		gl::setMatricesWindow( mFboComposite->getSize() );
 	
 		// Blend L-buffer and shadows
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboLBuffer,		0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboSsaoVertical,	1 );
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgComposite );
-		mGlslProgComposite->uniform( "uSamplerLBuffer",	0 );
-		mGlslProgComposite->uniform( "uSamplerSsao",	1 );
-		drawRect( mFboComposite->getSize() );
+		if ( mEnabledSsao ) {
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFboLBuffer,		0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboSsaoVertical,	1 );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgComposite );
+			mGlslProgComposite->uniform( "uSamplerLBuffer",	0 );
+			mGlslProgComposite->uniform( "uSamplerSsao",	1 );
+			drawRect( mFboComposite->getSize() );
+		} else {
+			gl::draw( mTextureFboLBuffer );
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// DEPTH OF FIELD
 
-	// Set up window for depth of field pass
-	{
+	if ( mEnabledDoF ) {
+
+		// Set up window for depth of field pass
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboDof );
 		{
 			const static GLenum buffers[] = {
@@ -448,34 +457,34 @@ void DeferredShadingApp::draw()
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboDofHorizontal, 0 );
 			drawRect( mFboDof->getSize() );
 		}
-	}
 
-	// Perform a blend pass between composite and DoF buffers
-	{
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboDof );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboDof->getSize() );
-		gl::ScopedMatrices scopedMatrices;
-		gl::disableDepthRead();
-		gl::disableDepthWrite();
-		gl::clear();
-		gl::setMatricesWindow( mFboDof->getSize() );
+		// Perform a blend pass between composite and DoF buffers
+		{
+			gl::ScopedFramebuffer scopedFrameBuffer( mFboDof );
+			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
+			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboDof->getSize() );
+			gl::ScopedMatrices scopedMatrices;
+			gl::disableDepthRead();
+			gl::disableDepthWrite();
+			gl::clear();
+			gl::setMatricesWindow( mFboDof->getSize() );
 
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboComposite,		0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboDofVertical,	1 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFboComposite,		0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboDofVertical,	1 );
 
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgBlend );
-		mGlslProgBlend->uniform( "uBlend",		0.6f );
-		mGlslProgBlend->uniform( "uSampler0",	0 );
-		mGlslProgBlend->uniform( "uSampler1",	1 );
-		drawRect( mFboDof->getSize() );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgBlend );
+			mGlslProgBlend->uniform( "uBlend",		0.6f );
+			mGlslProgBlend->uniform( "uSampler0",	0 );
+			mGlslProgBlend->uniform( "uSampler1",	1 );
+			drawRect( mFboDof->getSize() );
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// COLOR
 
 	// Set up window for color processing pass
-	{
+	if ( mEnabledColor ) {
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboColor );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboColor->getSize() );
 		gl::ScopedMatrices scopedMatrices;
@@ -485,7 +494,7 @@ void DeferredShadingApp::draw()
 		gl::setMatricesWindow( mFboColor->getSize() );
 	
 		// Perform color processing pass
-		gl::ScopedTextureBind scopedTextureBind( mTextureFboDofHorizontal, 0 );
+		gl::ScopedTextureBind scopedTextureBind( mEnabledDoF ? mTextureFboDofHorizontal : mTextureFboComposite, 0 );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgColor );
 		mGlslProgColor->uniform( "uBlend",			0.5f );
 		mGlslProgColor->uniform( "uColorOffset",	0.0015f );
@@ -595,10 +604,15 @@ void DeferredShadingApp::draw()
 		gl::clear();
 		gl::setMatricesWindow( getWindowSize() );
 
+		gl::TextureRef& texture = mTextureFboColor;
+		if ( !mEnabledColor ) {
+			texture = mEnabledDoF ? mTextureFboDofHorizontal : mTextureFboComposite;
+		}
+		
 		// Perform FXAA
 		if ( mEnabledFxaa ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboColor, 0 );
+			gl::ScopedTextureBind scopedTextureBind( texture, 0 );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
 			mGlslProgFxaa->uniform( "uSampler",	0 );
 			drawRect( getWindowSize() );
@@ -611,7 +625,7 @@ void DeferredShadingApp::draw()
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomVertical, 0 );
-			drawRect( mFboComposite->getSize() );
+			drawRect( getWindowSize() );
 		}
 	}
 
@@ -936,8 +950,11 @@ void DeferredShadingApp::setup()
 	mDepthScale		= 0.01f;
 	mDebugMode		= false;
 	mEnabledBloom	= true;
+	mEnabledColor	= true;
+	mEnabledDoF		= true;
 	mEnabledFxaa	= true;
 	mEnabledShadow	= true;
+	mEnabledSsao	= true;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
@@ -968,16 +985,19 @@ void DeferredShadingApp::setup()
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 160 ) );
-	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
-	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
-	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
-	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 260 ) );
+	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
+	mParams->addParam( "Debug mode",		&mDebugMode ).key( "d" );
+	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
+	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
+	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
-	mParams->addParam( "Bloom",			&mEnabledBloom ).key( "b" );
-	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
-	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
+	mParams->addParam( "Bloom",				&mEnabledBloom ).group( "Pass" );
+	mParams->addParam( "Color",				&mEnabledColor ).group( "Pass" );
+	mParams->addParam( "Depth of Field",	&mEnabledDoF ).group( "Pass" );
+	mParams->addParam( "FXAA",				&mEnabledFxaa ).group( "Pass" );
+	mParams->addParam( "Shadows",			&mEnabledShadow ).group( "Pass" );
+	mParams->addParam( "SSAO",				&mEnabledSsao ).group( "Pass" );
 
 	// Call resize to create FBOs
 	resize();
@@ -1029,6 +1049,6 @@ void DeferredShadingApp::update()
 CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), []( App::Settings* settings )
 {
 	settings->disableFrameRate();
-	settings->setWindowSize( 1920, 1080 );
+	settings->setWindowSize( 1280, 720 );
 } )
  
