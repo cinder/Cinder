@@ -438,7 +438,10 @@ void GeometryApp::loadGeomSource( const geom::Source &source )
 	vec3 size = bbox.getMax() - bbox.getMin();
 	float scale = std::max( std::max( size.x, size.y ), size.z ) / 25.0f;
 	mPrimitiveNormalLines = gl::Batch::create( mesh >> geom::VertexNormalLines( scale ), gl::getStockShader( gl::ShaderDef().color() ) );
-	mPrimitiveTangentLines = gl::Batch::create( mesh >> geom::VertexNormalLines( scale, geom::TANGENT ), gl::getStockShader( gl::ShaderDef().color() ) );
+	if( mesh.hasTangents() )
+		mPrimitiveTangentLines = gl::Batch::create( mesh >> geom::VertexNormalLines( scale, geom::TANGENT ), gl::getStockShader( gl::ShaderDef().color() ) );
+	else
+		mPrimitiveTangentLines.reset();
 
 	getWindow()->setTitle( "Geometry - " + to_string( mesh.getNumVertices() ) + " vertices" );
 }
