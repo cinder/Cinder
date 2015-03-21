@@ -1348,7 +1348,7 @@
 		00E0B60C0F60DE8B002C8FBD /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
 		00E5A41B163F5A2B00AACB3A /* CaptureImplCocoaDummy.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CaptureImplCocoaDummy.h; sourceTree = "<group>"; };
 		00E5A41D163F5AC500AACB3A /* CaptureImplCocoaDummy.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = CaptureImplCocoaDummy.mm; sourceTree = "<group>"; };
-		00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
+		00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Utilities.cpp; sourceTree = "<group>"; };
 		00F3BD1F0EBF89B700382AC1 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		00F601C719F6C9DD00C83781 /* Ubo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ubo.cpp; path = gl/Ubo.cpp; sourceTree = "<group>"; };
 		00F601CB19F6CA2D00C83781 /* Ubo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ubo.h; path = gl/Ubo.h; sourceTree = "<group>"; };
