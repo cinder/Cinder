@@ -90,6 +90,7 @@ private:
 	
 	ci::CameraPersp				mShadowCamera;
 
+	float						mFloor;
 	ci::vec3					mSpherePosition;
 	float						mSphereVelocity;
 
@@ -133,7 +134,7 @@ void DeferredShadingApp::draw()
 			float x			= glm::cos( t );
 			float z			= glm::sin( t );
 			vec3 p			= vec3( x, 0.0f, z ) * r;
-			p.y				= -6.5f;
+			p.y				= mFloor + 0.5f;
 
 			gl::ScopedModelMatrix scopedModelMatrix;
 			gl::translate( p );
@@ -178,7 +179,7 @@ void DeferredShadingApp::draw()
 			mGlslProgGBuffer->uniform( "uDepthScale",	mDepthScale );
 			mGlslProgGBuffer->uniform( "uMaterialId",	1 );
 			mGlslProgGBuffer->uniform( "uSamplerMix",	0.0f );
-			gl::translate( vec3( 0.0f, -7.0f, 0.0f ) );
+			gl::translate( vec3( 0.0f, mFloor, 0.0f ) );
 			gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
 			gl::scale( vec3( 125.0f ) );
 			gl::draw( mMeshRect );
@@ -895,7 +896,7 @@ void DeferredShadingApp::resize()
 
 	// Set up shadow camera
 	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
-	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, -7.0f, 0.0f ) );
+	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
 void DeferredShadingApp::screenShot()
@@ -955,6 +956,7 @@ void DeferredShadingApp::setup()
 	mEnabledFxaa	= true;
 	mEnabledShadow	= true;
 	mEnabledSsao	= true;
+	mFloor			= -7.0f;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
@@ -1012,28 +1014,30 @@ void DeferredShadingApp::update()
 		setFullScreen( mFullScreen );
 	}
 
+	// Update center sphere position
+	float ground	= mFloor + 1.0f;
+	float dampen	= 0.092f;
+	mSpherePosition.y		+= mSphereVelocity;
+	if ( mSphereVelocity > 0.0f ) {
+		mSphereVelocity *= ( 1.0f - dampen );
+	} else if ( mSphereVelocity < 0.0f ) {
+		mSphereVelocity *= ( 1.0f + dampen );
+	}
+	if ( mSpherePosition.y < ground ) {
+		mSpherePosition.y = ground;
+		mSphereVelocity	= -mSphereVelocity;
+	} else if ( mSphereVelocity > 0.0f && mSphereVelocity < 0.02f ) {
+		mSphereVelocity	= -mSphereVelocity;
+	}
+	
+	// Update light positions
 	if ( !mLights.empty() ) {
-		float ground	= -6.5f;
-		float dampen	= 0.092f;
-		mSpherePosition.y		+= mSphereVelocity;
-		if ( mSphereVelocity > 0.0f ) {
-			mSphereVelocity *= ( 1.0f - dampen );
-		} else if ( mSphereVelocity < 0.0f ) {
-			mSphereVelocity *= ( 1.0f + dampen );
-		}
-		if ( mSpherePosition.y < ground ) {
-			mSpherePosition.y = ground;
-			mSphereVelocity	= -mSphereVelocity;
-		} else if ( mSphereVelocity > 0.0f && mSphereVelocity < 0.02f ) {
-			mSphereVelocity	= -mSphereVelocity;
-		}
-
 		size_t numLights	= mLights.size() - 1;
 		float t				= e;
 		float d				= ( (float)M_PI * 2.0f ) / (float)numLights;
 		float r				= 3.5f;
 		for ( size_t i = 0; i < numLights; ++i, t += d ) {
-			float ground	= -6.9f;
+			float ground	= mFloor + 0.1f;
 			float x			= glm::cos( t );
 			float z			= glm::sin( t );
 			vec3 p			= vec3( x, 0.0f, z ) * r;
