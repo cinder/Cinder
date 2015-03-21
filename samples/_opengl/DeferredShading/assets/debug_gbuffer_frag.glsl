@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 const int MODE_ALBEDO	= 0;
 const int MODE_MATERIAL	= 1;

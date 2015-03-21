@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 uniform sampler2D	uSamplerLBuffer;
 uniform sampler2D	uSamplerSsao;

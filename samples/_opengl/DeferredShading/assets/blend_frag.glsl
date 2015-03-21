@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 uniform float		uBlend;
 uniform sampler2D	uSampler0;

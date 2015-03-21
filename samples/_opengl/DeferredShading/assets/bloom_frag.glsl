@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 const uint MATERIAL_COUNT = 4;
 

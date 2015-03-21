@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 uniform mat4 	ciModelView;
 uniform mat3 	ciNormalMatrix;

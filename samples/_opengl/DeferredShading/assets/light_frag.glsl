@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.06095261, -0.1337204 ),
@@ -35,6 +35,7 @@ uniform vec3	uLightPosition;
 uniform float	uLightRadius;
 
 uniform float	uShadowBlurSize;
+uniform bool	uShadowEnabled;
 uniform mat4 	uShadowMatrix;
 uniform float	uShadowMix;
 uniform float	uShadowSamples;
@@ -127,6 +128,8 @@ void main( void )
 	float att			= 1.0 / pow( ( d / ( 1.0 - pow( d / uLightRadius, 2.0 ) ) ) / uLightRadius + 1.0, 2.0 ); 
 
 	oColor 				= Ia + att * ( Id + Is ) + Ie;
-	oColor				*= shadow( position );
+	if ( uShadowEnabled ) {
+		oColor				*= shadow( position );
+	}
 	oColor				*= uLightIntensity;
 }

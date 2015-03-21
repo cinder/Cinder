@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 uniform vec2		uPixel;
 uniform sampler2D	uSampler;

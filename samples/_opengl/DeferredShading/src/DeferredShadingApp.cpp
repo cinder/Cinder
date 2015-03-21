@@ -20,6 +20,9 @@ public:
 	void						setup() override;
 	void						update() override;
 private:
+	void						drawRect( const ci::ivec2& sz );
+	void						drawRect( const ci::vec2& pos, const ci::ivec2& sz );
+
 	ci::MayaCamUI				mMayaCam;
 
 	std::vector<Light>			mLights;
@@ -76,15 +79,14 @@ private:
 	ci::gl::VboMeshRef			mMeshRect;
 	ci::gl::VboMeshRef			mMeshSphere;
 
-	void						drawRect( const ci::ivec2& sz );
-	void						drawRect( const ci::vec2& pos, const ci::ivec2& sz );
+	bool						mEnabledBloom;
+	bool						mEnabledFxaa;
+	bool						mEnabledShadow;
 
-	bool						mBloom;
 	float						mDepthScale;
-	bool						mFxaa;
-
-	ci::CameraPersp				mShadowCamera;
 	
+	ci::CameraPersp				mShadowCamera;
+
 	ci::vec3					mSpherePosition;
 	float						mSphereVelocity;
 
@@ -198,7 +200,7 @@ void DeferredShadingApp::draw()
 	// SHADOW MAP
 
 	// Draw shadow casters into FBO from view of shadow camera
-	{
+	if ( mEnabledShadow ) {
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
 		gl::ScopedMatrices scopedMatrices;
@@ -233,7 +235,9 @@ void DeferredShadingApp::draw()
 		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferMaterial,		1 );
 		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	2 );
 		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		3 );
-		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,				4 );
+		if ( mEnabledShadow ) {
+			gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap, 4 );
+		}
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgLight );
 		mGlslProgLight->uniform( "uSamplerAlbedo",		0 );
@@ -242,9 +246,10 @@ void DeferredShadingApp::draw()
 		mGlslProgLight->uniform( "uSamplerPosition",	3 );
 		mGlslProgLight->uniform( "uSamplerShadowMap",	4 );
 		mGlslProgLight->uniform( "uShadowBlurSize",		0.0025f );
+		mGlslProgLight->uniform( "uShadowEnabled",		mEnabledShadow );
 		mGlslProgLight->uniform( "uShadowMatrix",		shadowMatrix );
 		mGlslProgLight->uniform( "uShadowMix",			0.5f );
-		mGlslProgLight->uniform( "uShadowSamples",		8.0f );
+		mGlslProgLight->uniform( "uShadowSamples",		4.0f );
 		mGlslProgLight->uniform( "uViewMatrixInverse",	mMayaCam.getCamera().getInverseViewMatrix() );
 		mGlslProgLight->uniformBlock( 0, 0 );
 
@@ -267,7 +272,7 @@ void DeferredShadingApp::draw()
 	////////////////////////////////////////////////////////////////////////////////////////////
 	// BLOOM
 
-	if ( mBloom ) {
+	if ( mEnabledBloom ) {
 		// Set up window and clear buffers
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboBloom );
 		{	
@@ -591,7 +596,7 @@ void DeferredShadingApp::draw()
 		gl::setMatricesWindow( getWindowSize() );
 
 		// Perform FXAA
-		if ( mFxaa ) {
+		if ( mEnabledFxaa ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboColor, 0 );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
@@ -602,7 +607,7 @@ void DeferredShadingApp::draw()
 		}
 
 		// Draw bloom on top
-		if ( mBloom ) {
+		if ( mEnabledBloom ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomVertical, 0 );
@@ -827,7 +832,7 @@ void DeferredShadingApp::resize()
 
 	// Shadow buffer
 	{
-		uint32_t sz = 2048;
+		uint32_t sz = 1024;
 		gl::Texture2d::Format depthFormat;
 		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
 		depthFormat.setMagFilter( GL_LINEAR );
@@ -928,10 +933,11 @@ void DeferredShadingApp::setup()
 	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 	
 	// Set default values for all properties
-	mBloom			= true;
 	mDepthScale		= 0.01f;
 	mDebugMode		= false;
-	mFxaa			= true;
+	mEnabledBloom	= true;
+	mEnabledFxaa	= true;
+	mEnabledShadow	= true;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
@@ -969,8 +975,9 @@ void DeferredShadingApp::setup()
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
 	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
-	mParams->addParam( "Bloom",			&mBloom ).key( "b" );
-	mParams->addParam( "FXAA",			&mFxaa ).key( "a" );
+	mParams->addParam( "Bloom",			&mEnabledBloom ).key( "b" );
+	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
+	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
 
 	// Call resize to create FBOs
 	resize();
@@ -1019,10 +1026,9 @@ void DeferredShadingApp::update()
 	}
 }
 
-CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 1 ) ), []( App::Settings* settings )
+CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), []( App::Settings* settings )
 {
 	settings->disableFrameRate();
-	settings->setTitle( "Deferred" );
 	settings->setWindowSize( 1920, 1080 );
 } )
  

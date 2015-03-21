@@ -1,4 +1,4 @@
-#version 410 core
+#version 400 core
 
 out vec4 oColor;
 
