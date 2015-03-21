@@ -18,13 +18,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\DeferredShadingApp.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\Light.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DeferredShadingAdvancedApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -78,7 +78,7 @@
     <None Include="..\assets\gbuffer_vert.glsl">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\light_vert.glsl">
+    <None Include="..\assets\lbuffer_frag.glsl">
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\passThrough_vert.glsl">
@@ -94,9 +94,6 @@
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\ssao_vert.glsl">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\light_frag.glsl">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

@@ -20,8 +20,9 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{300BC54D-132A-4D01-A591-FF8F3EB42467}</ProjectGuid>
-    <RootNamespace>DeferredShading</RootNamespace>
+    <RootNamespace>DeferredShadingAdvanced</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>DeferredShadingAdvanced</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
@@ -200,9 +201,13 @@
     <ResourceCompile Include="Resources.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\DeferredShadingApp.cpp" />
+    <ClCompile Include="..\src\DeferredShadingAdvancedApp.cpp" />
     <ClCompile Include="..\src\Light.cpp" />
     <ClCompile Include="..\src\Material.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Light.h" />
+    <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\blend_frag.glsl" />
@@ -217,8 +222,7 @@
     <None Include="..\assets\gbuffer_frag.glsl" />
     <None Include="..\assets\gbuffer_light_frag.glsl" />
     <None Include="..\assets\gbuffer_vert.glsl" />
-    <None Include="..\assets\light_frag.glsl" />
-    <None Include="..\assets\light_vert.glsl" />
+    <None Include="..\assets\lbuffer_frag.glsl" />
     <None Include="..\assets\passThrough_vert.glsl" />
     <None Include="..\assets\shadow_map_frag.glsl" />
     <None Include="..\assets\shadow_map_vert.glsl" />
@@ -227,10 +231,6 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\include\Light.h" />
-    <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

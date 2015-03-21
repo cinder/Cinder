@@ -202,35 +202,22 @@
   <ItemGroup>
     <ClCompile Include="..\src\DeferredShadingApp.cpp" />
     <ClCompile Include="..\src\Light.cpp" />
-    <ClCompile Include="..\src\Material.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\assets\blend_frag.glsl" />
-    <None Include="..\assets\bloom_frag.glsl" />
-    <None Include="..\assets\blur_frag.glsl" />
-    <None Include="..\assets\color_frag.glsl" />
-    <None Include="..\assets\composite_frag.glsl" />
-    <None Include="..\assets\debug_gbuffer_frag.glsl" />
-    <None Include="..\assets\debug_material_frag.glsl" />
-    <None Include="..\assets\dof_frag.glsl" />
-    <None Include="..\assets\fxaa_frag.glsl" />
-    <None Include="..\assets\gbuffer_frag.glsl" />
-    <None Include="..\assets\gbuffer_light_frag.glsl" />
-    <None Include="..\assets\gbuffer_vert.glsl" />
-    <None Include="..\assets\light_frag.glsl" />
-    <None Include="..\assets\light_vert.glsl" />
-    <None Include="..\assets\passThrough_vert.glsl" />
-    <None Include="..\assets\shadow_map_frag.glsl" />
-    <None Include="..\assets\shadow_map_vert.glsl" />
-    <None Include="..\assets\ssao_frag.glsl" />
-    <None Include="..\assets\ssao_vert.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Light.h" />
-    <ClInclude Include="..\include\Material.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\debug_gbuffer_frag.glsl" />
+    <None Include="..\assets\fxaa_frag.glsl" />
+    <None Include="..\assets\gbuffer_frag.glsl" />
+    <None Include="..\assets\gbuffer_vert.glsl" />
+    <None Include="..\assets\lbuffer_frag.glsl" />
+    <None Include="..\assets\passThrough_vert.glsl" />
+    <None Include="..\assets\shadow_map_frag.glsl" />
+    <None Include="..\assets\shadow_map_vert.glsl" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\assets\random.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
