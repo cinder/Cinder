@@ -1355,7 +1355,10 @@ class DefaultVboTarget : public geom::Target {
 
 		for( const auto &attrib : source->getAvailableAttribs() ) {
 			uint8_t attribDims = source->getAttribDims( attrib );
-			requiredSize += numVertices * attribDims * sizeof( float );
+			if( attribDims > 0 ) {
+				mRequestedAttribs.push_back( attrib );
+				requiredSize += numVertices * attribDims * sizeof( float );
+			}
 		}
 
 		mArrayVbo = mContext->getDefaultArrayVbo( requiredSize );
@@ -1390,6 +1393,10 @@ class DefaultVboTarget : public geom::Target {
 	// TODO: what about stride?
 	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *sourceData, size_t count ) override
 	{
+		// sometimes a geom::Source will give us an attribute we didn't actually want. In particular, COLOR
+		if( find( mRequestedAttribs.begin(), mRequestedAttribs.end(), attr ) == mRequestedAttribs.end() )
+			return;
+	
 		int loc = mGlslProg->getAttribSemanticLocation( attr );
 		if( loc >= 0 ) {
 			size_t totalBytes = count * dims * sizeof(float);
@@ -1421,11 +1428,14 @@ class DefaultVboTarget : public geom::Target {
 		mElementVbo->bufferSubData( 0, numIndices * requiredBytesPerIndex, sourceData );
 	}
 
-	const geom::Source*	mSource;
-	Context*			mContext;
+	const geom::Source*		mSource;
+	Context*				mContext;
+	vector<geom::Attrib>	mRequestedAttribs;
+
 	gl::VboRef			mArrayVbo, mElementVbo;
 	const gl::GlslProg*	mGlslProg;
 	size_t				mArrayVboOffset;
+	
 	
 	GLenum				mIndexType;
 	

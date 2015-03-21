@@ -547,7 +547,8 @@ class Cylinder : public Source {
 
 class Cone : public Cylinder {
   public:
-	Cone() { radius( 1.0f, 0.0f ); }
+	Cone()
+	{ radius( 1.0f, 0.0f ); }
 
 	//! Enables colors. Disabled by default.
 	Cone&	colors( bool enable = true ) { mHasColors = enable; return *this; }
