@@ -83,6 +83,8 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
+	std::map<std::string,std::string>	getEnvironmentVariables() override;
+
 	fs::path	expandPath( const fs::path &path ) override;
 	fs::path	getHomeDirectory() override;
 	fs::path	getDocumentsDirectory()	override;
