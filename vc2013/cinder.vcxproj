@@ -502,6 +502,7 @@
     <ClCompile Include="..\src\cinder\gl\Pbo.cpp" />
     <ClCompile Include="..\src\cinder\gl\Query.cpp" />
     <ClCompile Include="..\src\cinder\gl\Shader.cpp" />
+    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp" />
     <ClCompile Include="..\src\cinder\gl\Sync.cpp" />
     <ClCompile Include="..\src\cinder\gl\Texture.cpp" />
     <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
@@ -732,6 +733,7 @@
     <ClInclude Include="..\include\cinder\gl\Pbo.h" />
     <ClInclude Include="..\include\cinder\gl\Query.h" />
     <ClInclude Include="..\include\cinder\gl\Shader.h" />
+    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h" />
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
     <ClInclude Include="..\include\cinder\gl\Sync.h" />
     <ClInclude Include="..\include\cinder\gl\Texture.h" />

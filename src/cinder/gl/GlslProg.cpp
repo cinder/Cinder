@@ -38,8 +38,9 @@ GlslProg::AttribSemanticMap		GlslProg::sDefaultAttribNameToSemanticMap;
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
 GlslProg::Format::Format()
+	: mPreprocessingEnabled( true ), mVersion( 0 )
 #if ! defined( CINDER_GL_ES_2 )
-	: mTransformFormat( -1 )
+	, mTransformFormat( -1 )
 #endif
 {
 	mAttribSemanticLocMap[geom::Attrib::POSITION] = 0;
@@ -47,125 +48,90 @@ GlslProg::Format::Format()
 
 GlslProg::Format& GlslProg::Format::vertex( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mVertexShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mVertexShader.data(), buffer.getData(), buffer.getDataSize() );
-		mVertexShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mVertexShader.clear();
-
+	setShaderSource( dataSource, &mVertexShader, &mVertexShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::vertex( const string &vertexShader )
 {
-	if( ! vertexShader.empty() )
-		mVertexShader = vertexShader;
-	else
-		mVertexShader.clear();
-
+	setShaderSource( vertexShader, &mVertexShader, &mVertexShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mFragmentShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mFragmentShader.data(), buffer.getData(), buffer.getDataSize() );
-		mFragmentShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mFragmentShader.clear();
-		
+	setShaderSource( dataSource, &mFragmentShader, &mFragmentShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 {
-	if( ! fragmentShader.empty() )
-		mFragmentShader = fragmentShader;
-	else
-		mFragmentShader.clear();
-
+	setShaderSource( fragmentShader, &mFragmentShader, &mFragmentShaderPath );
 	return *this;
 }
 
 #if ! defined( CINDER_GL_ES )
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mGeometryShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mGeometryShader.data(), buffer.getData(), buffer.getDataSize() );
-		mGeometryShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mGeometryShader.clear();
-		
+	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 {
-	if( ! geometryShader.empty() )
-		mGeometryShader = geometryShader;
-	else
-		mGeometryShader.clear();
-
+	setShaderSource( geometryShader, &mGeometryShader, &mGeometryShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mTessellationCtrlShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mTessellationCtrlShader.data(), buffer.getData(), buffer.getDataSize() );
-		mTessellationCtrlShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mTessellationCtrlShader.clear();
-	
+	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const string &tessellationCtrlShader )
 {
-	if( ! tessellationCtrlShader.empty() )
-		mTessellationCtrlShader = tessellationCtrlShader;
-	else
-		mTessellationCtrlShader.clear();
-	
+	setShaderSource( tessellationCtrlShader, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const DataSourceRef &dataSource )
 {
-	if( dataSource ) {
-		Buffer buffer( dataSource );
-		mTessellationEvalShader.resize( buffer.getDataSize() + 1 );
-		memcpy( (void*)mTessellationEvalShader.data(), buffer.getData(), buffer.getDataSize() );
-		mTessellationEvalShader[buffer.getDataSize()] = 0;
-	}
-	else
-		mTessellationEvalShader.clear();
-	
+	setShaderSource( dataSource, &mTessellationEvalShader, &mTessellationEvalShaderPath );
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellationEvalShader )
 {
-	if( ! tessellationEvalShader.empty() )
-		mTessellationEvalShader = tessellationEvalShader;
-	else
-		mTessellationEvalShader.clear();
-	
+	setShaderSource( tessellationEvalShader, &mTessellationEvalShader, &mTessellationEvalShaderPath );
 	return *this;
 }
+
 #endif // ! defined( CINDER_GL_ES )
+
+void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
+{
+	if( dataSource ) {
+		Buffer buffer( dataSource );
+		shaderSourceDest->resize( buffer.getDataSize() + 1 );
+		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getDataSize() );
+		(*shaderSourceDest)[buffer.getDataSize()] = 0;
+		if( dataSource->isFilePath() )
+			*shaderPathDest = dataSource->getFilePath();
+		else
+			shaderPathDest->clear();
+	}
+	else {
+		shaderSourceDest->clear();
+		shaderPathDest->clear();
+	}
+}
+
+void GlslProg::Format::setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest )
+{
+	*shaderSourceDest = source;
+	shaderPathDest->clear();
+}
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
@@ -176,6 +142,30 @@ GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::st
 GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std::string &attribName )
 {
 	mUniformSemanticMap[attribName] = semantic;
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::define( const std::string &define )
+{
+	mDefineDirectives.push_back( define );
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::define( const std::string &define, const std::string &value )
+{
+	mDefineDirectives.push_back( define + " " + value );
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::defineDirectives( const std::vector<std::string> &defines )
+{
+	mDefineDirectives = defines;
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::version( int version )
+{
+	mVersion = version;
 	return *this;
 }
 
@@ -248,21 +238,29 @@ GlslProg::~GlslProg()
 GlslProg::GlslProg( const Format &format )
 	: mActiveUniformTypesCached( false ), mActiveAttribTypesCached( false ),
 	mUniformSemanticsCached( false ), mUniformNameToSemanticMap( getDefaultUniformNameToSemanticMap() ),
-	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() )
+	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() ),
+	mPreprocessingEnabled( format.isPreprocessingEnabled() )
 {
 	mHandle = glCreateProgram();
 	
+	// copy the Format's define directives vector
+	for( const auto &define : format.getDefineDirectives() )
+		mShaderPreprocessor.addDefine( define );
+
+	if( format.getVersion() )
+		mShaderPreprocessor.setVersion( format.getVersion() );
+	
 	if( ! format.getVertex().empty() )
-		loadShader( format.getVertex(), GL_VERTEX_SHADER );
+		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
-		loadShader( format.getFragment(), GL_FRAGMENT_SHADER );
+		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER );
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), GL_GEOMETRY_SHADER );
+		loadShader( format.getGeometry(), format.mFragmentShaderPath, GL_GEOMETRY_SHADER );
 	if( ! format.getTessellationCtrl().empty() )
-		loadShader( format.getTessellationCtrl(), GL_TESS_CONTROL_SHADER );
+		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
-		loadShader( format.getTessellationEval(), GL_TESS_EVALUATION_SHADER );
+		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
 
 	// copy the Format's attribute-semantic map
@@ -377,11 +375,19 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 	return sDefaultAttribNameToSemanticMap;
 }
 
-void GlslProg::loadShader( const std::string &shaderSource, GLint shaderType )
+void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType )
 {
 	GLuint handle = glCreateShader( shaderType );
-	const char *cStr = shaderSource.c_str();
-	glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	if( mPreprocessingEnabled ) {
+		string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderPath );
+		const char *cStr = preprocessedSource.c_str();
+		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	}
+	else {
+		const char *cStr = shaderSource.c_str();
+		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
+	}
+
 	glCompileShader( handle );
 	
 	GLint status;
