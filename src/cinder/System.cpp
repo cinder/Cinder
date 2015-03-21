@@ -610,13 +610,19 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		currentInterface = interfaces;
 		while( currentInterface ) {
 			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
-				char host[NI_MAXHOST];
+				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
 				int result = getnameinfo( currentInterface->ifa_addr,
                            (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
                            host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
 				if( result != 0 )
 					continue;
-				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, currentInterface->ifa_netmask ) );
+				result = getnameinfo( currentInterface->ifa_netmask,
+                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                           subnetMask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( result != 0 )
+					continue;
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, subnetMask ) );
+
 			}
 			currentInterface = currentInterface->ifa_next;
 		}

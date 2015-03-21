@@ -80,7 +80,7 @@ class System {
 		const std::string&	getIpAddress() const { return mIpAddress; }
 		const std::string&	getSubnetMask() const { return mSubnetMask; }
 
-		NetworkAdapter(const std::string &name, const std::string &ip, const std::string &subnetMask)
+		NetworkAdapter( const std::string &name, const std::string &ip, const std::string &subnetMask )
 			: mName( name ), mIpAddress( ip ), mSubnetMask( subnetMask ) {}
 
 	  private:
@@ -117,7 +117,7 @@ class System {
 
 inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
 {
-	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
+	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress() << " Subnet: " << adapter.getSubnetMask();
 	return outp;
 }
 
