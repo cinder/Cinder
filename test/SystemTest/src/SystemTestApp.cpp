@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
-#include "cinder/qtime/QuickTime.h"
+//#include "cinder/qtime/QuickTime.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -26,13 +27,14 @@ void SystemTestApp::setup()
 	console() << " has 64 bit:" << System::hasX86_64() << std::endl;
 	console() << " CPUs:" << System::getNumCpus() << std::endl;
 	console() << " Cores:" << System::getNumCores() << std::endl;
-	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;	
+//	console() << " QuickTime version: " << std::hex << qtime::getQuickTimeVersion() << std::dec << " (" << qtime::getQuickTimeVersionString() << ")" << std::endl;
 	
 	console() << "Network Adapters: " << std::endl;
 	vector<System::NetworkAdapter> adapters = System::getNetworkAdapters();
 	for( vector<System::NetworkAdapter>::const_iterator netIt = adapters.begin(); netIt != adapters.end(); ++netIt )
 		console() << "  " << *netIt << std::endl;
 	console() << "IP Address: " << System::getIpAddress() << std::endl;
+	console() << "Subnet Mask: " << System::getSubnetMask() << std::endl;
 }
 
 CINDER_APP( SystemTestApp, RendererGl )
