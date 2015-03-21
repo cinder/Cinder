@@ -616,7 +616,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
                            host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
 				if( result != 0 )
 					continue;
-				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host ) );
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, currentInterface->ifa_netmask ) );
 			}
 			currentInterface = currentInterface->ifa_next;
 		}
@@ -645,7 +645,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
     if( (dwRetVal = ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen )) == NO_ERROR ) {
         pAdapter = pAdapterInfo;
         while( pAdapter ) {
-			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String ) );
+			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String, pAdapter->IpAddressList.IpMask.String ) );
             pAdapter = pAdapter->Next;
         }
     }
@@ -655,7 +655,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 #elif defined( CINDER_WINRT )
 	auto hosts = NetworkInformation::GetHostNames();
 	std::for_each(begin(hosts), end(hosts), [&](HostName^ n) {
-		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName) ) );
+		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), PlatformStringToString(n->IPInformation.PrefixLength.ToString()) ) );
 	});
 #else
 		throw Exception( "Not implemented" );
@@ -663,6 +663,17 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 
 	return adapters;
 
+}
+
+std::string System::getSubnetMask() {
+	auto preferredIpAddress = System::getIpAddress();
+	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
+	for (vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt) {
+		if (adaptIt->getIpAddress() == preferredIpAddress) {
+			return adaptIt->getSubnetMask();
+		}
+	}
+	return "0.0.0.0";
 }
 
 #if defined( CINDER_WINRT )
