@@ -114,7 +114,7 @@ map<string,string> PlatformMsw::getEnvironmentVariables()
 	size_t prevIdx = 0, idx = 0;
 	std::string keyString;
 	while( true ) {
-		if( env[idx] == TCHAR('=') ) {
+		if( ( env[idx] == TCHAR('=') ) && keyString.empty() ) {
 			keyString = msw::toUtf8String( std::wstring(env + prevIdx, env + idx) );
 			prevIdx = idx + 1;
 		}
@@ -123,6 +123,7 @@ map<string,string> PlatformMsw::getEnvironmentVariables()
 			prevIdx = idx + 1;
 			if( env[idx + 1] == TCHAR('\0'))
 				break;
+			keyString.clear();
 		}
 
 		++idx;
