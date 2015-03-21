@@ -1,4 +1,4 @@
-#version 330
+	    #version 330 // testing that #version still works with spaces, tabs, and comment
 
 uniform mat4	ciModelViewProjection;
 in vec4			ciPosition;
