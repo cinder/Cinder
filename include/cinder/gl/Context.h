@@ -381,6 +381,10 @@ class Context {
 	void		drawArrays( GLenum mode, GLint first, GLsizei count );
 	//! Analogous to glDrawElements()
 	void		drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
+#if (! defined( CINDER_GL_ES_2 ))
+	//! Analogous to glDrawRangeElements()
+	void		drawRangeElements( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
+#endif // (! defined( CINDER_GL_ES_2 ))
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 	//! Analogous to glDrawArraysInstanced()
 	void		drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount );

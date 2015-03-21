@@ -441,6 +441,9 @@ void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
 
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
+#if (! defined( CINDER_GL_ES_2 ))
+void	drawRangeElements( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices );
+#endif // ( !defined( CINDER_GL_ES_2 ) )
 	
 GLenum getError();
 std::string getErrorString( GLenum err );

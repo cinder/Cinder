@@ -416,6 +416,16 @@ void VboMesh::drawImpl()
 		glDrawArrays( mGlPrimitive, 0, mNumVertices );
 }
 
+void VboMesh::drawImpl( GLuint start, GLsizei count )
+{
+	if( mNumIndices ) {
+		CI_LOG_W( "Specifying a vertex range is not supported for indexed data. Use non-indexed data instead." );
+		glDrawElements( mGlPrimitive, mNumIndices, mIndexType, (GLvoid*) ( 0 ) );
+	}
+	else
+		glDrawArrays( mGlPrimitive, start, count );
+}
+
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();

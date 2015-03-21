@@ -1671,6 +1671,13 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
+#if (! defined( CINDER_GL_ES_2 ))
+void Context::drawRangeElements( GLenum mode, GLuint start, GLuint end, GLsizei count, GLenum type, const GLvoid *indices )
+{
+	glDrawRangeElements( mode, start, end, count, type, indices );
+}
+#endif
+
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {

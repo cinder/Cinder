@@ -138,6 +138,16 @@ void Batch::draw()
 	mVboMesh->drawImpl();
 }
 
+void Batch::draw( GLuint start, GLsizei count )
+{
+	auto ctx = gl::context();
+
+	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
+	gl::ScopedVao ScopedVao( mVao );
+	ctx->setDefaultShaderVars();
+	mVboMesh->drawImpl( start, count );
+}
+
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 void Batch::drawInstanced( GLsizei instanceCount )
 {

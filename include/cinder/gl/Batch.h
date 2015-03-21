@@ -48,6 +48,7 @@ class Batch {
 	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	
 	void			draw();
+	void			draw( GLuint start, GLsizei count );
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 	void			drawInstanced( GLsizei instanceCount );
 #endif
