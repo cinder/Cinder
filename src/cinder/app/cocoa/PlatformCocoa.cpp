@@ -45,6 +45,9 @@ namespace cinder { namespace app {
 
 PlatformCocoa::PlatformCocoa()
 	: mBundle( nil ), mDisplaysInitialized( false )
+#if defined( CINDER_MAC )
+	, mInsideModalLoop( false )
+#endif
 {
 	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
 	
@@ -131,6 +134,23 @@ void PlatformCocoa::prepareAssetLoading()
 	}
 }
 
+map<string,string> PlatformCocoa::getEnvironmentVariables()
+{
+	__block std::map<std::string, std::string> result;
+	NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+	[environment enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		if( (! [key isKindOfClass:[NSString class]]) || (! [obj isKindOfClass:[NSString class]]) ) {
+			return;
+		}
+
+		std::string k = ci::cocoa::convertNsString( key );
+		std::string v = ci::cocoa::convertNsString( obj );
+		result[k] = v;
+	}];
+
+	return result;
+}
+
 fs::path PlatformCocoa::expandPath( const fs::path &path )
 {
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
@@ -191,7 +211,9 @@ fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vect
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -218,7 +240,9 @@ fs::path PlatformCocoa::getFolderPath( const fs::path &initialPath )
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -268,8 +292,10 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 			[cinderSave setNameFieldStringValue:file];
 	}
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderSave runModal];
-
+	setInsideModalLoop( false );
+	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
 	}

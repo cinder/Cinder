@@ -143,6 +143,7 @@ void mouseDown( int twWindowId, app::MouseEvent &event )
 
 void mouseUp( int twWindowId, app::MouseEvent &event )
 {
+	auto oldCtx = gl::context();
 	pushGlState();
 	
 	TwSetCurrentWindow( twWindowId );
@@ -155,6 +156,9 @@ void mouseUp( int twWindowId, app::MouseEvent &event )
 	else
 		button = TW_MOUSE_MIDDLE;
 	event.setHandled( TwMouseButton( TW_MOUSE_RELEASED, button ) != 0 );
+	
+	// The button handler may have tweaked the current GL context, in which case, let's force it back to what it was
+	oldCtx->makeCurrent( true );
 	
 	popGlState();
 }

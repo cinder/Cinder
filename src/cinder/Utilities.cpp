@@ -27,6 +27,10 @@
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
+#if defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
+#endif
+
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -55,6 +59,11 @@ fs::path getDocumentsDirectory()
 void launchWebBrowser( const Url &url )
 {
 	app::Platform::get()->launchWebBrowser( url );
+}
+
+std::map<std::string, std::string> getEnvironmentVariables()
+{
+	return app::Platform::get()->getEnvironmentVariables();
 }
 
 std::vector<std::string> split( const std::string &str, char separator, bool compress )

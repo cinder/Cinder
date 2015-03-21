@@ -462,7 +462,8 @@ void Target::generateIndices( Primitive sourcePrimitive, size_t sourceNumIndices
 const float Rect::sNormals[4*3] = {0, 0, 1,	0, 0, 1,	0, 0, 1,	0, 0, 1 };
 const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0,	0.7071067f, 0.7071067f, 0 };
 
-Rect::Rect() : mHasColors( false )
+Rect::Rect()
+	: mHasColors( false )
 {
 	// upper-right, upper-left, lower-right, lower-left
 	mPositions[0] = vec2(  0.5f, -0.5f );
@@ -474,6 +475,7 @@ Rect::Rect() : mHasColors( false )
 }
 
 Rect::Rect( const Rectf &r )
+	: mHasColors( false )
 {
 	rect( r );
 	setDefaultColors();
@@ -583,12 +585,6 @@ Cube::Cube()
 	mColors[5] = Color(1,1,0);
 }
 
-Cube& Cube::colors()
-{
-	mHasColors = true;
-	return *this;
-}
-
 Cube& Cube::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ )
 {
 	mHasColors = true;
@@ -598,12 +594,6 @@ Cube& Cube::colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &pos
 	mColors[3] = negY;
 	mColors[4] = posZ;
 	mColors[5] = negZ;
-	return *this;
-}
-
-Cube& Cube::disableColors()
-{
-	mHasColors = false;
 	return *this;
 }
 

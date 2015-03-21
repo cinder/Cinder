@@ -774,6 +774,9 @@
     <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
       <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1612,6 +1615,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
       <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

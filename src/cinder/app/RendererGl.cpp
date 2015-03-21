@@ -78,7 +78,7 @@ void RendererGl::startDraw()
 	if( mStartDrawFn )
 		mStartDrawFn( this );
 	else
-		[mImpl makeCurrentContext];
+		[mImpl makeCurrentContext:false];
 }
 
 void RendererGl::finishDraw()
@@ -127,9 +127,9 @@ NSOpenGLContext* RendererGl::getNsOpenGlContext()
 	return [mImpl getNsOpenGlContext];
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:force];
 }
 
 void RendererGl::swapBuffers()
@@ -155,7 +155,7 @@ EAGLContext* RendererGl::getEaglContext() const
 
 void RendererGl::startDraw()
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:false];
 }
 
 void RendererGl::finishDraw()
@@ -173,9 +173,9 @@ void RendererGl::defaultResize()
 	[mImpl defaultResize];
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force)
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:force];
 }
 
 void RendererGl::swapBuffers()
@@ -239,9 +239,9 @@ void RendererGl::startDraw()
 		mImpl->makeCurrentContext();
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	mImpl->makeCurrentContext();
+	mImpl->makeCurrentContext( force );
 }
 
 void RendererGl::swapBuffers()
@@ -309,12 +309,12 @@ void RendererGl::startDraw()
 	if( mStartDrawFn )
 		mStartDrawFn( this );
 	else
-		mImpl->makeCurrentContext();
+		mImpl->makeCurrentContext( false );
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	mImpl->makeCurrentContext();
+	mImpl->makeCurrentContext( force );
 }
 
 void RendererGl::swapBuffers()

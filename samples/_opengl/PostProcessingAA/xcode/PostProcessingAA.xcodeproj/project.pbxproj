@@ -21,7 +21,6 @@
 		AC4EA0E019B5396C008DC602 /* SMAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4EA0DE19B5396C008DC602 /* SMAA.cpp */; };
 		AC4EA0E319B53979008DC602 /* FXAA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AC4EA0E119B53979008DC602 /* FXAA.cpp */; };
 		ACE6014B19AE1CA3003965A3 /* Pistons.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6014919AE1CA3003965A3 /* Pistons.cpp */; };
-		ACE6014C19AE1CA3003965A3 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = ACE6014A19AE1CA3003965A3 /* Shader.cpp */; };
 		ACE6015E19AE1CF0003965A3 /* fxaa.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015419AE1CF0003965A3 /* fxaa.frag */; };
 		ACE6015F19AE1CF0003965A3 /* fxaa.vert in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015519AE1CF0003965A3 /* fxaa.vert */; };
 		ACE6016019AE1CF0003965A3 /* smaa1.frag in Resources */ = {isa = PBXBuildFile; fileRef = ACE6015819AE1CF0003965A3 /* smaa1.frag */; };
@@ -42,9 +41,9 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		110DC3D01ABA49190028C512 /* Pistons.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Pistons.h; path = ../src/Pistons.h; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
-		5262D2D0785F4B528D237FA0 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* PostProcessingAA.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = PostProcessingAA.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -55,9 +54,6 @@
 		AC4EA0E119B53979008DC602 /* FXAA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FXAA.cpp; path = ../src/fxaa/FXAA.cpp; sourceTree = "<group>"; };
 		AC4EA0E219B53979008DC602 /* FXAA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FXAA.h; path = ../src/fxaa/FXAA.h; sourceTree = "<group>"; };
 		ACE6014919AE1CA3003965A3 /* Pistons.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pistons.cpp; path = ../src/Pistons.cpp; sourceTree = "<group>"; };
-		ACE6014A19AE1CA3003965A3 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = ../src/Shader.cpp; sourceTree = "<group>"; };
-		ACE6014E19AE1CB5003965A3 /* Pistons.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pistons.h; path = ../include/Pistons.h; sourceTree = "<group>"; };
-		ACE6014F19AE1CB5003965A3 /* Shader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Shader.h; path = ../include/Shader.h; sourceTree = "<group>"; };
 		ACE6015419AE1CF0003965A3 /* fxaa.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fxaa.frag; path = ../assets/fxaa.frag; sourceTree = "<group>"; };
 		ACE6015519AE1CF0003965A3 /* fxaa.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = fxaa.vert; path = ../assets/fxaa.vert; sourceTree = "<group>"; };
 		ACE6015619AE1CF0003965A3 /* FXAA3_11.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FXAA3_11.h; path = ../assets/FXAA3_11.h; sourceTree = "<group>"; };
@@ -95,20 +91,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
 				AC4EA0D919B53935008DC602 /* SMAA */,
 				AC4EA0D819B5392E008DC602 /* FXAA */,
 				ACE6014919AE1CA3003965A3 /* Pistons.cpp */,
-				ACE6014A19AE1CA3003965A3 /* Shader.cpp */,
+				110DC3D01ABA49190028C512 /* Pistons.h */,
 				DAD21F759B924066BE850668 /* PostProcessingAAApp.cpp */,
 			);
 			name = Source;
@@ -152,7 +141,6 @@
 			isa = PBXGroup;
 			children = (
 				ACE6015319AE1CCF003965A3 /* Shaders */,
-				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -165,9 +153,6 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				ACE6014E19AE1CB5003965A3 /* Pistons.h */,
-				ACE6014F19AE1CB5003965A3 /* Shader.h */,
-				5262D2D0785F4B528D237FA0 /* Resources.h */,
 				B41539A3E51D44279F98677F /* PostProcessingAA_Prefix.pch */,
 			);
 			name = Headers;
@@ -317,7 +302,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				ACE6014B19AE1CA3003965A3 /* Pistons.cpp in Sources */,
-				ACE6014C19AE1CA3003965A3 /* Shader.cpp in Sources */,
 				AB10A4F471B14CC7ABC7456A /* PostProcessingAAApp.cpp in Sources */,
 				AC4EA0E019B5396C008DC602 /* SMAA.cpp in Sources */,
 				AC4EA0E319B53979008DC602 /* FXAA.cpp in Sources */,

@@ -6,6 +6,7 @@
 #include "cinder/CinderAssert.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Text.h"
+#include "cinder/Utilities.h"
 
 #include "Resources.h"
 
@@ -25,6 +26,11 @@ void prepareSettings( App::Settings *settings )
 		for( size_t i = 0; i < args.size(); i++ )
 			console() << "\t[" << i << "] " << args[i] << endl;
 	}
+
+	CI_LOG_I( "environment vars: " );
+	const auto &envVars = getEnvironmentVariables();
+	for( auto &env : envVars )
+		CI_LOG_I( "{" << env.first  << "} = {" << env.second << "}" );
 
 	settings->setWindowPos( 50, 50 );
 	settings->setWindowSize( 900, 500 );

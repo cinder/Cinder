@@ -706,6 +706,9 @@
     <ClInclude Include="..\include\cinder\app\AppBase.h">
       <Filter>Header Files\app</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
@@ -1364,6 +1367,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\Sphere.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp">
+      <Filter>Source Files\gl</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

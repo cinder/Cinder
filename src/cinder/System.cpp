@@ -610,13 +610,19 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		currentInterface = interfaces;
 		while( currentInterface ) {
 			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
-				char host[NI_MAXHOST];
+				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
 				int result = getnameinfo( currentInterface->ifa_addr,
                            (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
                            host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
 				if( result != 0 )
 					continue;
-				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host ) );
+				result = getnameinfo( currentInterface->ifa_netmask,
+                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                           subnetMask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( result != 0 )
+					continue;
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, subnetMask ) );
+
 			}
 			currentInterface = currentInterface->ifa_next;
 		}
@@ -645,7 +651,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
     if( (dwRetVal = ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen )) == NO_ERROR ) {
         pAdapter = pAdapterInfo;
         while( pAdapter ) {
-			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String ) );
+			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String, pAdapter->IpAddressList.IpMask.String ) );
             pAdapter = pAdapter->Next;
         }
     }
@@ -654,8 +660,12 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
 #elif defined( CINDER_WINRT )
 	auto hosts = NetworkInformation::GetHostNames();
-	std::for_each(begin(hosts), end(hosts), [&](HostName^ n) {
-		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName) ) );
+	std::for_each( begin(hosts), end(hosts), [&](HostName^ n) {
+		std::string subnetMask;
+		if( n->IPInformation && n->IPInformation->PrefixLength )
+			subnetMask = PlatformStringToString( n->IPInformation->PrefixLength->ToString() );
+		
+		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), subnetMask ) );
 	});
 #else
 		throw Exception( "Not implemented" );
@@ -663,6 +673,17 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 
 	return adapters;
 
+}
+
+std::string System::getSubnetMask() {
+	auto preferredIpAddress = System::getIpAddress();
+	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
+	for (vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt) {
+		if (adaptIt->getIpAddress() == preferredIpAddress) {
+			return adaptIt->getSubnetMask();
+		}
+	}
+	return "0.0.0.0";
 }
 
 #if defined( CINDER_WINRT )

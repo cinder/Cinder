@@ -36,6 +36,7 @@
 #include "cinder/DataSource.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Exception.h"
+#include "cinder/gl/ShaderPreprocessor.h"
 
 //! Convenience macro that allows one to embed raw glsl code in-line. The \a VERSION parameter will be used for the glsl's '#version' define.
 //! \note Some strings will confuse different compilers, most commonly being preprocessor derictives (hence the need for \a VERSION to be a pamaeter).
@@ -85,7 +86,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&		attrib( geom::Attrib semantic, const std::string &attribName );
 		//! Specifies a uniform name to map to a specific semantic
 		Format&		uniform( UniformSemantic semantic, const std::string &attribName );
-		
 		//! Specifies a location for a specific named attribute
 		Format&		attribLocation( const std::string &attribName, GLint location );
 		//! Specifies a location for a semantic
@@ -123,7 +123,26 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::map<std::string,GLint>&	getAttribNameLocations() const { return mAttribNameLocMap; }
 		//! Returns the map between attribute semantics and specified locations
 		const std::map<geom::Attrib,GLint>&	getAttribSemanticLocations() const { return mAttribSemanticLocMap; }
-		
+
+		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
+		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		void		setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		Format&		preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define );
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define, const std::string &value );
+		//! Specifies a series of define directives to add to the shader sources
+		Format&		defineDirectives( const std::vector<std::string> &defines );
+		//! Specifies the #version directive to add to the shader sources
+		Format&		version( int version );
+		//! Returns the version number associated with this GlslProg, or 0 if none was speciefied.
+		int	getVersion() const										{ return mVersion; }
+		//! Returns the list of `#define` directives.
+		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
@@ -132,12 +151,22 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
 		
 	  protected:
-		std::string					mVertexShader;
-		std::string					mFragmentShader;
+		void			setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest );
+		void			setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest );
+
+		std::string		mVertexShader;
+		std::string		mFragmentShader;
+
+		fs::path		mVertexShaderPath;
+		fs::path		mFragmentShaderPath;
+
 #if ! defined( CINDER_GL_ES )
-		std::string								mGeometryShader;
-		std::string								mTessellationCtrlShader;
-		std::string								mTessellationEvalShader;
+		std::string		mGeometryShader;
+		std::string		mTessellationCtrlShader;
+		std::string		mTessellationEvalShader;
+		fs::path		mGeometryShaderPath;
+		fs::path		mTessellationCtrlShaderPath;
+		fs::path		mTessellationEvalShaderPath;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
 		GLenum									mTransformFormat;
@@ -148,9 +177,13 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::map<geom::Attrib,GLint>			mAttribSemanticLocMap;
 		std::map<std::string,UniformSemantic>	mUniformSemanticMap;
 		std::map<std::string,geom::Attrib>		mAttribSemanticMap;
+		std::vector<std::string>				mDefineDirectives;
+		int										mVersion;
 		
-		
+		bool									mPreprocessingEnabled;
 		std::string								mLabel;
+
+		friend class		GlslProg;
 	};
   
 	typedef std::map<std::string,UniformSemantic>	UniformSemanticMap;
@@ -259,7 +292,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	GlslProg( const Format &format );
 
 	void			bindImpl() const;
-	void			loadShader( const std::string &shaderSource, GLint shaderType );
+	void			loadShader( const std::string &shaderSource, const fs::path &shaderPath, GLint shaderType );
 	void			attachShaders();
 	void			link();
 	
@@ -286,6 +319,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	mutable std::set<std::string>			mLoggedMissingUniforms;
 
 	std::string								mLabel; // debug label
+	ShaderPreprocessor						mShaderPreprocessor;
+	bool									mPreprocessingEnabled;
 
 	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
 #if ! defined( CINDER_GL_ES_2 )

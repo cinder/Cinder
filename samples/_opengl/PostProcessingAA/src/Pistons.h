@@ -22,50 +22,54 @@
 
 #pragma once
 
-#include <exception>
-#include <string>
-
-#include "cinder/Filesystem.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/Cinder.h"
+#include "cinder/Color.h"
+#include "cinder/Vector.h"
+#include <vector>
 
-typedef std::shared_ptr<class Shader> ShaderRef;
+// Forward declarations.
+namespace cinder {
+class Camera;
+}
 
-class Shader {
+typedef std::shared_ptr<class Piston> PistonRef;
+
+class Piston {
 public:
-	Shader( void );
-	//! Creates a shader. Loads "[name].vert", "[name].geom" and/or "[name].frag" from the assets folder.
-	Shader( const std::string& name );
-	//! Creates a shader. Loads the supplied files from the assets folder.
-	Shader( const std::string& name, const std::string& vert, const std::string& frag, const std::string& geom = std::string() );
-	//!
-	~Shader( void );
+	Piston();
+	Piston( float x, float z );
 
-	static ShaderRef     create();
-	static ShaderRef     create( const std::string& name );
+	void update( const ci::Camera& camera );
+	void draw( float time );
 
-	ci::gl::GlslProgRef  program() { return mGlslProg; }
-
-	template<typename T>
-	void                 uniform( const std::string& name, T value ) { mGlslProg->uniform( name, value ); }
-
-protected:
-	const ci::fs::path&  getPath() const;
-
-	void                 load();
-	std::string          parseShader( const ci::fs::path& path, bool optional = true, int level = 0 );
-	std::string          parseVersion( const std::string& code );
+	// Our custom sorting comparator.
+	static int CompareByDistanceToCamera( const void* a, const void* b )
+	{
+		const Piston* pA = reinterpret_cast<const Piston*>( a );
+		const Piston* pB = reinterpret_cast<const Piston*>( b );
+		if( pA->mDistance < pB->mDistance )
+			return -1;
+		if( pA->mDistance > pB->mDistance )
+			return 1;
+		return 0;
+	}
 
 private:
-	std::string          mName;
-
-	std::string          mVertexFile;
-	std::string          mFragmentFile;
-	std::string          mGeometryFile;
-
-	bool                 mHasGeometryShader;
-
-	mutable ci::fs::path mPath;
-
-	unsigned int         mGlslVersion;
-	ci::gl::GlslProgRef  mGlslProg;
+	float      mDistance;
+	float      mOffset;
+	ci::Colorf mColor;
+	ci::vec3   mPosition;
 };
+
+class Pistons {
+public:
+	Pistons();
+
+	void update( const ci::Camera& camera );
+	void draw( const ci::Camera& camera, float time );
+private:
+	std::vector<Piston>    mPistons;
+	ci::gl::GlslProgRef    mShader;
+};
+

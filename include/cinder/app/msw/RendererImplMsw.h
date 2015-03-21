@@ -48,7 +48,7 @@ class RendererImplMsw {
 	virtual void	kill() = 0;
 	virtual void	defaultResize() const = 0;
 	virtual void	swapBuffers() const = 0;
-	virtual void	makeCurrentContext() = 0;
+	virtual void	makeCurrentContext( bool force = false ) = 0;
 
  protected:
   #if defined( CINDER_MSW )

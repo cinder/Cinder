@@ -71,9 +71,9 @@ void RendererImplGlMsw::swapBuffers() const
 	::SwapBuffers( mDC );
 }
 
-void RendererImplGlMsw::makeCurrentContext()
+void RendererImplGlMsw::makeCurrentContext( bool force )
 {
-	mCinderContext->makeCurrent();
+	mCinderContext->makeCurrent( force );
 }
 
 

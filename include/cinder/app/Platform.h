@@ -35,6 +35,7 @@ namespace cinder {
 
 #include <functional>
 #include <vector>
+#include <map>
 
 namespace cinder { namespace app {
 
@@ -103,6 +104,9 @@ class Platform {
 
 	//! Returns a reference to an output console, which is by default an alias to std::cout. Other platforms may override to use other necessary console mechanisms.
 	virtual std::ostream&	console();
+
+	//! Returns a std::map of the system's environment variables. Empty on WinRT.
+	virtual std::map<std::string,std::string>	getEnvironmentVariables() = 0;
 
 	//! Returns a canonical version of \a path. Collapses '.', ".." and "//". Converts '~' on Cocoa. Expands environment variables on MSW.
 	virtual fs::path	expandPath( const fs::path &path ) = 0;

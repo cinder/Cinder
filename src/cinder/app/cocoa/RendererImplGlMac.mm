@@ -126,9 +126,9 @@
 	return [mView pixelFormat];
 }
 
-- (void)makeCurrentContext
+- (void)makeCurrentContext:(bool)force
 {
-	mContext->makeCurrent();
+	mContext->makeCurrent( force );
 }
 
 - (void)flushBuffer
