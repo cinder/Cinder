@@ -78,6 +78,7 @@ class System {
 	  public:
 		const std::string&	getName() const { return mName; }
 		const std::string&	getIpAddress() const { return mIpAddress; }
+		//! Returns the subnet mask as a string in the form "255.255.240.0". On WinRT returns the prefix length.
 		const std::string&	getSubnetMask() const { return mSubnetMask; }
 
 		NetworkAdapter( const std::string &name, const std::string &ip, const std::string &subnetMask )

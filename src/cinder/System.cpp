@@ -660,8 +660,12 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
 #elif defined( CINDER_WINRT )
 	auto hosts = NetworkInformation::GetHostNames();
-	std::for_each(begin(hosts), end(hosts), [&](HostName^ n) {
-		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), PlatformStringToString(n->IPInformation.PrefixLength.ToString()) ) );
+	std::for_each( begin(hosts), end(hosts), [&](HostName^ n) {
+		std::string subnetMask;
+		if( n->IPInformation && n->IPInformation->PrefixLength )
+			subnetMask = PlatformStringToString( n->IPInformation->PrefixLength->ToString() );
+		
+		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), subnetMask ) );
 	});
 #else
 		throw Exception( "Not implemented" );
