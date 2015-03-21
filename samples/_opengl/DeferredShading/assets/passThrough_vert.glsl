@@ -7,7 +7,7 @@ in vec2 		ciTexCoord0;
 
 out Vertex
 {
-	vec2 	uv;
+	vec2 uv;
 } vertex;
 
 void main( void ) 

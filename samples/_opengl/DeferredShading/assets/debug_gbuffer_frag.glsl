@@ -1,13 +1,11 @@
 #version 400 core
 
 const int MODE_ALBEDO	= 0;
-const int MODE_MATERIAL	= 1;
-const int MODE_NORMAL	= 2;
-const int MODE_POSITION	= 3;
-const int MODE_DEPTH	= 4;
+const int MODE_NORMAL	= 1;
+const int MODE_POSITION	= 2;
+const int MODE_DEPTH	= 3;
 
 uniform sampler2D 	uSamplerAlbedo;
-uniform isampler2D	uSamplerMaterial;
 uniform sampler2D 	uSamplerNormalDepth;
 uniform sampler2D 	uSamplerPosition;
 
@@ -26,10 +24,6 @@ void main( void )
 	switch ( uMode ) {
 	case MODE_ALBEDO:
 		color 	= texture( uSamplerAlbedo, vertex.uv );
-		break;
-	case MODE_MATERIAL:
-		ivec4 m	= texture( uSamplerMaterial, vertex.uv );
-		color 	= vec4( float( m.r ) / 4.0, 0.0, 0.0, 1.0 );
 		break;
 	case MODE_NORMAL:
 		color 	= texture( uSamplerNormalDepth, vertex.uv );

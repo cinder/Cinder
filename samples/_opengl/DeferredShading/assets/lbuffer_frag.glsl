@@ -19,13 +19,12 @@ const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.6656654, -0.7041242 )
 );
 
-const uint MATERIAL_COUNT = 4;
-
 uniform sampler2D		uSamplerAlbedo;
-uniform usampler2D		uSamplerMaterial;
 uniform sampler2D		uSamplerNormalDepth;
 uniform sampler2D		uSamplerPosition;
 uniform sampler2DShadow uSamplerShadowMap;
+
+uniform bool	uDrawLightSource;
 
 uniform vec4	uLightColorAmbient;
 uniform vec4	uLightColorDiffuse;
@@ -42,23 +41,6 @@ uniform float	uShadowSamples;
 
 uniform mat4 	uViewMatrixInverse;
 uniform vec2	uWindowSize;
-
-struct Material
-{
-	vec4	ambient;
-	vec4	diffuse;
-	vec4	emissive;
-	vec4	specular;
-	float	shininess;
-	float	twoSided;
-	uint 	pad0; // std140
-	uint 	pad1; // std140
-};
-
-uniform Materials
-{
-	Material uMaterials[ MATERIAL_COUNT ];
-};
 
 in Vertex
 {
@@ -77,9 +59,9 @@ vec2 poisson( int index, float blurSize )
 	return poissonDisk[ int( 16.0 * random( vec4( gl_FragCoord.xyy, index ) ) ) % 16 ] * blurSize;
 }
 
-float shadow( in vec4 position )
+float shadow( in vec3 position )
 {
-	vec4 shadowClip 	= uShadowMatrix * uViewMatrixInverse * position;
+	vec4 shadowClip 	= uShadowMatrix * uViewMatrixInverse * vec4( position, 0.0 );
 	vec3 shadowCoord 	= shadowClip.xyz / shadowClip.w;
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
@@ -100,8 +82,8 @@ void main( void )
 {
 	vec2 uv				= gl_FragCoord.xy / uWindowSize;
 
-	vec4 position 		= texture( uSamplerPosition, uv );
-	vec3 L 				= uLightPosition - position.xyz;
+	vec3 position 		= texture( uSamplerPosition, uv ).xyz;
+	vec3 L 				= uLightPosition - position;
 	float d 			= length( L );
 	if ( d > uLightRadius ) {
 		discard;
@@ -109,27 +91,25 @@ void main( void )
 	L 					/= d;
 	
 	vec4 albedo 		= texture( uSamplerAlbedo, 		uv );
-	uint materialId 	= texture( uSamplerMaterial, 	uv ).r;
-	Material material 	= uMaterials[ materialId ];
 
 	vec4 normalDepth 	= texture( uSamplerNormalDepth, uv );
 	vec3 N 				= normalize( normalDepth.xyz );
-	vec3 V 				= normalize( -position.xyz );
+	vec3 V 				= normalize( -position );
 	vec3 H 				= normalize( L + V );
 	float NdotL 		= max( 0.0, dot( N, L ) );
 	float HdotN 		= max( 0.0, dot( H, N ) );
-	float Ks		 	= pow( HdotN, material.shininess );
+	float Ks		 	= pow( HdotN, 100.0 );
 
-	vec4 Ia 			= uLightColorAmbient * material.ambient;
-	vec4 Id 			= NdotL * uLightColorDiffuse * albedo * material.diffuse;
-	vec4 Ie 			= material.emissive;
-	vec4 Is 			= Ks * uLightColorSpecular * material.specular;
+	vec4 Ia 			= uLightColorAmbient;
+	vec4 Id 			= NdotL * uLightColorDiffuse * albedo;
+	vec4 Is 			= Ks * uLightColorSpecular;
+	vec4 Ie				= vec4( vec3( texture( uSamplerPosition, uv ).w ), 1.0 );
 
 	float att			= 1.0 / pow( ( d / ( 1.0 - pow( d / uLightRadius, 2.0 ) ) ) / uLightRadius + 1.0, 2.0 ); 
 
 	oColor 				= Ia + att * ( Id + Is ) + Ie;
 	if ( uShadowEnabled ) {
-		oColor				*= shadow( position );
+		oColor			*= shadow( position );
 	}
 	oColor				*= uLightIntensity;
 }

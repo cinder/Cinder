@@ -20,7 +20,6 @@
 		95A100537BDA4520A8437A34 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = E92B85B63C2742129B61014E /* CinderApp.icns */; };
 		AE886F581ABCA219002E883B /* DeferredShadingApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE886F551ABCA219002E883B /* DeferredShadingApp.cpp */; };
 		AE886F591ABCA219002E883B /* Light.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE886F561ABCA219002E883B /* Light.cpp */; };
-		AE886F5A1ABCA219002E883B /* Material.cpp in Sources */ = {isa = PBXBuildFile; fileRef = AE886F571ABCA219002E883B /* Material.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,10 +40,8 @@
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		8D1107320486CEB800E47090 /* DeferredShadingApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = DeferredShadingApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AE886F531ABCA205002E883B /* Light.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Light.h; path = ../include/Light.h; sourceTree = "<group>"; };
-		AE886F541ABCA205002E883B /* Material.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Material.h; path = ../include/Material.h; sourceTree = "<group>"; };
 		AE886F551ABCA219002E883B /* DeferredShadingApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeferredShadingApp.cpp; path = ../src/DeferredShadingApp.cpp; sourceTree = "<group>"; };
 		AE886F561ABCA219002E883B /* Light.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Light.cpp; path = ../src/Light.cpp; sourceTree = "<group>"; };
-		AE886F571ABCA219002E883B /* Material.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Material.cpp; path = ../src/Material.cpp; sourceTree = "<group>"; };
 		E92B85B63C2742129B61014E /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../data/CinderApp.icns; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -81,7 +78,6 @@
 			children = (
 				AE886F551ABCA219002E883B /* DeferredShadingApp.cpp */,
 				AE886F561ABCA219002E883B /* Light.cpp */,
-				AE886F571ABCA219002E883B /* Material.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -141,7 +137,6 @@
 			isa = PBXGroup;
 			children = (
 				AE886F531ABCA205002E883B /* Light.h */,
-				AE886F541ABCA205002E883B /* Material.h */,
 				261D7236DC8044D3AA888D66 /* DeferredShadingApp_Prefix.pch */,
 			);
 			name = Headers;
@@ -231,7 +226,6 @@
 			files = (
 				AE886F591ABCA219002E883B /* Light.cpp in Sources */,
 				AE886F581ABCA219002E883B /* DeferredShadingApp.cpp in Sources */,
-				AE886F5A1ABCA219002E883B /* Material.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
