@@ -20,7 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/gl.h" // has to be first
+#include "cinder/gl/platform.h" // has to be first
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Pbo.h"
 #include "cinder/gl/Texture.h"
@@ -28,6 +28,7 @@
 #include "cinder/gl/TextureFormatParsers.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/ip/Flip.h"
 #include "cinder/Log.h"
 #include <stdio.h>

@@ -24,7 +24,7 @@
 // Should only be instantiated by Vao::create() in the presence of GL_OES_vertex_array_object
 
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #if defined( CINDER_GL_ES_2 ) && ! defined( CINDER_GL_ANGLE )
 

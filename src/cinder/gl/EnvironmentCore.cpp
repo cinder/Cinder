@@ -23,7 +23,7 @@
 */
 
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "glload/gl_load.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"

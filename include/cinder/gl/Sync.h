@@ -24,7 +24,7 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 namespace cinder { namespace gl { 
 

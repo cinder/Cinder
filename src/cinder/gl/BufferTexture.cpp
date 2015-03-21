@@ -21,8 +21,8 @@
 */
 
 #include "cinder/gl/BufferTexture.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/scoped.h"
 
 namespace cinder { namespace gl {
 	

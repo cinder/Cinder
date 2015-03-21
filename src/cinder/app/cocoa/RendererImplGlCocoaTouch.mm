@@ -24,7 +24,7 @@
 #import "RendererImplGlCocoaTouch.h"
 #import <QuartzCore/QuartzCore.h>
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/Log.h"

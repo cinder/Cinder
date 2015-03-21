@@ -22,9 +22,9 @@
 */
 
 #if ! defined( CINDER_GL_ANGLE )
+#include "cinder/gl/platform.h"
 #include "cinder/app/msw/RendererImplGlMsw.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 #include "glload/wgl_all.h"

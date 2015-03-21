@@ -22,7 +22,6 @@
 */
 
 #include "cinder/gl/ShaderPreprocessor.h"
-#include "cinder/gl/gl.h"
 #include "cinder/app/Platform.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"

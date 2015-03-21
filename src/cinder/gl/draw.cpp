@@ -25,6 +25,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/VboMesh.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Text.h"
 #include "cinder/Triangulate.h"

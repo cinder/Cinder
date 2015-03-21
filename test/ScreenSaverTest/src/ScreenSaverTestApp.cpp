@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Color.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include "cinder/System.h"

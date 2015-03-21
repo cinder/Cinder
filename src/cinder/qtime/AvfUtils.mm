@@ -3,7 +3,7 @@
 // This path is used on iOS or Mac OS X 10.8+
 #if defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #include "cinder/qtime/QuickTimeImplAvf.h"
 #include "cinder/qtime/AvfUtils.h"

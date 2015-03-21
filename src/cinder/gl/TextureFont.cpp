@@ -24,6 +24,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
+#include "cinder/gl/scoped.h"
 
 #include "cinder/Text.h"
 #include "cinder/ip/Fill.h"

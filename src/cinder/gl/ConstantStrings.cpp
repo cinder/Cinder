@@ -22,7 +22,6 @@
 
 
 #include "cinder/gl/ConstantStrings.h"
-#include "cinder/gl/gl.h"
 
 #include <sstream>
 #include <unordered_map>

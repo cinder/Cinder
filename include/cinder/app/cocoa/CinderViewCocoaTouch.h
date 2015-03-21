@@ -24,7 +24,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "cinder/gl/gl.h"
 #include "cinder/app/cocoa/AppCocoaTouch.h"
 #include "cinder/app/Renderer.h"
 

@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/BufferObj.h"
+
 #include <memory>
 #include <vector>
 #include <map>

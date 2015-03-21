@@ -24,6 +24,7 @@
 #include "cinder/gl/wrapper.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/Batch.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 
 #if defined( CINDER_MSW )
