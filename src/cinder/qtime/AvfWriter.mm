@@ -1,13 +1,13 @@
 #include "cinder/app/App.h"
 #include "cinder/Utilities.h"
-
-#if defined( CINDER_COCOA )
-	#import <AVFoundation/AVFoundation.h>
-	#import <Foundation/Foundation.h>
-#endif
-
+#include "cinder/Log.h"
 #include "cinder/qtime/AvfUtils.h"
 #include "cinder/qtime/AvfWriter.h"
+#include "cinder/cocoa/CinderCocoa.h"
+#include "cinder/ip/Fill.h"
+
+#import <AVFoundation/AVFoundation.h>
+#import <Foundation/Foundation.h>
 
 namespace cinder { namespace qtime {
 
@@ -147,21 +147,22 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	NSError* error = nil;
 	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:AVFileTypeQuickTimeMovie error:&error];
 	
-	NSDictionary* compressionSettings = nil;
 	NSMutableDictionary* videoSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										  AVVideoCodecAppleProRes4444/*AVVideoCodecH264*/, AVVideoCodecKey,
+										  AVVideoCodecJPEG/*AVVideoCodecH264*/, AVVideoCodecKey,
 										  [NSNumber numberWithInteger:mWidth], AVVideoWidthKey,
 										  [NSNumber numberWithInteger:mHeight], AVVideoHeightKey,
 										  nil];
-	if( compressionSettings )
-		[videoSettings setObject:compressionSettings forKey:AVVideoCompressionPropertiesKey];
-	
 	mWriterSink = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
 	[mWriterSink setExpectsMediaDataInRealTime:true];
 
-compressionSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-							[NSNumber numberWithInt:kCVPixelFormatType_24BGR], kCVPixelBufferPixelFormatTypeKey,
-							nil ];
+	// These are documented as optimal for their respective platforms. AVVideoCodecAppleProRes4444 can support an alpha channel, but it automatically infers its necessity from the image content it seems.
+	NSDictionary *compressionSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+#if defined( CINDER_COCOA_TOUCH )
+										[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+#else
+										[NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
+#endif
+										nil ];
 	
 	mSinkAdapater = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:mWriterSink
 																					 sourcePixelBufferAttributes:compressionSettings];
@@ -171,7 +172,7 @@ compressionSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 	mWriter.movieFragmentInterval = CMTimeMakeWithSeconds(1.0, 1000);
 	[mWriter startWriting];
 	AVAssetWriterStatus status = [mWriter status];
-	if (status == AVAssetWriterStatusFailed) {
+	if( status == AVAssetWriterStatusFailed) {
 		error = [mWriter error];
 		NSString* str = [error description];
 		std::string descr = (str? std::string([str UTF8String]): "");
@@ -253,23 +254,29 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 		duration = mFormat.mDefaultTime;
 	
 	int64_t durationVal = static_cast<int64_t>( duration * mFormat.mTimeBase );
-	//CVPixelBufferGetDataSize([mSinkAdapter pixelBufferPool]);
-	CVPixelBufferPoolRef pbpool = [mSinkAdapater pixelBufferPool];
-	::CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource, pbpool, false );
-	// uncertain if this is meaningful...
+
+	::CVPixelBufferPoolRef pixelBufferPool = [mSinkAdapater pixelBufferPool];
+	::CVPixelBufferRef pixelBuffer;
+	if( ::CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pixelBufferPool, &pixelBuffer ) != kCVReturnSuccess ) {
+		CI_LOG_E( "Failed to add frame." );
+		return;
+	}
+
 	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
 	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
 	::CFRelease( gammaLevel );
 	
-	CVPixelBufferLockBaseAddress( pixelBuffer, 0 );
+	// this decrements the retain count on the CVPixelBuffer on destruction
+	Surface8uRef destinationSurface = cocoa::convertCVPixelBufferToSurface( pixelBuffer );
+	destinationSurface->copyFrom( imageSource, imageSource.getBounds() );
 	// THE FOLLOWING TIME VALUE IN SECONDS MUST BE VALID!!!
 	static double seconds = 0;
 	seconds += 0.016667;
 	CMTime currentTime = CMTimeMakeWithSeconds(seconds,120);
 
+//ip::fill( &destinationSurface->getChannelAlpha(), (uint8_t)128 );
+
 	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:currentTime];
-	CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
-	CVPixelBufferRelease( pixelBuffer );
 	mCurrentTimeValue += durationVal;
 	++mNumFrames;
 }
