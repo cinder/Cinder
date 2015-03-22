@@ -41,6 +41,7 @@
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
 #elif defined( CINDER_MSW )
+	#include "cinder/msw/CinderWindowsFwd.h"
 	struct HGLRC__;
 	typedef HGLRC__* HGLRC;
 #endif
