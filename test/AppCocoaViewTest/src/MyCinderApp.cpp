@@ -30,7 +30,7 @@ MyCinderApp::~MyCinderApp()
 void MyCinderApp::setup()
 {
 	testCbo.setState( TestCallbackOrder::SETUP );
-	getSignalShutdown().connect( [this] { testCbo.setState( TestCallbackOrder::SHUTDOWN ); } );
+	getSignalCleanup().connect( [this] { testCbo.setState( TestCallbackOrder::SHUTDOWN ); } );
 
 	mRadius = 50;
 	mAnimatedRadius = 0;

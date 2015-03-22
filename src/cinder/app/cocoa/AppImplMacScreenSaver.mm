@@ -528,7 +528,7 @@ static AppImplMacScreenSaver* getAppImpl()
 - (void)finalCleanup
 {
 	if( sAppImplInstance ) {
-		mApp->emitShutdown();	
+		mApp->emitCleanup();
 		delete sAppImplInstance->mApp;
 		[sAppImplInstance release];
 		sAppImplInstance = nil;
