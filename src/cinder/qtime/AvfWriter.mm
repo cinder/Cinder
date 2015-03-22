@@ -1,4 +1,26 @@
-#include "cinder/app/App.h"
+/*
+ Copyright (c) 2014, The Cinder Project, All rights reserved.
+ 
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+ 
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+ 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 #include "cinder/qtime/AvfUtils.h"
@@ -16,19 +38,21 @@ const float PLATFORM_DEFAULT_GAMMA = 2.2f;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter::Format
 
-MovieWriter::Format::Format() : mCodec( 'png ' )
+MovieWriter::Format::Format()
+	: mCodec( H264 )
 {
 	initDefaults();
 }
 
-MovieWriter::Format::Format( uint32_t codec, float quality ) : mCodec( codec )
+MovieWriter::Format::Format( Codec codec, float quality )
+	: mCodec( codec )
 {
 	initDefaults();
 	setQuality( quality );
 }
 
-MovieWriter::Format::Format( uint32_t codec, float quality, float frameRate, bool enableMultiPass )
-:	mCodec( codec ), mEnableMultiPass( enableMultiPass )
+MovieWriter::Format::Format( Codec codec, float quality, float frameRate, bool enableMultiPass )
+	:	mCodec( codec ), mEnableMultiPass( enableMultiPass )
 {
 	setQuality( quality );
 	setTimeScale( (long)(frameRate * 100) );
@@ -134,6 +158,24 @@ const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format 
 	return *this;
 }
 
+namespace {
+const NSString * codecToAvVideoCodecKey( MovieWriter::Codec codec )
+{
+	switch( codec ) {
+		case MovieWriter::Codec::H264:
+			return AVVideoCodecH264;
+		case MovieWriter::Codec::JPEG:
+			return AVVideoCodecJPEG;
+		case MovieWriter::Codec::PRO_RES_4444:
+			return AVVideoCodecAppleProRes4444;
+		case MovieWriter::Codec::PRO_RES_422:
+			return AVVideoCodecAppleProRes422;
+		default:
+			return nil;
+	}
+}
+} // anonymous namespace
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter
 MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format )
@@ -142,13 +184,16 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 //	AVFileTypeQuickTimeMovie
 //	AVFileTypeMPEG4
 //	AVFileTypeAppleM4V
+	// AVFoundation will fail if the path already exists.
+	if( fs::exists( path ) )
+		fs::remove( path );
 	
 	NSURL* localOutputURL = [NSURL fileURLWithPath:[NSString stringWithCString:mPath.c_str() encoding:[NSString defaultCStringEncoding]]];
 	NSError* error = nil;
 	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:AVFileTypeQuickTimeMovie error:&error];
 	
 	NSMutableDictionary* videoSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										  AVVideoCodecJPEG/*AVVideoCodecH264*/, AVVideoCodecKey,
+										  codecToAvVideoCodecKey( format.getCodec() ), AVVideoCodecKey,
 										  [NSNumber numberWithInteger:mWidth], AVVideoWidthKey,
 										  [NSNumber numberWithInteger:mHeight], AVVideoHeightKey,
 										  nil];
@@ -175,9 +220,8 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	if( status == AVAssetWriterStatusFailed) {
 		error = [mWriter error];
 		NSString* str = [error description];
-		std::string descr = (str? std::string([str UTF8String]): "");
-		ci::app::console() << " Error when trying to start writing: " << descr << std::endl;
-		
+		std::string description = (str? std::string([str UTF8String]): "");
+		CI_LOG_E( "Error at startWriting:" << description );
 	}
 	else {
 		[mWriter startSessionAtSourceTime:kCMTimeZero];
@@ -243,7 +287,7 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 		error = [mWriter error];
 		NSString* str = [error description];
 		std::string descr = (str? std::string([str UTF8String]): "");
-		ci::app::console() << " Error when trying to start writing: " << descr << std::endl;
+		CI_LOG_E( " Error when trying to start writing: " << descr );
 		return;
 	}
 	else if( status != AVAssetWriterStatusWriting ) {
@@ -414,7 +458,7 @@ void MovieWriter::finish()
 	
 	NSError* error = nil;
 	bool success = [mWriter finishWriting];
-	if (!success)
+	if( ! success )
 		error = [mWriter error];
 	
 	mFinished = true;

@@ -1,6 +1,27 @@
-#pragma once
+/*
+ Copyright (c) 2014, The Cinder Project, All rights reserved.
+ 
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+ 
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+ 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ */
 
-#include <string>
+#pragma once
 
 #include "cinder/Cinder.h"
 #include "cinder/ImageIo.h"
@@ -10,27 +31,15 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include <CoreVideo/CoreVideo.h>
 
-	#if defined( CINDER_MAC )
-	#elif defined( CINDER_COCOA_TOUCH )
-	#endif
-
 	#if defined( __OBJC__ )
 		@class AVAsset, AVAssetWriter, AVAssetWriterInput, AVAssetWriterInputPixelBufferAdaptor, NSDate;
-
 	#else
 		class AVAsset;
 		class AVAssetWriter;
 		class AVAssetWriterInput;
 		class AVAssetWriterInputPixelBufferAdaptor;
-
 	#endif
 #endif
-
-// RE-IMPLEMENT
-//typedef void* ICMCompressionSessionRef;
-//typedef void* ICMCompressionSessionOptionsRef;
-//typedef void* ICMEncodedFrameRef;
-//typedef void* ICMMultiPassStorageRef;
 
 namespace cinder { namespace qtime {
 
@@ -39,22 +48,24 @@ typedef std::shared_ptr<MovieWriter> MovieWriterRef;
 
 class MovieWriter {
   public:
+	typedef enum Codec { H264, JPEG, PRO_RES_4444, PRO_RES_422 } Codec;
+
 	//! Defines the encoding parameters of a MovieWriter
 	class Format {
 	  public:
 		Format();
-		Format( uint32_t codec, float quality );
+		Format( Codec codec, float quality );
 //		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate, bool enableMultiPass );
-		Format( uint32_t codec, float quality, float frameRate, bool enableMultiPass = false );
+		Format( Codec codec, float quality, float frameRate, bool enableMultiPass = false );
 		Format( const Format &format );
 		~Format();
 
 		const Format& operator=( const Format &format );
 
-		//! Returns the four character code for the QuickTime codec. Types can be found in QuickTime's ImageCompression.h.
-		uint32_t	getCodec() const { return mCodec; }
-		//! Sets the four character code for the QuickTime codec. Defaults to \c PNG (\c 'png '). Additional types can be found in QuickTime's \c ImageCompression.h.
-		Format&		setCodec( uint32_t codec ) { mCodec = codec; return *this; }
+		//! Returns the codec of type MovieWriter::Codec
+		Codec		getCodec() const { return mCodec; }
+		//! Sets the encoding codec. Default is \c H264
+		Format&		codec( Codec codec ) { mCodec = codec; return *this; }
 		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
 		float		getQuality() const { return mQualityFloat; }
 		//! Sets the overall quality for encoding. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
@@ -95,7 +106,7 @@ class MovieWriter {
 	  private:
 		void		initDefaults();
 
-		uint32_t	mCodec;
+		Codec		mCodec;
 		long		mTimeBase;
 		float		mDefaultTime;
 		float		mQualityFloat;
@@ -144,8 +155,6 @@ class MovieWriter {
 
 	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect.
 	void finish();
-	
-	enum { CODEC_H264 = 'avc1', CODEC_JPEG = 'jpeg', CODEC_MP4 = 'mp4v', CODEC_PNG = 'png ', CODEC_RAW = 'raw ', CODEC_ANIMATION = 'rle ' };
 
   private:
 	void createCompressionSession();
