@@ -49,6 +49,7 @@ typedef std::shared_ptr<MovieWriter> MovieWriterRef;
 class MovieWriter {
   public:
 	typedef enum Codec { H264, JPEG, PRO_RES_4444, PRO_RES_422 } Codec;
+	typedef enum FileType { QUICK_TIME_MOVIE, MPEG4, M4V } FileType;
 
 	//! Defines the encoding parameters of a MovieWriter
 	class Format {
@@ -57,15 +58,16 @@ class MovieWriter {
 		Format( Codec codec, float quality );
 //		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate, bool enableMultiPass );
 		Format( Codec codec, float quality, float frameRate, bool enableMultiPass = false );
-		Format( const Format &format );
-		~Format();
-
-		const Format& operator=( const Format &format );
 
 		//! Returns the codec of type MovieWriter::Codec
 		Codec		getCodec() const { return mCodec; }
 		//! Sets the encoding codec. Default is \c H264
 		Format&		codec( Codec codec ) { mCodec = codec; return *this; }
+		//! Returns the output file type. Default is \c FileType::QUICK_TIME_MOVIE.
+		FileType	getFileType() const { return mFileType; }
+		//! Sets the output file type, defined in MovieWriter::FileType. Default is \c FileType::QUICK_TIME_MOVIE.
+		Format&		fileType( FileType fileType ) { mFileType = fileType; return *this; }
+		
 		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
 		float		getQuality() const { return mQualityFloat; }
 		//! Sets the overall quality for encoding. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
@@ -107,6 +109,7 @@ class MovieWriter {
 		void		initDefaults();
 
 		Codec		mCodec;
+		FileType	mFileType;
 		long		mTimeBase;
 		float		mDefaultTime;
 		float		mQualityFloat;

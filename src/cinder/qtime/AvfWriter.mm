@@ -26,7 +26,6 @@
 #include "cinder/qtime/AvfUtils.h"
 #include "cinder/qtime/AvfWriter.h"
 #include "cinder/cocoa/CinderCocoa.h"
-#include "cinder/ip/Fill.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <Foundation/Foundation.h>
@@ -39,13 +38,13 @@ const float PLATFORM_DEFAULT_GAMMA = 2.2f;
 // MovieWriter::Format
 
 MovieWriter::Format::Format()
-	: mCodec( H264 )
+	: mCodec( H264 ), mFileType( QUICK_TIME_MOVIE )
 {
 	initDefaults();
 }
 
 MovieWriter::Format::Format( Codec codec, float quality )
-	: mCodec( codec )
+	: mCodec( codec ), mFileType( QUICK_TIME_MOVIE )
 {
 	initDefaults();
 	setQuality( quality );
@@ -58,17 +57,6 @@ MovieWriter::Format::Format( Codec codec, float quality, float frameRate, bool e
 	setTimeScale( (long)(frameRate * 100) );
 	setDefaultDuration( 1.0f / frameRate );
 	setGamma( PLATFORM_DEFAULT_GAMMA );
-}
-
-MovieWriter::Format::Format( const Format &format )
-:	mCodec( format.mCodec ), mTimeBase( format.mTimeBase ), mDefaultTime( format.mDefaultTime ), 
-	mGamma( format.mGamma ), mEnableMultiPass( format.mEnableMultiPass ), mQualityFloat( format.mQualityFloat )
-{
-	//  TODO: ???
-}
-
-MovieWriter::Format::~Format()
-{
 }
 
 void MovieWriter::Format::initDefaults()
@@ -146,18 +134,6 @@ MovieWriter::Format& MovieWriter::Format::setMaxKeyFrameRate( int32_t rate )
 	return *this;
 }
 
-const MovieWriter::Format& MovieWriter::Format::operator=( const Format &format )
-{
-	// TODO: UPDATE
-	mCodec = format.mCodec;
-	mTimeBase = format.mTimeBase;
-	mDefaultTime = format.mDefaultTime;
-	mGamma = format.mGamma;
-	mEnableMultiPass = format.mEnableMultiPass;
-
-	return *this;
-}
-
 namespace {
 const NSString * codecToAvVideoCodecKey( MovieWriter::Codec codec )
 {
@@ -170,6 +146,20 @@ const NSString * codecToAvVideoCodecKey( MovieWriter::Codec codec )
 			return AVVideoCodecAppleProRes4444;
 		case MovieWriter::Codec::PRO_RES_422:
 			return AVVideoCodecAppleProRes422;
+		default:
+			return nil;
+	}
+}
+
+NSString * fileTypeToAvFileType( MovieWriter::FileType fileType )
+{
+	switch( fileType ) {
+		case MovieWriter::FileType::QUICK_TIME_MOVIE:
+			return AVFileTypeQuickTimeMovie;
+		case MovieWriter::FileType::MPEG4:
+			return AVFileTypeMPEG4;
+		case MovieWriter::FileType::M4V:
+			return AVFileTypeAppleM4V;
 		default:
 			return nil;
 	}
@@ -190,7 +180,7 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	
 	NSURL* localOutputURL = [NSURL fileURLWithPath:[NSString stringWithCString:mPath.c_str() encoding:[NSString defaultCStringEncoding]]];
 	NSError* error = nil;
-	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:AVFileTypeQuickTimeMovie error:&error];
+	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:fileTypeToAvFileType( format.getFileType() ) error:&error];
 	
 	NSMutableDictionary* videoSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 										  codecToAvVideoCodecKey( format.getCodec() ), AVVideoCodecKey,
@@ -216,11 +206,9 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	[mWriter addInput:mWriterSink];
 	mWriter.movieFragmentInterval = CMTimeMakeWithSeconds(1.0, 1000);
 	[mWriter startWriting];
-	AVAssetWriterStatus status = [mWriter status];
-	if( status == AVAssetWriterStatusFailed) {
-		error = [mWriter error];
-		NSString* str = [error description];
-		std::string description = (str? std::string([str UTF8String]): "");
+	if( [mWriter status] == AVAssetWriterStatusFailed ) {
+		NSString* str = [[mWriter error] description];
+		std::string description = str ? std::string([str UTF8String]): "";
 		CI_LOG_E( "Error at startWriting:" << description );
 	}
 	else {
@@ -235,70 +223,18 @@ MovieWriter::~MovieWriter()
 }
 
 void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
-//void MovieWriter::addFrame( const ImageSourceRef& imageSource, float duration )
 {
-	/* RE-IMPLEMENT
-	if( mFinished )
-		throw MovieWriterExcAlreadyFinished();
-
-	if( duration <= 0 )
-		duration = mFormat.mDefaultTime;
-
-	::CVPixelBufferRef pixelBuffer = createCvPixelBuffer( imageSource, false );
-	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
-	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
-	::CFRelease( gammaLevel );
-
-	::ICMValidTimeFlags validTimeFlags = kICMValidTime_DisplayTimeStampIsValid | kICMValidTime_DisplayDurationIsValid;
-	::ICMCompressionFrameOptionsRef frameOptions = NULL;
-	int64_t durationVal = static_cast<int64_t>( duration * mFormat.mTimeBase );
-	OSStatus err = ::ICMCompressionSessionEncodeFrame( mCompressionSession, pixelBuffer,
-				mCurrentTimeValue, durationVal, validTimeFlags,
-                frameOptions, NULL, NULL );
-
-	mFrameTimes.push_back( std::pair<int64_t,int64_t>( mCurrentTimeValue, durationVal ) );
-
-	if( mDoingMultiPass ) {
-		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetWidth( pixelBuffer ) );
-		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetHeight( pixelBuffer ) );
-		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetPixelFormatType( pixelBuffer ) );
-		mMultiPassFrameCache->write( (uint32_t)::CVPixelBufferGetBytesPerRow( pixelBuffer ) );
-		::CVPixelBufferLockBaseAddress( pixelBuffer, 0 );
-		mMultiPassFrameCache->write( (uint32_t) ::CVPixelBufferGetDataSize( pixelBuffer ) );
-		mMultiPassFrameCache->writeData( ::CVPixelBufferGetBaseAddress( pixelBuffer ), ::CVPixelBufferGetDataSize( pixelBuffer ) );
-		::CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
-	}
-
-	mCurrentTimeValue += durationVal;
-	++mNumFrames;
-
-	::CVPixelBufferRelease( pixelBuffer );
-
-	if( err )
-		MovieWriterExcFrameEncode();
-	*/
-		
 	if( mFinished )
 		throw MovieWriterExcAlreadyFinished();
 	
-	NSError* error = nil;
 	AVAssetWriterStatus status = [mWriter status];
-	if( status == AVAssetWriterStatusFailed ) {
-		error = [mWriter error];
-		NSString* str = [error description];
-		std::string descr = (str? std::string([str UTF8String]): "");
+	if( status != AVAssetWriterStatusWriting ) {
+		NSString* str = [[mWriter error] description];
+		std::string descr = str ? std::string([str UTF8String]): "";
 		CI_LOG_E( " Error when trying to start writing: " << descr );
 		return;
 	}
-	else if( status != AVAssetWriterStatusWriting ) {
-		return;
-	}
 	
-	if( duration <= 0 )
-		duration = mFormat.mDefaultTime;
-	
-	int64_t durationVal = static_cast<int64_t>( duration * mFormat.mTimeBase );
-
 	::CVPixelBufferPoolRef pixelBufferPool = [mSinkAdapater pixelBufferPool];
 	::CVPixelBufferRef pixelBuffer;
 	if( ::CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pixelBufferPool, &pixelBuffer ) != kCVReturnSuccess ) {
@@ -318,83 +254,11 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 	seconds += 0.016667;
 	CMTime currentTime = CMTimeMakeWithSeconds(seconds,120);
 
-//ip::fill( &destinationSurface->getChannelAlpha(), (uint8_t)128 );
-
 	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:currentTime];
-	mCurrentTimeValue += durationVal;
+	mCurrentTimeValue += ( duration < 0 ) ? static_cast<int64_t>( mFormat.mDefaultTime * mFormat.mTimeBase ) : static_cast<int64_t>( duration * mFormat.mTimeBase );
 	++mNumFrames;
 }
 
-extern "C" {
-	
-void destroyDataArrayU8( void *releaseRefCon, const void *baseAddress )
-{
-	delete [] (reinterpret_cast<uint8_t*>( const_cast<void*>( baseAddress ) ));
-}
-/*
-OSStatus encodedFrameOutputCallback( void *refCon, ICMCompressionSessionOptionsRef session,
-									 OSStatus err, ICMEncodedFrameRef encodedFrame, void *reserved )
-{
-	// RE-IMPLEMENT
-	MovieWriter::Obj *obj = reinterpret_cast<MovieWriter::Obj*>( refCon );
-
-	ImageDescriptionHandle imageDescription = NULL;
-	err = ICMCompressionSessionGetImageDescription( session, &imageDescription );
-	if( ! err ) {
-		Fixed gammaLevel = qtime::floatToFixed( obj->mFormat.mGamma );
-		err = ICMImageDescriptionSetProperty(imageDescription,
-						kQTPropertyClass_ImageDescription,
-						kICMImageDescriptionPropertyID_GammaLevel,
-						sizeof(gammaLevel), &gammaLevel);
-		if( err != 0 )
-			throw;
-	}
-	else
-		throw;
-
-	OSStatus result = ::AddMediaSampleFromEncodedFrame( obj->mMedia, encodedFrame, NULL );
-	return result;
-	
-//	OSStatus result;
-//	return result;
-}
-
-OSStatus enableMultiPassWithTemporaryFile( ICMCompressionSessionOptionsRef inCompressionSessionOptions, ICMMultiPassStorageRef *outMultiPassStorage )
-{
-	// RE-IMPLEMENT
-	::ICMMultiPassStorageRef multiPassStorage = NULL;
-	OSStatus status;
-	*outMultiPassStorage = NULL;
-
-	// create storage using a temporary file with a unique file name
-	status = ::ICMMultiPassStorageCreateWithTemporaryFile( kCFAllocatorDefault, NULL, NULL, 0, &multiPassStorage );
-	if( noErr != status )
-		goto bail;
-
-	// enable multi-pass by setting the compression session options
-	// note - the compression session options object retains the multi-pass
-	// storage object
-	status = ::ICMCompressionSessionOptionsSetProperty( inCompressionSessionOptions, kQTPropertyClass_ICMCompressionSessionOptions,
-						kICMCompressionSessionOptionsPropertyID_MultiPassStorage, sizeof(ICMMultiPassStorageRef), &multiPassStorage );
-
- bail:
-    if( noErr != status ) {
-        // this api is NULL safe so we can just call it
-        ICMMultiPassStorageRelease( multiPassStorage );
-    }
-	else {
-        *outMultiPassStorage = multiPassStorage;
-    }
-
-    return status;
-	
-//	OSStatus result;
-//	return result;
- }
- */
-
-}
-	
 void MovieWriter::createCompressionSession()
 {
 	
@@ -404,12 +268,6 @@ void MovieWriter::createCompressionSession()
 	// apply settings using the following info...
 	
 	/*
-	 // codec options
-	AVVideoCodecH264 // @"avc1"
-	AVVideoCodecJPEG // @"jpeg"
-	AVVideoCodecAppleProRes4444 // @"ap4h"
-	AVVideoCodecAppleProRes422   // @"apcn"
-	 
 	 // compression settings option(s)
 	AVVideoCompressionPropertiesKey
 	 
@@ -446,7 +304,6 @@ void MovieWriter::createCompressionSession()
 	AVVideoCleanApertureHorizontalOffsetKey
 	AVVideoCleanApertureVerticalOffsetKey
 	 */
-	
 }
 	
 void MovieWriter::finish()
@@ -462,12 +319,6 @@ void MovieWriter::finish()
 		error = [mWriter error];
 	
 	mFinished = true;
-}
-
-bool MovieWriter::getUserCompressionSettings( Format* result, ImageSourceRef imageSource )
-{
-	
-	return false;
 }
 
 } } // namespace cinder::qtime
