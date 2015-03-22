@@ -628,6 +628,28 @@ void ImageTargetCgImage::finalize()
 	return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+{
+	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
+	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
+	int32_t rowBytes = CVPixelBufferGetBytesPerRow( pixelBufferRef );
+	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
+	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
+	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
+	SurfaceChannelOrder sco;
+	if( type == k24RGBPixelFormat )
+		sco = SurfaceChannelOrder::RGB;
+	else if( type == k32ARGBPixelFormat )
+		sco = SurfaceChannelOrder::ARGB;
+	else if( type == k24BGRPixelFormat )
+		sco = SurfaceChannelOrder::BGR;
+	else if( type == k32BGRAPixelFormat )
+		sco = SurfaceChannelOrder::BGRA;
+	Surface8u *newSurface = new Surface8u( ptr, width, height, rowBytes, sco );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
+}
 
 } } // namespace cinder::cocoa
 

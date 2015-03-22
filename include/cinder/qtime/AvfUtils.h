@@ -35,6 +35,7 @@ typedef std::shared_ptr<class ImageTargetCvPixelBuffer> ImageTargetCvPixelBuffer
 class ImageTargetCvPixelBuffer : public cinder::ImageTarget {
   public:
 	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource, bool convertToYpCbCr = false );
+	static ImageTargetCvPixelBufferRef createRef( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool );
 	~ImageTargetCvPixelBuffer();
 
 	virtual void*		getRowPointer( int32_t row );
@@ -44,6 +45,7 @@ class ImageTargetCvPixelBuffer : public cinder::ImageTarget {
 
   protected:
 	ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr );
+	ImageTargetCvPixelBuffer( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool );
 	
 	void		convertDataToYpCbCr();
 	void		convertDataToAYpCbCr();
@@ -56,6 +58,8 @@ class ImageTargetCvPixelBuffer : public cinder::ImageTarget {
 
 //! Creates a CVPixelBufferRef from an ImageSource. Release the result with CVPixelBufferRelease(). If \a convertToYpCbCr the resulting CVPixelBuffer will be in either \c k444YpCbCr8CodecType or \c k4444YpCbCrA8PixelFormat
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr = false );
+
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool );
 
 } } // namespace cinder::qtime
 

@@ -217,6 +217,8 @@ class ImageTargetCgImage : public ImageTarget {
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
 ::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
 
+//! Returns a Surface8u that represents \a pixelBufferRef. Decrements the retain count on \a pixelBufferRef on destruction.
+//Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 } } // namespace cinder::cocoa
 
