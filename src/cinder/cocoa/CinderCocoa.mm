@@ -34,6 +34,7 @@
 #else
 	#import <UIKit/UIKit.h>
 	#import <CoreText/CoreText.h>
+	#import <CoreVideo/CVPixelBuffer.h>
 #endif
 #import <Foundation/NSData.h>
 
@@ -639,13 +640,13 @@ Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
 	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
 	SurfaceChannelOrder sco;
-	if( type == k24RGBPixelFormat )
+	if( type == kCVPixelFormatType_24RGB )
 		sco = SurfaceChannelOrder::RGB;
-	else if( type == k32ARGBPixelFormat )
+	else if( type == kCVPixelFormatType_32ARGB )
 		sco = SurfaceChannelOrder::ARGB;
-	else if( type == k24BGRPixelFormat )
+	else if( type == kCVPixelFormatType_24BGR )
 		sco = SurfaceChannelOrder::BGR;
-	else if( type == k32BGRAPixelFormat )
+	else if( type == kCVPixelFormatType_32BGRA )
 		sco = SurfaceChannelOrder::BGRA;
 	Surface8u *newSurface = new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco );
 	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
