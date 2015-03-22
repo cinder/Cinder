@@ -31,7 +31,7 @@
 #include "cinder/TriMesh.h"
 #include "cinder/GeomIo.h"
 
-#include <ostream>
+#include <iosfwd>
 #include <vector>
 
 namespace cinder { namespace gl {

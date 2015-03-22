@@ -29,8 +29,7 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
-
-#include <ostream>
+#include <iosfwd>
 
 namespace cinder { namespace gl {
 
