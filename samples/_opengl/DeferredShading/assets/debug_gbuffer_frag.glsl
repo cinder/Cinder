@@ -3,10 +3,10 @@
 const int MODE_ALBEDO	= 0;
 const int MODE_NORMAL	= 1;
 const int MODE_POSITION	= 2;
-const int MODE_DEPTH	= 3;
+const int MODE_EMISSIVE	= 3;
 
 uniform sampler2D 	uSamplerAlbedo;
-uniform sampler2D 	uSamplerNormalDepth;
+uniform sampler2D 	uSamplerNormalEmissive;
 uniform sampler2D 	uSamplerPosition;
 
 uniform int uMode = 0;
@@ -26,13 +26,13 @@ void main( void )
 		color 	= texture( uSamplerAlbedo, vertex.uv );
 		break;
 	case MODE_NORMAL:
-		color 	= texture( uSamplerNormalDepth, vertex.uv );
+		color 	= vec4( texture( uSamplerNormalEmissive, vertex.uv ).xyz, 1.0 );
 		break;
 	case MODE_POSITION:
 		color 	= texture( uSamplerPosition, vertex.uv );
 		break;
-	case MODE_DEPTH:
-		color 	= vec4( vec3( 1.0 - texture( uSamplerNormalDepth, vertex.uv ).a ), 1.0 );
+	case MODE_EMISSIVE:
+		color 	= vec4( vec3( texture( uSamplerNormalEmissive, vertex.uv ).a ), 1.0 );
 		break;
 	}
 	oColor 		= color;

@@ -40,7 +40,7 @@ private:
 	ci::gl::TextureRef			mTextureRandom;
 	ci::gl::Texture2dRef		mTextureFboGBufferAlbedo;
 	ci::gl::Texture2dRef		mTextureFboGBufferDepth;
-	ci::gl::Texture2dRef		mTextureFboGBufferNormalDepth;
+	ci::gl::Texture2dRef		mTextureFboGBufferNormalEmissive;
 	ci::gl::Texture2dRef		mTextureFboGBufferPosition;
 	ci::gl::Texture2dRef		mTextureFboLBuffer;
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
@@ -52,12 +52,9 @@ private:
 	bool						mEnabledFxaa;
 	bool						mEnabledShadow;
 
-	float						mDepthScale;
-	
 	ci::CameraPersp				mShadowCamera;
 
 	float						mFloor;
-	ci::vec3					mSpherePosition;
 
 	bool						mDebugMode;
 	float						mFrameRate;
@@ -87,7 +84,7 @@ void DeferredShadingApp::draw()
 	{
 		{
 			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( mSpherePosition );
+			gl::translate( vec3( 0.0f, -4.0f, 0.0f ) );
 			gl::draw( mMeshSphere );
 		}
 
@@ -132,8 +129,7 @@ void DeferredShadingApp::draw()
 
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
-			mGlslProgGBuffer->uniform( "uDepthScale",	mDepthScale );
-			mGlslProgGBuffer->uniform( "uEmissive",		0.0f );
+			mGlslProgGBuffer->uniform( "uEmissive",	0.0f );
 
 			// Draw shadow casters (spheres)
 			drawSpheres();
@@ -193,7 +189,7 @@ void DeferredShadingApp::draw()
 	
 		// Bind G-buffer textures and shadow map
 		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalDepth,	1 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalEmissive,	1 );
 		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferPosition,		2 );
 		gl::ScopedTextureBind scopedTextureBind3( mTextureFboShadowMap,				3 );
 
@@ -201,15 +197,12 @@ void DeferredShadingApp::draw()
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
 			mGlslProgLBuffer->uniform( "uSamplerAlbedo",			0 );
-			mGlslProgLBuffer->uniform( "uSamplerNormalDepth",		1 );
+			mGlslProgLBuffer->uniform( "uSamplerNormalEmissive",	1 );
 			mGlslProgLBuffer->uniform( "uSamplerPosition",			2 );
 			mGlslProgLBuffer->uniform( "uSamplerShadowMap",			3 );
 
-			mGlslProgLBuffer->uniform( "uShadowBlurSize",			0.0025f );
 			mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
 			mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
-			mGlslProgLBuffer->uniform( "uShadowMix",				0.5f );
-			mGlslProgLBuffer->uniform( "uShadowSamples",			4.0f );
 			mGlslProgLBuffer->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
 			mGlslProgLBuffer->uniformBlock( 0, 0 );
 
@@ -247,7 +240,7 @@ void DeferredShadingApp::draw()
 		vec2 sz;
 		vec2 pos	= vec2( 0.0f );
 		float w		= (float)getWindowWidth();
-		sz.x		= w / 4.0f;
+		sz.x		= w / 3.0f;
 		sz.y		= sz.x / getWindowAspectRatio();
 		pos			= sz * 0.5f;
 
@@ -263,11 +256,11 @@ void DeferredShadingApp::draw()
 		// G-buffer
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
-			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",		0 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerNormalDepth",	1 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerPosition",		2 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",			0 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerNormalEmissive",	1 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerPosition",			2 );
 			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	1 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalEmissive,	1 );
 			gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		2 );
 		
 			for ( int32_t i = 0; i < 4; ++i ) {
@@ -290,18 +283,19 @@ void DeferredShadingApp::draw()
 			}
 		}
 	} else {
-		gl::clear();
 		gl::setMatricesWindow( getWindowSize() );
+		gl::clear();
+		gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
 
 		// Perform FXAA
 		if ( mEnabledFxaa ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
 			mGlslProgFxaa->uniform( "uSampler",	0 );
 			drawRect( getWindowSize() );
 		} else {
-			gl::draw( mTextureFboLBuffer );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
+			drawRect( getWindowSize() );
 		}
 	}
 
@@ -356,10 +350,11 @@ void DeferredShadingApp::resize()
 	auto createRenderbufferFromTexture = 
 		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
 	{
-		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), (int32_t)samples, (int32_t)coverageSamples );
+		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), 
+										 (int32_t)samples, (int32_t)coverageSamples );
 	};
 	
-	const ivec2 windowSize		= getWindowSize();
+	const ivec2 windowSize = getWindowSize();
 
 	// Geometry buffer
 	{
@@ -377,13 +372,13 @@ void DeferredShadingApp::resize()
 		textureFormat16.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
 		textureFormat16.setDataType( GL_FLOAT );
 
-		mTextureFboGBufferAlbedo				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat10 );
-		mTextureFboGBufferNormalDepth			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
-		mTextureFboGBufferPosition				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
+		mTextureFboGBufferAlbedo			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat10 );
+		mTextureFboGBufferNormalEmissive	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
+		mTextureFboGBufferPosition			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
 
-		gl::RenderbufferRef albedoBuffer		= createRenderbufferFromTexture( mTextureFboGBufferAlbedo,		0, 0 );
-		gl::RenderbufferRef normalDepthBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormalDepth, 0, 0 );
-		gl::RenderbufferRef positionBuffer		= createRenderbufferFromTexture( mTextureFboGBufferPosition,	0, 0 );
+		gl::RenderbufferRef albedoBuffer			= createRenderbufferFromTexture( mTextureFboGBufferAlbedo,			0, 0 );
+		gl::RenderbufferRef normalEmissiveBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormalEmissive,	0, 0 );
+		gl::RenderbufferRef positionBuffer			= createRenderbufferFromTexture( mTextureFboGBufferPosition,		0, 0 );
 
 		gl::Texture2d::Format depthFormat;
 		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
@@ -396,10 +391,10 @@ void DeferredShadingApp::resize()
 		gl::RenderbufferRef depthBuffer	= createRenderbufferFromTexture( mTextureFboGBufferDepth, 0, 0 );
 
 		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboGBufferAlbedo,		albedoBuffer );
-		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mTextureFboGBufferNormalDepth,	normalDepthBuffer );
-		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferPosition,		positionBuffer );
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT,	mTextureFboGBufferDepth,		depthBuffer );
+		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboGBufferAlbedo,			albedoBuffer );
+		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mTextureFboGBufferNormalEmissive,	normalEmissiveBuffer );
+		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferPosition,			positionBuffer );
+		fboFormat.attachment( GL_DEPTH_ATTACHMENT,	mTextureFboGBufferDepth,			depthBuffer );
 		try {
 			mFboGBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
 			clearFbo( mFboGBuffer );
@@ -450,7 +445,8 @@ void DeferredShadingApp::resize()
 	}
 
 	// Set up shadow camera
-	mShadowCamera.setPerspective( 150.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
+								  mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
 	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
@@ -494,7 +490,6 @@ void DeferredShadingApp::setup()
 	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 	
 	// Set default values for all properties
-	mDepthScale		= 0.01f;
 	mDebugMode		= false;
 	mEnabledFxaa	= true;
 	mEnabledShadow	= true;
@@ -504,21 +499,20 @@ void DeferredShadingApp::setup()
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
 	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mSpherePosition	= vec3( 0.0f, -4.0f, 0.0f );
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
 	mLights.push_back( Light()
 					  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .setIntensity( 0.5f )
+					  .setIntensity( 0.8f )
 					  .setPosition( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .setRadius( 0.125f )
+					  .setRadius( 0.1f )
 					  .setVolume( 15.0f ) );
 	for ( size_t i = 0; i < 8; ++i ) {
 		mLights.push_back( Light()
 						  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
 						  .setIntensity( 0.6f )
-						  .setRadius( 0.1f )
+						  .setRadius( 0.05f )
 						  .setVolume( 5.0f ) );
 	}
 
@@ -564,13 +558,14 @@ void DeferredShadingApp::update()
 			float x			= glm::cos( t );
 			float z			= glm::sin( t );
 			vec3 p			= vec3( x, 0.0f, z ) * r;
-			p.y				= ground + 1.0f;
+			p.y				= ground + 1.5f;
 			mLights.at( i + 1 ).setPosition( p );
 		}
 	}
 }
 
-CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), []( App::Settings* settings )
+CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), 
+			[]( App::Settings* settings )
 {
 	settings->disableFrameRate();
 	settings->setWindowSize( 1280, 720 );
