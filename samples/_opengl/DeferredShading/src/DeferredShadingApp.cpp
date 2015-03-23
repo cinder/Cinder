@@ -8,6 +8,13 @@
 #include "cinder/params/Params.h"
 
 #include "Light.h"
+
+/* This sample demonstrates how to do basic deferred shading.
+ * Scene is rendered into a FBO with multiple attachments (G-buffer).
+ * Shadow casters are rendered into a shadow map FBO. The data from 
+ * each is read while drawing light volumes into the L-buffer.
+ * Finally, the L-buffer is draw to the screen.
+ */
 class DeferredShadingApp : public ci::app::App
 {
 public:
@@ -18,9 +25,6 @@ public:
 	void						setup() override;
 	void						update() override;
 private:
-	void						drawRect( const ci::ivec2& sz );
-	void						drawRect( const ci::vec2& pos, const ci::ivec2& sz );
-
 	ci::MayaCamUI				mMayaCam;
 
 	std::vector<Light>			mLights;
@@ -78,7 +82,8 @@ void DeferredShadingApp::draw()
 	const mat4 shadowMatrix = mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix();
 	vec2 winSize			= vec2( getWindowSize() );
 	float e					= (float)getElapsedSeconds();
-	
+
+	// This draws our shadow casters
 	auto drawSpheres = [ & ]()
 	{
 		{
@@ -231,91 +236,49 @@ void DeferredShadingApp::draw()
 	gl::ScopedMatrices scopedMatrices;
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
+	gl::clear();
 
 	if ( mDebugMode ) {
+
+		// Draw G-buffer
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
+		mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",			0 );
+		mGlslProgDebugGbuffer->uniform( "uSamplerNormalEmissive",	1 );
+		mGlslProgDebugGbuffer->uniform( "uSamplerPosition",			2 );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalEmissive,	1 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		2 );
 		
-		vec2 sz;
-		vec2 pos	= vec2( 0.0f );
-		float w		= (float)getWindowWidth();
-		sz.x		= w / 3.0f;
-		sz.y		= sz.x / getWindowAspectRatio();
-		pos			= sz * 0.5f;
+		// Albedo   | Normals
+		// --------------------
+		// Position | Emissive
+		vec2 sz = getWindowCenter();
+		for ( int32_t i = 0; i < 4; ++i ) {
+			mGlslProgDebugGbuffer->uniform( "uMode", i );
+			vec2 pos( ( i % 2 ) * sz.x, glm::floor( (float)i * 0.5f ) * sz.y );
+			gl::drawSolidRect( Rectf( pos, pos + sz ) );
+		}
 
-		auto moveCursor = [ &pos, &sz, &w ]()
-		{
-			pos.x += sz.x;
-			if ( pos.x >= w ) {
-				pos.x = sz.x * 0.5f;
-				pos.y += sz.y;
-			}
-		};
-	
-		// G-buffer
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
-			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",			0 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerNormalEmissive",	1 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerPosition",			2 );
-			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalEmissive,	1 );
-			gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		2 );
-		
-			for ( int32_t i = 0; i < 4; ++i ) {
-				if ( i > 0 ) {
-					moveCursor();
-				}
-				mGlslProgDebugGbuffer->uniform( "uMode", i );
-				drawRect( pos, sz );
-			}
-		}
-		
-		// L-buffer
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			moveCursor();
-			mTextureFboLBuffer->setTopDown( true );
-			{
-				gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
-				drawRect( pos, sz );
-			}
-		}
 	} else {
-		gl::setMatricesWindow( getWindowSize() );
-		gl::clear();
 		gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
-
-		// Perform FXAA
 		if ( mEnabledFxaa ) {
+
+			// Perform FXAA
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
 			mGlslProgFxaa->uniform( "uSampler",	0 );
-			drawRect( getWindowSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 		} else {
+
+			// Draw without anti-aliasing
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			drawRect( getWindowSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 		}
 	}
 
 	mParams->draw();
-}
-
-void DeferredShadingApp::drawRect( const ivec2& sz )
-{
-	vec2 szf( sz );
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::translate( szf * 0.5f );
-	gl::scale( szf );
-	gl::draw( mMeshRect );
-};
-
-void DeferredShadingApp::drawRect( const vec2& pos, const ivec2& sz )
-{
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::translate( pos );
-	gl::scale( sz );
-	gl::draw( mMeshRect );
 }
 
 void DeferredShadingApp::mouseDown( MouseEvent event )
