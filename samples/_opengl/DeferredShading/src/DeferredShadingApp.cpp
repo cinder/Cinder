@@ -10,10 +10,10 @@
 #include "Light.h"
 
 /* This sample demonstrates how to do basic deferred shading.
- * Scene is rendered into a FBO with multiple attachments (G-buffer).
- * Shadow casters are rendered into a shadow map FBO. The data from 
- * each is read while drawing light volumes into the L-buffer.
- * Finally, the L-buffer is draw to the screen.
+ * THe scene is rendered into a frame buffer with multiple attachments
+ * (G-buffer). Shadow casters are rendered into a shadow map FBO. 
+ * The data from each is read while drawing light volumes into the 
+ * light buffer (L-buffer). Finally, the L-buffer is draw to the screen.
  */
 class DeferredShadingApp : public ci::app::App
 {

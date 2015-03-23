@@ -1,11 +1,13 @@
+// Reworked from here:
+// http://phatcore.com/alex/?p=227
+
 #version 400 core
 
+uniform float		uAspect;
 uniform float		uBias;
-uniform float		uFocalDepth;
-uniform float		uRange;
+uniform float		uOpacity;
 uniform sampler2D	uSampler;
 uniform sampler2D	uSamplerDepth;
-uniform vec2		uSize;
 
 in Vertex
 {
@@ -14,34 +16,50 @@ in Vertex
 
 out vec4 	oColor;
 
-void main( void ) 
+vec4 bokeh( float depth, vec2 offset, inout float influence ) 
 {
-	float d		= sqrt( pow( uFocalDepth, 2.0 ) + pow( texture( uSamplerDepth, vertex.uv ).a, 2.0 ) );
-	float blur	= log( d / uRange ) * uBias * uRange;
-	vec2 sz		= vec2( clamp( blur, -uSize.x, uSize.x ), clamp( blur, -uSize.y, uSize.y ) );
-	vec4 sum	= vec4( 0.0 );
+	float iDepth	= 0.0;
+	float contrib	= 0.0;
+	vec4 color		= texture( uSampler, vertex.uv + offset );
 
-	sum += texture( uSampler, vertex.uv + -10.0 * sz ) * 0.009167927656011385;
-	sum += texture( uSampler, vertex.uv +  -9.0 * sz ) * 0.014053461291849008;
-	sum += texture( uSampler, vertex.uv +  -8.0 * sz ) * 0.020595286319257878;
-	sum += texture( uSampler, vertex.uv +  -7.0 * sz ) * 0.028855245532226279;
-	sum += texture( uSampler, vertex.uv +  -6.0 * sz ) * 0.038650411513543079;
-	sum += texture( uSampler, vertex.uv +  -5.0 * sz ) * 0.049494378859311142;
-	sum += texture( uSampler, vertex.uv +  -4.0 * sz ) * 0.060594058578763078;
-	sum += texture( uSampler, vertex.uv +  -3.0 * sz ) * 0.070921288047096992;
-	sum += texture( uSampler, vertex.uv +  -2.0 * sz ) * 0.079358891804948081;
-	sum += texture( uSampler, vertex.uv +  -1.0 * sz ) * 0.084895951965930902;
-	sum += texture( uSampler, vertex.uv +	0.0 * sz ) * 0.086826196862124602;
-	sum += texture( uSampler, vertex.uv +   1.0 * sz ) * 0.084895951965930902;
-	sum += texture( uSampler, vertex.uv +   2.0 * sz ) * 0.079358891804948081;
-	sum += texture( uSampler, vertex.uv +   3.0 * sz ) * 0.070921288047096992;
-	sum += texture( uSampler, vertex.uv +   4.0 * sz ) * 0.060594058578763078;
-	sum += texture( uSampler, vertex.uv +   5.0 * sz ) * 0.049494378859311142;
-	sum += texture( uSampler, vertex.uv +   6.0 * sz ) * 0.038650411513543079;
-	sum += texture( uSampler, vertex.uv +   7.0 * sz ) * 0.028855245532226279;
-	sum += texture( uSampler, vertex.uv +   8.0 * sz ) * 0.020595286319257878;
-	sum += texture( uSampler, vertex.uv +   9.0 * sz ) * 0.014053461291849008;
-	sum += texture( uSampler, vertex.uv +  10.0 * sz ) * 0.009167927656011385;
-			
-	oColor = sum;
-} 
+	if ( color.rgb == vec3( 0.0 ) ) {
+		return vec4( 0.0 );
+	}
+
+	iDepth = texture( uSamplerDepth, vertex.uv + offset ).r;
+	if ( iDepth < depth ) {
+		contrib = abs( ( iDepth - 1.0f ) / 1.0 );
+	} else {
+		contrib = 1.0;
+	}
+
+	influence += contrib;
+	return color * contrib;
+}
+
+void main(void) 
+{
+	float depth		= texture( uSamplerDepth, vertex.uv ).r;
+	vec2 sz			= vec2( abs( ( depth - 1.0f ) / 1.0 ) ) * vec2( 1.0, uAspect ) * uBias;
+	float influence = 0.000001;
+
+	vec4 sum		= vec4( 0.0 );
+	sum				+= bokeh( depth, vec2(  0.158509, -0.884836) * sz, influence );
+	sum				+= bokeh( depth, vec2(  0.792547, -0.424181) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.769421,  0.250000) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.391857,  0.809017) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.391857,  0.809017) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.769421,  0.250000) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.158509, -0.884836) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.792547, -0.424181) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.951056, -0.309017) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.587785,  0.809017) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.317019, -0.769672) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.829966,  0.063661) * sz, influence );
+	sum 			+= bokeh( depth, vec2(  0.195928,  0.809017) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.708876,  0.436339) * sz, influence );
+	sum 			+= bokeh( depth, vec2( -0.317019, -0.769672) * sz, influence );
+   
+	oColor			= mix( texture( uSampler, vertex.uv ), sum / influence, vec4( uOpacity ) );
+}
+ 

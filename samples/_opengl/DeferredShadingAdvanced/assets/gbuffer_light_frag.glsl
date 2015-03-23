@@ -5,7 +5,6 @@ uniform int uMaterialId;
 in Vertex
 {
 	vec4	color;
-	float	depth;
 	vec3 	normal;
 	vec3 	position;
 	vec2 	uv;
