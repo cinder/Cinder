@@ -297,19 +297,7 @@ void DeferredShadingApp::resize()
 	camera.setAspectRatio( getWindowAspectRatio() );
 	mMayaCam.setCurrentCam( camera );
 
-	gl::disable( GL_CULL_FACE );
-	gl::enable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	gl::clear();
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
-	auto clearFbo = []( gl::FboRef& fbo ) -> void {
-		gl::ScopedFramebuffer fboScope( fbo );
-		gl::viewport( fbo->getSize() );
-		gl::clear();
-	};
-
-	// 
+	// Shortcut for using texture specs to create a render buffer
 	auto createRenderbufferFromTexture = 
 		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
 	{
@@ -351,7 +339,9 @@ void DeferredShadingApp::resize()
 		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferPosition,			positionBuffer );
 		try {
 			mFboGBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-			clearFbo( mFboGBuffer );
+			gl::ScopedFramebuffer scopedFramebuffer( mFboGBuffer );
+			gl::ScopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
+			gl::clear();
 		} catch ( gl::FboExceptionInvalidSpecification ex ) {
 			console() << "Failed to create G-buffer: " << ex.what() << endl;
 			quit();
@@ -396,7 +386,9 @@ void DeferredShadingApp::resize()
 		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, lightBuffer );
 		mFboLBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
 
-		clearFbo( mFboLBuffer );
+		gl::ScopedFramebuffer scopedFramebuffer( mFboLBuffer );
+		gl::ScopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
+		gl::clear();
 	}
 
 	// Set up shadow camera
