@@ -20,20 +20,75 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/UrilImplJni.h"
+#include "cinder/UrlImplJni.h"
+#include "cinder/android/UrlLoader.h"
 
 namespace cinder {
 
-IStreamUrlImplJni( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
-~IStreamUrlImplJni();
+IStreamUrlImplJni::IStreamUrlImplJni( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
+	: IStreamUrlImpl( user, password, options )
+{
+	ci::android::UrlLoader urlLoader = ci::android::UrlLoader( url );
+	mData = urlLoader.getData();
+}
 
-size_t IStreamUrlImplJni::readDataAvailable( void *dest, size_t maxSize );
-void IStreamUrlImplJni::seekAbsolute( off_t absoluteOffset );
-void IStreamUrlImplJni::seekRelative( off_t relativeOffset );
-off_t IStreamUrlImplJni::tell() const;
-off_t IStreamUrlImplJni::size() const;
+IStreamUrlImplJni::~IStreamUrlImplJni()
+{
+}
 
-bool isEof() const;
-void IORead( void *t, size_t size );
+size_t IStreamUrlImplJni::readDataAvailable( void *dest, size_t maxSize )
+{
+	size_t numBytesRead = 0;
+	if( mData ) {
+		size_t readSize = std::min( mData.getDataSize(), maxSize );
+		if( readSize > 0 ) {
+			memcpy( dest, (const void *)mData.getData(), readSize );
+			numBytesRead = readSize;
+		}
+	}
+	return numBytesRead;
+}
+
+void IStreamUrlImplJni::seekAbsolute( off_t absoluteOffset )
+{
+	mOffset = absoluteOffset;
+}
+
+void IStreamUrlImplJni::seekRelative( off_t relativeOffset )
+{
+	mOffset += relativeOffset;
+	mOffset = std::min( mOffset, (off_t)size() );
+}
+
+off_t IStreamUrlImplJni::tell() const
+{
+	return mOffset;
+}
+
+off_t IStreamUrlImplJni::size() const
+{
+	off_t result = mData ? mData.getDataSize() : 0;
+	return result;
+}
+
+bool IStreamUrlImplJni::isEof() const
+{
+	bool result = ( mOffset >= size() );
+	return 0;
+}
+
+void IStreamUrlImplJni::IORead( void *t, size_t size )
+{
+	if( ! mData ) {
+		return;
+	}
+
+	int64_t dataSize = mData.getDataSize();
+	int64_t remaining = dataSize - (int64_t)size;
+	remaining = std::max( (int64_t)0, remaining );
+
+	size_t readSize = std::min( size, (size_t)remaining );
+	memcpy( t, (const void *)mData.getData(), readSize );
+}
 
 } // namespace cinder

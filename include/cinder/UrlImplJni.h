@@ -23,13 +23,14 @@
 #pragma once
 
 #include "cinder/Url.h"
+#include "cinder/Buffer.h"
 
 namespace cinder {
 
 class IStreamUrlImplJni : public IStreamUrlImpl {
   public:
 	IStreamUrlImplJni( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options );
-	~IStreamUrlImplJni();
+	virtual ~IStreamUrlImplJni();
 
 	virtual size_t		readDataAvailable( void *dest, size_t maxSize );
 	virtual void		seekAbsolute( off_t absoluteOffset );
@@ -39,6 +40,10 @@ class IStreamUrlImplJni : public IStreamUrlImpl {
 	
 	virtual bool		isEof() const;
 	virtual void		IORead( void *t, size_t size );
+
+private:
+	ci::Buffer 			mData;
+	off_t 				mOffset;	
 };
 
 } // namespace cinder

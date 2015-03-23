@@ -26,7 +26,7 @@
 #if defined( CINDER_ANDROID )
   #include "cinder/app/android/AssetFileSystem.h"
   #include "cinder/app/android/PlatformAndroid.h"
- #endif
+#endif
 
 namespace cinder {
 

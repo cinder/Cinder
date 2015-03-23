@@ -1,5 +1,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/Texture.h"
+#include "cinder/ImageIo.h"
+#include "cinder/Surface.h"
 #include <list>
 using namespace ci;
 using namespace ci::app;
@@ -26,6 +29,7 @@ class UrlLoader : public App {
 
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
+	gl::TextureRef  mTex;
 };
 
 jmethodID GetStaticMethod( JNIEnv* env, jclass clazz, const std::string& methodName, const std::string& methodSig )
@@ -54,11 +58,13 @@ void writeToFile( const std::string& filePath, const uint8_t* dataBytes, uint32_
 void UrlLoader::setup()
 {
     try {
-        ci::android::UrlLoader loader( "http://upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" );
-        ci::Buffer buf = loader.getData();
-        if( buf ) {
-            writeToFile( "/storage/emulated/0/my_data.jpg", (const uint8_t*)buf.getData(), buf.getDataSize() );
-        }
+        mTex = gl::Texture::create( loadImage( loadUrl( "http://upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" ) ) );
+
+        //ci::android::UrlLoader loader( "http://upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" );
+        //ci::Buffer buf = loader.getData();
+        //if( buf ) {
+        //     writeToFile( "/storage/emulated/0/my_data.jpg", (const uint8_t*)buf.getData(), buf.getDataSize() );
+        //}
     }
     catch( const std::exception& e ) {
         console() << "Failed getting data: " << e.what() << std::endl;
@@ -213,6 +219,11 @@ void UrlLoader::keyDown( KeyEvent event )
 void UrlLoader::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
+
+    if( mTex ) {
+ 	    gl::color( 1.0f, 1.0f, 1.0f );
+        gl::draw( mTex );
+    }
 
 	gl::color( 1.0f, 0.5f, 0.25f );	
 	gl::begin( GL_LINE_STRIP );

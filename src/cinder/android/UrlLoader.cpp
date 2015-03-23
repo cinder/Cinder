@@ -68,6 +68,7 @@ void UrlLoader::cacheJni()
 void UrlLoader::destroyJni()
 {
 	if( JniHelper::get()->AttachCurrentThread() ) {
+		
 		JniHelper::get()->DeleteGlobalRef( UrlLoader::sUrlLoaderClass  );
 
 		UrlLoader::sUrlLoaderClass = NULL;
@@ -86,7 +87,7 @@ ci::Buffer UrlLoader::getData()
 
 		jbyteArray jBytes = (jbyteArray)JniHelper::get()->CallStaticObjectMethod( UrlLoader::sUrlLoaderClass, UrlLoader::sLoadUrlMethodId, jstrUrl );
 		if( NULL == jBytes ) {
-		    throw std::runtime_error( "loadUrl failed" );
+		    throw std::runtime_error( "org.libcinder.net.UrlLoader.loadUrl failed" );
 		}
 
 		size_t dataLength = JniHelper::get()->GetArrayLength( jBytes );
