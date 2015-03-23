@@ -10,6 +10,23 @@
 #include "Light.h"
 #include "Material.h"
 
+/* This sample demonstrates how create a robust deferred shading engine.
+ * The scene is rendered into a frame buffer with multiple attachments
+ * (G-buffer). A uniform buffer object is used to store a database of
+ * material data on the GPU. Shadow casters are rendered into a shadow 
+ * map FBO. The data from each is read while drawing light volumes into the 
+ * light buffer (L-buffer). Finally, the L-buffer is draw to the screen.
+ * 
+ * A screen space ambient occlusion (SSAO) pass provides extra detail with 
+ * local shadows. Lights are bloomed to appear that they are glowing. 
+ * We follow these with some post-processing passes, including depth of 
+ * field (to mimic camera focus), some color tweaks, and anti-aliasing.
+ * 
+ * This sample is intended for machines with a lot of GPU memory. 
+ * Check out the simpler DeferredShading sample if this is to taxing on 
+ * your machine, or if you are not yet familiar with the concept of
+ * deferred shading.
+ */
 class DeferredShadingAdvancedApp : public ci::app::App
 {
 public:
@@ -20,9 +37,6 @@ public:
 	void						setup() override;
 	void						update() override;
 private:
-	void						drawRect( const ci::ivec2& sz );
-	void						drawRect( const ci::vec2& pos, const ci::ivec2& sz );
-
 	ci::MayaCamUI				mMayaCam;
 
 	std::vector<Light>			mLights;
@@ -66,7 +80,7 @@ private:
 	ci::gl::Texture2dRef		mTextureFboGBufferAlbedo;
 	ci::gl::Texture2dRef		mTextureFboGBufferDepth;
 	ci::gl::Texture2dRef		mTextureFboGBufferMaterial;
-	ci::gl::Texture2dRef		mTextureFboGBufferNormalDepth;
+	ci::gl::Texture2dRef		mTextureFboGBufferNormal;
 	ci::gl::Texture2dRef		mTextureFboGBufferPosition;
 	ci::gl::Texture2dRef		mTextureFboLBuffer;
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
@@ -117,6 +131,7 @@ void DeferredShadingAdvancedApp::draw()
 	vec2 winSize			= vec2( getWindowSize() );
 	float e					= (float)getElapsedSeconds();
 	
+	// Draw shadow casters
 	auto drawSpheres = [ & ]()
 	{
 		{
@@ -234,17 +249,17 @@ void DeferredShadingAdvancedApp::draw()
 		gl::setMatrices( mMayaCam.getCamera() );
 	
 		// Bind G-buffer textures and shadow map
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferMaterial,		1 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	2 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		3 );
-		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,				4 );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,		0 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferMaterial,	1 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormal,		2 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,	3 );
+		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,			4 );
 
 		// Draw light volumes
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
 		mGlslProgLBuffer->uniform( "uSamplerAlbedo",			0 );
 		mGlslProgLBuffer->uniform( "uSamplerMaterial",			1 );
-		mGlslProgLBuffer->uniform( "uSamplerNormalDepth",		2 );
+		mGlslProgLBuffer->uniform( "uSamplerNormal",			2 );
 		mGlslProgLBuffer->uniform( "uSamplerPosition",			3 );
 		mGlslProgLBuffer->uniform( "uSamplerShadowMap",			4 );
 
@@ -308,7 +323,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgBloom->uniform( "uSize",				vec2( bloomSize.x, 0.0f ) );
 			mGlslProgBloom->uniform( "uSamplerAlbedo",		0 );
 			mGlslProgBloom->uniform( "uSamplerMaterial",	1 );
-			drawRect( mFboBloom->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboBloom->getSize() ) );
 		}
 
 		// Vertical pass
@@ -319,7 +334,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgBlur->uniform( "uAttenuation",	bloomAtt );
 			mGlslProgBlur->uniform( "uSize",		vec2( 0.0f, bloomSize.y ) );
 			mGlslProgBlur->uniform( "uSampler",		0 );
-			drawRect( mFboBloom->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboBloom->getSize() ) );
 		}
 	}
 
@@ -349,16 +364,18 @@ void DeferredShadingAdvancedApp::draw()
 		// SSAO pass
 		{
 			gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
-			gl::ScopedTextureBind scopedTextureBind0( mTextureRandom,					0 );
-			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalDepth,	1 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferDepth,			0 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureRandom,					1 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormal,	2 );
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgSsao );
-			mGlslProgSsao->uniform( "uFalloff",				0.0f );
-			mGlslProgSsao->uniform( "uOffset",				0.05f );
-			mGlslProgSsao->uniform( "uRadius",				0.05f );
-			mGlslProgSsao->uniform( "uStrength",			1.0f );
-			mGlslProgSsao->uniform( "uSamplerNoise",		0 );
-			mGlslProgSsao->uniform( "uSamplerNormalDepth",	1 );
-			drawRect( mFboSsao->getSize() );
+			mGlslProgSsao->uniform( "uFalloff",			0.0f );
+			mGlslProgSsao->uniform( "uOffset",			0.05f );
+			mGlslProgSsao->uniform( "uRadius",			0.05f );
+			mGlslProgSsao->uniform( "uStrength",		1.0f );
+			mGlslProgSsao->uniform( "uSamplerDepth",	0 );
+			mGlslProgSsao->uniform( "uSamplerNoise",	1 );
+			mGlslProgSsao->uniform( "uSamplerNormal",	2 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
 		}
 
 		// Calculate blur pixel size
@@ -373,7 +390,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
 		{
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboSsao, 0 );
-			drawRect( mFboSsao->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
 		}
 
 		// Vertical blur pass
@@ -381,7 +398,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
 		{
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboSsaoHorizontal, 0 );
-			drawRect( mFboSsao->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
 		}
 	}
 
@@ -405,7 +422,7 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgComposite );
 			mGlslProgComposite->uniform( "uSamplerLBuffer",	0 );
 			mGlslProgComposite->uniform( "uSamplerSsao",	1 );
-			drawRect( mFboComposite->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboComposite->getSize() ) );
 		} else {
 			gl::draw( mTextureFboLBuffer );
 		}
@@ -439,24 +456,24 @@ void DeferredShadingAdvancedApp::draw()
 		{
 			// Horizontal pass
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
-			mGlslProgDof->uniform( "uBias",					0.005f );
-			mGlslProgDof->uniform( "uFocalDepth",			0.75f );
-			mGlslProgDof->uniform( "uRange",				0.85f );
-			mGlslProgDof->uniform( "uSize",					vec2( dofBlurSize.x, 0.0f ) );
-			mGlslProgDof->uniform( "uSampler",				0 );
-			mGlslProgDof->uniform( "mTextureNormalDepth",	1 );
+			mGlslProgDof->uniform( "uBias",			0.005f );
+			mGlslProgDof->uniform( "uFocalDepth",	0.75f );
+			mGlslProgDof->uniform( "uRange",		0.85f );
+			mGlslProgDof->uniform( "uSize",			vec2( dofBlurSize.x, 0.0f ) );
+			mGlslProgDof->uniform( "uSampler",		0 );
+			mGlslProgDof->uniform( "uSamplerDepth",	1 );
 			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
 			{
-				gl::ScopedTextureBind scopedTextureBind0( mTextureFboComposite,				0 );
-				gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalDepth,	1 );
-				drawRect( mFboDof->getSize() );
+				gl::ScopedTextureBind scopedTextureBind0( mTextureFboComposite,		0 );
+				gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferDepth,	1 );
+				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboDof->getSize() ) );
 			}
 
 			// Vertical pass
 			mGlslProgDof->uniform( "uSize",	vec2( 0.0f, dofBlurSize.y ) );	
 			gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboDofHorizontal, 0 );
-			drawRect( mFboDof->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboDof->getSize() ) );
 		}
 
 		// Perform a blend pass between composite and DoF buffers
@@ -477,7 +494,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgBlend->uniform( "uBlend",		0.6f );
 			mGlslProgBlend->uniform( "uSampler0",	0 );
 			mGlslProgBlend->uniform( "uSampler1",	1 );
-			drawRect( mFboDof->getSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboDof->getSize() ) );
 		}
 	}
 
@@ -503,7 +520,7 @@ void DeferredShadingAdvancedApp::draw()
 		mGlslProgColor->uniform( "uMultiply",		16.0f );
 		mGlslProgColor->uniform( "uSaturation",		ColorAf( 0.882f, 0.89f, 0.843f, 1.0f ) );
 		mGlslProgColor->uniform( "uSampler",		0 );
-		drawRect( mFboColor->getSize() );
+		gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboColor->getSize() ) );
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -519,20 +536,16 @@ void DeferredShadingAdvancedApp::draw()
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
 		
+		// Handy way to draw buffers across the screen
 		vec2 sz;
-		vec2 pos	= vec2( 0.0f );
-		float w		= (float)getWindowWidth();
-		sz.x		= w / 4.0f;
-		sz.y		= sz.x / getWindowAspectRatio();
-		pos			= sz * 0.5f;
-
-		auto moveCursor = [ &pos, &sz, &w ]()
+		size_t columns	= 4;
+		float w			= (float)getWindowWidth();
+		sz.x			= w / (float)columns;
+		sz.y			= sz.x / getWindowAspectRatio();
+		size_t index	= 0;
+		auto calcPosition = [ &columns, &sz ]( size_t i ) ->vec2
 		{
-			pos.x += sz.x;
-			if ( pos.x >= w ) {
-				pos.x = sz.x * 0.5f;
-				pos.y += sz.y;
-			}
+			return vec2( ( i % columns ) * sz.x, glm::floor( (float)i / (float)columns ) * sz.y );
 		};
 	
 		// G-buffer
@@ -540,63 +553,66 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
 			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",		0 );
 			mGlslProgDebugGbuffer->uniform( "uSamplerMaterial",		1 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerNormalDepth",	2 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerNormal",	2 );
 			mGlslProgDebugGbuffer->uniform( "uSamplerPosition",		3 );
 			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
 			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferMaterial,		1 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	2 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormal,	2 );
 			gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		3 );
 		
-			for ( int32_t i = 0; i < 5; ++i ) {
-				if ( i > 0 ) {
-					moveCursor();
-				}
+			for ( int32_t i = 0; i < 5; ++i, ++index ) {
 				mGlslProgDebugGbuffer->uniform( "uMode", i );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( i );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
 		
 		// L-buffer
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			moveCursor();
+			++index;
 			mTextureFboLBuffer->setTopDown( true );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
 
 		// Bloom
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			moveCursor();
-			mTextureFboBloomHorizontal->setTopDown( true );
+			++index;
+			mTextureFboBloomHorizontal->setTopDown( false );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomHorizontal, 0 );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
-			moveCursor();
+			++index;
 			mTextureFboBloomVertical->setTopDown( true );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomVertical, 0 );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
 	
 		// SSAO
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			moveCursor();
+			++index;
 			mTextureFboSsao->setTopDown( true );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboSsao, 0 );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
-			moveCursor();
+			++index;
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboSsaoVertical, 0 );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
 
@@ -607,15 +623,17 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgDebugMaterial->uniform( "uSamplerMaterial", 0 );
 			mGlslProgDebugMaterial->uniformBlock( 0, 0 );
 			for ( int32_t i = 0; i < 6; ++i ) {
-				moveCursor();
+				++index;
 				mGlslProgDebugMaterial->uniform( "uMode", i );
-				drawRect( pos, sz );
+				vec2 pos = calcPosition( index );
+				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
 	} else {
 		gl::clear();
 		gl::setMatricesWindow( getWindowSize() );
 
+		// Choose final texture to draw based enable passes
 		gl::TextureRef& texture = mTextureFboColor;
 		if ( !mEnabledColor ) {
 			texture = mEnabledDoF ? mTextureFboDofHorizontal : mTextureFboComposite;
@@ -627,7 +645,7 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedTextureBind scopedTextureBind( texture, 0 );
 			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
 			mGlslProgFxaa->uniform( "uSampler",	0 );
-			drawRect( getWindowSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 		} else {
 			gl::draw( mTextureFboColor );
 		}
@@ -637,28 +655,11 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloomVertical, 0 );
-			drawRect( getWindowSize() );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 		}
 	}
 
 	mParams->draw();
-}
-
-void DeferredShadingAdvancedApp::drawRect( const ivec2& sz )
-{
-	vec2 szf( sz );
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::translate( szf * 0.5f );
-	gl::scale( szf );
-	gl::draw( mMeshRect );
-};
-
-void DeferredShadingAdvancedApp::drawRect( const vec2& pos, const ivec2& sz )
-{
-	gl::ScopedModelMatrix scopedModelMatrix;
-	gl::translate( pos );
-	gl::scale( sz );
-	gl::draw( mMeshRect );
 }
 
 void DeferredShadingAdvancedApp::mouseDown( MouseEvent event )
@@ -677,18 +678,14 @@ void DeferredShadingAdvancedApp::resize()
 	camera.setAspectRatio( getWindowAspectRatio() );
 	mMayaCam.setCurrentCam( camera );
 
-	gl::disable( GL_CULL_FACE );
-	gl::enable( GL_DEPTH_TEST );
-	glDepthFunc( GL_LEQUAL );
-	gl::clear();
-	glPolygonMode( GL_FRONT_AND_BACK, GL_FILL );
-
+	// Shortcut for clearing FBO
 	auto clearFbo = []( gl::FboRef& fbo ) -> void {
 		gl::ScopedFramebuffer fboScope( fbo );
 		gl::viewport( fbo->getSize() );
 		gl::clear();
 	};
 
+	// Shortcut for using texture specs to create a render buffer
 	auto createRenderbufferFromTexture = 
 		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
 	{
@@ -811,12 +808,12 @@ void DeferredShadingAdvancedApp::resize()
 
 		mTextureFboGBufferAlbedo				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat10 );
 		mTextureFboGBufferMaterial				= gl::Texture2d::create( windowSize.x, windowSize.y, materialTextureFormat );
-		mTextureFboGBufferNormalDepth			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
+		mTextureFboGBufferNormal			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
 		mTextureFboGBufferPosition				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
 
 		gl::RenderbufferRef albedoBuffer		= createRenderbufferFromTexture( mTextureFboGBufferAlbedo,		0, 0 );
 		gl::RenderbufferRef materialBuffer		= createRenderbufferFromTexture( mTextureFboGBufferMaterial,	0, 0 );
-		gl::RenderbufferRef normalDepthBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormalDepth, 0, 0 );
+		gl::RenderbufferRef normalDepthBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormal, 0, 0 );
 		gl::RenderbufferRef positionBuffer		= createRenderbufferFromTexture( mTextureFboGBufferPosition,	0, 0 );
 
 		gl::Texture2d::Format depthFormat;
@@ -832,7 +829,7 @@ void DeferredShadingAdvancedApp::resize()
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboGBufferAlbedo,		albedoBuffer );
 		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mTextureFboGBufferMaterial,		materialBuffer );
-		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferNormalDepth,	normalDepthBuffer );
+		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferNormal,	normalDepthBuffer );
 		fboFormat.attachment( GL_COLOR_ATTACHMENT3, mTextureFboGBufferPosition,		positionBuffer );
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT,	mTextureFboGBufferDepth,		depthBuffer );
 		try {
@@ -957,7 +954,7 @@ void DeferredShadingAdvancedApp::setup()
 	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
 	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			gBufferVert,							loadAsset( "gbuffer_frag.glsl" ) );
 	mGlslProgGBufferLight		= loadGlslProg( "G-buffer light",	gBufferVert,							loadAsset( "gbuffer_light_frag.glsl" ) );
-	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,		loadAsset( "lbuffer_frag.glsl" ) );
+	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
 	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
 	mGlslProgSsao				= loadGlslProg( "SSAO",				loadAsset( "ssao_vert.glsl" ),			loadAsset( "ssao_frag.glsl" ) );
 	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );

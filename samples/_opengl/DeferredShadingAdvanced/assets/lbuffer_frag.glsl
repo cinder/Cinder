@@ -23,7 +23,7 @@ const uint MATERIAL_COUNT = 3;
 
 uniform sampler2D		uSamplerAlbedo;
 uniform usampler2D		uSamplerMaterial;
-uniform sampler2D		uSamplerNormalDepth;
+uniform sampler2D		uSamplerNormal;
 uniform sampler2D		uSamplerPosition;
 uniform sampler2DShadow uSamplerShadowMap;
 
@@ -83,12 +83,13 @@ float shadow( in vec4 position )
 	vec3 shadowCoord 	= shadowClip.xyz / shadowClip.w;
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
+	float bias			= 0.86;
 	float v 			= 1.0;
 	float e				= ( 1.0 / float( uShadowSamples ) ) * uShadowMix;
 	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
 		for ( int i = 0; i < uShadowSamples; ++i ) {
 			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poisson( i, uShadowBlurSize ), 0.0 ) );
-			if ( depth > shadowCoord.z ) {
+			if ( depth > shadowCoord.z - bias ) {
 				v		+= e;
 			}
 		}
@@ -112,7 +113,7 @@ void main( void )
 	uint materialId 	= texture( uSamplerMaterial, 	uv ).r;
 	Material material 	= uMaterials[ materialId ];
 
-	vec4 normalDepth 	= texture( uSamplerNormalDepth, uv );
+	vec4 normalDepth 	= texture( uSamplerNormal, uv );
 	vec3 N 				= normalize( normalDepth.xyz );
 	vec3 V 				= normalize( -position.xyz );
 	vec3 H 				= normalize( L + V );

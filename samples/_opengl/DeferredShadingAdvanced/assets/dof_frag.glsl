@@ -4,7 +4,7 @@ uniform float		uBias;
 uniform float		uFocalDepth;
 uniform float		uRange;
 uniform sampler2D	uSampler;
-uniform sampler2D	mTextureNormalDepth;
+uniform sampler2D	uSamplerDepth;
 uniform vec2		uSize;
 
 in Vertex
@@ -16,7 +16,7 @@ out vec4 	oColor;
 
 void main( void ) 
 {
-	float d		= sqrt( pow( uFocalDepth, 2.0 ) + pow( texture( mTextureNormalDepth, vertex.uv ).a, 2.0 ) );
+	float d		= sqrt( pow( uFocalDepth, 2.0 ) + pow( texture( uSamplerDepth, vertex.uv ).a, 2.0 ) );
 	float blur	= log( d / uRange ) * uBias * uRange;
 	vec2 sz		= vec2( clamp( blur, -uSize.x, uSize.x ), clamp( blur, -uSize.y, uSize.y ) );
 	vec4 sum	= vec4( 0.0 );

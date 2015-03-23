@@ -8,7 +8,7 @@ const int MODE_DEPTH	= 4;
 
 uniform sampler2D 	uSamplerAlbedo;
 uniform isampler2D	uSamplerMaterial;
-uniform sampler2D 	uSamplerNormalDepth;
+uniform sampler2D 	uSamplerNormal;
 uniform sampler2D 	uSamplerPosition;
 
 uniform int uMode = 0;
@@ -32,13 +32,13 @@ void main( void )
 		color 	= vec4( float( m.r ) / 4.0, 0.0, 0.0, 1.0 );
 		break;
 	case MODE_NORMAL:
-		color 	= texture( uSamplerNormalDepth, vertex.uv );
+		color 	= texture( uSamplerNormal, vertex.uv );
 		break;
 	case MODE_POSITION:
 		color 	= texture( uSamplerPosition, vertex.uv );
 		break;
 	case MODE_DEPTH:
-		color 	= vec4( vec3( 1.0 - texture( uSamplerNormalDepth, vertex.uv ).a ), 1.0 );
+		color 	= vec4( vec3( 1.0 - texture( uSamplerNormal, vertex.uv ).a ), 1.0 );
 		break;
 	}
 	oColor 		= color;
