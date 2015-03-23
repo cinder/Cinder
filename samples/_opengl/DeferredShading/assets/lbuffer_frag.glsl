@@ -61,7 +61,7 @@ vec2 poisson( int index, float blurSize )
 
 float shadow( in vec3 position )
 {
-	vec4 shadowClip 	= uShadowMatrix * uViewMatrixInverse * vec4( position, 0.0 );
+	vec4 shadowClip 	= uShadowMatrix * uViewMatrixInverse * vec4( position, 1.0 );
 	vec3 shadowCoord 	= shadowClip.xyz / shadowClip.w;
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 

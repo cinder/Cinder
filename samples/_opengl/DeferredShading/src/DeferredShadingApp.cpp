@@ -193,11 +193,9 @@ void DeferredShadingApp::draw()
 	
 		// Bind G-buffer textures and shadow map
 		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	1 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		2 );
-		if ( mEnabledShadow ) {
-			gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,			3 );
-		}
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalDepth,	1 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferPosition,		2 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFboShadowMap,				3 );
 
 		// Draw light volumes
 		{
@@ -205,9 +203,8 @@ void DeferredShadingApp::draw()
 			mGlslProgLBuffer->uniform( "uSamplerAlbedo",			0 );
 			mGlslProgLBuffer->uniform( "uSamplerNormalDepth",		1 );
 			mGlslProgLBuffer->uniform( "uSamplerPosition",			2 );
-			if ( mEnabledShadow ) {
-				mGlslProgLBuffer->uniform( "uSamplerShadowMap",		3 );
-			}
+			mGlslProgLBuffer->uniform( "uSamplerShadowMap",			3 );
+
 			mGlslProgLBuffer->uniform( "uShadowBlurSize",			0.0025f );
 			mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
 			mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );

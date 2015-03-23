@@ -238,9 +238,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferMaterial,		1 );
 		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalDepth,	2 );
 		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		3 );
-		if ( mEnabledShadow ) {
-			gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,			4 );
-		}
+		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,				4 );
 
 		// Draw light volumes
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
@@ -248,9 +246,8 @@ void DeferredShadingAdvancedApp::draw()
 		mGlslProgLBuffer->uniform( "uSamplerMaterial",			1 );
 		mGlslProgLBuffer->uniform( "uSamplerNormalDepth",		2 );
 		mGlslProgLBuffer->uniform( "uSamplerPosition",			3 );
-		if ( mEnabledShadow ) {
-			mGlslProgLBuffer->uniform( "uSamplerShadowMap",		4 );
-		}
+		mGlslProgLBuffer->uniform( "uSamplerShadowMap",			4 );
+
 		mGlslProgLBuffer->uniform( "uShadowBlurSize",			0.0025f );
 		mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
 		mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
@@ -914,7 +911,7 @@ void DeferredShadingAdvancedApp::resize()
 	}
 
 	// Set up shadow camera
-	mShadowCamera.setPerspective( 150.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
 	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
