@@ -39,7 +39,6 @@ private:
 	
 	ci::gl::TextureRef			mTextureRandom;
 	ci::gl::Texture2dRef		mTextureFboGBufferAlbedo;
-	ci::gl::Texture2dRef		mTextureFboGBufferDepth;
 	ci::gl::Texture2dRef		mTextureFboGBufferNormalEmissive;
 	ci::gl::Texture2dRef		mTextureFboGBufferPosition;
 	ci::gl::Texture2dRef		mTextureFboLBuffer;
@@ -347,6 +346,7 @@ void DeferredShadingApp::resize()
 		gl::clear();
 	};
 
+	// 
 	auto createRenderbufferFromTexture = 
 		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
 	{
@@ -356,7 +356,9 @@ void DeferredShadingApp::resize()
 	
 	const ivec2 windowSize = getWindowSize();
 
-	// Geometry buffer
+	// Create the geometry buffer (G-buffer). This G-buffer uses three
+	// color attachments to store position, normal, emissive (light), and 
+	// color (albedo) data.
 	{
 		gl::Texture2d::Format textureFormat10;
 		textureFormat10.setInternalFormat( GL_RGB10_A2 );
@@ -380,21 +382,10 @@ void DeferredShadingApp::resize()
 		gl::RenderbufferRef normalEmissiveBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormalEmissive,	0, 0 );
 		gl::RenderbufferRef positionBuffer			= createRenderbufferFromTexture( mTextureFboGBufferPosition,		0, 0 );
 
-		gl::Texture2d::Format depthFormat;
-		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
-		depthFormat.setMagFilter( GL_NEAREST );
-		depthFormat.setMinFilter( GL_NEAREST );
-		depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		depthFormat.setDataType( GL_FLOAT );
-
-		mTextureFboGBufferDepth			= gl::Texture2d::create( windowSize.x, windowSize.y, depthFormat );
-		gl::RenderbufferRef depthBuffer	= createRenderbufferFromTexture( mTextureFboGBufferDepth, 0, 0 );
-
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboGBufferAlbedo,			albedoBuffer );
 		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mTextureFboGBufferNormalEmissive,	normalEmissiveBuffer );
 		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferPosition,			positionBuffer );
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT,	mTextureFboGBufferDepth,			depthBuffer );
 		try {
 			mFboGBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
 			clearFbo( mFboGBuffer );
@@ -404,26 +395,7 @@ void DeferredShadingApp::resize()
 		}
 	}
 
-	// Light buffer
-	{
-		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB10_A2 );
-		textureFormat.setMagFilter( GL_NEAREST );
-		textureFormat.setMinFilter( GL_NEAREST );
-		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_FLOAT );
-
-		mTextureFboLBuffer				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
-		gl::RenderbufferRef lightBuffer = createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 );
-
-		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, lightBuffer );
-		mFboLBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-
-		clearFbo( mFboLBuffer );
-	}
-
-	// Shadow buffer
+	// Create the shadow buffer. Shadows are rendered in a separate pass.
 	{
 		uint32_t sz = 1024;
 		gl::Texture2d::Format depthFormat;
@@ -442,6 +414,26 @@ void DeferredShadingApp::resize()
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
 		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+	}
+
+	// Create the light buffer (L-buffer). We'll draw light volumes into
+	// the L-buffer, reading the G-buffer and shadow buffer to render the scene.
+	{
+		gl::Texture2d::Format textureFormat;
+		textureFormat.setInternalFormat( GL_RGB10_A2 );
+		textureFormat.setMagFilter( GL_NEAREST );
+		textureFormat.setMinFilter( GL_NEAREST );
+		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
+		textureFormat.setDataType( GL_FLOAT );
+
+		mTextureFboLBuffer				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
+		gl::RenderbufferRef lightBuffer = createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 );
+
+		gl::Fbo::Format fboFormat;
+		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, lightBuffer );
+		mFboLBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
+
+		clearFbo( mFboLBuffer );
 	}
 
 	// Set up shadow camera
