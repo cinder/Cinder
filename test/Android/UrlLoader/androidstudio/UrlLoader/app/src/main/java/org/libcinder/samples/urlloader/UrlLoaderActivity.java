@@ -1,15 +1,14 @@
 package org.libcinder.samples.urlloader;
 
 import android.app.NativeActivity;
-import org.libcinder.net.UrlLoader;
-import org.libcinder.net.UrlLoaderResult;
-
-import android.util.Log;
+//import org.libcinder.netnone.UrlLoader;
+//import org.libcinder.netnone.UrlLoaderResult;
 
 public class UrlLoaderActivity extends NativeActivity {
     static final String TAG = "UrlLoaderActivity";
 
 
+/*
     static UrlLoaderResult sUrlLoaderResult = null;
 
     static long loadUrlStart(String url) {
@@ -39,4 +38,5 @@ public class UrlLoaderActivity extends NativeActivity {
         byte[] result = (null != sUrlLoaderResult) ? sUrlLoaderResult.getData() : null;
         return result;
     }
+*/
 }

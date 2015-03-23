@@ -10,6 +10,9 @@ using namespace std;
 
 #include <fstream>
 
+
+#include "cinder/android/UrlLoader.h"
+
 // We'll create a new Cinder Application by deriving from the App class
 class UrlLoader : public App {
   public:
@@ -39,8 +42,30 @@ jmethodID GetStaticMethod( JNIEnv* env, jclass clazz, const std::string& methodN
     return result;
 }
 
+void writeToFile( const std::string& filePath, const uint8_t* dataBytes, uint32_t dataLength )
+{
+    std::ofstream os( filePath.c_str(), std::ios::binary );
+    os.write( (const char*)dataBytes, dataLength );
+    os.close();
+
+    console() << "Wrote: " << filePath << std::endl;
+}
+
 void UrlLoader::setup()
 {
+    try {
+        ci::android::UrlLoader loader( "http://upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" );
+        ci::Buffer buf = loader.getData();
+        if( buf ) {
+            writeToFile( "/storage/emulated/0/my_data.jpg", (const uint8_t*)buf.getData(), buf.getDataSize() );
+        }
+    }
+    catch( const std::exception& e ) {
+        console() << "Failed getting data: " << e.what() << std::endl;
+    }
+
+
+/*
     android_app* app = EventManagerAndroid::instance()->getNativeApp();
     ANativeActivity* activity = app->activity;
     JavaVM* vm = activity->vm;
@@ -114,6 +139,7 @@ void UrlLoader::setup()
     catch( const std::exception& e ) {
         console() << "ERROR: " << e.what() << std::endl;
     }
+*/
 
 /*
     jmethodID staticMethod = env->GetStaticMethodID( cls, "loadUrl", "(Ljava/lang/String;)[B" );
@@ -159,7 +185,9 @@ void UrlLoader::setup()
     env->DeleteLocalRef( jUrlStr );
 */
 
+/*
     vm->DetachCurrentThread();
+*/
 }
 
 void UrlLoader::mouseDrag( MouseEvent event )

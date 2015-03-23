@@ -23,15 +23,23 @@
 
 #include "cinder/app/android/PlatformAndroid.h"
 #include "cinder/app/android/AssetFileSystem.h"
+#include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/android/LogCatStream.h"
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
+
+#include "cinder/android/JniHelper.h"
+#include "cinder/android/UrlLoader.h"
 
 namespace cinder { namespace app {
 
 PlatformAndroid::PlatformAndroid()
 	: mDisplaysInitialized( false )
 {
+
+	ci::android::JniHelper::initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
+	ci::android::UrlLoader::cacheJni();
+
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 }

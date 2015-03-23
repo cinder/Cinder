@@ -528,7 +528,9 @@ set( CINDER_C_SRC_FILES
 
 set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
     ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
+    ${CINDER_SRC_DIR}/cinder/android/UrlLoader.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp

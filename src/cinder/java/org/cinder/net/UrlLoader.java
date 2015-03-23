@@ -1,5 +1,5 @@
 package org.cinder.net;
 
-class UrlLoader {
-	
+public class UrlLoader {
+
 }

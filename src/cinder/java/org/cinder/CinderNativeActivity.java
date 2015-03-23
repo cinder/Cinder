@@ -1,5 +1,7 @@
 package org.cinder;
 
-class CinderNativeActivity {
+import android.app.NativeActivity;
+
+public class CinderNativeActivity extends NativeActivity {
 
 }
