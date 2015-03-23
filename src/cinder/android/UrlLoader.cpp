@@ -54,8 +54,6 @@ UrlLoader::~UrlLoader()
 
 void UrlLoader::cacheJni()
 {
-	LOGI( "=============================> cacheJni" );
-
 	if( JniHelper::get()->AttachCurrentThread() ) {
 		jclass urlLoaderClass = JniHelper::get()->retrieveClass( "org/libcinder/net/UrlLoader" );	
 		UrlLoader::sUrlLoaderClass = (jclass)JniHelper::get()->NewGlobalRef( urlLoaderClass );
