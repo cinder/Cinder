@@ -491,12 +491,6 @@ Rect& Rect::rect( const Rectf &r )
 	return *this;
 }
 
-Rect& Rect::colors()
-{
-	mHasColors = true;
-	return *this;
-}
-
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
 	mHasColors = true;
@@ -504,12 +498,6 @@ Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const C
 	mColors[1] = upperLeft;
 	mColors[2] = lowerRight;
 	mColors[3] = lowerLeft;
-	return *this;
-}
-
-Rect& Rect::disableColors()
-{
-	mHasColors = false;
 	return *this;
 }
 

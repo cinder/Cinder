@@ -214,8 +214,6 @@ class Rect : public Source {
 	Rect&		colors( bool enable = true ) { mHasColors = enable; return *this; }
 	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&		colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
-	//! Disables colors. Disabled by default.
-	Rect&		disableColors();
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&		texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft );
 
