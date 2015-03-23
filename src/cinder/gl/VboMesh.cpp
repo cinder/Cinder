@@ -376,36 +376,82 @@ void VboMesh::buildVao( const GlslProgRef &shader, const AttribGlslMap &attribut
 void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping )
 {
 	auto ctx = gl::context();
-	
-	// iterate all the vertex array VBOs; map<geom::BufferLayout,VboRef>
+	const auto maxDimsPerAttrib = 4;
+	std::set<geom::Attrib> enabledAttribs;
+	// iterate all the vertex array VBOs
 	for( const auto &vertArrayVbo : mVertexArrayVbos ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
+		auto size = vertArrayVbo.first.getAttribs().size();
+		std::cout << "Size: " << size << std::endl;
 		// now iterate the attributes associated with this VBO
 		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
 			int loc = -1;
 			// first see if we have a mapping in 'attributeMapping'
 			auto attributeMappingIt = attributeMapping.find( attribInfo.getAttrib() );
-			if( attributeMappingIt != attributeMapping.end() ) {
-				loc = shader->getAttribLocation( attributeMappingIt->second );
-			}
-			// otherwise, try to get the location of the attrib semantic in the shader if it's present
-			else if( shader->hasAttribSemantic( attribInfo.getAttrib() ) ) {
-				loc = shader->getAttribSemanticLocation( attribInfo.getAttrib() );			
-			}
 			
-			// if either the shader's mapping or 'attributeMapping' has this semantic, add it to the VAO
+			if( attributeMappingIt != attributeMapping.end() )
+				loc = shader->getAttribLocation( attributeMappingIt->second );
+			// otherwise, try to get the location of the attrib semantic in the shader if it's present
+			else if( shader->hasAttribSemantic( attribInfo.getAttrib() ) )
+				loc = shader->getAttribSemanticLocation( attribInfo.getAttrib() );
+			std::cout << geom::attribToString( attribInfo.getAttrib() ) << std::endl;
 			if( loc != -1 ) {
-				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
-				if( attribInfo.getInstanceDivisor() > 0 )
-					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+				if( attribInfo.getDims() > 4 ) {
+					auto numDims = (int)attribInfo.getDims();
+					uint32_t dataTypeBytes = 0;
+					switch (attribInfo.getDataType()) {
+						case geom::DataType::FLOAT: dataTypeBytes = 4; break;
+						case geom::DataType::INTEGER: dataTypeBytes = 4; break;
+						case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
+					}
+					int numTimes = (numDims / maxDimsPerAttrib);
+					size_t currentInnerOffset = 0;
+					for( int i = 0; i < numTimes && numDims > 0; i++ ) {
+						uint8_t numDimsTaken = numDims / maxDimsPerAttrib > 0 ? maxDimsPerAttrib : numDims;
+						ctx->enableVertexAttribArray( loc + i );
+						if( attribInfo.getDataType() != geom::DataType::INTEGER )
+							ctx->vertexAttribPointer( loc + i, numDimsTaken, GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)(attribInfo.getOffset() + currentInnerOffset) );
+						else
+							ctx->vertexAttribIPointer( loc + i, numDimsTaken, GL_INT, (GLsizei)attribInfo.getStride(), (const void*)(attribInfo.getOffset() + currentInnerOffset) );
+						if( attribInfo.getInstanceDivisor() > 0 )
+							ctx->vertexAttribDivisor( loc + i, attribInfo.getInstanceDivisor() );
+						numDims -= numDimsTaken;
+						currentInnerOffset += (numDimsTaken * dataTypeBytes);
+					}
+				}
+				else {
+					ctx->enableVertexAttribArray( loc );
+					if( attribInfo.getDataType() != geom::DataType::INTEGER )
+						ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+					else
+						ctx->vertexAttribIPointer( loc, attribInfo.getDims(), GL_INT, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+					if( attribInfo.getInstanceDivisor() > 0 )
+						ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+				}
+				enabledAttribs.insert( attribInfo.getAttrib() );
 			}
 		}
 	}
 	
-	if( mNumIndices > 0 )
+	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
+	const auto &glslActiveAttribs = shader->getActiveAttributes();
+	for( auto &glslActiveAttrib : glslActiveAttribs ) {
+		bool attribMappingFound = false;
+		for( auto & attrib : attributeMapping ) {
+			if( glslActiveAttrib.mName == attrib.second ) {
+				attribMappingFound = true;
+			}
+		}
+		if( (glslActiveAttrib.mSemantic != geom::Attrib::COLOR) &&
+		   (enabledAttribs.count( glslActiveAttrib.mSemantic ) == 0) &&
+		   ! attribMappingFound )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.mSemantic ) << " but vertex data doesn't provide it." );
+	}
+	
+	if( mIndices )
 		mIndices->bind();
+
 }
 
 void VboMesh::drawImpl( GLint first, GLsizei count )
