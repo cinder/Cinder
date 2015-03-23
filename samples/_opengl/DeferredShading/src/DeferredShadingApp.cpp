@@ -119,10 +119,9 @@ void DeferredShadingApp::draw()
 			const static GLenum buffers[] = {
 				GL_COLOR_ATTACHMENT0,
 				GL_COLOR_ATTACHMENT1,
-				GL_COLOR_ATTACHMENT2,
-				GL_COLOR_ATTACHMENT3
+				GL_COLOR_ATTACHMENT2
 			};
-			gl::drawBuffers( 4, buffers );
+			gl::drawBuffers( 3, buffers );
 		}
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
 		gl::ScopedMatrices scopedMatrices;
