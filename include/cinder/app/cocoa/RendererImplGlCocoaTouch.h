@@ -51,7 +51,7 @@
 - (id)initWithFrame:(CGRect)frame cinderView:(UIView *)cinderView renderer:(cinder::app::RendererGl *)renderer sharedRenderer:(cinder::app::RendererGlRef)sharedRenderer;
 
 - (EAGLContext*)getEaglContext;
-- (void)makeCurrentContext;
+- (void)makeCurrentContext:(bool)force;
 - (void)flushBuffer;
 - (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
