@@ -436,6 +436,12 @@
 		007050BA1114F93F003FCAE4 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C7BA408C0FA8C13A00AADC07 /* CoreAudio.framework */; };
 		0071BD050FB9F4AD0092E7D6 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
 		0071BD090FB9FA2C0092E7D6 /* Display.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0071BD080FB9FA2C0092E7D6 /* Display.cpp */; };
+		007364D21AC0B8D500A3C155 /* AvfWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007364D11AC0B8D500A3C155 /* AvfWriter.mm */; };
+		007364D31AC0B8D500A3C155 /* AvfWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007364D11AC0B8D500A3C155 /* AvfWriter.mm */; };
+		007364D41AC0B8D500A3C155 /* AvfWriter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 007364D11AC0B8D500A3C155 /* AvfWriter.mm */; };
+		007364D61AC0B8EC00A3C155 /* AvfWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 007364D51AC0B8EC00A3C155 /* AvfWriter.h */; };
+		007364D71AC0B8EC00A3C155 /* AvfWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 007364D51AC0B8EC00A3C155 /* AvfWriter.h */; };
+		007364D81AC0B8EC00A3C155 /* AvfWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 007364D51AC0B8EC00A3C155 /* AvfWriter.h */; };
 		007438420EA7924F005DD3E6 /* Capture.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 007438400EA7924F005DD3E6 /* Capture.cpp */; };
 		007438E00EA7975A005DD3E6 /* Capture.h in Headers */ = {isa = PBXBuildFile; fileRef = 007438DE0EA7975A005DD3E6 /* Capture.h */; };
 		007439930EA7BB47005DD3E6 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 007439920EA7BB47005DD3E6 /* QTKit.framework */; };
@@ -1241,6 +1247,8 @@
 		007050BE1114F93F003FCAE4 /* libcinder-iphone_d.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libcinder-iphone_d.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0071BD040FB9F4AD0092E7D6 /* Display.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Display.h; sourceTree = "<group>"; };
 		0071BD080FB9FA2C0092E7D6 /* Display.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Display.cpp; sourceTree = "<group>"; };
+		007364D11AC0B8D500A3C155 /* AvfWriter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AvfWriter.mm; path = qtime/AvfWriter.mm; sourceTree = "<group>"; };
+		007364D51AC0B8EC00A3C155 /* AvfWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvfWriter.h; path = qtime/AvfWriter.h; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
 		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../../../../Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
@@ -1792,6 +1800,7 @@
 		006D705F19942C1E008149E2 /* qtime */ = {
 			isa = PBXGroup;
 			children = (
+				007364D51AC0B8EC00A3C155 /* AvfWriter.h */,
 				006D706019942C31008149E2 /* AvfUtils.h */,
 				006D706119942C31008149E2 /* MovieWriter.h */,
 				006D706219942C31008149E2 /* QuickTime.h */,
@@ -1834,6 +1843,7 @@
 		00954472167CF92E008ECA02 /* qtime */ = {
 			isa = PBXGroup;
 			children = (
+				007364D11AC0B8D500A3C155 /* AvfWriter.mm */,
 				006D704319942BF5008149E2 /* AvfUtils.mm */,
 				006D704419942BF5008149E2 /* MovieWriter.cpp */,
 				006D704519942BF5008149E2 /* QuickTimeGlImplAvf.cpp */,
@@ -2784,6 +2794,7 @@
 				00A1141F1355369A00081873 /* sweep.h in Headers */,
 				00A114211355369A00081873 /* tess.h in Headers */,
 				00A114221355369A00081873 /* tesselator.h in Headers */,
+				007364D71AC0B8EC00A3C155 /* AvfWriter.h in Headers */,
 				00A1153A1357F42400081873 /* Easing.h in Headers */,
 				006D706A19942C31008149E2 /* AvfUtils.h in Headers */,
 				008FCFF91A7497DA00A86EC4 /* json-forwards.h in Headers */,
@@ -2897,6 +2908,7 @@
 				00CFD9981135C3520091E310 /* Premultiply.h in Headers */,
 				00CFD9991135C3520091E310 /* Resize.h in Headers */,
 				006D706E19942C31008149E2 /* MovieWriter.h in Headers */,
+				007364D81AC0B8EC00A3C155 /* AvfWriter.h in Headers */,
 				00CFD99A1135C3520091E310 /* Threshold.h in Headers */,
 				00CFD99B1135C3520091E310 /* Trim.h in Headers */,
 				0039FD25115B125400BA0BAD /* CinderCocoaTouch.h in Headers */,
@@ -2984,6 +2996,7 @@
 				007438E00EA7975A005DD3E6 /* Capture.h in Headers */,
 				00D23A560EAEB4DE0002BF91 /* Color.h in Headers */,
 				006D706919942C31008149E2 /* AvfUtils.h in Headers */,
+				007364D61AC0B8EC00A3C155 /* AvfWriter.h in Headers */,
 				009EEF0E0EB79A91003AB86B /* Filter.h in Headers */,
 				009EEF170EB79C45003AB86B /* Rect.h in Headers */,
 				00D92FE10EB8CC7200EE9D75 /* Url.h in Headers */,
@@ -3314,6 +3327,7 @@
 				111A5FAB191F72AE005C3166 /* CinderCoreAudio.cpp in Sources */,
 				007050A41114F93F003FCAE4 /* Shape2d.cpp in Sources */,
 				0003F3DF1992D64100647C8B /* BufferTexture.cpp in Sources */,
+				007364D31AC0B8D500A3C155 /* AvfWriter.mm in Sources */,
 				111A5F71191F7286005C3166 /* res0.c in Sources */,
 				0003F3F71992D64100647C8B /* GlslProg.cpp in Sources */,
 				007050A51114F93F003FCAE4 /* EdgeDetect.cpp in Sources */,
@@ -3499,6 +3513,7 @@
 				111A5FAC191F72AE005C3166 /* CinderCoreAudio.cpp in Sources */,
 				00CFD9CB1135C3520091E310 /* Shape2d.cpp in Sources */,
 				0003F3E01992D64100647C8B /* BufferTexture.cpp in Sources */,
+				007364D41AC0B8D500A3C155 /* AvfWriter.mm in Sources */,
 				111A5F48191F7285005C3166 /* res0.c in Sources */,
 				0003F3F81992D64100647C8B /* GlslProg.cpp in Sources */,
 				00CFD9CC1135C3520091E310 /* EdgeDetect.cpp in Sources */,
@@ -3710,6 +3725,7 @@
 				002F8F76103AFEBF0077CB91 /* System.cpp in Sources */,
 				0003F4021992D64100647C8B /* Texture.cpp in Sources */,
 				111A6001191F72AE005C3166 /* SampleRecorderNode.cpp in Sources */,
+				007364D21AC0B8D500A3C155 /* AvfWriter.mm in Sources */,
 				111A5EDF191F703D005C3166 /* smallft.c in Sources */,
 				C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */,
 				0032FD2B10BB472E00C63A9D /* Exception.cpp in Sources */,
