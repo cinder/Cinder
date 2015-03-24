@@ -639,13 +639,13 @@ void DeferredShadingAdvancedApp::resize()
 	const ivec2 windowSize		= getWindowSize();
 	const ivec2 windowSizeHalf	= windowSize / 2;
 
-	// Texture format for *most* color buffers
+	// Texture format for color buffers
 	gl::Texture2d::Format textureFormatColor = gl::Texture2d::Format()
-		.internalFormat( GL_RGB10_A2 )
+		.internalFormat( GL_RGB8 )
 		.magFilter( GL_NEAREST )
 		.minFilter( GL_NEAREST )
 		.wrap( GL_CLAMP_TO_EDGE )
-		.dataType( GL_FLOAT );
+		.dataType( GL_BYTE );
 
 	// Texture format for depth buffer
 	gl::Texture2d::Format textureFormatDepth = gl::Texture2d::Format()
