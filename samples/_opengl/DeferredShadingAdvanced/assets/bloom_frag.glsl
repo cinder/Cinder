@@ -2,8 +2,6 @@
 
 const int MATERIAL_COUNT	= 3;
 
-const float kBias			= 3.0;
-
 uniform float		uAttenuation;
 uniform vec2		uSize;
 uniform sampler2D	uSamplerAlbedo;
@@ -35,12 +33,12 @@ out vec4 	oColor;
 
 vec4 getColor( float offset )
 {
-	return texture( uSamplerAlbedo, vertex.uv + offset * uSize * kBias );
+	return texture( uSamplerAlbedo, vertex.uv + offset * uSize );
 }
 
 float getEmissive( float offset )
 {
-	int id = int( texture( uSamplerMaterial, vertex.uv + offset * uSize * kBias ).r );
+	int id = int( texture( uSamplerMaterial, vertex.uv + offset * uSize ).r );
 	return uMaterials[ id ].emissive;
 }
 

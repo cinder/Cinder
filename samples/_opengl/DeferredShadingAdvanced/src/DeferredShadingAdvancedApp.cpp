@@ -80,6 +80,7 @@ private:
 	ci::gl::VboMeshRef			mMeshCircle;
 	ci::gl::VboMeshRef			mMeshCube;
 	ci::gl::VboMeshRef			mMeshSphere;
+	ci::gl::VboMeshRef			mMeshSphereLow;
 
 	bool						mEnabledBloom;
 	bool						mEnabledColor;
@@ -94,7 +95,9 @@ private:
 	ci::vec3					mSpherePosition;
 	float						mSphereVelocity;
 
-	bool						mDebugMode;
+	bool						mDrawDebug;
+	bool						mDrawLightVolume;
+
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
@@ -116,7 +119,7 @@ void DeferredShadingAdvancedApp::draw()
 
 	const mat4 shadowMatrix			= mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix();
 	const mat4 projMatrixInverse	= glm::inverse( mMayaCam.getCamera().getProjectionMatrix() );
-	vec2 winSize					= vec2( getWindowSize() );
+	const vec2 winSize				= vec2( getWindowSize() );
 	float e							= (float)getElapsedSeconds();
 	
 	float near						= mMayaCam.getCamera().getNearClip();
@@ -473,7 +476,7 @@ void DeferredShadingAdvancedApp::draw()
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
 
-	if ( mDebugMode ) {
+	if ( mDrawDebug ) {
 		gl::ScopedMatrices scopedMatrices;
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
@@ -580,6 +583,24 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloom[ 1 ], 0 );
 			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
+		}
+
+		// Draw light volumes
+		if ( mDrawLightVolume ) {
+			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
+			gl::ScopedMatrices scopedMatrices;
+			gl::ScopedAlphaBlend scopedAlphaBlend( false );
+			gl::setMatrices( mMayaCam.getCamera() );
+			gl::ScopedPolygonMode scopedPolygonMode( GL_LINE );
+
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockColor );
+			for ( const Light& light : mLights ) {
+				gl::ScopedModelMatrix scopedModelMatrix;
+				gl::ScopedColor scopedColor( light.getColorDiffuse() * ColorAf( Colorf::white(), 0.08f ) );
+				gl::translate( light.getPosition() );
+				gl::scale( vec3( light.getVolume() ) );
+				gl::draw( mMeshSphereLow );
+			}
 		}
 
 		mFboPostIndex = pong;
@@ -790,23 +811,25 @@ void DeferredShadingAdvancedApp::setup()
 	loadShaders();
 	
 	// Set default values for all properties
-	mDebugMode		= false;
-	mEnabledBloom	= true;
-	mEnabledColor	= true;
-	mEnabledDoF		= true;
-	mEnabledFxaa	= true;
-	mEnabledShadow	= true;
-	mEnabledSsao	= true;
-	mFboPostIndex	= 0;
-	mFloor			= -7.0f;
-	mFrameRate		= 0.0f;
-	mFullScreen		= isFullScreen();
-	mMeshCircle		= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
-	mMeshCube		= gl::VboMesh::create( geom::Cube() );
-	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mSpherePosition	= vec3( 0.0f, -4.5f, 0.0f );
-	mSphereVelocity	= -0.1f;
-	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
+	mDrawDebug			= false;
+	mDrawLightVolume	= false;
+	mEnabledBloom		= true;
+	mEnabledColor		= true;
+	mEnabledDoF			= true;
+	mEnabledFxaa		= true;
+	mEnabledShadow		= true;
+	mEnabledSsao		= true;
+	mFboPostIndex		= 0;
+	mFloor				= -7.0f;
+	mFrameRate			= 0.0f;
+	mFullScreen			= isFullScreen();
+	mMeshCircle			= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
+	mMeshCube			= gl::VboMesh::create( geom::Cube() );
+	mMeshSphere			= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
+	mMeshSphereLow		= gl::VboMesh::create( geom::Sphere().subdivisions( 12 ) );
+	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
+	mSphereVelocity		= -0.1f;
+	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
 	for ( size_t i = 0; i < 8; ++i ) {
@@ -826,7 +849,7 @@ void DeferredShadingAdvancedApp::setup()
 	float r = 9.0f;
 	float t = 0.0f;
 	for ( size_t i = 0; i < 5; ++i, t += d ) {
-		vec3 p( glm::cos( t ) * r, mFloor + 0.1f, glm::sin( t ) * r );
+		vec3 p( glm::cos( t ) * r, mFloor + 0.5f, glm::sin( t ) * r );
 		mLights.push_back( Light()
 						  .setColorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
 						  .setIntensity( 1.0f )
@@ -862,20 +885,22 @@ void DeferredShadingAdvancedApp::setup()
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 260 ) );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );
 	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
-	mParams->addParam( "Debug mode",		&mDebugMode ).key( "d" );
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
 	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
-	mParams->addParam( "Bloom",				&mEnabledBloom ).group( "Pass" );
-	mParams->addParam( "Color",				&mEnabledColor ).group( "Pass" );
-	mParams->addParam( "Depth of Field",	&mEnabledDoF ).group( "Pass" );
-	mParams->addParam( "FXAA",				&mEnabledFxaa ).group( "Pass" );
-	mParams->addParam( "Shadows",			&mEnabledShadow ).group( "Pass" );
-	mParams->addParam( "SSAO",				&mEnabledSsao ).group( "Pass" );
+	mParams->addParam( "Debug",				&mDrawDebug ).key( "d" ).group( "Draw" );
+	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
+	mParams->addSeparator();
+	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "1" ).group( "Pass" );
+	mParams->addParam( "Color",				&mEnabledColor ).key( "2" ).group( "Pass" );
+	mParams->addParam( "Depth of Field",	&mEnabledDoF ).key( "3" ).group( "Pass" );
+	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "4" ).group( "Pass" );
+	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "5" ).group( "Pass" );
+	mParams->addParam( "SSAO",				&mEnabledSsao ).key( "6" ).group( "Pass" );
 
 	// Call resize to create FBOs
 	resize();
@@ -921,7 +946,7 @@ void DeferredShadingAdvancedApp::update()
 			if ( p.y < y ) {
 				p.y			+= ( y - p.y ) * 2.0f;
 			}
-			mLights.at( i + 1 ).setPosition( p );
+			mLights.at( i ).setPosition( p );
 		}
 	}
 }
