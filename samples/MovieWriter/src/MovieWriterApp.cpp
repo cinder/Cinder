@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/Shader.h"
+#include "cinder/Rand.h"
 
 #include "cinder/qtime/AvfWriter.h"
 
@@ -32,7 +33,7 @@ void prepareSettings( App::Settings *settings )
 void MovieWriterApp::setup()
 {
 #if defined( CINDER_COCOA_TOUCH )
-	auto format = qtime::MovieWriter::Format().codec( qtime::MovieWriter::H264 ).fileType( qtime::MovieWriter::QUICK_TIME_MOVIE )
+	auto format = qtime::MovieWriter::Format().codec( qtime::MovieWriter::JPEG ).fileType( qtime::MovieWriter::QUICK_TIME_MOVIE )
 					.enableFrameReordering( false ).jpegQuality( 0.09f ).enableFrameReordering( false ).averageBitsPerSecond( 10000000 );
 	mMovieExporter = qtime::MovieWriter::create( getDocumentsDirectory() / "test.mov", getWindowWidth(), getWindowHeight(), format );
 #else
@@ -44,6 +45,24 @@ void MovieWriterApp::setup()
 	}
 #endif
 	gl::bindStockShader( gl::ShaderDef().color() );
+
+Surface8u s( getWindowWidth(), getWindowHeight(), false ), s2( getWindowWidth(), getWindowHeight(), false );
+for( int h = 0; h < s.getWidth(); ++h )
+	for( int v = 0; v < s.getHeight(); ++v ) {
+		s.setPixel( ivec2( h, v ), Color8u( randInt(), randInt(), randInt() ) );
+		s2.setPixel( ivec2( h, v ), Color8u( randInt(), randInt(), randInt() ) );
+	}
+
+for( int m = 0; m < 100; ++m )
+{
+auto format = qtime::MovieWriter::Format().codec( qtime::MovieWriter::H264 ).fileType( qtime::MovieWriter::QUICK_TIME_MOVIE )
+				.enableFrameReordering( false ).jpegQuality( 0.09f ).enableFrameReordering( false ).averageBitsPerSecond( 10000 );
+mMovieExporter = qtime::MovieWriter::create( getDocumentsDirectory() / ("test" + to_string( m ) + ".mov"), getWindowWidth(), getWindowHeight(), format );
+
+for( int i = 0; i < 3; ++i )
+	mMovieExporter->addFrame( ( i & 1 ) ? s : s2 );
+std::cout << m << std::endl;
+}
 }
 
 void MovieWriterApp::mouseDown( MouseEvent event )
