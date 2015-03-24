@@ -24,7 +24,7 @@ const uint MATERIAL_COUNT = 3;
 uniform sampler2D		uSamplerAlbedo;
 uniform usampler2D		uSamplerMaterial;
 uniform sampler2D		uSamplerNormal;
-uniform sampler2D		uSamplerPosition;
+uniform sampler2D		uSamplerDepth;
 uniform sampler2DShadow uSamplerShadowMap;
 
 uniform vec4	uLightColorAmbient;
@@ -40,7 +40,9 @@ uniform mat4 	uShadowMatrix;
 uniform float	uShadowSamples;
 
 uniform mat4 	uViewMatrixInverse;
+uniform mat4    uProjMatrixInverse;
 uniform vec2	uWindowSize;
+uniform vec2    uProjectionParams;
 
 struct Material
 {
@@ -96,11 +98,21 @@ float shadow( in vec4 position )
 	return v;
 }
 
+
+vec4 getPosition( vec2 uv )
+{
+    float depth             = texture( uSamplerDepth, uv ).x;
+    float linearDepth 		= uProjectionParams.y / ( depth - uProjectionParams.x );
+    vec4 posProj        	= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
+    vec4 viewRay        	= uProjMatrixInverse * posProj;
+    return vec4( viewRay.xyz * linearDepth, 1.0 );
+}
+
 void main( void )
 {
 	vec2 uv				= gl_FragCoord.xy / uWindowSize;
 
-	vec4 position 		= texture( uSamplerPosition, uv );
+	vec4 position 		= getPosition( uv );
 	vec3 L 				= uLightPosition - position.xyz;
 	float d 			= length( L );
 	if ( d > uLightRadius ) {
@@ -133,3 +145,4 @@ void main( void )
 	}
 	oColor				*= uLightIntensity;
 }
+ 

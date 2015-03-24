@@ -13,7 +13,6 @@ out Vertex
 {
 	vec4 		color;
 	vec3 		normal;
-	vec3 		position;
 	vec2 		uv;
 } vertex;
 
@@ -21,9 +20,9 @@ void main()
 {
 	vertex.color 	= ciColor;
 	vertex.uv 		= ciTexCoord0;
-	vertex.position = ( ciModelView * ciPosition ).xyz;
 	vec3 n			= ciNormal;
 	vertex.normal 	= normalize( ciNormalMatrix * n );
 
 	gl_Position 	= ciModelViewProjection * ciPosition;
 }
+ 

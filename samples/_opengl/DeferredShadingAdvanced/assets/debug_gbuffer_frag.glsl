@@ -9,9 +9,21 @@ const int MODE_DEPTH	= 4;
 uniform sampler2D 	uSamplerAlbedo;
 uniform isampler2D	uSamplerMaterial;
 uniform sampler2D 	uSamplerNormal;
-uniform sampler2D 	uSamplerPosition;
+uniform sampler2D 	uSamplerDepth;
+
+uniform mat4        uProjMatrixInverse;
+uniform vec2        uProjectionParams;
 
 uniform int uMode = 0;
+
+vec4 getPosition( vec2 uv )
+{
+    float depth			= texture( uSamplerDepth, uv ).x;
+    float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
+    vec4 posProj		= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
+    vec4 viewRay		= uProjMatrixInverse * posProj;
+    return vec4( viewRay.xyz * linearDepth, 1.0 );
+}
 
 in Vertex
 {
@@ -35,7 +47,7 @@ void main( void )
 		color 	= texture( uSamplerNormal, vertex.uv );
 		break;
 	case MODE_POSITION:
-		color 	= texture( uSamplerPosition, vertex.uv );
+		color 	= getPosition( vertex.uv );
 		break;
 	case MODE_DEPTH:
 		color 	= vec4( vec3( 1.0 - texture( uSamplerNormal, vertex.uv ).a ), 1.0 );
@@ -43,3 +55,4 @@ void main( void )
 	}
 	oColor 		= color;
 }
+ 
