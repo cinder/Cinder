@@ -24,6 +24,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/ConstantStrings.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 
 #include "glm/gtc/type_ptr.hpp"

@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/gl.h" // necessary to give GLee the jump on Cocoa.h
+#include "cinder/gl/platform.h" // necessary to give glload the jump on Cocoa.h
 
 #import <Cocoa/Cocoa.h>
 #import <ScreenSaver/ScreenSaver.h>

@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/Renderer.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #if defined( CINDER_MAC )
 	#if defined __OBJC__

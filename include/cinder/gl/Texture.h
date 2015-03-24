@@ -22,8 +22,7 @@
 
 #pragma once
 
-#include "cinder/Cinder.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/Surface.h"
 #include "cinder/Rect.h"
 #include "cinder/Stream.h"

@@ -29,9 +29,6 @@
 		0003F3F01992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F11992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
 		0003F3F21992D64100647C8B /* Fbo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C61992D64100647C8B /* Fbo.cpp */; };
-		0003F3F31992D64100647C8B /* gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C71992D64100647C8B /* gl.cpp */; };
-		0003F3F41992D64100647C8B /* gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C71992D64100647C8B /* gl.cpp */; };
-		0003F3F51992D64100647C8B /* gl.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C71992D64100647C8B /* gl.cpp */; };
 		0003F3F61992D64100647C8B /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C81992D64100647C8B /* GlslProg.cpp */; };
 		0003F3F71992D64100647C8B /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C81992D64100647C8B /* GlslProg.cpp */; };
 		0003F3F81992D64100647C8B /* GlslProg.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3C81992D64100647C8B /* GlslProg.cpp */; };
@@ -998,6 +995,15 @@
 		1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
 		1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
+		116C06241ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
+		116C06251ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
+		116C06261ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
+		116C06271ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
+		116C06281ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
+		116C06291ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
+		116C062A1ABD2C06004D8297 /* wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06231ABD2C06004D8297 /* wrapper.cpp */; };
+		116C062B1ABD2C06004D8297 /* wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06231ABD2C06004D8297 /* wrapper.cpp */; };
+		116C062C1ABD2C06004D8297 /* wrapper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06231ABD2C06004D8297 /* wrapper.cpp */; };
 		1181F7C81A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
 		1181F7C91A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
 		1181F7CA1A7F8792001BBFA2 /* AppBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1181F7C71A7F8792001BBFA2 /* AppBase.cpp */; };
@@ -1086,7 +1092,6 @@
 		0003F3C31992D64100647C8B /* Environment.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Environment.cpp; path = gl/Environment.cpp; sourceTree = "<group>"; };
 		0003F3C41992D64100647C8B /* EnvironmentCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EnvironmentCore.cpp; path = gl/EnvironmentCore.cpp; sourceTree = "<group>"; };
 		0003F3C61992D64100647C8B /* Fbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Fbo.cpp; path = gl/Fbo.cpp; sourceTree = "<group>"; };
-		0003F3C71992D64100647C8B /* gl.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gl.cpp; path = gl/gl.cpp; sourceTree = "<group>"; };
 		0003F3C81992D64100647C8B /* GlslProg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GlslProg.cpp; path = gl/GlslProg.cpp; sourceTree = "<group>"; };
 		0003F3C91992D64100647C8B /* Pbo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pbo.cpp; path = gl/Pbo.cpp; sourceTree = "<group>"; };
 		0003F3CA1992D64100647C8B /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Shader.cpp; path = gl/Shader.cpp; sourceTree = "<group>"; };
@@ -1531,6 +1536,13 @@
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
 		1168DB441A8D90C900660ED3 /* Signals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Signals.h; sourceTree = "<group>"; };
+		116C061D1ABD2BE8004D8297 /* draw.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = draw.h; path = gl/draw.h; sourceTree = "<group>"; };
+		116C061E1ABD2BE8004D8297 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = gl/platform.h; sourceTree = "<group>"; };
+		116C061F1ABD2BE8004D8297 /* scoped.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = scoped.h; path = gl/scoped.h; sourceTree = "<group>"; };
+		116C06201ABD2BE8004D8297 /* wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wrapper.h; path = gl/wrapper.h; sourceTree = "<group>"; };
+		116C06211ABD2C06004D8297 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = gl/draw.cpp; sourceTree = "<group>"; };
+		116C06221ABD2C06004D8297 /* scoped.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scoped.cpp; path = gl/scoped.cpp; sourceTree = "<group>"; };
+		116C06231ABD2C06004D8297 /* wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wrapper.cpp; path = gl/wrapper.cpp; sourceTree = "<group>"; };
 		1181F7C31A7F8760001BBFA2 /* AppBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBase.h; path = app/AppBase.h; sourceTree = "<group>"; };
 		1181F7C71A7F8792001BBFA2 /* AppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppBase.cpp; path = app/AppBase.cpp; sourceTree = "<group>"; };
 		118CA4081A9427F700841458 /* AppMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = AppMac.cpp; sourceTree = "<group>"; };
@@ -2138,12 +2150,15 @@
 				0003F4281992D67300647C8B /* BufferTexture.h */,
 				0003F4291992D67300647C8B /* ConstantStrings.h */,
 				0003F42A1992D67300647C8B /* Context.h */,
+				116C061D1ABD2BE8004D8297 /* draw.h */,
 				0003F42B1992D67300647C8B /* Environment.h */,
 				0003F42C1992D67300647C8B /* Fbo.h */,
 				0003F42D1992D67300647C8B /* gl.h */,
 				0003F42E1992D67300647C8B /* GlslProg.h */,
 				0003F42F1992D67300647C8B /* Pbo.h */,
+				116C061E1ABD2BE8004D8297 /* platform.h */,
 				B0245F5819BEDF3200BC878D /* Query.h */,
+				116C061F1ABD2BE8004D8297 /* scoped.h */,
 				0003F4301992D67300647C8B /* Shader.h */,
 				11C6F75D1AA391FE0001FA5C /* ShaderPreprocessor.h */,
 				0003F4311992D67300647C8B /* Sync.h */,
@@ -2155,6 +2170,7 @@
 				0003F4361992D67300647C8B /* Vao.h */,
 				0003F4371992D67300647C8B /* Vbo.h */,
 				0003F4381992D67300647C8B /* VboMesh.h */,
+				116C06201ABD2BE8004D8297 /* wrapper.h */,
 			);
 			name = gl;
 			sourceTree = "<group>";
@@ -2167,14 +2183,15 @@
 				0003F3C01992D64100647C8B /* BufferTexture.cpp */,
 				0003F3C11992D64100647C8B /* ConstantStrings.cpp */,
 				0003F3C21992D64100647C8B /* Context.cpp */,
+				116C06211ABD2C06004D8297 /* draw.cpp */,
 				0003F3C31992D64100647C8B /* Environment.cpp */,
 				0003F3C41992D64100647C8B /* EnvironmentCore.cpp */,
 				00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */,
 				0003F3C61992D64100647C8B /* Fbo.cpp */,
-				0003F3C71992D64100647C8B /* gl.cpp */,
 				0003F3C81992D64100647C8B /* GlslProg.cpp */,
 				0003F3C91992D64100647C8B /* Pbo.cpp */,
 				B06DE70219C74935008B9E1B /* Query.cpp */,
+				116C06221ABD2C06004D8297 /* scoped.cpp */,
 				0003F3CA1992D64100647C8B /* Shader.cpp */,
 				11C6F7591AA391E50001FA5C /* ShaderPreprocessor.cpp */,
 				0003F3CB1992D64100647C8B /* Sync.cpp */,
@@ -2191,6 +2208,7 @@
 				0003F3D51992D64100647C8B /* VaoImplSoftware.cpp */,
 				0003F3D61992D64100647C8B /* Vbo.cpp */,
 				0003F3D71992D64100647C8B /* VboMesh.cpp */,
+				116C06231ABD2C06004D8297 /* wrapper.cpp */,
 			);
 			name = gl;
 			sourceTree = "<group>";
@@ -3273,7 +3291,6 @@
 				111A5F5C191F7286005C3166 /* floor0.c in Sources */,
 				0070504E1114F93F003FCAE4 /* Channel.cpp in Sources */,
 				0003F3F11992D64100647C8B /* Fbo.cpp in Sources */,
-				0003F3F41992D64100647C8B /* gl.cpp in Sources */,
 				111A5F63191F7286005C3166 /* lpc.c in Sources */,
 				0070504F1114F93F003FCAE4 /* Area.cpp in Sources */,
 				0003F41B1992D64100647C8B /* VaoImplEs.cpp in Sources */,
@@ -3302,6 +3319,7 @@
 				111A5F73191F7286005C3166 /* sharedbook.c in Sources */,
 				0003F3FD1992D64100647C8B /* Shader.cpp in Sources */,
 				00FFAED219DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */,
+				116C06281ABD2C06004D8297 /* scoped.cpp in Sources */,
 				0070507A1114F93F003FCAE4 /* BandedMatrix.cpp in Sources */,
 				0070507B1114F93F003FCAE4 /* BSplineFit.cpp in Sources */,
 				111A600E191F72AE005C3166 /* Utilities.cpp in Sources */,
@@ -3314,6 +3332,7 @@
 				111A5FC3191F72AE005C3166 /* Biquad.cpp in Sources */,
 				007050831114F93F003FCAE4 /* ObjLoader.cpp in Sources */,
 				0070508A1114F93F003FCAE4 /* Path2d.cpp in Sources */,
+				116C06251ABD2C06004D8297 /* draw.cpp in Sources */,
 				0070509B1114F93F003FCAE4 /* System.cpp in Sources */,
 				0070509C1114F93F003FCAE4 /* Buffer.cpp in Sources */,
 				0070509D1114F93F003FCAE4 /* Exception.cpp in Sources */,
@@ -3392,6 +3411,7 @@
 				00A1141A1355369A00081873 /* mesh.c in Sources */,
 				111A5F67191F7286005C3166 /* mapping0.c in Sources */,
 				111A5FFF191F72AE005C3166 /* SamplePlayerNode.cpp in Sources */,
+				116C062B1ABD2C06004D8297 /* wrapper.cpp in Sources */,
 				111A5FC9191F72AE005C3166 /* ConverterR8brain.cpp in Sources */,
 				111A5F79191F7286005C3166 /* window.c in Sources */,
 				00A1141C1355369A00081873 /* priorityq.c in Sources */,
@@ -3459,7 +3479,6 @@
 				111A5F33191F7285005C3166 /* floor0.c in Sources */,
 				00CFD9A01135C3520091E310 /* Channel.cpp in Sources */,
 				0003F3F21992D64100647C8B /* Fbo.cpp in Sources */,
-				0003F3F51992D64100647C8B /* gl.cpp in Sources */,
 				111A5F3A191F7285005C3166 /* lpc.c in Sources */,
 				00CFD9A11135C3520091E310 /* Area.cpp in Sources */,
 				0003F41C1992D64100647C8B /* VaoImplEs.cpp in Sources */,
@@ -3488,6 +3507,7 @@
 				111A5F4A191F7285005C3166 /* sharedbook.c in Sources */,
 				0003F3FE1992D64100647C8B /* Shader.cpp in Sources */,
 				00FFAED319DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */,
+				116C06291ABD2C06004D8297 /* scoped.cpp in Sources */,
 				00CFD9BB1135C3520091E310 /* BandedMatrix.cpp in Sources */,
 				00CFD9BC1135C3520091E310 /* BSplineFit.cpp in Sources */,
 				111A600F191F72AE005C3166 /* Utilities.cpp in Sources */,
@@ -3500,6 +3520,7 @@
 				111A5FC4191F72AE005C3166 /* Biquad.cpp in Sources */,
 				00CFD9C21135C3520091E310 /* ObjLoader.cpp in Sources */,
 				00CFD9C31135C3520091E310 /* Path2d.cpp in Sources */,
+				116C06261ABD2C06004D8297 /* draw.cpp in Sources */,
 				00CFD9C51135C3520091E310 /* System.cpp in Sources */,
 				00CFD9C61135C3520091E310 /* Buffer.cpp in Sources */,
 				00CFD9C71135C3520091E310 /* Exception.cpp in Sources */,
@@ -3578,6 +3599,7 @@
 				00A1142D1355369A00081873 /* sweep.c in Sources */,
 				111A5F3E191F7285005C3166 /* mapping0.c in Sources */,
 				111A6000191F72AE005C3166 /* SamplePlayerNode.cpp in Sources */,
+				116C062C1ABD2C06004D8297 /* wrapper.cpp in Sources */,
 				111A5FCA191F72AE005C3166 /* ConverterR8brain.cpp in Sources */,
 				111A5F50191F7285005C3166 /* window.c in Sources */,
 				00A1142F1355369A00081873 /* tess.c in Sources */,
@@ -3743,6 +3765,7 @@
 				00419C7111057CC6007EC9AD /* Grayscale.cpp in Sources */,
 				00419C7211057CC6007EC9AD /* Hdr.cpp in Sources */,
 				00419C7311057CC6007EC9AD /* Premultiply.cpp in Sources */,
+				116C06241ABD2C06004D8297 /* draw.cpp in Sources */,
 				00419C7411057CC6007EC9AD /* Resize.cpp in Sources */,
 				0003F3E71992D64100647C8B /* Environment.cpp in Sources */,
 				0003F3D81992D64100647C8B /* Batch.cpp in Sources */,
@@ -3786,9 +3809,9 @@
 				111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
 				00A114111355369A00081873 /* tess.c in Sources */,
+				116C062A1ABD2C06004D8297 /* wrapper.cpp in Sources */,
 				006D704019940F25008149E2 /* RendererGl.cpp in Sources */,
 				43C432401450A8DA0095B260 /* CinderMath.cpp in Sources */,
-				0003F3F31992D64100647C8B /* gl.cpp in Sources */,
 				00A121EF1362778200081873 /* Timeline.cpp in Sources */,
 				00A121F01362778200081873 /* TimelineItem.cpp in Sources */,
 				00A121F11362778200081873 /* Tween.cpp in Sources */,
@@ -3800,6 +3823,7 @@
 				0003F3F61992D64100647C8B /* GlslProg.cpp in Sources */,
 				111A5FC8191F72AE005C3166 /* ConverterR8brain.cpp in Sources */,
 				005C0CED14CBB47500A12CD2 /* Base64.cpp in Sources */,
+				116C06271ABD2C06004D8297 /* scoped.cpp in Sources */,
 				004172FF14C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				0041730314C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				111A5ED8191F703D005C3166 /* psy.c in Sources */,

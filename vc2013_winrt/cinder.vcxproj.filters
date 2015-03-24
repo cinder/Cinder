@@ -709,6 +709,18 @@
     <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\draw.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\platform.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\scoped.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\wrapper.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
@@ -1164,9 +1176,6 @@
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\gl.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -1369,6 +1378,15 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\draw.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\scoped.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\wrapper.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
   </ItemGroup>

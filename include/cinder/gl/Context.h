@@ -22,8 +22,8 @@
 
 #pragma once
 
+#include "cinder/gl/platform.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/gl.h"
 #include "cinder/Color.h"
 #include "cinder/Matrix44.h"
 #include "cinder/Vector.h"
@@ -53,6 +53,8 @@ typedef std::shared_ptr<Fbo>			FboRef;
 class VertBatch;
 typedef std::shared_ptr<VertBatch>		VertBatchRef;
 class Renderbuffer;
+
+class TextureBase;
 
 class Context {
   public:
