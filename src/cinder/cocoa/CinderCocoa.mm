@@ -633,7 +633,7 @@ void ImageTargetCgImage::finalize()
 
 Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 {
-	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
+	::CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
 	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
 	int32_t rowBytes = (int32_t)::CVPixelBufferGetBytesPerRow( pixelBufferRef );
 	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
@@ -649,7 +649,12 @@ Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
 	else if( type == kCVPixelFormatType_32BGRA )
 		sco = SurfaceChannelOrder::BGRA;
 	Surface8u *newSurface = new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco );
-	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s )
+		{	::CVPixelBufferUnlockBaseAddress( pixelBufferRef, 0 );
+			::CVBufferRelease( pixelBufferRef );
+			delete s;
+		}
+		);
 }
 
 } } // namespace cinder::cocoa

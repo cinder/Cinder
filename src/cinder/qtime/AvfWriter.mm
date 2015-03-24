@@ -145,7 +145,7 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 	
 	[mSinkAdapater retain];
 	[mWriter addInput:mWriterSink];
-	mWriter.movieFragmentInterval = CMTimeMakeWithSeconds(1.0, 1000);
+	mWriter.movieFragmentInterval = CMTimeMakeWithSeconds( 1.0, 1000 );
 	[mWriter startWriting];
 	if( [mWriter status] == AVAssetWriterStatusFailed ) {
 		NSString* str = [[mWriter error] description];
@@ -162,6 +162,7 @@ MovieWriter::~MovieWriter()
 	if( ! mFinished )
 		finish();
 	
+	::CVPixelBufferPoolRelease( mSinkAdapater.pixelBufferPool );
 	[mSinkAdapater release];
 	[mWriter release];
 }
@@ -171,8 +172,7 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 	if( mFinished )
 		throw MovieWriterExcAlreadyFinished();
 	
-	AVAssetWriterStatus status = [mWriter status];
-	if( status != AVAssetWriterStatusWriting ) {
+	if( [mWriter status] != AVAssetWriterStatusWriting ) {
 		NSString* str = [[mWriter error] description];
 		std::string descr = str ? std::string([str UTF8String]): "";
 		CI_LOG_E( " Error when trying to start writing: " << descr );
@@ -189,6 +189,11 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 	// this decrements the retain count on the CVPixelBuffer on destruction
 	Surface8uRef destinationSurface = cocoa::convertCVPixelBufferToSurface( pixelBuffer );
 	destinationSurface->copyFrom( imageSource, imageSource.getBounds() );
+
+	while( ! mWriterSink.readyForMoreMediaData ) {
+		NSDate *future = [NSDate dateWithTimeIntervalSinceNow:0.01];
+		[[NSRunLoop currentRunLoop] runUntilDate:future];
+	}
 	
 	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:CMTimeMakeWithSeconds( mCurrentSeconds, (int32_t)mFormat.mTimeBase )];
 	
