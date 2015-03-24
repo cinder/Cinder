@@ -683,7 +683,7 @@ void DeferredShadingAdvancedApp::resize()
 														 .magFilter( GL_NEAREST )
 														 .minFilter( GL_NEAREST )
 														 .wrap( GL_CLAMP_TO_EDGE )
-														 .dataType( GL_FLOAT ) );
+														 .dataType( GL_BYTE ) );
 		mTextureFboGBuffer[ 3 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormatDepth );
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 4; ++i ) {
