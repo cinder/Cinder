@@ -166,6 +166,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 		}
 	}
 	
+	::closedir( dir );
 #elif defined( CINDER_MSW )
 	::HDEVINFO devInfoSet;
 	::DWORD devCount = 0;
