@@ -256,7 +256,6 @@ void DeferredShadingAdvancedApp::draw()
 		mGlslProgLBuffer->uniform( "uShadowBlurSize",			0.0025f );
 		mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
 		mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
-		mGlslProgLBuffer->uniform( "uShadowOpacity",			0.85f );
 		mGlslProgLBuffer->uniform( "uShadowSamples",			4.0f );
 		mGlslProgLBuffer->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
 		mGlslProgLBuffer->uniformBlock( 0, 0 );
@@ -720,11 +719,11 @@ void DeferredShadingAdvancedApp::resize()
 	// Light buffer
 	{
 		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB8 );
+		textureFormat.setInternalFormat( GL_RGB10_A2 );
 		textureFormat.setMagFilter( GL_NEAREST );
 		textureFormat.setMinFilter( GL_NEAREST );
 		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_INT );
+		textureFormat.setDataType( GL_FLOAT );
 
 		mTextureFboLBuffer			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
 		gl::RenderbufferRef buffer	= createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 );
