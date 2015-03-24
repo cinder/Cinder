@@ -4,12 +4,12 @@ uniform int uMaterialId;
 
 in Vertex
 {
-	vec4	color;
+	vec3	color;
 	vec3 	normal;
 	vec2 	uv;
 } vertex;
 
-out vec4	oAlbedo;
+out vec3	oAlbedo;
 out int		oMaterial;
 out vec2	oNormal;
 

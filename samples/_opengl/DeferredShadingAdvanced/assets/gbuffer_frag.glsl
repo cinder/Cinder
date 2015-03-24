@@ -6,12 +6,12 @@ uniform float		uSamplerMix;
 
 in Vertex
 {
-	vec4	color;
+	vec3	color;
 	vec3 	normal;
 	vec2 	uv;
 } vertex;
 
-out vec4	oAlbedo;
+out vec3	oAlbedo;
 out int		oMaterial;
 out vec2	oNormal;
 
@@ -24,7 +24,7 @@ vec2 encodeNormal( vec3 n )
 
 void main( void )
 {
-	oAlbedo 	= vertex.color - uSamplerMix + texture( uSampler, vertex.uv ) * vertex.color * uSamplerMix;
+	oAlbedo 	= vertex.color - uSamplerMix + texture( uSampler, vertex.uv ).rgb * vertex.color * uSamplerMix;
 	oMaterial	= uMaterialId;
 	oNormal		= encodeNormal( vertex.normal );
 }

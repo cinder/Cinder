@@ -11,14 +11,14 @@ in vec4 		ciColor;
 
 out Vertex
 {
-	vec4 		color;
+	vec3 		color;
 	vec3 		normal;
 	vec2 		uv;
 } vertex;
 
 void main()
 {
-	vertex.color 	= ciColor;
+	vertex.color 	= ciColor.rgb;
 	vertex.uv 		= ciTexCoord0;
 	vec3 n			= ciNormal;
 	vertex.normal 	= normalize( ciNormalMatrix * n );
