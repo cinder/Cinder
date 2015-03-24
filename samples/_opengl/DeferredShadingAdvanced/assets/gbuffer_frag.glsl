@@ -1,8 +1,6 @@
 #version 330 core
 
-uniform int			uMaterialId;
-uniform sampler2D	uSampler;
-uniform float		uSamplerMix;
+uniform int uMaterialId;
 
 in Vertex
 {
@@ -24,7 +22,7 @@ vec2 encodeNormal( vec3 n )
 
 void main( void )
 {
-	oAlbedo 	= vertex.color - uSamplerMix + texture( uSampler, vertex.uv ).rgb * vertex.color * uSamplerMix;
+	oAlbedo 	= vertex.color;
 	oMaterial	= uMaterialId;
 	oNormal		= encodeNormal( vertex.normal );
 }

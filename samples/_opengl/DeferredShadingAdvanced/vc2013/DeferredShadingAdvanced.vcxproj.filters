@@ -72,9 +72,6 @@
     <None Include="..\assets\gbuffer_frag.glsl">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\gbuffer_light_frag.glsl">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\gbuffer_vert.glsl">
       <Filter>assets</Filter>
     </None>

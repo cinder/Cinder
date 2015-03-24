@@ -2,6 +2,10 @@
 
 const int MATERIAL_COUNT = 3;
 
+const float kShadowBias		= 0.865;
+const float	kShadowBlurSize = 0.007;
+const float	kShadowSamples	= 4.0;
+
 const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.06095261, -0.1337204 ),
 	vec2(  0.4983526,  0.233555 ),
@@ -34,15 +38,13 @@ uniform float	uLightIntensity;
 uniform vec3	uLightPosition;
 uniform float	uLightRadius;
 
-uniform float	uShadowBlurSize;
 uniform bool	uShadowEnabled;
 uniform mat4 	uShadowMatrix;
-uniform float	uShadowSamples;
 
-uniform mat4 	uViewMatrixInverse;
-uniform mat4    uProjMatrixInverse;
-uniform vec2	uWindowSize;
 uniform vec2    uProjectionParams;
+uniform mat4    uProjMatrixInverse;
+uniform mat4 	uViewMatrixInverse;
+uniform vec2	uWindowSize;
 
 struct Material
 {
@@ -84,13 +86,12 @@ float shadow( in vec4 position )
 	vec3 shadowCoord 	= shadowClip.xyz / shadowClip.w;
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
-	float bias			= 0.86;
 	float v 			= 0.0;
-	float e				= 1.0 / float( uShadowSamples );
+	float e				= 1.0 / float( kShadowSamples );
 	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
-		for ( int i = 0; i < uShadowSamples; ++i ) {
-			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poisson( i, uShadowBlurSize ), 0.0 ) );
-			if ( depth > shadowCoord.z - bias ) {
+		for ( int i = 0; i < kShadowSamples; ++i ) {
+			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poisson( i, kShadowBlurSize ), 0.0 ) );
+			if ( depth > shadowCoord.z - kShadowBias ) {
 				v		+= e;
 			}
 		}

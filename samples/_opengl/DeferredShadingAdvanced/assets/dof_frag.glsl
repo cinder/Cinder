@@ -1,11 +1,12 @@
+#version 330 core
+
 // Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
 
-#version 330 core
+const float	kBias		= 0.01;
+const float	kOpacity	= 0.6;
 
 uniform float		uAspect;
-uniform float		uBias;
-uniform float		uOpacity;
 uniform sampler2D	uSampler;
 uniform sampler2D	uSamplerDepth;
 
@@ -40,7 +41,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 void main( void )
 {
 	float depth		= texture( uSamplerDepth, vertex.uv ).r;
-	vec2 sz			= vec2( abs( ( depth - 1.0f ) / 1.0 ) ) * vec2( 1.0, uAspect ) * uBias;
+	vec2 sz			= vec2( abs( ( depth - 1.0f ) / 1.0 ) ) * vec2( 1.0, uAspect ) * kBias;
 	float influence = 0.000001;
 	vec4 sum		= vec4( 0.0 );
 
@@ -75,6 +76,6 @@ void main( void )
     sum += bokeh( depth, vec2( -0.317019, -0.769672 ) * sz, influence );
     sum += bokeh( depth, vec2( -0.634038, -0.539345 ) * sz, influence );
    
-	oColor = mix( texture( uSampler, vertex.uv ), sum / influence, vec4( uOpacity ) );
+	oColor = mix( texture( uSampler, vertex.uv ), sum / influence, vec4( kOpacity ) );
 }
  

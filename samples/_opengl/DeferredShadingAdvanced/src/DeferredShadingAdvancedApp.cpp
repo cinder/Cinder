@@ -43,6 +43,7 @@ private:
 
 	ci::gl::UboRef				mUboMaterial;
 	
+	void						loadShaders();
 	ci::gl::GlslProgRef			mGlslProgBlend;
 	ci::gl::GlslProgRef			mGlslProgBloom;
 	ci::gl::GlslProgRef			mGlslProgBlur;
@@ -53,7 +54,6 @@ private:
 	ci::gl::GlslProgRef			mGlslProgDof;
 	ci::gl::GlslProgRef			mGlslProgFxaa;
 	ci::gl::GlslProgRef			mGlslProgGBuffer;
-	ci::gl::GlslProgRef			mGlslProgGBufferLight;
 	ci::gl::GlslProgRef			mGlslProgLBuffer;
 	ci::gl::GlslProgRef			mGlslProgShadowMap;
 	ci::gl::GlslProgRef			mGlslProgSsao;
@@ -77,8 +77,8 @@ private:
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
 	ci::gl::Texture2dRef		mTextureFboSsao[ 3 ];
 
+	ci::gl::VboMeshRef			mMeshCircle;
 	ci::gl::VboMeshRef			mMeshCube;
-	ci::gl::VboMeshRef			mMeshRect;
 	ci::gl::VboMeshRef			mMeshSphere;
 
 	bool						mEnabledBloom;
@@ -170,36 +170,30 @@ void DeferredShadingAdvancedApp::draw()
 		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
 
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
-			mGlslProgGBuffer->uniform( "uSampler",		0 );
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
 
-			// Draw shadow casters (spheres)
-			mGlslProgGBuffer->uniform( "uMaterialId",	0 );
-			mGlslProgGBuffer->uniform( "uSamplerMix",	0.0f );
-			drawSpheres();
+		// Draw shadow casters (spheres)
+		mGlslProgGBuffer->uniform( "uMaterialId", 0 );
+		drawSpheres();
 	
-			// Draw floor
+		// Draw floor
+		{
 			gl::ScopedModelMatrix scopedModelMatrix;
-			mGlslProgGBuffer->uniform( "uMaterialId",	1 );
-			mGlslProgGBuffer->uniform( "uSamplerMix",	0.0f );
+			mGlslProgGBuffer->uniform( "uMaterialId", 1 );
 			gl::translate( vec3( 0.0f, mFloor, 0.0f ) );
 			gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
-			gl::scale( vec3( 125.0f ) );
-			gl::draw( mMeshRect );
+			gl::scale( vec3( 20.0f ) );
+			gl::draw( mMeshCircle );
 		}
 
 		// Draw light sources
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgGBufferLight );
-			mGlslProgGBufferLight->uniform( "uMaterialId", 2 );
-			for ( const Light& light : mLights ) {
-				gl::ScopedModelMatrix scopedModelMatrix;
-				gl::ScopedColor scopedColor( light.getColorDiffuse() );
-				gl::translate( light.getPosition() );
-				gl::scale( vec3( light.getRadius() ) );
-				gl::draw( mMeshSphere );
-			}
+		mGlslProgGBuffer->uniform( "uMaterialId", 2 );
+		for ( const Light& light : mLights ) {
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::ScopedColor scopedColor( light.getColorDiffuse() );
+			gl::translate( light.getPosition() );
+			gl::scale( vec3( light.getRadius() ) );
+			gl::draw( mMeshSphere );
 		}
 	}
 
@@ -246,19 +240,16 @@ void DeferredShadingAdvancedApp::draw()
 
 		// Draw light volumes
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
-		mGlslProgLBuffer->uniform( "uSamplerAlbedo",			0 );
-		mGlslProgLBuffer->uniform( "uSamplerMaterial",			1 );
-		mGlslProgLBuffer->uniform( "uSamplerNormal",			2 );
-		mGlslProgLBuffer->uniform( "uSamplerDepth",				3 );
-		mGlslProgLBuffer->uniform( "uSamplerShadowMap",			4 );
-
-		mGlslProgLBuffer->uniform( "uShadowBlurSize",			0.0025f );
-		mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
-		mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
-		mGlslProgLBuffer->uniform( "uShadowSamples",			4.0f );
-		mGlslProgLBuffer->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
-		mGlslProgLBuffer->uniform( "uProjMatrixInverse",		projMatrixInverse );
-		mGlslProgLBuffer->uniform( "uProjectionParams",			projectionParams );
+		mGlslProgLBuffer->uniform( "uProjMatrixInverse",	projMatrixInverse );
+		mGlslProgLBuffer->uniform( "uProjectionParams",		projectionParams );
+		mGlslProgLBuffer->uniform( "uSamplerAlbedo",		0 );
+		mGlslProgLBuffer->uniform( "uSamplerMaterial",		1 );
+		mGlslProgLBuffer->uniform( "uSamplerNormal",		2 );
+		mGlslProgLBuffer->uniform( "uSamplerDepth",			3 );
+		mGlslProgLBuffer->uniform( "uSamplerShadowMap",		4 );
+		mGlslProgLBuffer->uniform( "uShadowEnabled",		mEnabledShadow );
+		mGlslProgLBuffer->uniform( "uShadowMatrix",			shadowMatrix );
+		mGlslProgLBuffer->uniform( "uViewMatrixInverse",	mMayaCam.getCamera().getInverseViewMatrix() );
 		
 		mGlslProgLBuffer->uniformBlock( 0, 0 );
 
@@ -283,6 +274,7 @@ void DeferredShadingAdvancedApp::draw()
 	// BLOOM
 
 	if ( mEnabledBloom ) {
+	
 		// Set up window and clear buffers
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboBloom );
 		{
@@ -301,7 +293,7 @@ void DeferredShadingAdvancedApp::draw()
 
 		// Calculate bloom pixel size
 		float bloomAtt	= 1.5f;
-		vec2 bloomSize	= vec2( 1.0f ) / winSize * 3.0f;
+		vec2 bloomSize	= vec2( 1.0f ) / winSize;
 		bloomSize		*= vec2( mFboBloom->getSize() ) / winSize;
 
 		// Horizontal pass
@@ -359,10 +351,6 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedTextureBind scopedTextureBind1( mTextureRandom,			1 );
 			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],	2 );
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgSsao );
-			mGlslProgSsao->uniform( "uFalloff",			0.001f );
-			mGlslProgSsao->uniform( "uOffset",			0.05f );
-			mGlslProgSsao->uniform( "uRadius",			0.05f );
-			mGlslProgSsao->uniform( "uStrength",		1.0f );
 			mGlslProgSsao->uniform( "uSamplerDepth",	0 );
 			mGlslProgSsao->uniform( "uSamplerNoise",	1 );
 			mGlslProgSsao->uniform( "uSamplerNormal",	2 );
@@ -396,10 +384,10 @@ void DeferredShadingAdvancedApp::draw()
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// COMPOSITE
 
-	// Set up window for composite pass
 	{
 		size_t pong = ( mFboPostIndex + 1 ) % 2;
 
+		// Set up window for composite pass
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboPost );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + mFboPostIndex );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPost->getSize() );
@@ -441,8 +429,6 @@ void DeferredShadingAdvancedApp::draw()
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
 		mGlslProgDof->uniform( "uAspect",		mTextureFboPost[ pong ]->getAspectRatio() );
-		mGlslProgDof->uniform( "uBias",			0.05f );
-		mGlslProgDof->uniform( "uOpacity",		0.6f );
 		mGlslProgDof->uniform( "uSampler",		0 );
 		mGlslProgDof->uniform( "uSamplerDepth", 1 );
 
@@ -460,6 +446,7 @@ void DeferredShadingAdvancedApp::draw()
 	if ( mEnabledColor ) {
 		size_t pong = ( mFboPostIndex + 1 ) % 2;
 
+		// Set up window for color pass
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboPost );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + mFboPostIndex );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPost->getSize() );
@@ -472,13 +459,8 @@ void DeferredShadingAdvancedApp::draw()
 		// Perform color processing pass
 		gl::ScopedTextureBind scopedTextureBind( mTextureFboPost[ pong ], 0 );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgColor );
-		mGlslProgColor->uniform( "uBlend",			0.5f );
-		mGlslProgColor->uniform( "uColorOffset",	0.0015f );
-		mGlslProgColor->uniform( "uContrast",		0.5f );
-		mGlslProgColor->uniform( "uMultiply",		16.0f );
-		mGlslProgColor->uniform( "uSaturation",		ColorAf( 0.882f, 0.89f, 0.843f, 1.0f ) );
-		mGlslProgColor->uniform( "uSampler",		0 );
-		gl::drawSolidRect( Rectf( vec2( 0.0f ),		mFboPost->getSize() ) );
+		mGlslProgColor->uniform( "uSampler", 0 );
+		gl::drawSolidRect( Rectf( vec2( 0.0f ),	mFboPost->getSize() ) );
 
 		mFboPostIndex = pong;
 	}
@@ -515,11 +497,11 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ], 2 );
 
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
-			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",	0 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerDepth",	1 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerNormal",	2 );
-			mGlslProgDebugGbuffer->uniform( "uProjMatrixInverse",		projMatrixInverse );
-			mGlslProgDebugGbuffer->uniform( "uProjectionParams",		projectionParams );
+			mGlslProgDebugGbuffer->uniform( "uProjectionParams",	projectionParams );
+			mGlslProgDebugGbuffer->uniform( "uProjMatrixInverse",	projMatrixInverse );
+			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",		0 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerDepth",		1 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerNormal",		2 );
 
 			for ( int32_t i = 0; i < 4; ++i, ++index ) {
 				mGlslProgDebugGbuffer->uniform( "uMode", i );
@@ -606,6 +588,46 @@ void DeferredShadingAdvancedApp::draw()
 	mParams->draw();
 }
 
+void DeferredShadingAdvancedApp::loadShaders()
+{
+	// Shortcut for shader loading and error handling
+	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
+	{
+		gl::GlslProgRef glslProg;
+		try {
+			glslProg = gl::GlslProg::create( vertex, fragment );
+		} catch ( gl::GlslProgCompileExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( gl::GlslNullProgramExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( ... ) {
+			console() << name << ": Unknown GLSL Error" << endl;
+			quit();
+		}
+		return glslProg;
+	};
+
+	// Load shaders
+	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
+	mGlslProgBlend				= loadGlslProg( "Blend",			passThrough,							loadAsset( "blend_frag.glsl" ) );
+	mGlslProgBloom				= loadGlslProg( "Bloom",			passThrough,							loadAsset( "bloom_frag.glsl" ) );
+	mGlslProgBlur				= loadGlslProg( "Blur",				passThrough,							loadAsset( "blur_frag.glsl" ) );
+	mGlslProgColor				= loadGlslProg( "Color",			passThrough,							loadAsset( "color_frag.glsl" ) );
+	mGlslProgComposite			= loadGlslProg( "Composite",		passThrough,							loadAsset( "composite_frag.glsl" ) );
+	mGlslProgDebugGbuffer		= loadGlslProg( "Debug G-Buffer",	passThrough,							loadAsset( "debug_gbuffer_frag.glsl" ) );
+	mGlslProgDebugMaterial		= loadGlslProg( "Debug material",	passThrough,							loadAsset( "debug_material_frag.glsl" ) );
+	mGlslProgDof				= loadGlslProg( "Depth of field",	passThrough,							loadAsset( "dof_frag.glsl" ) );
+	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
+	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer_vert.glsl" ),		loadAsset( "gbuffer_frag.glsl" ) );
+	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
+	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
+	mGlslProgSsao				= loadGlslProg( "SSAO",				loadAsset( "ssao_vert.glsl" ),			loadAsset( "ssao_frag.glsl" ) );
+	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
+	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
+}
+
 void DeferredShadingAdvancedApp::mouseDown( MouseEvent event )
 {
 	mMayaCam.mouseDown( event.getPos() );
@@ -633,7 +655,8 @@ void DeferredShadingAdvancedApp::resize()
 	auto createRenderbufferFromTexture = 
 		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
 	{
-		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), (int32_t)samples, (int32_t)coverageSamples );
+		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), 
+										 (int32_t)samples, (int32_t)coverageSamples );
 	};
 	
 	const ivec2 windowSize		= getWindowSize();
@@ -764,44 +787,7 @@ void DeferredShadingAdvancedApp::setup()
 {
 	gl::enableVerticalSync();
 	
-	// Shortcut for shader loading and error handling
-	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
-	{
-		gl::GlslProgRef glslProg;
-		try {
-			glslProg = gl::GlslProg::create( vertex, fragment );
-		} catch ( gl::GlslProgCompileExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( gl::GlslNullProgramExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( ... ) {
-			console() << name << ": Unknown GLSL Error" << endl;
-			quit();
-		}
-		return glslProg;
-	};
-
-	// Load shaders
-	DataSourceRef gBufferVert	= loadAsset( "gbuffer_vert.glsl" );
-	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
-	mGlslProgBlend				= loadGlslProg( "Blend",			passThrough,							loadAsset( "blend_frag.glsl" ) );
-	mGlslProgBloom				= loadGlslProg( "Bloom",			passThrough,							loadAsset( "bloom_frag.glsl" ) );
-	mGlslProgBlur				= loadGlslProg( "Blur",				passThrough,							loadAsset( "blur_frag.glsl" ) );
-	mGlslProgColor				= loadGlslProg( "Color",			passThrough,							loadAsset( "color_frag.glsl" ) );
-	mGlslProgComposite			= loadGlslProg( "Composite",		passThrough,							loadAsset( "composite_frag.glsl" ) );
-	mGlslProgDebugGbuffer		= loadGlslProg( "Debug G-Buffer",	passThrough,							loadAsset( "debug_gbuffer_frag.glsl" ) );
-	mGlslProgDebugMaterial		= loadGlslProg( "Debug material",	passThrough,							loadAsset( "debug_material_frag.glsl" ) );
-	mGlslProgDof				= loadGlslProg( "Depth of field",	passThrough,							loadAsset( "dof_frag.glsl" ) );
-	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
-	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			gBufferVert,							loadAsset( "gbuffer_frag.glsl" ) );
-	mGlslProgGBufferLight		= loadGlslProg( "G-buffer light",	gBufferVert,							loadAsset( "gbuffer_light_frag.glsl" ) );
-	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
-	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
-	mGlslProgSsao				= loadGlslProg( "SSAO",				loadAsset( "ssao_vert.glsl" ),			loadAsset( "ssao_frag.glsl" ) );
-	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
-	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
+	loadShaders();
 	
 	// Set default values for all properties
 	mDebugMode		= false;
@@ -815,26 +801,38 @@ void DeferredShadingAdvancedApp::setup()
 	mFloor			= -7.0f;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
+	mMeshCircle		= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
-	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
 	mSpherePosition	= vec3( 0.0f, -4.5f, 0.0f );
 	mSphereVelocity	= -0.1f;
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
-	mLights.push_back( Light()
-					  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .setIntensity( 1.0f )
-					  .setPosition( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .setRadius( 0.125f )
-					  .setVolume( 15.0f ) );
 	for ( size_t i = 0; i < 8; ++i ) {
 		mLights.push_back( Light()
 						  .setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) )
 						  .setIntensity( 1.2f )
 						  .setRadius( 0.1f )
 						  .setVolume( 5.0f ) );
+	}
+	mLights.push_back( Light()
+					  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+					  .setIntensity( 1.0f )
+					  .setPosition( vec3( 0.0f, 0.0f, 0.0f ) )
+					  .setRadius( 0.125f )
+					  .setVolume( 15.0f ) );
+	float d	= ( (float)M_PI * 2.0f ) / 5.0f;
+	float r = 9.0f;
+	float t = 0.0f;
+	for ( size_t i = 0; i < 5; ++i, t += d ) {
+		vec3 p( glm::cos( t ) * r, mFloor + 0.1f, glm::sin( t ) * r );
+		mLights.push_back( Light()
+						  .setColorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
+						  .setIntensity( 1.0f )
+						  .setPosition( p )
+						  .setRadius( 0.1f )
+						  .setVolume( 3.0f ) );
 	}
 	
 	// Set up materials
@@ -864,10 +862,11 @@ void DeferredShadingAdvancedApp::setup()
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 240 ) );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 260 ) );
 	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
 	mParams->addParam( "Debug mode",		&mDebugMode ).key( "d" );
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
+	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
 	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
@@ -908,19 +907,19 @@ void DeferredShadingAdvancedApp::update()
 	}
 	
 	// Update light positions
-	if ( !mLights.empty() ) {
-		size_t numLights	= mLights.size() - 1;
+	if ( mLights.size() >= 8 ) {
+		size_t numLights	= 8;
 		float t				= e;
 		float d				= ( (float)M_PI * 2.0f ) / (float)numLights;
 		float r				= 3.5f;
 		for ( size_t i = 0; i < numLights; ++i, t += d ) {
-			float ground	= mFloor + 0.1f;
+			float y			= mFloor + 0.1f;
 			float x			= glm::cos( t );
 			float z			= glm::sin( t );
 			vec3 p			= vec3( x, 0.0f, z ) * r;
-			p.y				= ground + glm::sin( t + e * (float)M_PI ) * 2.0f;
-			if ( p.y < ground ) {
-				p.y			+= ( ground - p.y ) * 2.0f;
+			p.y				= y + glm::sin( t + e * (float)M_PI ) * 2.0f;
+			if ( p.y < y ) {
+				p.y			+= ( y - p.y ) * 2.0f;
 			}
 			mLights.at( i + 1 ).setPosition( p );
 		}

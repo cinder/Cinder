@@ -220,7 +220,6 @@
     <None Include="..\assets\dof_frag.glsl" />
     <None Include="..\assets\fxaa_frag.glsl" />
     <None Include="..\assets\gbuffer_frag.glsl" />
-    <None Include="..\assets\gbuffer_light_frag.glsl" />
     <None Include="..\assets\gbuffer_vert.glsl" />
     <None Include="..\assets\lbuffer_frag.glsl" />
     <None Include="..\assets\passThrough_vert.glsl" />

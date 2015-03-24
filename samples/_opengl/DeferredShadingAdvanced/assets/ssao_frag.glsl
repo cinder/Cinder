@@ -1,9 +1,11 @@
 #version 330 core
 
-uniform float		uFalloff;
-uniform float		uOffset;
-uniform float		uRadius;
-uniform float		uStrength;
+const float kFalloff	= 0.001;
+const float kInvSamples = -0.5 / 20.0;
+const float	kOffset		= 0.05;
+const float	kRadius		= 0.05;
+const float	kStrength	= 1.0;
+
 uniform sampler2D	uSamplerDepth;
 uniform sampler2D	uSamplerNoise;
 uniform sampler2D	uSamplerNormal;
@@ -14,8 +16,6 @@ in Vertex
 } vertex;
 
 out vec4 	oColor;
-
-const float kInvSamples = -0.5 / 20.0;
 
 float rand( vec2 v )
 {
@@ -38,7 +38,7 @@ void main( void )
 	vec3 N			= decodeNormal( texture( uSamplerNormal, vertex.uv ).rg );
     float depth		= texture( uSamplerDepth, vertex.uv ).r;
 	vec4 F			= vec4( 0.0 );
-	vec3 fresnel	= normalize( ( texture( uSamplerNoise, rand( vertex.uv ) * uOffset * vertex.uv ).xyz * 2.0 ) - vec3( 1.0 ) );
+	vec3 fresnel	= normalize( ( texture( uSamplerNoise, rand( vertex.uv ) * kOffset * vertex.uv ).xyz * 2.0 ) - vec3( 1.0 ) );
 	vec3 R			= vec3( 0.0 );
 	
 	vec3 unitSphere[ 10 ];
@@ -54,10 +54,10 @@ void main( void )
 	unitSphere[ 9 ]	= vec3(  0.035267662, -0.063188605,  0.54602677 );
     
     for ( int i = 0; i < 10; ++i ) {
-		R			= uRadius * reflect( unitSphere[ i ], fresnel );
+		R			= kRadius * reflect( unitSphere[ i ], fresnel );
 		vec2 uv		= vertex.uv + sign( dot( R, N ) ) * R.xy;
 		d			= depth - texture( uSamplerDepth, uv ).x;
-		bl			+= step( uFalloff, d ) * ( 1.0 - dot( N, N ) ) * ( 1.0 - smoothstep( uFalloff, uStrength, d ) );
+		bl			+= step( kFalloff, d ) * ( 1.0 - dot( N, N ) ) * ( 1.0 - smoothstep( kFalloff, kStrength, d ) );
     }
 
     oColor			= vec4( vec3( 1.0 + bl * kInvSamples ), 1.0 );
