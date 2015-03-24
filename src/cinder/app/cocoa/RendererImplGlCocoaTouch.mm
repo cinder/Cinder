@@ -207,9 +207,9 @@
 	}
 }
 
-- (void)makeCurrentContext
+- (void)makeCurrentContext:(bool)force
 {
-	mCinderContext->makeCurrent();
+	mCinderContext->makeCurrent( force );
     
 	// This application only creates a single default framebuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple framebuffers.
