@@ -1,4 +1,4 @@
-// Reworked from here:
+// Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
 
 #version 400 core
@@ -37,7 +37,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 	return color * contrib;
 }
 
-void main(void) 
+void main( void )
 {
 	float depth		= texture( uSamplerDepth, vertex.uv ).r;
 	vec2 sz			= vec2( abs( ( depth - 1.0f ) / 1.0 ) ) * vec2( 1.0, uAspect ) * uBias;

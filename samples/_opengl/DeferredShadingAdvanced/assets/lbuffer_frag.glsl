@@ -37,7 +37,7 @@ uniform float	uLightRadius;
 uniform float	uShadowBlurSize;
 uniform bool	uShadowEnabled;
 uniform mat4 	uShadowMatrix;
-uniform float	uShadowMix;
+uniform float	uShadowOpacity;
 uniform float	uShadowSamples;
 
 uniform mat4 	uViewMatrixInverse;
@@ -84,8 +84,8 @@ float shadow( in vec4 position )
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
 	float bias			= 0.86;
-	float v 			= 1.0;
-	float e				= ( 1.0 / float( uShadowSamples ) ) * uShadowMix;
+	float v 			= 0.0;
+	float e				= ( 1.0 / float( uShadowSamples ) ) * uShadowOpacity;
 	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
 		for ( int i = 0; i < uShadowSamples; ++i ) {
 			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poisson( i, uShadowBlurSize ), 0.0 ) );
