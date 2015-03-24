@@ -441,7 +441,7 @@ void DeferredShadingAdvancedApp::draw()
 		mGlslProgDof->uniform( "uAspect",		mTextureFboPost[ pong ]->getAspectRatio() );
 		mGlslProgDof->uniform( "uBias",			0.05f );
 		mGlslProgDof->uniform( "uDepth",		1.0f );
-		mGlslProgDof->uniform( "uOpacity",		0.5f );
+		mGlslProgDof->uniform( "uOpacity",		0.6f );
 		mGlslProgDof->uniform( "uSampler",		0 );
 		mGlslProgDof->uniform( "uSamplerDepth", 1 );
 
@@ -638,11 +638,11 @@ void DeferredShadingAdvancedApp::resize()
 	// Bloom buffer
 	{
 		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB8 );
+		textureFormat.setInternalFormat( GL_RGB10_A2 );
 		textureFormat.setMagFilter( GL_NEAREST );
 		textureFormat.setMinFilter( GL_NEAREST );
 		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_INT );
+		textureFormat.setDataType( GL_FLOAT );
 
 		mTextureFboBloom[ 0 ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
 		mTextureFboBloom[ 1 ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
@@ -738,11 +738,11 @@ void DeferredShadingAdvancedApp::resize()
 	// Post-processing buffer
 	{
 		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB8 );
+		textureFormat.setInternalFormat( GL_RGB10_A2 );
 		textureFormat.setMagFilter( GL_NEAREST );
 		textureFormat.setMinFilter( GL_NEAREST );
 		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_INT );
+		textureFormat.setDataType( GL_FLOAT );
 
 		mTextureFboPost[ 0 ] = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
 		mTextureFboPost[ 1 ] = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
@@ -762,7 +762,7 @@ void DeferredShadingAdvancedApp::resize()
 	{
 		uint32_t sz = 1024;
 		gl::Texture2d::Format depthFormat;
-		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT16 );
+		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
 		depthFormat.setMagFilter( GL_LINEAR );
 		depthFormat.setMinFilter( GL_LINEAR );
 		depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
@@ -782,11 +782,11 @@ void DeferredShadingAdvancedApp::resize()
 	// Screen space ambient occlusion buffer
 	{
 		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB8 );
+		textureFormat.setInternalFormat( GL_RGB10_A2 );
 		textureFormat.setMagFilter( GL_NEAREST );
 		textureFormat.setMinFilter( GL_NEAREST );
 		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_INT );
+		textureFormat.setDataType( GL_FLOAT );
 
 		mTextureFboSsao[ 0 ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
 		mTextureFboSsao[ 1 ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
@@ -985,6 +985,6 @@ void DeferredShadingAdvancedApp::update()
 CINDER_APP( DeferredShadingAdvancedApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), []( App::Settings* settings )
 {
 	settings->disableFrameRate();
-	settings->setWindowSize( 1280, 720 );
+	settings->setWindowSize( 1920, 1080 );
 } )
  
