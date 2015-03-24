@@ -1,6 +1,6 @@
-#version 400 core
+#version 330 core
 
-const uint MATERIAL_COUNT	= 3;
+const int MATERIAL_COUNT	= 3;
 
 const int MODE_AMBIENT		= 0;
 const int MODE_DIFFUSE		= 1;
@@ -18,16 +18,16 @@ struct Material
 	vec4	specular;
 	float	shininess;
 	float	twoSided;
-	uint 	pad0;
-	uint 	pad1;
+	uint 	pad0; // std140
+	uint 	pad1; // std140
 };
 
-uniform Materials
+layout (std140) uniform Materials
 {
 	Material uMaterials[ MATERIAL_COUNT ];
 };
 
-uniform usampler2D uSamplerMaterial;
+uniform usampler2D uSampler;
 
 uniform int uMode;
 
@@ -40,8 +40,8 @@ out vec4 oColor;
 
 void main( void )
 {
-	vec4 color			= vec4( 0.0, 0.0, 0.0, 1.0 );
-	uint id				= texture( uSamplerMaterial, vertex.uv ).r;
+	vec4 color			= vec4( 0.0 );
+	int id				= int( texture( uSampler, vertex.uv ).r );
 	Material material	= uMaterials[ id ];
 
 	switch ( uMode ) {
@@ -64,7 +64,7 @@ void main( void )
 		color = vec4( vec3( material.twoSided ), 1.0 );
 		break;
 	case MODE_MATERIAL_ID:
-		color = vec4( vec3( float( id ) / float( MATERIAL_COUNT ) ), 1.0 );
+		color = vec4( texture( uSampler, vertex.uv ).r, 0.0, 0.0, 1.0 );
 		break;
 	}
 

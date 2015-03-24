@@ -1,7 +1,7 @@
 // Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
 
-#version 400 core
+#version 330 core
 
 uniform float		uAspect;
 uniform float		uBias;

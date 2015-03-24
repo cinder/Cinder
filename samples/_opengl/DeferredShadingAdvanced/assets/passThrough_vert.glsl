@@ -1,9 +1,9 @@
-#version 400 core
+#version 330 core
 
-uniform mat4 	ciModelViewProjection;
+uniform mat4 ciModelViewProjection;
 
-in vec4 		ciPosition;
-in vec2 		ciTexCoord0;
+in vec4 	ciPosition;
+in vec2 	ciTexCoord0;
 
 out Vertex
 {

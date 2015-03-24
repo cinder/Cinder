@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 
 uniform float		uAttenuation;
 uniform vec2		uSize;

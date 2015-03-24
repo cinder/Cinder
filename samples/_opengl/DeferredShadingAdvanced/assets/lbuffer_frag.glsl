@@ -1,4 +1,6 @@
-#version 400 core
+#version 330 core
+
+const int MATERIAL_COUNT = 3;
 
 const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.06095261, -0.1337204 ),
@@ -19,12 +21,10 @@ const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.6656654, -0.7041242 )
 );
 
-const uint MATERIAL_COUNT = 3;
-
 uniform sampler2D		uSamplerAlbedo;
-uniform usampler2D		uSamplerMaterial;
-uniform sampler2D		uSamplerNormal;
 uniform sampler2D		uSamplerDepth;
+uniform isampler2D		uSamplerMaterial;
+uniform sampler2D		uSamplerNormal;
 uniform sampler2DShadow uSamplerShadowMap;
 
 uniform vec4	uLightColorAmbient;
@@ -56,7 +56,7 @@ struct Material
 	uint 	pad1; // std140
 };
 
-uniform Materials
+layout (std140) uniform Materials
 {
 	Material uMaterials[ MATERIAL_COUNT ];
 };
@@ -98,13 +98,21 @@ float shadow( in vec4 position )
 	return v;
 }
 
+vec3 decodeNormal( vec2 enc )
+{
+    vec4 n	= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
+    float l = dot( n.xyz, -n.xyw );
+    n.z		= l;
+    n.xy	*= sqrt( l );
+    return n.xyz * 2.0 + vec3( 0.0, 0.0, -1.0 );
+}
 
 vec4 getPosition( vec2 uv )
 {
-    float depth             = texture( uSamplerDepth, uv ).x;
-    float linearDepth 		= uProjectionParams.y / ( depth - uProjectionParams.x );
-    vec4 posProj        	= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
-    vec4 viewRay        	= uProjMatrixInverse * posProj;
+    float depth			= texture( uSamplerDepth, uv ).x;
+    float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
+    vec4 posProj		= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
+    vec4 viewRay		= uProjMatrixInverse * posProj;
     return vec4( viewRay.xyz * linearDepth, 1.0 );
 }
 
@@ -120,12 +128,11 @@ void main( void )
 	}
 	L 					/= d;
 	
-	vec4 albedo 		= texture( uSamplerAlbedo, 		uv );
-	uint materialId 	= texture( uSamplerMaterial, 	uv ).r;
+	vec4 albedo 		= texture( uSamplerAlbedo, uv );
+	int materialId		= int( texture( uSamplerMaterial, uv ).r );
 	Material material 	= uMaterials[ materialId ];
 
-	vec4 normalDepth 	= texture( uSamplerNormal, uv );
-	vec3 N 				= normalize( normalDepth.xyz );
+	vec3 N 				= decodeNormal( texture( uSamplerNormal, uv ).rg );
 	vec3 V 				= normalize( -position.xyz );
 	vec3 H 				= normalize( L + V );
 	float NdotL 		= max( 0.0, dot( N, L ) );
