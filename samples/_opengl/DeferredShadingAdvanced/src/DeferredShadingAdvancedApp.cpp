@@ -679,7 +679,7 @@ void DeferredShadingAdvancedApp::resize()
 														 .dataType( GL_BYTE ) );
 		mTextureFboGBuffer[ 2 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, 
 														 gl::Texture2d::Format()
-														 .internalFormat( GL_RG16F )
+														 .internalFormat( GL_RG8 )
 														 .magFilter( GL_NEAREST )
 														 .minFilter( GL_NEAREST )
 														 .wrap( GL_CLAMP_TO_EDGE )
