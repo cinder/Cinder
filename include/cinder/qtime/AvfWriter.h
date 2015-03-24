@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014, The Cinder Project, All rights reserved.
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
  
  This code is intended for use with the Cinder C++ library: http://libcinder.org
  
@@ -48,87 +48,77 @@ typedef std::shared_ptr<MovieWriter> MovieWriterRef;
 
 class MovieWriter {
   public:
-	typedef enum Codec { H264, JPEG, PRO_RES_4444, PRO_RES_422 } Codec;
+	typedef enum Codec { H264, JPEG
+#if ! defined( CINDER_COCOA_TOUCH )
+	, PRO_RES_4444, PRO_RES_422
+#endif
+	} Codec;
 	typedef enum FileType { QUICK_TIME_MOVIE, MPEG4, M4V } FileType;
 
 	//! Defines the encoding parameters of a MovieWriter
 	class Format {
 	  public:
 		Format();
-		Format( Codec codec, float quality );
-//		Format( const ICMCompressionSessionOptionsRef settings, uint32_t codec, float quality, float frameRate, bool enableMultiPass );
-		Format( Codec codec, float quality, float frameRate, bool enableMultiPass = false );
 
-		//! Returns the codec of type MovieWriter::Codec
+		//! Returns the codec of type MovieWriter::Codec. Default is \c Codec::H264.
 		Codec		getCodec() const { return mCodec; }
-		//! Sets the encoding codec. Default is \c H264
+		//! Sets the encoding codec. Default is \c Codec::H264
 		Format&		codec( Codec codec ) { mCodec = codec; return *this; }
 		//! Returns the output file type. Default is \c FileType::QUICK_TIME_MOVIE.
 		FileType	getFileType() const { return mFileType; }
 		//! Sets the output file type, defined in MovieWriter::FileType. Default is \c FileType::QUICK_TIME_MOVIE.
 		Format&		fileType( FileType fileType ) { mFileType = fileType; return *this; }
 		
-		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
-		float		getQuality() const { return mQualityFloat; }
-		//! Sets the overall quality for encoding. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
-		Format&		setQuality( float quality );
-		//! Returns the standard duration of a frame measured in seconds
-		float		getDefaultDuration() const { return mDefaultTime; }
+		//! Returns the overall quality for encoding in the range of [\c 0,\c 1.0] for the JPEG codec. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
+		float		getJpegQuality() const { return mJpegQuality; }
+		//! Sets the overall quality for encoding when using the JPEG codec. Must be in a range of [\c 0,\c 1.0]. Defaults to \c 0.99. \c 1.0 corresponds to lossless.
+		Format&		jpegQuality( float quality );
+		//! Returns the standard duration of a frame, measured in seconds. Defaults to \c 1/30 sec, meaning \c 30 FPS.
+		float		getDefaultFrameDuration() const { return mDefaultFrameDuration; }
 		//! Sets the default duration of a frame, measured in seconds. Defaults to \c 1/30 sec, meaning \c 30 FPS.
-		Format&		setDefaultDuration( float defaultDuration ) { mDefaultTime = defaultDuration; return *this; }
+		Format&		defaultFrameDuration( float defaultDuration ) { mDefaultFrameDuration = defaultDuration; return *this; }
 		//! Returns the integer base value for the encoding time scale. Defaults to \c 600
 		long		getTimeScale() const { return mTimeBase; }
 		//! Sets the integer base value for encoding time scale. Defaults to \c 600.
 		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
-		//! Returns the gamma value by which image data is encoded.
-		float		getGamma() const { return mGamma; }
-		//! Sets the gamma value by which image data is encoded. Defaults to \c 2.5 on MSW and \c 2.2 on Mac OS X.
-		Format&		setGamma( float gamma ) { mGamma = gamma; return *this; }
-		//! Returns if temporal compression (allowing \b P or \b B frames) is enabled. Defaults to \c true.
-		bool		isTemporal() const;
-		//! Enables temporal compression (allowing \b P or \b B frames). Defaults to \c true.
-		Format&		enableTemporal( bool enable = true );
-		//! Returns if frame reordering is enabled. Defaults to \c true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
-		bool		isReordering() const;
-		//! Enables frame reordering. Defaults to \c true. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
-		Format&		enableReordering( bool enable = true );
-		//! Gets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
-		int32_t		getMaxKeyFrameRate() const;
-		//! Sets the maximum number of frames between key frames. Default is \c 0, which indicates that the compressor should choose where to place all key frames. Compressors are allowed to generate key frames more frequently if this would result in more efficient compression.
-		Format&		setMaxKeyFrameRate( int32_t rate );
-		//! Returns whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
-		bool		isFrameTimeChanges() const;
-		//! Sets whether a codec is allowed to change frame times. Defaults to \c true. Some compressors are able to identify and coalesce runs of identical frames and output single frames with longer duration, or output frames at a different frame rate from the original.
-		Format&		enableFrameTimeChanges( bool enable = true );
-		//! Returns whether multiPass encoding is enabled. Defaults to \c false.
-		bool		isMultiPass() const { return mEnableMultiPass; }
-		//! Enables multiPass encoding. Defaults to \c false. While multiPass encoding can result in significantly smaller movies, it often takes much longer to compress and requires the creation of two temporary files for storing intermediate results.
-		Format&		enableMultiPass( bool enable = true ) { mEnableMultiPass = enable; return *this; }
+
+		//! Returns if frame reordering is enabled (H.264 only). Default is \c false.
+		bool		isFrameReorderingEnabled() const;
+		//! Enables frame reordering (H.264 only). Defaults to \c false. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
+		Format&		enableFrameReordering( bool enable = true );
+
+		//! Returns the average bits per second for H.264 encoding. Defaults to no limit.
+		float		getAverageBitsPerSecond() const { return mH264AverageBitsPerSecond; }
+		//! Sets the average bits per second for H.264 encoding. Defaults to no limit.
+		Format&		averageBitsPerSecond( float avgBitsPerSecond ) { mH264AverageBitsPerSecondSpecified = true; mH264AverageBitsPerSecond = avgBitsPerSecond; return *this; }
+		//! Resets the average bits per second to no limit.
+		void		unspecifyAverageBitsPerSecond() { mH264AverageBitsPerSecondSpecified = false; }
+		//! Returns whether the average bits per second for H.264 have been specified. If \c false, no limit is imposed.
+		bool		isAverageBitsPerSecondSpecified() const { return mH264AverageBitsPerSecond; }
 
 	  private:
-		void		initDefaults();
-
 		Codec		mCodec;
 		FileType	mFileType;
 		long		mTimeBase;
-		float		mDefaultTime;
-		float		mQualityFloat;
-		float		mGamma;
-		bool		mEnableMultiPass;
+		float		mDefaultFrameDuration;
+		float		mJpegQuality;
+		
+		// H.264 only
+		bool		mFrameReorderingEnabled;
+		bool		mH264AverageBitsPerSecondSpecified;
+		float		mH264AverageBitsPerSecond;
 
 		friend class MovieWriter;
 	};
 
 
-	MovieWriter() {}
-	MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format = Format::Format() );
 	~MovieWriter();
 
 	static MovieWriterRef	create( const fs::path &path, int32_t width, int32_t height, const Format &format = Format::Format() )
 		{ return std::shared_ptr<MovieWriter>( new MovieWriter( path, width, height, format ) ); }
 
 	//! Returns the Movie's default frame duration measured in seconds. You can also think of this as the Movie's frameRate.
-	float	getDefaultDuration() const { return mFormat.mDefaultTime; }
+	float	getDefaultDuration() const { return mFormat.mDefaultFrameDuration; }
 	//! Returns the width of the Movie in pixels
 	int32_t	getWidth() const { return mWidth; }
 	//! Returns the height of the Movie in pixels
@@ -143,35 +133,27 @@ class MovieWriter {
 	//! Returns the Movie's Format
 	const Format&	getFormat() const { return mFormat; }
 
-	/** \brief Presents the user with the standard compression options dialog. Optional \a previewImage provides a still image as a preview (currently ignored on Mac OS X). Returns \c false if user cancelled.
-		\image html qtime/MovieWriter/qtime_settings_small.png **/
-	static bool getUserCompressionSettings( Format* result, ImageSourceRef previewImage = ImageSourceRef() );
-
-	/** \brief Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a time other than the Format's default duration.
-		\note Calling addFrame() after a call to finish() will throw a MovieWriterExcAlreadyFinished exception.
-	**/
-//	void addFrame( const ImageSourceRef& imageSource, float duration = -1.0f );
+	//! Appends a frame to the Movie. The optional \a duration parameter allows a frame to be inserted for a durationtime other than the Format's default duration.
 	void addFrame( const Surface8u& imageSource, float duration = -1.0f );
 	
 	//! Returns the number of frames in the movie
 	uint32_t	getNumFrames() const { return mNumFrames; }
 
-	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect.
+	//! Completes the encoding of the movie and closes the file. Calling finish() more than once has no effect. It is an error to call addFrame() after calling finish().
 	void finish();
 
   private:
-	void createCompressionSession();
+	MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format );
 
-	AVAssetWriter* mWriter;
-	AVAssetWriterInput* mWriterSink;
-	AVAssetWriterInputPixelBufferAdaptor* mSinkAdapater;
+	AVAssetWriter*							mWriter;
+	AVAssetWriterInput*						mWriterSink;
+	AVAssetWriterInputPixelBufferAdaptor*	mSinkAdapater;
 	
-	fs::path		mPath;
 	uint32_t		mNumFrames;
-	int64_t			mCurrentTimeValue;
+	double			mCurrentSeconds;
 	int32_t			mWidth, mHeight;
 	Format			mFormat;
-	bool			mRequestedMultiPass, mDoingMultiPass, mFinished;
+	bool			mFinished;
 
 //	IoStreamRef		mMultiPassFrameCache;
 //	std::vector<std::pair<int64_t,int64_t> >	mFrameTimes;

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2014, The Cinder Project, All rights reserved.
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
  
  This code is intended for use with the Cinder C++ library: http://libcinder.org
  
@@ -32,105 +32,36 @@
 
 namespace cinder { namespace qtime {
 
-const float PLATFORM_DEFAULT_GAMMA = 2.2f;
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter::Format
 
 MovieWriter::Format::Format()
 	: mCodec( H264 ), mFileType( QUICK_TIME_MOVIE )
 {
-	initDefaults();
-}
-
-MovieWriter::Format::Format( Codec codec, float quality )
-	: mCodec( codec ), mFileType( QUICK_TIME_MOVIE )
-{
-	initDefaults();
-	setQuality( quality );
-}
-
-MovieWriter::Format::Format( Codec codec, float quality, float frameRate, bool enableMultiPass )
-	:	mCodec( codec ), mEnableMultiPass( enableMultiPass )
-{
-	setQuality( quality );
-	setTimeScale( (long)(frameRate * 100) );
-	setDefaultDuration( 1.0f / frameRate );
-	setGamma( PLATFORM_DEFAULT_GAMMA );
-}
-
-void MovieWriter::Format::initDefaults()
-{
 	mTimeBase = 600;
-	mDefaultTime = 1 / 30.0f;
-	mGamma = PLATFORM_DEFAULT_GAMMA;
-	mEnableMultiPass = false;
+	mDefaultFrameDuration = 1 / 30.0f;
 
-	enableTemporal( true );
-	enableReordering( true );
-	enableFrameTimeChanges( true );
-	setQuality( 0.99f );
+	enableFrameReordering( false );
+	jpegQuality( 0.99f );
+	
+	mH264AverageBitsPerSecondSpecified = false;
+	mH264AverageBitsPerSecond = 0;
 }
 
-MovieWriter::Format& MovieWriter::Format::setQuality( float quality )
+MovieWriter::Format& MovieWriter::Format::jpegQuality( float quality )
 {
-	/* TODO: RE-IMPLEMENT
-	mQualityFloat = constrain<float>( quality, 0, 1 );
-	CodecQ compressionQuality = CodecQ(0x00000400 * mQualityFloat);
-	OSStatus err = ICMCompressionSessionOptionsSetProperty( mOptions,
-                                kQTPropertyClass_ICMCompressionSessionOptions,
-                                kICMCompressionSessionOptionsPropertyID_Quality,
-                                sizeof(compressionQuality),
-                                &compressionQuality );	
-	*/
+	mJpegQuality = quality;
 	return *this;
 }
 
-bool MovieWriter::Format::isTemporal() const
+bool MovieWriter::Format::isFrameReorderingEnabled() const
 {
-	// TODO: RE-IMPLEMENT
-	return false;
+	return mFrameReorderingEnabled;
 }
 
-MovieWriter::Format& MovieWriter::Format::enableTemporal( bool enable )
+MovieWriter::Format& MovieWriter::Format::enableFrameReordering( bool enable )
 {
-	// TODO: RE-IMPLEMENT
-	return *this;
-}
-
-bool MovieWriter::Format::isReordering() const
-{
-	// TODO: RE-IMPLEMENT
-	return false;
-}
-
-MovieWriter::Format& MovieWriter::Format::enableReordering( bool enable )
-{
-	// TODO: RE-IMPLEMENT
-	return *this;
-}
-
-bool MovieWriter::Format::isFrameTimeChanges() const
-{
-	// TODO: RE-IMPLEMENT
-	return false;
-}
-
-MovieWriter::Format& MovieWriter::Format::enableFrameTimeChanges( bool enable )
-{
-	// TODO: RE-IMPLEMENT
-	return *this;
-}
-
-int32_t MovieWriter::Format::getMaxKeyFrameRate() const
-{
-	// TODO: RE-IMPLEMENT
-	return 0;
-}
-
-MovieWriter::Format& MovieWriter::Format::setMaxKeyFrameRate( int32_t rate )
-{
-	// TODO: RE-IMPLEMENT
+	mFrameReorderingEnabled = enable;
 	return *this;
 }
 
@@ -142,10 +73,12 @@ const NSString * codecToAvVideoCodecKey( MovieWriter::Codec codec )
 			return AVVideoCodecH264;
 		case MovieWriter::Codec::JPEG:
 			return AVVideoCodecJPEG;
+#if ! defined( CINDER_COCOA_TOUCH )
 		case MovieWriter::Codec::PRO_RES_4444:
 			return AVVideoCodecAppleProRes4444;
 		case MovieWriter::Codec::PRO_RES_422:
 			return AVVideoCodecAppleProRes422;
+#endif
 		default:
 			return nil;
 	}
@@ -169,38 +102,46 @@ NSString * fileTypeToAvFileType( MovieWriter::FileType fileType )
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // MovieWriter
 MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, const Format &format )
-	: mPath( path ), mWidth( width ), mHeight( height ), mFormat( format ), mFinished( false ), mNumFrames(0)
+	: mWidth( width ), mHeight( height ), mFormat( format ), mFinished( false ), mNumFrames( 0 ), mCurrentSeconds( 0 )
 {
-//	AVFileTypeQuickTimeMovie
-//	AVFileTypeMPEG4
-//	AVFileTypeAppleM4V
 	// AVFoundation will fail if the path already exists.
 	if( fs::exists( path ) )
 		fs::remove( path );
 	
-	NSURL* localOutputURL = [NSURL fileURLWithPath:[NSString stringWithCString:mPath.c_str() encoding:[NSString defaultCStringEncoding]]];
+	NSURL* localOutputURL = [NSURL fileURLWithPath:[NSString stringWithCString:path.c_str() encoding:[NSString defaultCStringEncoding]]];
 	NSError* error = nil;
 	mWriter = [[AVAssetWriter alloc] initWithURL:localOutputURL fileType:fileTypeToAvFileType( format.getFileType() ) error:&error];
+
+	NSMutableDictionary *compressionProperties = [NSMutableDictionary dictionary];
+	if( format.getCodec() == Codec::H264 ) {
+		[compressionProperties setValue:[NSNumber numberWithBool:format.isFrameReorderingEnabled()] forKey:AVVideoAllowFrameReorderingKey];
+		if( format.isAverageBitsPerSecondSpecified() )
+			[compressionProperties setValue:[NSNumber numberWithFloat:format.getAverageBitsPerSecond()] forKey:AVVideoAverageBitRateKey];
+	}
+	else if( format.getCodec() == Codec::JPEG ) {
+		[compressionProperties setValue:[NSNumber numberWithFloat:format.getJpegQuality()] forKey:AVVideoQualityKey];
+	}
 	
-	NSMutableDictionary* videoSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
-										  codecToAvVideoCodecKey( format.getCodec() ), AVVideoCodecKey,
-										  [NSNumber numberWithInteger:mWidth], AVVideoWidthKey,
-										  [NSNumber numberWithInteger:mHeight], AVVideoHeightKey,
-										  nil];
-	mWriterSink = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:videoSettings];
+	NSMutableDictionary* outputSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
+											codecToAvVideoCodecKey( format.getCodec() ), AVVideoCodecKey,
+											[NSNumber numberWithInteger:mWidth], AVVideoWidthKey,
+											[NSNumber numberWithInteger:mHeight], AVVideoHeightKey,
+											compressionProperties, AVVideoCompressionPropertiesKey,
+											nil];
+	mWriterSink = [AVAssetWriterInput assetWriterInputWithMediaType:AVMediaTypeVideo outputSettings:outputSettings];
 	[mWriterSink setExpectsMediaDataInRealTime:true];
 
+	NSDictionary *sourcePixelBufferAttributes = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 	// These are documented as optimal for their respective platforms. AVVideoCodecAppleProRes4444 can support an alpha channel, but it automatically infers its necessity from the image content it seems.
-	NSDictionary *compressionSettings = [NSMutableDictionary dictionaryWithObjectsAndKeys:
 #if defined( CINDER_COCOA_TOUCH )
-										[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+				[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
 #else
-										[NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
+				[NSNumber numberWithInt:kCVPixelFormatType_32ARGB], kCVPixelBufferPixelFormatTypeKey,
 #endif
-										nil ];
+				nil ];
 	
 	mSinkAdapater = [AVAssetWriterInputPixelBufferAdaptor assetWriterInputPixelBufferAdaptorWithAssetWriterInput:mWriterSink
-																					 sourcePixelBufferAttributes:compressionSettings];
+																					 sourcePixelBufferAttributes:sourcePixelBufferAttributes];
 	
 	[mSinkAdapater retain];
 	[mWriter addInput:mWriterSink];
@@ -220,6 +161,9 @@ MovieWriter::~MovieWriter()
 {
 	if( ! mFinished )
 		finish();
+	
+	[mSinkAdapater release];
+	[mWriter release];
 }
 
 void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
@@ -234,7 +178,7 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 		CI_LOG_E( " Error when trying to start writing: " << descr );
 		return;
 	}
-	
+
 	::CVPixelBufferPoolRef pixelBufferPool = [mSinkAdapater pixelBufferPool];
 	::CVPixelBufferRef pixelBuffer;
 	if( ::CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pixelBufferPool, &pixelBuffer ) != kCVReturnSuccess ) {
@@ -242,68 +186,14 @@ void MovieWriter::addFrame( const Surface8u& imageSource, float duration )
 		return;
 	}
 
-	::CFNumberRef gammaLevel = CFNumberCreate( kCFAllocatorDefault, kCFNumberFloatType, &mFormat.mGamma );
-	::CVBufferSetAttachment( pixelBuffer, kCVImageBufferGammaLevelKey, gammaLevel, kCVAttachmentMode_ShouldPropagate );
-	::CFRelease( gammaLevel );
-	
 	// this decrements the retain count on the CVPixelBuffer on destruction
 	Surface8uRef destinationSurface = cocoa::convertCVPixelBufferToSurface( pixelBuffer );
 	destinationSurface->copyFrom( imageSource, imageSource.getBounds() );
-	// THE FOLLOWING TIME VALUE IN SECONDS MUST BE VALID!!!
-	static double seconds = 0;
-	seconds += 0.016667;
-	CMTime currentTime = CMTimeMakeWithSeconds(seconds,120);
-
-	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:currentTime];
-	mCurrentTimeValue += ( duration < 0 ) ? static_cast<int64_t>( mFormat.mDefaultTime * mFormat.mTimeBase ) : static_cast<int64_t>( duration * mFormat.mTimeBase );
+	
+	[mSinkAdapater appendPixelBuffer:pixelBuffer withPresentationTime:CMTimeMakeWithSeconds( mCurrentSeconds, (int32_t)mFormat.mTimeBase )];
+	
+	mCurrentSeconds += ( duration <= 0 ) ? mFormat.mDefaultFrameDuration : duration;
 	++mNumFrames;
-}
-
-void MovieWriter::createCompressionSession()
-{
-	
-	//
-	// https://developer.apple.com/library/mac/documentation/AVFoundation/Reference/AVFoundation_Constants/Reference/reference.html#//apple_ref/doc/c_ref/AVVideoMaxKeyFrameIntervalKey
-	//
-	// apply settings using the following info...
-	
-	/*
-	 // compression settings option(s)
-	AVVideoCompressionPropertiesKey
-	 
-	 // bit rate option
-	AVVideoAverageBitRateKey
-	 
-	 // quality option
-	AVVideoQualityKey
-	 
-	 // key frame interval option
-	AVVideoMaxKeyFrameIntervalKey
-	 
-	 // H264 profile level options
-	AVVideoProfileLevelKey
-	AVVideoProfileLevelH264Baseline30
-	AVVideoProfileLevelH264Baseline31
-	AVVideoProfileLevelH264Baseline41
-	AVVideoProfileLevelH264Main30
-	AVVideoProfileLevelH264Main31
-	AVVideoProfileLevelH264Main32
-	AVVideoProfileLevelH264Main41
-	AVVideoProfileLevelH264High40
-	AVVideoProfileLevelH264High41
-	 
-	 // pixel aspect ratio options
-	AVVideoPixelAspectRatioKey
-	AVVideoPixelAspectRatioHorizontalSpacingKey
-	AVVideoPixelAspectRatioVerticalSpacingKey
-	 
-	 // not sure what "clean aperture" means...
-	AVVideoCleanApertureKey
-	AVVideoCleanApertureWidthKey
-	AVVideoCleanApertureHeightKey
-	AVVideoCleanApertureHorizontalOffsetKey
-	AVVideoCleanApertureVerticalOffsetKey
-	 */
 }
 	
 void MovieWriter::finish()
@@ -313,10 +203,13 @@ void MovieWriter::finish()
 	
 	[mWriterSink markAsFinished];
 	
-	NSError* error = nil;
-	bool success = [mWriter finishWriting];
-	if( ! success )
-		error = [mWriter error];
+	// finishWriting: only wants to be called from a secondary thread
+	__block __typeof__(mWriter) _mWriter = mWriter;
+	[mWriter retain]; // released inside block
+	dispatch_async( dispatch_get_global_queue( DISPATCH_QUEUE_PRIORITY_HIGH, 0 ), ^{
+		[_mWriter finishWriting];
+		[_mWriter release];
+	} );
 	
 	mFinished = true;
 }
