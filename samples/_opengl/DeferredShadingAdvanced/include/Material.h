@@ -30,5 +30,7 @@ protected:
 	ci::ColorAf			mColorEmission;
 	ci::ColorAf			mColorSpecular;
 	float				mShininess;
-	ci::vec3			mPad;
+	uint32_t			mPad0;
+	uint32_t			mPad1;
+	uint32_t			mPad2;
 };
