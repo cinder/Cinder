@@ -31,6 +31,11 @@
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
 
+#define FN_LOG( __FNREF__ ) 							\
+ 	if( NULL != __FNREF__ ) {							\
+ 		LOGI( #__FNREF__ " successfully obtained" );	\
+ 	}
+
 namespace cinder { namespace android {
 
 jclass		UrlLoader::sUrlLoaderClass  = NULL;
@@ -58,8 +63,10 @@ void UrlLoader::cacheJni()
 		jclass urlLoaderClass = JniHelper::get()->retrieveClass( "org/libcinder/net/UrlLoader" );	
 		UrlLoader::sUrlLoaderClass = (jclass)JniHelper::get()->NewGlobalRef( urlLoaderClass );
 
-		if( NULL != sUrlLoaderClass ) {
+		if( NULL != UrlLoader::sUrlLoaderClass ) {
 			UrlLoader::sLoadUrlMethodId = JniHelper::get()->GetStaticMethodId( UrlLoader::sUrlLoaderClass, "loadUrl", "(Ljava/lang/String;)[B" );
+
+			FN_LOG( UrlLoader::sLoadUrlMethodId );				
 		}
 		JniHelper::get()->DeatchCurrentThread();
 	}

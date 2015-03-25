@@ -1,5 +1,7 @@
 package org.libcinder.net;
 
+import org.libcinder.app.Platform;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -105,7 +107,7 @@ public class UrlLoader {
         sResult.set(new Result(url));
 
         try {
-            Log.i( "cinder", " (Java) Loading: " + URLDecoder.decode(url, "UTF-8") );
+            Log.i(Platform.TAG, " (Java) Loading: " + URLDecoder.decode(url, "UTF-8"));
 
             Impl loader = new Impl(sResult.get());
             loader.start();
@@ -117,6 +119,10 @@ public class UrlLoader {
         }
 
         return result;
+    }
+
+    public static int getResponseCode() {
+        return (null != sResult.get()) ? sResult.get().mResponseCode : -1;
     }
 
     public static String getResponseMsg() {
@@ -149,10 +155,6 @@ public class UrlLoader {
                 System.out.println("Exception (" + threadId + ") : " + UrlLoader.getExceptionMsg());
             }
         }
-    }
-
-    static public Tester createTester() {
-        return new Tester("");
     }
 
     static public void runTests() {

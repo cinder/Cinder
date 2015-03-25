@@ -528,6 +528,7 @@ set( CINDER_C_SRC_FILES
 
 set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
+    ${CINDER_SRC_DIR}/cinder/android/CinderCamera.cpp
     ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
     ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
     ${CINDER_SRC_DIR}/cinder/android/UrlLoader.cpp

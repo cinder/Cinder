@@ -254,12 +254,12 @@ CI_CALL_STATIC_TYPE_METHOD_IMPL( jfloat, Float, 0.0f )
 CI_CALL_STATIC_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
 #undef CI_CALL_STATIC_TYPE_METHOD_IMPL
 
-void JniHelper::CallStaticVoidMethod( jobject obj, jmethodID methodId, ... ) 
+void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... ) 
 {
 	if( AttachCurrentThread() ) {
 		va_list args;
 		va_start( args, methodId );
-		threadJniEnv->CallVoidMethodV( obj, methodId, args );
+		threadJniEnv->CallStaticVoidMethodV( clazz, methodId, args );
 		va_end( args );
 		DeatchCurrentThread();
 	}

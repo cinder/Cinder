@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.libcinder.exampleapp" >
-
-    <uses-permission android:name="android.permission.INTERNET" />
+    package="org.libcinder.samples.cameratesterapp" >
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
@@ -13,10 +11,13 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light" >
+        android:theme="@style/AppTheme" >
         <activity
-            android:name=".SampleActivity"
+            android:name=".CameraTesterAppActivity"
             android:label="@string/app_name" >
+            <!-- Tell NativeActivity the name of or .so -->
+            <meta-data android:name="android.app.lib_name"
+                android:value="CameraTesterApp" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

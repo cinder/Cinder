@@ -105,7 +105,7 @@ public:
 	CI_CALL_STATIC_TYPE_METHOD_DECL( jdouble, Double )
 #undef CI_CALL_STATIC_TYPE_METHOD_DECL	
 
-	void CallStaticVoidMethod( jobject obj, jmethodID methodId, ... );
+	void CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... );
 
 	jobject 	NewGlobalRef( jobject obj );
 	void 		DeleteGlobalRef( jobject globalRef );
