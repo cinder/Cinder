@@ -874,10 +874,9 @@ void DeferredShadingAdvancedApp::setup()
 	}
 	
 	// Set up materials
-	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.1f ) )
-						  .colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
+	mMaterials.push_back( Material().colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
 						  .shininess( 300.0f ) ); // Sphere
-	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.5f ) )
+	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.18f ) )
 						  .colorDiffuse( ColorAf::gray( 0.5f ) ).colorSpecular( ColorAf::white() )
 						  .shininess( 500.0f ) ); // Floor
 	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
