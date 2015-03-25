@@ -1,7 +1,7 @@
 #version 330 core
 
-const float kFalloff	= 0.0;
-const float kInvSamples = -0.5 / 10.0;
+const float kFalloff	= 0.001;
+const float kInvSamples = -0.5 / 20.0;
 const float	kOffset		= 0.01;
 const float	kRadius		= 0.01;
 const float	kStrength	= 1.0;

@@ -3,9 +3,9 @@
 // Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
 
-const float	kBias		= 0.05;
+const float	kBias		= 0.02;
 const float	kDepthPlane	= 0.85;
-const float	kOpacity	= 0.7;
+const float	kOpacity	= 1.0;
 
 uniform float		uAspect;
 uniform sampler2D	uSampler;
@@ -24,11 +24,15 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 	float contrib	= 0.0;
 	vec4 color		= texture( uSampler, vertex.uv + offset );
 
-	iDepth = texture( uSamplerDepth, vertex.uv + offset ).r;
-	if ( iDepth < depth ) {
-		contrib = distance( iDepth, kDepthPlane ) / kDepthPlane;
+	if ( color.rgb == vec3( 0.0 ) ) {
+		contrib = 0.2;
 	} else {
-		contrib = 1.0;
+		iDepth = texture( uSamplerDepth, vertex.uv + offset ).r;
+		if ( iDepth < depth ) {
+			contrib = distance( iDepth, kDepthPlane ) / kDepthPlane;
+		} else {
+			contrib = 1.0;
+		}
 	}
 
 	influence += contrib;

@@ -181,7 +181,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgGBuffer->uniform( "uMaterialId", 1 );
 			gl::translate( vec3( 0.0f, mFloor, 0.0f ) );
 			gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
-			gl::scale( vec3( 20.0f ) );
+			gl::scale( vec3( 10.0f ) );
 			gl::draw( mMeshCircle );
 		}
 
@@ -428,7 +428,6 @@ void DeferredShadingAdvancedApp::draw()
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
 		mGlslProgDof->uniform( "uAspect",		mTextureFboPost[ pong ]->getAspectRatio() );
-		mGlslProgDof->uniform( "uNear",			mMayaCam.getCamera().getNearClip() );
 		mGlslProgDof->uniform( "uSampler",		0 );
 		mGlslProgDof->uniform( "uSamplerDepth", 1 );
 
@@ -877,8 +876,8 @@ void DeferredShadingAdvancedApp::setup()
 	// Set up camera
 	ivec2 windowSize = toPixels( getWindowSize() );
 	CameraPersp cam( windowSize.x, windowSize.y, 60.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( 1.505f, -6.017f, 7.129f ) );
-	cam.setCenterOfInterestPoint( vec3( -0.031f, -5.312f, 1.345f ) );
+	cam.setEyePoint( vec3( 2.664f, -6.484f, 5.939f ) );
+	cam.setCenterOfInterestPoint( vec3( 0.469f, -5.430f, 1.146f ) );
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
