@@ -291,8 +291,8 @@ void DeferredShadingAdvancedApp::draw()
 		gl::setMatricesWindow( mFboBloom->getSize(), false );
 
 		// Calculate bloom pixel size
-		float bloomAtt	= 1.5f;
-		vec2 bloomSize	= vec2( 1.0f ) / winSize;
+		float bloomAtt	= 1.0f;
+		vec2 bloomSize	= vec2( 1.0f ) / winSize * 5.0f;
 		bloomSize		*= vec2( mFboBloom->getSize() ) / winSize;
 
 		// Horizontal pass
@@ -690,8 +690,8 @@ void DeferredShadingAdvancedApp::resize()
 	// Texture format for depth buffer
 	gl::Texture2d::Format textureFormatDepth = gl::Texture2d::Format()
 		.internalFormat( GL_DEPTH_COMPONENT32F )
-		.magFilter( GL_NEAREST )
-		.minFilter( GL_NEAREST )
+		.magFilter( GL_LINEAR )
+		.minFilter( GL_LINEAR )
 		.wrap( GL_CLAMP_TO_EDGE )
 		.dataType( GL_FLOAT );
 
@@ -699,7 +699,13 @@ void DeferredShadingAdvancedApp::resize()
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboBloom[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormatColor );
+			mTextureFboBloom[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, 
+														   gl::Texture2d::Format()
+														   .internalFormat( GL_RGB8 )
+														   .magFilter( GL_LINEAR )
+														   .minFilter( GL_LINEAR )
+														   .wrap( GL_CLAMP_TO_EDGE )
+														   .dataType( GL_BYTE ) );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboBloom[ i ], 
 								  createRenderbufferFromTexture( mTextureFboBloom[ 0 ], 0, 0 ) );
 		}
