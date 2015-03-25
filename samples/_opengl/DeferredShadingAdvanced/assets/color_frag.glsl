@@ -1,6 +1,6 @@
 #version 330 core
 
-const float	kBlend			= 0.6;
+const float	kBlend			= 0.8;
 const float	kColorOffset	= 0.0015;
 const float	kContrast		= 0.5;
 const float	kMultiply		= 16.0;

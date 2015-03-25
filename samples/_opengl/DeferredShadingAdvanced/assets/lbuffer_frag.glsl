@@ -3,7 +3,8 @@
 const int MATERIAL_COUNT = 3;
 
 const float kShadowBias		= 0.865;
-const float	kShadowBlurSize = 0.007;
+const float	kShadowBlurSize = 0.005;
+const float kShadowOpacity	= 0.3;
 const float	kShadowSamples	= 4.0;
 
 const vec2 poissonDisk[ 16 ] = vec2[] (
@@ -149,7 +150,7 @@ void main( void )
 
 	oColor 				= Ia + att * ( Id + Is ) + Ie;
 	if ( uShadowEnabled ) {
-		oColor			*= shadow( position );
+		oColor			= oColor * ( 1.0 - kShadowOpacity ) + ( oColor * shadow( position ) * kShadowOpacity );
 	}
 	oColor				*= uLightIntensity;
 }

@@ -361,7 +361,7 @@ void DeferredShadingAdvancedApp::draw()
 		}
 
 		// Calculate blur pixel size
-		vec2 ssaoBlurSize	= vec2( 1.0f ) / winSize * 2.0f;
+		vec2 ssaoBlurSize	= vec2( 1.0f ) / winSize;
 		ssaoBlurSize		*= vec2( mFboSsao->getSize() ) / winSize;
 
 		// Horizontal blur pass
@@ -432,6 +432,7 @@ void DeferredShadingAdvancedApp::draw()
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
 		mGlslProgDof->uniform( "uAspect",		mTextureFboPost[ pong ]->getAspectRatio() );
+		mGlslProgDof->uniform( "uNear",			mMayaCam.getCamera().getNearClip() );
 		mGlslProgDof->uniform( "uSampler",		0 );
 		mGlslProgDof->uniform( "uSamplerDepth", 1 );
 

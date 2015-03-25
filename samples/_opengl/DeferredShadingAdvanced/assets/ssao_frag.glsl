@@ -1,14 +1,14 @@
 #version 330 core
 
-const float kFalloff	= 0.001;
-const float kInvSamples = -0.5 / 20.0;
-const float	kOffset		= 0.05;
-const float	kRadius		= 0.05;
+const float kFalloff	= 0.0;
+const float kInvSamples = -0.5 / 10.0;
+const float	kOffset		= 0.01;
+const float	kRadius		= 0.01;
 const float	kStrength	= 1.0;
 
-uniform sampler2D	uSamplerDepth;
-uniform sampler2D	uSamplerNoise;
-uniform sampler2D	uSamplerNormal;
+uniform sampler2D uSamplerDepth;
+uniform sampler2D uSamplerNoise;
+uniform sampler2D uSamplerNormal;
 
 in Vertex
 {
@@ -57,7 +57,7 @@ void main( void )
 		R			= kRadius * reflect( unitSphere[ i ], fresnel );
 		vec2 uv		= vertex.uv + sign( dot( R, N ) ) * R.xy;
 		d			= depth - texture( uSamplerDepth, uv ).x;
-		bl			+= step( kFalloff, d ) * ( 1.0 - dot( N, N ) ) * ( 1.0 - smoothstep( kFalloff, kStrength, d ) );
+		bl			+= step( kFalloff, d ) * ( 1.0 - dot( texture( uSamplerNoise, vertex.uv ).xyz, N ) ) * ( 1.0 - smoothstep( kFalloff, kStrength, d ) );
     }
 
     oColor			= vec4( vec3( 1.0 + bl * kInvSamples ), 1.0 );
