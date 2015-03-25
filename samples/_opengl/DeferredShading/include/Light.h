@@ -9,6 +9,14 @@ class Light
 public:
 	Light();
 	
+	Light&				colorAmbient( const ci::ColorAf& c );
+	Light&				colorDiffuse( const ci::ColorAf& c );
+	Light&				colorSpecular( const ci::ColorAf& c );
+	Light&				intensity( float v );
+	Light&				radius( float v );
+	Light&				volume( float v );
+	Light&				position( const ci::vec3& v );
+
 	const ci::ColorAf&	getColorAmbient() const;
 	const ci::ColorAf&	getColorDiffuse() const;
 	const ci::ColorAf&	getColorSpecular() const;
@@ -17,13 +25,13 @@ public:
 	float				getRadius() const;
 	float				getVolume() const;
 
-	Light&				setColorAmbient( const ci::ColorAf& c );
-	Light&				setColorDiffuse( const ci::ColorAf& c );
-	Light&				setColorSpecular( const ci::ColorAf& c );
-	Light&				setIntensity( float v );
-	Light&				setRadius( float v );
-	Light&				setVolume( float v );
-	Light&				setPosition( const ci::vec3& v );
+	void				setColorAmbient( const ci::ColorAf& c );
+	void				setColorDiffuse( const ci::ColorAf& c );
+	void				setColorSpecular( const ci::ColorAf& c );
+	void				setIntensity( float v );
+	void				setRadius( float v );
+	void				setVolume( float v );
+	void				setPosition( const ci::vec3& v );
 protected:
 	ci::ColorAf			mColorAmbient;
 	ci::ColorAf			mColorDiffuse;

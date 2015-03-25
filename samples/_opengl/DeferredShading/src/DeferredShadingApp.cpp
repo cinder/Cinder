@@ -444,18 +444,12 @@ void DeferredShadingApp::setup()
 	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
-	mLights.push_back( Light()
-					  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .setIntensity( 0.8f )
-					  .setPosition( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .setRadius( 0.1f )
-					  .setVolume( 15.0f ) );
+	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+					  .intensity( 0.8f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
+					  .radius( 0.1f ).volume( 15.0f ) );
 	for ( size_t i = 0; i < 8; ++i ) {
-		mLights.push_back( Light()
-						  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-						  .setIntensity( 0.6f )
-						  .setRadius( 0.05f )
-						  .setVolume( 5.0f ) );
+		mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+						  .intensity( 0.6f ).radius( 0.05f ).volume( 5.0f ) );
 	}
 
 	// Set up camera
@@ -467,14 +461,14 @@ void DeferredShadingApp::setup()
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
-	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
-	mParams->addParam( "Debug mode",		&mDebugMode ).key( "d" );
-	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
-	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
+	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
+	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
+	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
+	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
+	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
-	mParams->addParam( "FXAA",				&mEnabledFxaa );
-	mParams->addParam( "Shadows",			&mEnabledShadow );
+	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
+	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
 
 	// Call resize to create FBOs
 	resize();

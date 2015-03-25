@@ -54,9 +54,7 @@ struct Material
 	vec4	emissive;
 	vec4	specular;
 	float	shininess;
-	float	twoSided;
-	uint 	pad0; // std140
-	uint 	pad1; // std140
+	vec3	pad;
 };
 
 layout (std140) uniform Materials

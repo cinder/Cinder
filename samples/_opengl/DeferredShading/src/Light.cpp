@@ -5,11 +5,53 @@ using namespace std;
 
 Light::Light() 
 : mColorAmbient( Colorf::black() ), 
-mColorDiffuse( Colorf::white() ), mColorSpecular( Colorf::white() ),
-mIntensity( 1.0f ), mPosition( vec3( 0.0f ) ), mRadius( 1.0f ),
+mColorDiffuse( Colorf::white() ), mColorSpecular( Colorf::white() ), 
+mIntensity( 1.0f ), mPosition( vec3( 0.0f ) ), mRadius( 1.0f ), 
 mVolume( 10.0f )
 {
 	setPosition( vec3( 0.0f ) );
+}
+
+Light& Light::colorAmbient( const ColorAf& c )
+{
+	mColorAmbient = c;
+	return *this;
+}
+
+Light& Light::colorDiffuse( const ColorAf& c )
+{
+	mColorDiffuse = c;
+	return *this;
+}
+
+Light& Light::colorSpecular( const ColorAf& c )
+{
+	mColorSpecular = c;
+	return *this;
+}
+
+Light& Light::position( const vec3& v )
+{
+	mPosition = v;
+	return *this;
+}
+
+Light& Light::intensity( float v )
+{
+	mIntensity = v;
+	return *this;
+}
+
+Light& Light::radius( float v )
+{
+	mRadius = v;
+	return *this;
+}
+
+Light& Light::volume( float v )
+{
+	mVolume = v;
+	return *this;
 }
 
 const ColorAf& Light::getColorAmbient() const
@@ -47,44 +89,37 @@ float Light::getVolume() const
 	return mVolume;
 }
 
-Light& Light::setColorAmbient( const ColorAf& c )
+void Light::setColorAmbient( const ColorAf& c )
 {
 	mColorAmbient = c;
-	return *this;
 }
 
-Light& Light::setColorDiffuse( const ColorAf& c )
+void Light::setColorDiffuse( const ColorAf& c )
 {
 	mColorDiffuse = c;
-	return *this;
 }
 
-Light& Light::setColorSpecular( const ColorAf& c )
+void Light::setColorSpecular( const ColorAf& c )
 {
 	mColorSpecular = c;
-	return *this;
 }
 
-Light& Light::setPosition( const vec3& v )
+void Light::setPosition( const vec3& v )
 {
 	mPosition = v;
-	return *this;
 }
 
-Light& Light::setIntensity( float v )
+void Light::setIntensity( float v )
 {
 	mIntensity = v;
-	return *this;
 }
 
-Light& Light::setRadius( float v )
+void Light::setRadius( float v )
 {
 	mRadius = v;
-	return *this;
 }
 
-Light& Light::setVolume( float v )
+void Light::setVolume( float v )
 {
 	mVolume = v;
-	return *this;
 }

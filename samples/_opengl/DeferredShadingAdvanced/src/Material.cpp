@@ -5,43 +5,37 @@ using namespace ci;
 Material::Material()
 : mColorAmbient( ColorAf::gray( 0.2f ) ), mColorDiffuse( ColorAf::gray( 0.8f ) ), 
 mColorEmission( ColorAf::black() ), mColorSpecular( ColorAf::black() ), 
-mShininess( 0.0f ), mTwoSided( 0.8f ), mPad0( 0 ), mPad1( 0 )
+mShininess( 0.0f ), mPad( vec3( 0.0f ) )
 {
 }
 
-Material& Material::setColorAmbient( const ci::ColorAf& c )
+Material& Material::colorAmbient( const ci::ColorAf& c )
 {
 	mColorAmbient = c;
 	return *this;
 }
 
-Material& Material::setColorDiffuse( const ci::ColorAf& c )
+Material& Material::colorDiffuse( const ci::ColorAf& c )
 {
 	mColorDiffuse = c;
 	return *this;
 }
 
-Material& Material::setColorEmission( const ci::ColorAf& c )
+Material& Material::colorEmission( const ci::ColorAf& c )
 {
 	mColorEmission = c;
 	return *this;
 }
 
-Material& Material::setColorSpecular( const ci::ColorAf& c )
+Material& Material::colorSpecular( const ci::ColorAf& c )
 {
 	mColorSpecular = c;
 	return *this;
 }
 
-Material& Material::setShininess( float v )
+Material& Material::shininess( float v )
 {
 	mShininess = v;
-	return *this;
-}
-
-Material& Material::setTwoSided( float v )
-{
-	mTwoSided = v;
 	return *this;
 }
 
@@ -70,7 +64,27 @@ float Material::getShininess() const
 	return mShininess;
 }
 
-float Material::getTwoSided() const
+void Material::setColorAmbient( const ci::ColorAf& c )
 {
-	return mTwoSided;
+	mColorAmbient = c;
+}
+
+void Material::setColorDiffuse( const ci::ColorAf& c )
+{
+	mColorDiffuse = c;
+}
+
+void Material::setColorEmission( const ci::ColorAf& c )
+{
+	mColorEmission = c;
+}
+
+void Material::setColorSpecular( const ci::ColorAf& c )
+{
+	mColorSpecular = c;
+}
+
+void Material::setShininess( float v )
+{
+	mShininess = v;
 }

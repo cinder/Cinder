@@ -835,47 +835,31 @@ void DeferredShadingAdvancedApp::setup()
 
 	// Set up lights
 	for ( size_t i = 0; i < 8; ++i ) {
-		mLights.push_back( Light()
-						  .setColorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) )
-						  .setIntensity( 1.2f )
-						  .setRadius( 0.1f )
-						  .setVolume( 5.0f ) );
+		mLights.push_back( Light().colorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) )
+						  .intensity( 1.2f ).radius( 0.1f ).volume( 5.0f ) );
 	}
-	mLights.push_back( Light()
-					  .setColorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .setIntensity( 1.0f )
-					  .setPosition( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .setRadius( 0.125f )
-					  .setVolume( 15.0f ) );
+	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+					  .intensity( 1.0f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
+					  .radius( 0.125f ).volume( 15.0f ) );
 	float d	= ( (float)M_PI * 2.0f ) / 5.0f;
 	float r = 9.0f;
 	float t = 0.0f;
 	for ( size_t i = 0; i < 5; ++i, t += d ) {
 		vec3 p( glm::cos( t ) * r, mFloor + 0.5f, glm::sin( t ) * r );
-		mLights.push_back( Light()
-						  .setColorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
-						  .setIntensity( 1.0f )
-						  .setPosition( p )
-						  .setRadius( 0.1f )
-						  .setVolume( 3.0f ) );
+		mLights.push_back( Light().colorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
+						  .intensity( 1.0f ).position( p ).radius( 0.1f ).volume( 3.0f ) );
 	}
 	
 	// Set up materials
-	mMaterials.push_back( Material()
-						 .setColorAmbient( ColorAf::black() )
-						 .setColorDiffuse( ColorAf::white() )
-						 .setColorSpecular( ColorAf::white() )
-						 .setShininess( 300.0f ) ); // Sphere
-	mMaterials.push_back( Material()
-						 .setColorAmbient( ColorAf::black() )
-						 .setColorDiffuse( ColorAf::gray( 0.5f ) )
-						 .setColorSpecular( ColorAf::white() )
-						 .setShininess( 500.0f ) ); // Floor
-	mMaterials.push_back( Material()
-						 .setColorAmbient( ColorAf::black() )
-						 .setColorDiffuse( ColorAf::black() )
-						 .setColorEmission( ColorAf::white() )
-						 .setShininess( 100.0f ) ); // Light
+	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+						  .colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
+						  .shininess( 300.0f ) ); // Sphere
+	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+						  .colorDiffuse( ColorAf::gray( 0.5f ) ).colorSpecular( ColorAf::white() )
+						  .shininess( 500.0f ) ); // Floor
+	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+						  .colorDiffuse( ColorAf::black() ).colorEmission( ColorAf::white() )
+						  .shininess( 100.0f ) ); // Light
 	mUboMaterial = gl::Ubo::create( sizeof( Material ) * mMaterials.size(), (GLvoid*)&mMaterials[ 0 ] );
 	gl::context()->bindBufferBase( mUboMaterial->getTarget(), 0, mUboMaterial );
 
