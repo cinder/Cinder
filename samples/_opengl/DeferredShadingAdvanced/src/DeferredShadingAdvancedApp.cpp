@@ -876,9 +876,9 @@ void DeferredShadingAdvancedApp::setup()
 
 	// Set up camera
 	ivec2 windowSize = toPixels( getWindowSize() );
-	CameraPersp cam( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
-	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
+	CameraPersp cam( windowSize.x, windowSize.y, 60.0f, 1.0f, 100.0f );
+	cam.setEyePoint( vec3( 1.505f, -6.017f, 7.129f ) );
+	cam.setCenterOfInterestPoint( vec3( -0.031f, -5.312f, 1.345f ) );
 	mMayaCam.setCurrentCam( cam );
 
 	// Set up parameters
