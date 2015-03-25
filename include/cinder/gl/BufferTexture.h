@@ -22,7 +22,6 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
 #include "cinder/gl/BufferObj.h"
 
 namespace cinder { namespace gl {

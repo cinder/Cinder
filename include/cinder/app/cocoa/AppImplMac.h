@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h" // necessary to give GLee the jump on Cocoa.h // TODO: still necessary?
+#include "cinder/gl/platform.h" // necessary to give glload the jump on Cocoa.h
 
 #import <Cocoa/Cocoa.h>
 

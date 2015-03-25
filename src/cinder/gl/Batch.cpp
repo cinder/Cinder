@@ -25,7 +25,8 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/VboMesh.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/scoped.h"
+
 #include "cinder/Log.h"
 
 namespace cinder { namespace gl {

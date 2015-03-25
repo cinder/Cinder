@@ -34,6 +34,7 @@
 #else
 	#import <UIKit/UIKit.h>
 	#import <CoreText/CoreText.h>
+	#import <CoreVideo/CVPixelBuffer.h>
 #endif
 #import <Foundation/NSData.h>
 
@@ -628,6 +629,33 @@ void ImageTargetCgImage::finalize()
 	return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+{
+	::CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
+	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
+	int32_t rowBytes = (int32_t)::CVPixelBufferGetBytesPerRow( pixelBufferRef );
+	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
+	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
+	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
+	SurfaceChannelOrder sco;
+	if( type == kCVPixelFormatType_24RGB )
+		sco = SurfaceChannelOrder::RGB;
+	else if( type == kCVPixelFormatType_32ARGB )
+		sco = SurfaceChannelOrder::ARGB;
+	else if( type == kCVPixelFormatType_24BGR )
+		sco = SurfaceChannelOrder::BGR;
+	else if( type == kCVPixelFormatType_32BGRA )
+		sco = SurfaceChannelOrder::BGRA;
+	Surface8u *newSurface = new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s )
+		{	::CVPixelBufferUnlockBaseAddress( pixelBufferRef, 0 );
+			::CVBufferRelease( pixelBufferRef );
+			delete s;
+		}
+		);
+}
 
 } } // namespace cinder::cocoa
 

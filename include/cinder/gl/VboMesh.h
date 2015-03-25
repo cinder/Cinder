@@ -22,14 +22,16 @@
 
 #pragma once
 
+#include "cinder/gl/Vao.h"
+#include "cinder/gl/Vbo.h"
+#include "cinder/gl/GlslProg.h"
+
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 #include "cinder/TriMesh.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/geomIo.h"
+#include "cinder/GeomIo.h"
 
-#include <ostream>
+#include <iosfwd>
 #include <vector>
 
 namespace cinder { namespace gl {

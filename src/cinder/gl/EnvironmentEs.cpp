@@ -22,8 +22,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/gl/platform.h"
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 
 #if defined( CINDER_GL_ES )

@@ -24,7 +24,7 @@
 #include "cinder/app/Renderer.h"
 
 #if !defined( CINDER_WINRT)
-	#include "cinder/gl/gl.h"
+	#include "cinder/gl/platform.h"
 #endif
 
 #include "cinder/app/AppBase.h"

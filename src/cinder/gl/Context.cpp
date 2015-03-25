@@ -21,7 +21,6 @@
 */
 
 #include "cinder/gl/Context.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Shader.h"
@@ -31,6 +30,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 

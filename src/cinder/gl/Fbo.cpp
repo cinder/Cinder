@@ -32,13 +32,14 @@
 
 // Both ANGLE and iOS support OES_depth_texture (ANGLE_depth_texture) so we support it everywhere
 
-#include "cinder/gl/gl.h" // must be first
+#include "cinder/gl/platform.h" // must be first
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/scoped.h"
+#include "cinder/gl/ConstantStrings.h"
 #include "cinder/Log.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/ConstantStrings.h"
 #include "cinder/ip/Flip.h"
 
 using namespace std;

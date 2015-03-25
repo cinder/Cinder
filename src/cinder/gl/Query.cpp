@@ -34,8 +34,6 @@ namespace cinder { namespace gl {
 Query::Query( GLuint target )
 	: mTarget( target ), mId( 0 ) 
 {
-	CI_ASSERT_MSG( context(), "No currently valid gl context." );
-	
 	glGenQueries( 1, &mId );
 }
 

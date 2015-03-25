@@ -22,7 +22,7 @@
 
 // Concrete implementation of VAO for desktop GL
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #if ! defined( CINDER_GL_ES_2 )
 #include "cinder/gl/Vao.h"

@@ -26,8 +26,9 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/Matrix44.h"
+
 #include <map>
 #include <iosfwd>
 

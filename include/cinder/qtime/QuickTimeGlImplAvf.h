@@ -26,7 +26,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/qtime/QuickTimeImplAvf.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 // Forward declarations of CoreVideo types
 typedef struct __CVBuffer *CVBufferRef;

@@ -24,7 +24,6 @@
 // This file is only meant to be included by QuickTime.h
 #pragma once
 
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/DataSource.h"
 #include "cinder/Display.h"
