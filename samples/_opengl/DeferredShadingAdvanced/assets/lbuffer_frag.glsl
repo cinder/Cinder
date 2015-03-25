@@ -2,7 +2,7 @@
 
 const int MATERIAL_COUNT = 3;
 
-const float kShadowBias		= 0.865;
+const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
 const float kShadowOpacity	= 0.3;
 const float	kShadowSamples	= 4.0;
@@ -102,10 +102,10 @@ float shadow( in vec4 position )
 
 vec3 decodeNormal( vec2 enc )
 {
-    vec4 n	= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
-    float l = dot( n.xyz, -n.xyw );
-    n.z		= l;
-    n.xy	*= sqrt( l );
+    vec4 n				= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
+    float l				= dot( n.xyz, -n.xyw );
+    n.z					= l;
+    n.xy				*= sqrt( l );
     return n.xyz * 2.0 + vec3( 0.0, 0.0, -1.0 );
 }
 

@@ -3,7 +3,7 @@
 const float	kBlend			= 0.8;
 const float	kColorOffset	= 0.0015;
 const float	kContrast		= 0.5;
-const float	kMultiply		= 16.0;
+const float	kMultiply		= 24.0;
 const vec4	kSaturation		= vec4( 0.992, 1.0, 0.953, 1.0 );
 
 uniform sampler2D	uSampler;

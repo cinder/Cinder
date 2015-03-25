@@ -35,6 +35,7 @@ public:
 private:
 	ci::MayaCamUI				mMayaCam;
 
+	Light						mCameraLight;
 	std::vector<Light>			mLights;
 	std::vector<Material>		mMaterials;
 
@@ -223,10 +224,6 @@ void DeferredShadingAdvancedApp::draw()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
-		gl::enableDepthRead( true );
-		gl::enableDepthWrite( true );
-		gl::ScopedState scopedState( GL_DEPTH_TEST, false );
-		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
 	
@@ -249,24 +246,39 @@ void DeferredShadingAdvancedApp::draw()
 		mGlslProgLBuffer->uniform( "uShadowEnabled",		mEnabledShadow );
 		mGlslProgLBuffer->uniform( "uShadowMatrix",			shadowMatrix );
 		mGlslProgLBuffer->uniform( "uViewMatrixInverse",	mMayaCam.getCamera().getInverseViewMatrix() );
-		
+		mGlslProgLBuffer->uniform( "uWindowSize",			vec2( mFboLBuffer->getSize() ) );
 		mGlslProgLBuffer->uniformBlock( 0, 0 );
-
-		for ( const Light& light : mLights ) {
-			mGlslProgLBuffer->uniform( "uLightColorAmbient",	light.getColorAmbient() );
-			mGlslProgLBuffer->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
-			mGlslProgLBuffer->uniform( "uLightColorSpecular",	light.getColorSpecular() );
-			mGlslProgLBuffer->uniform( "uLightPosition",
-									  vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
-			mGlslProgLBuffer->uniform( "uLightIntensity",		light.getIntensity() );
-			mGlslProgLBuffer->uniform( "uLightRadius",			light.getVolume() );
-			mGlslProgLBuffer->uniform( "uWindowSize",			vec2( getWindowSize() ) );
-
-			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( light.getPosition() );
-			gl::scale( vec3( light.getVolume() ) );
-			gl::draw( mMeshCube );
+		{
+			gl::enableDepthRead( true );
+			gl::enableDepthWrite( true );
+			gl::ScopedState scopedState( GL_DEPTH_TEST, false );
+			gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
+		
+			for ( const Light& light : mLights ) {
+				mGlslProgLBuffer->uniform( "uLightColorAmbient",	light.getColorAmbient() );
+				mGlslProgLBuffer->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
+				mGlslProgLBuffer->uniform( "uLightColorSpecular",	light.getColorSpecular() );
+				mGlslProgLBuffer->uniform( "uLightPosition",
+										  vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+				mGlslProgLBuffer->uniform( "uLightIntensity",		light.getIntensity() );
+				mGlslProgLBuffer->uniform( "uLightRadius",			light.getVolume() );
+				
+				gl::ScopedModelMatrix scopedModelMatrix;
+				gl::translate( light.getPosition() );
+				gl::scale( vec3( light.getVolume() ) );
+				gl::draw( mMeshCube );
+			}
 		}
+
+		// Draw camera light as full screen rectangle to reduce geometry
+		gl::setMatricesWindow( mFboLBuffer->getSize() );
+		mGlslProgLBuffer->uniform( "uLightColorAmbient",	mCameraLight.getColorAmbient() );
+		mGlslProgLBuffer->uniform( "uLightColorDiffuse",	mCameraLight.getColorDiffuse() );
+		mGlslProgLBuffer->uniform( "uLightColorSpecular",	mCameraLight.getColorSpecular() );
+		mGlslProgLBuffer->uniform( "uLightPosition",		mCameraLight.getPosition() );
+		mGlslProgLBuffer->uniform( "uLightIntensity",		mCameraLight.getIntensity() );
+		mGlslProgLBuffer->uniform( "uLightRadius",			mCameraLight.getRadius() );
+		gl::drawSolidRect( mFboLBuffer->getBounds() );
 	}
 
 	////////////////////////////////////////////////////////////////////////////////////////////
@@ -472,6 +484,8 @@ void DeferredShadingAdvancedApp::draw()
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
 
+	size_t pong = ( mFboPostIndex + 1 ) % 2;
+
 	if ( mDrawDebug ) {
 		gl::ScopedMatrices scopedMatrices;
 		gl::clear( Colorf::gray( 0.4f ) );
@@ -537,7 +551,7 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboGBuffer[ 1 ], 0 );
 			mGlslProgDebugMaterial->uniform( "uSampler", 0 );
 			mGlslProgDebugMaterial->uniformBlock( 0, 0 );
-			for ( int32_t i = 0; i < 7; ++i, ++index ) {
+			for ( int32_t i = 0; i < 6; ++i, ++index ) {
 				mGlslProgDebugMaterial->uniform( "uMode", i );
 				vec2 pos = calcPosition( index );
 				gl::drawSolidRect( Rectf( pos, pos + sz ) );
@@ -551,10 +565,18 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
 			vec2 pos = calcPosition( index );
 			gl::drawSolidRect( Rectf( pos, pos + sz ) );
+			++index;
+		}
+
+		// Post-processed
+		{
+			mTextureFboPost[ pong ]->setTopDown( true );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboPost[ pong ], 0 );
+			vec2 pos = calcPosition( index );
+			gl::drawSolidRect( Rectf( pos, pos + sz ) );
+
 		}
 	} else {
-		size_t pong = ( mFboPostIndex + 1 ) % 2;
-
 		gl::ScopedMatrices scopedMatrices;
 		gl::clear();
 		gl::setMatricesWindow( getWindowSize() );
@@ -598,9 +620,9 @@ void DeferredShadingAdvancedApp::draw()
 				gl::draw( mMeshSphereLow );
 			}
 		}
-
-		mFboPostIndex = pong;
 	}
+
+	mFboPostIndex = pong;
 
 	mParams->draw();
 }
@@ -681,11 +703,11 @@ void DeferredShadingAdvancedApp::resize()
 
 	// Texture format for color buffers
 	gl::Texture2d::Format textureFormatColor = gl::Texture2d::Format()
-		.internalFormat( GL_RGB8 )
+		.internalFormat( GL_RGB10_A2 )
 		.magFilter( GL_NEAREST )
 		.minFilter( GL_NEAREST )
 		.wrap( GL_CLAMP_TO_EDGE )
-		.dataType( GL_BYTE );
+		.dataType( GL_FLOAT );
 
 	// Texture format for depth buffer
 	gl::Texture2d::Format textureFormatDepth = gl::Texture2d::Format()
@@ -834,13 +856,14 @@ void DeferredShadingAdvancedApp::setup()
 	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
+	mCameraLight = Light().colorAmbient( ColorAf::gray( 0.3f ) ).colorSpecular( ColorAf::gray( 0.1f ) )
+		.radius( mMayaCam.getCamera().getFarClip() * 0.5f ).intensity( 0.5f );
 	for ( size_t i = 0; i < 8; ++i ) {
-		mLights.push_back( Light().colorDiffuse( ColorAf( 1.0f, 0.7f, 0.8f, 1.0f ) )
-						  .intensity( 1.2f ).radius( 0.1f ).volume( 5.0f ) );
+		float t = (float)i / 8.0f;
+		ColorAf c( 0.91f + t * 0.1f, 0.5f + t * 0.5f, 0.9f - t * 0.25f, 1.0f );
+		mLights.push_back( Light().colorDiffuse( c )
+						  .intensity( 1.0f ).radius( 0.1f ).volume( 5.0f ) );
 	}
-	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .intensity( 1.0f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .radius( 0.125f ).volume( 15.0f ) );
 	float d	= ( (float)M_PI * 2.0f ) / 5.0f;
 	float r = 9.0f;
 	float t = 0.0f;
@@ -851,10 +874,10 @@ void DeferredShadingAdvancedApp::setup()
 	}
 	
 	// Set up materials
-	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.1f ) )
 						  .colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
 						  .shininess( 300.0f ) ); // Sphere
-	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.5f ) )
 						  .colorDiffuse( ColorAf::gray( 0.5f ) ).colorSpecular( ColorAf::white() )
 						  .shininess( 500.0f ) ); // Floor
 	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
@@ -918,6 +941,7 @@ void DeferredShadingAdvancedApp::update()
 	}
 	
 	// Update light positions
+	mCameraLight.setPosition( mMayaCam.getCamera().getEyePoint() );
 	if ( mLights.size() >= 8 ) {
 		size_t numLights	= 8;
 		float t				= e;
