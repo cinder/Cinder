@@ -149,7 +149,19 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		void				setLabel( const std::string &label ) { mLabel = label; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
-		
+        
+        //! Returns the fs::path for the vertex shader. Returns an empty fs::path if it isn't present.
+        const fs::path&	getVertexPath() const { return mVertexShaderPath; }
+        //! Returns the fs::path for the fragment shader. Returns an empty fs::path if it isn't present.
+        const fs::path&	getFragmentPath() const { return mFragmentShaderPath; }
+#if ! defined( CINDER_GL_ES )
+        //! Returns the fs::path for the geometry shader. Returns an empty fs::path if it isn't present.
+        const fs::path&	getGeometryPath() const { return mGeometryShaderPath; }
+        //! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
+        const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
+        //! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
+        const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
+#endif
 	  protected:
 		void			setShaderSource( const DataSourceRef &dataSource, std::string *shaderSourceDest, fs::path *shaderPathDest );
 		void			setShaderSource( const std::string &source, std::string *shaderSourceDest, fs::path *shaderPathDest );
