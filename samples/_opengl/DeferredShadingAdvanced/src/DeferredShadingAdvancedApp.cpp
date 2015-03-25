@@ -1,8 +1,5 @@
 #include "cinder/app/App.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Ubo.h"
-#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Json.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/params/Params.h"
@@ -104,7 +101,6 @@ private:
 	void						screenShot();
 };
 
-#include "cinder/gl/Context.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Rand.h"
