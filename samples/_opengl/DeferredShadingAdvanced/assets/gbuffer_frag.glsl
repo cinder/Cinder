@@ -9,9 +9,9 @@ in Vertex
 	vec2 	uv;
 } vertex;
 
-out vec3	oAlbedo;
-out int		oMaterial;
-out vec2	oNormal;
+out vec4	oAlbedo;
+out ivec4	oMaterial;
+out vec4	oNormal;
 
 vec2 encodeNormal( vec3 n )
 {
@@ -22,7 +22,7 @@ vec2 encodeNormal( vec3 n )
 
 void main( void )
 {
-	oAlbedo 	= vertex.color;
-	oMaterial	= uMaterialId;
-	oNormal		= encodeNormal( vertex.normal );
+	oAlbedo 	= vec4( vertex.color, 1.0 );
+	oMaterial	= ivec4( uMaterialId, 0, 0, 1 );
+	oNormal		= vec4( encodeNormal( vertex.normal ), 0.0, 1.0 );
 }
