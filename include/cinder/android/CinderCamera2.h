@@ -34,6 +34,10 @@ public:
 	virtual ~CinderCamera2();
 
 	ci::Surface			getSurface();
+
+private:
+	static void 		cacheJni();
+	static void 		destroyJni();	
 };
 
 }} // namespace cinder::android

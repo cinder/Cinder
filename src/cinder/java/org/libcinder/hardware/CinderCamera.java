@@ -9,11 +9,14 @@ import android.graphics.SurfaceTexture;
 
 import java.util.concurrent.locks.ReentrantLock;
 
+/** \class CinderCamera
+ *
+ */
 public class CinderCamera implements Camera.PreviewCallback {
     private SurfaceTexture mDummyTexture = null;
 
     private int mActiveCameraId = -1;
-    private Camera mActiveCamera = null;
+    private Camera mCamera = null;
 
     private int mFrontCameraId = -1;
     private int mBackCameraId = -1;
@@ -47,21 +50,21 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     public void startCamera() {
-        // Bail if we don't have a valid camera id or mActiveCamera isn't null
-        if ((-1 == mActiveCameraId) || (null != mActiveCamera)) {
+        // Bail if we don't have a valid camera id or mCamera isn't null
+        if ((-1 == mActiveCameraId) || (null != mCamera)) {
             return;
         }
 
         try {
-            mActiveCamera = Camera.open(mActiveCameraId);
+            mCamera = Camera.open(mActiveCameraId);
 
-            Camera.Parameters params = mActiveCamera.getParameters();
+            Camera.Parameters params = mCamera.getParameters();
             mWidth = params.getPreviewSize().width;
             mHeight = params.getPreviewSize().height;
 
-            mActiveCamera.setPreviewTexture(mDummyTexture);
-            mActiveCamera.setPreviewCallback(this);
-            mActiveCamera.startPreview();
+            mCamera.setPreviewTexture(mDummyTexture);
+            mCamera.setPreviewCallback(this);
+            mCamera.startPreview();
         }
         catch(Exception e ) {
             Log.e(Platform.TAG, "CinderCamera.startCamera failed: " + e);
@@ -70,12 +73,12 @@ public class CinderCamera implements Camera.PreviewCallback {
 
     public void stopCamera() {
         try {
-            if (null != mActiveCamera) {
-                mActiveCamera.setPreviewTexture(null);
-                mActiveCamera.setPreviewCallback(null);
-                mActiveCamera.stopPreview();
-                mActiveCamera.release();
-                mActiveCamera = null;
+            if (null != mCamera) {
+                mCamera.setPreviewTexture(null);
+                mCamera.setPreviewCallback(null);
+                mCamera.stopPreview();
+                mCamera.release();
+                mCamera = null;
             }
         }
         catch(Exception e ) {
@@ -117,21 +120,12 @@ public class CinderCamera implements Camera.PreviewCallback {
 
     @Override
     public void onPreviewFrame(byte[] data, Camera camera) {
-        //Camera.Parameters params = camera.getParameters();
-        //int w = params.getPreviewSize().width;
-        //int h = params.getPreviewSize().height;
-        //Log.i(Platform.TAG, "onPreviewFrame: " + w + "x" + h + ", numBytes: " + data.length);
-
-        //Log.i(Platform.TAG, "onPreviewFrame");
         privateLockPixels();
-
         try {
-            //Camera.Parameters params = camera.getParameters();
             mPixels = data;
         }
         finally {
             privateUnlockPixels();
-            //Log.i(Platform.TAG, "onPreviewFrame");
         }
     }
 

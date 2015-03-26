@@ -33,6 +33,16 @@ CinderCamera2::~CinderCamera2()
 {
 }
 
+void CinderCamera2::cacheJni()
+{
+
+}
+
+void CinderCamera2::destroyJni()
+{
+	
+}
+
 ci::Surface CinderCamera2::getSurface()
 {
 	ci::Surface result;

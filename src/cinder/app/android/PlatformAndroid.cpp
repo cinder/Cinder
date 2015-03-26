@@ -30,7 +30,12 @@
 
 #include "cinder/android/JniHelper.h"
 #include "cinder/android/CinderCamera.h"
+#if __ANDROID_API__ >= 21
+  #include "cinder/android/CinderCamera2.h"
+#endif
 #include "cinder/android/UrlLoader.h"
+
+#include <android/api-level.h>
 
 namespace cinder { namespace app {
 
@@ -41,6 +46,9 @@ PlatformAndroid::PlatformAndroid()
 	ci::android::JniHelper::initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
 	ci::android::UrlLoader::cacheJni();
 	ci::android::CinderCamera::cacheJni();
+#if __ANDROID_API__ >= 21
+	ci::android::CinderCamera2::cacheJni();
+#endif	
 
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();

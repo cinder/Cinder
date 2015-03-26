@@ -53,7 +53,6 @@ private:
 
 	static jclass		sUrlLoaderClass;
 	static jmethodID	sLoadUrlMethodId;
-	static jmethodID 	s
 
 	std::string 		mUrl;
 	int 				mResponseCode = -1;
