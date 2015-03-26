@@ -15,11 +15,12 @@
 class DeferredShadingApp : public ci::app::App
 {
 public:
+	DeferredShadingApp();
+
 	void						draw() override;
 	void						mouseDown( ci::app::MouseEvent event ) override;
 	void						mouseDrag( ci::app::MouseEvent event ) override;
 	void						resize() override;
-	void						setup() override;
 	void						update() override;
 private:
 	ci::MayaCamUI				mMayaCam;
@@ -70,6 +71,83 @@ private:
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+DeferredShadingApp::DeferredShadingApp()
+{
+	gl::enableVerticalSync();
+	
+	// Shortcut for shader loading and error handling
+	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
+	{
+		gl::GlslProgRef glslProg;
+		try {
+			glslProg = gl::GlslProg::create( vertex, fragment );
+		} catch ( gl::GlslProgCompileExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( gl::GlslNullProgramExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( ... ) {
+			console() << name << ": Unknown GLSL Error" << endl;
+			quit();
+		}
+		return glslProg;
+	};
+
+	// Load shaders
+	DataSourceRef gBufferVert	= loadAsset( "gbuffer_vert.glsl" );
+	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
+	mGlslProgDebugGbuffer		= loadGlslProg( "Debug G-Buffer",	passThrough,							loadAsset( "debug_gbuffer_frag.glsl" ) );
+	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
+	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			gBufferVert,							loadAsset( "gbuffer_frag.glsl" ) );
+	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
+	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
+	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
+	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
+	
+	// Set default values for all properties
+	mDebugMode		= false;
+	mEnabledFxaa	= true;
+	mEnabledShadow	= true;
+	mFloor			= -7.0f;
+	mFrameRate		= 0.0f;
+	mFullScreen		= isFullScreen();
+	mMeshCube		= gl::VboMesh::create( geom::Cube() );
+	mMeshRect		= gl::VboMesh::create( geom::Rect() );
+	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
+	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
+
+	// Set up lights
+	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+					  .intensity( 0.8f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
+					  .radius( 0.1f ).volume( 15.0f ) );
+	for ( size_t i = 0; i < 8; ++i ) {
+		mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+						  .intensity( 0.6f ).radius( 0.05f ).volume( 5.0f ) );
+	}
+
+	// Set up camera
+	ivec2 windowSize = toPixels( getWindowSize() );
+	CameraPersp cam( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
+	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
+	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
+	mMayaCam.setCurrentCam( cam );
+
+	// Set up parameters
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
+	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
+	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
+	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
+	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
+	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
+	mParams->addSeparator();
+	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
+	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
+
+	// Call resize to create FBOs
+	resize();
+}
 
 void DeferredShadingApp::draw()
 {
@@ -395,83 +473,6 @@ void DeferredShadingApp::resize()
 void DeferredShadingApp::screenShot()
 {
 	writeImage( getAppPath() / fs::path( "frame" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
-}
-
-void DeferredShadingApp::setup()
-{
-	gl::enableVerticalSync();
-	
-	// Shortcut for shader loading and error handling
-	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
-	{
-		gl::GlslProgRef glslProg;
-		try {
-			glslProg = gl::GlslProg::create( vertex, fragment );
-		} catch ( gl::GlslProgCompileExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( gl::GlslNullProgramExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( ... ) {
-			console() << name << ": Unknown GLSL Error" << endl;
-			quit();
-		}
-		return glslProg;
-	};
-
-	// Load shaders
-	DataSourceRef gBufferVert	= loadAsset( "gbuffer_vert.glsl" );
-	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
-	mGlslProgDebugGbuffer		= loadGlslProg( "Debug G-Buffer",	passThrough,							loadAsset( "debug_gbuffer_frag.glsl" ) );
-	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
-	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			gBufferVert,							loadAsset( "gbuffer_frag.glsl" ) );
-	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
-	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
-	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
-	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
-	
-	// Set default values for all properties
-	mDebugMode		= false;
-	mEnabledFxaa	= true;
-	mEnabledShadow	= true;
-	mFloor			= -7.0f;
-	mFrameRate		= 0.0f;
-	mFullScreen		= isFullScreen();
-	mMeshCube		= gl::VboMesh::create( geom::Cube() );
-	mMeshRect		= gl::VboMesh::create( geom::Rect() );
-	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
-
-	// Set up lights
-	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-					  .intensity( 0.8f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
-					  .radius( 0.1f ).volume( 15.0f ) );
-	for ( size_t i = 0; i < 8; ++i ) {
-		mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
-						  .intensity( 0.6f ).radius( 0.05f ).volume( 5.0f ) );
-	}
-
-	// Set up camera
-	ivec2 windowSize = toPixels( getWindowSize() );
-	CameraPersp cam( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
-	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
-	mMayaCam.setCurrentCam( cam );
-
-	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
-	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
-	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
-	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
-	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
-	mParams->addSeparator();
-	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
-	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
-
-	// Call resize to create FBOs
-	resize();
 }
 
 void DeferredShadingApp::update()

@@ -26,11 +26,12 @@
 class DeferredShadingAdvancedApp : public ci::app::App
 {
 public:
+	DeferredShadingAdvancedApp();
+
 	void						draw() override;
 	void						mouseDown( ci::app::MouseEvent event ) override;
 	void						mouseDrag( ci::app::MouseEvent event ) override;
 	void						resize() override;
-	void						setup() override;
 	void						update() override;
 private:
 	ci::MayaCamUI				mMayaCam;
@@ -109,6 +110,92 @@ private:
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
+{
+	gl::enableVerticalSync();
+	
+	loadShaders();
+	
+	// Set default values for all properties
+	mDrawDebug			= false;
+	mDrawLightVolume	= false;
+	mEnabledBloom		= true;
+	mEnabledColor		= true;
+	mEnabledDoF			= true;
+	mEnabledFxaa		= true;
+	mEnabledShadow		= true;
+	mEnabledSsao		= true;
+	mFboPostIndex		= 0;
+	mFloor				= -7.0f;
+	mFrameRate			= 0.0f;
+	mFullScreen			= isFullScreen();
+	mMeshCircle			= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
+	mMeshCube			= gl::VboMesh::create( geom::Cube() );
+	mMeshSphere			= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
+	mMeshSphereLow		= gl::VboMesh::create( geom::Sphere().subdivisions( 12 ) );
+	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
+	mSphereVelocity		= -0.1f;
+	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
+
+	// Set up lights
+	mCameraLight = Light().colorAmbient( ColorAf::gray( 0.3f ) ).colorSpecular( ColorAf::gray( 0.1f ) )
+		.radius( mMayaCam.getCamera().getFarClip() * 0.5f ).intensity( 0.5f );
+	for ( size_t i = 0; i < 8; ++i ) {
+		float t = (float)i / 8.0f;
+		ColorAf c( 0.91f + t * 0.1f, 0.5f + t * 0.5f, 0.9f - t * 0.25f, 1.0f );
+		mLights.push_back( Light().colorDiffuse( c )
+						  .intensity( 1.0f ).radius( 0.1f ).volume( 5.0f ) );
+	}
+	float d	= ( (float)M_PI * 2.0f ) / 5.0f;
+	float r = 9.0f;
+	float t = 0.0f;
+	for ( size_t i = 0; i < 5; ++i, t += d ) {
+		vec3 p( glm::cos( t ) * r, mFloor + 0.5f, glm::sin( t ) * r );
+		mLights.push_back( Light().colorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
+						  .intensity( 1.0f ).position( p ).radius( 0.1f ).volume( 3.0f ) );
+	}
+	
+	// Set up materials
+	mMaterials.push_back( Material().colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
+						  .shininess( 300.0f ) ); // Sphere
+	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.18f ) )
+						  .colorDiffuse( ColorAf::gray( 0.5f ) ).colorSpecular( ColorAf::white() )
+						  .shininess( 500.0f ) ); // Floor
+	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
+						  .colorDiffuse( ColorAf::black() ).colorEmission( ColorAf::white() )
+						  .shininess( 100.0f ) ); // Light
+	mUboMaterial = gl::Ubo::create( sizeof( Material ) * mMaterials.size(), (GLvoid*)&mMaterials[ 0 ] );
+	gl::context()->bindBufferBase( mUboMaterial->getTarget(), 0, mUboMaterial );
+
+	// Set up camera
+	ivec2 windowSize = toPixels( getWindowSize() );
+	CameraPersp cam( windowSize.x, windowSize.y, 60.0f, 1.0f, 100.0f );
+	cam.setEyePoint( vec3( 2.664f, -6.484f, 5.939f ) );
+	cam.setCenterOfInterestPoint( vec3( 0.469f, -5.430f, 1.146f ) );
+	mMayaCam.setCurrentCam( cam );
+
+	// Set up parameters
+	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );
+	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
+	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
+	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
+	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
+	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
+	mParams->addSeparator();
+	mParams->addParam( "Debug",				&mDrawDebug ).key( "d" ).group( "Draw" );
+	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
+	mParams->addSeparator();
+	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "1" ).group( "Pass" );
+	mParams->addParam( "Color",				&mEnabledColor ).key( "2" ).group( "Pass" );
+	mParams->addParam( "Depth of Field",	&mEnabledDoF ).key( "3" ).group( "Pass" );
+	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "4" ).group( "Pass" );
+	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "5" ).group( "Pass" );
+	mParams->addParam( "SSAO",				&mEnabledSsao ).key( "6" ).group( "Pass" );
+
+	// Call resize to create FBOs
+	resize();
+}
 
 void DeferredShadingAdvancedApp::draw()
 {
@@ -826,92 +913,6 @@ void DeferredShadingAdvancedApp::resize()
 void DeferredShadingAdvancedApp::screenShot()
 {
 	writeImage( getAppPath() / fs::path( "frame" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
-}
-
-void DeferredShadingAdvancedApp::setup()
-{
-	gl::enableVerticalSync();
-	
-	loadShaders();
-	
-	// Set default values for all properties
-	mDrawDebug			= false;
-	mDrawLightVolume	= false;
-	mEnabledBloom		= true;
-	mEnabledColor		= true;
-	mEnabledDoF			= true;
-	mEnabledFxaa		= true;
-	mEnabledShadow		= true;
-	mEnabledSsao		= true;
-	mFboPostIndex		= 0;
-	mFloor				= -7.0f;
-	mFrameRate			= 0.0f;
-	mFullScreen			= isFullScreen();
-	mMeshCircle			= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
-	mMeshCube			= gl::VboMesh::create( geom::Cube() );
-	mMeshSphere			= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mMeshSphereLow		= gl::VboMesh::create( geom::Sphere().subdivisions( 12 ) );
-	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
-	mSphereVelocity		= -0.1f;
-	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
-
-	// Set up lights
-	mCameraLight = Light().colorAmbient( ColorAf::gray( 0.3f ) ).colorSpecular( ColorAf::gray( 0.1f ) )
-		.radius( mMayaCam.getCamera().getFarClip() * 0.5f ).intensity( 0.5f );
-	for ( size_t i = 0; i < 8; ++i ) {
-		float t = (float)i / 8.0f;
-		ColorAf c( 0.91f + t * 0.1f, 0.5f + t * 0.5f, 0.9f - t * 0.25f, 1.0f );
-		mLights.push_back( Light().colorDiffuse( c )
-						  .intensity( 1.0f ).radius( 0.1f ).volume( 5.0f ) );
-	}
-	float d	= ( (float)M_PI * 2.0f ) / 5.0f;
-	float r = 9.0f;
-	float t = 0.0f;
-	for ( size_t i = 0; i < 5; ++i, t += d ) {
-		vec3 p( glm::cos( t ) * r, mFloor + 0.5f, glm::sin( t ) * r );
-		mLights.push_back( Light().colorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
-						  .intensity( 1.0f ).position( p ).radius( 0.1f ).volume( 3.0f ) );
-	}
-	
-	// Set up materials
-	mMaterials.push_back( Material().colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
-						  .shininess( 300.0f ) ); // Sphere
-	mMaterials.push_back( Material().colorAmbient( ColorAf::gray( 0.18f ) )
-						  .colorDiffuse( ColorAf::gray( 0.5f ) ).colorSpecular( ColorAf::white() )
-						  .shininess( 500.0f ) ); // Floor
-	mMaterials.push_back( Material().colorAmbient( ColorAf::black() )
-						  .colorDiffuse( ColorAf::black() ).colorEmission( ColorAf::white() )
-						  .shininess( 100.0f ) ); // Light
-	mUboMaterial = gl::Ubo::create( sizeof( Material ) * mMaterials.size(), (GLvoid*)&mMaterials[ 0 ] );
-	gl::context()->bindBufferBase( mUboMaterial->getTarget(), 0, mUboMaterial );
-
-	// Set up camera
-	ivec2 windowSize = toPixels( getWindowSize() );
-	CameraPersp cam( windowSize.x, windowSize.y, 60.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( 2.664f, -6.484f, 5.939f ) );
-	cam.setCenterOfInterestPoint( vec3( 0.469f, -5.430f, 1.146f ) );
-	mMayaCam.setCurrentCam( cam );
-
-	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );
-	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
-	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
-	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
-	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
-	mParams->addSeparator();
-	mParams->addParam( "Debug",				&mDrawDebug ).key( "d" ).group( "Draw" );
-	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
-	mParams->addSeparator();
-	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "1" ).group( "Pass" );
-	mParams->addParam( "Color",				&mEnabledColor ).key( "2" ).group( "Pass" );
-	mParams->addParam( "Depth of Field",	&mEnabledDoF ).key( "3" ).group( "Pass" );
-	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "4" ).group( "Pass" );
-	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "5" ).group( "Pass" );
-	mParams->addParam( "SSAO",				&mEnabledSsao ).key( "6" ).group( "Pass" );
-
-	// Call resize to create FBOs
-	resize();
 }
 
 void DeferredShadingAdvancedApp::update()
