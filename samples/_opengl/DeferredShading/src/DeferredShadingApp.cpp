@@ -500,7 +500,7 @@ void DeferredShadingApp::update()
 	}
 }
 
-CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 4, 0 ) ), 
+CINDER_APP( DeferredShadingApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 3, 3 ) ), 
 			[]( App::Settings* settings )
 {
 	settings->disableFrameRate();

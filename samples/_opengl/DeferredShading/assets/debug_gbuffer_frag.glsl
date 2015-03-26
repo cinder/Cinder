@@ -1,4 +1,4 @@
-#version 400 core
+#version 330 core
 
 const int MODE_ALBEDO	= 0;
 const int MODE_NORMAL	= 1;
