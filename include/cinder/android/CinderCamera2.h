@@ -23,63 +23,17 @@
 
 #pragma once
 
-#include "cinder/android/JniHelper.h"
-//#include "cinder/Buffer.h"
-#include "cinder/Surface.h"
-
-namespace cinder { namespace app {
-
-class PlatformAndroid;
-
-}} // namespace cinder::app
+#include "cinder/Surface.h" 
 
 namespace cinder { namespace android {
 
-class CinderCamera {
+class CinderCamera2 {
 public:
 
-	CinderCamera();
-	CinderCamera( const std::string& url );
-	virtual ~CinderCamera();
-
-	bool 				initialize();
-	bool 				hasFrontCamera() const { return mHasFrontCamera; }
-	bool 				hasBackCamera() const { return mHasBackCamera; }
-	void 				startCapture();
-	void 				stopCapture();
-	//const uint8_t *	lockPixels();
-	//void 				unlockPixels();
-	int 				getWidth() const { return mWidth; }
-	int 				getHeight() const { return mHeight; }
+	CinderCamera2();
+	virtual ~CinderCamera2();
 
 	ci::Surface			getSurface();
-
-private:
-	static void 		cacheJni();
-	static void 		destroyJni();
-
-	static jclass		sCinderCameraClass;
-	static jmethodID	sInitializeMethodId;
-	static jmethodID 	sHasFrontCameraMethodId;
-	static jmethodID 	sHasBackCameraMethodId;
-	static jmethodID 	sStartCaptureMethodId;
-	static jmethodID 	sStopCaptureMethodId;
-	static jmethodID 	sLockPixelsMethodId;
-	static jmethodID 	sUnlockPixelsMethodId;
-	static jmethodID 	sGetWidthMethodId;
-	static jmethodID 	sGetHeightMethodId;
-
-	bool 				mInitialized = false;
-	bool 				mHasFrontCamera = false;
-	bool 				mHasBackCamera = false;
-	bool 				mCapturing = false;
-	bool 				mLockedPixels = false;
-	int 				mWidth = 0;
-	int 				mHeight = 0;
-
-	//ci::Buffer			mBuffer;
-
-	friend class cinder::app::PlatformAndroid;
 };
 
 }} // namespace cinder::android

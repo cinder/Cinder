@@ -21,46 +21,22 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#pragma once
-
-#include "cinder/android/JniHelper.h"
-#include "cinder/Buffer.h"
-
-namespace cinder { namespace app {
-
-class PlatformAndroid;
-
-}} // namespace cinder::app
+#include "cinder/android/CinderCamera2.h"
 
 namespace cinder { namespace android {
 
-class UrlLoader {
-public:
+CinderCamera2::CinderCamera2()
+{
+}
 
-	UrlLoader();
-	UrlLoader( const std::string& url );
-	virtual ~UrlLoader();
+CinderCamera2::~CinderCamera2()
+{
+}
 
-	ci::Buffer			getData();
-
-	int 				getResponseCode() const { return mResponseCode; }
-	const std::string& 	getResponseMsg() const { return mResponseMsg; }
-	const std::string& 	getExceptionMsg() const { return mExceptionMsg; }
-
-private:
-	static void 		cacheJni();
-	static void 		destroyJni();
-
-	static jclass		sUrlLoaderClass;
-	static jmethodID	sLoadUrlMethodId;
-	static jmethodID 	s
-
-	std::string 		mUrl;
-	int 				mResponseCode = -1;
-	std::string 		mResponseMsg;
-	std::string 		mExceptionMsg;
-
-	friend class cinder::app::PlatformAndroid;
-};
+ci::Surface CinderCamera2::getSurface()
+{
+	ci::Surface result;
+	return result;
+}
 
 }} // namespace cinder::android

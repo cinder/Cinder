@@ -324,12 +324,18 @@ ci::Surface	CinderCamera::getSurface()
 				size_t dataLength = JniHelper::get()->GetArrayLength( jBytes );
 				jbyte* dataPtr = (jbyte*)JniHelper::get()->GetByteArrayElements( jBytes, NULL );
 				if( ( NULL != dataPtr ) && ( dataLength > 0 ) ) {
+					/*
 					if( ! mBuffer ) {
 						mBuffer = ci::Buffer( dataLength );
 					}
 
 					memcpy( mBuffer.getData(), (const void *)dataPtr, dataLength );
 					hasPixels = true;
+					*/
+
+					const uint8_t * src = (const uint8_t *)dataPtr;
+					uint8_t * dst = (uint8_t *)result.getData();
+					ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );					
 				}
 			}
 
@@ -337,12 +343,14 @@ ci::Surface	CinderCamera::getSurface()
 			JniHelper::get()->DeatchCurrentThread();
 		}
 
+/*
 		// Now process
 		if( hasPixels ) {
 			const uint8_t * src = (const uint8_t *)mBuffer.getData();
 			uint8_t * dst = (uint8_t *)result.getData();
 			ConvertYUV2RGB( src, src + (mWidth*mHeight), dst, mWidth, mHeight );			
 		}
+*/		
 	}
 
 	return result;

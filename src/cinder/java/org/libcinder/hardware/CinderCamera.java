@@ -52,29 +52,20 @@ public class CinderCamera implements Camera.PreviewCallback {
             return;
         }
 
-        Log.i(Platform.TAG, "startCamera (0)");
-
         try {
-            Log.i(Platform.TAG, "startCamera (1)");
             mActiveCamera = Camera.open(mActiveCameraId);
 
             Camera.Parameters params = mActiveCamera.getParameters();
             mWidth = params.getPreviewSize().width;
             mHeight = params.getPreviewSize().height;
 
-            Log.i(Platform.TAG, "startCamera (2)");
             mActiveCamera.setPreviewTexture(mDummyTexture);
-            Log.i(Platform.TAG, "startCamera (3)");
             mActiveCamera.setPreviewCallback(this);
-            Log.i(Platform.TAG, "startCamera (4)");
             mActiveCamera.startPreview();
-            Log.i(Platform.TAG, "startCamera (5)");
         }
         catch(Exception e ) {
             Log.e(Platform.TAG, "CinderCamera.startCamera failed: " + e);
         }
-
-        Log.i(Platform.TAG, "startCamera (6)");
     }
 
     public void stopCamera() {
@@ -93,6 +84,10 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     public void startFrontCamera() {
+        if(mFrontCameraId == mActiveCameraId) {
+            return;
+        }
+
         stopCamera();
 
         mActiveCameraId = mFrontCameraId;
@@ -100,6 +95,10 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     public void startBackCamera() {
+        if(mBackCameraId == mActiveCameraId) {
+            return;
+        }
+
         stopCamera();
 
         mActiveCameraId = mBackCameraId;
@@ -156,31 +155,43 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     public static void startCapture() {
+        if(null == sCamera) {
+            return;
+        }
+
         sCamera.startCamera();
     }
 
     public static void stopCapture() {
+        if(null == sCamera) {
+            return;
+        }
+
         sCamera.stopCamera();
     }
 
     public static byte[] lockPixels() {
-        //Log.i(Platform.TAG, Thread.currentThread().getName() );
-        //Log.i(Platform.TAG, "lockPixels - static");
+        if(null == sCamera) {
+            return null;
+        }
+
         sCamera.privateLockPixels();
         return sCamera.mPixels;
     }
 
     public static void unlockPixels() {
-        //Log.i(Platform.TAG, Thread.currentThread().getName() );
+        if(null == sCamera) {
+            return;
+        }
+
         sCamera.privateUnlockPixels();
-        //Log.i(Platform.TAG, "unlockPixels - static");
     }
 
     public static int getWidth() {
-        return sCamera.mWidth;
+        return (null != sCamera) ? sCamera.mWidth : 0;
     }
 
     public static int getHeight() {
-        return sCamera.mHeight;
+        return (null != sCamera) ? sCamera.mHeight : 0;
     }
 }
