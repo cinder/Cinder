@@ -41,7 +41,7 @@ MovieWriter::Format::Format()
 	mTimeBase = 600;
 	mDefaultFrameDuration = 1 / 30.0f;
 
-	enableFrameReordering( false );
+	mFrameReorderingEnabled = false;
 	jpegQuality( 0.99f );
 	
 	mH264AverageBitsPerSecondSpecified = false;
@@ -54,6 +54,7 @@ MovieWriter::Format& MovieWriter::Format::jpegQuality( float quality )
 	return *this;
 }
 
+#if ( defined( CINDER_MAC ) &&  ( MAC_OS_X_VERSION_MIN_REQUIRED >= 101000 ) ) || ( defined( CINDER_COCOA_TOUCH ) && ( __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000 ) )
 bool MovieWriter::Format::isFrameReorderingEnabled() const
 {
 	return mFrameReorderingEnabled;
@@ -64,6 +65,7 @@ MovieWriter::Format& MovieWriter::Format::enableFrameReordering( bool enable )
 	mFrameReorderingEnabled = enable;
 	return *this;
 }
+#endif
 
 namespace {
 const NSString * codecToAvVideoCodecKey( MovieWriter::Codec codec )
@@ -114,7 +116,10 @@ MovieWriter::MovieWriter( const fs::path &path, int32_t width, int32_t height, c
 
 	NSMutableDictionary *compressionProperties = [NSMutableDictionary dictionary];
 	if( format.getCodec() == Codec::H264 ) {
+// Frame reordering is only enabled in OS X 10.10 / iOS 7.0
+#if ( defined( CINDER_MAC ) &&  ( MAC_OS_X_VERSION_MIN_REQUIRED >= 101000 ) ) || ( defined( CINDER_COCOA_TOUCH ) && ( __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000 ) )
 		[compressionProperties setValue:[NSNumber numberWithBool:format.isFrameReorderingEnabled()] forKey:AVVideoAllowFrameReorderingKey];
+#endif
 		if( format.isAverageBitsPerSecondSpecified() )
 			[compressionProperties setValue:[NSNumber numberWithFloat:format.getAverageBitsPerSecond()] forKey:AVVideoAverageBitRateKey];
 	}
