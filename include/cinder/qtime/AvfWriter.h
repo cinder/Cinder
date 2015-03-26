@@ -82,10 +82,12 @@ class MovieWriter {
 		//! Sets the integer base value for encoding time scale. Defaults to \c 600.
 		Format&		setTimeScale( long timeScale ) { mTimeBase = timeScale; return *this; }
 
+#if ( defined( CINDER_MAC ) &&  ( MAC_OS_X_VERSION_MIN_REQUIRED >= 101000 ) ) || ( defined( CINDER_COCOA_TOUCH ) && ( __IPHONE_OS_VERSION_MIN_REQUIRED >= 70000 ) )
 		//! Returns if frame reordering is enabled (H.264 only). Default is \c false.
 		bool		isFrameReorderingEnabled() const;
 		//! Enables frame reordering (H.264 only). Defaults to \c false. In order to encode \b B frames, a compressor must reorder frames, which means that the order in which they will be emitted and stored (the decode order) is different from the order in which they were presented to the compressor (the display order).
 		Format&		enableFrameReordering( bool enable = true );
+#endif
 
 		//! Returns the average bits per second for H.264 encoding. Defaults to no limit.
 		float		getAverageBitsPerSecond() const { return mH264AverageBitsPerSecond; }
