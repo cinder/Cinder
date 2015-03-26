@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -44,6 +44,15 @@ namespace glm
 			this->value[2] = col_type(0, 0);
 			this->value[3] = col_type(0, 0);
 #		endif
+	}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat4x2<T, P>::tmat4x2(tmat4x2<T, P> const & m)
+	{
+		this->value[0] = m.value[0];
+		this->value[1] = m.value[1];
+		this->value[2] = m.value[2];
+		this->value[3] = m.value[3];
 	}
 
 	template <typename T, precision P>
@@ -270,6 +279,16 @@ namespace glm
 
 	//////////////////////////////////////////////////////////////
 	// Unary updatable operators
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat4x2<T, P>& tmat4x2<T, P>::operator=(tmat4x2<T, P> const & m)
+	{
+		this->value[0] = m[0];
+		this->value[1] = m[1];
+		this->value[2] = m[2];
+		this->value[3] = m[3];
+		return *this;
+	}
 
 	template <typename T, precision P>
 	template <typename U>

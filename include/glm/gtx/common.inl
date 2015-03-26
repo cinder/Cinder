@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -32,8 +32,28 @@
 
 #include <cmath>
 
-namespace glm
+namespace glm{
+namespace detail
 {
+	template <typename T, precision P, template <class, precision> class vecType, bool isFloat = true>
+	struct compute_fmod
+	{
+		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & a, vecType<T, P> const & b)
+		{
+			return detail::functor2<T, P, vecType>::call(std::fmod, a, b);
+		}
+	};
+
+	template <typename T, precision P, template <class, precision> class vecType>
+	struct compute_fmod<T, P, vecType, false>
+	{
+		GLM_FUNC_QUALIFIER static vecType<T, P> call(vecType<T, P> const & a, vecType<T, P> const & b)
+		{
+			return a % b;
+		}
+	};
+}//namespace detail
+
 	template <typename T> 
 	GLM_FUNC_QUALIFIER bool isdenormal(T const & x)
 	{
@@ -98,5 +118,24 @@ namespace glm
 			isdenormal(x.y),
 			isdenormal(x.z),
 			isdenormal(x.w));
+	}
+
+	// fmod
+	template <typename genType>
+	GLM_FUNC_QUALIFIER genType fmod(genType x, genType y)
+	{
+		return fmod(tvec1<genType>(x), y).x;
+	}
+
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> fmod(vecType<T, P> const & x, T y)
+	{
+		return detail::compute_fmod<T, P, vecType, std::numeric_limits<T>::is_iec559>::call(x, vecType<T, P>(y));
+	}
+
+	template <typename T, precision P, template <typename, precision> class vecType>
+	GLM_FUNC_QUALIFIER vecType<T, P> fmod(vecType<T, P> const & x, vecType<T, P> const & y)
+	{
+		return detail::compute_fmod<T, P, vecType, std::numeric_limits<T>::is_iec559>::call(x, y);
 	}
 }//namespace glm

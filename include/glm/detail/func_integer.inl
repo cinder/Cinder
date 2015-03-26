@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -248,10 +248,8 @@ namespace detail
 		GLM_STATIC_ASSERT(sizeof(uint) == sizeof(uint32), "uint and uint32 size mismatch");
 
 		uint64 Value64 = static_cast<uint64>(x) * static_cast<uint64>(y);
-		uint32* PointerMSB = (reinterpret_cast<uint32*>(&Value64) + 1);
-		msb = *PointerMSB;
-		uint32* PointerLSB = (reinterpret_cast<uint32*>(&Value64) + 0);
-		lsb = *PointerLSB;
+		msb = static_cast<uint>(Value64 >> static_cast<uint64>(32));
+		lsb = static_cast<uint>(Value64);
 	}
 
 	template <precision P, template <typename, precision> class vecType>
@@ -270,10 +268,8 @@ namespace detail
 		GLM_STATIC_ASSERT(sizeof(int) == sizeof(int32), "int and int32 size mismatch");
 
 		int64 Value64 = static_cast<int64>(x) * static_cast<int64>(y);
-		int32* PointerMSB = (reinterpret_cast<int32*>(&Value64) + 1);
-		msb = *PointerMSB;
-		int32* PointerLSB = (reinterpret_cast<int32*>(&Value64));
-		lsb = *PointerLSB;
+		msb = static_cast<int>(Value64 >> static_cast<int64>(32));
+		lsb = static_cast<int>(Value64);
 	}
 
 	template <precision P, template <typename, precision> class vecType>

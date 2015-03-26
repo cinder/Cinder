@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -56,8 +56,8 @@ namespace detail
 		return std::string(text);
 	}
 
-	static const char* True = "true";
-	static const char* False = "false";
+	static const char* LabelTrue = "true";
+	static const char* LabelFalse = "false";
 
 	template <typename T, bool isFloat = false>
 	struct literal
@@ -164,7 +164,7 @@ namespace detail
 		GLM_FUNC_QUALIFIER static std::string call(tvec1<bool, P> const & x)
 		{
 			return detail::format("bvec1(%s)",
-				x[0] ? detail::True : detail::False);
+				x[0] ? detail::LabelTrue : detail::LabelFalse);
 		}
 	};
 
@@ -174,8 +174,8 @@ namespace detail
 		GLM_FUNC_QUALIFIER static std::string call(tvec2<bool, P> const & x)
 		{
 			return detail::format("bvec2(%s, %s)",
-				x[0] ? detail::True : detail::False,
-				x[1] ? detail::True : detail::False);
+				x[0] ? detail::LabelTrue : detail::LabelFalse,
+				x[1] ? detail::LabelTrue : detail::LabelFalse);
 		}
 	};
 
@@ -185,9 +185,9 @@ namespace detail
 		GLM_FUNC_QUALIFIER static std::string call(tvec3<bool, P> const & x)
 		{
 			return detail::format("bvec3(%s, %s, %s)",
-				x[0] ? detail::True : detail::False,
-				x[1] ? detail::True : detail::False,
-				x[2] ? detail::True : detail::False);
+				x[0] ? detail::LabelTrue : detail::LabelFalse,
+				x[1] ? detail::LabelTrue : detail::LabelFalse,
+				x[2] ? detail::LabelTrue : detail::LabelFalse);
 		}
 	};
 
@@ -197,10 +197,10 @@ namespace detail
 		GLM_FUNC_QUALIFIER static std::string call(tvec4<bool, P> const & x)
 		{
 			return detail::format("bvec4(%s, %s, %s, %s)",
-				x[0] ? detail::True : detail::False,
-				x[1] ? detail::True : detail::False,
-				x[2] ? detail::True : detail::False,
-				x[3] ? detail::True : detail::False);
+				x[0] ? detail::LabelTrue : detail::LabelFalse,
+				x[1] ? detail::LabelTrue : detail::LabelFalse,
+				x[2] ? detail::LabelTrue : detail::LabelFalse,
+				x[3] ? detail::LabelTrue : detail::LabelFalse);
 		}
 	};
 

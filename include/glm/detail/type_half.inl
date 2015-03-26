@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 ///
 /// This half implementation is based on OpenEXR which is Copyright (c) 2002, 
 /// Industrial Light & Magic, a division of Lucas Digital Ltd. LLC

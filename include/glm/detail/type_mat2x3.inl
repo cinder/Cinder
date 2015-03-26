@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -42,6 +42,13 @@ namespace glm
 			this->value[0] = col_type(1, 0, 0);
 			this->value[1] = col_type(0, 1, 0);
 #		endif
+	}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat2x3<T, P>::tmat2x3(tmat2x3<T, P> const & m)
+	{
+		this->value[0] = m.value[0];
+		this->value[1] = m.value[1];
 	}
 
 	template <typename T, precision P>
@@ -219,6 +226,14 @@ namespace glm
 
 	//////////////////////////////////////////////////////////////
 	// Unary updatable operators
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat2x3<T, P>& tmat2x3<T, P>::operator=(tmat2x3<T, P> const & m)
+	{
+		this->value[0] = m[0];
+		this->value[1] = m[1];
+		return *this;
+	}
 
 	template <typename T, precision P>
 	template <typename U>
@@ -432,7 +447,7 @@ namespace glm
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tmat4x3<T, P> operator*(tmat2x3<T, P> const & m1, tmat3x2<T, P> const & m2)
+	GLM_FUNC_QUALIFIER tmat4x3<T, P> operator*(tmat2x3<T, P> const & m1, tmat4x2<T, P> const & m2)
 	{
 		return tmat4x3<T, P>(
 			m1[0][0] * m2[0][0] + m1[1][0] * m2[0][1],

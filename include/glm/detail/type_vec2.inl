@@ -12,10 +12,6 @@
 /// The above copyright notice and this permission notice shall be included in
 /// all copies or substantial portions of the Software.
 /// 
-/// Restrictions:
-///		By making use of the Software for military purposes, you choose to make
-///		a Bunny unhappy.
-/// 
 /// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 /// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 /// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -25,13 +21,44 @@
 /// THE SOFTWARE.
 ///
 /// @ref core
-/// @file glm/detail/type_tvec2.inl
+/// @file glm/core/type_tvec2.inl
 /// @date 2008-08-18 / 2011-06-15
 /// @author Christophe Riccio
 ///////////////////////////////////////////////////////////////////////////////////
 
 namespace glm
 {
+#ifdef GLM_FORCE_SIZE_FUNC
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR size_t tvec2<T, P>::size() const
+	{
+		return 2;
+	}
+#else
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER GLM_CONSTEXPR length_t tvec2<T, P>::length() const
+	{
+		return 2;
+	}
+#endif
+
+	//////////////////////////////////////
+	// Accesses
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER T & tvec2<T, P>::operator[](length_t i)
+	{
+		assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
+		return (&x)[i];
+	}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER T const & tvec2<T, P>::operator[](length_t i) const
+	{
+		assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
+		return (&x)[i];
+	}
+
 	//////////////////////////////////////
 	// Implicit basic constructors
 
@@ -40,6 +67,11 @@ namespace glm
 #		ifndef GLM_FORCE_NO_CTOR_INIT
 			: x(0), y(0)
 #		endif
+	{}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tvec2<T, P>::tvec2(tvec2<T, P> const & v)
+		: x(v.x), y(v.y)
 	{}
 
 	template <typename T, precision P>
@@ -61,8 +93,8 @@ namespace glm
 	{}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tvec2<T, P>::tvec2(T const & a, T const & b)
-		: x(a), y(b)
+	GLM_FUNC_QUALIFIER tvec2<T, P>::tvec2(T const & s1, T const & s2)
+		: x(s1), y(s2)
 	{}
 
 	//////////////////////////////////////
@@ -107,52 +139,15 @@ namespace glm
 	{}
 
 	//////////////////////////////////////
-	// Component accesses
-
-#	ifdef GLM_FORCE_SIZE_FUNC
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER GLM_CONSTEXPR typename tvec2<T, P>::size_type tvec2<T, P>::size() const
-		{
-			return 2;
-		}
-
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER T & tvec2<T, P>::operator[](typename tvec2<T, P>::size_type i)
-		{
-			assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
-			return (&x)[i];
-		}
-
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER T const & tvec2<T, P>::operator[](typename tvec2<T, P>::size_type i) const
-		{
-			assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
-			return (&x)[i];
-		}
-#	else
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER GLM_CONSTEXPR typename tvec2<T, P>::length_type tvec2<T, P>::length() const
-		{
-			return 2;
-		}
-
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER T & tvec2<T, P>::operator[](typename tvec2<T, P>::length_type i)
-		{
-			assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
-			return (&x)[i];
-		}
-
-		template <typename T, precision P>
-		GLM_FUNC_QUALIFIER T const & tvec2<T, P>::operator[](typename tvec2<T, P>::length_type i) const
-		{
-			assert(i >= 0 && static_cast<detail::component_count_t>(i) < detail::component_count(*this));
-			return (&x)[i];
-		}
-#	endif//GLM_FORCE_SIZE_FUNC
-
-	//////////////////////////////////////
 	// Unary arithmetic operators
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tvec2<T, P> & tvec2<T, P>::operator=(tvec2<T, P> const & v)
+	{
+		this->x = v.x;
+		this->y = v.y;
+		return *this;
+	}
 
 	template <typename T, precision P>
 	template <typename U>

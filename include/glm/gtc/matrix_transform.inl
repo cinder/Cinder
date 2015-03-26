@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -217,8 +217,23 @@ namespace glm
 		T zFar
 	)
 	{
+		#ifdef GLM_LEFT_HANDED
+			return perspectiveLH(fovy, aspect, zNear, zFar);
+		#else
+			return perspectiveRH(fovy, aspect, zNear, zFar);
+		#endif
+	}
+
+	template <typename T>
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveRH
+	(
+		T fovy,
+		T aspect,
+		T zNear,
+		T zFar
+	)
+	{
 		assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
-		assert(zFar > zNear);
 
 		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
 
@@ -232,7 +247,46 @@ namespace glm
 	}
 	
 	template <typename T>
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveLH
+		(
+		T fovy,
+		T aspect,
+		T zNear,
+		T zFar
+		)
+	{
+		assert(abs(aspect - std::numeric_limits<T>::epsilon()) > static_cast<T>(0));
+
+		T const tanHalfFovy = tan(fovy / static_cast<T>(2));
+		
+		tmat4x4<T, defaultp> Result(static_cast<T>(0));
+		Result[0][0] = static_cast<T>(1) / (aspect * tanHalfFovy);
+		Result[1][1] = static_cast<T>(1) / (tanHalfFovy);
+		Result[2][2] = (zFar + zNear) / (zFar - zNear);
+		Result[2][3] = static_cast<T>(1);
+		Result[3][2] = -(static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
+		return Result;
+	}
+
+	template <typename T>
 	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveFov
+	(
+		T fov,
+		T width,
+		T height,
+		T zNear,
+		T zFar
+	)
+	{
+		#ifdef GLM_LEFT_HANDED
+			return perspectiveFovLH(fov, width, height, zNear, zFar);
+		#else
+			return perspectiveFovRH(fov, width, height, zNear, zFar);
+		#endif
+	}
+
+	template <typename T>
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveFovRH
 	(
 		T fov,
 		T width,
@@ -254,6 +308,33 @@ namespace glm
 		Result[1][1] = h;
 		Result[2][2] = - (zFar + zNear) / (zFar - zNear);
 		Result[2][3] = - static_cast<T>(1);
+		Result[3][2] = - (static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
+		return Result;
+	}
+
+	template <typename T>
+	GLM_FUNC_QUALIFIER tmat4x4<T, defaultp> perspectiveFovLH
+	(
+		T fov,
+		T width,
+		T height,
+		T zNear,
+		T zFar
+	)
+	{
+		assert(width > static_cast<T>(0));
+		assert(height > static_cast<T>(0));
+		assert(fov > static_cast<T>(0));
+	
+		T const rad = fov;
+		T const h = glm::cos(static_cast<T>(0.5) * rad) / glm::sin(static_cast<T>(0.5) * rad);
+		T const w = h * height / width; ///todo max(width , Height) / min(width , Height)?
+
+		tmat4x4<T, defaultp> Result(static_cast<T>(0));
+		Result[0][0] = w;
+		Result[1][1] = h;
+		Result[2][2] = (zFar + zNear) / (zFar - zNear);
+		Result[2][3] = static_cast<T>(1);
 		Result[3][2] = - (static_cast<T>(2) * zFar * zNear) / (zFar - zNear);
 		return Result;
 	}
@@ -392,6 +473,21 @@ namespace glm
 		tvec3<T, P> const & up
 	)
 	{
+		#ifdef GLM_LEFT_HANDED
+			return lookAtLH(eye, center, up);
+		#else
+			return lookAtRH(eye, center, up);
+		#endif
+	}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> lookAtRH
+	(
+		tvec3<T, P> const & eye,
+		tvec3<T, P> const & center,
+		tvec3<T, P> const & up
+	)
+	{
 		tvec3<T, P> const f(normalize(center - eye));
 		tvec3<T, P> const s(normalize(cross(f, up)));
 		tvec3<T, P> const u(cross(s, f));
@@ -409,6 +505,34 @@ namespace glm
 		Result[3][0] =-dot(s, eye);
 		Result[3][1] =-dot(u, eye);
 		Result[3][2] = dot(f, eye);
+		return Result;
+	}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tmat4x4<T, P> lookAtLH
+	(
+		tvec3<T, P> const & eye,
+		tvec3<T, P> const & center,
+		tvec3<T, P> const & up
+	)
+	{
+		tvec3<T, P> const f(normalize(center - eye));
+		tvec3<T, P> const s(normalize(cross(up, f)));
+		tvec3<T, P> const u(cross(f, s));
+
+		tmat4x4<T, P> Result(1);
+		Result[0][0] = s.x;
+		Result[1][0] = s.y;
+		Result[2][0] = s.z;
+		Result[0][1] = u.x;
+		Result[1][1] = u.y;
+		Result[2][1] = u.z;
+		Result[0][2] = f.x;
+		Result[1][2] = f.y;
+		Result[2][2] = f.z;
+		Result[3][0] = -dot(s, eye);
+		Result[3][1] = -dot(u, eye);
+		Result[3][2] = -dot(f, eye);
 		return Result;
 	}
 }//namespace glm
