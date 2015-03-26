@@ -7,6 +7,7 @@ import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 
 public class CinderCamera2 {
@@ -34,6 +35,7 @@ public class CinderCamera2 {
         }
     };
 
+    private HandlerThread mBackgroundThread;
     private Handler mBackgroundHandler;
 
     public CinderCamera2() {
@@ -62,6 +64,7 @@ public class CinderCamera2 {
         Log.i(Platform.TAG, "Back Camera: " + mBackCameraId);
     }
 
+
     public void startCamera() {
         // Bail if we don't have a valid camera id or mActiveCamera isn't null
         if ((null == mActiveCameraId) || (null != mActiveCamera)) {
@@ -69,10 +72,29 @@ public class CinderCamera2 {
         }
 
         try {
+            mBackgroundThread = new HandlerThread("CameraBackground");
+            mBackgroundThread.start();
+
+            mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
+
             mCameraManager.openCamera(mActiveCameraId, mStateCallback, mBackgroundHandler);
         }
         catch(Exception e ) {
             Log.e(Platform.TAG, "CinderCamera2.startCamera failed: " + e);
+        }
+    }
+
+    public void stopCamera() {
+        if(null != mBackgroundThread) {
+            mBackgroundThread.quitSafely();
+            try {
+                mBackgroundThread.join();
+                mBackgroundThread = null;
+                mBackgroundHandler = null;
+            }
+            catch(Exception e ) {
+                Log.e(Platform.TAG, "CinderCamera2.stopCamera failed: " + e);
+            }
         }
     }
 
@@ -84,10 +106,23 @@ public class CinderCamera2 {
         if(null == sCamera) {
             sCamera = new CinderCamera2();
         }
+        
         return (null != sCamera.mFrontCameraId || null != sCamera.mBackCameraId);
     }
 
-    public static void startCapture() {}
+    public static void startCapture() {
+        if(null == sCamera) {
+            return;
+        }
 
-    public static void stopCapture() {}
+        sCamera.startCamera();
+    }
+
+    public static void stopCapture() {
+        if(null == sCamera) {
+            return;
+        }
+
+        sCamera.stopCamera();
+    }
 }
