@@ -59,8 +59,8 @@ void NodeTestApp::setup()
 	
 	auto ctx = audio::master();
 	mGain = ctx->makeNode( new audio::GainNode( 0.04f ) );
-	mGen = ctx->makeNode( new audio::GenSineNode( 440 ) );
-	mNoise = ctx->makeNode( new audio::GenNoiseNode() );
+	mGen = ctx->makeNode<audio::GenSineNode>( 440 );
+	mNoise = ctx->makeNode<audio::GenNoiseNode>();
 
 	mMonitor = audio::master()->makeNode( new audio::MonitorNode( audio::MonitorNode::Format().windowSize( 2048 ) ) );
 

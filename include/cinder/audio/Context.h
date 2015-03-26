@@ -59,9 +59,12 @@ class Context : public std::enable_shared_from_this<Context> {
 	//! Creates and returns a platform-specific InputDeviceNode, which captures audio from the hardware input device specified by \a device. 
 	virtual InputDeviceNodeRef		createInputDeviceNode( const DeviceRef &device = Device::getDefaultInput(), const Node::Format &format = Node::Format() ) = 0;
 
-	//! Interface for creating new Node's of type \a NodeT, which are thereafter owned by this Context. All Node's must be created using this method in order for them to correctly have a parent Context.
+	//! Interface for creating new Node's of type \a NodeT, which is owned by this Context. All Node's must be created using the Context.
 	template<typename NodeT>
 	std::shared_ptr<NodeT>		makeNode( NodeT *node );
+	//! Interface for creating a new Node of type \a NodeT, which is owned by this Context. All Node's must be created using the Context.
+	template<typename NodeT, typename... Args>
+	std::shared_ptr<NodeT>		makeNode( Args&&... args );
 
 	//! Sets the new output of this Context to \a output. You should do this before making any connections because when Node's are initialized they use the format of the OutputNode to configure their buffers.
 	virtual void setOutput( const OutputNodeRef &output );
@@ -173,7 +176,19 @@ class Context : public std::enable_shared_from_this<Context> {
 template<typename NodeT>
 std::shared_ptr<NodeT> Context::makeNode( NodeT *node )
 {
+	static_assert( std::is_base_of<Node, NodeT>::value, "NodeT must inherit from audio::Node" );
+
 	std::shared_ptr<NodeT> result( node );
+	result->setContext( shared_from_this() );
+	return result;
+}
+
+template<typename NodeT, typename... Args>
+std::shared_ptr<NodeT> Context::makeNode( Args&&... args )
+{
+	static_assert( std::is_base_of<Node, NodeT>::value, "NodeT must inherit from audio::Node" );
+
+	std::shared_ptr<NodeT> result( new NodeT( std::forward<Args>( args )... ) );
 	result->setContext( shared_from_this() );
 	return result;
 }
