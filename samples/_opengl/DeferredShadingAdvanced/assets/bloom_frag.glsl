@@ -1,6 +1,6 @@
 #version 330 core
 
-const int MATERIAL_COUNT	= 3;
+const int MATERIAL_COUNT = 3;
 
 uniform float		uAttenuation;
 uniform vec2		uSize;
@@ -36,7 +36,7 @@ vec4 getColor( float offset )
 	return texture( uSamplerAlbedo, vertex.uv + offset * uSize );
 }
 
-float getEmissive( float offset )
+vec4 getEmissive( float offset )
 {
 	int id = int( texture( uSamplerMaterial, vertex.uv + offset * uSize ).r );
 	return uMaterials[ id ].emissive;
