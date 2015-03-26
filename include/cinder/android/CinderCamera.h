@@ -47,8 +47,8 @@ public:
 	bool 				hasBackCamera() const { return mHasBackCamera; }
 	void 				startCapture();
 	void 				stopCapture();
-	const uint8_t *		lockPixels();
-	void 				unlockPixels();
+	//const uint8_t *	lockPixels();
+	//void 				unlockPixels();
 	int 				getWidth() const { return mWidth; }
 	int 				getHeight() const { return mHeight; }
 
@@ -76,6 +76,8 @@ private:
 	bool 				mLockedPixels = false;
 	int 				mWidth = 0;
 	int 				mHeight = 0;
+
+	ci::Buffer			mBuffer;
 
 	friend class cinder::app::PlatformAndroid;
 };

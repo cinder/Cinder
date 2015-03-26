@@ -107,11 +107,13 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     private void privateLockPixels() {
+        //Log.i(Platform.TAG, "privateLockPixels");
         mMutex.lock();
     }
 
     private void privateUnlockPixels() {
         mMutex.unlock();;
+        //Log.i(Platform.TAG, "privateUnlockPixels");
     }
 
     @Override
@@ -121,14 +123,16 @@ public class CinderCamera implements Camera.PreviewCallback {
         //int h = params.getPreviewSize().height;
         //Log.i(Platform.TAG, "onPreviewFrame: " + w + "x" + h + ", numBytes: " + data.length);
 
+        //Log.i(Platform.TAG, "onPreviewFrame");
         privateLockPixels();
 
         try {
-            Camera.Parameters params = camera.getParameters();
+            //Camera.Parameters params = camera.getParameters();
             mPixels = data;
         }
         finally {
             privateUnlockPixels();
+            //Log.i(Platform.TAG, "onPreviewFrame");
         }
     }
 
@@ -160,12 +164,16 @@ public class CinderCamera implements Camera.PreviewCallback {
     }
 
     public static byte[] lockPixels() {
+        //Log.i(Platform.TAG, Thread.currentThread().getName() );
+        //Log.i(Platform.TAG, "lockPixels - static");
         sCamera.privateLockPixels();
         return sCamera.mPixels;
     }
 
     public static void unlockPixels() {
-        sCamera.privateLockPixels();
+        //Log.i(Platform.TAG, Thread.currentThread().getName() );
+        sCamera.privateUnlockPixels();
+        //Log.i(Platform.TAG, "unlockPixels - static");
     }
 
     public static int getWidth() {

@@ -69,6 +69,7 @@ void CameraTesterApp::draw()
     Surface surf = mCamera.getSurface();
     gl::TextureRef tex = gl::Texture::create( surf );
     if( tex ) {
+        gl::color( 1.0f, 1.0f, 1.0f );
         gl::draw( tex );
     }
 }
