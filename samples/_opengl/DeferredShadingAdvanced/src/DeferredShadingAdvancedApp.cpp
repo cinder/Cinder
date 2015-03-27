@@ -59,22 +59,16 @@ private:
 	ci::gl::GlslProgRef			mGlslProgStockColor;
 	ci::gl::GlslProgRef			mGlslProgStockTexture;
 
-	ci::gl::FboRef				mFboBloom;
-	ci::gl::FboRef				mFboGBuffer;
-	ci::gl::FboRef				mFboLBuffer;
+	ci::gl::FboRef				mFbo;
+	ci::gl::FboRef				mFboHalf;
 	ci::gl::FboRef				mFboShadowMap;
-	ci::gl::FboRef				mFboSsao;
 	
-	ci::gl::FboRef				mFboPost;
-	size_t						mFboPostIndex;
-	ci::gl::Texture2dRef		mTextureFboPost[ 2 ];
-
+	ci::gl::Texture2dRef		mTextureFbo[ 6 ];
+	ci::gl::Texture2dRef		mTextureFboHalf[ 4 ];
 	ci::gl::TextureRef			mTextureRandom;
-	ci::gl::Texture2dRef		mTextureFboBloom[ 2 ];
-	ci::gl::Texture2dRef		mTextureFboGBuffer[ 4 ];
-	ci::gl::Texture2dRef		mTextureFboLBuffer;
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
-	ci::gl::Texture2dRef		mTextureFboSsao[ 3 ];
+
+	size_t						mPingPong;
 
 	ci::gl::VboMeshRef			mMeshCircle;
 	ci::gl::VboMeshRef			mMeshCube;
@@ -126,7 +120,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledFxaa		= true;
 	mEnabledShadow		= true;
 	mEnabledSsao		= true;
-	mFboPostIndex		= 0;
+	mPingPong			= 0;
 	mFloor				= -7.0f;
 	mFrameRate			= 0.0f;
 	mFullScreen			= isFullScreen();
@@ -188,25 +182,33 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addSeparator();
 	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "1" ).group( "Pass" );
 	mParams->addParam( "Color",				&mEnabledColor ).key( "2" ).group( "Pass" );
-	mParams->addParam( "Depth of Field",	&mEnabledDoF ).key( "3" ).group( "Pass" );
+	mParams->addParam( "Depth of field",	&mEnabledDoF ).key( "3" ).group( "Pass" );
 	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "4" ).group( "Pass" );
 	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "5" ).group( "Pass" );
 	mParams->addParam( "SSAO",				&mEnabledSsao ).key( "6" ).group( "Pass" );
 
 	// Create shadow map buffer
-	size_t sz = 1024;
-	mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
-												 .internalFormat( GL_DEPTH_COMPONENT32F )
-												 .magFilter( GL_LINEAR )
-												 .minFilter( GL_LINEAR )
-												 .wrap( GL_CLAMP_TO_EDGE )
-												 .dataType( GL_FLOAT ) );
-	gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-	gl::Fbo::Format fboFormat;
-	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
-	mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+	{
+		size_t sz = 1024;
+		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
+													 .internalFormat( GL_DEPTH_COMPONENT32F )
+													 .magFilter( GL_LINEAR )
+													 .minFilter( GL_LINEAR )
+													 .wrap( GL_CLAMP_TO_EDGE )
+													 .dataType( GL_FLOAT ) );
+		gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+		glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+		gl::Fbo::Format fboFormat;
+		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
+		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+	}
+	
+	// Set up shadow camera
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(),
+								 mMayaCam.getCamera().getNearClip(),
+								 mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 	
 	// Call resize to create FBOs
 	resize();
@@ -251,25 +253,67 @@ void DeferredShadingAdvancedApp::draw()
 		}
 	};
 	
+	// Clear frame buffers
+	{
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		const static GLenum buffers[] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2,
+			GL_COLOR_ATTACHMENT3,
+			GL_COLOR_ATTACHMENT4
+		};
+		gl::drawBuffers( 5, buffers );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
+		gl::clear();
+	}
+	{
+		gl::ScopedFramebuffer scopedFrameBuffer( mFboHalf );
+		const static GLenum buffers[] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2,
+			GL_COLOR_ATTACHMENT3,
+		};
+		gl::drawBuffers( 4, buffers );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboHalf->getSize() );
+		gl::clear();
+	}
+	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// SHADOW MAP
+	
+	// Draw shadow casters into FBO from view of shadow camera
+	if ( mEnabledShadow ) {
+		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
+		gl::ScopedMatrices scopedMatrices;
+		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
+		gl::ScopedFrontFace scopedFrontFace( GL_CW );
+		gl::enableDepthRead( true );
+		gl::enableDepthWrite( true );
+		gl::clear();
+		gl::setMatrices( mShadowCamera );
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
+		drawSpheres();
+	}
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// G-BUFFER
 	
 	{
 		// Bind the G-buffer FBO and draw to all attachments
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboGBuffer );
-		{
-			const static GLenum buffers[] = {
-				GL_COLOR_ATTACHMENT0,
-				GL_COLOR_ATTACHMENT1,
-				GL_COLOR_ATTACHMENT2
-			};
-			gl::drawBuffers( 3, buffers );
-		}
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		const static GLenum buffers[] = {
+			GL_COLOR_ATTACHMENT0,
+			GL_COLOR_ATTACHMENT1,
+			GL_COLOR_ATTACHMENT2
+		};
+		gl::drawBuffers( 3, buffers );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::enableDepthRead( true );
 		gl::enableDepthWrite( true );
-		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
@@ -300,68 +344,51 @@ void DeferredShadingAdvancedApp::draw()
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
-	// SHADOW MAP
-
-	// Draw shadow casters into FBO from view of shadow camera
-	if ( mEnabledShadow ) {
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
-		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-		gl::ScopedFrontFace scopedFrontFace( GL_CW );
-		gl::enableDepthRead( true );
-		gl::enableDepthWrite( true );
-		gl::clear();
-		gl::setMatrices( mShadowCamera );
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
-		drawSpheres();
-	}
-
-	//////////////////////////////////////////////////////////////////////////////////////////////
 	// L-BUFFER
 
 	{
 		// Set up window and clear buffers
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboLBuffer );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
-		gl::clear();
+		gl::enableDepthRead( true );
+		gl::enableDepthWrite( true );
 		gl::setMatrices( mMayaCam.getCamera() );
-	
+		
 		// Bind G-buffer textures and shadow map
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],	0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],	1 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],	2 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBuffer[ 3 ],	3 );
-		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,		4 );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],		0 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 1 ],		1 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 2 ],		2 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFbo[ 3 ],		3 );
+		gl::ScopedTextureBind scopedTextureBind4( mTextureFboShadowMap,	4 );
 
 		// Draw light volumes
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
 		mGlslProgLBuffer->uniform( "uProjMatrixInverse",	projMatrixInverse );
 		mGlslProgLBuffer->uniform( "uProjectionParams",		projectionParams );
-		mGlslProgLBuffer->uniform( "uSamplerAlbedo",		0 );
-		mGlslProgLBuffer->uniform( "uSamplerMaterial",		1 );
-		mGlslProgLBuffer->uniform( "uSamplerNormal",		2 );
-		mGlslProgLBuffer->uniform( "uSamplerDepth",			3 );
+		mGlslProgLBuffer->uniform( "uSamplerDepth",			0 );
+		mGlslProgLBuffer->uniform( "uSamplerAlbedo",		1 );
+		mGlslProgLBuffer->uniform( "uSamplerMaterial",		2 );
+		mGlslProgLBuffer->uniform( "uSamplerNormal",		3 );
 		mGlslProgLBuffer->uniform( "uSamplerShadowMap",		4 );
 		mGlslProgLBuffer->uniform( "uShadowEnabled",		mEnabledShadow );
 		mGlslProgLBuffer->uniform( "uShadowMatrix",			shadowMatrix );
 		mGlslProgLBuffer->uniform( "uViewMatrixInverse",	mMayaCam.getCamera().getInverseViewMatrix() );
-		mGlslProgLBuffer->uniform( "uWindowSize",			vec2( mFboLBuffer->getSize() ) );
+		mGlslProgLBuffer->uniform( "uWindowSize",			vec2( mFbo->getSize() ) );
 		mGlslProgLBuffer->uniformBlock( 0, 0 );
 		{
-			gl::enableDepthRead( true );
-			gl::enableDepthWrite( true );
 			gl::ScopedState scopedState( GL_DEPTH_TEST, false );
 			gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		
 			for ( const Light& light : mLights ) {
+				vec3 p = vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) );
+				
 				mGlslProgLBuffer->uniform( "uLightColorAmbient",	light.getColorAmbient() );
 				mGlslProgLBuffer->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
 				mGlslProgLBuffer->uniform( "uLightColorSpecular",	light.getColorSpecular() );
-				mGlslProgLBuffer->uniform( "uLightPosition",
-										  vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+				mGlslProgLBuffer->uniform( "uLightPosition",		p );
 				mGlslProgLBuffer->uniform( "uLightIntensity",		light.getIntensity() );
 				mGlslProgLBuffer->uniform( "uLightRadius",			light.getVolume() );
 				
@@ -373,65 +400,14 @@ void DeferredShadingAdvancedApp::draw()
 		}
 
 		// Draw camera light as full screen rectangle to reduce geometry
-		gl::setMatricesWindow( mFboLBuffer->getSize() );
+		gl::setMatricesWindow( mFbo->getSize() );
 		mGlslProgLBuffer->uniform( "uLightColorAmbient",	mCameraLight.getColorAmbient() );
 		mGlslProgLBuffer->uniform( "uLightColorDiffuse",	mCameraLight.getColorDiffuse() );
 		mGlslProgLBuffer->uniform( "uLightColorSpecular",	mCameraLight.getColorSpecular() );
 		mGlslProgLBuffer->uniform( "uLightPosition",		mCameraLight.getPosition() );
 		mGlslProgLBuffer->uniform( "uLightIntensity",		mCameraLight.getIntensity() );
 		mGlslProgLBuffer->uniform( "uLightRadius",			mCameraLight.getRadius() );
-		gl::drawSolidRect( mFboLBuffer->getBounds() );
-	}
-
-	////////////////////////////////////////////////////////////////////////////////////////////
-	// BLOOM
-
-	if ( mEnabledBloom ) {
-	
-		// Set up window and clear buffers
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboBloom );
-		{
-			const static GLenum buffers[] = {
-				GL_COLOR_ATTACHMENT0,
-				GL_COLOR_ATTACHMENT1
-			};
-			gl::drawBuffers( 2, buffers );
-		}
-		gl::ScopedViewport scopedViewport( ivec2( 0 ),mFboBloom->getSize() );
-		gl::ScopedMatrices scopedMatrices;
-		gl::disableDepthRead();
-		gl::disableDepthWrite();
-		gl::clear();
-		gl::setMatricesWindow( mFboBloom->getSize(), false );
-
-		// Calculate bloom pixel size
-		float bloomAtt	= 1.0f;
-		vec2 bloomSize	= vec2( 1.0f ) / winSize * 5.0f;
-		bloomSize		*= vec2( mFboBloom->getSize() ) / winSize;
-
-		// Horizontal pass
-		{
-			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
-			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],	0 );
-			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],	1 );
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgBloom );
-			mGlslProgBloom->uniform( "uAttenuation",		bloomAtt );
-			mGlslProgBloom->uniform( "uSize",				vec2( bloomSize.x, 0.0f ) );
-			mGlslProgBloom->uniform( "uSamplerAlbedo",		0 );
-			mGlslProgBloom->uniform( "uSamplerMaterial",	1 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboBloom->getSize() ) );
-		}
-
-		// Vertical pass
-		{
-			gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloom[ 0 ], 0 );
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgBlur );
-			mGlslProgBlur->uniform( "uAttenuation",	bloomAtt );
-			mGlslProgBlur->uniform( "uSize",		vec2( 0.0f, bloomSize.y ) );
-			mGlslProgBlur->uniform( "uSampler",		0 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboBloom->getSize() ) );
-		}
+		gl::drawSolidRect( mFbo->getBounds() );
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -440,57 +416,48 @@ void DeferredShadingAdvancedApp::draw()
 	if ( mEnabledSsao ) {
 		
 		// Set up window and clear buffers
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboSsao );
-		{
-			const static GLenum buffers[] = {
-				GL_COLOR_ATTACHMENT0,
-				GL_COLOR_ATTACHMENT1, 
-				GL_COLOR_ATTACHMENT2
-			};
-			gl::drawBuffers( 3, buffers );
-		}
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSsao->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFboHalf );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboHalf->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAlphaBlend scopedAlphaBlend( true );
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
-		gl::clear();
-		gl::setMatricesWindow( mFboSsao->getSize() );
+		gl::setMatricesWindow( mFboHalf->getSize() );
 
 		// SSAO pass
 		{
-			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
-			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 3 ],	0 );
-			gl::ScopedTextureBind scopedTextureBind1( mTextureRandom,			1 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],	2 );
+			gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],	0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureRandom,	1 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 3 ],	2 );
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgSsao );
 			mGlslProgSsao->uniform( "uSamplerDepth",	0 );
 			mGlslProgSsao->uniform( "uSamplerNoise",	1 );
 			mGlslProgSsao->uniform( "uSamplerNormal",	2 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
 		}
 
 		// Calculate blur pixel size
 		vec2 ssaoBlurSize	= vec2( 1.0f ) / winSize;
-		ssaoBlurSize		*= vec2( mFboSsao->getSize() ) / winSize;
+		ssaoBlurSize		*= vec2( mFboHalf->getSize() ) / winSize;
 
 		// Horizontal blur pass
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgBlur );
 		mGlslProgBlur->uniform( "uAttenuation",	1.0f );
 		mGlslProgBlur->uniform( "uSize",		vec2( ssaoBlurSize.x, 0.0f ) );
 		mGlslProgBlur->uniform( "uSampler",		0 );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
 		{
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboSsao[ 0 ], 0 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ 2 ], 0 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
 		}
 
 		// Vertical blur pass
 		mGlslProgBlur->uniform( "uSize", vec2( 0.0f, ssaoBlurSize.y ) );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
 		{
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboSsao[ 1 ], 0 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSsao->getSize() ) );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ 3 ], 0 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
 		}
 	}
 
@@ -498,58 +465,56 @@ void DeferredShadingAdvancedApp::draw()
 	// COMPOSITE
 
 	{
-		size_t pong = ( mFboPostIndex + 1 ) % 2;
-
 		// Set up window for composite pass
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboPost );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + mFboPostIndex );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPost->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT4 );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
-		gl::clear();
-		gl::setMatricesWindow( mFboPost->getSize() );
+		gl::setMatricesWindow( mFbo->getSize() );
 	
 		// Blend L-buffer and shadows
 		if ( mEnabledSsao ) {
-			gl::ScopedTextureBind scopedTextureBind0( mTextureFboLBuffer,	0 );
-			gl::ScopedTextureBind scopedTextureBind1( mTextureFboSsao[ 2 ],	1 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 4 ],		0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboHalf[ 2 ],	1 );
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgComposite );
 			mGlslProgComposite->uniform( "uSamplerLBuffer",	0 );
 			mGlslProgComposite->uniform( "uSamplerSsao",	1 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboPost->getSize() ) );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFbo->getSize() ) );
 		} else {
-			gl::draw( mTextureFboLBuffer );
+			gl::draw( mTextureFbo[ 4 ] );
 		}
-		mFboPostIndex = pong;
+		
+		mPingPong = 0;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// DEPTH OF FIELD
 
 	if ( mEnabledDoF ) {
-		size_t pong = ( mFboPostIndex + 1 ) % 2;
+		size_t pong = ( mPingPong + 1 ) % 2;
 
 		// Set up window for depth of field pass
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboPost );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + mFboPostIndex );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPost->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT3 + mPingPong );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
 		gl::clear();
-		gl::setMatricesWindow( mFboPost->getSize() );
+		gl::setMatricesWindow( mFbo->getSize() );
 
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
-		mGlslProgDof->uniform( "uAspect",		mTextureFboPost[ pong ]->getAspectRatio() );
-		mGlslProgDof->uniform( "uSampler",		0 );
-		mGlslProgDof->uniform( "uSamplerDepth", 1 );
+		mGlslProgDof->uniform( "uAspect",		mTextureFbo[ 4 + pong ]->getAspectRatio() );
+		mGlslProgDof->uniform( "uSamplerDepth", 0 );
+		mGlslProgDof->uniform( "uSampler",		1 );
 
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboPost[ pong ],	0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 3 ],	1 );
-		gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboPost->getSize() ) );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],			0 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 4 + pong ],	1 );
+		gl::drawSolidRect( Rectf( vec2( 0.0f ), mFbo->getSize() ) );
 
-		mFboPostIndex = pong;
+		mPingPong = pong;
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -557,25 +522,68 @@ void DeferredShadingAdvancedApp::draw()
 
 	// Set up window for color processing pass
 	if ( mEnabledColor ) {
-		size_t pong = ( mFboPostIndex + 1 ) % 2;
+		size_t pong = ( mPingPong + 1 ) % 2;
 
 		// Set up window for color pass
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboPost );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + mFboPostIndex );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPost->getSize() );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT3 + mPingPong );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
 		gl::clear();
-		gl::setMatricesWindow( mFboPost->getSize() );
+		gl::setMatricesWindow( mFbo->getSize() );
 	
 		// Perform color processing pass
-		gl::ScopedTextureBind scopedTextureBind( mTextureFboPost[ pong ], 0 );
+		gl::ScopedTextureBind scopedTextureBind( mTextureFbo[ 4 + pong ], 0 );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgColor );
 		mGlslProgColor->uniform( "uSampler", 0 );
-		gl::drawSolidRect( Rectf( vec2( 0.0f ),	mFboPost->getSize() ) );
+		gl::drawSolidRect( Rectf( vec2( 0.0f ),	mFbo->getSize() ) );
 
-		mFboPostIndex = pong;
+		mPingPong = pong;
+	}
+	
+	////////////////////////////////////////////////////////////////////////////////////////////
+	// BLOOM
+	
+	if ( mEnabledBloom ) {
+		
+		// Set up window and clear buffers
+		gl::ScopedFramebuffer scopedFrameBuffer( mFboHalf );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ),mFboHalf->getSize() );
+		gl::ScopedMatrices scopedMatrices;
+		gl::disableDepthRead();
+		gl::disableDepthWrite();
+		gl::setMatricesWindow( mFboHalf->getSize(), false );
+		
+		// Calculate bloom pixel size
+		float bloomAtt	= 1.0f;
+		vec2 bloomSize	= vec2( 1.0f ) / winSize * 5.0f;
+		bloomSize		*= vec2( mFboHalf->getSize() ) / winSize;
+		
+		// Horizontal pass
+		{
+			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 1 ],	0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 2 ],	1 );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgBloom );
+			mGlslProgBloom->uniform( "uAttenuation",		bloomAtt );
+			mGlslProgBloom->uniform( "uSize",				vec2( bloomSize.x, 0.0f ) );
+			mGlslProgBloom->uniform( "uSamplerAlbedo",		0 );
+			mGlslProgBloom->uniform( "uSamplerMaterial",	1 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
+		}
+		
+		// Vertical pass
+		{
+			gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ 0 ], 0 );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgBlur );
+			mGlslProgBlur->uniform( "uAttenuation",	bloomAtt );
+			mGlslProgBlur->uniform( "uSize",		vec2( 0.0f, bloomSize.y ) );
+			mGlslProgBlur->uniform( "uSampler",		0 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -585,9 +593,7 @@ void DeferredShadingAdvancedApp::draw()
 	gl::ScopedViewport scopedViewport( ivec2( 0 ), getWindowSize() );
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
-
-	size_t pong = ( mFboPostIndex + 1 ) % 2;
-
+	
 	if ( mDrawDebug ) {
 		gl::ScopedMatrices scopedMatrices;
 		gl::clear( Colorf::gray( 0.4f ) );
@@ -600,22 +606,22 @@ void DeferredShadingAdvancedApp::draw()
 		sz.x			= w / (float)columns;
 		sz.y			= sz.x / getWindowAspectRatio();
 		size_t index	= 0;
-		auto calcPosition = [ &columns, &sz ]( size_t i ) ->vec2
+		auto calcPosition = [ &columns, &sz ]( size_t i ) -> vec2
 		{
 			return vec2( ( i % columns ) * sz.x, glm::floor( (float)i / (float)columns ) * sz.y );
 		};
 	
 		// G-buffer
 		{
-			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ], 0 );
-			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 3 ], 1 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ], 2 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ], 0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 1 ], 1 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 3 ], 2 );
 
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
 			mGlslProgDebugGbuffer->uniform( "uProjectionParams",	projectionParams );
 			mGlslProgDebugGbuffer->uniform( "uProjMatrixInverse",	projMatrixInverse );
-			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",		0 );
-			mGlslProgDebugGbuffer->uniform( "uSamplerDepth",		1 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerDepth",		0 );
+			mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",		1 );
 			mGlslProgDebugGbuffer->uniform( "uSamplerNormal",		2 );
 
 			for ( int32_t i = 0; i < 4; ++i, ++index ) {
@@ -625,23 +631,12 @@ void DeferredShadingAdvancedApp::draw()
 			}
 		}
 
-		// Bloom
+		// Bloom and SSAO
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			for ( size_t i = 0; i < 2; ++i, ++index ) {
-				mTextureFboBloom[ i ]->setTopDown( i > 0 );
-				gl::ScopedTextureBind scopedTextureBind( mTextureFboBloom[ i ], 0 );
-				vec2 pos = calcPosition( index );
-				gl::drawSolidRect( Rectf( pos, pos + sz ) );
-			}
-		}
-	
-		// SSAO
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			for ( size_t i = 0; i < 3; i += 2, ++index ) {
-				mTextureFboSsao[ i ]->setTopDown( i > 0 );
-				gl::ScopedTextureBind scopedTextureBind( mTextureFboSsao[ i ], 0 );
+			for ( size_t i = 1; i < 4; i += 2, ++index ) {
+				mTextureFboHalf[ i ]->setTopDown( i > 0 );
+				gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ i ], 0 );
 				vec2 pos = calcPosition( index );
 				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
@@ -650,7 +645,7 @@ void DeferredShadingAdvancedApp::draw()
 		// Material
 		{
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugMaterial );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboGBuffer[ 1 ], 0 );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFbo[ 2 ], 0 );
 			mGlslProgDebugMaterial->uniform( "uSampler", 0 );
 			mGlslProgDebugMaterial->uniformBlock( 0, 0 );
 			for ( int32_t i = 0; i < 6; ++i, ++index ) {
@@ -659,25 +654,6 @@ void DeferredShadingAdvancedApp::draw()
 				gl::drawSolidRect( Rectf( pos, pos + sz ) );
 			}
 		}
-		
-		// L-buffer
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-		{
-			mTextureFboLBuffer->setTopDown( true );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
-			vec2 pos = calcPosition( index );
-			gl::drawSolidRect( Rectf( pos, pos + sz ) );
-			++index;
-		}
-
-		// Post-processed
-		{
-			mTextureFboPost[ pong ]->setTopDown( true );
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboPost[ pong ], 0 );
-			vec2 pos = calcPosition( index );
-			gl::drawSolidRect( Rectf( pos, pos + sz ) );
-
-		}
 	} else {
 		gl::ScopedMatrices scopedMatrices;
 		gl::clear();
@@ -685,7 +661,7 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Perform FXAA
 		{
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboPost[ pong ], 0 );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFbo[ 4 + mPingPong ], 0 );
 			if ( mEnabledFxaa ) {
 				gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
 				mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
@@ -701,13 +677,13 @@ void DeferredShadingAdvancedApp::draw()
 		if ( mEnabledBloom ) {
 			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 			gl::ScopedAdditiveBlend scopedAdditiveBlend;
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboBloom[ 1 ], 0 );
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ 1 ], 0 );
 			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 		}
 
 		// Draw light volumes
 		if ( mDrawLightVolume ) {
-			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
+			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 			gl::ScopedMatrices scopedMatrices;
 			gl::ScopedAlphaBlend scopedAlphaBlend( false );
 			gl::setMatrices( mMayaCam.getCamera() );
@@ -723,8 +699,6 @@ void DeferredShadingAdvancedApp::draw()
 			}
 		}
 	}
-
-	mFboPostIndex = pong;
 
 	mParams->draw();
 }
@@ -785,24 +759,6 @@ void DeferredShadingAdvancedApp::resize()
 	camera.setAspectRatio( getWindowAspectRatio() );
 	mMayaCam.setCurrentCam( camera );
 
-	// Shortcut for clearing FBO
-	auto clearFbo = []( gl::FboRef& fbo ) -> void {
-		gl::ScopedFramebuffer fboScope( fbo );
-		gl::viewport( fbo->getSize() );
-		gl::clear();
-	};
-
-	// Shortcut for using texture specs to create a render buffer
-	auto createRenderbufferFromTexture = 
-		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
-	{
-		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), 
-										 (int32_t)samples, (int32_t)coverageSamples );
-	};
-	
-	const ivec2 windowSize		= getWindowSize();
-	const ivec2 windowSizeHalf	= windowSize / 2;
-
 	// Texture format for color buffers
 	gl::Texture2d::Format textureFormat = gl::Texture2d::Format()
 		.internalFormat( GL_RGB10_A2 )
@@ -811,101 +767,66 @@ void DeferredShadingAdvancedApp::resize()
 		.wrap( GL_CLAMP_TO_EDGE )
 		.dataType( GL_FLOAT );
 
-	// Bloom buffer
+	// Half window size framebuffer
+	// 0 - 1 Bloom
+	// 2 - 3 SSAO
 	{
-		gl::Fbo::Format fboFormat;
-		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboBloom[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, 
-														   gl::Texture2d::Format()
-														   .internalFormat( GL_RGB8 )
-														   .magFilter( GL_LINEAR )
-														   .minFilter( GL_LINEAR )
-														   .wrap( GL_CLAMP_TO_EDGE )
-														   .dataType( GL_BYTE ) );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboBloom[ i ], 
-								  createRenderbufferFromTexture( mTextureFboBloom[ 0 ], 0, 0 ) );
-		}
-		mFboBloom = gl::Fbo::create( windowSizeHalf.x, windowSizeHalf.y, fboFormat );
-		clearFbo( mFboBloom );
-	}
-
-	// Geometry buffer
-	{
-		mTextureFboGBuffer[ 0 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
-		mTextureFboGBuffer[ 1 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, 
-														 gl::Texture2d::Format()
-														 .internalFormat( GL_R8I )
-														 .magFilter( GL_NEAREST )
-														 .minFilter( GL_NEAREST )
-														 .wrap( GL_CLAMP_TO_EDGE )
-														 .dataType( GL_BYTE ) );
-		mTextureFboGBuffer[ 2 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, 
-														 gl::Texture2d::Format()
-														 .internalFormat( GL_RG8 )
-														 .magFilter( GL_NEAREST )
-														 .minFilter( GL_NEAREST )
-														 .wrap( GL_CLAMP_TO_EDGE )
-														 .dataType( GL_BYTE ) );
-		mTextureFboGBuffer[ 3 ]	= gl::Texture2d::create( windowSize.x, windowSize.y,
-														gl::Texture2d::Format()
-														.internalFormat( GL_DEPTH_COMPONENT32F )
-														.magFilter( GL_LINEAR )
-														.minFilter( GL_LINEAR )
-														.wrap( GL_CLAMP_TO_EDGE )
-														.dataType( GL_FLOAT ) );
+		int32_t h = getWindowHeight() / 2;
+		int32_t w = getWindowWidth() / 2;
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 4; ++i ) {
-			fboFormat.attachment( i == 3 ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0 + i, 
-								  mTextureFboGBuffer[ i ], 
-								  createRenderbufferFromTexture( mTextureFboGBuffer[ i ], 0, 0 ) );
+			mTextureFboHalf[ i ] = gl::Texture2d::create( w, h, textureFormat );
+			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboHalf[ i ],
+								 gl::Renderbuffer::create( w, h, mTextureFboHalf[ i ]->getInternalFormat(), 0, 0 ) );
 		}
-		try {
-			mFboGBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-			clearFbo( mFboGBuffer );
-		} catch ( gl::FboExceptionInvalidSpecification ex ) {
-			console() << "Failed to create G-buffer: " << ex.what() << endl;
-			quit();
-		}
+		mFboHalf = gl::Fbo::create( w, h, fboFormat );
+		gl::ScopedFramebuffer scopedFramebuffer( mFboHalf );
+		gl::viewport( mFboHalf->getSize() );
+		gl::clear();
 	}
 
-	// Light buffer
+	// Set up the frame buffer
+	// 0 GL_DEPTH_ATTACHMENT	Depth
+	// 1 GL_COLOR_ATTACHMENT0	Albedo
+	// 2 GL_COLOR_ATTACHMENT1	Material ID
+	// 3 GL_COLOR_ATTACHMENT2	Encoded normals
+	// 4 GL_COLOR_ATTACHMENT3	Ping
+	// 5 GL_COLOR_ATTACHMENT4	Pong
 	{
-		mTextureFboLBuffer = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
+		int32_t h = getWindowHeight();
+		int32_t w = getWindowWidth();
+		mTextureFbo[ 0 ] = gl::Texture2d::create( w, h, gl::Texture2d::Format()
+												 .internalFormat( GL_DEPTH_COMPONENT32F )
+												 .magFilter( GL_LINEAR )
+												 .minFilter( GL_LINEAR )
+												 .wrap( GL_CLAMP_TO_EDGE )
+												.dataType( GL_FLOAT ) );
+		mTextureFbo[ 1 ] = gl::Texture2d::create( w, h, textureFormat );
+		mTextureFbo[ 2 ] = gl::Texture2d::create( w, h, gl::Texture2d::Format()
+												 .internalFormat( GL_R8I )
+												 .magFilter( GL_NEAREST )
+												 .minFilter( GL_NEAREST )
+												 .wrap( GL_CLAMP_TO_EDGE )
+												 .dataType( GL_BYTE ) );
+		mTextureFbo[ 3 ] = gl::Texture2d::create( w, h, gl::Texture2d::Format()
+												 .internalFormat( GL_RG8 )
+												 .magFilter( GL_NEAREST )
+												 .minFilter( GL_NEAREST )
+												 .wrap( GL_CLAMP_TO_EDGE )
+												 .dataType( GL_BYTE ) );
+		mTextureFbo[ 4 ] = gl::Texture2d::create( w, h, textureFormat );
+		mTextureFbo[ 5 ] = gl::Texture2d::create( w, h, textureFormat );
 		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, 
-							  createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 ) );
-		mFboLBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-
-		clearFbo( mFboLBuffer );
-	}
-
-	// Post-processing buffer
-	{
-		gl::Fbo::Format fboFormat;
-		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboPost[ i ] = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboPost[ i ], 
-								  createRenderbufferFromTexture( mTextureFboPost[ 0 ], 0, 0 ) );
+		for ( size_t i = 0; i <= 5; ++i ) {
+			 fboFormat.attachment( i == 0 ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0 + ( i - 1 ),
+								  mTextureFbo[ i ],
+								  gl::Renderbuffer::create( w, h, mTextureFbo[ i ]->getInternalFormat(), 0, 0 ) );
 		}
-		mFboPost = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-		clearFbo( mFboPost );
+		mFbo = gl::Fbo::create( w, h, fboFormat );
+		gl::ScopedFramebuffer scopedFramebuffer( mFbo );
+		gl::viewport( mFbo->getSize() );
+		gl::clear();
 	}
-
-	// Screen space ambient occlusion buffer
-	{
-		gl::Fbo::Format fboFormat;
-		for ( size_t i = 0; i < 3; ++i ) {
-			mTextureFboSsao[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboSsao[ i ], 
-								  createRenderbufferFromTexture( mTextureFboSsao[ i ], 0, 0 ) );
-		}
-		mFboSsao = gl::Fbo::create( windowSizeHalf.x, windowSizeHalf.y, fboFormat );
-		clearFbo( mFboSsao );
-	}
-
-	// Set up shadow camera
-	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
-	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
 void DeferredShadingAdvancedApp::screenShot()
