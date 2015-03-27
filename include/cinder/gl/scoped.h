@@ -167,6 +167,7 @@ struct ScopedScissor : private Noncopyable {
 
 struct ScopedViewport : private Noncopyable {
 	ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
+	ScopedViewport( const ivec2 &size );
 	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedViewport();
 
