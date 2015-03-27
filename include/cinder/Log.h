@@ -133,8 +133,6 @@ class Logger {
 
 class LoggerConsole : public Logger {
   public:
-	virtual ~LoggerConsole()	{}
-
 	void write( const Metadata &meta, const std::string &text ) override;
 };
 
