@@ -455,6 +455,7 @@ void DeferredShadingAdvancedApp::draw()
 		// Vertical blur pass
 		mGlslProgBlur->uniform( "uSize", vec2( 0.0f, ssaoBlurSize.y ) );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
+		gl::clear();
 		{
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboHalf[ 3 ], 0 );
 			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboHalf->getSize() ) );
