@@ -161,6 +161,21 @@ class LoggerFile : public Logger {
 	std::ofstream	mStream;
 };
 
+//! Logger that doesn't actually print anything, but triggers a breakpoint if a log event happens past a specified threshold
+class LoggerBreakpoint : public Logger {
+  public:
+	LoggerBreakpoint( Level triggerLevel = LEVEL_ERROR )
+		: mTriggerLevel( triggerLevel )
+	{}
+
+	void write( const Metadata &meta, const std::string &text ) override;
+
+	void	setTriggerLevel( Level triggerLevel )	{ mTriggerLevel = triggerLevel; }
+	Level	getTriggerLevel() const					{ return mTriggerLevel; }
+  private:
+	Level	mTriggerLevel;
+};
+
 #if defined( CINDER_COCOA )
 
 class LoggerSysLog : public Logger {
@@ -223,6 +238,13 @@ public:
 	void setSystemLoggingLevel( Level level );
 	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
 
+	//! Enables a breakpoint to be triggered when a log message happens at `LEVEL_ERROR` or higher
+	void enableBreakOnError()							{ enableBreakOnLevel( LEVEL_ERROR ); }
+	//! Enables a breakpoint to be triggered when a log message happens at \a trigerLevel or higher.
+	void enableBreakOnLevel( Level trigerLevel );
+	//! Disables any breakpoints set for logging.
+	void disableBreakOnLog();
+
 protected:
 	LogManager();
 
@@ -231,7 +253,7 @@ protected:
 	std::unique_ptr<Logger>	mLogger;
 	LoggerImplMulti			*mLoggerMulti;
 	mutable std::mutex		mMutex;
-	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled;
+	bool					mConsoleLoggingEnabled, mFileLoggingEnabled, mSystemLoggingEnabled, mBreakOnLogEnabled;
 	Level					mSystemLoggingLevel;
 
 	static LogManager *sInstance;

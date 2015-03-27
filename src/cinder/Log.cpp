@@ -24,6 +24,7 @@
 #include "cinder/Log.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Utilities.h"
+#include "cinder/Breakpoint.h"
 #include "cinder/app/Platform.h"
 
 #if defined( CINDER_COCOA )
@@ -175,6 +176,7 @@ void LogManager::restoreToDefault()
 	mConsoleLoggingEnabled = true;
 	mFileLoggingEnabled = false;
 	mSystemLoggingEnabled = false;
+	mBreakOnLogEnabled = false;
 
 	switch( CI_MAX_LOG_LEVEL ) {
 		case 5: mSystemLoggingLevel = LEVEL_VERBOSE;	break;
@@ -298,6 +300,30 @@ void LogManager::disableSystemLogging()
 #endif
 }
 
+void LogManager::enableBreakOnLevel( Level triggerLevel )
+{
+	if( mBreakOnLogEnabled ) {
+		auto logger = mLoggerMulti->findType<LoggerBreakpoint>();
+		logger->setTriggerLevel( triggerLevel );
+	}
+	else {
+		addLogger( new LoggerBreakpoint( triggerLevel ) );
+		mBreakOnLogEnabled = true;
+	}
+}
+
+void LogManager::disableBreakOnLog()
+{
+	if( ! mBreakOnLogEnabled )
+		return;
+	
+	auto logger = mLoggerMulti->findType<LoggerBreakpoint>();
+	if( logger )
+		mLoggerMulti->remove( logger );
+
+	mBreakOnLogEnabled = false;
+}
+
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Logger
 // ----------------------------------------------------------------------------------------------------
@@ -417,6 +443,17 @@ void LoggerFile::ensureDirectoryExists()
 			// not using CI_LOG_E since it could lead to recursion
 			cerr << "ci::log::LoggerFile error: Unable to create folder \"" << dir.string() << "\"" << endl;
 		}
+	}
+}
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerBreakpoint
+// ----------------------------------------------------------------------------------------------------
+
+void LoggerBreakpoint::write( const Metadata &meta, const string &text )
+{
+	if( meta.mLevel >= mTriggerLevel ) {
+		CI_BREAKPOINT();
 	}
 }
 
