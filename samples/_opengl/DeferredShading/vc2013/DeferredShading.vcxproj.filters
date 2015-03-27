@@ -36,9 +36,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\debug_gbuffer_frag.glsl">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\fxaa_frag.glsl">
       <Filter>assets</Filter>
     </None>
@@ -58,6 +55,9 @@
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\shadow_map_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\debug_frag.glsl">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

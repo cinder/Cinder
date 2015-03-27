@@ -41,7 +41,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 
 void main( void )
 {
-	float depth		= texture( uSamplerDepth, vertex.uv ).r + 0.5;
+	float depth		= texture( uSamplerDepth, vertex.uv ).r * 1.0;
 	vec2 sz			= vec2( kBias * distance( depth, kDepthPlane ) / kDepthPlane ) * vec2( 1.0, uAspect );
 	float influence	= 0.000001;
 	vec4 sum		= vec4( 0.0 );

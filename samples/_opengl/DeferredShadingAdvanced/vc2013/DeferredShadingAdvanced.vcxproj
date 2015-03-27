@@ -215,8 +215,7 @@
     <None Include="..\assets\blur_frag.glsl" />
     <None Include="..\assets\color_frag.glsl" />
     <None Include="..\assets\composite_frag.glsl" />
-    <None Include="..\assets\debug_gbuffer_frag.glsl" />
-    <None Include="..\assets\debug_material_frag.glsl" />
+    <None Include="..\assets\debug_frag.glsl" />
     <None Include="..\assets\dof_frag.glsl" />
     <None Include="..\assets\fxaa_frag.glsl" />
     <None Include="..\assets\gbuffer_frag.glsl" />

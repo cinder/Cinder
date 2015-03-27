@@ -207,7 +207,7 @@
     <ClInclude Include="..\include\Light.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\debug_gbuffer_frag.glsl" />
+    <None Include="..\assets\debug_frag.glsl" />
     <None Include="..\assets\fxaa_frag.glsl" />
     <None Include="..\assets\gbuffer_frag.glsl" />
     <None Include="..\assets\gbuffer_vert.glsl" />

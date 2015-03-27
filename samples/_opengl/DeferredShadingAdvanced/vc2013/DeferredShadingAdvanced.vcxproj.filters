@@ -57,12 +57,6 @@
     <None Include="..\assets\composite_frag.glsl">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\debug_gbuffer_frag.glsl">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\debug_material_frag.glsl">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\dof_frag.glsl">
       <Filter>assets</Filter>
     </None>
@@ -91,6 +85,9 @@
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\ssao_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\debug_frag.glsl">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

@@ -27,7 +27,7 @@ private:
 
 	std::vector<Light>			mLights;
 	
-	ci::gl::GlslProgRef			mGlslProgDebugGbuffer;
+	ci::gl::GlslProgRef			mGlslProgDebug;
 	ci::gl::GlslProgRef			mGlslProgFxaa;
 	ci::gl::GlslProgRef			mGlslProgGBuffer;
 	ci::gl::GlslProgRef			mGlslProgLBuffer;
@@ -94,7 +94,7 @@ DeferredShadingApp::DeferredShadingApp()
 	// Load shaders
 	DataSourceRef gBufferVert	= loadAsset( "gbuffer_vert.glsl" );
 	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
-	mGlslProgDebugGbuffer		= loadGlslProg( "Debug G-Buffer",	passThrough,							loadAsset( "debug_gbuffer_frag.glsl" ) );
+	mGlslProgDebug				= loadGlslProg( "Debug",			passThrough,							loadAsset( "debug_frag.glsl" ) );
 	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
 	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			gBufferVert,							loadAsset( "gbuffer_frag.glsl" ) );
 	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
@@ -328,10 +328,10 @@ void DeferredShadingApp::draw()
 		// Draw G-buffer
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgDebugGbuffer );
-		mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",			0 );
-		mGlslProgDebugGbuffer->uniform( "uSamplerNormalEmissive",	1 );
-		mGlslProgDebugGbuffer->uniform( "uSamplerPosition",			2 );
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgDebug );
+		mGlslProgDebug->uniform( "uSamplerAlbedo",			0 );
+		mGlslProgDebug->uniform( "uSamplerNormalEmissive",	1 );
+		mGlslProgDebug->uniform( "uSamplerPosition",			2 );
 		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],	0 );
 		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 1 ],	1 );
 		gl::ScopedTextureBind scopedTextureBind3( mTextureFbo[ 2 ],	2 );
@@ -341,7 +341,7 @@ void DeferredShadingApp::draw()
 		// Position | Emissive
 		vec2 sz = getWindowCenter();
 		for ( int32_t i = 0; i < 4; ++i ) {
-			mGlslProgDebugGbuffer->uniform( "uMode", i );
+			mGlslProgDebug->uniform( "uMode", i );
 			vec2 pos( ( i % 2 ) * sz.x, glm::floor( (float)i * 0.5f ) * sz.y );
 			gl::drawSolidRect( Rectf( pos, pos + sz ) );
 		}
