@@ -227,9 +227,9 @@ Paint Paint::parse( const char *value, bool *specified, const Node *parentNode )
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
@@ -746,9 +746,9 @@ Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNo
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
