@@ -156,6 +156,11 @@ DeferredShadingApp::DeferredShadingApp()
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
 	mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
 	
+	// Set up shadow camera
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
+								  mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
+
 	// Call resize to create FBOs
 	resize();
 }
@@ -405,11 +410,6 @@ void DeferredShadingApp::resize()
 	gl::ScopedFramebuffer scopedFramebuffer( mFbo );
 	gl::ScopedViewport( ivec2( 0 ), mFbo->getSize() );
 	gl::clear();
-
-	// Set up shadow camera
-	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
-								  mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
-	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
 void DeferredShadingApp::screenShot()
