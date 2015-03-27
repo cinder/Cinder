@@ -396,23 +396,15 @@ void DeferredShadingApp::resize()
 	// attachment read the first three to render the scene inside light volumes.
 	int32_t h = getWindowHeight();
 	int32_t w = getWindowWidth();
-	{
-		gl::Fbo::Format fboFormat;
-		for ( size_t i = 0; i < 4; ++i ) {
-			mTextureFbo[ i ] = gl::Texture2d::create( w, h, textureFormat );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFbo[ i ],
-								 gl::Renderbuffer::create( w, h, GL_RGBA16F, 0, 0 ) );
-		}
-		try {
-			mFbo = gl::Fbo::create( w, h, fboFormat );
-			gl::ScopedFramebuffer scopedFramebuffer( mFbo );
-			gl::ScopedViewport( ivec2( 0 ), mFbo->getSize() );
-			gl::clear();
-		} catch ( gl::FboExceptionInvalidSpecification ex ) {
-			console() << "Failed to create FBO: " << ex.what() << endl;
-			quit();
-		}
+	gl::Fbo::Format fboFormat;
+	for ( size_t i = 0; i < 4; ++i ) {
+		mTextureFbo[ i ] = gl::Texture2d::create( w, h, textureFormat );
+		fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFbo[ i ] );
 	}
+	mFbo = gl::Fbo::create( w, h, fboFormat );
+	gl::ScopedFramebuffer scopedFramebuffer( mFbo );
+	gl::ScopedViewport( ivec2( 0 ), mFbo->getSize() );
+	gl::clear();
 
 	// Set up shadow camera
 	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
