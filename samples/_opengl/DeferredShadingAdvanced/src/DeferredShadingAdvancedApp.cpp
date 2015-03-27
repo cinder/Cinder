@@ -592,7 +592,6 @@ void DeferredShadingAdvancedApp::draw()
 			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 			
 			{
-				// Set up window for composite pass
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + ping );
 				gl::ScopedMatrices scopedMatrices;
 				gl::setMatricesWindow( mFboPingPong->getSize() );
@@ -619,8 +618,6 @@ void DeferredShadingAdvancedApp::draw()
 			// DEPTH OF FIELD
 			
 			if ( mEnabledDoF ) {
-				
-				// Set up window for depth of field pass
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + ping );
 				gl::ScopedMatrices scopedMatrices;
 				gl::setMatricesWindow( mFboPingPong->getSize() );
@@ -643,8 +640,6 @@ void DeferredShadingAdvancedApp::draw()
 			// COLOR
 			
 			if ( mEnabledColor ) {
-				
-				// Set up window for color pass
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + ping );
 				gl::ScopedMatrices scopedMatrices;
 				gl::setMatricesWindow( mFboPingPong->getSize() );
