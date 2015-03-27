@@ -45,9 +45,6 @@
     <None Include="..\assets\blend_frag.glsl">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\bloom_frag.glsl">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\blur_frag.glsl">
       <Filter>assets</Filter>
     </None>
@@ -88,6 +85,9 @@
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\debug_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\emissive_frag.glsl">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

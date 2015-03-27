@@ -211,7 +211,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\assets\blend_frag.glsl" />
-    <None Include="..\assets\bloom_frag.glsl" />
+    <None Include="..\assets\emissive_frag.glsl" />
     <None Include="..\assets\blur_frag.glsl" />
     <None Include="..\assets\color_frag.glsl" />
     <None Include="..\assets\composite_frag.glsl" />

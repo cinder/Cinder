@@ -44,12 +44,12 @@ private:
 	
 	void						loadShaders();
 	ci::gl::GlslProgRef			mGlslProgBlend;
-	ci::gl::GlslProgRef			mGlslProgBloom;
 	ci::gl::GlslProgRef			mGlslProgBlur;
 	ci::gl::GlslProgRef			mGlslProgColor;
 	ci::gl::GlslProgRef			mGlslProgComposite;
 	ci::gl::GlslProgRef			mGlslProgDebug;
 	ci::gl::GlslProgRef			mGlslProgDof;
+	ci::gl::GlslProgRef			mGlslProgEmissive;
 	ci::gl::GlslProgRef			mGlslProgFxaa;
 	ci::gl::GlslProgRef			mGlslProgGBuffer;
 	ci::gl::GlslProgRef			mGlslProgLBuffer;
@@ -65,7 +65,7 @@ private:
 	
 	ci::gl::Texture2dRef		mTextureFboGBuffer[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboPingPong[ 2 ];
-	ci::gl::Texture2dRef		mTextureFboSmall[ 4 ];
+	ci::gl::Texture2dRef		mTextureFboSmall[ 5 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
 	ci::gl::TextureRef			mTextureRandom;
 
@@ -275,18 +275,18 @@ void DeferredShadingAdvancedApp::draw()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::clear();
 	}
-	{
+	/*{
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboSmall );
 		const static GLenum buffers[] = {
-			GL_COLOR_ATTACHMENT0,
 			GL_COLOR_ATTACHMENT1,
 			GL_COLOR_ATTACHMENT2,
 			GL_COLOR_ATTACHMENT3,
+			GL_COLOR_ATTACHMENT4
 		};
 		gl::drawBuffers( 4, buffers );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSmall->getSize() );
 		gl::clear();
-	}
+	}*/
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// SHADOW MAP
@@ -427,13 +427,68 @@ void DeferredShadingAdvancedApp::draw()
 		pong = ( pong + 1 ) % 2;
 	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	// SSAO
-
 	{
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboSmall );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSmall->getSize() );
 		
+		////////////////////////////////////////////////////////////////////////////////////////////
+		// LIGHT ACCUMULATION AND BLOOM
+
+		gl::ScopedMatrices scopedMatrices;
+		gl::setMatricesWindow( mFboSmall->getSize() );
+		gl::disableDepthRead();
+		gl::disableDepthWrite();
+			
+		// Light accumulation
+		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
+				
+		// Dim last frame (produces light trails)
+		{
+			gl::ScopedAlphaBlend scopedAlphaBlend( false );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockColor );
+			gl::ScopedColor scopedColor( ColorAf( Colorf::black(), 0.43f ) );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
+		}
+		{
+			gl::ScopedAdditiveBlend scopedAdditiveBlend;
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 1 ], 0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 2 ], 1 );
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgEmissive );
+			mGlslProgEmissive->uniform( "uSamplerAlbedo",	0 );
+			mGlslProgEmissive->uniform( "uSamplerMaterial",	1 );
+			gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
+		}
+
+		// Bloom
+		if ( mEnabledBloom ) {
+			float bloomAtt	= 1.0f;
+			vec2 bloomSize	= vec2( 1.0f ) / winSize * 3.0f;
+			bloomSize		*= vec2( mFboSmall->getSize() ) / winSize;
+			
+			gl::ScopedGlslProg scopedGlslProg( mGlslProgBlur );
+			mGlslProgBlur->uniform( "uAttenuation",	bloomAtt );
+			mGlslProgBlur->uniform( "uSampler",		0 );
+			
+			// Horizontal pass
+			gl::drawBuffer( GL_COLOR_ATTACHMENT1 );	
+			mGlslProgBlur->uniform( "uSize", vec2( bloomSize.x, 0.0f ) );
+			{
+				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 0 ], 0 );
+				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
+			}
+			
+			// Vertical pass
+			gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
+			mGlslProgBlur->uniform( "uSize", vec2( 0.0f, bloomSize.y ) );
+			{
+				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 1 ], 0 );
+				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
+			}
+		}
+
+		//////////////////////////////////////////////////////////////////////////////////////////////
+		// SSAO
+
 		if ( mEnabledSsao ) {
 			gl::ScopedAlphaBlend scopedAlphaBlend( true );
 			gl::ScopedMatrices scopedMatrices;
@@ -443,7 +498,7 @@ void DeferredShadingAdvancedApp::draw()
 
 			// SSAO pass
 			{
-				gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
+				gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
 				gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],	0 );
 				gl::ScopedTextureBind scopedTextureBind1( mTextureRandom,			1 );
 				gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 3 ],	2 );
@@ -463,7 +518,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgBlur->uniform( "uAttenuation",	1.0f );
 			mGlslProgBlur->uniform( "uSize",		vec2( ssaoBlurSize.x, 0.0f ) );
 			mGlslProgBlur->uniform( "uSampler",		0 );
-			gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
+			gl::drawBuffer( GL_COLOR_ATTACHMENT4 );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 2 ], 0 );
 				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
@@ -471,49 +526,9 @@ void DeferredShadingAdvancedApp::draw()
 
 			// Vertical blur pass
 			mGlslProgBlur->uniform( "uSize", vec2( 0.0f, ssaoBlurSize.y ) );
-			gl::drawBuffer( GL_COLOR_ATTACHMENT2 );
-			gl::clear();
+			gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
 			{
 				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 3 ], 0 );
-				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
-			}
-		}
-		
-		////////////////////////////////////////////////////////////////////////////////////////////
-		// BLOOM
-		
-		if ( mEnabledBloom ) {
-			gl::ScopedMatrices scopedMatrices;
-			gl::setMatricesWindow( mFboSmall->getSize(), false );
-			gl::disableDepthRead();
-			gl::disableDepthWrite();
-			
-			// Calculate bloom pixel size
-			float bloomAtt	= 1.0f;
-			vec2 bloomSize	= vec2( 1.0f ) / winSize * 5.0f;
-			bloomSize		*= vec2( mFboSmall->getSize() ) / winSize;
-			
-			// Horizontal pass
-			{
-				gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
-				gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 1 ], 0 );
-				gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 2 ], 1 );
-				gl::ScopedGlslProg scopedGlslProg( mGlslProgBloom );
-				mGlslProgBloom->uniform( "uAttenuation",		bloomAtt );
-				mGlslProgBloom->uniform( "uSize",				vec2( bloomSize.x, 0.0f ) );
-				mGlslProgBloom->uniform( "uSamplerAlbedo",		0 );
-				mGlslProgBloom->uniform( "uSamplerMaterial",	1 );
-				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
-			}
-			
-			// Vertical pass
-			{
-				gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
-				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 0 ], 0 );
-				gl::ScopedGlslProg scopedGlslProg( mGlslProgBlur );
-				mGlslProgBlur->uniform( "uAttenuation",	bloomAtt );
-				mGlslProgBlur->uniform( "uSize",		vec2( 0.0f, bloomSize.y ) );
-				mGlslProgBlur->uniform( "uSampler",		0 );
 				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboSmall->getSize() ) );
 			}
 		}
@@ -564,14 +579,18 @@ void DeferredShadingAdvancedApp::draw()
 			}
 		}
 
-		// Bloom and SSAO
+		// Bloom
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
 		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			for ( size_t i = 1; i < 4; i += 2, ++index ) {
-				gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ i ], 0 );
-				vec2 pos = calcPosition( index );
-				gl::drawSolidRect( Rectf( pos, pos + sz ) );
-			}
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ mEnabledBloom ? 2 : 0 ], 0 );
+			vec2 pos = calcPosition( index );
+			gl::drawSolidRect( Rectf( pos, pos + sz ) );
+			++index;
+		}
+		{
+			gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 3 ], 0 );
+			vec2 pos = calcPosition( index );
+			gl::drawSolidRect( Rectf( pos, pos + sz ) );
 		}
 	} else {
 		
@@ -593,7 +612,7 @@ void DeferredShadingAdvancedApp::draw()
 				// Blend L-buffer and SSAO
 				if ( mEnabledSsao ) {
 					gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],	0 );
-					gl::ScopedTextureBind scopedTextureBind1( mTextureFboSmall[ 2 ],		1 );
+					gl::ScopedTextureBind scopedTextureBind1( mTextureFboSmall[ 3 ],		1 );
 					gl::ScopedGlslProg scopedGlslProg( mGlslProgComposite );
 					mGlslProgComposite->uniform( "uSamplerLBuffer",	0 );
 					mGlslProgComposite->uniform( "uSamplerSsao",	1 );
@@ -676,13 +695,11 @@ void DeferredShadingAdvancedApp::draw()
 			}
 		}
 
-		// Draw bloom on top
-		if ( mEnabledBloom ) {
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			gl::ScopedAdditiveBlend scopedAdditiveBlend;
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ 1 ], 0 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
-		}
+		// Draw light accumulation
+		gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
+		gl::ScopedAdditiveBlend scopedAdditiveBlend;
+		gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ mEnabledBloom ? 2 : 0 ], 0 );
+		gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
 
 		// Draw light volumes
 		if ( mDrawLightVolume ) {
@@ -729,12 +746,12 @@ void DeferredShadingAdvancedApp::loadShaders()
 	// Load shaders
 	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
 	mGlslProgBlend				= loadGlslProg( "Blend",			passThrough,							loadAsset( "blend_frag.glsl" ) );
-	mGlslProgBloom				= loadGlslProg( "Bloom",			passThrough,							loadAsset( "bloom_frag.glsl" ) );
 	mGlslProgBlur				= loadGlslProg( "Blur",				passThrough,							loadAsset( "blur_frag.glsl" ) );
 	mGlslProgColor				= loadGlslProg( "Color",			passThrough,							loadAsset( "color_frag.glsl" ) );
 	mGlslProgComposite			= loadGlslProg( "Composite",		passThrough,							loadAsset( "composite_frag.glsl" ) );
 	mGlslProgDebug				= loadGlslProg( "Debug",			passThrough,							loadAsset( "debug_frag.glsl" ) );
 	mGlslProgDof				= loadGlslProg( "Depth of field",	passThrough,							loadAsset( "dof_frag.glsl" ) );
+	mGlslProgEmissive			= loadGlslProg( "Emissive",			passThrough,							loadAsset( "emissive_frag.glsl" ) );
 	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
 	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer_vert.glsl" ),		loadAsset( "gbuffer_frag.glsl" ) );
 	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
@@ -824,13 +841,14 @@ void DeferredShadingAdvancedApp::resize()
 	}
 	
 	// Half-size framebuffer
-	// 0 GL_COLOR_ATTACHMENT0 Bloom ping
-	// 1 GL_COLOR_ATTACHMENT1 Bloom pong
-	// 2 GL_COLOR_ATTACHMENT2 SSAO ping
-	// 3 GL_COLOR_ATTACHMENT3 SSAO pong
+	// 0 GL_COLOR_ATTACHMENT0 Light accumulation
+	// 1 GL_COLOR_ATTACHMENT1 Bloom ping
+	// 2 GL_COLOR_ATTACHMENT2 Bloom pong
+	// 3 GL_COLOR_ATTACHMENT3 SSAO ping
+	// 4 GL_COLOR_ATTACHMENT4 SSAO pong
 	{
 		gl::Fbo::Format fboFormat;
-		for ( size_t i = 0; i < 4; ++i ) {
+		for ( size_t i = 0; i < 5; ++i ) {
 			mTextureFboSmall[ i ] = gl::Texture2d::create( w / 2, h / 2, textureFormat );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboSmall[ i ] );
 		}
