@@ -8,7 +8,7 @@ const float	kDepthPlane	= 0.85;
 const float	kOpacity	= 1.0;
 
 uniform float		uAspect;
-uniform sampler2D	uSampler;
+uniform sampler2D	uSamplerColor;
 uniform sampler2D	uSamplerDepth;
 
 in Vertex
@@ -22,7 +22,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 {
 	float iDepth	= 0.0;
 	float contrib	= 0.0;
-	vec4 color		= texture( uSampler, vertex.uv + offset );
+	vec4 color		= texture( uSamplerColor, vertex.uv + offset );
 
 	if ( color.rgb == vec3( 0.0 ) ) {
 		contrib = 0.2;
@@ -77,6 +77,6 @@ void main( void )
     sum += bokeh( depth, vec2( -0.317019, -0.769672 ) * sz, influence );
     sum += bokeh( depth, vec2( -0.634038, -0.539345 ) * sz, influence );
    
-	oColor = mix( texture( uSampler, vertex.uv ), sum / influence, vec4( vec3( kOpacity ), 1.0 ) );
+	oColor = mix( texture( uSamplerColor, vertex.uv ), sum / influence, vec4( vec3( kOpacity ), 1.0 ) );
 }
  

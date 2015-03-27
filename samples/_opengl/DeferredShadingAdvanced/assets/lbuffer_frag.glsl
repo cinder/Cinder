@@ -153,5 +153,6 @@ void main( void )
 		oColor			= oColor * ( 1.0 - kShadowOpacity ) + ( oColor * shadow( position ) * kShadowOpacity );
 	}
 	oColor				*= uLightIntensity;
+
 }
  

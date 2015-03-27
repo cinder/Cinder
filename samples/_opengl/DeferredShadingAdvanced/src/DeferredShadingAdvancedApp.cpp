@@ -63,7 +63,7 @@ private:
 	ci::gl::FboRef				mFboShadowMap;
 	ci::gl::FboRef				mFboSmall;
 	
-	ci::gl::Texture2dRef		mTextureFboGBuffer[ 3 ];
+	ci::gl::Texture2dRef		mTextureFboGBuffer[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboPingPong[ 2 ];
 	ci::gl::Texture2dRef		mTextureFboSmall[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
@@ -623,7 +623,7 @@ void DeferredShadingAdvancedApp::draw()
 				gl::ScopedGlslProg scopedGlslProg( mGlslProgDof );
 				mGlslProgDof->uniform( "uAspect",		mTextureFboPingPong[ pong ]->getAspectRatio() );
 				mGlslProgDof->uniform( "uSamplerDepth", 0 );
-				mGlslProgDof->uniform( "uSampler",		1 );
+				mGlslProgDof->uniform( "uSamplerColor", 1 );
 				gl::drawSolidRect( Rectf( vec2( 0.0f ), mFboPingPong->getSize() ) );
 				
 				ping = pong;
@@ -768,10 +768,11 @@ void DeferredShadingAdvancedApp::resize()
 		.wrap( GL_CLAMP_TO_EDGE )
 		.dataType( GL_FLOAT );
 
+	int32_t h = getWindowHeight();
+	int32_t w = getWindowWidth();
+
 	// Set up the ping pong frame buffer
 	{
-		int32_t h = getWindowHeight();
-		int32_t w = getWindowWidth();
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 2; ++i ) {
 			mTextureFboPingPong[ i ] = gl::Texture2d::create( w, h, textureFormat );
@@ -789,8 +790,6 @@ void DeferredShadingAdvancedApp::resize()
 	// 2 GL_COLOR_ATTACHMENT1	Material ID
 	// 3 GL_COLOR_ATTACHMENT2	Encoded normals
 	{
-		int32_t h = getWindowHeight();
-		int32_t w = getWindowWidth();
 		mTextureFboGBuffer[ 0 ] = gl::Texture2d::create( w, h, 
 														 gl::Texture2d::Format()
 														 .internalFormat( GL_DEPTH_COMPONENT32F )
@@ -830,15 +829,12 @@ void DeferredShadingAdvancedApp::resize()
 	// 2 GL_COLOR_ATTACHMENT2 SSAO ping
 	// 3 GL_COLOR_ATTACHMENT3 SSAO pong
 	{
-		int32_t h = getWindowHeight() / 2;
-		int32_t w = getWindowWidth() / 2;
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 4; ++i ) {
-			mTextureFboSmall[ i ] = gl::Texture2d::create( w, h, textureFormat );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboSmall[ i ],
-								 gl::Renderbuffer::create( w, h, mTextureFboSmall[ i ]->getInternalFormat(), 0, 0 ) );
+			mTextureFboSmall[ i ] = gl::Texture2d::create( w / 2, h / 2, textureFormat );
+			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboSmall[ i ] );
 		}
-		mFboSmall = gl::Fbo::create( w, h, fboFormat );
+		mFboSmall = gl::Fbo::create( w / 2, h / 2, fboFormat );
 		gl::ScopedFramebuffer scopedFramebuffer( mFboSmall );
 		gl::viewport( mFboSmall->getSize() );
 		gl::clear();
