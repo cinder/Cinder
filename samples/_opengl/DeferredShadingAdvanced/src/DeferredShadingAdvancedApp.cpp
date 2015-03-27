@@ -210,7 +210,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(),
 								 mMayaCam.getCamera().getNearClip(),
 								 mMayaCam.getCamera().getFarClip() );
-	mShadowCamera.lookAt( mLights.at( 0 ).getPosition(), vec3( 0.0f, mFloor, 0.0f ) );
+	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
 	
 	// Call resize to create FBOs
 	resize();
