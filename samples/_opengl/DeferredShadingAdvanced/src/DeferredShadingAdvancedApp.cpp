@@ -71,6 +71,7 @@ private:
 
 	ci::gl::VboMeshRef			mMeshCircle;
 	ci::gl::VboMeshRef			mMeshCube;
+	ci::gl::VboMeshRef			mMeshIcosahedron;
 	ci::gl::VboMeshRef			mMeshSphere;
 	ci::gl::VboMeshRef			mMeshSphereLow;
 
@@ -124,6 +125,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mFullScreen			= isFullScreen();
 	mMeshCircle			= gl::VboMesh::create( geom::Circle().subdivisions( 64 ) );
 	mMeshCube			= gl::VboMesh::create( geom::Cube() );
+	mMeshIcosahedron	= gl::VboMesh::create( geom::Icosahedron() );
 	mMeshSphere			= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
 	mMeshSphereLow		= gl::VboMesh::create( geom::Sphere().subdivisions( 12 ) );
 	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
@@ -227,8 +229,8 @@ void DeferredShadingAdvancedApp::draw()
 	vec2 projectionParams			= vec2( farClip / ( farClip - nearClip ), 
 											( -farClip * nearClip ) / ( farClip - nearClip ) );
 	
-	// Draws the shadow casting spheres
-	auto drawSpheres = [ & ]()
+	// Draws shadow casting objects
+	auto drawShadowCasters = [ & ]()
 	{
 		{
 			gl::ScopedModelMatrix scopedModelMatrix;
@@ -236,20 +238,20 @@ void DeferredShadingAdvancedApp::draw()
 			gl::draw( mMeshSphere );
 		}
 
-		size_t numSpheres	= 4;
-		float t				= e * 0.165f;
-		float d				= ( (float)M_PI * 2.0f ) / (float)numSpheres;
-		float r				= 4.5f;
-		for ( size_t i = 0; i < numSpheres; ++i, t += d ) {
-			float x			= glm::cos( t );
-			float z			= glm::sin( t );
-			vec3 p			= vec3( x, 0.0f, z ) * r;
-			p.y				= mFloor + 0.5f;
+		float t		= e * 0.165f;
+		float d		= ( (float)M_PI * 2.0f ) / 4.0f;
+		float r		= 4.5f;
+		for ( size_t i = 0; i < 4; ++i, t += d ) {
+			float x	= glm::cos( t );
+			float z	= glm::sin( t );
+			vec3 p	= vec3( x, 0.0f, z ) * r;
+			p.y		= mFloor + 0.5f;
 
 			gl::ScopedModelMatrix scopedModelMatrix;
 			gl::translate( p );
+			gl::rotate( e );
 			gl::scale( vec3( 0.5f ) );
-			gl::draw( mMeshSphere );
+			gl::draw( mMeshIcosahedron );
 		}
 	};
 	
@@ -275,18 +277,6 @@ void DeferredShadingAdvancedApp::draw()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::clear();
 	}
-	/*{
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboSmall );
-		const static GLenum buffers[] = {
-			GL_COLOR_ATTACHMENT1,
-			GL_COLOR_ATTACHMENT2,
-			GL_COLOR_ATTACHMENT3,
-			GL_COLOR_ATTACHMENT4
-		};
-		gl::drawBuffers( 4, buffers );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSmall->getSize() );
-		gl::clear();
-	}*/
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// SHADOW MAP
@@ -303,7 +293,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::clear();
 		gl::setMatrices( mShadowCamera );
 		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
-		drawSpheres();
+		drawShadowCasters();
 	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
@@ -329,7 +319,7 @@ void DeferredShadingAdvancedApp::draw()
 			
 		// Draw shadow casters (spheres)
 		mGlslProgGBuffer->uniform( "uMaterialId", 0 );
-		drawSpheres();
+		drawShadowCasters();
 		
 		// Draw non shadow casters (floor)
 		{
