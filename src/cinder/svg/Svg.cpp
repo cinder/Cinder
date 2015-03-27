@@ -800,7 +800,7 @@ mat3 Node::parseTransform( const std::string &value )
 bool Node::parseTransformComponent( const char **c, mat3 *result )
 {
 	// skip leading whitespace
-	while( **c && isspace( **c ) )
+	while( **c && ( isspace( **c ) || ( **c == ',' ) ) )
 		(*c)++;
 	
 	mat3 m;
