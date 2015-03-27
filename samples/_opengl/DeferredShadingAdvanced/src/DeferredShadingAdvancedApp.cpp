@@ -788,7 +788,8 @@ void DeferredShadingAdvancedApp::resize()
 	int32_t h = getWindowHeight();
 	int32_t w = getWindowWidth();
 
-	// Set up the ping pong frame buffer
+	// Set up the ping pong frame buffer. We'll use this FBO to render
+	// the scene and perform post-processing passes.
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 2; ++i ) {
