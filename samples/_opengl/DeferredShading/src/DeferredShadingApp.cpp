@@ -35,17 +35,13 @@ private:
 	ci::gl::GlslProgRef			mGlslProgStockColor;
 	ci::gl::GlslProgRef			mGlslProgStockTexture;
 
-	ci::gl::FboRef				mFboGBuffer;
-	ci::gl::FboRef				mFboLBuffer;
+	ci::gl::FboRef				mFbo;
 	ci::gl::FboRef				mFboShadowMap;
 	
-	ci::gl::TextureRef			mTextureRandom;
-	ci::gl::Texture2dRef		mTextureFboGBufferAlbedo;
-	ci::gl::Texture2dRef		mTextureFboGBufferNormalEmissive;
-	ci::gl::Texture2dRef		mTextureFboGBufferPosition;
-	ci::gl::Texture2dRef		mTextureFboLBuffer;
+	ci::gl::Texture2dRef		mTextureFbo[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
-
+	ci::gl::TextureRef			mTextureRandom;
+	
 	ci::gl::VboMeshRef			mMeshCube;
 	ci::gl::VboMeshRef			mMeshRect;
 	ci::gl::VboMeshRef			mMeshSphere;
@@ -145,6 +141,21 @@ DeferredShadingApp::DeferredShadingApp()
 	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
 	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
 
+	// Create shadow map buffer
+	size_t sz = 1024;
+	mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
+												 .internalFormat( GL_DEPTH_COMPONENT32F )
+												 .magFilter( GL_LINEAR )
+												 .minFilter( GL_LINEAR )
+												 .wrap( GL_CLAMP_TO_EDGE )
+												 .dataType( GL_FLOAT ) );
+	gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+	gl::Fbo::Format fboFormat;
+	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
+	mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+	
 	// Call resize to create FBOs
 	resize();
 }
@@ -188,7 +199,7 @@ void DeferredShadingApp::draw()
 	
 	{
 		// Bind the G-buffer FBO and draw to all attachments
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboGBuffer );
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
 		{
 			const static GLenum buffers[] = {
 				GL_COLOR_ATTACHMENT0,
@@ -197,7 +208,7 @@ void DeferredShadingApp::draw()
 			};
 			gl::drawBuffers( 3, buffers );
 		}
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::enableDepthRead( true );
 		gl::enableDepthWrite( true );
@@ -254,9 +265,10 @@ void DeferredShadingApp::draw()
 	// L-BUFFER
 
 	{
-		// Set up window and clear buffers
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboLBuffer );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
+		// Set up window and clear L-buffer
+		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
+		gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
 		gl::ScopedState scopedState( GL_DEPTH_TEST, false );
@@ -265,10 +277,10 @@ void DeferredShadingApp::draw()
 		gl::setMatrices( mMayaCam.getCamera() );
 	
 		// Bind G-buffer textures and shadow map
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-		gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBufferNormalEmissive,	1 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferPosition,		2 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFboShadowMap,				3 );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],		0 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 1 ],		1 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 2 ],		2 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFboShadowMap,	3 );
 
 		// Draw light volumes
 		{
@@ -320,9 +332,9 @@ void DeferredShadingApp::draw()
 		mGlslProgDebugGbuffer->uniform( "uSamplerAlbedo",			0 );
 		mGlslProgDebugGbuffer->uniform( "uSamplerNormalEmissive",	1 );
 		mGlslProgDebugGbuffer->uniform( "uSamplerPosition",			2 );
-		gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBufferAlbedo,			0 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBufferNormalEmissive,	1 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBufferPosition,		2 );
+		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],	0 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 1 ],	1 );
+		gl::ScopedTextureBind scopedTextureBind3( mTextureFbo[ 2 ],	2 );
 		
 		// Albedo   | Normals
 		// --------------------
@@ -335,7 +347,7 @@ void DeferredShadingApp::draw()
 		}
 
 	} else {
-		gl::ScopedTextureBind scopedTextureBind( mTextureFboLBuffer, 0 );
+		gl::ScopedTextureBind scopedTextureBind( mTextureFbo[ 3 ], 0 );
 		if ( mEnabledFxaa ) {
 
 			// Perform FXAA
@@ -370,98 +382,36 @@ void DeferredShadingApp::resize()
 	camera.setAspectRatio( getWindowAspectRatio() );
 	mMayaCam.setCurrentCam( camera );
 
-	// Shortcut for using texture specs to create a render buffer
-	auto createRenderbufferFromTexture = 
-		[]( const gl::Texture2dRef& tex, size_t samples, size_t coverageSamples ) -> gl::RenderbufferRef
+	// Texture format
+	gl::Texture2d::Format textureFormat = gl::Texture2d::Format()
+		.internalFormat( GL_RGBA16F )
+		.magFilter( GL_NEAREST )
+		.minFilter( GL_NEAREST )
+		.wrap( GL_CLAMP_TO_EDGE )
+		.dataType( GL_FLOAT );
+
+	// Create FBO for the the geometry buffer (G-buffer) and light buffer
+	// (L-buffer). This G-buffer uses three olor attachments to store
+	// position, normal, emissive (light), and color (albedo) data. The fourth
+	// attachment read the first three to render the scene inside light volumes.
+	int32_t h = getWindowHeight();
+	int32_t w = getWindowWidth();
 	{
-		return gl::Renderbuffer::create( tex->getWidth(), tex->getHeight(), tex->getInternalFormat(), 
-										 (int32_t)samples, (int32_t)coverageSamples );
-	};
-	
-	const ivec2 windowSize = getWindowSize();
-
-	// Create the geometry buffer (G-buffer). This G-buffer uses three
-	// color attachments to store position, normal, emissive (light), and 
-	// color (albedo) data.
-	{
-		gl::Texture2d::Format textureFormat10;
-		textureFormat10.setInternalFormat( GL_RGB10_A2 );
-		textureFormat10.setMagFilter( GL_NEAREST );
-		textureFormat10.setMinFilter( GL_NEAREST );
-		textureFormat10.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat10.setDataType( GL_FLOAT );
-		
-		gl::Texture2d::Format textureFormat16;
-		textureFormat16.setInternalFormat( GL_RGBA16F );
-		textureFormat16.setMagFilter( GL_NEAREST );
-		textureFormat16.setMinFilter( GL_NEAREST );
-		textureFormat16.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat16.setDataType( GL_FLOAT );
-
-		mTextureFboGBufferAlbedo			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat10 );
-		mTextureFboGBufferNormalEmissive	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
-		mTextureFboGBufferPosition			= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat16 );
-
-		gl::RenderbufferRef albedoBuffer			= createRenderbufferFromTexture( mTextureFboGBufferAlbedo,			0, 0 );
-		gl::RenderbufferRef normalEmissiveBuffer	= createRenderbufferFromTexture( mTextureFboGBufferNormalEmissive,	0, 0 );
-		gl::RenderbufferRef positionBuffer			= createRenderbufferFromTexture( mTextureFboGBufferPosition,		0, 0 );
-
 		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboGBufferAlbedo,			albedoBuffer );
-		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mTextureFboGBufferNormalEmissive,	normalEmissiveBuffer );
-		fboFormat.attachment( GL_COLOR_ATTACHMENT2, mTextureFboGBufferPosition,			positionBuffer );
+		for ( size_t i = 0; i < 4; ++i ) {
+			mTextureFbo[ i ] = gl::Texture2d::create( w, h, textureFormat );
+			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFbo[ i ],
+								 gl::Renderbuffer::create( w, h, GL_RGBA16F, 0, 0 ) );
+		}
 		try {
-			mFboGBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-			gl::ScopedFramebuffer scopedFramebuffer( mFboGBuffer );
-			gl::ScopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
+			mFbo = gl::Fbo::create( w, h, fboFormat );
+			gl::ScopedFramebuffer scopedFramebuffer( mFbo );
+			gl::ScopedViewport( ivec2( 0 ), mFbo->getSize() );
 			gl::clear();
 		} catch ( gl::FboExceptionInvalidSpecification ex ) {
-			console() << "Failed to create G-buffer: " << ex.what() << endl;
+			console() << "Failed to create FBO: " << ex.what() << endl;
 			quit();
 		}
-	}
-
-	// Create the shadow buffer. Shadows are rendered in a separate pass.
-	{
-		uint32_t sz = 1024;
-		gl::Texture2d::Format depthFormat;
-		depthFormat.setInternalFormat( GL_DEPTH_COMPONENT32F );
-		depthFormat.setMagFilter( GL_LINEAR );
-		depthFormat.setMinFilter( GL_LINEAR );
-		depthFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		depthFormat.setDataType( GL_FLOAT );
-		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, depthFormat );
-		{
-			gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-		}
-		
-		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
-		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
-	}
-
-	// Create the light buffer (L-buffer). We'll draw light volumes into
-	// the L-buffer, reading the G-buffer and shadow buffer to render the scene.
-	{
-		gl::Texture2d::Format textureFormat;
-		textureFormat.setInternalFormat( GL_RGB10_A2 );
-		textureFormat.setMagFilter( GL_NEAREST );
-		textureFormat.setMinFilter( GL_NEAREST );
-		textureFormat.setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-		textureFormat.setDataType( GL_FLOAT );
-
-		mTextureFboLBuffer				= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
-		gl::RenderbufferRef lightBuffer = createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 );
-
-		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, lightBuffer );
-		mFboLBuffer = gl::Fbo::create( windowSize.x, windowSize.y, fboFormat );
-
-		gl::ScopedFramebuffer scopedFramebuffer( mFboLBuffer );
-		gl::ScopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
-		gl::clear();
 	}
 
 	// Set up shadow camera

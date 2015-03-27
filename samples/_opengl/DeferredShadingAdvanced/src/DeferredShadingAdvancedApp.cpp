@@ -193,6 +193,21 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "5" ).group( "Pass" );
 	mParams->addParam( "SSAO",				&mEnabledSsao ).key( "6" ).group( "Pass" );
 
+	// Create shadow map buffer
+	size_t sz = 1024;
+	mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
+												 .internalFormat( GL_DEPTH_COMPONENT32F )
+												 .magFilter( GL_LINEAR )
+												 .minFilter( GL_LINEAR )
+												 .wrap( GL_CLAMP_TO_EDGE )
+												 .dataType( GL_FLOAT ) );
+	gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+	gl::Fbo::Format fboFormat;
+	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
+	mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+	
 	// Call resize to create FBOs
 	resize();
 }
@@ -789,18 +804,10 @@ void DeferredShadingAdvancedApp::resize()
 	const ivec2 windowSizeHalf	= windowSize / 2;
 
 	// Texture format for color buffers
-	gl::Texture2d::Format textureFormatColor = gl::Texture2d::Format()
+	gl::Texture2d::Format textureFormat = gl::Texture2d::Format()
 		.internalFormat( GL_RGB10_A2 )
 		.magFilter( GL_NEAREST )
 		.minFilter( GL_NEAREST )
-		.wrap( GL_CLAMP_TO_EDGE )
-		.dataType( GL_FLOAT );
-
-	// Texture format for depth buffer
-	gl::Texture2d::Format textureFormatDepth = gl::Texture2d::Format()
-		.internalFormat( GL_DEPTH_COMPONENT32F )
-		.magFilter( GL_LINEAR )
-		.minFilter( GL_LINEAR )
 		.wrap( GL_CLAMP_TO_EDGE )
 		.dataType( GL_FLOAT );
 
@@ -824,7 +831,7 @@ void DeferredShadingAdvancedApp::resize()
 
 	// Geometry buffer
 	{
-		mTextureFboGBuffer[ 0 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormatColor );
+		mTextureFboGBuffer[ 0 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
 		mTextureFboGBuffer[ 1 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, 
 														 gl::Texture2d::Format()
 														 .internalFormat( GL_R8I )
@@ -839,7 +846,13 @@ void DeferredShadingAdvancedApp::resize()
 														 .minFilter( GL_NEAREST )
 														 .wrap( GL_CLAMP_TO_EDGE )
 														 .dataType( GL_BYTE ) );
-		mTextureFboGBuffer[ 3 ]	= gl::Texture2d::create( windowSize.x, windowSize.y, textureFormatDepth );
+		mTextureFboGBuffer[ 3 ]	= gl::Texture2d::create( windowSize.x, windowSize.y,
+														gl::Texture2d::Format()
+														.internalFormat( GL_DEPTH_COMPONENT32F )
+														.magFilter( GL_LINEAR )
+														.minFilter( GL_LINEAR )
+														.wrap( GL_CLAMP_TO_EDGE )
+														.dataType( GL_FLOAT ) );
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 4; ++i ) {
 			fboFormat.attachment( i == 3 ? GL_DEPTH_ATTACHMENT : GL_COLOR_ATTACHMENT0 + i, 
@@ -857,7 +870,7 @@ void DeferredShadingAdvancedApp::resize()
 
 	// Light buffer
 	{
-		mTextureFboLBuffer = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormatColor );
+		mTextureFboLBuffer = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mTextureFboLBuffer, 
 							  createRenderbufferFromTexture( mTextureFboLBuffer, 0, 0 ) );
@@ -870,7 +883,7 @@ void DeferredShadingAdvancedApp::resize()
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboPost[ i ] = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormatColor );
+			mTextureFboPost[ i ] = gl::Texture2d::create( windowSize.x, windowSize.y, textureFormat );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboPost[ i ], 
 								  createRenderbufferFromTexture( mTextureFboPost[ 0 ], 0, 0 ) );
 		}
@@ -878,26 +891,11 @@ void DeferredShadingAdvancedApp::resize()
 		clearFbo( mFboPost );
 	}
 
-	// Shadow buffer
-	{
-		size_t sz = 1024;
-		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, textureFormatDepth );
-		{
-			gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-		}
-		
-		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
-		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
-	}
-
 	// Screen space ambient occlusion buffer
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 3; ++i ) {
-			mTextureFboSsao[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormatColor );
+			mTextureFboSsao[ i ] = gl::Texture2d::create( windowSizeHalf.x, windowSizeHalf.y, textureFormat );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboSsao[ i ], 
 								  createRenderbufferFromTexture( mTextureFboSsao[ i ], 0, 0 ) );
 		}
