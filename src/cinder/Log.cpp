@@ -53,7 +53,7 @@ public:
 	void add( std::unique_ptr<Logger> &&logger )		{ mLoggers.emplace_back( move( logger ) ); }
 
 	template <typename LoggerT>
-	Logger* findType();
+	LoggerT* findType();
 
 	void remove( Logger *logger );
 
@@ -326,11 +326,12 @@ void LoggerConsole::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 template <typename LoggerT>
-Logger* LoggerImplMulti::findType()
+LoggerT* LoggerImplMulti::findType()
 {
 	for( const auto &logger : mLoggers ) {
-		if( dynamic_cast<LoggerT *>( logger.get() ) )
-			return logger.get();
+		auto result = dynamic_cast<LoggerT *>( logger.get() );
+		if( result )
+			return result;
 	}
 
 	return nullptr;
