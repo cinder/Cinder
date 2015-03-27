@@ -229,8 +229,16 @@ SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
-	: SurfaceBase( other ), mCinderSurface( other.mCinderSurface )
+	: SurfaceBase( other )
 {
+	initCinderSurface( other.mCinderSurface.hasAlpha(), mCairoSurface );
+}
+
+SurfaceImage& SurfaceImage::operator=( const SurfaceImage &other )
+{
+	this->SurfaceBase::operator=( other );
+	initCinderSurface( other.mCinderSurface.hasAlpha(), mCairoSurface );
+	return *this;
 }
 
 uint8_t* SurfaceImage::getData() 

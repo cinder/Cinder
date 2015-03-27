@@ -119,12 +119,14 @@ class SurfaceBase {
 class SurfaceImage : public SurfaceBase {
  public:
 	SurfaceImage() : SurfaceBase() {}
+	SurfaceImage( const SurfaceImage &other );	
 	SurfaceImage( int32_t width, int32_t height, bool hasAlpha = false );
 	SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t height, int32_t stride, bool hasAlpha = false );
 	//! Creates a copy of \a ciSurface
 	SurfaceImage( cinder::Surface ciSurface );
 	SurfaceImage( ImageSourceRef imageSource );
-	SurfaceImage( const SurfaceImage &other );
+
+	SurfaceImage& operator=( const SurfaceImage &other );
 	
 	uint8_t*		getData();
 	const uint8_t*	getData() const { return getData(); }
