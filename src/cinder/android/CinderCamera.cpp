@@ -84,6 +84,8 @@ void CinderCamera::cacheJni()
 			FN_LOG( CinderCamera::sStopCaptureMethodId );	
 			FN_LOG( CinderCamera::sLockPixelsMethodId );	
 			FN_LOG( CinderCamera::sUnlockPixelsMethodId );	
+			FN_LOG( CinderCamera::sGetWidthMethodId );	
+			FN_LOG( CinderCamera::sGetHeightMethodId );				
 		}
 		JniHelper::get()->DeatchCurrentThread();
 	}
@@ -103,6 +105,8 @@ void CinderCamera::destroyJni()
 		CinderCamera::sStopCaptureMethodId 		= NULL;
 		CinderCamera::sLockPixelsMethodId 		= NULL;
 		CinderCamera::sUnlockPixelsMethodId 	= NULL;	
+		CinderCamera::sGetWidthMethodId 		= NULL;
+		CinderCamera::sGetHeightMethodId 		= NULL;	
 
 		JniHelper::get()->DeatchCurrentThread();
 	}
@@ -220,7 +224,7 @@ static bool gTableInited = false;
  //
  //Initialize conversion table for YUV420 to RGB
  //
- void InitConvertTable()
+ static void InitConvertTable()
  {
     long int crv,cbu,cgu,cgv;
     int i,ind;
@@ -248,7 +252,7 @@ static bool gTableInited = false;
     gTableInited = true;
  }
 
- void ConvertYUV2RGB(const unsigned char *src0,const unsigned char *src1,unsigned char *dst_ori, int width,int height)
+ static void ConvertYUV2RGB(const unsigned char *src0,const unsigned char *src1,unsigned char *dst_ori, int width,int height)
  {
  	if( ! gTableInited ) {
  		InitConvertTable();
@@ -304,8 +308,6 @@ static bool gTableInited = false;
          py1+=   width;
          py2+=   width;
      }
-
-
 }
 
 

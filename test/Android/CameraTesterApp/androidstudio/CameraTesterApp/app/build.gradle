@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId "org.libcinder.samples.cameratesterapp"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 21
         versionCode 1
         versionName "1.0"

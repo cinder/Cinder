@@ -5,14 +5,16 @@ import org.libcinder.app.Platform;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.graphics.Point;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
-import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
+import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
+import android.media.Image;
 import android.media.ImageReader;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -20,11 +22,13 @@ import android.util.Log;
 import android.util.Size;
 import android.view.Surface;
 
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.locks.ReentrantLock;
 
 /** \class CinderCamera2
  *
@@ -36,43 +40,58 @@ public class CinderCamera2 {
 
     private CameraManager mCameraManager = null;
 
+    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+
     private String mFrontCameraId = null;
     private String mBackCameraId = null;
 
     private String mActiveCameraId = null;
     private CameraDevice mCamera = null;
-    private CameraCaptureSession mSession = null;
-    private CaptureRequest.Builder mBuilder = null;
 
     private int mWidth = 0;
     private int mHeight = 0;
+    private byte[] mPixels = null;
+    private ReentrantLock mMutex;
 
-    private HandlerThread mBackgroundThread;
-    private Handler mBackgroundHandler;
+    private HandlerThread mCameraHandlerThread;
+    private Handler mCameraHandler;
 
-    private ImageReader mImageReader;
+    private static final int sPreviewImageFormat = ImageFormat.YUV_420_888;
+    private ImageReader mPreviewImageReader = null;
 
-    private Semaphore mCameraOpenCloseLock = new Semaphore(1);
+    private CaptureRequest mPreviewRequest = null;
+    private CaptureRequest.Builder mPreviewRequestBuilder = null;
+    private CameraCaptureSession mPreviewCaptureSession = null;
 
-    /** \extends CameraDevice.StateCallback
-     *
-     */
+    private final ImageReader.OnImageAvailableListener mOnImageAvailableListener = new ImageReader.OnImageAvailableListener() {
+        @Override
+        public void onImageAvailable(ImageReader reader) {
+            privateLockPixels();
+            try {
+                Image image = reader.acquireLatestImage();
+                if((null != image) && (image.getPlanes().length > 0)) {
+                    ByteBuffer buffer = image.getPlanes()[0].getBuffer();
+
+                    if(null == mPixels) {
+                        mPixels = new byte[buffer.remaining()];
+                    }
+                    buffer.get(mPixels);
+
+                    image.close();
+                }
+            }
+            finally {
+                privateUnlockPixels();
+            }
+        }
+    };
+
     private final CameraDevice.StateCallback mStateCallback = new CameraDevice.StateCallback() {
         @Override
         public void onOpened(CameraDevice camera) {
             mCameraOpenCloseLock.release();
             mCamera = camera;
-
-            try {
-                mBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-
-                mDummyTexture = new SurfaceTexture(0);
-                mDummySurface = new Surface(mDummyTexture);
-                mBuilder.addTarget(mDummySurface);
-            }
-            catch(Exception e ) {
-                Log.e(Platform.TAG, "CameraDevice.StateCallback.onOpened failed: " + e);
-            }
+            startPreview();
         }
 
         @Override
@@ -115,25 +134,38 @@ public class CinderCamera2 {
 
         mActiveCameraId = (null != mBackCameraId) ? mBackCameraId : ((null != mFrontCameraId) ? mFrontCameraId : null);
 
-        Log.i(Platform.TAG, "Front camera: " + mFrontCameraId);
-        Log.i(Platform.TAG, "Back camera: " + mBackCameraId);
-
-
-
-
-        try {
-            if(null != mFrontCameraId) {
-                Log.i(Platform.TAG, "Front camera preview size: " + getOptimalPreviewSize(mFrontCameraId));
+        // Get preview size
+        if(null != mActiveCameraId) {
+            Size previewSize = getOptimalPreviewSize(mActiveCameraId);
+            if (null == previewSize) {
+                throw new UnsupportedOperationException("couldn't get preview size for Camera " + mActiveCameraId);
             }
 
-            if(null != mBackCameraId) {
-                Log.i(Platform.TAG, "Back camera preview size: " + getOptimalPreviewSize(mBackCameraId));
-            }
+            mWidth = previewSize.getWidth();
+            mHeight = previewSize.getHeight();
         }
-        catch(Exception e) {
-        }
+
+        mMutex = new ReentrantLock();
+
+//        Log.i(Platform.TAG, "Front camera: " + mFrontCameraId);
+//        Log.i(Platform.TAG, "Back camera: " + mBackCameraId);
+//
+//        try {
+//            if(null != mFrontCameraId) {
+//                Log.i(Platform.TAG, "Front camera preview size: " + getOptimalPreviewSize(mFrontCameraId));
+//            }
+//
+//            if(null != mBackCameraId) {
+//                Log.i(Platform.TAG, "Back camera preview size: " + getOptimalPreviewSize(mBackCameraId));
+//            }
+//        }
+//        catch(Exception e) {
+//        }
     }
 
+    /** \func getOptimalPreviewSize
+     *
+     */
     private Size getOptimalPreviewSize(String cameraId) {
         Size result = null;
         try {
@@ -200,6 +232,110 @@ public class CinderCamera2 {
         return result;
     }
 
+    /** \func startPreview
+     *
+     */
+    private void startPreview() {
+        // Start the preview
+        try {
+            // Get preview size
+            Size previewSize = getOptimalPreviewSize(mCamera.getId());
+            if(null == previewSize) {
+                throw new UnsupportedOperationException("couldn't get preview size for Camera " + mCamera.getId());
+            }
+
+            // Create ImageReader
+            mPreviewImageReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), sPreviewImageFormat, 2);
+            mPreviewImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
+
+            // Create SurfaceTexture
+            mDummyTexture = new SurfaceTexture(0);
+            mDummyTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+
+            // Create Surface
+            mDummySurface = new Surface(mDummyTexture);
+
+            // Create CaptureRequest.Builder
+            mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            mPreviewRequestBuilder.addTarget(mDummySurface);
+            mPreviewRequestBuilder.addTarget(mPreviewImageReader.getSurface());
+
+            // Create CameraCaptureSession
+            mCamera.createCaptureSession(
+                    Arrays.asList(mDummySurface, mPreviewImageReader.getSurface()),
+                    new CameraCaptureSession.StateCallback() {
+                        @Override
+                        public void onConfigured(CameraCaptureSession session) {
+                            if(null == mCamera) {
+                                return;
+                            }
+
+                            mPreviewCaptureSession = session;
+                            //mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
+                            //mPreviewHandlerThread = new HandlerThread("preview-handler-thread");
+                            //mPreviewHandlerThread.start();
+                            //mPreviewHandler = new Handler(mPreviewHandlerThread.getLooper());
+
+                            try {
+                                mPreviewRequest = mPreviewRequestBuilder.build();
+                                mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
+                            } catch (Exception e) {
+                                Log.e(Platform.TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
+                            }
+                        }
+
+                        @Override
+                        public void onConfigureFailed(CameraCaptureSession session) {
+                        }
+                    },
+                    null
+            );
+        }
+        catch(Exception e ) {
+            Log.e(Platform.TAG, "CameraDevice.StateCallback.onOpened failed: " + e);
+        }
+    }
+
+    /** \func stopPreview
+     *
+     */
+    private void stopPreview() {
+        if(null != mCamera) {
+            mCamera.close();
+            mCamera = null;
+        }
+
+        if(null != mPreviewImageReader) {
+            mPreviewImageReader.close();
+            mPreviewImageReader = null;
+        }
+
+//        if(null != mPreviewHandlerThread) {
+//            try {
+//                if(null != mPreviewCaptureSession) {
+//                    mPreviewCaptureSession.stopRepeating();
+//                }
+//                mPreviewHandlerThread.quitSafely();
+//                mPreviewHandlerThread.join();;
+//                mPreviewHandlerThread = null;
+//                mPreviewHandler = null;
+//            }
+//            catch(Exception e) {
+//                Log.e(Platform.TAG, "Preview handler stop failed: " + e);
+//            }
+//        }
+    }
+
+    private void privateLockPixels() {
+        //Log.i(Platform.TAG, "privateLockPixels");
+        mMutex.lock();
+    }
+
+    private void privateUnlockPixels() {
+        mMutex.unlock();;
+        //Log.i(Platform.TAG, "privateUnlockPixels");
+    }
+
     /** \func startCamera
      *
      */
@@ -210,12 +346,10 @@ public class CinderCamera2 {
         }
 
         try {
-            mBackgroundThread = new HandlerThread("CameraBackground");
-            mBackgroundThread.start();
-
-            mBackgroundHandler = new Handler(mBackgroundThread.getLooper());
-
-            mCameraManager.openCamera(mActiveCameraId, mStateCallback, mBackgroundHandler);
+            mCameraHandlerThread = new HandlerThread("camera-handler-thread");
+            mCameraHandlerThread.start();
+            mCameraHandler = new Handler(mCameraHandlerThread.getLooper());
+            mCameraManager.openCamera(mActiveCameraId, mStateCallback, mCameraHandler);
         }
         catch(Exception e ) {
             Log.e(Platform.TAG, "CinderCamera2.startCamera failed: " + e);
@@ -226,15 +360,17 @@ public class CinderCamera2 {
      *
      */
     public void stopCamera() {
-        if(null != mBackgroundThread) {
-            mBackgroundThread.quitSafely();
+        stopPreview();
+
+        if(null != mCameraHandlerThread) {
             try {
-                mBackgroundThread.join();
-                mBackgroundThread = null;
-                mBackgroundHandler = null;
+                mCameraHandlerThread.quitSafely();
+                mCameraHandlerThread.join();
+                mCameraHandlerThread = null;
+                mCameraHandler = null;
             }
             catch(Exception e ) {
-                Log.e(Platform.TAG, "CinderCamera2.stopCamera failed: " + e);
+                Log.e(Platform.TAG, "Camera handler thread stop failed: " + e);
             }
         }
     }
@@ -251,6 +387,14 @@ public class CinderCamera2 {
         return (null != sCamera.mFrontCameraId || null != sCamera.mBackCameraId);
     }
 
+    public static boolean hasFrontCamera() {
+        return (null != sCamera) && (null != sCamera.mFrontCameraId);
+    }
+
+    public static boolean hasBackCamera() {
+        return (null != sCamera) && (null != sCamera.mBackCameraId);
+    }
+
     public static void startCapture() {
         if(null == sCamera) {
             return;
@@ -265,5 +409,30 @@ public class CinderCamera2 {
         }
 
         sCamera.stopCamera();
+    }
+
+    public static byte[] lockPixels() {
+        if(null == sCamera) {
+            return null;
+        }
+
+        sCamera.privateLockPixels();
+        return sCamera.mPixels;
+    }
+
+    public static void unlockPixels() {
+        if(null == sCamera) {
+            return;
+        }
+
+        sCamera.privateUnlockPixels();
+    }
+
+    public static int getWidth() {
+        return (null != sCamera) ? sCamera.mWidth : 0;
+    }
+
+    public static int getHeight() {
+        return (null != sCamera) ? sCamera.mHeight : 0;
     }
 }

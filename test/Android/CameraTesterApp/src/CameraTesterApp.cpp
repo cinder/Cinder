@@ -9,6 +9,7 @@ using namespace ci::app;
 using namespace std;
 
 #include "cinder/android/CinderCamera.h"
+#include "cinder/android/CinderCamera2.h"
 
 // We'll create a new Cinder Application by deriving from the App class
 class CameraTesterApp : public App {
@@ -24,7 +25,7 @@ class CameraTesterApp : public App {
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
 
-    ci::android::CinderCamera   mCamera;
+    ci::android::CinderCamera2  mCamera;
 };
 
 void CameraTesterApp::setup()

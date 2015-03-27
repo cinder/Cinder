@@ -30,9 +30,10 @@ public class SampleActivity extends ActionBarActivity implements View.OnClickLis
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+
         Platform.setActivity(this);
 
-        super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
         Button button = (Button)findViewById(R.id.button);
