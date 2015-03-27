@@ -22,7 +22,6 @@
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
-#include "cinder/System.h"
 
 #include "FXAA.h"
 
@@ -36,7 +35,7 @@ FXAA::FXAA()
 		mGlslProg->uniform( "uTexture", 0 );
 	}
 	catch( const std::exception &e ) {
-		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( e ).name() ) << ", what: " << e.what() );
+		CI_LOG_EXCEPTION( "exception caught loading fxaa.vert / frag", e );
 	}
 }
 

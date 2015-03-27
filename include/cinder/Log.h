@@ -27,6 +27,7 @@
 #include "cinder/Filesystem.h"
 #include "cinder/CurrentFunction.h"
 #include "cinder/CinderAssert.h"
+#include "cinder/System.h"
 
 #include <sstream>
 #include <fstream>
@@ -318,3 +319,10 @@ typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
 } } // namespace cinder::log
+
+//! Debug macro to simplify logging an exception, which also prints the exception type
+#define CI_LOG_EXCEPTION( str, exc )	\
+{										\
+	CI_LOG_E( str << ", exception type: " << cinder::System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );	\
+}
+
