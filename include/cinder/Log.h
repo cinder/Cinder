@@ -35,48 +35,6 @@
 #include <memory>
 #include <mutex>
 
-#define CINDER_LOG_STREAM( level, stream ) ::cinder::log::Entry( level, ::cinder::log::Location( CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) ) << stream
-
-// CI_MAX_LOG_LEVEL is designed so that if you set it to 0, nothing logs, 1 only fatal, 2 fatal + error, etc...
-
-#if ! defined( CI_MAX_LOG_LEVEL )
-	#if ! defined( NDEBUG )
-		#define CI_MAX_LOG_LEVEL 5	// debug mode default is LEVEL_VERBOSE
-	#else
-		#define CI_MAX_LOG_LEVEL 4	// release mode default is LEVEL_INFO
-	#endif
-#endif
-
-#if( CI_MAX_LOG_LEVEL >= 5 )
-	#define CI_LOG_V( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_VERBOSE, stream )
-#else
-	#define CI_LOG_V( stream )	((void)0)
-#endif
-
-#if( CI_MAX_LOG_LEVEL >= 4 )
-	#define CI_LOG_I( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_INFO, stream )
-#else
-	#define CI_LOG_I( stream )	((void)0)
-#endif
-
-#if( CI_MAX_LOG_LEVEL >= 3 )
-	#define CI_LOG_W( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_WARNING, stream )
-#else
-	#define CI_LOG_W( stream )	((void)0)
-#endif
-
-#if( CI_MAX_LOG_LEVEL >= 2 )
-	#define CI_LOG_E( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_ERROR, stream )
-#else
-	#define CI_LOG_E( stream )	((void)0)
-#endif
-
-#if( CI_MAX_LOG_LEVEL >= 1 )
-	#define CI_LOG_F( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_FATAL, stream )
-#else
-	#define CI_LOG_F( stream )	((void)0)
-#endif
-
 namespace cinder { namespace log {
 
 typedef enum {
@@ -319,6 +277,51 @@ typedef ThreadSafeT<LoggerConsole>		LoggerConsoleThreadSafe;
 typedef ThreadSafeT<LoggerFile>			LoggerFileThreadSafe;
 
 } } // namespace cinder::log
+
+// ----------------------------------------------------------------------------------
+// Logging macros
+
+#define CINDER_LOG_STREAM( level, stream ) ::cinder::log::Entry( level, ::cinder::log::Location( CINDER_CURRENT_FUNCTION, __FILE__, __LINE__ ) ) << stream
+
+// CI_MAX_LOG_LEVEL is designed so that if you set it to 0, nothing logs, 1 only fatal, 2 fatal + error, etc...
+
+#if ! defined( CI_MAX_LOG_LEVEL )
+	#if ! defined( NDEBUG )
+		#define CI_MAX_LOG_LEVEL 5	// debug mode default is LEVEL_VERBOSE
+	#else
+		#define CI_MAX_LOG_LEVEL 4	// release mode default is LEVEL_INFO
+	#endif
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 5 )
+	#define CI_LOG_V( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_VERBOSE, stream )
+#else
+	#define CI_LOG_V( stream )	((void)0)
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 4 )
+	#define CI_LOG_I( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_INFO, stream )
+#else
+	#define CI_LOG_I( stream )	((void)0)
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 3 )
+	#define CI_LOG_W( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_WARNING, stream )
+#else
+	#define CI_LOG_W( stream )	((void)0)
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 2 )
+	#define CI_LOG_E( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_ERROR, stream )
+#else
+	#define CI_LOG_E( stream )	((void)0)
+#endif
+
+#if( CI_MAX_LOG_LEVEL >= 1 )
+	#define CI_LOG_F( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_FATAL, stream )
+#else
+	#define CI_LOG_F( stream )	((void)0)
+#endif
 
 //! Debug macro to simplify logging an exception, which also prints the exception type
 #define CI_LOG_EXCEPTION( str, exc )	\
