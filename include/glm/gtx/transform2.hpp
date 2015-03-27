@@ -55,6 +55,47 @@ namespace glm
 	/// @addtogroup gtx_transform2
 	/// @{
 
+	//! Builds a 2D translation matrix.
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> translate2D(
+		tvec2<T, P> const & v);
+
+	//! Transforms a matrix with a 2D translation.
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> translate2D(
+		tmat3x3<T, P> const & m,
+		tvec2<T, P> const & v);
+
+	//! Builds a 2D scale matrix.
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> scale2D(
+		tvec2<T, P> const & v);
+
+	//! Transforms a matrix with a 2D scale.
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> translate2D(
+		tmat3x3<T, P> const & m,
+		tvec2<T, P> const & v);
+
+	//! Builds a 2D rotation matrix with an angle expressed in radians.
+	//! Equivalent to a 3D rotation around vec3( 0, 0, 1 );
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> rotate2D(
+		T angle);
+
+	//! Transforms a matrix with a 2D rotation expressed in radians.
+	//! Equivalent to a 3D rotation around vec3( 0, 0, 1 );
+	//! From GLM_GTX_transform2 extension.
+	template <typename T, precision P>
+	GLM_FUNC_DECL tmat3x3<T, P> rotate2D(
+		tmat3x3<T, P> const & m,
+		T angle);
+
 	//! Transforms a matrix with a shearing on X axis.
 	//! From GLM_GTX_transform2 extension.
 	template <typename T, precision P>
