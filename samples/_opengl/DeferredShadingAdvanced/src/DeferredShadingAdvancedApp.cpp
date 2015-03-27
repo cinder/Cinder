@@ -1,6 +1,5 @@
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
-#include "cinder/Json.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/params/Params.h"
 
