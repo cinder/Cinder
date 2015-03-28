@@ -40,7 +40,8 @@ class ProfileBase {
 	{
 	}
 		
-	int32_t	getSessionId() const{ return mSessionId; }
+	int32_t	getSessionId() const { return mSessionId; }
+	const std::string & getSource() const { return mSource; }
 
 	//! Translates into a ci::TouchEvent::Touch
 	app::TouchEvent::Touch getTouch( double time, const vec2 &posScale ) const {
