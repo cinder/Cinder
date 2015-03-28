@@ -142,7 +142,6 @@ class SvgRendererGl : public svg::Renderer {
 	void	pushMatrix( const mat3 &m ) override {
 		gl::pushModelMatrix();
 		gl::multModelMatrix( transform2dTo3d( m ) );
-std::cout << transform2dTo3d( m ) << std::endl;
 	}
 	void	popMatrix() override {
 		gl::popModelMatrix();

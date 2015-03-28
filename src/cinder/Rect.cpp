@@ -22,7 +22,6 @@
 
 #include "cinder/Rect.h"
 #include "cinder/Area.h"
-#include "cinder/MatrixAffine2.h"
 
 #include <limits>
 using std::numeric_limits;
