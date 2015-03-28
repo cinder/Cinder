@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -115,10 +115,11 @@ namespace detail
 #		if GLM_HAS_ANONYMOUS_UNION
 			union
 			{
-				typename detail::simd<T>::type data;
+				struct { T x, y, z, w;};
 				struct { T r, g, b, a; };
 				struct { T s, t, p, q; };
-				struct { T x, y, z, w;};
+
+				typename detail::simd<T>::type data;
 
 #				ifdef GLM_SWIZZLE
 					_GLM_SWIZZLE4_2_MEMBERS(T, P, tvec2, x, y, z, w)
@@ -166,6 +167,7 @@ namespace detail
 		// Implicit basic constructors
 
 		GLM_FUNC_DECL tvec4();
+		GLM_FUNC_DECL tvec4(tvec4<T, P> const & v);
 		template <precision Q>
 		GLM_FUNC_DECL tvec4(tvec4<T, Q> const & v);
 
@@ -282,6 +284,8 @@ namespace detail
 
 		//////////////////////////////////////
 		// Unary arithmetic operators
+
+		GLM_FUNC_DECL tvec4<T, P> & operator=(tvec4<T, P> const & v);
 
 		template <typename U>
 		GLM_FUNC_DECL tvec4<T, P> & operator=(tvec4<U, P> const & v);

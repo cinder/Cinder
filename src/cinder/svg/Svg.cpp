@@ -227,9 +227,9 @@ Paint Paint::parse( const char *value, bool *specified, const Node *parentNode )
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
@@ -609,7 +609,7 @@ Node::Node( const Node *parent, const XmlTree &xml )
 		mTransform = parseTransform( xml["transform"] );
 	}
 	else
-		mTransform.setToIdentity();
+		mTransform = mat3();
 }
 
 Doc* Node::getDoc() const
@@ -746,9 +746,9 @@ Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNo
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
@@ -786,33 +786,32 @@ Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNo
 	}
 }
 
-MatrixAffine2f Node::parseTransform( const std::string &value )
+mat3 Node::parseTransform( const std::string &value )
 {
 	const char *c = value.c_str();
-	MatrixAffine2f curMat;
-	curMat.setToIdentity();
-	MatrixAffine2f nextMat;
+	mat3 curMat;
+	mat3 nextMat;
 	while( parseTransformComponent( &c, &nextMat ) ) {
 		curMat = curMat * nextMat;
 	}
 	return curMat;
 }
 
-bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
+bool Node::parseTransformComponent( const char **c, mat3 *result )
 {
 	// skip leading whitespace
-	while( **c && isspace( **c ) )
+	while( **c && ( isspace( **c ) || ( **c == ',' ) ) )
 		(*c)++;
 	
-	MatrixAffine2f m;
+	mat3 m;
 	if( ! strncmp( *c, "scale", 5 ) ) {
 		*c += 5; //strlen( "scale" );
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
-			m = MatrixAffine2f::makeScale( v[0] );
+			m = glm::scale( mat3(), vec2( v[0] ) );
 		}
 		else if( v.size() == 2 ) {
-			m = MatrixAffine2f::makeScale( vec2( v[0], v[1] ) );
+			m = glm::scale( mat3(), vec2( v[0], v[1] ) );
 		}
 		else
 			throw TransformParseExc();
@@ -821,9 +820,9 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		*c += 9; //strlen( "translate" );
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 )
-			m = MatrixAffine2f::makeTranslate( vec2( v[0], v[0] ) );
+			m = glm::translate( mat3(), vec2( v[0], 0 ) );
 		else if( v.size() == 2 ) {
-			m = MatrixAffine2f::makeTranslate( vec2( v[0], v[1] ) );
+			m = glm::translate( mat3(), vec2( v[0], v[1] ) );
 		}
 		else
 			throw TransformParseExc();
@@ -833,14 +832,16 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
-			m = MatrixAffine2f::makeRotate( a );
+			m = glm::rotate( mat3(), a );
 			//m33[0] = math<float>::cos( a ); m33[1] = math<float>::sin( a );
 			//m33[3] = -math<float>::sin( a ); m33[4] = math<float>::cos( a );
 		}
 		else if( v.size() == 3 ) { // rotate around point
 			float a = toRadians( v[0] );
-			vec2 v; v.x = v[0]; v.y = v[1];
-			m = MatrixAffine2f::makeRotate( a, v );
+			vec2 origin( v[1], v[2] );
+			m = glm::translate( mat3(), origin );
+			m = glm::rotate( m, a );
+			m = glm::translate( m, -origin );
 		}
 		else
 			throw TransformParseExc();
@@ -848,9 +849,8 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 	else if( ! strncmp( *c, "matrix", 6 ) ) {
 		*c += 6; //strlen( "matrix" );
 		vector<float> v = parseFloatList( c );
-		if( v.size() == 6 ) {
-			m = MatrixAffine2f( &v[0] );
-		}
+		if( v.size() == 6 )
+			m = mat3( v[0], v[1], 0, v[2], v[3], 0, v[4], v[5], 1 );
 		else
 			throw TransformParseExc();
 	}
@@ -859,8 +859,7 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
-			m = MatrixAffine2f::makeSkewX( a );
-			//m33[3] = math<float>::tan( a );
+			m = glm::shearY2D( mat3(), tan( a ) );
 		}
 		else
 			throw TransformParseExc();
@@ -871,7 +870,7 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
 			//m33[1] = math<float>::tan( a );
-			m = MatrixAffine2f::makeSkewY( a );
+			m = glm::shearX2D( mat3(), tan( a ) );
 		}
 		else
 			throw TransformParseExc();
@@ -974,13 +973,13 @@ Paint Node::findPaintInAncestors( const std::string &paintName ) const
 		return Paint();
 }
 
-MatrixAffine2f Node::getTransformAbsolute() const
+mat3 Node::getTransformAbsolute() const
 {
-	MatrixAffine2f result;
+	mat3 result;
 	if( mSpecifiesTransform )
 		result = mTransform;
 	else
-		result.setToIdentity();
+		result = mat3();
 	
 	const Node *parent = mParent;
 	while( parent ) {
@@ -1746,12 +1745,12 @@ const Node* Group::findNode( const std::string &id, bool recurse ) const
 	return NULL;
 }
 
-Node* Group::nodeUnderPoint( const vec2 &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const
+Node* Group::nodeUnderPoint( const vec2 &absolutePoint, const mat3 &parentInverseMatrix ) const
 {
-	MatrixAffine2f invTransform = parentInverseMatrix;
+	mat3 invTransform = parentInverseMatrix;
 	if( mSpecifiesTransform )
-		invTransform = mTransform.invertCopy() * invTransform;
-	vec2 localPt = invTransform * absolutePoint;
+		invTransform = inverse( mTransform ) * invTransform;
+	vec2 localPt = vec2( invTransform * vec3( absolutePoint, 1 ) );
 	
 	for( list<Node*>::const_reverse_iterator nodeIt = mChildren.rbegin(); nodeIt != mChildren.rend(); ++nodeIt ) {
 		if( typeid(**nodeIt) == typeid(svg::Group) ) {
@@ -1761,8 +1760,8 @@ Node* Group::nodeUnderPoint( const vec2 &absolutePoint, const MatrixAffine2f &pa
 		}
 		else {
 			if( (*nodeIt)->specifiesTransform() ) {
-				MatrixAffine2f childInvTransform = (*nodeIt)->getTransformInverse() * invTransform;
-				if( (*nodeIt)->containsPoint( childInvTransform * absolutePoint) )
+				mat3 childInvTransform = (*nodeIt)->getTransformInverse() * invTransform;
+				if( (*nodeIt)->containsPoint( vec2( childInvTransform * vec3( absolutePoint, 1 ) ) ) )
 					return *nodeIt;	
 			}
 			else if( (*nodeIt)->containsPoint( localPt ) )
@@ -2229,14 +2228,14 @@ void Doc::loadDoc( DataSourceRef source, fs::path filePath )
 
 	bool needsViewBoxMapping = mViewBox.getWidth() > 0 && mViewBox.getHeight() > 0 && mWidth > 0 && mHeight > 0;
 	if( needsViewBoxMapping ) {
-		MatrixAffine2f m33; m33.setToIdentity();
-		m33[0] = mViewBox.getWidth() / (float)mWidth; m33[3] = mViewBox.getHeight() / (float)mHeight;
-		m33[4] = (float)-mViewBox.x1; m33[5] = (float)-mViewBox.y1;
+		mat3 m33;
+		m33[0][0] = mViewBox.getWidth() / (float)mWidth; m33[1][1] = mViewBox.getHeight() / (float)mHeight;
+		m33[2][0] = (float)-mViewBox.x1; m33[2][1] = (float)-mViewBox.y1;
 		mTransform = m33;
 		mSpecifiesTransform = true;
 	}
 	else
-		mTransform.setToIdentity();
+		mTransform = mat3();
 
 	// we can't parse the group w/o having parsed the viewBox, dimensions, etc, so we have to do this manually:
 	if( xml.hasChild( "switch" ) )		// when saved with "preserve Illustrator editing capabilities", svg data is inside a "switch"
@@ -2270,7 +2269,7 @@ shared_ptr<Surface8u> Doc::loadImage( fs::path relativePath )
 
 Node* Doc::nodeUnderPoint( const vec2 &pt )
 {
-	return Group::nodeUnderPoint( pt, MatrixAffine2f::identity() );
+	return Group::nodeUnderPoint( pt, mat3() );
 }
 
 void Doc::renderSelf( Renderer &renderer ) const

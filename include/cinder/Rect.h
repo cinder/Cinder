@@ -34,7 +34,9 @@ template<typename T> class MatrixAffine2;
 template<typename T>
 class RectT {
  public:
-	typedef glm::tvec2<T, glm::defaultp> Vec2T;
+	typedef glm::tvec2<T, glm::defaultp>	Vec2T;
+	typedef glm::tvec3<T, glm::defaultp>	Vec3T;
+	typedef glm::tmat3x3<T, glm::defaultp>	Mat3T;
 
 	RectT() {}
 	//! Initializes the rectangle to be the bounding box of \a points
@@ -71,7 +73,7 @@ class RectT {
 	RectT		scaled( const Vec2T &scale ) const;
 
 	//! Returns a copy of the Rect transformed by \a matrix. Represents the bounding box of the transformed Rect when \a matrix expresses non-scale/translate operations.
-	RectT		transformCopy( const class MatrixAffine2<T> &matrix ) const;
+	RectT		transformCopy( const Mat3T &matrix ) const;
 
 	//! Is a point \a pt inside the rectangle
 	template<typename Y>

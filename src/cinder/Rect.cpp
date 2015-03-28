@@ -22,7 +22,6 @@
 
 #include "cinder/Rect.h"
 #include "cinder/Area.h"
-#include "cinder/MatrixAffine2.h"
 
 #include <limits>
 using std::numeric_limits;
@@ -199,17 +198,17 @@ RectT<T> RectT<T>::scaled( const Vec2T &scale ) const
 }
 
 template<typename T>
-RectT<T> RectT<T>::transformCopy( const MatrixAffine2<T> &matrix ) const
+RectT<T> RectT<T>::transformCopy( const Mat3T& matrix ) const
 {
 	RectT<T> result;
 	result.x1 = numeric_limits<T>::max();
 	result.x2 = -numeric_limits<T>::max();
 	result.y1 = numeric_limits<T>::max();
 	result.y2 = -numeric_limits<T>::max();
-	result.include( matrix.transformPoint( Vec2T( x1, y1 ) ) );
-	result.include( matrix.transformPoint( Vec2T( x2, y1 ) ) );
-	result.include( matrix.transformPoint( Vec2T( x2, y2 ) ) );
-	result.include( matrix.transformPoint( Vec2T( x1, y2 ) ) );
+	result.include( Vec2T( matrix * Vec3T( x1, y1, 1 ) ) );
+	result.include( Vec2T( matrix * Vec3T( x2, y1, 1 ) ) );
+	result.include( Vec2T( matrix * Vec3T( x2, y2, 1 ) ) );
+	result.include( Vec2T( matrix * Vec3T( x1, y2, 1 ) ) );
 	
 	return result;
 }

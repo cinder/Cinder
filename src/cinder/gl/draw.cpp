@@ -755,6 +755,51 @@ void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 	ctx->popVao();
 }
 
+void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
+{
+	auto ctx = context();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+	
+	if( numSegments <= 0 )
+		numSegments = static_cast<int>(math<double>::floor( std::max( radiusX, radiusY ) * M_PI * 2 ) );
+	if( numSegments < 3 )
+		numSegments = 3;
+	// construct circle
+	const size_t numVertices = numSegments;
+	vector<vec2> positions;
+	positions.assign( numVertices, center );	// all vertices start at center
+	const float tDelta = 2.0f * static_cast<float>(M_PI) * (1.0f / numVertices);
+	float t = 0;
+	for( auto &pos : positions ) {
+		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		pos += unit * vec2( radiusX, radiusY );	// push out from center
+		t += tDelta;
+	}
+	// copy data to GPU
+	const size_t size = positions.size() * sizeof( vec2 );
+	auto arrayVbo = ctx->getDefaultArrayVbo( size );
+	arrayVbo->bufferSubData( 0, size, (GLvoid*)positions.data() );
+	// set attributes
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)nullptr );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	// draw
+	drawArrays( GL_LINE_LOOP, 0, (GLsizei)positions.size() );
+	ctx->popVao();
+}
+
 void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 {
 	auto ctx = context();
@@ -819,6 +864,85 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
 		if( verts )
 			verts[s+1] = center + unit * radius;
+		if( texCoords )
+			texCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
+		if( normals )
+			normals[s+1] = vec3( 0, 0, 1 );
+		t += tDelta;
+	}
+
+	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
+	ctx->getDefaultVao()->replacementBindEnd();
+
+	ctx->setDefaultShaderVars();
+	ctx->drawArrays( GL_TRIANGLE_FAN, 0, numSegments + 2 );
+	ctx->popVao();
+}
+
+void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
+{
+	auto ctx = context();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
+	if( ! curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+
+	if( numSegments <= 0 ) {
+		numSegments = (int)math<double>::floor( std::max(radiusX,radiusY) * M_PI * 2 );
+	}
+	if( numSegments < 2 ) numSegments = 2;
+	size_t numVertices = (numSegments+2)*2;
+	
+	size_t worstCaseSize = numVertices * sizeof(float) * ( 2 + 2 + 3 );
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( worstCaseSize );
+	ScopedBuffer vboScp( defaultVbo );
+
+	size_t dataSizeBytes = 0;
+
+	size_t vertsOffset, texCoordsOffset, normalsOffset;
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		vertsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		enableVertexAttribArray( texLoc );
+		vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		texCoordsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int normalLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::NORMAL );
+	if( normalLoc >= 0 ) {
+		enableVertexAttribArray( normalLoc );
+		vertexAttribPointer( normalLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)(dataSizeBytes) );
+		normalsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 3 * sizeof(float);
+	}
+
+	unique_ptr<uint8_t[]> data( new uint8_t[dataSizeBytes] );
+	vec2 *verts = ( posLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + vertsOffset ) : nullptr;
+	vec2 *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + texCoordsOffset ) : nullptr;
+	vec3 *normals = ( normalLoc >= 0 ) ? reinterpret_cast<vec3*>( data.get() + normalsOffset ) : nullptr;
+
+	if( verts )
+		verts[0] = center;
+	if( texCoords )
+		texCoords[0] = vec2( 0.5f, 0.5f );
+	if( normals )
+		normals[0] = vec3( 0, 0, 1 );
+	const float tDelta = 1.0f / numSegments * 2 * (float)M_PI;
+	float t = 0;
+	for( int s = 0; s <= numSegments; s++ ) {
+		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		if( verts )
+			verts[s+1] = center + unit * vec2( radiusX, radiusY );
 		if( texCoords )
 			texCoords[s+1] = unit * 0.5f + vec2( 0.5f, 0.5f );
 		if( normals )

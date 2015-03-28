@@ -463,9 +463,6 @@
 		007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
 		008876560F957E7300FD55C5 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
 		00887AC10F9C279700FD55C5 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
-		008B435D14EF426100B55B07 /* MatrixAffine2.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B435C14EF426100B55B07 /* MatrixAffine2.h */; };
-		008B435E14EF426100B55B07 /* MatrixAffine2.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B435C14EF426100B55B07 /* MatrixAffine2.h */; };
-		008B435F14EF426100B55B07 /* MatrixAffine2.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B435C14EF426100B55B07 /* MatrixAffine2.h */; };
 		008B439D14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
 		008B439E14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
 		008B439F14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
@@ -1270,7 +1267,6 @@
 		008876550F957E7300FD55C5 /* Arcball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arcball.h; sourceTree = "<group>"; };
 		0088773B0F96671600FD55C5 /* FileDropEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDropEvent.h; path = app/FileDropEvent.h; sourceTree = "<group>"; };
 		00887AC00F9C279700FD55C5 /* MayaCamUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MayaCamUI.h; sourceTree = "<group>"; };
-		008B435C14EF426100B55B07 /* MatrixAffine2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; path = MatrixAffine2.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		008B439A14F5F39100B55B07 /* Svg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Svg.h; path = svg/Svg.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		008B439C14F5F39100B55B07 /* SvgGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SvgGl.h; path = svg/SvgGl.h; sourceTree = "<group>"; };
 		008B43A714F5F8F800B55B07 /* Svg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Svg.cpp; path = svg/Svg.cpp; sourceTree = "<group>"; };
@@ -1976,7 +1972,6 @@
 				277C2CEC1366632B00178A29 /* Matrix22.h */,
 				277C2CED1366632B00178A29 /* Matrix33.h */,
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
-				008B435C14EF426100B55B07 /* MatrixAffine2.h */,
 				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
@@ -2829,7 +2824,6 @@
 				0014408014CDB8D900D99000 /* Plane.h in Headers */,
 				43F78EF71516DAE200EB63B5 /* Json.h in Headers */,
 				0059BD34151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */,
-				008B435E14EF426100B55B07 /* MatrixAffine2.h in Headers */,
 				008B439E14F5F39100B55B07 /* Svg.h in Headers */,
 				008B43A414F5F39100B55B07 /* SvgGl.h in Headers */,
 				0034C325151A5B9F003F2E30 /* linebreak.h in Headers */,
@@ -2976,7 +2970,6 @@
 				111A5F51191F7285005C3166 /* window.h in Headers */,
 				0003F44A1992D67300647C8B /* Environment.h in Headers */,
 				0003F4681992D67300647C8B /* TransformFeedbackObj.h in Headers */,
-				008B435F14EF426100B55B07 /* MatrixAffine2.h in Headers */,
 				008B439F14F5F39100B55B07 /* Svg.h in Headers */,
 				111A5F39191F7285005C3166 /* lookup_data.h in Headers */,
 				111A5F35191F7285005C3166 /* highlevel.h in Headers */,
@@ -3172,7 +3165,6 @@
 				0014407F14CDB8D900D99000 /* Plane.h in Headers */,
 				43F78EF61516DAE200EB63B5 /* Json.h in Headers */,
 				0059BD33151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */,
-				008B435D14EF426100B55B07 /* MatrixAffine2.h in Headers */,
 				111A5ECE191F703D005C3166 /* setup_11.h in Headers */,
 				0003F44B1992D67300647C8B /* Fbo.h in Headers */,
 				111A5EC2191F703D005C3166 /* mdct.h in Headers */,

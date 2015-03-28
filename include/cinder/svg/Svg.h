@@ -27,11 +27,11 @@
 #include "cinder/Cinder.h"
 #include "cinder/Xml.h"
 #include "cinder/Vector.h"
+#include "cinder/Matrix.h"
 #include "cinder/Color.h"
 #include "cinder/Shape2d.h"
 #include "cinder/PolyLine.h"
 #include "cinder/Exception.h"
-#include "cinder/MatrixAffine2.h"
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
 #include "cinder/Noncopyable.h"
@@ -83,7 +83,7 @@ class Renderer {
 	virtual void	drawImage( const svg::Image &image ) {}
 	virtual void	drawTextSpan( const svg::TextSpan &span ) {}
 
-	virtual void	pushMatrix( const MatrixAffine2f &m ) {}
+	virtual void	pushMatrix( const mat3 &m ) {}
 	virtual void	popMatrix() {}
 	virtual void	pushStyle( const svg::Style &style ) {}
 	virtual void	popStyle( const svg::Style &style ) {}	
@@ -167,7 +167,7 @@ class Paint {
 	float			getRadius() const { return mRadius; } // radial-only
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
-	MatrixAffine2f	getTransform() const { return mTransform; }
+	mat3			getTransform() const { return mTransform; }
 	
 	uint8_t									mType;
 	std::vector<std::pair<float,ColorA8u> >	mStops;
@@ -175,7 +175,7 @@ class Paint {
 	vec2				mCoords0, mCoords1;
 	float				mRadius;
 	bool				mUseObjectBoundingBox;
-	MatrixAffine2f		mTransform;
+	mat3				mTransform;
 	bool				mSpecifiesTransform;
 };
 
@@ -342,19 +342,19 @@ class Node {
 	Paint					findPaintInAncestors( const std::string &paintName ) const;
 
 	//! Returns whether this Node specifies a transformation
-	bool			specifiesTransform() const { return mSpecifiesTransform; }
+	bool				specifiesTransform() const { return mSpecifiesTransform; }
 	//! Returns the local transformation of this node. Returns identity if the Node's transform isn't specified.
-	MatrixAffine2f		getTransform() const { return mTransform; }
+	mat3				getTransform() const { return mTransform; }
 	//! Sets the local transformation of this node.
-	void				setTransform( const MatrixAffine2f &transform ) { mTransform = transform; mSpecifiesTransform = true; }
+	void				setTransform( const mat3 &transform ) { mTransform = transform; mSpecifiesTransform = true; }
 	//! Removes the local transformation of this node, effectively making it the identity matrix.
 	void				unspecifyTransform() { mSpecifiesTransform = false; }
 	//! Returns the inverse of the local transformation of this node. Returns identity if the Node's transform isn't specified.
-	MatrixAffine2f		getTransformInverse() const { return ( mSpecifiesTransform ) ? mTransform.invertCopy() : MatrixAffine2f::identity(); }
+	mat3				getTransformInverse() const { return ( mSpecifiesTransform ) ? inverse( mTransform ) : mat3(); }
 	//! Returns the absolute transformation of this node, which includes inherited transformations.
-	MatrixAffine2f		getTransformAbsolute() const;
+	mat3				getTransformAbsolute() const;
 	//! Returns the inverse of the absolute transformation of this node, which includes inherited transformations.
-	MatrixAffine2f		getTransformAbsoluteInverse() const { return getTransformAbsolute().invertCopy(); }
+	mat3				getTransformAbsoluteInverse() const { return inverse( getTransformAbsolute() ); }
 
 	//! Returns the local bounding box of the Node. Calculated and cached the first time it is requested.
 	Rectf			getBoundingBox() const { if( ! mBoundingBoxCached ) { mBoundingBox = calcBoundingBox(); mBoundingBoxCached = true; } return mBoundingBox;  }
@@ -406,8 +406,8 @@ class Node {
 	virtual Rectf	calcBoundingBox() const { return Rectf( 0, 0, 0, 0 ); }
 
 	static Paint		parsePaint( const char *value, bool *specified, const Node *parentNode );
-	static MatrixAffine2f	parseTransform( const std::string &value );
-	static bool			parseTransformComponent( const char **c, MatrixAffine2f *result );
+	static mat3			parseTransform( const std::string &value );
+	static bool			parseTransformComponent( const char **c, mat3 *result );
 	
 	static std::string	findStyleValue( const std::string &styleString, const std::string &key );
 	void				parseStyle( const std::string &value );
@@ -417,7 +417,7 @@ class Node {
 	std::string		mId;
 	Style			mStyle;
 	bool			mSpecifiesTransform;
-	MatrixAffine2f	mTransform;
+	mat3			mTransform;
 	mutable bool	mBoundingBoxCached;
 	mutable Rectf	mBoundingBox;
 	
@@ -457,7 +457,7 @@ class Gradient : public Node {
 	vec2				mCoords0, mCoords1;
 	bool				mUseObjectBoundingBox;
 	bool				mSpecifiesTransform;
-	MatrixAffine2f		mTransform;
+	mat3				mTransform;
 };
 
 //! SVG Linear gradient
@@ -762,7 +762,7 @@ class Group : public Node, private Noncopyable {
 	std::list<Node*>&		getChildren() { return mChildren; }
 
   protected:
-	Node*		nodeUnderPoint( const vec2 &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const;
+	Node*		nodeUnderPoint( const vec2 &absolutePoint, const mat3 &parentInverseMatrix ) const;
 	Shape2d		getMergedShape2d() const;
 
 	virtual void	renderSelf( Renderer &renderer ) const;

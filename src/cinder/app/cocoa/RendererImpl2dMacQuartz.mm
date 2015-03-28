@@ -78,6 +78,10 @@
 	currentGraphicsContext = [NSGraphicsContext currentContext];
 	currentRef = (CGContextRef)[currentGraphicsContext graphicsPort];
 	CGContextRetain( currentRef );
+	
+	CGAffineTransform originalCtm = ::CGContextGetCTM( currentRef );
+	CGAffineTransform originalCtmInv = ::CGAffineTransformInvert( originalCtm );
+	::CGContextConcatCTM( currentRef, originalCtmInv );
 }
 
 - (void)flushBuffer

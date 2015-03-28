@@ -229,8 +229,16 @@ SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
-	: SurfaceBase( other ), mCinderSurface( other.mCinderSurface )
+	: SurfaceBase( other )
 {
+	initCinderSurface( other.mCinderSurface.hasAlpha(), mCairoSurface );
+}
+
+SurfaceImage& SurfaceImage::operator=( const SurfaceImage &other )
+{
+	this->SurfaceBase::operator=( other );
+	initCinderSurface( other.mCinderSurface.hasAlpha(), mCairoSurface );
+	return *this;
 }
 
 uint8_t* SurfaceImage::getData() 
@@ -453,14 +461,14 @@ void Matrix::init( double xx_, double yx_, double xy_, double yy_, double x0_, d
 	y0 = y0_;
 }
 
-Matrix::Matrix( const cinder::MatrixAffine2f &m )
+Matrix::Matrix( const mat3 &m )
 {
-	xx = m.m[0];
-	yx = m.m[1];
-	xy = m.m[2];
-	yy = m.m[3];
-	x0 = m.m[4];
-	y0 = m.m[5];
+	xx = m[0][0];
+	yx = m[0][1];
+	xy = m[1][0];
+	yy = m[1][1];
+	x0 = m[2][0];
+	y0 = m[2][1];
 }
 
 void Matrix::initIdentity()
@@ -1643,7 +1651,7 @@ void Context::transform( const Matrix &aMatrix )
 	cairo_transform( mCairo, &aMatrix.getCairoMatrix() );
 }
 
-void Context::transform( const cinder::MatrixAffine2f &matrix )
+void Context::transform( const mat3 &matrix )
 {
 	cairo_transform( mCairo, &cairo::Matrix( matrix ).getCairoMatrix() );
 }
@@ -1653,7 +1661,7 @@ void Context::setMatrix( const Matrix &aMatrix )
 	cairo_set_matrix( mCairo, &aMatrix.getCairoMatrix() );
 }
 
-void Context::setMatrix( const cinder::MatrixAffine2f &matrix )
+void Context::setMatrix( const mat3 &matrix )
 {
 	cairo_set_matrix( mCairo, &cairo::Matrix( matrix ).getCairoMatrix() );
 }
@@ -1663,11 +1671,14 @@ void Context::getMatrix( Matrix *aMatrix )
 	cairo_get_matrix( mCairo, &aMatrix->getCairoMatrix() );
 }
 
-MatrixAffine2f Context::getMatrix() const
+mat3 Context::getMatrix() const
 {
 	cairo_matrix_t temp;
 	cairo_get_matrix( mCairo, &temp );
-	return MatrixAffine2f( (float)temp.xx, (float)temp.yx, (float)temp.xy, (float)temp.yy, (float)temp.x0, (float)temp.y0 );
+
+	return mat3( temp.xx, temp.yx, temp.x0, temp.xy, temp.yy, temp.y0, 0, 0, 1 );
+
+//	return mat3( (float)temp.xx, (float)temp.yx, (float)temp.xy, (float)temp.yy, (float)temp.x0, (float)temp.y0 );
 }
 
 void Context::identityMatrix()
@@ -1808,6 +1819,11 @@ cairo::SurfaceQuartz createWindowSurface()
 std::string	Context::statusToString() const
 {
 	return std::string( cairo_status_to_string( cairo_status( mCairo ) ) );
+}
+
+bool isSingular( const mat3& m )
+{
+	return fabs( m[0][0] * m[1][1] - m[1][0] * m[0][1] ) <= 0.000001f;
 }
 
 /////////////////////////////////////////////////////////////////////////////
@@ -2051,11 +2067,11 @@ class SvgRendererCairo : public svg::Renderer {
 		strokeAndFill( span );
 	}
 
-	void	pushMatrix( const MatrixAffine2f &top ) {
-		MatrixAffine2f m = mMatrixStack.back() * top;
+	void	pushMatrix( const mat3 &top ) {
+		mat3 m = mMatrixStack.back() * top;
 		mMatrixStack.push_back( m );
 		// verify the matrix is non-singular
-		if( ! m.isSingular() ) {
+		if( ! isSingular( m ) ) {
 			mCtx.setMatrix( m );
 			//mCtx.transform( mMatrixStack.back() );
 		}
@@ -2067,8 +2083,8 @@ class SvgRendererCairo : public svg::Renderer {
 		mMatrixStack.pop_back();
 		mMatrixStackContainsIllegal = false;
 		for( size_t s = 0; s < mMatrixStack.size(); ++s ) {
-			const MatrixAffine2f &m = mMatrixStack[s];
-			if( m.isSingular() ) {
+			const mat3 &m = mMatrixStack[s];
+			if( isSingular( m ) ) {
 				mMatrixStackContainsIllegal = true;
 				break;
 			}
@@ -2118,7 +2134,7 @@ class SvgRendererCairo : public svg::Renderer {
 	void	pushTextRotation( float rotation ) { mTextRotationStack.push_back( rotation ); }
 	void	popTextRotation() { mTextRotationStack.pop_back(); }
 
-	std::vector<MatrixAffine2f>		mMatrixStack;
+	std::vector<mat3>			mMatrixStack;
 	bool						mMatrixStackContainsIllegal;
 	std::vector<svg::Paint>		mFillStack, mStrokeStack;
 	std::vector<float>			mFillOpacityStack, mStrokeOpacityStack;

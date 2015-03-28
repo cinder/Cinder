@@ -25,7 +25,7 @@
 #include "cinder/Vector.h"
 #include "cinder/Rect.h"
 #include "cinder/Path2d.h"
-#include "cinder/MatrixAffine2.h"
+#include "cinder/Matrix.h"
 
 #include <vector>
 
@@ -67,9 +67,9 @@ class Shape2d {
 	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 
 	//! Transforms the Shape2d by \a matrix.
-	void		transform( const MatrixAffine2f &matrix );
+	void		transform( const mat3 &matrix );
 	//! Returns a copy transformed by \a matrix.
-	Shape2d		transformCopy( const MatrixAffine2f &matrix ) const;
+	Shape2d		transformCopy( const mat3 &matrix ) const;
 
 	//! Returns the bounding box of the Shape's control points. Note that this is not necessarily the bounding box of the path's shape.
 	Rectf	calcBoundingBox() const;

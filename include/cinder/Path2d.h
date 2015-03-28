@@ -26,7 +26,7 @@
 #include "cinder/BSpline.h"
 #include "cinder/Rect.h"
 #include "cinder/Exception.h"
-#include "cinder/MatrixAffine2.h"
+#include "cinder/Matrix.h"
 
 #include <vector>
 
@@ -83,9 +83,9 @@ class Path2d {
 	//! Scales the Path2d by \a amount.x on X and \a amount.y on Y around the center \a scaleCenter
 	void		scale( const vec2 &amount, vec2 scaleCenter = vec2() );
 	//! Transforms the Path2d by \a matrix.
-	void		transform( const MatrixAffine2f &matrix );
+	void		transform( const mat3 &matrix );
 	//! Returns a copy transformed by \a matrix.
-	Path2d		transformCopy( const MatrixAffine2f &matrix ) const;
+	Path2d		transformCopy( const mat3 &matrix ) const;
 
 
 	const std::vector<vec2>&	getPoints() const { return mPoints; }
