@@ -4,7 +4,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/ip/Fill.h"
-//#include "cinder/svg/SvgGl.h"
+#include "cinder/svg/SvgGl.h"
 #include "cinder/cairo/Cairo.h"
 
 using namespace ci;
@@ -83,7 +83,7 @@ void SimpleViewerApp::draw()
 			if( mUseCairo )
 				gl::draw( mTex );
 			else
-;//				gl::draw( *mDoc );
+				gl::draw( *mDoc );
 		}
 	}
 	else {
