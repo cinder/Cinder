@@ -305,6 +305,7 @@
     <ClInclude Include="..\include\cinder\app\winrt\WindowImplWinRt.h" />
     <ClInclude Include="..\include\cinder\Arcball.h" />
     <ClInclude Include="..\include\cinder\Area.h" />
+    <ClInclude Include="..\include\cinder\audio\audio.h" />
     <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
     <ClInclude Include="..\include\cinder\audio\Context.h" />

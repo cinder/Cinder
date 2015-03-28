@@ -724,6 +724,9 @@
     <ClInclude Include="..\include\cinder\Breakpoint.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\audio.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
