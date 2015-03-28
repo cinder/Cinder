@@ -120,11 +120,11 @@ class SvgRendererGl : public svg::Renderer {
 	void	drawEllipse( const svg::Ellipse &ellipse ) override {
 		if( ! mFillStack.back().isNone() ) {
 			gl::color( getCurFillColor() );
-//			gl::drawSolidEllipse( ellipse.getCenter(), ellipse.getRadiusX(), ellipse.getRadiusY() );
+			gl::drawSolidEllipse( ellipse.getCenter(), ellipse.getRadiusX(), ellipse.getRadiusY() );
 		}
 		if( ! mStrokeStack.back().isNone() ) {
 			gl::color( getCurStrokeColor() );
-//			gl::drawStrokedEllipse( ellipse.getCenter(), ellipse.getRadiusX(), ellipse.getRadiusY() );
+			gl::drawStrokedEllipse( ellipse.getCenter(), ellipse.getRadiusX(), ellipse.getRadiusY() );
 		}
 	}	
     

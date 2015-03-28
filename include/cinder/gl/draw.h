@@ -90,14 +90,19 @@ void drawLine( const vec2 &a, const vec2 &b );
 
 //! Draws \a texture on the XY-plane
 void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
+//! Draws a filled circle centered around \a center with a radius of \a radius
 void drawSolidCircle( const vec2 &center, float radius, int numSegments = -1 );
+//! Draws a filled ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a stroked rectangle with dimensions \a rect.
 void drawStrokedRect( const Rectf &rect );
 //! Draws a stroked rectangle centered around \a rect, with a line width of \a lineWidth
 void drawStrokedRect( const Rectf &rect, float lineWidth );
-//! Draws a stroked circles centered around \a center with a radius of \a radius
+//! Draws a stroked circle centered around \a center with a radius of \a radius
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments = -1 );
+//! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
 void drawString( const std::string &str, const vec2 &pos, const ColorA &color = ColorA( 1, 1, 1, 1 ), Font font = Font() );
