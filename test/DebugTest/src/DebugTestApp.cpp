@@ -21,6 +21,7 @@ class DebugTestApp : public App {
 	void testAddFile();
 	void testAddRemove();
 	void testAsserts();
+	void testBreakOnLog();
 
 
 	void keyDown( KeyEvent event );
@@ -34,12 +35,13 @@ void DebugTestApp::setup()
 //	testEnableBadFilePath();
 //	testEnableDisable();
 //	testAddRemove();
-	testRotatingFile();
+	//testRotatingFile();
 	//testEnableDisable();
 //	testSystemLevel();
 	//testAddFile();
 	//testAddRemove();
 	//testAsserts();
+	testBreakOnLog();
 }
 
 void DebugTestApp::testAsserts()
@@ -51,6 +53,18 @@ void DebugTestApp::testAsserts()
 
 //	CI_ASSERT( false );
 //	CI_ASSERT_MSG( false, "blarg" );
+}
+
+void DebugTestApp::testBreakOnLog()
+{
+	log::manager()->enableBreakOnError();
+	//log::manager()->enableBreakOnLevel( log::LEVEL_WARNING );
+
+	CI_LOG_V( "bang" );
+	CI_LOG_I( "bang" );
+	CI_LOG_W( "bang" );
+	CI_LOG_E( "bang" );
+	CI_LOG_F( "bang" );
 }
 
 void DebugTestApp::testEnableFileLogger()
@@ -111,11 +125,12 @@ void DebugTestApp::testAddFile()
 
 void DebugTestApp::testAddRemove()
 {
-	auto logger = new log::LoggerSysLog;
-	log::manager()->addLogger( logger );
-	CI_LOG_I( "added LoggerSysLog" );
-	log::manager()->removeLogger( logger );
-	CI_LOG_I( "removed LoggerSysLog" );
+	// TEMPORARY: commented out to build on windows, until LoggerSysLog is implemented there.
+// 	auto logger = new log::LoggerSysLog;
+// 	log::manager()->addLogger( logger );
+// 	CI_LOG_I( "added LoggerSysLog" );
+// 	log::manager()->removeLogger( logger );
+// 	CI_LOG_I( "removed LoggerSysLog" );
 }
 
 void DebugTestApp::testEnableBadFilePath()

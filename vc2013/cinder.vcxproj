@@ -704,6 +704,7 @@
     <ClInclude Include="..\include\cinder\audio\WaveformType.h" />
     <ClInclude Include="..\include\cinder\audio\WaveTable.h" />
     <ClInclude Include="..\include\cinder\Base64.h" />
+    <ClInclude Include="..\include\cinder\Breakpoint.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\CinderAssert.h" />
     <ClInclude Include="..\include\cinder\CinderGlm.h" />

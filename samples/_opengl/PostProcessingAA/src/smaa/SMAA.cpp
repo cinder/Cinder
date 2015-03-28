@@ -22,7 +22,6 @@
 
 #include "cinder/app/App.h"
 #include "cinder/Log.h"
-#include "cinder/System.h"
 
 #include "SMAA.h"
 #include "AreaTex.h"
@@ -40,7 +39,7 @@ SMAA::SMAA()
 		mGlslThirdPass = gl::GlslProg::create( app::loadAsset( "smaa3.vert" ), app::loadAsset( "smaa3.frag" ) );
 	}
 	catch( const std::exception& e ) {
-		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( e ).name() ) << ", what: " << e.what() );
+		CI_LOG_EXCEPTION( "exception caught loading smaa shaders", e );
 	}
 
 	// Create lookup textures
