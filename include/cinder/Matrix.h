@@ -42,6 +42,32 @@
 
 namespace cinder {
 
+inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
+{
+	glm::mat4 result( glm::uninitialize );
+	result[0][0] = m[0][0];
+	result[0][1] = m[0][1];
+	result[0][2] = m[0][2];
+	result[0][3] = 0;
+
+	result[1][0] = m[1][0];
+	result[1][1] = m[1][1];
+	result[1][2] = m[1][2];
+	result[1][3] = 0;
+
+	result[2][0] = 0;
+	result[2][1] = 0;
+	result[2][2] = 1;
+	result[2][3] = 0;
+
+	result[3][0] = m[2][0];
+	result[3][1] = m[2][1];
+	result[3][2] = 0;
+	result[3][3] = m[2][2];
+	
+	return result;
+}
+
 glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
