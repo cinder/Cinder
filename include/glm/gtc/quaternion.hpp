@@ -59,7 +59,7 @@ namespace glm
 	/// @addtogroup gtc_quaternion
 	/// @{
 
-	template <typename T, precision P = defaultp>
+	template <typename T, precision P>
 	struct tquat
 	{
 		typedef tquat<T, P> type;

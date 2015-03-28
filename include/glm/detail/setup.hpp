@@ -38,15 +38,15 @@
 ///////////////////////////////////////////////////////////////////////////////////
 // Version
 
-#define GLM_VERSION					97
+#define GLM_VERSION					96
 #define GLM_VERSION_MAJOR			0
 #define GLM_VERSION_MINOR			9
-#define GLM_VERSION_PATCH			7
-#define GLM_VERSION_REVISION		0
+#define GLM_VERSION_PATCH			6
+#define GLM_VERSION_REVISION		3
 
 #if(defined(GLM_MESSAGES) && !defined(GLM_MESSAGE_VERSION_DISPLAYED))
 #	define GLM_MESSAGE_VERSION_DISPLAYED
-#	pragma message ("GLM: version 0.9.7")
+#	pragma message ("GLM: version 0.9.6.3")
 #endif//GLM_MESSAGE
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -502,8 +502,8 @@
 
 #if GLM_PLATFORM == GLM_PLATFORM_ANDROID
 #	define GLM_HAS_CXX11_STL 0
-#elif GLM_COMPILER & (GLM_COMPILER_LLVM | GLM_COMPILER_APPLE_CLANG | GLM_COMPILER_INTEL)
-#	define GLM_HAS_CXX11_STL __has_include("__config")
+#elif GLM_COMPILER & (GLM_COMPILER_LLVM | GLM_COMPILER_APPLE_CLANG)
+#	define GLM_HAS_CXX11_STL __has_include(<__config>)
 #else
 #	define GLM_HAS_CXX11_STL ((GLM_LANG & GLM_LANG_CXX0X_FLAG) && \
 		((GLM_COMPILER & GLM_COMPILER_GCC) && (GLM_COMPILER >= GLM_COMPILER_GCC48)) || \
@@ -633,7 +633,8 @@
 #endif
 
 // 
-#define GLM_HAS_TRIVIAL_QUERIES 0
+#define GLM_HAS_TRIVIAL_QUERIES 0//( \
+	//((GLM_COMPILER & GLM_COMPILER_VC) && (GLM_COMPILER >= GLM_COMPILER_VC2013)))
 
 // 
 #if GLM_LANG & GLM_LANG_CXX11_FLAG

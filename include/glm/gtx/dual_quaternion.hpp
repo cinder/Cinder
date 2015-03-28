@@ -58,7 +58,7 @@ namespace glm
 	/// @addtogroup gtx_dual_quaternion
 	/// @{
 
-	template <typename T, precision P = defaultp>
+	template <typename T, precision P>
 	struct tdualquat
 	{
 		typedef T value_type;

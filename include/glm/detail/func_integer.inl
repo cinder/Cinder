@@ -248,8 +248,10 @@ namespace detail
 		GLM_STATIC_ASSERT(sizeof(uint) == sizeof(uint32), "uint and uint32 size mismatch");
 
 		uint64 Value64 = static_cast<uint64>(x) * static_cast<uint64>(y);
-		msb = static_cast<uint>(Value64 >> static_cast<uint64>(32));
-		lsb = static_cast<uint>(Value64);
+		uint32* PointerMSB = (reinterpret_cast<uint32*>(&Value64) + 1);
+		msb = *PointerMSB;
+		uint32* PointerLSB = (reinterpret_cast<uint32*>(&Value64) + 0);
+		lsb = *PointerLSB;
 	}
 
 	template <precision P, template <typename, precision> class vecType>
@@ -268,8 +270,10 @@ namespace detail
 		GLM_STATIC_ASSERT(sizeof(int) == sizeof(int32), "int and int32 size mismatch");
 
 		int64 Value64 = static_cast<int64>(x) * static_cast<int64>(y);
-		msb = static_cast<int>(Value64 >> static_cast<int64>(32));
-		lsb = static_cast<int>(Value64);
+		int32* PointerMSB = (reinterpret_cast<int32*>(&Value64) + 1);
+		msb = *PointerMSB;
+		int32* PointerLSB = (reinterpret_cast<int32*>(&Value64));
+		lsb = *PointerLSB;
 	}
 
 	template <precision P, template <typename, precision> class vecType>
