@@ -61,7 +61,7 @@ void MovieWriterApp::draw()
 	gl::clear();
 	gl::enableDepthRead();
 	gl::color( Color( CM_HSV, fmod( getElapsedFrames() / 30.0f, 1.0f ), 1, 1 ) );
-	gl::draw( geom::Circle().center( getWindowCenter() ).radius( getElapsedFrames() ) );
+	gl::draw( geom::Circle().center( getWindowCenter() ).radius( getElapsedFrames() ).subdivisions( 100 ) );
 }
 
 CINDER_APP( MovieWriterApp, RendererGl, MovieWriterApp::prepareSettings )
