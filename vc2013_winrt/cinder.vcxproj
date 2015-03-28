@@ -345,6 +345,7 @@
     <ClInclude Include="..\include\cinder\audio\WaveformType.h" />
     <ClInclude Include="..\include\cinder\audio\WaveTable.h" />
     <ClInclude Include="..\include\cinder\AxisAlignedBox.h" />
+    <ClInclude Include="..\include\cinder\Breakpoint.h" />
     <ClInclude Include="..\include\cinder\BSpline.h" />
     <ClInclude Include="..\include\cinder\BSplineFit.h" />
     <ClInclude Include="..\include\cinder\Buffer.h" />
