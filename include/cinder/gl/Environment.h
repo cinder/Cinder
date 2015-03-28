@@ -31,9 +31,9 @@
 	typedef struct _CGLContextObject       *CGLContextObj;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined( __OBJC__ )
-		@class EAGLContext;
+		@class	EAGLContext;
 	#else
-		typedef void*	EAGLContext;
+		class	EAGLContext;
 	#endif
 #elif defined( CINDER_GL_ANGLE )
 	typedef void*		EGLContext;
