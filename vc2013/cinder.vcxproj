@@ -663,6 +663,7 @@
     <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h" />
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h" />
     <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h" />
+    <ClInclude Include="..\include\cinder\audio\audio.h" />
     <ClInclude Include="..\include\cinder\audio\Buffer.h" />
     <ClInclude Include="..\include\cinder\audio\ChannelRouterNode.h" />
     <ClInclude Include="..\include\cinder\audio\Context.h" />

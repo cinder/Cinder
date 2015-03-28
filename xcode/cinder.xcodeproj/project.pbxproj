@@ -1544,6 +1544,7 @@
 		116C06221ABD2C06004D8297 /* scoped.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scoped.cpp; path = gl/scoped.cpp; sourceTree = "<group>"; };
 		116C06231ABD2C06004D8297 /* wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wrapper.cpp; path = gl/wrapper.cpp; sourceTree = "<group>"; };
 		117C98081AC534C300957DC6 /* Breakpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Breakpoint.h; sourceTree = "<group>"; };
+		117C98151AC6815400957DC6 /* audio.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = audio.h; sourceTree = "<group>"; };
 		1181F7C31A7F8760001BBFA2 /* AppBase.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AppBase.h; path = app/AppBase.h; sourceTree = "<group>"; };
 		1181F7C71A7F8792001BBFA2 /* AppBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AppBase.cpp; path = app/AppBase.cpp; sourceTree = "<group>"; };
 		118CA4081A9427F700841458 /* AppMac.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = AppMac.cpp; sourceTree = "<group>"; };
@@ -2622,6 +2623,7 @@
 				111A5EF6191F726A005C3166 /* cocoa */,
 				111A5F00191F726A005C3166 /* dsp */,
 				111A5F0F191F726A005C3166 /* msw */,
+				117C98151AC6815400957DC6 /* audio.h */,
 				111A5EF4191F726A005C3166 /* Buffer.h */,
 				111A5EF5191F726A005C3166 /* ChannelRouterNode.h */,
 				111A5EFC191F726A005C3166 /* Context.h */,
