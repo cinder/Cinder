@@ -28,7 +28,7 @@
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix44.h"
 
-#include "cinder/app/AppCocoaTouch.h" // this is only for app::InterfaceOrientation, since it currently lives there
+#include "cinder/app/cocoa/AppCocoaTouch.h" // this is only for app::InterfaceOrientation, since it currently lives there
 
 namespace cinder {
 

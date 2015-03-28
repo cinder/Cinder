@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 
