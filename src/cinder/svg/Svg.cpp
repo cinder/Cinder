@@ -838,10 +838,10 @@ bool Node::parseTransformComponent( const char **c, mat3 *result )
 		}
 		else if( v.size() == 3 ) { // rotate around point
 			float a = toRadians( v[0] );
-			vec2 v; v.x = v[0]; v.y = v[1];
-			m = glm::translate( mat3(), -v );
+			vec2 origin( v[1], v[2] );
+			m = glm::translate( mat3(), origin );
 			m = glm::rotate( m, a );
-			m = glm::translate( mat3(), v );
+			m = glm::translate( m, -origin );
 		}
 		else
 			throw TransformParseExc();
