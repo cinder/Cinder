@@ -52,6 +52,28 @@ bool Connection::isConnected() const
 	return ! mDisconnector.expired() && mLink;
 }
 
+void Connection::block()
+{
+	if( mLink ) {
+		mLink->block();
+	}
+}
+
+void Connection::unblock()
+{
+	if( mLink ) {
+		mLink->unblock();
+	}
+}
+
+bool Connection::isActive() const
+{
+	if( mLink ) {
+		return mLink->isActive();
+	}
+	return false;
+}
+
 ScopedConnection::ScopedConnection()
 {
 }
