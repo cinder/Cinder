@@ -26,9 +26,9 @@
 #include "cinder/Cinder.h"
 #include "cinder/CinderMath.h"
 #include "cinder/Matrix22.h"
-#include "cinder/MatrixAffine2.h"
 #include "cinder/Matrix33.h"
 #include "cinder/Matrix44.h"
+#include "cinder/Vector.h"
 
 #include "glm/mat3x3.hpp"
 #include "glm/mat4x4.hpp"
@@ -36,10 +36,37 @@
 #include "glm/gtc/type_ptr.hpp"
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtx/transform.hpp"
+#include "glm/gtx/matrix_transform_2d.hpp"
 #include "glm/gtx/euler_angles.hpp"
 #include "glm/gtx/io.hpp"
 
 namespace cinder {
+
+inline glm::mat4 transform2dTo3d( const glm::mat3 &m )
+{
+	glm::mat4 result( glm::uninitialize );
+	result[0][0] = m[0][0];
+	result[0][1] = m[0][1];
+	result[0][2] = m[0][2];
+	result[0][3] = 0;
+
+	result[1][0] = m[1][0];
+	result[1][1] = m[1][1];
+	result[1][2] = m[1][2];
+	result[1][3] = 0;
+
+	result[2][0] = 0;
+	result[2][1] = 0;
+	result[2][2] = 1;
+	result[2][3] = 0;
+
+	result[3][0] = m[2][0];
+	result[3][1] = m[2][1];
+	result[3][2] = 0;
+	result[3][3] = m[2][2];
+	
+	return result;
+}
 
 glm::mat4 alignZAxisWithTarget( vec3 targetDir, vec3 upDir );
 

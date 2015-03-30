@@ -208,6 +208,11 @@ std::ostream& PlatformWinRt::console()
 	return *mOutputStream;
 }
 
+map<string,string> PlatformWinRt::getEnvironmentVariables()
+{
+	return map<string,string>();
+}
+
 fs::path PlatformWinRt::expandPath( const fs::path &path )
 {
 #if _MSC_VER <= 1800

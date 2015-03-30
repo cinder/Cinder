@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -43,8 +43,8 @@
 
 #include "../detail/setup.hpp"
 
-#if !GLM_HAS_TEMPLATE_ALIASES
-#	error "GLM_GTX_scalar_multiplication requires C++11 suppport or alias templates"
+#if !GLM_HAS_TEMPLATE_ALIASES && !(GLM_COMPILER & GLM_COMPILER_GCC)
+#	error "GLM_GTX_scalar_multiplication requires C++11 suppport or alias templates and if not support for GCC"
 #endif
 
 #include "../vec2.hpp"

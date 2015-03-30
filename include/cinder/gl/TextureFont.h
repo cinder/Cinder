@@ -37,6 +37,7 @@
 namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class TextureFont>	TextureFontRef;
+typedef std::shared_ptr<class GlslProg>		GlslProgRef;
 
 class TextureFont {
   public:

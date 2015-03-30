@@ -61,7 +61,7 @@ void Piston::draw( float time )
 
 //////////////////////////////////////////////////////////////////////
 
-void Pistons::setup()
+Pistons::Pistons()
 {
 	mPistons.clear();
 

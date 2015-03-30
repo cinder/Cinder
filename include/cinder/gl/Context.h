@@ -22,8 +22,8 @@
 
 #pragma once
 
+#include "cinder/gl/platform.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/gl.h"
 #include "cinder/Color.h"
 #include "cinder/Matrix44.h"
 #include "cinder/Vector.h"
@@ -54,6 +54,8 @@ class VertBatch;
 typedef std::shared_ptr<VertBatch>		VertBatchRef;
 class Renderbuffer;
 
+class TextureBase;
+
 class Context {
   public:
 	struct PlatformData {
@@ -76,8 +78,8 @@ class Context {
 	//! Returns the platform-specific OpenGL Context. CGLContextObj on Mac OS X, EAGLContext on iOS
 	const std::shared_ptr<PlatformData>		getPlatformData() const { return mPlatformData; }
 
-	//! Makes this the currently active OpenGL Context
-	void			makeCurrent() const;
+	//! Makes this the currently active OpenGL Context. If \a force then the cached pointer to the current Context is ignored.
+	void			makeCurrent( bool force = false ) const;
 	//! Returns the thread's currently active OpenGL Context
 	static Context*	getCurrent();
 	//! Set thread's local storage to reflect \a context as the active Context

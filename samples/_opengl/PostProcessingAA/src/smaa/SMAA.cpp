@@ -30,16 +30,16 @@
 using namespace ci;
 using namespace std;
 
-void SMAA::setup()
+SMAA::SMAA()
 {
 	// Load and compile our shaders
 	try {
-		mSMAAFirstPass = Shader::create( "smaa1" );
-		mSMAASecondPass = Shader::create( "smaa2" );
-		mSMAAThirdPass = Shader::create( "smaa3" );
+		mGlslFirstPass = gl::GlslProg::create( app::loadAsset( "smaa1.vert" ), app::loadAsset( "smaa1.frag" ) );
+		mGlslSecondPass = gl::GlslProg::create( app::loadAsset( "smaa2.vert" ), app::loadAsset( "smaa2.frag" ) );
+		mGlslThirdPass = gl::GlslProg::create( app::loadAsset( "smaa3.vert" ), app::loadAsset( "smaa3.frag" ) );
 	}
 	catch( const std::exception& e ) {
-		CI_LOG_E( e.what() );
+		CI_LOG_EXCEPTION( "exception caught loading smaa shaders", e );
 	}
 
 	// Create lookup textures
@@ -70,7 +70,7 @@ void SMAA::setup()
 	mFboFormat.enableDepthBuffer( false );
 }
 
-void SMAA::apply( gl::FboRef destination, gl::FboRef source )
+void SMAA::apply( const gl::FboRef &destination, const gl::FboRef &source )
 {
 	gl::ScopedFramebuffer fbo( destination );
 	gl::ScopedViewport viewport( 0, 0, destination->getWidth(), destination->getHeight() );
@@ -97,9 +97,9 @@ void SMAA::apply( gl::FboRef destination, gl::FboRef source )
 	}
 }
 
-void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
+void SMAA::draw( const gl::Texture2dRef &source, const Area &bounds )
 {
-	if( !mSMAAFirstPass || !mSMAASecondPass || !mSMAAThirdPass )
+	if( ! mGlslFirstPass || ! mGlslSecondPass || ! mGlslThirdPass )
 		return;
 
 	// Create or resize buffers.
@@ -114,10 +114,10 @@ void SMAA::draw( gl::Texture2dRef source, const Area& bounds )
 	// Apply SMAA.
 	gl::ScopedTextureBind tex0( source );
 	gl::ScopedTextureBind tex1( mFboBlendPass->getColorTexture(), 1 );
-	gl::ScopedGlslProg shader( mSMAAThirdPass->program() );
-	mSMAAThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mSMAAThirdPass->uniform( "uColorTex", 0 );
-	mSMAAThirdPass->uniform( "uBlendTex", 1 );
+	gl::ScopedGlslProg glslScope( mGlslThirdPass );
+	mGlslThirdPass->uniform( "SMAA_RT_METRICS", mMetrics );
+	mGlslThirdPass->uniform( "uColorTex", 0 );
+	mGlslThirdPass->uniform( "uBlendTex", 1 );
 
 	gl::color( Color::white() );
 	gl::drawSolidRect( bounds );
@@ -149,16 +149,16 @@ void SMAA::createBuffers( int width, int height )
 	mMetrics = vec4( 1.0f / width, 1.0f / height, (float) width, (float) height );
 }
 
-void SMAA::doEdgePass( gl::Texture2dRef source )
+void SMAA::doEdgePass( const gl::Texture2dRef &source )
 {
 	// Enable frame buffer, bind textures and shader.
 	gl::ScopedFramebuffer fbo( mFboEdgePass );
 	gl::clear( ColorA( 0, 0, 0, 0 ) );
 
 	gl::ScopedTextureBind tex0( source );
-	gl::ScopedGlslProg shader( mSMAAFirstPass->program() );
-	mSMAAFirstPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mSMAAFirstPass->uniform( "uColorTex", 0 );
+	gl::ScopedGlslProg glslScope( mGlslFirstPass );
+	mGlslFirstPass->uniform( "SMAA_RT_METRICS", mMetrics );
+	mGlslFirstPass->uniform( "uColorTex", 0 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
 	gl::color( Color::white() );
@@ -174,11 +174,11 @@ void SMAA::doBlendPass()
 	gl::ScopedTextureBind tex0( mFboEdgePass->getColorTexture() );
 	gl::ScopedTextureBind tex1( mAreaTex, 1 );
 	gl::ScopedTextureBind tex2( mSearchTex, 2 );
-	gl::ScopedGlslProg shader( mSMAASecondPass->program() );
-	mSMAASecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
-	mSMAASecondPass->uniform( "uEdgesTex", 0 );
-	mSMAASecondPass->uniform( "uAreaTex", 1 );
-	mSMAASecondPass->uniform( "uSearchTex", 2 );
+	gl::ScopedGlslProg glslScope( mGlslSecondPass );
+	mGlslSecondPass->uniform( "SMAA_RT_METRICS", mMetrics );
+	mGlslSecondPass->uniform( "uEdgesTex", 0 );
+	mGlslSecondPass->uniform( "uAreaTex", 1 );
+	mGlslSecondPass->uniform( "uSearchTex", 2 );
 
 	// Execute shader by drawing a 'full screen' rectangle.
 	gl::color( Color::white() );

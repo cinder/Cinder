@@ -25,6 +25,7 @@
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
 #include "cinder/msw/StackWalker.h"
+#include "cinder/msw/CinderMsw.h"
 #include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
 #include "cinder/app/AppBase.h"
 #include "cinder/ImageSourceFileWic.h"
@@ -100,6 +101,37 @@ std::ostream& PlatformMsw::console()
 		mOutputStream.reset( new cinder::msw::dostream );
 	
 	return *mOutputStream;
+}
+
+map<string,string> PlatformMsw::getEnvironmentVariables()
+{
+	map<string,string> result;
+	
+	WCHAR* env = ::GetEnvironmentStrings();
+	if( ! env )
+		return result;
+
+	size_t prevIdx = 0, idx = 0;
+	std::string keyString;
+	while( true ) {
+		if( ( env[idx] == TCHAR('=') ) && keyString.empty() ) {
+			keyString = msw::toUtf8String( std::wstring(env + prevIdx, env + idx) );
+			prevIdx = idx + 1;
+		}
+		else if( env[idx] == TCHAR('\0') ) {
+			result[keyString] = msw::toUtf8String( std::wstring(env + prevIdx, env + idx) );
+			prevIdx = idx + 1;
+			if( env[idx + 1] == TCHAR('\0'))
+				break;
+			keyString.clear();
+		}
+
+		++idx;
+	}
+
+	::FreeEnvironmentStrings( env );
+
+	return result;
 }
 
 fs::path PlatformMsw::expandPath( const fs::path &path )

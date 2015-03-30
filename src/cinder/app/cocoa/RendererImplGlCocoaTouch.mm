@@ -24,7 +24,7 @@
 #import "RendererImplGlCocoaTouch.h"
 #import <QuartzCore/QuartzCore.h>
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
@@ -207,9 +207,9 @@
 	}
 }
 
-- (void)makeCurrentContext
+- (void)makeCurrentContext:(bool)force
 {
-	mCinderContext->makeCurrent();
+	mCinderContext->makeCurrent( force );
     
 	// This application only creates a single default framebuffer which is already bound at this point.
 	// This call is redundant, but needed if dealing with multiple framebuffers.

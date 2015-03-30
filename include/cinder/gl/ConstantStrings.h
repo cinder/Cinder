@@ -22,7 +22,7 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include <string>
 
 namespace cinder { namespace gl {

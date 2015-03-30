@@ -106,7 +106,7 @@ class Renderer {
 
 	virtual void startDraw() {}
 	virtual void finishDraw() {}
-	virtual void makeCurrentContext() {}
+	virtual void makeCurrentContext( bool force = false ) {}
 	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
@@ -136,7 +136,7 @@ class Renderer2d : public Renderer {
 	void			startDraw() override;
 	void			finishDraw() override;
 	void			defaultResize() override;
-	void			makeCurrentContext() override;
+	void			makeCurrentContext( bool force = false ) override;
 	void			setFrameSize( int width, int height ) override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 	

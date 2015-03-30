@@ -703,17 +703,17 @@ void Path2d::scale( const vec2 &amount, vec2 scaleCenter )
 		*ptIt = scaleCenter + vec2( ( ptIt->x - scaleCenter.x ) * amount.x, ( ptIt->y - scaleCenter.y ) * amount.y );
 }
 
-void Path2d::transform( const MatrixAffine2f &matrix )
+void Path2d::transform( const mat3 &matrix )
 {
 	for( vector<vec2>::iterator ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt )
-		*ptIt = matrix.transformPoint( *ptIt );
+		*ptIt = vec2( matrix * vec3( *ptIt, 1 ) );
 }
 
-Path2d Path2d::transformCopy( const MatrixAffine2f &matrix ) const
+Path2d Path2d::transformCopy( const mat3 &matrix ) const
 {
 	Path2d result = *this;
 	for( vector<vec2>::iterator ptIt = result.mPoints.begin(); ptIt != result.mPoints.end(); ++ptIt )
-		*ptIt = matrix.transformPoint( *ptIt );
+		*ptIt = vec2( matrix * vec3( *ptIt, 1 ) );
 	return result;
 }
 

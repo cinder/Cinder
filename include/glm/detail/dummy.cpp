@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -34,7 +34,8 @@
 ///////////////////////////////////////////////////////////////////////////////////
 
 #define GLM_MESSAGES
-#include "../glm.hpp"
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
 #include <limits>
 
 struct material
@@ -213,10 +214,19 @@ typename vecType::value_type normalizeDotC(vecType const & a, vecType const & b)
 
 int main()
 {
-	glm::vec4 v(1);
-	float a = normalizeDotA(v, v);
-	float b = normalizeDotB(v, v);
-	float c = normalizeDotC(v, v);
+	glm::vec1 o(1);
+	glm::vec2 a(1);
+	glm::vec3 b(1);
+	glm::vec4 c(1);
+
+	glm::quat q;
+	glm::dualquat p;
+
+	glm::mat4 m(1);
+
+	float a0 = normalizeDotA(a, a);
+	float b0 = normalizeDotB(b, b);
+	float c0 = normalizeDotC(c, c);
 
 	return 0;
 }

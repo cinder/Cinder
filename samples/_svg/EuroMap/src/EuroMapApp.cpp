@@ -16,11 +16,12 @@ using namespace std;
 
 class EuroMapApp : public App {
   public:
-  	void prepareSettings( Settings *settings );
-	void setup();
-	void mouseMove( MouseEvent event );	
-	void draw();
-	
+	static void prepareSettings( Settings *settings );
+
+	void		setup() override;
+	void		mouseMove( MouseEvent event ) override;
+	void		draw() override;
+
 	gl::TextureRef		mMapTex;
 	gl::TextureFontRef	mFont;
 	svg::DocRef			mMapDoc;
@@ -66,6 +67,7 @@ void EuroMapApp::mouseMove( MouseEvent event )
 
 void EuroMapApp::draw()
 {
+	gl::clear();
 	gl::enableAlphaBlending();
 	glLineWidth( 2.0f );
 	
@@ -92,4 +94,4 @@ void EuroMapApp::draw()
 }
 
 
-CINDER_APP( EuroMapApp, RendererGl )
+CINDER_APP( EuroMapApp, RendererGl, EuroMapApp::prepareSettings )

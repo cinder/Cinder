@@ -1,9 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
-#include "cinder/audio/Context.h"
-#include "cinder/audio/NodeEffects.h"
-#include "cinder/audio/SamplePlayerNode.h"
+#include "cinder/audio/audio.h"
 
 #include "Resources.h"
 #include "../../common/AudioDrawUtils.h"

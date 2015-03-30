@@ -30,7 +30,7 @@
 #include "cinder/Shape2d.h"
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MatrixAffine2.h"
+#include "cinder/Matrix.h"
 #include "cinder/Function.h"
 #include "cinder/svg/Svg.h"
 
@@ -119,12 +119,14 @@ class SurfaceBase {
 class SurfaceImage : public SurfaceBase {
  public:
 	SurfaceImage() : SurfaceBase() {}
+	SurfaceImage( const SurfaceImage &other );	
 	SurfaceImage( int32_t width, int32_t height, bool hasAlpha = false );
 	SurfaceImage( const uint8_t *dataPtr, int32_t width, int32_t height, int32_t stride, bool hasAlpha = false );
 	//! Creates a copy of \a ciSurface
 	SurfaceImage( cinder::Surface ciSurface );
 	SurfaceImage( ImageSourceRef imageSource );
-	SurfaceImage( const SurfaceImage &other );
+
+	SurfaceImage& operator=( const SurfaceImage &other );
 	
 	uint8_t*		getData();
 	const uint8_t*	getData() const { return getData(); }
@@ -262,7 +264,7 @@ class Matrix
   public:
 	Matrix();
 	Matrix( double xx, double yx, double xy, double yy, double x0, double y0 );
-	Matrix( const cinder::MatrixAffine2f &m );
+	Matrix( const mat3 &m );
 
 	// This is a sort of horrible technique, but we will replace this with the ci::Matrix32 that will exist one day
 	cairo_matrix_t&			getCairoMatrix() { return *reinterpret_cast<cairo_matrix_t*>( &(this->xx) ); }
@@ -664,11 +666,11 @@ class Context
 	void        scale( double sx, double sy );
 	void        rotate( double radians );
 	void        transform( const Matrix &aMatrix );
-	void        transform( const cinder::MatrixAffine2f &matrix );	
+	void        transform( const mat3 &matrix );
 	void        setMatrix( const Matrix &aMatrix );
-	void		setMatrix( const cinder::MatrixAffine2f &matrix );
+	void		setMatrix( const mat3 &matrix );
 	void        getMatrix( Matrix *aMatrix );
-	MatrixAffine2f   getMatrix() const;	
+	mat3		getMatrix() const;
 	void        identityMatrix();
 	void        userToDevice( double *x, double *y );
 	void        userToDeviceDistance( double *dx, double *dy );

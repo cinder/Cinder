@@ -24,16 +24,16 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/Context.h"
 
 #if defined( CINDER_MAC )
 	typedef struct _CGLContextObject       *CGLContextObj;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined( __OBJC__ )
-		@class EAGLContext;
+		@class	EAGLContext;
 	#else
-		typedef void*	EAGLContext;
+		class	EAGLContext;
 	#endif
 #elif defined( CINDER_GL_ANGLE )
 	typedef void*		EGLContext;
@@ -41,6 +41,7 @@
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
 #elif defined( CINDER_MSW )
+	#include "cinder/msw/CinderWindowsFwd.h"
 	struct HGLRC__;
 	typedef HGLRC__* HGLRC;
 #endif

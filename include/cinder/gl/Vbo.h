@@ -24,6 +24,8 @@
 
 #include "cinder/gl/BufferObj.h"
 
+#include <vector>
+
 namespace cinder { namespace gl {
 	
 typedef std::shared_ptr<class Vbo> VboRef;

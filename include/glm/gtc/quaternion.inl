@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -105,6 +105,11 @@ namespace detail
 	{}
 
 	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tquat<T, P>::tquat(tquat<T, P> const & q)
+		: x(q.x), y(q.y), z(q.z), w(q.w)
+	{}
+
+	template <typename T, precision P>
 	template <precision Q>
 	GLM_FUNC_QUALIFIER tquat<T, P>::tquat(tquat<T, Q> const & q)
 		: x(q.x), y(q.y), z(q.z), w(q.w)
@@ -176,7 +181,7 @@ namespace detail
 		this->w = c.x * c.y * c.z + s.x * s.y * s.z;
 		this->x = s.x * c.y * c.z - c.x * s.y * s.z;
 		this->y = c.x * s.y * c.z + s.x * c.y * s.z;
-		this->z = c.x * c.y * s.z - s.x * s.y * c.z;		
+		this->z = c.x * c.y * s.z - s.x * s.y * c.z;
 	}
 
 	template <typename T, precision P>
@@ -221,19 +226,43 @@ namespace detail
 	// tquat<valType> operators
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator+=(tquat<T, P> const & q)
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator=(tquat<T, P> const & q)
 	{
-		this->w += q.w;
-		this->x += q.x;
-		this->y += q.y;
-		this->z += q.z;
+		this->w = q.w;
+		this->x = q.x;
+		this->y = q.y;
+		this->z = q.z;
 		return *this;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator*=(tquat<T, P> const & q)
+	template <typename U>
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator=(tquat<U, P> const & q)
+	{
+		this->w = static_cast<T>(q.w);
+		this->x = static_cast<T>(q.x);
+		this->y = static_cast<T>(q.y);
+		this->z = static_cast<T>(q.z);
+		return *this;
+	}
+
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator+=(tquat<U, P> const & q)
+	{
+		this->w += static_cast<T>(q.w);
+		this->x += static_cast<T>(q.x);
+		this->y += static_cast<T>(q.y);
+		this->z += static_cast<T>(q.z);
+		return *this;
+	}
+
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator*=(tquat<U, P> const & r)
 	{
 		tquat<T, P> const p(*this);
+		tquat<T, P> const q(r);
 
 		this->w = p.w * q.w - p.x * q.x - p.y * q.y - p.z * q.z;
 		this->x = p.w * q.x + p.x * q.w + p.y * q.z - p.z * q.y;
@@ -242,23 +271,25 @@ namespace detail
 		return *this;
 	}
 
-	template <typename T, precision P> 
-	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator*=(T const & s)
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator*=(U s)
 	{
-		this->w *= s;
-		this->x *= s;
-		this->y *= s;
-		this->z *= s;
+		this->w *= static_cast<U>(s);
+		this->x *= static_cast<U>(s);
+		this->y *= static_cast<U>(s);
+		this->z *= static_cast<U>(s);
 		return *this;
 	}
 
-	template <typename T, precision P> 
-	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator/=(T const & s)
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tquat<T, P> & tquat<T, P>::operator/=(U s)
 	{
-		this->w /= s;
-		this->x /= s;
-		this->y /= s;
-		this->z /= s;
+		this->w /= static_cast<U>(s);
+		this->x /= static_cast<U>(s);
+		this->y /= static_cast<U>(s);
+		this->z /= static_cast<U>(s);
 		return *this;
 	}
 

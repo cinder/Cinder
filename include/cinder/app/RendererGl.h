@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/Renderer.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #if defined( CINDER_MAC )
 	#if defined __OBJC__
@@ -188,7 +188,7 @@ class RendererGl : public Renderer {
 	void			startDraw() override;
 	void			finishDraw() override;
 	void			defaultResize() override;
-	void			makeCurrentContext() override;
+	void			makeCurrentContext( bool force = false ) override;
 	void			swapBuffers()override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 

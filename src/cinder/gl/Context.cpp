@@ -21,7 +21,6 @@
 */
 
 #include "cinder/gl/Context.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Environment.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Shader.h"
@@ -31,6 +30,7 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 #include "cinder/Utilities.h"
 
@@ -184,19 +184,19 @@ ContextRef Context::createFromExisting( const std::shared_ptr<PlatformData> &pla
 	return result;
 }
 
-void Context::makeCurrent() const
+void Context::makeCurrent( bool force ) const
 {
 #if defined( CINDER_COCOA )
 	if( ! sThreadSpecificCurrentContextInitialized ) {
 		pthread_key_create( &sThreadSpecificCurrentContextKey, NULL );
 		sThreadSpecificCurrentContextInitialized = true;
 	}
-	if( pthread_getspecific( sThreadSpecificCurrentContextKey ) != this ) {
-	pthread_setspecific( sThreadSpecificCurrentContextKey, this );
+	if( force || ( pthread_getspecific( sThreadSpecificCurrentContextKey ) != this ) ) {
+		pthread_setspecific( sThreadSpecificCurrentContextKey, this );
 		env()->makeContextCurrent( this );
 	}
 #else
-	if( sThreadSpecificCurrentContext != this ) {
+	if( force || ( sThreadSpecificCurrentContext != this ) ) {
 		sThreadSpecificCurrentContext = const_cast<Context*>( this );
 		env()->makeContextCurrent( this );
 	}

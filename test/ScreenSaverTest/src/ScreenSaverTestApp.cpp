@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Color.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include "cinder/System.h"
@@ -83,7 +83,7 @@ void ScreenSaverTestApp::setup()
 	mColor = Color( 1.0f, 0.5f, 0.25f );
 	mBackgroundColor = Color( 0.7f, 0.0f, 0.8f );
 
-	getSignalShutdown().connect( [this] {
+	getSignalCleanup().connect( [this] {
 		CI_LOG_I( "shutting down" );
 	} );
 

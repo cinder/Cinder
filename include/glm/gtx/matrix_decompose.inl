@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -125,31 +125,32 @@ namespace glm
 
 		// Now get scale and shear.
 		for(length_t i = 0; i < 3; ++i)
-			Row[i] = LocalMatrix[i];
+			for(int j = 0; j < 3; ++j)
+				Row[i][j] = LocalMatrix[i][j];
 
 		// Compute X scale factor and normalize first row.
 		Scale.x = length(Row[0]);// v3Length(Row[0]);
 
-		v3Scale(Row[0], 1.0);
+		v3Scale(Row[0], static_cast<T>(1));
 
 		// Compute XY shear factor and make 2nd row orthogonal to 1st.
 		Skew.z = dot(Row[0], Row[1]);
-		Row[1] = combine(Row[1], Row[0], 1.0, -Skew.z);
+		Row[1] = combine(Row[1], Row[0], static_cast<T>(1), -Skew.z);
 
 		// Now, compute Y scale and normalize 2nd row.
 		Scale.y = length(Row[1]);
-		v3Scale(Row[1], 1.0);
+		v3Scale(Row[1], static_cast<T>(1));
 		Skew.z /= Scale.y;
 
 		// Compute XZ and YZ shears, orthogonalize 3rd row.
 		Skew.y = glm::dot(Row[0], Row[2]);
-		Row[2] = combine(Row[2], Row[0], 1.0, -Skew.y);
+		Row[2] = combine(Row[2], Row[0], static_cast<T>(1), -Skew.y);
 		Skew.x = glm::dot(Row[1], Row[2]);
-		Row[2] = combine(Row[2], Row[1], 1.0, -Skew.x);
+		Row[2] = combine(Row[2], Row[1], static_cast<T>(1), -Skew.x);
 
 		// Next, get Z scale and normalize 3rd row.
 		Scale.z = length(Row[2]);
-		v3Scale(Row[2], 1.0);
+		v3Scale(Row[2], static_cast<T>(1));
 		Skew.y /= Scale.z;
 		Skew.x /= Scale.z;
 

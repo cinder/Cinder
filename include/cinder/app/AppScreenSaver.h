@@ -24,7 +24,6 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/gl/gl.h"
 #include "cinder/app/AppBase.h"
 
 #if defined( CINDER_MAC )

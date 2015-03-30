@@ -25,7 +25,7 @@
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for <=Mac OS 10.7
 #if ( defined( CINDER_MAC ) && ( ! defined( __LP64__ ) ) && ( MAC_OS_X_VERSION_MIN_REQUIRED < 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) )
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/qtime/QuickTimeUtils.h"
 
@@ -407,26 +407,6 @@ Handle createPointerDataRefWithExtensions( void *data, size_t dataSize, const st
 	return result;
 }
 
-Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
-{
-	CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
-	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
-	int32_t rowBytes = CVPixelBufferGetBytesPerRow( pixelBufferRef );
-	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
-	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
-	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
-	SurfaceChannelOrder sco;
-	if( type == k24RGBPixelFormat )
-		sco = SurfaceChannelOrder::RGB;
-	else if( type == k32ARGBPixelFormat )
-		sco = SurfaceChannelOrder::ARGB;
-	else if( type == k24BGRPixelFormat )
-		sco = SurfaceChannelOrder::BGR;
-	else if( type == k32BGRAPixelFormat )
-		sco = SurfaceChannelOrder::BGRA;
-	Surface8u *newSurface = new Surface8u( ptr, width, height, rowBytes, sco );
-	return Surface8uRef( newSurface, [=] ( Surface8u *s ) { ::CVBufferRelease( pixelBufferRef ); delete s; } );
-}
 
 #endif // ( ! defined( __LP64__ ) )
 

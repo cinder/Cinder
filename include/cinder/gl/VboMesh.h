@@ -22,14 +22,16 @@
 
 #pragma once
 
+#include "cinder/gl/Vao.h"
+#include "cinder/gl/Vbo.h"
+#include "cinder/gl/GlslProg.h"
+
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 #include "cinder/TriMesh.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/geomIo.h"
+#include "cinder/GeomIo.h"
 
-#include <ostream>
+#include <iosfwd>
 #include <vector>
 
 namespace cinder { namespace gl {
@@ -208,11 +210,14 @@ class VboMesh {
 	template<typename T>
 	class MappedAttrib : public MappedAttribBase {
 	  public:
-		T&			operator*() { return *(reinterpret_cast<T*>( mPtr )); }
-		const T&	operator*() const { return *(reinterpret_cast<const T*>( mPtr )); }
-		
-		T&			operator[]( size_t i ) { return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
-		const T&	operator[]( size_t i ) const { return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
+		T&			operator*()			{ return *(reinterpret_cast<T*>( mPtr )); }
+		const T&	operator*() const	{ return *(reinterpret_cast<const T*>( mPtr )); }
+
+		T*			operator->()		{ return reinterpret_cast<T*>( mPtr ); }
+		const T*	operator->() const	{ return reinterpret_cast<const T*>( mPtr ); }
+
+		T&			operator[]( size_t i )			{ return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
+		const T&	operator[]( size_t i ) const	{ return *(reinterpret_cast<T*>( ((uint8_t*)mPtr) + mStride * i )); }
 		
 		// pre-increment
 		MappedAttrib	operator++() { mPtr = ((uint8_t*)mPtr) + mStride; return *this; }

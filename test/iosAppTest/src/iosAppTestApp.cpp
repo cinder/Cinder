@@ -208,7 +208,7 @@ void iosAppTestApp::setup()
 	getSignalWillEnterForeground().connect( bind( &iosAppTestApp::willEnterForeground, this ) );
 	getSignalWillResignActive().connect( bind( &iosAppTestApp::willResignActive, this ) );
 	getSignalDidBecomeActive().connect( bind( &iosAppTestApp::didBecomeActive, this ) );
-	getSignalShutdown().connect( bind( &iosAppTestApp::shuttingDown, this ) );
+	getSignalCleanup().connect( bind( &iosAppTestApp::shuttingDown, this ) );
 	getSignalMemoryWarning().connect( bind( &iosAppTestApp::memoryWarning, this ) );
 
 	getSignalSupportedOrientations().connect( std::bind( &iosAppTestApp::supportAllOrientations, this ) );

@@ -4,6 +4,7 @@ file(GLOB ROOT_SOURCE *.cpp)
 file(GLOB ROOT_INLINE *.inl)
 file(GLOB ROOT_HEADER *.hpp)
 file(GLOB ROOT_TEXT ../*.txt)
+file(GLOB ROOT_NAT ../util/glm.natvis)
 
 file(GLOB_RECURSE CORE_SOURCE ./detail/*.cpp)
 file(GLOB_RECURSE CORE_INLINE ./detail/*.inl)
@@ -31,7 +32,7 @@ source_group("GTX Files" FILES ${GTX_HEADER})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/..)
 
 if(GLM_TEST_ENABLE)
-	add_executable(${NAME} ${ROOT_TEXT}
+	add_executable(${NAME} ${ROOT_TEXT} ${ROOT_NAT}
 		${ROOT_SOURCE}    ${ROOT_INLINE}    ${ROOT_HEADER}
 		${CORE_SOURCE}    ${CORE_INLINE}    ${CORE_HEADER}
 		${GTC_SOURCE}     ${GTC_INLINE}     ${GTC_HEADER}

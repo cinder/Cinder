@@ -22,10 +22,14 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
+
 #include <map>
+#include <string>
 
 namespace cinder { namespace gl {
+
+typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 
 #if ! defined( CINDER_GL_ES_2 )
 	

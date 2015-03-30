@@ -1,0 +1,99 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="assets">
+      <UniqueIdentifier>{a43608b8-9a4d-46f2-a0c0-d4aefa1b6a7b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\Light.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\Material.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\DeferredShadingAdvancedApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Light.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\assets\blend_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\blur_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\color_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\composite_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\dof_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\fxaa_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\gbuffer_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\gbuffer_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\lbuffer_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\passThrough_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\shadow_map_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\shadow_map_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\ssao_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\ssao_vert.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\debug_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\emissive_frag.glsl">
+      <Filter>assets</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\assets\random.png">
+      <Filter>assets</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
