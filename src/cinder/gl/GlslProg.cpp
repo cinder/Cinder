@@ -27,6 +27,7 @@
 #include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
+#include "cinder/Noncopyable.h"
 
 #include "glm/gtc/type_ptr.hpp"
 
@@ -39,29 +40,17 @@ namespace cinder { namespace gl {
 static GlslProg::UniformSemanticMap	sDefaultUniformNameToSemanticMap;
 static GlslProg::AttribSemanticMap	sDefaultAttribNameToSemanticMap;
 	
-class UniformBuffer {
-public:
+class UniformBuffer : cinder::Noncopyable {
+  public:
 	UniformBuffer( uint32_t bufferSize )
-	: mBuffer( new uint8_t[bufferSize] ),
-	mBufferSize( bufferSize )
+		: mBuffer( new uint8_t[bufferSize] ), mBufferSize( bufferSize )
 	{
-		memset( mBuffer, std::numeric_limits<int>::max(), mBufferSize );
-	}
-	
-	UniformBuffer( const UniformBuffer &other ) = delete;
-	UniformBuffer& operator=( const UniformBuffer &rhs ) = delete;
-	UniformBuffer( UniformBuffer &&other ) = delete;
-	UniformBuffer& operator=( UniformBuffer &&rhs ) = delete;
-	
-	~UniformBuffer()
-	{
-		auto ptr = (uint8_t*)mBuffer;
-		delete [] ptr;
+		memset( mBuffer.get(), std::numeric_limits<int>::max(), mBufferSize );
 	}
 	
 	bool shouldBuffer( uint32_t beginningByte, uint32_t size, const void * valuePointer )
 	{
-		auto ptr = ((uint8_t*)mBuffer + beginningByte);
+		auto ptr = (mBuffer.get() + beginningByte);
 		if( memcmp( ptr, valuePointer, size ) == 0 ) {
 			return false;
 		}
@@ -71,9 +60,9 @@ public:
 		}
 	}
 	
-private:
-	void*		mBuffer;
-	uint32_t	mBufferSize;
+  private:
+	std::unique_ptr<uint8_t[]>		mBuffer;
+	uint32_t						mBufferSize;
 };
 
 //////////////////////////////////////////////////////////////////////////
