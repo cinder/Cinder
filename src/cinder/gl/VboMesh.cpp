@@ -412,8 +412,10 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 						ctx->enableVertexAttribArray( loc + i );
 						if( attribInfo.getDataType() != geom::DataType::INTEGER )
 							ctx->vertexAttribPointer( loc + i, numDimsTaken, GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)(attribInfo.getOffset() + currentInnerOffset) );
+#if ! defined( CINDER_GL_ES )
 						else
 							ctx->vertexAttribIPointer( loc + i, numDimsTaken, GL_INT, (GLsizei)attribInfo.getStride(), (const void*)(attribInfo.getOffset() + currentInnerOffset) );
+#endif
 						if( attribInfo.getInstanceDivisor() > 0 )
 							ctx->vertexAttribDivisor( loc + i, attribInfo.getInstanceDivisor() );
 						numDims -= numDimsTaken;
@@ -424,8 +426,10 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 					ctx->enableVertexAttribArray( loc );
 					if( attribInfo.getDataType() != geom::DataType::INTEGER )
 						ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+#if ! defined( CINDER_GL_ES )
 					else
 						ctx->vertexAttribIPointer( loc, attribInfo.getDims(), GL_INT, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
+#endif
 					if( attribInfo.getInstanceDivisor() > 0 )
 						ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
 				}

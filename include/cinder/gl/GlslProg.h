@@ -264,19 +264,21 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniform( int location, const uvec2 &data ) const;
 	void	uniform( int location, const uvec3 &data ) const;
 	void	uniform( int location, const uvec4 &data ) const;
-#endif
+#endif // ! defined( CINDER_GL_ES_2 )
 	void	uniform( const std::string &name, const mat2 &data, bool transpose = false ) const;
 	void	uniform( const std::string &name, const mat3 &data, bool transpose = false ) const;
 	void	uniform( const std::string &name, const mat4 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat2 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat3 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat4 &data, bool transpose = false ) const;
-	
-	void	uniform( const std::string &name, const int *data, int count ) const;
+
+#if ! defined( CINDER_GL_ES_2 )
 	void	uniform( const std::string &name, const uint32_t *data, int count ) const;
-	void	uniform( const std::string &name, const float *data, int count ) const;
-	void	uniform( int location, const int *data, int count ) const;
 	void	uniform( int location, const uint32_t *data, int count ) const;
+#endif // ! defined( CINDER_GL_ES_2 )
+	void	uniform( const std::string &name, const int *data, int count ) const;
+	void	uniform( int location, const int *data, int count ) const;
+	void	uniform( const std::string &name, const float *data, int count ) const;
 	void	uniform( int location, const float *data, int count ) const;
 	void	uniform( const std::string &name, const ivec2 *data, int count ) const;
 	void	uniform( const std::string &name, const vec2 *data, int count ) const;

@@ -1155,24 +1155,24 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_BOOL_VEC2: return std::is_same<T,glm::bvec2>::value;
 		case GL_BOOL_VEC3: return std::is_same<T,glm::bvec3>::value;
 		case GL_BOOL_VEC4: return std::is_same<T,glm::bvec4>::value;
+		// signed int
+		case GL_INT: return std::is_same<T,int32_t>::value;
+		case GL_INT_VEC2: return std::is_same<T,glm::ivec2>::value;
+		case GL_INT_VEC3: return std::is_same<T,glm::ivec3>::value;
+		case GL_INT_VEC4: return std::is_same<T,glm::ivec4>::value;
+		case GL_SAMPLER_2D: return std::is_same<T,int32_t>::value;
 		// unigned int
 		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC2: return std::is_same<T,glm::uvec2>::value;
 		case GL_UNSIGNED_INT_VEC3: return std::is_same<T,glm::uvec3>::value;
 		case GL_UNSIGNED_INT_VEC4: return std::is_same<T,glm::uvec4>::value;
-		// signed int
-		case GL_INT: return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_2D: return std::is_same<T,int32_t>::value;
-#if ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_SHADOW: return std::is_same<T,int32_t>::value;
 		case GL_SAMPLER_3D: return std::is_same<T,int32_t>::value;
 #else
 		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
 #endif
 		case GL_SAMPLER_CUBE: return std::is_same<T,int32_t>::value;
-		case GL_INT_VEC2: return std::is_same<T,glm::ivec2>::value;
-		case GL_INT_VEC3: return std::is_same<T,glm::ivec3>::value;
-		case GL_INT_VEC4: return std::is_same<T,glm::ivec4>::value;
 		// float
 		case GL_FLOAT: return std::is_same<T,float>::value;
 		case GL_FLOAT_VEC2: return std::is_same<T,glm::vec2>::value;
@@ -1205,35 +1205,7 @@ void GlslProg::uniformFunc<bool>( int location, const bool &data ) const
 	glUniform1i( location, data );
 }
 	
-template<>
-inline bool GlslProg::checkUniformType<bool>( GLenum uniformType, std::string &type ) const
-{
-	type = "bool";
-	return GL_BOOL == uniformType;
-}
-	
 #if ! defined( CINDER_GL_ES_2 )
-// bvec2
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec2";
-	return GL_BOOL_VEC2 == uniformType;
-}
-
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec3";
-	return GL_BOOL_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec4";
-	return GL_BOOL_VEC4 == uniformType;
-}
-	
 // uint32_t
 void GlslProg::uniform( const std::string &name, uint32_t data ) const
 {
@@ -1250,13 +1222,6 @@ void GlslProg::uniformFunc( int location, const uint32_t &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform1ui( location, data );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<uint32_t>( GLenum uniformType, std::string &type ) const
-{
-	type = "uint32_t";
-	return GL_UNSIGNED_INT == uniformType;
 }
 	
 // uvec2
@@ -1276,13 +1241,6 @@ void GlslProg::uniformFunc( int location, const uvec2 &data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform2ui( location, data.x, data.y );
 }
-	
-template<>
-inline bool GlslProg::checkUniformType<uvec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "uvec2";
-	return GL_UNSIGNED_INT_VEC2 == uniformType;
-}
 
 // uvec3
 void GlslProg::uniform( const std::string &name, const uvec3 &data ) const
@@ -1301,14 +1259,7 @@ void GlslProg::uniformFunc( int location, const uvec3 &data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform3ui( location, data.x, data.y, data.z );
 }
-	
-template<>
-inline bool GlslProg::checkUniformType<uvec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "uvec3";
-	return GL_UNSIGNED_INT_VEC3 == uniformType;
-}
-	
+
 // uvec4
 void GlslProg::uniform( const std::string &name, const uvec4 &data ) const
 {
@@ -1326,14 +1277,25 @@ void GlslProg::uniformFunc( int location, const uvec4 &data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform4ui( location, data.x, data.y, data.z, data.w );
 }
-	
-template<>
-inline bool GlslProg::checkUniformType<uvec4>( GLenum uniformType, std::string &type ) const
+
+void GlslProg::uniform( const std::string &name, const uint32_t *data, int count ) const
 {
-	type = "uvec4";
-	return GL_UNSIGNED_INT_VEC4 == uniformType;
+	uniformImpl( name, data, count );
 }
-#endif
+	
+void GlslProg::uniform( int location, const uint32_t *data, int count ) const
+{
+	uniformImpl( location, data, count );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const uint32_t *data, int count ) const
+{
+	ScopedGlslProg shaderBind( shared_from_this() );
+	glUniform1uiv( location, count, data );
+}
+
+#endif // ! defined( CINDER_GL_ES_2 )
 	
 // int
 void GlslProg::uniform( const std::string &name, int data ) const
@@ -1353,27 +1315,6 @@ void GlslProg::uniformFunc( int location, const int &data ) const
     glUniform1i( location, data );
 }
 	
-template<>
-inline bool GlslProg::checkUniformType<int>( GLenum uniformType, std::string &type ) const
-{
-	// This is somewhat unfortunate but needed because OpenGL made
-	// all of these able to be buffered throught the integer path.
-	// We could add more samplers here if needed.
-	switch( uniformType ) {
-		case GL_BOOL: return true; break;
-		case GL_INT: return true; break;
-		case GL_SAMPLER_2D: return true; break;
-#if ! defined( CINDER_GL_ES_2 )
-		case GL_SAMPLER_2D_SHADOW: return true; break;
-		case GL_SAMPLER_3D: return true; break;
-#else
-		case GL_SAMPLER_2D_SHADOW_EXT: return true; break;
-#endif
-		case GL_SAMPLER_CUBE: return true; break;
-		default: type = "int"; return false; break;
-	}
-}
-
 // ivec2
 void GlslProg::uniform( const std::string &name, const ivec2 &data ) const
 {
@@ -1390,13 +1331,6 @@ void GlslProg::uniformFunc( int location, const ivec2 &data ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniform2i( location, data.x, data.y );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<ivec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec2";
-	return GL_INT_VEC2 == uniformType;
 }
 
 // ivec3
@@ -1416,13 +1350,6 @@ void GlslProg::uniformFunc( int location, const ivec3 &data ) const
 	ScopedGlslProg shaderBind( this );
 	glUniform3i( location, data.x, data.y, data.z );
 }
-	
-template<>
-inline bool GlslProg::checkUniformType<ivec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec3";
-	return GL_INT_VEC3 == uniformType;
-}
 
 // ivec4
 void GlslProg::uniform( const std::string &name, const ivec4 &data ) const
@@ -1440,13 +1367,6 @@ void GlslProg::uniformFunc( int location, const ivec4 &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform4i( location, data.x, data.y, data.z, data.w );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<ivec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec4";
-	return GL_INT_VEC4 == uniformType;
 }
 
 // int *, count
@@ -1467,23 +1387,6 @@ void GlslProg::uniformFunc( int location, const int *data, int count ) const
     glUniform1iv( location, count, data );
 }
 	
-void GlslProg::uniform( const std::string &name, const uint32_t *data, int count ) const
-{
-	uniformImpl( name, data, count );
-}
-	
-void GlslProg::uniform( int location, const uint32_t *data, int count ) const
-{
-	uniformImpl( location, data, count );
-}
-
-template<>
-void GlslProg::uniformFunc( int location, const uint32_t *data, int count ) const
-{
-	ScopedGlslProg shaderBind( this );
-	glUniform1uiv( location, count, data );
-}
-
 // ivec2 *, count
 void GlslProg::uniform( const std::string &name, const ivec2 *data, int count ) const
 {
@@ -1519,13 +1422,6 @@ void GlslProg::uniformFunc( int location, const float &data ) const
     ScopedGlslProg shaderBind( this );
     glUniform1f( location, data );
 }
-	
-template<>
-inline bool GlslProg::checkUniformType<float>( GLenum uniformType, std::string &type ) const
-{
-	type = "float";
-	return GL_FLOAT == uniformType;
-}
 
 // vec2
 void GlslProg::uniform( const std::string &name, const vec2 &data ) const
@@ -1543,13 +1439,6 @@ void GlslProg::uniformFunc( int location, const vec2 &data ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniform2f( location, data.x, data.y );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<vec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec2";
-	return GL_FLOAT_VEC2 == uniformType;
 }
 
 // vec3
@@ -1570,13 +1459,6 @@ void GlslProg::uniformFunc( int location, const vec3 &data ) const
     glUniform3f( location, data.x, data.y, data.z );
 }
 
-template<>
-inline bool GlslProg::checkUniformType<vec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec3";
-	return GL_FLOAT_VEC3 == uniformType;
-}
-
 // vec4
 void GlslProg::uniform( const std::string &name, const vec4 &data ) const
 {
@@ -1593,13 +1475,6 @@ void GlslProg::uniformFunc( int location, const vec4 &data ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniform4f( location, data.x, data.y, data.z, data.w );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<vec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec4";
-	return GL_FLOAT_VEC4 == uniformType;
 }
 
 // mat2
@@ -1620,13 +1495,6 @@ void GlslProg::uniformMatFunc( int location, const mat2 &data, bool transpose ) 
 	glUniformMatrix2fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
 	
-template<>
-inline bool GlslProg::checkUniformType<mat2>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat2";
-	return GL_FLOAT_MAT2 == uniformType;
-}
-	
 // mat3
 void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpose ) const
 {
@@ -1643,13 +1511,6 @@ void GlslProg::uniformMatFunc( int location, const mat3 &data, bool transpose ) 
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix3fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<mat3>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat3";
-	return GL_FLOAT_MAT3 == uniformType;
 }
 
 // mat4
@@ -1668,13 +1529,6 @@ void GlslProg::uniformMatFunc( int location, const mat4 &data, bool transpose ) 
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix4fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<mat4>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat4";
-	return GL_FLOAT_MAT4 == uniformType;
 }
 
 // float*, count
