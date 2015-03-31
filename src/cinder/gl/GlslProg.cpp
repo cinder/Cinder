@@ -1490,10 +1490,16 @@ void GlslProg::uniform( const std::string &name, const vec3 &data ) const
 
 void GlslProg::uniform( int location, const vec3 &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform3f( location, data.x, data.y, data.z );
+	uniformImpl( location, data );
 }
-	
+
+template<>
+void GlslProg::uniformFunc( int location, const vec3 &data ) const
+{
+	ScopedGlslProg shaderBind( this );
+    glUniform3f( location, data.x, data.y, data.z );
+}
+
 template<>
 inline bool GlslProg::checkUniformType<vec3>( GLenum uniformType, std::string &type ) const
 {
@@ -1645,8 +1651,14 @@ void GlslProg::uniform( const std::string &name, const vec3 *data, int count ) c
 	
 void GlslProg::uniform( int location, const vec3 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform3fv( location, count, &data[0].x );
+	uniformImpl( location, data, count );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const vec3 *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform3fv( location, count, &data[0].x );
 }
 
 // vec4*, count
