@@ -1289,7 +1289,7 @@ inline bool GlslProg::checkUniformType<int>( GLenum uniformType, std::string &ty
 	// This is somewhat unfortunate but needed because OpenGL made
 	// all of these able to be buffered throught the integer path.
 	// We could add more samplers here if needed.
-	switch ( uniformType ) {
+	switch( uniformType ) {
 		case GL_BOOL: return true; break;
 		case GL_INT: return true; break;
 		case GL_SAMPLER_2D: return true; break;
@@ -1599,56 +1599,6 @@ inline bool GlslProg::checkUniformType<mat4>( GLenum uniformType, std::string &t
 {
 	type = "mat4";
 	return GL_FLOAT_MAT4 == uniformType;
-}
-
-// Color
-void GlslProg::uniform( const std::string &name, const Color &data ) const
-{
-	uniformImpl( name, data );
-}
-	
-void GlslProg::uniform( int location, const Color &data ) const
-{
-	uniformImpl( location, data );
-}
-
-template<>
-void GlslProg::uniformFunc( int location, const Color &data ) const
-{
-    ScopedGlslProg shaderBind( this );
-    glUniform3f( location, data.r, data.g, data.b );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<Color>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec3 as Color";
-	return GL_FLOAT_VEC3 == uniformType;
-}
-
-// ColorA
-void GlslProg::uniform( const std::string &name, const ColorA &data ) const
-{
-	uniformImpl( name, data );
-}
-	
-void GlslProg::uniform( int location, const ColorA &data ) const
-{
-	uniformImpl( location, data );
-}
-
-template<>
-void GlslProg::uniformFunc( int location, const ColorA &data ) const
-{
-    ScopedGlslProg shaderBind( this );
-    glUniform4f( location, data.r, data.g, data.b, data.a );
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<ColorA>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec4 as ColorA";
-	return GL_FLOAT_VEC4 == uniformType;
 }
 
 // float*, count

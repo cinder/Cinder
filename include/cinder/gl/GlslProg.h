@@ -31,7 +31,6 @@
 
 #include "cinder/gl/wrapper.h"
 #include "cinder/Vector.h"
-#include "cinder/Color.h"
 #include "cinder/Matrix.h"
 #include "cinder/DataSource.h"
 #include "cinder/GeomIo.h"
@@ -266,10 +265,6 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	void	uniform( int location, const uvec3 &data ) const;
 	void	uniform( int location, const uvec4 &data ) const;
 #endif
-	void	uniform( const std::string &name, const Color &data ) const;
-	void	uniform( const std::string &name, const ColorA &data ) const;
-	void	uniform( int location, const Color &data ) const;
-	void	uniform( int location, const ColorA &data ) const;
 	void	uniform( const std::string &name, const mat2 &data, bool transpose = false ) const;
 	void	uniform( const std::string &name, const mat3 &data, bool transpose = false ) const;
 	void	uniform( const std::string &name, const mat4 &data, bool transpose = false ) const;
