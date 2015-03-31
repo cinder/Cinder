@@ -45,7 +45,7 @@ namespace cinder { namespace gl {
 	
 typedef std::shared_ptr<class GlslProg> GlslProgRef;
 	
-class UniformBuffer;
+class UniformValueCache;
 
 class ShaderPreprocessor;
 
@@ -426,7 +426,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	std::vector<Attribute>					mAttributes;
 	std::vector<Uniform>					mUniforms;
-	mutable UniformBuffer					*mUniformBuffer;
+	mutable UniformValueCache				*mUniformValueCache;
 #if ! defined( CINDER_GL_ES_2 )
 	std::vector<UniformBlock>				mUniformBlocks;
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;

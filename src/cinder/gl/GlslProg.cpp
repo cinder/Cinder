@@ -40,9 +40,9 @@ namespace cinder { namespace gl {
 static GlslProg::UniformSemanticMap	sDefaultUniformNameToSemanticMap;
 static GlslProg::AttribSemanticMap	sDefaultAttribNameToSemanticMap;
 	
-class UniformBuffer : cinder::Noncopyable {
+class UniformValueCache : cinder::Noncopyable {
   public:
-	UniformBuffer( uint32_t bufferSize )
+	UniformValueCache( uint32_t bufferSize )
 		: mBuffer( new uint8_t[bufferSize] ), mBufferSize( bufferSize )
 	{
 		memset( mBuffer.get(), std::numeric_limits<int>::max(), mBufferSize );
@@ -588,7 +588,7 @@ void GlslProg::cacheActiveUniforms()
 	
 	auto & semanticNameMap = getDefaultUniformNameToSemanticMap();
 	
-	uint32_t uniformBufferSize = 0;
+	uint32_t uniformValueCacheSize = 0;
 	
 	for( GLint i = 0; i < numActiveUniforms; ++i ) {
 		char name[512];
@@ -610,21 +610,21 @@ void GlslProg::cacheActiveUniforms()
 			}
 			
 			Uniform uniform;
-			uniform.mName		= name;
-			uniform.mLoc		= loc;
-			uniform.mIndex      = i;
-			uniform.mCount		= count;
-			uniform.mType		= type;
-			uniform.mDataSize	= count * glTypeToBytes( type );
-			uniform.mSemantic	= uniformSemantic;
-			uniform.mBytePointer = uniformBufferSize;
-			uniformBufferSize	+= uniform.mDataSize;
+			uniform.mName			= name;
+			uniform.mLoc			= loc;
+			uniform.mIndex			= i;
+			uniform.mCount			= count;
+			uniform.mType			= type;
+			uniform.mDataSize		= count * glTypeToBytes( type );
+			uniform.mSemantic		= uniformSemantic;
+			uniform.mBytePointer	= uniformValueCacheSize;
+			uniformValueCacheSize  += uniform.mDataSize;
 			mUniforms.push_back( uniform );
 		}
 	}
 	
-	if ( numActiveUniforms ) {
-		mUniformBuffer = new UniformBuffer( uniformBufferSize );
+	if( numActiveUniforms ) {
+		mUniformValueCache = new UniformValueCache( uniformValueCacheSize );
 	}
 }
 
@@ -784,8 +784,8 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 	GLint debugLength	= 0;
 	glGetShaderiv( handle, GL_INFO_LOG_LENGTH, &debugLength );
 	
-	if ( debugLength > 0 ) {
-		debugLog = new GLchar[ debugLength ];
+	if( debugLength > 0 ) {
+		debugLog = new GLchar[debugLength];
 		glGetShaderInfoLog( handle, debugLength, &charsWritten, debugLog );
 		log.append( debugLog, 0, debugLength );
 		delete [] debugLog;
@@ -1036,12 +1036,10 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 	
 bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int count ) const
 {
-	if( mUniformBuffer ) {
-		return mUniformBuffer->shouldBuffer( uniform.mBytePointer, glTypeToBytes( uniform.mType ) * count, val );
-	}
-	else {
+	if( mUniformValueCache )
+		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, glTypeToBytes( uniform.mType ) * count, val );
+	else
 		return false;
-	}
 }
 	
 template<typename LookUp, typename T>
