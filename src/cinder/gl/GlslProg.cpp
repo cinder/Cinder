@@ -30,6 +30,8 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
+#include <type_traits>
+
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -269,10 +271,25 @@ GlslProg::Format& GlslProg::Format::attribLocation( const std::string &attribNam
 
 GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attribSemantic, GLint location )
 {
-    Attribute attrib;
-    attrib.mSemantic = attribSemantic;
-    attrib.mLoc = location;
-    mAttributes.push_back( attrib );
+	bool exists = false;
+	for( auto & attrib : mAttributes ) {
+		if( attrib.mSemantic == attribSemantic ) {
+			attrib.mLoc = location;
+			exists = true;
+			break;
+		}
+		else if( attrib.mLoc == location ) {
+			attrib.mSemantic = attribSemantic;
+			exists = true;
+			break;
+		}
+	}
+	if( ! exists ) {
+		Attribute attrib;
+		attrib.mSemantic = attribSemantic;
+		attrib.mLoc = location;
+		mAttributes.push_back( attrib );
+	}
 	return *this;
 }
 
@@ -420,7 +437,7 @@ GlslProg::GlslProg( const Format &format )
 		}
 		if( ! foundUserDefined ) {
 			CI_LOG_E( "Unknown uniform: \"" << userUniform.mName << "\"" );
-			mLoggedUniforms.insert( userUniform.mName );
+			mLoggedUniformNames.insert( userUniform.mName );
 		}
 	}
 	// make sure we get all of the semantic info correct from the user
@@ -445,7 +462,6 @@ GlslProg::GlslProg( const Format &format )
 			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
-    cout << *this << endl;
     
 	setLabel( format.getLabel() );
 	gl::context()->glslProgCreated( this );
@@ -593,6 +609,9 @@ void GlslProg::cacheActiveUniforms()
 		
 		glGetActiveUniform( mHandle, (GLuint)i, 511, &nameLength, &count, &type, name );
 		auto loc = glGetUniformLocation( mHandle, name );
+		// This may be a part of a uniform block, in that case it will be counted as
+		// an active uniform but have a location of -1. Disregard as we'll catch it
+		// when we cache the uniform block.
 		if( loc != -1 ) {
 			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
 			
@@ -722,6 +741,8 @@ void GlslProg::cacheActiveTransformFeedbackVaryings()
 			glGetTransformFeedbackVarying( mHandle, i, 500, &length, &count, &type, name );
 			name[length] = 0;
 			
+			// So they've told us at setup what to look for. Find the varying, they told us
+			// about so that we can finish the setup.
 			auto varying = findTransformFeedbackVaryings( name );
 			if( varying ) {
 				varying->mCount = count;
@@ -786,18 +807,26 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 	
 void GlslProg::logMissingUniform( const std::string &name ) const
 {
-	if( mLoggedUniforms.count( name ) == 0 ) {
+	if( mLoggedUniformNames.count( name ) == 0 ) {
 		CI_LOG_E( "Unknown uniform: \"" << name << "\"" );
-		mLoggedUniforms.insert( name );
+		mLoggedUniformNames.insert( name );
+	}
+}
+	
+void GlslProg::logMissingUniform( int location ) const
+{
+	if( mLoggedUniformLocations.count( location ) == 0 ) {
+		CI_LOG_E( "Unknown uniform location: \"" << location << "\"" );
+		mLoggedUniformLocations.insert( location );
 	}
 }
 	
 void GlslProg::logUniformWrongType( const std::string &name, GLenum uniformType, const std::string &userType ) const
 {
-	if( mLoggedUniforms.count( name ) == 0 ) {
+	if( mLoggedUniformNames.count( name ) == 0 ) {
 		CI_LOG_W("Uniform type mismatch for \"" << name << "\", expected "
-				 << gl::constantToString(uniformType) << " and received a " << userType << ".");
-		mLoggedUniforms.insert( name );
+				 << gl::constantToString( uniformType ) << " and received a " << userType << ".");
+		mLoggedUniformNames.insert( name );
 	}
 }
 	
@@ -863,6 +892,18 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name ) const
 	const Uniform* ret = nullptr;
 	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
+			ret = &uniform;
+			break;
+		}
+	}
+	return ret;
+}
+	
+const GlslProg::Uniform* GlslProg::findUniform( int location ) const
+{
+	const Uniform* ret = nullptr;
+	for( const auto & uniform : mUniforms ) {
+		if( uniform.mLoc == location ) {
 			ret = &uniform;
 			break;
 		}
@@ -1013,142 +1054,656 @@ bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int c
 		return false;
 	}
 }
+	
+template<typename LookUp, typename T>
+inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
+{
+	auto found = findUniform( lookUp );
+	if( ! found ) {
+		logMissingUniform( lookUp );
+		return;
+	}
+	if( validateUniform( *found, data ) )
+		uniformFunc( found->mLoc, data );
+}
+
+template<typename LookUp, typename T>
+inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool transpose ) const
+{
+	auto found = findUniform( lookUp );
+	if( ! found ) {
+		logMissingUniform( lookUp );
+		return;
+	}
+	if( validateUniform( *found, data ) )
+		uniformMatFunc( found->mLoc, data, transpose );
+}
+
+template<typename LookUp, typename T>
+inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int count ) const
+{
+	auto found = findUniform( lookUp );
+	if( ! found ) {
+		logMissingUniform( lookUp );
+		return;
+	}
+	if( validateUniform( *found, data, count ) )
+		uniformFunc( found->mLoc, data, count );
+}
+
+template<typename LookUp, typename T>
+inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const
+{
+	auto found = findUniform( lookUp );
+	if( ! found ) {
+		logMissingUniform( lookUp );
+		return;
+	}
+	if( validateUniform( *found, data, count ) )
+		uniformMatFunc( found->mLoc, data, count, transpose );
+}
+	
+template<typename T>
+inline bool GlslProg::validateUniform( const Uniform &uniform, const T &val ) const
+{
+	std::string type;
+	if( ! checkUniformType<T>( uniform.mType, type ) ) {
+		logUniformWrongType( uniform.mName, uniform.mType, type );
+		return false;
+	}
+	else {
+		return checkUniformValue( uniform, &val, 1 );
+	}
+}
+
+template<typename T>
+inline bool GlslProg::validateUniform( const Uniform &uniform, const T *val, int count ) const
+{
+	std::string type;
+	if( ! checkUniformType<T>( uniform.mType, type ) ) {
+		logUniformWrongType( uniform.mName, uniform.mType, type );
+		return false;
+	}
+	else
+		return checkUniformValue( uniform, val, count );
+}
 
 // bool
+void GlslProg::uniform( const std::string &name, bool data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, bool data ) const
+{
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc<bool>( int location, const bool &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform1i( location, data );
 }
+	
+template<>
+inline bool GlslProg::checkUniformType<bool>( GLenum uniformType, std::string &type ) const
+{
+	type = "bool";
+	return GL_BOOL == uniformType;
+}
+	
 #if ! defined( CINDER_GL_ES_2 )
+// bvec2
+template<>
+inline bool GlslProg::checkUniformType<glm::bvec2>( GLenum uniformType, std::string &type ) const
+{
+	type = "bvec2";
+	return GL_BOOL_VEC2 == uniformType;
+}
+
+template<>
+inline bool GlslProg::checkUniformType<glm::bvec3>( GLenum uniformType, std::string &type ) const
+{
+	type = "bvec3";
+	return GL_BOOL_VEC3 == uniformType;
+}
+template<>
+inline bool GlslProg::checkUniformType<glm::bvec4>( GLenum uniformType, std::string &type ) const
+{
+	type = "bvec4";
+	return GL_BOOL_VEC4 == uniformType;
+}
+	
 // uint32_t
+void GlslProg::uniform( const std::string &name, uint32_t data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, uint32_t data ) const
+{
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const uint32_t &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform1ui( location, data );
 }
 	
+template<>
+inline bool GlslProg::checkUniformType<uint32_t>( GLenum uniformType, std::string &type ) const
+{
+	type = "uint32_t";
+	return GL_UNSIGNED_INT == uniformType;
+}
+	
 // uvec2
+void GlslProg::uniform( const std::string &name, const uvec2 &data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, const uvec2 &data ) const
+{
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const uvec2 &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform2ui( location, data.x, data.y );
 }
+	
+template<>
+inline bool GlslProg::checkUniformType<uvec2>( GLenum uniformType, std::string &type ) const
+{
+	type = "uvec2";
+	return GL_UNSIGNED_INT_VEC2 == uniformType;
+}
 
 // uvec3
+void GlslProg::uniform( const std::string &name, const uvec3 &data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, const uvec3 &data ) const
+{
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const uvec3 &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform3ui( location, data.x, data.y, data.z );
 }
 	
+template<>
+inline bool GlslProg::checkUniformType<uvec3>( GLenum uniformType, std::string &type ) const
+{
+	type = "uvec3";
+	return GL_UNSIGNED_INT_VEC3 == uniformType;
+}
+	
 // uvec4
+void GlslProg::uniform( const std::string &name, const uvec4 &data ) const
+{
+	uniformImpl( name, data );
+}
+
 void GlslProg::uniform( int location, const uvec4 &data ) const
+{
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const uvec4 &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform4ui( location, data.x, data.y, data.z, data.w );
 }
+	
+template<>
+inline bool GlslProg::checkUniformType<uvec4>( GLenum uniformType, std::string &type ) const
+{
+	type = "uvec4";
+	return GL_UNSIGNED_INT_VEC4 == uniformType;
+}
 #endif
 	
 // int
+void GlslProg::uniform( const std::string &name, int data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, int data ) const
 {
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const int &data ) const
+{
 	ScopedGlslProg shaderBind( this );
-	glUniform1i( location, data );
+    glUniform1i( location, data );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<int>( GLenum uniformType, std::string &type ) const
+{
+	// This is somewhat unfortunate but needed because OpenGL made
+	// all of these able to be buffered throught the integer path.
+	// We could add more samplers here if needed.
+	switch ( uniformType ) {
+		case GL_BOOL: return true; break;
+		case GL_INT: return true; break;
+		case GL_SAMPLER_2D: return true; break;
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_SAMPLER_2D_SHADOW: return true; break;
+		case GL_SAMPLER_3D: return true; break;
+#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return true; break;
+#endif
+		case GL_SAMPLER_CUBE: return true; break;
+		default: type = "int"; return false; break;
+	}
 }
 
 // ivec2
+void GlslProg::uniform( const std::string &name, const ivec2 &data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, const ivec2 &data ) const
 {
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const ivec2 &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform2i( location, data.x, data.y );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<ivec2>( GLenum uniformType, std::string &type ) const
+{
+	type = "ivec2";
+	return GL_INT_VEC2 == uniformType;
+}
+
+// ivec3
+void GlslProg::uniform( const std::string &name, const ivec3 &data ) const
+{
+	uniformImpl( name, data );
+}
+	
+void GlslProg::uniform( int location, const ivec3 &data ) const
+{
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const ivec3 &data ) const
+{
 	ScopedGlslProg shaderBind( this );
-	glUniform2i( location, data.x, data.y );
+	glUniform3i( location, data.x, data.y, data.z );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<ivec3>( GLenum uniformType, std::string &type ) const
+{
+	type = "ivec3";
+	return GL_INT_VEC3 == uniformType;
+}
+
+// ivec4
+void GlslProg::uniform( const std::string &name, const ivec4 &data ) const
+{
+	uniformImpl( name, data );
+}
+
+void GlslProg::uniform( int location, const ivec4 &data ) const
+{
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const ivec4 &data ) const
+{
+	ScopedGlslProg shaderBind( this );
+	glUniform4i( location, data.x, data.y, data.z, data.w );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<ivec4>( GLenum uniformType, std::string &type ) const
+{
+	type = "ivec4";
+	return GL_INT_VEC4 == uniformType;
 }
 
 // int *, count
+void GlslProg::uniform( const std::string &name, const int *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const int *data, int count ) const
 {
+	uniformImpl( location, data, count );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const int *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform1iv( location, count, data );
+}
+	
+void GlslProg::uniform( const std::string &name, const uint32_t *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
+void GlslProg::uniform( int location, const uint32_t *data, int count ) const
+{
+	uniformImpl( location, data, count );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const uint32_t *data, int count ) const
+{
 	ScopedGlslProg shaderBind( this );
-	glUniform1iv( location, count, data );
+	glUniform1uiv( location, count, data );
 }
 
 // ivec2 *, count
+void GlslProg::uniform( const std::string &name, const ivec2 *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const ivec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform2iv( location, count, &data[0].x );
+	uniformImpl( location, data, count );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const ivec2 *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform2iv( location, count, &data[0].x );
 }
 
 // float
+void GlslProg::uniform( const std::string &name, float data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, float data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform1f( location, data );
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const float &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform1f( location, data );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<float>( GLenum uniformType, std::string &type ) const
+{
+	type = "float";
+	return GL_FLOAT == uniformType;
 }
 
 // vec2
+void GlslProg::uniform( const std::string &name, const vec2 &data ) const
+{
+	uniformImpl( name, data );
+}
+
 void GlslProg::uniform( int location, const vec2 &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform2f( location, data.x, data.y );
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const vec2 &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform2f( location, data.x, data.y );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<vec2>( GLenum uniformType, std::string &type ) const
+{
+	type = "vec2";
+	return GL_FLOAT_VEC2 == uniformType;
 }
 
 // vec3
+void GlslProg::uniform( const std::string &name, const vec3 &data ) const
+{
+	uniformImpl( name, data );
+}
+
 void GlslProg::uniform( int location, const vec3 &data ) const
 {
 	ScopedGlslProg shaderBind( this );
 	glUniform3f( location, data.x, data.y, data.z );
 }
-
-// vec4
-void GlslProg::uniform( int location, const vec4 &data ) const
+	
+template<>
+inline bool GlslProg::checkUniformType<vec3>( GLenum uniformType, std::string &type ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform4f( location, data.x, data.y, data.z, data.w );
+	type = "vec3";
+	return GL_FLOAT_VEC3 == uniformType;
 }
 
+// vec4
+void GlslProg::uniform( const std::string &name, const vec4 &data ) const
+{
+	uniformImpl( name, data );
+}
+	
+void GlslProg::uniform( int location, const vec4 &data ) const
+{
+	uniformImpl( location, data );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const vec4 &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform4f( location, data.x, data.y, data.z, data.w );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<vec4>( GLenum uniformType, std::string &type ) const
+{
+	type = "vec4";
+	return GL_FLOAT_VEC4 == uniformType;
+}
+
+// mat2
+void GlslProg::uniform( const std::string &name, const mat2 &data, bool transpose ) const
+{
+	uniformMatImpl( name, data, transpose );
+}
+	
+void GlslProg::uniform( int location, const mat2 &data, bool transpose ) const
+{
+	uniformMatImpl( location, data, transpose );
+}
+	
+template<>
+void GlslProg::uniformMatFunc( int location, const mat2 &data, bool transpose ) const
+{
+	ScopedGlslProg shaderBind( this );
+	glUniformMatrix2fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<mat2>( GLenum uniformType, std::string &type ) const
+{
+	type = "mat2";
+	return GL_FLOAT_MAT2 == uniformType;
+}
+	
 // mat3
+void GlslProg::uniform( const std::string &name, const mat3 &data, bool transpose ) const
+{
+	uniformMatImpl( name, data, transpose );
+}
+
 void GlslProg::uniform( int location, const mat3 &data, bool transpose ) const
+{
+	uniformMatImpl( location, data, transpose );
+}
+	
+template<>
+void GlslProg::uniformMatFunc( int location, const mat3 &data, bool transpose ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix3fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
+	
+template<>
+inline bool GlslProg::checkUniformType<mat3>( GLenum uniformType, std::string &type ) const
+{
+	type = "mat3";
+	return GL_FLOAT_MAT3 == uniformType;
+}
 
 // mat4
+void GlslProg::uniform( const std::string &name, const mat4 &data, bool transpose ) const
+{
+	uniformMatImpl( name, data, transpose );
+}
+	
 void GlslProg::uniform( int location, const mat4 &data, bool transpose ) const
+{
+	uniformMatImpl( location, data, transpose );
+}
+
+template<>
+void GlslProg::uniformMatFunc( int location, const mat4 &data, bool transpose ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix4fv( location, 1, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( data ) );
 }
+	
+template<>
+inline bool GlslProg::checkUniformType<mat4>( GLenum uniformType, std::string &type ) const
+{
+	type = "mat4";
+	return GL_FLOAT_MAT4 == uniformType;
+}
 
 // Color
+void GlslProg::uniform( const std::string &name, const Color &data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, const Color &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform3f( location, data.r, data.g, data.b );
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const Color &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform3f( location, data.r, data.g, data.b );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<Color>( GLenum uniformType, std::string &type ) const
+{
+	type = "vec3 as Color";
+	return GL_FLOAT_VEC3 == uniformType;
 }
 
 // ColorA
+void GlslProg::uniform( const std::string &name, const ColorA &data ) const
+{
+	uniformImpl( name, data );
+}
+	
 void GlslProg::uniform( int location, const ColorA &data ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform4f( location, data.r, data.g, data.b, data.a );
+	uniformImpl( location, data );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const ColorA &data ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform4f( location, data.r, data.g, data.b, data.a );
+}
+	
+template<>
+inline bool GlslProg::checkUniformType<ColorA>( GLenum uniformType, std::string &type ) const
+{
+	type = "vec4 as ColorA";
+	return GL_FLOAT_VEC4 == uniformType;
 }
 
 // float*, count
+void GlslProg::uniform( const std::string &name, const float *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const float *data, int count ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform1fv( location, count, data );
+	uniformImpl( location, data, count );
+}
+	
+template<>
+void GlslProg::uniformFunc( int location, const float *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform1fv( location, count, data );
 }
 
 // vec2*, count
+void GlslProg::uniform( const std::string &name, const vec2 *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const vec2 *data, int count ) const
 {
-	ScopedGlslProg shaderBind( this );
-	glUniform2fv( location, count, &data[0].x );
+	uniformImpl( location, data, count );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const vec2 *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform2fv( location, count, &data[0].x );
 }
 
 // vec3*, count
+void GlslProg::uniform( const std::string &name, const vec3 *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const vec3 *data, int count ) const
 {
 	ScopedGlslProg shaderBind( this );
@@ -1156,21 +1711,72 @@ void GlslProg::uniform( int location, const vec3 *data, int count ) const
 }
 
 // vec4*, count
+void GlslProg::uniform( const std::string &name, const vec4 *data, int count ) const
+{
+	uniformImpl( name, data, count );
+}
+	
 void GlslProg::uniform( int location, const vec4 *data, int count ) const
 {
+	uniformImpl( location, data, count );
+}
+
+template<>
+void GlslProg::uniformFunc( int location, const vec4 *data, int count ) const
+{
+    ScopedGlslProg shaderBind( this );
+    glUniform4fv( location, count, &data[0].x );
+}
+	
+// mat2*, count
+void GlslProg::uniform( const std::string &name, const mat2 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( name, data, count, transpose );
+}
+
+void GlslProg::uniform( int location, const mat2 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( location, data, count, transpose );
+}
+	
+template<>
+void GlslProg::uniformMatFunc( int location, const mat2 *data, int count, bool transpose ) const
+{
 	ScopedGlslProg shaderBind( this );
-	glUniform4fv( location, count, &data[0].x );
+	glUniformMatrix2fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 // mat3*, count
+void GlslProg::uniform( const std::string &name, const mat3 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( name, data, count, transpose );
+}
+	
 void GlslProg::uniform( int location, const mat3 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( location, data, count, transpose );
+}
+	
+template<>
+void GlslProg::uniformMatFunc( int location, const mat3 *data, int count, bool transpose ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix3fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );
 }
 
 // mat4*, count
+void GlslProg::uniform( const std::string &name, const mat4 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( name, data, count, transpose );
+}
+	
 void GlslProg::uniform( int location, const mat4 *data, int count, bool transpose ) const
+{
+	uniformMatImpl( location, data, count, transpose );
+}
+	
+template<>
+void GlslProg::uniformMatFunc( int location, const mat4 *data, int count, bool transpose ) const
 {
     ScopedGlslProg shaderBind( this );
     glUniformMatrix4fv( location, count, ( transpose ) ? GL_TRUE : GL_FALSE, glm::value_ptr( *data ) );

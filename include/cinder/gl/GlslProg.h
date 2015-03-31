@@ -57,7 +57,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	struct Attribute {
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1;
-		GLenum			mType;
+		GLenum			mType = -1;
 		geom::Attrib	mSemantic = geom::Attrib::NUM_ATTRIBS;
 	};
 	
@@ -66,7 +66,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		GLint			mCount = 0, mLoc = -1, mIndex = -1;
 		GLint			mDataSize = 0;
 		GLint			mBytePointer = 0;
-		GLenum			mType;
+		GLenum			mType = -1;
 		UniformSemantic mSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
 	};
 	
@@ -236,63 +236,65 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	
 	GLuint			getHandle() const { return mHandle; }
 	
-	void	uniform( const std::string &name, bool data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, int data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, float data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, bool data ) const;
+	void	uniform( const std::string &name, int data ) const;
+	void	uniform( const std::string &name, float data ) const;
 #if ! defined( CINDER_GL_ES_2 )
-	void	uniform( const std::string &name, uint32_t data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, uint32_t data ) const;
 	void	uniform( int location, uint32_t data ) const;
 #endif
 	void	uniform( int location, bool data ) const;
 	void	uniform( int location, int data ) const;
 	void	uniform( int location, float data ) const;
-	void	uniform( const std::string &name, const vec2 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const vec3 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const vec4 &data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, const vec2 &data ) const;
+	void	uniform( const std::string &name, const vec3 &data ) const;
+	void	uniform( const std::string &name, const vec4 &data ) const;
 	void	uniform( int location, const vec2 &data ) const;
 	void	uniform( int location, const vec3 &data ) const;
 	void	uniform( int location, const vec4 &data ) const;
-	void	uniform( const std::string &name, const ivec2 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const ivec3 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const ivec4 &data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, const ivec2 &data ) const;
+	void	uniform( const std::string &name, const ivec3 &data ) const;
+	void	uniform( const std::string &name, const ivec4 &data ) const;
 	void	uniform( int location, const ivec2 &data ) const;
 	void	uniform( int location, const ivec3 &data ) const;
 	void	uniform( int location, const ivec4 &data ) const;
 #if ! defined( CINDER_GL_ES_2 )
-	void	uniform( const std::string &name, const uvec2 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const uvec3 &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const uvec4 &data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, const uvec2 &data ) const;
+	void	uniform( const std::string &name, const uvec3 &data ) const;
+	void	uniform( const std::string &name, const uvec4 &data ) const;
 	void	uniform( int location, const uvec2 &data ) const;
 	void	uniform( int location, const uvec3 &data ) const;
 	void	uniform( int location, const uvec4 &data ) const;
 #endif
-	void	uniform( const std::string &name, const Color &data ) const { uniformImpl( name, data ); }
-	void	uniform( const std::string &name, const ColorA &data ) const { uniformImpl( name, data ); }
+	void	uniform( const std::string &name, const Color &data ) const;
+	void	uniform( const std::string &name, const ColorA &data ) const;
 	void	uniform( int location, const Color &data ) const;
 	void	uniform( int location, const ColorA &data ) const;
-	void	uniform( const std::string &name, const mat2 &data, bool transpose = false ) const { uniformMatImpl( name, data, transpose ); }
-	void	uniform( const std::string &name, const mat3 &data, bool transpose = false ) const { uniformMatImpl( name, data, transpose ); }
-	void	uniform( const std::string &name, const mat4 &data, bool transpose = false ) const { uniformMatImpl( name, data, transpose ); }
+	void	uniform( const std::string &name, const mat2 &data, bool transpose = false ) const;
+	void	uniform( const std::string &name, const mat3 &data, bool transpose = false ) const;
+	void	uniform( const std::string &name, const mat4 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat2 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat3 &data, bool transpose = false ) const;
 	void	uniform( int location, const mat4 &data, bool transpose = false ) const;
 	
-	void	uniform( const std::string &name, const int *data, int count ) const { uniformImpl( name, data, count ); }
-	void	uniform( const std::string &name, const uint32_t *data, int count ) const { uniformImpl( name, data, count ); }
-	void	uniform( const std::string &name, const float *data, int count ) const { uniformImpl( name, data, count ); }
+	void	uniform( const std::string &name, const int *data, int count ) const;
+	void	uniform( const std::string &name, const uint32_t *data, int count ) const;
+	void	uniform( const std::string &name, const float *data, int count ) const;
 	void	uniform( int location, const int *data, int count ) const;
 	void	uniform( int location, const uint32_t *data, int count ) const;
 	void	uniform( int location, const float *data, int count ) const;
-	void	uniform( const std::string &name, const ivec2 *data, int count ) const { uniformImpl( name, data, count ); }
-	void	uniform( const std::string &name, const vec2 *data, int count ) const { uniformImpl( name, data, count ); }
-	void	uniform( const std::string &name, const vec3 *data, int count ) const { uniformImpl( name, data, count ); }
-	void	uniform( const std::string &name, const vec4 *data, int count ) const { uniformImpl( name, data, count ); }
+	void	uniform( const std::string &name, const ivec2 *data, int count ) const;
+	void	uniform( const std::string &name, const vec2 *data, int count ) const;
+	void	uniform( const std::string &name, const vec3 *data, int count ) const;
+	void	uniform( const std::string &name, const vec4 *data, int count ) const;
 	void	uniform( int location, const ivec2 *data, int count ) const;
 	void	uniform( int location, const vec2 *data, int count ) const;
 	void	uniform( int location, const vec3 *data, int count ) const;
 	void	uniform( int location, const vec4 *data, int count ) const;
-	void	uniform( const std::string &name, const mat3 *data, int count, bool transpose = false ) const { uniformMatImpl( name, data, count, transpose ); }
-	void	uniform( const std::string &name, const mat4 *data, int count, bool transpose = false ) const { uniformMatImpl( name, data, count, transpose ); }
+	void	uniform( const std::string &name, const mat2 *data, int count, bool transpose = false ) const;
+	void	uniform( const std::string &name, const mat3 *data, int count, bool transpose = false ) const;
+	void	uniform( const std::string &name, const mat4 *data, int count, bool transpose = false ) const;
+	void	uniform( int location, const mat2 *data, int count, bool transpose = false ) const;
 	void	uniform( int location, const mat3 *data, int count, bool transpose = false ) const;
 	void	uniform( int location, const mat4 *data, int count, bool transpose = false ) const;
 	
@@ -359,26 +361,40 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	Attribute*		findAttrib( const std::string &name );
 	//! Caches all active Uniforms after linrking.
 	void			cacheActiveUniforms();
-	//! Returns a pointer to the Uniform that matches \a name. Returns nullptr if the attrib doesn't exist.
+	//! Returns a pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist.
 	Uniform*		findUniform( const std::string &name );
+	//! Returns a pointer to the Uniform that matches \a location. Returns nullptr if the uniform doesn't exist.
+	const Uniform*	findUniform( int location ) const;
+	
 	//! Performs the finding, validation, and implementation of single uniform variables. Ends by calling the location
 	//! variant uniform function.
+	template<typename LookUp, typename T>
+	void			uniformImpl( const LookUp &lookUp, const T &data ) const;
 	template<typename T>
-	void			uniformImpl( const std::string &name, const T &data ) const;
+	void			uniformFunc( int location, const T &data ) const;
 	//! Performs the finding, validation, and implementation of single uniform Matrix variables. Ends by calling the location
 	//! variant uniform function.
+	template<typename LookUp, typename T>
+	void			uniformMatImpl( const LookUp &lookUp, const T &data, bool transpose ) const;
 	template<typename T>
-	void			uniformMatImpl( const std::string &name, const T &data, bool transpose ) const;
+	void			uniformMatFunc( int location, const T &data, bool transpose ) const;
 	//! Performs the finding, validation, and implementation of multiple uniform variables. Ends by calling the location
 	//! variant uniform function.
+	template<typename LookUp, typename T>
+	void			uniformImpl( const LookUp &lookUp, const T *data, int count ) const;
 	template<typename T>
-	void			uniformImpl( const std::string &name, const T *data, int count ) const;
+	void			uniformFunc( int location, const T *data, int count ) const;
 	//! Performs the finding, validation, and implementation of multiple uniform Matrix variables. Ends by calling the location
 	//! variant uniform function.
+	template<typename LookUp, typename T>
+	void			uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const;
 	template<typename T>
-	void			uniformMatImpl( const std::string &name, const T *data, int count, bool transpose ) const;
+	void			uniformMatFunc( int location, const T *data, int count, bool transpose ) const;
+	
 	//! Logs an error and caches the name.
 	void			logMissingUniform( const std::string &name ) const;
+	//! Logs an error and caches the name.
+	void			logMissingUniform( int location ) const;
 	//! Logs a warning and caches the name.
 	void			logUniformWrongType( const std::string &name, GLenum uniformType, const std::string &userType ) const;
 	//! Checks the validity of the settings on this uniform, specifically type and value
@@ -416,243 +432,20 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 #endif
 	
 	// enumerates the uniforms we've already logged as missing so that we don't flood the log with the same message
-	mutable std::set<std::string>			mLoggedUniforms;
-
+	mutable std::set<std::string>			mLoggedUniformNames;
+	mutable std::set<int>					mLoggedUniformLocations;
 	std::string								mLabel; // debug label
 	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
 
 	friend class Context;
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
 };
-	
-template<typename T>
-inline void GlslProg::uniformImpl( const std::string &name, const T &data ) const
-{
-	auto found = findUniform( name );
-	if( ! found ) {
-		logMissingUniform( name );
-		return;
-	}
-	if( validateUniform( *found, data ) )
-		uniform( found->mLoc, data );
-}
-	
-template<typename T>
-inline void	GlslProg::uniformMatImpl( const std::string &name, const T &data, bool transpose ) const
-{
-	auto found = findUniform( name );
-	if( ! found ) {
-		logMissingUniform( name );
-		return;
-	}
-	if( validateUniform( *found, data ) )
-		uniform( found->mLoc, data, transpose );
-}
-
-template<typename T>
-inline void	GlslProg::uniformImpl( const std::string &name, const T *data, int count ) const
-{
-	auto found = findUniform( name );
-	if( ! found ) {
-		logMissingUniform( name );
-		return;
-	}
-	if( validateUniform( *found, data, count ) )
-		uniform( (int)found->mLoc, data, count );
-}
-	
-template<typename T>
-inline void	GlslProg::uniformMatImpl( const std::string &name, const T *data, int count, bool transpose ) const
-{
-	auto found = findUniform( name );
-	if( ! found ) {
-		logMissingUniform( name );
-		return;
-	}
-	if( validateUniform( *found, data, count ) )
-		uniform( found->mLoc, data, count, transpose );
-}
-	
-template<typename T>
-inline bool GlslProg::validateUniform( const Uniform &uniform, const T &val ) const
-{
-	std::string type;
-	if( ! checkUniformType<T>( uniform.mType, type ) ) {
-		logUniformWrongType( uniform.mName, uniform.mType, type );
-		return false;
-	}
-	else {
-		return checkUniformValue( uniform, &val, 1 );
-	}
-}
-	
-template<typename T>
-inline bool GlslProg::validateUniform( const Uniform &uniform, const T *val, int count ) const
-{
-	std::string type;
-	if( ! checkUniformType<T>( uniform.mType, type ) ) {
-		logUniformWrongType( uniform.mName, uniform.mType, type );
-		return false;
-	}
-	else
-		return checkUniformValue( uniform, val, count );
-}
-	
-template<typename T>
-inline bool GlslProg::checkUniformType( GLenum uniformType, std::string &type ) const
-{
-	type = "unknown type";
-	return false;
-}
-template<>
-inline bool GlslProg::checkUniformType<bool>( GLenum uniformType, std::string &type ) const
-{
-	type = "bool";
-	return GL_BOOL == uniformType;
-}
-	
-template<>
-inline bool GlslProg::checkUniformType<int>( GLenum uniformType, std::string &type ) const
-{
-	// We could add more samplers here if needed.
-	switch ( uniformType ) {
-		case GL_BOOL: return true; break;
-		case GL_INT: return true; break;
-		case GL_SAMPLER_2D: return true; break;
-#if ! defined( CINDER_GL_ES_2 )
-		case GL_SAMPLER_2D_SHADOW: return true; break;
-		case GL_SAMPLER_3D: return true; break;
-#else
-		case GL_SAMPLER_2D_SHADOW_EXT: return true; break;
-#endif
-		case GL_SAMPLER_CUBE: return true; break;
-		default: type = "int"; return false; break;
-	}
-}
-template<>
-inline bool GlslProg::checkUniformType<float>( GLenum uniformType, std::string &type ) const
-{
-	type = "float";
-	return GL_FLOAT == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<uint32_t>( GLenum uniformType, std::string &type ) const
-{
-	type = "uint32_t";
-	return GL_UNSIGNED_INT == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec2";
-	return GL_BOOL_VEC2 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec3";
-	return GL_BOOL_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<glm::bvec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "bvec4";
-	return GL_BOOL_VEC4 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<ivec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec2";
-	return GL_INT_VEC2 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<ivec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec3";
-	return GL_INT_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<ivec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "ivec4";
-	return GL_INT_VEC4 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<vec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec2";
-	return GL_FLOAT_VEC2 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<vec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec3";
-	return GL_FLOAT_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<vec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec4";
-	return GL_FLOAT_VEC4 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<Color>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec3 as Color";
-	return GL_FLOAT_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<ColorA>( GLenum uniformType, std::string &type ) const
-{
-	type = "vec4 as ColorA";
-	return GL_FLOAT_VEC4 == uniformType;
-}
-#if ! defined( CINDER_GL_ES_2 )
-template<>
-inline bool GlslProg::checkUniformType<uvec2>( GLenum uniformType, std::string &type ) const
-{
-	type = "uvec2";
-	return GL_UNSIGNED_INT_VEC2 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<uvec3>( GLenum uniformType, std::string &type ) const
-{
-	type = "uvec3";
-	return GL_UNSIGNED_INT_VEC3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<uvec4>( GLenum uniformType, std::string &type ) const
-{
-	type = "uvec4";
-	return GL_UNSIGNED_INT_VEC4 == uniformType;
-}
-#endif
-template<>
-inline bool GlslProg::checkUniformType<mat2>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat2";
-	return GL_FLOAT_MAT2 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<mat3>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat3";
-	return GL_FLOAT_MAT3 == uniformType;
-}
-template<>
-inline bool GlslProg::checkUniformType<mat4>( GLenum uniformType, std::string &type ) const
-{
-	type = "mat4";
-	return GL_FLOAT_MAT4 == uniformType;
-}
-
 
 class GlslProgExc : public cinder::gl::Exception {
   public:
 	GlslProgExc()	{}
 	GlslProgExc( const std::string &description ) : cinder::gl::Exception( description )	{}
 };
-
 
 class GlslProgCompileExc : public GlslProgExc {
   public:
