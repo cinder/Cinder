@@ -403,7 +403,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	//! Checks the type of the uniform against the provided type of data in validateUniform. If the provided
 	//! type, \a uniformType, and the type T match this function returns true, otherwise it returns false.
 	template<typename T>
-	bool			checkUniformType( GLenum uniformType, std::string &typeString ) const;
+	bool			checkUniformType( GLenum uniformType ) const;
+	template<typename T>
+	bool			checkUniformType( GLenum uniformType, std::string &typeName ) const;
 #if ! defined( CINDER_GL_ES_2 )
 	//! Caches all active Uniform Blocks after linking.
 	void			cacheActiveUniformBlocks();
@@ -414,6 +416,9 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	//! Returns a pointer to the Transform Feedback Varyings that matches \a name. Returns nullptr if the attrib doesn't exist.
 	TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name );
 #endif
+
+	template<typename T>
+	static std::string	cppTypeToGlslTypeName();
 	
 	GLuint									mHandle;
 	

@@ -814,7 +814,7 @@ void GlslProg::logUniformWrongType( const std::string &name, GLenum uniformType,
 {
 	if( mLoggedUniformNames.count( name ) == 0 ) {
 		CI_LOG_W("Uniform type mismatch for \"" << name << "\", expected "
-				 << gl::constantToString( uniformType ) << " and received a " << userType << ".");
+				 << gl::constantToString( uniformType ) << " and received " << userType );
 		mLoggedUniformNames.insert( name );
 	}
 }
@@ -1095,9 +1095,8 @@ inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T *data, int c
 template<typename T>
 inline bool GlslProg::validateUniform( const Uniform &uniform, const T &val ) const
 {
-	std::string type;
-	if( ! checkUniformType<T>( uniform.mType, type ) ) {
-		logUniformWrongType( uniform.mName, uniform.mType, type );
+	if( ! checkUniformType<T>( uniform.mType ) ) {
+		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() );
 		return false;
 	}
 	else {
@@ -1108,13 +1107,84 @@ inline bool GlslProg::validateUniform( const Uniform &uniform, const T &val ) co
 template<typename T>
 inline bool GlslProg::validateUniform( const Uniform &uniform, const T *val, int count ) const
 {
-	std::string type;
-	if( ! checkUniformType<T>( uniform.mType, type ) ) {
-		logUniformWrongType( uniform.mName, uniform.mType, type );
+	if( ! checkUniformType<T>( uniform.mType ) ) {
+		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() + "[" + to_string( count ) + "]" );
 		return false;
 	}
+	else {
+		return checkUniformValue( uniform, &val, 1 );
+	}
+}
+
+template<typename T>
+string GlslProg::cppTypeToGlslTypeName()
+{
+		 if( std::is_same<T,bool>::value ) return "bool";
+	else if( std::is_same<T,glm::bvec2>::value ) return "bvec2";
+	else if( std::is_same<T,glm::bvec3>::value ) return "bvec3";
+	else if( std::is_same<T,glm::bvec4>::value ) return "bvec4";
+	// unsigned int
+	else if( std::is_same<T,uint32_t>::value ) return "uint32_t";
+	else if( std::is_same<T,glm::uvec2>::value ) return "uvec2";
+	else if( std::is_same<T,glm::uvec3>::value ) return "uvec3";
+	else if( std::is_same<T,glm::uvec4>::value ) return "uvec4";
+	// signed int
+	else if( std::is_same<T,int32_t>::value ) return "int32_t";
+	else if( std::is_same<T,glm::ivec2>::value ) return "ivec2";
+	else if( std::is_same<T,glm::ivec3>::value ) return "ivec3";
+	else if( std::is_same<T,glm::ivec4>::value ) return "ivec4";
+	// float
+	else if( std::is_same<T,float>::value ) return "float";
+	else if( std::is_same<T,glm::vec2>::value ) return "vec2";
+	else if( std::is_same<T,glm::vec3>::value ) return "vec3";
+	else if( std::is_same<T,glm::vec4>::value ) return "vec4";
+	// matrix
+	else if( std::is_same<T,glm::mat2>::value ) return "mat2";
+	else if( std::is_same<T,glm::mat3>::value ) return "mat3";
+	else if( std::is_same<T,glm::mat4>::value ) return "mat4";
 	else
-		return checkUniformValue( uniform, val, count );
+		return "unknown";
+}
+
+template<typename T>
+bool GlslProg::checkUniformType( GLenum uniformType ) const
+{
+	switch( uniformType ) {
+		// bool
+		case GL_BOOL: return std::is_same<T,bool>::value || std::is_same<T,int32_t>::value;
+		case GL_BOOL_VEC2: return std::is_same<T,glm::bvec2>::value;
+		case GL_BOOL_VEC3: return std::is_same<T,glm::bvec3>::value;
+		case GL_BOOL_VEC4: return std::is_same<T,glm::bvec4>::value;
+		// unigned int
+		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
+		case GL_UNSIGNED_INT_VEC2: return std::is_same<T,glm::uvec2>::value;
+		case GL_UNSIGNED_INT_VEC3: return std::is_same<T,glm::uvec3>::value;
+		case GL_UNSIGNED_INT_VEC4: return std::is_same<T,glm::uvec4>::value;
+		// signed int
+		case GL_INT: return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_2D: return std::is_same<T,int32_t>::value;
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_SAMPLER_2D_SHADOW: return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_3D: return std::is_same<T,int32_t>::value;
+#else
+		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
+#endif
+		case GL_SAMPLER_CUBE: return std::is_same<T,int32_t>::value;
+		case GL_INT_VEC2: return std::is_same<T,glm::ivec2>::value;
+		case GL_INT_VEC3: return std::is_same<T,glm::ivec3>::value;
+		case GL_INT_VEC4: return std::is_same<T,glm::ivec4>::value;
+		// float
+		case GL_FLOAT: return std::is_same<T,float>::value;
+		case GL_FLOAT_VEC2: return std::is_same<T,glm::vec2>::value;
+		case GL_FLOAT_VEC3: return std::is_same<T,glm::vec3>::value;
+		case GL_FLOAT_VEC4: return std::is_same<T,glm::vec4>::value;
+		// matrix
+		case GL_FLOAT_MAT2: return std::is_same<T,glm::mat2>::value;
+		case GL_FLOAT_MAT3: return std::is_same<T,glm::mat3>::value;
+		case GL_FLOAT_MAT4: return std::is_same<T,glm::mat4>::value;
+		default:
+			CI_LOG_E( "Unknown uniform type" ); return false;
+	}
 }
 
 // bool
