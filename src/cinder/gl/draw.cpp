@@ -545,9 +545,10 @@ void draw( const geom::Source &source )
 
 	// determine attribs requested by shader
 	geom::AttribSet requestedAttribs;
-	auto semantics = curGlslProg->getAttribSemantics();
+	auto semantics = curGlslProg->getActiveAttributes();
 	for( auto &semantic : semantics )
-		requestedAttribs.insert( semantic.second );
+		if( semantic.mSemantic != geom::Attrib::NUM_ATTRIBS )
+			requestedAttribs.insert( semantic.mSemantic );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();

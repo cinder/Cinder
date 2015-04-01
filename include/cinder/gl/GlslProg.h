@@ -66,7 +66,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		GLint			mDataSize = 0;
 		GLint			mBytePointer = 0;
 		GLenum			mType = -1;
-		UniformSemantic mSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+		UniformSemantic mSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 	};
 	
 #if ! defined( CINDER_GL_ES_2 )
@@ -152,6 +152,25 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		const std::map<std::string,GLuint>&	getFragDataLocations() const { return mFragDataLocations; }
 #endif
 		
+		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
+		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		void		setPreprocessingEnabled( bool enable )		{ mPreprocessingEnabled = enable; }
+		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
+		Format&		preprocess( bool enable )					{ mPreprocessingEnabled = enable; return *this; }
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define );
+		//! Specifies a define directive to add to the shader sources
+		Format&		define( const std::string &define, const std::string &value );
+		//! Specifies a series of define directives to add to the shader sources
+		Format&		defineDirectives( const std::vector<std::string> &defines );
+		//! Specifies the #version directive to add to the shader sources
+		Format&		version( int version );
+		//! Returns the version number associated with this GlslProg, or 0 if none was speciefied.
+		int	getVersion() const										{ return mVersion; }
+		//! Returns the list of `#define` directives.
+		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+		
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
@@ -159,17 +178,17 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
 		Format&				label( const std::string &label ) { setLabel( label ); return *this; }
         
-        	//! Returns the fs::path for the vertex shader. Returns an empty fs::path if it isn't present.
-        	const fs::path&	getVertexPath() const { return mVertexShaderPath; }
-        	//! Returns the fs::path for the fragment shader. Returns an empty fs::path if it isn't present.
-        	const fs::path&	getFragmentPath() const { return mFragmentShaderPath; }
+		//! Returns the fs::path for the vertex shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getVertexPath() const { return mVertexShaderPath; }
+		//! Returns the fs::path for the fragment shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getFragmentPath() const { return mFragmentShaderPath; }
 #if ! defined( CINDER_GL_ES )
-        	//! Returns the fs::path for the geometry shader. Returns an empty fs::path if it isn't present.
-        	const fs::path&	getGeometryPath() const { return mGeometryShaderPath; }
-        	//! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
-        	const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
-        	//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
-        	const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
+		//! Returns the fs::path for the geometry shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getGeometryPath() const { return mGeometryShaderPath; }
+		//! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
+		//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
 #endif
 		const std::vector<Uniform>&		getUniforms() const { return mUniforms; }
 		const std::vector<Attribute>&	getAttributes() const { return mAttributes; }
@@ -202,6 +221,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::vector<Attribute>					mAttributes;
 		std::vector<Uniform>					mUniforms;
 		
+		std::vector<std::string>				mDefineDirectives;
+		int										mVersion;
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;

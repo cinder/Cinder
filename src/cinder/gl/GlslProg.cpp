@@ -337,7 +337,7 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-: mPreprocessingEnabled( format.isPreprocessingEnabled() ), mUniformBuffer( nullptr )
+: mPreprocessingEnabled( format.isPreprocessingEnabled() ), mUniformValueCache( nullptr )
 #if ! defined( CINDER_GL_ES_2 )
  , mTransformFeedbackFormat( -1 )
 #endif
@@ -602,7 +602,7 @@ void GlslProg::cacheActiveUniforms()
 		// an active uniform but have a location of -1. Disregard as we'll catch it
 		// when we cache the uniform block.
 		if( loc != -1 ) {
-			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+			UniformSemantic uniformSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 			
 			auto foundSemantic = semanticNameMap.find( name );
 			if( foundSemantic != semanticNameMap.end() ) {
@@ -669,7 +669,7 @@ void GlslProg::cacheActiveUniformBlocks()
 			
 			glGetActiveUniform( mHandle, (GLuint)index, 511, &nameLength, &count, &type, name );
 			
-			UniformSemantic uniformSemantic = UniformSemantic::USER_DEFINED_UNIFORM;
+			UniformSemantic uniformSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 			
 			auto foundSemantic = semanticNameMap.find( name );
 			if( foundSemantic != semanticNameMap.end() ) {
