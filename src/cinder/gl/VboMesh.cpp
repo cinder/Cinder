@@ -383,7 +383,6 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
 		auto size = vertArrayVbo.first.getAttribs().size();
-		std::cout << "Size: " << size << std::endl;
 		// now iterate the attributes associated with this VBO
 		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
 			int loc = -1;
@@ -395,7 +394,6 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 			// otherwise, try to get the location of the attrib semantic in the shader if it's present
 			else if( shader->hasAttribSemantic( attribInfo.getAttrib() ) )
 				loc = shader->getAttribSemanticLocation( attribInfo.getAttrib() );
-			std::cout << geom::attribToString( attribInfo.getAttrib() ) << std::endl;
 			if( loc != -1 ) {
 				if( attribInfo.getDims() > 4 ) {
 					auto numDims = (int)attribInfo.getDims();

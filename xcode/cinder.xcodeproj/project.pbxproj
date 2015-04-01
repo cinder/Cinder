@@ -995,9 +995,6 @@
 		1161C978165C7DFC00268A5E /* ImageTargetFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */; };
 		1161C979165C847200268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
 		1161C97A165C847400268A5E /* ImageSourceFileQuartz.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */; };
-		116C06241ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
-		116C06251ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
-		116C06261ABD2C06004D8297 /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06211ABD2C06004D8297 /* draw.cpp */; };
 		116C06271ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
 		116C06281ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
 		116C06291ABD2C06004D8297 /* scoped.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 116C06221ABD2C06004D8297 /* scoped.cpp */; };
@@ -1064,9 +1061,9 @@
 		B06DE70319C74935008B9E1B /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06DE70219C74935008B9E1B /* Query.cpp */; };
 		B06DE70419C74935008B9E1B /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06DE70219C74935008B9E1B /* Query.cpp */; };
 		B06DE70519C74935008B9E1B /* Query.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B06DE70219C74935008B9E1B /* Query.cpp */; };
-		B31987E71ACB9B1700DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987E61ACB9B1700DEB9EF /* draw.cpp */; };
-		B31987E81ACB9B1700DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987E61ACB9B1700DEB9EF /* draw.cpp */; };
-		B31987E91ACB9B1700DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987E61ACB9B1700DEB9EF /* draw.cpp */; };
+		B31987EB1ACB9D8B00DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987EA1ACB9D8B00DEB9EF /* draw.cpp */; };
+		B31987EC1ACB9D8B00DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987EA1ACB9D8B00DEB9EF /* draw.cpp */; };
+		B31987ED1ACB9D8B00DEB9EF /* draw.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B31987EA1ACB9D8B00DEB9EF /* draw.cpp */; };
 		B3B7E8B31AB3610F00D80463 /* ConstantConversions.h in Headers */ = {isa = PBXBuildFile; fileRef = B3B7E8B21AB3610F00D80463 /* ConstantConversions.h */; };
 		B3B7E8B41AB3610F00D80463 /* ConstantConversions.h in Headers */ = {isa = PBXBuildFile; fileRef = B3B7E8B21AB3610F00D80463 /* ConstantConversions.h */; };
 		B3B7E8B51AB3610F00D80463 /* ConstantConversions.h in Headers */ = {isa = PBXBuildFile; fileRef = B3B7E8B21AB3610F00D80463 /* ConstantConversions.h */; };
@@ -1551,7 +1548,6 @@
 		116C061E1ABD2BE8004D8297 /* platform.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = platform.h; path = gl/platform.h; sourceTree = "<group>"; };
 		116C061F1ABD2BE8004D8297 /* scoped.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = scoped.h; path = gl/scoped.h; sourceTree = "<group>"; };
 		116C06201ABD2BE8004D8297 /* wrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = wrapper.h; path = gl/wrapper.h; sourceTree = "<group>"; };
-		116C06211ABD2C06004D8297 /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = gl/draw.cpp; sourceTree = "<group>"; };
 		116C06221ABD2C06004D8297 /* scoped.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = scoped.cpp; path = gl/scoped.cpp; sourceTree = "<group>"; };
 		116C06231ABD2C06004D8297 /* wrapper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wrapper.cpp; path = gl/wrapper.cpp; sourceTree = "<group>"; };
 		117C98081AC534C300957DC6 /* Breakpoint.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Breakpoint.h; sourceTree = "<group>"; };
@@ -1621,7 +1617,7 @@
 		5391FD670E957646002A13D5 /* KeyEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KeyEvent.h; path = app/KeyEvent.h; sourceTree = "<group>"; };
 		B0245F5819BEDF3200BC878D /* Query.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Query.h; path = gl/Query.h; sourceTree = "<group>"; };
 		B06DE70219C74935008B9E1B /* Query.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Query.cpp; path = gl/Query.cpp; sourceTree = "<group>"; };
-		B31987E61ACB9B1700DEB9EF /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = gl/draw.cpp; sourceTree = "<group>"; };
+		B31987EA1ACB9D8B00DEB9EF /* draw.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = draw.cpp; path = gl/draw.cpp; sourceTree = "<group>"; };
 		B3B7E8B21AB3610F00D80463 /* ConstantConversions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ConstantConversions.h; path = gl/ConstantConversions.h; sourceTree = "<group>"; };
 		B3B7E8B61AB3613500D80463 /* ConstantConversions.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ConstantConversions.cpp; path = gl/ConstantConversions.cpp; sourceTree = "<group>"; };
 		C70E19FE106AA38700E63577 /* Buffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Buffer.h; sourceTree = "<group>"; };
@@ -2204,7 +2200,7 @@
 				0003F3C01992D64100647C8B /* BufferTexture.cpp */,
 				0003F3C21992D64100647C8B /* Context.cpp */,
 				B3B7E8B61AB3613500D80463 /* ConstantConversions.cpp */,
-				B31987E61ACB9B1700DEB9EF /* draw.cpp */,
+				B31987EA1ACB9D8B00DEB9EF /* draw.cpp */,
 				0003F3C31992D64100647C8B /* Environment.cpp */,
 				0003F3C41992D64100647C8B /* EnvironmentCore.cpp */,
 				00AD0D2D19F051B100022D9F /* EnvironmentEs.cpp */,
@@ -3353,7 +3349,6 @@
 				111A5FC3191F72AE005C3166 /* Biquad.cpp in Sources */,
 				007050831114F93F003FCAE4 /* ObjLoader.cpp in Sources */,
 				0070508A1114F93F003FCAE4 /* Path2d.cpp in Sources */,
-				116C06251ABD2C06004D8297 /* draw.cpp in Sources */,
 				0070509B1114F93F003FCAE4 /* System.cpp in Sources */,
 				0070509C1114F93F003FCAE4 /* Buffer.cpp in Sources */,
 				0070509D1114F93F003FCAE4 /* Exception.cpp in Sources */,
@@ -3380,6 +3375,7 @@
 				0003F4001992D64100647C8B /* Sync.cpp in Sources */,
 				111A5F69191F7286005C3166 /* mdct.c in Sources */,
 				007050A91114F93F003FCAE4 /* Hdr.cpp in Sources */,
+				B31987EC1ACB9D8B00DEB9EF /* draw.cpp in Sources */,
 				0003F40C1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				118CA43A1A9427F700841458 /* PlatformCocoa.cpp in Sources */,
 				118CA4311A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */,
@@ -3454,7 +3450,6 @@
 				0041730014C9BE760070C0D1 /* Frustum.cpp in Sources */,
 				111A5F6D191F7286005C3166 /* psy.c in Sources */,
 				0003F3FA1992D64100647C8B /* Pbo.cpp in Sources */,
-				B31987E81ACB9B1700DEB9EF /* draw.cpp in Sources */,
 				0041730414C9BE8E0070C0D1 /* Plane.cpp in Sources */,
 				114B7554192B2F9800E30153 /* MonitorNode.cpp in Sources */,
 				111A5FCC191F72AE005C3166 /* Dsp.cpp in Sources */,
@@ -3545,7 +3540,6 @@
 				111A5FC4191F72AE005C3166 /* Biquad.cpp in Sources */,
 				00CFD9C21135C3520091E310 /* ObjLoader.cpp in Sources */,
 				00CFD9C31135C3520091E310 /* Path2d.cpp in Sources */,
-				116C06261ABD2C06004D8297 /* draw.cpp in Sources */,
 				00CFD9C51135C3520091E310 /* System.cpp in Sources */,
 				00CFD9C61135C3520091E310 /* Buffer.cpp in Sources */,
 				00CFD9C71135C3520091E310 /* Exception.cpp in Sources */,
@@ -3572,6 +3566,7 @@
 				0003F4011992D64100647C8B /* Sync.cpp in Sources */,
 				111A5F40191F7285005C3166 /* mdct.c in Sources */,
 				00CFD9D01135C3520091E310 /* Hdr.cpp in Sources */,
+				B31987ED1ACB9D8B00DEB9EF /* draw.cpp in Sources */,
 				0003F40D1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */,
 				118CA43B1A9427F700841458 /* PlatformCocoa.cpp in Sources */,
 				118CA4321A9427F700841458 /* RendererImpl2dCocoaTouchQuartz.mm in Sources */,
@@ -3646,7 +3641,6 @@
 				43F78EF41516DAB700EB63B5 /* Json.cpp in Sources */,
 				111A5F44191F7285005C3166 /* psy.c in Sources */,
 				0003F3FB1992D64100647C8B /* Pbo.cpp in Sources */,
-				B31987E91ACB9B1700DEB9EF /* draw.cpp in Sources */,
 				008B43AA14F5F8F800B55B07 /* Svg.cpp in Sources */,
 				114B7555192B2F9800E30153 /* MonitorNode.cpp in Sources */,
 				111A5FCD191F72AE005C3166 /* Dsp.cpp in Sources */,
@@ -3778,6 +3772,7 @@
 				C70E1A03106AA39D00E63577 /* Buffer.cpp in Sources */,
 				0032FD2B10BB472E00C63A9D /* Exception.cpp in Sources */,
 				111A5EDE191F703D005C3166 /* sharedbook.c in Sources */,
+				B31987EB1ACB9D8B00DEB9EF /* draw.cpp in Sources */,
 				006228E410C8273C00A8191C /* DataSource.cpp in Sources */,
 				0003F4911995D9F500647C8B /* TwOpenGLCore.cpp in Sources */,
 				009FD54C10C9AEA100D63B1B /* ImageIo.cpp in Sources */,
@@ -3792,7 +3787,6 @@
 				00419C7211057CC6007EC9AD /* Hdr.cpp in Sources */,
 				B3B7E8B71AB3613500D80463 /* ConstantConversions.cpp in Sources */,
 				00419C7311057CC6007EC9AD /* Premultiply.cpp in Sources */,
-				116C06241ABD2C06004D8297 /* draw.cpp in Sources */,
 				00419C7411057CC6007EC9AD /* Resize.cpp in Sources */,
 				0003F3E71992D64100647C8B /* Environment.cpp in Sources */,
 				0003F3D81992D64100647C8B /* Batch.cpp in Sources */,
@@ -3868,7 +3862,6 @@
 				0034C321151A5B9F003F2E30 /* linebreak.c in Sources */,
 				114B7553192B2F9800E30153 /* MonitorNode.cpp in Sources */,
 				111A5FAD191F72AE005C3166 /* ContextAudioUnit.cpp in Sources */,
-				B31987E71ACB9B1700DEB9EF /* draw.cpp in Sources */,
 				0034C327151A5B9F003F2E30 /* linebreakdata.c in Sources */,
 				0003F4201992D64100647C8B /* Vbo.cpp in Sources */,
 				111A5EF1191F722E005C3166 /* CinderAssert.cpp in Sources */,
