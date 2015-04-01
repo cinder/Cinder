@@ -118,9 +118,9 @@ void ParticleSphereGPUApp::setup()
 		gl::enableVertexAttribArray( 3 );
 		gl::enableVertexAttribArray( 4 );
 		gl::vertexAttribPointer( 0, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, pos) );
-		gl::vertexAttribPointer( 1, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, color) );
-		gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, ppos) );
-		gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, home) );
+		gl::vertexAttribPointer( 1, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, ppos) );
+		gl::vertexAttribPointer( 2, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, home) );
+		gl::vertexAttribPointer( 3, 4, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, color) );
 		gl::vertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, damping) );
 	}
 
@@ -135,11 +135,11 @@ void ParticleSphereGPUApp::setup()
 #endif
 		.feedbackFormat( GL_INTERLEAVED_ATTRIBS )
 		.feedbackVaryings( { "position", "pposition", "home", "color", "damping" } )
-		.attribLocation( "iPosition", 0 )
-		.attribLocation( "iColor", 1 )
-		.attribLocation( "iPPosition", 2 )
-		.attribLocation( "iHome", 3 )
-		.attribLocation( "iDamping", 4 )
+									   .attribLocation( "iPosition", 0 )
+									   .attribLocation( "iPPosition", 1 )
+									   .attribLocation( "iHome", 2 )
+									   .attribLocation( "iColor", 3 )
+									   .attribLocation( "iDamping", 4 )
 									   );
 
 	// Listen to mouse events so we can send data as uniforms.
@@ -152,6 +152,7 @@ void ParticleSphereGPUApp::setup()
 	getWindow()->getSignalMouseDrag().connect( [this]( MouseEvent event )
 											  {
 												  mMousePos = vec3( event.getX(), event.getY(), 0.0f );
+												  cout << mMousePos << endl;
 											  } );
 	getWindow()->getSignalMouseUp().connect( [this]( MouseEvent event )
 											{
