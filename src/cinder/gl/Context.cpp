@@ -1885,6 +1885,7 @@ void Context::setDefaultShaderVars()
 				case UNIFORM_ELAPSED_SECONDS: {
 					auto elapsed = float( app::getElapsedSeconds() );
 					glslProg->uniform( uniform.mLoc, elapsed );
+				break;
 				}
 				default:
 					;

@@ -984,6 +984,7 @@ std::string uniformSemanticToString( UniformSemantic uniformSemantic )
 		case UNIFORM_VIEWPORT_MATRIX: return "UNIFORM_VIEWPORT_MATRIX";
 		case UNIFORM_WINDOW_SIZE: return "UNIFORM_WINDOW_SIZE";
 		case UNIFORM_ELAPSED_SECONDS: return "UNIFORM_ELAPSED_SECONDS";
+		case UNIFORM_USER_DEFINED: return "UNIFORM_USER_DEFINED";
 		default: return "";
 	}
 }
