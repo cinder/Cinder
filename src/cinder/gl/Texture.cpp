@@ -1171,14 +1171,19 @@ Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 		result.x2 = area.x2 / (float)getCleanWidth();
 		result.y1 = area.y1 / (float)getCleanHeight();
 		result.y2 = area.y2 / (float)getCleanHeight();
+		
+		if( ! mTopDown ) {
+			result.y1 = 1.0f - result.y1;
+			result.y2 = 1.0f - result.y2;
+		}
 	}
 	else {
 		result = Rectf( area );
-	}
-	
-	if( ! mTopDown ) {
-		result.y1 = 1.0f - result.y1;
-		result.y2 = 1.0f - result.y2;
+
+		if( ! mTopDown ) {
+			result.y1 = getCleanHeight() - result.y1;
+			result.y2 = getCleanHeight() - result.y2;
+		}
 	}
 	
 	return result;
