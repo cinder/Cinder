@@ -408,12 +408,16 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 		mIndices->bind();
 }
 
-void VboMesh::drawImpl()
+void VboMesh::drawImpl( GLint first, GLsizei count )
 {
-	if( mNumIndices )
-		glDrawElements( mGlPrimitive, mNumIndices, mIndexType, (GLvoid*)( 0 ) );
+	if( mNumIndices ) {
+		size_t firstByteOffset = first;
+		if( mIndexType == GL_UNSIGNED_INT ) firstByteOffset *= 4;
+		else if( mIndexType == GL_UNSIGNED_SHORT ) firstByteOffset *= 2;
+		glDrawElements( mGlPrimitive, ( count < 0 ) ? ( mNumIndices - first ) : count, mIndexType, (GLvoid*)( firstByteOffset ) );
+	}
 	else
-		glDrawArrays( mGlPrimitive, 0, mNumVertices );
+		glDrawArrays( mGlPrimitive, first, ( count < 0 ) ? ( mNumVertices - first ) : count );
 }
 
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )

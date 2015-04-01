@@ -129,14 +129,14 @@ void Batch::replaceVboMesh( const VboMeshRef &vboMesh )
 	initVao( mAttribMapping );
 }
 
-void Batch::draw()
+void Batch::draw( GLint first, GLsizei count )
 {
 	auto ctx = gl::context();
 	
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
-	mVboMesh->drawImpl();
+	mVboMesh->drawImpl( first, count );
 }
 
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
