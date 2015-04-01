@@ -22,6 +22,7 @@ def markupFunction( fnXml, parent, bs4 ):
 	parent.append( li )
 	
 def processClassXmlFile( inPath, outPath, html ):
+	print "Processing file: " + inPath + " > " + outPath;
 	tree = ET.parse( inPath )
 	
 	# add title
@@ -30,13 +31,42 @@ def processClassXmlFile( inPath, outPath, html ):
 	titleTag.append( "Cinder: " + str(findCompoundName( tree )) )
 	headTag.insert( 0, titleTag )
 
+	# find contents wrapper
 	contentsTag = html.find( "div", "contents" )
-	ulTag = html.new_tag( "ul" )
-	contentsTag.append( ulTag )
 
-	# member functions
-	for memberFn in tree.findall( r'compounddef/sectiondef/memberdef[@kind="function"]' ):
-		markupFunction( memberFn, ulTag, html )
+	# create regular and static member function ul wrappers
+	ulTag = html.new_tag( "ul" )
+	staticUlTag = html.new_tag( "ul" )
+	staticUlTag['class'] = 'static'	
+
+	funcCount = 0
+	staticFuncCount = 0
+
+	# public member functions
+	for memberFn in tree.findall( r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]' ):
+		# split between static or not
+		isStatic = memberFn.attrib[ "static" ]
+
+		if isStatic == 'yes':
+			staticFuncCount += 1
+			markupFunction( memberFn, staticUlTag, html )
+		else:
+			funcCount += 1
+			markupFunction( memberFn, ulTag, html )
+			
+	# if function count > 0 add it
+	if funcCount > 0 :
+		header = html.new_tag( "h3")
+		header.string = "Member Functions"
+		contentsTag.append( header )
+		contentsTag.append( ulTag )
+
+	# if static function count > 0 add it
+	if staticFuncCount > 0 :
+		header = html.new_tag( "h3")
+		header.string = "Static Member Functions"
+		contentsTag.append( header )
+		contentsTag.append( staticUlTag )
 
 	# write the file	
 	outFile = codecs.open( outPath, "w", "UTF-8" )
