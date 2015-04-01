@@ -39,9 +39,6 @@ namespace cinder { namespace gl {
 class VboMesh;
 typedef std::shared_ptr<VboMesh> VboMeshRef;
 	
-void draw( const VboMeshRef& vbo );
-void drawRange( const VboMeshRef& vbo, GLint start, GLsizei count );
-
 class VboMesh {
   public:
 	class Layout {
