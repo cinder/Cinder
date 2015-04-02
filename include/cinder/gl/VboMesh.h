@@ -39,9 +39,6 @@ namespace cinder { namespace gl {
 class VboMesh;
 typedef std::shared_ptr<VboMesh> VboMeshRef;
 	
-void draw( const VboMeshRef& vbo );
-void drawRange( const VboMeshRef& vbo, GLint start, GLsizei count );
-
 class VboMesh {
   public:
 	class Layout {
@@ -243,7 +240,7 @@ class VboMesh {
 #endif // ! defined(CINDER_GL_ES_3) || (! defined( CINDER_GL_ANGLE ))
 
 	//! Issues a glDraw* call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
-	void		drawImpl();
+	void		drawImpl( GLint first = 0, GLsizei count = -1 );
 #if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
 	//! Issues a glDraw*Instanced call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawInstancedImpl( GLsizei instanceCount );

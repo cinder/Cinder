@@ -34,7 +34,7 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
-void draw( const VboMeshRef& mesh )
+void draw( const VboMeshRef& mesh, GLint first, GLsizei count )
 {
 	auto ctx = gl::context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
@@ -48,7 +48,7 @@ void draw( const VboMeshRef& mesh )
 	mesh->buildVao( curGlslProg );
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	mesh->drawImpl();
+	mesh->drawImpl( first, count );
 	ctx->popVao();
 }
 
