@@ -34,7 +34,6 @@ void MotionBasicApp::update()
 	if( ! MotionManager::isEnabled() )
 		return;
 
-//	mModelView = MotionManager::getRotationMatrix().inverted();
 	mModelMatrix = inverse( MotionManager::getRotationMatrix() );
 
     if( MotionManager::isShaking( 1.5f ) ) {
