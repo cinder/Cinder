@@ -4,6 +4,8 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Batch.h"
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"

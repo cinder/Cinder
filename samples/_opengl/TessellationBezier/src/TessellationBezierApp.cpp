@@ -3,6 +3,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/VboMesh.h"
+#include "cinder/gl/draw.h"
 
 using namespace ci;
 using namespace ci::app;

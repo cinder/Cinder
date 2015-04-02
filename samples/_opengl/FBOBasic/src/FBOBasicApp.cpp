@@ -3,6 +3,8 @@
 #include "cinder/Camera.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
 
 using namespace ci;
 using namespace ci::app;
