@@ -419,7 +419,12 @@ void DeferredShadingApp::resize()
 
 void DeferredShadingApp::screenShot()
 {
-	writeImage( getAppPath() / fs::path( "frame" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
+#if defined( CINDER_MSW )
+	fs::path path = getAppPath();
+#else
+	fs::path path = getAppPath().parent_path();
+#endif
+	writeImage( path / fs::path( "frame" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
 }
 
 void DeferredShadingApp::update()
