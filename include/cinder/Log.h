@@ -173,26 +173,19 @@ public:
 
 	void enableConsoleLogging();
 	void disableConsoleLogging();
-	void setConsoleLoggingEnabled( bool b = true )		{ b ? enableConsoleLogging() : disableConsoleLogging(); }
+	void setConsoleLoggingEnabled( bool enable )		{ enable ? enableConsoleLogging() : disableConsoleLogging(); }
 	bool isConsoleLoggingEnabled() const				{ return mConsoleLoggingEnabled; }
 
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
-	void setFileLoggingEnabled( bool b = true, const fs::path &filePath = fs::path(), bool appendToExisting = true )
-														{ b ? enableFileLogging( filePath, appendToExisting )
-															: disableFileLogging(); }
-
-	void setFileLoggingEnabled( bool b = true, const fs::path &folder = fs::path(),
-								const std::string& formatStr = "", bool appendToExisting = true )
-														{ b ? enableFileLogging( folder, formatStr, appendToExisting )
-															: disableFileLogging(); }
-
+	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
+	void setFileLoggingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
 	void enableSystemLogging();
 	void disableSystemLogging();
-	void setSystemLoggingEnabled( bool b = true )		{ b ? enableSystemLogging() : disableSystemLogging(); }
+	void setSystemLoggingEnabled( bool enable = true )		{ enable ? enableSystemLogging() : disableSystemLogging(); }
 	bool isSystemLoggingEnabled() const					{ return mSystemLoggingEnabled; }
 	void setSystemLoggingLevel( Level level );
 	Level getSystemLoggingLevel() const					{ return mSystemLoggingLevel; }
