@@ -5,7 +5,7 @@ const int MATERIAL_COUNT = 3;
 const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
 const float kShadowOpacity	= 0.3;
-const float	kShadowSamples	= 4.0;
+const int	kShadowSamples	= 4;
 
 const vec2 poissonDisk[ 16 ] = vec2[] (
 	vec2( -0.06095261, -0.1337204 ),
