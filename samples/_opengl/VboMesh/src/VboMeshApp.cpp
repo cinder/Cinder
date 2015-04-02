@@ -90,9 +90,9 @@ void VboSampleApp::update()
 	// dynmaically generate our new positions based on a sin(x) + cos(z) wave
 	auto mappedPosAttrib = mVboMesh->mapAttrib3f( geom::Attrib::POSITION );
 	for( int i = 0; i < mVboMesh->getNumVertices(); i++ ) {
-			vec3 &pos = *mappedPosAttrib;
-			(*mappedPosAttrib).y = ( sinf( pos.x * xFreq + offset ) + cosf( pos.z * zFreq + offset ) ) / 4.0f;;
-			++mappedPosAttrib;
+		vec3 &pos = *mappedPosAttrib;
+		(*mappedPosAttrib).y = ( sinf( pos.x * xFreq + offset ) + cosf( pos.z * zFreq + offset ) ) / 4.0f;;
+		++mappedPosAttrib;
 	}
 	mappedPosAttrib.unmap();
 }
