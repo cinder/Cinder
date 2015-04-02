@@ -78,8 +78,7 @@ float random( vec4 seed4 )
 
 vec2 poisson( int index, float blurSize ) 
 {
-	vec2 uv = vertex.uv;
-	return poissonDisk[ int( 16.0 * random( vec4( uv.x, uv.y, uv.y, index ) ) ) % 16 ] * blurSize;
+	return poissonDisk[ int( 16.0 * random( vec4( gl_FragCoord.xyy, index ) ) ) % 16 ] * blurSize;
 }
 
 float shadow( in vec4 position )
