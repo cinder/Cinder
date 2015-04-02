@@ -6,17 +6,19 @@ const int MODE_ALBEDO		= 0;
 const int MODE_NORMAL		= 1;
 const int MODE_POSITION		= 2;
 const int MODE_DEPTH		= 3;
-const int MODE_AMBIENT		= 4;
-const int MODE_DIFFUSE		= 5;
-const int MODE_EMISSIVE		= 6;
-const int MODE_SPECULAR		= 7;
-const int MODE_SHININESS	= 8;
-const int MODE_MATERIAL_ID	= 9;
+const int MODE_STENCIL		= 4;
+const int MODE_AMBIENT		= 5;
+const int MODE_DIFFUSE		= 6;
+const int MODE_EMISSIVE		= 7;
+const int MODE_SPECULAR		= 8;
+const int MODE_SHININESS	= 9;
+const int MODE_MATERIAL_ID	= 10;
 
 uniform sampler2D 	uSamplerAlbedo;
 uniform sampler2D 	uSamplerDepth;
 uniform isampler2D	uSamplerMaterial;
 uniform sampler2D	uSamplerNormal;
+uniform sampler2D 	uSamplerStencil;
 
 uniform mat4        uProjMatrixInverse;
 uniform vec2        uProjectionParams;
@@ -85,6 +87,9 @@ void main( void )
 		break;
 	case MODE_DEPTH:
 		color 	= vec4( vec3( 1.0 - texture( uSamplerDepth, vertex.uv ).r ), 1.0 );
+		break;
+	case MODE_STENCIL:
+		color 	= vec4( vec3( 1.0 - texture( uSamplerStencil, vertex.uv ).r ), 1.0 );
 		break;
 	case MODE_AMBIENT:
 		color = uMaterials[ getId() ].ambient;
