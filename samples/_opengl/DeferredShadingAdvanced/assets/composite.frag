@@ -1,7 +1,7 @@
 #version 330 core
 
-uniform sampler2D	uSamplerLBuffer;
-uniform sampler2D	uSamplerSsao;
+uniform sampler2D uSamplerLBuffer;
+uniform sampler2D uSamplerSsao;
 
 in Vertex
 {

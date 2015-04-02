@@ -27,7 +27,7 @@ const vec2 poissonDisk[ 16 ] = vec2[] (
 );
 
 uniform sampler2D		uSamplerAlbedo;
-uniform sampler2D		uSamplerDepth;
+uniform sampler2DShadow	uSamplerDepth;
 uniform isampler2D		uSamplerMaterial;
 uniform sampler2D		uSamplerNormal;
 uniform sampler2DShadow uSamplerShadowMap;
@@ -111,7 +111,7 @@ vec3 decodeNormal( vec2 enc )
 
 vec4 getPosition( vec2 uv )
 {
-    float depth			= texture( uSamplerDepth, uv ).x;
+    float depth			= texture( uSamplerDepth, vec3( uv, 0.0 ) );
     float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
     vec4 posProj		= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
     vec4 viewRay		= uProjMatrixInverse * posProj;

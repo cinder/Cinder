@@ -7,9 +7,9 @@ const float	kBias		= 0.02;
 const float	kDepthPlane	= 0.85;
 const float	kOpacity	= 1.0;
 
-uniform float		uAspect;
-uniform sampler2D	uSamplerColor;
-uniform sampler2D	uSamplerDepth;
+uniform float			uAspect;
+uniform sampler2D		uSamplerColor;
+uniform sampler2DShadow	uSamplerDepth;
 
 in Vertex
 {
@@ -27,7 +27,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 	if ( color.rgb == vec3( 0.0 ) ) {
 		contrib = 0.2;
 	} else {
-		iDepth = texture( uSamplerDepth, vertex.uv + offset ).r;
+		iDepth = texture( uSamplerDepth, vec3( vertex.uv + offset, 0.0 ) );
 		if ( iDepth < depth ) {
 			contrib = distance( iDepth, kDepthPlane ) / kDepthPlane;
 		} else {
@@ -41,7 +41,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 
 void main( void )
 {
-	float depth		= texture( uSamplerDepth, vertex.uv ).r * 1.0;
+	float depth		= texture( uSamplerDepth, vec3( vertex.uv, 0.0 ) );
 	vec2 sz			= vec2( kBias * distance( depth, kDepthPlane ) / kDepthPlane ) * vec2( 1.0, uAspect );
 	float influence	= 0.000001;
 	vec4 sum		= vec4( 0.0 );
