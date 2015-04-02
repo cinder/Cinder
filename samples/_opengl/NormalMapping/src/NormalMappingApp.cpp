@@ -277,7 +277,7 @@ void NormalMappingApp::update()
 	mShaderNormalMapping->uniform( "uLights[1].position", mLightAmbient.position );
 
 #if ! defined( CINDER_GL_ES )
-	if(mShaderWireframe)
+	if( mShaderWireframe )
 		mShaderWireframe->uniform( "uViewportSize", vec2( getWindowSize() ) );
 #endif
 }
@@ -366,12 +366,12 @@ void NormalMappingApp::resize()
 void NormalMappingApp::mouseDown( MouseEvent event )
 {
 	mMayaCamera.setCurrentCam( mCamera );
-	mMayaCamera.mouseDown( event.getPos() );
+	mMayaCamera.mouseDown( event );
 }
 
 void NormalMappingApp::mouseDrag( MouseEvent event )
 {
-	mMayaCamera.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mMayaCamera.mouseDrag( event );
 	mCamera = mMayaCamera.getCamera();
 }
 
