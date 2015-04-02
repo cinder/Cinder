@@ -613,8 +613,88 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 	setBorderColor( border );
 }
 
+#if ! defined( CINDER_GL_ES_2 )
 /////////////////////////////////////////////////////////////////////////////////
-// Texture
+// Texture1d
+Texture1dRef Texture1d::create( GLint width, Format format )
+{
+	return Texture1dRef( new Texture1d( width, format ) );
+}
+
+Texture1dRef Texture1d::create( const Surface8u &surface, Format format )
+{
+	return Texture1dRef( new Texture1d( surface, format ) );
+}
+
+Texture1dRef Texture1d::create( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+{
+	return Texture1dRef( new Texture1d( width, dataFormat, data, format ) );
+}
+
+Texture1d::Texture1d( GLint width, Format format )
+	: mWidth( width )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	TextureBase::initParams( format, GL_RGB );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	env()->allocateTexStorage1d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
+}
+
+Texture1d::Texture1d( const Surface8u &surface, Format format )
+	: mWidth( surface.getWidth() )
+{
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
+
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, surface.getData() );
+}
+
+Texture1d::Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+	: mWidth( width )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	TextureBase::initParams( format, GL_RGB );
+
+	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, data );
+}
+
+void Texture1d::update( const Surface8u &surface, int mipLevel )
+{
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
+		
+	ivec2 mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
+	if( surface.getSize() != mipMapSize )
+		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexSubImage1D( mTarget, mipLevel,
+		0, // offsets
+		mipMapSize.x, dataFormat, type, surface.getData() );
+}
+
+void Texture1d::printDims( std::ostream &os ) const
+{
+	os << mWidth;
+}
+
+#endif // ! defined( CINDER_GL_ES )
+
+/////////////////////////////////////////////////////////////////////////////////
+// Texture2d
 Texture2dRef Texture2d::create( int width, int height, Format format )
 {
 	return TextureRef( new Texture( width, height, format ) );
@@ -1437,7 +1517,7 @@ void Texture3d::printDims( std::ostream &os ) const
 	os << mWidth << " x " << mHeight << " x " << mDepth;
 }
 
-#endif // ! defined( CINDER_GL_ES )
+#endif // ! defined( CINDER_GL_ES_2 )
 
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
