@@ -49,12 +49,12 @@ void CompassApp::setup()
 
 	// directions.png contains an image of our 6 directions; this is a map of pixel offsets into that texture
 	mCardinalSize = ivec2( 300, 300 );
-	mCardinalPositions['U'] = vec2( 0, 0 );
-	mCardinalPositions['D'] = vec2( mCardinalSize.x, 0 );
+	mCardinalPositions['U'] = vec2( 0, mCardinalSize.y * 2 );
+	mCardinalPositions['D'] = vec2( mCardinalSize.x, mCardinalSize.y * 2 );
 	mCardinalPositions['S'] = vec2( 0, mCardinalSize.y );
 	mCardinalPositions['W'] = vec2( mCardinalSize.x, mCardinalSize.y );
-	mCardinalPositions['N'] = vec2( 0, mCardinalSize.y * 2 );
-	mCardinalPositions['E'] = vec2( mCardinalSize.x, mCardinalSize.y * 2 );
+	mCardinalPositions['N'] = vec2( 0, 0 );
+	mCardinalPositions['E'] = vec2( mCardinalSize.x, 0 );
 
 	mCardinalTex = gl::Texture::create( loadImage( loadAsset( "directions.png" ) ) );
 }
