@@ -179,15 +179,8 @@ public:
 	void enableFileLogging( const fs::path &filePath = fs::path(), bool appendToExisting = true );
 	void enableFileLogging( const fs::path &folder, const std::string& formatStr, bool appendToExisting = true);
 	void disableFileLogging();
-	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true )
-														{ enable ? enableFileLogging( filePath, appendToExisting )
-															: disableFileLogging(); }
-
-	void setFileLoggingEnabled( bool enable, const fs::path &folder = fs::path(),
-								const std::string& formatStr = "", bool appendToExisting = true )
-														{ enable ? enableFileLogging( folder, formatStr, appendToExisting )
-															: disableFileLogging(); }
-
+	void setFileLoggingEnabled( bool enable, const fs::path &filePath = fs::path(), bool appendToExisting = true );
+	void setFileLoggingEnabled( bool enable, const fs::path &folder, const std::string &formatStr, bool appendToExisting = true );
 	bool isFileLoggingEnabled() const					{ return mFileLoggingEnabled; }
 
 	void enableSystemLogging();

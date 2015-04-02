@@ -244,6 +244,23 @@ void LogManager::enableFileLogging( const fs::path &folder, const std::string &f
 	mFileLoggingEnabled = true;
 }
 
+void LogManager::setFileLoggingEnabled( bool enable, const fs::path &filePath, bool appendToExisting )
+{
+	if( enable )
+		enableFileLogging( filePath, appendToExisting );
+	else
+		disableFileLogging();
+}
+
+
+void LogManager::setFileLoggingEnabled( bool enable, const fs::path &folder, const string &formatStr, bool appendToExisting )
+{
+	if( enable )
+		enableFileLogging( folder, formatStr, appendToExisting );
+	else
+		disableFileLogging();
+}
+
 void LogManager::enableSystemLogging()
 {
 	if( mSystemLoggingEnabled )
