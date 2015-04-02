@@ -36,28 +36,28 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\fxaa_frag.glsl">
+    <None Include="..\assets\debug.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\gbuffer_frag.glsl">
+    <None Include="..\assets\fxaa.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\gbuffer_vert.glsl">
+    <None Include="..\assets\gbuffer.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\lbuffer_frag.glsl">
+    <None Include="..\assets\lbuffer.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\passThrough_vert.glsl">
+    <None Include="..\assets\gbuffer.vert">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\shadow_map_frag.glsl">
+    <None Include="..\assets\shadow_map.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\shadow_map_vert.glsl">
+    <None Include="..\assets\pass_through.vert">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\debug_frag.glsl">
+    <None Include="..\assets\shadow_map.vert">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

@@ -1,3 +1,29 @@
+/* 
+ * Deferred Shading Advanced sample application by:
+ * Stephen Schieberl - Wieden+Kennedy
+ * Michael Latzoni - Wieden+Kennedy
+ * 
+ * Additional code:
+ * Simon Geilfus
+ * 
+ * This sample demonstrates how to create a robust deferred shading engine.
+ * The scene is rendered into a frame buffer with multiple attachments
+ * (G-buffer). A uniform buffer object is used to store a database of
+ * material data on the GPU. Shadow casters are rendered into a shadow 
+ * map FBO. The data from each is read while drawing light volumes into the 
+ * light buffer (L-buffer). Finally, the L-buffer is drawn to the screen.
+ * 
+ * A screen space ambient occlusion (SSAO) pass provides extra detail with 
+ * local shadows. Lights are accumulated to leave subtle trails, then bloomed 
+ * to appear that they are glowing. We follow these with some post-processing 
+ * passes, including depth of field to mimic camera focus, some color tweaks, 
+ * and anti-aliasing.
+ * 
+ * This sample is intended for powerful GPUs. Check out the simpler 
+ * DeferredShading sample if this is too taxing on your machine, 
+ * or if you are not yet familiar with the concept of deferred shading.
+ */
+
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/MayaCamUI.h"
@@ -6,22 +32,6 @@
 #include "Light.h"
 #include "Material.h"
 
-/* This sample demonstrates how create a robust deferred shading engine.
- * The scene is rendered into a frame buffer with multiple attachments
- * (G-buffer). A uniform buffer object is used to store a database of
- * material data on the GPU. Shadow casters are rendered into a shadow 
- * map FBO. The data from each is read while drawing light volumes into the 
- * light buffer (L-buffer). Finally, the L-buffer is draw to the screen.
- * 
- * A screen space ambient occlusion (SSAO) pass provides extra detail with 
- * local shadows. Lights are bloomed to appear that they are glowing. 
- * We follow these with some post-processing passes, including depth of 
- * field (to mimic camera focus), some color tweaks, and anti-aliasing.
- * 
- * This sample is intended for powerful GPUs. Check out the simpler 
- * DeferredShading sample if this is too taxing on your machine, 
- * or if you are not yet familiar with the concept of deferred shading.
- */
 class DeferredShadingAdvancedApp : public ci::app::App
 {
 public:
@@ -729,19 +739,19 @@ void DeferredShadingAdvancedApp::loadShaders()
 	};
 
 	// Load shaders
-	DataSourceRef passThrough	= loadAsset( "passThrough_vert.glsl" );
-	mGlslProgBlend				= loadGlslProg( "Blend",			passThrough,							loadAsset( "blend_frag.glsl" ) );
-	mGlslProgBlur				= loadGlslProg( "Blur",				passThrough,							loadAsset( "blur_frag.glsl" ) );
-	mGlslProgColor				= loadGlslProg( "Color",			passThrough,							loadAsset( "color_frag.glsl" ) );
-	mGlslProgComposite			= loadGlslProg( "Composite",		passThrough,							loadAsset( "composite_frag.glsl" ) );
-	mGlslProgDebug				= loadGlslProg( "Debug",			passThrough,							loadAsset( "debug_frag.glsl" ) );
-	mGlslProgDof				= loadGlslProg( "Depth of field",	passThrough,							loadAsset( "dof_frag.glsl" ) );
-	mGlslProgEmissive			= loadGlslProg( "Emissive",			passThrough,							loadAsset( "emissive_frag.glsl" ) );
-	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,							loadAsset( "fxaa_frag.glsl" ) );
-	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer_vert.glsl" ),		loadAsset( "gbuffer_frag.glsl" ) );
-	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,							loadAsset( "lbuffer_frag.glsl" ) );
-	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map_vert.glsl" ),	loadAsset( "shadow_map_frag.glsl" ) );
-	mGlslProgSsao				= loadGlslProg( "SSAO",				loadAsset( "ssao_vert.glsl" ),			loadAsset( "ssao_frag.glsl" ) );
+	DataSourceRef passThrough	= loadAsset( "pass_through.vert" );
+	mGlslProgBlend				= loadGlslProg( "Blend",			passThrough,					loadAsset( "blend.frag" ) );
+	mGlslProgBlur				= loadGlslProg( "Blur",				passThrough,					loadAsset( "blur.frag" ) );
+	mGlslProgColor				= loadGlslProg( "Color",			passThrough,					loadAsset( "color.frag" ) );
+	mGlslProgComposite			= loadGlslProg( "Composite",		passThrough,					loadAsset( "composite.frag" ) );
+	mGlslProgDebug				= loadGlslProg( "Debug",			passThrough,					loadAsset( "debug.frag" ) );
+	mGlslProgDof				= loadGlslProg( "Depth of field",	passThrough,					loadAsset( "dof.frag" ) );
+	mGlslProgEmissive			= loadGlslProg( "Emissive",			passThrough,					loadAsset( "emissive.frag" ) );
+	mGlslProgFxaa				= loadGlslProg( "FXAA",				passThrough,					loadAsset( "fxaa.frag" ) );
+	mGlslProgGBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer.vert" ),	loadAsset( "gbuffer.frag" ) );
+	mGlslProgLBuffer			= loadGlslProg( "L-buffer",			passThrough,					loadAsset( "lbuffer.frag" ) );
+	mGlslProgShadowMap			= loadGlslProg( "Shadow map",		loadAsset( "shadow_map.vert" ),	loadAsset( "shadow_map.frag" ) );
+	mGlslProgSsao				= loadGlslProg( "SSAO",				loadAsset( "ssao.vert" ),		loadAsset( "ssao.frag" ) );
 	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
 	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 }

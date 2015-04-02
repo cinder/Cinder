@@ -210,22 +210,22 @@
     <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blend_frag.glsl" />
-    <None Include="..\assets\emissive_frag.glsl" />
-    <None Include="..\assets\blur_frag.glsl" />
-    <None Include="..\assets\color_frag.glsl" />
-    <None Include="..\assets\composite_frag.glsl" />
-    <None Include="..\assets\debug_frag.glsl" />
-    <None Include="..\assets\dof_frag.glsl" />
-    <None Include="..\assets\fxaa_frag.glsl" />
-    <None Include="..\assets\gbuffer_frag.glsl" />
-    <None Include="..\assets\gbuffer_vert.glsl" />
-    <None Include="..\assets\lbuffer_frag.glsl" />
-    <None Include="..\assets\passThrough_vert.glsl" />
-    <None Include="..\assets\shadow_map_frag.glsl" />
-    <None Include="..\assets\shadow_map_vert.glsl" />
-    <None Include="..\assets\ssao_frag.glsl" />
-    <None Include="..\assets\ssao_vert.glsl" />
+    <None Include="..\assets\blend.frag" />
+    <None Include="..\assets\emissive.frag" />
+    <None Include="..\assets\blur.frag" />
+    <None Include="..\assets\color.frag" />
+    <None Include="..\assets\composite.frag" />
+    <None Include="..\assets\debug.frag" />
+    <None Include="..\assets\dof.frag" />
+    <None Include="..\assets\fxaa.frag" />
+    <None Include="..\assets\gbuffer.frag" />
+    <None Include="..\assets\gbuffer.vert" />
+    <None Include="..\assets\lbuffer.frag" />
+    <None Include="..\assets\pass_through.vert" />
+    <None Include="..\assets\shadow_map.frag" />
+    <None Include="..\assets\shadow_map.vert" />
+    <None Include="..\assets\ssao.frag" />
+    <None Include="..\assets\ssao.vert" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png" />
