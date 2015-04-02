@@ -45,22 +45,39 @@ class UniformValueCache : cinder::Noncopyable {
 	UniformValueCache( uint32_t bufferSize )
 		: mBuffer( new uint8_t[bufferSize] ), mBufferSize( bufferSize )
 	{
-		memset( mBuffer.get(), std::numeric_limits<int>::max(), mBufferSize );
+	}
+	
+	void insertBeginningByte( uint32_t value ) {
+		auto it = std::lower_bound( mCachedBeginningBytes.begin(),
+								   mCachedBeginningBytes.end(),
+								   value,
+								   std::greater<int>() );
+		mCachedBeginningBytes.insert( it, value );
 	}
 	
 	bool shouldBuffer( uint32_t beginningByte, uint32_t size, const void * valuePointer )
 	{
 		auto ptr = (mBuffer.get() + beginningByte);
-		if( memcmp( ptr, valuePointer, size ) == 0 ) {
-			return false;
-		}
-		else {
+		if( ! std::binary_search( mCachedBeginningBytes.begin(),
+							   mCachedBeginningBytes.end(),
+							   beginningByte ) ) {
+			insertBeginningByte( beginningByte );
 			memcpy( ptr, valuePointer, size );
 			return true;
+		}
+		else {
+			if( memcmp( ptr, valuePointer, size ) == 0 ) {
+				return false;
+			}
+			else {
+				memcpy( ptr, valuePointer, size );
+				return true;
+			}
 		}
 	}
 	
   private:
+	std::vector<uint32_t>			mCachedBeginningBytes;
 	std::unique_ptr<uint8_t[]>		mBuffer;
 	uint32_t						mBufferSize;
 };
