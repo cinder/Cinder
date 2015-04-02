@@ -2,6 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
 #include "cinder/params/Params.h"
+#include "cinder/gl/gl.h"
 
 #include <functional>
 
