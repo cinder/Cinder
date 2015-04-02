@@ -242,7 +242,6 @@ void DeferredShadingAdvancedApp::draw()
 	// Draws shadow casting objects
 	auto drawShadowCasters = [ & ]()
 	{
-		gl::enable( GL_STENCIL_TEST, GL_TRUE );
 		{
 			gl::ScopedModelMatrix scopedModelMatrix;
 			gl::translate( mSpherePosition );
@@ -264,7 +263,6 @@ void DeferredShadingAdvancedApp::draw()
 			gl::scale( vec3( 0.5f ) );
 			gl::draw( mMeshIcosahedron );
 		}
-		gl::enable( GL_STENCIL_TEST, GL_FALSE );
 	};
 	
 	// Clear frame buffers
@@ -574,7 +572,7 @@ void DeferredShadingAdvancedApp::draw()
 			mGlslProgDebug->uniform( "uSamplerNormal",		2 );
 			mGlslProgDebug->uniform( "uSamplerDepth",		3 );
 
-			for ( int32_t i = 0; i < 11; ++i, ++index ) {
+			for ( int32_t i = 0; i < 10; ++i, ++index ) {
 				mGlslProgDebug->uniform( "uMode", i );
 				vec2 pos = calcPosition( index );
 				gl::drawSolidRect( Rectf( pos, pos + sz ) );
