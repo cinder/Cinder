@@ -45,7 +45,6 @@ private:
 	
 	ci::gl::Texture2dRef		mTextureFbo[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
-	ci::gl::TextureRef			mTextureRandom;
 	
 	ci::gl::VboMeshRef			mMeshCube;
 	ci::gl::VboMeshRef			mMeshRect;
@@ -117,7 +116,6 @@ DeferredShadingApp::DeferredShadingApp()
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
 	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-	mTextureRandom	= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
 	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
@@ -303,14 +301,13 @@ void DeferredShadingApp::draw()
 			mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
 			mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
 			mGlslProgLBuffer->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
-			mGlslProgLBuffer->uniformBlock( 0, 0 );
 
 			for ( const Light& light : mLights ) {
 				mGlslProgLBuffer->uniform( "uLightColorAmbient",	light.getColorAmbient() );
 				mGlslProgLBuffer->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
 				mGlslProgLBuffer->uniform( "uLightColorSpecular",	light.getColorSpecular() );
-				mGlslProgLBuffer->uniform( "uLightPosition",
-										  vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+				mGlslProgLBuffer->uniform( "uLightPosition", 
+										   vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
 				mGlslProgLBuffer->uniform( "uLightIntensity",		light.getIntensity() );
 				mGlslProgLBuffer->uniform( "uLightRadius",			light.getVolume() );
 				mGlslProgLBuffer->uniform( "uWindowSize",			vec2( getWindowSize() ) );
