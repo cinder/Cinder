@@ -16,7 +16,6 @@ static const float kTargetSize = 2.0f;
 static const float kTargetDistance = 4.0f;
 static const float kHorizontalSize = kTargetSize * 4.0f;
 
-
 class CompassApp : public App {
   public:
 	void setup();
@@ -34,6 +33,8 @@ class CompassApp : public App {
 	gl::TextureRef		mCardinalTex;
 	map<char, ivec2>	mCardinalPositions;
 	ivec2				mCardinalSize;
+
+	gl::BatchRef		mSphereBatch;
 };
 
 void CompassApp::setup()
@@ -57,6 +58,11 @@ void CompassApp::setup()
 	mCardinalPositions['E'] = vec2( mCardinalSize.x, 0 );
 
 	mCardinalTex = gl::Texture::create( loadImage( loadAsset( "directions.png" ) ) );
+
+	// add something to look at in the background
+	auto geom = geom::Sphere().radius( kTargetSize * 4 ).colors() >> geom::Lines();
+	auto glsl = gl::getStockShader( gl::ShaderDef().color() );
+	mSphereBatch = gl::Batch::create( geom, glsl );
 }
 
 void CompassApp::resize()
@@ -80,6 +86,8 @@ void CompassApp::draw()
 
     gl::pushMatrices();
     gl::setMatrices( mCam );
+
+	mSphereBatch->draw();
 
 	static const float kD = kTargetDistance;
 	drawCardinalTex( 'N', vec3(  0,  0, -kD ),	vec3(  0,	  M_PI,	  0 ) );
@@ -112,8 +120,9 @@ void CompassApp::drawCardinalTex( char d, const vec3 &location, const vec3 &loca
 #else
 	// draw billboarded, flip to face eye point
 	gl::rotate( mCam.getOrientation() );
-	gl::rotate( vec3( 0, M_PI, 0 ) );
+	gl::rotate( M_PI, vec3( 0, 1, 0 ) );
 #endif
+
 	gl::draw( mCardinalTex, srcArea, destRect );
 
 	gl::popModelView();
