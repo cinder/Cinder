@@ -38,7 +38,7 @@ typedef std::shared_ptr<class Renderbuffer>		RenderbufferRef;
 
 struct ScopedVao : private Noncopyable {
 	ScopedVao( Vao *vao );
-	ScopedVao( VaoRef &vao );
+	ScopedVao( const VaoRef &vao );
 	~ScopedVao();
 
   private:

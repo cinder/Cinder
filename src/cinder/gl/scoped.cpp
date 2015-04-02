@@ -39,7 +39,7 @@ ScopedVao::ScopedVao( Vao *vao )
 	mCtx->pushVao( vao );
 }
 
-ScopedVao::ScopedVao( VaoRef &vao )
+ScopedVao::ScopedVao( const VaoRef &vao )
 	: mCtx( gl::context() )
 {
 	mCtx->pushVao( vao );
