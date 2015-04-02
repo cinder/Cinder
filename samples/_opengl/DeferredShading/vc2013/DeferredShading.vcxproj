@@ -216,9 +216,6 @@
     <None Include="..\assets\shadow_map.frag" />
     <None Include="..\assets\shadow_map.vert" />
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
 </Project>
