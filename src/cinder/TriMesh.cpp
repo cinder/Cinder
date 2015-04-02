@@ -463,7 +463,7 @@ void TriMesh::write( DataTargetRef dataTarget ) const
 
 	OStreamRef out = dataTarget->getStream();
 	
-	const uint8_t versionNumber = 1;
+	const uint8_t versionNumber = 2;
 	out->write( versionNumber );
 	
 	out->writeLittle( static_cast<uint32_t>( mPositions.size() / 3 ) );
