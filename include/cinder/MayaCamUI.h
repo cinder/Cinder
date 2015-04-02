@@ -30,9 +30,8 @@ namespace cinder {
 
 class MayaCamUI {
  public:
-	MayaCamUI() { mInitialCam = mCurrentCam = CameraPersp(); }
-	MayaCamUI( const CameraPersp &aInitialCam ) { mInitialCam = mCurrentCam = aInitialCam; }
-	
+	MayaCamUI()									{ mInitialCam = mCurrentCam = CameraPersp(); }
+	MayaCamUI( const CameraPersp &initialCam )	{ mInitialCam = mCurrentCam = initialCam; }
 
 	void mouseDown( const app::MouseEvent &event )
 	{
@@ -113,8 +112,8 @@ class MayaCamUI {
 		}
 	}	
 	
-	const CameraPersp& getCamera() const { return mCurrentCam; }
-	void setCurrentCam( const CameraPersp &aCurrentCam ) { mCurrentCam = aCurrentCam; }
+	const CameraPersp& getCamera() const				{ return mCurrentCam; }
+	void setCurrentCam( const CameraPersp &currentCam ) { mCurrentCam = currentCam; }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
