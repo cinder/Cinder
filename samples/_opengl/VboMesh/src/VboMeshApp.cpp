@@ -1,17 +1,16 @@
 //
-// This sample demonstrates the VboMesh class by creating a simple Plane mesh with a texture mapped onto it.
-// The mesh has static indices and texture coordinates, but its vertex positions are dynamic.
+// This sample demonstrates basic usage of the VboMesh class by creating a simple Plane mesh
+// with a texture mapped onto it. The mesh has static indices and texture coordinates, but
+// its vertex positions are dynamic.
 //
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/VboMesh.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/GeomIO.h"
-#include "cinder/MayaCamUI.h"
 #include "cinder/ImageIo.h"
+#include "cinder/MayaCamUI.h"
 
 #include "Resources.h"
 
@@ -19,9 +18,6 @@ using namespace ci;
 using namespace ci::app;
 
 using std::vector;
-
-const int VERTICES_X = 200;
-const int VERTICES_Z = 50;
 
 class VboSampleApp : public App {
  public:
@@ -41,7 +37,7 @@ class VboSampleApp : public App {
 
 void VboSampleApp::setup()
 {
-	auto plane = geom::Plane().size( vec2( 20, 20 ) ).subdivisions( ivec2( VERTICES_X, VERTICES_Z ) );
+	auto plane = geom::Plane().size( vec2( 20, 20 ) ).subdivisions( ivec2( 200, 50 ) );
 
 	vector<gl::VboMesh::Layout> bufferLayout = {
 		gl::VboMesh::Layout().usage( GL_DYNAMIC_DRAW ).attrib( geom::Attrib::POSITION, 3 ),
@@ -83,9 +79,7 @@ void VboSampleApp::mouseDrag( MouseEvent event )
 
 void VboSampleApp::update()
 {
-	const float zFreq = 0.9325f;
-	const float xFreq = 1.3467f;
-	float offset = getElapsedSeconds() * 5.0f;
+	float offset = getElapsedSeconds() * 4.0f;
 
 	// Dynmaically generate our new positions based on a sin(x) + cos(z) wave
 	// We set 'orphanExisting' to false so that we can also read from the position buffer, though keep
@@ -93,7 +87,7 @@ void VboSampleApp::update()
 	auto mappedPosAttrib = mVboMesh->mapAttrib3f( geom::Attrib::POSITION, false );
 	for( int i = 0; i < mVboMesh->getNumVertices(); i++ ) {
 		vec3 &pos = *mappedPosAttrib;
-		(*mappedPosAttrib).y = ( sinf( pos.x * xFreq + offset ) + cosf( pos.z * zFreq + offset ) ) / 4.0f;;
+		mappedPosAttrib->y = sinf( pos.x * 1.1467f + offset ) * 0.323f + cosf( pos.z * 0.7325f + offset ) * 0.431f;
 		++mappedPosAttrib;
 	}
 	mappedPosAttrib.unmap();
