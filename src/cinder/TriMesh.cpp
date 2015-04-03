@@ -416,76 +416,96 @@ void TriMesh::read( DataSourceRef dataSource )
 	uint8_t versionNumber;
 	in->read( &versionNumber );
 	
-	uint32_t numPositions, numNormals, numTexCoords, numIndices;
-	in->readLittle( &numPositions );
-	in->readLittle( &numNormals );
-	in->readLittle( &numTexCoords );
+	uint32_t numIndices, numPositions, numNormals, numColors, numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
+
 	in->readLittle( &numIndices );
-	
-	for( size_t idx = 0; idx < numPositions; ++idx ) {
-		for( int v = 0; v < 3; ++v ) {
-			float f;
-			in->readLittle( &f );
-			mPositions.push_back( f );
-		}
-	}
 
-	for( size_t idx = 0; idx < numNormals; ++idx ) {
-		vec3 v;
-		in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
-		mNormals.push_back( v );
-	}
+	in->readLittle( &mPositionsDims );
+	in->readLittle( &numPositions );
 
-	for( size_t idx = 0; idx < numTexCoords; ++idx ) {
-		for( int v = 0; v < 2; ++v ) {
-			float f;
-			in->readLittle( &f );
-			mTexCoords0.push_back( f );
-		}
-	}
+	in->readLittle( &mNormalsDims );
+	in->readLittle( &numNormals );
 
-	for( size_t idx = 0; idx < numIndices; ++idx ) {
-		uint32_t v;
-		in->readLittle( &v );
-		mIndices.push_back( v );
-	}
+	in->readLittle( &numColors );
+	in->readLittle( &mColorsDims );
 
-	mPositionsDims = 3;
-	mTexCoords0Dims = 2;
+	in->readLittle( &numTexCoords0 );
+	in->readLittle( &mTexCoords0Dims );
+
+	in->readLittle( &numTexCoords1 );
+	in->readLittle( &mTexCoords1Dims );
+
+	in->readLittle( &numTexCoords2 );
+	in->readLittle( &mTexCoords2Dims );
+
+	in->readLittle( &numTexCoords3 );
+	in->readLittle( &mTexCoords3Dims );
+
+	mIndices.resize( numIndices );
+	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
+
+	mPositions.resize( numPositions * mPositionsDims );
+	in->readData( mPositions.data(), mPositions.size() * sizeof( float ) );
+
+	mNormals.resize( numNormals );
+	in->readData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+
+	mColors.resize( numColors * mColorsDims );
+	in->readData( mColors.data(), mColors.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords0 * mTexCoords0Dims );
+	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords1 * mTexCoords1Dims );
+	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
+	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
+	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
 }
 
 void TriMesh::write( DataTargetRef dataTarget ) const
 {
-	assert(mPositionsDims == 3);
-	assert(mTexCoords0Dims == 2);
-
 	// note: tangents and bitangents are not written, because these can be reconstructed
 
 	OStreamRef out = dataTarget->getStream();
 	
 	const uint8_t versionNumber = 2;
 	out->write( versionNumber );
-	
-	out->writeLittle( static_cast<uint32_t>( mPositions.size() / 3 ) );
-	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords0.size() / 2 ) );
+
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
-	
-	for( auto it = mPositions.begin(); it != mPositions.end(); ++it ) {
-		out->writeLittle( *it );
-	}
 
-	for( vector<vec3>::const_iterator it = mNormals.begin(); it != mNormals.end(); ++it ) {
-		out->writeLittle( it->x ); out->writeLittle( it->y ); out->writeLittle( it->z );
-	}
+	out->writeLittle( static_cast<uint8_t>( mPositionsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mPositions.size() / mPositionsDims ) );
 
-	for( auto it = mTexCoords0.begin(); it != mTexCoords0.end(); ++it ) {
-		out->writeLittle( *it );
-	}
+	out->writeLittle( static_cast<uint8_t>( mNormalsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
 
-	for( vector<uint32_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
-		out->writeLittle( *it );
-	}
+	out->writeLittle( static_cast<uint8_t>( mColorsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mColors.size() / mColorsDims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords0Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords0.size() / mTexCoords0Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords1Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords1.size() / mTexCoords1Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords2Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords2.size() / mTexCoords2Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords3Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords3.size() / mTexCoords3Dims ) );
+
+	out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
+	out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
+	out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+	out->writeData( mColors.data(), mColors.size() * sizeof( float ) );
+	out->writeData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+	out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+	out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
+	out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
 }
 
 bool TriMesh::recalculateNormals( bool smooth, bool weighted )
