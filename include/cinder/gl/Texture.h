@@ -83,6 +83,9 @@ class TextureBase {
 	//! Returns the depth of the texture in pixels, ignoring clean bounds.
 	virtual GLint	getDepth() const = 0;
 
+	//! Returns whether the Texture has an alpha channel based on its internal format
+	bool			hasAlpha() const;
+
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void			setWrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
 #if ! defined( CINDER_GL_ES )
@@ -114,8 +117,8 @@ class TextureBase {
 
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
-	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat
-	static void		getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType );
+	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat, as well as whether the internal format contains an alpha channel, is compressed, and is in the sRGB color space.
+	static void		getInternalFormatInfo( GLint internalFormat, GLenum *outDataFormat, GLenum *outDataType, bool *outAlpha = nullptr, bool *outCompressed = nullptr, bool *outSrgb = nullptr );
 	//! Returns the number of mip levels necessary to represent a texture of \a width, \a height and \a depth
 	static int		requiredMipLevels( GLint width, GLint height, GLint depth );
 
