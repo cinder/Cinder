@@ -24,8 +24,13 @@
 */
 
 #include "cinder/TriMesh.h"
+#include "cinder/Exception.h"
 
-using std::vector;
+using namespace std;
+
+namespace {
+	const uint8_t READ_WRITE_VERSION = 2;
+}
 
 namespace cinder {
 
@@ -440,6 +445,12 @@ void TriMesh::read( const DataSourceRef &dataSource )
 
 	uint8_t versionNumber;
 	in->read( &versionNumber );
+
+	if( versionNumber != READ_WRITE_VERSION ) {
+		string description = "TriMesh::read() error: wrong version number. expected: ";
+		description += to_string( READ_WRITE_VERSION ) + ", actual: " + to_string( versionNumber );
+		throw Exception( description );
+	}
 	
 	uint32_t numIndices, numPositions, numNormals, numColors, numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
 
@@ -497,8 +508,7 @@ void TriMesh::write( const DataTargetRef &dataTarget ) const
 
 	OStreamRef out = dataTarget->getStream();
 	
-	const uint8_t versionNumber = 2;
-	out->write( versionNumber );
+	out->write( READ_WRITE_VERSION );
 
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
 
