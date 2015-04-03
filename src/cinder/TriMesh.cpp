@@ -514,6 +514,9 @@ void TriMesh::read( const DataSourceRef &dataSource )
 
 void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 {
+	if( mIndices.empty() )
+		return;
+
 	OStreamRef out = dataTarget->getStream();
 	
 	out->write( READ_WRITE_VERSION );
@@ -521,25 +524,25 @@ void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
 
 	out->writeLittle( static_cast<uint8_t>( mPositionsDims ) );
-	out->writeLittle( static_cast<uint32_t>( mPositions.size() / mPositionsDims ) );
+	out->writeLittle( static_cast<uint32_t>( ! mPositions.empty() ? mPositions.size() / mPositionsDims : 0 ) );
 
 	out->writeLittle( static_cast<uint8_t>( mNormalsDims ) );
 	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
 
 	out->writeLittle( static_cast<uint8_t>( mColorsDims ) );
-	out->writeLittle( static_cast<uint32_t>( mColors.size() / mColorsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mColors.empty() ? 0 : mColors.size() / mColorsDims ) );
 
 	out->writeLittle( static_cast<uint8_t>( mTexCoords0Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords0.size() / mTexCoords0Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords0.empty() ? 0 : mTexCoords0.size() / mTexCoords0Dims ) );
 
 	out->writeLittle( static_cast<uint8_t>( mTexCoords1Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords1.size() / mTexCoords1Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords1.empty() ? 0 : mTexCoords1.size() / mTexCoords1Dims ) );
 
 	out->writeLittle( static_cast<uint8_t>( mTexCoords2Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords2.size() / mTexCoords2Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords2.empty() ? 0 : mTexCoords2.size() / mTexCoords2Dims ) );
 
 	out->writeLittle( static_cast<uint8_t>( mTexCoords3Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords3.size() / mTexCoords3Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords3.empty() ? 0 : mTexCoords3.size() / mTexCoords3Dims ) );
 
 	if( writeTangents ) {
 		out->writeLittle( static_cast<uint32_t>( mTangents.size() ) );
@@ -552,17 +555,26 @@ void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 	}
 
 	out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
-	out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
-	out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
-	out->writeData( mColors.data(), mColors.size() * sizeof( float ) );
-	out->writeData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
-	out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
-	out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
-	out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+	if( ! mPositions.empty() )
+		out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
+	if( ! mNormals.empty() )
+		out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+	if( ! mColors.empty() )
+		out->writeData( mColors.data(), mColors.size() * sizeof( float ) );
+	if( ! mTexCoords0.empty() )
+		out->writeData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+	if( ! mTexCoords1.empty() )
+		out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+	if( ! mTexCoords2.empty() )
+		out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
+	if( ! mTexCoords3.empty() )
+		out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
 
 	if( writeTangents ) {
-		out->writeData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
-		out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+		if( ! mTangents.empty() )
+			out->writeData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+		if( ! mBitangents.empty() )
+			out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
 	}
 }
 
