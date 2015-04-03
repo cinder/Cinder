@@ -52,24 +52,24 @@ bool Connection::isConnected() const
 	return ! mDisconnector.expired() && mLink;
 }
 
-void Connection::block()
+void Connection::disable()
 {
 	if( mLink ) {
-		mLink->block();
+		mLink->disable();
 	}
 }
 
-void Connection::unblock()
+void Connection::enable()
 {
 	if( mLink ) {
-		mLink->unblock();
+		mLink->enable();
 	}
 }
 
-bool Connection::isActive() const
+bool Connection::isEnabled() const
 {
 	if( mLink ) {
-		return mLink->isActive();
+		return mLink->isEnabled();
 	}
 	return false;
 }

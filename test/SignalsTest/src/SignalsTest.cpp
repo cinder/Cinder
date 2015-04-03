@@ -496,6 +496,28 @@ struct TestCollectorAppEvent {
 	}
 };
 
+struct TestConnectionToggling {
+	static void run()
+	{
+		Signal<void (int)> signal;
+		int sum = 0;
+
+		auto connection = signal.connect( [&]( int amount ){ sum += amount; } );
+		signal.emit( 5 );
+		assert( sum == 5 );
+
+		connection.disable();
+		signal.emit( 5 );
+		assert( ! connection.isEnabled() );
+		assert( sum == 5 );
+
+		connection.enable();
+		signal.emit( 5 );
+		assert( connection.isEnabled() );
+		assert( sum == 10 );
+	}
+};
+
 template <typename TestT>
 void runTest()
 {
@@ -518,5 +540,6 @@ int main()
 	runTest<TestCollectorBooleanAnd>();
 	runTest<TestCollectorBitwiseAnd>();
 	runTest<TestCollectorAppEvent>();
+	runTest<TestConnectionToggling>();
 	return 0;
 }
