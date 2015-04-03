@@ -203,7 +203,7 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 
 GLint TextureBase::getInternalFormat() const
 {
-#if ! defined( CINDER_GL_ES_2 )
+#if ! defined( CINDER_GL_ES )
 	if( mInternalFormat == -1 ) {
 		ScopedTextureBind scopedBind( mTarget, mTextureId );
 		glGetTexLevelParameteriv( mTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, &mInternalFormat );
@@ -678,7 +678,7 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 	setBorderColor( border );
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+#if ! defined( CINDER_GL_ES )
 /////////////////////////////////////////////////////////////////////////////////
 // Texture1d
 Texture1dRef Texture1d::create( GLint width, Format format )
