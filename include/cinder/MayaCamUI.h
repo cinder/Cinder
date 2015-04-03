@@ -24,21 +24,39 @@
 
 #include "cinder/Vector.h"
 #include "cinder/Camera.h"
+#include "cinder/app/MouseEvent.h"
 
 namespace cinder {
 
 class MayaCamUI {
  public:
-	MayaCamUI() { mInitialCam = mCurrentCam = CameraPersp(); }
-	MayaCamUI( const CameraPersp &aInitialCam ) { mInitialCam = mCurrentCam = aInitialCam; }
-	
+	MayaCamUI()									{ mInitialCam = mCurrentCam = CameraPersp(); }
+	MayaCamUI( const CameraPersp &initialCam )	{ mInitialCam = mCurrentCam = initialCam; }
+
+	void mouseDown( const app::MouseEvent &event )
+	{
+		mouseDown( event.getPos() );
+	}
+
 	void mouseDown( const ivec2 &mousePos )
 	{
 		mInitialMousePos = mousePos;
 		mInitialCam = mCurrentCam;
 		mLastAction = ACTION_NONE;
 	}
-	
+
+	void mouseDrag( const app::MouseEvent &event )
+	{
+		bool isLeftDown = event.isLeftDown();
+		bool isMiddleDown = event.isMiddleDown() || event.isAltDown();
+		bool isRightDown = event.isRightDown() || event.isMetaDown();
+
+		if( isMiddleDown )
+			isLeftDown = false;
+
+		mouseDrag( event.getPos(), isLeftDown, isMiddleDown, isRightDown );
+	}
+
 	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 	{
 		int action;
@@ -94,8 +112,8 @@ class MayaCamUI {
 		}
 	}	
 	
-	const CameraPersp& getCamera() const { return mCurrentCam; }
-	void setCurrentCam( const CameraPersp &aCurrentCam ) { mCurrentCam = aCurrentCam; }
+	const CameraPersp& getCamera() const				{ return mCurrentCam; }
+	void setCurrentCam( const CameraPersp &currentCam ) { mCurrentCam = currentCam; }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
