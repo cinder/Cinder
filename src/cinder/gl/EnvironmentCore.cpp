@@ -42,6 +42,8 @@ class EnvironmentCore : public Environment {
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+
+	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
 	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
@@ -101,6 +103,20 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 		(*objectLabelFn)( identifier, name, length, label );
 }
 
+void EnvironmentCore::allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType )
+{
+	static auto texStorage1DFn = glTexStorage1D;
+	if( texStorage1DFn && immutable )
+		texStorage1DFn( target, levels, internalFormat, width );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
+		if( texImageDataType != -1 )
+			dataType = texImageDataType;
+		glTexImage1D( target, 0, internalFormat, width, 0, dataFormat, dataType, nullptr );
+	}
+}
+
 void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 	static auto texStorage2DFn = glTexStorage2D;
@@ -108,7 +124,7 @@ void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenu
 		texStorage2DFn( target, levels, internalFormat, width, height );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		if( texImageDataType != -1 )
 			dataType = texImageDataType;
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
@@ -122,7 +138,7 @@ void EnvironmentCore::allocateTexStorage3d( GLenum target, GLsizei levels, GLenu
 		texStorage3DFn( target, levels, internalFormat, width, height, depth );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
 	}	
 }
@@ -134,7 +150,7 @@ void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internal
 		texStorage2DFn( GL_TEXTURE_CUBE_MAP, levels, internalFormat, width, height );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		for( int face = 0; face < 6; ++face )
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}

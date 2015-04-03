@@ -40,6 +40,11 @@ using namespace std;
 
 namespace cinder { namespace gl {
 
+#if defined( CINDER_GL_ANGLE )
+	#define GL_COMPRESSED_RGBA_S3TC_DXT3_EXT	GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE
+	#define GL_COMPRESSED_RGBA_S3TC_DXT5_EXT	GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE
+#endif
+
 class ImageSourceTexture;
 class ImageTargetTexture;
 
@@ -198,111 +203,163 @@ void TextureBase::initParams( Format &format, GLint defaultInternalFormat )
 
 GLint TextureBase::getInternalFormat() const
 {
+#if ! defined( CINDER_GL_ES )
+	if( mInternalFormat == -1 ) {
+		ScopedTextureBind scopedBind( mTarget, mTextureId );
+		glGetTexLevelParameteriv( mTarget, 0, GL_TEXTURE_INTERNAL_FORMAT, &mInternalFormat );
+	}
+#endif
 	return mInternalFormat;
 }
 
-void TextureBase::getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType )
+void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFormat, GLenum *outDataType, bool *outAlpha, bool *outCompressed, bool *outSrgb )
 {
+	bool sRgb = false;
+	GLenum dataFormat;
+	GLenum dataType;
+
 	switch( internalFormat ) {
 #if ! defined( CINDER_GL_ES_2 )
-		case GL_R8:				*resultDataFormat = GL_RED;			*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_R8_SNORM:		*resultDataFormat = GL_RED;			*resultDataType = GL_BYTE;							break;
-		case GL_R16F:			*resultDataFormat = GL_RED;			*resultDataType = GL_HALF_FLOAT;					break;
-		case GL_R32F:			*resultDataFormat = GL_RED;			*resultDataType = GL_FLOAT;							break;
-		case GL_R8UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_R8I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_BYTE;							break;
-		case GL_R16UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_SHORT;				break;
-		case GL_R16I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_SHORT;							break;
-		case GL_R32UI:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_UNSIGNED_INT;					break;
-		case GL_R32I:			*resultDataFormat = GL_RED_INTEGER;	*resultDataType = GL_INT;							break;
-		case GL_RG8:			*resultDataFormat = GL_RG;			*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RG8_SNORM:		*resultDataFormat = GL_RG;			*resultDataType = GL_BYTE;							break;
-		case GL_RG16F:			*resultDataFormat = GL_RG;			*resultDataType = GL_HALF_FLOAT;					break;
-		case GL_RG32F:			*resultDataFormat = GL_RG;			*resultDataType = GL_FLOAT;							break;
-		case GL_RG8UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RG8I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_BYTE;							break;
-		case GL_RG16UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_SHORT;				break;
-		case GL_RG16I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_SHORT;							break;
-		case GL_RG32UI:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_UNSIGNED_INT;					break;
-		case GL_RG32I:			*resultDataFormat = GL_RG_INTEGER;	*resultDataType = GL_INT;							break;
-		case GL_RGB8:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_SRGB8:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGB8_SNORM:		*resultDataFormat = GL_RGB;			*resultDataType = GL_BYTE;							break;
-		case GL_R11F_G11F_B10F: *resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_INT_10F_11F_11F_REV;	break;
-		case GL_RGB9_E5:		*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_INT_5_9_9_9_REV;		break;
-		case GL_RGB16F:			*resultDataFormat = GL_RGB;			*resultDataType = GL_HALF_FLOAT;					break;
-		case GL_RGB32F:			*resultDataFormat = GL_RGB;			*resultDataType = GL_FLOAT;							break;
-		case GL_RGB8UI:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGB8I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_BYTE;							break;
-		case GL_RGB16UI:		*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_SHORT;				break;
-		case GL_RGB16I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_SHORT;							break;
-		case GL_RGB32UI:		*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_UNSIGNED_INT;					break;
-		case GL_RGB32I:			*resultDataFormat = GL_RGB_INTEGER; *resultDataType = GL_INT;							break;
-		case GL_RGBA8:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_SRGB8_ALPHA8:	*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGBA8_SNORM:	*resultDataFormat = GL_RGBA;		*resultDataType = GL_BYTE;							break;
-		case GL_RGB10_A2:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_INT_2_10_10_10_REV;	break;
-		case GL_RGBA16F:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_HALF_FLOAT;					break;
-		case GL_RGBA32F:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_FLOAT;							break;
-		case GL_RGBA8UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGBA8I:			*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_BYTE;							break;
-		case GL_RGB10_A2UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT_2_10_10_10_REV;	break;
-		case GL_RGBA16UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_SHORT;				break;
-		case GL_RGBA16I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_SHORT;							break;
-		case GL_RGBA32I:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_INT;							break;
-		case GL_RGBA32UI:		*resultDataFormat = GL_RGBA_INTEGER;*resultDataType = GL_UNSIGNED_INT;					break;
+		case GL_R8:				dataFormat = GL_RED;			dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_R8_SNORM:		dataFormat = GL_RED;			dataType = GL_BYTE;								break;
+		case GL_R16F:			dataFormat = GL_RED;			dataType = GL_HALF_FLOAT;						break;
+		case GL_R32F:			dataFormat = GL_RED;			dataType = GL_FLOAT;							break;
+		case GL_R8UI:			dataFormat = GL_RED_INTEGER;	dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_R8I:			dataFormat = GL_RED_INTEGER;	dataType = GL_BYTE;								break;
+		case GL_R16UI:			dataFormat = GL_RED_INTEGER;	dataType = GL_UNSIGNED_SHORT;					break;
+		case GL_R16I:			dataFormat = GL_RED_INTEGER;	dataType = GL_SHORT;							break;
+		case GL_R32UI:			dataFormat = GL_RED_INTEGER;	dataType = GL_UNSIGNED_INT;						break;
+		case GL_R32I:			dataFormat = GL_RED_INTEGER;	dataType = GL_INT;								break;
+		case GL_RG8:			dataFormat = GL_RG;				dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RG8_SNORM:		dataFormat = GL_RG;				dataType = GL_BYTE;								break;
+		case GL_RG16F:			dataFormat = GL_RG;				dataType = GL_HALF_FLOAT;						break;
+		case GL_RG32F:			dataFormat = GL_RG;				dataType = GL_FLOAT;							break;
+		case GL_RG8UI:			dataFormat = GL_RG_INTEGER;		dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RG8I:			dataFormat = GL_RG_INTEGER;		dataType = GL_BYTE;								break;
+		case GL_RG16UI:			dataFormat = GL_RG_INTEGER;		dataType = GL_UNSIGNED_SHORT;					break;
+		case GL_RG16I:			dataFormat = GL_RG_INTEGER;		dataType = GL_SHORT;							break;
+		case GL_RG32UI:			dataFormat = GL_RG_INTEGER;		dataType = GL_UNSIGNED_INT;						break;
+		case GL_RG32I:			dataFormat = GL_RG_INTEGER;		dataType = GL_INT;								break;
+		case GL_RGB8:			dataFormat = GL_RGB;			dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_SRGB8:			dataFormat = GL_RGB;			dataType = GL_UNSIGNED_BYTE;	sRgb = true;	break;
+		case GL_RGB8_SNORM:		dataFormat = GL_RGB;			dataType = GL_BYTE;								break;
+		case GL_R11F_G11F_B10F: dataFormat = GL_RGB;			dataType = GL_UNSIGNED_INT_10F_11F_11F_REV;		break;
+		case GL_RGB9_E5:		dataFormat = GL_RGB;			dataType = GL_UNSIGNED_INT_5_9_9_9_REV;			break;
+		case GL_RGB16F:			dataFormat = GL_RGB;			dataType = GL_HALF_FLOAT;						break;
+		case GL_RGB32F:			dataFormat = GL_RGB;			dataType = GL_FLOAT;							break;
+		case GL_RGB8UI:			dataFormat = GL_RGB_INTEGER;	dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGB8I:			dataFormat = GL_RGB_INTEGER;	dataType = GL_BYTE;								break;
+		case GL_RGB16UI:		dataFormat = GL_RGB_INTEGER;	dataType = GL_UNSIGNED_SHORT;					break;
+		case GL_RGB16I:			dataFormat = GL_RGB_INTEGER;	dataType = GL_SHORT;							break;
+		case GL_RGB32UI:		dataFormat = GL_RGB_INTEGER;	dataType = GL_UNSIGNED_INT;						break;
+		case GL_RGB32I:			dataFormat = GL_RGB_INTEGER;	dataType = GL_INT;								break;
+		case GL_RGBA8:			dataFormat = GL_RGBA;			dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_SRGB8_ALPHA8:	dataFormat = GL_RGBA;			dataType = GL_UNSIGNED_BYTE;	sRgb = true;	break;
+		case GL_RGBA8_SNORM:	dataFormat = GL_RGBA;			dataType = GL_BYTE;								break;
+		case GL_RGB10_A2:		dataFormat = GL_RGBA;			dataType = GL_UNSIGNED_INT_2_10_10_10_REV;		break;
+		case GL_RGBA16F:		dataFormat = GL_RGBA;			dataType = GL_HALF_FLOAT;						break;
+		case GL_RGBA32F:		dataFormat = GL_RGBA;			dataType = GL_FLOAT;							break;
+		case GL_RGBA8UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_BYTE;					break;
+		case GL_RGBA8I:			dataFormat = GL_RGBA_INTEGER;	dataType = GL_BYTE;								break;
+		case GL_RGB10_A2UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_INT_2_10_10_10_REV;		break;
+		case GL_RGBA16UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_SHORT;					break;
+		case GL_RGBA16I:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_SHORT;							break;
+		case GL_RGBA32I:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_INT;								break;
+		case GL_RGBA32UI:		dataFormat = GL_RGBA_INTEGER;	dataType = GL_UNSIGNED_INT;						break;
 #else
-		case GL_RGB8_OES:				*resultDataFormat = GL_RGB;				*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_RGBA8_OES:				*resultDataFormat = GL_RGBA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_ALPHA8_EXT:				*resultDataFormat = GL_ALPHA;			*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_LUMINANCE8_EXT:			*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_LUMINANCE8_ALPHA8_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_UNSIGNED_BYTE;		break;
-		case GL_RGBA32F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_FLOAT;				break;
-		case GL_RGB32F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_FLOAT;				break;
-		case GL_ALPHA32F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_FLOAT;				break;
-		case GL_LUMINANCE32F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_FLOAT;				break;
-		case GL_LUMINANCE_ALPHA32F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_FLOAT;				break;
-		case GL_RGBA16F_EXT:			*resultDataFormat = GL_RGBA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_RGB16F_EXT:				*resultDataFormat = GL_RGB;				*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_ALPHA16F_EXT:			*resultDataFormat = GL_ALPHA;			*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_LUMINANCE16F_EXT:		*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_LUMINANCE_ALPHA16F_EXT:	*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_BGRA8_EXT:				*resultDataFormat = GL_LUMINANCE_ALPHA;	*resultDataType = GL_HALF_FLOAT_OES;	break;
-		case GL_R32F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_FLOAT;				break;
-		case GL_R16F_EXT:				*resultDataFormat = GL_RED;				*resultDataType = GL_HALF_FLOAT_OES;	break;
+		case GL_RGB8_OES:				dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA8_OES:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_ALPHA8_EXT:				dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE8_EXT:			dataFormat = GL_LUMINANCE;			dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE8_ALPHA8_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA32F_EXT:			dataFormat = GL_RGBA;				dataType = GL_FLOAT;					break;
+		case GL_RGB32F_EXT:				dataFormat = GL_RGB;				dataType = GL_FLOAT;					break;
+		case GL_ALPHA32F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_FLOAT;					break;
+		case GL_LUMINANCE32F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_FLOAT;					break;
+		case GL_LUMINANCE_ALPHA32F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_FLOAT;					break;
+		case GL_RGBA16F_EXT:			dataFormat = GL_RGBA;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_RGB16F_EXT:				dataFormat = GL_RGB;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_ALPHA16F_EXT:			dataFormat = GL_ALPHA;				dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_LUMINANCE16F_EXT:		dataFormat = GL_LUMINANCE;			dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_LUMINANCE_ALPHA16F_EXT:	dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_BGRA8_EXT:				dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_HALF_FLOAT_OES;			break;
+		case GL_R32F_EXT:				dataFormat = GL_RED;				dataType = GL_FLOAT;					break;
+		case GL_R16F_EXT:				dataFormat = GL_RED;				dataType = GL_HALF_FLOAT_OES;			break;
 #endif
-		case GL_RGB5_A1:		*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGBA4:			*resultDataFormat = GL_RGBA;		*resultDataType = GL_UNSIGNED_BYTE;					break;
-		case GL_RGB565:			*resultDataFormat = GL_RGB;			*resultDataType = GL_UNSIGNED_BYTE;					break;		
+		case GL_RGB5_A1:				dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA4:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGB565:					dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
 
 		// UNSIZED FORMATS
-		case GL_RGB:				*resultDataFormat = GL_RGB;				*resultDataType = GL_UNSIGNED_BYTE;			break;
-		case GL_RGBA:				*resultDataFormat = GL_RGBA;			*resultDataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGB:					dataFormat = GL_RGB;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RGBA:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_BYTE;			break;
 #if defined( CINDER_GL_ES )
-		case GL_LUMINANCE_ALPHA:	*resultDataFormat = GL_LUMINANCE_ALPHA; *resultDataType = GL_UNSIGNED_BYTE;			break;
-		case GL_LUMINANCE:			*resultDataFormat = GL_LUMINANCE;		*resultDataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE_ALPHA:		dataFormat = GL_LUMINANCE_ALPHA;	dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_LUMINANCE:				dataFormat = GL_LUMINANCE;			dataType = GL_UNSIGNED_BYTE;			break;
 #endif // ! CINDER_GL_ES
-		case GL_ALPHA:				*resultDataFormat = GL_ALPHA;			*resultDataType = GL_UNSIGNED_BYTE;			break;
+		case GL_ALPHA:					dataFormat = GL_ALPHA;				dataType = GL_UNSIGNED_BYTE;			break;
 #if ! defined( CINDER_GL_ES )
-		case GL_DEPTH_COMPONENT:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_UNSIGNED_INT;			break;
-		case GL_DEPTH_STENCIL:		*resultDataFormat = GL_DEPTH_STENCIL;	*resultDataType = GL_UNSIGNED_INT_24_8;		break;
-		case GL_RED:				*resultDataFormat = GL_RED;				*resultDataType = GL_UNSIGNED_BYTE;			break;
-		case GL_RG:					*resultDataFormat = GL_RG;				*resultDataType = GL_UNSIGNED_BYTE;			break;
+		case GL_DEPTH_COMPONENT:		dataFormat = GL_DEPTH_COMPONENT;	dataType = GL_UNSIGNED_INT;				break;
+		case GL_DEPTH_STENCIL:			dataFormat = GL_DEPTH_STENCIL;		dataType = GL_UNSIGNED_INT_24_8;		break;
+		case GL_RED:					dataFormat = GL_RED;				dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_RG:						dataFormat = GL_RG;					dataType = GL_UNSIGNED_BYTE;			break;
 #endif // ! CINDER_GL_ES
 
 		// SIZED DEPTH FORMATS
-		case GL_DEPTH_COMPONENT16:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_UNSIGNED_SHORT;				break;
+		case GL_DEPTH_COMPONENT16:	dataFormat = GL_DEPTH_COMPONENT; dataType = GL_UNSIGNED_SHORT;				break;
 #if ! defined( CINDER_GL_ES_2 )
-		case GL_DEPTH_COMPONENT24:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_UNSIGNED_INT;					break;
-		case GL_DEPTH_COMPONENT32F:	*resultDataFormat = GL_DEPTH_COMPONENT; *resultDataType = GL_FLOAT;							break;
-		case GL_DEPTH24_STENCIL8:	*resultDataFormat = GL_DEPTH_STENCIL;	*resultDataType = GL_UNSIGNED_INT_24_8;				break;
-		case GL_DEPTH32F_STENCIL8:	*resultDataFormat = GL_DEPTH_STENCIL;	*resultDataType = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;break;
+		case GL_DEPTH_COMPONENT24:	dataFormat = GL_DEPTH_COMPONENT; dataType = GL_UNSIGNED_INT;					break;
+		case GL_DEPTH_COMPONENT32F:	dataFormat = GL_DEPTH_COMPONENT; dataType = GL_FLOAT;							break;
+		case GL_DEPTH24_STENCIL8:	dataFormat = GL_DEPTH_STENCIL;	dataType = GL_UNSIGNED_INT_24_8;				break;
+		case GL_DEPTH32F_STENCIL8:	dataFormat = GL_DEPTH_STENCIL;	dataType = GL_FLOAT_32_UNSIGNED_INT_24_8_REV;	break;
 #endif
+		// COMPRESSED FORMATS
+#if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
+		case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:				dataFormat = GL_RGB;	dataType = 0;					break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT3_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
+		case GL_COMPRESSED_RGBA_S3TC_DXT5_EXT:				dataFormat = GL_RGBA;	dataType = 0;					break;
+#endif
+#if defined( CINDER_GL_ES ) && ! defined( CINDER_GL_ANGLE )
+		case GL_COMPRESSED_RGB_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
+		case GL_COMPRESSED_RGB_PVRTC_2BPPV1_IMG:			dataFormat = GL_RGB;	dataType = 0;					break;
+		case GL_COMPRESSED_RGBA_PVRTC_4BPPV1_IMG:			dataFormat = GL_RGBA;	dataType = 0;					break;
+		case GL_COMPRESSED_RGBA_PVRTC_2BPPV1_IMG:			dataFormat = GL_RGBA;	dataType = 0;					break;
+#endif
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_COMPRESSED_RGB8_ETC2:						dataFormat = GL_RGB;	dataType = 0;					break;
+		case GL_COMPRESSED_SRGB8_ETC2:						dataFormat = GL_RGB;	dataType = 0; sRgb = true;		break;
+		case GL_COMPRESSED_RGB8_PUNCHTHROUGH_ALPHA1_ETC2:	dataFormat = GL_RGBA;	dataType = 0;					break;
+		case GL_COMPRESSED_SRGB8_PUNCHTHROUGH_ALPHA1_ETC2:	dataFormat = GL_RGBA;	dataType = 0; sRgb = true;		break;
+		case GL_COMPRESSED_RGBA8_ETC2_EAC:					dataFormat = GL_RGBA;	dataType = 0;					break;
+		case GL_COMPRESSED_SRGB8_ALPHA8_ETC2_EAC:			dataFormat = GL_RGBA;	dataType = 0; sRgb = true;		break;
+		case GL_COMPRESSED_R11_EAC:							dataFormat = GL_RED;	dataType = 0;					break;
+		case GL_COMPRESSED_SIGNED_R11_EAC:					dataFormat = GL_RED;	dataType = 0;					break;
+		case GL_COMPRESSED_RG11_EAC:						dataFormat = GL_RG;		dataType = 0;					break;
+		case GL_COMPRESSED_SIGNED_RG11_EAC:					dataFormat = GL_RG;		dataType = 0;					break;
+#endif
+
 		default:
 			CI_LOG_W( "Unknown internalFormat:" << gl::constantToString( internalFormat ) );
-			*resultDataFormat = GL_RGBA;
-			*resultDataType = GL_UNSIGNED_BYTE;
+			dataFormat = GL_RGBA;
+			dataType = GL_UNSIGNED_BYTE;
 	}
+	
+	if( outAlpha )
+#if defined( CINDER_GL_ES )
+		*outAlpha = ( dataFormat == GL_RGBA ) || ( dataFormat == GL_ALPHA ) || ( dataFormat == GL_LUMINANCE_ALPHA );
+#else
+		*outAlpha = ( dataFormat == GL_RGBA ) || ( dataFormat == GL_ALPHA ) || ( dataFormat == GL_RGBA_INTEGER );
+#endif
+
+	if( outCompressed )
+		*outCompressed = ( dataType == 0 );
+	if( outSrgb )
+		*outSrgb = sRgb;
+	if( outDataFormat )
+		*outDataFormat = dataFormat;
+	if( outDataType )
+		*outDataType = dataType;
 }
 
 void TextureBase::bind( uint8_t textureUnit ) const
@@ -315,6 +372,14 @@ void TextureBase::unbind( uint8_t textureUnit ) const
 {
 	ScopedActiveTexture ScopedActiveTexture( textureUnit );
 	gl::context()->bindTexture( mTarget, 0 );
+}
+
+bool TextureBase::hasAlpha() const
+{
+	GLint internalFormat = getInternalFormat();
+	bool resultAlpha;
+	getInternalFormatInfo( internalFormat, nullptr, nullptr, &resultAlpha );
+	return resultAlpha;
 }
 
 // Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D
@@ -613,8 +678,88 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 	setBorderColor( border );
 }
 
+#if ! defined( CINDER_GL_ES )
 /////////////////////////////////////////////////////////////////////////////////
-// Texture
+// Texture1d
+Texture1dRef Texture1d::create( GLint width, Format format )
+{
+	return Texture1dRef( new Texture1d( width, format ) );
+}
+
+Texture1dRef Texture1d::create( const Surface8u &surface, Format format )
+{
+	return Texture1dRef( new Texture1d( surface, format ) );
+}
+
+Texture1dRef Texture1d::create( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+{
+	return Texture1dRef( new Texture1d( width, dataFormat, data, format ) );
+}
+
+Texture1d::Texture1d( GLint width, Format format )
+	: mWidth( width )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	TextureBase::initParams( format, GL_RGB );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	env()->allocateTexStorage1d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, format.isImmutableStorage(), format.getDataType() );
+}
+
+Texture1d::Texture1d( const Surface8u &surface, Format format )
+	: mWidth( surface.getWidth() )
+{
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
+
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, surface.getData() );
+}
+
+Texture1d::Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+	: mWidth( width )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	TextureBase::initParams( format, GL_RGB );
+
+	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, data );
+}
+
+void Texture1d::update( const Surface8u &surface, int mipLevel )
+{
+	GLint dataFormat;
+	GLenum type;
+	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
+		
+	ivec2 mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
+	if( surface.getSize() != mipMapSize )
+		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
+
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexSubImage1D( mTarget, mipLevel,
+		0, // offsets
+		mipMapSize.x, dataFormat, type, surface.getData() );
+}
+
+void Texture1d::printDims( std::ostream &os ) const
+{
+	os << mWidth;
+}
+
+#endif // ! defined( CINDER_GL_ES )
+
+/////////////////////////////////////////////////////////////////////////////////
+// Texture2d
 Texture2dRef Texture2d::create( int width, int height, Format format )
 {
 	return TextureRef( new Texture( width, height, format ) );
@@ -858,8 +1003,7 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 
 Texture2d::Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose )
 	: TextureBase( target, textureId, -1 ), mWidth( width ), mHeight( height ),
-	mCleanWidth( width ), mCleanHeight( height ),
-	mTopDown( false )
+	mCleanWidth( width ), mCleanHeight( height ), mTopDown( false )
 {
 	mDoNotDispose = doNotDispose;
 }
@@ -1437,7 +1581,7 @@ void Texture3d::printDims( std::ostream &os ) const
 	os << mWidth << " x " << mHeight << " x " << mDepth;
 }
 
-#endif // ! defined( CINDER_GL_ES )
+#endif // ! defined( CINDER_GL_ES_2 )
 
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
