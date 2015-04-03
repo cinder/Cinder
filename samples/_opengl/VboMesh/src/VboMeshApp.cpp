@@ -87,8 +87,10 @@ void VboSampleApp::update()
 	const float xFreq = 1.3467f;
 	float offset = getElapsedSeconds() * 5.0f;
 
-	// dynmaically generate our new positions based on a sin(x) + cos(z) wave
-	auto mappedPosAttrib = mVboMesh->mapAttrib3f( geom::Attrib::POSITION );
+	// Dynmaically generate our new positions based on a sin(x) + cos(z) wave
+	// We set 'orphanExisting' to false so that we can also read from the position buffer, though keep
+	// in mind that this isn't the most efficient way to do cpu-side updates. Consider using VboMesh::bufferAttrib() as well.
+	auto mappedPosAttrib = mVboMesh->mapAttrib3f( geom::Attrib::POSITION, false );
 	for( int i = 0; i < mVboMesh->getNumVertices(); i++ ) {
 		vec3 &pos = *mappedPosAttrib;
 		(*mappedPosAttrib).y = ( sinf( pos.x * xFreq + offset ) + cosf( pos.z * zFreq + offset ) ) / 4.0f;;
