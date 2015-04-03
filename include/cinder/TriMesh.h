@@ -297,10 +297,10 @@ class TriMesh : public geom::Source {
 	//! Calculates the bounding box of all vertices as transformed by \a transform. Fails if the positions are not 3D.
 	AxisAlignedBox3f	calcBoundingBox( const mat4 &transform ) const;
 
-	//! This allows you read a TriMesh in from a data file, for instance an .obj file. At present .obj and .dat files are supported
+	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
 	void		read( const DataSourceRef &dataSource );
-	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
-	void		write( const DataTargetRef &dataTarget ) const;
+	//! Writes this TriMesh out to a binary data file. If \a writeTangents is set to true then tangents and bi-tangents will also be written, but this defaults to false because they can be reconstructed.
+	void		write( const DataTargetRef &dataTarget, bool writeTangents = false ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
