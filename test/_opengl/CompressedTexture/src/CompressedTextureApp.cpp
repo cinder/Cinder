@@ -10,7 +10,7 @@ using namespace std;
 
 class CompressedTextureApp : public App {
   public:
-	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
+	void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup();
 	void mouseDown( MouseEvent event );	
 	void keyDown( KeyEvent event );
@@ -29,6 +29,7 @@ void CompressedTextureApp::setup()
 	ivec2 textureSize = mTextures.back().second->getSize();
 
 	gl::Texture::Format		format;
+	format.loadTopDown();
 #if ! defined( CINDER_GLES ) // use an intermediate PBO for non-ES
 	gl::PboRef pbo = gl::Pbo::create( GL_PIXEL_UNPACK_BUFFER, textureSize.x * textureSize.y * 4, nullptr, GL_STREAM_DRAW );
 	format.intermediatePbo( pbo );

@@ -324,13 +324,19 @@ ScopedRenderbuffer::~ScopedRenderbuffer()
 ScopedViewport::ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension )
 	: mCtx( gl::context() )
 {
-	mCtx->pushViewport( std::pair<ivec2, ivec2>( lowerLeftPosition, dimension ) );
+	mCtx->pushViewport( { lowerLeftPosition, dimension } );
+}
+
+ScopedViewport::ScopedViewport( const ivec2 &size )
+	: mCtx( gl::context() )
+{
+	mCtx->pushViewport( { ivec2( 0 ), size } );
 }
 
 ScopedViewport::ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height )
 	: mCtx( gl::context() )
 {
-	mCtx->pushViewport( std::pair<ivec2, ivec2>( ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) ) );		
+	mCtx->pushViewport( { ivec2( lowerLeftX, lowerLeftY ), ivec2( width, height ) } );
 }
 	
 ScopedViewport::~ScopedViewport()

@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\VBOSampleApp.cpp">
+    <ClCompile Include="..\src\VboMeshApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

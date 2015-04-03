@@ -35,9 +35,9 @@
 #include <array>
 
 #if defined( CINDER_GL_ES )
-#define GL_BLUE		0x1905
-#define GL_GREEN	0x1904
-#define GL_RED		0x1903
+	#define GL_BLUE		0x1905
+	#define GL_GREEN	0x1904
+	#define GL_RED		0x1903
 #endif
 
 namespace cinder { namespace gl {
@@ -47,7 +47,12 @@ typedef std::shared_ptr<class TextureBase>		TextureBaseRef;
 typedef std::shared_ptr<class Texture2d>		Texture2dRef;
 typedef Texture2dRef							TextureRef;
 typedef std::shared_ptr<Texture2d>				Texture2dRef;
-typedef std::shared_ptr<class Texture3d>		Texture3dRef;
+#if ! defined( CINDER_GL_ES )
+	typedef std::shared_ptr<class Texture1d>		Texture1dRef;
+#endif
+#if ! defined( CINDER_GL_ES_2 )
+	typedef std::shared_ptr<class Texture3d>		Texture3dRef;
+#endif
 typedef std::shared_ptr<class TextureCubeMap>	TextureCubeMapRef;
 
 // Forward-declared from cinder/gl/Pbo.h
@@ -77,6 +82,9 @@ class TextureBase {
 	virtual GLint	getHeight() const = 0;
 	//! Returns the depth of the texture in pixels, ignoring clean bounds.
 	virtual GLint	getDepth() const = 0;
+
+	//! Returns whether the Texture has an alpha channel based on its internal format
+	bool			hasAlpha() const;
 
 	//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 	void			setWrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
@@ -109,8 +117,8 @@ class TextureBase {
 
 	//! Returns the appropriate parameter to glGetIntegerv() for a specific target; ie GL_TEXTURE_2D -> GL_TEXTURE_BINDING_2D. Returns 0 on failure.
 	static GLenum	getBindingConstantForTarget( GLenum target );
-	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat
-	static void		getInternalFormatDataFormatAndType( GLint internalFormat, GLenum *resultDataFormat, GLenum *resultDataType );
+	//! Returns the corresponding legal values for glTexImage*D() calls for dataFormat and dataType based on \a internalFormat, as well as whether the internal format contains an alpha channel, is compressed, and is in the sRGB color space.
+	static void		getInternalFormatInfo( GLint internalFormat, GLenum *outDataFormat, GLenum *outDataType, bool *outAlpha = nullptr, bool *outCompressed = nullptr, bool *outSrgb = nullptr );
 	//! Returns the number of mip levels necessary to represent a texture of \a width, \a height and \a depth
 	static int		requiredMipLevels( GLint width, GLint height, GLint depth );
 
@@ -364,6 +372,63 @@ class TextureData {
 	std::unique_ptr<uint8_t[]>	mDataStoreMem;
 	size_t						mDataStoreSize;
 };
+
+#if ! defined( CINDER_GL_ES )
+class Texture1d : public TextureBase {
+  public:
+	struct Format : public TextureBase::Format {
+		//! Default constructor, sets the target to \c GL_TEXTURE_1D, wrap to \c GL_CLAMP, disables mipmapping, the internal format to "automatic"
+		Format() : TextureBase::Format() { mTarget = GL_TEXTURE_1D; }
+
+		//! Chaining functions for Format class.
+		//! Sets the target, defaults to \c GL_TEXTURE_1D
+		Format& target( GLenum target ) { mTarget = target; return *this; }
+		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
+		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
+		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
+		Format& wrap( GLenum wrap ) { mWrapS = wrap; return *this; }
+		Format& wrapS( GLenum wrapS ) { mWrapS = wrapS; return *this; }
+		Format& minFilter( GLenum minFilter ) { setMinFilter( minFilter ); return *this; }
+		Format& magFilter( GLenum magFilter ) { setMagFilter( magFilter ); return *this; }
+		//! Sets whether the storage for the cannot be changed in the future (making glTexImage1D() calls illegal). More efficient when possible. Default is \c false.
+		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
+		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
+		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
+		
+		friend Texture1d;
+	};
+
+	static Texture1dRef create( GLint width, Format format = Format() );
+	//! Constructs a Texture1d using the top row of \a surface
+	static Texture1dRef create( const Surface8u &surface, Format format = Format() );
+	static Texture1dRef create( GLint width, GLenum dataFormat, const uint8_t *data, Format format = Format() );
+	
+	//! Updates the Texture1d using the top row of \a surface.
+	void	update( const Surface8u &surface, int mipLevel = 0 );
+	
+	//! Returns the width of the texture in pixels
+	GLint			getWidth() const override { return mWidth; }
+	//! Returns the height of the texture in pixels, which is always \c 1
+	GLint			getHeight() const override { return 1; }
+	//! Returns the depth of the texture, which is always \c 1
+	GLint			getDepth() const override { return 1; }
+	//! the aspect ratio of the texture (width / height)
+	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
+	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
+	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
+
+  protected:
+  	Texture1d( GLint width, Format format );
+	Texture1d( const Surface8u &surface, Format format );
+	Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format );
+
+	virtual void	printDims( std::ostream &os ) const override;
+
+	GLint		mWidth;
+};
+
+#endif // ! defined( CINDER_GL_ES )
 
 class Texture2d : public TextureBase {
   public:
