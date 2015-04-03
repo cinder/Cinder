@@ -42,7 +42,7 @@ namespace detail {
 struct SignalLinkBase {
   public:
 	SignalLinkBase()
-		: mRefCount( 1 )
+		: mRefCount( 1 ), mEnabled( true )
 	{}
 	virtual ~SignalLinkBase()
 	{
@@ -71,8 +71,24 @@ struct SignalLinkBase {
 		return mRefCount;
 	}
 
+	void enable()
+	{
+		mEnabled = true;
+	}
+
+	void disable()
+	{
+		mEnabled = false;
+	}
+
+	bool isEnabled() const
+	{
+		return mEnabled;
+	}
+
   private:
-	int	mRefCount;
+	int		mRefCount;
+	bool	mEnabled;
 };
 
 //! Base Signal class, which provides a concrete type that can be stored by the Disconnector
@@ -110,6 +126,13 @@ class Connection {
 	bool disconnect();
 	//! Returns whether or not this Connection is still connected to the callback chain.
 	bool isConnected() const;
+
+	//! Enable calling the function linked to this Connection.
+	void enable();
+	//! Disable calling the function linked to this Connection. Does not affect the callback chain.
+	void disable();
+	//! Returns true iff the linked function will be called as part of the callback chain.
+	bool isEnabled() const;
 
   private:
 	std::weak_ptr<detail::Disconnector>		mDisconnector;
@@ -246,7 +269,7 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 			SignalLink *link = lp.second;
 			link->incrRef();
 			do {
-				if( link->mCallbackFn ) {
+				if( link->mCallbackFn && link->isEnabled() ) {
 					const bool continueEmission = this->invoke( collector, link->mCallbackFn, args... );
 					if( ! continueEmission )
 						break;
