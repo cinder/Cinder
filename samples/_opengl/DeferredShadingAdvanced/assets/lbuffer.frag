@@ -5,9 +5,10 @@ const int MATERIAL_COUNT = 3;
 const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
 const float kShadowOpacity	= 0.3;
-const int	kShadowSamples	= 4;
 
-const vec2 poissonDisk[ 16 ] = vec2[] (
+const int POISSON_KERNEL = 16;
+
+const vec2 poissonDisk[ POISSON_KERNEL ] = vec2[] (
 	vec2( -0.06095261, -0.1337204 ),
 	vec2(  0.4983526,  0.233555 ),
 	vec2( -0.2842098, -0.5506849 ),
@@ -71,16 +72,6 @@ in Vertex
 
 out vec4 	oColor;
 
-float random( vec4 seed4 ) 
-{
-	return fract( sin( dot( seed4, vec4( 12.9898, 78.233, 45.164, 94.673 ) ) ) * 43758.5453 );
-}
-
-vec2 poisson( int index, float blurSize ) 
-{
-	return poissonDisk[ int( 16.0 * random( vec4( gl_FragCoord.xyy, index ) ) ) % 16 ] * blurSize;
-}
-
 float shadow( in vec4 position )
 {
 	vec4 shadowClip 	= uShadowMatrix * uViewMatrixInverse * position;
@@ -88,10 +79,10 @@ float shadow( in vec4 position )
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
 	float v 			= 0.0;
-	float e				= 1.0 / float( kShadowSamples );
+	float e				= 1.0 / float( POISSON_KERNEL );
 	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
-		for ( int i = 0; i < kShadowSamples; ++i ) {
-			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poisson( i, kShadowBlurSize ), 0.0 ) );
+		for ( int i = 0; i < POISSON_KERNEL; ++i ) {
+			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poissonDisk[ i ] * kShadowBlurSize, 0.0 ) );
 			if ( depth > shadowCoord.z - kShadowBias ) {
 				v		+= e;
 			}

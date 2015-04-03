@@ -199,7 +199,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 
 	// Create shadow map buffer
 	{
-		size_t sz = 512;
+		size_t sz = 2048;
 		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
 													 .internalFormat( GL_DEPTH_COMPONENT32F )
 													 .magFilter( GL_LINEAR )
