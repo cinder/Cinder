@@ -88,7 +88,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	if( version.empty() ) {
 #if defined( CINDER_GL_ES_3 )
 		version = "#version " + to_string( mVersion ) + " es\n";
-#elif defined( CINDER_GL_ES_2 )
+#else
 		version = "#version " + to_string( mVersion ) + "\n";
 #endif
 	}
