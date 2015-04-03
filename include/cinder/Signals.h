@@ -127,11 +127,11 @@ class Connection {
 	//! Returns whether or not this Connection is still connected to the callback chain.
 	bool isConnected() const;
 
-	//! Enable calling the function linked to this Connection.
+	//! Enable calling the function linked to this Connection. Does not affect the callback chain. Default is enabled.
 	void enable();
 	//! Disable calling the function linked to this Connection. Does not affect the callback chain.
 	void disable();
-	//! Returns true iff the linked function will be called as part of the callback chain.
+	//! Returns true if the linked function will be called as part of the callback chain. Default is enabled.
 	bool isEnabled() const;
 
   private:
