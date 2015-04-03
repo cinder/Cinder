@@ -25,27 +25,74 @@
 #include "cinder/Vector.h"
 #include "cinder/Camera.h"
 #include "cinder/app/MouseEvent.h"
+#include "cinder/app/Window.h"
 
 namespace cinder {
 
 class MayaCamUI {
  public:
-	MayaCamUI()									{ mInitialCam = mCurrentCam = CameraPersp(); }
-	MayaCamUI( const CameraPersp &initialCam )	{ mInitialCam = mCurrentCam = initialCam; }
+	MayaCamUI()
+		: mCamera( &mInternalCamera )
+	{}
+	MayaCamUI( const CameraPersp &initialCam )
+		: mInitialCam( initialCam ), mInternalCamera( initialCam ), mCamera( &mInternalCamera )
+	{}
+	MayaCamUI( CameraPersp *camera )
+		: mInitialCam( *camera ), mCamera( camera )
+	{}
 
-	void mouseDown( const app::MouseEvent &event )
+	MayaCamUI( const MayaCamUI &rhs )
+		: mInitialCam( rhs.mInitialCam ), mInternalCamera( rhs.mInternalCamera )
+	{
+		// if mCamera was just pointed at rhs' mInternalCamera, we'll point it at our own
+		if( rhs.mCamera == &rhs.mInternalCamera )
+			mCamera = &mInternalCamera;
+		else
+			mCamera = rhs.mCamera;
+	}
+
+	MayaCamUI& operator=( const MayaCamUI &rhs )
+	{
+		mInitialCam = rhs.mInitialCam;
+		mInternalCamera = rhs.mInternalCamera;
+		// if mCamera was just pointed at rhs' mInternalCamera, we'll point it at our own
+		if( rhs.mCamera == &rhs.mInternalCamera )
+			mCamera = &mInternalCamera;
+		else
+			mCamera = rhs.mCamera;
+		return *this;
+	}
+
+	void connect( const app::WindowRef &window )
+	{
+		mWindow = window;
+		mMouseDownConnection = window->getSignalMouseDown().connect(
+			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+		mMouseDragConnection = window->getSignalMouseDrag().connect(
+			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+	}
+
+	void disconnect()
+	{
+		mMouseDownConnection.disconnect();
+		mMouseDragConnection.disconnect();
+		mWindow.reset();
+	}
+
+	void mouseDown( app::MouseEvent &event )
 	{
 		mouseDown( event.getPos() );
+		event.setHandled();
 	}
 
 	void mouseDown( const ivec2 &mousePos )
 	{
 		mInitialMousePos = mousePos;
-		mInitialCam = mCurrentCam;
+		mInitialCam = *mCamera;
 		mLastAction = ACTION_NONE;
 	}
 
-	void mouseDrag( const app::MouseEvent &event )
+	void mouseDrag( app::MouseEvent &event )
 	{
 		bool isLeftDown = event.isLeftDown();
 		bool isMiddleDown = event.isMiddleDown() || event.isAltDown();
@@ -55,6 +102,7 @@ class MayaCamUI {
 			isLeftDown = false;
 
 		mouseDrag( event.getPos(), isLeftDown, isMiddleDown, isRightDown );
+		event.setHandled();
 	}
 
 	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
@@ -70,7 +118,7 @@ class MayaCamUI {
 			return;
 		
 		if( action != mLastAction ) {
-			mInitialCam = mCurrentCam;
+			mInitialCam = *mCamera;
 			mInitialMousePos = mousePos;
 		}
 		
@@ -82,15 +130,15 @@ class MayaCamUI {
 			float newCOI = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialCam.getCenterOfInterest();
 			vec3 oldTarget = mInitialCam.getCenterOfInterestPoint();
 			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newCOI;
-			mCurrentCam.setEyePoint( newEye );
-			mCurrentCam.setCenterOfInterest( newCOI );
+			mCamera->setEyePoint( newEye );
+			mCamera->setCenterOfInterest( newCOI );
 		}
 		else if( action == ACTION_PAN ) { // panning
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / 1000.0f * mInitialCam.getCenterOfInterest();
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 1000.0f * mInitialCam.getCenterOfInterest();
 			vec3 right, up;
 			mInitialCam.getBillboardVectors( &right, &up );
-			mCurrentCam.setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
+			mCamera->setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
 		}
 		else { // tumbling
 			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
@@ -107,20 +155,24 @@ class MayaCamUI {
 			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
 			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
-			mCurrentCam.setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
-			mCurrentCam.setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
+			mCamera->setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
+			mCamera->setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
-	}	
+	}
 	
-	const CameraPersp& getCamera() const				{ return mCurrentCam; }
-	void setCurrentCam( const CameraPersp &currentCam ) { mCurrentCam = currentCam; }
+	const CameraPersp& getCamera() const				{ return *mCamera; }
+	void setCurrentCam( const CameraPersp &currentCam ) { *mCamera = currentCam; }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
  
-	ivec2		mInitialMousePos;
-	CameraPersp	mCurrentCam, mInitialCam;
-	int			mLastAction;
+	ivec2				mInitialMousePos;
+	CameraPersp			mInitialCam, mInternalCamera;
+	CameraPersp			*mCamera;
+	int					mLastAction;
+	
+	app::WindowRef			mWindow;
+	signals::Connection		mMouseDownConnection, mMouseDragConnection;
 };
 
 }; // namespace cinder

@@ -76,9 +76,6 @@ public:
 	void	draw();
 	void	resize();
 
-	void	mouseDown( MouseEvent event );
-	void	mouseDrag( MouseEvent event );
-
 	void	keyDown( KeyEvent event );
 
 	bool	isInitialized() const {
@@ -238,6 +235,9 @@ void NormalMappingApp::setup()
 	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
 #endif
 
+	mMayaCamera = MayaCamUI( &mCamera );
+	mMayaCamera.connect( getWindow() );
+
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
 }
@@ -291,7 +291,7 @@ void NormalMappingApp::draw()
 	if( isInitialized() ) {
 		// get ready to draw in 3D
 		gl::pushMatrices();
-		gl::setMatrices( mCamera );
+		gl::setMatrices( mMayaCamera.getCamera() );
 
 		gl::enableDepthRead();
 		gl::enableDepthWrite();
@@ -361,18 +361,6 @@ void NormalMappingApp::draw()
 void NormalMappingApp::resize()
 {
 	mCamera.setAspectRatio( getWindowAspectRatio() );
-}
-
-void NormalMappingApp::mouseDown( MouseEvent event )
-{
-	mMayaCamera.setCurrentCam( mCamera );
-	mMayaCamera.mouseDown( event );
-}
-
-void NormalMappingApp::mouseDrag( MouseEvent event )
-{
-	mMayaCamera.mouseDrag( event );
-	mCamera = mMayaCamera.getCamera();
 }
 
 void NormalMappingApp::keyDown( KeyEvent event )
