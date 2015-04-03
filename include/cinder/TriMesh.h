@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2015, The Barbarian Group
  All rights reserved.
  
  Portions of this code (C) Paul Houx
