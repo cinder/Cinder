@@ -437,7 +437,6 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 	return AxisAlignedBox3f( min, max );
 }
 
-
 void TriMesh::read( const DataSourceRef &dataSource )
 {
 	IStreamRef in = dataSource->createStream();
@@ -452,7 +451,9 @@ void TriMesh::read( const DataSourceRef &dataSource )
 		throw Exception( description );
 	}
 	
-	uint32_t numIndices, numPositions, numNormals, numColors, numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
+	uint32_t numIndices, numPositions, numNormals, numColors;
+	uint32_t numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
+	uint32_t numTangents, numBitangents;
 
 	in->readLittle( &numIndices );
 
@@ -477,6 +478,9 @@ void TriMesh::read( const DataSourceRef &dataSource )
 	in->readLittle( &numTexCoords3 );
 	in->readLittle( &mTexCoords3Dims );
 
+	in->readLittle( &numTangents );
+	in->readLittle( &numBitangents );
+
 	mIndices.resize( numIndices );
 	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
 
@@ -500,12 +504,16 @@ void TriMesh::read( const DataSourceRef &dataSource )
 
 	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
 	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+
+	mTangents.resize( numTangents );
+	in->readData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+
+	mBitangents.resize( numBitangents );
+	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
 }
 
-void TriMesh::write( const DataTargetRef &dataTarget ) const
+void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 {
-	// note: tangents and bitangents are not written, because these can be reconstructed
-
 	OStreamRef out = dataTarget->getStream();
 	
 	out->write( READ_WRITE_VERSION );
@@ -533,6 +541,16 @@ void TriMesh::write( const DataTargetRef &dataTarget ) const
 	out->writeLittle( static_cast<uint8_t>( mTexCoords3Dims ) );
 	out->writeLittle( static_cast<uint32_t>( mTexCoords3.size() / mTexCoords3Dims ) );
 
+	if( writeTangents ) {
+		out->writeLittle( static_cast<uint32_t>( mTangents.size() ) );
+		out->writeLittle( static_cast<uint32_t>( mBitangents.size() ) );
+	}
+	else {
+		// write zeroes for num tangents / bitangents
+		out->writeLittle( static_cast<uint32_t>( 0 ) );
+		out->writeLittle( static_cast<uint32_t>( 0 ) );
+	}
+
 	out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
 	out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
 	out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
@@ -541,6 +559,11 @@ void TriMesh::write( const DataTargetRef &dataTarget ) const
 	out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
 	out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
 	out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+
+	if( writeTangents ) {
+		out->writeData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+		out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+	}
 }
 
 bool TriMesh::recalculateNormals( bool smooth, bool weighted )
