@@ -298,9 +298,9 @@ class TriMesh : public geom::Source {
 	AxisAlignedBox3f	calcBoundingBox( const mat4 &transform ) const;
 
 	//! This allows you read a TriMesh in from a data file, for instance an .obj file. At present .obj and .dat files are supported
-	void		read( DataSourceRef in );
+	void		read( const DataSourceRef &dataSource );
 	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
-	void		write( DataTargetRef out ) const;
+	void		write( const DataTargetRef &dataTarget ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
