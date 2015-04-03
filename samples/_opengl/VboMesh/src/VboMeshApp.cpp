@@ -37,8 +37,11 @@ class VboSampleApp : public App {
 
 void VboSampleApp::setup()
 {
+	// create some geometry using a geom::Plane
 	auto plane = geom::Plane().size( vec2( 20, 20 ) ).subdivisions( ivec2( 200, 50 ) );
 
+	// Specify two planar buffers - positions are dynamic because they will be modified
+	// in the update() loop. Tex Coords are static since we don't need to update them.
 	vector<gl::VboMesh::Layout> bufferLayout = {
 		gl::VboMesh::Layout().usage( GL_DYNAMIC_DRAW ).attrib( geom::Attrib::POSITION, 3 ),
 		gl::VboMesh::Layout().usage( GL_STATIC_DRAW ).attrib( geom::Attrib::TEX_COORD_0, 2 )
