@@ -136,7 +136,7 @@ void TextureMipmappingApp::setup()
 	int heightFraction = getWindowHeight() / 10;
 	
 	// getting max Anisotropic maximum sampling available on the graphics card above 1
-	mMaxAnisoFilterAmount = gl::Texture::getMaxMaxAnisotropy() - 1.0f;
+	mMaxAnisoFilterAmount = gl::Texture::getMaxAnisotropyMax() - 1.0f;
 	
 	mLeftControl = shared_ptr<FilterControl>( new FilterControl( Rectf( widthFraction - 50, heightFraction * 1, widthFraction + 50, heightFraction * 1 + 30 ),
 													Rectf( widthFraction - 50, heightFraction * 2, widthFraction + 50, heightFraction * 2 + 30 ),
