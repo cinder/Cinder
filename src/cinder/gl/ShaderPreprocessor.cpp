@@ -23,6 +23,7 @@
 
 #include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/app/Platform.h"
+#include "cinder/gl/Platform.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
@@ -45,7 +46,7 @@ ShaderPreprocessor::ShaderPreprocessor()
 #if defined( CINDER_GL_ES_3 )
 	mVersion = 300;
 #elif defined( CINDER_GL_ES_2 )
-	mVersion = 110;
+	mVersion = 100;
 #else // desktop
 	mVersion = 150;
 #endif
@@ -85,8 +86,8 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	
 	// if we don't have a version yet, add the default one
 	if( version.empty() ) {
-#if defined( CINDER_GL_ES )
-		version = "#version " + to_string( mVersion ) + "es\n";
+#if defined( CINDER_GL_ES_3 )
+		version = "#version " + to_string( mVersion ) + " es\n";
 #else
 		version = "#version " + to_string( mVersion ) + "\n";
 #endif
