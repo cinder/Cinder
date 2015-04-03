@@ -408,7 +408,7 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 }
 
 
-void TriMesh::read( DataSourceRef dataSource )
+void TriMesh::read( const DataSourceRef &dataSource )
 {
 	IStreamRef in = dataSource->createStream();
 	clear();
@@ -466,7 +466,7 @@ void TriMesh::read( DataSourceRef dataSource )
 	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
 }
 
-void TriMesh::write( DataTargetRef dataTarget ) const
+void TriMesh::write( const DataTargetRef &dataTarget ) const
 {
 	// note: tangents and bitangents are not written, because these can be reconstructed
 
