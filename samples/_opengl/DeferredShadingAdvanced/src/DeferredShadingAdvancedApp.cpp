@@ -214,6 +214,9 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
 		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+		gl::ScopedFramebuffer scopedFramebuffer( mFboShadowMap );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
+		gl::clear();
 	}
 	
 	// Set up shadow camera
@@ -793,7 +796,7 @@ void DeferredShadingAdvancedApp::resize()
 		}
 		mFboPingPong = gl::Fbo::create( w, h, fboFormat );
 		gl::ScopedFramebuffer scopedFramebuffer( mFboPingPong );
-		gl::viewport( mFboPingPong->getSize() );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::clear();
 	}
 
@@ -830,7 +833,7 @@ void DeferredShadingAdvancedApp::resize()
 		try {
 			mFboGBuffer = gl::Fbo::create( w, h, fboFormat );
 			gl::ScopedFramebuffer scopedFramebuffer( mFboGBuffer );
-			gl::viewport( mFboGBuffer->getSize() );
+			gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboGBuffer->getSize() );
 			gl::clear();
 		} catch ( gl::FboExceptionInvalidSpecification ex ) {
 			console() << ex.what() << endl;
@@ -853,7 +856,7 @@ void DeferredShadingAdvancedApp::resize()
 		}
 		mFboSmall = gl::Fbo::create( w / 2, h / 2, fboFormat );
 		gl::ScopedFramebuffer scopedFramebuffer( mFboSmall );
-		gl::viewport( mFboSmall->getSize() );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboSmall->getSize() );
 		gl::clear();
 	}
 }
