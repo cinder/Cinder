@@ -275,6 +275,9 @@
 		005374F61194F584004D686E /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
 		005374F71194F588004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
 		005374F81194F589004D686E /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00C071AF0FF16244004801EA /* Font.cpp */; };
+		0055BE991AD099DE00813C09 /* Checkerboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0055BE981AD099DE00813C09 /* Checkerboard.cpp */; };
+		0055BE9A1AD099DE00813C09 /* Checkerboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0055BE981AD099DE00813C09 /* Checkerboard.cpp */; };
+		0055BE9B1AD099DE00813C09 /* Checkerboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0055BE981AD099DE00813C09 /* Checkerboard.cpp */; };
 		0059BD33151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
 		0059BD34151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
 		0059BD35151CF5540063F095 /* ConcurrentCircularBuffer.h in Headers */ = {isa = PBXBuildFile; fileRef = 0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */; };
@@ -1222,6 +1225,8 @@
 		0049C1B31010E5A40015B4B9 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = app/Renderer.h; sourceTree = "<group>"; };
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
 		0053819915A8CDF90019BA91 /* Event.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Event.h; path = app/Event.h; sourceTree = "<group>"; };
+		0055BE981AD099DE00813C09 /* Checkerboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Checkerboard.cpp; path = ip/Checkerboard.cpp; sourceTree = "<group>"; };
+		0055BEC51AD09A4F00813C09 /* Checkerboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Checkerboard.h; path = ip/Checkerboard.h; sourceTree = "<group>"; };
 		0059BD32151CF5540063F095 /* ConcurrentCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConcurrentCircularBuffer.h; sourceTree = "<group>"; };
 		005C0CE814CBB3DB00A12CD2 /* Base64.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
 		005C0CEC14CBB47500A12CD2 /* Base64.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Base64.cpp; sourceTree = "<group>"; };
@@ -2119,6 +2124,7 @@
 				00419C7D11057CDB007EC9AD /* Resize.h */,
 				00419C7E11057CDB007EC9AD /* Threshold.h */,
 				00419C7F11057CDB007EC9AD /* Trim.h */,
+				0055BEC51AD09A4F00813C09 /* Checkerboard.h */,
 			);
 			name = ip;
 			sourceTree = "<group>";
@@ -2129,6 +2135,7 @@
 				434708D81267EE4300AA7349 /* Blend.cpp */,
 				00419C6511057CC6007EC9AD /* EdgeDetect.cpp */,
 				00419C6611057CC6007EC9AD /* Fill.cpp */,
+				0055BE981AD099DE00813C09 /* Checkerboard.cpp */,
 				00419C6711057CC6007EC9AD /* Flip.cpp */,
 				00419C6811057CC6007EC9AD /* Grayscale.cpp */,
 				00419C6911057CC6007EC9AD /* Hdr.cpp */,
@@ -3303,6 +3310,7 @@
 				111A5F26191F727A005C3166 /* framing.c in Sources */,
 				1181F7C91A7F8792001BBFA2 /* AppBase.cpp in Sources */,
 				007050571114F93F003FCAE4 /* Color.cpp in Sources */,
+				0055BE9A1AD099DE00813C09 /* Checkerboard.cpp in Sources */,
 				111A5FC0191F72AE005C3166 /* Device.cpp in Sources */,
 				007050581114F93F003FCAE4 /* Rect.cpp in Sources */,
 				007050691114F93F003FCAE4 /* Utilities.cpp in Sources */,
@@ -3491,6 +3499,7 @@
 				111A5F28191F727B005C3166 /* framing.c in Sources */,
 				1181F7CA1A7F8792001BBFA2 /* AppBase.cpp in Sources */,
 				00CFD9A51135C3520091E310 /* Color.cpp in Sources */,
+				0055BE9B1AD099DE00813C09 /* Checkerboard.cpp in Sources */,
 				111A5FC1191F72AE005C3166 /* Device.cpp in Sources */,
 				00CFD9A61135C3520091E310 /* Rect.cpp in Sources */,
 				00CFD9B61135C3520091E310 /* Utilities.cpp in Sources */,
@@ -3801,6 +3810,7 @@
 				00FFAED119DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */,
 				0003F4141992D64100647C8B /* Vao.cpp in Sources */,
 				11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
+				0055BE991AD099DE00813C09 /* Checkerboard.cpp in Sources */,
 				00A1140D1355369A00081873 /* priorityq.c in Sources */,
 				111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,
 				00A1140F1355369A00081873 /* sweep.c in Sources */,
