@@ -43,6 +43,10 @@ public:
     virtual void        SetScissor(int _X0, int _Y0, int _Width, int _Height);
 
 protected:
+	void				CullFaceEnable( bool enable );
+	void				SaveCullFaceEnabled();
+	void				RestoreCullFaceEnabled();
+
     bool                m_Drawing;
     GLuint              m_FontTexID;
     const CTexFont *    m_FontTex;
@@ -61,6 +65,7 @@ protected:
     GLint               m_PrevScissorBox[4];
     GLint               m_PrevViewport[4];
     GLuint              m_PrevProgramObject;
+	bool				m_PrevCullFaceEnabled, m_SavedCullFaceEnabled;
 
     GLuint              m_LineRectVS;
     GLuint              m_LineRectFS;
