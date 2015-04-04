@@ -6,27 +6,6 @@ const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
 const float kShadowOpacity	= 0.3;
 
-const int POISSON_KERNEL = 16;
-
-const vec2 poissonDisk[ POISSON_KERNEL ] = vec2[] (
-	vec2( -0.06095261, -0.1337204 ),
-	vec2(  0.4983526,  0.233555 ),
-	vec2( -0.2842098, -0.5506849 ),
-	vec2(  0.05801121, 0.6332615 ),
-	vec2( -0.5088959, -0.003537838 ),
-	vec2(  0.4832182, -0.2853011 ),
-	vec2( -0.8192781, -0.2787592 ),
-	vec2(  0.1339615, -0.6042675 ),
-	vec2(  0.5493031, -0.8009133 ),
-	vec2(  0.9285686,  0.146349 ),
-	vec2( -0.2837186, -0.9508537 ),
-	vec2(  0.5228189,  0.8005553 ),
-	vec2( -0.4011278,  0.5258422 ),
-	vec2( -0.2490727,  0.9233519 ),
-	vec2( -0.8024328,  0.3718062 ),
-	vec2( -0.6656654, -0.7041242 )
-);
-
 uniform sampler2D		uSamplerAlbedo;
 uniform sampler2D		uSamplerDepth;
 uniform isampler2D		uSamplerMaterial;
@@ -79,13 +58,56 @@ float shadow( in vec4 position )
 	shadowCoord 		= shadowCoord * 0.5 + 0.5;
 
 	float v 			= 0.0;
-	float e				= 1.0 / float( POISSON_KERNEL );
+	float e				= 0.0625;
 	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
-		for ( int i = 0; i < POISSON_KERNEL; ++i ) {
-			float depth	= texture( uSamplerShadowMap, shadowCoord + vec3( poissonDisk[ i ] * kShadowBlurSize, 0.0 ) );
-			if ( depth > shadowCoord.z - kShadowBias ) {
-				v		+= e;
-			}
+		float d = shadowCoord.z - kShadowBias;
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.06095261, -0.1337204 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.4983526,  0.233555 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.2842098, -0.5506849 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.05801121, 0.6332615 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.5088959, -0.003537838 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.4832182, -0.2853011 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.8192781, -0.2787592 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.1339615, -0.6042675 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.5493031, -0.8009133 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.9285686,  0.146349 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.2837186, -0.9508537 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2(  0.5228189,  0.8005553 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.4011278,  0.5258422 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.2490727,  0.9233519 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.8024328,  0.3718062 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
+		}
+		if ( texture( uSamplerShadowMap, shadowCoord + vec3( vec2( -0.6656654, -0.7041242 ) * kShadowBlurSize, 0.0 ) ) > d ) {
+			v += e;
 		}
 	}
 	return v;
