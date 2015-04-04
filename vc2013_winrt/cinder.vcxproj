@@ -405,6 +405,7 @@
     <ClInclude Include="..\include\cinder\gl\wrapper.h" />
     <ClInclude Include="..\include\cinder\ImageIo.h" />
     <ClInclude Include="..\include\cinder\ip\Blend.h" />
+    <ClInclude Include="..\include\cinder\ip\Checkerboard.h" />
     <ClInclude Include="..\include\cinder\ip\EdgeDetect.h" />
     <ClInclude Include="..\include\cinder\ip\Fill.h" />
     <ClInclude Include="..\include\cinder\ip\Flip.h" />
@@ -750,6 +751,7 @@
     <ClCompile Include="..\src\cinder\ImageSourceFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ImageTargetFileWic.cpp" />
     <ClCompile Include="..\src\cinder\ip\Blend.cpp" />
+    <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp" />
     <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp" />
     <ClCompile Include="..\src\cinder\ip\Fill.cpp" />
     <ClCompile Include="..\src\cinder\ip\Flip.cpp" />
