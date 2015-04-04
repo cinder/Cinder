@@ -25,6 +25,8 @@
 #include "TwOpenGLCore.h"
 #include "TwMgr.h"
 
+#include <iostream>
+
 using namespace std;
 
 extern const char *g_ErrCantLoadOGL;
@@ -435,7 +437,7 @@ void CTwGraphOpenGLCore::BeginDraw(int _WndWidth, int _WndHeight)
     _glDisable(GL_LINE_SMOOTH); CHECK_GL_ERROR;
 
 //    m_PrevCullFace = _glIsEnabled(GL_CULL_FACE);
-    _glDisable(GL_CULL_FACE); CHECK_GL_ERROR;
+	CullFaceEnable( false );
     
 //    m_PrevDepthTest = _glIsEnabled(GL_DEPTH_TEST);
     _glDisable(GL_DEPTH_TEST); CHECK_GL_ERROR;
@@ -884,6 +886,30 @@ void CTwGraphOpenGLCore::SetScissor(int _X0, int _Y0, int _Width, int _Height)
 }
 
 //  ---------------------------------------------------------------------------
+void CTwGraphOpenGLCore::CullFaceEnable( bool enable )
+{
+	m_PrevCullFaceEnabled = enable;
+	if( m_PrevCullFaceEnabled )
+		_glEnable( GL_CULL_FACE );
+	else
+		_glDisable( GL_CULL_FACE );
+}
+
+void CTwGraphOpenGLCore::SaveCullFaceEnabled()
+{
+	m_SavedCullFaceEnabled = m_PrevCullFaceEnabled;
+}
+
+void CTwGraphOpenGLCore::RestoreCullFaceEnabled()
+{
+	m_PrevCullFaceEnabled = m_SavedCullFaceEnabled;
+	if( m_PrevCullFaceEnabled )
+		_glEnable( GL_CULL_FACE );
+	else
+		_glDisable( GL_CULL_FACE );
+}
+
+//  ---------------------------------------------------------------------------
 
 void CTwGraphOpenGLCore::DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_Colors, Cull _CullMode)
 {
@@ -893,18 +919,19 @@ void CTwGraphOpenGLCore::DrawTriangles(int _NumTriangles, int *_Vertices, color3
     const GLfloat dy = +0.0f;
 
     // Backup states
-/*    GLint prevCullFaceMode, prevFrontFace;
-    _glGetIntegerv(GL_CULL_FACE_MODE, &prevCullFaceMode);
-    _glGetIntegerv(GL_FRONT_FACE, &prevFrontFace);
-    GLboolean prevCullEnable = _glIsEnabled(GL_CULL_FACE);*/
+	SaveCullFaceEnabled();
+	
     _glCullFace(GL_BACK);
-    _glEnable(GL_CULL_FACE);
-    if( _CullMode==CULL_CW )
+    if( _CullMode==CULL_CW ) {
+		CullFaceEnable( true );
         _glFrontFace(GL_CCW);
-    else if( _CullMode==CULL_CCW )
+	}
+    else if( _CullMode==CULL_CCW ) {
+		CullFaceEnable( true );
         _glFrontFace(GL_CW);
+	}
     else
-        _glDisable(GL_CULL_FACE);
+		CullFaceEnable( false );
 
     _glUseProgram(m_TriProgram);
     _glBindVertexArray(m_TriVArray);
@@ -929,12 +956,7 @@ void CTwGraphOpenGLCore::DrawTriangles(int _NumTriangles, int *_Vertices, color3
     _glDrawArrays(GL_TRIANGLES, 0, (GLsizei)numVerts);
 
     // Reset states
-/*    _glCullFace(prevCullFaceMode);
-    _glFrontFace(prevFrontFace);
-    if( prevCullEnable )
-        _glEnable(GL_CULL_FACE);
-    else
-        _glDisable(GL_CULL_FACE);*/
+	RestoreCullFaceEnabled();
 
     CHECK_GL_ERROR;
 }
