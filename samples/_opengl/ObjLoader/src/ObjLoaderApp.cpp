@@ -12,6 +12,7 @@
 #include "cinder/gl/Batch.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Shader.h"
+#include "cinder/ip/Checkerboard.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -37,6 +38,7 @@ class ObjLoaderApp : public App {
 	TriMeshRef		mMesh;
 	gl::BatchRef	mBatch;
 	gl::GlslProgRef	mGlsl;
+	gl::TextureRef	mCheckerTexture;
 };
 
 void ObjLoaderApp::setup()
@@ -46,10 +48,14 @@ void ObjLoaderApp::setup()
 #else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 #endif
+	mGlsl->uniform( "uTex0", 0 );
 
 	CameraPersp initialCam;
 	initialCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
 	mMayaCam.setCurrentCam( initialCam );
+
+	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
+	mCheckerTexture->bind( 0 );
 
 	loadObjFile( getAssetPath( "8lbs.obj" ) );
 }
