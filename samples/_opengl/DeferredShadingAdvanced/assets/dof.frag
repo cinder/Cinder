@@ -27,7 +27,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 	if ( color.rgb == vec3( 0.0 ) ) {
 		contrib = 0.2;
 	} else {
-		iDepth = texture( uSamplerDepth, vertex.uv + offset );
+		iDepth = texture( uSamplerDepth, vertex.uv + offset ).x;
 		if ( iDepth < depth ) {
 			contrib = distance( iDepth, kDepthPlane ) / kDepthPlane;
 		} else {
@@ -41,7 +41,7 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 
 void main( void )
 {
-	float depth		= texture( uSamplerDepth, vertex.uv );
+	float depth		= texture( uSamplerDepth, vertex.uv ).x;
 	vec2 sz			= vec2( kBias * distance( depth, kDepthPlane ) / kDepthPlane ) * vec2( 1.0, uAspect );
 	float influence	= 0.000001;
 	vec4 sum		= vec4( 0.0 );

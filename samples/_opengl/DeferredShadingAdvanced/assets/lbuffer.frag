@@ -124,7 +124,7 @@ vec3 decodeNormal( vec2 enc )
 
 vec4 getPosition( vec2 uv )
 {
-    float depth			= texture( uSamplerDepth, uv );
+    float depth			= texture( uSamplerDepth, uv ).x;
     float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
     vec4 posProj		= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
     vec4 viewRay		= uProjMatrixInverse * posProj;
