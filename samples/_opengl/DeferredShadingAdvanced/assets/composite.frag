@@ -1,18 +1,13 @@
-#version 330 core
+#include "vertex_in.glsl"
 
-uniform sampler2D	uSamplerLBuffer;
-uniform sampler2D	uSamplerSsao;
+uniform sampler2D uSamplerLBuffer;
+uniform sampler2D uSamplerSsao;
 
-in Vertex
-{
-	vec2 	uv;
-} vertex;
-
-out vec4 	oColor;
+out vec3 	oColor;
 
 void main( void )
 {
-	vec4 color	= texture( uSamplerLBuffer, vertex.uv );
-	color		-= vec4( vec3( 1.0 - texture( uSamplerSsao, vertex.uv ).r ), 0.0 );
+	vec3 color	= texture( uSamplerLBuffer, vertex.uv ).rgb;
+	color		-= vec3( 1.0 - texture( uSamplerSsao, vertex.uv ).r );
 	oColor		= color;
 }

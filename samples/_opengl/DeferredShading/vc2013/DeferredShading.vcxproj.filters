@@ -61,9 +61,4 @@
       <Filter>assets</Filter>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png">
-      <Filter>assets</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

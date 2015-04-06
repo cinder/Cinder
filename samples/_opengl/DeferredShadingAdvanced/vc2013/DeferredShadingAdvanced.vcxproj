@@ -210,7 +210,6 @@
     <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blend.frag" />
     <None Include="..\assets\emissive.frag" />
     <None Include="..\assets\blur.frag" />
     <None Include="..\assets\color.frag" />
@@ -221,11 +220,14 @@
     <None Include="..\assets\gbuffer.frag" />
     <None Include="..\assets\gbuffer.vert" />
     <None Include="..\assets\lbuffer.frag" />
+    <None Include="..\assets\material.glsl" />
     <None Include="..\assets\pass_through.vert" />
     <None Include="..\assets\shadow_map.frag" />
     <None Include="..\assets\shadow_map.vert" />
     <None Include="..\assets\ssao.frag" />
     <None Include="..\assets\ssao.vert" />
+    <None Include="..\assets\vertex_in.glsl" />
+    <None Include="..\assets\vertex_out.glsl" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png" />

@@ -59,7 +59,7 @@ void main( void )
 	vec4 Is 				= Ks * uLightColorSpecular;
 	vec4 Ie					= vec4( vec3( normalEmissive.w ), 1.0 );
 
-	oColor 					+= Ia + att * ( Id + Is );
+	oColor 					= Ia + att * ( Id + Is );
 	oColor					*= uLightIntensity;
 
 	// Calculate shadow
@@ -81,4 +81,5 @@ void main( void )
 
 	// Add emissive
 	oColor					+= Ie;
+	oColor.a				= 1.0;
 }

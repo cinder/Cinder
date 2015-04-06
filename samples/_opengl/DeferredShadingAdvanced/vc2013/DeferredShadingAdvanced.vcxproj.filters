@@ -42,9 +42,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blend.frag">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\blur.frag">
       <Filter>assets</Filter>
     </None>
@@ -88,6 +85,15 @@
       <Filter>assets</Filter>
     </None>
     <None Include="..\assets\ssao.vert">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\material.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\vertex_in.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\vertex_out.glsl">
       <Filter>assets</Filter>
     </None>
   </ItemGroup>

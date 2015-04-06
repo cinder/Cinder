@@ -1,4 +1,4 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 // Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
@@ -11,23 +11,18 @@ uniform float		uAspect;
 uniform sampler2D	uSamplerColor;
 uniform sampler2D	uSamplerDepth;
 
-in Vertex
-{
-	vec2 	uv;
-} vertex;
+out vec3 	oColor;
 
-out vec4 	oColor;
-
-vec4 bokeh( float depth, vec2 offset, inout float influence ) 
+vec3 bokeh( in float depth, in vec2 offset, inout float influence ) 
 {
 	float iDepth	= 0.0;
 	float contrib	= 0.0;
-	vec4 color		= texture( uSamplerColor, vertex.uv + offset );
+	vec3 color		= texture( uSamplerColor, vertex.uv + offset ).rgb;
 
-	if ( color.rgb == vec3( 0.0 ) ) {
+	if ( color == vec3( 0.0 ) ) {
 		contrib = 0.2;
 	} else {
-		iDepth = texture( uSamplerDepth, vertex.uv + offset ).r;
+		iDepth = texture( uSamplerDepth, vertex.uv + offset ).x;
 		if ( iDepth < depth ) {
 			contrib = distance( iDepth, kDepthPlane ) / kDepthPlane;
 		} else {
@@ -41,10 +36,10 @@ vec4 bokeh( float depth, vec2 offset, inout float influence )
 
 void main( void )
 {
-	float depth		= texture( uSamplerDepth, vertex.uv ).r * 1.0;
+	float depth		= texture( uSamplerDepth, vertex.uv ).x;
 	vec2 sz			= vec2( kBias * distance( depth, kDepthPlane ) / kDepthPlane ) * vec2( 1.0, uAspect );
 	float influence	= 0.000001;
-	vec4 sum		= vec4( 0.0 );
+	vec3 sum		= vec3( 0.0 );
 
 	sum += bokeh( depth, vec2(  0.158509, -0.884836 ) * sz, influence );
     sum += bokeh( depth, vec2(  0.475528, -0.654508 ) * sz, influence );
@@ -77,6 +72,6 @@ void main( void )
     sum += bokeh( depth, vec2( -0.317019, -0.769672 ) * sz, influence );
     sum += bokeh( depth, vec2( -0.634038, -0.539345 ) * sz, influence );
    
-	oColor = mix( texture( uSamplerColor, vertex.uv ), sum / influence, vec4( vec3( kOpacity ), 1.0 ) );
+	oColor = mix( texture( uSamplerColor, vertex.uv ).rgb, sum / influence, vec3( kOpacity ) );
 }
  

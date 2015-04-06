@@ -1,5 +1,3 @@
-#version 330 core
-
 uniform int uMaterialId;
 
 in Vertex

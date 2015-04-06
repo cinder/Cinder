@@ -1,9 +1,7 @@
-#version 330 core
-
-out vec4 oColor;
+out float oColor;
 
 void main( void )
 {
-	oColor = vec4( gl_FragCoord.zzz, 1.0 );
+	oColor = gl_FragCoord.z;
 }
  

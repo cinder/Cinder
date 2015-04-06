@@ -1,6 +1,5 @@
-#version 330 core
-
-const int MATERIAL_COUNT	= 3;
+#include "material.glsl"
+#include "vertex_in.glsl"
 
 const int MODE_ALBEDO		= 0;
 const int MODE_NORMAL		= 1;
@@ -15,39 +14,16 @@ const int MODE_MATERIAL_ID	= 9;
 
 uniform sampler2D 	uSamplerAlbedo;
 uniform sampler2D 	uSamplerDepth;
-uniform isampler2D	uSamplerMaterial;
 uniform sampler2D	uSamplerNormal;
 
 uniform mat4        uProjMatrixInverse;
 uniform vec2        uProjectionParams;
 
-struct Material
-{
-	vec4	ambient;
-	vec4	diffuse;
-	vec4	emissive;
-	vec4	specular;
-	float	shininess;
-	uint	pad0;
-	uint	pad1;
-	uint	pad2;
-};
-
-layout (std140) uniform Materials
-{
-	Material uMaterials[ MATERIAL_COUNT ];
-};
-
 uniform int uMode = 0;
 
-in Vertex
-{
-	vec2 uv;
-} vertex;
+out vec3 oColor;
 
-out vec4 oColor;
-
-vec3 decodeNormal( vec2 enc )
+vec3 decodeNormal( in vec2 enc )
 {
     vec4 n	= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
     float l = dot( n.xyz, -n.xyw );
@@ -56,7 +32,7 @@ vec3 decodeNormal( vec2 enc )
     return n.xyz * 2.0 + vec3( 0.0, 0.0, -1.0 );
 }
 
-vec4 getPosition( vec2 uv )
+vec4 getPosition( in vec2 uv )
 {
     float depth			= texture( uSamplerDepth, uv ).x;
     float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
@@ -72,37 +48,37 @@ int getId()
 
 void main( void )
 {
-	vec4 color 	= vec4( 1.0 );
+	vec3 color 	= vec3( 1.0 );
 	switch ( uMode ) {
 	case MODE_ALBEDO:
-		color 	= texture( uSamplerAlbedo, vertex.uv );
+		color 	= texture( uSamplerAlbedo, vertex.uv ).rgb;
 		break;
 	case MODE_NORMAL:
-		color 	= vec4( decodeNormal( texture( uSamplerNormal, vertex.uv ).rg ), 1.0 );
+		color 	= decodeNormal( texture( uSamplerNormal, vertex.uv ).rg );
 		break;
 	case MODE_POSITION:
-		color 	= getPosition( vertex.uv );
+		color 	= getPosition( vertex.uv ).xyz;
 		break;
 	case MODE_DEPTH:
-		color 	= vec4( vec3( 1.0 - texture( uSamplerDepth, vertex.uv ).r ), 1.0 );
+		color 	= vec3( 1.0 - texture( uSamplerDepth, vertex.uv ).r );
 		break;
 	case MODE_AMBIENT:
-		color = uMaterials[ getId() ].ambient;
+		color	= uMaterials[ getId() ].ambient.rgb;
 		break;
 	case MODE_DIFFUSE:
-		color = uMaterials[ getId() ].diffuse;
+		color	= uMaterials[ getId() ].diffuse.rgb;
 		break;
 	case MODE_EMISSIVE:
-		color = uMaterials[ getId() ].emissive;
+		color	= uMaterials[ getId() ].emissive.rgb;
 		break;
 	case MODE_SPECULAR:
-		color = uMaterials[ getId() ].specular;
+		color	= uMaterials[ getId() ].specular.rgb;
 		break;
 	case MODE_SHININESS:
-		color = vec4( vec3( uMaterials[ getId() ].shininess ) / 128.0, 1.0 );
+		color	= vec3( uMaterials[ getId() ].shininess ) / 128.0;
 		break;
 	case MODE_MATERIAL_ID:
-		color = vec4( texture( uSamplerMaterial, vertex.uv ).r, 0.0, 0.0, 1.0 );
+		color	= vec3( texture( uSamplerMaterial, vertex.uv ).r, 0.0, 0.0 );
 		break;
 	}
 	oColor 		= color;
