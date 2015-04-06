@@ -264,8 +264,9 @@ uint8_t glTypeToBytes( GLenum type )
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
-#if ! defined( CINDER_GL_ES_2 )
+#if ! defined( CINDER_GL_ES )
 		case GL_SAMPLER_BUFFER_EXT: return sizeof(int); break;
+#elif ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_SHADOW:	return sizeof(int); break;
 		case GL_SAMPLER_3D:			return sizeof(int); break;
 #else
