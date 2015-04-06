@@ -1,4 +1,4 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 const float	kBlend			= 0.8;
 const float	kColorOffset	= 0.0015;
@@ -7,11 +7,6 @@ const float	kMultiply		= 24.0;
 const vec3	kSaturation		= vec3( 0.992, 1.0, 0.953 );
 
 uniform sampler2D	uSampler;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec3 	oColor;
 

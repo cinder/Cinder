@@ -1,13 +1,8 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 uniform float		uBlend;
 uniform sampler2D	uSampler0;
 uniform sampler2D	uSampler1;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec3 	oColor;
 

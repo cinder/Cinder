@@ -1,4 +1,4 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 // Reworked from Alex Fraser's sweet tutorial here:
 // http://phatcore.com/alex/?p=227
@@ -10,11 +10,6 @@ const float	kOpacity	= 1.0;
 uniform float		uAspect;
 uniform sampler2D	uSamplerColor;
 uniform sampler2D	uSamplerDepth;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec3 	oColor;
 

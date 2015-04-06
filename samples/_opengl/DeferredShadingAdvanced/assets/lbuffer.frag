@@ -1,6 +1,5 @@
-#version 330 core
-
 #include "material.glsl"
+#include "vertex_in.glsl"
 
 const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
@@ -8,7 +7,6 @@ const float kShadowOpacity	= 0.3;
 
 uniform sampler2D		uSamplerAlbedo;
 uniform sampler2D		uSamplerDepth;
-uniform isampler2D		uSamplerMaterial;
 uniform sampler2D		uSamplerNormal;
 uniform sampler2DShadow uSamplerShadowMap;
 
@@ -26,11 +24,6 @@ uniform vec2    uProjectionParams;
 uniform mat4    uProjMatrixInverse;
 uniform mat4 	uViewMatrixInverse;
 uniform vec2	uWindowSize;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec4 	oColor;
 

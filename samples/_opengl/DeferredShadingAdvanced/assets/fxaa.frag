@@ -1,12 +1,7 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 uniform vec2		uPixel;
 uniform sampler2D	uSampler;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec4 	oColor;
 

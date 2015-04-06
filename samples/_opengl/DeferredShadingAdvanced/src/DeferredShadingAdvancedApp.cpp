@@ -103,6 +103,7 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
+	bool						mQuit;
 	void						screenShot();
 };
 
@@ -138,6 +139,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mMeshIcosahedron	= gl::VboMesh::create( geom::Icosahedron() );
 	mMeshSphere			= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
 	mMeshSphereLow		= gl::VboMesh::create( geom::Sphere().subdivisions( 12 ) );
+	mQuit				= false;
 	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
 	mSphereVelocity		= -0.1f;
 	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
@@ -185,7 +187,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",				[ & ]() { quit(); },		"key=q" );
+	mParams->addParam( "Quit",				&mQuit ).key( "q" );
 	mParams->addSeparator();
 	mParams->addParam( "Debug",				&mDrawDebug ).key( "d" ).group( "Draw" );
 	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
@@ -727,7 +729,7 @@ void DeferredShadingAdvancedApp::loadShaders()
 	{
 		gl::GlslProgRef glslProg;
 		try {
-			glslProg = gl::GlslProg::create( vertex, fragment );
+			glslProg = gl::GlslProg::create( gl::GlslProg::Format().version( 330 ).vertex( vertex ).fragment( fragment ) );
 		} catch ( gl::GlslProgCompileExc ex ) {
 			console() << name << ": GLSL Error: " << ex.what() << endl;
 			quit();
@@ -868,6 +870,11 @@ void DeferredShadingAdvancedApp::screenShot()
 
 void DeferredShadingAdvancedApp::update()
 {
+	if ( mQuit ) {
+		quit();
+		return;
+	}
+
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
 

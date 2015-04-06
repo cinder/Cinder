@@ -1,14 +1,7 @@
-#version 330 core
-
 #include "material.glsl"
+#include "vertex_in.glsl"
 
 uniform sampler2D	uSamplerAlbedo;
-uniform isampler2D	uSamplerMaterial;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec4 	oColor;
 

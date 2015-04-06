@@ -93,6 +93,12 @@
     <None Include="..\assets\material.glsl">
       <Filter>assets</Filter>
     </None>
+    <None Include="..\assets\vertex_in.glsl">
+      <Filter>assets</Filter>
+    </None>
+    <None Include="..\assets\vertex_out.glsl">
+      <Filter>assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png">

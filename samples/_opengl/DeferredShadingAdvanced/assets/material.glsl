@@ -16,4 +16,7 @@ layout (std140) uniform Materials
 {
 	Material uMaterials[ MATERIAL_COUNT ];
 };
+
+
+uniform isampler2D uSamplerMaterial;
  

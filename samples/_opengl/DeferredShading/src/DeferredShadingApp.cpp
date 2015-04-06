@@ -61,6 +61,7 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
+	bool						mQuit;
 	void						screenShot();
 };
 
@@ -116,6 +117,7 @@ DeferredShadingApp::DeferredShadingApp()
 	mMeshCube		= gl::VboMesh::create( geom::Cube() );
 	mMeshRect		= gl::VboMesh::create( geom::Rect() );
 	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
+	mQuit			= false;
 
 	// Set up lights
 	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
@@ -139,7 +141,7 @@ DeferredShadingApp::DeferredShadingApp()
 	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
 	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
+	mParams->addParam( "Quit",			&mQuit ).key( "q" );
 	mParams->addSeparator();
 	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
 	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
@@ -426,6 +428,11 @@ void DeferredShadingApp::screenShot()
 
 void DeferredShadingApp::update()
 {
+	if ( mQuit ) {
+		quit();
+		return;
+	}
+
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
 

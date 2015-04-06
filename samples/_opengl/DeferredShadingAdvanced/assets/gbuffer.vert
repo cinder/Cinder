@@ -1,5 +1,3 @@
-#version 330 core
-
 uniform mat4 	ciModelView;
 uniform mat3 	ciNormalMatrix;
 uniform mat4 	ciModelViewProjection;

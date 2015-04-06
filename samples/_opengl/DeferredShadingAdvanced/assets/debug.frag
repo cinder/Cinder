@@ -1,6 +1,5 @@
-#version 330 core
-
 #include "material.glsl"
+#include "vertex_in.glsl"
 
 const int MODE_ALBEDO		= 0;
 const int MODE_NORMAL		= 1;
@@ -15,18 +14,12 @@ const int MODE_MATERIAL_ID	= 9;
 
 uniform sampler2D 	uSamplerAlbedo;
 uniform sampler2D 	uSamplerDepth;
-uniform isampler2D	uSamplerMaterial;
 uniform sampler2D	uSamplerNormal;
 
 uniform mat4        uProjMatrixInverse;
 uniform vec2        uProjectionParams;
 
 uniform int uMode = 0;
-
-in Vertex
-{
-	vec2 uv;
-} vertex;
 
 out vec3 oColor;
 

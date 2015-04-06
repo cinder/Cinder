@@ -1,13 +1,8 @@
-#version 330 core
+#include "vertex_out.glsl"
 
 uniform mat4 	ciModelViewProjection;
 
 in vec4 		ciPosition;
-
-out Vertex
-{
-	vec2 	uv;
-} vertex;
 
 void main( void ) 
 {

@@ -1,4 +1,4 @@
-#version 330 core
+#include "vertex_in.glsl"
 
 const float kFalloff	= 0.001;
 const float kInvSamples = -0.5 / 20.0;
@@ -9,11 +9,6 @@ const float	kStrength	= 1.0;
 uniform sampler2D uSamplerDepth;
 uniform sampler2D uSamplerNoise;
 uniform sampler2D uSamplerNormal;
-
-in Vertex
-{
-	vec2 	uv;
-} vertex;
 
 out vec4 	oColor;
 
