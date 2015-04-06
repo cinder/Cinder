@@ -232,6 +232,10 @@ static void* android_app_entry(void* param) {
     android_main(android_app);
 
     android_app_destroy(android_app);
+
+    // In the case where the activity successfully gets destroyed (on config changes)
+    // this will cause the destructors setup using pthread_key_create to fire.
+    pthread_exit((void*)NULL);
     return NULL;
 }
 
@@ -421,7 +425,23 @@ static void onInputQueueDestroyed(ANativeActivity* activity, AInputQueue* queue)
 
 void ANativeActivity_onCreate(ANativeActivity* activity,
         void* savedState, size_t savedStateSize) {
-    LOGV("Creating: %p\n", activity);
+    LOGV("ANativeActivity_onCreate: %p\n", activity);
+
+    activity->callbacks->onStart = onStart;
+    activity->callbacks->onResume = onResume;
+    activity->callbacks->onSaveInstanceState = onSaveInstanceState;
+    activity->callbacks->onPause = onPause;
+    activity->callbacks->onStop = onStop;
+    activity->callbacks->onDestroy = onDestroy;
+    activity->callbacks->onWindowFocusChanged = onWindowFocusChanged;
+    activity->callbacks->onNativeWindowCreated = onNativeWindowCreated;
+    activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
+    activity->callbacks->onInputQueueCreated = onInputQueueCreated;
+    activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
+    activity->callbacks->onConfigurationChanged = onConfigurationChanged;
+    activity->callbacks->onLowMemory = onLowMemory;
+
+/*    
     activity->callbacks->onDestroy = onDestroy;
     activity->callbacks->onStart = onStart;
     activity->callbacks->onResume = onResume;
@@ -435,6 +455,6 @@ void ANativeActivity_onCreate(ANativeActivity* activity,
     activity->callbacks->onNativeWindowDestroyed = onNativeWindowDestroyed;
     activity->callbacks->onInputQueueCreated = onInputQueueCreated;
     activity->callbacks->onInputQueueDestroyed = onInputQueueDestroyed;
-
+*/
     activity->instance = android_app_create(activity, savedState, savedStateSize);
 }

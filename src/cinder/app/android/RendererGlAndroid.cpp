@@ -29,6 +29,11 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 
+#include <android/log.h>
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+
 // These aren't defined on ARM32 or ARM64 for OpenGL ES 2. They 
 // get loaded in RendererGlAndroid::initialize via eglGetProcAddress.
 #if defined(CINDER_ANDROID) && defined(CINDER_GL_ES_2) && (defined(__arm__) || defined(__aarch64__))
@@ -139,7 +144,6 @@ bool RendererGlAndroid::initialize( ANativeWindow *nativeWindow, RendererRef sha
 	if( eglGetError() != EGL_SUCCESS ) {
 		return false;
 	}
-	
 	checkGlStatus();
 
 	gl::Environment::setEs();

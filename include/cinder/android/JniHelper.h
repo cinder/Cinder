@@ -35,17 +35,14 @@ public:
 
 	virtual ~JniHelper();
 
-	static void 		initialize( ANativeActivity* nativeActivity );
-	static void 		destroy();
+	static void 		Initialize( ANativeActivity* nativeActivity );
+	static void 		Destroy();
 
-	static JniHelper* 	get();
+	static JniHelper* 	Get();
 
-	JavaVM*				getJavaVm();
-	//JNIEnv*				getJniEnv();
+	jclass				RetrieveClass( const std::string& name );	
 
-	jclass				retrieveClass( const std::string& name );
-
-	bool				AttachCurrentThread();
+	JNIEnv*				AttachCurrentThread();
 	void 				DeatchCurrentThread();
 
 	jclass				FindClass( const std::string& name );
@@ -123,8 +120,8 @@ private:
 
 	JniHelper( ANativeActivity* nativeActivity );
 
-	JavaVM*			mJavaVm;
-	//JNIEnv*			mJniEnv;
+	//JavaVM*		mJavaVm;
+	//JNIEnv*		mJniEnv;
 	jobject			mActivityObject 		= NULL;
 	jclass 			mActivityClass 			= NULL;
 

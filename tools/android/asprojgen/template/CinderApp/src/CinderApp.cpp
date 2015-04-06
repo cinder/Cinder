@@ -9,6 +9,7 @@ using namespace std;
 // We'll create a new Cinder Application by deriving from the App class
 class $<<CINDER_APPNAME>> : public App {
   public:
+	void setup();
 	void mouseDrag( MouseEvent event );
 #if defined( CINDER_ANDROID )
     void touchesBegan( TouchEvent event );
@@ -19,6 +20,11 @@ class $<<CINDER_APPNAME>> : public App {
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
 };
+
+void $<<CINDER_APPNAME>>::setup()
+{
+
+}
 
 void $<<CINDER_APPNAME>>::mouseDrag( MouseEvent event )
 {
@@ -33,6 +39,7 @@ void $<<CINDER_APPNAME>>::touchesBegan( TouchEvent event )
 	}
 }
 #endif
+
 void $<<CINDER_APPNAME>>::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )

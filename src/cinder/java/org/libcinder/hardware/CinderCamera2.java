@@ -11,7 +11,6 @@ import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
 import android.hardware.camera2.CameraDevice;
 import android.hardware.camera2.CameraManager;
-import android.hardware.camera2.CameraMetadata;
 import android.hardware.camera2.CaptureRequest;
 import android.hardware.camera2.params.StreamConfigurationMap;
 import android.media.Image;
@@ -70,6 +69,15 @@ public class CinderCamera2 {
             try {
                 Image image = reader.acquireLatestImage();
                 if((null != image) && (image.getPlanes().length > 0)) {
+                    Log.i(Platform.TAG, "Number of planes:" + image.getPlanes().length);
+
+                    ByteBuffer buf0 = image.getPlanes()[0].getBuffer();
+                    ByteBuffer buf1 = image.getPlanes()[1].getBuffer();
+                    ByteBuffer buf2 = image.getPlanes()[2].getBuffer();
+                    Log.i(Platform.TAG, "...plane[0] size:" + buf0.remaining());
+                    Log.i(Platform.TAG, "...plane[1] size:" + buf1.remaining());
+                    Log.i(Platform.TAG, "...plane[2] size:" + buf2.remaining());
+
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
 
                     if(null == mPixels) {
@@ -146,21 +154,6 @@ public class CinderCamera2 {
         }
 
         mMutex = new ReentrantLock();
-
-//        Log.i(Platform.TAG, "Front camera: " + mFrontCameraId);
-//        Log.i(Platform.TAG, "Back camera: " + mBackCameraId);
-//
-//        try {
-//            if(null != mFrontCameraId) {
-//                Log.i(Platform.TAG, "Front camera preview size: " + getOptimalPreviewSize(mFrontCameraId));
-//            }
-//
-//            if(null != mBackCameraId) {
-//                Log.i(Platform.TAG, "Back camera preview size: " + getOptimalPreviewSize(mBackCameraId));
-//            }
-//        }
-//        catch(Exception e) {
-//        }
     }
 
     /** \func getOptimalPreviewSize
@@ -200,7 +193,7 @@ public class CinderCamera2 {
                 int height = size.getHeight();
                 int area = width*height;
                 float aspectRatio = (float)width/(float)height;
-                if(aspectRatio < 1.0) {
+                if(aspectRatio < 1.0f) {
                     int t = width;
                     width = height;
                     height = t;
@@ -262,33 +255,28 @@ public class CinderCamera2 {
 
             // Create CameraCaptureSession
             mCamera.createCaptureSession(
-                    Arrays.asList(mDummySurface, mPreviewImageReader.getSurface()),
-                    new CameraCaptureSession.StateCallback() {
-                        @Override
-                        public void onConfigured(CameraCaptureSession session) {
-                            if(null == mCamera) {
-                                return;
-                            }
-
-                            mPreviewCaptureSession = session;
-                            //mPreviewRequestBuilder.set(CaptureRequest.CONTROL_MODE, CameraMetadata.CONTROL_MODE_AUTO);
-                            //mPreviewHandlerThread = new HandlerThread("preview-handler-thread");
-                            //mPreviewHandlerThread.start();
-                            //mPreviewHandler = new Handler(mPreviewHandlerThread.getLooper());
-
-                            try {
-                                mPreviewRequest = mPreviewRequestBuilder.build();
-                                mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
-                            } catch (Exception e) {
-                                Log.e(Platform.TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
-                            }
+                Arrays.asList(mDummySurface, mPreviewImageReader.getSurface()),
+                new CameraCaptureSession.StateCallback() {
+                    @Override
+                    public void onConfigured(CameraCaptureSession session) {
+                        if(null == mCamera) {
+                            return;
                         }
 
-                        @Override
-                        public void onConfigureFailed(CameraCaptureSession session) {
+                        mPreviewCaptureSession = session;
+                        try {
+                            mPreviewRequest = mPreviewRequestBuilder.build();
+                            mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
+                        } catch (Exception e) {
+                            Log.e(Platform.TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
                         }
-                    },
-                    null
+                    }
+
+                    @Override
+                    public void onConfigureFailed(CameraCaptureSession session) {
+                    }
+                },
+                null
             );
         }
         catch(Exception e ) {
@@ -309,21 +297,6 @@ public class CinderCamera2 {
             mPreviewImageReader.close();
             mPreviewImageReader = null;
         }
-
-//        if(null != mPreviewHandlerThread) {
-//            try {
-//                if(null != mPreviewCaptureSession) {
-//                    mPreviewCaptureSession.stopRepeating();
-//                }
-//                mPreviewHandlerThread.quitSafely();
-//                mPreviewHandlerThread.join();;
-//                mPreviewHandlerThread = null;
-//                mPreviewHandler = null;
-//            }
-//            catch(Exception e) {
-//                Log.e(Platform.TAG, "Preview handler stop failed: " + e);
-//            }
-//        }
     }
 
     private void privateLockPixels() {
@@ -375,7 +348,9 @@ public class CinderCamera2 {
         }
     }
 
-    // -------------------------------------------------------------------------
+    // =============================================================================================
+    // Static Methods for C++
+    // =============================================================================================
 
     private static CinderCamera2 sCamera = null;
 

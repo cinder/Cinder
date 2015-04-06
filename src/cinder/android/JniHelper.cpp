@@ -36,134 +36,171 @@
 
 namespace cinder { namespace android { 
 
-// Thread specific JNIEnv
-static thread_local JNIEnv*  threadJniEnv = nullptr;
-static thread_local uint32_t threadAttachCount = 0;
+// Currently, the GCC implementation of thread_local does not handle
+// non-trivial destructors. This is a work around until a newer version
+// of GCC is available that handles non-trivial destructors.
+static pthread_key_t 	sThreadExitKey;
+static pthread_once_t	sThreadExitOnceInit = PTHREAD_ONCE_INIT;
+static JavaVM*			sJavaVm = nullptr;
 
-// Static instance of JniHelper
+static void JvmHelper_ThreadExit( void* block )
+{
+	LOGI("JVMAttach_ThreadExit");
+
+	if( nullptr != block ) {
+		if( nullptr != sJavaVm ) {
+			sJavaVm->DetachCurrentThread();
+		}
+		pthread_setspecific( sThreadExitKey, nullptr );
+	}
+}
+
+static void JvmHelper_MakeKey()
+{
+	LOGI("JVMAttach_MakeKey");
+
+	pthread_key_create( &sThreadExitKey, JvmHelper_ThreadExit );
+}
+
+static void JvmHelper_InitOnce( JavaVM* jvm )
+{
+	LOGI("JVMAttach_InitOnce");
+
+	pthread_once( &sThreadExitOnceInit, JvmHelper_MakeKey );
+	sJavaVm = jvm;
+}
+
+static JNIEnv* JvmHelper_Attach()
+{
+	JNIEnv* jniEnv = nullptr;
+	if( nullptr != sJavaVm ) {
+		if( JNI_OK != sJavaVm->AttachCurrentThread( &jniEnv, nullptr ) ) {
+			jniEnv = nullptr;
+		}
+	}
+
+	if( ! pthread_setspecific( sThreadExitKey, (void*)jniEnv ) ) {
+		// TODO: Handle error
+	}
+
+	return jniEnv;
+}
+
+static void JvmHelper_Deatch()
+{
+	void* block = pthread_getspecific( sThreadExitKey );
+	if( nullptr != block ) {
+		if( nullptr != sJavaVm ) {
+			sJavaVm->DetachCurrentThread();
+		}
+		pthread_setspecific( sThreadExitKey, nullptr );
+	}
+}
+
+// Friendly name
+static JNIEnv* JvmHelper_CurrentJniEnv()
+{
+	return JvmHelper_Attach();
+}
+
+/** \class JniHelper
+ *
+ */
 std::unique_ptr<JniHelper> JniHelper::sInstance;
 
 JniHelper::JniHelper( ANativeActivity* nativeActivity )
-	: mJavaVm( nativeActivity->vm ),
-	  mActivityObject( nativeActivity->clazz )
+	: mActivityObject( nativeActivity->clazz )
 {
-	if( AttachCurrentThread() ) {
+
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
 		// Get android.app.NativeActivity
-		jclass activityClass = threadJniEnv->FindClass( "android/app/NativeActivity" );
-		mActivityClass = (jclass)threadJniEnv->NewGlobalRef( activityClass );			
+		jclass activityClass = jniEnv->FindClass( "android/app/NativeActivity" );
+		mActivityClass = (jclass)jniEnv->NewGlobalRef( activityClass );			
 
 		// Get getClassLoader in android.app.NativeActivity
-		mGetClassLoaderMethodId	= threadJniEnv->GetMethodID( mActivityClass, "getClassLoader", "()Ljava/lang/ClassLoader;" );
+		mGetClassLoaderMethodId	= jniEnv->GetMethodID( mActivityClass, "getClassLoader", "()Ljava/lang/ClassLoader;" );
 
 		// Call android.app.NativeActivity.getClassLoader to get ClassLoader object
-		jobject classLoaderObject = threadJniEnv->CallObjectMethod( mActivityObject, mGetClassLoaderMethodId );
-		mClassLoaderObject = threadJniEnv->NewGlobalRef( classLoaderObject );
+		jobject classLoaderObject = jniEnv->CallObjectMethod( mActivityObject, mGetClassLoaderMethodId );
+		mClassLoaderObject = jniEnv->NewGlobalRef( classLoaderObject );
 
 		// Get java.lang.ClassLoader
-		jclass classLoaderClass = threadJniEnv->FindClass( "java/lang/ClassLoader" );
-		mClassLoaderClass = (jclass)threadJniEnv->NewGlobalRef( classLoaderClass );
+		jclass classLoaderClass = jniEnv->FindClass( "java/lang/ClassLoader" );
+		mClassLoaderClass = (jclass)jniEnv->NewGlobalRef( classLoaderClass );
 
 		// Get loadClass in java.lang.ClassLoader
-		mLoadClassMethodId = threadJniEnv->GetMethodID( mClassLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;" );
-
-		DeatchCurrentThread();
+		mLoadClassMethodId = jniEnv->GetMethodID( mClassLoaderClass, "loadClass", "(Ljava/lang/String;)Ljava/lang/Class;" );
 	}
 }
 
 JniHelper::~JniHelper()
 {
-	if( AttachCurrentThread() ) {
-		threadJniEnv->DeleteGlobalRef( mActivityClass );
-		threadJniEnv->DeleteGlobalRef( mClassLoaderObject );
-		threadJniEnv->DeleteGlobalRef( mClassLoaderClass );
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		jniEnv->DeleteGlobalRef( mActivityClass );
+		jniEnv->DeleteGlobalRef( mClassLoaderObject );
+		jniEnv->DeleteGlobalRef( mClassLoaderClass );
 		mActivityClass = NULL;
 		mClassLoaderObject = NULL;
 		mClassLoaderClass = NULL;
-
-		DeatchCurrentThread();
 	}
 }
 
-void JniHelper::initialize( ANativeActivity* nativeActivity )
+void JniHelper::Initialize( ANativeActivity* nativeActivity )
 {
 	if( JniHelper::sInstance ) {
 		return;
 	}
 
+	JvmHelper_InitOnce( nativeActivity->vm );
 	JniHelper::sInstance = std::unique_ptr<JniHelper>( new JniHelper( nativeActivity ) );
 }
 
-void JniHelper::destroy()
+void JniHelper::Destroy()
 {
-
 }
 
-JniHelper* JniHelper::get()
+JniHelper* JniHelper::Get()
 {
 	return JniHelper::sInstance.get();
 }
 
-jclass JniHelper::retrieveClass( const std::string& name )
+jclass JniHelper::RetrieveClass( const std::string& name )
 {
-	jclass result = NULL;
-
-	if( AttachCurrentThread() ) {
-		jstring jstrClassName = NewStringUTF( name.c_str() );
-
-		result = (jclass)CallObjectMethod( mClassLoaderObject, mLoadClassMethodId, jstrClassName );
+	jclass result = nullptr;
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		jstring jstrClassName = jniEnv->NewStringUTF( name.c_str() );
+		result = reinterpret_cast<jclass>( jniEnv->CallObjectMethod( mClassLoaderObject, mLoadClassMethodId, jstrClassName ) );
 		// if( NULL != result ) {
 		// 	std::stringstream ss;
 		// 	ss << "retrieveClass - class found: " << name;
 		// 	LOGI( ss.str().c_str() );
 		// }
-
-		DeleteLocalRef( jstrClassName );
-		DeatchCurrentThread();
+		jniEnv->DeleteLocalRef( jstrClassName );
 	}
-
 	return result;
 }
 
-bool JniHelper::AttachCurrentThread()
+JNIEnv* JniHelper::AttachCurrentThread()
 {
-	if( nullptr == threadJniEnv ) {
-		if( JNI_OK != mJavaVm->AttachCurrentThread( &threadJniEnv, NULL ) ) {
-			threadJniEnv = nullptr;
-		}
-		// else {
-		// 	std::stringstream ss;
-		// 	ss << "CINDER-JNI::AttachCurrentThread - threadJniEnv: 0x" << std::hex << (uint32_t)threadJniEnv;
-		// 	LOGI( ss.str().c_str() );
-		// }
-	}
-
-	if( nullptr != threadJniEnv ) {
-		++threadAttachCount;
-	}
-
-	return (nullptr != threadJniEnv);
+	JNIEnv* jniEnv = JvmHelper_Attach();
+	return jniEnv;
 }
 
 void JniHelper::DeatchCurrentThread()
 {
-	if( threadAttachCount > 0 ) {
-		--threadAttachCount;
-	}
-
-	if((0 == threadAttachCount) && (nullptr != threadJniEnv)) {
-		threadJniEnv = nullptr;
-		mJavaVm->DetachCurrentThread();
-		//LOGI( "CINDER-JNI::DeatchCurrentThread" );
-	}
+	JvmHelper_Deatch();
 }
 
 jclass JniHelper::FindClass( const std::string& name )
 {
 	jclass result = NULL;
 
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->FindClass( name.c_str() );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->FindClass( name.c_str() );
 	}
 
 	return result;
@@ -173,9 +210,9 @@ jmethodID JniHelper::GetStaticMethodId( jclass clazz, const std::string& name, c
 {
 	jmethodID result = NULL;
 
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->GetStaticMethodID( clazz, name.c_str(), sig.c_str() );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->GetStaticMethodID( clazz, name.c_str(), sig.c_str() );
 	}
 
 	return result;
@@ -185,9 +222,9 @@ jmethodID JniHelper::GetMethodId( jclass clazz, const std::string& name, const s
 {
 	jmethodID result = NULL;
 
-	if( AttachCurrentThread()) {
-		result = threadJniEnv->GetMethodID( clazz, name.c_str(), sig.c_str() );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->GetMethodID( clazz, name.c_str(), sig.c_str() );
 	}
 
 	return result;
@@ -197,12 +234,12 @@ jmethodID JniHelper::GetMethodId( jclass clazz, const std::string& name, const s
 _jtype JniHelper::Call##_jname##Method( jobject obj, jmethodID methodId, ... )	\
 {																				\
 	_jtype result = _jdefval;													\
-	if( AttachCurrentThread() ) {												\
+	auto jniEnv = JvmHelper_CurrentJniEnv();									\
+	if( jniEnv ) {																\
 		va_list args;															\
 		va_start( args, methodId );												\
-		result = threadJniEnv->Call##_jname##MethodV( obj, methodId, args );	\
+		result = jniEnv->Call##_jname##MethodV( obj, methodId, args );			\
 		va_end( args );															\
-		DeatchCurrentThread();													\
 	}																			\
 	return result;																\
 }
@@ -220,12 +257,12 @@ CI_CALL_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
 
 void JniHelper::CallVoidMethod( jobject obj, jmethodID methodId, ... ) 
 {
-	if( AttachCurrentThread() ) {
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
 		va_list args;
 		va_start( args, methodId );
-		threadJniEnv->CallVoidMethodV( obj, methodId, args );
+		jniEnv->CallVoidMethodV( obj, methodId, args );
 		va_end( args );
-		DeatchCurrentThread();
 	}
 }
 
@@ -233,12 +270,12 @@ void JniHelper::CallVoidMethod( jobject obj, jmethodID methodId, ... )
 _jtype JniHelper::CallStatic##_jname##Method( jclass clazz, jmethodID methodId, ... )	\
 {																						\
 	_jtype result = _jdefval;															\
-	if( AttachCurrentThread() ) {														\
+	auto jniEnv = JvmHelper_CurrentJniEnv();											\
+	if( jniEnv ) {																		\
 		va_list args;																	\
 		va_start( args, methodId );														\
-		result = threadJniEnv->CallStatic##_jname##MethodV( clazz, methodId, args );	\
+		result = jniEnv->CallStatic##_jname##MethodV( clazz, methodId, args );			\
 		va_end( args );																	\
-		DeatchCurrentThread();															\
 	}																					\
 	return result;																		\
 }
@@ -256,61 +293,57 @@ CI_CALL_STATIC_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
 
 void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... ) 
 {
-	if( AttachCurrentThread() ) {
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
 		va_list args;
 		va_start( args, methodId );
-		threadJniEnv->CallStaticVoidMethodV( clazz, methodId, args );
+		jniEnv->CallStaticVoidMethodV( clazz, methodId, args );
 		va_end( args );
-		DeatchCurrentThread();
 	}
 }
 
 jobject JniHelper::NewGlobalRef( jobject obj )
 {
-	jobject result = NULL;
-	
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->NewGlobalRef( obj );
-		DeatchCurrentThread();
+	jobject result = NULL;	
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->NewGlobalRef( obj );
 	}
-
 	return result;
 }
 
 void JniHelper::DeleteGlobalRef( jobject globalRef )
 {
-	if( AttachCurrentThread() ) {
-		threadJniEnv->DeleteGlobalRef( globalRef );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		jniEnv->DeleteGlobalRef( globalRef );
 	}
 }
 
 jstring JniHelper::NewStringUTF( const std::string& str )
 {
 	jstring result = NULL;
-
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->NewStringUTF( str.c_str() );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->NewStringUTF( str.c_str() );
 	}
-
 	return result;
 }
 
 void JniHelper::DeleteLocalRef( jobject localRef )
 {
-	if( AttachCurrentThread() ) {
-		threadJniEnv->DeleteLocalRef( localRef );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		jniEnv->DeleteLocalRef( localRef );
 	}
 }
 
 jsize JniHelper::GetArrayLength( jarray array )
 {
 	jsize result = 0;
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->GetArrayLength( array );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->GetArrayLength( array );
 	}
 	return result;
 }
@@ -318,18 +351,18 @@ jsize JniHelper::GetArrayLength( jarray array )
 jbyte* JniHelper::GetByteArrayElements( jbyteArray array, jboolean* isCopy )
 {
 	jbyte* result = NULL;
-	if( AttachCurrentThread() ) {
-		result = threadJniEnv->GetByteArrayElements( array, isCopy );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->GetByteArrayElements( array, isCopy );
 	}
 	return result;
 }
 
 void JniHelper::ReleaseByteArrayElements( jbyteArray array, jbyte* elems, jint mode )
 {
-	if( AttachCurrentThread() ) {
-		threadJniEnv->ReleaseByteArrayElements( array, elems, mode );
-		DeatchCurrentThread();
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		jniEnv->ReleaseByteArrayElements( array, elems, mode );
 	}
 }
 

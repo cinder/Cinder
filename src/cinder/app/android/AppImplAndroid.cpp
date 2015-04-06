@@ -284,8 +284,9 @@ void AppImplAndroid::reinitializeWindowSurface()
 void AppImplAndroid::quit()
 {
 	// Close all windows, forcing the application to quit.
-	while( ! mWindows.empty() )
+	while( ! mWindows.empty() ) {
 		mWindows.back()->close();
+	}
 
 	// Always quit, even if ! isQuitOnLastWindowCloseEnabled()
 	EventManagerAndroid::instance()->setShouldQuit( true );

@@ -58,6 +58,8 @@ void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRende
 
 void AppAndroid::launch( const char *title, int argc, char * const argv[] )
 {
+	LOGI("AppAndroid::launch");
+
 	mImpl->setup();
 
 	//

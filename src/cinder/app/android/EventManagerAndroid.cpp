@@ -114,6 +114,8 @@ void EventManagerAndroid::setShouldQuit( bool val )
 
 void EventManagerAndroid::appQuit()
 {
+	LOGI("EventManagerAndroid::appQuit");
+
 	if( nullptr != mAppImplInst ) {
 		mAppImplInst->quit();
 	}
@@ -126,6 +128,8 @@ bool EventManagerAndroid::deferredMainHasBeenCalled() const
 
 void EventManagerAndroid::callDeferredMain()
 {
+	LOGI("EventManagerAndroid::callDeferredMain");
+
 	/// @TODO: Add assert check to make sure mDeferredMain is not empty
 	mDeferredMainFn();
 	mDeferredMainHasBeenCalled = true;
@@ -238,9 +242,11 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 
 			if( nullptr != ndkApp->window ) {
 				if( ! eventMan->deferredMainHasBeenCalled() ) {
+					LOGI("APP_CMD_INIT_WINDOW -- callDeferredMain");
 					eventMan->callDeferredMain();
 				}
 				else {
+					LOGI("APP_CMD_INIT_WINDOW -- reinitializeWindowSurface");
 					eventMan->reinitializeWindowSurface();
 				}
 			}
@@ -381,10 +387,13 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		/**
 		 * Command from main thread: the app's activity is being destroyed,
 		 * and waiting for the app thread to clean up and exit before proceeding.
+		 *
+		 * NOTE: This message is not guaranteed by the operating system. See the following:
+		 *       http://developer.android.com/reference/android/app/Activity.html#onDestroy%28%29
+		 *
 		 */
 		case APP_CMD_DESTROY: {
 			LOGI( "APP_CMD_DESTROY" );
-
 			eventMan->appQuit();
 		}
 		break;
@@ -393,6 +402,8 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 
 void EventManagerAndroid::execute()
 {
+	LOGI(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> EventManagerAndroid::execute");
+
 	mNativeApp->userData     = this;
 	mNativeApp->onInputEvent = EventManagerAndroid::NativeHandleInput;
 	mNativeApp->onAppCmd     = EventManagerAndroid::NativeHandleCmd;

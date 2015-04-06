@@ -59,29 +59,33 @@ UrlLoader::~UrlLoader()
 
 void UrlLoader::cacheJni()
 {
-	if( JniHelper::get()->AttachCurrentThread() ) {
-		jclass urlLoaderClass = JniHelper::get()->retrieveClass( "org/libcinder/net/UrlLoader" );	
-		UrlLoader::sUrlLoaderClass = (jclass)JniHelper::get()->NewGlobalRef( urlLoaderClass );
+	const std::string className = "org/libcinder/net/UrlLoader";
+	//if( JniHelper::Get()->AttachCurrentThread() ) 
+	{
+		jclass urlLoaderClass = JniHelper::Get()->RetrieveClass( className );
+		if( nullptr != urlLoaderClass ) {
+			UrlLoader::sUrlLoaderClass = reinterpret_cast<jclass>( JniHelper::Get()->NewGlobalRef( urlLoaderClass ) );
+		}
 
 		if( NULL != UrlLoader::sUrlLoaderClass ) {
-			UrlLoader::sLoadUrlMethodId = JniHelper::get()->GetStaticMethodId( UrlLoader::sUrlLoaderClass, "loadUrl", "(Ljava/lang/String;)[B" );
+			UrlLoader::sLoadUrlMethodId = JniHelper::Get()->GetStaticMethodId( UrlLoader::sUrlLoaderClass, "loadUrl", "(Ljava/lang/String;)[B" );
 
 			FN_LOG( UrlLoader::sLoadUrlMethodId );				
 		}
-		JniHelper::get()->DeatchCurrentThread();
+		//JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
 void UrlLoader::destroyJni()
 {
-	if( JniHelper::get()->AttachCurrentThread() ) {
+	if( JniHelper::Get()->AttachCurrentThread() ) {
 		
-		JniHelper::get()->DeleteGlobalRef( UrlLoader::sUrlLoaderClass  );
+		JniHelper::Get()->DeleteGlobalRef( UrlLoader::sUrlLoaderClass  );
 
 		UrlLoader::sUrlLoaderClass = NULL;
 		UrlLoader::sLoadUrlMethodId = NULL;
 
-		JniHelper::get()->DeatchCurrentThread();
+		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
@@ -89,16 +93,16 @@ ci::Buffer UrlLoader::getData()
 {
 	ci::Buffer result;
 
-	if( JniHelper::get()->AttachCurrentThread() ) {
-		jstring jstrUrl = JniHelper::get()->NewStringUTF( mUrl );
+	if( JniHelper::Get()->AttachCurrentThread() ) {
+		jstring jstrUrl = JniHelper::Get()->NewStringUTF( mUrl );
 
-		jbyteArray jBytes = (jbyteArray)JniHelper::get()->CallStaticObjectMethod( UrlLoader::sUrlLoaderClass, UrlLoader::sLoadUrlMethodId, jstrUrl );
+		jbyteArray jBytes = (jbyteArray)JniHelper::Get()->CallStaticObjectMethod( UrlLoader::sUrlLoaderClass, UrlLoader::sLoadUrlMethodId, jstrUrl );
 		if( NULL == jBytes ) {
 		    throw std::runtime_error( "org.libcinder.net.UrlLoader.loadUrl failed" );
 		}
 
-		size_t dataLength = JniHelper::get()->GetArrayLength( jBytes );
-		jbyte* dataPtr = (jbyte*)JniHelper::get()->GetByteArrayElements( jBytes, NULL );
+		size_t dataLength = JniHelper::Get()->GetArrayLength( jBytes );
+		jbyte* dataPtr = (jbyte*)JniHelper::Get()->GetByteArrayElements( jBytes, NULL );
 		if( NULL == dataPtr ) {
 			throw std::runtime_error( "unable to get bytearray" );
 		}
@@ -108,9 +112,9 @@ ci::Buffer UrlLoader::getData()
 			memcpy( (void *)result.getData(), (const void *)dataPtr, dataLength );
 		}
 
-		JniHelper::get()->ReleaseByteArrayElements( jBytes, dataPtr, 0 );
-		JniHelper::get()->DeleteLocalRef( jstrUrl );
-		JniHelper::get()->DeatchCurrentThread();
+		JniHelper::Get()->ReleaseByteArrayElements( jBytes, dataPtr, 0 );
+		JniHelper::Get()->DeleteLocalRef( jstrUrl );
+		JniHelper::Get()->DeatchCurrentThread();
 	}
 
 	return result;

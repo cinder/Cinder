@@ -37,13 +37,18 @@
 
 #include <android/api-level.h>
 
+#include <android/log.h>
+#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
+#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
+#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+
 namespace cinder { namespace app {
 
 PlatformAndroid::PlatformAndroid()
 	: mDisplaysInitialized( false )
 {
 
-	ci::android::JniHelper::initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
+	ci::android::JniHelper::Initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
 	ci::android::UrlLoader::cacheJni();
 	ci::android::CinderCamera::cacheJni();
 #if __ANDROID_API__ >= 21
@@ -52,10 +57,13 @@ PlatformAndroid::PlatformAndroid()
 
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
+
+	LOGI( "PlatformAndroid::PlatformAndroid" );
 }
 
 PlatformAndroid::~PlatformAndroid()
 {	
+	LOGI( "PlatformAndroid::~PlatformAndroid" );
 }
 
 PlatformAndroid* PlatformAndroid::get() 
