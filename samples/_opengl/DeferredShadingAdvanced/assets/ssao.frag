@@ -17,12 +17,12 @@ in Vertex
 
 out vec4 	oColor;
 
-float rand( vec2 v )
+float rand( in vec2 v )
 {
     return fract( sin( dot( v, vec2( 12.9898, 78.233 ) ) ) * 43758.5453 );
 }
 
-vec3 decodeNormal( vec2 enc )
+vec3 decodeNormal( in vec2 enc )
 {
     vec4 n	= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
     float l = dot( n.xyz, -n.xyw );
@@ -37,7 +37,6 @@ void main( void )
 	float d			= 0.0;
 	vec3 N			= decodeNormal( texture( uSamplerNormal, vertex.uv ).rg );
     float depth		= texture( uSamplerDepth, vertex.uv ).x;
-	vec4 F			= vec4( 0.0 );
 	vec3 fresnel	= normalize( ( texture( uSamplerNoise, rand( vertex.uv ) * kOffset * vertex.uv ).xyz * 2.0 ) - vec3( 1.0 ) );
 	vec3 R			= vec3( 0.0 );
 	

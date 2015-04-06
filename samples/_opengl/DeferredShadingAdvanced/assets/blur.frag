@@ -9,7 +9,7 @@ in Vertex
 	vec2 	uv;
 } vertex;
 
-out vec4 	oColor;
+out vec3 	oColor;
 
 void main( void )
 {
@@ -36,5 +36,5 @@ void main( void )
 	sum += texture( uSampler, vertex.uv +   9.0 * uSize ) * 0.014053461291849008;
 	sum += texture( uSampler, vertex.uv +  10.0 * uSize ) * 0.009167927656011385;
 
-	oColor = uAttenuation * sum;
+	oColor = uAttenuation * sum.rgb;
 }

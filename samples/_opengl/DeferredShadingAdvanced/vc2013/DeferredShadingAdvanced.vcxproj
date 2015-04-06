@@ -221,6 +221,7 @@
     <None Include="..\assets\gbuffer.frag" />
     <None Include="..\assets\gbuffer.vert" />
     <None Include="..\assets\lbuffer.frag" />
+    <None Include="..\assets\material.glsl" />
     <None Include="..\assets\pass_through.vert" />
     <None Include="..\assets\shadow_map.frag" />
     <None Include="..\assets\shadow_map.vert" />

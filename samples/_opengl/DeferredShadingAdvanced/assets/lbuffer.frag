@@ -1,6 +1,6 @@
 #version 330 core
 
-const int MATERIAL_COUNT = 3;
+#include "material.glsl"
 
 const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
@@ -26,23 +26,6 @@ uniform vec2    uProjectionParams;
 uniform mat4    uProjMatrixInverse;
 uniform mat4 	uViewMatrixInverse;
 uniform vec2	uWindowSize;
-
-struct Material
-{
-	vec4	ambient;
-	vec4	diffuse;
-	vec4	emissive;
-	vec4	specular;
-	float	shininess;
-	uint	pad0;
-	uint	pad1;
-	uint	pad2;
-};
-
-layout (std140) uniform Materials
-{
-	Material uMaterials[ MATERIAL_COUNT ];
-};
 
 in Vertex
 {
@@ -113,7 +96,7 @@ float shadow( in vec4 position )
 	return v;
 }
 
-vec3 decodeNormal( vec2 enc )
+vec3 decodeNormal( in vec2 enc )
 {
     vec4 n				= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
     float l				= dot( n.xyz, -n.xyw );
@@ -122,7 +105,7 @@ vec3 decodeNormal( vec2 enc )
     return n.xyz * 2.0 + vec3( 0.0, 0.0, -1.0 );
 }
 
-vec4 getPosition( vec2 uv )
+vec4 getPosition( in vec2 uv )
 {
     float depth			= texture( uSamplerDepth, uv ).x;
     float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
@@ -166,6 +149,6 @@ void main( void )
 		oColor			= oColor * ( 1.0 - kShadowOpacity ) + ( oColor * shadow( position ) * kShadowOpacity );
 	}
 	oColor				*= uLightIntensity;
-
+	oColor.a			= 1.0;
 }
  

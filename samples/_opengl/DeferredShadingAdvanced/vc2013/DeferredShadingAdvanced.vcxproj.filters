@@ -90,6 +90,9 @@
     <None Include="..\assets\ssao.vert">
       <Filter>assets</Filter>
     </None>
+    <None Include="..\assets\material.glsl">
+      <Filter>assets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\assets\random.png">
