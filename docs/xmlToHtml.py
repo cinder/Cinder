@@ -20,6 +20,56 @@ def markupFunction( fnXml, parent, bs4 ):
 	li.append( definition )
 	li.append( fnXml.find( "argsstring" ).text )
 	parent.append( li )
+
+def replaceTag( tag ):
+
+	if( tag == "para" ):
+		return "p"
+	elif( tag == "linebreak" ):
+		return "br"
+	elif( tag == "emphasis" ):
+		return "em"
+	elif (tag == "ref" ):
+		return "a"
+	elif( tag == "computeroutput" ):
+		return "code"
+	else:
+		return tag
+
+def iterateMarkup( tree, parent, html ):
+
+	origTag = tree.tag
+
+	currentTag = parent
+	
+	# append any new tags
+	if tree.tag != None :
+		htmlTag = html.new_tag( replaceTag( tree.tag ) )
+		currentTag = htmlTag
+		parent.append( currentTag )
+	
+	# add content to tag
+	if tree.text != None:
+		currentTag.append( tree.text.strip() )
+	
+	# iterate through children tags
+	for child in list( tree ):
+		output = iterateMarkup( child, currentTag, html )
+
+	# tail is any extra text that isn't wrapped in another tag
+	# that exists before the next tag
+	if tree.tail != None:
+		parent.append( tree.tail.strip() )
+	
+	return currentTag
+
+def markupParagraph( paraXml, parent, html ):
+
+	print "\n-- MARKING UP PARAGRAPH --"
+	
+	description_el = iterateMarkup( paraXml, parent, html )
+	parent.append( description_el )
+	
 	
 def processClassXmlFile( inPath, outPath, html ):
 	print "Processing file: " + inPath + " > " + outPath;
@@ -34,10 +84,22 @@ def processClassXmlFile( inPath, outPath, html ):
 	# find contents wrapper
 	contentsTag = html.find( "div", "contents" )
 
+	# description
+	descriptionHeader = html.new_tag( "h3")
+	descriptionHeader.string = "Description"
+	contentsTag.append( descriptionHeader )
+
+	descTag = html.new_tag( "div" )
+	descTag['class'] = "description"
+
+	markupParagraph( tree.find( r'compounddef/detaileddescription/' ), descTag, html );
+	
+	contentsTag.append( descTag )
+
 	# create regular and static member function ul wrappers
 	ulTag = html.new_tag( "ul" )
 	staticUlTag = html.new_tag( "ul" )
-	staticUlTag['class'] = 'static'	
+	staticUlTag['class'] = "static"	
 
 	funcCount = 0
 	staticFuncCount = 0
