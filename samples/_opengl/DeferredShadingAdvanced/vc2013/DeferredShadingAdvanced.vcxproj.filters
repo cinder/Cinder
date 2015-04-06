@@ -42,9 +42,6 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blend.frag">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\blur.frag">
       <Filter>assets</Filter>
     </None>

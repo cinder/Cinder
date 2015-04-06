@@ -4,7 +4,7 @@ uniform float		uAttenuation;
 uniform vec2		uSize;
 uniform sampler2D	uSampler;
 
-out vec3 	oColor;
+out vec4 	oColor;
 
 void main( void )
 {
@@ -31,5 +31,5 @@ void main( void )
 	sum += texture( uSampler, vertex.uv +   9.0 * uSize ) * 0.014053461291849008;
 	sum += texture( uSampler, vertex.uv +  10.0 * uSize ) * 0.009167927656011385;
 
-	oColor = uAttenuation * sum.rgb;
+	oColor = uAttenuation * sum;
 }

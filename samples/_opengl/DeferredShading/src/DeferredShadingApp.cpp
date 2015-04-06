@@ -32,13 +32,16 @@ private:
 
 	std::vector<Light>			mLights;
 	
-	ci::gl::GlslProgRef			mGlslProgDebug;
-	ci::gl::GlslProgRef			mGlslProgFxaa;
-	ci::gl::GlslProgRef			mGlslProgGBuffer;
-	ci::gl::GlslProgRef			mGlslProgLBuffer;
-	ci::gl::GlslProgRef			mGlslProgShadowMap;
-	ci::gl::GlslProgRef			mGlslProgStockColor;
-	ci::gl::GlslProgRef			mGlslProgStockTexture;
+	void						loadShaders();
+	ci::gl::BatchRef			mBatchDebugRect;
+	ci::gl::BatchRef			mBatchFxaaRect;
+	ci::gl::BatchRef			mBatchGBufferRect;
+	ci::gl::BatchRef			mBatchGBufferSphere;
+	ci::gl::BatchRef			mBatchLBufferCube;
+	ci::gl::BatchRef			mBatchShadowSphere;
+	ci::gl::BatchRef			mBatchStockColorRect;
+	ci::gl::BatchRef			mBatchStockColorSphere;
+	ci::gl::BatchRef			mBatchStockTextureRect;
 
 	ci::gl::FboRef				mFbo;
 	ci::gl::FboRef				mFboShadowMap;
@@ -46,10 +49,6 @@ private:
 	ci::gl::Texture2dRef		mTextureFbo[ 4 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
 	
-	ci::gl::VboMeshRef			mMeshCube;
-	ci::gl::VboMeshRef			mMeshRect;
-	ci::gl::VboMeshRef			mMeshSphere;
-
 	bool						mEnabledFxaa;
 	bool						mEnabledShadow;
 
@@ -78,35 +77,6 @@ DeferredShadingApp::DeferredShadingApp()
 {
 	gl::enableVerticalSync();
 	
-	// Shortcut for shader loading and error handling
-	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
-	{
-		gl::GlslProgRef glslProg;
-		try {
-			glslProg = gl::GlslProg::create( vertex, fragment );
-		} catch ( gl::GlslProgCompileExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( gl::GlslNullProgramExc ex ) {
-			console() << name << ": GLSL Error: " << ex.what() << endl;
-			quit();
-		} catch ( ... ) {
-			console() << name << ": Unknown GLSL Error" << endl;
-			quit();
-		}
-		return glslProg;
-	};
-
-	// Load shaders
-	DataSourceRef passThrough	= loadAsset( "pass_through.vert" );
-	mGlslProgDebug				= loadGlslProg( "Debug",		passThrough,					loadAsset( "debug.frag" ) );
-	mGlslProgFxaa				= loadGlslProg( "FXAA",			passThrough,					loadAsset( "fxaa.frag" ) );
-	mGlslProgGBuffer			= loadGlslProg( "G-buffer",		loadAsset( "gbuffer.vert" ),	loadAsset( "gbuffer.frag" ) );
-	mGlslProgLBuffer			= loadGlslProg( "L-buffer",		passThrough,					loadAsset( "lbuffer.frag" ) );
-	mGlslProgShadowMap			= loadGlslProg( "Shadow map",	loadAsset( "shadow_map.vert" ),	loadAsset( "shadow_map.frag" ) );
-	mGlslProgStockColor			= gl::context()->getStockShader( gl::ShaderDef().color() );
-	mGlslProgStockTexture		= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
-	
 	// Set default values for all properties
 	mDebugMode		= false;
 	mEnabledFxaa	= true;
@@ -114,9 +84,6 @@ DeferredShadingApp::DeferredShadingApp()
 	mFloor			= -7.0f;
 	mFrameRate		= 0.0f;
 	mFullScreen		= isFullScreen();
-	mMeshCube		= gl::VboMesh::create( geom::Cube() );
-	mMeshRect		= gl::VboMesh::create( geom::Rect() );
-	mMeshSphere		= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
 	mQuit			= false;
 
 	// Set up lights
@@ -166,6 +133,9 @@ DeferredShadingApp::DeferredShadingApp()
 								  mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
 	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
 
+	// Load shaders and create batches
+	loadShaders();
+
 	// Call resize to create FBOs
 	resize();
 }
@@ -178,32 +148,50 @@ void DeferredShadingApp::draw()
 	vec2 winSize			= vec2( getWindowSize() );
 	float e					= (float)getElapsedSeconds();
 
-	// This draws our shadow casters
-	auto drawSpheres = [ & ]()
+	vector<mat4> spheres;
 	{
-		{
-			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( vec3( 0.0f, -4.0f, 0.0f ) );
-			gl::draw( mMeshSphere );
-		}
+		mat4 m( 1.0f );
+		m = glm::translate( m, vec3( 0.0f, -4.0f, 0.0f ) );
+		spheres.push_back( m );
+	}
+	float t		= e * 0.165f;
+	float d		= ( (float)M_PI * 2.0f ) / 4.0f;
+	float r		= 4.5f;
+	for ( size_t i = 0; i < 4; ++i, t += d ) {
+		float x	= glm::cos( t );
+		float z	= glm::sin( t );
+		vec3 p	= vec3( x, 0.0f, z ) * r;
+		p.y		= mFloor + 0.5f;
 
-		size_t numSpheres	= 4;
-		float t				= e * 0.165f;
-		float d				= ( (float)M_PI * 2.0f ) / (float)numSpheres;
-		float r				= 4.5f;
-		for ( size_t i = 0; i < numSpheres; ++i, t += d ) {
-			float x			= glm::cos( t );
-			float z			= glm::sin( t );
-			vec3 p			= vec3( x, 0.0f, z ) * r;
-			p.y				= mFloor + 0.5f;
-
-			gl::ScopedModelMatrix scopedModelMatrix;
-			gl::translate( p );
-			gl::scale( vec3( 0.5f ) );
-			gl::draw( mMeshSphere );
-		}
-	};
+		mat4 m( 1.0f );
+		m = glm::translate( m, p );
+		m = glm::rotate( m, e, vec3( 1.0f ) );
+		m = glm::scale( m, vec3( 0.5f ) );
+		
+		spheres.push_back( m );
+	}
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// SHADOW MAP
+
+	// Draw shadow casters into FBO from view of shadow camera
+	if ( mEnabledShadow ) {
+		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
+		gl::ScopedMatrices scopedMatrices;
+		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
+		gl::ScopedFrontFace scopedFrontFace( GL_CW );
+		gl::enableDepthRead( true );
+		gl::enableDepthWrite( true );
+		gl::clear();
+		gl::setMatrices( mShadowCamera );
+		for ( const mat4& m : spheres ) {
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::multModelMatrix( m );
+			mBatchShadowSphere->draw();
+		}
+	}
+
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// G-BUFFER
 	
@@ -220,71 +208,53 @@ void DeferredShadingApp::draw()
 		}
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::ScopedMatrices scopedMatrices;
-		gl::enableDepthRead( true );
+		gl::enableDepthRead();
 		gl::enableDepthWrite( true );
 		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
 
+		// Draw floor
+		mBatchGBufferRect->getGlslProg()->uniform( "uEmissive", 0.0f );
 		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgGBuffer );
-			mGlslProgGBuffer->uniform( "uEmissive",	0.0f );
-
-			// Draw shadow casters (spheres)
-			drawSpheres();
-	
-			// Draw floor
 			gl::ScopedModelMatrix scopedModelMatrix;
-			{
-				gl::ScopedModelMatrix scopedModelMatrix;
-				gl::translate( vec3( 0.0f, mFloor, 0.0f ) );
-				gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
-				gl::scale( vec3( 125.0f ) );
-				gl::draw( mMeshRect );
-			}
-			
-			// Draw light sources
-			mGlslProgGBuffer->uniform( "uEmissive", 1.0f );
-			for ( const Light& light : mLights ) {
-				gl::ScopedModelMatrix scopedModelMatrix;
-				gl::translate( light.getPosition() );
-				gl::scale( vec3( light.getRadius() ) );
-				gl::draw( mMeshSphere );
-			}
+			gl::translate( vec3( 0.0f, mFloor, 0.0f ) );
+			gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
+			gl::scale( vec3( 20.0f ) );
+			mBatchGBufferRect->draw();
 		}
-	}
 
-	//////////////////////////////////////////////////////////////////////////////////////////////
-	// SHADOW MAP
-
-	// Draw shadow casters into FBO from view of shadow camera
-	if ( mEnabledShadow ) {
-		gl::ScopedFramebuffer scopedFrameBuffer( mFboShadowMap );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
-		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-		gl::ScopedFrontFace scopedFrontFace( GL_CW );
-		gl::enableDepthRead( true );
-		gl::enableDepthWrite( true );
-		gl::clear();
-		gl::setMatrices( mShadowCamera );
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgShadowMap );
-		drawSpheres();
+		// Draw shadow casters
+		mBatchGBufferSphere->getGlslProg()->uniform( "uEmissive", 0.0f );
+		for ( const mat4& m : spheres ) {
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::multModelMatrix( m );
+			mBatchGBufferSphere->draw();
+		}
+			
+		// Draw light sources
+		mBatchGBufferSphere->getGlslProg()->uniform( "uEmissive", 1.0f );
+		for ( const Light& light : mLights ) {
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::translate( light.getPosition() );
+			gl::scale( vec3( light.getRadius() ) );
+			mBatchGBufferSphere->draw();
+		}
 	}
 
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// L-BUFFER
 
 	{
-		// Set up window and clear L-buffer
 		gl::ScopedFramebuffer scopedFrameBuffer( mFbo );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT3 );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
+		gl::clear();
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
-		gl::ScopedState scopedState( GL_DEPTH_TEST, false );
 		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-		gl::clear();
 		gl::setMatrices( mMayaCam.getCamera() );
+		gl::enableDepthRead();
+		gl::disableDepthWrite();
 	
 		// Bind G-buffer textures and shadow map
 		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],		0 );
@@ -293,32 +263,24 @@ void DeferredShadingApp::draw()
 		gl::ScopedTextureBind scopedTextureBind3( mTextureFboShadowMap,	3 );
 
 		// Draw light volumes
-		{
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgLBuffer );
-			mGlslProgLBuffer->uniform( "uSamplerAlbedo",			0 );
-			mGlslProgLBuffer->uniform( "uSamplerNormalEmissive",	1 );
-			mGlslProgLBuffer->uniform( "uSamplerPosition",			2 );
-			mGlslProgLBuffer->uniform( "uSamplerShadowMap",			3 );
+		mBatchLBufferCube->getGlslProg()->uniform( "uShadowEnabled",			mEnabledShadow );
+		mBatchLBufferCube->getGlslProg()->uniform( "uShadowMatrix",				shadowMatrix );
+		mBatchLBufferCube->getGlslProg()->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
+		
+		for ( const Light& light : mLights ) {
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorAmbient",	light.getColorAmbient() );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorSpecular",	light.getColorSpecular() );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightPosition", 
+										vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightIntensity",		light.getIntensity() );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightRadius",			light.getVolume() );
+			mBatchLBufferCube->getGlslProg()->uniform( "uWindowSize",			vec2( getWindowSize() ) );
 
-			mGlslProgLBuffer->uniform( "uShadowEnabled",			mEnabledShadow );
-			mGlslProgLBuffer->uniform( "uShadowMatrix",				shadowMatrix );
-			mGlslProgLBuffer->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
-
-			for ( const Light& light : mLights ) {
-				mGlslProgLBuffer->uniform( "uLightColorAmbient",	light.getColorAmbient() );
-				mGlslProgLBuffer->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
-				mGlslProgLBuffer->uniform( "uLightColorSpecular",	light.getColorSpecular() );
-				mGlslProgLBuffer->uniform( "uLightPosition", 
-										   vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
-				mGlslProgLBuffer->uniform( "uLightIntensity",		light.getIntensity() );
-				mGlslProgLBuffer->uniform( "uLightRadius",			light.getVolume() );
-				mGlslProgLBuffer->uniform( "uWindowSize",			vec2( getWindowSize() ) );
-
-				gl::ScopedModelMatrix scopedModelMatrix;
-				gl::translate( light.getPosition() );
-				gl::scale( vec3( light.getVolume() ) );
-				gl::draw( mMeshCube );
-			}
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::translate( light.getPosition() );
+			gl::scale( vec3( light.getVolume() ) );
+			mBatchLBufferCube->draw();
 		}
 	}
 
@@ -337,42 +299,96 @@ void DeferredShadingApp::draw()
 		// Draw G-buffer
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
-		gl::ScopedGlslProg scopedGlslProg( mGlslProgDebug );
-		mGlslProgDebug->uniform( "uSamplerAlbedo",			0 );
-		mGlslProgDebug->uniform( "uSamplerNormalEmissive",	1 );
-		mGlslProgDebug->uniform( "uSamplerPosition",			2 );
 		gl::ScopedTextureBind scopedTextureBind0( mTextureFbo[ 0 ],	0 );
-		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 1 ],	1 );
-		gl::ScopedTextureBind scopedTextureBind3( mTextureFbo[ 2 ],	2 );
+		gl::ScopedTextureBind scopedTextureBind1( mTextureFbo[ 1 ],	1 );
+		gl::ScopedTextureBind scopedTextureBind2( mTextureFbo[ 2 ],	2 );
 		
 		// Albedo   | Normals
 		// --------------------
 		// Position | Emissive
 		vec2 sz = getWindowCenter();
 		for ( int32_t i = 0; i < 4; ++i ) {
-			mGlslProgDebug->uniform( "uMode", i );
 			vec2 pos( ( i % 2 ) * sz.x, glm::floor( (float)i * 0.5f ) * sz.y );
-			gl::drawSolidRect( Rectf( pos, pos + sz ) );
+			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::translate( pos + sz * 0.5f );
+			gl::scale( sz );
+			mBatchDebugRect->getGlslProg()->uniform( "uMode", i );
+			mBatchDebugRect->draw();
 		}
 
 	} else {
+		gl::translate( getWindowCenter() );
+		gl::scale( getWindowSize() );
+
 		gl::ScopedTextureBind scopedTextureBind( mTextureFbo[ 3 ], 0 );
 		if ( mEnabledFxaa ) {
 
 			// Perform FXAA
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgFxaa );
-			mGlslProgFxaa->uniform( "uPixel",	vec2( 1.0f ) / winSize );
-			mGlslProgFxaa->uniform( "uSampler",	0 );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
+			mBatchFxaaRect->getGlslProg()->uniform( "uPixel", vec2( 1.0f ) / winSize );
+			mBatchFxaaRect->draw();
 		} else {
 
 			// Draw without anti-aliasing
-			gl::ScopedGlslProg scopedGlslProg( mGlslProgStockTexture );
-			gl::drawSolidRect( Rectf( vec2( 0.0f ), getWindowSize() ) );
+			mBatchStockTextureRect->draw();
 		}
 	}
 
 	mParams->draw();
+}
+
+void DeferredShadingApp::loadShaders()
+{
+	// Shortcut for shader loading and error handling
+	auto loadGlslProg = [ & ]( const string& name, DataSourceRef vertex, DataSourceRef fragment ) -> gl::GlslProgRef
+	{
+		gl::GlslProgRef glslProg;
+		try {
+			glslProg = gl::GlslProg::create( vertex, fragment );
+		} catch ( gl::GlslProgCompileExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( gl::GlslNullProgramExc ex ) {
+			console() << name << ": GLSL Error: " << ex.what() << endl;
+			quit();
+		} catch ( ... ) {
+			console() << name << ": Unknown GLSL Error" << endl;
+			quit();
+		}
+		return glslProg;
+	};
+
+	gl::VboMeshRef cube		= gl::VboMesh::create( geom::Cube() );
+	gl::VboMeshRef rect		= gl::VboMesh::create( geom::Rect() );
+	gl::VboMeshRef sphere	= gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
+
+	// Load shaders
+	DataSourceRef passThrough		= loadAsset( "pass_through.vert" );
+	gl::GlslProgRef debug			= loadGlslProg( "Debug",		passThrough,					loadAsset( "debug.frag" ) );
+	gl::GlslProgRef fxaa			= loadGlslProg( "FXAA",			passThrough,					loadAsset( "fxaa.frag" ) );
+	gl::GlslProgRef gBuffer			= loadGlslProg( "G-buffer",		loadAsset( "gbuffer.vert" ),	loadAsset( "gbuffer.frag" ) );
+	gl::GlslProgRef lBuffer			= loadGlslProg( "L-buffer",		passThrough,					loadAsset( "lbuffer.frag" ) );
+	gl::GlslProgRef shadowMap		= loadGlslProg( "Shadow map",	loadAsset( "shadow_map.vert" ),	loadAsset( "shadow_map.frag" ) );
+	gl::GlslProgRef stockColor		= gl::context()->getStockShader( gl::ShaderDef().color() );
+	gl::GlslProgRef stockTexture	= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
+	
+	mBatchDebugRect			= gl::Batch::create( rect,		debug );
+	mBatchFxaaRect			= gl::Batch::create( rect,		fxaa );
+	mBatchGBufferRect		= gl::Batch::create( rect,		gBuffer );
+	mBatchGBufferSphere		= gl::Batch::create( sphere,	gBuffer );
+	mBatchLBufferCube		= gl::Batch::create( cube,		lBuffer );
+	mBatchShadowSphere		= gl::Batch::create( sphere,	shadowMap );
+	mBatchStockColorRect	= gl::Batch::create( rect,		stockColor );
+	mBatchStockColorSphere	= gl::Batch::create( rect,		stockColor );
+	mBatchStockTextureRect	= gl::Batch::create( rect,		stockTexture );
+
+	mBatchDebugRect->getGlslProg()->uniform(	"uSamplerAlbedo",			0 );
+	mBatchDebugRect->getGlslProg()->uniform(	"uSamplerNormalEmissive",	1 );
+	mBatchDebugRect->getGlslProg()->uniform(	"uSamplerPosition",			2 );
+	mBatchFxaaRect->getGlslProg()->uniform(		"uSampler",					0 );
+	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerAlbedo",			0 );
+	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerNormalEmissive",	1 );
+	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerPosition",			2 );
+	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerShadowMap",		3 );
 }
 
 void DeferredShadingApp::mouseDown( MouseEvent event )

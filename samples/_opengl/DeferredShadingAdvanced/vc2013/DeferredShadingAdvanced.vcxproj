@@ -210,7 +210,6 @@
     <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blend.frag" />
     <None Include="..\assets\emissive.frag" />
     <None Include="..\assets\blur.frag" />
     <None Include="..\assets\color.frag" />
