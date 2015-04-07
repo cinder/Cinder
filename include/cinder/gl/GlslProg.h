@@ -30,7 +30,6 @@
 #include <set>
 
 #include "cinder/gl/wrapper.h"
-#include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/Vector.h"
 #include "cinder/Color.h"
 #include "cinder/Matrix.h"
@@ -46,6 +45,8 @@
 namespace cinder { namespace gl {
 	
 typedef std::shared_ptr<class GlslProg> GlslProgRef;
+
+class ShaderPreprocessor;
 
 class GlslProg : public std::enable_shared_from_this<GlslProg> {
   public:
@@ -331,8 +332,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 	mutable std::set<std::string>			mLoggedMissingUniforms;
 
 	std::string								mLabel; // debug label
-	ShaderPreprocessor						mShaderPreprocessor;
-	bool									mPreprocessingEnabled;
+	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
 
 	// storage as a work-around for NVidia on MSW driver bug expecting persistent memory in calls to glTransformFeedbackVaryings
 #if ! defined( CINDER_GL_ES_2 )
