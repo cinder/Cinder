@@ -96,13 +96,5 @@
     <None Include="..\assets\ao.frag">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\ao.vert">
-      <Filter>assets</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png">
-      <Filter>assets</Filter>
-    </Image>
   </ItemGroup>
 </Project>

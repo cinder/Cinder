@@ -61,7 +61,6 @@ private:
 	ci::gl::Texture2dRef		mTextureFboGBuffer[ 3 ];
 	ci::gl::Texture2dRef		mTextureFboPingPong[ 2 ];
 	ci::gl::Texture2dRef		mTextureFboShadowMap;
-	ci::gl::TextureRef			mTextureRandom;
 
 	void						loadShaders();
 	ci::gl::BatchRef			mBatchAoRect;
@@ -85,11 +84,12 @@ private:
 	ci::gl::BatchRef			mBatchStockColorSphereLow;
 	ci::gl::BatchRef			mBatchStockTextureRect;
 
+	bool						mEnabledAo;
+	bool						mEnabledAoBlur;
 	bool						mEnabledBloom;
 	bool						mEnabledColor;
 	bool						mEnabledDoF;
 	bool						mEnabledFxaa;
-	bool						mEnabledAo;
 	bool						mEnabledShadow;
 
 	ci::CameraPersp				mShadowCamera;
@@ -100,6 +100,16 @@ private:
 
 	bool						mDrawDebug;
 	bool						mDrawLightVolume;
+
+	enum : int32_t
+	{
+		Quality_Low, 
+		Quality_Medium, 
+		Quality_High, 
+		Quality_VeryHigh
+	} typedef Quality;
+	int32_t						mQuality;
+	int32_t						mQualityPrev;
 
 	float						mFrameRate;
 	bool						mFullScreen;
@@ -122,21 +132,23 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	gl::enableVerticalSync();
 		
 	// Set default values for all properties
-	mDrawDebug			= false;
 	mDrawLightVolume	= false;
+	mDrawDebug			= false;
+	mEnabledAo			= true;
+	mEnabledAoBlur		= true;
 	mEnabledBloom		= true;
 	mEnabledColor		= true;
 	mEnabledDoF			= true;
 	mEnabledFxaa		= true;
 	mEnabledShadow		= true;
-	mEnabledAo		= true;
 	mFloor				= -7.0f;
 	mFrameRate			= 0.0f;
 	mFullScreen			= isFullScreen();
+	mQuality			= Quality_Medium;
+	mQualityPrev		= mQuality;
 	mQuit				= false;
 	mSpherePosition		= vec3( 0.0f, -4.5f, 0.0f );
 	mSphereVelocity		= -0.1f;
-	mTextureRandom		= gl::Texture::create( loadImage( loadAsset( "random.png" ) ) );
 
 	// Set up lights
 	for ( size_t i = 0; i < 8; ++i ) {
@@ -153,6 +165,8 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 		mLights.push_back( Light().colorDiffuse( ColorAf( 0.85f, 0.7f, 1.0f, 1.0f ) )
 						  .intensity( 1.0f ).position( p ).radius( 0.1f ).volume( 3.0f ) );
 	}
+	mLights.push_back( Light().colorDiffuse( ColorAf( 1.0f, 0.85f, 0.7f, 1.0f ) )
+					   .intensity( 1.0f ).radius( 0.3f ).volume( 30.0f ) );
 
 	// Set up materials
 	mMaterials.push_back( Material().colorDiffuse( ColorAf::white() ).colorSpecular( ColorAf::white() )
@@ -173,52 +187,28 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	cam.setCenterOfInterestPoint( vec3( 0.469f, -5.430f, 1.146f ) );
 	mMayaCam.setCurrentCam( cam );
 
+	vector<string> quality = { "Low", "Medium", "High", "Very high" };
+
 	// Set up parameters
-	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );
+	mParams = params::InterfaceGl::create( "Params", ivec2( 240, 360 ) );
 	mParams->addParam( "Frame rate",		&mFrameRate,				"", true );
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },	"key=space" );
 	mParams->addParam( "Quit",				&mQuit ).key( "q" );
 	mParams->addSeparator();
-	mParams->addParam( "Debug",				&mDrawDebug ).key( "d" ).group( "Draw" );
+	mParams->addParam( "Debug mode",		&mDrawDebug ).key( "d" ).group( "Draw" );
 	mParams->addParam( "Light volume",		&mDrawLightVolume ).key( "v" ).group( "Draw" );
+	mParams->addParam( "Quality",			quality, &mQuality, "keyDecr=- keyIncr== group=`Draw`" );
 	mParams->addSeparator();
 	mParams->addParam( "AO",				&mEnabledAo ).key( "1" ).group( "Pass" );
-	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "2" ).group( "Pass" );
-	mParams->addParam( "Color",				&mEnabledColor ).key( "3" ).group( "Pass" );
-	mParams->addParam( "Depth of field",	&mEnabledDoF ).key( "4" ).group( "Pass" );
-	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "5" ).group( "Pass" );
-	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "6" ).group( "Pass" );
+	mParams->addParam( "AO blur",			&mEnabledAoBlur ).key( "2" ).group( "Pass" );
+	mParams->addParam( "Bloom",				&mEnabledBloom ).key( "3" ).group( "Pass" );
+	mParams->addParam( "Color",				&mEnabledColor ).key( "4" ).group( "Pass" );
+	mParams->addParam( "Depth of field",	&mEnabledDoF ).key( "5" ).group( "Pass" );
+	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "6" ).group( "Pass" );
+	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "7" ).group( "Pass" );
 
-	// Create shadow map buffer
-	{
-		size_t sz = 2048;
-		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
-													 .internalFormat( GL_DEPTH_COMPONENT32F )
-													 .magFilter( GL_LINEAR )
-													 .minFilter( GL_LINEAR )
-													 .wrap( GL_CLAMP_TO_EDGE )
-													 .dataType( GL_FLOAT ) );
-		{
-			gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-		}
-		gl::Fbo::Format fboFormat;
-		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
-		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
-		gl::ScopedFramebuffer scopedFramebuffer( mFboShadowMap );
-		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
-		gl::clear();
-	}
-	
-	// Set up shadow camera
-	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(),
-								 mMayaCam.getCamera().getNearClip(),
-								 mMayaCam.getCamera().getFarClip() );
-	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
-	
 	// Load shaders and create batches
 	loadShaders();
 
@@ -495,25 +485,29 @@ void DeferredShadingAdvancedApp::draw()
 			mBatchAoRect->draw();
 		}
 
-		// Calculate blur pixel size
-		vec2 aoBlurSize	= vec2( 1.0f ) / winSize;
-		aoBlurSize		*= vec2( mFboAo->getSize() ) / winSize;
+		// AO blur pass
+		if ( mEnabledAoBlur ) {
 
-		// Horizontal blur pass
-		mBatchBlurRect->getGlslProg()->uniform( "uAttenuation",	1.0f );
-		mBatchBlurRect->getGlslProg()->uniform( "uSize",		vec2( aoBlurSize.x, 0.0f ) );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
-		{
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 0 ], 0 );
-			mBatchBlurRect->draw();
-		}
+			// Calculate blur pixel size
+			vec2 aoBlurSize	= vec2( 1.0f ) / winSize;
+			aoBlurSize		*= vec2( mFboAo->getSize() ) / winSize;
 
-		// Vertical blur pass
-		mBatchBlurRect->getGlslProg()->uniform( "uSize", vec2( 0.0f, aoBlurSize.y ) );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
-		{
-			gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 1 ], 0 );
-			mBatchBlurRect->draw();
+			// Horizontal blur pass
+			mBatchBlurRect->getGlslProg()->uniform( "uAttenuation",	1.0f );
+			mBatchBlurRect->getGlslProg()->uniform( "uSize",		vec2( aoBlurSize.x, 0.0f ) );
+			gl::drawBuffer( GL_COLOR_ATTACHMENT1 );
+			{
+				gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 0 ], 0 );
+				mBatchBlurRect->draw();
+			}
+
+			// Vertical blur pass
+			mBatchBlurRect->getGlslProg()->uniform( "uSize", vec2( 0.0f, aoBlurSize.y ) );
+			gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
+			{
+				gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 1 ], 0 );
+				mBatchBlurRect->draw();
+			}
 		}
 	}
 
@@ -726,7 +720,7 @@ void DeferredShadingAdvancedApp::loadShaders()
 	gl::GlslProgRef gBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer.vert" ),	loadAsset( "gbuffer.frag" ) );
 	gl::GlslProgRef lBuffer			= loadGlslProg( "L-buffer",			passThrough,					loadAsset( "lbuffer.frag" ) );
 	gl::GlslProgRef shadowMap		= loadGlslProg( "Shadow map",		loadAsset( "shadow_map.vert" ),	loadAsset( "shadow_map.frag" ) );
-	gl::GlslProgRef ao			= loadGlslProg( "AO",				loadAsset( "ao.vert" ),		loadAsset( "ao.frag" ) );
+	gl::GlslProgRef ao				= loadGlslProg( "AO",				passThrough,					loadAsset( "ao.frag" ) );
 	gl::GlslProgRef stockColor		= gl::context()->getStockShader( gl::ShaderDef().color() );
 	gl::GlslProgRef stockTexture	= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 
@@ -797,14 +791,26 @@ void DeferredShadingAdvancedApp::resize()
 
 	// Texture format for color buffers
 	gl::Texture2d::Format textureFormat = gl::Texture2d::Format()
-		.internalFormat( GL_RGB10_A2 )
+		.internalFormat( mQuality == Quality_VeryHigh ? GL_RGB32F : GL_RGB10_A2 )
 		.magFilter( GL_NEAREST )
 		.minFilter( GL_NEAREST )
 		.wrap( GL_CLAMP_TO_EDGE )
 		.dataType( GL_FLOAT );
 
-	int32_t h = getWindowHeight();
-	int32_t w = getWindowWidth();
+	// CHoose window sizes based on selected quality
+	int32_t h	= getWindowHeight();
+	int32_t w	= getWindowWidth();
+	int32_t hs	= h / 2;
+	int32_t ws	= w / 2;
+
+	if ( mQuality < Quality_Medium ) {
+		h /= 2;
+		w /= 2;
+	}
+	if ( mQuality > Quality_Medium ) {
+		hs = h;
+		ws = w;
+	}
 
 	// Light accumulation frame buffer
 	// 0 GL_COLOR_ATTACHMENT0 Light accumulation
@@ -813,10 +819,10 @@ void DeferredShadingAdvancedApp::resize()
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 3; ++i ) {
-			mTextureFboAccum[ i ] = gl::Texture2d::create( w / 2, h / 2, textureFormat );
+			mTextureFboAccum[ i ] = gl::Texture2d::create( ws, hs, textureFormat );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboAccum[ i ] );
 		}
-		mFboAccum = gl::Fbo::create( w / 2, h / 2, fboFormat );
+		mFboAccum = gl::Fbo::create( ws, hs, fboFormat );
 		gl::ScopedFramebuffer scopedFramebuffer( mFboAccum );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboAccum->getSize() );
 		gl::clear();
@@ -826,10 +832,10 @@ void DeferredShadingAdvancedApp::resize()
 	{
 		gl::Fbo::Format fboFormat;
 		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboAo[ i ] = gl::Texture2d::create( w, h, textureFormat );
+			mTextureFboAo[ i ] = gl::Texture2d::create( ws, hs, textureFormat );
 			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + i, mTextureFboAo[ i ] );
 		}
-		mFboAo = gl::Fbo::create( w, h, fboFormat );
+		mFboAo = gl::Fbo::create( ws, hs, fboFormat );
 		gl::ScopedFramebuffer scopedFramebuffer( mFboAo );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboAo->getSize() );
 		gl::clear();
@@ -890,6 +896,47 @@ void DeferredShadingAdvancedApp::resize()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::clear();
 	}
+
+	// Create shadow map buffer
+	{
+		size_t sz = 1024;
+		switch ( mQuality ) {
+		case Quality_Low:
+			sz = 512;
+			break;
+		case Quality_High:
+			sz = 2048;
+			break;
+		case Quality_VeryHigh:
+			sz = 4096;
+			break;
+		default:
+			break;
+		}
+		mTextureFboShadowMap = gl::Texture2d::create( sz, sz, gl::Texture2d::Format()
+													 .internalFormat( GL_DEPTH_COMPONENT32F )
+													 .magFilter( GL_LINEAR )
+													 .minFilter( GL_LINEAR )
+													 .wrap( GL_CLAMP_TO_EDGE )
+													 .dataType( GL_FLOAT ) );
+		{
+			gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
+			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+		}
+		gl::Fbo::Format fboFormat;
+		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
+		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
+		gl::ScopedFramebuffer scopedFramebuffer( mFboShadowMap );
+		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboShadowMap->getSize() );
+		gl::clear();
+	}
+	
+	// Set up shadow camera
+	mShadowCamera.setPerspective( 150.0f, mFboShadowMap->getAspectRatio(),
+								 mMayaCam.getCamera().getNearClip(),
+								 mMayaCam.getCamera().getFarClip() );
+	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
 }
 
 void DeferredShadingAdvancedApp::screenShot()
@@ -902,6 +949,11 @@ void DeferredShadingAdvancedApp::update()
 	if ( mQuit ) {
 		quit();
 		return;
+	}
+
+	if ( mQualityPrev != mQuality ) {
+		resize();
+		mQualityPrev = mQuality;
 	}
 
 	float e		= (float)getElapsedSeconds();
@@ -945,6 +997,11 @@ void DeferredShadingAdvancedApp::update()
 			mLights.at( i ).setPosition( p );
 		}
 	}
+	float t = e * 0.333f;
+	mLights.back().setPosition( vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 3.0f );
+
+	// Update shadow camera
+	mShadowCamera.setEyePoint( mLights.back().getPosition() );
 }
 
 CINDER_APP( DeferredShadingAdvancedApp, RendererGl( RendererGl::Options().msaa( 0 ).coreProfile( true ).version( 3, 3 ) ), 
