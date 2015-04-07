@@ -213,7 +213,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 	mRecenterCamera = false;
 
 	mMayaCam.setCurrentCam( mCamera );
-	mMayaCam.mouseDown( event.getPos() );
+	mMayaCam.mouseDown( event );
 
 	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
 		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) + 1 );
@@ -225,7 +225,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 
 void GeometryApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mMayaCam.mouseDrag( event );
 	mCamera = mMayaCam.getCamera();
 }
 
