@@ -88,6 +88,8 @@ static JNIEnv* JvmHelper_Attach()
 
 static void JvmHelper_Deatch()
 {
+	LOGI("JvmHelper_Deatch");
+	
 	void* block = pthread_getspecific( sThreadExitKey );
 	if( nullptr != block ) {
 		if( nullptr != sJavaVm ) {

@@ -24,19 +24,16 @@
 #include "cinder/app/android/AppAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
-#include <android/log.h>
-
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+#include "cinder/android/AndroidDevLog.h"
+using namespace ci::android;
 
 namespace cinder { namespace app {
-
-//android_app *AppAndroid::sNativeApp = nullptr;
 
 AppAndroid::AppAndroid()
 	: AppBase()
 {
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
@@ -44,11 +41,15 @@ AppAndroid::AppAndroid()
 
 	Platform::get()->setExecutablePath( getAppPath() );
 
-	mImpl.reset( new AppImplAndroid( this, *settings ) );
+	mImpl.reset( new AppImplAndroid( this, *settings ) );	
+
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 AppAndroid::~AppAndroid()
 {
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title )
@@ -58,13 +59,15 @@ void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRende
 
 void AppAndroid::launch( const char *title, int argc, char * const argv[] )
 {
-	LOGI("AppAndroid::launch");
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 	mImpl->setup();
 
 	//
 	// NOTE: Don't call AppImplAndroid's event loop functions from here.
 	//
+	
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 WindowRef AppAndroid::createWindow( const Window::Format &format )

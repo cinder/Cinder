@@ -402,8 +402,6 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 
 void EventManagerAndroid::execute()
 {
-	LOGI(">>>>>>>>>>>>>>>>>>>>>>>>>>>>> EventManagerAndroid::execute");
-
 	mNativeApp->userData     = this;
 	mNativeApp->onInputEvent = EventManagerAndroid::NativeHandleInput;
 	mNativeApp->onAppCmd     = EventManagerAndroid::NativeHandleCmd;

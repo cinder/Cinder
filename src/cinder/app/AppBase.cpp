@@ -36,6 +36,12 @@
 
 using namespace std;
 
+
+#if defined( CINDER_ANDROID )
+#include "cinder/android/AndroidDevLog.h"
+using namespace ci::android;
+#endif
+
 namespace cinder { namespace app {
 
 AppBase*					AppBase::sInstance = nullptr;			// Static instance of App, effectively a singleton
@@ -113,8 +119,16 @@ AppBase::~AppBase()
 // These are called by application instantiation main functions
 // static
 void AppBase::prepareLaunch()
-{
+{	
+#if defined( CINDER_ANDROID )
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
+#endif
+
 	Platform::get()->prepareLaunch();
+
+#if defined( CINDER_ANDROID )
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
+#endif
 }
 
 // static
@@ -143,6 +157,12 @@ void AppBase::executeLaunch( const char *title, int argc, char * const argv[] )
 void AppBase::cleanupLaunch()
 {
 	Platform::get()->cleanupLaunch();
+
+#if defined( CINDER_ANDROID )
+	// This will delete Platform::sInstance if it's not null. 
+	// Afterwards Platform::sInstance will be set to null.
+	Platform::set( nullptr );
+#endif 	
 }
 
 void AppBase::privateSetup__()

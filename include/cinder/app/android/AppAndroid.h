@@ -26,6 +26,8 @@
 #include "cinder/app/AppBase.h"
 #include "cinder/app/android/EventManagerAndroid.h"
 
+#include "cinder/android/AndroidDevLog.h"
+
 namespace cinder { namespace app {
 
 class AppImplAndroid;
@@ -94,9 +96,11 @@ void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *t
 	if( settings.getShouldQuit() )
 		return;
 
+ci::android::dbg_app_log( "Allocating AppT" );
 	AppBase *app = new AppT;
 	#pragma unused( app )
 
+ci::android::dbg_app_log( "Calling AppBase::executeLaunch" );
 	AppBase::executeLaunch( title, 0, nullptr );
 	//
 	// NOTE: AppBase::cleanupLaunch is called in EventManagerAndroid::execute.
@@ -113,8 +117,12 @@ void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, an
 
 	std::unique_ptr<EventManagerAndroid> eventManager( new EventManagerAndroid( nativeApp, deferredMainFn, cleanupLaunchFn ) );
 	if( eventManager ) {
-		eventManager->execute();
+ci::android::dbg_app_log( "BEFORE eventManager->execute()" );
+		eventManager->execute();		
+ci::android::dbg_app_log( "AFTER eventManager->execute()" );
+ci::android::dbg_app_log( "." );
 	}
+
 }
 
 #define CINDER_APP_ANDROID( APP, RENDERER, ... )									\
