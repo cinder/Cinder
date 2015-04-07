@@ -118,7 +118,13 @@ void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, an
 	std::unique_ptr<EventManagerAndroid> eventManager( new EventManagerAndroid( nativeApp, deferredMainFn, cleanupLaunchFn ) );
 	if( eventManager ) {
 ci::android::dbg_app_log( "BEFORE eventManager->execute()" );
-		eventManager->execute();		
+		eventManager->execute();
+
+		AppBase *app = AppBase::get();
+		if( nullptr != app ) {
+			delete app;
+		}
+
 ci::android::dbg_app_log( "AFTER eventManager->execute()" );
 ci::android::dbg_app_log( "." );
 	}
