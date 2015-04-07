@@ -63,12 +63,12 @@ class MayaCamUI {
 		return *this;
 	}
 
-	void connect( const app::WindowRef &window )
+	void connect( const app::WindowRef &window, int signalPriority = 0 )
 	{
 		mWindow = window;
-		mMouseDownConnection = window->getSignalMouseDown().connect(
+		mMouseDownConnection = window->getSignalMouseDown().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
-		mMouseDragConnection = window->getSignalMouseDrag().connect(
+		mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
 	}
 
