@@ -24,6 +24,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/ConstantStrings.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/ShaderPreprocessor.h"
 #include "cinder/gl/scoped.h"
 #include "cinder/Log.h"
 
@@ -239,18 +240,21 @@ GlslProg::~GlslProg()
 GlslProg::GlslProg( const Format &format )
 	: mActiveUniformTypesCached( false ), mActiveAttribTypesCached( false ),
 	mUniformSemanticsCached( false ), mUniformNameToSemanticMap( getDefaultUniformNameToSemanticMap() ),
-	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() ),
-	mPreprocessingEnabled( format.isPreprocessingEnabled() )
+	mAttribSemanticsCached( false ), mAttribNameToSemanticMap( getDefaultAttribNameToSemanticMap() )
 {
 	mHandle = glCreateProgram();
-	
-	// copy the Format's define directives vector
-	for( const auto &define : format.getDefineDirectives() )
-		mShaderPreprocessor.addDefine( define );
 
-	if( format.getVersion() )
-		mShaderPreprocessor.setVersion( format.getVersion() );
-	
+	if( format.isPreprocessingEnabled() ) {
+		mShaderPreprocessor.reset( new ShaderPreprocessor );
+
+		// copy the Format's define directives vector
+		for( const auto &define : format.getDefineDirectives() )
+			mShaderPreprocessor->addDefine( define );
+
+		if( format.getVersion() )
+			mShaderPreprocessor->setVersion( format.getVersion() );
+	}
+
 	if( ! format.getVertex().empty() )
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
@@ -379,8 +383,8 @@ GlslProg::AttribSemanticMap& GlslProg::getDefaultAttribNameToSemanticMap()
 void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPath, GLint shaderType )
 {
 	GLuint handle = glCreateShader( shaderType );
-	if( mPreprocessingEnabled ) {
-		string preprocessedSource = mShaderPreprocessor.parse( shaderSource, shaderPath );
+	if( mShaderPreprocessor ) {
+		string preprocessedSource = mShaderPreprocessor->parse( shaderSource, shaderPath );
 		const char *cStr = preprocessedSource.c_str();
 		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	}
