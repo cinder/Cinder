@@ -7,7 +7,6 @@ in Vertex
 	vec4	color;
 	vec3 	normal;
 	vec4 	position;
-	vec2 	uv;
 } vertex;
 
 layout (location = 0) out vec4	oAlbedo;
