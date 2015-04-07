@@ -5,9 +5,9 @@ const int MODE_NORMAL	= 1;
 const int MODE_POSITION	= 2;
 const int MODE_EMISSIVE	= 3;
 
-uniform sampler2D 	uSamplerAlbedo;
-uniform sampler2D 	uSamplerNormalEmissive;
-uniform sampler2D 	uSamplerPosition;
+uniform sampler2D uSamplerAlbedo;
+uniform sampler2D uSamplerNormalEmissive;
+uniform sampler2D uSamplerPosition;
 
 uniform int uMode = 0;
 

@@ -91,7 +91,8 @@ DeferredShadingApp::DeferredShadingApp()
 					  .intensity( 0.8f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
 					  .radius( 0.1f ).volume( 15.0f ) );
 	for ( size_t i = 0; i < 8; ++i ) {
-		mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
+		float t = ( (float)i / 8.0f ) * 0.2f;
+		mLights.push_back( Light().colorDiffuse( ColorAf( 0.75f + t * 0.5f, 0.92f - t, 0.7f + t * t, 1.0f ) )
 						  .intensity( 0.6f ).radius( 0.05f ).volume( 5.0f ) );
 	}
 
@@ -107,6 +108,7 @@ DeferredShadingApp::DeferredShadingApp()
 	mParams->addParam( "Frame rate",	&mFrameRate,				"", true );
 	mParams->addParam( "Debug mode",	&mDebugMode ).key( "d" );
 	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
+	mParams->addButton( "Load shaders",	[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
 	mParams->addParam( "Quit",			&mQuit ).key( "q" );
 	mParams->addSeparator();
@@ -121,9 +123,8 @@ DeferredShadingApp::DeferredShadingApp()
 												 .minFilter( GL_LINEAR )
 												 .wrap( GL_CLAMP_TO_EDGE )
 												 .dataType( GL_FLOAT ) );
-	gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-	glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
+	mTextureFboShadowMap->setCompareFunc( GL_LEQUAL );
+	mTextureFboShadowMap->setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
 	gl::Fbo::Format fboFormat;
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
 	mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
@@ -235,6 +236,7 @@ void DeferredShadingApp::draw()
 		mBatchGBufferSphere->getGlslProg()->uniform( "uEmissive", 1.0f );
 		for ( const Light& light : mLights ) {
 			gl::ScopedModelMatrix scopedModelMatrix;
+			gl::ScopedColor scopedColor( light.getColorDiffuse() );
 			gl::translate( light.getPosition() );
 			gl::scale( vec3( light.getRadius() ) );
 			mBatchGBufferSphere->draw();
@@ -470,6 +472,10 @@ void DeferredShadingApp::update()
 			p.y				= ground + 1.5f;
 			mLights.at( i + 1 ).setPosition( p );
 		}
+
+		t					= e * 0.333f;
+		mLights.front().setPosition( vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 2.0f );
+		mShadowCamera.setEyePoint( mLights.front().getPosition() );
 	}
 }
 

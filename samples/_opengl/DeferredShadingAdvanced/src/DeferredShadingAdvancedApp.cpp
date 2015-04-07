@@ -919,11 +919,8 @@ void DeferredShadingAdvancedApp::resize()
 													 .minFilter( GL_LINEAR )
 													 .wrap( GL_CLAMP_TO_EDGE )
 													 .dataType( GL_FLOAT ) );
-		{
-			gl::ScopedTextureBind scopeTextureBind( mTextureFboShadowMap );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_MODE, GL_COMPARE_REF_TO_TEXTURE );
-			glTexParameteri( GL_TEXTURE_2D, GL_TEXTURE_COMPARE_FUNC, GL_LEQUAL );
-		}
+		mTextureFboShadowMap->setCompareFunc( GL_LEQUAL );
+		mTextureFboShadowMap->setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
 		gl::Fbo::Format fboFormat;
 		fboFormat.attachment( GL_DEPTH_ATTACHMENT, mTextureFboShadowMap );
 		mFboShadowMap = gl::Fbo::create( sz, sz, fboFormat );
