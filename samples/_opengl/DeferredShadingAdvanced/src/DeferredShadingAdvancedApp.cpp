@@ -489,7 +489,7 @@ void DeferredShadingAdvancedApp::draw()
 		if ( mEnabledAoBlur ) {
 
 			// Calculate blur pixel size
-			vec2 aoBlurSize	= vec2( 1.0f ) / winSize;
+			vec2 aoBlurSize	= vec2( 0.5f ) / winSize;
 			aoBlurSize		*= vec2( mFboAo->getSize() ) / winSize;
 
 			// Horizontal blur pass
