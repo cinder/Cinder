@@ -4,7 +4,6 @@ in Vertex
 {
 	vec3	color;
 	vec3 	normal;
-	vec2 	uv;
 } vertex;
 
 layout (location = 0) out vec3	oAlbedo;
@@ -24,3 +23,4 @@ void main( void )
 	oMaterial	= uMaterialId;
 	oNormal		= encodeNormal( vertex.normal );
 }
+ 
