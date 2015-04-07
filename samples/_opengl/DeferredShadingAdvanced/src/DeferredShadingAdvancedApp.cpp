@@ -536,10 +536,10 @@ void DeferredShadingAdvancedApp::draw()
 	
 		// G-buffer and materials
 		{
-			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 0 ],			0 );
-			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 1 ],			1 );
-			gl::ScopedTextureBind scopedTextureBind3( mTextureFboGBuffer[ 2 ],			2 );
-			gl::ScopedTextureBind scopedTextureBind0( mFboGBuffer->getDepthTexture(),	3 );
+			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],			0 );
+			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],			1 );
+			gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],			2 );
+			gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),	3 );
 
 			mBatchDebugRect->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
 			mBatchDebugRect->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
@@ -710,6 +710,7 @@ void DeferredShadingAdvancedApp::loadShaders()
 
 	// Load shaders
 	DataSourceRef passThrough		= loadAsset( "pass_through.vert" );
+	gl::GlslProgRef ao				= loadGlslProg( "AO",				passThrough,					loadAsset( "ao.frag" ) );
 	gl::GlslProgRef blur			= loadGlslProg( "Blur",				passThrough,					loadAsset( "blur.frag" ) );
 	gl::GlslProgRef color			= loadGlslProg( "Color",			passThrough,					loadAsset( "color.frag" ) );
 	gl::GlslProgRef composite		= loadGlslProg( "Composite",		passThrough,					loadAsset( "composite.frag" ) );
@@ -720,7 +721,6 @@ void DeferredShadingAdvancedApp::loadShaders()
 	gl::GlslProgRef gBuffer			= loadGlslProg( "G-buffer",			loadAsset( "gbuffer.vert" ),	loadAsset( "gbuffer.frag" ) );
 	gl::GlslProgRef lBuffer			= loadGlslProg( "L-buffer",			passThrough,					loadAsset( "lbuffer.frag" ) );
 	gl::GlslProgRef shadowMap		= loadGlslProg( "Shadow map",		loadAsset( "shadow_map.vert" ),	loadAsset( "shadow_map.frag" ) );
-	gl::GlslProgRef ao				= loadGlslProg( "AO",				passThrough,					loadAsset( "ao.frag" ) );
 	gl::GlslProgRef stockColor		= gl::context()->getStockShader( gl::ShaderDef().color() );
 	gl::GlslProgRef stockTexture	= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 
