@@ -1,12 +1,4 @@
 #pragma once
 #include "cinder/CinderResources.h"
 
-//#define RES_MY_RES			CINDER_RESOURCE( ../resources/, image_name.png, 128, IMAGE )
-
-
-
-
-
-
-
-
+#define RES_8LBS_OBJ			CINDER_RESOURCE( ../../../samples/data/models/, 8lbs.obj, 128, OBJ )

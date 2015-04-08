@@ -14,6 +14,7 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		11EBBACE1AD4D5A300EC24CF /* 8lbs.obj in Resources */ = {isa = PBXBuildFile; fileRef = 11EBBACD1AD4D5A300EC24CF /* 8lbs.obj */; };
 		24024A26B07B4039AC24DB3C /* TriMeshReadWriteTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1AE5DE9536294CE49F9FB108 /* TriMeshReadWriteTestApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -29,12 +30,14 @@
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		11EBBACD1AD4D5A300EC24CF /* 8lbs.obj */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = 8lbs.obj; path = ../../../samples/data/models/8lbs.obj; sourceTree = "<group>"; };
+		11EBBACF1AD4D5D700EC24CF /* prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = prefix.pch; sourceTree = "<group>"; };
+		11EBBAD01AD4D64900EC24CF /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		1AE5DE9536294CE49F9FB108 /* TriMeshReadWriteTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TriMeshReadWriteTestApp.cpp; path = ../src/TriMeshReadWriteTestApp.cpp; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
-		680F00D494D843899360974A /* TriMeshReadWriteTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = TriMeshReadWriteTest_Prefix.pch; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* TriMeshReadWriteTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TriMeshReadWriteTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A7A4A3BBE1564DEC9A093277 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		FDD05FB5E5904A9595D0805E /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
@@ -61,13 +64,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		01B97315FEAEA392516A2CEA /* Blocks */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Blocks;
-			sourceTree = "<group>";
-		};
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
@@ -111,7 +107,6 @@
 		29B97314FDCFA39411CA2CEA /* TriMeshReadWriteTest */ = {
 			isa = PBXGroup;
 			children = (
-				01B97315FEAEA392516A2CEA /* Blocks */,
 				29B97315FDCFA39411CA2CEA /* Headers */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97317FDCFA39411CA2CEA /* Resources */,
@@ -124,8 +119,8 @@
 		29B97315FDCFA39411CA2CEA /* Headers */ = {
 			isa = PBXGroup;
 			children = (
+				11EBBACF1AD4D5D700EC24CF /* prefix.pch */,
 				FDD05FB5E5904A9595D0805E /* Resources.h */,
-				680F00D494D843899360974A /* TriMeshReadWriteTest_Prefix.pch */,
 			);
 			name = Headers;
 			sourceTree = "<group>";
@@ -133,6 +128,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				11EBBAD01AD4D64900EC24CF /* assets */,
+				11EBBACD1AD4D5A300EC24CF /* 8lbs.obj */,
 				A7A4A3BBE1564DEC9A093277 /* Info.plist */,
 			);
 			name = Resources;
@@ -201,6 +198,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11EBBACE1AD4D5A300EC24CF /* 8lbs.obj in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

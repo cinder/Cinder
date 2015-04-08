@@ -1,13 +1,15 @@
 #version 150
 
-in vec4		Color;
-in vec3		Normal;
+uniform sampler2D	uTex0;
 
-out vec4 	oColor;
+in vec3		vNormal;
+in vec2		vTexCoord0;
+
+out vec4 	oFragColor;
 
 void main( void )
 {
-	vec3 normal = normalize( -Normal );
+	vec3 normal = normalize( -vNormal );
 	float diffuse = max( dot( normal, vec3( 0, 0, -1 ) ), 0 );
-	oColor = Color * diffuse;
+	oFragColor = texture( uTex0, vTexCoord0 ) * diffuse;
 }
