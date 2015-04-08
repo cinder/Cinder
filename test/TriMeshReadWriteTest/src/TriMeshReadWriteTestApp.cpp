@@ -5,6 +5,7 @@
 #include "cinder/Sphere.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/ImageIo.h"
+#include "cinder/ip/Checkerboard.h"
 
 #include "Resources.h"
 
@@ -30,11 +31,13 @@ class TriMeshReadWriteTestApp : public App {
 	TriMeshRef		mMesh;
 	gl::BatchRef	mBatch;
 	gl::GlslProgRef	mGlsl;
+	gl::TextureRef	mCheckerTexture;
 };
 
 void TriMeshReadWriteTestApp::setup()
 {	
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+	mGlsl->uniform( "uTex0", 0 );
 
 	CameraPersp initialCam;
 	initialCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
@@ -48,10 +51,9 @@ void TriMeshReadWriteTestApp::setup()
 
 void TriMeshReadWriteTestApp::testObjFileWriteRead()
 {
-	const string modelObjName = "8lbs.obj";
 	const string modelBinName = "model.bin";
 
-	ObjLoader loader( loadAsset( modelObjName ) );
+	ObjLoader loader( loadResource( RES_8LBS_OBJ ) );
 	mMesh = TriMesh::create( loader );
 	if( ! loader.getAvailableAttribs().count( geom::NORMAL ) )
 		mMesh->recalculateNormals();
@@ -67,6 +69,9 @@ void TriMeshReadWriteTestApp::testObjFileWriteRead()
 	mMesh->read( loadFile( writePath / modelBinName ) );
 
 	mBatch = gl::Batch::create( *mMesh, mGlsl );
+
+	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
+	mCheckerTexture->bind( 0 );
 }
 
 void TriMeshReadWriteTestApp::resize()
@@ -102,7 +107,7 @@ void TriMeshReadWriteTestApp::keyDown( KeyEvent event )
 
 void TriMeshReadWriteTestApp::draw()
 {
-	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
+	gl::clear( Color( 0.45f, 0.22f, 0.1f ) );
 
 	gl::setMatrices( mMayaCam.getCamera() );
 

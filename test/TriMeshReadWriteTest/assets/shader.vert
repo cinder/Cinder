@@ -8,12 +8,12 @@ in vec2		ciTexCoord0;
 in vec3		ciNormal;
 in vec4		ciColor;
 
-out lowp vec4	Color;
-out highp vec3	Normal;
+out highp vec3	vNormal;
+out highp vec2	vTexCoord0;
 
 void main( void )
 {
 	gl_Position	= ciModelViewProjection * ciPosition;
-	Color 		= ciColor;
-	Normal		= ciNormalMatrix * ciNormal;
+	vNormal		= ciNormalMatrix * ciNormal;
+	vTexCoord0	= ciTexCoord0;
 }
