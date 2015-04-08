@@ -579,20 +579,20 @@ void TriMesh::readImplV2( const IStreamRef &in )
 	in->readLittle( &mNormalsDims );
 	in->readLittle( &numNormals );
 
-	in->readLittle( &numColors );
 	in->readLittle( &mColorsDims );
+	in->readLittle( &numColors );
 
-	in->readLittle( &numTexCoords0 );
 	in->readLittle( &mTexCoords0Dims );
+	in->readLittle( &numTexCoords0 );
 
-	in->readLittle( &numTexCoords1 );
 	in->readLittle( &mTexCoords1Dims );
+	in->readLittle( &numTexCoords1 );
 
-	in->readLittle( &numTexCoords2 );
 	in->readLittle( &mTexCoords2Dims );
+	in->readLittle( &numTexCoords2 );
 
-	in->readLittle( &numTexCoords3 );
 	in->readLittle( &mTexCoords3Dims );
+	in->readLittle( &numTexCoords3 );
 
 	in->readLittle( &numTangents );
 	in->readLittle( &numBitangents );
@@ -616,7 +616,7 @@ void TriMesh::readImplV2( const IStreamRef &in )
 	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
 
 	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
-	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+	in->readData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
 
 	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
 	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
