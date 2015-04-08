@@ -29,7 +29,6 @@ out vec4 	oColor;
 
 void main( void )
 {
-
 	// Only draw fragment if it occurs inside the light volume
 	vec2 uv					= gl_FragCoord.xy / uWindowSize;
 	vec4 position			= texture( uSamplerPosition, uv );
@@ -64,7 +63,7 @@ void main( void )
 
 	// Calculate shadow
 	if ( uShadowEnabled ) {
-		float bias			= 0.86;
+		const float bias	= 0.86;
 		vec4 shadowClip		= uShadowMatrix * uViewMatrixInverse * position;
 		vec3 shadowCoord	= shadowClip.xyz / shadowClip.w;
 		shadowCoord 		= shadowCoord * 0.5 + 0.5;

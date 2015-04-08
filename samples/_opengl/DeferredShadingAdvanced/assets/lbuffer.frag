@@ -1,29 +1,24 @@
 #include "material.glsl"
 #include "vertex_in.glsl"
+#include "decode.glsl"
 
 const float kShadowBias		= 0.8655;
 const float	kShadowBlurSize = 0.005;
 const float kShadowOpacity	= 0.3;
 
+uniform vec4			uLightColorAmbient;
+uniform vec4			uLightColorDiffuse;
+uniform vec4			uLightColorSpecular;
+uniform float			uLightIntensity;
+uniform vec3			uLightPosition;
+uniform float			uLightRadius;
 uniform sampler2D		uSamplerAlbedo;
-uniform sampler2D		uSamplerDepth;
 uniform sampler2D		uSamplerNormal;
 uniform sampler2DShadow uSamplerShadowMap;
-
-uniform vec4	uLightColorAmbient;
-uniform vec4	uLightColorDiffuse;
-uniform vec4	uLightColorSpecular;
-uniform float	uLightIntensity;
-uniform vec3	uLightPosition;
-uniform float	uLightRadius;
-
-uniform bool	uShadowEnabled;
-uniform mat4 	uShadowMatrix;
-
-uniform vec2    uProjectionParams;
-uniform mat4    uProjMatrixInverse;
-uniform mat4 	uViewMatrixInverse;
-uniform vec2	uWindowSize;
+uniform bool			uShadowEnabled;
+uniform mat4			uShadowMatrix;
+uniform mat4 			uViewMatrixInverse;
+uniform vec2			uWindowSize;
 
 out vec4 	oColor;
 
@@ -89,29 +84,11 @@ float shadow( in vec4 position )
 	return v;
 }
 
-vec3 decodeNormal( in vec2 enc )
-{
-    vec4 n				= vec4( enc.xy, 0.0, 0.0 ) * vec4( 2.0, 2.0, 0.0, 0.0 ) + vec4( -1.0, -1.0, 1.0, -1.0 );
-    float l				= dot( n.xyz, -n.xyw );
-    n.z					= l;
-    n.xy				*= sqrt( l );
-    return n.xyz * 2.0 + vec3( 0.0, 0.0, -1.0 );
-}
-
-vec4 getPosition( in vec2 uv )
-{
-    float depth			= texture( uSamplerDepth, uv ).x;
-    float linearDepth 	= uProjectionParams.y / ( depth - uProjectionParams.x );
-    vec4 posProj		= vec4( ( uv.x - 0.5 ) * 2.0, ( uv.y - 0.5 ) * 2.0, 0.0, 1.0 );
-    vec4 viewRay		= uProjMatrixInverse * posProj;
-    return vec4( viewRay.xyz * linearDepth, 1.0 );
-}
-
 void main( void )
 {
 	vec2 uv				= gl_FragCoord.xy / uWindowSize;
 
-	vec4 position 		= getPosition( uv );
+	vec4 position 		= decodePosition( uv );
 	vec3 L 				= uLightPosition - position.xyz;
 	float d 			= length( L );
 	if ( d > uLightRadius ) {

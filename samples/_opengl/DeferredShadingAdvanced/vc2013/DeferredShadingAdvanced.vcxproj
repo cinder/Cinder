@@ -210,6 +210,7 @@
     <ClInclude Include="..\include\Material.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\assets\decode.glsl" />
     <None Include="..\assets\emissive.frag" />
     <None Include="..\assets\blur.frag" />
     <None Include="..\assets\color.frag" />
@@ -224,13 +225,9 @@
     <None Include="..\assets\pass_through.vert" />
     <None Include="..\assets\shadow_map.frag" />
     <None Include="..\assets\shadow_map.vert" />
-    <None Include="..\assets\ssao.frag" />
-    <None Include="..\assets\ssao.vert" />
+    <None Include="..\assets\ao.frag" />
     <None Include="..\assets\vertex_in.glsl" />
     <None Include="..\assets\vertex_out.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
