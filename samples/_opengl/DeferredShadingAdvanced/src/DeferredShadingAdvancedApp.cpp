@@ -120,7 +120,6 @@ private:
 
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
-#include "cinder/Rand.h"
 #include "cinder/Utilities.h"
 
 using namespace ci;
