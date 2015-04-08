@@ -440,76 +440,21 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 void TriMesh::read( const DataSourceRef &dataSource )
 {
 	IStreamRef in = dataSource->createStream();
-	clear();
 
 	uint8_t versionNumber;
 	in->read( &versionNumber );
 
-	if( versionNumber != READ_WRITE_VERSION ) {
-		string description = "TriMesh::read() error: wrong version number. expected: ";
-		description += to_string( READ_WRITE_VERSION ) + ", actual: " + to_string( versionNumber );
-		throw Exception( description );
+	if( versionNumber == 1 ) {
+		clear();
+		readImplV1( in );
 	}
-	
-	uint32_t numIndices, numPositions, numNormals, numColors;
-	uint32_t numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
-	uint32_t numTangents, numBitangents;
-
-	in->readLittle( &numIndices );
-
-	in->readLittle( &mPositionsDims );
-	in->readLittle( &numPositions );
-
-	in->readLittle( &mNormalsDims );
-	in->readLittle( &numNormals );
-
-	in->readLittle( &numColors );
-	in->readLittle( &mColorsDims );
-
-	in->readLittle( &numTexCoords0 );
-	in->readLittle( &mTexCoords0Dims );
-
-	in->readLittle( &numTexCoords1 );
-	in->readLittle( &mTexCoords1Dims );
-
-	in->readLittle( &numTexCoords2 );
-	in->readLittle( &mTexCoords2Dims );
-
-	in->readLittle( &numTexCoords3 );
-	in->readLittle( &mTexCoords3Dims );
-
-	in->readLittle( &numTangents );
-	in->readLittle( &numBitangents );
-
-	mIndices.resize( numIndices );
-	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
-
-	mPositions.resize( numPositions * mPositionsDims );
-	in->readData( mPositions.data(), mPositions.size() * sizeof( float ) );
-
-	mNormals.resize( numNormals );
-	in->readData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
-
-	mColors.resize( numColors * mColorsDims );
-	in->readData( mColors.data(), mColors.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords0 * mTexCoords0Dims );
-	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords1 * mTexCoords1Dims );
-	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
-	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
-	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
-
-	mTangents.resize( numTangents );
-	in->readData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
-
-	mBitangents.resize( numBitangents );
-	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+	else if( versionNumber == 2 ) {
+		clear();
+		readImplV2( in );
+	}
+	else {
+		throw Exception( "TriMesh::read() error: wrong version number. expected version = 1 or 2, version read: " + to_string( versionNumber ) );
+	}
 }
 
 void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
@@ -576,6 +521,111 @@ void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 		if( ! mBitangents.empty() )
 			out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
 	}
+}
+
+// used in 0.8.6 and early glNext
+void TriMesh::readImplV1( const IStreamRef &in )
+{
+	uint32_t numPositions, numNormals, numTexCoords, numIndices;
+	in->readLittle( &numPositions );
+	in->readLittle( &numNormals );
+	in->readLittle( &numTexCoords );
+	in->readLittle( &numIndices );
+
+	for( size_t idx = 0; idx < numPositions; ++idx ) {
+		for( int v = 0; v < 3; ++v ) {
+			float f;
+			in->readLittle( &f );
+			mPositions.push_back( f );
+		}
+	}
+
+	for( size_t idx = 0; idx < numNormals; ++idx ) {
+		vec3 v;
+		in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
+		mNormals.push_back( v );
+	}
+
+	for( size_t idx = 0; idx < numTexCoords; ++idx ) {
+		for( int v = 0; v < 2; ++v ) {
+			float f;
+			in->readLittle( &f );
+			mTexCoords0.push_back( f );
+		}
+	}
+
+	for( size_t idx = 0; idx < numIndices; ++idx ) {
+		uint32_t v;
+		in->readLittle( &v );
+		mIndices.push_back( v );
+	}
+
+	mPositionsDims = 3;
+	mTexCoords0Dims = 2;
+}
+
+// used in 0.9.0
+void TriMesh::readImplV2( const IStreamRef &in )
+{
+	uint32_t numIndices, numPositions, numNormals, numColors;
+	uint32_t numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
+	uint32_t numTangents, numBitangents;
+
+	in->readLittle( &numIndices );
+
+	in->readLittle( &mPositionsDims );
+	in->readLittle( &numPositions );
+
+	in->readLittle( &mNormalsDims );
+	in->readLittle( &numNormals );
+
+	in->readLittle( &numColors );
+	in->readLittle( &mColorsDims );
+
+	in->readLittle( &numTexCoords0 );
+	in->readLittle( &mTexCoords0Dims );
+
+	in->readLittle( &numTexCoords1 );
+	in->readLittle( &mTexCoords1Dims );
+
+	in->readLittle( &numTexCoords2 );
+	in->readLittle( &mTexCoords2Dims );
+
+	in->readLittle( &numTexCoords3 );
+	in->readLittle( &mTexCoords3Dims );
+
+	in->readLittle( &numTangents );
+	in->readLittle( &numBitangents );
+
+	mIndices.resize( numIndices );
+	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
+
+	mPositions.resize( numPositions * mPositionsDims );
+	in->readData( mPositions.data(), mPositions.size() * sizeof( float ) );
+
+	mNormals.resize( numNormals );
+	in->readData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+
+	mColors.resize( numColors * mColorsDims );
+	in->readData( mColors.data(), mColors.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords0 * mTexCoords0Dims );
+	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords1 * mTexCoords1Dims );
+	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
+	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
+	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+
+	mTangents.resize( numTangents );
+	in->readData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+
+	mBitangents.resize( numBitangents );
+	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
 }
 
 bool TriMesh::recalculateNormals( bool smooth, bool weighted )

@@ -337,6 +337,9 @@ class TriMesh : public geom::Source {
 	//! Returns whether or not the vertex, color etc. at both indices is the same.
 	bool		verticesEqual( uint32_t indexA, uint32_t indexB ) const;
 
+	void		readImplV1( const IStreamRef &in );
+	void		readImplV2( const IStreamRef &in );
+
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;
   
