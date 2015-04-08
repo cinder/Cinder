@@ -28,10 +28,6 @@
 
 using namespace std;
 
-namespace {
-	const uint8_t READ_WRITE_VERSION = 2;
-}
-
 namespace cinder {
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -463,8 +459,9 @@ void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 		return;
 
 	OStreamRef out = dataTarget->getStream();
-	
-	out->write( READ_WRITE_VERSION );
+
+	const uint8_t version = 2;
+	out->write( version );
 
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
 
@@ -521,47 +518,6 @@ void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
 		if( ! mBitangents.empty() )
 			out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
 	}
-}
-
-// used in 0.8.6 and early glNext
-void TriMesh::readImplV1( const IStreamRef &in )
-{
-	uint32_t numPositions, numNormals, numTexCoords, numIndices;
-	in->readLittle( &numPositions );
-	in->readLittle( &numNormals );
-	in->readLittle( &numTexCoords );
-	in->readLittle( &numIndices );
-
-	for( size_t idx = 0; idx < numPositions; ++idx ) {
-		for( int v = 0; v < 3; ++v ) {
-			float f;
-			in->readLittle( &f );
-			mPositions.push_back( f );
-		}
-	}
-
-	for( size_t idx = 0; idx < numNormals; ++idx ) {
-		vec3 v;
-		in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
-		mNormals.push_back( v );
-	}
-
-	for( size_t idx = 0; idx < numTexCoords; ++idx ) {
-		for( int v = 0; v < 2; ++v ) {
-			float f;
-			in->readLittle( &f );
-			mTexCoords0.push_back( f );
-		}
-	}
-
-	for( size_t idx = 0; idx < numIndices; ++idx ) {
-		uint32_t v;
-		in->readLittle( &v );
-		mIndices.push_back( v );
-	}
-
-	mPositionsDims = 3;
-	mTexCoords0Dims = 2;
 }
 
 // used in 0.9.0
@@ -626,6 +582,47 @@ void TriMesh::readImplV2( const IStreamRef &in )
 
 	mBitangents.resize( numBitangents );
 	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+}
+
+// used in 0.8.6 and early glNext
+void TriMesh::readImplV1( const IStreamRef &in )
+{
+	uint32_t numPositions, numNormals, numTexCoords, numIndices;
+	in->readLittle( &numPositions );
+	in->readLittle( &numNormals );
+	in->readLittle( &numTexCoords );
+	in->readLittle( &numIndices );
+
+	for( size_t idx = 0; idx < numPositions; ++idx ) {
+		for( int v = 0; v < 3; ++v ) {
+			float f;
+			in->readLittle( &f );
+			mPositions.push_back( f );
+		}
+	}
+
+	for( size_t idx = 0; idx < numNormals; ++idx ) {
+		vec3 v;
+		in->readLittle( &v.x ); in->readLittle( &v.y ); in->readLittle( &v.z );
+		mNormals.push_back( v );
+	}
+
+	for( size_t idx = 0; idx < numTexCoords; ++idx ) {
+		for( int v = 0; v < 2; ++v ) {
+			float f;
+			in->readLittle( &f );
+			mTexCoords0.push_back( f );
+		}
+	}
+
+	for( size_t idx = 0; idx < numIndices; ++idx ) {
+		uint32_t v;
+		in->readLittle( &v );
+		mIndices.push_back( v );
+	}
+
+	mPositionsDims = 3;
+	mTexCoords0Dims = 2;
 }
 
 bool TriMesh::recalculateNormals( bool smooth, bool weighted )
