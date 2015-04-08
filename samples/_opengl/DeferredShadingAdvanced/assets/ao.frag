@@ -14,7 +14,7 @@ const float	kPiHalf					= kPi * 0.5;
 const float	kSampleRadius			= 0.5;
 const float kSampleStep				= 0.0005;
 const float kStepAngle				= kPiTwo / kNumSampleDirections;
-const float kStrength				= 1.3;
+const float kStrength				= 1.0;
 const float kTangentBias			= 0.05;
 
 out vec4 	oColor;
