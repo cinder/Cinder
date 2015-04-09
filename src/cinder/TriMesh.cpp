@@ -1,6 +1,32 @@
-#include "cinder/TriMesh.h"
+/*
+ Copyright (c) 2015, The Barbarian Group
+ All rights reserved.
 
-using std::vector;
+ Portions of this code (C) Paul Houx
+ All rights reserved.
+
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+*/
+
+#include "cinder/TriMesh.h"
+#include "cinder/Exception.h"
+
+using namespace std;
 
 namespace cinder {
 
@@ -407,21 +433,166 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 	return AxisAlignedBox3f( min, max );
 }
 
-
-void TriMesh::read( DataSourceRef dataSource )
+void TriMesh::read( const DataSourceRef &dataSource )
 {
 	IStreamRef in = dataSource->createStream();
-	clear();
 
 	uint8_t versionNumber;
 	in->read( &versionNumber );
-	
+
+	if( versionNumber == 1 ) {
+		clear();
+		readImplV1( in );
+	}
+	else if( versionNumber == 2 ) {
+		clear();
+		readImplV2( in );
+	}
+	else {
+		throw Exception( "TriMesh::read() error: wrong version number. expected version = 1 or 2, version read: " + to_string( versionNumber ) );
+	}
+}
+
+void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
+{
+	if( mIndices.empty() )
+		return;
+
+	OStreamRef out = dataTarget->getStream();
+
+	const uint8_t version = 2;
+	out->write( version );
+
+	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
+
+	out->writeLittle( static_cast<uint8_t>( mPositionsDims ) );
+	out->writeLittle( static_cast<uint32_t>( ! mPositions.empty() ? mPositions.size() / mPositionsDims : 0 ) );
+
+	out->writeLittle( static_cast<uint8_t>( mNormalsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
+
+	out->writeLittle( static_cast<uint8_t>( mColorsDims ) );
+	out->writeLittle( static_cast<uint32_t>( mColors.empty() ? 0 : mColors.size() / mColorsDims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords0Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords0.empty() ? 0 : mTexCoords0.size() / mTexCoords0Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords1Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords1.empty() ? 0 : mTexCoords1.size() / mTexCoords1Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords2Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords2.empty() ? 0 : mTexCoords2.size() / mTexCoords2Dims ) );
+
+	out->writeLittle( static_cast<uint8_t>( mTexCoords3Dims ) );
+	out->writeLittle( static_cast<uint32_t>( mTexCoords3.empty() ? 0 : mTexCoords3.size() / mTexCoords3Dims ) );
+
+	if( writeTangents ) {
+		out->writeLittle( static_cast<uint32_t>( mTangents.size() ) );
+		out->writeLittle( static_cast<uint32_t>( mBitangents.size() ) );
+	}
+	else {
+		// write zeroes for num tangents / bitangents
+		out->writeLittle( static_cast<uint32_t>( 0 ) );
+		out->writeLittle( static_cast<uint32_t>( 0 ) );
+	}
+
+	out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
+	if( ! mPositions.empty() )
+		out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
+	if( ! mNormals.empty() )
+		out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+	if( ! mColors.empty() )
+		out->writeData( mColors.data(), mColors.size() * sizeof( float ) );
+	if( ! mTexCoords0.empty() )
+		out->writeData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+	if( ! mTexCoords1.empty() )
+		out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+	if( ! mTexCoords2.empty() )
+		out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
+	if( ! mTexCoords3.empty() )
+		out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+
+	if( writeTangents ) {
+		if( ! mTangents.empty() )
+			out->writeData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+		if( ! mBitangents.empty() )
+			out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+	}
+}
+
+// used in 0.9.0
+void TriMesh::readImplV2( const IStreamRef &in )
+{
+	uint32_t numIndices, numPositions, numNormals, numColors;
+	uint32_t numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
+	uint32_t numTangents, numBitangents;
+
+	in->readLittle( &numIndices );
+
+	in->readLittle( &mPositionsDims );
+	in->readLittle( &numPositions );
+
+	in->readLittle( &mNormalsDims );
+	in->readLittle( &numNormals );
+
+	in->readLittle( &mColorsDims );
+	in->readLittle( &numColors );
+
+	in->readLittle( &mTexCoords0Dims );
+	in->readLittle( &numTexCoords0 );
+
+	in->readLittle( &mTexCoords1Dims );
+	in->readLittle( &numTexCoords1 );
+
+	in->readLittle( &mTexCoords2Dims );
+	in->readLittle( &numTexCoords2 );
+
+	in->readLittle( &mTexCoords3Dims );
+	in->readLittle( &numTexCoords3 );
+
+	in->readLittle( &numTangents );
+	in->readLittle( &numBitangents );
+
+	mIndices.resize( numIndices );
+	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
+
+	mPositions.resize( numPositions * mPositionsDims );
+	in->readData( mPositions.data(), mPositions.size() * sizeof( float ) );
+
+	mNormals.resize( numNormals );
+	in->readData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
+
+	mColors.resize( numColors * mColorsDims );
+	in->readData( mColors.data(), mColors.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords0 * mTexCoords0Dims );
+	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords1 * mTexCoords1Dims );
+	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
+	in->readData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
+
+	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
+	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
+
+	mTangents.resize( numTangents );
+	in->readData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
+
+	mBitangents.resize( numBitangents );
+	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+}
+
+// used in 0.8.6 and early glNext
+void TriMesh::readImplV1( const IStreamRef &in )
+{
 	uint32_t numPositions, numNormals, numTexCoords, numIndices;
 	in->readLittle( &numPositions );
 	in->readLittle( &numNormals );
 	in->readLittle( &numTexCoords );
 	in->readLittle( &numIndices );
-	
+
 	for( size_t idx = 0; idx < numPositions; ++idx ) {
 		for( int v = 0; v < 3; ++v ) {
 			float f;
@@ -452,40 +623,6 @@ void TriMesh::read( DataSourceRef dataSource )
 
 	mPositionsDims = 3;
 	mTexCoords0Dims = 2;
-}
-
-void TriMesh::write( DataTargetRef dataTarget ) const
-{
-	assert(mPositionsDims == 3);
-	assert(mTexCoords0Dims == 2);
-
-	// note: tangents and bitangents are not written, because these can be reconstructed
-
-	OStreamRef out = dataTarget->getStream();
-	
-	const uint8_t versionNumber = 1;
-	out->write( versionNumber );
-	
-	out->writeLittle( static_cast<uint32_t>( mPositions.size() / 3 ) );
-	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords0.size() / 2 ) );
-	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
-	
-	for( auto it = mPositions.begin(); it != mPositions.end(); ++it ) {
-		out->writeLittle( *it );
-	}
-
-	for( vector<vec3>::const_iterator it = mNormals.begin(); it != mNormals.end(); ++it ) {
-		out->writeLittle( it->x ); out->writeLittle( it->y ); out->writeLittle( it->z );
-	}
-
-	for( auto it = mTexCoords0.begin(); it != mTexCoords0.end(); ++it ) {
-		out->writeLittle( *it );
-	}
-
-	for( vector<uint32_t>::const_iterator it = mIndices.begin(); it != mIndices.end(); ++it ) {
-		out->writeLittle( *it );
-	}
 }
 
 bool TriMesh::recalculateNormals( bool smooth, bool weighted )
@@ -1089,663 +1226,5 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 
 	return true;
 }
-
-#if 0
-
-TriMesh TriMesh::createCircle( const ivec2 &resolution )
-{
-	return createRing( resolution, 0.0f );
-}
-
-TriMesh TriMesh::createCube( const ivec3 &resolution )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec2> texCoords;
-	
-	ci::TriMesh front	= createSquare( ivec2( resolution.x, resolution.y ) );
-	ci::TriMesh left	= createSquare( ivec2( resolution.z, resolution.y ) );
-	ci::TriMesh top		= createSquare( ivec2( resolution.x, resolution.z ) );
-	
-	vec3 normal;
-	vec3 offset;
-	mat4 transform;
-	
-	// Back
-	normal = vec3( 0.0f, 0.0f, -1.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	// Bottom
-	normal = vec3( 0.0f, -1.0f, 0.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	transform.rotate( vec3( -(float)M_PI * 0.5f, 0.0f, 0.0f ) );
-	transform.translate( offset * -1.0f );
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	normal = vec3( 0.0f, 0.0f, 1.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = front.getVertices().begin(); iter != front.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = front.getTexCoords().begin(); iter != front.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	normal = vec3( -1.0f, 0.0f, 0.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	transform.rotate( vec3( 0.0f, -(float)M_PI * 0.5f, 0.0f ) );
-	transform.translate( offset * -1.0f );
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	// Right
-	normal = vec3( 1.0f, 0.0f, 0.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	transform.rotate( vec3( 0.0f, (float)M_PI * 0.5f, 0.0f ) );
-	transform.translate( offset * -1.0f );
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = left.getVertices().begin(); iter != left.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = left.getTexCoords().begin(); iter != left.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	normal = vec3( 0.0f, 1.0f, 0.0f );
-	offset = normal * 0.5f;
-	transform.setToIdentity();
-	transform.translate( offset );
-	transform.rotate( vec3( (float)M_PI * 0.5f, 0.0f, 0.0f ) );
-	transform.translate( offset * -1.0f );
-	transform.translate( offset );
-	for ( vector<vec3>::iterator iter = top.getVertices().begin(); iter != top.getVertices().end(); ++iter ) {
-		positions.push_back( transform.transformPoint( *iter ) );
-		normals.push_back( normal );
-	}
-	for ( vector<vec2>::iterator iter = top.getTexCoords().begin(); iter != top.getTexCoords().end(); ++iter ) {
-		texCoords.push_back( *iter );
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		indices.push_back( i );
-		colors.push_back( color );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-TriMesh TriMesh::createCylinder( const ivec2 &resolution, float topRadius, float baseRadius, bool closeTop, bool closeBase )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec3> srcNormals;
-	vector<vec3> srcPositions;
-	vector<vec2> srcTexCoords;
-	vector<vec2> texCoords;
-	
-	float delta = ( 2.0f * (float)M_PI ) / (float)resolution.x;
-	float step	= 1.0f / (float)resolution.y;
-	float ud	= 1.0f / (float)resolution.x;
-	
-	int32_t p = 0;
-	for ( float phi = 0.0f; p <= resolution.y; ++p, phi += step ) {
-		int32_t t	= 0;
-		float u		= 0.0f;
-		for ( float theta = 0.0f; t < resolution.x; ++t, u += ud, theta += delta ) {
-			
-			float radius = lerp( baseRadius, topRadius, phi );
-			
-			vec3 position(
-						   math<float>::cos( theta ) * radius,
-						   phi - 0.5f,
-						   math<float>::sin( theta ) * radius
-						   );
-			srcPositions.push_back( position );
-			
-			vec3 normal = vec3( position.x, 0.0f, position.z ).normalized();
-			normal.y = 0.0f;
-			srcNormals.push_back( normal );
-			
-			vec2 texCoord( u, phi );
-			srcTexCoords.push_back( texCoord );
-		}
-	}
-	
-	srcNormals.push_back( vec3( 0.0f, 1.0f, 0.0f ) );
-	srcNormals.push_back( vec3( 0.0f, -1.0f, 0.0f ) );
-	srcPositions.push_back( vec3( 0.0f, -0.5f, 0.0f ) );
-	srcPositions.push_back( vec3( 0.0f, 0.5f, 0.0f ) );
-	srcTexCoords.push_back( vec2( 0.0f, 0.0f ) );
-	srcTexCoords.push_back( vec2( 0.0f, 1.0f ) );
-	int32_t topCenter		= (int32_t)srcPositions.size() - 1;
-	int32_t bottomCenter	= topCenter - 1;
-	
-	if ( closeTop ) {
-		for ( int32_t t = 0; t < resolution.x; ++t ) {
-			int32_t n = t + 1 >= resolution.x ? 0 : t + 1;
-			
-			normals.push_back( srcNormals[ topCenter ] );
-			normals.push_back( srcNormals[ topCenter ] );
-			normals.push_back( srcNormals[ topCenter ] );
-			
-			positions.push_back( srcPositions[ topCenter ] );
-			positions.push_back( srcPositions[ ( resolution.x * resolution.y ) + n ] );
-			positions.push_back( srcPositions[ ( resolution.x * resolution.y ) + t ] );
-			
-			texCoords.push_back( srcTexCoords[ topCenter ] );
-			texCoords.push_back( srcTexCoords[ topCenter ] );
-			texCoords.push_back( srcTexCoords[ topCenter ] );
-		}
-	}
-	
-	for ( int32_t p = 0; p < resolution.y; ++p ) {
-		for ( int32_t t = 0; t < resolution.x; ++t ) {
-			int32_t n = t + 1 >= resolution.x ? 0 : t + 1;
-			
-			int32_t index0 = ( p + 0 ) * resolution.x + t;
-			int32_t index1 = ( p + 0 ) * resolution.x + n;
-			int32_t index2 = ( p + 1 ) * resolution.x + t;
-			int32_t index3 = ( p + 1 ) * resolution.x + n;
-			
-			normals.push_back( srcNormals[ index0 ] );
-			normals.push_back( srcNormals[ index2 ] );
-			normals.push_back( srcNormals[ index1 ] );
-			normals.push_back( srcNormals[ index1 ] );
-			normals.push_back( srcNormals[ index2 ] );
-			normals.push_back( srcNormals[ index3 ] );
-			
-			positions.push_back( srcPositions[ index0 ] );
-			positions.push_back( srcPositions[ index2 ] );
-			positions.push_back( srcPositions[ index1 ] );
-			positions.push_back( srcPositions[ index1 ] );
-			positions.push_back( srcPositions[ index2 ] );
-			positions.push_back( srcPositions[ index3 ] );
-			
-			texCoords.push_back( srcTexCoords[ index0 ] );
-			texCoords.push_back( srcTexCoords[ index2 ] );
-			texCoords.push_back( srcTexCoords[ index1 ] );
-			texCoords.push_back( srcTexCoords[ index1 ] );
-			texCoords.push_back( srcTexCoords[ index2 ] );
-			texCoords.push_back( srcTexCoords[ index3 ] );
-		}
-	}
-	
-	if ( closeBase ) {
-		for ( int32_t t = 0; t < resolution.x; ++t ) {
-			int32_t n = t + 1 >= resolution.x ? 0 : t + 1;
-			
-			normals.push_back( srcNormals[ bottomCenter ] );
-			normals.push_back( srcNormals[ bottomCenter ] );
-			normals.push_back( srcNormals[ bottomCenter ] );
-			
-			positions.push_back( srcPositions[ bottomCenter ] );
-			positions.push_back( srcPositions[ n ] );
-			positions.push_back( srcPositions[ t ] );
-			
-			texCoords.push_back( srcTexCoords[ bottomCenter ] );
-			texCoords.push_back( srcTexCoords[ bottomCenter ] );
-			texCoords.push_back( srcTexCoords[ bottomCenter ] );
-		}
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		indices.push_back( i );
-		colors.push_back( color );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	srcNormals.clear();
-	srcPositions.clear();
-	srcTexCoords.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-TriMesh TriMesh::createIcosahedron( uint32_t division )
-{
-	vector<ColorAf> colors;
-	vector<vec3> positions;
-	vector<vec3> normals;
-	vector<vec2> texCoords;
-	vector<uint32_t> indices;
-	
-	const float t	= 0.5f + 0.5f * math<float>::sqrt( 5.0f );
-	const float one	= 1.0f / math<float>::sqrt( 1.0f + t * t );
-	const float tau	= t * one;
-	const float pi	= (float)M_PI;
-	
-	normals.push_back( vec3(  one, 0.0f,  tau ) );
-	normals.push_back( vec3(  one, 0.0f, -tau ) );
-	normals.push_back( vec3( -one, 0.0f, -tau ) );
-	normals.push_back( vec3( -one, 0.0f,  tau ) );
-	
-	normals.push_back( vec3(  tau,  one, 0.0f ) );
-	normals.push_back( vec3( -tau,  one, 0.0f ) );
-	normals.push_back( vec3( -tau, -one, 0.0f ) );
-	normals.push_back( vec3(  tau, -one, 0.0f ) );
-	
-	normals.push_back( vec3( 0.0f,  tau,  one ) );
-	normals.push_back( vec3( 0.0f, -tau,  one ) );
-	normals.push_back( vec3( 0.0f, -tau, -one ) );
-	normals.push_back( vec3( 0.0f,  tau, -one ) );
-	
-	for ( size_t i = 0; i < 12; ++i ) {
-		positions.push_back( normals[ i ] * 0.5f );
-	}
-	
-	static const size_t numIndices = 60;
-	uint32_t indexArray[ numIndices ] = {
-		0, 8, 3,	0, 3, 9,
-		1, 2, 11,	1, 10, 2,
-		4, 0, 7,	4, 7, 1,
-		6, 3, 5,	6, 5, 2,
-		8, 4, 11,	8, 11, 5,
-		9, 10, 7,	9, 6, 10,
-		8, 0, 4,	11, 4, 1,
-		0, 9, 7,	1, 7, 10,
-		3, 8, 5,	2, 5, 11,
-		3, 6, 9,	2, 10, 6
-	};
-	
-	ColorAf color = ColorAf::white();
-	for ( size_t i = 0; i < numIndices; ++i ) {
-		indices.push_back( indexArray[ i ] );
-		colors.push_back( color );
-	}
-	
-	for ( vector<vec3>::const_iterator iter = normals.begin(); iter != normals.end(); ++iter ) {
-		float u = 0.5f + 0.5f * math<float>::atan2( iter->x, iter->z ) / pi;
-		float v = 0.5f - math<float>::asin( iter->y ) / pi;
-		vec2 texCoord( u, v );
-		texCoords.push_back( texCoord );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	if ( division > 1 ) {
-		mesh = subdivide( mesh, division, true );
-	}
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-TriMesh TriMesh::createRing( const ivec2 &resolution, float ratio )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec2> texCoords;
-	
-	vec3 norm0( 0.0f, 0.0f, 1.0f );
-	
-	float delta = ( (float)M_PI * 2.0f ) / (float)resolution.x;
-	float width	= 1.0f - ratio;
-	float step	= width / (float)resolution.y;
-	
-	int32_t p = 0;
-	for ( float phi = 0.0f; p < resolution.y; ++p, phi += step ) {
-		
-		float innerRadius = phi + 0.0f + ratio;
-		float outerRadius = phi + step + ratio;
-		
-		int32_t t = 0;
-		for ( float theta = 0.0f; t < resolution.x; ++t, theta += delta ) {
-			float ct	= math<float>::cos( theta );
-			float st	= math<float>::sin( theta );
-			float ctn	= math<float>::cos( theta + delta );
-			float stn	= math<float>::sin( theta + delta );
-			
-			vec3 pos0 = vec3( ct, st, 0.0f ) * innerRadius;
-			vec3 pos1 = vec3( ctn, stn, 0.0f ) * innerRadius;
-			vec3 pos2 = vec3( ct, st, 0.0f ) * outerRadius;
-			vec3 pos3 = vec3( ctn, stn, 0.0f ) * outerRadius;
-			if ( t >= resolution.x - 1 ) {
-				ctn		= math<float>::cos( 0.0f );
-				stn		= math<float>::sin( 0.0f );
-				pos1	= vec3( ctn, stn, 0.0f ) * innerRadius;
-				pos3	= vec3( ctn, stn, 0.0f ) * outerRadius;
-			}
-			
-			vec2 texCoord0 = ( pos0.xy() + vec2::one() ) * 0.5f;
-			vec2 texCoord1 = ( pos1.xy() + vec2::one() ) * 0.5f;
-			vec2 texCoord2 = ( pos2.xy() + vec2::one() ) * 0.5f;
-			vec2 texCoord3 = ( pos3.xy() + vec2::one() ) * 0.5f;
-			
-			positions.push_back( pos0 );
-			positions.push_back( pos2 );
-			positions.push_back( pos1 );
-			positions.push_back( pos1 );
-			positions.push_back( pos2 );
-			positions.push_back( pos3 );
-			
-			texCoords.push_back( texCoord0 );
-			texCoords.push_back( texCoord2 );
-			texCoords.push_back( texCoord1 );
-			texCoords.push_back( texCoord1 );
-			texCoords.push_back( texCoord2 );
-			texCoords.push_back( texCoord3 );
-		}
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		colors.push_back( color );
-		indices.push_back( i );
-		normals.push_back( norm0 );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-TriMesh TriMesh::createSphere( const ivec2 &resolution )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec2> texCoords;
-	
-	float step = (float)M_PI / (float)resolution.y;
-	float delta = ((float)M_PI * 2.0f) / (float)resolution.x;
-	
-	int32_t p = 0;
-	for ( float phi = 0.0f; p <= resolution.y; p++, phi += step ) {
-		int32_t t = 0;
-		
-		uint32_t a = (uint32_t)( ( p + 0 ) * resolution.x );
-		uint32_t b = (uint32_t)( ( p + 1 ) * resolution.x );
-		
-		for ( float theta = delta; t < resolution.x; t++, theta += delta ) {
-			float sinPhi = math<float>::sin( phi );
-			float x = sinPhi * math<float>::cos( theta );
-			float y = sinPhi * math<float>::sin( theta );
-			float z = -math<float>::cos( phi );
-			vec3 position( x, y, z );
-			vec3 normal = position.normalized();
-			vec2 texCoord = ( normal.xy() + vec2::one() ) * 0.5f;
-			
-			normals.push_back( normal );
-			positions.push_back( position );
-			texCoords.push_back( texCoord );
-			
-			uint32_t n = (uint32_t)( t + 1 >= resolution.x ? 0 : t + 1 );
-			indices.push_back( a + t );
-			indices.push_back( b + t );
-			indices.push_back( a + n );
-			indices.push_back( a + n );
-			indices.push_back( b + t );
-			indices.push_back( b + n );
-		}
-	}
-	
-	for ( vector<uint32_t>::iterator iter = indices.begin(); iter != indices.end(); ) {
-		if ( *iter < positions.size() ) {
-			++iter;
-		} else {
-			iter = indices.erase( iter );
-		}
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		colors.push_back( color );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-TriMesh TriMesh::createSquare( const ivec2 &resolution )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec2> texCoords;
-	
-	vec3 norm0( 0.0f, 0.0f, 1.0f );
-	
-	vec2 scale( 1.0f / math<float>::max( (float)resolution.x, 1.0f ), 1.0f / math<float>::max( (float)resolution.y, 1.0f ) );
-	uint32_t index = 0;
-	for ( int32_t y = 0; y < resolution.y; ++y ) {
-		for ( int32_t x = 0; x < resolution.x; ++x, ++index ) {
-			
-			float x1 = (float)x * scale.x;
-			float y1 = (float)y * scale.y;
-			float x2 = (float)( x + 1 ) * scale.x;
-			float y2 = (float)( y + 1 ) * scale.y;
-			
-			vec3 pos0( x1 - 0.5f, y1 - 0.5f, 0.0f );
-			vec3 pos1( x2 - 0.5f, y1 - 0.5f, 0.0f );
-			vec3 pos2( x1 - 0.5f, y2 - 0.5f, 0.0f );
-			vec3 pos3( x2 - 0.5f, y2 - 0.5f, 0.0f );
-			
-			vec2 texCoord0( x1, y1 );
-			vec2 texCoord1( x2, y1 );
-			vec2 texCoord2( x1, y2 );
-			vec2 texCoord3( x2, y2 );
-			
-			positions.push_back( pos2 );
-			positions.push_back( pos1 );
-			positions.push_back( pos0 );
-			positions.push_back( pos1 );
-			positions.push_back( pos2 );
-			positions.push_back( pos3 );
-			
-			texCoords.push_back( texCoord2 );
-			texCoords.push_back( texCoord1 );
-			texCoords.push_back( texCoord0 );
-			texCoords.push_back( texCoord1 );
-			texCoords.push_back( texCoord2 );
-			texCoords.push_back( texCoord3 );
-			
-			for ( uint32_t i = 0; i < 6; ++i ) {
-				indices.push_back( index * 6 + i );
-				normals.push_back( norm0 );
-			}
-		}
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		colors.push_back( color );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	texCoords.clear();
-	
-	return mesh;
-	
-}
-
-TriMesh TriMesh::createTorus( const ivec2 &resolution, float ratio )
-{
-	vector<ColorAf> colors;
-	vector<uint32_t> indices;
-	vector<vec3> normals;
-	vector<vec3> positions;
-	vector<vec3> srcNormals;
-	vector<vec3> srcPositions;
-	vector<vec2> srcTexCoords;
-	vector<vec2> texCoords;
-	
-	float pi			= (float)M_PI;
-	float delta			= ( 2.0f * pi ) / (float)resolution.y;
-	float step			= ( 2.0f * pi ) / (float)resolution.x;
-	float ud			= 1.0f / (float)resolution.y;
-	float vd			= 1.0f / (float)resolution.x;
-	
-	float outerRadius	= 0.5f / (1.0f + ratio);
-	float innerRadius	= outerRadius * ratio;
-	
-	int32_t p			= 0;
-	float v				= 0.0f;
-	for ( float phi = 0.0f; p < resolution.x; ++p, v += vd, phi += step ) {
-		float cosPhi = math<float>::cos( phi - pi );
-		float sinPhi = math<float>::sin( phi - pi );
-		
-		int32_t t = 0;
-		float u = 0.0f;
-		for ( float theta = 0.0f; t < resolution.y; ++t, u += ud, theta += delta ) {
-			float cosTheta = math<float>::cos( theta );
-			float sinTheta = math<float>::sin( theta );
-			
-			float rct	= outerRadius + innerRadius * cosTheta;
-			float x		= cosPhi * rct;
-			float y		= sinPhi * rct;
-			float z		= sinTheta * innerRadius;
-			
-			vec3 normal( -cosTheta * cosTheta, sinPhi * cosTheta, sinTheta );
-			vec3 position( x, y, z );
-			vec2 texCoord( u, v );
-			
-			positions.push_back( position );
-			normals.push_back( normal );
-			texCoords.push_back( texCoord );
-		}
-	}
-	
-	for ( p = 0; p < resolution.x; ++p ) {
-		int32_t a = ( p + 0 ) * resolution.y;
-		int32_t b = ( p + 1 >= resolution.x ? 0 : p + 1 ) * resolution.y;
-		
-		for ( int32_t t = 0; t < resolution.y; ++t ) {
-			int32_t n = t + 1 >= resolution.y ? 0 : t + 1;
-			
-			uint32_t index0 = (uint32_t)( a + t );
-			uint32_t index1 = (uint32_t)( a + n );
-			uint32_t index2 = (uint32_t)( b + t );
-			uint32_t index3 = (uint32_t)( b + n );
-			
-			indices.push_back( index0 );
-			indices.push_back( index2 );
-			indices.push_back( index1 );
-			indices.push_back( index1 );
-			indices.push_back( index2 );
-			indices.push_back( index3 );
-		}
-	}
-	
-	ColorAf color = ColorAf::white();
-	for ( uint32_t i = 0; i < positions.size(); ++i ) {
-		colors.push_back( color );
-	}
-	
-	TriMesh mesh = TriMesh::create( indices, colors, normals, positions, texCoords );
-	
-	colors.clear();
-	indices.clear();
-	normals.clear();
-	positions.clear();
-	srcNormals.clear();
-	srcPositions.clear();
-	srcTexCoords.clear();
-	texCoords.clear();
-	
-	return mesh;
-}
-
-#endif
-/*
-Rectf TriMesh2d::calcBoundingBox() const
-{
-	if( mPositions.empty() )
-		return Rectf( vec2(), vec2() );
-
-	vec2 min(mPositions[0]), max(mPositions[0]);
-	for( size_t i = 1; i < mPositions.size(); ++i ) {
-		if( mPositions[i].x < min.x )
-			min.x = mPositions[i].x;
-		else if( mPositions[i].x > max.x )
-			max.x = mPositions[i].x;
-		if( mPositions[i].y < min.y )
-			min.y = mPositions[i].y;
-		else if( mPositions[i].y > max.y )
-			max.y = mPositions[i].y;
-	}
-	
-	return Rectf( min, max );
-}*/
-	
-/////////////////////////////////////////////////////////////////////////////////////////////////
 
 } // namespace cinder
