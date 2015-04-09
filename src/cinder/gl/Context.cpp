@@ -965,6 +965,14 @@ void Context::textureDeleted( const TextureBase *texture )
 	}
 }
 
+bool Context::isTextureBound( GLenum target, GLuint textureId )
+{
+	if( mTextureBindingStack.empty() )
+		return false;
+
+	return mTextureBindingStack.find( textureId ) != mTextureBindingStack.end();
+}
+
 //////////////////////////////////////////////////////////////////
 // ActiveTexture
 void Context::setActiveTexture( uint8_t textureUnit )
@@ -1156,6 +1164,38 @@ void Context::framebufferDeleted( const Fbo *fbo )
 	// remove from object tracking
 	if( mObjectTrackingEnabled )
 		mLiveFbos.erase( fbo );
+}
+
+bool Context::isFramebufferBound( const FboRef &fbo, GLenum target )
+{
+	return isFramebufferBound( target, fbo->getId() );
+}
+
+bool Context::isFramebufferBound( GLenum target, GLuint framebuffer )
+{
+#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+	if( mFramebufferStack.empty() )
+		return false;
+
+	return std::find( mFramebufferStack.begin(), mFramebufferStack.end(), framebuffer ) != mFramebufferStack.end();
+#else
+	if( target == GL_READ_FRAMEBUFFER ) {
+		if( mReadFramebufferStack.empty() )
+			return false;
+
+		return std::find( mReadFramebufferStack.begin(), mReadFramebufferStack.end(), framebuffer ) != mReadFramebufferStack.end();
+	}
+	else if( target == GL_DRAW_FRAMEBUFFER || target == GL_FRAMEBUFFER ) {
+		if( mDrawFramebufferStack.empty() )
+			return false;
+
+		return std::find( mDrawFramebufferStack.begin(), mDrawFramebufferStack.end(), framebuffer ) != mDrawFramebufferStack.end();
+	}
+	else {
+		//throw gl::Exception( "Illegal target for isFramebufferBound" );
+		return false; // 
+	}
+#endif
 }
 
 //////////////////////////////////////////////////////////////////

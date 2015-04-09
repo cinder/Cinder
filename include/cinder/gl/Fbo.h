@@ -218,6 +218,8 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 		GLint	getDepthBufferInternalFormat() const { return mDepthBufferInternalFormat; }
 		//! Returns the Texture::Format for the default color texture at GL_COLOR_ATTACHMENT0.
 		const Texture::Format&	getColorTextureFormat() const { return mColorTextureFormat; }
+		//! Returns the Texture::Format for the depth texture.
+		const Texture::Format&	getDepthTextureFormat() const { return mDepthTextureFormat; }
 		//! Returns the number of samples used in MSAA-style antialiasing. Defaults to none, disabling multisampling.
 		int		getSamples() const { return mSamples; }
 		//! Returns the number of coverage samples used in CSAA-style antialiasing. Defaults to none. MSW only.

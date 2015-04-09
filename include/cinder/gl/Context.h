@@ -254,6 +254,8 @@ class Context {
 	void		textureCreated( const TextureBase *texture );
 	//! No-op if texture wasn't bound, otherwise reflects the texture unit's binding as 0 (in accordance with what GL has done automatically). Also used by object tracking.
 	void		textureDeleted( const TextureBase *texture );
+	//! Returns \c true if texture \a textureId is currently bound, or if it's on the binding stack.
+	bool		isTextureBound( GLenum target, GLuint textureId );
 
 	//! Sets the active texture unit; expects values relative to \c 0, \em not GL_TEXTURE0
 	void		setActiveTexture( uint8_t textureUnit );
@@ -286,6 +288,10 @@ class Context {
 	void		framebufferCreated( const Fbo *fbo );
 	//! Used by object tracking.
 	void		framebufferDeleted( const Fbo *fbo );
+	//! Returns \c true if framebuffer \a fbo is currently bound, or if it's on the binding stack.
+	bool		isFramebufferBound( const FboRef &fbo, GLenum target = GL_FRAMEBUFFER );
+	//! Returns \c true if framebuffer \a fbo is currently bound, or if it's on the binding stack.
+	bool		isFramebufferBound( GLenum target, GLuint framebuffer );
 
 	//! Analogous to glEnable() or glDisable(). Enables or disables OpenGL capability \a cap
 	void		setBoolState( GLenum cap, GLboolean value );

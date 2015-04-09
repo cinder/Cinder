@@ -697,7 +697,7 @@ Texture1dRef Texture1d::create( GLint width, GLenum dataFormat, const uint8_t *d
 }
 
 Texture1d::Texture1d( GLint width, Format format )
-	: mWidth( width )
+	: mWidth( width ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -709,7 +709,7 @@ Texture1d::Texture1d( GLint width, Format format )
 }
 
 Texture1d::Texture1d( const Surface8u &surface, Format format )
-	: mWidth( surface.getWidth() )
+	: mWidth( surface.getWidth() ), mFormat( format )
 {
 	GLint dataFormat;
 	GLenum type;
@@ -725,7 +725,7 @@ Texture1d::Texture1d( const Surface8u &surface, Format format )
 }
 
 Texture1d::Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
-	: mWidth( width )
+	: mWidth( width ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
 	mTarget = format.getTarget();
@@ -827,61 +827,61 @@ void Texture2d::initMaxMipmapLevel()
 Texture2d::Texture2d( int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if ! defined( CINDER_GL_ES_2 )
-	initParams( format, GL_RGBA8 );
+	initParams( mFormat, GL_RGBA8 );
 #else
-	initParams( format, GL_RGBA );
+	initParams( mFormat, GL_RGBA );
 #endif
 
 	initMaxMipmapLevel();
-	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage(), format.getDataType() );
+	env()->allocateTexStorage2d( mTarget, mMaxMipmapLevel + 1, mInternalFormat, width, height, mFormat.isImmutableStorage(), mFormat.getDataType() );
 }
 
 Texture2d::Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format )
 	: mWidth( width ), mHeight( height ),
 	mCleanWidth( width ), mCleanHeight( height ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, GL_RGBA );
-	initData( data, dataFormat, GL_UNSIGNED_BYTE, format );
+	initParams( mFormat, GL_RGBA );
+	initData( data, dataFormat, GL_UNSIGNED_BYTE, mFormat );
 }
 
 Texture2d::Texture2d( const Surface8u &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+	initParams( mFormat, surface.hasAlpha() ? GL_RGBA : GL_RGB );
 	setData<uint8_t>( surface, true, 0, ivec2( 0, 0 ) );
 }
 
 Texture2d::Texture2d( const Channel8u &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
 	initParams( format, GL_LUMINANCE );
 #else
-	if( ! format.mSwizzleSpecified ) {
+	if( ! mFormat.mSwizzleSpecified ) {
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
-		format.setSwizzleMask( swizzleMask );
+		mFormat.setSwizzleMask( swizzleMask );
 	}
-	initParams( format, GL_RED );
+	initParams( mFormat, GL_RED );
 #endif
 	setData<uint8_t>( channel, true, 0, ivec2( 0, 0 ) );
 }
@@ -889,15 +889,15 @@ Texture2d::Texture2d( const Channel8u &channel, Format format )
 Texture2d::Texture2d( const Surface16u &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
-	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+	initParams( mFormat, surface.hasAlpha() ? GL_RGBA : GL_RGB );
 #else
-	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+	initParams( mFormat, surface.hasAlpha() ? GL_RGBA : GL_RGB );
 #endif
 
 	setData<uint16_t>( surface, true, 0, ivec2( 0, 0 ) );
@@ -906,19 +906,19 @@ Texture2d::Texture2d( const Surface16u &surface, Format format )
 Texture2d::Texture2d( const Channel16u &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
-	initParams( format, GL_LUMINANCE );
+	initParams( mFormat, GL_LUMINANCE );
 #else
-	if( ! format.mSwizzleSpecified ) {
+	if( ! mFormat.mSwizzleSpecified ) {
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
-		format.setSwizzleMask( swizzleMask );
+		mFormat.setSwizzleMask( swizzleMask );
 	}
-	initParams( format, GL_RED );
+	initParams( mFormat, GL_RED );
 #endif
 
 	setData<uint16_t>( channel, true, 0, ivec2( 0, 0 ) );
@@ -927,15 +927,15 @@ Texture2d::Texture2d( const Channel16u &channel, Format format )
 Texture2d::Texture2d( const Surface32f &surface, Format format )
 	: mWidth( surface.getWidth() ), mHeight( surface.getHeight() ),
 	mCleanWidth( surface.getWidth() ), mCleanHeight( surface.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
-	initParams( format, surface.hasAlpha() ? GL_RGBA : GL_RGB );
+	initParams( mFormat, surface.hasAlpha() ? GL_RGBA : GL_RGB );
 #else
-	initParams( format, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F );
+	initParams( mFormat, surface.hasAlpha() ? GL_RGBA32F : GL_RGB32F );
 #endif
 
 	setData<float>( surface, true, 0, ivec2( 0, 0 ) );
@@ -944,19 +944,19 @@ Texture2d::Texture2d( const Surface32f &surface, Format format )
 Texture2d::Texture2d( const Channel32f &channel, Format format )
 	: mWidth( channel.getWidth() ), mHeight( channel.getHeight() ),
 	mCleanWidth( channel.getWidth() ), mCleanHeight( channel.getHeight() ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 #if defined( CINDER_GL_ES )
-	initParams( format, GL_LUMINANCE );
+	initParams( mFormat, GL_LUMINANCE );
 #else
-	if( ! format.mSwizzleSpecified ) {
+	if( ! mFormat.mSwizzleSpecified ) {
 		std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_ONE };
-		format.setSwizzleMask( swizzleMask );
+		mFormat.setSwizzleMask( swizzleMask );
 	}
-	initParams( format, GL_RED );
+	initParams( mFormat, GL_RED );
 #endif
 
 	setData<float>( channel, true, 0, ivec2( 0, 0 ) );
@@ -964,7 +964,7 @@ Texture2d::Texture2d( const Channel32f &channel, Format format )
 
 Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	: mWidth( -1 ), mHeight( -1 ), mCleanWidth( -1 ), mCleanHeight( -1 ),
-	mTopDown( false )
+	mTopDown( false ), mFormat( format )
 {
 	GLint defaultInternalFormat;	
 	// Set the internal format based on the image's color space
@@ -981,11 +981,11 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 #else
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ?  GL_RG : GL_RED;
-			if( ! format.mSwizzleSpecified ) {
+			if( ! mFormat.mSwizzleSpecified ) {
 				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
 				if( defaultInternalFormat == GL_RED )
 					swizzleMask[3] = GL_ONE;
-				format.setSwizzleMask( swizzleMask );
+				mFormat.setSwizzleMask( swizzleMask );
 			}
 #endif
 		} break;
@@ -995,10 +995,10 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 	}
 
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, defaultInternalFormat );
-	initData( imageSource, format );
+	initParams( mFormat, defaultInternalFormat );
+	initData( imageSource, mFormat );
 }
 
 Texture2d::Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose )
@@ -1009,12 +1009,12 @@ Texture2d::Texture2d( GLenum target, GLuint textureId, int width, int height, bo
 }
 
 Texture2d::Texture2d( const TextureData &data, Format format )
-	: mTopDown( false )
+	: mTopDown( false ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	initParams( format, 0 /* unused */ );
+	initParams( mFormat, 0 /* unused */ );
 	
 	replace( data );
 
@@ -1538,24 +1538,24 @@ Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, GLenum d
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
-	: mWidth( width ), mHeight( height ), mDepth( depth )
+	: mWidth( width ), mHeight( height ), mDepth( depth ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	TextureBase::initParams( format, GL_RGB );
+	TextureBase::initParams( mFormat, GL_RGB );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
+	env()->allocateTexStorage3d( mTarget, mFormat.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, mFormat.isImmutableStorage() );
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, const uint8_t *data, Format format )
-	: mWidth( width ), mHeight( height ), mDepth( depth )
+	: mWidth( width ), mHeight( height ), mDepth( depth ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
-	TextureBase::initParams( format, GL_RGB );
+	TextureBase::initParams( mFormat, GL_RGB );
 
 	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, GL_UNSIGNED_BYTE, data );
 }
@@ -1762,23 +1762,24 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const 
 }
 
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
-	: mWidth( width ), mHeight( height )
+	: mWidth( width ), mHeight( height ), mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );	
-	TextureBase::initParams( format, GL_RGB );
+	TextureBase::initParams( mFormat, GL_RGB );
 
-	env()->allocateTexStorageCubeMap( mMaxMipmapLevel + 1, mInternalFormat, width, height, format.isImmutableStorage() );	
+	env()->allocateTexStorageCubeMap( mMaxMipmapLevel + 1, mInternalFormat, width, height, mFormat.isImmutableStorage() );
 }
 
 template<typename T>
 TextureCubeMap::TextureCubeMap( const SurfaceT<T> images[6], Format format )
+	: mFormat( format )
 {
 	glGenTextures( 1, &mTextureId );
-	mTarget = format.getTarget();
+	mTarget = mFormat.getTarget();
 	ScopedTextureBind texBindScope( mTarget, mTextureId );	
-	TextureBase::initParams( format, ( images[0].hasAlpha() ) ? GL_RGBA : GL_RGB );
+	TextureBase::initParams( mFormat, ( images[0].hasAlpha() ) ? GL_RGBA : GL_RGB );
 
 	mWidth = images[0].getWidth();
 	mHeight = images[0].getHeight();
@@ -1791,7 +1792,7 @@ TextureCubeMap::TextureCubeMap( const SurfaceT<T> images[6], Format format )
 		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + target, 0, mInternalFormat, images[target].getWidth(), images[target].getHeight(), 0,
 			( images[target].hasAlpha() ) ? GL_RGBA : GL_RGB, dataType, images[target].getData() );
 			
-	if( format.mMipmapping ) {
+	if( mFormat.mMipmapping ) {
 #if ! defined( CINDER_GL_ES_2 )
 		if( mMaxMipmapLevel == -1 )
 			mMaxMipmapLevel = requiredMipLevels( mWidth, mHeight, 1 ) - 1;
