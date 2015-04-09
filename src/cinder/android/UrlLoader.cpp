@@ -38,8 +38,8 @@
 
 namespace cinder { namespace android {
 
-jclass		UrlLoader::sUrlLoaderClass  = NULL;
-jmethodID	UrlLoader::sLoadUrlMethodId = NULL;
+jclass		UrlLoader::sUrlLoaderClass  = nullptr;
+jmethodID	UrlLoader::sLoadUrlMethodId = nullptr;
 
 UrlLoader::UrlLoader()
 {
@@ -60,32 +60,26 @@ UrlLoader::~UrlLoader()
 void UrlLoader::cacheJni()
 {
 	const std::string className = "org/libcinder/net/UrlLoader";
-	//if( JniHelper::Get()->AttachCurrentThread() ) 
-	{
+	if( JniHelper::Get()->AttachCurrentThread() ) {
 		jclass urlLoaderClass = JniHelper::Get()->RetrieveClass( className );
 		if( nullptr != urlLoaderClass ) {
 			UrlLoader::sUrlLoaderClass = reinterpret_cast<jclass>( JniHelper::Get()->NewGlobalRef( urlLoaderClass ) );
 		}
 
-		if( NULL != UrlLoader::sUrlLoaderClass ) {
+		if( nullptr != UrlLoader::sUrlLoaderClass ) {
 			UrlLoader::sLoadUrlMethodId = JniHelper::Get()->GetStaticMethodId( UrlLoader::sUrlLoaderClass, "loadUrl", "(Ljava/lang/String;)[B" );
 
 			FN_LOG( UrlLoader::sLoadUrlMethodId );				
 		}
-		//JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
 void UrlLoader::destroyJni()
 {
-	if( JniHelper::Get()->AttachCurrentThread() ) {
-		
+	if( JniHelper::Get()->AttachCurrentThread() ) {	
 		JniHelper::Get()->DeleteGlobalRef( UrlLoader::sUrlLoaderClass  );
-
 		UrlLoader::sUrlLoaderClass = NULL;
 		UrlLoader::sLoadUrlMethodId = NULL;
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
@@ -114,7 +108,6 @@ ci::Buffer UrlLoader::getData()
 
 		JniHelper::Get()->ReleaseByteArrayElements( jBytes, dataPtr, 0 );
 		JniHelper::Get()->DeleteLocalRef( jstrUrl );
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 
 	return result;

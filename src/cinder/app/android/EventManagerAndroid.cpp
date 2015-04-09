@@ -19,10 +19,13 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
+
+#include "cinder/android/AndroidDevLog.h"
+using namespace ci::android;
 
 #include <sstream>
 #include <iomanip>
@@ -414,6 +417,7 @@ void EventManagerAndroid::execute()
 	mProximitySensor     = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mSensorEventQueue    = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
+dbg_app_log( "Starting Event Loop" );
 	// Event loop
 	while( ! mShouldQuit ) {
 		// Sleep until next frame;
@@ -461,9 +465,11 @@ void EventManagerAndroid::execute()
 			}
 		}		
 	}
+dbg_app_log( "Ended Event Loop" );
 
 	// Call AppBase::cleanupLaunch
 	if( mDeferredMainHasBeenCalled ) {
+dbg_app_log( "Cleaning up" );
 		mCleanupLaunchFn();
 	}
 }

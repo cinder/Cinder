@@ -91,14 +91,12 @@ void CinderCamera2::cacheJni()
 			FN_LOG( CinderCamera2::sGetWidthMethodId );	
 			FN_LOG( CinderCamera2::sGetHeightMethodId );	
 		}
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
 void CinderCamera2::destroyJni()
 {
-	if( JniHelper::Get()->AttachCurrentThread() ) {
-		
+	if( JniHelper::Get()->AttachCurrentThread() ) {	
 		JniHelper::Get()->DeleteGlobalRef( CinderCamera2::sCinderCameraClass );
 
 		CinderCamera2::sCinderCameraClass		= nullptr;
@@ -111,8 +109,6 @@ void CinderCamera2::destroyJni()
 		CinderCamera2::sUnlockPixelsMethodId 	= nullptr;	
 		CinderCamera2::sGetWidthMethodId 		= nullptr;
 		CinderCamera2::sGetHeightMethodId 		= nullptr;	
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
@@ -127,8 +123,6 @@ bool CinderCamera2::initialize()
 			mHasFrontCamera = (bool)JniHelper::Get()->CallStaticBooleanMethod( CinderCamera2::sCinderCameraClass, CinderCamera2::sHasFrontCameraMethodId );
 			mHasBackCamera = (bool)JniHelper::Get()->CallStaticBooleanMethod( CinderCamera2::sCinderCameraClass, CinderCamera2::sHasBackCameraMethodId );
 		}
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 
 	return mInitialized;	
@@ -147,8 +141,6 @@ void CinderCamera2::startCapture()
 		mHeight = JniHelper::Get()->CallStaticIntMethod( CinderCamera2::sCinderCameraClass, CinderCamera2::sGetHeightMethodId );
 
 		mCapturing = true;
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}	
 }
 
@@ -162,8 +154,6 @@ void CinderCamera2::stopCapture()
 		JniHelper::Get()->CallStaticVoidMethod( CinderCamera2::sCinderCameraClass, CinderCamera2::sStopCaptureMethodId );
 
 		mCapturing = false;
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}	
 }
 
@@ -346,7 +336,6 @@ ci::Surface	CinderCamera2::getSurface()
 			}
 
 			JniHelper::Get()->CallStaticVoidMethod( CinderCamera2::sCinderCameraClass, CinderCamera2::sUnlockPixelsMethodId );
-			JniHelper::Get()->DeatchCurrentThread();
 		}
 
 /*

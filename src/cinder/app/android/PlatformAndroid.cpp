@@ -75,7 +75,13 @@ DataSourceRef PlatformAndroid::loadAsset( const fs::path &relativePath )
 {
 	fs::path assetPath = findAssetPath( relativePath );
 	if( ! assetPath.empty() ) {
-		return DataSourceAndroidAsset::create( assetPath.string() );
+		if( ci::app::PlatformAndroid::isAssetPath( assetPath ) ) {
+			return DataSourceAndroidAsset::create( assetPath );
+		}
+		else {
+			return DataSourcePath::create( assetPath );
+		}
+		//return DataSourceAndroidAsset::create( assetPath.string() );		
 	}
 	else {
 		throw AssetLoadExc( relativePath );

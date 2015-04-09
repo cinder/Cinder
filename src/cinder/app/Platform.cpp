@@ -69,7 +69,7 @@ dbg_app_log( "Allocating Platform" );
 
 #if defined( CINDER_ANDROID )
 	else {
-dbg_app_log( "Skipped allocation of platform" );
+dbg_app_log( "Skipped allocation of Platform" );
 	}
 #endif
 

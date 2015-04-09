@@ -19,20 +19,12 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #include "cinder/android/JniHelper.h"
-
 #include "cinder/app/App.h"
 
-#include <thread>
-#include <sstream>
-#include <iomanip>
-
-#include <android/log.h>
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+#include "cinder/android/AndroidDevLog.h"
 
 namespace cinder { namespace android { 
 
@@ -45,11 +37,12 @@ static JavaVM*			sJavaVm = nullptr;
 
 static void JvmHelper_ThreadExit( void* block )
 {
-	LOGI("JVMAttach_ThreadExit");
+dbg_app_log("JVMAttach_ThreadExit");
 
 	if( nullptr != block ) {
 		if( nullptr != sJavaVm ) {
 			sJavaVm->DetachCurrentThread();
+dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread");
 		}
 		pthread_setspecific( sThreadExitKey, nullptr );
 	}
@@ -57,14 +50,14 @@ static void JvmHelper_ThreadExit( void* block )
 
 static void JvmHelper_MakeKey()
 {
-	LOGI("JVMAttach_MakeKey");
+dbg_app_log("JVMAttach_MakeKey");
 
 	pthread_key_create( &sThreadExitKey, JvmHelper_ThreadExit );
 }
 
 static void JvmHelper_InitOnce( JavaVM* jvm )
 {
-	LOGI("JVMAttach_InitOnce");
+dbg_app_log("JVMAttach_InitOnce");
 
 	pthread_once( &sThreadExitOnceInit, JvmHelper_MakeKey );
 	sJavaVm = jvm;
@@ -88,8 +81,8 @@ static JNIEnv* JvmHelper_Attach()
 
 static void JvmHelper_Deatch()
 {
-	LOGI("JvmHelper_Deatch");
-	
+dbg_app_log("JvmHelper_Deatch");
+
 	void* block = pthread_getspecific( sThreadExitKey );
 	if( nullptr != block ) {
 		if( nullptr != sJavaVm ) {

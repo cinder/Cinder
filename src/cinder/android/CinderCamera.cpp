@@ -91,7 +91,6 @@ void CinderCamera::cacheJni()
 			FN_LOG( CinderCamera::sGetWidthMethodId );	
 			FN_LOG( CinderCamera::sGetHeightMethodId );				
 		}
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
@@ -111,8 +110,6 @@ void CinderCamera::destroyJni()
 		CinderCamera::sUnlockPixelsMethodId 	= nullptr;	
 		CinderCamera::sGetWidthMethodId 		= nullptr;
 		CinderCamera::sGetHeightMethodId 		= nullptr;	
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 }
 
@@ -127,8 +124,6 @@ bool CinderCamera::initialize()
 			mHasFrontCamera = (bool)JniHelper::Get()->CallStaticBooleanMethod( CinderCamera::sCinderCameraClass, CinderCamera::sHasFrontCameraMethodId );
 			mHasBackCamera = (bool)JniHelper::Get()->CallStaticBooleanMethod( CinderCamera::sCinderCameraClass, CinderCamera::sHasBackCameraMethodId );
 		}
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}
 
 	return mInitialized;	
@@ -147,8 +142,6 @@ void CinderCamera::startCapture()
 		mHeight = JniHelper::Get()->CallStaticIntMethod( CinderCamera::sCinderCameraClass, CinderCamera::sGetHeightMethodId );
 
 		mCapturing = true;
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}	
 }
 
@@ -162,8 +155,6 @@ void CinderCamera::stopCapture()
 		JniHelper::Get()->CallStaticVoidMethod( CinderCamera::sCinderCameraClass, CinderCamera::sStopCaptureMethodId );
 
 		mCapturing = false;
-
-		JniHelper::Get()->DeatchCurrentThread();
 	}	
 }
 
@@ -216,12 +207,12 @@ void CinderCamera::unlockPixels()
 // Conversion from yuv nv21 to rgb24 adapted from
 // videonet conversion from YUV420 to RGB24
 // http://www.codeguru.com/cpp/g-m/multimedia/video/article.php/c7621
- static long int crv_tab[256];
- static long int cbu_tab[256];
- static long int cgu_tab[256];
- static long int cgv_tab[256];
- static long int tab_76309[256];
- static unsigned char clp[1024];         //for clip in CCIR601
+static long int crv_tab[256];
+static long int cbu_tab[256];
+static long int cgu_tab[256];
+static long int cgv_tab[256];
+static long int tab_76309[256];
+static unsigned char clp[1024];         //for clip in CCIR601
 
 static bool gTableInited = false;
 
@@ -346,7 +337,6 @@ ci::Surface	CinderCamera::getSurface()
 			}
 
 			JniHelper::Get()->CallStaticVoidMethod( CinderCamera::sCinderCameraClass, CinderCamera::sUnlockPixelsMethodId );
-			JniHelper::Get()->DeatchCurrentThread();
 		}
 
 /*

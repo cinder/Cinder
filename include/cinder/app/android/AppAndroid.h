@@ -19,7 +19,7 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #pragma once
 
@@ -96,7 +96,7 @@ void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *t
 	if( settings.getShouldQuit() )
 		return;
 
-ci::android::dbg_app_log( "Allocating AppT" );
+ci::android::dbg_app_log( "Allocating AppAndroid" );
 	AppBase *app = new AppT;
 	#pragma unused( app )
 
@@ -117,6 +117,8 @@ void AppAndroid::main( const RendererRef &defaultRenderer, const char *title, an
 
 	std::unique_ptr<EventManagerAndroid> eventManager( new EventManagerAndroid( nativeApp, deferredMainFn, cleanupLaunchFn ) );
 	if( eventManager ) {
+ci::android::dbg_app_log( "." );
+ci::android::dbg_app_log( "." );
 ci::android::dbg_app_log( "BEFORE eventManager->execute()" );
 		eventManager->execute();
 
@@ -126,7 +128,6 @@ ci::android::dbg_app_log( "BEFORE eventManager->execute()" );
 		}
 
 ci::android::dbg_app_log( "AFTER eventManager->execute()" );
-ci::android::dbg_app_log( "." );
 	}
 
 }
