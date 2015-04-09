@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -58,7 +59,7 @@ void WindowTestApp::prepareSettings( Settings *settings )
 {
 	settings->setPowerManagementEnabled( false );
 	settings->setQuitOnLastWindowCloseEnabled( false );
-//	settings->setFullScreen( false );
+//	settings->setFullScreen( true );
 	settings->setWindowSize( 800, 500 );
 	settings->setTitle( "title set from App::Settings" );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
