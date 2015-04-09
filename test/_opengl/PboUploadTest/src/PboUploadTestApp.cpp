@@ -18,7 +18,7 @@ static const int NUM_BUFFERS = 2;
 static const int ROWS_TO_FILL = 50;
 
 // Enable or disable this to experiment with PBOs on or off
-//#define USE_PBO
+#define USE_PBO
 // Enable or disable to experiment with double buffering the Texture and PBOs
 #define DOUBLE_BUFFER
 
@@ -72,7 +72,7 @@ void PboUploadTestApp::update()
 	}
 	// fill all the rows
 #if defined( USE_PBO )
-	gl::BufferScope bscp( mPbos[mCurrentPbo] );
+	gl::ScopedBuffer bscp( mPbos[mCurrentPbo] );
 	// why does this slow things down on the Mac?
 //	mPbos[mCurrentPbo]->bufferData( mPbos[mCurrentPbo]->getSize(), nullptr, GL_STREAM_DRAW );
 	void *pboData = mPbos[mCurrentPbo]->map( GL_WRITE_ONLY );
