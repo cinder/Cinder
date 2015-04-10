@@ -4,8 +4,15 @@ import os
 import codecs
 import shutil
 import copy
+import re
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
+
+CLASS_PREFIX = "classcinder_1_1_"
+NAMESPACE_PREFIX = "namespacecinder_1"
+
+CLASS_HTML = "classcinder.html"
+NAMESPACE_HTML = "namespacecinder.html"
 
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
@@ -21,30 +28,94 @@ def markupFunction( fnXml, parent, bs4 ):
 	li.append( fnXml.find( "argsstring" ).text )
 	parent.append( li )
 
-def replaceTag( tag ):
+def addClassToTag( tag, className ):
+	tag["class"] = tag.get("class", []) + [className]
 
+def defineLinkTag( tag, attrib, html ):
+
+	refId = attrib["refid"]
+	kind = attrib["kindref"]
+	href = refId
+	print "KIND: " + attrib["kindref"] + ", refId: " + refId
+
+	pageUrl = None
+	if kind == "member":
+		strList = refId.rsplit("_1", 1)
+		href = strList[0] + ".html#" + strList[1]
+
+	# elif kind == "compound":
+	else :
+		href = refId + ".html"
+
+	tag["href"] = href
+
+def defineTag( tagName, tree, html ):
+
+	newTag = html.new_tag( tagName )
+	if( tagName == "a" ):
+		# print "LINK TAG: "
+		defineLinkTag( newTag, tree.attrib, html )
+	
+	return newTag
+
+def replaceTag( tree, parentTag, html ):
+
+	tag = tree.tag
+	attrib = tree.attrib
+	hasParent = False
+
+
+	if parentTag and parentTag.parent:
+		hasParent = True
+
+	# find html tag based on tag
 	if( tag == "para" ):
-		return "p"
+		if hasParent and parentTag.parent.dl :
+			tagName = "dd"
+		else :
+			tagName = "p"
+
 	elif( tag == "linebreak" ):
-		return "br"
+		tagName = "br"
 	elif( tag == "emphasis" ):
-		return "em"
+		tagName = "em"
 	elif (tag == "ref" ):
-		return "a"
+		tagName = "a"
 	elif( tag == "computeroutput" ):
-		return "code"
-	else:
-		return tag
+		tagName = "code"
+	elif( tag == "simplesect"):
+		tagName = "dl"
+
+	# newTag = html.new_tag( tagName );
+	newTag = defineTag( tagName, tree, html );
+
+	if( tag == "simplesect" ) :
+		seeTag = html.new_tag( "dt" )
+		addClassToTag( seeTag, "section")
+
+		if( attrib["kind"] == "see"):
+			addClassToTag( seeTag, "see")
+			seeTag.string = "See Also"
+		newTag.append( seeTag )
+
+	return newTag
+
 
 def iterateMarkup( tree, parent, html ):
 
 	origTag = tree.tag
 
+	# print "<TAG>: " + tree.tag
+	# print tree.attrib
+
+	# if tree.text :
+		# print "TEXT: " + tree.text
+
 	currentTag = parent
 	
 	# append any new tags
 	if tree.tag != None :
-		htmlTag = html.new_tag( replaceTag( tree.tag ) )
+		htmlTag = replaceTag( tree, currentTag, html )
 		currentTag = htmlTag
 		parent.append( currentTag )
 	
@@ -90,8 +161,10 @@ def processClassXmlFile( inPath, outPath, html ):
 	contentsTag.append( descriptionHeader )
 
 	descTag = html.new_tag( "div" )
-	descTag['class'] = "description"
+	# descTag['class'] = "description"
+	addClassToTag( descTag, "description" )
 
+	markupParagraph( tree.find( r'compounddef/briefdescription/' ), descTag, html );
 	markupParagraph( tree.find( r'compounddef/detaileddescription/' ), descTag, html );
 	
 	contentsTag.append( descTag )
@@ -99,7 +172,8 @@ def processClassXmlFile( inPath, outPath, html ):
 	# create regular and static member function ul wrappers
 	ulTag = html.new_tag( "ul" )
 	staticUlTag = html.new_tag( "ul" )
-	staticUlTag['class'] = "static"	
+	# staticUlTag['class'] = "static"	
+	addClassToTag( staticUlTag, "static" )
 
 	funcCount = 0
 	staticFuncCount = 0
