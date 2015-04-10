@@ -702,6 +702,72 @@ class BSpline : public Source {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
+// Wireframe primitives
+class WireSource : public Source {
+public:
+	WireSource() {}
+	virtual ~WireSource() {}
+
+	size_t			getNumIndices() const override { return 0; }
+	Primitive		getPrimitive() const override { return geom::LINES; }
+	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
+	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
+
+protected:
+	void			circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution = 12, float arc = 1.0f ) const;
+};
+
+class WireCube : public WireSource {
+public:
+	WireCube() : WireCube( vec3( 1 ) ) {}
+	WireCube( const vec3 &size, const ivec3 &subdivisions = ivec3( 1 ) )
+		: mSize( size )
+	{
+		mSubdivisions = glm::max( ivec3( 1 ), subdivisions );
+	}
+	
+	WireCube&	subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	WireCube&	subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	WireCube&	size( const vec3 &sz ) { mSize = sz; return *this; }
+	WireCube&	size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 8 + ( mSubdivisions.y + 1 ) * 8 + ( mSubdivisions.z + 1 ) * 8; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	ivec3					mSubdivisions;
+	vec3					mSize;
+};
+
+class WireSphere : public WireSource {
+public:
+	WireSphere()
+		: mCenter(0), mRadius(1.0f), mSubdivisions(4, 6, 18) {}
+
+	WireSphere&	center( const vec3 &center ) { mCenter = center; return *this; }
+	WireSphere&	radius( float radius ) { mRadius = radius; return *this; }
+	//! Specifies the number of segments. Defaults are: 18 for \a resolution (roundness), 4 for \a axis (height) and 6 for \a angle.
+	WireSphere&	subdivisions( int resolution, int axis, int angle ) { mSubdivisions = glm::max( ivec3( 1, 1, 6 ), ivec3( axis, angle, resolution ) ); return *this; }
+	//! Default is 18, minimum is 6.
+	WireSphere&	subdivisionsResolution( int subdiv ) { mSubdivisions.z = glm::max( 6, subdiv ); return *this; }
+	//! Default is 4.
+	WireSphere&	subdivisionsAxis( int subdiv ) { mSubdivisions.x = glm::max( 1, subdiv ); return *this; }
+	//! Default is 6.
+	WireSphere&	subdivisionsAngle( int subdiv ) { mSubdivisions.y = glm::max( 1, subdiv ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	vec3		mCenter;
+	float		mRadius;
+	ivec3		mSubdivisions;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
 //! "Bakes" a mat4 transformation into the positions, normals and tangents of a geom::Source
 class Transform : public Modifier {

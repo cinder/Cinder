@@ -2906,7 +2906,127 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 }
 
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
-template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+template BSpline::BSpline( const ci::BSpline<3, float>&, int );
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireSource
+void WireSource::circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution, float arc ) const
+{
+	vec3  position = vec3( radius, 0, 0 );
+	float angle = arc * float( 2.0 * M_PI / resolution );
+
+	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
+	for( int i = 0; i < resolution; ++i ) {
+		vec3 v = center + glm::rotate( position, ( i + 1 ) * angle, axis );
+		*( *ptr )++ = v;
+		*( *ptr )++ = v;
+	}
+	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCube
+void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 d = -mSize;
+	vec3 s = 2.0f * mSize / vec3( mSubdivisions );
+
+	vec3 *ptr = positions.data();
+	for( int i = 0; i <= mSubdivisions.x; ++i ) {
+		float x = d.x + i * s.x;
+		*ptr++ = vec3( x, d.y, d.z );
+		*ptr++ = vec3( x, -d.y, d.z );
+		*ptr++ = vec3( x, -d.y, d.z );
+		*ptr++ = vec3( x, -d.y, -d.z );
+		*ptr++ = vec3( x, -d.y, -d.z );
+		*ptr++ = vec3( x, d.y, -d.z );
+		*ptr++ = vec3( x, d.y, -d.z );
+		*ptr++ = vec3( x, d.y, d.z );
+	}
+
+	for( int i = 0; i <= mSubdivisions.y; ++i ) {
+		float y = d.y + i * s.y;
+		*ptr++ = vec3( d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, -d.z );
+		*ptr++ = vec3( -d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, d.z );
+	}
+
+	for( int i = 0; i <= mSubdivisions.z; ++i ) {
+		float z = d.z + i * s.z;
+		*ptr++ = vec3( d.x, d.y, z );
+		*ptr++ = vec3( -d.x, d.y, z );
+		*ptr++ = vec3( -d.x, d.y, z );
+		*ptr++ = vec3( -d.x, -d.y, z );
+		*ptr++ = vec3( -d.x, -d.y, z );
+		*ptr++ = vec3( d.x, -d.y, z );
+		*ptr++ = vec3( d.x, -d.y, z );
+		*ptr++ = vec3( d.x, d.y, z );
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireSphere
+size_t WireSphere::getNumVertices() const
+{
+	int resolution = mSubdivisions.z + 1;
+	return ( mSubdivisions.x - 1 ) * resolution * 2 + ( ( resolution + 1 ) / 2 ) * mSubdivisions.y * 2;
+}
+
+void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	float angle = float( 2.0 * M_PI / mSubdivisions.z );
+
+	vec3 *ptr = positions.data();
+	for( int i = 1; i < mSubdivisions.x; ++i ) {
+		float f = float( i ) / mSubdivisions.x * 2.0f - 1.0f;
+		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
+		vec3 center = mCenter + mRadius * vec3( 0, glm::sin( f * float( M_PI / 2.0 ) ), 0 );
+
+		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
+		for( int j = 0; j < mSubdivisions.z; ++j ) {
+			vec3 v = center + vec3( glm::sin( j * angle ), 0, glm::cos( j * angle ) ) * radius;
+			*ptr++ = v;
+			*ptr++ = v;
+		}
+		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
+	}
+
+	int semidiv = ( mSubdivisions.z + 1 ) / 2;
+	float semi = float( M_PI / semidiv );
+	angle = float( 2.0 * M_PI / mSubdivisions.y );
+
+	for( int i = 0; i < mSubdivisions.y; ++i ) {
+		*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
+		for( int j = 0; j < semidiv; ++j ) {
+			vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
+			*ptr++ = v;
+			*ptr++ = v;
+		}
+		*ptr++ = mCenter + vec3( 0, -1, 0 ) * mRadius;
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // VertexNormalLines
