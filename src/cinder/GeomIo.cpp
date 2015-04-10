@@ -2980,11 +2980,54 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// WireCylinder
+size_t WireCylinder::getNumVertices() const
+{
+	return ( mSubdivisionsAxis + ( mSubdivisionsHeight + 1 ) * mNumSegments ) * 2;
+}
+
+void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	glm::mat3 m = glm::toMat3( glm::quat( vec3( 0, 1, 0 ), mDirection ) );
+
+	float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+	for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+		float c = glm::cos( i * angle );
+		float s = glm::sin( i * angle );
+		*ptr++ = mOrigin + m * vec3( mRadiusBase * c, 0, mRadiusBase * s );
+		*ptr++ = mOrigin + m * vec3( mRadiusApex * c, mHeight, mRadiusApex * s );
+	}
+	
+	angle = float( 2.0 * M_PI / mNumSegments );
+	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
+		float height = i * mHeight / mSubdivisionsHeight;
+		float radius = lerp<float>( mRadiusBase, mRadiusApex, float( i ) / mSubdivisionsHeight );
+
+		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
+		for( int j = 1; j < mNumSegments; ++j ) {
+			vec3 v = mOrigin + m * vec3( radius * glm::cos( j * angle ), height, radius * glm::sin( j * angle ) );
+			*ptr++ = v;
+			*ptr++ = v;
+		}
+		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
 // WireSphere
 size_t WireSphere::getNumVertices() const
 {
-	int resolution = mSubdivisions.z + 1;
-	return ( mSubdivisions.x - 1 ) * resolution * 2 + ( ( resolution + 1 ) / 2 ) * mSubdivisions.y * 2;
+	return ( mSubdivisionsHeight - 1 ) * mNumSegments * 2 + ( ( mNumSegments + 1 ) / 2 ) * mSubdivisionsAxis * 2;
 }
 
 void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -2994,16 +3037,16 @@ void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 	std::vector<vec3> positions;
 	positions.resize( numVertices );
 
-	float angle = float( 2.0 * M_PI / mSubdivisions.z );
+	float angle = float( 2.0 * M_PI / mNumSegments );
 
 	vec3 *ptr = positions.data();
-	for( int i = 1; i < mSubdivisions.x; ++i ) {
-		float f = float( i ) / mSubdivisions.x * 2.0f - 1.0f;
+	for( int i = 1; i < mSubdivisionsHeight; ++i ) {
+		float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
 		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
 		vec3 center = mCenter + mRadius * vec3( 0, glm::sin( f * float( M_PI / 2.0 ) ), 0 );
 
 		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
-		for( int j = 0; j < mSubdivisions.z; ++j ) {
+		for( int j = 1; j < mNumSegments; ++j ) {
 			vec3 v = center + vec3( glm::sin( j * angle ), 0, glm::cos( j * angle ) ) * radius;
 			*ptr++ = v;
 			*ptr++ = v;
@@ -3011,19 +3054,39 @@ void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
 	}
 
-	int semidiv = ( mSubdivisions.z + 1 ) / 2;
+	int semidiv = ( mNumSegments + 1 ) / 2;
 	float semi = float( M_PI / semidiv );
-	angle = float( 2.0 * M_PI / mSubdivisions.y );
+	angle = float( 2.0 * M_PI / mSubdivisionsAxis );
 
-	for( int i = 0; i < mSubdivisions.y; ++i ) {
+	for( int i = 0; i < mSubdivisionsAxis; ++i ) {
 		*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
-		for( int j = 0; j < semidiv; ++j ) {
+		for( int j = 1; j < semidiv; ++j ) {
 			vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
 			*ptr++ = v;
 			*ptr++ = v;
 		}
 		*ptr++ = mCenter + vec3( 0, -1, 0 ) * mRadius;
 	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireTorus
+size_t WireTorus::getNumVertices() const
+{
+	return 4096;
+}
+
+void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	// TODO
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }

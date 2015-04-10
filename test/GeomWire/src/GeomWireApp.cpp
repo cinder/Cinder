@@ -42,7 +42,13 @@ void GeomWireApp::setup()
 	//mWireframe = gl::Batch::create( geom::WireCube().subdivisions(2), shader );
 
 	mSolid = gl::Batch::create( geom::Sphere().subdivisions( 72 ), shader );
-	mWireframe = gl::Batch::create( geom::WireSphere().subdivisions( 72, 4, 6 ), shader );
+	mWireframe = gl::Batch::create( geom::WireSphere().subdivisions( 72 ), shader );
+
+	//mSolid = gl::Batch::create( geom::Cylinder().subdivisionsHeight( 4 ), shader );
+	//mWireframe = gl::Batch::create( geom::WireCylinder().subdivisionsHeight( 4 ), shader );
+
+	//mSolid = gl::Batch::create( geom::Cone().subdivisionsHeight( 4 ), shader );
+	//mWireframe = gl::Batch::create( geom::WireCone().subdivisionsHeight( 4 ), shader );
 
 	//
 	mCamera.setPerspective( 35.0f, 1.0f, 0.05f, 100.0f );
