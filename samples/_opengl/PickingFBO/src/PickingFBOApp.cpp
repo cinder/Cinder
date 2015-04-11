@@ -52,6 +52,7 @@ class PickingFBOApp : public App {
 	gl::GlslProgRef		mNotPickableProg;
 	int					mPickPixelSize;
 	ivec2				mPickPos;
+	CameraPersp			mCamera;
 	MayaCamUI			mMayaCam;
 	vec4				mDefaultVertexColor;
 	vec4				mDefaultEdgeColor;
@@ -85,10 +86,8 @@ void PickingFBOApp::setup()
 	setupGeometry();
 	setupFbo();
 
-	CameraPersp cam( mMayaCam.getCamera() );
-	cam.lookAt( vec3( 100, 100, 100 ), vec3( 0 ) );
-	cam.setCenterOfInterestPoint( vec3( 0 ) );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.lookAt( vec3( 100, 100, 100 ), vec3( 0 ) );
+	mMayaCam = MayaCamUI( &mCamera );
 
 	mBoxTransform = mat4( 1.0f );
 	mBoxTransform = glm::scale( mBoxTransform, vec3( 30.0f ) );
@@ -103,9 +102,8 @@ void PickingFBOApp::setup()
 
 void PickingFBOApp::resize()
 {
-	CameraPersp cam( mMayaCam.getCamera() );
-	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	mMayaCam.setCurrentCam( cam );
+	mMayaCam.setWindowSize( getWindowSize() );
+	mCamera.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	setupFbo();
 	mNeedsRedraw = true;
@@ -151,7 +149,7 @@ void PickingFBOApp::renderScene()
 	gl::pointSize( 6.0f ); // this is defined in the vertex shader in ES 3
 #endif
 	gl::pushMatrices();
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCamera );
 	mGridMesh->draw();
 	gl::multModelMatrix( mBoxTransform );
 	mEdgesBatch->draw();

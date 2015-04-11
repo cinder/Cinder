@@ -54,9 +54,6 @@ class FrustumCullingReduxApp : public App {
 	void toggleCullableFov();
 	void drawCullableFov();
 
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-
 	void keyDown( KeyEvent event );
 	
   protected:
@@ -98,8 +95,8 @@ class FrustumCullingReduxApp : public App {
 	std::list<CullableObjectRef>	mObjects;
 
 	// camera
-	MayaCamUI		mMayaCam;
 	CameraPersp		mRenderCam;
+	MayaCamUI		mMayaCam;
 
 	// help text
 	gl::Texture2dRef	mHelp;
@@ -163,8 +160,8 @@ void FrustumCullingReduxApp::setup()
 	mCullingFov = 60;
 	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
 	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
-	
-	mMayaCam.setCurrentCam( mRenderCam );
+	mMayaCam = MayaCamUI( &mRenderCam );
+	mMayaCam.connect( getWindow() );
 
 	// track current time so we can calculate elapsed time
 	mCurrentSeconds = getElapsedSeconds();
@@ -285,17 +282,6 @@ void FrustumCullingReduxApp::draw()
 		gl::draw( mHelp );
 		gl::disableAlphaBlending();
 	}
-}
-
-void FrustumCullingReduxApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void FrustumCullingReduxApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	mRenderCam = mMayaCam.getCamera();
 }
 
 void FrustumCullingReduxApp::keyDown( KeyEvent event )

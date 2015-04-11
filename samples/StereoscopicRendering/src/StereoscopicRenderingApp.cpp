@@ -151,8 +151,7 @@ void StereoscopicRenderingApp::setup()
 	mDrawAutoFocus = false;
 
 	// Setup the camera. This is very similar to a standard perspective camera.
-	mCamera.setEyePoint( vec3( 0.2f, 1.3f, -11.5f ) );
-	mCamera.setCenterOfInterestPoint( vec3( 0.5f, 1.5f, -0.1f ) );
+	mCamera.lookAt( vec3( 0.2f, 1.3f, -11.5f ), vec3( 0.5f, 1.5f, -0.1f ) );
 	mCamera.setFov( 60.0f );
 
 	mMayaCam.setCurrentCam( mCamera );

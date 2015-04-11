@@ -131,8 +131,7 @@ private:
 void NormalMappingApp::setup()
 {
 	// setup camera and lights
-	mCamera.setEyePoint( vec3( 0.2f, 0.4f, 1.0f ) );
-	mCamera.setCenterOfInterestPoint( vec3(0.0f, 0.425f, 0.0f) );
+	mCamera.lookAt( vec3( 0.2f, 0.4f, 1.0f ), vec3(0.0f, 0.425f, 0.0f) );
 	mCamera.setNearClip( 0.01f );
 	mCamera.setFarClip( 100.0f );
 

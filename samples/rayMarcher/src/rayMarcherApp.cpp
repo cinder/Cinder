@@ -16,13 +16,11 @@ using namespace ci::app;
 
 class RayMarcherApp : public App {
  public:	
-	RayMarcherApp() : mMarcher( &mMayaCam.getCamera() ) {}
+	RayMarcherApp() : mMarcher( &mCamera ) {}
 	
 	void		prepareSettings( Settings *settings );
 
 	void		setup();
-	void		mouseDown( MouseEvent event );
-	void		mouseDrag( MouseEvent event );
 	void		keyDown( KeyEvent event );	
 	void		resize();
 	void		update();
@@ -32,6 +30,7 @@ class RayMarcherApp : public App {
 	gl::Texture2dRef			mImageTexture;
 
 	RayMarcher		mMarcher;
+	CameraPersp		mCamera;
 	MayaCamUI		mMayaCam;
 	vec3			mStartEyePoint;
 	int				mCurrentLine;
@@ -49,11 +48,12 @@ void RayMarcherApp::prepareSettings( Settings *settings )
 
 void RayMarcherApp::setup()
 {
-	CameraPersp cam;
+	mCamera = CameraPersp();
 	mStartEyePoint = vec3( 15, 21, 27.5 ) * 0.65f;
-	cam.lookAt( mStartEyePoint, vec3( 0 ), vec3( 0, 1, 0 ) );
-	cam.setCenterOfInterest( distance( mStartEyePoint, vec3( 0 ) ) );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.lookAt( mStartEyePoint, vec3( 0 ), vec3( 0, 1, 0 ) );
+	mMayaCam = MayaCamUI( &mCamera );
+	mMayaCam.connect( getWindow() );
+	mMayaCam.getSignalCameraChange().connect( [this] { mCurrentLine = 0; } );
 	
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
 								 .vertex( CI_GLSL( 150,
@@ -77,17 +77,6 @@ void RayMarcherApp::setup()
 														oColor = vec3( clamp( dot( vNormal, uLightDir ), 0.0, 1.0 ) );
 													}
 													) ) );
-}
-
-void RayMarcherApp::mouseDown( MouseEvent event )
-{		
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void RayMarcherApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	mCurrentLine = 0;	
 }
 
 void RayMarcherApp::keyDown( KeyEvent event )
