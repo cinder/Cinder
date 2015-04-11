@@ -84,9 +84,13 @@ class MayaCamUI {
 		mWindow.reset();
 	}
 
+	signals::Signal<void()>&	getSignalCameraChange()
+	{
+		return mSignalCameraChange;
+	}
+
 	void mouseDown( app::MouseEvent &event )
 	{
-std::cout << length( mCamera->getEyePoint() ) << " " << mCenterOfInterest << std::endl;
 		mouseDown( event.getPos() );
 		event.setHandled();
 	}
@@ -166,6 +170,8 @@ std::cout << length( mCamera->getEyePoint() ) << " " << mCenterOfInterest << std
 			mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialCenterOfInterest + rotatedVec );
 			mCamera->setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
+		
+		mSignalCameraChange.emit();
 	}
 	
 	const CameraPersp& getCamera() const				{ return *mCamera; }
@@ -199,6 +205,7 @@ std::cout << length( mCamera->getEyePoint() ) << " " << mCenterOfInterest << std
 	app::WindowRef			mWindow;
 	ivec2					mWindowSize; // used when mWindow is null
 	signals::Connection		mMouseDownConnection, mMouseDragConnection;
+	signals::Signal<void()>	mSignalCameraChange;
 };
 
 }; // namespace cinder
