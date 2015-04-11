@@ -43,12 +43,6 @@ class Camera {
 	vec3		getEyePoint() const { return mEyePoint; }
 	void		setEyePoint( const vec3 &aEyePoint );
 	
-	float		getCenterOfInterest() const { return mCenterOfInterest; }
-	void		setCenterOfInterest( float aCenterOfInterest ) { mCenterOfInterest = aCenterOfInterest; }
-	
-	vec3		getCenterOfInterestPoint() const { return mEyePoint + mViewDirection * mCenterOfInterest; }
-	void		setCenterOfInterestPoint( const vec3 &centerOfInterestPoint );
-		
 	vec3		getWorldUp() const { return mWorldUp; }
 	void		setWorldUp( const vec3 &aWorldUp );
 
@@ -115,7 +109,6 @@ class Camera {
 	vec3	mEyePoint;
 	vec3	mViewDirection;
 	quat	mOrientation;
-	float	mCenterOfInterest;
 	vec3	mWorldUp;
 
 	float	mFov; // vertical field of view in degrees

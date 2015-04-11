@@ -46,12 +46,6 @@ void Camera::setEyePoint( const vec3 &aEyePoint )
 	mModelViewCached = false;
 }
 
-void Camera::setCenterOfInterestPoint( const vec3 &centerOfInterestPoint )
-{
-	mCenterOfInterest = distance( mEyePoint, centerOfInterestPoint );
-	lookAt( centerOfInterestPoint );
-}
-
 void Camera::setViewDirection( const vec3 &aViewDirection )
 {
 	mViewDirection = normalize( aViewDirection );
@@ -262,7 +256,6 @@ CameraPersp::CameraPersp()
 	: Camera()
 {
 	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
-	setCenterOfInterest( 44.822f );
 	setPerspective( 35, 1, 0.1f, 1000 );
 }
 
@@ -362,7 +355,6 @@ CameraOrtho::CameraOrtho()
 	: Camera()
 {
 	lookAt( vec3( 0, 0, 0.1f ), vec3(), vec3( 0, 1, 0 ) );
-	setCenterOfInterest( 0.1f );
 	setFov( 35 );
 }
 
