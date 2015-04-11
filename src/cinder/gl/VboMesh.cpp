@@ -382,7 +382,6 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 	for( const auto &vertArrayVbo : mVertexArrayVbos ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
-		auto size = vertArrayVbo.first.getAttribs().size();
 		// now iterate the attributes associated with this VBO
 		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
 			int loc = -1;
