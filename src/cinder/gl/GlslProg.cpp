@@ -354,7 +354,7 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-: mPreprocessingEnabled( format.isPreprocessingEnabled() ), mUniformValueCache( nullptr )
+: mUniformValueCache( nullptr )
 #if ! defined( CINDER_GL_ES_2 )
  , mTransformFeedbackFormat( -1 )
 #endif
