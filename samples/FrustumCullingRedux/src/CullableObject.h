@@ -30,7 +30,7 @@
 typedef std::shared_ptr<class CullableObject> CullableObjectRef;
 
 class CullableObject {
-public:
+  public:
 	CullableObject( const ci::gl::BatchRef &batch );
 	~CullableObject();
 	
@@ -46,7 +46,8 @@ public:
 	const ci::vec3& getPosition() const { return mPosition; }
 	
 	void setTransform( const ci::vec3 &position, const ci::vec3 &rotation, const ci::vec3 &scale );
-protected:
+	
+  protected:
 	//! keep track of culling state
 	bool			mIsCulled;
 
