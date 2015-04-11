@@ -819,8 +819,7 @@ using namespace cinder::app;
 															enableMultiTouch:appImpl->mApp->isMultiTouchEnabled()];
 
 	[winImpl->mWin setDelegate:self];
-	// add CinderView as subview of window's content view to avoid NSWindow warning: https://github.com/cinder/Cinder/issues/584
-	[winImpl->mWin.contentView addSubview:winImpl->mCinderView];
+	[winImpl->mWin setContentView:winImpl->mCinderView];
 
 	[winImpl->mWin makeKeyAndOrderFront:nil];
 	// after showing the window, the size may have changed (see NSWindow::constrainFrameRect) so we need to update our internal variable
