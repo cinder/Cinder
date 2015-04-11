@@ -63,7 +63,7 @@ void stackBlur_impl( const IMAGET &srcSurface, IMAGET *dstSurface, const Area &a
 	const int32_t heightMinusOne = height - 1;
 	const int32_t div = radius + radius + 1;
 	const int32_t radiusPlusOne = radius + 1;
-	const SUMT divisor = ((div+1)>>1)*((div+1)>>1);
+	const SUMT divisor = (SUMT)(((div+1)>>1)*((div+1)>>1));
 	const SUMT invDivisor = 1 / divisor;
 	const uint8_t srcPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( srcSurface );
 	const uint8_t dstPixelInc = ( CHANNELS == 4 ) ? 4 : getPixelIncrement( *dstSurface );
@@ -75,7 +75,7 @@ void stackBlur_impl( const IMAGET &srcSurface, IMAGET *dstSurface, const Area &a
 	srcPixelData += getPixelDataOffset( srcSurface );
 	dstPixelData += getPixelDataOffset( *dstSurface );
 
-	SUMT stack[div*CHANNELS];
+	std::unique_ptr<SUMT[]> stack( new SUMT[div*CHANNELS] );
 	SUMT *tempPixelData = (SUMT*)malloc(width * height * sizeof(SUMT) * CHANNELS);
 	SUMT *channelData = tempPixelData;
 
@@ -174,9 +174,9 @@ void stackBlur_impl( const IMAGET &srcSurface, IMAGET *dstSurface, const Area &a
 		for( int32_t y = 0; y < height; y++) {
 			for( int c = 0; c < CHANNELS; ++c ) {
 				if( std::is_integral<SUMT>::value )
-					dstPixelData[offset + c] = sum[c] / divisor;
+					dstPixelData[offset + c] = (T)(sum[c] / divisor);
 				else
-					dstPixelData[offset + c] = sum[c] * invDivisor;
+					dstPixelData[offset + c] = (T)(sum[c] * invDivisor);
 				sum[c] -= outSum[c];
 			}
 			

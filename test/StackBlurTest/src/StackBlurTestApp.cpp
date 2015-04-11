@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-typedef uint8_t T;
+typedef uint16_t T;
 
 class StackBlurTestApp : public App {
   public:

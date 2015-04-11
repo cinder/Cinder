@@ -786,6 +786,9 @@
     <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Blur.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -1647,6 +1650,9 @@
       <Filter>Header Files\audio</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Checkerboard.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Blur.h">
       <Filter>Header Files\ip</Filter>
     </ClInclude>
   </ItemGroup>
