@@ -96,7 +96,7 @@ void ObjLoaderApp::frameCurrentObject()
 {
 	Sphere boundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
 	
-	mMayaCam.setCurrentCam( mMayaCam.getCamera().getFrameSphere( boundingSphere, 100 ) );
+	mMayaCam.setCurrentCam( mMayaCam.getCamera().calcFraming( boundingSphere ) );
 }
 
 void ObjLoaderApp::keyDown( KeyEvent event )

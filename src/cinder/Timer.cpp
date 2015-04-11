@@ -61,14 +61,14 @@ Timer::Timer( bool startOnConstruction )
 	}
 }
 
-void Timer::start()
+void Timer::start( double offsetSeconds )
 {	
 #if defined( CINDER_COCOA )
-	mStartTime = ::CFAbsoluteTimeGetCurrent();
+	mStartTime = ::CFAbsoluteTimeGetCurrent() - offsetSeconds;
 #elif (defined( CINDER_MSW ) || defined( CINDER_WINRT))
 	::LARGE_INTEGER rawTime;
 	::QueryPerformanceCounter( &rawTime );
-	mStartTime = rawTime.QuadPart * mInvNativeFreq;
+	mStartTime = rawTime.QuadPart * mInvNativeFreq - offsetSeconds;
 #endif
 
 	mIsStopped = false;

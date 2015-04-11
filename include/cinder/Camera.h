@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
- 
+ Copyright (c) 2012, The Cinder Project: http://libcinder.org All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -32,6 +32,8 @@
 
 namespace cinder {
 
+class Sphere;
+
 // By default the camera is looking down -Z
 class Camera {
   public:
@@ -59,10 +61,16 @@ class Camera {
 	quat		getOrientation() const { return mOrientation; }
 	void		setOrientation( const quat &aOrientation );
 
+	//! Returns the camera's vertical field of view measured in degrees.
 	float	getFov() const { return mFov; }
+	//! Sets the camera's vertical field of view measured in degrees.
 	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	//! Returns the camera's horizontal field of view measured in degrees.
 	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
-	void	setFovHorizontal( float aFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(aFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+	//! Sets the camera's horizontal field of view measured in degrees.
+	void	setFovHorizontal( float verticalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(verticalFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+	//! Returns the camera's focal length, calculating it based on the field of view.
+	float	getFocalLength() const;
 
 	float	getAspectRatio() const { return mAspectRatio; }
 	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
@@ -95,38 +103,38 @@ class Camera {
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
  	vec3 worldToNdc( const vec3 &worldCoord );
 
-	float	getScreenRadius( const class Sphere &sphere, float screenWidth, float screenHeight ) const;
+	float	calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const;
 
   protected:
+	void			calcMatrices() const;
+
+	virtual void	calcViewMatrix() const;
+	virtual void	calcInverseView() const;
+	virtual void	calcProjection() const = 0;
+
 	vec3	mEyePoint;
 	vec3	mViewDirection;
 	quat	mOrientation;
 	float	mCenterOfInterest;
 	vec3	mWorldUp;
 
-	float	mFov;
+	float	mFov; // vertical field of view in degrees
 	float	mAspectRatio;
 	float	mNearClip;		
 	float	mFarClip;
 
-	mutable vec3		mU;	// Right vector
-	mutable vec3		mV;	// Readjust up-vector
-	mutable vec3		mW;	// Negative view direction
+	mutable vec3	mU;	// Right vector
+	mutable vec3	mV;	// Readjust up-vector
+	mutable vec3	mW;	// Negative view direction
 
 	mutable mat4	mProjectionMatrix, mInverseProjectionMatrix;
-	mutable bool		mProjectionCached;
+	mutable bool	mProjectionCached;
 	mutable mat4	mViewMatrix;
-	mutable bool		mModelViewCached;
+	mutable bool	mModelViewCached;
 	mutable mat4	mInverseModelViewMatrix;
-	mutable bool		mInverseModelViewCached;
+	mutable bool	mInverseModelViewCached;
 	
-	mutable float		mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
-
-	inline void		calcMatrices() const;
-
-	virtual void	calcViewMatrix() const;
-	virtual void	calcInverseView() const;
-	virtual void	calcProjection() const = 0;
+	mutable float	mFrustumLeft, mFrustumRight, mFrustumTop, mFrustumBottom;
 };
 
 class CameraPersp : public Camera {
@@ -166,7 +174,8 @@ class CameraPersp : public Camera {
 	
 	virtual bool	isPersp() const { return true; }
 
-	CameraPersp	getFrameSphere( const class Sphere &worldSpaceSphere, int maxIterations = 20 ) const;
+	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation).
+	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
 
   protected:
 	vec2	mLensShift;
@@ -204,7 +213,7 @@ class CameraStereo : public CameraPersp {
 	void			setConvergence( float distance, bool adjustEyeSeparation=false ) { 
 		mConvergence = distance; mProjectionCached = false;
 
-		if(adjustEyeSeparation) 
+		if( adjustEyeSeparation )
 			mEyeSeparation = mConvergence / 30.0f;
 	}
 	//! Returns the distance between the camera's for the left and right eyes.
@@ -237,9 +246,10 @@ class CameraStereo : public CameraPersp {
 	mutable mat4	mViewMatrixLeft, mInverseModelViewMatrixLeft;
 	mutable mat4	mViewMatrixRight, mInverseModelViewMatrixRight;
 
-	virtual void	calcViewMatrix() const override;
-	virtual void	calcInverseView() const override;
-	virtual void	calcProjection() const override;
+	void	calcViewMatrix() const override;
+	void	calcInverseView() const override;
+	void	calcProjection() const override;
+	
   private:
 	bool			mIsStereo;
 	bool			mIsLeft;
