@@ -36,6 +36,8 @@
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <algorithm>
+
 namespace cinder {
 
 void Camera::setEyePoint( const vec3 &aEyePoint )
