@@ -26,7 +26,7 @@ using std::vector;
 
 namespace cinder {
 
-bool Sphere::intersects( const Ray &ray )
+bool Sphere::intersects( const Ray &ray ) const
 {
 	float 		t;
 	vec3		temp 	= ray.getOrigin() - mCenter;
@@ -56,7 +56,7 @@ bool Sphere::intersects( const Ray &ray )
 	return false;
 }
 
-int Sphere::intersect( const Ray &ray, float *intersection )
+int Sphere::intersect( const Ray &ray, float *intersection ) const
 {
 	float 		t;
 	vec3		temp 	= ray.getOrigin() - mCenter;
@@ -121,6 +121,35 @@ Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 			maxDistance = dist;
 	}
 	return Sphere( center, math<float>::sqrt( maxDistance ) );
+}
+
+void Sphere::calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const
+{
+	vec3 o( -mCenter.x, mCenter.y, mCenter.z );
+	
+    float r2 = mRadius * mRadius;
+	float z2 = o.z * o.z;
+	float l2 = dot( o, o );
+
+	if( outCenter )
+		*outCenter = focalLength * o.z * vec2( o ) / ( z2-r2 );
+	if( outAxisA )
+		*outAxisA = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-z2)) ) * vec2( o.x, o.y );
+	if( outAxisB )
+		*outAxisB = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2)) ) * vec2( -o.y, o.x );
+}
+
+float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) const
+{
+	vec3 o( mCenter );
+	
+    float r2 = mRadius * mRadius;
+	float z2 = o.z * o.z;
+	float l2 = dot( o, o );
+	
+	float area = -M_PI * focalLength * focalLength * r2 * sqrt( abs((l2-r2)/(r2-z2)) ) / (r2-z2);
+	float aspectRatio = screenSizePixels.x / screenSizePixels.y;
+	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;
 }
 
 } // namespace cinder
