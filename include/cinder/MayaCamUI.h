@@ -32,34 +32,39 @@ namespace cinder {
 class MayaCamUI {
  public:
 	MayaCamUI()
-		: mCamera( &mInternalCamera )
+		: mCamera( &mInternalCamera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( mInternalCamera.getEyePoint() ) )
 	{}
 	MayaCamUI( const CameraPersp &initialCam )
-		: mInitialCam( initialCam ), mInternalCamera( initialCam ), mCamera( &mInternalCamera )
+		: mInitialCam( initialCam ), mInternalCamera( initialCam ), mCamera( &mInternalCamera ), mWindowSize( 640, 480 ),
+			mCenterOfInterest( length( initialCam.getEyePoint() ) )
 	{}
 	MayaCamUI( CameraPersp *camera )
-		: mInitialCam( *camera ), mCamera( camera )
+		: mInitialCam( *camera ), mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) )
 	{}
 
 	MayaCamUI( const MayaCamUI &rhs )
 		: mInitialCam( rhs.mInitialCam ), mInternalCamera( rhs.mInternalCamera )
 	{
-		// if mCamera was just pointed at rhs' mInternalCamera, we'll point it at our own
+		// if mCamera is just pointed at rhs' mInternalCamera, we'll point it at our own
 		if( rhs.mCamera == &rhs.mInternalCamera )
 			mCamera = &mInternalCamera;
 		else
 			mCamera = rhs.mCamera;
+		mCenterOfInterest = rhs.mCenterOfInterest;
+		mWindowSize = rhs.mWindowSize;
 	}
 
 	MayaCamUI& operator=( const MayaCamUI &rhs )
 	{
 		mInitialCam = rhs.mInitialCam;
 		mInternalCamera = rhs.mInternalCamera;
-		// if mCamera was just pointed at rhs' mInternalCamera, we'll point it at our own
+		// if mCamera is just pointed at rhs' mInternalCamera, we'll point it at our own
 		if( rhs.mCamera == &rhs.mInternalCamera )
 			mCamera = &mInternalCamera;
 		else
 			mCamera = rhs.mCamera;
+		mCenterOfInterest = rhs.mCenterOfInterest;
+		mWindowSize = rhs.mWindowSize;
 		return *this;
 	}
 
@@ -81,6 +86,7 @@ class MayaCamUI {
 
 	void mouseDown( app::MouseEvent &event )
 	{
+std::cout << length( mCamera->getEyePoint() ) << " " << mCenterOfInterest << std::endl;
 		mouseDown( event.getPos() );
 		event.setHandled();
 	}
@@ -89,6 +95,7 @@ class MayaCamUI {
 	{
 		mInitialMousePos = mousePos;
 		mInitialCam = *mCamera;
+		mInitialCenterOfInterest = mCenterOfInterest;		
 		mLastAction = ACTION_NONE;
 	}
 
@@ -119,6 +126,7 @@ class MayaCamUI {
 		
 		if( action != mLastAction ) {
 			mInitialCam = *mCamera;
+			mInitialCenterOfInterest = mCenterOfInterest;
 			mInitialMousePos = mousePos;
 		}
 		
@@ -127,15 +135,15 @@ class MayaCamUI {
 		if( action == ACTION_ZOOM ) { // zooming
 			int mouseDelta = ( mousePos.x - mInitialMousePos.x ) + ( mousePos.y - mInitialMousePos.y );
 
-			float newCOI = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialCam.getCenterOfInterest();
-			vec3 oldTarget = mInitialCam.getCenterOfInterestPoint();
+			float newCOI = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialCenterOfInterest;
+			vec3 oldTarget = mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialCenterOfInterest;
 			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newCOI;
 			mCamera->setEyePoint( newEye );
-			mCamera->setCenterOfInterest( newCOI );
+			mCenterOfInterest = newCOI;
 		}
 		else if( action == ACTION_PAN ) { // panning
-			float deltaX = ( mousePos.x - mInitialMousePos.x ) / 1000.0f * mInitialCam.getCenterOfInterest();
-			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 1000.0f * mInitialCam.getCenterOfInterest();
+			float deltaX = ( mousePos.x - mInitialMousePos.x ) / (float)getWindowSize().x * mInitialCenterOfInterest;
+			float deltaY = ( mousePos.y - mInitialMousePos.y ) / (float)getWindowSize().y * mInitialCenterOfInterest;
 			vec3 right, up;
 			mInitialCam.getBillboardVectors( &right, &up );
 			mCamera->setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
@@ -152,26 +160,44 @@ class MayaCamUI {
 				deltaY = -deltaY;
 			}
 
-			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( mInitialCam.getEyePoint() - mInitialCam.getCenterOfInterestPoint() );
+			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( -mInitialCam.getViewDirection() * mInitialCenterOfInterest );
 			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
-			mCamera->setEyePoint( mInitialCam.getCenterOfInterestPoint() + rotatedVec );
+			mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialCenterOfInterest + rotatedVec );
 			mCamera->setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
 	}
 	
 	const CameraPersp& getCamera() const				{ return *mCamera; }
 	void setCurrentCam( const CameraPersp &currentCam ) { *mCamera = currentCam; }
+
+	//! Sets the size of the window in pixels when no WindowRef is supplied with connect()
+	void	setWindowSize( const ivec2 &windowSizePixels ) { mWindowSize = windowSizePixels; }
+
+	//! Sets the distance along the eye vector around which the camera tumbles
+	void	setCenterOfInterest( float coi ) { mCenterOfInterest = coi; }
+	//! Returns the distance along the eye vector around which the camera tumbles
+	float	getCenterOfInterest() const { return mCenterOfInterest; }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
+
+	ivec2		getWindowSize()
+	{
+		if( mWindow )
+			return mWindow->getSize();
+		else
+			return mWindowSize;
+	}
  
 	ivec2				mInitialMousePos;
 	CameraPersp			mInitialCam, mInternalCamera;
 	CameraPersp			*mCamera;
+	float				mInitialCenterOfInterest, mCenterOfInterest;
 	int					mLastAction;
 	
 	app::WindowRef			mWindow;
+	ivec2					mWindowSize; // used when mWindow is null
 	signals::Connection		mMouseDownConnection, mMouseDragConnection;
 };
 
