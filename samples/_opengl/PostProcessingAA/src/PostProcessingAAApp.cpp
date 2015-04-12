@@ -35,8 +35,6 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 #include "cinder/Timer.h"
 #include "cinder/Utilities.h"

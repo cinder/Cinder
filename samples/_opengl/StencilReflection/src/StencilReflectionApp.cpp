@@ -1,9 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 
 // This sample is based off a sample from the website http://open.gl/depthstencils .

@@ -7,7 +7,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/VboMesh.h"
 #include "cinder/GeomIO.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
