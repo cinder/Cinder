@@ -318,13 +318,13 @@ void StereoscopicRenderingApp::draw()
 void StereoscopicRenderingApp::mouseDown( MouseEvent event )
 {
 	// Handle user interaction.
-	mMayaCam.mouseDown( event.getPos() );
+	mMayaCam.mouseDown( event );
 }
 
 void StereoscopicRenderingApp::mouseDrag( MouseEvent event )
 {
 	// Handle user interaction.
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mMayaCam.mouseDrag( event );
 
 	// Update stereoscopic camera.
 	mCamera.setEyePoint( mMayaCam.getCamera().getEyePoint() );

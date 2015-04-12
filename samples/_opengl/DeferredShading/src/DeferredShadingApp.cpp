@@ -23,8 +23,6 @@ public:
 	DeferredShadingApp();
 
 	void						draw() override;
-	void						mouseDown( ci::app::MouseEvent event ) override;
-	void						mouseDrag( ci::app::MouseEvent event ) override;
 	void						resize() override;
 	void						update() override;
 private:
@@ -101,6 +99,7 @@ DeferredShadingApp::DeferredShadingApp()
 	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
 	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
 	mMayaCam.setCurrentCam( cam );
+	mMayaCam.connect( getWindow(), -1 ); // set priority to be lower than InterfaceGl
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
@@ -389,16 +388,6 @@ void DeferredShadingApp::loadShaders()
 	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerNormalEmissive",	1 );
 	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerPosition",			2 );
 	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerShadowMap",		3 );
-}
-
-void DeferredShadingApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void DeferredShadingApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 }
 
 void DeferredShadingApp::resize()

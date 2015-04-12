@@ -18,15 +18,14 @@ class RayMarcherApp : public App {
  public:	
 	RayMarcherApp() : mMarcher( &mMayaCam.getCamera() ) {}
 	
-	void		prepareSettings( Settings *settings );
+	static void	prepareSettings( Settings *settings );
 
-	void		setup();
-	void		mouseDown( MouseEvent event );
-	void		mouseDrag( MouseEvent event );
-	void		keyDown( KeyEvent event );	
-	void		resize();
-	void		update();
-	void		draw();
+	void		setup() override;
+	void		mouseDrag( MouseEvent event ) override;
+	void		keyDown( KeyEvent event ) override;
+	void		resize() override;
+	void		update() override;
+	void		draw() override;
 
 	std::shared_ptr<Surface8u>	mImageSurface;
 	gl::Texture2dRef			mImageTexture;
@@ -39,6 +38,7 @@ class RayMarcherApp : public App {
 	gl::GlslProgRef	mGlsl;
 };
 
+// static
 void RayMarcherApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize( 400, 300 );
@@ -54,6 +54,8 @@ void RayMarcherApp::setup()
 	cam.lookAt( mStartEyePoint, vec3( 0 ), vec3( 0, 1, 0 ) );
 	cam.setCenterOfInterest( distance( mStartEyePoint, vec3( 0 ) ) );
 	mMayaCam.setCurrentCam( cam );
+	mMayaCam.connect( getWindow() );
+	mMarcher = RayMarcher( &mMayaCam.getCamera() );
 	
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
 								 .vertex( CI_GLSL( 150,
@@ -79,15 +81,9 @@ void RayMarcherApp::setup()
 													) ) );
 }
 
-void RayMarcherApp::mouseDown( MouseEvent event )
-{		
-	mMayaCam.mouseDown( event.getPos() );
-}
-
 void RayMarcherApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	mCurrentLine = 0;	
+	mCurrentLine = 0;
 }
 
 void RayMarcherApp::keyDown( KeyEvent event )
@@ -142,4 +138,4 @@ void RayMarcherApp::draw()
 					   vec2( 1, 1 - mCurrentLine / float(mImageTexture->getHeight()) ) );
 }
 
-CINDER_APP( RayMarcherApp, RendererGl )
+CINDER_APP( RayMarcherApp, RendererGl, RayMarcherApp::prepareSettings )
