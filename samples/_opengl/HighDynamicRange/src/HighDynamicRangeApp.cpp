@@ -2,6 +2,8 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
 
 using namespace ci;
 using namespace ci::app;
