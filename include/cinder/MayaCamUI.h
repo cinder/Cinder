@@ -162,6 +162,9 @@ class MayaCamUI {
 	
 	const CameraPersp& getCamera() const				{ return *mCamera; }
 	void setCurrentCam( const CameraPersp &currentCam ) { *mCamera = currentCam; }
+
+	//! Convenience routine to set the internal Camera's aspect ratio
+	void setAspectRatio( float aspectRatio )	{ mCamera->setAspectRatio( aspectRatio ); }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
