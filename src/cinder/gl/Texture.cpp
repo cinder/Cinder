@@ -601,11 +601,11 @@ int TextureBase::requiredMipLevels( GLint width, GLint height, GLint depth )
 	return floor( std::log2( maxDim ) ) + 1;
 }
 
-GLfloat TextureBase::getMaxMaxAnisotropy()
+GLfloat TextureBase::getMaxAnisotropyMax()
 {
-	GLfloat maxMaxAnisotropy;
-	glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxMaxAnisotropy );
-	return maxMaxAnisotropy;
+	GLfloat maxAnisotropyMax;
+	glGetFloatv( GL_MAX_TEXTURE_MAX_ANISOTROPY_EXT, &maxAnisotropyMax );
+	return maxAnisotropyMax;
 }
 
 bool TextureBase::supportsHardwareSwizzle()
