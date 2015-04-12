@@ -65,10 +65,10 @@ using namespace std;
 
 class StereoscopicRenderingApp : public App {
 public:
-	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL } RenderMethod;
+	enum FocusMethod { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS };
+	enum RenderMethod { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL };
 
-	typedef struct InstanceData {
+	struct InstanceData {
 		vec3 position;
 		vec3 color;
 	};
