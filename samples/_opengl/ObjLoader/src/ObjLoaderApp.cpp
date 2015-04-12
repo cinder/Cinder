@@ -21,15 +21,12 @@ class ObjLoaderApp : public App {
 	void	setup() override;
 	void	resize() override;
 
-	void	mouseDown( MouseEvent event ) override;
-	void	mouseDrag( MouseEvent event ) override;
 	void	keyDown( KeyEvent event ) override;
 
 	void	loadObjFile( const fs::path &filePath );
 	void	frameCurrentObject();
 	void	draw() override;
 	
-	Arcball			mArcball;
 	MayaCamUI		mMayaCam;
 	TriMeshRef		mMesh;
 	gl::BatchRef	mBatch;
@@ -49,34 +46,20 @@ void ObjLoaderApp::setup()
 	CameraPersp initialCam;
 	initialCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
 	mMayaCam.setCurrentCam( initialCam );
+	mMayaCam.connect( getWindow() );
 
 	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
 	mCheckerTexture->bind( 0 );
 
 	loadObjFile( getAssetPath( "8lbs.obj" ) );
+
+	gl::enableDepthWrite();
+	gl::enableDepthRead();
 }
 
 void ObjLoaderApp::resize()
 {
-	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
-	mArcball.setRadius( 150 );
-}
-
-void ObjLoaderApp::mouseDown( MouseEvent event )
-{
-	if( event.isAltDown() )
-		mMayaCam.mouseDown( event.getPos() );
-	else
-		mArcball.mouseDown( event.getPos() );
-}
-
-void ObjLoaderApp::mouseDrag( MouseEvent event )
-{
-	if( event.isAltDown() )
-		mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	else
-		mArcball.mouseDrag( event.getPos() );
+	mMayaCam.setAspectRatio( getWindowAspectRatio() );
 }
 
 void ObjLoaderApp::loadObjFile( const fs::path &filePath )
@@ -110,18 +93,13 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 
 void ObjLoaderApp::draw()
 {
-	gl::enableDepthWrite();
-	gl::enableDepthRead();
-	
 	gl::clear( Color( 0.0f, 0.1f, 0.2f ) );
-
 	gl::setMatrices( mMayaCam.getCamera() );
 
-	gl::pushMatrices();
-		gl::rotate( mArcball.getQuat() );
-		mBatch->draw();
-	gl::popMatrices();
+	mBatch->draw();
 }
 
 
-CINDER_APP( ObjLoaderApp, RendererGl )
+CINDER_APP( ObjLoaderApp, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )
