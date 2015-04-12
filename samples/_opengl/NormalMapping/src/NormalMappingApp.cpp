@@ -39,6 +39,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
 #include "cinder/TriMesh.h"
+#include "cinder/Log.h"
 
 #include "DebugMesh.h"
 
@@ -193,8 +194,8 @@ void NormalMappingApp::setup()
 		mShaderNormalMapping->uniform( "uLights[1].specular", mLightAmbient.specular );
 		mShaderNormalMapping->uniform( "uNumOfLights", 2 );
 	}
-	catch( const std::exception& e ) {
-		console() << "Error loading asset: " << e.what() << std::endl;
+	catch( const std::exception &e ) {
+		CI_LOG_EXCEPTION( "Error loading asset", e );
 		quit();
 	}
 
@@ -209,7 +210,7 @@ void NormalMappingApp::setup()
 		mMeshDebug = createDebugMesh(mesh);
 	}
 	catch( const std::exception& e ) {
-		console() << "Error loading asset: " << e.what() << std::endl;
+		CI_LOG_EXCEPTION( "Error loading asset", e );
 		quit();
 	}
 
@@ -384,7 +385,7 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	if( fs::exists( mshFile ) ) {
 		timer.start();
 		mesh.read( loadFile( mshFile ) );
-		console() << "Loading the mesh took " << timer.getSeconds() << " seconds." << std::endl;
+		CI_LOG_I( "Loading the mesh took " << timer.getSeconds() << " seconds." );
 	}
 	else {
 		std::string msg = "Could not locate the file (" + mshFile.string() + ").";
@@ -395,7 +396,7 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	if( ! mesh.hasNormals() ) {
 		timer.start();
 		mesh.recalculateNormals();
-		console() << "Calculating " << mesh.getNumVertices() << " normals took " << timer.getSeconds() << " seconds." << std::endl;
+		CI_LOG_I( "Calculating " << mesh.getNumVertices() << " normals took " << timer.getSeconds() << " seconds." );
 	}
 
 	// if the mesh does not have tangents, calculate them on-the-fly
@@ -403,7 +404,7 @@ TriMesh NormalMappingApp::createMesh( const fs::path& mshFile )
 	if( ! mesh.hasTangents() ) {
 		timer.start();
 		mesh.recalculateTangents();
-		console() << "Calculating " << mesh.getNumVertices() << " tangents took " << timer.getSeconds() << " seconds." << std::endl;
+		CI_LOG_I( "Calculating " << mesh.getNumVertices() << " tangents took " << timer.getSeconds() << " seconds." );
 	}
 
 	return mesh;
