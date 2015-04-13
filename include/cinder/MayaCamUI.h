@@ -66,7 +66,6 @@ class MayaCamUI {
 				setWindowSize( mWindow->getSize() );
 				if( mCamera )
 					mCamera->setAspectRatio( mWindow->getAspectRatio() );
-std::cout << "Aspect ratio: " << mCamera->getAspectRatio() << std::endl;
 			}
 		);
 	}
@@ -122,7 +121,7 @@ std::cout << "Aspect ratio: " << mCamera->getAspectRatio() << std::endl;
 	{
 		if( ! mCamera )
 			return;
-	
+
 		int action;
 		if( rightDown || ( leftDown && middleDown ) )
 			action = ACTION_ZOOM;
@@ -158,8 +157,8 @@ std::cout << "Aspect ratio: " << mCamera->getAspectRatio() << std::endl;
 			mCamera->setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
 		}
 		else { // tumbling
-			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
+			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 			vec3 mW = normalize( mInitialCam.getViewDirection() );
 			bool invertMotion = ( mInitialCam.getOrientation() * glm::vec3( 0, 1, 0 ) ).y < 0.0f;
 			vec3 mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
