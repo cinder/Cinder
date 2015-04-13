@@ -93,9 +93,7 @@ void RayMarcherApp::resize()
 	mImageTexture = gl::Texture::create( *mImageSurface );
 	mCurrentLine = 0;
 	
-	CameraPersp cam = mMayaCam.getCamera();
-	cam.setPerspective( 45, getWindowWidth() / (float)getWindowHeight(), 0.1f, 100.0f );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.setPerspective( 45, getWindowWidth() / (float)getWindowHeight(), 0.1f, 100.0f );
 }
 
 void RayMarcherApp::update()
@@ -112,7 +110,7 @@ void RayMarcherApp::draw()
 	gl::clear();
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCamera );
 	
 	mGlsl->bind();
 	mGlsl->uniform( "uLightDir", vec3( gl::getViewMatrix() * vec4( RayMarcher::sLightDir, 0.0 ) ) );

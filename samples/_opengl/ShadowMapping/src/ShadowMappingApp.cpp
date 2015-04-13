@@ -113,23 +113,19 @@ struct LightData {
 };
 
 class ShadowMappingApp : public App {
-public:
+  public:
 	void setup() override;
-	void resize() override;
 	void update() override;
 	void draw() override;
 	
-	void mouseMove( MouseEvent event ) override;
-	void mouseDown( MouseEvent event ) override;
-	void mouseDrag( MouseEvent event ) override;
 	void keyDown( KeyEvent event ) override;
-private:
+  private:
 	void drawScene( float spinAngle, const gl::GlslProgRef& glsl = nullptr );
 	params::InterfaceGlRef		mParams;
 	
 	float						mFrameRate;
+	CameraPersp					mCamera;
 	MayaCamUI					mMayaCam;
-	ivec2						mMousePos;
 	
 	gl::BatchRef				mTeapot, mTeapotShadowed;
 	gl::BatchRef				mSphere, mSphereShadowed;
@@ -229,14 +225,11 @@ void ShadowMappingApp::setup()
 	
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-}
 
-void ShadowMappingApp::resize()
-{
-	CameraPersp cam = mMayaCam.getCamera();
-	cam.setFov( 30.0f );
-	cam.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.setFov( 30.0f );
+	mCamera.setAspectRatio( getWindowAspectRatio() );
+	mMayaCam = MayaCamUI( &mCamera );
+	mMayaCam.connect( getWindow() );
 }
 
 void ShadowMappingApp::update()
@@ -307,7 +300,7 @@ void ShadowMappingApp::draw()
 	}
 
 	// Render shadowed scene
-	gl::setMatrices( mLight.toggleViewpoint ? mLight.camera : mMayaCam.getCamera() );
+	gl::setMatrices( mLight.toggleViewpoint ? mLight.camera : mCamera );
 	gl::viewport( toPixels( getWindowSize() ) );
 	{
 		gl::ScopedGlslProg bind( mShadowShader );
@@ -332,27 +325,6 @@ void ShadowMappingApp::draw()
 	gl::drawVector( mLight.viewpoint, 4.5f * normalize( mLight.viewpoint ) );
 	
 	mParams->draw();
-}
-
-void ShadowMappingApp::mouseDown( MouseEvent event )
-{
-	mMousePos = event.getPos();
-	mMayaCam.mouseDown( mMousePos );
-}
-
-void ShadowMappingApp::mouseMove( MouseEvent event )
-{
-	mMousePos = event.getPos();
-}
-
-void ShadowMappingApp::mouseDrag( MouseEvent event )
-{
-	mMousePos = event.getPos();
-	
-	// Added/hacked support for international mac laptop keyboards.
-	bool middle = event.isMiddleDown() || ( event.isMetaDown() && event.isLeftDown() );
-	bool right = event.isRightDown() || ( event.isControlDown() && event.isLeftDown() );
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown() && !middle && !right, middle, right );
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )

@@ -74,7 +74,6 @@ public:
 
 	void	update();
 	void	draw();
-	void	resize();
 
 	void	keyDown( KeyEvent event );
 
@@ -235,7 +234,7 @@ void NormalMappingApp::setup()
 #endif
 
 	mMayaCamera = MayaCamUI( &mCamera );
-	mMayaCamera.connect( getWindow() );
+	mMayaCamera.connect( getWindow(), -1 );
 
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
@@ -355,11 +354,6 @@ void NormalMappingApp::draw()
 		gl::draw( mCopyrightMap, centered );
 		gl::disableAlphaBlending();
 	}
-}
-
-void NormalMappingApp::resize()
-{
-	mCamera.setAspectRatio( getWindowAspectRatio() );
 }
 
 void NormalMappingApp::keyDown( KeyEvent event )
