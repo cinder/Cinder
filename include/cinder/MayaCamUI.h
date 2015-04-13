@@ -204,6 +204,8 @@ std::cout << "Aspect ratio: " << mCamera->getAspectRatio() << std::endl;
 	void	setCenterOfInterest( float coi ) { mCenterOfInterest = coi; }
 	//! Returns the distance along the eye vector around which the camera tumbles
 	float	getCenterOfInterest() const { return mCenterOfInterest; }
+	//! Returns the point along the eye vector around which the camera tumbles
+	vec3	getCenterOfInterestPoint() const { return mCamera->getEyePoint() + mCamera->getViewDirection() * mCenterOfInterest; }
 
 	//! Sets the multiplier on mouse wheel zooming. Larger values zoom faster. Negative values invert the direction. Default is \c 1.2
 	void	setMouseWheelMultiplier( float multiplier ) { mMouseWheelMultiplier = multiplier; }
