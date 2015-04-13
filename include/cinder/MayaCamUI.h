@@ -1,6 +1,6 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2010, The Cinder Project, All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -19,7 +19,6 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
-
 #pragma once
 
 #include "cinder/Vector.h"
@@ -32,37 +31,21 @@ namespace cinder {
 class MayaCamUI {
  public:
 	MayaCamUI()
-		: mCamera( &mInternalCamera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( mInternalCamera.getEyePoint() ) )
-	{}
-	MayaCamUI( const CameraPersp &initialCam )
-		: mInitialCam( initialCam ), mInternalCamera( initialCam ), mCamera( &mInternalCamera ), mWindowSize( 640, 480 ),
-			mCenterOfInterest( length( initialCam.getEyePoint() ) )
+		: mCamera( nullptr )
 	{}
 	MayaCamUI( CameraPersp *camera )
-		: mInitialCam( *camera ), mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) )
+		: mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) )
 	{}
 
 	MayaCamUI( const MayaCamUI &rhs )
-		: mInitialCam( rhs.mInitialCam ), mInternalCamera( rhs.mInternalCamera )
+		: mCamera( rhs.mCamera ), mCenterOfInterest( rhs.mCenterOfInterest ), mWindowSize( rhs.mWindowSize ),
+			mWindow( rhs.mWindow )
 	{
-		// if mCamera is just pointed at rhs' mInternalCamera, we'll point it at our own
-		if( rhs.mCamera == &rhs.mInternalCamera )
-			mCamera = &mInternalCamera;
-		else
-			mCamera = rhs.mCamera;
-		mCenterOfInterest = rhs.mCenterOfInterest;
-		mWindowSize = rhs.mWindowSize;
 	}
 
 	MayaCamUI& operator=( const MayaCamUI &rhs )
 	{
-		mInitialCam = rhs.mInitialCam;
-		mInternalCamera = rhs.mInternalCamera;
-		// if mCamera is just pointed at rhs' mInternalCamera, we'll point it at our own
-		if( rhs.mCamera == &rhs.mInternalCamera )
-			mCamera = &mInternalCamera;
-		else
-			mCamera = rhs.mCamera;
+		mCamera = rhs.mCamera;
 		mCenterOfInterest = rhs.mCenterOfInterest;
 		mWindowSize = rhs.mWindowSize;
 		return *this;
@@ -97,6 +80,8 @@ class MayaCamUI {
 
 	void mouseDown( const ivec2 &mousePos )
 	{
+		if( ! mCamera )
+			return;
 		mInitialMousePos = mousePos;
 		mInitialCam = *mCamera;
 		mInitialCenterOfInterest = mCenterOfInterest;		
@@ -118,6 +103,9 @@ class MayaCamUI {
 
 	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 	{
+		if( ! mCamera )
+			return;
+	
 		int action;
 		if( rightDown || ( leftDown && middleDown ) )
 			action = ACTION_ZOOM;
@@ -174,8 +162,8 @@ class MayaCamUI {
 		mSignalCameraChange.emit();
 	}
 	
-	const CameraPersp& getCamera() const				{ return *mCamera; }
-	void setCurrentCam( const CameraPersp &currentCam ) { *mCamera = currentCam; }
+	const	CameraPersp& getCamera() const		{ return *mCamera; }
+	void	setCamera( CameraPersp *camera )	{ mCamera = camera; }
 
 	//! Sets the size of the window in pixels when no WindowRef is supplied with connect()
 	void	setWindowSize( const ivec2 &windowSizePixels ) { mWindowSize = windowSizePixels; }
@@ -197,7 +185,7 @@ class MayaCamUI {
 	}
  
 	ivec2				mInitialMousePos;
-	CameraPersp			mInitialCam, mInternalCamera;
+	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
 	float				mInitialCenterOfInterest, mCenterOfInterest;
 	int					mLastAction;
