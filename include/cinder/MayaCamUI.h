@@ -31,15 +31,15 @@ namespace cinder {
 class MayaCamUI {
  public:
 	MayaCamUI()
-		: mCamera( nullptr )
+		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
 	{}
 	MayaCamUI( CameraPersp *camera )
-		: mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) )
+		: mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) ), mMouseWheelMultiplier( 1.2f )
 	{}
 
 	MayaCamUI( const MayaCamUI &rhs )
 		: mCamera( rhs.mCamera ), mCenterOfInterest( rhs.mCenterOfInterest ), mWindowSize( rhs.mWindowSize ),
-			mWindow( rhs.mWindow )
+			mWindow( rhs.mWindow ), mMouseWheelMultiplier( rhs.mMouseWheelMultiplier )
 	{
 	}
 
@@ -48,6 +48,7 @@ class MayaCamUI {
 		mCamera = rhs.mCamera;
 		mCenterOfInterest = rhs.mCenterOfInterest;
 		mWindowSize = rhs.mWindowSize;
+		mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
 		return *this;
 	}
 
@@ -58,6 +59,16 @@ class MayaCamUI {
 			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
 		mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
 			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+		mMouseWheelConnection = window->getSignalMouseWheel().connect( signalPriority,
+			[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
+		mWindowResizeConnection = window->getSignalResize().connect( signalPriority,
+			[this]() {
+				setWindowSize( mWindow->getSize() );
+				if( mCamera )
+					mCamera->setAspectRatio( mWindow->getAspectRatio() );
+std::cout << "Aspect ratio: " << mCamera->getAspectRatio() << std::endl;
+			}
+		);
 	}
 
 	void disconnect()
@@ -75,6 +86,12 @@ class MayaCamUI {
 	void mouseDown( app::MouseEvent &event )
 	{
 		mouseDown( event.getPos() );
+		event.setHandled();
+	}
+
+	void mouseWheel( app::MouseEvent &event )
+	{
+		mouseWheel( event.getWheelIncrement() );
 		event.setHandled();
 	}
 
@@ -162,6 +179,21 @@ class MayaCamUI {
 		mSignalCameraChange.emit();
 	}
 	
+	void	mouseWheel( float increment )
+	{
+		if( ! mCamera )
+			return;
+
+		float multiplier;
+		if( mMouseWheelMultiplier > 0 )
+			multiplier = powf( mMouseWheelMultiplier, increment );
+		else
+			multiplier = powf( -mMouseWheelMultiplier, -increment );
+		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCenterOfInterest * ( 1 - multiplier ) );
+		mCamera->setEyePoint( newEye );
+		mCenterOfInterest *= (float)multiplier;
+	}
+	
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
 	void	setCamera( CameraPersp *camera )	{ mCamera = camera; }
 
@@ -172,6 +204,11 @@ class MayaCamUI {
 	void	setCenterOfInterest( float coi ) { mCenterOfInterest = coi; }
 	//! Returns the distance along the eye vector around which the camera tumbles
 	float	getCenterOfInterest() const { return mCenterOfInterest; }
+
+	//! Sets the multiplier on mouse wheel zooming. Larger values zoom faster. Negative values invert the direction. Default is \c 1.2
+	void	setMouseWheelMultiplier( float multiplier ) { mMouseWheelMultiplier = multiplier; }
+	//! Returns the multiplier on mouse wheel zooming. Default is \c 1.2.
+	float	getMouseWheelMultiplier() const { return mMouseWheelMultiplier; }
 	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
@@ -188,11 +225,13 @@ class MayaCamUI {
 	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
 	float				mInitialCenterOfInterest, mCenterOfInterest;
+	float				mMouseWheelMultiplier;
 	int					mLastAction;
 	
 	app::WindowRef			mWindow;
 	ivec2					mWindowSize; // used when mWindow is null
-	signals::Connection		mMouseDownConnection, mMouseDragConnection;
+	signals::Connection		mMouseDownConnection, mMouseDragConnection, mMouseWheelConnection;
+	signals::Connection		mWindowResizeConnection;
 	signals::Signal<void()>	mSignalCameraChange;
 };
 
