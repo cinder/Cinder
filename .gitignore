@@ -33,3 +33,8 @@ ipch/
 # doxygen generated files
 docs/html
 docs/doxygen/cinder.tag
+
+# CinderBlocks
+blocks/
+!blocks/[__AppTemplates,Box2D,Cairo,FMOD,LocationManager,MotionManager,OSC,QuickTime,TUIO]
+

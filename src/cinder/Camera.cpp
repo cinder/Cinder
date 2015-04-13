@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
- 
+ Copyright (c) 2012, The Cinder Project: http://libcinder.org All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -25,6 +25,7 @@
 
 #include "cinder/Camera.h"
 #include "cinder/Sphere.h"
+#include "cinder/Frustum.h"
 
 #include "cinder/CinderMath.h"
 #include "cinder/Matrix33.h"
@@ -34,6 +35,8 @@
 #include "glm/gtx/quaternion.hpp"
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+#include <algorithm>
 
 namespace cinder {
 
@@ -61,6 +64,12 @@ void Camera::setOrientation( const quat &aOrientation )
 	mOrientation = glm::normalize( aOrientation );
 	mViewDirection = glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
+}
+
+// Derive from math presented in http://paulbourke.net/miscellaneous/lens/
+float Camera::getFocalLength() const
+{
+	return 1 / ( tan( toRadians( mFov ) * 0.5f ) * 2 );
 }
 
 void Camera::setWorldUp( const vec3 &aWorldUp )
@@ -175,22 +184,16 @@ vec3 Camera::worldToNdc( const vec3 &worldCoord )
 	return vec3( unproj.x / unproj.w, unproj.y / unproj.w, unproj.z / unproj.w );
 }
 
-//* This only mostly works
-float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float screenHeight ) const
+float Camera::calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const
 {
-	vec2 screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
-	vec3 orthog = normalize( orthogonal( mViewDirection ) );
-	vec2 screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
-	return distance( screenPerimeter, screenCenter );
+	Sphere camSpaceSphere( vec3( getViewMatrix()*vec4(sphere.getCenter(), 1.0f) ), sphere.getRadius() );
+	return camSpaceSphere.calcProjectedArea( getFocalLength(), screenSizePixels );
 }
 
 void Camera::calcMatrices() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();
 	if( ! mProjectionCached ) calcProjection();
-
-	// note: calculation of the inverse modelview matrices is postponed until actually requested
-	//if( ! mInverseModelViewCached ) calcInverseModelView();
 }
 
 void Camera::calcViewMatrix() const
@@ -344,27 +347,12 @@ void CameraPersp::setLensShift(float horizontal, float vertical)
 	mProjectionCached = false;
 }
 
-CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int maxIterations ) const
+CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 {
 	CameraPersp result = *this;
-	result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * getCenterOfInterest() );
-	
-	float minDistance = 0.01f, maxDistance = 100000.0f;
-	float curDistance = getCenterOfInterest();
-	for( int i = 0; i < maxIterations; ++i ) {
-		float curRadius = result.getScreenRadius( worldSpaceSphere, 2.0f, 2.0f );
-		if( curRadius < 1.0f ) { // we should get closer
-			maxDistance = curDistance;
-			curDistance = ( curDistance + minDistance ) * 0.5f;
-		}
-		else { // we should get farther
-			minDistance = curDistance;
-			curDistance = ( curDistance + maxDistance ) * 0.5f;			
-		}
-		result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * curDistance );
-	}
-	
-	result.setCenterOfInterest( distance( result.getEyePoint(), worldSpaceSphere.getCenter() ) );
+	float xDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFovHorizontal() * 0.5f ) );
+	float yDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFov() * 0.5f ) );
+	result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * std::max( xDistance, yDistance ) );
 	return result;
 }
 
@@ -408,46 +396,46 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 void CameraOrtho::calcProjection() const
 {
 	mat4 &p = mProjectionMatrix;
-	p[0][0] =  2.0f/(mFrustumRight - mFrustumLeft);
-	p[1][0] =  0.0f;
-	p[2][0] =  0.0f;
-	p[3][0] =  -(mFrustumRight + mFrustumLeft)/(mFrustumRight - mFrustumLeft);
+	p[0][0] =  2 / (mFrustumRight - mFrustumLeft);
+	p[1][0] =  0;
+	p[2][0] =  0;
+	p[3][0] =  -(mFrustumRight + mFrustumLeft) / (mFrustumRight - mFrustumLeft);
 
-	p[0][1] =  0.0f;
-	p[1][1] =  2.0f/(mFrustumTop - mFrustumBottom);
-	p[2][1] =  0.0f;
-	p[3][1] =  -(mFrustumTop + mFrustumBottom)/(mFrustumTop - mFrustumBottom);
+	p[0][1] =  0;
+	p[1][1] =  2 / (mFrustumTop - mFrustumBottom);
+	p[2][1] =  0;
+	p[3][1] =  -(mFrustumTop + mFrustumBottom) / (mFrustumTop - mFrustumBottom);
 
-	p[0][2] =  0.0f;
-	p[1][2] =  0.0f;
-	p[2][2] = -2.0f/(mFarClip - mNearClip);
-	p[3][2] = -(mFarClip + mNearClip)/(mFarClip - mNearClip);
+	p[0][2] =  0;
+	p[1][2] =  0;
+	p[2][2] = -2 / (mFarClip - mNearClip);
+	p[3][2] = -(mFarClip + mNearClip) / (mFarClip - mNearClip);
 
-	p[0][3] =  0.0f;
-	p[1][3] =  0.0f;
-	p[2][3] =  0.0f;
-	p[3][3] =  1.0f;
+	p[0][3] =  0;
+	p[1][3] =  0;
+	p[2][3] =  0;
+	p[3][3] =  1;
 
 	mat4 &m = mInverseProjectionMatrix;
 	m[0][0] =  (mFrustumRight - mFrustumLeft) * 0.5f;
-	m[1][0] =  0.0f;
-	m[2][0] =  0.0f;
+	m[1][0] =  0;
+	m[2][0] =  0;
 	m[3][0] =  (mFrustumRight + mFrustumLeft) * 0.5f;
 
-	m[0][1] =  0.0f;
+	m[0][1] =  0;
 	m[1][1] =  (mFrustumTop - mFrustumBottom) * 0.5f;
-	m[2][1] =  0.0f;
+	m[2][1] =  0;
 	m[3][1] =  (mFrustumTop + mFrustumBottom) * 0.5f;
 
-	m[0][2] =  0.0f;
-	m[1][2] =  0.0f;
+	m[0][2] =  0;
+	m[1][2] =  0;
 	m[2][2] =  (mFarClip - mNearClip) * 0.5f;
 	m[3][2] =  (mNearClip + mFarClip) * 0.5f;
 
-	m[0][3] =  0.0f;
-	m[1][3] =  0.0f;
-	m[2][3] =  0.0f;
-	m[3][3] =  1.0f;
+	m[0][3] =  0;
+	m[1][3] =  0;
+	m[2][3] =  0;
+	m[3][3] =  1;
 
 	mProjectionCached = true;
 }

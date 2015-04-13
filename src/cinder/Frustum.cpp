@@ -91,10 +91,8 @@ bool Frustum<T>::contains( const Vec3T &center, T radius ) const
 {
 	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
-		distance = mFrustumPlanes[i].distance(center);
-		if( distance < -radius )
-			return false;
-		else if( distance < radius )
+		distance = mFrustumPlanes[i].distance( center );
+		if( distance < radius )
 			return false;
 	}
 
@@ -131,7 +129,7 @@ bool Frustum<T>::contains( const AxisAlignedBox3f &box ) const
 template<typename T>
 bool Frustum<T>::intersects( const Vec3T &loc ) const
 {
-	return contains(loc);
+	return contains( loc );
 }
 
 template<typename T>
@@ -139,7 +137,7 @@ bool Frustum<T>::intersects( const Vec3T &center, T radius ) const
 {
 	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
-		distance = mFrustumPlanes[i].distance(center);
+		distance = mFrustumPlanes[i].distance( center );
 		if( distance < -radius )
 			return false;
 	}
@@ -158,7 +156,7 @@ bool Frustum<T>::intersects( const Vec3T &center, const Vec3T &size ) const
 template<typename T>
 bool Frustum<T>::intersects( const Sphere &sphere ) const
 {
-	return intersects( Vec3T( sphere.getCenter() ), Vec3T( sphere.getRadius() ) );
+	return intersects( Vec3T( sphere.getCenter() ), (T)sphere.getRadius() );
 }
 
 template<typename T>

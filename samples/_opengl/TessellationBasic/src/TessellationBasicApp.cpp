@@ -1,9 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/Shader.h"
 #include "cinder/params/Params.h"
 
 using namespace ci;

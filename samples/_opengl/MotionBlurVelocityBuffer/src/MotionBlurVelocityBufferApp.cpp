@@ -15,12 +15,6 @@
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/VboMesh.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Query.h"
 
 #include "cinder/GeomIo.h"
 #include "cinder/Rand.h"

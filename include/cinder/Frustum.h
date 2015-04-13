@@ -68,13 +68,13 @@ class Frustum {
 
 	//! Returns true if point is within frustum.
 	bool intersects( const Vec3T &loc ) const;
-	//! Returns true if the sphere is partially contained within frustum. See also 'contains'.
+	//! Returns true if the sphere is fully or partially contained within frustum. See also 'contains'.
 	bool intersects( const Vec3T &center, T radius ) const;
-	//! Returns true if the box is partially contained within frustum. See also 'contains'.
+	//! Returns true if the box is fully or partially contained within frustum. See also 'contains'.
 	bool intersects( const Vec3T &center, const Vec3T &size ) const;
-	//! Returns true if the sphere is partially contained within frustum. See also 'contains'.
+	//! Returns true if the sphere is fully or partially contained within frustum. See also 'contains'.
 	bool intersects( const Sphere &sphere ) const;
-	//! Returns true if the box is partially contained within frustum. See also 'contains'.
+	//! Returns true if the box is fully or partially contained within frustum. See also 'contains'.
 	bool intersects( const AxisAlignedBox3f &box ) const;
 
 	//! Returns a const reference to the Plane associated with /a section of the Frustum.

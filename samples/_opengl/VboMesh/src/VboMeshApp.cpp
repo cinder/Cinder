@@ -7,7 +7,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/VboMesh.h"
 #include "cinder/GeomIO.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
@@ -19,15 +18,13 @@ using namespace ci::app;
 
 using std::vector;
 
-class VboSampleApp : public App {
+class VboMeshApp : public App {
  public:
 	void	setup() override;
 	void	update() override;
 	void	draw() override;
 
 	void	keyDown( KeyEvent event ) override;
-	void	mouseDown( MouseEvent event ) override;
-	void	mouseDrag( MouseEvent event ) override;
 
   private:
 	gl::VboMeshRef	mVboMesh;
@@ -35,7 +32,7 @@ class VboSampleApp : public App {
 	MayaCamUI		mMayaCam;
 };
 
-void VboSampleApp::setup()
+void VboMeshApp::setup()
 {
 	// create some geometry using a geom::Plane
 	auto plane = geom::Plane().size( vec2( 20, 20 ) ).subdivisions( ivec2( 200, 50 ) );
@@ -50,37 +47,16 @@ void VboSampleApp::setup()
 	mVboMesh = gl::VboMesh::create( plane, bufferLayout );
 
 	mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE ) ), gl::Texture::Format().loadTopDown() );
+	mMayaCam.connect( getWindow() );
 }
 
-void VboSampleApp::keyDown( KeyEvent event )
+void VboMeshApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'w' )
 		gl::setWireframeEnabled( ! gl::isWireframeEnabled() );
 }
 
-void VboSampleApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void VboSampleApp::mouseDrag( MouseEvent event )
-{
-#if defined( CINDER_MAC )
-	// remapping key modifiers so mayacam is usable on a mac touchpad
-	bool isLeftDown = event.isLeftDown();
-	bool isMiddleDown = event.isAltDown();
-	bool isRightDown = event.isMetaDown();
-
-	if( isMiddleDown )
-		isLeftDown = false;
-
-	mMayaCam.mouseDrag( event.getPos(), isLeftDown, isMiddleDown, isRightDown );
-#else
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-#endif
-}
-
-void VboSampleApp::update()
+void VboMeshApp::update()
 {
 	float offset = getElapsedSeconds() * 4.0f;
 
@@ -96,7 +72,7 @@ void VboSampleApp::update()
 	mappedPosAttrib.unmap();
 }
 
-void VboSampleApp::draw()
+void VboMeshApp::draw()
 {
 	gl::clear( Color( 0.15f, 0.15f, 0.15f ) );
 
@@ -109,4 +85,4 @@ void VboSampleApp::draw()
 }
 
 
-CINDER_APP( VboSampleApp, RendererGl )
+CINDER_APP( VboMeshApp, RendererGl )

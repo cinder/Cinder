@@ -76,7 +76,7 @@ void drawStrokedCube( const vec3 &center, const vec3 &size );
 //! Renders a stroked cube using \a box as the guide for center and size.
 inline void drawStrokedCube( const ci::AxisAlignedBox3f &box ) { drawStrokedCube( box.getCenter(), box.getSize() ); }
 //! Renders a solid sphere at \a center of radius \a radius, subdivided on both longitude and latitude into \a subdivisions.
-void drawSphere( const vec3 &center, float radius, int subdivisions );
+void drawSphere( const vec3 &center, float radius, int subdivisions = -1 );
 //! Draws a textured quad of size \a scale that is aligned with the vectors \a bbRight and \a bbUp at \a pos, rotated by \a rotationRadians around the vector orthogonal to \a bbRight and \a bbUp.
 void drawBillboard( const vec3 &pos, const vec2 &scale, float rotationRadians, const vec3 &bbRight, const vec3 &bbUp, const Rectf &texCoords = Rectf( 0, 0, 1, 1 ) );
 //! Renders a stroked representation of \a cam

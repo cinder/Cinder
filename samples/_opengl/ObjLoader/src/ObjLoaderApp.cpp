@@ -6,12 +6,8 @@
 #include "cinder/Arcball.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/Sphere.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Batch.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
-#include "cinder/gl/Shader.h"
 #include "cinder/ip/Checkerboard.h"
 
 using namespace ci;
@@ -96,7 +92,7 @@ void ObjLoaderApp::frameCurrentObject()
 {
 	Sphere boundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
 	
-	mMayaCam.setCurrentCam( mMayaCam.getCamera().getFrameSphere( boundingSphere, 100 ) );
+	mMayaCam.setCurrentCam( mMayaCam.getCamera().calcFraming( boundingSphere ) );
 }
 
 void ObjLoaderApp::keyDown( KeyEvent event )

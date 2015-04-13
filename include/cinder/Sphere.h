@@ -32,19 +32,26 @@ namespace cinder {
 class Sphere {
  public:
 	Sphere() {}
-	Sphere( const vec3 &aCenter, float aRadius ) : mCenter( aCenter ), mRadius( aRadius ) {}
+	Sphere( const vec3 &center, float radius )
+		: mCenter( center ), mRadius( radius )
+	{}
 
 	float	getRadius() const { return mRadius; }
 	void	setRadius( float radius ) { mRadius = radius; }
 	
-	const vec3&	getCenter() const { return mCenter; }
-	const void		setCenter( const vec3 &center ) { mCenter = center; }
+	vec3	getCenter() const { return mCenter; }
+	void	setCenter( const vec3 &center ) { mCenter = center; }
 
-	bool intersects( const Ray &ray );
-	int intersect( const Ray &ray, float *intersection );
+	bool	intersects( const Ray &ray ) const;
+	int		intersect( const Ray &ray, float *intersection ) const;
 
 	static Sphere	calculateBoundingSphere( const std::vector<vec3> &points );
 	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
+
+	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Algorithm due to Iñigo Quilez.
+	void	calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
+	//! Calculates the projected area of the Sphere given \a focalLength and screen size in pixels. Algorithm due to Iñigo Quilez.
+	float	calcProjectedArea( float focalLength, vec2 screenSizePixels ) const;
 
  protected:
  	vec3	mCenter;

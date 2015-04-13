@@ -31,6 +31,7 @@
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 
+#include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Context.h"
@@ -75,6 +76,7 @@ class FrustumCullingReduxApp : public App {
 
 	// flags
 	bool			mPerformCulling;
+	bool			mCullWithSpheres;
 	bool			mDrawEstimatedBoundingBoxes;
 	bool			mDrawPreciseBoundingBoxes;
 	bool			mShowRevealingFov;
@@ -83,10 +85,11 @@ class FrustumCullingReduxApp : public App {
 	Anim<float>		mCullingFov;
 
 	ci::TriMeshRef		mTriMesh;
-	gl::BatchRef		mBatch;
+	gl::BatchRef		mBatch, mSphereBatch;
 
 	// caches the heart's bounding box in object space coordinates
 	AxisAlignedBox3f	mObjectBoundingBox;
+	Sphere				mObjectBoundingSphere;
 
 	// render assets
 	gl::GlslProgRef		mShader;
@@ -116,6 +119,7 @@ void FrustumCullingReduxApp::setup()
 {
 	// Intialize settings
 	mPerformCulling = true;
+	mCullWithSpheres = true;
 	mDrawEstimatedBoundingBoxes = false;
 	mDrawPreciseBoundingBoxes = false;
 	mShowRevealingFov = false;
@@ -153,6 +157,8 @@ void FrustumCullingReduxApp::setup()
 		obj->setTransform( pos, rot, scale );
 	}
 
+	mSphereBatch = gl::Batch::create( geom::Sphere() >> geom::Lines(), gl::getStockShader( gl::ShaderDef().color() ) );
+
 	// setup cameras
 	mCullingFov = 60;
 	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
@@ -179,15 +185,19 @@ void FrustumCullingReduxApp::update()
 
 	for( auto & obj : mObjects ) {
 		// update object (so it rotates slowly around its axis)
-		obj->update(elapsed);
+		obj->update( elapsed );
 
-		if( mPerformCulling ) {
+		if( mPerformCulling && mCullWithSpheres ) {
+			Sphere worldBoundingSphere( mObjectBoundingSphere.getCenter() + obj->getPosition(), mObjectBoundingSphere.getRadius() );
+			// check if the bounding sphere intersects the visible world
+			obj->setCulled( ! visibleWorld.intersects( worldBoundingSphere ) );
+		}
+		else if( mPerformCulling ) {
 			// create a fast approximation of the world space bounding box by transforming the
 			// eight corners of the object space bounding box and using them to create a new axis aligned bounding box 
 			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 
 			// check if the bounding box intersects the visible world
-			
 			obj->setCulled( ! visibleWorld.intersects( worldBoundingBox ) );
 		}
 		else {
@@ -221,25 +231,39 @@ void FrustumCullingReduxApp::draw()
 		
 		AxisAlignedBox3f worldBoundingBox;
 		for( auto & obj : mObjects ) {
-			if( mDrawEstimatedBoundingBoxes ) {
-				// create a fast approximation of the world space bounding box by transforming the
-				// eight corners and using them to create a new axis aligned bounding box
-				worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
+			if( ! mCullWithSpheres ) {
+				if( mDrawEstimatedBoundingBoxes ) {
+					// create a fast approximation of the world space bounding box by transforming the
+					// eight corners and using them to create a new axis aligned bounding box
+					worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
+					
+					if( ! obj->isCulled() )
+						gl::color( Color( 0, 1, 1 ) );
+					else
+						gl::color( Color( 1, 0.5f, 0 ) );
+					
+					gl::drawStrokedCube( worldBoundingBox );
+				}
 				
+				if( mDrawPreciseBoundingBoxes && ! obj->isCulled() ) {
+					// you can see how much the approximated bounding boxes differ
+					// from the precise ones by enabling this code
+					worldBoundingBox = mTriMesh->calcBoundingBox( obj->getTransform() );
+					gl::color( Color(1, 1, 0) );
+					gl::drawStrokedCube( worldBoundingBox );
+				}
+			}
+			// if we're using spheres and the user has requested drawing "boxes" drawing bounding spheres instead
+			else if( mDrawPreciseBoundingBoxes || mDrawEstimatedBoundingBoxes ) {
+				gl::ScopedModelMatrix mtx;
+				gl::multModelMatrix( obj->getTransform() );
+				gl::scale( vec3( mObjectBoundingSphere.getRadius() ) );
+				gl::translate( mObjectBoundingBox.getCenter() );
 				if( ! obj->isCulled() )
 					gl::color( Color( 0, 1, 1 ) );
 				else
 					gl::color( Color( 1, 0.5f, 0 ) );
-				
-				gl::drawStrokedCube( worldBoundingBox );
-			}
-			
-			if( mDrawPreciseBoundingBoxes && ! obj->isCulled() ) {
-				// you can see how much the approximated bounding boxes differ
-				// from the precise ones by enabling this code
-				worldBoundingBox = mTriMesh->calcBoundingBox( obj->getTransform() );
-				gl::color( Color(1, 1, 0) );
-				gl::drawStrokedCube( worldBoundingBox );
+				mSphereBatch->draw();
 			}
 		}
 
@@ -287,7 +311,10 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 				mDrawEstimatedBoundingBoxes = ! mDrawEstimatedBoundingBoxes;
 		break;
 		case KeyEvent::KEY_c:
-			mPerformCulling = !mPerformCulling;
+			mPerformCulling = ! mPerformCulling;
+		break;
+		case KeyEvent::KEY_s:
+			mCullWithSpheres = ! mCullWithSpheres;
 		break;
 		case KeyEvent::KEY_f: {
 			bool verticalSyncEnabled = gl::isVerticalSyncEnabled();
@@ -296,7 +323,7 @@ void FrustumCullingReduxApp::keyDown( KeyEvent event )
 		}
 		break;
 		case KeyEvent::KEY_h:
-			mShowHelp = !mShowHelp;
+			mShowHelp = ! mShowHelp;
 		break;
 		case KeyEvent::KEY_v:
 			toggleVerticalSync();
@@ -346,6 +373,8 @@ void FrustumCullingReduxApp::loadObject()
 
 	// We then use trimesh to calculate the Bounding Box
 	mObjectBoundingBox = mTriMesh->calcBoundingBox();
+	
+	mObjectBoundingSphere = Sphere::calculateBoundingSphere( mTriMesh->getPositions<3>(), mTriMesh->getNumVertices() );
 }
 
 void FrustumCullingReduxApp::drawGrid(float size, float step)
@@ -379,6 +408,11 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 		layout.addLine( "(C) Toggle culling (currently ON)" );
 	else
 		layout.addLine( "(C) Toggle culling (currently OFF)" );
+
+	if( mCullWithSpheres )
+		layout.addLine( "(S) Toggle using spheres for culling (currently ON)" );
+	else
+		layout.addLine( "(S) Toggle using spheres for culling (currently OFF)" );
 
 	if( mDrawEstimatedBoundingBoxes )
 		layout.addLine( "(B) Toggle estimated bounding boxes (currently ON)" );
