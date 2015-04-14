@@ -2910,23 +2910,6 @@ template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// WireSource
-void WireSource::circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution, float arc ) const
-{
-	vec3  position = vec3( radius, 0, 0 );
-	float angle = arc * float( 2.0 * M_PI / resolution );
-
-	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
-	for( int i = 0; i < resolution; ++i ) {
-		vec3 v = center + glm::rotate( position, ( i + 1 ) * angle, axis );
-		*( *ptr )++ = v;
-		*( *ptr )++ = v;
-	}
-	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////
 // WireCircle
 size_t WireCircle::getNumVertices() const
 {

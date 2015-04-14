@@ -712,9 +712,6 @@ public:
 	Primitive		getPrimitive() const override { return geom::LINES; }
 	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
 	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
-
-protected:
-	void			circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution = 12, float arc = 1.0f ) const;
 };
 
 
