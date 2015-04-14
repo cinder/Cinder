@@ -2927,6 +2927,36 @@ void WireSource::circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// WireCircle
+size_t WireCircle::getNumVertices() const
+{
+	return 2 * mNumSegments;
+}
+
+void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	float angle = float( 2.0 * M_PI / mNumSegments );
+
+	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	for( int i = 1; i < mNumSegments; ++i ) {
+		vec3 v = mCenter + mRadius * vec3( glm::cos( i * angle ), glm::sin( i * angle ), 0 );
+		*ptr++ = v;
+		*ptr++ = v;
+	}
+	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
 // WireCube
 void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
@@ -2983,7 +3013,8 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 // WireCylinder
 size_t WireCylinder::getNumVertices() const
 {
-	return ( mSubdivisionsAxis + ( mSubdivisionsHeight + 1 ) * mNumSegments ) * 2;
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	return ( subdivisionAxis + ( mSubdivisionsHeight + 1 ) * mNumSegments ) * 2;
 }
 
 void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -2997,15 +3028,17 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 
 	glm::mat3 m = glm::toMat3( glm::quat( vec3( 0, 1, 0 ), mDirection ) );
 
-	float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
-	for( int i = 0; i < mSubdivisionsAxis; ++i ) {
-		float c = glm::cos( i * angle );
-		float s = glm::sin( i * angle );
-		*ptr++ = mOrigin + m * vec3( mRadiusBase * c, 0, mRadiusBase * s );
-		*ptr++ = mOrigin + m * vec3( mRadiusApex * c, mHeight, mRadiusApex * s );
+	if ( mSubdivisionsAxis > 1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			float c = glm::cos( i * angle );
+			float s = glm::sin( i * angle );
+			*ptr++ = mOrigin + m * vec3( mRadiusBase * c, 0, mRadiusBase * s );
+			*ptr++ = mOrigin + m * vec3( mRadiusApex * c, mHeight, mRadiusApex * s );
+		}
 	}
 	
-	angle = float( 2.0 * M_PI / mNumSegments );
+	float angle = float( 2.0 * M_PI / mNumSegments );
 	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
 		float height = i * mHeight / mSubdivisionsHeight;
 		float radius = lerp<float>( mRadiusBase, mRadiusApex, float( i ) / mSubdivisionsHeight );
@@ -3024,10 +3057,73 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// WirePlane
+WirePlane& WirePlane::subdivisions( const ivec2 &subdivisions )
+{
+	mSubdivisions.x = std::max( subdivisions.x, 1 );
+	mSubdivisions.y = std::max( subdivisions.y, 1 );
+	return *this;
+}
+
+WirePlane& WirePlane::normal( const vec3 &normal )
+{
+	auto normalNormal = normalize( normal );
+	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
+	if( abs( yAxisDot ) < 0.999f ) {
+		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, 0, 1 );
+	}
+	else {
+		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, -1, 0 );
+	}
+
+	return *this;
+}
+
+WirePlane& WirePlane::axes( const vec3 &uAxis, const vec3 &vAxis )
+{
+	mAxisU = normalize( uAxis );
+	mAxisV = normalize( vAxis );
+	return *this;
+}
+
+void WirePlane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
+	const vec3 normal = cross( mAxisV, mAxisU );
+
+	for( int x = 0; x <= mSubdivisions.x; ++x ) {
+		float u = x * stepIncr.x - 0.5f;
+		*ptr++ = mOrigin + ( mSize.x *  u ) * mAxisU + ( mSize.y * -0.5f ) * mAxisV;
+		*ptr++ = mOrigin + ( mSize.x *  u ) * mAxisU + ( mSize.y * +0.5f ) * mAxisV;
+	}
+
+	for( int y = 0; y <= mSubdivisions.y; ++y ) {
+		float v = y * stepIncr.y - 0.5f;
+		*ptr++ = mOrigin + ( mSize.x * -0.5f ) * mAxisU + ( mSize.y * v ) * mAxisV;
+		*ptr++ = mOrigin + ( mSize.x * +0.5f ) * mAxisU + ( mSize.y * v ) * mAxisV;
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
 // WireSphere
 size_t WireSphere::getNumVertices() const
 {
-	return ( mSubdivisionsHeight - 1 ) * mNumSegments * 2 + ( ( mNumSegments + 1 ) / 2 ) * mSubdivisionsAxis * 2;
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	return ( mSubdivisionsHeight - 1 ) * mNumSegments * 2 + ( ( mNumSegments + 1 ) / 2 ) * subdivisionAxis * 2;
 }
 
 void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3037,9 +3133,9 @@ void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 	std::vector<vec3> positions;
 	positions.resize( numVertices );
 
-	float angle = float( 2.0 * M_PI / mNumSegments );
-
 	vec3 *ptr = positions.data();
+
+	float angle = float( 2.0 * M_PI / mNumSegments );
 	for( int i = 1; i < mSubdivisionsHeight; ++i ) {
 		float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
 		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
@@ -3054,18 +3150,20 @@ void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
 	}
 
-	int semidiv = ( mNumSegments + 1 ) / 2;
-	float semi = float( M_PI / semidiv );
-	angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+	if( mSubdivisionsAxis > 1 ) {
+		int semidiv = ( mNumSegments + 1 ) / 2;
+		float semi = float( M_PI / semidiv );
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
 
-	for( int i = 0; i < mSubdivisionsAxis; ++i ) {
-		*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
-		for( int j = 1; j < semidiv; ++j ) {
-			vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
-			*ptr++ = v;
-			*ptr++ = v;
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
+			for( int j = 1; j < semidiv; ++j ) {
+				vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = mCenter + vec3( 0, -1, 0 ) * mRadius;
 		}
-		*ptr++ = mCenter + vec3( 0, -1, 0 ) * mRadius;
 	}
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
@@ -3076,7 +3174,9 @@ void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 // WireTorus
 size_t WireTorus::getNumVertices() const
 {
-	return 4096;
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	int subdivisionHeight = ( mSubdivisionsHeight > 1 ) ? mSubdivisionsHeight : 0;
+	return ( subdivisionHeight + subdivisionAxis ) * mNumSegments * 2;
 }
 
 void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3086,7 +3186,42 @@ void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 	std::vector<vec3> positions;
 	positions.resize( numVertices );
 
-	// TODO
+	vec3 *ptr = positions.data();
+
+	if( mSubdivisionsHeight > 1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsHeight );
+		float step = float( 2.0 * M_PI / mNumSegments );
+		for( int i = 0; i < mSubdivisionsHeight; ++i ) {
+			float radius = mRadiusMinor + ( mRadiusMajor - mRadiusMinor ) * glm::cos( i * angle );
+			vec3 center = mCenter + vec3( 0, ( mRadiusMajor - mRadiusMinor ) * glm::sin( i*angle ), 0 );
+
+			*ptr++ = center + radius * vec3( 0, 0, 1 );
+			for( int j = 1; j < mNumSegments; ++j ) {
+				vec3 v = center + radius * vec3( glm::sin( j * step ), 0, glm::cos( j * step ) );
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = center + radius * vec3( 0, 0, 1 );
+		}
+	}
+
+	if( mSubdivisionsAxis>1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+		float step = float( 2.0 * M_PI / mNumSegments );
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			float radius = mRadiusMinor;
+			vec3 center = mCenter + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+
+			radius = ( mRadiusMajor - mRadiusMinor );
+			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			for( int j = 1; j < mNumSegments; ++j ) {
+				vec3 v = center + radius * vec3( glm::cos( j * step ) * glm::cos( i * angle ), glm::sin( j * step ), glm::cos( j * step ) * glm::sin( i * angle ) );
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+		}
+	}
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
