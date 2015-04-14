@@ -3277,16 +3277,18 @@ void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 		float step = float( 2.0 * M_PI / mNumSegments );
 		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
 			float radius = mRadiusMinor;
-			vec3 center = mCenter + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			float c = glm::cos( i * angle );
+			float s = glm::sin( i * angle );
+			vec3 center = mCenter + vec3( radius * c, 0, radius * s );
 
 			radius = ( mRadiusMajor - mRadiusMinor );
-			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
 			for( int j = 1; j < mNumSegments; ++j ) {
-				vec3 v = center + radius * vec3( glm::cos( j * step ) * glm::cos( i * angle ), glm::sin( j * step ), glm::cos( j * step ) * glm::sin( i * angle ) );
+				vec3 v = center + radius * vec3( glm::cos( j * step ) * c, glm::sin( j * step ), glm::cos( j * step ) * s );
 				*ptr++ = v;
 				*ptr++ = v;
 			}
-			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
 		}
 	}
 
