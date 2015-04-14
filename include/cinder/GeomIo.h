@@ -755,7 +755,7 @@ public:
 	WireCube&	size( const vec3 &sz ) { mSize = sz; return *this; }
 	WireCube&	size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 8 + ( mSubdivisions.y + 1 ) * 8 + ( mSubdivisions.z + 1 ) * 8; }
+	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
 protected:
@@ -820,7 +820,7 @@ public:
 	//!
 	WirePlane&	normal( const vec3 &normal );
 
-	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ) * 2; }
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
 protected:

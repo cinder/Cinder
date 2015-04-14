@@ -2952,7 +2952,34 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 	vec3 s = 2.0f * mSize / vec3( mSubdivisions );
 
 	vec3 *ptr = positions.data();
-	for( int i = 0; i <= mSubdivisions.x; ++i ) {
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+
+	for( int i = 1; i < mSubdivisions.x; ++i ) {
 		float x = d.x + i * s.x;
 		*ptr++ = vec3( x, d.y, d.z );
 		*ptr++ = vec3( x, -d.y, d.z );
@@ -2964,7 +2991,7 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 		*ptr++ = vec3( x, d.y, d.z );
 	}
 
-	for( int i = 0; i <= mSubdivisions.y; ++i ) {
+	for( int i = 1; i < mSubdivisions.y; ++i ) {
 		float y = d.y + i * s.y;
 		*ptr++ = vec3( d.x, y, d.z );
 		*ptr++ = vec3( -d.x, y, d.z );
@@ -2976,7 +3003,7 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 		*ptr++ = vec3( d.x, y, d.z );
 	}
 
-	for( int i = 0; i <= mSubdivisions.z; ++i ) {
+	for( int i = 1; i < mSubdivisions.z; ++i ) {
 		float z = d.z + i * s.z;
 		*ptr++ = vec3( d.x, d.y, z );
 		*ptr++ = vec3( -d.x, d.y, z );
@@ -2997,7 +3024,14 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 size_t WireCylinder::getNumVertices() const
 {
 	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
-	return ( subdivisionAxis + ( mSubdivisionsHeight + 1 ) * mNumSegments ) * 2;
+	int subdivisionHeight = mSubdivisionsHeight + 1;
+
+	if( mRadiusApex <= 0.0f && mRadiusBase <= 0.0f )
+		subdivisionHeight = 0;
+	else if( mRadiusApex <= 0.0f || mRadiusBase <= 0.0f )
+		subdivisionHeight--;
+
+	return ( subdivisionAxis + subdivisionHeight * mNumSegments ) * 2;
 }
 
 void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3025,6 +3059,8 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
 		float height = i * mHeight / mSubdivisionsHeight;
 		float radius = lerp<float>( mRadiusBase, mRadiusApex, float( i ) / mSubdivisionsHeight );
+		if( radius <= 0.0f )
+			continue;
 
 		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
 		for( int j = 1; j < mNumSegments; ++j ) {
