@@ -25,6 +25,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include "cinder/Frustum.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
@@ -803,32 +804,6 @@ protected:
 	int			mNumSegments, mNumSlices;
 };
 
-//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
-class WirePlane : public WireSource {
-public:
-	WirePlane()
-		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
-
-	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
-	WirePlane&	subdivisions( const ivec2 &subdivisions );
-	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
-	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
-	//!
-	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
-	//!
-	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
-	//!
-	WirePlane&	normal( const vec3 &normal );
-
-	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-
-protected:
-	ivec2		mSubdivisions;
-	vec2		mSize;
-	vec3		mOrigin, mAxisU, mAxisV;
-};
-
 
 class WireCone : public WireCylinder {
 public:
@@ -857,6 +832,46 @@ public:
 	WireCone&	direction( const vec3 &direction ) { WireCylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
+};
+
+class WireFrustum : public WireSource {
+public:
+	WireFrustum( const CameraPersp &cam );
+
+	//template<typename T>
+	//WireFrustum( const Frustum<T> &frustum );
+
+	size_t		getNumVertices() const override { return 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	vec3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
+};
+
+//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
+class WirePlane : public WireSource {
+public:
+	WirePlane()
+		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
+
+	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
+	WirePlane&	subdivisions( const ivec2 &subdivisions );
+	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
+	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
+	//!
+	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
+	//!
+	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//!
+	WirePlane&	normal( const vec3 &normal );
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	ivec2		mSubdivisions;
+	vec2		mSize;
+	vec3		mOrigin, mAxisU, mAxisV;
 };
 
 

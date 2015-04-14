@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Camera.h"
+#include "cinder/Frustum.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"
@@ -3074,6 +3076,52 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
 
+WireFrustum::WireFrustum( const CameraPersp &cam )
+{
+	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
+	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
+}
+
+void WireFrustum::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	/*// extract camera position from view matrix, so that it will work with CameraStereo as well
+	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
+	mat4 view = cam.getViewMatrix();
+	vec3 eye;
+	eye.x = -( view[0][0] * view[3][0] + view[0][1] * view[3][1] + view[0][2] * view[3][2] );
+	eye.y = -( view[1][0] * view[3][0] + view[1][1] * view[3][1] + view[1][2] * view[3][2] );
+	eye.z = -( view[2][0] * view[3][0] + view[2][1] * view[3][1] + view[2][2] * view[3][2] );
+	//*/
+
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+	*ptr++ = ntl;	*ptr++ = ntr;
+	*ptr++ = ntr;	*ptr++ = nbr;
+	*ptr++ = nbr;	*ptr++ = nbl;
+	*ptr++ = nbl;	*ptr++ = ntl;
+
+	*ptr++ = ftl;	*ptr++ = ftr;
+	*ptr++ = ftr;	*ptr++ = fbr;
+	*ptr++ = fbr;	*ptr++ = fbl;
+	*ptr++ = fbl;	*ptr++ = ftl;
+
+	*ptr++ = ftl;	*ptr++ = ntl;
+	*ptr++ = ftr;	*ptr++ = ntr;
+	*ptr++ = fbr;	*ptr++ = nbr;
+	*ptr++ = fbl;	*ptr++ = nbl;
+
+	//gl::ScopedColor color( 0.25f * gl::context()->getCurrentColor() );
+	//implDrawLine( eye, nearTopLeft );
+	//implDrawLine( eye, nearTopRight );
+	//implDrawLine( eye, nearBottomRight );
+	//implDrawLine( eye, nearBottomLeft );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WirePlane
