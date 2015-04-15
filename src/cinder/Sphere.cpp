@@ -133,10 +133,19 @@ void Sphere::calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA,
 
 	if( outCenter )
 		*outCenter = focalLength * o.z * vec2( o ) / ( z2-r2 );
-	if( outAxisA )
-		*outAxisA = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-z2)) ) * vec2( o.x, o.y );
-	if( outAxisB )
-		*outAxisB = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2)) ) * vec2( -o.y, o.x );
+	if( fabs( z2 - l2 ) > 0.00001f ) {
+		if( outAxisA )
+			*outAxisA = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-z2)) ) * vec2( o.x, o.y );
+			
+		if( outAxisB )
+			*outAxisB = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2)) ) * vec2( -o.y, o.x );
+	}
+	else {
+		if( outAxisA )
+			*outAxisA = vec2( 0, focalLength * mRadius / o.z );
+		if( outAxisB )
+			*outAxisB = vec2( focalLength * mRadius / o.z, 0 );
+	}
 }
 
 float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) const
