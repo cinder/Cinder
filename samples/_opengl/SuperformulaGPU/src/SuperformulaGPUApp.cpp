@@ -1,12 +1,9 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
-#include "cinder/gl/Ubo.h"
 #include "cinder/GeomIo.h"
 
 using namespace ci;

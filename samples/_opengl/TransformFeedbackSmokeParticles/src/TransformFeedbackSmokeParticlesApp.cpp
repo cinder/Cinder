@@ -2,12 +2,6 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/gl/Context.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/Vbo.h"
-
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"

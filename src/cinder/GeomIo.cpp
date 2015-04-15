@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Camera.h"
+#include "cinder/Frustum.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"
@@ -2912,7 +2914,392 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 }
 
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
-template BSpline::BSpline( const ci::BSpline<3,float>&, int );
+template BSpline::BSpline( const ci::BSpline<3, float>&, int );
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCircle
+size_t WireCircle::getNumVertices() const
+{
+	return 2 * mNumSegments;
+}
+
+void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	float angle = float( 2.0 * M_PI / mNumSegments );
+
+	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	for( int i = 1; i < mNumSegments; ++i ) {
+		vec3 v = mCenter + mRadius * vec3( glm::cos( i * angle ), glm::sin( i * angle ), 0 );
+		*ptr++ = v;
+		*ptr++ = v;
+	}
+	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCube
+void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 d = -mSize;
+	vec3 s = 2.0f * mSize / vec3( mSubdivisions );
+
+	vec3 *ptr = positions.data();
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+
+	for( int i = 1; i < mSubdivisions.x; ++i ) {
+		float x = d.x + i * s.x;
+		*ptr++ = vec3( x, d.y, d.z );
+		*ptr++ = vec3( x, -d.y, d.z );
+		*ptr++ = vec3( x, -d.y, d.z );
+		*ptr++ = vec3( x, -d.y, -d.z );
+		*ptr++ = vec3( x, -d.y, -d.z );
+		*ptr++ = vec3( x, d.y, -d.z );
+		*ptr++ = vec3( x, d.y, -d.z );
+		*ptr++ = vec3( x, d.y, d.z );
+	}
+
+	for( int i = 1; i < mSubdivisions.y; ++i ) {
+		float y = d.y + i * s.y;
+		*ptr++ = vec3( d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, d.z );
+		*ptr++ = vec3( -d.x, y, -d.z );
+		*ptr++ = vec3( -d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, -d.z );
+		*ptr++ = vec3( d.x, y, d.z );
+	}
+
+	for( int i = 1; i < mSubdivisions.z; ++i ) {
+		float z = d.z + i * s.z;
+		*ptr++ = vec3( d.x, d.y, z );
+		*ptr++ = vec3( -d.x, d.y, z );
+		*ptr++ = vec3( -d.x, d.y, z );
+		*ptr++ = vec3( -d.x, -d.y, z );
+		*ptr++ = vec3( -d.x, -d.y, z );
+		*ptr++ = vec3( d.x, -d.y, z );
+		*ptr++ = vec3( d.x, -d.y, z );
+		*ptr++ = vec3( d.x, d.y, z );
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCylinder
+size_t WireCylinder::getNumVertices() const
+{
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	int subdivisionHeight = mSubdivisionsHeight + 1;
+
+	if( mRadiusApex <= 0.0f && mRadiusBase <= 0.0f )
+		subdivisionHeight = 0;
+	else if( mRadiusApex <= 0.0f || mRadiusBase <= 0.0f )
+		subdivisionHeight--;
+
+	return ( subdivisionAxis + subdivisionHeight * mNumSegments ) * 2;
+}
+
+void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	glm::mat3 m = glm::toMat3( glm::quat( vec3( 0, 1, 0 ), mDirection ) );
+
+	if ( mSubdivisionsAxis > 1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			float c = glm::cos( i * angle );
+			float s = glm::sin( i * angle );
+			*ptr++ = mOrigin + m * vec3( mRadiusBase * c, 0, mRadiusBase * s );
+			*ptr++ = mOrigin + m * vec3( mRadiusApex * c, mHeight, mRadiusApex * s );
+		}
+	}
+	
+	float angle = float( 2.0 * M_PI / mNumSegments );
+	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
+		float height = i * mHeight / mSubdivisionsHeight;
+		float radius = lerp<float>( mRadiusBase, mRadiusApex, float( i ) / mSubdivisionsHeight );
+		if( radius <= 0.0f )
+			continue;
+
+		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
+		for( int j = 1; j < mNumSegments; ++j ) {
+			vec3 v = mOrigin + m * vec3( radius * glm::cos( j * angle ), height, radius * glm::sin( j * angle ) );
+			*ptr++ = v;
+			*ptr++ = v;
+		}
+		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+WireFrustum::WireFrustum( const CameraPersp &cam )
+{
+	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
+	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
+}
+
+void WireFrustum::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	/*// extract camera position from view matrix, so that it will work with CameraStereo as well
+	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
+	mat4 view = cam.getViewMatrix();
+	vec3 eye;
+	eye.x = -( view[0][0] * view[3][0] + view[0][1] * view[3][1] + view[0][2] * view[3][2] );
+	eye.y = -( view[1][0] * view[3][0] + view[1][1] * view[3][1] + view[1][2] * view[3][2] );
+	eye.z = -( view[2][0] * view[3][0] + view[2][1] * view[3][1] + view[2][2] * view[3][2] );
+	//*/
+
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+	*ptr++ = ntl;	*ptr++ = ntr;
+	*ptr++ = ntr;	*ptr++ = nbr;
+	*ptr++ = nbr;	*ptr++ = nbl;
+	*ptr++ = nbl;	*ptr++ = ntl;
+
+	*ptr++ = ftl;	*ptr++ = ftr;
+	*ptr++ = ftr;	*ptr++ = fbr;
+	*ptr++ = fbr;	*ptr++ = fbl;
+	*ptr++ = fbl;	*ptr++ = ftl;
+
+	*ptr++ = ftl;	*ptr++ = ntl;
+	*ptr++ = ftr;	*ptr++ = ntr;
+	*ptr++ = fbr;	*ptr++ = nbr;
+	*ptr++ = fbl;	*ptr++ = nbl;
+
+	//gl::ScopedColor color( 0.25f * gl::context()->getCurrentColor() );
+	//implDrawLine( eye, nearTopLeft );
+	//implDrawLine( eye, nearTopRight );
+	//implDrawLine( eye, nearBottomRight );
+	//implDrawLine( eye, nearBottomLeft );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WirePlane
+WirePlane& WirePlane::subdivisions( const ivec2 &subdivisions )
+{
+	mSubdivisions.x = std::max( subdivisions.x, 1 );
+	mSubdivisions.y = std::max( subdivisions.y, 1 );
+	return *this;
+}
+
+WirePlane& WirePlane::normal( const vec3 &normal )
+{
+	auto normalNormal = normalize( normal );
+	float yAxisDot = dot( normalNormal, vec3( 0, 1, 0 ) );
+	if( abs( yAxisDot ) < 0.999f ) {
+		quat normalQuat( vec3( 0, 1, 0 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, 0, 1 );
+	}
+	else {
+		quat normalQuat( vec3( 0, 0, 1 ), normalNormal );
+		mAxisU = normalQuat * vec3( 1, 0, 0 );
+		mAxisV = normalQuat * vec3( 0, -1, 0 );
+	}
+
+	return *this;
+}
+
+WirePlane& WirePlane::axes( const vec3 &uAxis, const vec3 &vAxis )
+{
+	mAxisU = normalize( uAxis );
+	mAxisV = normalize( vAxis );
+	return *this;
+}
+
+void WirePlane::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
+	const vec3 normal = cross( mAxisV, mAxisU );
+
+	for( int x = 0; x <= mSubdivisions.x; ++x ) {
+		float u = x * stepIncr.x - 0.5f;
+		*ptr++ = mOrigin + ( mSize.x *  u ) * mAxisU + ( mSize.y * -0.5f ) * mAxisV;
+		*ptr++ = mOrigin + ( mSize.x *  u ) * mAxisU + ( mSize.y * +0.5f ) * mAxisV;
+	}
+
+	for( int y = 0; y <= mSubdivisions.y; ++y ) {
+		float v = y * stepIncr.y - 0.5f;
+		*ptr++ = mOrigin + ( mSize.x * -0.5f ) * mAxisU + ( mSize.y * v ) * mAxisV;
+		*ptr++ = mOrigin + ( mSize.x * +0.5f ) * mAxisU + ( mSize.y * v ) * mAxisV;
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireSphere
+size_t WireSphere::getNumVertices() const
+{
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	return ( mSubdivisionsHeight - 1 ) * mNumSegments * 2 + ( ( mNumSegments + 1 ) / 2 ) * subdivisionAxis * 2;
+}
+
+void WireSphere::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	float angle = float( 2.0 * M_PI / mNumSegments );
+	for( int i = 1; i < mSubdivisionsHeight; ++i ) {
+		float f = float( i ) / mSubdivisionsHeight * 2.0f - 1.0f;
+		float radius = mRadius * glm::cos( f * float( M_PI / 2.0 ) );
+		vec3 center = mCenter + mRadius * vec3( 0, glm::sin( f * float( M_PI / 2.0 ) ), 0 );
+
+		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
+		for( int j = 1; j < mNumSegments; ++j ) {
+			vec3 v = center + vec3( glm::sin( j * angle ), 0, glm::cos( j * angle ) ) * radius;
+			*ptr++ = v;
+			*ptr++ = v;
+		}
+		*ptr++ = center + vec3( 0, 0, 1 ) * radius;
+	}
+
+	if( mSubdivisionsAxis > 1 ) {
+		int semidiv = ( mNumSegments + 1 ) / 2;
+		float semi = float( M_PI / semidiv );
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			*ptr++ = mCenter + vec3( 0, 1, 0 ) * mRadius;
+			for( int j = 1; j < semidiv; ++j ) {
+				vec3 v = mCenter + vec3( glm::sin( j * semi ) * glm::sin( i * angle ), glm::cos( j * semi ), glm::sin( j * semi ) * glm::cos( i * angle ) ) * mRadius;
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = mCenter + vec3( 0, -1, 0 ) * mRadius;
+		}
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// WireTorus
+size_t WireTorus::getNumVertices() const
+{
+	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
+	int subdivisionHeight = ( mSubdivisionsHeight > 1 ) ? mSubdivisionsHeight : 0;
+	return ( subdivisionHeight + subdivisionAxis ) * mNumSegments * 2;
+}
+
+void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+
+	if( mSubdivisionsHeight > 1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsHeight );
+		float step = float( 2.0 * M_PI / mNumSegments );
+		for( int i = 0; i < mSubdivisionsHeight; ++i ) {
+			float radius = mRadiusMinor + ( mRadiusMajor - mRadiusMinor ) * glm::cos( i * angle );
+			vec3 center = mCenter + vec3( 0, ( mRadiusMajor - mRadiusMinor ) * glm::sin( i*angle ), 0 );
+
+			*ptr++ = center + radius * vec3( 0, 0, 1 );
+			for( int j = 1; j < mNumSegments; ++j ) {
+				vec3 v = center + radius * vec3( glm::sin( j * step ), 0, glm::cos( j * step ) );
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = center + radius * vec3( 0, 0, 1 );
+		}
+	}
+
+	if( mSubdivisionsAxis > 1 ) {
+		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
+		float step = float( 2.0 * M_PI / mNumSegments );
+		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
+			float radius = mRadiusMinor;
+			float c = glm::cos( i * angle );
+			float s = glm::sin( i * angle );
+			vec3 center = mCenter + vec3( radius * c, 0, radius * s );
+
+			radius = ( mRadiusMajor - mRadiusMinor );
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
+			for( int j = 1; j < mNumSegments; ++j ) {
+				vec3 v = center + radius * vec3( glm::cos( j * step ) * c, glm::sin( j * step ), glm::cos( j * step ) * s );
+				*ptr++ = v;
+				*ptr++ = v;
+			}
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
+		}
+	}
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // VertexNormalLines

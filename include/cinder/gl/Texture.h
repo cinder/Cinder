@@ -106,7 +106,7 @@ class TextureBase {
 	/** Sets the filtering behavior when a texture is displayed at a higher resolution than its native resolution.
 	 * Possible values are \li \c GL_NEAREST \li \c GL_LINEAR **/
 	void			setMagFilter( GLenum magFilter );
-	//! Sets the anisotropic filtering amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+	//! Sets the anisotropic filtering amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 	void			setMaxAnisotropy( GLfloat maxAnisotropy );
 	//! Returns whether the Texture has Mipmapping enabled
 	bool			hasMipmapping() const { return mMipmapping; }
@@ -131,7 +131,7 @@ class TextureBase {
 	//! calculate the size of mipMap for the corresponding level
 	static ivec2	calcMipLevelSize( int level, GLint width, GLint height );
 	//! Returns the maximum anisotropic filtering maximum allowed by the hardware
-	static GLfloat	getMaxMaxAnisotropy();
+	static GLfloat	getMaxAnisotropyMax();
 
 	//! Returns the Texture's swizzle mask (corresponding to \c GL_TEXTURE_SWIZZLE_RGBA)	
 	std::array<GLint,4>	getSwizzleMask() const { return mSwizzleMask; }
@@ -198,7 +198,7 @@ class TextureBase {
 		void	setMinFilter( GLenum minFilter ) { mMinFilter = minFilter; mMinFilterSpecified = true; }
 		//! Sets the filtering behavior when a texture is displayed at a higher resolution than its native resolution. Default is \c GL_LINEAR.
 		void	setMagFilter( GLenum magFilter ) { mMagFilter = magFilter; }
-		//! Sets the anisotropic filter amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		//! Sets the anisotropic filter amount. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		void    setMaxAnisotropy( GLfloat maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; }
 		
 		//! Returns the texture's target
@@ -384,7 +384,7 @@ class Texture1d : public TextureBase {
 		//! Sets the target, defaults to \c GL_TEXTURE_1D
 		Format& target( GLenum target ) { mTarget = target; return *this; }
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
-		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = wrap; return *this; }
@@ -439,7 +439,7 @@ class Texture2d : public TextureBase {
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
-		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		//! Specifies the internal format for the Texture, used by glTexImage2D or glTexStorage2D when available. Defaults to \c -1 which implies automatic determination.
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
@@ -615,7 +615,7 @@ class Texture3d : public TextureBase {
 		//! Sets the target, defaults to \c GL_TEXTURE_3D, also supports \c GL_TEXTURE_2D_ARRAY
 		Format& target( GLenum target ) { mTarget = target; return *this; }
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
-		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }
@@ -670,7 +670,7 @@ class TextureCubeMap : public TextureBase
 		//! Chaining functions for Format class.
 		Format& target( GLenum target ) { mTarget = target; return *this; }
 		Format& mipmap( bool enableMipmapping = true ) { mMipmapping = enableMipmapping; return *this; }
-		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxMaxAnisotropy();
+		//! Sets the maximum amount of anisotropic filtering. A value greater than 1.0 "enables" anisotropic filtering. Maximum of getMaxAnisotropyMax();
 		Format& maxAnisotropy( float maxAnisotropy ) { mMaxAnisotropy = maxAnisotropy; return *this; }
 		Format& internalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; return *this; }
 		Format& wrap( GLenum wrap ) { mWrapS = mWrapT = mWrapR = wrap; return *this; }

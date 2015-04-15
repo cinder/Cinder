@@ -2,13 +2,6 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/gl/TransformFeedbackObj.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/BufferTexture.h"
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;

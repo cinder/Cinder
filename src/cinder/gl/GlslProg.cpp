@@ -261,7 +261,7 @@ GlslProg::GlslProg( const Format &format )
 		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER );
 #if ! defined( CINDER_GL_ES )
 	if( ! format.getGeometry().empty() )
-		loadShader( format.getGeometry(), format.mFragmentShaderPath, GL_GEOMETRY_SHADER );
+		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER );
 	if( ! format.getTessellationCtrl().empty() )
 		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
