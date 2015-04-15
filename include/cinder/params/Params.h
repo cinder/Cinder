@@ -158,6 +158,9 @@ class InterfaceGl {
 	template <typename T>
 	Options<T>	addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn );
 
+	//! Adds an enumerated param to the interface with no target, but is instead accessed with \a setterFn and \a getterFn. The input parameter of \a setterFn and the return value of \a getterFn correspond to the indices of \a enumNames. \return Options<T> for chaining options to the param.
+	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn );
+
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
 	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
 	
