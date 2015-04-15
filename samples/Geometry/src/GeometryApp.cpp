@@ -65,7 +65,7 @@ private:
 	CameraPersp			mCamera;
 	MayaCamUI			mMayaCam;
 	bool				mRecenterCamera;
-	vec3				mCameraCOI;
+	vec3				mCameraTarget, mCameraLerpTarget;
 	double				mLastMouseDownTime;
 
 	gl::VertBatchRef	mGrid;
@@ -123,8 +123,8 @@ void GeometryApp::setup()
 	mTexture = gl::Texture::create( loadImage( loadAsset( "stripes.jpg" ) ), fmt );
 
 	// Setup the camera.
-	mCamera.setEyePoint( normalize( vec3( 3, 3, 6 ) ) * 5.0f );
-	mCamera.setCenterOfInterestPoint( mCameraCOI );
+	mCamera.lookAt( normalize( vec3( 3, 3, 6 ) ) * 5.0f, mCameraTarget );
+	mMayaCam = MayaCamUI( &mCamera );
 
 	// Load and compile the shaders.
 	createPhongShader();
@@ -151,9 +151,11 @@ void GeometryApp::update()
 
 	// After creating a new primitive, gradually move the camera to get a good view.
 	if( mRecenterCamera ) {
-		float distance = glm::distance( mCamera.getEyePoint(), mCameraCOI );
-		mCamera.setEyePoint( mCameraCOI - lerp( distance, 5.0f, 0.1f ) * mCamera.getViewDirection() );
-		mCamera.setCenterOfInterestPoint( lerp( mCamera.getCenterOfInterestPoint(), mCameraCOI, 0.25f ) );
+		float distance = glm::distance( mCamera.getEyePoint(), mCameraTarget );
+		vec3 eye = mCameraLerpTarget - lerp( distance, 5.0f, 0.1f ) * mCamera.getViewDirection();
+		mCameraTarget = lerp( mCameraTarget, mCameraLerpTarget, 0.25f );
+		mCamera.lookAt( eye, mCameraTarget );
+		mMayaCam.setCenterOfInterest( glm::distance( eye, vec3( 0 ) ) );
 	}
 }
 
@@ -256,7 +258,6 @@ void GeometryApp::mouseDown( MouseEvent event )
 {
 	mRecenterCamera = false;
 
-	mMayaCam.setCurrentCam( mCamera );
 	mMayaCam.mouseDown( event );
 
 	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
@@ -270,7 +271,6 @@ void GeometryApp::mouseDown( MouseEvent event )
 void GeometryApp::mouseDrag( MouseEvent event )
 {
 	mMayaCam.mouseDrag( event );
-	mCamera = mMayaCam.getCamera();
 }
 
 void GeometryApp::resize()
@@ -466,7 +466,7 @@ void GeometryApp::loadGeomSource( const geom::Source &source, const geom::Source
 
 	TriMesh mesh( source, fmt );
 	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
-	mCameraCOI = mesh.calcBoundingBox().getCenter();
+	mCameraLerpTarget = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 
 	if( mSubdivision > 1 )
