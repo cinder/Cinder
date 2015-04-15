@@ -86,6 +86,7 @@ class Camera {
 	virtual const mat4&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
 	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
+	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const;
 	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
 	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
