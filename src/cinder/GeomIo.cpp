@@ -3272,7 +3272,7 @@ void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 		}
 	}
 
-	if( mSubdivisionsAxis>1 ) {
+	if( mSubdivisionsAxis > 1 ) {
 		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
 		float step = float( 2.0 * M_PI / mNumSegments );
 		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
