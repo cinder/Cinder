@@ -184,6 +184,29 @@ float Camera::calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels
 	return camSpaceSphere.calcProjectedArea( getFocalLength(), screenSizePixels );
 }
 
+vec2 proxy( vec2 v, const vec2 &windowSize )
+{
+	vec2 result = v;
+	result.x *= 1 / ( windowSize.x / windowSize.y );
+	result += vec2( 0.5f );
+	result *= windowSize;
+	return result;
+}
+
+void Camera::calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, float *outRadius ) const
+{
+	Sphere camSpaceSphere( vec3( getViewMatrix()*vec4(sphere.getCenter(), 1.0f) ), sphere.getRadius() );
+	vec2 center, axisA, axisB;
+	camSpaceSphere.calcProjection( getFocalLength(), &center, &axisA, &axisB );
+	float invAspectRatio = screenSizePixels.y / screenSizePixels.x;
+
+	if( outCenter )
+		*outCenter = proxy( center, screenSizePixels );//( center * vec2( invAspectRatio, 1 ) + vec2( 0.5f ) ) * screenSizePixels;
+	if( outRadius )
+		*outRadius = std::max( length( ( axisA * vec2( invAspectRatio, 1 ) ) * screenSizePixels ),
+			length( ( axisB * vec2( invAspectRatio, 1 )) * screenSizePixels ) );
+}
+
 void Camera::calcMatrices() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();

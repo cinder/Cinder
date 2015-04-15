@@ -97,7 +97,10 @@ class Camera {
  	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
  	vec3 worldToNdc( const vec3 &worldCoord );
 
+	//! Calculates the area of the screen-space elliptical projection of \a sphere
 	float	calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const;
+	//! Calculates the screen-space circular projection of \a sphere, putting the results in \a outCenter and \a outRadius. This is the bounding circle of the true elliptical projection.
+	void	calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, float *outRadius ) const;
 
   protected:
 	void			calcMatrices() const;
