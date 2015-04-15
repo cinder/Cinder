@@ -25,6 +25,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include "cinder/Frustum.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
@@ -700,6 +701,233 @@ class BSpline : public Source {
 	std::vector<float>		mPositions;
 	std::vector<vec3>		mNormals;
 };
+
+//////////////////////////////////////////////////////////////////////////////////////
+// Wireframe primitives
+class WireSource : public Source {
+public:
+	WireSource() {}
+	virtual ~WireSource() {}
+
+	size_t			getNumIndices() const override { return 0; }
+	Primitive		getPrimitive() const override { return geom::LINES; }
+	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
+	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
+};
+
+
+class WireCircle : public WireSource {
+public:
+	WireCircle();
+
+	//!
+	WireCircle&	center( const vec2 &center ) { mCenter = vec3( center, 0 ); return *this; }
+	//!
+	WireCircle&	center( const vec3 &center ) { mCenter = center; return *this; }
+	//!
+	WireCircle&	radius( float radius ) { mRadius = radius; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCircle&	subdivisions( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	vec3		mCenter;
+	float		mRadius;
+	int			mNumSegments;
+	size_t		mNumVertices;
+};
+
+
+class WireCube : public WireSource {
+public:
+	WireCube() : WireCube( vec3( 1 ) ) {}
+	WireCube( const vec3 &size, const ivec3 &subdivisions = ivec3( 1 ) )
+		: mSize( size )
+	{
+		mSubdivisions = glm::max( ivec3( 1 ), subdivisions );
+	}
+	
+	WireCube&	subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	WireCube&	subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	WireCube&	size( const vec3 &sz ) { mSize = sz; return *this; }
+	WireCube&	size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	ivec3					mSubdivisions;
+	vec3					mSize;
+};
+
+
+class WireCylinder : public WireSource {
+public:
+	WireCylinder()
+		: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ),
+		mSubdivisionsAxis( 6 ), mSubdivisionsHeight( 1 ), mNumSegments( 72 )
+	{
+	}
+
+	//! Specifices the base of the Cylinder.
+	WireCylinder&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
+	WireCylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
+	WireCylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCylinder&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//! Specifies the height of the cylinder.
+	WireCylinder&	height( float height ) { mHeight = height; return *this; }
+	//! Specifies the base and apex radius.
+	WireCylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max( 0.f, radius ); return *this; }
+	//! Specifies the axis of the cylinder.
+	WireCylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
+	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
+	WireCylinder&	set( const vec3 &from, const vec3 &to );
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	vec3		mOrigin;
+	float		mHeight;
+	vec3		mDirection;
+	float		mRadiusBase;
+	float		mRadiusApex;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	int			mNumSegments, mNumSlices;
+};
+
+
+class WireCone : public WireCylinder {
+public:
+	WireCone()
+	{ radius( 1.0f, 0.0f ); }
+
+	WireCone&	origin( const vec3 &origin ) { WireCylinder::origin( origin ); return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the WireCone. Defaults to \c 18.
+	WireCone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of subdivisions along the WireCone's height. Defaults to \c 1.
+	WireCone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCone&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//!
+	WireCone&	height( float height ) { WireCylinder::height( height ); return *this; }
+	//! Specifies the base and apex radius.
+	WireCone&	radius( float radius ) { WireCylinder::radius( radius ); return *this; }
+	//! Specifies the base radius.
+	WireCone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
+	//! Specifies the apex radius.
+	WireCone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
+	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
+	WireCone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
+	//! Specifies the base and apex radius separately.
+	WireCone&	radius( float base, float apex ) { mRadiusBase = math<float>::max( 0.f, base ); mRadiusApex = math<float>::max( 0.f, apex ); return *this; }
+	WireCone&	direction( const vec3 &direction ) { WireCylinder::direction( direction ); return *this; }
+	//! Conveniently sets origin, height and direction.
+	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
+};
+
+class WireFrustum : public WireSource {
+public:
+	WireFrustum( const CameraPersp &cam );
+
+	//template<typename T>
+	//WireFrustum( const Frustum<T> &frustum );
+
+	size_t		getNumVertices() const override { return 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	vec3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
+};
+
+//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
+class WirePlane : public WireSource {
+public:
+	WirePlane()
+		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
+
+	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
+	WirePlane&	subdivisions( const ivec2 &subdivisions );
+	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
+	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
+	//!
+	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
+	//!
+	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//!
+	WirePlane&	normal( const vec3 &normal );
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	ivec2		mSubdivisions;
+	vec2		mSize;
+	vec3		mOrigin, mAxisU, mAxisV;
+};
+
+
+class WireSphere : public WireSource {
+public:
+	WireSphere()
+		: mCenter(0), mRadius(1.0f), mSubdivisionsAxis(6), mSubdivisionsHeight(4), mNumSegments(72) {}
+
+	WireSphere&	center( const vec3 &center ) { mCenter = center; return *this; }
+	WireSphere&	radius( float radius ) { mRadius = radius; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireSphere&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	WireSphere&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = glm::max( 1, subdiv ); return *this; }
+	WireSphere&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = glm::max( 1, subdiv ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	vec3		mCenter;
+	float		mRadius;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	int			mNumSegments;
+};
+
+
+class WireTorus : public WireSource {
+public:
+	WireTorus()
+		: mCenter( 0 ), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mNumSegments( 72 ) {}
+
+	WireTorus&	center( const vec3 &center ) { mCenter = center; return *this; }
+	WireTorus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	WireTorus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireTorus&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
+	WireTorus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
+	//! Specifies the major and minor radius separately.
+	WireTorus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max( 0, major ); mRadiusMinor = math<float>::max( 0, minor ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	vec3		mCenter;
+	float		mRadiusMajor;
+	float		mRadiusMinor;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	float		mHeight;
+	float		mCoils;
+	int			mNumRings, mNumAxis, mNumSegments;
+};
+
 
 //////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
