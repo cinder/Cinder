@@ -45,6 +45,9 @@ class Sphere {
 	bool	intersects( const Ray &ray ) const;
 	int		intersect( const Ray &ray, float *intersection ) const;
 
+	//! Returns the closest point on \a ray to the Sphere. If \a ray intersects then returns the point of nearest intersection.
+	vec3	closestPoint( const Ray &ray ) const;
+
 	static Sphere	calculateBoundingSphere( const std::vector<vec3> &points );
 	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
 

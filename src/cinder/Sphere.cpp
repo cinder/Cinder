@@ -61,9 +61,9 @@ int Sphere::intersect( const Ray &ray, float *intersection ) const
 	float 		t;
 	vec3		temp 	= ray.getOrigin() - mCenter;
 	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
-	float 		b 		= 2.0f * dot( temp, ray.getDirection() );
+	float 		b 		= 2 * dot( temp, ray.getDirection() );
 	float 		c 		= dot( temp, temp ) - mRadius * mRadius;
-	float 		disc	= b * b - 4.0f * a * c;
+	float 		disc	= b * b - 4 * a * c;
 
 	if( disc < 0.0f ) {
 		return 0;
@@ -88,6 +88,35 @@ int Sphere::intersect( const Ray &ray, float *intersection ) const
 	return 0;
 }
 
+vec3 Sphere::closestPoint( const Ray &ray ) const
+{
+	float 		t;
+	vec3		diff 	= ray.getOrigin() - mCenter;
+	float 		a 		= dot( ray.getDirection(), ray.getDirection() );
+	float 		b 		= 2 * dot( diff, ray.getDirection() );
+	float 		c 		= dot( diff, diff ) - mRadius * mRadius;
+	float 		disc	= b * b - 4 * a * c;
+
+	if( disc > 0 ) {
+		float e = math<float>::sqrt( disc );
+		float denom = 2 * a;
+		t = (-b - e) / denom;    // smaller root
+
+		if( t > EPSILON_VALUE )
+			return ray.calcPosition( t );
+
+		t = (-b + e) / denom;    // larger root
+		if( t > EPSILON_VALUE )
+			return ray.calcPosition( t );
+	}
+	
+	// doesn't intersect; closest point on line
+	t = dot( -diff, normalize(ray.getDirection()) );
+	vec3 onRay = ray.calcPosition( t );
+	return mCenter + normalize( onRay - mCenter ) * mRadius;
+	
+//	return ray.getDirection() * dot( ray.getDirection(), (mCenter - ray.getOrigin() ) );
+}
 
 Sphere Sphere::calculateBoundingSphere( const vector<vec3> &points )
 {
