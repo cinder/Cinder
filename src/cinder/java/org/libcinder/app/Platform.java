@@ -6,6 +6,9 @@ import android.graphics.Point;
 import android.view.Display;
 import android.view.WindowManager;
 
+/** \class Platform
+ *
+ */
 public class Platform {
     public final static String TAG = "cinder";
 

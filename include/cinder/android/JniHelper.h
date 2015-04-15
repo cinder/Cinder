@@ -40,6 +40,8 @@ public:
 
 	static JniHelper* 	Get();
 
+	jobject 			GetActivityObject() { return mActivityObject; }
+
 	jclass				RetrieveClass( const std::string& name );	
 
 	JNIEnv*				AttachCurrentThread();

@@ -9,17 +9,15 @@ import android.view.View;
 import android.widget.Button;
 
 import org.libcinder.app.Platform;
-import org.libcinder.hardware.CinderCamera;
-import org.libcinder.hardware.CinderCamera2;
-import org.libcinder.net.UrlLoader;
+import org.libcinder.hardware.CameraV2;
 
 public class SampleActivity extends ActionBarActivity implements View.OnClickListener {
 
     protected void runTests() {
         //UrlLoader.runTests();
 
-        CinderCamera2.initialize();
-        CinderCamera2.startCapture();
+        //CameraV2.initialize();
+        //CameraV2.startCapture();
     }
 
     @Override
@@ -44,7 +42,7 @@ public class SampleActivity extends ActionBarActivity implements View.OnClickLis
     protected void onPause() {
         super.onPause();
 
-        CinderCamera2.stopCapture();
+        //CameraV2.stopCapture();
     }
 
     @Override
