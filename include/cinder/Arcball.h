@@ -1,6 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -33,13 +35,6 @@ class Arcball {
 	{
 		setNoConstraintAxis();
 	}
-	Arcball( const ivec2 &aScreenSize )
-		: mWindowSize( aScreenSize )
-	{	
-		setCenter( vec2( mWindowSize.x / 2.0f, mWindowSize.y / 2.0f ) );
-		mRadius = std::min( (float)mWindowSize.x / 2, (float)mWindowSize.y / 2 );
-		setNoConstraintAxis();
-	}
 	
 	void mouseDown( const ivec2 &mousePos )
 	{
@@ -55,7 +50,7 @@ class Arcball {
 			from = constrainToAxis( from, mConstraintAxis );
 			to = constrainToAxis( to, mConstraintAxis );
 		}
-		
+
 		vec3 axis = cross( from, to );
 		mCurrentQuat = normalize( mInitialQuat * quat( dot( from, to ), axis.x, axis.y, axis.z ) );
 	}
@@ -64,7 +59,6 @@ class Arcball {
 	const quat& 	getQuat() const				{ return mCurrentQuat; }
 	void			setQuat( const quat &q )	{ mCurrentQuat = q; }
 	
-	void			setWindowSize( const ivec2 &aWindowSize )	{ mWindowSize = aWindowSize; }
 	void			setCenter( const vec2 &aCenter )			{ mCenter = aCenter; }
 	const vec2&		getCenter() const							{ return mCenter; }
 
@@ -81,7 +75,7 @@ class Arcball {
 		vec3 result;
 		
 		result.x = ( point.x - mCenter.x ) / ( mRadius * 2 );
-		result.y = ( point.y - mCenter.y ) / ( mRadius * 2 );
+		result.y = -( point.y - mCenter.y ) / ( mRadius * 2 );
 		result.z = 0.0f;
 
 		float mag = length2( result );
@@ -117,7 +111,6 @@ class Arcball {
 		return onPlane;
 	}
 	
-	ivec2		mWindowSize;
 	ivec2		mInitialMousePos;
 	vec2		mCenter;
 	quat		mCurrentQuat, mInitialQuat;
