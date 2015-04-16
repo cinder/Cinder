@@ -30,6 +30,7 @@
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
+#include "cinder/Utilities.h"
 
 #include "cinder/gl/gl.h"
 #include "cinder/gl/GlslProg.h"
@@ -104,7 +105,6 @@ protected:
 void FrustumCullingReduxApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize( 1200, 675 );
-	settings->setTitle( "Frustum Culling Redux" );
 	settings->disableFrameRate();
 }
 
@@ -119,7 +119,7 @@ void FrustumCullingReduxApp::setup()
 	mCullWithSpheres = true;
 	mDrawWorldSpaceBounds = false;
 	mDrawObjectSpaceBounds = false;
-	mShowRevealingFov = false;
+	mShowRevealingFov = true;
 	mShowHelp = true;
 
 	// Render help texture.
@@ -151,9 +151,9 @@ void FrustumCullingReduxApp::setup()
 	mGridBatch = gl::Batch::create( geom::WirePlane().size( vec2( 4000 ) ).subdivisions( ivec2( 80, 80 ) ), gl::getStockShader( gl::ShaderDef().color() ) );
 
 	// Setup the camera.
-	mCullingFov = 60;
+	mCullingFov = 45.0f;
 
-	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
+	mRenderCam.setPerspective( 60.0f, getWindowAspectRatio(), 10, 10000 );
 	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
 
 	mMayaCam.setCurrentCam( mRenderCam );
@@ -205,6 +205,10 @@ void FrustumCullingReduxApp::update()
 			obj->setCulled( !visibleWorld.intersects( worldBoundingBox ) );
 		}
 	}
+
+	// Update window title.
+	if( getElapsedFrames() % 60 == 0 )
+		getWindow()->setTitle( "Frustum Culling Redux - " + toString( (int) getAverageFps() ) + " FPS" );
 }
 
 void FrustumCullingReduxApp::draw()
@@ -421,7 +425,12 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	layout.setColor( ColorA( 1, 1, 1, 1 ) );
 	layout.setLeadingOffset( 3 );
 
-	layout.clear( ColorA::gray( 0.2f, 0.5f ) );
+	layout.clear( ColorA::gray( 0.2f, 0.75f ) );
+
+	if( mShowRevealingFov )
+		layout.addLine( "(Space) Toggle reveal culling (currently ON)" );
+	else
+		layout.addLine( "(Space) Toggle reveal culling (currently OFF)" );
 
 	if( mPerformCulling )
 		layout.addLine( "(C) Toggle culling (currently ON)" );
@@ -434,19 +443,14 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 		layout.addLine( "(S) Toggle using spheres for culling (currently OFF)" );
 
 	if( mDrawWorldSpaceBounds )
-		layout.addLine( "(B) Toggle estimated bounding boxes (currently ON)" );
+		layout.addLine( "(B) Toggle world space bounding boxes (currently ON)" );
 	else
-		layout.addLine( "(B) Toggle estimated bounding boxes (currently OFF)" );
+		layout.addLine( "(B) Toggle world space bounding boxes (currently OFF)" );
 
 	if( mDrawObjectSpaceBounds )
-		layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently ON)" );
+		layout.addLine( "(B)+(Shift) Toggle object space bounding boxes (currently ON)" );
 	else
-		layout.addLine( "(B)+(Shift) Toggle precise bounding boxes (currently OFF)" );
-
-	if( mShowRevealingFov )
-		layout.addLine( "(Space) Toggle reveal culling (currently ON)" );
-	else
-		layout.addLine( "(Space) Toggle reveal culling (currently OFF)" );
+		layout.addLine( "(B)+(Shift) Toggle object space bounding boxes (currently OFF)" );
 
 	if( gl::isVerticalSyncEnabled() )
 		layout.addLine( "(V) Toggle vertical sync (currently ON)" );
