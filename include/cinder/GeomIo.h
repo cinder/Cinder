@@ -25,6 +25,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include "cinder/Frustum.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
@@ -704,22 +705,20 @@ class BSpline : public Source {
 //////////////////////////////////////////////////////////////////////////////////////
 // Wireframe primitives
 class WireSource : public Source {
-public:
-	WireSource() {}
-	virtual ~WireSource() {}
-
+  public:
 	size_t			getNumIndices() const override { return 0; }
 	Primitive		getPrimitive() const override { return geom::LINES; }
 	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
 	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
 
-protected:
-	void			circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution = 12, float arc = 1.0f ) const;
+  protected:
+	WireSource() {}
+	virtual ~WireSource() {}  
 };
 
 
 class WireCircle : public WireSource {
-public:
+  public:
 	WireCircle();
 
 	//!
@@ -734,7 +733,7 @@ public:
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
-private:
+  private:
 	vec3		mCenter;
 	float		mRadius;
 	int			mNumSegments;
@@ -743,7 +742,7 @@ private:
 
 
 class WireCube : public WireSource {
-public:
+  public:
 	WireCube() : WireCube( vec3( 1 ) ) {}
 	WireCube( const vec3 &size, const ivec3 &subdivisions = ivec3( 1 ) )
 		: mSize( size )
@@ -758,17 +757,17 @@ public:
 	WireCube&	size( const vec3 &sz ) { mSize = sz; return *this; }
 	WireCube&	size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
 
-	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 8 + ( mSubdivisions.y + 1 ) * 8 + ( mSubdivisions.z + 1 ) * 8; }
+	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
-protected:
+  protected:
 	ivec3					mSubdivisions;
 	vec3					mSize;
 };
 
 
 class WireCylinder : public WireSource {
-public:
+  public:
 	WireCylinder()
 		: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ),
 		mSubdivisionsAxis( 6 ), mSubdivisionsHeight( 1 ), mNumSegments( 72 )
@@ -795,7 +794,7 @@ public:
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
-protected:
+  protected:
 	vec3		mOrigin;
 	float		mHeight;
 	vec3		mDirection;
@@ -806,35 +805,9 @@ protected:
 	int			mNumSegments, mNumSlices;
 };
 
-//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
-class WirePlane : public WireSource {
-public:
-	WirePlane()
-		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
-
-	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
-	WirePlane&	subdivisions( const ivec2 &subdivisions );
-	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
-	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
-	//!
-	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
-	//!
-	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
-	//!
-	WirePlane&	normal( const vec3 &normal );
-
-	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * ( mSubdivisions.y + 1 ) * 2; }
-	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
-
-protected:
-	ivec2		mSubdivisions;
-	vec2		mSize;
-	vec3		mOrigin, mAxisU, mAxisV;
-};
-
 
 class WireCone : public WireCylinder {
-public:
+  public:
 	WireCone()
 	{ radius( 1.0f, 0.0f ); }
 
@@ -862,9 +835,49 @@ public:
 	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
 };
 
+class WireFrustum : public WireSource {
+  public:
+	WireFrustum( const CameraPersp &cam );
+
+	//template<typename T>
+	//WireFrustum( const Frustum<T> &frustum );
+
+	size_t		getNumVertices() const override { return 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  private:
+	vec3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
+};
+
+//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
+class WirePlane : public WireSource {
+  public:
+	WirePlane()
+		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
+
+	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
+	WirePlane&	subdivisions( const ivec2 &subdivisions );
+	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
+	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
+	//!
+	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
+	//!
+	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//!
+	WirePlane&	normal( const vec3 &normal );
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	ivec2		mSubdivisions;
+	vec2		mSize;
+	vec3		mOrigin, mAxisU, mAxisV;
+};
+
 
 class WireSphere : public WireSource {
-public:
+  public:
 	WireSphere()
 		: mCenter(0), mRadius(1.0f), mSubdivisionsAxis(6), mSubdivisionsHeight(4), mNumSegments(72) {}
 
@@ -878,7 +891,7 @@ public:
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
-protected:
+  protected:
 	vec3		mCenter;
 	float		mRadius;
 	int			mSubdivisionsAxis;
@@ -888,7 +901,7 @@ protected:
 
 
 class WireTorus : public WireSource {
-public:
+  public:
 	WireTorus()
 		: mCenter( 0 ), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mNumSegments( 72 ) {}
 
@@ -905,7 +918,7 @@ public:
 	size_t		getNumVertices() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
-protected:
+  protected:
 	vec3		mCenter;
 	float		mRadiusMajor;
 	float		mRadiusMinor;

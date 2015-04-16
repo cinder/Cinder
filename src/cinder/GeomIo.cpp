@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
+#include "cinder/Camera.h"
+#include "cinder/Frustum.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Log.h"
@@ -2910,23 +2912,6 @@ template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// WireSource
-void WireSource::circle( vec3 **ptr, const vec3 &center, const vec3 &axis, float radius, int resolution, float arc ) const
-{
-	vec3  position = vec3( radius, 0, 0 );
-	float angle = arc * float( 2.0 * M_PI / resolution );
-
-	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
-	for( int i = 0; i < resolution; ++i ) {
-		vec3 v = center + glm::rotate( position, ( i + 1 ) * angle, axis );
-		*( *ptr )++ = v;
-		*( *ptr )++ = v;
-	}
-	*( *ptr )++ = center + glm::rotate( position, 0.0f, axis );
-}
-
-
-///////////////////////////////////////////////////////////////////////////////////////
 // WireCircle
 size_t WireCircle::getNumVertices() const
 {
@@ -2969,7 +2954,34 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 	vec3 s = 2.0f * mSize / vec3( mSubdivisions );
 
 	vec3 *ptr = positions.data();
-	for( int i = 0; i <= mSubdivisions.x; ++i ) {
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+
+	*ptr++ = vec3( d.x, d.y, -d.z );
+	*ptr++ = vec3( d.x, d.y, d.z );
+	*ptr++ = vec3( -d.x, d.y, -d.z );
+	*ptr++ = vec3( -d.x, d.y, d.z );
+	*ptr++ = vec3( d.x, -d.y, -d.z );
+	*ptr++ = vec3( d.x, -d.y, d.z );
+	*ptr++ = vec3( -d.x, -d.y, -d.z );
+	*ptr++ = vec3( -d.x, -d.y, d.z );
+
+	for( int i = 1; i < mSubdivisions.x; ++i ) {
 		float x = d.x + i * s.x;
 		*ptr++ = vec3( x, d.y, d.z );
 		*ptr++ = vec3( x, -d.y, d.z );
@@ -2981,7 +2993,7 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 		*ptr++ = vec3( x, d.y, d.z );
 	}
 
-	for( int i = 0; i <= mSubdivisions.y; ++i ) {
+	for( int i = 1; i < mSubdivisions.y; ++i ) {
 		float y = d.y + i * s.y;
 		*ptr++ = vec3( d.x, y, d.z );
 		*ptr++ = vec3( -d.x, y, d.z );
@@ -2993,7 +3005,7 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 		*ptr++ = vec3( d.x, y, d.z );
 	}
 
-	for( int i = 0; i <= mSubdivisions.z; ++i ) {
+	for( int i = 1; i < mSubdivisions.z; ++i ) {
 		float z = d.z + i * s.z;
 		*ptr++ = vec3( d.x, d.y, z );
 		*ptr++ = vec3( -d.x, d.y, z );
@@ -3014,7 +3026,14 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 size_t WireCylinder::getNumVertices() const
 {
 	int subdivisionAxis = ( mSubdivisionsAxis > 1 ) ? mSubdivisionsAxis : 0;
-	return ( subdivisionAxis + ( mSubdivisionsHeight + 1 ) * mNumSegments ) * 2;
+	int subdivisionHeight = mSubdivisionsHeight + 1;
+
+	if( mRadiusApex <= 0.0f && mRadiusBase <= 0.0f )
+		subdivisionHeight = 0;
+	else if( mRadiusApex <= 0.0f || mRadiusBase <= 0.0f )
+		subdivisionHeight--;
+
+	return ( subdivisionAxis + subdivisionHeight * mNumSegments ) * 2;
 }
 
 void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs ) const
@@ -3042,6 +3061,8 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	for( int i = 0; i <= mSubdivisionsHeight; ++i ) {
 		float height = i * mHeight / mSubdivisionsHeight;
 		float radius = lerp<float>( mRadiusBase, mRadiusApex, float( i ) / mSubdivisionsHeight );
+		if( radius <= 0.0f )
+			continue;
 
 		*ptr++ = mOrigin + m * vec3( radius, height, 0 );
 		for( int j = 1; j < mNumSegments; ++j ) {
@@ -3055,6 +3076,52 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
 
+WireFrustum::WireFrustum( const CameraPersp &cam )
+{
+	cam.getNearClipCoordinates( &ntl, &ntr, &nbl, &nbr );
+	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
+}
+
+void WireFrustum::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	/*// extract camera position from view matrix, so that it will work with CameraStereo as well
+	//  see: http://www.gamedev.net/topic/397751-how-to-get-camera-position/page__p__3638207#entry3638207
+	mat4 view = cam.getViewMatrix();
+	vec3 eye;
+	eye.x = -( view[0][0] * view[3][0] + view[0][1] * view[3][1] + view[0][2] * view[3][2] );
+	eye.y = -( view[1][0] * view[3][0] + view[1][1] * view[3][1] + view[1][2] * view[3][2] );
+	eye.z = -( view[2][0] * view[3][0] + view[2][1] * view[3][1] + view[2][2] * view[3][2] );
+	//*/
+
+	size_t numVertices = getNumVertices();
+
+	std::vector<vec3> positions;
+	positions.resize( numVertices );
+
+	vec3 *ptr = positions.data();
+	*ptr++ = ntl;	*ptr++ = ntr;
+	*ptr++ = ntr;	*ptr++ = nbr;
+	*ptr++ = nbr;	*ptr++ = nbl;
+	*ptr++ = nbl;	*ptr++ = ntl;
+
+	*ptr++ = ftl;	*ptr++ = ftr;
+	*ptr++ = ftr;	*ptr++ = fbr;
+	*ptr++ = fbr;	*ptr++ = fbl;
+	*ptr++ = fbl;	*ptr++ = ftl;
+
+	*ptr++ = ftl;	*ptr++ = ntl;
+	*ptr++ = ftr;	*ptr++ = ntr;
+	*ptr++ = fbr;	*ptr++ = nbr;
+	*ptr++ = fbl;	*ptr++ = nbl;
+
+	//gl::ScopedColor color( 0.25f * gl::context()->getCurrentColor() );
+	//implDrawLine( eye, nearTopLeft );
+	//implDrawLine( eye, nearTopRight );
+	//implDrawLine( eye, nearBottomRight );
+	//implDrawLine( eye, nearBottomLeft );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WirePlane
@@ -3205,21 +3272,23 @@ void WireTorus::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 		}
 	}
 
-	if( mSubdivisionsAxis>1 ) {
+	if( mSubdivisionsAxis > 1 ) {
 		float angle = float( 2.0 * M_PI / mSubdivisionsAxis );
 		float step = float( 2.0 * M_PI / mNumSegments );
 		for( int i = 0; i < mSubdivisionsAxis; ++i ) {
 			float radius = mRadiusMinor;
-			vec3 center = mCenter + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			float c = glm::cos( i * angle );
+			float s = glm::sin( i * angle );
+			vec3 center = mCenter + vec3( radius * c, 0, radius * s );
 
 			radius = ( mRadiusMajor - mRadiusMinor );
-			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
 			for( int j = 1; j < mNumSegments; ++j ) {
-				vec3 v = center + radius * vec3( glm::cos( j * step ) * glm::cos( i * angle ), glm::sin( j * step ), glm::cos( j * step ) * glm::sin( i * angle ) );
+				vec3 v = center + radius * vec3( glm::cos( j * step ) * c, glm::sin( j * step ), glm::cos( j * step ) * s );
 				*ptr++ = v;
 				*ptr++ = v;
 			}
-			*ptr++ = center + vec3( radius * glm::cos( i * angle ), 0, radius * glm::sin( i * angle ) );
+			*ptr++ = center + vec3( radius * c, 0, radius * s );
 		}
 	}
 
