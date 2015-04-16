@@ -38,8 +38,6 @@ public:
 	DeferredShadingAdvancedApp();
 
 	void						draw() override;
-	void						mouseDown( ci::app::MouseEvent event ) override;
-	void						mouseDrag( ci::app::MouseEvent event ) override;
 	void						resize() override;
 	void						update() override;
 private:
@@ -170,6 +168,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	cam.setEyePoint( vec3( 2.664f, -6.484f, 5.939f ) );
 	cam.setCenterOfInterestPoint( vec3( 0.469f, -5.430f, 1.146f ) );
 	mMayaCam.setCurrentCam( cam );
+	mMayaCam.connect( getWindow(), -1 ); // set priority to be lower than InterfaceGl
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );
@@ -768,16 +767,6 @@ void DeferredShadingAdvancedApp::loadShaders()
 	mBatchDebugRect->getGlslProg()->uniformBlock( 0, 0 );
 	mBatchEmissiveRect->getGlslProg()->uniformBlock( 0, 0 );
 	mBatchLBufferCube->getGlslProg()->uniformBlock( 0, 0 );
-}
-
-void DeferredShadingAdvancedApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void DeferredShadingAdvancedApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 }
 
 void DeferredShadingAdvancedApp::resize()

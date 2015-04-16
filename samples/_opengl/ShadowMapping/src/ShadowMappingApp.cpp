@@ -201,6 +201,8 @@ void ShadowMappingApp::setup()
 	mParams->addParam( "Auto normal slope offset", &mEnableNormSlopeOffset );
 	mParams->addParam( "Num samples", &mNumRandomSamples ).min( 1 );
 //	mParams->minimize();
+
+	mMayaCam.connect( getWindow() );
 	
 	auto positionGlsl = gl::getStockShader( gl::ShaderDef() );
 	
@@ -331,7 +333,6 @@ void ShadowMappingApp::draw()
 void ShadowMappingApp::mouseDown( MouseEvent event )
 {
 	mMousePos = event.getPos();
-	mMayaCam.mouseDown( mMousePos );
 }
 
 void ShadowMappingApp::mouseMove( MouseEvent event )
@@ -342,11 +343,6 @@ void ShadowMappingApp::mouseMove( MouseEvent event )
 void ShadowMappingApp::mouseDrag( MouseEvent event )
 {
 	mMousePos = event.getPos();
-	
-	// Added/hacked support for international mac laptop keyboards.
-	bool middle = event.isMiddleDown() || ( event.isMetaDown() && event.isLeftDown() );
-	bool right = event.isRightDown() || ( event.isControlDown() && event.isLeftDown() );
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown() && !middle && !right, middle, right );
 }
 
 void ShadowMappingApp::keyDown( KeyEvent event )

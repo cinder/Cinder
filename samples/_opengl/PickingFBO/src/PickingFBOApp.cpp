@@ -169,14 +169,14 @@ void PickingFBOApp::mouseDown( MouseEvent event )
 		setSelectedColors( selection );
 	}
 	else {
-		mMayaCam.mouseDown( mPickPos );
+		mMayaCam.mouseDown( event );
 	}
 	mNeedsRedraw = true;
 }
 
 void PickingFBOApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mMayaCam.mouseDrag( event );
 	mNeedsRedraw = true;
 }
 

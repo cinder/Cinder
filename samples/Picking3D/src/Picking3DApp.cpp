@@ -16,8 +16,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/MayaCamUI.h"
 #include "cinder/Rand.h"
@@ -289,7 +288,7 @@ void Picking3DApp::mouseMove( MouseEvent event )
 void Picking3DApp::mouseDown( MouseEvent event )
 {	
 	// let the camera handle the interaction
-	mMayaCam.mouseDown( event.getPos() );
+	mMayaCam.mouseDown( event );
 }
 
 void Picking3DApp::mouseDrag( MouseEvent event )
@@ -297,8 +296,8 @@ void Picking3DApp::mouseDrag( MouseEvent event )
 	// keep track of the mouse
 	mMousePos = event.getPos();
 
-	// let the camera handle the interaction
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	// let the MayaCamUI handle the interaction
+	mMayaCam.mouseDrag( event );
 }
 
 void Picking3DApp::resize()

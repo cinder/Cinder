@@ -46,19 +46,16 @@ using namespace std;
 
 class FrustumCullingReduxApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void update();
-	void draw();
+	static void prepareSettings( Settings *settings );
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void update() override;
+	void draw() override;
 	
 	void toggleCullableFov();
 	void drawCullableFov();
 
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
 
-	void keyDown( KeyEvent event );
-	
   protected:
 	//! load the heart shaped mesh 
 	void			loadObject();
@@ -105,7 +102,8 @@ class FrustumCullingReduxApp : public App {
 	gl::Texture2dRef	mHelp;
 };
 
-void FrustumCullingReduxApp::prepareSettings(Settings *settings)
+// static
+void FrustumCullingReduxApp::prepareSettings( Settings *settings )
 {
 	// setup our window
 	settings->setWindowSize( 1200, 675 );
@@ -164,7 +162,8 @@ void FrustumCullingReduxApp::setup()
 	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
 	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
 	
-	mMayaCam.setCurrentCam( mRenderCam );
+	mMayaCam = MayaCamUI( &mRenderCam );
+	mMayaCam.connect( getWindow() );
 
 	// track current time so we can calculate elapsed time
 	mCurrentSeconds = getElapsedSeconds();
@@ -285,17 +284,6 @@ void FrustumCullingReduxApp::draw()
 		gl::draw( mHelp );
 		gl::disableAlphaBlending();
 	}
-}
-
-void FrustumCullingReduxApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void FrustumCullingReduxApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	mRenderCam = mMayaCam.getCamera();
 }
 
 void FrustumCullingReduxApp::keyDown( KeyEvent event )
@@ -439,4 +427,4 @@ void FrustumCullingReduxApp::renderHelpToTexture()
 	mHelp = gl::Texture::create( layout.render( true, false ) );
 }
 
-CINDER_APP( FrustumCullingReduxApp, RendererGl )
+CINDER_APP( FrustumCullingReduxApp, RendererGl, FrustumCullingReduxApp::prepareSettings )
