@@ -129,7 +129,7 @@ void FrustumCullingReduxApp::setup()
 	loadObject();
 
 	// Create a few hearts.
-	int sz = math<int>::sqrt( NUM_OBJECTS );
+	int sz = (int) math<double>::sqrt( NUM_OBJECTS );
 
 	Rand::randomize();
 	mObjects.resize( NUM_OBJECTS );
@@ -379,8 +379,7 @@ void FrustumCullingReduxApp::toggleCullableFov()
 	// This allows you to see what culling does.
 	mShowRevealingFov = !mShowRevealingFov;
 
-	float fov = mShowRevealingFov ? 45 : 60;
-	timeline().apply( &mCullingFov, fov, 0.6f, EaseInOutCubic() );
+	timeline().apply( &mCullingFov, mShowRevealingFov ? 45.0f : 60.0f, 0.6f, EaseInOutCubic() );
 }
 
 void FrustumCullingReduxApp::drawCullableFov()
