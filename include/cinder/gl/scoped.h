@@ -210,12 +210,11 @@ struct ScopedFaceCulling : private Noncopyable {
 };
 
 //! Scopes state of depth testing.
-struct ScopedDepthTesting : private Noncopyable {
-	ScopedDepthTesting();
-	ScopedDepthTesting( bool read );
-	ScopedDepthTesting( bool read, bool write );
-	ScopedDepthTesting( bool read, bool write, GLenum depthFunc );
-	~ScopedDepthTesting();
+struct ScopedDepthBuffer : private Noncopyable {
+	ScopedDepthBuffer( bool enableReadAndWrite = true );
+	ScopedDepthBuffer( bool enableRead, bool enableWrite );
+	ScopedDepthBuffer( bool enableRead, bool enableWrite, GLenum depthFunc );
+	~ScopedDepthBuffer();
 	
   private:
 	Context		*mCtx;
