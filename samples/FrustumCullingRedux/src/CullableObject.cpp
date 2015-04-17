@@ -29,7 +29,7 @@ using namespace ci::gl;
 CullableObject::CullableObject( const BatchRef &batch )
 	: mBatch( batch ), mIsCulled( false )
 {
-	setTransform( vec3( 0 ), vec3( 0 ), vec3( 0.1f ) );
+	setTransform( vec3( 0 ), vec3( 0 ), 1.0f );
 }
 
 CullableObject::~CullableObject()
@@ -61,7 +61,7 @@ void CullableObject::draw()
 	}
 }
 
-void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, const vec3 &scale )
+void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, float scale )
 {
 	mPosition = position;
 	mRotation = rotation;
@@ -71,5 +71,5 @@ void CullableObject::setTransform( const vec3 &position, const vec3 &rotation, c
 	mTransform = mat4();
 	mTransform *= glm::translate( position );
 	mTransform *= toMat4( quat( rotation ) );
-	mTransform *= glm::scale( scale );
+	mTransform *= glm::scale( vec3( scale ) );
 }

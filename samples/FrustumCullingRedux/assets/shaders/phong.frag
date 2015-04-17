@@ -1,27 +1,31 @@
 #version 150
 
-in vec3		PositionEyeSpace;
-in vec3		Normal;
+in vec4	vertPosition;
+in vec3	vertNormal;
 
-uniform vec3	uDiffuse;
-uniform vec3	uSpecular;
-uniform float	uShininess;
-
-out vec4 oColor;
+out vec4 fragColor;
 
 void main()
 {
-	// light properties in view space
-	const vec3 lightPos = vec3( 0.0 );
+	// Light position in view space.
+	const vec3 kLightPosition = vec3( 0 );
 
-	vec3 toLight = normalize( lightPos - PositionEyeSpace );
-	vec3 toEye = normalize( -PositionEyeSpace );
-	vec3 refl = normalize( reflect( -toLight, Normal ) );
+	// Calculate lighting vectors.
+	vec3 L = normalize( kLightPosition - vertPosition.xyz );
+	vec3 E = normalize( -vertPosition.xyz );
+	vec3 N = normalize( vertNormal );
+	vec3 H = normalize( L + E );
 
-	vec3 diffuse = uDiffuse * max( dot( Normal, toLight ), 0.0 );
+	// Calculate diffuse lighting component.
+	const vec3 kDiffuseColor = vec3( 1, 0, 0 );
+	vec3 diffuse = kDiffuseColor * max( dot( N, L ), 0.0 );
 
-	vec3 specular = uSpecular * pow( max( dot( refl, toEye ), 0.0 ), uShininess );
-	specular = clamp( specular, 0.0, 1.0 );
+	// Calculate specular lighting component.
+	const float kShininess = 200.0;
+	const float kNormalization = ( kShininess + 8.0 ) / ( 3.14159265 * 8.0 );
+	const vec3 kSpecularColor = vec3( 1, 0.8, 0.8 );
+	vec3 specular = kNormalization * kSpecularColor * pow( max( dot( N, H ), 0.0 ), kShininess );
 
-	oColor = vec4( diffuse + specular, 1.0 );
+	// Output final color.
+	fragColor = vec4( diffuse + specular, 1.0 );
 }

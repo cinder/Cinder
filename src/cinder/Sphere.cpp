@@ -152,4 +152,12 @@ float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) cons
 	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;
 }
 
+Sphere Sphere::transformed( const mat4 &transform )
+{
+	vec4 center = transform * vec4( mCenter, 1 );
+	vec4 radius = transform * vec4( mRadius, 0, 0, 0 );
+
+	return Sphere( vec3( center ), glm::length( radius ) );
+}
+
 } // namespace cinder
