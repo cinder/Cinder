@@ -297,6 +297,44 @@ ScopedFaceCulling::~ScopedFaceCulling()
 	if( mSaveFace )
 		mCtx->popCullFace();
 }
+	
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDepthTesting
+ScopedDepthTesting::ScopedDepthTesting()
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, true );
+	mCtx->pushDepthMask( true );
+}
+ScopedDepthTesting::ScopedDepthTesting( bool read )
+	: mCtx( gl::context() ), mSaveMask( false ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, read );
+}
+	
+ScopedDepthTesting::ScopedDepthTesting( bool read, bool write )
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, read );
+	mCtx->pushDepthMask( write );
+}
+	
+ScopedDepthTesting::ScopedDepthTesting( bool read, bool write, GLenum depthFunc )
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( true )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, read );
+	mCtx->pushDepthMask( write );
+	mCtx->pushDepthFunc( depthFunc );
+}
+
+ScopedDepthTesting::~ScopedDepthTesting()
+{
+	mCtx->popBoolState( GL_DEPTH_TEST );
+	if( mSaveMask )
+		mCtx->popDepthMask();
+	if( mSaveFunc )
+		mCtx->popDepthFunc();
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedRenderbuffer

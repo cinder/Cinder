@@ -209,6 +209,20 @@ struct ScopedFaceCulling : private Noncopyable {
 	bool		mSaveFace;
 };
 
+//! Scopes state of depth testing.
+struct ScopedDepthTesting : private Noncopyable {
+	ScopedDepthTesting();
+	ScopedDepthTesting( bool read );
+	ScopedDepthTesting( bool read, bool write );
+	ScopedDepthTesting( bool read, bool write, GLenum depthFunc );
+	~ScopedDepthTesting();
+	
+  private:
+	Context		*mCtx;
+	bool		mSaveMask;
+	bool		mSaveFunc;
+};
+
 //! Scopes state of Renderbuffer binding
 struct ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &renderBuffer );
