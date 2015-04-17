@@ -278,7 +278,6 @@ class TextureBase {
 		bool				mImmutableStorage;
 		GLfloat				mMaxAnisotropy;
 		GLint				mInternalFormat, mDataType;
-		//GLint				mDataFormat;
 		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;
@@ -290,9 +289,6 @@ class TextureBase {
 #endif
 		friend class TextureBase;
 	};
-
-	//! Returns the Texture::Format of this texture
-	virtual const Format& getFormat() const = 0;
 
   protected:
 	TextureBase();
@@ -430,9 +426,6 @@ class Texture1d : public TextureBase {
 	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
 	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 
-	//! Returns the Texture::Format of this texture
-	const Format&	getFormat() const override { return mFormat; }
-
   protected:
   	Texture1d( GLint width, Format format );
 	Texture1d( const Surface8u &surface, Format format );
@@ -441,7 +434,6 @@ class Texture1d : public TextureBase {
 	virtual void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth;
-	Format		mFormat;
 };
 
 #endif // ! defined( CINDER_GL_ES )
@@ -582,9 +574,6 @@ class Texture2d : public TextureBase {
 	//!	Marks whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
 	void			setTopDown( bool topDown = true ) { mTopDown = topDown; }
 	
-	//! Returns the Texture::Format of this texture
-	const Format&	getFormat() const override { return mFormat; }
-	
 	//! Returns an ImageSource pointing to this Texture
 	ImageSourceRef	createSource();
 	
@@ -619,7 +608,6 @@ class Texture2d : public TextureBase {
 
 	mutable GLint	mWidth, mHeight, mCleanWidth, mCleanHeight;
 	bool			mTopDown;
-	Format			mFormat;
 	
 	friend class Texture2dCache;
 };
@@ -670,9 +658,6 @@ class Texture3d : public TextureBase {
 	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
 	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 
-	//! Returns the Texture::Format of this texture
-	const Format&	getFormat() const override { return mFormat; }
-
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
 	Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, const uint8_t *data, Format format );
@@ -680,7 +665,6 @@ class Texture3d : public TextureBase {
 	virtual void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth, mHeight, mDepth;
-	Format		mFormat;
 };
 #endif // ! defined( CINDER_GL_ES_2 )
 
@@ -725,9 +709,6 @@ class TextureCubeMap : public TextureBase
 	GLint			getHeight() const override { return mHeight; }
 	//! Returns the depth of the texture in pixels (
 	GLint			getDepth() const override { return 1; }
-
-	//! Returns the Texture::Format of this texture
-	const Format&	getFormat() const override { return mFormat; }
 	
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );
@@ -740,7 +721,6 @@ class TextureCubeMap : public TextureBase
 	virtual void	printDims( std::ostream &os ) const override;
 	
 	GLint		mWidth, mHeight;
-	Format		mFormat;
 };
 
 typedef std::shared_ptr<class Texture2dCache> Texture2dCacheRef;
