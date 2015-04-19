@@ -582,7 +582,7 @@ using namespace cinder::app;
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ivec2( content.origin.x, [[[NSScreen screens] objectAtIndex:0] frame].size.height - frame.origin.y - content.size.height );
+	mPos = ivec2( NSMinX( content ), NSHeight( mWin.screen.frame ) - NSMinY( frame ) - NSHeight( content ) );
 	[mAppImpl setActiveWindow:self];
 
 	// This appears to be NULL in some scenarios
@@ -628,9 +628,21 @@ using namespace cinder::app;
 	NSSize nsSize = [mCinderView frame].size;
 	mSize = cinder::ivec2( nsSize.width, nsSize.height );
 
+	NSRect frame = [mWin frame];
+	NSRect content = [mWin contentRectForFrameRect:frame];
+	
+	ivec2 prevPos = mPos;	
+	mPos = ivec2( NSMinX( content ), NSHeight( mWin.screen.frame ) - NSMinY( frame ) - NSHeight( content ) );
+
 	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
 		[mAppImpl setActiveWindow:self];
 		mWindowRef->emitResize();
+		
+		// resized from the top left
+		if ( prevPos != mPos )
+		{
+			mWindowRef->emitMove();
+		}
 	}
 }
 
