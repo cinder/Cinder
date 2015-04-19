@@ -638,11 +638,9 @@ using namespace cinder::app;
 		[mAppImpl setActiveWindow:self];
 		mWindowRef->emitResize();
 		
-		// resized from the top left
-		if ( prevPos != mPos )
-		{
+		// If the resize happened from top left, also signal that the Window moved.
+		if( prevPos != mPos )
 			mWindowRef->emitMove();
-		}
 	}
 }
 
