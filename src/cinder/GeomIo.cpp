@@ -317,7 +317,7 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 		for( size_t i = 0; i < numIndices - 2; ++i ) {
 			if( i & 1 ) { // odd
 				target[outIdx++] = source[i+1];
-				target[outIdx++] = source[0];
+				target[outIdx++] = source[i];
 				target[outIdx++] = source[i+2];
 			}
 			else { // even
@@ -326,8 +326,9 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 				target[outIdx++] = source[i+2];
 			}
 		}
-									}
-									break;
+		break;
+	}
+									
 	case Primitive::TRIANGLE_FAN: { // ABC, ACD, ADE, etc
 		if( numIndices < 3 )
 			return;
@@ -337,7 +338,8 @@ void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *sourc
 			target[outIdx++] = source[i+1];
 			target[outIdx++] = source[i+2];
 		}
-									}
+		break;
+	}
 	default:
 		throw ExcIllegalPrimitiveType();			
 		break;
