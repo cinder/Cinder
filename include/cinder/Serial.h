@@ -100,21 +100,45 @@ class Serial : private Noncopyable {
 };
 	
 class SerialExc : public Exception {
+  public:
+	SerialExc( const std::string &description )
+		: Exception( description )
+	{}
 };
 
 class SerialExcOpenFailed : public SerialExc {
+  public:
+	SerialExcOpenFailed()
+		: SerialExc( "Serial failed to open." )
+	{}
 };
 
 class SerialExcDeviceEnumerationFailed : public SerialExc {
+  public:
+	SerialExcDeviceEnumerationFailed()
+		: SerialExc( "Serial device enumeration failed." )
+	{}
 };
 
 class SerialExcReadFailure : public SerialExc {
+  public:
+	SerialExcReadFailure()
+		: SerialExc( "Serial failed to read." )
+	{}
 };
 
 class SerialExcWriteFailure : public SerialExc {
+  public:
+	SerialExcWriteFailure()
+		: SerialExc( "Serial failed to write." )
+	{}
 };
 
 class SerialTimeoutExc : public SerialExc {	
+  public:
+	SerialTimeoutExc()
+		: SerialExc( "Serial timed out." )
+	{}
 };
 		
 } // namespace cinder
