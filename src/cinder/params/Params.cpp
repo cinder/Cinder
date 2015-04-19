@@ -625,6 +625,22 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 	delete [] ev;
 }
 
+InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn )
+{
+	TwSetCurrentWindow( mTwWindowId );
+
+	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
+	for( size_t v = 0; v < enumNames.size(); ++v ) {
+		ev[v].Value = (int)v;
+		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
+	}
+
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, (unsigned int)enumNames.size() );
+	delete [] ev;
+
+	return Options<int>( name, nullptr, evType, this ).accessors( setterFn, getterFn );
+}
+
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
 {
 	TwSetCurrentWindow( mTwWindowId );
