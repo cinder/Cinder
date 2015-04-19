@@ -33,7 +33,21 @@ void TriMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 
 void TriMeshGeomTarget::copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex )
 {
-	mMesh->mIndices.resize( numIndices );
+	size_t targetNumIndices = numIndices;
+	switch ( primitive ) {
+		case geom::Primitive::TRIANGLE_STRIP :
+		case geom::Primitive::TRIANGLE_FAN : {
+			targetNumIndices = ( numIndices - 2 ) * 3;
+			break;
+		}
+			
+		default: {
+			// All good
+			break;
+		}
+	}
+			
+	mMesh->mIndices.resize( targetNumIndices );
 	copyIndexDataForceTriangles( primitive, source, numIndices, mMesh->mIndices.data() );
 }
 
