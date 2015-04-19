@@ -605,10 +605,10 @@ void InterfaceGl::addParam( const std::string &name, std::string *param, const s
 	implAddParamDeprecated( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
 }
 
-void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
+InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
+
 	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
 	for( size_t v = 0; v < enumNames.size(); ++v ) {
 		ev[v].Value = (int)v;
@@ -621,8 +621,10 @@ void InterfaceGl::addParam( const std::string &name, const std::vector<std::stri
 		TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
 	else
 		TwAddVarRW( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
-		
+
 	delete [] ev;
+
+	return Options<int>( name, param, evType, this );
 }
 
 InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn )
