@@ -40,6 +40,36 @@ namespace cinder {
 typedef std::shared_ptr<class TriMesh>		TriMeshRef;
 	
 class TriMesh : public geom::Source {
+  public:
+	// Data block identifiers should resemble geom::Attrib,
+	// but where geom::Attrib can freely change the order, we can not change it
+	// here if we want to remain backward compatible. Also, the TriMesh::Attribs
+	// are used as bitmasks, which is why we specify each individual value.
+	typedef enum attrib : uint32_t {
+		POSITION = 0x00000001,
+		COLOR = 0x00000002,
+		TEX_COORD_0 = 0x00000004,
+		TEX_COORD_1 = 0x00000008,
+		TEX_COORD_2 = 0x00000010,
+		TEX_COORD_3 = 0x00000020,
+		NORMAL = 0x00000100,
+		TANGENT = 0x00000200,
+		BITANGENT = 0x00000400,
+		BONE_INDEX = 0x00001000,
+		BONE_WEIGHT = 0x00002000,
+		CUSTOM_0 = 0x00010000,
+		CUSTOM_1 = 0x00020000,
+		CUSTOM_2 = 0x00040000,
+		CUSTOM_3 = 0x00080000,
+		CUSTOM_4 = 0x00100000,
+		CUSTOM_5 = 0x00200000,
+		CUSTOM_6 = 0x00400000,
+		CUSTOM_7 = 0x00800000,
+		CUSTOM_8 = 0x01000000,
+		CUSTOM_9 = 0x02000000,
+		ALL = 0x03FF373F // Combination of all masks. Keep up to date when changing this enum.
+	} Attrib;
+
  public:
 	class Format {
 	  public:
@@ -299,8 +329,25 @@ class TriMesh : public geom::Source {
 
 	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
 	void		read( const DataSourceRef &dataSource );
-	//! Writes this TriMesh out to a binary data file. If \a writeTangents is set to true then tangents and bi-tangents will also be written, but this defaults to false because they can be reconstructed.
-	void		write( const DataTargetRef &dataTarget, bool writeTangents = false ) const;
+	//! Writes this TriMesh out to a binary data file.
+	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, (uint32_t) Attrib::ALL ); }
+	//! Writes this TriMesh out to a binary data file. If \a writeNormals or \a writeTangents is \c true, normals and/or tangents are written to the file.
+	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const
+	{
+		uint32_t mask = Attrib::ALL; 
+		if( !writeNormals ) mask &= ~Attrib::NORMAL;
+		if( !writeTangents ) mask &= ~Attrib::TANGENT & ~Attrib::BITANGENT;
+		write( dataTarget, mask );
+	}
+	//! Writes this TriMesh out to a binary data file. You can specify which attributes to write by supplying a list of \a attribs.
+	void		write( const DataTargetRef &dataTarget, const std::set<Attrib> &attribs ) const {
+		uint32_t mask = 0;
+		for( auto &attrib : attribs )
+			mask |= attrib;
+		write( dataTarget, mask );
+	}
+	//! Writes this TriMesh out to a binary data file. The \a writeMask parameter can be used to specify what data should be included (e.g. POSITION | COLOR). By default, all data will be written.
+	void		write( const DataTargetRef &dataTarget, uint32_t writeMask ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
@@ -316,6 +363,10 @@ class TriMesh : public geom::Source {
 		Optionally, vertices are normalized if \a normalize is TRUE. */
 	void		subdivide( int division = 2, bool normalize = false );
 
+	//! Converts a geom::Attrib to a TriMesh::Attrib.
+	static Attrib geomToTriMeshAttrib( geom::Attrib attrib );
+	//! Converts a TriMesh::Attrib to a geom::Attrib.
+	static geom::Attrib triMeshToGeomAttrib( Attrib attrib );
 
 	//! Create TriMesh from vectors of vertex data.
 /*	static TriMesh		create( std::vector<uint32_t> &indices, const std::vector<ColorAf> &colors,

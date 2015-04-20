@@ -51,22 +51,41 @@ void TriMeshReadWriteTestApp::setup()
 
 void TriMeshReadWriteTestApp::testObjFileWriteRead()
 {
-	const string modelBinName = "model.bin";
+	Timer t( false );
 
-	ObjLoader loader( loadResource( RES_8LBS_OBJ ) );
-	mMesh = TriMesh::create( loader );
-	if( ! loader.getAvailableAttribs().count( geom::NORMAL ) )
-		mMesh->recalculateNormals();
+	const string modelBinName = "model.bin";
 
 #if defined( CINDER_MSW )
 	fs::path writePath = getAppPath();
 #else
 	fs::path writePath = getAppPath().parent_path();
 #endif
+	
+	// write
+	t.start();
+	ObjLoader loader( loadResource( RES_8LBS_OBJ ) );
+	mMesh = TriMesh::create( loader );
+	t.stop();
+	console() << "Reading OBJ file took " << t.getSeconds() << " seconds." << std::endl;
 
-	mMesh->write( writeFile( writePath / modelBinName, false ) );
-	mMesh->clear();
+	if( !mMesh->hasNormals() )
+		mMesh->recalculateNormals();
+
+	t.start();
+	mMesh->write( writeFile( writePath / modelBinName, false ), { TriMesh::POSITION, TriMesh::TEX_COORD_0 } );
+	t.stop();
+	console() << "Writing binary file took " << t.getSeconds() << " seconds." << std::endl;
+
+	// read
+	mMesh = TriMesh::create();
+
+	t.start();
 	mMesh->read( loadFile( writePath / modelBinName ) );
+	t.stop();
+	console() << "Reading binary file took " << t.getSeconds() << " seconds." << std::endl;
+
+	if( !mMesh->hasNormals() )
+		mMesh->recalculateNormals();
 
 	mBatch = gl::Batch::create( *mMesh, mGlsl );
 

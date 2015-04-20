@@ -453,135 +453,110 @@ void TriMesh::read( const DataSourceRef &dataSource )
 	}
 }
 
-void TriMesh::write( const DataTargetRef &dataTarget, bool writeTangents ) const
+void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 {
-	if( mIndices.empty() )
-		return;
-
 	OStreamRef out = dataTarget->getStream();
+
+	auto writeAttrib = [out, writeMask]( uint32_t attrib, uint8_t dims, uint32_t sizeInFloats, const void *ptr ) {
+		if( sizeInFloats > 0 && ( writeMask & attrib ) ) {
+			out->writeLittle( attrib );
+			out->writeLittle( dims );
+			out->writeLittle( sizeInFloats );
+			out->writeData( ptr, sizeInFloats * sizeof( float ) );
+		}
+	};
 
 	const uint8_t version = 2;
 	out->write( version );
 
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
+	if( !mIndices.empty() )
+		out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
 
-	out->writeLittle( static_cast<uint8_t>( mPositionsDims ) );
-	out->writeLittle( static_cast<uint32_t>( ! mPositions.empty() ? mPositions.size() / mPositionsDims : 0 ) );
-
-	out->writeLittle( static_cast<uint8_t>( mNormalsDims ) );
-	out->writeLittle( static_cast<uint32_t>( mNormals.size() ) );
-
-	out->writeLittle( static_cast<uint8_t>( mColorsDims ) );
-	out->writeLittle( static_cast<uint32_t>( mColors.empty() ? 0 : mColors.size() / mColorsDims ) );
-
-	out->writeLittle( static_cast<uint8_t>( mTexCoords0Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords0.empty() ? 0 : mTexCoords0.size() / mTexCoords0Dims ) );
-
-	out->writeLittle( static_cast<uint8_t>( mTexCoords1Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords1.empty() ? 0 : mTexCoords1.size() / mTexCoords1Dims ) );
-
-	out->writeLittle( static_cast<uint8_t>( mTexCoords2Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords2.empty() ? 0 : mTexCoords2.size() / mTexCoords2Dims ) );
-
-	out->writeLittle( static_cast<uint8_t>( mTexCoords3Dims ) );
-	out->writeLittle( static_cast<uint32_t>( mTexCoords3.empty() ? 0 : mTexCoords3.size() / mTexCoords3Dims ) );
-
-	if( writeTangents ) {
-		out->writeLittle( static_cast<uint32_t>( mTangents.size() ) );
-		out->writeLittle( static_cast<uint32_t>( mBitangents.size() ) );
-	}
-	else {
-		// write zeroes for num tangents / bitangents
-		out->writeLittle( static_cast<uint32_t>( 0 ) );
-		out->writeLittle( static_cast<uint32_t>( 0 ) );
-	}
-
-	out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
-	if( ! mPositions.empty() )
-		out->writeData( mPositions.data(), mPositions.size() * sizeof( float ) );
-	if( ! mNormals.empty() )
-		out->writeData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
-	if( ! mColors.empty() )
-		out->writeData( mColors.data(), mColors.size() * sizeof( float ) );
-	if( ! mTexCoords0.empty() )
-		out->writeData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
-	if( ! mTexCoords1.empty() )
-		out->writeData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
-	if( ! mTexCoords2.empty() )
-		out->writeData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
-	if( ! mTexCoords3.empty() )
-		out->writeData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
-
-	if( writeTangents ) {
-		if( ! mTangents.empty() )
-			out->writeData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
-		if( ! mBitangents.empty() )
-			out->writeData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
-	}
+	writeAttrib( Attrib::POSITION, mPositionsDims, mPositions.size(), mPositions.data() );
+	writeAttrib( Attrib::COLOR, mColorsDims, mColors.size(), mColors.data() );
+	writeAttrib( Attrib::NORMAL, mNormalsDims, mNormals.size() * 3, mNormals.data() );
+	writeAttrib( Attrib::TEX_COORD_0, mTexCoords0Dims, mTexCoords0.size(), mTexCoords0.data() );
+	writeAttrib( Attrib::TEX_COORD_1, mTexCoords1Dims, mTexCoords1.size(), mTexCoords1.data() );
+	writeAttrib( Attrib::TEX_COORD_2, mTexCoords2Dims, mTexCoords2.size(), mTexCoords2.data() );
+	writeAttrib( Attrib::TEX_COORD_3, mTexCoords3Dims, mTexCoords3.size(), mTexCoords3.data() );
+	writeAttrib( Attrib::TANGENT, mTangentsDims, mTangents.size() * 3, mTangents.data() );
+	writeAttrib( Attrib::BITANGENT, mBitangentsDims, mBitangents.size() * 3, mBitangents.data() );
 }
 
 // used in 0.9.0
 void TriMesh::readImplV2( const IStreamRef &in )
 {
-	uint32_t numIndices, numPositions, numNormals, numColors;
-	uint32_t numTexCoords0, numTexCoords1, numTexCoords2, numTexCoords3;
-	uint32_t numTangents, numBitangents;
+	auto readAttribf = [in]( uint8_t *dims, std::vector<float> *data ) {
+		if( in->isEof() ) return;
 
+		in->readLittle( dims );
+
+		uint32_t sizeInFloats;
+		in->readLittle( &sizeInFloats );
+
+		data->resize( sizeInFloats );
+		in->readData( data->data(), sizeInFloats * sizeof( float ) );
+	};
+
+	auto readAttribVec3f = [in]( uint8_t *dims, std::vector<vec3> *data ) {
+		if( in->isEof() ) return;
+
+		in->readLittle( dims );
+
+		uint32_t sizeInFloats;
+		in->readLittle( &sizeInFloats );
+
+		data->resize( sizeInFloats * sizeof( float ) / sizeof( vec3 ) );
+		in->readData( data->data(), sizeInFloats * sizeof( float ) );
+	};
+
+	// indices
+	uint32_t numIndices;
 	in->readLittle( &numIndices );
+	if( numIndices > 0 ) {
+		mIndices.resize( numIndices );
+		in->readData( mIndices.data(), numIndices * sizeof( uint32_t ) );
+	}
 
-	in->readLittle( &mPositionsDims );
-	in->readLittle( &numPositions );
+	// attribs
+	uint32_t attrib;
+	while( !in->isEof() ) {
+		in->readLittle( &attrib );
 
-	in->readLittle( &mNormalsDims );
-	in->readLittle( &numNormals );
-
-	in->readLittle( &mColorsDims );
-	in->readLittle( &numColors );
-
-	in->readLittle( &mTexCoords0Dims );
-	in->readLittle( &numTexCoords0 );
-
-	in->readLittle( &mTexCoords1Dims );
-	in->readLittle( &numTexCoords1 );
-
-	in->readLittle( &mTexCoords2Dims );
-	in->readLittle( &numTexCoords2 );
-
-	in->readLittle( &mTexCoords3Dims );
-	in->readLittle( &numTexCoords3 );
-
-	in->readLittle( &numTangents );
-	in->readLittle( &numBitangents );
-
-	mIndices.resize( numIndices );
-	in->readData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
-
-	mPositions.resize( numPositions * mPositionsDims );
-	in->readData( mPositions.data(), mPositions.size() * sizeof( float ) );
-
-	mNormals.resize( numNormals );
-	in->readData( mNormals.data(), mNormals.size() * sizeof( vec3 ) );
-
-	mColors.resize( numColors * mColorsDims );
-	in->readData( mColors.data(), mColors.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords0 * mTexCoords0Dims );
-	in->readData( mTexCoords0.data(), mTexCoords0.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords1 * mTexCoords1Dims );
-	in->readData( mTexCoords1.data(), mTexCoords1.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords2 * mTexCoords2Dims );
-	in->readData( mTexCoords2.data(), mTexCoords2.size() * sizeof( float ) );
-
-	mTexCoords0.resize( numTexCoords3 * mTexCoords3Dims );
-	in->readData( mTexCoords3.data(), mTexCoords3.size() * sizeof( float ) );
-
-	mTangents.resize( numTangents );
-	in->readData( mTangents.data(), mTangents.size() * sizeof( vec3 ) );
-
-	mBitangents.resize( numBitangents );
-	in->readData( mBitangents.data(), mBitangents.size() * sizeof( vec3 ) );
+		switch( attrib ) {
+			case POSITION:
+				readAttribf( &mPositionsDims, &mPositions );
+				break;
+			case COLOR:
+				readAttribf( &mColorsDims, &mColors );
+				break;
+			case NORMAL:
+				readAttribVec3f( &mNormalsDims, &mNormals );
+				break;
+			case TEX_COORD_0:
+				readAttribf( &mTexCoords0Dims, &mTexCoords0 );
+				break;
+			case TEX_COORD_1:
+				readAttribf( &mTexCoords1Dims, &mTexCoords1 );
+				break;
+			case TEX_COORD_2:
+				readAttribf( &mTexCoords2Dims, &mTexCoords2 );
+				break;
+			case TEX_COORD_3:
+				readAttribf( &mTexCoords3Dims, &mTexCoords3 );
+				break;
+			case TANGENT:
+				readAttribVec3f( &mTangentsDims, &mTangents );
+				break;
+			case BITANGENT:
+				readAttribVec3f( &mBitangentsDims, &mBitangents );
+				break;
+			default:
+				throw Exception( "Invalid file contents." );
+				break;
+		}
+	}
 }
 
 // used in 0.8.6 and early glNext
@@ -1225,6 +1200,66 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	// TODO: bone index and weight
 
 	return true;
+}
+
+TriMesh::Attrib TriMesh::geomToTriMeshAttrib( geom::Attrib attrib )
+{
+	switch( attrib ) {
+		case POSITION: return Attrib::POSITION;
+		case COLOR: return Attrib::COLOR;
+		case TEX_COORD_0: return Attrib::TEX_COORD_0;
+		case TEX_COORD_1: return Attrib::TEX_COORD_1;
+		case TEX_COORD_2: return Attrib::TEX_COORD_2;
+		case TEX_COORD_3: return Attrib::TEX_COORD_3;
+		case NORMAL: return Attrib::NORMAL;
+		case TANGENT: return Attrib::TANGENT;
+		case BITANGENT: return Attrib::BITANGENT;
+		case BONE_INDEX: return Attrib::BONE_INDEX;
+		case BONE_WEIGHT: return Attrib::BONE_WEIGHT;
+		case CUSTOM_0: return Attrib::CUSTOM_0;
+		case CUSTOM_1: return Attrib::CUSTOM_1;
+		case CUSTOM_2: return Attrib::CUSTOM_2;
+		case CUSTOM_3: return Attrib::CUSTOM_3;
+		case CUSTOM_4: return Attrib::CUSTOM_4;
+		case CUSTOM_5: return Attrib::CUSTOM_5;
+		case CUSTOM_6: return Attrib::CUSTOM_6;
+		case CUSTOM_7: return Attrib::CUSTOM_7;
+		case CUSTOM_8: return Attrib::CUSTOM_8;
+		case CUSTOM_9: return Attrib::CUSTOM_9;
+		default:
+			throw Exception( "Failed to map attribute." );
+			break;
+	}
+}
+
+geom::Attrib TriMesh::triMeshToGeomAttrib( TriMesh::Attrib attrib )
+{
+	switch( attrib ) {
+		case POSITION: return geom::POSITION;
+		case COLOR: return geom::COLOR;
+		case TEX_COORD_0: return geom::TEX_COORD_0;
+		case TEX_COORD_1: return geom::TEX_COORD_1;
+		case TEX_COORD_2: return geom::TEX_COORD_2;
+		case TEX_COORD_3: return geom::TEX_COORD_3;
+		case NORMAL: return geom::NORMAL;
+		case TANGENT: return geom::TANGENT;
+		case BITANGENT: return geom::BITANGENT;
+		case BONE_INDEX: return geom::BONE_INDEX;
+		case BONE_WEIGHT: return geom::BONE_WEIGHT;
+		case CUSTOM_0: return geom::CUSTOM_0;
+		case CUSTOM_1: return geom::CUSTOM_1;
+		case CUSTOM_2: return geom::CUSTOM_2;
+		case CUSTOM_3: return geom::CUSTOM_3;
+		case CUSTOM_4: return geom::CUSTOM_4;
+		case CUSTOM_5: return geom::CUSTOM_5;
+		case CUSTOM_6: return geom::CUSTOM_6;
+		case CUSTOM_7: return geom::CUSTOM_7;
+		case CUSTOM_8: return geom::CUSTOM_8;
+		case CUSTOM_9: return geom::CUSTOM_9;
+		default:
+			throw Exception( "Failed to map attribute." );
+			break;
+	}
 }
 
 } // namespace cinder
