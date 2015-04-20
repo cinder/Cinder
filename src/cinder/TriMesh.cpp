@@ -473,15 +473,15 @@ void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 	if( !mIndices.empty() )
 		out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
 
-	writeAttrib( Attrib::POSITION, mPositionsDims, mPositions.size(), mPositions.data() );
-	writeAttrib( Attrib::COLOR, mColorsDims, mColors.size(), mColors.data() );
-	writeAttrib( Attrib::NORMAL, mNormalsDims, mNormals.size() * 3, mNormals.data() );
-	writeAttrib( Attrib::TEX_COORD_0, mTexCoords0Dims, mTexCoords0.size(), mTexCoords0.data() );
-	writeAttrib( Attrib::TEX_COORD_1, mTexCoords1Dims, mTexCoords1.size(), mTexCoords1.data() );
-	writeAttrib( Attrib::TEX_COORD_2, mTexCoords2Dims, mTexCoords2.size(), mTexCoords2.data() );
-	writeAttrib( Attrib::TEX_COORD_3, mTexCoords3Dims, mTexCoords3.size(), mTexCoords3.data() );
-	writeAttrib( Attrib::TANGENT, mTangentsDims, mTangents.size() * 3, mTangents.data() );
-	writeAttrib( Attrib::BITANGENT, mBitangentsDims, mBitangents.size() * 3, mBitangents.data() );
+	writeAttrib( toMask( geom::POSITION ), mPositionsDims, mPositions.size(), mPositions.data() );
+	writeAttrib( toMask( geom::COLOR ), mColorsDims, mColors.size(), mColors.data() );
+	writeAttrib( toMask( geom::NORMAL ), mNormalsDims, mNormals.size() * 3, mNormals.data() );
+	writeAttrib( toMask( geom::TEX_COORD_0 ), mTexCoords0Dims, mTexCoords0.size(), mTexCoords0.data() );
+	writeAttrib( toMask( geom::TEX_COORD_1 ), mTexCoords1Dims, mTexCoords1.size(), mTexCoords1.data() );
+	writeAttrib( toMask( geom::TEX_COORD_2 ), mTexCoords2Dims, mTexCoords2.size(), mTexCoords2.data() );
+	writeAttrib( toMask( geom::TEX_COORD_3 ), mTexCoords3Dims, mTexCoords3.size(), mTexCoords3.data() );
+	writeAttrib( toMask( geom::TANGENT ), mTangentsDims, mTangents.size() * 3, mTangents.data() );
+	writeAttrib( toMask( geom::BITANGENT ), mBitangentsDims, mBitangents.size() * 3, mBitangents.data() );
 }
 
 // used in 0.9.0
@@ -524,32 +524,32 @@ void TriMesh::readImplV2( const IStreamRef &in )
 	while( !in->isEof() ) {
 		in->readLittle( &attrib );
 
-		switch( attrib ) {
-			case POSITION:
+		switch( fromMask( attrib ) ) {
+			case geom::POSITION:
 				readAttribf( &mPositionsDims, &mPositions );
 				break;
-			case COLOR:
+			case geom::COLOR:
 				readAttribf( &mColorsDims, &mColors );
 				break;
-			case NORMAL:
+			case geom::NORMAL:
 				readAttribVec3f( &mNormalsDims, &mNormals );
 				break;
-			case TEX_COORD_0:
+			case geom::TEX_COORD_0:
 				readAttribf( &mTexCoords0Dims, &mTexCoords0 );
 				break;
-			case TEX_COORD_1:
+			case geom::TEX_COORD_1:
 				readAttribf( &mTexCoords1Dims, &mTexCoords1 );
 				break;
-			case TEX_COORD_2:
+			case geom::TEX_COORD_2:
 				readAttribf( &mTexCoords2Dims, &mTexCoords2 );
 				break;
-			case TEX_COORD_3:
+			case geom::TEX_COORD_3:
 				readAttribf( &mTexCoords3Dims, &mTexCoords3 );
 				break;
-			case TANGENT:
+			case geom::TANGENT:
 				readAttribVec3f( &mTangentsDims, &mTangents );
 				break;
-			case BITANGENT:
+			case geom::BITANGENT:
 				readAttribVec3f( &mBitangentsDims, &mBitangents );
 				break;
 			default:
@@ -1202,63 +1202,59 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 	return true;
 }
 
-TriMesh::Attrib TriMesh::geomToTriMeshAttrib( geom::Attrib attrib )
+uint32_t TriMesh::toMask( geom::Attrib attrib )
 {
 	switch( attrib ) {
-		case POSITION: return Attrib::POSITION;
-		case COLOR: return Attrib::COLOR;
-		case TEX_COORD_0: return Attrib::TEX_COORD_0;
-		case TEX_COORD_1: return Attrib::TEX_COORD_1;
-		case TEX_COORD_2: return Attrib::TEX_COORD_2;
-		case TEX_COORD_3: return Attrib::TEX_COORD_3;
-		case NORMAL: return Attrib::NORMAL;
-		case TANGENT: return Attrib::TANGENT;
-		case BITANGENT: return Attrib::BITANGENT;
-		case BONE_INDEX: return Attrib::BONE_INDEX;
-		case BONE_WEIGHT: return Attrib::BONE_WEIGHT;
-		case CUSTOM_0: return Attrib::CUSTOM_0;
-		case CUSTOM_1: return Attrib::CUSTOM_1;
-		case CUSTOM_2: return Attrib::CUSTOM_2;
-		case CUSTOM_3: return Attrib::CUSTOM_3;
-		case CUSTOM_4: return Attrib::CUSTOM_4;
-		case CUSTOM_5: return Attrib::CUSTOM_5;
-		case CUSTOM_6: return Attrib::CUSTOM_6;
-		case CUSTOM_7: return Attrib::CUSTOM_7;
-		case CUSTOM_8: return Attrib::CUSTOM_8;
-		case CUSTOM_9: return Attrib::CUSTOM_9;
-		default:
-			throw Exception( "Failed to map attribute." );
-			break;
+		case geom::POSITION: return 0x00000001;
+		case geom::COLOR: return 0x00000002;
+		case geom::TEX_COORD_0: return 0x00000004;
+		case geom::TEX_COORD_1: return 0x00000008;
+		case geom::TEX_COORD_2: return 0x00000010;
+		case geom::TEX_COORD_3: return 0x00000020;
+		case geom::NORMAL: return 0x00000100;
+		case geom::TANGENT: return 0x00000200;
+		case geom::BITANGENT: return 0x00000400;
+		case geom::BONE_INDEX: return 0x00001000;
+		case geom::BONE_WEIGHT: return 0x00002000;
+		case geom::CUSTOM_0: return 0x00010000;
+		case geom::CUSTOM_1: return 0x00020000;
+		case geom::CUSTOM_2: return 0x00040000;
+		case geom::CUSTOM_3: return 0x00080000;
+		case geom::CUSTOM_4: return 0x00100000;
+		case geom::CUSTOM_5: return 0x00200000;
+		case geom::CUSTOM_6: return 0x00400000;
+		case geom::CUSTOM_7: return 0x00800000;
+		case geom::CUSTOM_8: return 0x01000000;
+		case geom::CUSTOM_9: return 0x02000000;
+		default: return 0;
 	}
 }
 
-geom::Attrib TriMesh::triMeshToGeomAttrib( TriMesh::Attrib attrib )
+geom::Attrib TriMesh::fromMask( uint32_t attrib )
 {
 	switch( attrib ) {
-		case POSITION: return geom::POSITION;
-		case COLOR: return geom::COLOR;
-		case TEX_COORD_0: return geom::TEX_COORD_0;
-		case TEX_COORD_1: return geom::TEX_COORD_1;
-		case TEX_COORD_2: return geom::TEX_COORD_2;
-		case TEX_COORD_3: return geom::TEX_COORD_3;
-		case NORMAL: return geom::NORMAL;
-		case TANGENT: return geom::TANGENT;
-		case BITANGENT: return geom::BITANGENT;
-		case BONE_INDEX: return geom::BONE_INDEX;
-		case BONE_WEIGHT: return geom::BONE_WEIGHT;
-		case CUSTOM_0: return geom::CUSTOM_0;
-		case CUSTOM_1: return geom::CUSTOM_1;
-		case CUSTOM_2: return geom::CUSTOM_2;
-		case CUSTOM_3: return geom::CUSTOM_3;
-		case CUSTOM_4: return geom::CUSTOM_4;
-		case CUSTOM_5: return geom::CUSTOM_5;
-		case CUSTOM_6: return geom::CUSTOM_6;
-		case CUSTOM_7: return geom::CUSTOM_7;
-		case CUSTOM_8: return geom::CUSTOM_8;
-		case CUSTOM_9: return geom::CUSTOM_9;
-		default:
-			throw Exception( "Failed to map attribute." );
-			break;
+		case 0x00000001: return geom::POSITION;
+		case 0x00000002: return geom::COLOR;
+		case 0x00000004: return geom::TEX_COORD_0;
+		case 0x00000008: return geom::TEX_COORD_1;
+		case 0x00000010: return geom::TEX_COORD_2;
+		case 0x00000020: return geom::TEX_COORD_3;
+		case 0x00000100: return geom::NORMAL;
+		case 0x00000200: return geom::TANGENT;
+		case 0x00000400: return geom::BITANGENT;
+		case 0x00001000: return geom::BONE_INDEX;
+		case 0x00002000: return geom::BONE_WEIGHT;
+		case 0x00010000: return geom::CUSTOM_0;
+		case 0x00020000: return geom::CUSTOM_1;
+		case 0x00040000: return geom::CUSTOM_2;
+		case 0x00080000: return geom::CUSTOM_3;
+		case 0x00100000: return geom::CUSTOM_4;
+		case 0x00200000: return geom::CUSTOM_5;
+		case 0x00400000: return geom::CUSTOM_6;
+		case 0x00800000: return geom::CUSTOM_7;
+		case 0x01000000: return geom::CUSTOM_8;
+		case 0x02000000: return geom::CUSTOM_9;
+		default: throw Exception( "Invalid parameter" ); return geom::NUM_ATTRIBS;
 	}
 }
 

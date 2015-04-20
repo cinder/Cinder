@@ -72,7 +72,7 @@ void TriMeshReadWriteTestApp::testObjFileWriteRead()
 		mMesh->recalculateNormals();
 
 	t.start();
-	mMesh->write( writeFile( writePath / modelBinName, false ), { TriMesh::POSITION, TriMesh::TEX_COORD_0 } );
+	mMesh->write( writeFile( writePath / modelBinName, false ), { geom::POSITION, geom::TEX_COORD_0 } );
 	t.stop();
 	console() << "Writing binary file took " << t.getSeconds() << " seconds." << std::endl;
 
