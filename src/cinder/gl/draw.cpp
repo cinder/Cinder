@@ -331,7 +331,7 @@ void draw( const PolyLine2 &polyLine )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
+	ctx->drawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
@@ -359,7 +359,7 @@ void draw( const PolyLine3 &polyLine )
 
 	ctx->getDefaultVao()->replacementBindEnd();
 	ctx->setDefaultShaderVars();
-	ctx->drawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
+	ctx->drawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	ctx->popVao();
 }
 
