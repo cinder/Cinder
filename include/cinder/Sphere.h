@@ -32,7 +32,9 @@ namespace cinder {
 
 class Sphere {
  public:
-	Sphere() {}
+	Sphere()
+		: mCenter( 0 ), mRadius( 0 )
+	{}
 	Sphere( const vec3 &center, float radius )
 		: mCenter( center ), mRadius( radius )
 	{}
