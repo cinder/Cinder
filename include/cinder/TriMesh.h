@@ -302,20 +302,9 @@ class TriMesh : public geom::Source {
 	//! Writes this TriMesh out to a binary data file.
 	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, ~0 ); }
 	//! Writes this TriMesh out to a binary data file. If \a writeNormals or \a writeTangents is \c true, normals and/or tangents are written to the file.
-	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const
-	{
-		uint32_t mask = ~0; 
-		if( !writeNormals ) mask &= ~toMask( geom::NORMAL );
-		if( !writeTangents ) mask &= ~toMask( geom::TANGENT ) & ~toMask( geom::BITANGENT );
-		write( dataTarget, mask );
-	}
+	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const;
 	//! Writes this TriMesh out to a binary data file. You can specify which attributes to write by supplying a list of \a attribs.
-	void		write( const DataTargetRef &dataTarget, const std::set<geom::Attrib> &attribs ) const {
-		uint32_t mask = 0;
-		for( auto &attrib : attribs )
-			mask |= toMask( attrib );
-		write( dataTarget, mask );
-	}
+	void		write( const DataTargetRef &dataTarget, const std::set<geom::Attrib> &attribs ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
@@ -355,14 +344,14 @@ class TriMesh : public geom::Source {
 	void		readImplV1( const IStreamRef &in );
 
 	/*! Writes this TriMesh out to a binary data file. The \a writeMask parameter can be used to specify
-	 * what data should be included (e.g. toMask(POSITION) | toMask(COLOR) ) or what should be excluded (e.g. ~toMask( NORMAL ) & ~toMask( TEX_COORD_0) ).
-	 * By default, all data will be written. */
+	 * what data should be included (e.g. toMask(POSITION) | toMask(COLOR) )
+	 * or what should be excluded (e.g. ~toMask( NORMAL ) & ~toMask( TEX_COORD_0) ). */
 	void		write( const DataTargetRef &dataTarget, uint32_t writeMask ) const;
 
 	//! Converts a geom::Attrib to an attribute bitmask.
-	static uint32_t toMask( geom::Attrib attrib );
+	static uint32_t	toMask( geom::Attrib attrib );
 	//! Converts an attribute bitmask to a geom::Attrib.
-	static geom::Attrib fromMask( uint32_t attrib );
+	static geom::Attrib	fromMask( uint32_t attrib );
 
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;

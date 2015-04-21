@@ -24,7 +24,6 @@ class TriMeshReadWriteTestApp : public App {
 
 	void	testObjFileWriteRead();
 	void	loadObjFile( const fs::path &filePath );
-	void	frameCurrentObject();
 	void	draw() override;
 	
 	MayaCamUI		mMayaCam;
@@ -110,18 +109,8 @@ void TriMeshReadWriteTestApp::mouseDrag( MouseEvent event )
 	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
 }
 
-void TriMeshReadWriteTestApp::frameCurrentObject()
-{
-	Sphere boundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
-	
-	mMayaCam.setCurrentCam( mMayaCam.getCamera().getFrameSphere( boundingSphere, 100 ) );
-}
-
 void TriMeshReadWriteTestApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 'f' ) {
-		frameCurrentObject();
-	}
 }
 
 void TriMeshReadWriteTestApp::draw()

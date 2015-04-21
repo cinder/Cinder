@@ -453,6 +453,24 @@ void TriMesh::read( const DataSourceRef &dataSource )
 	}
 }
 
+void TriMesh::write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const
+{
+	uint32_t mask = ~0;
+	if( !writeNormals ) 
+		mask &= ~toMask( geom::NORMAL );
+	if( !writeTangents )
+		mask &= ~toMask( geom::TANGENT ) & ~toMask( geom::BITANGENT );
+	write( dataTarget, mask );
+}
+
+void TriMesh::write( const DataTargetRef &dataTarget, const std::set<geom::Attrib> &attribs ) const
+{
+	uint32_t mask = 0;
+	for( auto &attrib : attribs )
+		mask |= toMask( attrib );
+	write( dataTarget, mask );
+}
+
 void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 {
 	OStreamRef out = dataTarget->getStream();
@@ -527,34 +545,34 @@ void TriMesh::readImplV2( const IStreamRef &in )
 		switch( fromMask( attrib ) ) {
 			case geom::POSITION:
 				readAttribf( &mPositionsDims, &mPositions );
-				break;
+			break;
 			case geom::COLOR:
 				readAttribf( &mColorsDims, &mColors );
-				break;
+			break;
 			case geom::NORMAL:
 				readAttribVec3f( &mNormalsDims, &mNormals );
-				break;
+			break;
 			case geom::TEX_COORD_0:
 				readAttribf( &mTexCoords0Dims, &mTexCoords0 );
-				break;
+			break;
 			case geom::TEX_COORD_1:
 				readAttribf( &mTexCoords1Dims, &mTexCoords1 );
-				break;
+			break;
 			case geom::TEX_COORD_2:
 				readAttribf( &mTexCoords2Dims, &mTexCoords2 );
-				break;
+			break;
 			case geom::TEX_COORD_3:
 				readAttribf( &mTexCoords3Dims, &mTexCoords3 );
-				break;
+			break;
 			case geom::TANGENT:
 				readAttribVec3f( &mTangentsDims, &mTangents );
-				break;
+			break;
 			case geom::BITANGENT:
 				readAttribVec3f( &mBitangentsDims, &mBitangents );
-				break;
+			break;
 			default:
 				throw Exception( "Invalid file contents." );
-				break;
+			break;
 		}
 	}
 }
