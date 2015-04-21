@@ -571,7 +571,7 @@ void TriMesh::readImplV2( const IStreamRef &in )
 				readAttribVec3f( &mBitangentsDims, &mBitangents );
 			break;
 			default:
-				throw Exception( "Invalid file contents." );
+				throw Exception( "TriMesh::read() error: Invalid file contents." );
 			break;
 		}
 	}
@@ -1244,7 +1244,7 @@ uint32_t TriMesh::toMask( geom::Attrib attrib )
 		case geom::CUSTOM_7: return 0x00800000;
 		case geom::CUSTOM_8: return 0x01000000;
 		case geom::CUSTOM_9: return 0x02000000;
-		default: return 0;
+		default: throw Exception( "TriMesh i/o error: Unexpected attrib" ); return 0;
 	}
 }
 
@@ -1272,7 +1272,7 @@ geom::Attrib TriMesh::fromMask( uint32_t attrib )
 		case 0x00800000: return geom::CUSTOM_7;
 		case 0x01000000: return geom::CUSTOM_8;
 		case 0x02000000: return geom::CUSTOM_9;
-		default: throw Exception( "Invalid parameter" ); return geom::NUM_ATTRIBS;
+		default: throw Exception( "TriMesh i/o error: Invalid mask" ); return geom::NUM_ATTRIBS;
 	}
 }
 
