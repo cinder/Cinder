@@ -456,9 +456,9 @@ void TriMesh::read( const DataSourceRef &dataSource )
 void TriMesh::write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const
 {
 	uint32_t mask = ~0;
-	if( !writeNormals ) 
+	if( ! writeNormals )
 		mask &= ~toMask( geom::NORMAL );
-	if( !writeTangents )
+	if( ! writeTangents )
 		mask &= ~toMask( geom::TANGENT ) & ~toMask( geom::BITANGENT );
 	write( dataTarget, mask );
 }
@@ -475,12 +475,12 @@ void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 {
 	OStreamRef out = dataTarget->getStream();
 
-	auto writeAttrib = [out, writeMask]( uint32_t attrib, uint8_t dims, uint32_t sizeInFloats, const void *ptr ) {
-		if( sizeInFloats > 0 && ( writeMask & attrib ) ) {
+	auto writeAttrib = [out, writeMask]( uint32_t attrib, uint8_t dims, size_t numFloats, const void *ptr ) {
+		if( numFloats > 0 && ( writeMask & attrib ) ) {
 			out->writeLittle( attrib );
 			out->writeLittle( dims );
-			out->writeLittle( sizeInFloats );
-			out->writeData( ptr, sizeInFloats * sizeof( float ) );
+			out->writeLittle( (uint32_t)numFloats );
+			out->writeData( ptr, numFloats * sizeof( float ) );
 		}
 	};
 
