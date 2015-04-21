@@ -1223,27 +1223,27 @@ bool TriMesh::verticesEqual( uint32_t indexA, uint32_t indexB ) const
 uint32_t TriMesh::toMask( geom::Attrib attrib )
 {
 	switch( attrib ) {
-		case geom::POSITION: return 0x00000001;
-		case geom::COLOR: return 0x00000002;
+		case geom::POSITION:	return 0x00000001;
+		case geom::COLOR:		return 0x00000002;
 		case geom::TEX_COORD_0: return 0x00000004;
 		case geom::TEX_COORD_1: return 0x00000008;
 		case geom::TEX_COORD_2: return 0x00000010;
 		case geom::TEX_COORD_3: return 0x00000020;
-		case geom::NORMAL: return 0x00000100;
-		case geom::TANGENT: return 0x00000200;
-		case geom::BITANGENT: return 0x00000400;
-		case geom::BONE_INDEX: return 0x00001000;
-		case geom::BONE_WEIGHT: return 0x00002000;
-		case geom::CUSTOM_0: return 0x00010000;
-		case geom::CUSTOM_1: return 0x00020000;
-		case geom::CUSTOM_2: return 0x00040000;
-		case geom::CUSTOM_3: return 0x00080000;
-		case geom::CUSTOM_4: return 0x00100000;
-		case geom::CUSTOM_5: return 0x00200000;
-		case geom::CUSTOM_6: return 0x00400000;
-		case geom::CUSTOM_7: return 0x00800000;
-		case geom::CUSTOM_8: return 0x01000000;
-		case geom::CUSTOM_9: return 0x02000000;
+		case geom::NORMAL:		return 0x00000100;
+		case geom::TANGENT:		return 0x00000200;
+		case geom::BITANGENT:	return 0x00000400;
+		case geom::BONE_INDEX:	return 0x00001000;
+		case geom::BONE_WEIGHT:	return 0x00002000;
+		case geom::CUSTOM_0:	return 0x00010000;
+		case geom::CUSTOM_1:	return 0x00020000;
+		case geom::CUSTOM_2:	return 0x00040000;
+		case geom::CUSTOM_3:	return 0x00080000;
+		case geom::CUSTOM_4:	return 0x00100000;
+		case geom::CUSTOM_5:	return 0x00200000;
+		case geom::CUSTOM_6:	return 0x00400000;
+		case geom::CUSTOM_7:	return 0x00800000;
+		case geom::CUSTOM_8:	return 0x01000000;
+		case geom::CUSTOM_9:	return 0x02000000;
 		default: throw Exception( "TriMesh i/o error: Unexpected attrib" ); return 0;
 	}
 }
