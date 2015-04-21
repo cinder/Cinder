@@ -488,7 +488,7 @@ void TriMesh::write( const DataTargetRef &dataTarget, uint32_t writeMask ) const
 	out->write( version );
 
 	out->writeLittle( static_cast<uint32_t>( mIndices.size() ) );
-	if( !mIndices.empty() )
+	if( ! mIndices.empty() )
 		out->writeData( mIndices.data(), mIndices.size() * sizeof( uint32_t ) );
 
 	writeAttrib( toMask( geom::POSITION ), mPositionsDims, mPositions.size(), mPositions.data() );
@@ -539,7 +539,7 @@ void TriMesh::readImplV2( const IStreamRef &in )
 
 	// attribs
 	uint32_t attrib;
-	while( !in->isEof() ) {
+	while( ! in->isEof() ) {
 		in->readLittle( &attrib );
 
 		switch( fromMask( attrib ) ) {
@@ -725,7 +725,7 @@ bool TriMesh::recalculateTangents()
 bool TriMesh::recalculateBitangents()
 {
 	// requires valid 3D tangents and normals
-	if( !(hasTangents() || recalculateTangents()) )
+	if( ! ( hasTangents() || recalculateTangents() ) )
 		return false;
 
 	mBitangents.assign( mNormals.size(), vec3() );
