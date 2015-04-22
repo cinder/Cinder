@@ -23,6 +23,7 @@
 
 #include "cinder/android/net/UrlLoader.h"
 #include "cinder/android/AndroidDevLog.h" 
+#include <sstream>
 
 namespace cinder { namespace android {
 
@@ -109,14 +110,23 @@ ci::Buffer UrlLoader::loadUrl( const std::string& url )
 
 		jbyteArray jBytes = (jbyteArray)JniHelper::Get()->CallObjectMethod( mJavaObject, UrlLoader::sJavaMethodLoadUrl, jstrUrl );
 		if( nullptr == jBytes ) {
-			std::string msg = getExceptionMsg();
-		    throw std::runtime_error( msg );
+			int resCode = getResponseCode();
+			std::string resMsg = getResponseMsg();
+			std::string excMsg = getExceptionMsg();
+			std::stringstream ss;
+			ss << "UrlLoader.loadUrl returned null (Response Code: " << resCode << ", Response Msg: " << resMsg << ", Exception Msg: " << excMsg << ")";
+		    throw std::runtime_error( ss.str() );
 		}
 
 		size_t dataLength = JniHelper::Get()->GetArrayLength( jBytes );
 		jbyte* dataPtr = (jbyte*)JniHelper::Get()->GetByteArrayElements( jBytes, NULL );
 		if( nullptr == dataPtr ) {
-			throw std::runtime_error( "unable to get bytearray" );
+			int resCode = getResponseCode();
+			std::string resMsg = getResponseMsg();
+			std::string excMsg = getExceptionMsg();
+			std::stringstream ss;
+			ss << "failed to get byte array (Response Code: " << resCode << ", Response Msg: " << resMsg << ", Exception Msg: " << excMsg << ")";
+		    throw std::runtime_error( ss.str() );
 		}
 
 		if( dataLength > 0 ) {
