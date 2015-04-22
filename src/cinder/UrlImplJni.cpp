@@ -21,15 +21,15 @@
 */
 
 #include "cinder/UrlImplJni.h"
-#include "cinder/android/UrlLoader.h"
+#include "cinder/android/net/UrlLoader.h"
 
 namespace cinder {
 
 IStreamUrlImplJni::IStreamUrlImplJni( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamUrlImpl( user, password, options )
 {
-	ci::android::UrlLoader urlLoader = ci::android::UrlLoader( url );
-	mData = urlLoader.getData();
+	ci::android::UrlLoader urlLoader = ci::android::UrlLoader();
+	mData = urlLoader.loadUrl( url );
 }
 
 IStreamUrlImplJni::~IStreamUrlImplJni()

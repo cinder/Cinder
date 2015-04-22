@@ -531,10 +531,10 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
     ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
-    ${CINDER_SRC_DIR}/cinder/android/hardware/Camera.cpp
+    #${CINDER_SRC_DIR}/cinder/android/hardware/Camera.cpp
     ${CINDER_SRC_DIR}/cinder/android/media/ExMediaPlayer.cpp
     ${CINDER_SRC_DIR}/cinder/android/net/UrlLoader.cpp
-    ${CINDER_SRC_DIR}/cinder/android/video/MovieGl.cpp
+    #${CINDER_SRC_DIR}/cinder/android/video/MovieGl.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp

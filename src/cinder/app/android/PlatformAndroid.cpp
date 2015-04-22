@@ -29,16 +29,11 @@
 #include "cinder/ImageSourceFileStbImage.h"
 
 #include "cinder/android/JniHelper.h"
-#include "cinder/android/Camera.h"
-#include "cinder/android/UrlLoader.h"
-#include "cinder/android/VideoPlayer.h"
+#include "cinder/android/hardware/Camera.h"
+#include "cinder/android/net/UrlLoader.h"
 
-#include <android/api-level.h>
-
-#include <android/log.h>
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
+#include "cinder/android/AndroidDevLog.h"
+using namespace cinder::android;
 
 namespace cinder { namespace app {
 
@@ -48,17 +43,17 @@ PlatformAndroid::PlatformAndroid()
 
 	ci::android::JniHelper::Initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
 	ci::android::UrlLoader::cacheJni();
-	ci::android::CinderCamera::cacheJni();
+	//ci::android::CinderCamera::cacheJni();
 
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 
-	LOGI( "PlatformAndroid::PlatformAndroid" );
+	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
 }
 
 PlatformAndroid::~PlatformAndroid()
 {	
-	LOGI( "PlatformAndroid::~PlatformAndroid" );
+	dbg_app_log( "PlatformAndroid::~PlatformAndroid" );
 }
 
 PlatformAndroid* PlatformAndroid::get() 

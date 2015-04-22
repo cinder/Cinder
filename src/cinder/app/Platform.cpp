@@ -32,11 +32,6 @@
 #include "cinder/app/android/PlatformAndroid.h"
 #endif
 
-#if defined( CINDER_ANDROID )
-#include "cinder/android/AndroidDevLog.h"
-using namespace ci::android;
-#endif
-
 using namespace std;
 
 namespace cinder { namespace app {
@@ -51,8 +46,6 @@ static Platform *sInstance = nullptr;
 // static
 Platform* Platform::get()
 {
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );
-
 	if( ! sInstance ) {
 		// set a default platform instance
 #if defined( CINDER_COCOA )
@@ -61,19 +54,10 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		sInstance = new PlatformMsw;
 
 #elif defined( CINDER_ANDROID )
-dbg_app_log( "Allocating Platform" );
 		sInstance = new PlatformAndroid;
-
 #endif
 	}
 
-#if defined( CINDER_ANDROID )
-	else {
-dbg_app_log( "Skipped allocation of Platform" );
-	}
-#endif
-
-dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 	return sInstance;
 }
 

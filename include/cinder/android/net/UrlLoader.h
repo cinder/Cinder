@@ -38,10 +38,9 @@ class UrlLoader {
 public:
 
 	UrlLoader();
-	UrlLoader( const std::string& url );
 	virtual ~UrlLoader();
 
-	ci::Buffer			getData();
+	ci::Buffer			loadUrl( const std::string& url );
 
 	int 				getResponseCode() const { return mResponseCode; }
 	const std::string& 	getResponseMsg() const { return mResponseMsg; }
@@ -51,9 +50,17 @@ private:
 	static void 		cacheJni();
 	static void 		destroyJni();
 
-	static jclass		sUrlLoaderClass;
-	static jmethodID	sLoadUrlMethodId;
+	static std::string 	sJavaClassName;
+	static jclass		sJavaClass;
+	static jmethodID	sJavaStaticMethodCreate;
+	static jmethodID	sJavaMethodLoadUrl;
+	static jmethodID 	sJavaMethodGetResponseCode;
+	static jmethodID 	sJavaMethodGetResponseMsg;
+	static jmethodID 	sJavaMethodGetExceptionMsg;
 
+	void 				initialize();
+
+	jobject 			mJavaObject = nullptr;
 	std::string 		mUrl;
 	int 				mResponseCode = -1;
 	std::string 		mResponseMsg;

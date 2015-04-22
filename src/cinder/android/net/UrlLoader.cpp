@@ -21,55 +21,54 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/android/UrlLoader.h"
-
-#include <sstream>
-#include <iomanip>
-
-#include <android/log.h>
-#define LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder", __VA_ARGS__))
-#define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
-#define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
-
-#define FN_LOG( __FNREF__ ) 							\
- 	if( NULL != __FNREF__ ) {							\
- 		LOGI( #__FNREF__ " successfully obtained" );	\
- 	}
+#include "cinder/android/net/UrlLoader.h"
+#include "cinder/android/AndroidDevLog.h" 
 
 namespace cinder { namespace android {
 
-jclass		UrlLoader::sUrlLoaderClass  = nullptr;
-jmethodID	UrlLoader::sLoadUrlMethodId = nullptr;
+std::string	UrlLoader::sJavaClassName				= "org/libcinder/net/UrlLoader";
+jclass		UrlLoader::sJavaClass 					= nullptr;
+jmethodID	UrlLoader::sJavaStaticMethodCreate		= nullptr;
+jmethodID	UrlLoader::sJavaMethodLoadUrl 			= nullptr;
+jmethodID 	UrlLoader::sJavaMethodGetResponseCode	= nullptr;
+jmethodID 	UrlLoader::sJavaMethodGetResponseMsg	= nullptr;
+jmethodID 	UrlLoader::sJavaMethodGetExceptionMsg	= nullptr;
 
 UrlLoader::UrlLoader()
 {
-
-}
-
-UrlLoader::UrlLoader( const std::string& url )
-	: mUrl( url )
-{
-
+	initialize();
 }
 
 UrlLoader::~UrlLoader()
 {
-
+	if( JniHelper::Get()->AttachCurrentThread() ) {
+		JniHelper::Get()->DeleteGlobalRef( mJavaObject );
+	}
 }
 
 void UrlLoader::cacheJni()
 {
 	const std::string className = "org/libcinder/net/UrlLoader";
 	if( JniHelper::Get()->AttachCurrentThread() ) {
-		jclass urlLoaderClass = JniHelper::Get()->RetrieveClass( className );
-		if( nullptr != urlLoaderClass ) {
-			UrlLoader::sUrlLoaderClass = reinterpret_cast<jclass>( JniHelper::Get()->NewGlobalRef( urlLoaderClass ) );
+		jclass javaClass = JniHelper::Get()->RetrieveClass( UrlLoader::sJavaClassName );
+		if( nullptr != javaClass ) {
+			UrlLoader::sJavaClass = reinterpret_cast<jclass>( JniHelper::Get()->NewGlobalRef( javaClass ) );
+
+			jni_obtained_check( UrlLoader::sJavaClass );
 		}
 
-		if( nullptr != UrlLoader::sUrlLoaderClass ) {
-			UrlLoader::sLoadUrlMethodId = JniHelper::Get()->GetStaticMethodId( UrlLoader::sUrlLoaderClass, "loadUrl", "(Ljava/lang/String;)[B" );
+		if( nullptr != UrlLoader::sJavaClass ) {
+			UrlLoader::sJavaStaticMethodCreate	  = JniHelper::Get()->GetStaticMethodId( UrlLoader::sJavaClass, "create", "()Lorg/libcinder/net/UrlLoader;" );
+			jni_obtained_check( UrlLoader::sJavaStaticMethodCreate );
 
-			FN_LOG( UrlLoader::sLoadUrlMethodId );				
+			UrlLoader::sJavaMethodLoadUrl 		  = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "loadUrl",         "(Ljava/lang/String;)[B" );
+			UrlLoader::sJavaMethodGetResponseCode = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getResponseCode", "()I" );
+			UrlLoader::sJavaMethodGetResponseMsg  = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getResponseMsg",  "()Ljava/lang/String;" );
+			UrlLoader::sJavaMethodGetExceptionMsg = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getExceptionMsg", "()Ljava/lang/String;" );
+			jni_obtained_check( UrlLoader::sJavaMethodLoadUrl );
+			jni_obtained_check( UrlLoader::sJavaMethodGetResponseCode );
+			jni_obtained_check( UrlLoader::sJavaMethodGetResponseMsg );
+			jni_obtained_check( UrlLoader::sJavaMethodGetExceptionMsg );
 		}
 	}
 }
@@ -77,20 +76,37 @@ void UrlLoader::cacheJni()
 void UrlLoader::destroyJni()
 {
 	if( JniHelper::Get()->AttachCurrentThread() ) {	
-		JniHelper::Get()->DeleteGlobalRef( UrlLoader::sUrlLoaderClass  );
-		UrlLoader::sUrlLoaderClass = NULL;
-		UrlLoader::sLoadUrlMethodId = NULL;
+		JniHelper::Get()->DeleteGlobalRef( UrlLoader::sJavaClass  );
+		UrlLoader::sJavaClass 					= nullptr;
+		UrlLoader::sJavaStaticMethodCreate		= nullptr;
+		UrlLoader::sJavaMethodLoadUrl 			= nullptr;
+		UrlLoader::sJavaMethodGetResponseCode	= nullptr;
+		UrlLoader::sJavaMethodGetResponseMsg	= nullptr;
+		UrlLoader::sJavaMethodGetExceptionMsg	= nullptr;
 	}
 }
 
-ci::Buffer UrlLoader::getData()
+void UrlLoader::initialize()
+{
+	if( JniHelper::Get()->AttachCurrentThread() ) {
+		jobject javaObject = JniHelper::Get()->CallStaticObjectMethod( UrlLoader::sJavaClass, UrlLoader::sJavaStaticMethodCreate );
+		if( nullptr != javaObject ) {
+			mJavaObject = reinterpret_cast<jobject>( JniHelper::Get()->NewGlobalRef( javaObject ) );
+			jni_obtained_check( UrlLoader::mJavaObject );
+		}		
+	}
+}
+
+ci::Buffer UrlLoader::loadUrl( const std::string& url )
 {
 	ci::Buffer result;
+
+	mUrl = url;
 
 	if( JniHelper::Get()->AttachCurrentThread() ) {
 		jstring jstrUrl = JniHelper::Get()->NewStringUTF( mUrl );
 
-		jbyteArray jBytes = (jbyteArray)JniHelper::Get()->CallStaticObjectMethod( UrlLoader::sUrlLoaderClass, UrlLoader::sLoadUrlMethodId, jstrUrl );
+		jbyteArray jBytes = (jbyteArray)JniHelper::Get()->CallObjectMethod( mJavaObject, UrlLoader::sJavaMethodLoadUrl, jstrUrl );
 		if( NULL == jBytes ) {
 		    throw std::runtime_error( "org.libcinder.net.UrlLoader.loadUrl failed" );
 		}
