@@ -191,7 +191,7 @@ void JniHelper::DeatchCurrentThread()
 
 jclass JniHelper::FindClass( const std::string& name )
 {
-	jclass result = NULL;
+	jclass result = nullptr;
 
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
@@ -201,9 +201,12 @@ jclass JniHelper::FindClass( const std::string& name )
 	return result;
 }
 
+// -------------------------------------------------------------------------------------------------
+// Java Static Methods
+// -------------------------------------------------------------------------------------------------
 jmethodID JniHelper::GetStaticMethodId( jclass clazz, const std::string& name, const std::string& sig )
 {
-	jmethodID result = NULL;
+	jmethodID result = nullptr;
 
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
@@ -213,9 +216,59 @@ jmethodID JniHelper::GetStaticMethodId( jclass clazz, const std::string& name, c
 	return result;
 }
 
+#define CI_CALL_STATIC_TYPE_METHOD_IMPL( _jtype, _jname, _jdefval )						\
+_jtype JniHelper::CallStatic##_jname##Method( jclass clazz, jmethodID methodId, ... )	\
+{																						\
+	_jtype result = _jdefval;															\
+	auto jniEnv = JvmHelper_CurrentJniEnv();											\
+	if( jniEnv ) {																		\
+		va_list args;																	\
+		va_start( args, methodId );														\
+		result = jniEnv->CallStatic##_jname##MethodV( clazz, methodId, args );			\
+		va_end( args );																	\
+	}																					\
+	return result;																		\
+}
+
+//
+// CallStaticObjectMethod
+// CallStaticBooleanMethod
+// CallStaticByteMethod
+// CallStaticCharMethod
+// CallStaticShortMethod
+// CallStaticIntMethod
+// CallStaticLongMethod
+// CallStaticFloatMethod
+// CallStaticDoubleMethod
+//	
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jobject, Object, nullptr )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jboolean, Boolean, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jbyte, Byte, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jchar, Char, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jshort, Short, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jint, Int, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jlong, Long, 0 )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jfloat, Float, 0.0f )
+CI_CALL_STATIC_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
+#undef CI_CALL_STATIC_TYPE_METHOD_IMPL
+
+void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... ) 
+{
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		va_list args;
+		va_start( args, methodId );
+		jniEnv->CallStaticVoidMethodV( clazz, methodId, args );
+		va_end( args );
+	}
+}
+
+// -------------------------------------------------------------------------------------------------
+// Java Methods
+// -------------------------------------------------------------------------------------------------
 jmethodID JniHelper::GetMethodId( jclass clazz, const std::string& name, const std::string& sig )
 {
-	jmethodID result = NULL;
+	jmethodID result = nullptr;
 
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
@@ -239,7 +292,18 @@ _jtype JniHelper::Call##_jname##Method( jobject obj, jmethodID methodId, ... )	\
 	return result;																\
 }
 
-CI_CALL_TYPE_METHOD_IMPL( jobject, Object, NULL )
+//
+// CallObjectMethod
+// CallBooleanMethod
+// CallByteMethod
+// CallCharMethod
+// CallShortMethod
+// CallIntMethod
+// CallLongMethod
+// CallFloatMethod
+// CallDoubleMethod
+//	
+CI_CALL_TYPE_METHOD_IMPL( jobject, Object, nullptr )
 CI_CALL_TYPE_METHOD_IMPL( jboolean, Boolean, 0 )
 CI_CALL_TYPE_METHOD_IMPL( jbyte, Byte, 0 )
 CI_CALL_TYPE_METHOD_IMPL( jchar, Char, 0 )
@@ -261,45 +325,144 @@ void JniHelper::CallVoidMethod( jobject obj, jmethodID methodId, ... )
 	}
 }
 
-#define CI_CALL_STATIC_TYPE_METHOD_IMPL( _jtype, _jname, _jdefval )						\
-_jtype JniHelper::CallStatic##_jname##Method( jclass clazz, jmethodID methodId, ... )	\
-{																						\
-	_jtype result = _jdefval;															\
-	auto jniEnv = JvmHelper_CurrentJniEnv();											\
-	if( jniEnv ) {																		\
-		va_list args;																	\
-		va_start( args, methodId );														\
-		result = jniEnv->CallStatic##_jname##MethodV( clazz, methodId, args );			\
-		va_end( args );																	\
-	}																					\
-	return result;																		\
-}
-
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jobject, Object, NULL )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jboolean, Boolean, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jbyte, Byte, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jchar, Char, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jshort, Short, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jint, Int, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jlong, Long, 0 )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jfloat, Float, 0.0f )
-CI_CALL_STATIC_TYPE_METHOD_IMPL( jdouble, Double, 0.0 )
-#undef CI_CALL_STATIC_TYPE_METHOD_IMPL
-
-void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... ) 
+// -------------------------------------------------------------------------------------------------
+// Java Static Fields
+// -------------------------------------------------------------------------------------------------
+jfieldID JniHelper::GetStaticFieldID( jclass clazz, const std::string& name, const std::string& sig )
 {
+	jfieldID result = nullptr;
+
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
-		va_list args;
-		va_start( args, methodId );
-		jniEnv->CallStaticVoidMethodV( clazz, methodId, args );
-		va_end( args );
-	}
+		result = jniEnv->GetStaticFieldID( clazz, name.c_str(), sig.c_str() );
+	}	
+
+	return result;
 }
+
+jfieldID JniHelper::GetStaticObjectFieldID( jclass clazz, const std::string& name, const std::string& sig )
+{
+	return GetStaticFieldID( clazz, name, sig );
+}
+
+#define CI_GET_STATIC_TYPE_FIELDID_IMPL( _jname, _jsig )								\
+jfieldID JniHelper::GetStatic##_jname##FieldID( jclass clazz, const std::string& name )	\
+{																						\
+	return GetStaticFieldID( clazz, name, _jsig );								\
+}
+
+//
+// GetStaticObjectFieldID
+// GetStaticBooleanFieldID
+// GetStaticByteFieldID
+// GetStaticCharFieldID
+// GetStaticShortFieldID
+// GetStaticIntFieldID
+// GetStaticLongFieldID
+// GetStaticFloatFieldID
+// GetStaticDoubleFieldID
+// GetStaticStringleFieldID
+//	
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Boolean, "Z" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Byte, "B" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Char, "C" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Short, "S" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Int, "I" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Long, "J" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Float, "F" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( Double, "D" )
+CI_GET_STATIC_TYPE_FIELDID_IMPL( String, "Ljava/lang/String;" )
+#undef CI_GET_STATIC_TYPE_FIELDID_IMPL
+
+#define CI_GET_STATIC_TYPE_FIELD_IMPL( _jtype, _jname, _jdefval )				\
+_jtype JniHelper::GetStatic##_jname##Field( jclass clazz, jfieldID fieldId )	\
+{																				\
+	_jtype result = _jdefval;													\
+	auto jniEnv = JvmHelper_CurrentJniEnv();									\
+	if( jniEnv ) {																\
+		result = jniEnv->GetStatic##_jname##Field( clazz, fieldId );			\
+	}																			\
+	return result;																\
+}
+
+//
+// GetStaticObjectFieldID
+// GetStaticBooleanFieldID
+// GetStaticByteFieldID
+// GetStaticCharFieldID
+// GetStaticShortFieldID
+// GetStaticIntFieldID
+// GetStaticLongFieldID
+// GetStaticFloatFieldID
+// GetStaticDoubleFieldID
+//	
+CI_GET_STATIC_TYPE_FIELD_IMPL( jobject, Object, nullptr )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jchar, Char, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jshort, Short, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jint, Int, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jlong, Long, 0 )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jfloat, Float, 0.0f )
+CI_GET_STATIC_TYPE_FIELD_IMPL( jdouble, Double, 0.0 )
+#undef CI_GET_STATIC_TYPE_FIELD_IMPL
+
+std::string JniHelper::GetStaticStringField( jclass clazz, jfieldID fieldId )
+{
+	std::string result;
+
+	jstring strObj = (jstring)GetStaticObjectField( clazz, fieldId );
+	if( nullptr != strObj ) {
+
+	}
+
+	return result;	
+}
+
+#define CI_SET_STATIC_TYPE_FIELD_IMPL( _jtype, _jname )										\
+void JniHelper::SetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype value )	\
+{																							\
+	auto jniEnv = JvmHelper_CurrentJniEnv();												\
+	if( jniEnv ) {																			\
+		jniEnv->SetStatic##_jname##Field( clazz, fieldId, value );							\
+	}																						\
+}
+
+//
+// SetStaticObjectFieldID
+// SetStaticBooleanFieldID
+// SetStaticByteFieldID
+// SetStaticCharFieldID
+// SetStaticShortFieldID
+// SetStaticIntFieldID
+// SetStaticLongFieldID
+// SetStaticFloatFieldID
+// SetStaticDoubleFieldID
+//	
+CI_SET_STATIC_TYPE_FIELD_IMPL( jobject, Object, nullptr )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jchar, Char, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jshort, Short, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jint, Int, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jlong, Long, 0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jfloat, Float, 0.0f )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jdouble, Double, 0.0 )
+#undef CI_SET_STATIC_TYPE_FIELD_IMPL
+
+void JniHelper::SetStaticStringField( jclass clazz, jfieldID fieldId, const std::string& value )
+{
+	// @TODO:
+}
+
+// -------------------------------------------------------------------------------------------------
+// Java Fields
+// -------------------------------------------------------------------------------------------------
+
 
 jobject JniHelper::NewGlobalRef( jobject obj )
 {
-	jobject result = NULL;	
+	jobject result = nullptr;	
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->NewGlobalRef( obj );
@@ -317,7 +480,7 @@ void JniHelper::DeleteGlobalRef( jobject globalRef )
 
 jstring JniHelper::NewStringUTF( const std::string& str )
 {
-	jstring result = NULL;
+	jstring result = nullptr;
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->NewStringUTF( str.c_str() );
@@ -345,7 +508,7 @@ jsize JniHelper::GetArrayLength( jarray array )
 
 jbyte* JniHelper::GetByteArrayElements( jbyteArray array, jboolean* isCopy )
 {
-	jbyte* result = NULL;
+	jbyte* result = nullptr;
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->GetByteArrayElements( array, isCopy );

@@ -176,7 +176,10 @@ for plat in ${PLATFORMS[@]}; do
             # Skip 64-bit builds on android-19
             if (( $plat <= 19 )); then
                 case $arch in
-                    arm64-v8a|x86_64|mips64) continue ;;                    
+                    arm64-v8a|x86_64|mips64) 
+                        echo "\n(CINDER-ANDROID): [ERROR] 64-bit require android-21 or later"
+                        continue 
+                    ;;
                 esac
             fi
 

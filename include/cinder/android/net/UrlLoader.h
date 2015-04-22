@@ -54,9 +54,9 @@ private:
 	static jclass		sJavaClass;
 	static jmethodID	sJavaStaticMethodCreate;
 	static jmethodID	sJavaMethodLoadUrl;
-	static jmethodID 	sJavaMethodGetResponseCode;
-	static jmethodID 	sJavaMethodGetResponseMsg;
-	static jmethodID 	sJavaMethodGetExceptionMsg;
+	static jfieldID 	sJavaFieldResponseCode;
+	static jfieldID 	sJavaFieldResponseMsg;
+	static jfieldID 	sJavaFieldExceptionMsg;
 
 	void 				initialize();
 

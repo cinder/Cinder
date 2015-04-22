@@ -51,74 +51,251 @@ public:
 	void 				DeatchCurrentThread();
 
 	jclass				FindClass( const std::string& name );
-	jmethodID			GetStaticMethodId( jclass clazz, const std::string& name, const std::string& sig );
-	jmethodID			GetMethodId( jclass clazz, const std::string& name, const std::string& sig );
 
+	// ---------------------------------------------------------------------------------------------
+	// Java Static Methods
+	// ---------------------------------------------------------------------------------------------
+	jmethodID GetStaticMethodId( jclass clazz, const std::string& name, const std::string& sig );
 
-//
-// CallObjectMethod
-// CallBooleanMethod
-// CallByteMethod
-// CallCharMethod
-// CallShortMethod
-// CallIntMethod
-// CallLongMethod
-// CallFloatMethod
-// CallDoubleMethod
-//	
-#define CI_CALL_TYPE_METHOD_DECL( _jtype, _jname ) \
-	_jtype Call##_jname##Method( jobject obj, jmethodID methodId, ... );
+	#define CI_CALL_STATIC_TYPE_METHOD_DECL( _jtype, _jname ) \
+		_jtype CallStatic##_jname##Method( jclass clazz, jmethodID methodId, ... );
 
-	CI_CALL_TYPE_METHOD_DECL( jobject, Object )
-	CI_CALL_TYPE_METHOD_DECL( jboolean, Boolean )
-	CI_CALL_TYPE_METHOD_DECL( jbyte, Byte )
-	CI_CALL_TYPE_METHOD_DECL( jchar, Char )
-	CI_CALL_TYPE_METHOD_DECL( jshort, Short )
-	CI_CALL_TYPE_METHOD_DECL( jint, Int )
-	CI_CALL_TYPE_METHOD_DECL( jlong, Long )
-	CI_CALL_TYPE_METHOD_DECL( jfloat, Float )
-	CI_CALL_TYPE_METHOD_DECL( jdouble, Double )
-#undef CI_CALL_TYPE_METHOD	
-
-	void CallVoidMethod( jobject obj, jmethodID methodId, ... );
-
-//
-// CallStaticObjectMethod
-// CallStaticBooleanMethod
-// CallStaticByteMethod
-// CallStaticCharMethod
-// CallStaticShortMethod
-// CallStaticIntMethod
-// CallStaticLongMethod
-// CallStaticFloatMethod
-// CallStaticDoubleMethod
-//	
-#define CI_CALL_STATIC_TYPE_METHOD_DECL( _jtype, _jname ) \
-	_jtype CallStatic##_jname##Method( jclass clazz, jmethodID methodId, ... );
-
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jobject, Object )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jboolean, Boolean )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jbyte, Byte )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jchar, Char )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jshort, Short )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jint, Int )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jlong, Long )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jfloat, Float )
-	CI_CALL_STATIC_TYPE_METHOD_DECL( jdouble, Double )
-#undef CI_CALL_STATIC_TYPE_METHOD_DECL	
+		//
+		// CallStaticObjectMethod
+		// CallStaticBooleanMethod
+		// CallStaticByteMethod
+		// CallStaticCharMethod
+		// CallStaticShortMethod
+		// CallStaticIntMethod
+		// CallStaticLongMethod
+		// CallStaticFloatMethod
+		// CallStaticDoubleMethod
+		//	
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jobject, Object )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jboolean, Boolean )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jbyte, Byte )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jchar, Char )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jshort, Short )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jint, Int )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jlong, Long )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jfloat, Float )
+		CI_CALL_STATIC_TYPE_METHOD_DECL( jdouble, Double )
+	#undef CI_CALL_STATIC_TYPE_METHOD_DECL	
 
 	void CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... );
 
-	jobject 	NewGlobalRef( jobject obj );
-	void 		DeleteGlobalRef( jobject globalRef );
 
-	jstring 	NewStringUTF( const std::string& str );	
-	void 		DeleteLocalRef( jobject localRef );
+	// ---------------------------------------------------------------------------------------------
+	// Java Methods
+	// ---------------------------------------------------------------------------------------------
+	jmethodID GetMethodId( jclass clazz, const std::string& name, const std::string& sig );
 
-	jsize 		GetArrayLength( jarray array );
-	jbyte* 		GetByteArrayElements( jbyteArray array, jboolean* isCopy );
+	#define CI_CALL_TYPE_METHOD_DECL( _jtype, _jname ) \
+		_jtype Call##_jname##Method( jobject obj, jmethodID methodId, ... );
 
-	void 		ReleaseByteArrayElements( jbyteArray array, jbyte* elems, jint mode );
+		//
+		// CallObjectMethod
+		// CallBooleanMethod
+		// CallByteMethod
+		// CallCharMethod
+		// CallShortMethod
+		// CallIntMethod
+		// CallLongMethod
+		// CallFloatMethod
+		// CallDoubleMethod
+		//	
+		CI_CALL_TYPE_METHOD_DECL( jobject, Object )
+		CI_CALL_TYPE_METHOD_DECL( jboolean, Boolean )
+		CI_CALL_TYPE_METHOD_DECL( jbyte, Byte )
+		CI_CALL_TYPE_METHOD_DECL( jchar, Char )
+		CI_CALL_TYPE_METHOD_DECL( jshort, Short )
+		CI_CALL_TYPE_METHOD_DECL( jint, Int )
+		CI_CALL_TYPE_METHOD_DECL( jlong, Long )
+		CI_CALL_TYPE_METHOD_DECL( jfloat, Float )
+		CI_CALL_TYPE_METHOD_DECL( jdouble, Double )
+	#undef CI_CALL_TYPE_METHOD
+
+	void  CallVoidMethod( jobject obj, jmethodID methodId, ... );
+
+	// ---------------------------------------------------------------------------------------------
+	// Java Static Fields
+	// ---------------------------------------------------------------------------------------------
+	jfieldID GetStaticFieldID( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetStaticObjectFieldID( jclass clazz, const std::string& name, const std::string& sig );
+
+	#define CI_GET_STATIC_TYPE_FIELDID_DECL( _jname ) \
+		jfieldID GetStatic##_jname##FieldID( jclass clazz, const std::string& name );	
+
+		//
+		// GetStaticBooleanFieldID
+		// GetStaticByteFieldID
+		// GetStaticCharFieldID
+		// GetStaticShortFieldID
+		// GetStaticIntFieldID
+		// GetStaticLongFieldID
+		// GetStaticFloatFieldID
+		// GetStaticDoubleFieldID
+		// GetStaticStringFieldID
+		//	
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Boolean )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Byte )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Char )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Short )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Int )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Long )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Float )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( Double )
+		CI_GET_STATIC_TYPE_FIELDID_DECL( String )
+	#undef CI_GET_STATIC_TYPE_FIELDID_DECL	
+
+	#define CI_GET_STATIC_TYPE_FIELD_DECL( _jtype, _jname ) \
+		_jtype GetStatic##_jname##Field( jclass clazz, jfieldID fieldId );
+
+		//
+		// GetStaticBooleanField
+		// GetStaticByteField
+		// GetStaticCharField
+		// GetStaticShortField
+		// GetStaticIntField
+		// GetStaticLongField
+		// GetStaticFloatField
+		// GetStaticDoubleField
+		//	
+		CI_GET_STATIC_TYPE_FIELD_DECL( jobject, Object )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jboolean, Boolean )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jbyte, Byte )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jchar, Char )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jshort, Short )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jint, Int )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jlong, Long )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jfloat, Float )
+		CI_GET_STATIC_TYPE_FIELD_DECL( jdouble, Double )
+	#undef CI_GET_STATIC_TYPE_FIELD_DECL
+
+	std::string GetStaticStringField( jclass clazz, jfieldID fieldId );
+
+	#define CI_SET_STATIC_TYPE_FIELD_DECL( _jtype, _jname ) \
+		void GetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype value );
+
+		//
+		// SetStaticBooleanField
+		// SetStaticByteField
+		// SetStaticCharField
+		// SetStaticShortField
+		// SetStaticIntField
+		// SetStaticLongField
+		// SetStaticFloatField
+		// SetStaticDoubleField
+		//	
+		CI_SET_STATIC_TYPE_FIELD_DECL( jobject, Object )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jboolean, Boolean )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jbyte, Byte )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jchar, Char )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jshort, Short )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jint, Int )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jlong, Long )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jfloat, Float )
+		CI_SET_STATIC_TYPE_FIELD_DECL( jdouble, Double )
+	#undef CI_SET_STATIC_TYPE_FIELD_DECL
+
+	void SetStaticStringField( jclass clazz, jfieldID fieldId, const std::string& value );	
+
+	// ---------------------------------------------------------------------------------------------
+	// Java Fields
+	// ---------------------------------------------------------------------------------------------
+	jfieldID GetFieldId( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
+
+	#define CI_GET_TYPE_FIELDID_DECL( _jname ) \
+		jfieldID Get##_jname##FieldID( jclass clazz, const std::string& name );	
+
+		//
+		// GetBooleanFieldID
+		// GetByteFieldID
+		// GetCharFieldID
+		// GetShortFieldID
+		// GetIntFieldID
+		// GetLongFieldID
+		// GetFloatFieldID
+		// GetDoubleFieldID
+		// GetStringFieldID
+		//	
+		CI_GET_TYPE_FIELDID_DECL( Boolean )
+		CI_GET_TYPE_FIELDID_DECL( Byte )
+		CI_GET_TYPE_FIELDID_DECL( Char )
+		CI_GET_TYPE_FIELDID_DECL( Short )
+		CI_GET_TYPE_FIELDID_DECL( Int )
+		CI_GET_TYPE_FIELDID_DECL( Long )
+		CI_GET_TYPE_FIELDID_DECL( Float )
+		CI_GET_TYPE_FIELDID_DECL( Double )
+		CI_GET_TYPE_FIELDID_DECL( String )
+	#undef CI_GET_TYPE_FIELDID_DECL	
+
+	#define CI_GET_TYPE_FIELD_DECL( _jtype, _jname ) \
+		_jtype Get##_jname##Field( jobject obj, jfieldID fieldId );
+
+		//
+		// GetObjectField
+		// GetBooleanField
+		// GetByteField
+		// GetCharField
+		// GetShortField
+		// GetIntField
+		// GetLongField
+		// GetFloatField
+		// GetDoubleField
+		//	
+		CI_GET_TYPE_FIELD_DECL( jobject, Object )
+		CI_GET_TYPE_FIELD_DECL( jboolean, Boolean )
+		CI_GET_TYPE_FIELD_DECL( jbyte, Byte )
+		CI_GET_TYPE_FIELD_DECL( jchar, Char )
+		CI_GET_TYPE_FIELD_DECL( jshort, Short )
+		CI_GET_TYPE_FIELD_DECL( jint, Int )
+		CI_GET_TYPE_FIELD_DECL( jlong, Long )
+		CI_GET_TYPE_FIELD_DECL( jfloat, Float )
+		CI_GET_TYPE_FIELD_DECL( jdouble, Double )
+	#undef CI_GET_TYPE_FIELD_DECL
+
+	std::string GetStringField( jobject obj, jfieldID fieldId );
+
+	#define CI_SET_TYPE_FIELD_DECL( _jtype, _jname ) \
+		void Set##_jname##Field( jobject obj, jfieldID fieldId, _jtype value );
+
+		//
+		// SetObjectField
+		// SetBooleanField
+		// SetByteField
+		// SetCharField
+		// SetShortField
+		// SetIntField
+		// SetLongField
+		// SetFloatField
+		// SetDoubleField
+		//	
+		CI_SET_TYPE_FIELD_DECL( jobject, Object )
+		CI_SET_TYPE_FIELD_DECL( jboolean, Boolean )
+		CI_SET_TYPE_FIELD_DECL( jbyte, Byte )
+		CI_SET_TYPE_FIELD_DECL( jchar, Char )
+		CI_SET_TYPE_FIELD_DECL( jshort, Short )
+		CI_SET_TYPE_FIELD_DECL( jint, Int )
+		CI_SET_TYPE_FIELD_DECL( jlong, Long )
+		CI_SET_TYPE_FIELD_DECL( jfloat, Float )
+		CI_SET_TYPE_FIELD_DECL( jdouble, Double )
+	#undef CI_SET_TYPE_FIELD_DECL
+
+	void SetStringField( jobject obj, jfieldID fieldId, const std::string& value );	
+
+
+	jobject 			NewGlobalRef( jobject obj );
+	void 				DeleteGlobalRef( jobject globalRef );
+
+	jstring 			NewStringUTF( const std::string& str );	
+	void 				DeleteLocalRef( jobject localRef );
+
+	jsize 				GetArrayLength( jarray array );
+	jbyte* 				GetByteArrayElements( jbyteArray array, jboolean* isCopy );
+
+	void 				ReleaseByteArrayElements( jbyteArray array, jbyte* elems, jint mode );
 
 private:	
 	static std::unique_ptr<JniHelper>	sInstance;

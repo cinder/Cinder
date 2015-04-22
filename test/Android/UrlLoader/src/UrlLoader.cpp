@@ -44,17 +44,23 @@ public:
     DataReport( const std::string& aUrl ) : url( aUrl ) {}
 
     void load() {
-        auto ds = loadUrl( url );
 
-        if( ds && ds->getBuffer() ) {
-            auto buf = ds->getBuffer();
+        try{
+            auto ds = loadUrl( url );
 
-            std::stringstream ss;
-            ss << buf.getDataSize() << " bytes";
-            summary = ss.str();
+            if( ds && ds->getBuffer() ) {
+                auto buf = ds->getBuffer();
+
+                std::stringstream ss;
+                ss << buf.getDataSize() << " bytes";
+                summary = ss.str();
+            }
+            else {
+                summary = "result is null!";
+            }
         }
-        else {
-            summary = "result is null!";
+        catch( const std::exception& e ) {
+            summary = std::string("load failed: ") + e.what();
         }
     }
 };
@@ -62,7 +68,7 @@ public:
 void UrlLoader::setup()
 {
     std::vector<std::string> urls;
-    urls.push_back( "http://upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" );
+    urls.push_back( "http://1upload.wikimedia.org/wikipedia/commons/d/d4/New_York_City_at_night_HDR_edit1.jpg" );
     urls.push_back( "http://www.google.com" );
     urls.push_back( "http://www.amazon.com" );
     urls.push_back( "http://www.twitter.com" );
@@ -76,24 +82,28 @@ void UrlLoader::setup()
     urls.push_back( "http://www.pinboard.in" );
     urls.push_back( "http://www.osnews.com" );
 
-    std::vector<std::shared_ptr<DataReport>> reports;
-    for( auto& url : urls ) {
-        reports.push_back( std::make_shared<DataReport>( url ) );
-    }
+    for( int i = 0; i < 100; ++i ) {
+        std::vector<std::shared_ptr<DataReport>> reports;
+        for( auto& url : urls ) {
+            reports.push_back( std::make_shared<DataReport>( url ) );
+        }
 
-    std::vector<std::shared_ptr<std::thread>> threads;
-    for( auto& report : reports  ) {
-        std::shared_ptr<std::thread> t( new std::thread( &DataReport::load, report ) );
-        threads.push_back( t );
-    }
+        std::vector<std::shared_ptr<std::thread>> threads;
+        for( auto& report : reports  ) {
+            std::shared_ptr<std::thread> t( new std::thread( &DataReport::load, report ) );
+            threads.push_back( t );
+        }
 
-    for( auto& t : threads ) {
-        t->join();
-    }
+        for( auto& t : threads ) {
+            t->join();
+        }
 
-    for( auto& report : reports  ) {
-        console() << "Loaded: " + report->url << std::endl;
-        console() << "   " << report->summary << std::endl;
+        for( auto& report : reports  ) {
+            console() << i << " - loaded: " + report->url << std::endl;
+            console() << "..." << report->summary << std::endl;
+        }
+
+        sleep( 1 );
     }
 
 /*
