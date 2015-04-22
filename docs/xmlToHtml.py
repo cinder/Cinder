@@ -8,11 +8,16 @@ import re
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup
 
-CLASS_PREFIX = "classcinder_1_1_"
-NAMESPACE_PREFIX = "namespacecinder_1"
+tagDictionary = {
+	"linebreak": "br",
+	"emphasis": "em",
+	"ref": "a",
+	"computeroutput": "code",
+	"includes": "code",
+	"simplesect": "dl",
+	"para": "p"
+}
 
-CLASS_HTML = "classcinder.html"
-NAMESPACE_HTML = "namespacecinder.html"
 
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
@@ -29,6 +34,11 @@ def addClassToTag( tag, className ):
 	tag["class"] = tag.get("class", []) + [className]
 
 
+# Generates a new html element and optionally adds classes and content
+# bs4		beautiful soup
+# tagType	html tag/element (p, a, em, etc)
+# classes 	array of strings that you want as classes for the element
+# contents	any content that you want to populate your tag with, if known
 def genTag( bs4, tagType, classes = None, contents = None ):
 	newTag = bs4.new_tag( tagType )
 
@@ -42,7 +52,7 @@ def genTag( bs4, tagType, classes = None, contents = None ):
 	return newTag
 
 
-def markupFunction( fnXml, parent, bs4 ):
+def markupFunction( bs4, fnXml, parent, isConstructor ):
 
 	# create new line
 	# left side = return type
@@ -55,19 +65,22 @@ def markupFunction( fnXml, parent, bs4 ):
 	# | 			| description 						|
 	# ---------------------------------------------------
 	
-	li = bs4.new_tag( "li" )
+	# li = bs4.new_tag( "li" )
+	li = genTag( bs4, "li", ["row"] )
 
 	# wrapper
 	functionDiv = genTag( bs4, "div", ["functionDef"] )
 	li.append( functionDiv )
 
 	# left side / return type
-	returnDiv = genTag( bs4, "div", ["returnCol"] )
-	iterateMarkup( fnXml.find( "type/" ), returnDiv, bs4 )
-	functionDiv.append( returnDiv )
+	if not isConstructor:
+		returnDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
+		print "RETURN COL"
+		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
+		functionDiv.append( returnDiv )
 
 	# right side (function name and description)
-	definitionCol = genTag( bs4, "div", ["definitionCol"] )
+	definitionCol = genTag( bs4, "div", ["definitionCol columns large-9"] )
 	functionDiv.append( definitionCol )
 
 	# function name
@@ -79,7 +92,7 @@ def markupFunction( fnXml, parent, bs4 ):
 
 	# detailed description
 	# ET.dump(fnXml)
-	descriptionDiv = markupDescription( fnXml, bs4 );
+	descriptionDiv = markupDescription( bs4, fnXml );
 	# markupParagraph( tree.find( r'compounddef/detaileddescription/' ), descTag, html );
 	# descriptionDiv = genTag( bs4, "div", ["description"], "This is the detailed description" )
 	definitionCol.append( descriptionDiv )
@@ -87,19 +100,19 @@ def markupFunction( fnXml, parent, bs4 ):
 	parent.append( li )
 
 
-def defineLinkTag( tag, attrib, html ):
+def defineLinkTag( tag, attrib ):
 
 	refId = None
 	kind = None
 
 	if( "refid" in attrib ) :
 		refId = attrib["refid"]
-		print "REF ID: " + refId
+		# print "REF ID: " + refId
 		href = refId + ".html"
 
 	if( "kindref" in attrib ) :
 		kind = attrib["kindref"]
-		print "KIND: " + kind
+		# print "KIND: " + kind
 
 		if kind == "member":
 			strList = refId.rsplit("_1", 1)
@@ -110,29 +123,29 @@ def defineLinkTag( tag, attrib, html ):
 
 	tag["href"] = href
 
-def defineTag( tagName, tree, html ):
+def defineTag( bs4, tagName, tree ):
 
-	newTag = html.new_tag( tagName )
+	newTag = bs4.new_tag( tagName )
 	if( tagName == "a" ):
 		# print "LINK TAG: "
-		defineLinkTag( newTag, tree.attrib, html )
+		defineLinkTag( newTag, tree.attrib )
 	
 	return newTag
 
-def genIncludesTag( tree, bs4 ):
+# generate includes tag group
+def genIncludesTag( bs4, tree ):
 
 	# wrap the content in <code> tag
 	# prepend with "#include"
 	wrapperEl = genTag( bs4, "code", ["include"], "#include " )
-	# wrap include file name in a tag
+	# wrap include file name in <a> tag
 	includeLink = genTag( bs4, "a", None, tree.text )
-	defineLinkTag( includeLink, {'linkid':tree.text}, bs4 )
+	defineLinkTag( includeLink, {'linkid':tree.text} )
 	wrapperEl.append( includeLink )
-	# return <code> tag
 	return wrapperEl
 
 
-def replaceTag( tree, parentTag, html ):
+def replaceTag( bs4, tree, parentTag ):
 
 	tag = tree.tag
 	attrib = tree.attrib
@@ -146,40 +159,35 @@ def replaceTag( tree, parentTag, html ):
 		if hasParent and parentTag.parent.dl :
 			tagName = "dd"
 		else :
-			tagName = "p"
+			tagName = tagDictionary[tag]
 
-	elif( tag == "linebreak" ):
-		tagName = "br"
-	elif( tag == "emphasis" ):
-		tagName = "em"
-	elif (tag == "ref" ):
-		tagName = "a"
-	elif( tag == "computeroutput" ):
-		tagName = "code"
-	elif( tag == "simplesect"):
-		tagName = "dl"
-	elif( tag == "includes" ):
-		tagName = "code"
-	else :
-		tagName = tag
+	# get tag equivalent
+	if tag in tagDictionary:
+		tagName = tagDictionary[tag]
+	else:
+		# TODO: replace with nothing - no new tag
+		tagName = "span"
 
-	# newTag = html.new_tag( tagName );
-	newTag = defineTag( tagName, tree, html );
 
+
+	newTag = defineTag( bs4, tagName, tree );
+
+	# if simplesect, construct with some content
 	if( tag == "simplesect" ) :
-		seeTag = html.new_tag( "dt" )
+		seeTag = bs4.new_tag( "dt" )
 		addClassToTag( seeTag, "section")
 
+		# "see also" reference
 		if( attrib["kind"] == "see"):
 			addClassToTag( seeTag, "see")
 			seeTag.string = "See Also"
 		newTag.append( seeTag )
 
-	print "TAG: " + tagName
+	# print "TAG: " + tagName
 	return newTag
 
 
-def iterateMarkup( tree, parent, html ):
+def iterateMarkup( bs4, tree, parent ):
 
 	if tree == None :
 		return
@@ -189,14 +197,15 @@ def iterateMarkup( tree, parent, html ):
 
 	# print tree.attrib
 
-	# if tree.text :
-		# print "TEXT: " + tree.text
+	print "TAG: " + tree.tag
+	if tree.text :
+		print "TEXT: " + tree.text
 
 	currentTag = parent
 	
 	# append any new tags
 	if tree.tag != None :
-		htmlTag = replaceTag( tree, currentTag, html )
+		htmlTag = replaceTag( bs4, tree, currentTag )
 		currentTag = htmlTag
 		parent.append( currentTag )
 	
@@ -206,7 +215,7 @@ def iterateMarkup( tree, parent, html ):
 	
 	# iterate through children tags
 	for child in list( tree ):
-		output = iterateMarkup( child, currentTag, html )
+		output = iterateMarkup( bs4, child, currentTag )
 
 	# tail is any extra text that isn't wrapped in another tag
 	# that exists before the next tag
@@ -215,7 +224,7 @@ def iterateMarkup( tree, parent, html ):
 	
 	return currentTag
 
-def markupDescription( tree, bs4 ):
+def markupDescription( bs4, tree ):
 
 	print "\n-- MARKING UP PARAGRAPH --"
 	
@@ -224,48 +233,55 @@ def markupDescription( tree, bs4 ):
 	# return iterateMarkup( paraXml, parent, html )
 
 	description_el = genTag( bs4, "div", ["description"] )
-	iterateMarkup( tree.find( r'briefdescription/' ), description_el, bs4 )
-	iterateMarkup( tree.find( r'detaileddescription/' ), description_el, bs4 )
+	iterateMarkup( bs4, tree.find( r'briefdescription/' ), description_el )
+	iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )
 	return description_el
 	
 	
 def processClassXmlFile( inPath, outPath, html ):
+
 	print "Processing file: " + inPath + " > " + outPath;
 	tree = ET.parse( inPath )
 	
 	# add title
 	headTag = html.head
 	titleTag = html.new_tag( "title" )
-	titleTag.append( "Cinder: " + str(findCompoundName( tree )) )
+	compoundName = str(findCompoundName( tree )) 		# with "cinder::"
+	className = compoundName.rsplit( "cinder::", 1 )[1]	# without "cinder::"
+
+	titleTag.append( compoundName )
 	headTag.insert( 0, titleTag )
 
 	# find contents wrapper
 	contentsTag = html.find( "div", "contents" )
 
+	# description area
+	descriptionEl = html.find( id="description" )
+	descriptionProseEl = descriptionEl.find( "div", "prose" )
+	sideEl = descriptionEl.find( "div", "side" )
+
 	# ----------
 	#  Includes
 	# ----------
-	print "--INCLUDES--"
-	contentsTag.append( genTag( html, "h3", None, "Includes") )
+	sideEl.append( genTag( html, "h3", None, "Includes") )
 	includesUl = genTag( html, "ul" )
 	for includeDef in tree.findall( r"compounddef/includes" ):
 		# includesUl.append( genTag( html, "li", None, includeDef.text ) )
-		includeLi = genTag( html, "li" )
+		includeLi = genTag( html, "li", ["row"] )
 		# includeContent = replaceTag( includeDef, includeLi, html )
 		# includeContent.append( includeDef.text );
-		includeContent = genIncludesTag( includeDef, html );
+		includeContent = genIncludesTag( html, includeDef );
 		includeLi.append( includeContent )
 		includesUl.append( includeLi )
-	contentsTag.append( includesUl )
-	print "--END INCLUDES--"
+	sideEl.append( includesUl )
 
 
 	# +-----------+
 	#  Description
 	# +-----------+
-	descriptionHeader = html.new_tag( "h3")
-	descriptionHeader.string = "Description"
-	contentsTag.append( descriptionHeader )
+	descriptionHeader = html.new_tag( "h1")
+	descriptionHeader.string = compoundName + "<T> Class Template Reference"
+	descriptionProseEl.append( descriptionHeader )
 
 	# descTag = html.new_tag( "div" )
 	# descTag['class'] = "description"
@@ -275,22 +291,25 @@ def processClassXmlFile( inPath, outPath, html ):
 	# markupDescription( tree.find( r'compounddef/briefdescription/' ), descTag, html );
 	# markupDescription( tree.find( r'compounddef/briefdescription/' ), descTag, html );
 	# print tree.dump( tree.find(r'compounddef/') )
-	descTag = markupDescription( tree.find( r'compounddef' ), html );
+	descTag = markupDescription( html, tree.find( r'compounddef' ) );
 	
 	
-	contentsTag.append( descTag )
+	descriptionProseEl.append( descTag )
 
 	# +-------+
 	#  Classes
 	# +-------+
-	classesHeader = genTag( html, "h3", None, "Classes" )
+	sectionTag = genTag( html, "section" )
+	classesHeader = genTag( html, "h1", None, "Classes" )
 	contentsTag.append( classesHeader )
 
 	classesUl = genTag( html, "ul" )
 	for classDef in tree.findall( r"compounddef/innerclass" ):
-		classesUl.append( genTag( html, "li", None, classDef.text ) )
+		classesUl.append( genTag( html, "li", ["row"], classDef.text ) )
 		# TODO: pull class brief descrption from class page xml
-	contentsTag.append( classesUl )
+	sectionTag.append( classesUl )
+	sectionTag.append( genTag( html, "hr" ) )
+	contentsTag.append( sectionTag );
 
 	# +----------------+
 	#  Member Functions
@@ -308,27 +327,40 @@ def processClassXmlFile( inPath, outPath, html ):
 	for memberFn in tree.findall( r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]' ):
 		# split between static or not
 		isStatic = memberFn.attrib[ "static" ]
+		memberName = memberFn.find(r"name")
+		isConstructor = False
 
+		# determine if it is a constructor
+		if memberName is not None and memberName.text == className:
+			isConstructor = True
+
+		# determine if static
 		if isStatic == 'yes':
 			staticFuncCount += 1
-			markupFunction( memberFn, staticUlTag, html )
+			markupFunction( html, memberFn, staticUlTag, isConstructor )
 		else:
 			funcCount += 1
-			markupFunction( memberFn, ulTag, html )
+			markupFunction( html, memberFn, ulTag, isConstructor )
 			
 	# if function count > 0 add it
 	if funcCount > 0 :
-		header = html.new_tag( "h3")
+		header = html.new_tag( "h1")
 		header.string = "Public Member Functions"
-		contentsTag.append( header )
-		contentsTag.append( ulTag )
+		sectionTag = genTag( html, "section" );
+		sectionTag.append( header )
+		sectionTag.append( ulTag )
+		contentsTag.append( sectionTag );
+		sectionTag.append( genTag( html, "hr" ) )
 
 	# if static function count > 0 add it
 	if staticFuncCount > 0 :
-		header = html.new_tag( "h3")
+		header = html.new_tag( "h1")
 		header.string = "Static Public Member Functions"
-		contentsTag.append( header )
-		contentsTag.append( staticUlTag )
+		sectionTag = genTag( html, "section" );
+		sectionTag.append( header )
+		sectionTag.append( staticUlTag )
+		contentsTag.append( sectionTag )
+		sectionTag.append( genTag( html, "hr" ) )
 
 	# write the file	
 	outFile = codecs.open( outPath, "w", "UTF-8" )
