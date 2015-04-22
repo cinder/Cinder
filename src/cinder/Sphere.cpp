@@ -97,7 +97,7 @@ Sphere Sphere::calculateBoundingSphere( const vector<vec3> &points )
 Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 {
 	if( ! numPoints )
-		return Sphere();
+		return Sphere( vec3( 0 ), 0 );
 	
 	// compute minimal and maximal bounds
 	vec3 min(points[0]), max(points[0]);
