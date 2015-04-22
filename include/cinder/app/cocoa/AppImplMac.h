@@ -69,7 +69,6 @@
 - (void)setFrameRate:(float)frameRate;
 - (void)disableFrameRate;
 - (bool)isFrameRateEnabled;
-- (void)quit;
 
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
 - (cinder::app::WindowRef)getWindow;
@@ -105,7 +104,6 @@
 - (cinder::ivec2)getPos;
 - (float)getContentScale;
 - (void)setPos:(cinder::ivec2)pos;
-- (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
 - (void)setTitle:(NSString *)title;
