@@ -109,7 +109,7 @@ Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 	options.c_cflag |= CS8;
 	::tcsetattr( mFd, TCSANOW, &options );
 #elif defined( CINDER_MSW )
-	mDeviceHandle = ::CreateFileA( mDevice.getPath().c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0 );
+	mDeviceHandle = ::CreateFileA( device.getPath().c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0 );
 	if( mDeviceHandle == INVALID_HANDLE_VALUE ) {
 		throw SerialExcOpenFailed();
 	}
@@ -256,7 +256,7 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 			throw SerialExcReadFailure();	
 #elif defined( CINDER_MSW )
 		::DWORD bytesWritten;
-		if( ! ::WriteFile( mObj->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
+		if( ! ::WriteFile( mImpl->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
 			throw SerialExcWriteFailure();
 #endif
 		if( bytesWritten != -1 )
@@ -274,7 +274,7 @@ void Serial::readBytes( void *data, size_t numBytes )
 			throw SerialExcReadFailure();
 #elif defined( CINDER_MSW )
 		::DWORD bytesRead = 0;
-		if( ! ::ReadFile( mObj->mDeviceHandle, data, numBytes - totalBytesRead, &bytesRead, 0 ) )
+		if( ! ::ReadFile( mImpl->mDeviceHandle, data, numBytes - totalBytesRead, &bytesRead, 0 ) )
 			throw SerialExcReadFailure();
 #endif
 		if( bytesRead != -1 )
@@ -291,7 +291,7 @@ size_t Serial::readAvailableBytes( void *data, size_t maximumBytes )
 	long bytesRead = ::read( mImpl->mFd, data, maximumBytes );
 #elif defined( CINDER_MSW )
 	::DWORD bytesRead = 0;
-	if( ! ::ReadFile( mObj->mDeviceHandle, data, maximumBytes, &bytesRead, 0 ) )
+	if( ! ::ReadFile( mImpl->mDeviceHandle, data, maximumBytes, &bytesRead, 0 ) )
 		throw SerialExcReadFailure();
 #endif
 
@@ -367,8 +367,8 @@ size_t Serial::getNumBytesAvailable() const
 #elif defined( CINDER_MSW )
 	::COMSTAT status;
 	::DWORD error;
-	if( ! ::ClearCommError( mObj->mDeviceHandle, &error, &status ) )
-		throw SerialExc();
+	if( ! ::ClearCommError( mImpl->mDeviceHandle, &error, &status ) )
+		throw SerialExc( "Serial failuture upon attempt to retreive information on device handle" );
 	else
 		result = status.cbInQue;
 #endif
@@ -396,7 +396,7 @@ void Serial::flush( bool input, bool output )
 	flags |= ( output ) ? PURGE_TXCLEAR : 0;
 	
 	if( input || output )
-		::PurgeComm( mObj->mDeviceHandle, flags );
+		::PurgeComm( mImpl->mDeviceHandle, flags );
 #endif
 }
 
