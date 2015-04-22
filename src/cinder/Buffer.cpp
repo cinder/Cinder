@@ -30,48 +30,49 @@
 
 namespace cinder {
 
-Buffer::Obj::Obj( void * aData, size_t aSize, bool aOwnsData ) 
-	: mData( aData ), mAllocatedSize( aSize ), mDataSize( aSize ), mOwnsData( aOwnsData ) 
-{
-}
-
-Buffer::Obj::~Obj()
+Buffer::~Buffer()
 {
 	if( mOwnsData ) {
 		free( mData );
 	}
 }
 
-Buffer::Buffer( std::shared_ptr<DataSource> dataSource )
+Buffer::Buffer( void *data, size_t size )
+	: mData( data ), mAllocatedSize( size ), mDataSize( size ), mOwnsData( false )
+{
+}
+
+Buffer::Buffer( size_t size )
+	: mData( malloc( size ) ), mAllocatedSize( size ), mDataSize( size ), mOwnsData( true )
+{
+}
+
+Buffer::Buffer( const DataSourceRef &dataSource )
+	: mOwnsData( true )
 {
 	Buffer &otherBuffer = dataSource->getBuffer();
-	char *data = reinterpret_cast<char*>( malloc( otherBuffer.getDataSize() ) );
-	memcpy( data, otherBuffer.getData(), otherBuffer.getDataSize() );
-	mObj = std::shared_ptr<Obj>( new Obj( data, otherBuffer.getDataSize(), true ) );
-}
+	const size_t size = otherBuffer.getDataSize();
 
-Buffer::Buffer( void * aData, size_t aSize ) 
-	: mObj( new Obj( aData, aSize, false ) )
-{	
-}
+	mData = malloc( size );
+	memcpy( mData, otherBuffer.getData(), size );
 
-Buffer::Buffer( size_t aSize ) 
-	: mObj( new Obj( malloc( aSize ), aSize, true ) )
-{
+	mAllocatedSize = size;
+	mDataSize = size;
 }
 
 void Buffer::resize( size_t newSize )
 {
-	if( ! mObj->mOwnsData ) return;
+	if( ! mOwnsData )
+		return;
 	
-	mObj->mData = realloc( mObj->mData, newSize );
-	mObj->mDataSize = newSize;
-	mObj->mAllocatedSize = newSize;
+	mData = realloc( mData, newSize );
+	mDataSize = newSize;
+	mAllocatedSize = newSize;
 }
 
-void Buffer::copyFrom( const void * aData, size_t length )
+void Buffer::copyFrom( const void *data, size_t length )
 {
-	memcpy( mObj->mData, aData, length );
+	memcpy( mData, data, length );
 }
 
 void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
@@ -80,9 +81,9 @@ void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
 	os->write( *this );
 }
 
-std::shared_ptr<uint8_t>	Buffer::convertToSharedPtr()
+std::shared_ptr<uint8_t> Buffer::convertToSharedPtr()
 {
-	mObj->mOwnsData = false;
+	mOwnsData = false;
 	return std::shared_ptr<uint8_t>( reinterpret_cast<uint8_t*>( mObj->mData ), free );
 }
 

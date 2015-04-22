@@ -26,55 +26,43 @@
 
 #define DEFAULT_COMPRESSION_LEVEL 6
 
-namespace cinder { 
+namespace cinder {
+
+typedef std::shared_ptr<class DataSource>	DataSourceRef;
 
 class Buffer {
- private:
-	struct Obj {
-		Obj( void * aBuffer, size_t aSize, bool aOwnsData );
-		~Obj();
-	
-		void	* mData;
-		size_t	mAllocatedSize;
-		size_t	mDataSize;
-		bool	mOwnsData;
-	};
-
- public:
+  public:
 	Buffer() {}
-	Buffer( void * aBuffer, size_t aSize );
+	Buffer( void *buffer, size_t size );
 	Buffer( size_t size );
+	~Buffer();
+
 	//! Creates a Buffer from a DataSource
-	explicit Buffer( std::shared_ptr<class DataSource> dataSource );
+	explicit Buffer( const DataSourceRef &dataSource );
 	
-	size_t getAllocatedSize() const { return mObj->mAllocatedSize; }
-	size_t getDataSize() const { return mObj->mDataSize; }
-	void setDataSize( size_t aSize ) { mObj->mDataSize = aSize; }
+	size_t getAllocatedSize() const		{ return mAllocatedSize; }
+	size_t getDataSize() const			{ return mDataSize; }
+	void setDataSize( size_t size )		{ mDataSize = size; }
 	
-	void * getData() { return mObj->mData; }
-	const void * getData() const { return mObj->mData; }
+	void*		getData()				{ return mData; }
+	const void* getData() const			{ return mData; }
 	
 	//! Returns a shared_ptr for the data and gives up ownership of the data
 	std::shared_ptr<uint8_t>	convertToSharedPtr();
 	
 	void resize( size_t newSize );
 	
-	void copyFrom( const void * aData, size_t length );
+	void copyFrom( const void *data, size_t length );
 	//TODO: copy from region of another buffer
 	
 	//! Writes a Buffer to a DataTarget
 	void	write( std::shared_ptr<class DataTarget> dataTarget );
 	
   private:
-	std::shared_ptr<Obj>		mObj;
-
-  public:
- 	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Buffer::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Buffer::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
+	void*	mData;
+	size_t	mAllocatedSize;
+	size_t	mDataSize;
+	bool	mOwnsData;
 };
 
 Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
