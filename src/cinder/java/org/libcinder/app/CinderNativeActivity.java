@@ -20,11 +20,7 @@ public class CinderNativeActivity extends NativeActivity {
 
     private Camera mCamera = null;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        sInstance = this;
-
+    private void initializeCamera() {
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             mCamera = new CameraV2();
         }
@@ -37,6 +33,12 @@ public class CinderNativeActivity extends NativeActivity {
             FragmentTransaction ft = fm.beginTransaction();
             ft.add(mCamera, "cinder-camera-fragment").commit();
         }
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sInstance = this;
     }
 
     @Override
@@ -62,6 +64,16 @@ public class CinderNativeActivity extends NativeActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    public static CinderNativeActivity getActivity() {
+        return sInstance;
+    }
+
+    public static void setActivity(CinderNativeActivity activity) {
+        if(null == sInstance) {
+            sInstance = activity;
+        }
     }
 
     public Display getDefaultDisplay() {

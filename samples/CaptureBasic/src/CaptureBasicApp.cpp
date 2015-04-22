@@ -24,7 +24,7 @@ void CaptureBasicApp::setup()
 	// print the devices
 	for( auto device = Capture::getDevices().begin(); device != Capture::getDevices().end(); ++device ) {
 		console() << "Device: " << (*device)->getName() << " "
-#if defined( CINDER_COCOA_TOUCH )
+#if ( defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID ) )
 					<< ( (*device)->isFrontFacing() ? "Front" : "Rear" ) << "-facing"
 #endif
 					<< std::endl;

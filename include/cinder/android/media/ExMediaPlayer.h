@@ -21,16 +21,22 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/android/VideoPlayer.h"
+#pragma once
+
+#include "cinder/android/JniHelper.h"
 
 namespace cinder { namespace android {
 
-VideoPlayer::VideoPlayer()
-{
-}
+/** \class ExMediaPlayer
+ *
+ */
+class ExMediPlayer {
+public:
 
-VideoPlayer::~VideoPlayer()
-{
-}
+private:
+	jobject 			mExMediaPlayerObject;
+
+	static jclass		sExMediaPlayerClass;
+};
 
 }} // namespace cinder::android

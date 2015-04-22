@@ -21,7 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "cinder/android/CinderCamera.h"
+#include "cinder/android/Camera.h"
+#include "cinder/android/AndroidDevLog.h"
 
 #include <sstream>
 #include <iomanip>

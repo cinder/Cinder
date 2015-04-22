@@ -19,67 +19,21 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
-#pragma once
-
-#include "cinder/android/JniHelper.h"
-//#include "cinder/Buffer.h"
-#include "cinder/Surface.h"
-
-namespace cinder { namespace app {
-
-class PlatformAndroid;
-
-}} // namespace cinder::app
+#include "cinder/android/MovieGl.h"
 
 namespace cinder { namespace android {
 
-class CinderCamera {
-public:
+/** \class MovieGl
+ *
+ */
+MovieGl::MovieGl()
+{
+}
 
-	CinderCamera();
-	CinderCamera( const std::string& url );
-	virtual ~CinderCamera();
-
-	bool 				initialize();
-	bool 				hasFrontCamera() const { return mHasFrontCamera; }
-	bool 				hasBackCamera() const { return mHasBackCamera; }
-	void 				startCapture();
-	void 				stopCapture();
-	//const uint8_t *	lockPixels();
-	//void 				unlockPixels();
-	int 				getWidth() const { return mWidth; }
-	int 				getHeight() const { return mHeight; }
-
-	ci::Surface			getSurface();
-
-private:
-	static void 		cacheJni();
-	static void 		destroyJni();
-
-	static jclass		sCinderCameraClass;
-	static jmethodID	sInitializeMethodId;
-	static jmethodID 	sHasFrontCameraMethodId;
-	static jmethodID 	sHasBackCameraMethodId;
-	static jmethodID 	sStartCaptureMethodId;
-	static jmethodID 	sStopCaptureMethodId;
-	static jmethodID 	sLockPixelsMethodId;
-	static jmethodID 	sUnlockPixelsMethodId;
-	static jmethodID 	sGetWidthMethodId;
-	static jmethodID 	sGetHeightMethodId;
-
-	bool 				mInitialized = false;
-	bool 				mHasFrontCamera = false;
-	bool 				mHasBackCamera = false;
-	bool 				mCapturing = false;
-	bool 				mLockedPixels = false;
-	int 				mWidth = 0;
-	int 				mHeight = 0;
-
-	//ci::Buffer			mBuffer;
-
-	friend class cinder::app::PlatformAndroid;
-};
+MovieGl::~MovieGl()
+{
+}
 
 }} // namespace cinder::android

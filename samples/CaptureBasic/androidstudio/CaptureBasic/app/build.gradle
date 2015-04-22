@@ -9,7 +9,7 @@ android {
     println "BUILD DIR  : ${buildDir}"
 
     defaultConfig {
-        applicationId "org.libcinder.samples.deviceevents"
+        applicationId "org.libcinder.samples.capturebasic"
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
@@ -65,11 +65,10 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
-        cinderDir = "${projectDir}/../../../../../.."
-        verbose = true
-        gles2 = false
-        moduleName = "DeviceEvents"
+        ndkDir = "${projectDir}/../../../../../../android-ndk-r10d"
+        cinderDir = "${projectDir}/../../../../.."
+        verbose = false 
+        moduleName = "CaptureBasic"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {
@@ -95,7 +94,7 @@ android {
         ]
         stl = "gnustl_static"
         toolChainVersion = "4.9"
-        archs = ["x86"]
+        archs = ["armeabi-v7a"]
         //archs = ["armeabi", "armeabi-v7a", "arm64-v8a", "mips", "mips64", "x86","x86_64"]
     }
 

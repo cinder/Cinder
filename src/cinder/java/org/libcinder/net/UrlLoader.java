@@ -1,7 +1,5 @@
 package org.libcinder.net;
 
-import org.libcinder.app.Platform;
-
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
@@ -13,6 +11,142 @@ import java.net.URLDecoder;
 
 import android.util.Log;
 
+import org.libcinder.Cinder;
+
+/** \class UrlLoader
+ *
+ */
+public class UrlLoader {
+
+    private static final String TAG = "UrlLoader";
+
+    private String mUrl;
+    private int    mResponseCode = -1;
+    private String mResponseMsg;
+    private String mExceptionMsg;
+
+    /** \class LoaderThread
+     *
+     */
+    private class LoaderThread extends Thread {
+
+        private byte[] mData;
+
+        public byte[] getData() {
+            return mData;
+        }
+
+        @Override
+        public void run() {
+            try {
+                if(null != mUrl) {
+                    int connectTimeout = 5000;
+                    int readTimeout = 5000;
+
+                    // java.net.URL doesn't seem to want to deal with encoded URLs
+                    String decodedUrl = URLDecoder.decode(mUrl, "UTF-8");
+
+                    URL url = new URL(decodedUrl);
+                    HttpURLConnection connection = (HttpURLConnection)url.openConnection();
+                    connection.setInstanceFollowRedirects(true);
+                    connection.setConnectTimeout(connectTimeout);
+                    connection.setReadTimeout(readTimeout);
+
+                    // Handle redirection
+                    switch(connection.getResponseCode()) {
+                        case HttpURLConnection.HTTP_MOVED_PERM:
+                        case HttpURLConnection.HTTP_MOVED_TEMP:
+                        case HttpURLConnection.HTTP_SEE_OTHER:
+                        {
+                            String redirectLocation = connection.getHeaderField("Location");
+                            String cookies = connection.getHeaderField("Set-Cookie");
+
+                            connection = (HttpURLConnection)(new URL(redirectLocation)).openConnection();
+                            if(null != cookies) {
+                                connection.setRequestProperty("Cookie", cookies);
+                            }
+                        }
+                        break;
+                    }
+
+                    int responseCode = connection.getResponseCode();
+                    String responseMsg = connection.getResponseMessage();
+                    mResponseCode = responseCode;
+                    mResponseMsg = responseMsg;
+
+                    try {
+                        // Throw if we don't get a 200
+                        if(HttpURLConnection.HTTP_OK != responseCode) {
+                            throw new UnknownServiceException(responseCode + ":" + responseMsg);
+                        }
+
+                        InputStream inputStream = new BufferedInputStream(connection.getInputStream());
+                        byte[] buffer = new byte[1024];
+                        int numBytesRead = 0;
+
+                        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+                        while(-1 != (numBytesRead = inputStream.read(buffer))) {
+                            outputStream.write(buffer, 0, numBytesRead);
+                        }
+
+                        mData = outputStream.toByteArray();
+                    }
+                    finally {
+                        connection.disconnect();
+                    }
+                }
+            } catch(Exception e) {
+                mExceptionMsg = e.toString();
+                Log.i(TAG, mExceptionMsg);
+            }
+        }
+    }
+
+    // =============================================================================================
+    // =============================================================================================
+
+    public UrlLoader() {
+
+    }
+
+    public static UrlLoader create() {
+        return new UrlLoader();
+    }
+
+    public byte[] loadUrl(String url) {
+        byte[] result = null;
+
+        try {
+            mUrl = url;
+
+            LoaderThread loader = new LoaderThread();
+            loader.start();
+            loader.join();
+
+            result = loader.getData();
+        }
+        catch(Exception e) {
+            mExceptionMsg = e.toString();
+            Log.e(TAG, mExceptionMsg);
+        }
+
+        return result;
+    }
+
+    public int getResponseCode() {
+        return mResponseCode;
+    }
+
+    public String getResponseMsg() {
+        return mResponseMsg;
+    }
+
+    public String getExceptionMsg() {
+        return mExceptionMsg;
+    }
+}
+
+/*
 public class UrlLoader {
     static private class Result {
         public String mUrl          = null;
@@ -107,7 +241,7 @@ public class UrlLoader {
         sResult.set(new Result(url));
 
         try {
-            Log.i(Platform.TAG, " (Java) Loading: " + URLDecoder.decode(url, "UTF-8"));
+            Log.i(Cinder.TAG, " (Java) Loading: " + URLDecoder.decode(url, "UTF-8"));
 
             Impl loader = new Impl(sResult.get());
             loader.start();
@@ -180,3 +314,4 @@ public class UrlLoader {
         }
     }
 }
+*/

@@ -53,4 +53,11 @@ void dbg_app_fn_exit( const std::string& s )
 	DBG_APP_LOGI( ss.str().c_str() );
 }
 
+void dbg_obtained_fn( const std::string& s )
+{
+	std::stringstream ss;
+	ss << "[JNI]: " << s << " method obtained";
+	DBG_APP_LOGI( ss.str().c_str() );
+}
+
 }} // namespace cinder::android

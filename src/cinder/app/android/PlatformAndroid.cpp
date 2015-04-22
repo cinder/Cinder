@@ -29,11 +29,9 @@
 #include "cinder/ImageSourceFileStbImage.h"
 
 #include "cinder/android/JniHelper.h"
-#include "cinder/android/CinderCamera.h"
-#if __ANDROID_API__ >= 21
-  #include "cinder/android/CinderCamera2.h"
-#endif
+#include "cinder/android/Camera.h"
 #include "cinder/android/UrlLoader.h"
+#include "cinder/android/VideoPlayer.h"
 
 #include <android/api-level.h>
 
@@ -51,9 +49,6 @@ PlatformAndroid::PlatformAndroid()
 	ci::android::JniHelper::Initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
 	ci::android::UrlLoader::cacheJni();
 	ci::android::CinderCamera::cacheJni();
-#if __ANDROID_API__ >= 21
-	ci::android::CinderCamera2::cacheJni();
-#endif	
 
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();

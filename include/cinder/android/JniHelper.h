@@ -30,6 +30,9 @@
 
 namespace cinder { namespace android {
 
+/** \class JniHelper
+ *
+ */
 class JniHelper {
 public:
 

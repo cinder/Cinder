@@ -29,4 +29,6 @@ void dbg_app_log( const std::string& s );
 void dbg_app_fn_enter( const std::string& s );
 void dbg_app_fn_exit( const std::string& s );
 
+void dbg_obtained_fn( const std::string& s );
+
 }} // namespace cinder::android 

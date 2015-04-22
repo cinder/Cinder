@@ -112,7 +112,7 @@ if( NOT NDK_ROOT )
         "android-ndk-r9c"
     )
 
-    set( _curDirStr "${CMAKE_CURRENT_BINARY_DIR}" )
+    set( _curDirStr "${CMAKE_CURRENT_SOURCE_DIR}" )
     # If string begins with "/" - remove the first "/"
     string( SUBSTRING "${_curDirStr}" 0 1 _firstChar )
     if( "/" STREQUAL "${_firstChar}" )
@@ -475,7 +475,7 @@ message( "" )
 message( "${BoldGreen}CMAKE_SYSROOT     : ${CMAKE_SYSROOT}${ColorReset}" ) 
 message( "" )
 
-project( cinder )
+project( cinder_android )
 
 include_directories( 
     ${CINDER_INC_DIR} 
@@ -529,11 +529,12 @@ set( CINDER_C_SRC_FILES
 set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/AndroidDevLog.cpp
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
-    ${CINDER_SRC_DIR}/cinder/android/CinderCamera.cpp
-    ${CINDER_SRC_DIR}/cinder/android/CinderCamera2.cpp
     ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
     ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
-    ${CINDER_SRC_DIR}/cinder/android/UrlLoader.cpp
+    ${CINDER_SRC_DIR}/cinder/android/hardware/Camera.cpp
+    ${CINDER_SRC_DIR}/cinder/android/media/ExMediaPlayer.cpp
+    ${CINDER_SRC_DIR}/cinder/android/net/UrlLoader.cpp
+    ${CINDER_SRC_DIR}/cinder/android/video/MovieGl.cpp
 
     ${CINDER_SRC_DIR}/cinder/app/android/AppAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/app/android/AppImplAndroid.cpp

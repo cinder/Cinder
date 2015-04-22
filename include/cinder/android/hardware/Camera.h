@@ -19,12 +19,13 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #pragma once
 
 #include "cinder/android/JniHelper.h"
-#include "cinder/Buffer.h"
+//#include "cinder/Buffer.h"
+#include "cinder/Surface.h"
 
 namespace cinder { namespace app {
 
@@ -34,30 +35,24 @@ class PlatformAndroid;
 
 namespace cinder { namespace android {
 
-class UrlLoader {
+class CinderCamera {
 public:
 
-	UrlLoader();
-	UrlLoader( const std::string& url );
-	virtual ~UrlLoader();
+	CinderCamera();
+	CinderCamera( const std::string& url );
+	virtual ~CinderCamera();
 
-	ci::Buffer			getData();
 
-	int 				getResponseCode() const { return mResponseCode; }
-	const std::string& 	getResponseMsg() const { return mResponseMsg; }
-	const std::string& 	getExceptionMsg() const { return mExceptionMsg; }
+	ci::Surface			getSurface();
 
 private:
 	static void 		cacheJni();
 	static void 		destroyJni();
 
-	static jclass		sUrlLoaderClass;
-	static jmethodID	sLoadUrlMethodId;
+	static jclass		sJniClass;
+	
+	jobject 			mJavaObject;
 
-	std::string 		mUrl;
-	int 				mResponseCode = -1;
-	std::string 		mResponseMsg;
-	std::string 		mExceptionMsg;
 
 	friend class cinder::app::PlatformAndroid;
 };
