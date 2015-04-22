@@ -96,7 +96,7 @@ public class UrlLoader {
                     }
                 }
             } catch(Exception e) {
-                mExceptionMsg = e.toString();
+                mExceptionMsg = e.getMessage();
                 Log.i(TAG, mExceptionMsg);
             }
         }
@@ -126,7 +126,7 @@ public class UrlLoader {
             result = loader.getData();
         }
         catch(Exception e) {
-            mExceptionMsg = e.toString();
+            mExceptionMsg = e.getMessage();
             Log.e(TAG, mExceptionMsg);
         }
 

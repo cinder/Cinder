@@ -37,12 +37,12 @@ static JavaVM*			sJavaVm = nullptr;
 
 static void JvmHelper_ThreadExit( void* block )
 {
-dbg_app_log("JVMAttach_ThreadExit");
+//dbg_app_log("JVMAttach_ThreadExit");
 
 	if( nullptr != block ) {
 		if( nullptr != sJavaVm ) {
 			sJavaVm->DetachCurrentThread();
-dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread");
+dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread (via pthread_key_create destructor)");
 		}
 		pthread_setspecific( sThreadExitKey, nullptr );
 	}
@@ -50,14 +50,14 @@ dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread");
 
 static void JvmHelper_MakeKey()
 {
-dbg_app_log("JVMAttach_MakeKey");
+//dbg_app_log("JVMAttach_MakeKey");
 
 	pthread_key_create( &sThreadExitKey, JvmHelper_ThreadExit );
 }
 
 static void JvmHelper_InitOnce( JavaVM* jvm )
 {
-dbg_app_log("JVMAttach_InitOnce");
+//dbg_app_log("JVMAttach_InitOnce");
 
 	pthread_once( &sThreadExitOnceInit, JvmHelper_MakeKey );
 	sJavaVm = jvm;
@@ -81,7 +81,7 @@ static JNIEnv* JvmHelper_Attach()
 
 static void JvmHelper_Deatch()
 {
-dbg_app_log("JvmHelper_Deatch");
+//dbg_app_log("JvmHelper_Deatch");
 
 	void* block = pthread_getspecific( sThreadExitKey );
 	if( nullptr != block ) {
@@ -174,6 +174,18 @@ jclass JniHelper::RetrieveClass( const std::string& name )
 		// 	LOGI( ss.str().c_str() );
 		// }
 		jniEnv->DeleteLocalRef( jstrClassName );
+	}
+	return result;
+}
+
+std::string JniHelper::StdStringFromJString( JNIEnv* jniEnv, jstring jstr )
+{
+	std::string result;
+	if( ( nullptr != jniEnv ) && ( nullptr != jstr ) ) {		
+		const char *utf = jniEnv->GetStringUTFChars( jstr, nullptr );
+		jsize n = jniEnv->GetStringUTFLength( jstr );
+		result = std::string( utf, n );
+		jniEnv->ReleaseStringUTFChars( jstr, utf );
 	}
 	return result;
 }
@@ -348,7 +360,7 @@ jfieldID JniHelper::GetStaticObjectFieldID( jclass clazz, const std::string& nam
 #define CI_GET_STATIC_TYPE_FIELDID_IMPL( _jname, _jsig )								\
 jfieldID JniHelper::GetStatic##_jname##FieldID( jclass clazz, const std::string& name )	\
 {																						\
-	return GetStaticFieldID( clazz, name, _jsig );								\
+	return GetStaticFieldID( clazz, name, _jsig );										\
 }
 
 //
@@ -379,7 +391,7 @@ _jtype JniHelper::GetStatic##_jname##Field( jclass clazz, jfieldID fieldId )	\
 {																				\
 	_jtype result = _jdefval;													\
 	auto jniEnv = JvmHelper_CurrentJniEnv();									\
-	if( jniEnv ) {																\
+	if( jniEnv && ( nullptr != fieldId ) ) {									\
 		result = jniEnv->GetStatic##_jname##Field( clazz, fieldId );			\
 	}																			\
 	return result;																\
@@ -409,56 +421,178 @@ CI_GET_STATIC_TYPE_FIELD_IMPL( jdouble, Double, 0.0 )
 
 std::string JniHelper::GetStaticStringField( jclass clazz, jfieldID fieldId )
 {
-	std::string result;
-
 	jstring strObj = (jstring)GetStaticObjectField( clazz, fieldId );
-	if( nullptr != strObj ) {
-
-	}
-
-	return result;	
+	return JniHelper::StdStringFromJString( JvmHelper_CurrentJniEnv(), strObj );
 }
 
 #define CI_SET_STATIC_TYPE_FIELD_IMPL( _jtype, _jname )										\
 void JniHelper::SetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype value )	\
 {																							\
 	auto jniEnv = JvmHelper_CurrentJniEnv();												\
-	if( jniEnv ) {																			\
+	if( jniEnv && ( nullptr != fieldId ) ) {												\
 		jniEnv->SetStatic##_jname##Field( clazz, fieldId, value );							\
 	}																						\
 }
 
 //
-// SetStaticObjectFieldID
-// SetStaticBooleanFieldID
-// SetStaticByteFieldID
-// SetStaticCharFieldID
-// SetStaticShortFieldID
-// SetStaticIntFieldID
-// SetStaticLongFieldID
-// SetStaticFloatFieldID
-// SetStaticDoubleFieldID
+// SetStaticObjectField
+// SetStaticBooleanField
+// SetStaticByteField
+// SetStaticCharField
+// SetStaticShortField
+// SetStaticIntField
+// SetStaticLongField
+// SetStaticFloatField
+// SetStaticDoubleField
 //	
-CI_SET_STATIC_TYPE_FIELD_IMPL( jobject, Object, nullptr )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jchar, Char, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jshort, Short, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jint, Int, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jlong, Long, 0 )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jfloat, Float, 0.0f )
-CI_SET_STATIC_TYPE_FIELD_IMPL( jdouble, Double, 0.0 )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jobject, Object )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jboolean, Boolean )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jbyte, Byte )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jchar, Char )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jshort, Short )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jint, Int )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jlong, Long )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jfloat, Float )
+CI_SET_STATIC_TYPE_FIELD_IMPL( jdouble, Double )
 #undef CI_SET_STATIC_TYPE_FIELD_IMPL
 
 void JniHelper::SetStaticStringField( jclass clazz, jfieldID fieldId, const std::string& value )
 {
-	// @TODO:
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv && ( nullptr != fieldId ) ) {
+		jstring jstr = jniEnv->NewStringUTF( value.c_str() );
+		jniEnv->SetStaticObjectField( clazz, fieldId, (jobject)jstr );
+		jniEnv->DeleteLocalRef( (jobject)jstr );
+	}	
 }
 
 // -------------------------------------------------------------------------------------------------
 // Java Fields
 // -------------------------------------------------------------------------------------------------
+jfieldID JniHelper::GetFieldID( jclass clazz, const std::string& name, const std::string& sig )
+{
+	jfieldID result = nullptr;
 
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv ) {
+		result = jniEnv->GetFieldID( clazz, name.c_str(), sig.c_str() );
+	}	
+
+	return result;
+}
+
+jfieldID JniHelper::GetObjectFieldID( jclass clazz, const std::string& name, const std::string& sig )
+{
+	return GetFieldID( clazz, name, sig );
+}
+
+#define CI_GET_TYPE_FIELDID_IMPL( _jname, _jsig )									\
+jfieldID JniHelper::Get##_jname##FieldID( jclass clazz, const std::string& name )	\
+{																					\
+	return GetFieldID( clazz, name, _jsig );										\
+}
+
+//
+// GetBooleanFieldID
+// GetByteFieldID
+// GetCharFieldID
+// GetShortFieldID
+// GetIntFieldID
+// GetLongFieldID
+// GetFloatFieldID
+// GetDoubleFieldID
+// GetStringleFieldID
+//	
+CI_GET_TYPE_FIELDID_IMPL( Boolean, "Z" )
+CI_GET_TYPE_FIELDID_IMPL( Byte, "B" )
+CI_GET_TYPE_FIELDID_IMPL( Char, "C" )
+CI_GET_TYPE_FIELDID_IMPL( Short, "S" )
+CI_GET_TYPE_FIELDID_IMPL( Int, "I" )
+CI_GET_TYPE_FIELDID_IMPL( Long, "J" )
+CI_GET_TYPE_FIELDID_IMPL( Float, "F" )
+CI_GET_TYPE_FIELDID_IMPL( Double, "D" )
+CI_GET_TYPE_FIELDID_IMPL( String, "Ljava/lang/String;" )
+#undef CI_GET_TYPE_FIELDID_IMPL
+
+#define CI_GET_TYPE_FIELD_IMPL( _jtype, _jname, _jdefval )				\
+_jtype JniHelper::Get##_jname##Field( jobject obj, jfieldID fieldId )	\
+{																		\
+	_jtype result = _jdefval;											\
+	auto jniEnv = JvmHelper_CurrentJniEnv();							\
+	if( jniEnv && ( nullptr != fieldId ) ) {							\
+		result = jniEnv->Get##_jname##Field( obj, fieldId );			\
+	}																	\
+	return result;														\
+}
+
+//
+// GetObjectField
+// GetBooleanField
+// GetByteField
+// GetCharField
+// GetShortField
+// GetIntField
+// GetLongField
+// GetFloatField
+// GetDoubleField
+//	
+CI_GET_TYPE_FIELD_IMPL( jobject, Object, nullptr )
+CI_GET_TYPE_FIELD_IMPL( jboolean, Boolean, 0 )
+CI_GET_TYPE_FIELD_IMPL( jbyte, Byte, 0 )
+CI_GET_TYPE_FIELD_IMPL( jchar, Char, 0 )
+CI_GET_TYPE_FIELD_IMPL( jshort, Short, 0 )
+CI_GET_TYPE_FIELD_IMPL( jint, Int, 0 )
+CI_GET_TYPE_FIELD_IMPL( jlong, Long, 0 )
+CI_GET_TYPE_FIELD_IMPL( jfloat, Float, 0.0f )
+CI_GET_TYPE_FIELD_IMPL( jdouble, Double, 0.0 )
+#undef CI_GET_TYPE_FIELD_IMPL
+
+std::string JniHelper::GetStringField( jobject obj, jfieldID fieldId )
+{
+	jstring strObj = (jstring)GetObjectField( obj, fieldId );
+	return JniHelper::StdStringFromJString( JvmHelper_CurrentJniEnv(), strObj );
+}
+
+#define CI_SET_TYPE_FIELD_IMPL( _jtype, _jname )									\
+void JniHelper::Set##_jname##Field( jobject obj, jfieldID fieldId, _jtype value )	\
+{																					\
+	auto jniEnv = JvmHelper_CurrentJniEnv();										\
+	if( jniEnv && ( nullptr != fieldId ) ) {										\
+		jniEnv->Set##_jname##Field( obj, fieldId, value );						\
+	}																				\
+}
+
+//
+// SetObjectField
+// SetBooleanField
+// SetByteField
+// SetCharField
+// SetShortField
+// SetIntField
+// SetLongField
+// SetFloatField
+// SetDoubleField
+//	
+CI_SET_TYPE_FIELD_IMPL( jobject, Object )
+CI_SET_TYPE_FIELD_IMPL( jboolean, Boolean )
+CI_SET_TYPE_FIELD_IMPL( jbyte, Byte )
+CI_SET_TYPE_FIELD_IMPL( jchar, Char )
+CI_SET_TYPE_FIELD_IMPL( jshort, Short )
+CI_SET_TYPE_FIELD_IMPL( jint, Int )
+CI_SET_TYPE_FIELD_IMPL( jlong, Long )
+CI_SET_TYPE_FIELD_IMPL( jfloat, Float )
+CI_SET_TYPE_FIELD_IMPL( jdouble, Double )
+#undef CI_SET_TYPE_FIELD_IMPL
+
+void JniHelper::SetStringField( jobject obj, jfieldID fieldId, const std::string& value )
+{
+	auto jniEnv = JvmHelper_CurrentJniEnv();
+	if( jniEnv && ( nullptr != fieldId ) ) {
+		jstring jstr = jniEnv->NewStringUTF( value.c_str() );
+		jniEnv->SetObjectField( obj, fieldId, (jobject)jstr );
+		jniEnv->DeleteLocalRef( (jobject)jstr );
+	}	
+}
 
 jobject JniHelper::NewGlobalRef( jobject obj )
 {

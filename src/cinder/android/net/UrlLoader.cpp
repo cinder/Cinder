@@ -61,14 +61,15 @@ void UrlLoader::cacheJni()
 			UrlLoader::sJavaStaticMethodCreate	  = JniHelper::Get()->GetStaticMethodId( UrlLoader::sJavaClass, "create", "()Lorg/libcinder/net/UrlLoader;" );
 			jni_obtained_check( UrlLoader::sJavaStaticMethodCreate );
 
-			UrlLoader::sJavaMethodLoadUrl 		  = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "loadUrl",         "(Ljava/lang/String;)[B" );
-			//UrlLoader::sJavaMethodGetResponseCode = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getResponseCode", "()I" );
-			//UrlLoader::sJavaMethodGetResponseMsg  = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getResponseMsg",  "()Ljava/lang/String;" );
-			//UrlLoader::sJavaMethodGetExceptionMsg = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "getExceptionMsg", "()Ljava/lang/String;" );
+			UrlLoader::sJavaMethodLoadUrl 		  = JniHelper::Get()->GetMethodId( UrlLoader::sJavaClass, "loadUrl", "(Ljava/lang/String;)[B" );
 			jni_obtained_check( UrlLoader::sJavaMethodLoadUrl );
-			//jni_obtained_check( UrlLoader::sJavaMethodGetResponseCode );
-			//jni_obtained_check( UrlLoader::sJavaMethodGetResponseMsg );
-			//jni_obtained_check( UrlLoader::sJavaMethodGetExceptionMsg );
+
+			UrlLoader::sJavaFieldResponseCode = JniHelper::Get()->GetIntFieldID( UrlLoader::sJavaClass, "mResponseCode" );
+			UrlLoader::sJavaFieldResponseMsg  = JniHelper::Get()->GetStringFieldID( UrlLoader::sJavaClass, "mResponseMsg" );
+			UrlLoader::sJavaFieldExceptionMsg = JniHelper::Get()->GetStringFieldID( UrlLoader::sJavaClass, "mExceptionMsg" );
+			jni_obtained_check( UrlLoader::sJavaFieldResponseCode );
+			jni_obtained_check( UrlLoader::sJavaFieldResponseMsg );
+			jni_obtained_check( UrlLoader::sJavaFieldExceptionMsg );
 		}
 	}
 }
@@ -108,7 +109,8 @@ ci::Buffer UrlLoader::loadUrl( const std::string& url )
 
 		jbyteArray jBytes = (jbyteArray)JniHelper::Get()->CallObjectMethod( mJavaObject, UrlLoader::sJavaMethodLoadUrl, jstrUrl );
 		if( nullptr == jBytes ) {
-		    throw std::runtime_error( "org.libcinder.net.UrlLoader.loadUrl failed" );
+			std::string msg = getExceptionMsg();
+		    throw std::runtime_error( msg );
 		}
 
 		size_t dataLength = JniHelper::Get()->GetArrayLength( jBytes );
@@ -127,6 +129,21 @@ ci::Buffer UrlLoader::loadUrl( const std::string& url )
 	}
 
 	return result;
+}
+
+int UrlLoader::getResponseCode() const
+{
+	return JniHelper::Get()->GetIntField( mJavaObject, UrlLoader::sJavaFieldResponseCode );
+}
+
+std::string UrlLoader::getResponseMsg() const
+{
+	return JniHelper::Get()->GetStringField( mJavaObject, UrlLoader::sJavaFieldResponseMsg );
+}
+
+std::string UrlLoader::getExceptionMsg() const
+{
+	return JniHelper::Get()->GetStringField( mJavaObject, UrlLoader::sJavaFieldExceptionMsg );
 }
 
 }} // namespace cinder::android

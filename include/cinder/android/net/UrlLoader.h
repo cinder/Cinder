@@ -42,9 +42,9 @@ public:
 
 	ci::Buffer			loadUrl( const std::string& url );
 
-	int 				getResponseCode() const { return mResponseCode; }
-	const std::string& 	getResponseMsg() const { return mResponseMsg; }
-	const std::string& 	getExceptionMsg() const { return mExceptionMsg; }
+	int 				getResponseCode() const;
+	std::string 		getResponseMsg() const;
+	std::string 		getExceptionMsg() const;
 
 private:
 	static void 		cacheJni();
@@ -62,9 +62,9 @@ private:
 
 	jobject 			mJavaObject = nullptr;
 	std::string 		mUrl;
-	int 				mResponseCode = -1;
-	std::string 		mResponseMsg;
-	std::string 		mExceptionMsg;
+	//int 				mResponseCode = -1;
+	//std::string 		mResponseMsg;
+	//std::string 		mExceptionMsg;
 
 	friend class cinder::app::PlatformAndroid;
 };

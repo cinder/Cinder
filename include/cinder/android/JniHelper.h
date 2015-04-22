@@ -47,6 +47,8 @@ public:
 
 	jclass				RetrieveClass( const std::string& name );	
 
+	static std::string 	StdStringFromJString( JNIEnv* jniEnv, jstring jstr );
+
 	JNIEnv*				AttachCurrentThread();
 	void 				DeatchCurrentThread();
 
@@ -175,7 +177,7 @@ public:
 	std::string GetStaticStringField( jclass clazz, jfieldID fieldId );
 
 	#define CI_SET_STATIC_TYPE_FIELD_DECL( _jtype, _jname ) \
-		void GetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype value );
+		void SetStatic##_jname##Field( jclass clazz, jfieldID fieldId, _jtype value );
 
 		//
 		// SetStaticBooleanField
@@ -203,8 +205,8 @@ public:
 	// ---------------------------------------------------------------------------------------------
 	// Java Fields
 	// ---------------------------------------------------------------------------------------------
-	jfieldID GetFieldId( jclass clazz, const std::string& name, const std::string& sig );
-	jfieldID GetObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetFieldID( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetObjectFieldID( jclass clazz, const std::string& name, const std::string& sig );
 
 	#define CI_GET_TYPE_FIELDID_DECL( _jname ) \
 		jfieldID Get##_jname##FieldID( jclass clazz, const std::string& name );	

@@ -82,7 +82,7 @@ void UrlLoader::setup()
     urls.push_back( "http://www.pinboard.in" );
     urls.push_back( "http://www.osnews.com" );
 
-    for( int i = 0; i < 100; ++i ) {
+    for( int i = 0; i < 1; ++i ) {
         std::vector<std::shared_ptr<DataReport>> reports;
         for( auto& url : urls ) {
             reports.push_back( std::make_shared<DataReport>( url ) );
