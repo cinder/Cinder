@@ -160,6 +160,10 @@ class TextureBase {
 		void	setBaseMipmapLevel( GLuint level ) { mBaseMipmapLevel = level; }
 		//! Sets the max mipmap level. Default (expressed as \c -1) is derived from the size of the texture. Ignored on ES 2.
 		void	setMaxMipmapLevel( GLint level ) { mMaxMipmapLevel = level; }
+		//! Returns the index of the lowest defined mipmap level.
+		GLuint	getBaseMipmapLevel() const { return mBaseMipmapLevel; }
+		//! Returns the max mipmap level.
+		GLuint	getMaxMipmapLevel() const { return mMaxMipmapLevel; }
 		
 		//! Sets whether the storage for the cannot be changed in the future (making glTexImage*D() calls illegal). More efficient when possible. Default is \c false.
 		void	setImmutableStorage( bool immutable = true ) { mImmutableStorage = immutable; }
@@ -179,7 +183,12 @@ class TextureBase {
 		// Specifies the texture comparison mode for currently bound depth textures.
 		void	setCompareMode( GLenum compareMode ) { mCompareMode = compareMode; }
 		// Specifies the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
-		void	setCompareFunc( GLenum compareFunc ) { mCompareFunc = compareFunc; }		
+		void	setCompareFunc( GLenum compareFunc ) { mCompareFunc = compareFunc; }
+		//! Returns the texture comparison mode for currently bound depth texture.
+		GLenum	getCompareMode() const { return mCompareMode; }
+		//! Returns the comparison operator used when \c GL_TEXTURE_COMPARE_MODE is set to \c GL_COMPARE_R_TO_TEXTURE
+		GLenum	getCompareFunc() const { return mCompareFunc; }
+
 		//! Sets the wrapping behavior when a texture coordinate falls outside the range of [0,1]. Possible values are \c GL_REPEAT, \c GL_CLAMP_TO_EDGE, etc. Default is \c GL_CLAMP_TO_EDGE.
 		void	setWrap( GLenum wrapS, GLenum wrapT ) { setWrapS( wrapS ); setWrapT( wrapT ); }
 #if ! defined( CINDER_GL_ES )
@@ -269,7 +278,6 @@ class TextureBase {
 		bool				mImmutableStorage;
 		GLfloat				mMaxAnisotropy;
 		GLint				mInternalFormat, mDataType;
-		GLint				mDataFormat;
 		bool				mSwizzleSpecified;
 		std::array<GLint,4>	mSwizzleMask;
 		bool				mBorderSpecified;

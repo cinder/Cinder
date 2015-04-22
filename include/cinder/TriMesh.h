@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2015, The Barbarian Group
  All rights reserved.
  
  Portions of this code (C) Paul Houx
@@ -297,10 +297,14 @@ class TriMesh : public geom::Source {
 	//! Calculates the bounding box of all vertices as transformed by \a transform. Fails if the positions are not 3D.
 	AxisAlignedBox3f	calcBoundingBox( const mat4 &transform ) const;
 
-	//! This allows you read a TriMesh in from a data file, for instance an .obj file. At present .obj and .dat files are supported
-	void		read( DataSourceRef in );
-	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
-	void		write( DataTargetRef out ) const;
+	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
+	void		read( const DataSourceRef &dataSource );
+	//! Writes this TriMesh out to a binary data file.
+	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, ~0 ); }
+	//! Writes this TriMesh out to a binary data file. If \a writeNormals or \a writeTangents is \c true, normals and/or tangents are written to the file.
+	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const;
+	//! Writes this TriMesh out to a binary data file. You can specify which attributes to write by supplying a list of \a attribs.
+	void		write( const DataTargetRef &dataTarget, const std::set<geom::Attrib> &attribs ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
@@ -315,7 +319,6 @@ class TriMesh : public geom::Source {
 	/*! Subdivide each triangle of the TriMesh into \a division times division triangles. Division less than 2 leaves the mesh unaltered.
 		Optionally, vertices are normalized if \a normalize is TRUE. */
 	void		subdivide( int division = 2, bool normalize = false );
-
 
 	//! Create TriMesh from vectors of vertex data.
 /*	static TriMesh		create( std::vector<uint32_t> &indices, const std::vector<ColorAf> &colors,
@@ -336,6 +339,19 @@ class TriMesh : public geom::Source {
 
 	//! Returns whether or not the vertex, color etc. at both indices is the same.
 	bool		verticesEqual( uint32_t indexA, uint32_t indexB ) const;
+
+	void		readImplV2( const IStreamRef &in );
+	void		readImplV1( const IStreamRef &in );
+
+	/*! Writes this TriMesh out to a binary data file. The \a writeMask parameter can be used to specify
+	 * what data should be included (e.g. toMask(POSITION) | toMask(COLOR) )
+	 * or what should be excluded (e.g. ~toMask( NORMAL ) & ~toMask( TEX_COORD_0) ). */
+	void		write( const DataTargetRef &dataTarget, uint32_t writeMask ) const;
+
+	//! Converts a geom::Attrib to an attribute bitmask.
+	static uint32_t	toMask( geom::Attrib attrib );
+	//! Converts an attribute bitmask to a geom::Attrib.
+	static geom::Attrib	fromMask( uint32_t attrib );
 
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;

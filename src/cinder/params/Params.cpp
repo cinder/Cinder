@@ -605,24 +605,58 @@ void InterfaceGl::addParam( const std::string &name, std::string *param, const s
 	implAddParamDeprecated( name, param, TW_TYPE_STDSTRING, optionsStr, readOnly );
 }
 
+// deprecated enum variant
 void InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly )
 {
 	TwSetCurrentWindow( mTwWindowId );
-	
-	TwEnumVal *ev = new TwEnumVal[enumNames.size()];
+
+	vector<TwEnumVal> ev( enumNames.size() );
 	for( size_t v = 0; v < enumNames.size(); ++v ) {
 		ev[v].Value = (int)v;
 		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
 	}
 
-	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev, (unsigned int)enumNames.size() );
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev.data(), (unsigned int)ev.size() );
 
 	if( readOnly )
 		TwAddVarRO( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
 	else
 		TwAddVarRW( mBar.get(), name.c_str(), evType, param, optionsStr.c_str() );
-		
-	delete [] ev;
+}
+
+InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, bool readOnly )
+{
+	TwSetCurrentWindow( mTwWindowId );
+
+	vector<TwEnumVal> ev( enumNames.size() );
+	for( size_t v = 0; v < enumNames.size(); ++v ) {
+		ev[v].Value = (int)v;
+		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
+	}
+
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev.data(), (unsigned int)ev.size() );
+
+	if( readOnly )
+		TwAddVarRO( mBar.get(), name.c_str(), evType, param, nullptr );
+	else
+		TwAddVarRW( mBar.get(), name.c_str(), evType, param, nullptr );
+
+	return Options<int>( name, param, evType, this );
+}
+
+InterfaceGl::Options<int> InterfaceGl::addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn )
+{
+	TwSetCurrentWindow( mTwWindowId );
+
+	vector<TwEnumVal> ev( enumNames.size() );
+	for( size_t v = 0; v < enumNames.size(); ++v ) {
+		ev[v].Value = (int)v;
+		ev[v].Label = const_cast<char*>( enumNames[v].c_str() );
+	}
+
+	TwType evType = TwDefineEnum( (name + "EnumType").c_str(), ev.data(), (unsigned int)ev.size() );
+
+	return Options<int>( name, nullptr, evType, this ).accessors( setterFn, getterFn );
 }
 
 void InterfaceGl::addSeparator( const std::string &name, const std::string &optionsStr )
