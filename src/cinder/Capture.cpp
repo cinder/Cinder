@@ -50,10 +50,9 @@ const vector<Capture::DeviceRef>& Capture::getDevices( bool forceRefresh )
 
 Capture::DeviceRef Capture::findDeviceByName( const string &name )
 {
-	const vector<DeviceRef> &devices = getDevices();
-	for( vector<DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		if( (*deviceIt)->getName() == name )
-			return *deviceIt;
+	for( const auto &dev : getDevices() ) {
+		if( dev->getName() == name )
+			return dev;
 	}
 	
 	return DeviceRef(); // failed - return "null" device
@@ -61,10 +60,9 @@ Capture::DeviceRef Capture::findDeviceByName( const string &name )
 
 Capture::DeviceRef Capture::findDeviceByNameContains( const string &nameFragment )
 {	
-	const vector<DeviceRef> &devices = getDevices();
-	for( vector<DeviceRef>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		if( (*deviceIt)->getName().find( nameFragment ) != std::string::npos )
-			return *deviceIt;
+	for( const auto &dev : getDevices() ) {
+		if( dev->getName().find( nameFragment ) != std::string::npos )
+			return dev;
 	}
 
 	return DeviceRef();
