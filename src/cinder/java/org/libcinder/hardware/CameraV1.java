@@ -4,6 +4,7 @@ import org.libcinder.Cinder;
 
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
+import android.provider.ContactsContract;
 import android.util.Log;
 import android.graphics.SurfaceTexture;
 
@@ -26,24 +27,40 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
     public CameraV1() {}
 
+    public static void checkCameraPresence(boolean[] back, boolean[] front) {
+        back[0] = false;
+        front[0] = false;
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for( int i = 0; i < numberOfCameras; ++i ) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
+                back[0] = true;
+            }
+            else if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
+                front[0] = true;
+            }
+        }
+    }
+
     @Override
     protected void initialize() {
         int numberOfCameras = Camera.getNumberOfCameras();
         for( int i = 0; i < numberOfCameras; ++i ) {
             android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
             Camera.getCameraInfo(i, info);
-            if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
-                mFrontDeviceId = i;
-            }
-            else if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
+            if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
                 mBackDeviceId = i;
+            }
+            else if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
+                mFrontDeviceId = i;
             }
         }
 
         mActiveDeviceId = (-1 != mBackDeviceId) ? mBackDeviceId : ((-1 != mFrontDeviceId) ? mFrontDeviceId : -1);
 
-        Log.i(Cinder.TAG, "Front Camera: " + mFrontDeviceId);
         Log.i(Cinder.TAG, "Back Camera: " + mBackDeviceId);
+        Log.i(Cinder.TAG, "Front Camera: " + mFrontDeviceId);
 
         mDummyTexture = new SurfaceTexture(0);
 

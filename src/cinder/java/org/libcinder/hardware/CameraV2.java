@@ -1,7 +1,7 @@
 package org.libcinder.hardware;
 
 import org.libcinder.Cinder;
-import org.libcinder.app.CinderNativeActivity;
+import org.libcinder.app.ModulesFragment;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -122,6 +122,30 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     public CameraV2() {
     }
 
+    public static void checkCameraPresence(boolean[] back, boolean[] front) {
+        back[0] = false;
+        front[0] = false;
+
+        CameraManager cm = (CameraManager)ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
+
+        try {
+            for (String cameraId : cm.getCameraIdList()) {
+                CameraCharacteristics info = cm.getCameraCharacteristics(cameraId);
+
+                int facing = info.get(CameraCharacteristics.LENS_FACING);
+                if(CameraCharacteristics.LENS_FACING_BACK == facing) {
+                    back[0] = true;
+                }
+                else if(CameraCharacteristics.LENS_FACING_FRONT == facing) {
+                    front[0] = true;
+                }
+            }
+        }
+        catch(Exception e ) {
+            throw new UnsupportedOperationException("Failed getting camera: " + e);
+        }
+    }
+
     @Override
     protected void initialize() {
         mCameraManager = (CameraManager)getActivity().getSystemService(Context.CAMERA_SERVICE);
@@ -131,11 +155,11 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
                 CameraCharacteristics info = mCameraManager.getCameraCharacteristics(cameraId);
 
                 int facing = info.get(CameraCharacteristics.LENS_FACING);
-                if(CameraCharacteristics.LENS_FACING_FRONT == facing) {
-                    mFrontDeviceId = cameraId;
-                }
-                else if(CameraCharacteristics.LENS_FACING_BACK == facing) {
+                if(CameraCharacteristics.LENS_FACING_BACK == facing) {
                     mBackDeviceId = cameraId;
+                }
+                else if(CameraCharacteristics.LENS_FACING_FRONT == facing) {
+                    mFrontDeviceId = cameraId;
                 }
             }
         }
@@ -166,7 +190,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         Size result = null;
         try {
             // Get the raw display size
-            Point displaySize = CinderNativeActivity.getActivity().getDefaultDisplaySize();
+            Point displaySize = ModulesFragment.get().getDefaultDisplaySize();
             int rawDisplayWidth = displaySize.x;
             int rawDisplayHeight = displaySize.y;
             int rawDisplayArea = rawDisplayWidth*rawDisplayHeight;

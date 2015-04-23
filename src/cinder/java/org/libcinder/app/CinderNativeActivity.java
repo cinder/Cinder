@@ -75,29 +75,4 @@ public class CinderNativeActivity extends NativeActivity {
             sInstance = activity;
         }
     }
-
-    public Display getDefaultDisplay() {
-        WindowManager wm = (WindowManager)sInstance.getSystemService(Context.WINDOW_SERVICE);
-        Display result = wm.getDefaultDisplay();
-        return result;
-    }
-
-    public Point getDefaultDisplaySize() {
-        Display defaultDisplay = this.getDefaultDisplay();
-        Point result = new Point();
-        defaultDisplay.getRealSize(result);
-        return result;
-    }
-
-    public boolean isBackCameraAvailable() {
-        return ((null != mCamera) && mCamera.isFrontCameraAvailable());
-    }
-
-    public boolean isFrontCameraAvailable() {
-        return ((null != mCamera) && mCamera.isFrontCameraAvailable());
-    }
-
-    public boolean isInternetAvailable() {
-        return false;
-    }
 }

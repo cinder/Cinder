@@ -39,7 +39,7 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
         mModulesFragment = new ModulesFragment();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add( mModulesFragment, "cinder-modules-fragment" );
+        fragmentTransaction.add(mModulesFragment, ModulesFragment.ID);
         fragmentTransaction.commit();
 
         mLog = (DebugTextView)findViewById(R.id.textView);
