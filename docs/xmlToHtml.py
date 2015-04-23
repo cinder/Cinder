@@ -6,13 +6,13 @@ import shutil
 import copy
 import re
 import xml.etree.ElementTree as ET
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, Tag, NavigableString
 
 tagDictionary = {
 	"linebreak": "br",
 	"emphasis": "em",
 	"ref": "a",
-	"computeroutput": "code",
+	# "computeroutput": "code",
 	"includes": "code",
 	"simplesect": "dl",
 	"para": "p"
@@ -52,6 +52,7 @@ def genTag( bs4, tagType, classes = None, contents = None ):
 	return newTag
 
 
+
 def markupFunction( bs4, fnXml, parent, isConstructor ):
 
 	# create new line
@@ -75,12 +76,20 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	# left side / return type
 	if not isConstructor:
 		returnDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
-		print "RETURN COL"
+		# print "RETURN COL"
 		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
 		functionDiv.append( returnDiv )
 
+
 	# right side (function name and description)
-	definitionCol = genTag( bs4, "div", ["definitionCol columns large-9"] )
+	definitionCol = genTag( bs4, "div", ["definitionCol columns"] )
+
+	# width is dependent on if it has the return column
+	if isConstructor:
+		addClassToTag(definitionCol, "large-12")
+	else:
+		addClassToTag(definitionCol, "large-9")
+
 	functionDiv.append( definitionCol )
 
 	# function name
@@ -123,12 +132,14 @@ def defineLinkTag( tag, attrib ):
 
 	tag["href"] = href
 
+
 def defineTag( bs4, tagName, tree ):
 
 	newTag = bs4.new_tag( tagName )
-	if( tagName == "a" ):
-		# print "LINK TAG: "
+	if tagName == "a":
 		defineLinkTag( newTag, tree.attrib )
+	# elif tagName == "code":
+		# addClassToTag( newTag, "language-cpp" );
 	
 	return newTag
 
@@ -145,11 +156,12 @@ def genIncludesTag( bs4, tree ):
 	return wrapperEl
 
 
-def replaceTag( bs4, tree, parentTag ):
+def replaceTag( bs4, tree, parentTag, content ):
 
 	tag = tree.tag
 	attrib = tree.attrib
 	hasParent = False
+	contentTag = None
 
 	if parentTag and parentTag.parent:
 		hasParent = True
@@ -160,17 +172,24 @@ def replaceTag( bs4, tree, parentTag ):
 			tagName = "dd"
 		else :
 			tagName = tagDictionary[tag]
+	# elif tag == "computeroutput" :
+		# if hasParent and parentTag.parent.pre :
+			# tagName = "code"
+			# addClassToTag( codeTag, "language-cpp" )
 
 	# get tag equivalent
 	if tag in tagDictionary:
 		tagName = tagDictionary[tag]
+		newTag = defineTag( bs4, tagName, tree );
 	else:
 		# TODO: replace with nothing - no new tag
-		tagName = "span"
+		tagName = "div"
+		newTag = defineTag( bs4, tagName, tree );
+		addClassToTag( newTag, tag )
 
 
-
-	newTag = defineTag( bs4, tagName, tree );
+	
+	contentTag = newTag
 
 	# if simplesect, construct with some content
 	if( tag == "simplesect" ) :
@@ -183,7 +202,43 @@ def replaceTag( bs4, tree, parentTag ):
 			seeTag.string = "See Also"
 		newTag.append( seeTag )
 
+	if tag == "computeroutput" :
+		print "pre--"
+		# preTag = bs4.new_tag( "pre" )
+		codeTag = bs4.new_tag( "code" )
+		addClassToTag( codeTag, "language-cpp" )
+		# addClassToTag( codeTag, "highlight" )
+		# preTag.append( codeTag )
+		newTag.append( codeTag )
+		# newTag.append( codeTag )
+		contentTag = codeTag
+		# contentTag = preTag
+
+
+	# TODO: figure out why adding a <pre> instead of a <code> breaks the <p>
+
+	if content is not None :
+		contentTag.append( content )
+
+
 	# print "TAG: " + tagName
+	
+
+	# if tag == "computeroutput" :
+
+	# 	# if pre tag == p, append to parent, then add new p to continue from
+	# 	print ""
+	# 	print " -------------------"
+	# 	print " ---- ADD NEW P ----"
+	# 	newPTag =  genTag( bs4, "p")
+	# 	parentTag.parent.append( newTag )
+	# 	parentTag.append( newPTag )
+	# 	newTag = newPTag
+	# 	# print parentTag
+	# else  :
+		# parentTag.append( newTag )
+	parentTag.append( newTag )
+
 	return newTag
 
 
@@ -197,21 +252,33 @@ def iterateMarkup( bs4, tree, parent ):
 
 	# print tree.attrib
 
-	print "TAG: " + tree.tag
-	if tree.text :
-		print "TEXT: " + tree.text
+	# print "TAG: " + tree.tag
+	# if tree.text :
+		# print "TEXT: " + tree.text
 
 	currentTag = parent
-	
-	# append any new tags
-	if tree.tag != None :
-		htmlTag = replaceTag( bs4, tree, currentTag )
-		currentTag = htmlTag
-		parent.append( currentTag )
-	
+	content = None
+
 	# add content to tag
 	if tree.text != None:
-		currentTag.append( tree.text.strip() )
+		# currentTag.append( tree.text.strip() )
+		content = tree.text.strip()
+
+	# append any new tags
+	if tree.tag != None :
+		print "OLD TAG"
+		print currentTag
+		htmlTag = replaceTag( bs4, tree, currentTag, content )
+
+		# if tree parent == <p> && newTag == <pre>
+		# add a new pre tag in and make that the current parent again
+
+		currentTag = htmlTag
+		# parent.append( currentTag )
+	
+		print "NEW TAG"
+		print currentTag
+	
 	
 	# iterate through children tags
 	for child in list( tree ):
@@ -226,7 +293,7 @@ def iterateMarkup( bs4, tree, parent ):
 
 def markupDescription( bs4, tree ):
 
-	print "\n-- MARKING UP PARAGRAPH --"
+	# print "\n-- MARKING UP PARAGRAPH --"
 	
 	# description_el = iterateMarkup( paraXml, parent, html )
 	# parent.append( description_el )
@@ -236,7 +303,87 @@ def markupDescription( bs4, tree ):
 	iterateMarkup( bs4, tree.find( r'briefdescription/' ), description_el )
 	iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )
 	return description_el
-	
+
+# Looks though the html and replaces any code chunks that exist
+# in a paragraph and splits them up so that we can use pre tags.
+def replaceCodeChunks( bs4 ) :
+
+	# find all p tags
+	pTags = bs4.find_all( "p" )
+	for p in pTags :
+
+		# if the paragraph as a "div.computeroutput"
+		codeChunks = p.find_all( "div", "computeroutput" )
+		
+		if( len(codeChunks) > 0 ) :
+
+			newTags = []
+			curP = None
+
+			for c in p.contents:
+				
+				# create a new paragraph to wrap content in
+				if curP is None:
+					curP = genTag( bs4, "p" )
+					newTags.append( curP )
+
+				
+				addToP = True
+
+				if type( c ) == Tag:
+					if c.has_attr("class") :
+						print c["class"]
+
+						# look for any tags with "computeroutput"
+						if "computeroutput" in c["class"] :
+
+							# add a new pre
+							preTag = genTag( bs4, "pre" )
+							
+							for code in c.contents :
+								preTag.append( clone(code) )
+							newTags.append( preTag )
+
+							# create a new p tag for any following content to add itself to
+							curP = genTag( bs4, "p" )
+							newTags.append( curP )
+							addToP = False
+				
+				if addToP :
+					cClone = clone(c)
+					curP.append( cClone )
+
+			# replace p tag with an empty span
+			replacementTag = genTag(bs4, "span") 
+			p.replace_with( replacementTag )
+
+			# add the newly organized tags to the new span
+			for t in newTags:
+				# print "TAG:"
+				# print t
+				replacementTag.append( t )
+
+			# unwrap / remove the span since that was only there to place this new content into
+			replacementTag.unwrap()
+			
+
+# clone an element
+# from: http://stackoverflow.com/questions/23057631/clone-element-with-beautifulsoup/23058678#23058678
+def clone(el):
+    if isinstance(el, NavigableString):
+        return type(el)(el)
+
+    copy = Tag(None, el.builder, el.name, el.namespace, el.nsprefix)
+    # work around bug where there is no builder set
+    # https://bugs.launchpad.net/beautifulsoup/+bug/1307471
+    copy.attrs = dict(el.attrs)
+    copy.index = el.index
+    for attr in ('can_be_empty_element', 'hidden'):
+        setattr(copy, attr, getattr(el, attr))
+    for child in el.contents:
+        copy.append(clone(child))
+    return copy
+
 	
 def processClassXmlFile( inPath, outPath, html ):
 
@@ -361,6 +508,9 @@ def processClassXmlFile( inPath, outPath, html ):
 		sectionTag.append( staticUlTag )
 		contentsTag.append( sectionTag )
 		sectionTag.append( genTag( html, "hr" ) )
+
+	# replace any code chunks with <pre> tags, which is not possible on initial creation
+	replaceCodeChunks( html )
 
 	# write the file	
 	outFile = codecs.open( outPath, "w", "UTF-8" )
