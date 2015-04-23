@@ -2,6 +2,7 @@ package org.libcinder.hardware;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -48,6 +49,8 @@ public abstract class Camera extends Fragment {
     public abstract boolean isBackCameraAvailable();
 
     public abstract boolean isFrontCameraAvailable();
+
+    public abstract void setDummyTexture(SurfaceTexture dummyTexture);
 
     public abstract void startCapture();
 

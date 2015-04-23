@@ -15,6 +15,8 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 public class CameraV1 extends org.libcinder.hardware.Camera implements android.hardware.Camera.PreviewCallback {
 
+    private static final String TAG = "CameraV1";
+
     private SurfaceTexture mDummyTexture = null;
 
     private android.hardware.Camera mCamera = null;
@@ -152,6 +154,10 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
     }
 
+    // =============================================================================================
+    // Camera functions
+    // =============================================================================================
+
     /** isBackCameraAvailable
      *
      */
@@ -166,6 +172,22 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     @Override
     public boolean isFrontCameraAvailable() {
         return -1 != mFrontDeviceId;
+    }
+
+    /** setDummyTexture
+     *
+     */
+    @Override
+    public void setDummyTexture(SurfaceTexture dummyTexture) {
+        mDummyTexture = dummyTexture;
+        if(null != mCamera) {
+            try {
+                mCamera.setPreviewTexture(mDummyTexture);
+            }
+            catch(Exception e) {
+                Log.w(TAG, "(setDummyTexture) Camera.setPreviewTexture failed");
+            }
+        }
     }
 
     /** startCapture

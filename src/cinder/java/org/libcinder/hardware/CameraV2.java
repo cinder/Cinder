@@ -36,6 +36,8 @@ import java.util.concurrent.locks.ReentrantLock;
 @TargetApi(21)
 public class CameraV2 extends org.libcinder.hardware.Camera {
 
+    private static final String TAG = "CameraV2";
+
     private SurfaceTexture mDummyTexture = null;
     private Surface mDummySurface = null;
 
@@ -54,6 +56,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     private HandlerThread mCameraHandlerThread;
     private Handler mCameraHandler;
 
+    private Size mPreviewSize = null;
     private static final int sPreviewImageFormat = ImageFormat.YUV_420_888;
     private ImageReader mPreviewImageReader = null;
 
@@ -142,7 +145,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             }
         }
         catch(Exception e ) {
-            throw new UnsupportedOperationException("Failed getting camera: " + e);
+            throw new RuntimeException("failed getting camera: " + e);
         }
     }
 
@@ -164,7 +167,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             }
         }
         catch(Exception e ) {
-            throw new UnsupportedOperationException("Failed getting camera: " + e);
+            throw new RuntimeException("Failed getting camera: " + e);
         }
 
         mActiveDeviceId = (null != mBackDeviceId) ? mBackDeviceId : ((null != mFrontDeviceId) ? mFrontDeviceId : null);
@@ -173,7 +176,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         if(null != mActiveDeviceId) {
             Size previewSize = getOptimalPreviewSize(mActiveDeviceId);
             if (null == previewSize) {
-                throw new UnsupportedOperationException("couldn't get preview size for Camera " + mActiveDeviceId);
+                throw new RuntimeException("couldn't get preview size for Camera " + mActiveDeviceId);
             }
 
             mWidth = previewSize.getWidth();
@@ -259,18 +262,18 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         // Start the preview
         try {
             // Get preview size
-            Size previewSize = getOptimalPreviewSize(mCamera.getId());
-            if(null == previewSize) {
-                throw new UnsupportedOperationException("couldn't get preview size for Camera " + mCamera.getId());
+            mPreviewSize = getOptimalPreviewSize(mCamera.getId());
+            if(null == mPreviewSize) {
+                throw new RuntimeException("couldn't get preview size for Camera " + mCamera.getId());
             }
 
             // Create ImageReader
-            mPreviewImageReader = ImageReader.newInstance(previewSize.getWidth(), previewSize.getHeight(), sPreviewImageFormat, 2);
+            mPreviewImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), sPreviewImageFormat, 2);
             mPreviewImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
 
             // Create SurfaceTexture
             mDummyTexture = new SurfaceTexture(0);
-            mDummyTexture.setDefaultBufferSize(previewSize.getWidth(), previewSize.getHeight());
+            mDummyTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
 
             // Create Surface
             mDummySurface = new Surface(mDummyTexture);
@@ -403,6 +406,10 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         startDevice();
     }
 
+    // =============================================================================================
+    // Camera functions
+    // =============================================================================================
+
     /** isBackCameraAvailable
      *
      */
@@ -417,6 +424,23 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     @Override
     public boolean isFrontCameraAvailable() {
         return null != mFrontDeviceId;
+    }
+
+    /** setDummyTexture
+     *
+     */
+    @Override
+    public void setDummyTexture(SurfaceTexture dummyTexture) {
+        if(null != mPreviewRequestBuilder) {
+            mPreviewRequestBuilder.removeTarget(mDummySurface);
+        }
+
+        mDummyTexture = dummyTexture;
+        mDummySurface = new Surface(mDummyTexture);
+
+        if(null != mPreviewRequestBuilder) {
+            mPreviewRequestBuilder.addTarget(mDummySurface);
+        }
     }
 
     /** startCapture
@@ -445,7 +469,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      */
     @Override
     public void switchToBackCamera() {
-        if(mBackDeviceId == mActiveDeviceId) {
+        if(mActiveDeviceId.equals(mBackDeviceId)) {
             return;
         }
 
@@ -457,7 +481,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      */
     @Override
     public void switchToFrontCamera() {
-        if(mFrontDeviceId == mActiveDeviceId) {
+        if(mActiveDeviceId.equals(mFrontDeviceId)) {
             return;
         }
 
