@@ -211,8 +211,11 @@ struct ScopedFaceCulling : private Noncopyable {
 
 //! Scopes state of depth testing.
 struct ScopedDepthBuffer : private Noncopyable {
-	ScopedDepthBuffer( bool enableReadAndWrite = true );
+	//! Enables or disables both depth comparisons and writing to the depth buffer
+	ScopedDepthBuffer( bool enableReadAndWrite );
+	//! Enables or disables depth comparisons and/or writing to the depth buffer
 	ScopedDepthBuffer( bool enableRead, bool enableWrite );
+	//! Enables or disables depth comparisons, writing to the depth buffer and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
 	ScopedDepthBuffer( bool enableRead, bool enableWrite, GLenum depthFunc );
 	~ScopedDepthBuffer();
 	
