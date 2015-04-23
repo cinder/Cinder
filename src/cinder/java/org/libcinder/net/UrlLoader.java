@@ -3,7 +3,6 @@ package org.libcinder.net;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.net.HttpURLConnection;
 import java.net.UnknownServiceException;
 import java.net.URL;
@@ -11,7 +10,7 @@ import java.net.URLDecoder;
 
 import android.util.Log;
 
-import org.libcinder.Cinder;
+import org.libcinder.app.ModulesFragment;
 
 /** \class UrlLoader
  *
@@ -116,18 +115,22 @@ public class UrlLoader {
     public byte[] loadUrl(String url) {
         byte[] result = null;
 
-        try {
-            mUrl = url;
+        if(ModulesFragment.permissions().INTERNET()) {
+            try {
+                mUrl = url;
 
-            LoaderThread loader = new LoaderThread();
-            loader.start();
-            loader.join();
+                LoaderThread loader = new LoaderThread();
+                loader.start();
+                loader.join();
 
-            result = loader.getData();
+                result = loader.getData();
+            } catch (Exception e) {
+                mExceptionMsg = e.getMessage();
+                Log.e(TAG, mExceptionMsg);
+            }
         }
-        catch(Exception e) {
-            mExceptionMsg = e.getMessage();
-            Log.e(TAG, mExceptionMsg);
+        else {
+            mExceptionMsg = ModulesFragment.permissions().missing().INTERNET();
         }
 
         return result;

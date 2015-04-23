@@ -1,6 +1,8 @@
 package org.libcinder.exampleapp;
 
 import android.app.Activity;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
@@ -11,6 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import org.libcinder.app.ModulesFragment;
 import org.libcinder.exampleapp.widgets.DebugTextView;
 import org.libcinder.net.UrlLoader;
 
@@ -22,6 +25,8 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
 
     private static final String TAG = "UrlLoaderActivity";
 
+    private ModulesFragment mModulesFragment;
+
     private DebugTextView mLog;
 
     private EditText mEditText;
@@ -30,6 +35,12 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_url_loader);
+
+        mModulesFragment = new ModulesFragment();
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        fragmentTransaction.add( mModulesFragment, "cinder-modules-fragment" );
+        fragmentTransaction.commit();
 
         mLog = (DebugTextView)findViewById(R.id.textView);
         mLog.setMovementMethod(new ScrollingMovementMethod());
@@ -77,13 +88,17 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
 
             @Override
             public void run() {
-                UrlLoader loader = new UrlLoader();
-                data = loader.loadUrl(url);
-                if(null != data) {
-                    summary = data.length + " bytes";
+                try {
+                    UrlLoader loader = new UrlLoader();
+                    data = loader.loadUrl(url);
+                    if (null != data) {
+                        summary = data.length + " bytes";
+                    } else {
+                        summary = "result is null!";
+                    }
                 }
-                else {
-                    summary = "result is null!";
+                catch(Exception e) {
+                    summary = "error: " + e.getMessage();
                 }
             }
         }
