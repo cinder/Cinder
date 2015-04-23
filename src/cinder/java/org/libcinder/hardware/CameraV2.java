@@ -47,10 +47,6 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
     private CameraDevice mCamera = null;
 
-    private String mBackDeviceId = null;
-    private String mFrontDeviceId = null;
-    private String mActiveDeviceId = null;
-
     private ReentrantLock mPixelsMutex = null;
 
     private HandlerThread mCameraHandlerThread;
@@ -71,14 +67,14 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             try {
                 Image image = reader.acquireLatestImage();
                 if((null != image) && (image.getPlanes().length > 0)) {
-                    Log.i(Cinder.TAG, "Number of planes:" + image.getPlanes().length);
+                    //Log.i(Cinder.TAG, "Number of planes:" + image.getPlanes().length);
 
                     ByteBuffer buf0 = image.getPlanes()[0].getBuffer();
                     ByteBuffer buf1 = image.getPlanes()[1].getBuffer();
                     ByteBuffer buf2 = image.getPlanes()[2].getBuffer();
-                    Log.i(Cinder.TAG, "...plane[0] size:" + buf0.remaining());
-                    Log.i(Cinder.TAG, "...plane[1] size:" + buf1.remaining());
-                    Log.i(Cinder.TAG, "...plane[2] size:" + buf2.remaining());
+                    //Log.i(Cinder.TAG, "...plane[0] size:" + buf0.remaining());
+                    //Log.i(Cinder.TAG, "...plane[1] size:" + buf1.remaining());
+                    //Log.i(Cinder.TAG, "...plane[2] size:" + buf2.remaining());
 
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
 
@@ -123,6 +119,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      *
      */
     public CameraV2() {
+        // @TODO
     }
 
     public static void checkCameraPresence(boolean[] back, boolean[] front) {
@@ -150,8 +147,8 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     }
 
     @Override
-    protected void initialize() {
-        mCameraManager = (CameraManager)getActivity().getSystemService(Context.CAMERA_SERVICE);
+    public final void initialize() {
+        mCameraManager = (CameraManager)ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             for (String cameraId : mCameraManager.getCameraIdList()) {
@@ -170,6 +167,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             throw new RuntimeException("Failed getting camera: " + e);
         }
 
+/*
         mActiveDeviceId = (null != mBackDeviceId) ? mBackDeviceId : ((null != mFrontDeviceId) ? mFrontDeviceId : null);
 
         // Get preview size
@@ -182,6 +180,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             mWidth = previewSize.getWidth();
             mHeight = previewSize.getHeight();
         }
+*/
 
         mPixelsMutex = new ReentrantLock();
     }
@@ -267,16 +266,23 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
                 throw new RuntimeException("couldn't get preview size for Camera " + mCamera.getId());
             }
 
+            mWidth = mPreviewSize.getWidth();
+            mHeight = mPreviewSize.getHeight();
+
             // Create ImageReader
             mPreviewImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), sPreviewImageFormat, 2);
             mPreviewImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
 
             // Create SurfaceTexture
-            mDummyTexture = new SurfaceTexture(0);
-            mDummyTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            if(null == mDummyTexture) {
+                mDummyTexture = new SurfaceTexture(0);
+                //mDummyTexture.setDefaultBufferSize(mPreviewSize.getWidth(), mPreviewSize.getHeight());
+            }
 
             // Create Surface
-            mDummySurface = new Surface(mDummyTexture);
+            if(null == mDummySurface) {
+                mDummySurface = new Surface(mDummyTexture);
+            }
 
             // Create CaptureRequest.Builder
             mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
@@ -382,7 +388,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      *
      */
     private void startBackDevice() {
-        if(mBackDeviceId.equals(mActiveDeviceId)) {
+        if((null != mActiveDeviceId) && (mBackDeviceId.equals(mActiveDeviceId))) {
             return;
         }
 
@@ -396,7 +402,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      *
      */
     private void startFrontDevice() {
-        if(mFrontDeviceId.equals(mActiveDeviceId)) {
+        if((null != mActiveDeviceId) && (mFrontDeviceId.equals(mActiveDeviceId))) {
             return;
         }
 
@@ -409,22 +415,6 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     // =============================================================================================
     // Camera functions
     // =============================================================================================
-
-    /** isBackCameraAvailable
-     *
-     */
-    @Override
-    public boolean isBackCameraAvailable() {
-        return null != mBackDeviceId;
-    }
-
-    /** isFrontCameraAvailable
-     *
-     */
-    @Override
-    public boolean isFrontCameraAvailable() {
-        return null != mFrontDeviceId;
-    }
 
     /** setDummyTexture
      *

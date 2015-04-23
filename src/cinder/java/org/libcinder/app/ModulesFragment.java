@@ -65,6 +65,7 @@ public class ModulesFragment extends Fragment {
     public void onAttach(Activity activity) {
         Log.i(TAG, "onAttach");
         super.onAttach(activity);
+        ModulesFragment.set(this);
     }
 
     /** onCreate
@@ -74,7 +75,6 @@ public class ModulesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        ModulesFragment.set(this);
 
         this.checkCameraPresence();
     }

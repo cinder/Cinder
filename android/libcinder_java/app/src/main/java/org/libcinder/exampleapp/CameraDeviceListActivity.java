@@ -30,7 +30,7 @@ public class CameraDeviceListActivity extends Activity implements Button.OnClick
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_camera_devices);
+        setContentView(R.layout.activity_camera_devices_list);
 
         mLog = (DebugTextView)findViewById(R.id.textView);
         mLog.setMovementMethod(new ScrollingMovementMethod());

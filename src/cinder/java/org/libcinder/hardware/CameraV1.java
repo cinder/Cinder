@@ -4,7 +4,6 @@ import org.libcinder.Cinder;
 
 import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
-import android.provider.ContactsContract;
 import android.util.Log;
 import android.graphics.SurfaceTexture;
 
@@ -21,13 +20,11 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
     private android.hardware.Camera mCamera = null;
 
-    private int mBackDeviceId   = -1;
-    private int mFrontDeviceId  = -1;
-    private int mActiveDeviceId = -1;
-
     private ReentrantLock mPixelsMutex  = null;
 
-    public CameraV1() {}
+    public CameraV1() {
+        // @TODO
+    }
 
     public static void checkCameraPresence(boolean[] back, boolean[] front) {
         back[0] = false;
@@ -46,25 +43,28 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     }
 
     @Override
-    protected void initialize() {
+    public final void initialize() {
         int numberOfCameras = Camera.getNumberOfCameras();
         for( int i = 0; i < numberOfCameras; ++i ) {
             android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
             Camera.getCameraInfo(i, info);
             if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
-                mBackDeviceId = i;
+                mBackDeviceId = Integer.toString(i);
             }
             else if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
-                mFrontDeviceId = i;
+                mFrontDeviceId = Integer.toString(i);
             }
         }
 
+/*
         mActiveDeviceId = (-1 != mBackDeviceId) ? mBackDeviceId : ((-1 != mFrontDeviceId) ? mFrontDeviceId : -1);
 
         Log.i(Cinder.TAG, "Back Camera: " + mBackDeviceId);
         Log.i(Cinder.TAG, "Front Camera: " + mFrontDeviceId);
-
-        mDummyTexture = new SurfaceTexture(0);
+*/
+        if(null == mDummyTexture) {
+            mDummyTexture = new SurfaceTexture(0);
+        }
 
         mPixelsMutex = new ReentrantLock();
     }
@@ -74,12 +74,12 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     private void startDevice() {
         // Bail if we don't have a valid camera id or mCamera isn't null
-        if ((-1 == mActiveDeviceId) || (null != mCamera)) {
+        if ((null == mActiveDeviceId) || (null != mCamera)) {
             return;
         }
 
         try {
-            mCamera = android.hardware.Camera.open(mActiveDeviceId);
+            mCamera = android.hardware.Camera.open(Integer.parseInt(mActiveDeviceId));
 
             Camera.Parameters params = mCamera.getParameters();
             mWidth = params.getPreviewSize().width;
@@ -116,7 +116,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      *
      */
     private void startBackDevice() {
-        if(mBackDeviceId == mActiveDeviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mBackDeviceId))) {
             return;
         }
 
@@ -130,7 +130,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      *
      */
     private void startFrontDevice() {
-        if(mFrontDeviceId == mActiveDeviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId))) {
             return;
         }
 
@@ -157,22 +157,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     // =============================================================================================
     // Camera functions
     // =============================================================================================
-
-    /** isBackCameraAvailable
-     *
-     */
-    @Override
-    public boolean isBackCameraAvailable() {
-        return -1 != mBackDeviceId;
-    }
-
-    /** isFrontCameraAvailable
-     *
-     */
-    @Override
-    public boolean isFrontCameraAvailable() {
-        return -1 != mFrontDeviceId;
-    }
 
     /** setDummyTexture
      *
@@ -216,7 +200,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     @Override
     public void switchToBackCamera() {
-        if(mBackDeviceId == mActiveDeviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mBackDeviceId))) {
             return;
         }
 
@@ -228,7 +212,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     @Override
     public void switchToFrontCamera() {
-        if(mFrontDeviceId == mActiveDeviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId))) {
             return;
         }
 

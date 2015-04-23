@@ -8,6 +8,10 @@ import android.os.Bundle;
 
 public abstract class Camera extends Fragment {
 
+    protected String mBackDeviceId   = null;
+    protected String mFrontDeviceId  = null;
+    protected String mActiveDeviceId = null;
+
     protected int mWidth = 0;
     protected int mHeight = 0;
     protected byte[] mPixels = null;
@@ -44,11 +48,7 @@ public abstract class Camera extends Fragment {
         return mHeight;
     }
 
-    protected abstract void initialize();
-
-    public abstract boolean isBackCameraAvailable();
-
-    public abstract boolean isFrontCameraAvailable();
+    public abstract void initialize();
 
     public abstract void setDummyTexture(SurfaceTexture dummyTexture);
 
@@ -63,6 +63,46 @@ public abstract class Camera extends Fragment {
     public abstract byte[] lockPixels();
 
     public abstract void unlockPixels();
+
+    /** isBackCameraAvailable
+     *
+     */
+    public boolean isBackCameraAvailable() {
+        return (null != mBackDeviceId);
+    }
+
+    /** isFrontCameraAvailable
+     *
+     */
+    public boolean isFrontCameraAvailable() {
+        return (null != mFrontDeviceId);
+    }
+
+    /** isBackCameraActive
+     *
+     */
+    public boolean isBackCameraActive() {
+        return ((null != mBackDeviceId) && (mActiveDeviceId.equals(mBackDeviceId)));
+    }
+
+    /** isFrontCameraActive
+     *
+     */
+    public boolean isFrontCameraActive() {
+        return ((null != mFrontDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId)));
+    }
+
+    /** toggleActiveCamera
+     *
+     */
+    public void toggleActiveCamera() {
+        if(isBackCameraActive() && isFrontCameraAvailable()) {
+            switchToFrontCamera();
+        }
+        else if(isFrontCameraActive() && isBackCameraAvailable()) {
+            switchToBackCamera();;
+        }
+    }
 
     /** onAttach
      *
