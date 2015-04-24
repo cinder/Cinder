@@ -2,6 +2,7 @@ package org.libcinder.hardware;
 
 import android.app.Activity;
 import android.app.Fragment;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +39,22 @@ public abstract class Camera extends Fragment {
         else {
             CameraV1.checkCameraPresence(back, front);
         }
+    }
+
+    public static String imageFormatString(int imageFormat) {
+        String result = null;
+        switch(imageFormat) {
+            case ImageFormat.RGB_565     : result = "RGB_565";     break;
+            case ImageFormat.NV16        : result = "NV16";        break;
+            case ImageFormat.YUY2        : result = "YUY2";        break;
+            case ImageFormat.YV12        : result = "YV12";        break;
+            case ImageFormat.JPEG        : result = "JPEG";        break;
+            case ImageFormat.NV21        : result = "NV21";        break;
+            case ImageFormat.YUV_420_888 : result = "YUV_420_888"; break;
+            case ImageFormat.RAW_SENSOR  : result = "RAW_SENSOR";  break;
+            case ImageFormat.RAW10       : result = "RAW10";       break;
+        }
+        return result;
     }
 
     public int getWidth() {

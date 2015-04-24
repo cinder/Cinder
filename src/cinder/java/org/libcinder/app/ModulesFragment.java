@@ -192,8 +192,11 @@ public class ModulesFragment extends Fragment {
     // =============================================================================================
 
     public Display getDefaultDisplay() {
-        WindowManager wm = (WindowManager)getActivity().getSystemService(Context.WINDOW_SERVICE);
-        Display result = wm.getDefaultDisplay();
+        Display result = null;
+        if(null != getActivity()) {
+            WindowManager wm = (WindowManager)getActivity().getSystemService(Context.WINDOW_SERVICE);
+            result = wm.getDefaultDisplay();
+        }
         return result;
     }
 

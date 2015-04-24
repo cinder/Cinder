@@ -3,6 +3,7 @@ package org.libcinder.exampleapp;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.camera2.CameraCharacteristics;
@@ -74,6 +75,8 @@ public class CameraDeviceListActivity extends Activity implements Button.OnClick
             for(Camera.Size size : params.getSupportedPreviewSizes()) {
                 mLog.appendLine(size.width + "x" + size.height, 2);
             }
+
+            mLog.appendLine("supported formats:", 1);
         }
     }
 
@@ -97,9 +100,21 @@ public class CameraDeviceListActivity extends Activity implements Button.OnClick
                 mLog.appendLine("canDisableShutterSound: " + "n/a", 1);
 
                 StreamConfigurationMap scm = info.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
-                List<Size> sizes = Arrays.asList(scm.getOutputSizes(SurfaceTexture.class));
+                List<Size> sizes = Arrays.asList(scm.getOutputSizes(ImageFormat.YUV_420_888));
                 for(Size size : sizes) {
                     mLog.appendLine(size.getWidth() + "x" + size.getHeight(), 2);
+                }
+
+                mLog.appendLine("supported formats:", 1);
+                int[] formats = scm.getOutputFormats();
+                for(int fmt : formats) {
+                    String fmtStr = org.libcinder.hardware.Camera.imageFormatString(fmt);
+                    if(null != fmtStr) {
+                        mLog.appendLine(fmtStr, 2);
+                    }
+                    else {
+                        mLog.appendLine("UNKNOWN FORMAT: " + Integer.toString(fmt), 2);
+                    }
                 }
             }
         }
