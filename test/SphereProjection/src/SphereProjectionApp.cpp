@@ -126,9 +126,8 @@ void SphereProjectionApp::draw()
 		gl::color( 1, 1, 1, 1 );
 		
 		// draw bounding circle
-		float radius;
-		mCam.calcScreenProjection( worldSpaceSphere, getWindowSize(), &center, &radius );
-		gl::drawStrokedCircle( center, radius );
+		mCam.calcScreenProjection( worldSpaceSphere, getWindowSize(), &center, &axisA, &axisB );
+		gl::drawStrokedCircle( center, std::max( length( axisA ), length( axisB ) ) );
 	}
 	
 	mParams->draw();
