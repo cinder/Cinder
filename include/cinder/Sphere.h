@@ -51,8 +51,10 @@ class Sphere {
 	static Sphere	calculateBoundingSphere( const std::vector<vec3> &points );
 	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
 
-	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Algorithm due to Iñigo Quilez.
+	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Returns \c false if calculation failed, rendering only \a outCenter correct. Algorithm due to Iñigo Quilez.
 	void	calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
+	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Algorithm due to Iñigo Quilez.
+	void	calcProjection( float focalLength, vec2 screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
 	//! Calculates the projected area of the Sphere given \a focalLength and screen size in pixels. Algorithm due to Iñigo Quilez.
 	float	calcProjectedArea( float focalLength, vec2 screenSizePixels ) const;
 

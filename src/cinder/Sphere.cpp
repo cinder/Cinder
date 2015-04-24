@@ -167,14 +167,35 @@ void Sphere::calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA,
 			*outAxisA = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-z2)) ) * vec2( o.x, o.y );
 			
 		if( outAxisB )
-			*outAxisB = focalLength * sqrtf( -r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2)) ) * vec2( -o.y, o.x );
+			*outAxisB = focalLength * sqrtf( fabs(-r2*(r2-l2)/((l2-z2)*(r2-z2)*(r2-l2))) ) * vec2( -o.y, o.x );
 	}
-	else {
+	else { // approximate with circle
+		float radius = focalLength * mRadius / sqrtf( z2 - r2 );
 		if( outAxisA )
-			*outAxisA = vec2( 0, focalLength * mRadius / o.z );
+			*outAxisA = vec2( radius, 0 );
 		if( outAxisB )
-			*outAxisB = vec2( focalLength * mRadius / o.z, 0 );
+			*outAxisB = vec2( 0, radius );
 	}
+}
+
+void Sphere::calcProjection( float focalLength, vec2 screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const
+{
+	auto toScreenPixels = [=] ( vec2 v, const vec2 &windowSize ) {
+		vec2 result = v;
+		result.x *= 1 / ( windowSize.x / windowSize.y );
+		result += vec2( 0.5f );
+		result *= windowSize;
+		return result;
+	};
+	
+	vec2 center, axisA, axisB;
+	calcProjection( focalLength, &center, &axisA, &axisB );
+	if( outCenter )
+		*outCenter = toScreenPixels( center, screenSizePixels );
+	if( outAxisA )
+		*outAxisA = toScreenPixels( center + axisA * 0.5f, screenSizePixels ) - toScreenPixels( center - axisA * 0.5f, screenSizePixels );
+	if( outAxisB )
+		*outAxisB = toScreenPixels( center + axisB * 0.5f, screenSizePixels ) - toScreenPixels( center - axisB * 0.5f, screenSizePixels );
 }
 
 float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) const
