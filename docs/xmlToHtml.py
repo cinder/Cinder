@@ -20,8 +20,13 @@ tagDictionary = {
 	"para": "p"
 }
 
-tagXml = None;
+tagXml = None
 
+# various HTML elements on the page
+sideEl = None
+
+fileTags = None
+classTags = None
 
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
@@ -33,6 +38,19 @@ def findClassDescription( className ):
 	# find the xml file for that class
 	# within that xml file, find the brief description
 	return ""
+
+def findClassTag( className ):
+	# find the class definition in tag file
+	for c in classTags :
+		# print c.find('name').text
+		if c.find('name').text == className:
+			return c
+
+def findFileTag( includeFile ):
+	# find the file definition in tag file
+	for f in fileTags :
+		if f.find('name').text == includeFile:
+			return f
 
 def addClassToTag( tag, className ):
 	tag["class"] = tag.get("class", []) + [className]
@@ -158,6 +176,73 @@ def genIncludesTag( bs4, text ):
 	defineLinkTag( includeLink, {'linkid':text} )
 	# wrapperEl.append( includeLink )
 	return includeLink
+
+def genTypeDefs( bs4, tree ):
+	# create html from template
+	side = getTemplate( bs4, "side-expandable" )
+	sideEl.append( side )
+
+	# fill heading
+	side.find('h4').append("Typedefs:")
+
+	# get typedefs from fileTagTree in tagfile
+	typeDefs = tree.findall( r'member[@kind="typedef"]' )
+	typeDefUl = None
+	if len(typeDefs) > 0 :
+		typeDefUl = genTag( bs4, "ul" )
+
+	# fill list of typedefs
+	for typeDef in typeDefs :
+		typeDefLi = genTag( bs4, "li" )
+		typeDefLi.append( typeDef.find("name").text );
+		typeDefUl.append( typeDefLi )
+
+	# plug into html
+	if typeDefUl is not None:
+		side.append(typeDefUl)
+
+	print typeDefs
+
+
+# def iterClassBase( tree, heirarchy ) :
+# 	base = tree.find( 'base' )
+# 	# tree.find( 'base' ).text
+
+# 	if base is None:
+# 		return
+# 	else :
+# 		# add to heirarchy
+# 		heirarchy.push( base.text )
+# 		iterClassBase( tree, heirarchy )
+
+def genClassHierarchy( bs4, tree ):
+	# create html from template
+	side = getTemplate( bs4, "side-expandable" )
+	sideEl.append( side )
+
+	# fill heading
+	side.find('h4').append("Class Heirarchy:")
+
+	# get base from tagfile
+	base = tree.find( 'base' ).text
+	print "BASE: " + base
+
+
+	# typeDefUl = None
+	# if len(typeDefs) > 0 :
+	# 	typeDefUl = genTag( bs4, "ul" )
+
+	# # fill list of typedefs
+	# for typeDef in typeDefs :
+	# 	typeDefLi = genTag( bs4, "li" )
+	# 	typeDefLi.append( typeDef.find("name").text );
+	# 	typeDefUl.append( typeDefLi )
+
+	# # plug into html
+	# if typeDefUl is not None:
+	# 	side.append(typeDefUl)
+
+	# print typeDefs
 
 
 def replaceTag( bs4, tree, parentTag, content ):
@@ -380,14 +465,17 @@ def clone(el) :
         copy.append(clone(child))
     return copy
 
-def findTemplate( bs4, elementId ) :
-	return bs4.find( id=elementId )
+def getTemplate( bs4, elementId ) :
+	return clone( bs4.find( id=elementId ) )
 
 	
 def processClassXmlFile( inPath, outPath, html ):
 
+	global sideEl
+	global fileTags
+	global classTags
 	# soup = html;
-	
+
 	print "Processing file: " + inPath + " > " + outPath;
 	tree = ET.parse( inPath )
 
@@ -403,18 +491,13 @@ def processClassXmlFile( inPath, outPath, html ):
 	# compound/file name
 	# print "INCLUDE FILE: " + includeDef
 	# print tagXml.findall( r'compound[@kind="file"]/[name="{includeName}"]' )
-	files = tagXml.findall( r'compound[@kind="file"]' )
-	classTagTree = None
-	for f in files :
-		if f.find('name').text == includeDef:
-			classTagTree = f
-			break;
-
-	print ET.dump(classTagTree)
-
-	# print tagXml.findall( r'compound[@kind="file"]/[name="Surface.h"]' )
-	# expr = r'compound[@kind="file"]/[name=$includeName]'
-	# print tagXml.xpath(expr, includeName=includeName)
+	fileTags = tagXml.findall( r'compound[@kind="file"]' )
+	fileTagTree = findFileTag( includeDef )
+	# print ET.dump(fileTagTree)
+	
+	classTags = tagXml.findall( r'compound[@kind="class"]' )
+	classTagTree = findClassTag( "cinder::CameraPersp" )
+	# print ET.dump(classTagTree)
 
 	titleTag.append( compoundName )
 	headTag.insert( 0, titleTag )
@@ -423,8 +506,8 @@ def processClassXmlFile( inPath, outPath, html ):
 	contentsTag = html.find( "div", "contents" )
 
 	# description area
-	# descriptionEl = html.find( id="description" )
-	descriptionEl = findTemplate( html, "description" )
+	descriptionEl = html.find( id="description" )
+	# descriptionEl = getTemplate( html, "description" )
 	descriptionProseEl = descriptionEl.find( "div", "prose" )
 	sideEl = descriptionEl.find( "div", "side" )
 	includeEl = sideEl.find( "div", "include" )
@@ -439,22 +522,9 @@ def processClassXmlFile( inPath, outPath, html ):
 	# ----------
 	#  Typedefs
 	# ----------
-	side = clone( html.find( id="side-expandable" ) )
-	sideEl.append( side )
-	side.find('h4').append("Typedefs:")
-	# TODO: Grab typedefs from cinder.tag file
-	typeDefs = classTagTree.findall( r'member[@kind="typedef"]' )
-	typeDefUl = None
-	if len(typeDefs) > 0 :
-		typeDefUl = genTag( html, "ul" )
-
-	for typeDef in typeDefs :
-		typeDefLi = genTag( html, "li" )
-		typeDefLi.append( typeDef.find("name").text );
-		typeDefUl.append(typeDefLi)
-	side.append(typeDefUl)
-
-	print typeDefs
+	genTypeDefs( html, fileTagTree )
+	genClassHierarchy( html, classTagTree )
+	
 
 
 	# +-----------+
