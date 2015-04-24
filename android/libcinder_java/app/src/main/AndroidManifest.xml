@@ -16,7 +16,7 @@
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:theme="@style/Theme.AppCompat.Light" >
+        android:theme="@style/Theme.AppCompat.Light">
         <activity
             android:name=".CameraDeviceListActivity"
             android:label="@string/title_activity_camera_devices" >
@@ -37,7 +37,8 @@
         </activity>
         <activity
             android:name=".CameraPreviewActivity"
-            android:label="@string/title_activity_camera_preview" >
+            android:label="@string/title_activity_camera_preview"
+            android:screenOrientation="fullSensor" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

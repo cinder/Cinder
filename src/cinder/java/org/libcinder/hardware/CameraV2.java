@@ -4,6 +4,7 @@ import org.libcinder.app.ModulesFragment;
 
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.ImageFormat;
 import android.graphics.SurfaceTexture;
@@ -37,9 +38,6 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
     private static final String TAG = "CameraV2";
 
-    private SurfaceTexture mDummyTexture = null;
-    private Surface mDummySurface = null;
-
     private CameraManager mCameraManager = null;
 
     private Semaphore mCameraOpenCloseLock = new Semaphore(1);
@@ -51,10 +49,10 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     private HandlerThread mCameraHandlerThread;
     private Handler mCameraHandler;
 
-    private Size mPreviewSize = null;
-    private int mPreviewImageFormat = ImageFormat.JPEG; //ImageFormat.YUV_420_888;
+    private int mPreviewImageFormat = ImageFormat.YUV_420_888;
     private ImageReader mPreviewImageReader = null;
-    private Surface mPreviewSurface = null;
+    private Surface mImageSurface = null;
+    private Surface mDummySurface = null;
 
     private CaptureRequest mPreviewRequest = null;
     private CaptureRequest.Builder mPreviewRequestBuilder = null;
@@ -66,7 +64,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             lockPixels();
             try {
                 Image image = reader.acquireLatestImage();
-                if((null != image) && (image.getPlanes().length > 0)) {
+                if ((null != image) && (image.getPlanes().length > 0)) {
                     //Log.i(TAG, "Number of planes:" + image.getPlanes().length);
 
                     ByteBuffer buf0 = image.getPlanes()[0].getBuffer();
@@ -78,15 +76,14 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
 
-                    if(null == mPixels) {
+                    if (null == mPixels) {
                         mPixels = new byte[buffer.remaining()];
                     }
                     buffer.get(mPixels);
 
                     image.close();
                 }
-            }
-            finally {
+            } finally {
                 unlockPixels();
             }
         }
@@ -115,75 +112,342 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         }
     };
 
-    /** CinderCamera2
+    /** CameraV2
      *
      */
     public CameraV2() {
         // @TODO
     }
 
+    /** checkCameraPresence
+     *
+     */
     public static void checkCameraPresence(boolean[] back, boolean[] front) {
         back[0] = false;
         front[0] = false;
 
-        CameraManager cm = (CameraManager)ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
+        CameraManager cm = (CameraManager) ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             for (String cameraId : cm.getCameraIdList()) {
                 CameraCharacteristics info = cm.getCameraCharacteristics(cameraId);
 
                 int facing = info.get(CameraCharacteristics.LENS_FACING);
-                if(CameraCharacteristics.LENS_FACING_BACK == facing) {
+                if (CameraCharacteristics.LENS_FACING_BACK == facing) {
                     back[0] = true;
-                }
-                else if(CameraCharacteristics.LENS_FACING_FRONT == facing) {
+                } else if (CameraCharacteristics.LENS_FACING_FRONT == facing) {
                     front[0] = true;
                 }
             }
-        }
-        catch(Exception e ) {
+        } catch (Exception e) {
             throw new RuntimeException("failed getting camera: " + e);
         }
     }
 
+    /** startPreview
+     *
+     */
+    private void startPreview() {
+        // Start the preview
+        try {
+            // Get preview size
+            Size previewSize = getOptimalPreviewSize(mCamera.getId());
+            if (null == previewSize) {
+                throw new RuntimeException("couldn't get preview size for Camera " + mCamera.getId());
+            }
+
+            setPreferredPreviewSize(previewSize.getWidth(), previewSize.getHeight());
+
+            // Create ImageReader
+            final int maxImages = 2;
+            mPreviewImageReader = ImageReader.newInstance(getWidth(), getHeight(), mPreviewImageFormat, maxImages);
+            mPreviewImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
+            mImageSurface = mPreviewImageReader.getSurface();
+
+            // Create SurfaceTexture
+            if (null == mDummyTexture) {
+                mDummyTexture = new SurfaceTexture(0);
+            }
+            mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
+
+            // Create Surface
+            if (null == mDummySurface) {
+                mDummySurface = new Surface(mDummyTexture);
+            }
+
+            // Create CaptureRequest.Builder
+            mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
+            mPreviewRequestBuilder.addTarget(mDummySurface);
+            mPreviewRequestBuilder.addTarget(mImageSurface);
+
+            // Create CameraCaptureSession
+            mCamera.createCaptureSession(
+                Arrays.asList(mDummySurface, mImageSurface),
+                new CameraCaptureSession.StateCallback() {
+                    @Override
+                    public void onConfigured(CameraCaptureSession session) {
+                        if (null == mCamera) {
+                            return;
+                        }
+
+                        mPreviewCaptureSession = session;
+                        try {
+                            mPreviewRequest = mPreviewRequestBuilder.build();
+                            mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
+                        } catch (Exception e) {
+                            Log.e(TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
+                        }
+                    }
+
+                    @Override
+                    public void onConfigureFailed(CameraCaptureSession session) {
+                        Log.e(TAG, "Unable to create capture session using current configuration");
+                    }
+                },
+                null
+            );
+        } catch (Exception e) {
+            Log.e(TAG, "CameraDevice.StateCallback.onOpened failed: " + e);
+        }
+    }
+
+    /** stopPreview
+     *
+     */
+    private void stopPreview() {
+        if(null != mPreviewCaptureSession) {
+            mPreviewCaptureSession.close();;
+            mPreviewCaptureSession = null;
+        }
+
+        if (null != mCamera) {
+            mCamera.close();
+            mCamera = null;
+        }
+
+        if (null != mPreviewImageReader) {
+            mPreviewImageReader.close();
+            mPreviewImageReader = null;
+        }
+    }
+
+    /** startDevice
+     *
+     */
+    private void startDevice() {
+        // Bail if we don't have a valid camera id or mCamera isn't null
+        if ((null == mActiveDeviceId) || (null != mCamera)) {
+            return;
+        }
+
+        try {
+            mCameraHandlerThread = new HandlerThread("camera-handler-thread");
+            mCameraHandlerThread.start();
+        }
+        catch(Exception e) {
+            Log.e(TAG, "camera HandlerThread allocation failed: " + e.getMessage());
+        }
+
+        try {
+            mCameraHandler = new Handler(mCameraHandlerThread.getLooper());
+        }
+        catch(Exception e) {
+            Log.e(TAG, "camera Handler allocation failed: " + e.getMessage());
+        }
+
+        try {
+            mCameraManager.openCamera(mActiveDeviceId, mStateCallback, mCameraHandler);
+        } catch (Exception e) {
+            Log.e(TAG, "openCamera failed: " + e.getMessage());
+        }
+    }
+
+    /** stopDevice
+     *
+     */
+    private void stopDevice() {
+        stopPreview();
+
+        if (null != mCameraHandlerThread) {
+            try {
+                mCameraHandlerThread.quitSafely();
+                mCameraHandlerThread.join();
+                mCameraHandlerThread = null;
+                mCameraHandler = null;
+            } catch (Exception e) {
+                Log.e(TAG, "Camera handler thread stop failed: " + e);
+            }
+        }
+    }
+
+    private void startDevice(String deviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(deviceId))) {
+            return;
+        }
+
+        stopDevice();
+
+        mActiveDeviceId = deviceId;
+        startDevice();
+    }
+
+    /** updatePreviewTransform
+     *
+     */
+    public void updatePreviewTransform(int viewWidth, int viewHeight, int orientation, int displayRotation) {
+        float centerX = viewWidth/2.0f;
+        float centerY = viewHeight/2.0f;
+        float scaleX = 1;
+        float scaleY = 1;
+
+        float rotationDegrees = 0;
+        switch(displayRotation) {
+            case Surface.ROTATION_0: {
+                rotationDegrees = 0;
+            }
+            break;
+
+            case Surface.ROTATION_90: {
+                rotationDegrees = 90;
+                scaleX = (float)viewWidth/(float)viewHeight;
+                scaleY = (float)viewHeight/(float)viewWidth;
+            }
+            break;
+
+            case Surface.ROTATION_180: {
+                rotationDegrees = 180;
+            }
+            break;
+
+            case Surface.ROTATION_270: {
+                rotationDegrees = 270;
+                scaleX = (float)viewWidth/(float)viewHeight;
+                scaleY = (float)viewHeight/(float)viewWidth;
+            }
+            break;
+        }
+
+        mPreviewTransform.reset();
+        mPreviewTransform.postRotate(360.0f - rotationDegrees, centerX, centerY);
+        mPreviewTransform.postScale(scaleX, scaleY, centerX, centerY);
+    }
+
+    // =============================================================================================
+    // Camera functions
+    // =============================================================================================
+
+    /** initializeImpl
+     *
+     */
     @Override
-    public final void initialize() {
-        mCameraManager = (CameraManager)ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
+    protected final void initializeImpl() {
+        mCameraManager = (CameraManager) ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             for (String cameraId : mCameraManager.getCameraIdList()) {
                 CameraCharacteristics info = mCameraManager.getCameraCharacteristics(cameraId);
 
                 int facing = info.get(CameraCharacteristics.LENS_FACING);
-                if(CameraCharacteristics.LENS_FACING_BACK == facing) {
+                if (CameraCharacteristics.LENS_FACING_BACK == facing) {
                     mBackDeviceId = cameraId;
-                }
-                else if(CameraCharacteristics.LENS_FACING_FRONT == facing) {
+                } else if (CameraCharacteristics.LENS_FACING_FRONT == facing) {
                     mFrontDeviceId = cameraId;
                 }
             }
-        }
-        catch(Exception e ) {
+        } catch (Exception e) {
             throw new RuntimeException("Failed getting camera: " + e);
         }
 
-/*
-        mActiveDeviceId = (null != mBackDeviceId) ? mBackDeviceId : ((null != mFrontDeviceId) ? mFrontDeviceId : null);
-
-        // Get preview size
-        if(null != mActiveDeviceId) {
-            Size previewSize = getOptimalPreviewSize(mActiveDeviceId);
-            if (null == previewSize) {
-                throw new RuntimeException("couldn't get preview size for Camera " + mActiveDeviceId);
-            }
-
-            mWidth = previewSize.getWidth();
-            mHeight = previewSize.getHeight();
-        }
-*/
-
         mPixelsMutex = new ReentrantLock();
     }
+
+    /** setDummyTexture
+     *
+     */
+    @Override
+    protected void setDummyTextureImpl(SurfaceTexture dummyTexture) {
+        if (null != mPreviewRequestBuilder) {
+            mPreviewRequestBuilder.removeTarget(mDummySurface);
+        }
+
+        mDummyTexture = dummyTexture;
+        mDummySurface = new Surface(mDummyTexture);
+
+        if (null != mPreviewRequestBuilder) {
+            mPreviewRequestBuilder.addTarget(mDummySurface);
+        }
+    }
+
+    /** startCapture
+     *
+     */
+    @Override
+    protected void startCaptureImpl(String deviceId) {
+        if(null != deviceId) {
+            startDevice(deviceId);
+        }
+        else {
+            if (isBackCameraAvailable()) {
+                startDevice(mBackDeviceId);
+            } else if (isFrontCameraAvailable()) {
+                startDevice(mFrontDeviceId);
+            }
+        }
+    }
+
+    /** stopCapture
+     *
+     */
+    @Override
+    protected void stopCaptureImpl() {
+        stopDevice();
+    }
+
+    /** switchToBackCamera
+     *
+     */
+    @Override
+    protected void switchToBackCameraImpl() {
+        if (mActiveDeviceId.equals(mBackDeviceId)) {
+            return;
+        }
+
+        startDevice(mBackDeviceId);
+    }
+
+    /** switchToFrontCamera
+     *
+     */
+    @Override
+    protected void switchToFrontCameraImpl() {
+        if (mActiveDeviceId.equals(mFrontDeviceId)) {
+            return;
+        }
+
+        startDevice(mFrontDeviceId);
+    }
+
+    /** lockPixels
+     *
+     */
+    @Override
+    public byte[] lockPixels() {
+        mPixelsMutex.lock();
+        return mPixels;
+    }
+
+    /** unlockPixels
+     *
+     */
+    @Override
+    public void unlockPixels() {
+        mPixelsMutex.unlock();
+    }
+
+
+    // =============================================================================================
+    // Support methods
+    // =============================================================================================
 
     /** getOptimalPreviewSize
      *
@@ -254,321 +518,4 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         return result;
     }
 
-    /** startPreview
-     *
-     */
-    private void startPreview() {
-        // Start the preview
-        try {
-            // Get preview size
-            mPreviewSize = getOptimalPreviewSize(mCamera.getId());
-            if(null == mPreviewSize) {
-                throw new RuntimeException("couldn't get preview size for Camera " + mCamera.getId());
-            }
-
-            mWidth = mPreviewSize.getWidth();
-            mHeight = mPreviewSize.getHeight();
-            Log.i(TAG, "CamaeraV2.startPreview: " + mWidth + "x" + mHeight);
-
-            // Create ImageReader
-            final int maxImages = 2;
-            mPreviewImageReader = ImageReader.newInstance(mPreviewSize.getWidth(), mPreviewSize.getHeight(), mPreviewImageFormat, maxImages);
-            mPreviewImageReader.setOnImageAvailableListener(mOnImageAvailableListener, mCameraHandler);
-            mPreviewSurface = mPreviewImageReader.getSurface();
-
-            // Create SurfaceTexture
-            if(null == mDummyTexture) {
-                mDummyTexture = new SurfaceTexture(0);
-            }
-            mDummyTexture.setDefaultBufferSize(mWidth, mHeight);
-
-            // Create Surface
-            if(null == mDummySurface) {
-                mDummySurface = new Surface(mDummyTexture);
-            }
-
-            // Create CaptureRequest.Builder
-            mPreviewRequestBuilder = mCamera.createCaptureRequest(CameraDevice.TEMPLATE_PREVIEW);
-            mPreviewRequestBuilder.addTarget(mDummySurface);
-            //mPreviewRequestBuilder.addTarget(mPreviewSurface);
-
-            // Create CameraCaptureSession
-            mCamera.createCaptureSession(
-                Arrays.asList(mDummySurface), //Arrays.asList(mDummySurface, mPreviewSurface),
-                new CameraCaptureSession.StateCallback() {
-                    @Override
-                    public void onConfigured(CameraCaptureSession session) {
-                        if(null == mCamera) {
-                            return;
-                        }
-
-                        mPreviewCaptureSession = session;
-                        try {
-                            mPreviewRequest = mPreviewRequestBuilder.build();
-                            mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
-                        } catch (Exception e) {
-                            Log.e(TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
-                        }
-                    }
-
-                    @Override
-                    public void onConfigureFailed(CameraCaptureSession session) {
-                        Log.e(TAG, "Unable to create capture session using current configuration");
-                    }
-                },
-                null
-            );
-        }
-        catch(Exception e ) {
-            Log.e(TAG, "CameraDevice.StateCallback.onOpened failed: " + e);
-        }
-    }
-
-    /** stopPreview
-     *
-     */
-    private void stopPreview() {
-        if(null != mCamera) {
-            mCamera.close();
-            mCamera = null;
-        }
-
-        if(null != mPreviewImageReader) {
-            mPreviewImageReader.close();
-            mPreviewImageReader = null;
-        }
-    }
-
-//    private void privateLockPixels() {
-//        //Log.i(Platform.TAG, "privateLockPixels");
-//        mPixelsMutex.lock();
-//    }
-//
-//    private void privateUnlockPixels() {
-//        mPixelsMutex.unlock();;
-//        //Log.i(Platform.TAG, "privateUnlockPixels");
-//    }
-
-    /** startDevice
-     *
-     */
-    private void startDevice() {
-        // Bail if we don't have a valid camera id or mCamera isn't null
-        if ((null == mActiveDeviceId) || (null != mCamera)) {
-            return;
-        }
-
-        try {
-            mCameraHandlerThread = new HandlerThread("camera-handler-thread");
-            mCameraHandlerThread.start();
-            mCameraHandler = new Handler(mCameraHandlerThread.getLooper());
-            mCameraManager.openCamera(mActiveDeviceId, mStateCallback, mCameraHandler);
-        }
-        catch(Exception e ) {
-            Log.e(TAG, "CinderCamera2.startDevice failed: " + e);
-        }
-    }
-
-    /** stopDevice
-     *
-     */
-    private void stopDevice() {
-        stopPreview();
-
-        if(null != mCameraHandlerThread) {
-            try {
-                mCameraHandlerThread.quitSafely();
-                mCameraHandlerThread.join();
-                mCameraHandlerThread = null;
-                mCameraHandler = null;
-            }
-            catch(Exception e ) {
-                Log.e(TAG, "Camera handler thread stop failed: " + e);
-            }
-        }
-    }
-
-    /** startBackDevice
-     *
-     */
-    private void startBackDevice() {
-        if((null != mActiveDeviceId) && (mBackDeviceId.equals(mActiveDeviceId))) {
-            return;
-        }
-
-        stopDevice();
-
-        mActiveDeviceId = mBackDeviceId;
-        startDevice();
-    }
-
-    /** startFrontDevice
-     *
-     */
-    private void startFrontDevice() {
-        if((null != mActiveDeviceId) && (mFrontDeviceId.equals(mActiveDeviceId))) {
-            return;
-        }
-
-        stopDevice();
-
-        mActiveDeviceId = mFrontDeviceId;
-        startDevice();
-    }
-
-    // =============================================================================================
-    // Camera functions
-    // =============================================================================================
-
-    /** setDummyTexture
-     *
-     */
-    @Override
-    public void setDummyTexture(SurfaceTexture dummyTexture) {
-        if(null != mPreviewRequestBuilder) {
-            mPreviewRequestBuilder.removeTarget(mDummySurface);
-        }
-
-        mDummyTexture = dummyTexture;
-        mDummySurface = new Surface(mDummyTexture);
-
-        if(null != mPreviewRequestBuilder) {
-            mPreviewRequestBuilder.addTarget(mDummySurface);
-        }
-    }
-
-    /** startCapture
-     *
-     */
-    @Override
-    public void startCapture() {
-        if(isBackCameraAvailable()) {
-            startBackDevice();
-        }
-        else if(isFrontCameraAvailable()) {
-            startFrontDevice();
-        }
-    }
-
-    /** stopCapture
-     *
-     */
-    @Override
-    public void stopCapture() {
-        stopDevice();
-    }
-
-    /** switchToBackCamera
-     *
-     */
-    @Override
-    public void switchToBackCamera() {
-        if(mActiveDeviceId.equals(mBackDeviceId)) {
-            return;
-        }
-
-        startBackDevice();
-    }
-
-    /** switchToFrontCamera
-     *
-     */
-    @Override
-    public void switchToFrontCamera() {
-        if(mActiveDeviceId.equals(mFrontDeviceId)) {
-            return;
-        }
-
-        startFrontDevice();
-    }
-
-    /** lockPixels
-     *
-     */
-    @Override
-    public byte[] lockPixels() {
-        mPixelsMutex.lock();
-        return mPixels;
-    }
-
-    /** unlockPixels
-     *
-     */
-    @Override
-    public void unlockPixels() {
-        mPixelsMutex.unlock();
-    }
-
-
-/*
-    // =============================================================================================
-    // Static Methods for C++
-    // =============================================================================================
-
-    private static CameraV2 sCamera = null;
-
-    public static boolean initialize() {
-        if(null == sCamera) {
-            sCamera = new CameraV2();
-        }
-
-        return (null != sCamera.mFrontDeviceId || null != sCamera.mBackDeviceId);
-    }
-
-    public static boolean hasFrontCamera() {
-        return (null != sCamera) && (null != sCamera.mFrontDeviceId);
-    }
-
-    public static boolean hasBackCamera() {
-        return (null != sCamera) && (null != sCamera.mBackDeviceId);
-    }
-
-    public static void startCapture() {
-        if(null == sCamera) {
-            return;
-        }
-
-        sCamera.startDevice();
-    }
-
-    public static void stopCapture() {
-        if(null == sCamera) {
-            return;
-        }
-
-        sCamera.stopDevice();
-    }
-
-    public static byte[] lockPixels() {
-        if(null == sCamera) {
-            return null;
-        }
-
-        sCamera.privateLockPixels();
-        return sCamera.mPixels;
-    }
-
-    public static void unlockPixels() {
-        if(null == sCamera) {
-            return;
-        }
-
-        sCamera.privateUnlockPixels();
-    }
-
-    public static int getWidth() {
-        return (null != sCamera) ? sCamera.mWidth : 0;
-    }
-
-    public static int getHeight() {
-        return (null != sCamera) ? sCamera.mHeight : 0;
-    }
-
-    public static void takePicture() {
-        if(null == sCamera) {
-            return;
-        }
-
-    }
-*/
 }

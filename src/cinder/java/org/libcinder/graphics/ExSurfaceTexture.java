@@ -11,6 +11,13 @@ public class ExSurfaceTexture extends android.graphics.SurfaceTexture {
     public ExSurfaceTexture(int texName) {
         super(texName, false);
         mTexName = texName;
+
+        /*
+        if(-1 == mTexName) {
+            super.detachFromGLContext();
+            mAttached = false;
+        }
+        */
     }
 
     public ExSurfaceTexture(int texName, boolean singleBufferMode) {

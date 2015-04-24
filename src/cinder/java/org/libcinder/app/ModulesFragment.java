@@ -8,12 +8,17 @@ Using ModulesFragment in Activity
 2) Activity's onCreate should look something like this:
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // ...
-        mModulesFragment = new ModulesFragment();
         FragmentManager fragmentManager = getFragmentManager();
-        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(mModulesFragment, ModulesFragment.ID);
-        fragmentTransaction.commit();
+        Fragment fragment = fragmentManager.findFragmentByTag(ModulesFragment.FRAGMENT_TAG);
+        if(null == fragment) {
+            mModulesFragment = new ModulesFragment();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(mModulesFragment, ModulesFragment.FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        }
+        else {
+            mModulesFragment = (ModulesFragment)fragment;
+        }
     }
 
 */
@@ -22,6 +27,8 @@ package org.libcinder.app;
 import android.Manifest;
 import android.app.Activity;
 import android.app.Fragment;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
@@ -39,7 +46,7 @@ import org.libcinder.hardware.Camera;
 public class ModulesFragment extends Fragment {
 
     private static final String TAG = "ModulesFragment";
-    public static final String ID = "cinder-modules-fragment";
+    public static final String FRAGMENT_TAG = "fragment:org.libcinder.app.ModulesFragment";
 
     private static ModulesFragment sInstance;
 
@@ -241,7 +248,26 @@ public class ModulesFragment extends Fragment {
     public Camera getCamera() {
         if(null == mCamera) {
             mCamera = Camera.create();
+            addCameraFragment(mCamera);
         }
         return mCamera;
+    }
+
+    public Camera getCamera(int version) {
+        if(null == mCamera) {
+            mCamera = Camera.create(version);
+            addCameraFragment(mCamera);
+        }
+        return mCamera;
+    }
+
+    private void addCameraFragment(Camera camera) {
+        FragmentManager fragmentManager = getFragmentManager();
+        Fragment fragment = fragmentManager.findFragmentByTag(Camera.FRAGMENT_TAG);
+        if(null == fragment) {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(camera, Camera.FRAGMENT_TAG);
+            fragmentTransaction.commit();
+        }
     }
 }

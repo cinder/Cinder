@@ -6,6 +6,7 @@ import android.hardware.Camera;
 import android.hardware.Camera.CameraInfo;
 import android.util.Log;
 import android.graphics.SurfaceTexture;
+import android.view.Surface;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -16,22 +17,26 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
     private static final String TAG = "CameraV1";
 
-    private SurfaceTexture mDummyTexture = null;
-
     private android.hardware.Camera mCamera = null;
 
     private ReentrantLock mPixelsMutex  = null;
 
+    /** CameraV1
+     *
+     */
     public CameraV1() {
         // @TODO
     }
 
+    /** checkCameraPresence
+     *
+     */
     public static void checkCameraPresence(boolean[] back, boolean[] front) {
         back[0] = false;
         front[0] = false;
         int numberOfCameras = Camera.getNumberOfCameras();
         for( int i = 0; i < numberOfCameras; ++i ) {
-            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            CameraInfo info = new CameraInfo();
             Camera.getCameraInfo(i, info);
             if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
                 back[0] = true;
@@ -40,33 +45,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
                 front[0] = true;
             }
         }
-    }
-
-    @Override
-    public final void initialize() {
-        int numberOfCameras = Camera.getNumberOfCameras();
-        for( int i = 0; i < numberOfCameras; ++i ) {
-            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
-            Camera.getCameraInfo(i, info);
-            if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
-                mBackDeviceId = Integer.toString(i);
-            }
-            else if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
-                mFrontDeviceId = Integer.toString(i);
-            }
-        }
-
-/*
-        mActiveDeviceId = (-1 != mBackDeviceId) ? mBackDeviceId : ((-1 != mFrontDeviceId) ? mFrontDeviceId : -1);
-
-        Log.i(Cinder.TAG, "Back Camera: " + mBackDeviceId);
-        Log.i(Cinder.TAG, "Front Camera: " + mFrontDeviceId);
-*/
-        if(null == mDummyTexture) {
-            mDummyTexture = new SurfaceTexture(0);
-        }
-
-        mPixelsMutex = new ReentrantLock();
     }
 
     /** startDevice
@@ -82,12 +60,17 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             mCamera = android.hardware.Camera.open(Integer.parseInt(mActiveDeviceId));
 
             Camera.Parameters params = mCamera.getParameters();
-            mWidth = params.getPreviewSize().width;
-            mHeight = params.getPreviewSize().height;
+            setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
+
+            if(null == mDummyTexture) {
+                mDummyTexture = new SurfaceTexture(0);
+            }
+            mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
 
             mCamera.setPreviewTexture(mDummyTexture);
             mCamera.setPreviewCallback(this);
             mCamera.startPreview();
+
         }
         catch(Exception e ) {
             Log.e(Cinder.TAG, "CinderCamera.startDevice failed: " + e);
@@ -112,31 +95,14 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
     }
 
-    /** startBackDevice
-     *
-     */
-    private void startBackDevice() {
-        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mBackDeviceId))) {
+    private void startDevice(String deviceId) {
+        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(deviceId))) {
             return;
         }
 
         stopDevice();
 
-        mActiveDeviceId = mBackDeviceId;
-        startDevice();
-    }
-
-    /** startFrontDevice
-     *
-     */
-    private void startFrontDevice() {
-        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId))) {
-            return;
-        }
-
-        stopDevice();
-
-        mActiveDeviceId = mFrontDeviceId;
+        mActiveDeviceId = deviceId;
         startDevice();
     }
 
@@ -158,11 +124,28 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     // Camera functions
     // =============================================================================================
 
+    @Override
+    protected final void initializeImpl() {
+        int numberOfCameras = Camera.getNumberOfCameras();
+        for( int i = 0; i < numberOfCameras; ++i ) {
+            android.hardware.Camera.CameraInfo info = new android.hardware.Camera.CameraInfo();
+            Camera.getCameraInfo(i, info);
+            if(CameraInfo.CAMERA_FACING_BACK == info.facing) {
+                mBackDeviceId = Integer.toString(i);
+            }
+            else if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
+                mFrontDeviceId = Integer.toString(i);
+            }
+        }
+
+        mPixelsMutex = new ReentrantLock();
+    }
+
     /** setDummyTexture
      *
      */
     @Override
-    public void setDummyTexture(SurfaceTexture dummyTexture) {
+    protected void setDummyTextureImpl(SurfaceTexture dummyTexture) {
         mDummyTexture = dummyTexture;
         if(null != mCamera) {
             try {
@@ -174,24 +157,28 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
     }
 
-    /** startCapture
+    /** startCaptureImpl
      *
      */
     @Override
-    public void startCapture() {
-        if(isBackCameraAvailable()) {
-            startBackDevice();
+    protected void startCaptureImpl(String deviceId) {
+        if(null != deviceId) {
+            startDevice(deviceId);
         }
-        else if(isFrontCameraAvailable()) {
-            startFrontDevice();
+        else {
+            if (isBackCameraAvailable()) {
+                startDevice(mBackDeviceId);
+            } else if (isFrontCameraAvailable()) {
+                startDevice(mFrontDeviceId);
+            }
         }
     }
 
-    /** stopCapture
+    /** stopCaptureImpl
      *
      */
     @Override
-    public void stopCapture() {
+    protected void stopCaptureImpl() {
         stopDevice();
     }
 
@@ -199,24 +186,24 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      *
      */
     @Override
-    public void switchToBackCamera() {
+    protected void switchToBackCameraImpl() {
         if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mBackDeviceId))) {
             return;
         }
 
-        startBackDevice();
+        startDevice(mBackDeviceId);
     }
 
     /** switchToFrontCamera
      *
      */
     @Override
-    public void switchToFrontCamera() {
+    protected void switchToFrontCameraImpl() {
         if((null != mActiveDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId))) {
             return;
         }
 
-        startFrontDevice();
+        startDevice(mFrontDeviceId);
     }
 
     /** lockPixels
@@ -236,74 +223,37 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         mPixelsMutex.unlock();
     }
 
-/*
-    // =============================================================================================
-    // Static Methods for C++
-    // =============================================================================================
-
-    private static CameraV1 sCamera = null;
-
-    public static boolean initialize() {
-        if(null == sCamera) {
-            sCamera = new CameraV1();
-        }
-        return (-1 != sCamera.mFrontDeviceId || -1 != sCamera.mBackDeviceId);
-    }
-
-    public static boolean hasFrontCamera() {
-        return (null != sCamera) && (-1 != sCamera.mFrontDeviceId);
-    }
-
-    public static boolean hasBackCamera() {
-        return (null != sCamera) && (-1 != sCamera.mBackDeviceId);
-    }
-
-    public static void startCapture() {
-        if(null == sCamera) {
+    /** setDisplayOrientation
+     *
+     */
+    protected void setDisplayOrientation(int displayRotation) {
+        if((null != mActiveDeviceId) && (null == mCamera)) {
             return;
         }
 
-        sCamera.startDevice();
-    }
-
-    public static void stopCapture() {
-        if(null == sCamera) {
-            return;
+        int degrees = 0;
+        switch(displayRotation) {
+            case Surface.ROTATION_0   : degrees = 0;   break;
+            case Surface.ROTATION_90  : degrees = 90;  break;
+            case Surface.ROTATION_180 : degrees = 180; break;
+            case Surface.ROTATION_270 : degrees = 270; break;
         }
 
-        sCamera.stopDevice();
-    }
+        int cameraId = Integer.parseInt(mActiveDeviceId);
+        CameraInfo info = new CameraInfo();
+        Camera.getCameraInfo(cameraId, info);
 
-    public static byte[] lockPixels() {
-        if(null == sCamera) {
-            return null;
+        int adjusted = 0;
+        if(CameraInfo.CAMERA_FACING_FRONT == info.facing) {
+            adjusted = (info.orientation + degrees) % 360;
+            adjusted = (360 - adjusted) % 360;
+        }
+        else {
+            adjusted = (info.orientation - degrees + 360) % 360;
         }
 
-        sCamera.privateLockPixels();
-        return sCamera.mPixels;
-    }
+        Log.i(TAG, "info.orientation: " + info.orientation);
 
-    public static void unlockPixels() {
-        if(null == sCamera) {
-            return;
-        }
-
-        sCamera.privateUnlockPixels();
+        mCamera.setDisplayOrientation(adjusted);
     }
-
-    public static int getWidth() {
-        return (null != sCamera) ? sCamera.mWidth : 0;
-    }
-
-    public static int getHeight() {
-        return (null != sCamera) ? sCamera.mHeight : 0;
-    }
-
-    public static void takePicture() {
-        if(null == sCamera) {
-            return;
-        }
-        sCamera.takePicture();
-    }
-*/
 }
