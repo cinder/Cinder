@@ -108,7 +108,7 @@ class MayaCamUI {
 	{
 		bool isLeftDown = event.isLeftDown();
 		bool isMiddleDown = event.isMiddleDown() || event.isAltDown();
-		bool isRightDown = event.isRightDown() || event.isMetaDown();
+		bool isRightDown = event.isRightDown() || event.isControlDown();
 
 		if( isMiddleDown )
 			isLeftDown = false;
