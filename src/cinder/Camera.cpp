@@ -157,13 +157,23 @@ void Camera::getBillboardVectors( vec3 *right, vec3 *up ) const
 
 vec2 Camera::worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const
 {
-	vec3 eyeCoord = vec3( getViewMatrix() * vec4( worldCoord, 1 ) );
-	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	vec4 eyeCoord = getViewMatrix() * vec4( worldCoord, 1 );
+	vec4 ndc = getProjectionMatrix() * eyeCoord;
 	ndc.x /= ndc.w;
 	ndc.y /= ndc.w;
 	ndc.z /= ndc.w;
 
 	return vec2( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
+}
+
+vec2 Camera::eyeToScreen( const vec3 &eyeCoord, const vec2 &screenSizePixels ) const
+{
+	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	ndc.x /= ndc.w;
+	ndc.y /= ndc.w;
+	ndc.z /= ndc.w;
+
+	return vec2( ( ndc.x + 1.0f ) / 2.0f * screenSizePixels.x, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenSizePixels.y );
 }
 
 float Camera::worldToEyeDepth( const vec3 &worldCoord ) const
@@ -176,7 +186,7 @@ float Camera::worldToEyeDepth( const vec3 &worldCoord ) const
 }
 
 
-vec3 Camera::worldToNdc( const vec3 &worldCoord )
+vec3 Camera::worldToNdc( const vec3 &worldCoord ) const
 {
 	vec4 eye = getViewMatrix() * vec4( worldCoord, 1 );
 	vec4 unproj = getProjectionMatrix() * eye;
@@ -189,27 +199,25 @@ float Camera::calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels
 	return camSpaceSphere.calcProjectedArea( getFocalLength(), screenSizePixels );
 }
 
-vec2 proxy( vec2 v, const vec2 &windowSize )
+void Camera::calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const
 {
-	vec2 result = v;
-	result.x *= 1 / ( windowSize.x / windowSize.y );
-	result += vec2( 0.5f );
-	result *= windowSize;
-	return result;
-}
+	auto toScreenPixels = [=] ( vec2 v, const vec2 &windowSize ) {
+		vec2 result = v;
+		result.x *= 1 / ( windowSize.x / windowSize.y );
+		result += vec2( 0.5f );
+		result *= windowSize;
+		return result;
+	};
 
-void Camera::calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, float *outRadius ) const
-{
 	Sphere camSpaceSphere( vec3( getViewMatrix()*vec4(sphere.getCenter(), 1.0f) ), sphere.getRadius() );
 	vec2 center, axisA, axisB;
 	camSpaceSphere.calcProjection( getFocalLength(), &center, &axisA, &axisB );
-	float invAspectRatio = screenSizePixels.y / screenSizePixels.x;
-
 	if( outCenter )
-		*outCenter = proxy( center, screenSizePixels );//( center * vec2( invAspectRatio, 1 ) + vec2( 0.5f ) ) * screenSizePixels;
-	if( outRadius )
-		*outRadius = std::max( length( ( axisA * vec2( invAspectRatio, 1 ) ) * screenSizePixels ),
-			length( ( axisB * vec2( invAspectRatio, 1 )) * screenSizePixels ) );
+		*outCenter = toScreenPixels( center, screenSizePixels );//( center * vec2( invAspectRatio, 1 ) + vec2( 0.5f ) ) * screenSizePixels;
+	if( outAxisA )
+		*outAxisA = toScreenPixels( center + axisA * 0.5f, screenSizePixels ) - toScreenPixels( center - axisA * 0.5f, screenSizePixels );
+	if( outAxisB )
+		*outAxisB = toScreenPixels( center + axisB * 0.5f, screenSizePixels ) - toScreenPixels( center - axisB * 0.5f, screenSizePixels );
 }
 
 void Camera::calcMatrices() const

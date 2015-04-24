@@ -89,19 +89,21 @@ class Camera {
 	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const;
 	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
-	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
- 	vec2 worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const;
+	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based on a screen which is \a screenWidth x \a screenHeight pixels.
+	vec2 worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const;
+	//! Converts a eye-space coordinate \a eyeCoord to screen coordinates as viewed by the camera
+	vec2 eyeToScreen( const vec3 &eyeCoord, const vec2 &screenSizePixels ) const;
 	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
- 	vec3 worldToEye( const vec3 &worldCoord )	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
- 	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
- 	float worldToEyeDepth( const vec3 &worldCoord ) const;
- 	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
- 	vec3 worldToNdc( const vec3 &worldCoord );
+	vec3 worldToEye( const vec3 &worldCoord ) const	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
+	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
+	float worldToEyeDepth( const vec3 &worldCoord ) const;
+	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
+	vec3 worldToNdc( const vec3 &worldCoord ) const;
 
 	//! Calculates the area of the screen-space elliptical projection of \a sphere
 	float	calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const;
-	//! Calculates the screen-space circular projection of \a sphere, putting the results in \a outCenter and \a outRadius. This is the bounding circle of the true elliptical projection.
-	void	calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, float *outRadius ) const;
+	//! Calculates the screen-space elliptical projection of \a sphere, putting the results in \a outCenter, \a outAxisA and \a outAxisB
+	void	calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
 
   protected:
 	void			calcMatrices() const;
