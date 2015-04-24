@@ -1806,85 +1806,85 @@ void Context::setDefaultShaderVars()
 	if( glslProg ) {
 		const auto &uniforms = glslProg->getActiveUniforms();
 		for( const auto &uniform : uniforms ) {
-			switch( uniform.mSemantic ) {
+			switch( uniform.getUniformSemantic() ) {
 				case UNIFORM_MODEL_MATRIX: {
 					auto model = gl::getModelMatrix();
-					glslProg->uniform( uniform.mLoc, model );
+					glslProg->uniform( uniform.getLocation(), model );
 				}
 				break;
 				case UNIFORM_MODEL_MATRIX_INVERSE: {
 					auto inverseModel = glm::inverse( gl::getModelMatrix() );
-					glslProg->uniform( uniform.mLoc, inverseModel );
+					glslProg->uniform( uniform.getLocation(), inverseModel );
 				}
 				break;
 				case UNIFORM_MODEL_MATRIX_INVERSE_TRANSPOSE: {
 					auto modelInverseTranspose = gl::calcModelMatrixInverseTranspose();
-					glslProg->uniform( uniform.mLoc, modelInverseTranspose );
+					glslProg->uniform( uniform.getLocation(), modelInverseTranspose );
 				}
 				break;
 				case UNIFORM_VIEW_MATRIX: {
 					auto view = gl::getViewMatrix();
-					glslProg->uniform( uniform.mLoc, view );
+					glslProg->uniform( uniform.getLocation(), view );
 				}
 				break;
 				case UNIFORM_VIEW_MATRIX_INVERSE: {
 					auto viewInverse = gl::calcViewMatrixInverse();
-					glslProg->uniform( uniform.mLoc, viewInverse );
+					glslProg->uniform( uniform.getLocation(), viewInverse );
 				}
 				break;
 				case UNIFORM_MODEL_VIEW: {
 					auto modelView = gl::getModelView();
-					glslProg->uniform( uniform.mLoc, modelView );
+					glslProg->uniform( uniform.getLocation(), modelView );
 				}
 				break;
 				case UNIFORM_MODEL_VIEW_INVERSE: {
 					auto modelViewInverse = glm::inverse( gl::getModelView() );
-					glslProg->uniform( uniform.mLoc, modelViewInverse );
+					glslProg->uniform( uniform.getLocation(), modelViewInverse );
 				}
 				break;
 				case UNIFORM_MODEL_VIEW_INVERSE_TRANSPOSE: {
 					auto normalMatrix = gl::calcNormalMatrix();
-					glslProg->uniform( uniform.mLoc, normalMatrix );
+					glslProg->uniform( uniform.getLocation(), normalMatrix );
 				}
 				break;
 				case UNIFORM_MODEL_VIEW_PROJECTION: {
 					auto modelViewProjection = gl::getModelViewProjection();
-					glslProg->uniform( uniform.mLoc, modelViewProjection );
+					glslProg->uniform( uniform.getLocation(), modelViewProjection );
 				}
 				break;
 				case UNIFORM_MODEL_VIEW_PROJECTION_INVERSE: {
 					auto modelViewProjectionInverse = glm::inverse( gl::getModelViewProjection() );
-					glslProg->uniform( uniform.mLoc, modelViewProjectionInverse );
+					glslProg->uniform( uniform.getLocation(), modelViewProjectionInverse );
 				}
 				break;
 				case UNIFORM_PROJECTION_MATRIX: {
 					auto projection = gl::getProjectionMatrix();
-					glslProg->uniform( uniform.mLoc, projection );
+					glslProg->uniform( uniform.getLocation(), projection );
 				}
 				break;
 				case UNIFORM_PROJECTION_MATRIX_INVERSE: {
 					auto projectionInverse = glm::inverse( gl::getProjectionMatrix() );
-					glslProg->uniform( uniform.mLoc, projectionInverse );
+					glslProg->uniform( uniform.getLocation(), projectionInverse );
 				}
 				break;
 				case UNIFORM_NORMAL_MATRIX: {
 					auto normalMatrix = gl::calcNormalMatrix();
-					glslProg->uniform( uniform.mLoc, normalMatrix );
+					glslProg->uniform( uniform.getLocation(), normalMatrix );
 				}
 				break;
 				case UNIFORM_VIEWPORT_MATRIX: {
 					auto viewport = gl::calcViewportMatrix();
-					glslProg->uniform( uniform.mLoc, viewport );
+					glslProg->uniform( uniform.getLocation(), viewport );
 				}
 				break;
 				case UNIFORM_WINDOW_SIZE: {
 					auto windowSize = app::getWindowSize();
-					glslProg->uniform( uniform.mLoc, windowSize );
+					glslProg->uniform( uniform.getLocation(), windowSize );
 				}
 				break;
 				case UNIFORM_ELAPSED_SECONDS: {
 					auto elapsed = float( app::getElapsedSeconds() );
-					glslProg->uniform( uniform.mLoc, elapsed );
+					glslProg->uniform( uniform.getLocation(), elapsed );
 				break;
 				}
 				default:
@@ -1894,10 +1894,10 @@ void Context::setDefaultShaderVars()
 
 		const auto &attribs = glslProg->getActiveAttributes();
 		for( const auto &attrib : attribs ) {
-			switch( attrib.mSemantic ) {
+			switch( attrib.getAttributeSemantic() ) {
 				case geom::Attrib::COLOR: {
 					ColorA c = ctx->getCurrentColor();
-					gl::vertexAttrib4f( attrib.mLoc, c.r, c.g, c.b, c.a );
+					gl::vertexAttrib4f( attrib.getLocation(), c.r, c.g, c.b, c.a );
 				}
 				break;
 				default:

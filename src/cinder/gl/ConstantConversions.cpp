@@ -215,7 +215,7 @@ std::string	constantToString( GLenum constant )
 	}
 }
 	
-uint8_t glTypeToDimenstion( GLenum type )
+uint8_t typeToDimension( GLenum type )
 {
 	switch (type) {
 		case GL_UNSIGNED_INT:
@@ -258,7 +258,7 @@ uint8_t glTypeToDimenstion( GLenum type )
 	}
 }
 	
-uint8_t glTypeToBytes( GLenum type )
+uint8_t typeToBytes( GLenum type )
 {
 	switch (type) {
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;

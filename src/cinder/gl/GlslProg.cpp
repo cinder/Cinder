@@ -47,7 +47,8 @@ class UniformValueCache : cinder::Noncopyable {
 	{
 	}
 	
-	void insertBeginningByte( uint32_t value ) {
+	void insertBeginningByte( uint32_t value )
+	{
 		auto it = std::lower_bound( mCachedBeginningBytes.begin(),
 								   mCachedBeginningBytes.end(),
 								   value,
@@ -181,7 +182,7 @@ void GlslProg::Format::setShaderSource( const std::string &source, std::string *
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
-    bool exists = false;
+	bool exists = false;
     for( auto & attrib : mAttributes ) {
         if( attrib.mName == attribName ) {
             attrib.mSemantic = semantic;
@@ -632,7 +633,7 @@ void GlslProg::cacheActiveUniforms()
 			uniform.mIndex			= i;
 			uniform.mCount			= count;
 			uniform.mType			= type;
-			uniform.mDataSize		= count * glTypeToBytes( type );
+			uniform.mDataSize		= count * gl::typeToBytes( type );
 			uniform.mSemantic		= uniformSemantic;
 			uniform.mBytePointer	= uniformValueCacheSize;
 			uniformValueCacheSize  += uniform.mDataSize;
@@ -671,7 +672,7 @@ void GlslProg::cacheActiveUniformBlocks()
 		UniformBlock uniformBlock;
 		uniformBlock.mName = name;
 		uniformBlock.mLoc = loc;
-		uniformBlock.mSize = dataSize;
+		uniformBlock.mDataSize = dataSize;
 		uniformBlock.mBlockBinding = blockBinding;
 		
 		std::vector<GLint> uniformIndices( numActiveUniforms );
@@ -755,27 +756,6 @@ void GlslProg::cacheActiveTransformFeedbackVaryings()
 				varying->mType = type;
 			}
 		}
-		
-		// TODO: This needs to be created correctly and checked, this is where the magic will happen.
-//		static const std::string nextComponent = "glNextComponent";
-//		static const std::string nextBuffer = "glNextBuffer";
-//		
-//		// This isn't pretty but it will work to tell us about what the attributes are
-//		if( mTransformFeedbackFormat == GL_INTERLEAVED_ATTRIBS ) {
-//			for( auto & varying : mTransformFeedbackVaryings ) {
-//				// if the count is zero we must have reached a special variable, i.e. gl_Ne
-//				if( varying.mCount == 0 ) {
-//					if ( ! varying.mName.compare( 0, nextComponent.size(), nextComponent ) ) {
-//						auto dimStr = varying.mName.substr( nextComponent.size(), 1 );
-//						auto dimInt = std::stoi( dimStr );
-//						
-//					}
-//					else if( varying.mName.compare( 0, nextBuffer.size(), nextBuffer ) ) {
-//						
-//					}
-//				}
-//			}
-//		}
 	}
 }
 #endif // ! defined( CINDER_GL_ES_2 )
@@ -874,6 +854,18 @@ const GlslProg::Attribute* GlslProg::findAttrib( const std::string &name ) const
 	const Attribute* ret = nullptr;
 	for( auto & attrib : mAttributes ) {
 		if( attrib.mName == name ) {
+			ret = &attrib;
+			break;
+		}
+	}
+	return ret;
+}
+	
+const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
+{
+	const Attribute* ret = nullptr;
+	for( auto & attrib : mAttributes ) {
+		if( attrib.mSemantic == semantic ) {
 			ret = &attrib;
 			break;
 		}
@@ -1023,7 +1015,7 @@ GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 							 return block.mBlockBinding == blockBinding;
 						 });
 	if( found != mUniformBlocks.end() )
-		return found->mSize;
+		return found->mDataSize;
 	else
 		return -1;
 }
@@ -1054,7 +1046,7 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int count ) const
 {
 	if( mUniformValueCache )
-		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, glTypeToBytes( uniform.mType ) * count, val );
+		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, uniform.mDataSize, val );
 	else
 		return false;
 }
@@ -1685,44 +1677,46 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 	auto attribs = rhs.getActiveAttributes();
 	os << "\tAttributes: " << std::endl;
 	for( auto &attrib : attribs ) {
-		os << "\t\t\"" << attrib.mName << "\":" << std::endl;
-		os << "\t\t Loc: " << attrib.mLoc << std::endl;
-		os << "\t\t Type: " << gl::constantToString( attrib.mType ) << std::endl;
-		os << "\t\t Semantic: <" << geom::attribToString( attrib.mSemantic ) << ">" << std::endl;
+		os << "\t\t\"" << attrib.getName() << "\":" << std::endl;
+		os << "\t\t Loc: " << attrib.getLocation() << std::endl;
+		os << "\t\t Count: " << attrib.getCount() << std::endl;
+		os << "\t\t Type: " << gl::constantToString( attrib.getType() ) << std::endl;
+		os << "\t\t Semantic: <" << geom::attribToString( attrib.getAttributeSemantic() ) << ">" << std::endl;
 	}
 	
 	os << "\tUniforms: " << std::endl;
 	auto & uniforms = rhs.getActiveUniforms();
 	for( auto &uniform : uniforms ) {
-		os << "\t\t\"" << uniform.mName << "\":" << std::endl;
-		os << "\t\t Loc: " << uniform.mLoc << std::endl;
-		os << "\t\t Type: " << gl::constantToString( uniform.mType ) << std::endl;
-		os << "\t\t Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
+		os << "\t\t\"" << uniform.getName() << "\":" << std::endl;
+		os << "\t\t Loc: " << uniform.getLocation() << std::endl;
+		os << "\t\t Count: " << uniform.getCount() << std::endl;
+		os << "\t\t Type: " << gl::constantToString( uniform.getType() ) << std::endl;
+		os << "\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 	}
 	
 #if ! defined( CINDER_GL_ES_2 )
 	os << "\tUniform Blocks: " << std::endl;
 	auto & uniformBlocks = rhs.getActiveUniformBlocks();
 	for( auto & uniformBlock : uniformBlocks ) {
-		os << "\t\t\"" << uniformBlock.mName << "\":" << std::endl;
-		os << "\t\t Loc: " << uniformBlock.mLoc << std::endl;
-		os << "\t\t Size: " << uniformBlock.mSize << std::endl;
-		os << "\t\t BlockBinding: " << uniformBlock.mBlockBinding << std::endl;
+		os << "\t\t\"" << uniformBlock.getName() << "\":" << std::endl;
+		os << "\t\t Loc: " << uniformBlock.getLocation() << std::endl;
+		os << "\t\t Size: " << uniformBlock.getDataSize() << std::endl;
+		os << "\t\t BlockBinding: " << uniformBlock.getBlockBinding() << std::endl;
 		os << "\t\t Active Uniforms: " << endl;
-		for( auto & uniform : uniformBlock.mActiveUniforms ) {
-			os << "\t\t\t\"" << uniform.mName << "\":" << std::endl;
-			os << "\t\t\t Loc: " << uniform.mLoc << std::endl;
-			os << "\t\t\t Type: " << gl::constantToString( uniform.mType ) << std::endl;
-			os << "\t\t\t Semantic: <" << gl::uniformSemanticToString( uniform.mSemantic ) << ">" << std::endl;
+		for( auto & uniform : uniformBlock.getActiveUniforms() ) {
+			os << "\t\t\t\"" << uniform.getName() << "\":" << std::endl;
+			os << "\t\t\t Loc: " << uniform.getLocation() << std::endl;
+			os << "\t\t\t Type: " << gl::constantToString( uniform.getType() ) << std::endl;
+			os << "\t\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 		}
 	}
 	
 	os << "\tTransform Feedback Varyings: " << std::endl;
 	auto & feedbackVaryings = rhs.getActiveTransformFeedbackVaryings();
 	for( auto & varying : feedbackVaryings ) {
-		os << "\t\t\"" << varying.mName << "\":" << std::endl;
-		os << "\t\t Type: " << gl::constantToString( varying.mType ) << std::endl;
-		os << "\t\t Count: " << varying.mCount << std::endl;
+		os << "\t\t\"" << varying.getName() << "\":" << std::endl;
+		os << "\t\t Type: " << gl::constantToString( varying.getType() ) << std::endl;
+		os << "\t\t Count: " << varying.getCount() << std::endl;
 	}
 #endif
 	return os;

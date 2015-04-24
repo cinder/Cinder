@@ -314,10 +314,6 @@ void	drawBuffer( GLenum dst );
 //! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
 void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
 
-void	drawArrays( GLenum mode, GLint first, GLsizei count );
-void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-
-
 class Exception : public cinder::Exception {
   public:
 	Exception()	{}

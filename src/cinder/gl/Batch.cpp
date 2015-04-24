@@ -60,8 +60,8 @@ Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const Att
 	}
 	// and then the attributes references by the GLSL
 	for( const auto &attrib : glsl->getActiveAttributes() ) {
-		if( source.getAttribDims( attrib.mSemantic ) )
-			attribs.insert( attrib.mSemantic );
+		if( source.getAttribDims( attrib.getAttributeSemantic() ) )
+			attribs.insert( attrib.getAttributeSemantic() );
 	}
 	mVboMesh = gl::VboMesh::create( source, attribs );
 	initVao( attributeMapping );

@@ -3,6 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 #include "cinder/params/Params.h"
+#include "cinder/MayaCamUI.h"
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
@@ -31,7 +32,6 @@ class ClothSimulationApp : public App {
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
-	void keyDown( KeyEvent event ) override;
 	void updateRayPosition( const ci::ivec2 &mousePos, bool useDistance );
 	
 	void setupBuffers();
@@ -45,6 +45,7 @@ class ClothSimulationApp : public App {
 	gl::GlslProgRef						mUpdateGlsl, mRenderGlsl;
 	
 	CameraPersp							mCam;
+	MayaCamUI							mMayaCam;
 	float								mCurrentCamRotation;
 	uint32_t							mIterationsPerFrame, mIterationIndex;
 	bool								mDrawPoints, mDrawLines, mUpdate;
@@ -58,9 +59,12 @@ ClothSimulationApp::ClothSimulationApp()
 	mCurrentCamRotation( 0.0f ), mUpdate( true ),
 	mCam( getWindowWidth(), getWindowHeight(), 20.0f, 0.01f, 1000.0f )
 {
-	mCam.lookAt( vec3( sin( mCurrentCamRotation ) * 140.0f, 0,
-					  cos( mCurrentCamRotation ) * 140.0f ),
-				 vec3( 0.0f ) );
+	mMayaCam = MayaCamUI( &mCam );
+	vec3 eye = vec3( sin( mCurrentCamRotation ) * 140.0f, 0,
+					cos( mCurrentCamRotation ) * 140.0f );
+	vec3 target = vec3( 0.0f );
+	mCam.lookAt( eye, target );
+	mCam.setCenterOfInterest( distance(eye, target) );
 	
 	setupGlsl();
 	setupBuffers();
@@ -254,12 +258,18 @@ void ClothSimulationApp::draw()
 
 void ClothSimulationApp::mouseDown( MouseEvent event )
 {
-	updateRayPosition( event.getPos(), true );
+	if( event.isRightDown() )
+		mMayaCam.mouseDrag( event.getPos(), true, false, false );
+	else
+		updateRayPosition( event.getPos(), true );
 }
 
 void ClothSimulationApp::mouseDrag( MouseEvent event )
 {
-	updateRayPosition( event.getPos(), true );
+	if( event.isRightDown() )
+		mMayaCam.mouseDrag( event.getPos(), true, false, false );
+	else
+		updateRayPosition( event.getPos(), true );
 }
 
 void ClothSimulationApp::mouseUp( MouseEvent event )
@@ -274,24 +284,6 @@ void ClothSimulationApp::updateRayPosition( const ci::ivec2 &mousePos, bool useD
 	auto dist = distance( mCam.getEyePoint(), vec3() );
 	auto rayPosition = ray.calcPosition( useDistance ? dist : 0 );
 	mUpdateGlsl->uniform( "rayPosition", rayPosition );
-}
-
-void ClothSimulationApp::keyDown( KeyEvent event )
-{
-	switch ( event.getCode() ) {
-		case KeyEvent::KEY_LEFT: {
-			mCurrentCamRotation -= 0.1f;
-			mCam.lookAt( vec3( sin( mCurrentCamRotation ) * 140.0f, 0,
-							   cos( mCurrentCamRotation ) * 140.0f ), vec3() );
-		}
-		case KeyEvent::KEY_RIGHT: {
-			mCurrentCamRotation += 0.1f;
-			mCam.lookAt( vec3( sin( mCurrentCamRotation ) * 140.0f, 0,
-							   cos( mCurrentCamRotation ) * 140.0f ), vec3() );
-		}
-		default:
-		break;
-	}
 }
 
 void ClothSimulationApp::setupParams()
@@ -309,15 +301,18 @@ void ClothSimulationApp::setupParams()
 	[&](){
 		mUpdateGlsl->uniform( "gravity", gravity );
 	});
-	mParams->addParam( "Rest Length", &restLength ).updateFn(
+	mParams->addParam( "Rest Length", &restLength )
+	.min( 0.0f ).max( 30.0f ).updateFn(
 	[&](){
 		mUpdateGlsl->uniform( "rest_length", restLength );
 	});
-	mParams->addParam( "Damping Constant", &dampingConst ).min( 1.5f ).updateFn(
+	mParams->addParam( "Damping Constant", &dampingConst )
+	.min( 1.5f ).max( 25.0f ).updateFn(
 	[&](){
 		mUpdateGlsl->uniform( "c", dampingConst );
 	});
-	mParams->addParam( "Spring Constant", &springConstant ).updateFn(
+	mParams->addParam( "Spring Constant", &springConstant )
+	.min( 0.1f ).max( 17.0f ).updateFn(
 	[&](){
 		mUpdateGlsl->uniform( "k", springConstant );
 	});
@@ -343,7 +338,7 @@ void ClothSimulationApp::setupParams()
 	mParams->addText( "Render Params" );
 	mParams->addParam( "Draw Lines", &mDrawLines );
 	mParams->addParam( "Draw Points", &mDrawPoints );
-	mParams->addText( "Left and Right arrows to rotate" );
+	mParams->addText( "Right Mouse Button Rotates" );
 }
 
 CINDER_APP( ClothSimulationApp, RendererGl(),
