@@ -40,22 +40,22 @@
 
 namespace cinder {
 
-void Camera::setEyePoint( const vec3 &aEyePoint )
+void Camera::setEyePoint( const vec3 &eyePoint )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mModelViewCached = false;
 }
 
-void Camera::setViewDirection( const vec3 &aViewDirection )
+void Camera::setViewDirection( const vec3 &viewDirection )
 {
-	mViewDirection = normalize( aViewDirection );
+	mViewDirection = normalize( viewDirection );
 	mOrientation = glm::rotation( mViewDirection, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
-void Camera::setOrientation( const quat &aOrientation )
+void Camera::setOrientation( const quat &orientation )
 {
-	mOrientation = glm::normalize( aOrientation );
+	mOrientation = glm::normalize( orientation );
 	mViewDirection = glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
@@ -66,10 +66,10 @@ float Camera::getFocalLength() const
 	return 1 / ( tan( toRadians( mFov ) * 0.5f ) * 2 );
 }
 
-void Camera::setWorldUp( const vec3 &aWorldUp )
+void Camera::setWorldUp( const vec3 &worldUp )
 {
-	mWorldUp = normalize( aWorldUp );
-	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	mWorldUp = normalize( worldUp );
+	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, worldUp ) );
 	mModelViewCached = false;
 }
 
@@ -77,23 +77,26 @@ void Camera::lookAt( const vec3 &target )
 {
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
-void Camera::lookAt( const vec3 &aEyePoint, const vec3 &target )
+void Camera::lookAt( const vec3 &eyePoint, const vec3 &target )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = quat( glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
-void Camera::lookAt( const vec3 &aEyePoint, const vec3 &target, const vec3 &aWorldUp )
+void Camera::lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &aWorldUp )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mWorldUp = normalize( aWorldUp );
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
@@ -254,6 +257,13 @@ void Camera::calcInverseView() const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraPersp
+// Creates a default camera resembling Maya Persp
+CameraPersp::CameraPersp()
+	: Camera()
+{
+	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
+	setPerspective( 35, 1.3333f, 0.1f, 1000 );
+}
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 	: Camera()
@@ -285,14 +295,6 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, flo
 
 	setPerspective( fovDegrees, aspect, nearPlane, farPlane );
 	lookAt( vec3( eyeX, eyeY, dist ), vec3( eyeX, eyeY, 0.0f ) );
-}
-
-// Creates a default camera resembling Maya Persp
-CameraPersp::CameraPersp()
-	: Camera()
-{
-	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
-	setPerspective( 35, 1, 0.1f, 1000 );
 }
 
 void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane )

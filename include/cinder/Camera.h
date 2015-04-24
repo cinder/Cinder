@@ -37,7 +37,6 @@ class Sphere;
 // By default the camera is looking down -Z
 class Camera {
   public:
-	Camera() : mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ) {}
 	virtual ~Camera() {}
 
 	vec3		getEyePoint() const { return mEyePoint; }
@@ -46,32 +45,46 @@ class Camera {
 	vec3		getWorldUp() const { return mWorldUp; }
 	void		setWorldUp( const vec3 &aWorldUp );
 
+	//! Modifies the view direction to look from the current eyePoint to \a target. Also updates the pivot distance.
 	void		lookAt( const vec3 &target );
-	void		lookAt( const vec3 &aEyePoint, const vec3 &target );
-	void		lookAt( const vec3 &aEyePoint, const vec3 &target, const vec3 &aUp );
+	//! Modifies the eyePoint and view direction to look from \a eyePoint to \a target. Also updates the pivot distance.
+	void		lookAt( const vec3 &eyePoint, const vec3 &target );
+	//! Modifies the eyePoint and view direction to look from \a eyePoint to \a target with up vector \a up (to achieve camera roll). Also updates the pivot distance.
+	void		lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &up );
+	//! Returns the world-space vector along which the camera is oriented
 	vec3		getViewDirection() const { return mViewDirection; }
-	void		setViewDirection( const vec3 &aViewDirection );
+	//! Sets the world-space vector along which the camera is oriented
+	void		setViewDirection( const vec3 &viewDirection );
 
+	//! Returns the world-space quaternion that expresses the camera's orientation
 	quat		getOrientation() const { return mOrientation; }
-	void		setOrientation( const quat &aOrientation );
+	//! Sets the camera's orientation with world-space quaternion \a orientation
+	void		setOrientation( const quat &orientation );
 
 	//! Returns the camera's vertical field of view measured in degrees.
 	float	getFov() const { return mFov; }
 	//! Sets the camera's vertical field of view measured in degrees.
-	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	void	setFov( float verticalFov ) { mFov = verticalFov;  mProjectionCached = false; }
 	//! Returns the camera's horizontal field of view measured in degrees.
 	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
 	//! Sets the camera's horizontal field of view measured in degrees.
-	void	setFovHorizontal( float verticalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(verticalFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+	void	setFovHorizontal( float horizontalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians( horizontalFov ) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
 	//! Returns the camera's focal length, calculating it based on the field of view.
 	float	getFocalLength() const;
+
+	//! Primarily for user interaction such as with CamUi. Returns the distance from the camera along the view direction relative to which tumbling and dollying occur.
+	float	getPivotDistance() const { return mPivotDistance; }
+	//! Primarily for user interaction such as with CamUi. Sets the distance from the camera along the view direction relative to which tumbling and dollying occur.
+	void	setPivotDistance( float distance );
+	//! Primarily for user interaction such as with CamUi. Returns the world-space point relative to which tumbling and dollying occur.
+	vec3	getPivotPoint() const { return mEyePoint + mViewDirection * mPivotDistance; }
 
 	float	getAspectRatio() const { return mAspectRatio; }
 	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
 	float	getNearClip() const { return mNearClip; }
-	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; mProjectionCached = false; }
+	void	setNearClip( float nearClip ) { mNearClip = nearClip; mProjectionCached = false; }
 	float	getFarClip() const { return mFarClip; }
-	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; mProjectionCached = false; }
+	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; }
 
 	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
 	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
@@ -106,6 +119,11 @@ class Camera {
 	void	calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
 
   protected:
+	Camera()
+		: mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
+			mPivotDistance( 0 )
+	{}
+
 	void			calcMatrices() const;
 
 	virtual void	calcViewMatrix() const;
@@ -121,6 +139,7 @@ class Camera {
 	float	mAspectRatio;
 	float	mNearClip;		
 	float	mFarClip;
+	float	mPivotDistance;
 
 	mutable vec3	mU;	// Right vector
 	mutable vec3	mV;	// Readjust up-vector
@@ -138,9 +157,12 @@ class Camera {
 
 class CameraPersp : public Camera {
   public:
+	//! Creates a default camera with eyePoint at ( 28, 21, 28 ), looking at the origin, 35deg vertical field-of-view and a 1.333 aspect ratio.
 	CameraPersp();
-	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
-	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
+	//! Constructs screen-aligned camera
+	CameraPersp( int pixelWidth, int pixelHeight, float fov );
+	//! Constructs screen-aligned camera
+	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane );
 	
 	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
