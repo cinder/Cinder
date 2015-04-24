@@ -8,15 +8,19 @@ import re
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup, Tag, NavigableString
 
+# soup = None
+
 tagDictionary = {
 	"linebreak": "br",
 	"emphasis": "em",
 	"ref": "a",
 	# "computeroutput": "code",
-	"includes": "code",
+	"includes": "span",
 	"simplesect": "dl",
 	"para": "p"
 }
+
+tagXml = None;
 
 
 def findCompoundName( tree ):
@@ -144,16 +148,16 @@ def defineTag( bs4, tagName, tree ):
 	return newTag
 
 # generate includes tag group
-def genIncludesTag( bs4, tree ):
+def genIncludesTag( bs4, text ):
 
 	# wrap the content in <code> tag
 	# prepend with "#include"
-	wrapperEl = genTag( bs4, "code", ["include"], "#include " )
+	# wrapperEl = genTag( bs4, "span", ["include"], "#include" )
 	# wrap include file name in <a> tag
-	includeLink = genTag( bs4, "a", None, tree.text )
-	defineLinkTag( includeLink, {'linkid':tree.text} )
-	wrapperEl.append( includeLink )
-	return wrapperEl
+	includeLink = genTag( bs4, "a", None, text )
+	defineLinkTag( includeLink, {'linkid':text} )
+	# wrapperEl.append( includeLink )
+	return includeLink
 
 
 def replaceTag( bs4, tree, parentTag, content ):
@@ -186,8 +190,6 @@ def replaceTag( bs4, tree, parentTag, content ):
 		tagName = "div"
 		newTag = defineTag( bs4, tagName, tree );
 		addClassToTag( newTag, tag )
-
-
 	
 	contentTag = newTag
 
@@ -266,18 +268,12 @@ def iterateMarkup( bs4, tree, parent ):
 
 	# append any new tags
 	if tree.tag != None :
-		print "OLD TAG"
-		print currentTag
 		htmlTag = replaceTag( bs4, tree, currentTag, content )
 
 		# if tree parent == <p> && newTag == <pre>
 		# add a new pre tag in and make that the current parent again
 
-		currentTag = htmlTag
-		# parent.append( currentTag )
-	
-		print "NEW TAG"
-		print currentTag
+		currentTag = htmlTag	
 	
 	
 	# iterate through children tags
@@ -369,7 +365,7 @@ def replaceCodeChunks( bs4 ) :
 
 # clone an element
 # from: http://stackoverflow.com/questions/23057631/clone-element-with-beautifulsoup/23058678#23058678
-def clone(el):
+def clone(el) :
     if isinstance(el, NavigableString):
         return type(el)(el)
 
@@ -384,17 +380,41 @@ def clone(el):
         copy.append(clone(child))
     return copy
 
+def findTemplate( bs4, elementId ) :
+	return bs4.find( id=elementId )
+
 	
 def processClassXmlFile( inPath, outPath, html ):
 
+	# soup = html;
+	
 	print "Processing file: " + inPath + " > " + outPath;
 	tree = ET.parse( inPath )
-	
+
 	# add title
 	headTag = html.head
 	titleTag = html.new_tag( "title" )
-	compoundName = str(findCompoundName( tree )) 		# with "cinder::"
-	className = compoundName.rsplit( "cinder::", 1 )[1]	# without "cinder::"
+	compoundName = str(findCompoundName( tree )) 				# with "cinder::"
+	className = compoundName.rsplit( "cinder::", 1 )[1]			# without "cinder::"
+	includeDef = tree.findall( r"compounddef/includes" )[0].text
+
+	# print tagXml
+	# file info from tag file = includes file name text
+	# compound/file name
+	# print "INCLUDE FILE: " + includeDef
+	# print tagXml.findall( r'compound[@kind="file"]/[name="{includeName}"]' )
+	files = tagXml.findall( r'compound[@kind="file"]' )
+	classTagTree = None
+	for f in files :
+		if f.find('name').text == includeDef:
+			classTagTree = f
+			break;
+
+	print ET.dump(classTagTree)
+
+	# print tagXml.findall( r'compound[@kind="file"]/[name="Surface.h"]' )
+	# expr = r'compound[@kind="file"]/[name=$includeName]'
+	# print tagXml.xpath(expr, includeName=includeName)
 
 	titleTag.append( compoundName )
 	headTag.insert( 0, titleTag )
@@ -403,24 +423,38 @@ def processClassXmlFile( inPath, outPath, html ):
 	contentsTag = html.find( "div", "contents" )
 
 	# description area
-	descriptionEl = html.find( id="description" )
+	# descriptionEl = html.find( id="description" )
+	descriptionEl = findTemplate( html, "description" )
 	descriptionProseEl = descriptionEl.find( "div", "prose" )
 	sideEl = descriptionEl.find( "div", "side" )
+	includeEl = sideEl.find( "div", "include" )
 
 	# ----------
 	#  Includes
 	# ----------
-	sideEl.append( genTag( html, "h3", None, "Includes") )
-	includesUl = genTag( html, "ul" )
-	for includeDef in tree.findall( r"compounddef/includes" ):
-		# includesUl.append( genTag( html, "li", None, includeDef.text ) )
-		includeLi = genTag( html, "li", ["row"] )
-		# includeContent = replaceTag( includeDef, includeLi, html )
-		# includeContent.append( includeDef.text );
-		includeContent = genIncludesTag( html, includeDef );
-		includeLi.append( includeContent )
-		includesUl.append( includeLi )
-	sideEl.append( includesUl )
+	includeContent = genIncludesTag( html, includeDef );
+	includeEl.append( includeContent )
+	
+	
+	# ----------
+	#  Typedefs
+	# ----------
+	side = clone( html.find( id="side-expandable" ) )
+	sideEl.append( side )
+	side.find('h4').append("Typedefs:")
+	# TODO: Grab typedefs from cinder.tag file
+	typeDefs = classTagTree.findall( r'member[@kind="typedef"]' )
+	typeDefUl = None
+	if len(typeDefs) > 0 :
+		typeDefUl = genTag( html, "ul" )
+
+	for typeDef in typeDefs :
+		typeDefLi = genTag( html, "li" )
+		typeDefLi.append( typeDef.find("name").text );
+		typeDefUl.append(typeDefLi)
+	side.append(typeDefUl)
+
+	print typeDefs
 
 
 	# +-----------+
@@ -523,8 +557,10 @@ def parseTemplateHtml( templatePath ):
 if __name__ == "__main__":
 	htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 	doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
+	# Load tag file
 
 	if len( sys.argv ) == 3: # process a specific file
+		tagXml = ET.ElementTree( ET.parse( "doxygen/cinder.tag" ).getroot() )
 		templateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
 		processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, sys.argv[2] ), copy.deepcopy( templateHtml ) )
 	else:
