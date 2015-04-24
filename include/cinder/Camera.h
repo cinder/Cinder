@@ -75,7 +75,7 @@ class Camera {
 	//! Primarily for user interaction such as with CamUi. Returns the distance from the camera along the view direction relative to which tumbling and dollying occur.
 	float	getPivotDistance() const { return mPivotDistance; }
 	//! Primarily for user interaction such as with CamUi. Sets the distance from the camera along the view direction relative to which tumbling and dollying occur.
-	void	setPivotDistance( float distance );
+	void	setPivotDistance( float distance ) { mPivotDistance = distance; }
 	//! Primarily for user interaction such as with CamUi. Returns the world-space point relative to which tumbling and dollying occur.
 	vec3	getPivotPoint() const { return mEyePoint + mViewDirection * mPivotDistance; }
 

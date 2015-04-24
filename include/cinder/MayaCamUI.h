@@ -34,11 +34,11 @@ class MayaCamUI {
 		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
 	{}
 	MayaCamUI( CameraPersp *camera )
-		: mCamera( camera ), mWindowSize( 640, 480 ), mCenterOfInterest( length( camera->getEyePoint() ) ), mMouseWheelMultiplier( 1.2f )
+		: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
 	{}
 
 	MayaCamUI( const MayaCamUI &rhs )
-		: mCamera( rhs.mCamera ), mCenterOfInterest( rhs.mCenterOfInterest ), mWindowSize( rhs.mWindowSize ),
+		: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
 			mWindow( rhs.mWindow ), mMouseWheelMultiplier( rhs.mMouseWheelMultiplier )
 	{
 	}
@@ -46,7 +46,6 @@ class MayaCamUI {
 	MayaCamUI& operator=( const MayaCamUI &rhs )
 	{
 		mCamera = rhs.mCamera;
-		mCenterOfInterest = rhs.mCenterOfInterest;
 		mWindowSize = rhs.mWindowSize;
 		mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
 		return *this;
@@ -100,7 +99,7 @@ class MayaCamUI {
 			return;
 		mInitialMousePos = mousePos;
 		mInitialCam = *mCamera;
-		mInitialCenterOfInterest = mCenterOfInterest;		
+		mInitialPivotDistance = mCamera->getPivotDistance();
 		mLastAction = ACTION_NONE;
 	}
 
@@ -134,7 +133,7 @@ class MayaCamUI {
 		
 		if( action != mLastAction ) {
 			mInitialCam = *mCamera;
-			mInitialCenterOfInterest = mCenterOfInterest;
+			mInitialPivotDistance = mCamera->getPivotDistance();
 			mInitialMousePos = mousePos;
 		}
 		
@@ -143,15 +142,15 @@ class MayaCamUI {
 		if( action == ACTION_ZOOM ) { // zooming
 			int mouseDelta = ( mousePos.x - mInitialMousePos.x ) + ( mousePos.y - mInitialMousePos.y );
 
-			float newCOI = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialCenterOfInterest;
-			vec3 oldTarget = mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialCenterOfInterest;
-			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newCOI;
+			float newPivotDistance = powf( 2.71828183f, -mouseDelta / 500.0f ) * mInitialPivotDistance;
+			vec3 oldTarget = mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance;
+			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newPivotDistance;
 			mCamera->setEyePoint( newEye );
-			mCenterOfInterest = newCOI;
+			mCamera->setPivotDistance( newPivotDistance );
 		}
 		else if( action == ACTION_PAN ) { // panning
-			float deltaX = ( mousePos.x - mInitialMousePos.x ) / (float)getWindowSize().x * mInitialCenterOfInterest;
-			float deltaY = ( mousePos.y - mInitialMousePos.y ) / (float)getWindowSize().y * mInitialCenterOfInterest;
+			float deltaX = ( mousePos.x - mInitialMousePos.x ) / (float)getWindowSize().x * mInitialPivotDistance;
+			float deltaY = ( mousePos.y - mInitialMousePos.y ) / (float)getWindowSize().y * mInitialPivotDistance;
 			vec3 right, up;
 			mInitialCam.getBillboardVectors( &right, &up );
 			mCamera->setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
@@ -168,10 +167,10 @@ class MayaCamUI {
 				deltaY = -deltaY;
 			}
 
-			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( -mInitialCam.getViewDirection() * mInitialCenterOfInterest );
+			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( -mInitialCam.getViewDirection() * mInitialPivotDistance );
 			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
 
-			mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialCenterOfInterest + rotatedVec );
+			mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance + rotatedVec );
 			mCamera->setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
 		}
 		
@@ -188,9 +187,9 @@ class MayaCamUI {
 			multiplier = powf( mMouseWheelMultiplier, increment );
 		else
 			multiplier = powf( -mMouseWheelMultiplier, -increment );
-		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCenterOfInterest * ( 1 - multiplier ) );
+		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCamera->getPivotDistance() * ( 1 - multiplier ) );
 		mCamera->setEyePoint( newEye );
-		mCenterOfInterest *= (float)multiplier;
+		mCamera->setPivotDistance( mCamera->getPivotDistance() * multiplier );
 	}
 	
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
@@ -198,13 +197,6 @@ class MayaCamUI {
 
 	//! Sets the size of the window in pixels when no WindowRef is supplied with connect()
 	void	setWindowSize( const ivec2 &windowSizePixels ) { mWindowSize = windowSizePixels; }
-
-	//! Sets the distance along the eye vector around which the camera tumbles
-	void	setCenterOfInterest( float coi ) { mCenterOfInterest = coi; }
-	//! Returns the distance along the eye vector around which the camera tumbles
-	float	getCenterOfInterest() const { return mCenterOfInterest; }
-	//! Returns the point along the eye vector around which the camera tumbles
-	vec3	getCenterOfInterestPoint() const { return mCamera->getEyePoint() + mCamera->getViewDirection() * mCenterOfInterest; }
 
 	//! Sets the multiplier on mouse wheel zooming. Larger values zoom faster. Negative values invert the direction. Default is \c 1.2
 	void	setMouseWheelMultiplier( float multiplier ) { mMouseWheelMultiplier = multiplier; }
@@ -225,7 +217,7 @@ class MayaCamUI {
 	ivec2				mInitialMousePos;
 	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
-	float				mInitialCenterOfInterest, mCenterOfInterest;
+	float				mInitialPivotDistance;
 	float				mMouseWheelMultiplier;
 	int					mLastAction;
 	
