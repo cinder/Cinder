@@ -22,6 +22,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		004DA2491AE5A435008D4CE7 /* Arcball.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Arcball.h; path = ../../../include/cinder/Arcball.h; sourceTree = "<group>"; };
 		006D725E19953059008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D725F19953059008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -109,6 +110,7 @@
 		29B97314FDCFA39411CA2CEA /* ArcballDemo */ = {
 			isa = PBXGroup;
 			children = (
+				004DA2491AE5A435008D4CE7 /* Arcball.h */,
 				080E96DDFE201D6D7F000001 /* Source */,
 				29B97315FDCFA39411CA2CEA /* Other Sources */,
 				29B97317FDCFA39411CA2CEA /* Resources */,

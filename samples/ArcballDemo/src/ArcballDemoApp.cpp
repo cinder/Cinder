@@ -5,6 +5,7 @@
 #include "cinder/Arcball.h"
 #include "cinder/Rand.h"
 #include "cinder/Sphere.h"
+#include "cinder/MayaCamUI.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -16,69 +17,136 @@ class ArcballDemoApp : public App {
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;
 	void draw() override;
-	void keyDown( KeyEvent ) override { mCam.setPerspective( randFloat( 5, 140 ), getWindowAspectRatio(), 1.0f, 10.0f ); }
+	void keyDown( KeyEvent event ) override;
 	
 	Arcball			mArcball;
-	CameraPersp		mCam;
+	CameraPersp		mCam, mDebugCam;
+	MayaCamUI		mMayaCam;
 	
 	Sphere			mEarthSphere;
-	gl::BatchRef	mEarth;
+	gl::BatchRef	mEarth, mMarker, mConstraintAxis;
 	gl::TextureRef	mEarthTex;
+
+	bool			mUsingMayaCam = false;
+	float			mZLookAt;
 };
 
 void ArcballDemoApp::setup()
 {
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-	
-	mCam.setPerspective( 45.0f, getWindowAspectRatio(), 1.0f, 20.0f );
-	mCam.lookAt( vec3( 3, 3, 3 ), vec3( 0 ) );
 
-	// We represent Earth wit a sphere that is radius 1.5f, centered at the origin
-	mEarthSphere = Sphere( vec3( 0 ), 1.5f );
-	mEarth = gl::Batch::create( geom::Sphere( mEarthSphere ).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mZLookAt = 0.5f;
+	mCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
+	mCam.lookAt( vec3( 0,3, 5 ), vec3( mZLookAt ) );
+
+	mDebugCam = mCam;
+
+	mEarthSphere = Sphere( vec3( 0, 0, -3 ), 1.5f );
+	mEarth = gl::Batch::create( geom::Sphere( Sphere( vec3(0), mEarthSphere.getRadius() ) ).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture() ) );
 	mEarthTex = gl::Texture::create( loadImage( loadAsset( "earth.jpg" ) ) );
+
+	mMarker = gl::Batch::create( geom::Sphere().radius(0.1f).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().color() ) );
+	auto cylinder = geom::Cylinder().radius(0.05f).height( mEarthSphere.getRadius() * 3.5 ) >> geom::Translate( 0, -1.75 * mEarthSphere.getRadius(), 0 );
+	mConstraintAxis = gl::Batch::create( cylinder, gl::getStockShader( gl::ShaderDef().color() ) );
+
+	mArcball = Arcball( &mCam, mEarthSphere );
+	mMayaCam = MayaCamUI( &mDebugCam );
+}
+
+void ArcballDemoApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'f' ) {
+		mCam.setPerspective( randFloat( 5, 140 ), getWindowAspectRatio(), 1.0f, 10.0f );
+	}
+	else if( event.getChar() == 'd' ) {
+		mUsingMayaCam = ! mUsingMayaCam;
+		if( mUsingMayaCam )
+			mDebugCam = mCam;
+	}
+	else if ( event.getChar() == 'c' ) {
+		if( mArcball.isUsingConstraint() )
+			mArcball.setNoConstraintAxis();
+		else
+			mArcball.setConstraintAxis( normalize( vec3( randFloat(), randFloat(), randFloat() ) ) );
+	}
+	else if( event.getChar() == 'z' ) {
+		mZLookAt /= 10;
+		mCam.lookAt( vec3( 0, 0, 5 ), vec3( mZLookAt ) );
+	}
+	else if( event.getChar() == 'r' ) {
+		mEarthSphere.setCenter( vec3( randFloat(2), randFloat(1), randFloat( -4, 0 ) ) );
+		mEarth = gl::Batch::create( geom::Sphere( Sphere( vec3(0), mEarthSphere.getRadius() ) ).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture() ) );
+		mArcball.setSphere( mEarthSphere );
+	}
 }
 
 void ArcballDemoApp::resize()
 {
 	mCam.setAspectRatio( getWindowAspectRatio() );
-
-	// We need to inform our Arcball of a new center and radius (measured in pixels)
-	// CameraPersp::calcScreenProjection() calculates those values for a given Sphere
-	vec2 screenCenter;
-	float screenRadius;
-	mCam.calcScreenProjection( mEarthSphere, getWindowSize(), &screenCenter, &screenRadius );
-	mArcball.setCenter( screenCenter );
-	mArcball.setRadius( screenRadius );
+	mDebugCam.setAspectRatio( getWindowAspectRatio() );
 }
 
 void ArcballDemoApp::mouseDown( MouseEvent event )
 {
-	mArcball.mouseDown( event.getPos() );
+	if( mUsingMayaCam )
+		mMayaCam.mouseDown( event.getPos() );
+	else
+		mArcball.mouseDown( event.getPos(), getWindowSize() );
 }
 
 void ArcballDemoApp::mouseDrag( MouseEvent event )
 {
-	mArcball.mouseDrag( event.getPos() );
+	if( mUsingMayaCam )
+		mMayaCam.mouseDrag( event );
+	else
+		mArcball.mouseDrag( event.getPos(), getWindowSize() );
 }
 
 void ArcballDemoApp::draw()
 {
+	CameraPersp &cam = ( mUsingMayaCam ) ? mDebugCam : mCam;
 	gl::clear( Color( 0, 0.0f, 0.15f ) );
-	gl::setMatrices( mCam );
+	gl::setMatrices( cam );
 
-//	gl::translate( mEarthSphere.getCenter() );
+	// draw the earth
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+	gl::translate( mEarthSphere.getCenter() );
 	gl::rotate( mArcball.getQuat() );
 	mEarthTex->bind();
 	mEarth->draw();
-	
+
+	// draw constraint axis
+	if( mArcball.isUsingConstraint() ) {
+		gl::setMatrices( cam );
+		gl::color( 1, 1, 0 );
+		gl::translate( mEarthSphere.getCenter() );
+		gl::rotate( glm::rotation( vec3( 0, 1, 0 ), mArcball.getConstraintAxis() ) );
+		mConstraintAxis->draw();
+	}
+
+	gl::disableDepthRead();
+
+	// draw from vector marker
+	gl::setMatrices( cam );
+	gl::color( 0, 1, 0.25f );
+	gl::translate( mEarthSphere.getCenter() + mArcball.getFromVector() * mEarthSphere.getRadius() );
+	mMarker->draw();
+
+	// draw to vector marker
+	gl::setMatrices( cam );
+	gl::color( 1, 0.5f, 0.25f );
+	gl::translate( mEarthSphere.getCenter() + mArcball.getToVector() * mEarthSphere.getRadius() );
+	mMarker->draw();
+
+	// draw the elliptical axes
 	gl::setMatricesWindow( getWindowSize() );
-	gl::color( 1, 1, 1 );
-	vec2 screenCenter;
-	float screenRadius;
-	mCam.calcScreenProjection( mEarthSphere, getWindowSize(), &screenCenter, &screenRadius );
-	gl::drawStrokedCircle( screenCenter, screenRadius );
+	gl::color( 1, 0, 0 );
+	vec2 center, axisA, axisB;
+	mCam.calcScreenProjection( mEarthSphere, getWindowSize(), &center, &axisA, &axisB );
+	gl::drawLine( center - axisA, center + axisA );
+	gl::drawLine( center - axisB, center + axisB );
 }
 
 CINDER_APP( ArcballDemoApp, RendererGl )
