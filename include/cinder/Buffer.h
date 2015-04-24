@@ -47,9 +47,6 @@ class Buffer {
 	void*		getData()				{ return mData; }
 	const void* getData() const			{ return mData; }
 	
-	//! Returns a shared_ptr for the data and gives up ownership of the data
-	std::shared_ptr<uint8_t>	convertToSharedPtr();
-	
 	void resize( size_t newSize );
 	
 	void copyFrom( const void *data, size_t length );

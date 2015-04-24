@@ -81,12 +81,6 @@ void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
 	os->write( *this );
 }
 
-std::shared_ptr<uint8_t> Buffer::convertToSharedPtr()
-{
-	mOwnsData = false;
-	return std::shared_ptr<uint8_t>( reinterpret_cast<uint8_t*>( mObj->mData ), free );
-}
-
 Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resizeResult )
 {
 	/*Initial output buffer size needs to be 0.1% larger than source buffer + 12 bytes*/
