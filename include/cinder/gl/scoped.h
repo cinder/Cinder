@@ -190,7 +190,7 @@ struct ScopedProjectionMatrix : private Noncopyable {
 	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
 };
 
-//! Preserves all
+//! Preserves all matrices
 struct ScopedMatrices : private Noncopyable {
 	ScopedMatrices()	{ gl::pushMatrices(); }
 	~ScopedMatrices()	{ gl::popMatrices(); }
@@ -209,7 +209,7 @@ struct ScopedFaceCulling : private Noncopyable {
 	bool		mSaveFace;
 };
 
-//! Scopes state of depth testing.
+//! Scopes state of depth testing and writing
 struct ScopedDepthBuffer : private Noncopyable {
 	//! Enables or disables both depth comparisons and writing to the depth buffer
 	ScopedDepthBuffer( bool enableReadAndWrite );
