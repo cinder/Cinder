@@ -28,54 +28,77 @@
 
 namespace cinder {
 
-class MayaCamUI {
+//! Enables user interaction with a CameraPersp via the mouse
+class CameraUi {
  public:
-	MayaCamUI()
+	CameraUi()
 		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
 	{}
-	MayaCamUI( CameraPersp *camera )
+	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 )
 		: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
-	{}
-
-	MayaCamUI( const MayaCamUI &rhs )
-		: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
-			mWindow( rhs.mWindow ), mMouseWheelMultiplier( rhs.mMouseWheelMultiplier )
 	{
+		connect( window, signalPriority );
 	}
 
-	MayaCamUI& operator=( const MayaCamUI &rhs )
+	CameraUi( const CameraUi &rhs )
+		: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
+			mWindow( rhs.mWindow ), mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ),
+			mSignalPriority( rhs.mSignalPriority )
+	{
+		connect( mWindow, mSignalPriority );
+	}
+	
+	~CameraUi()
+	{
+		disconnect();
+	}
+
+	CameraUi& operator=( const CameraUi &rhs )
 	{
 		mCamera = rhs.mCamera;
 		mWindowSize = rhs.mWindowSize;
 		mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
+		mWindow = rhs.mWindow;
+		mSignalPriority = rhs.mSignalPriority;
+		connect( mWindow, mSignalPriority );
 		return *this;
 	}
 
+	//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
 	void connect( const app::WindowRef &window, int signalPriority = 0 )
 	{
 		mWindow = window;
-		mMouseDownConnection = window->getSignalMouseDown().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDown( event ); } );
-		mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
-		mMouseWheelConnection = window->getSignalMouseWheel().connect( signalPriority,
-			[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
-		mWindowResizeConnection = window->getSignalResize().connect( signalPriority,
-			[this]() {
-				setWindowSize( mWindow->getSize() );
-				if( mCamera )
-					mCamera->setAspectRatio( mWindow->getAspectRatio() );
-			}
-		);
+		mSignalPriority = signalPriority;
+		if( window ) {
+			mMouseDownConnection = window->getSignalMouseDown().connect( signalPriority,
+				[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+			mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
+				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
+			mMouseWheelConnection = window->getSignalMouseWheel().connect( signalPriority,
+				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
+			mWindowResizeConnection = window->getSignalResize().connect( signalPriority,
+				[this]() {
+					setWindowSize( mWindow->getSize() );
+					if( mCamera )
+						mCamera->setAspectRatio( mWindow->getAspectRatio() );
+				}
+			);
+		}
+		else
+			disconnect();
 	}
 
+	//! Disconnects all signal handlers
 	void disconnect()
 	{
 		mMouseDownConnection.disconnect();
 		mMouseDragConnection.disconnect();
+		mMouseWheelConnection.disconnect();
+		mWindowResizeConnection.disconnect();
 		mWindow.reset();
 	}
 
+	//! Signal emitted whenever the user modifies the camera
 	signals::Signal<void()>&	getSignalCameraChange()
 	{
 		return mSignalCameraChange;
@@ -97,6 +120,7 @@ class MayaCamUI {
 	{
 		if( ! mCamera )
 			return;
+
 		mInitialMousePos = mousePos;
 		mInitialCam = *mCamera;
 		mInitialPivotDistance = mCamera->getPivotDistance();
@@ -177,7 +201,7 @@ class MayaCamUI {
 		mSignalCameraChange.emit();
 	}
 	
-	void	mouseWheel( float increment )
+	void mouseWheel( float increment )
 	{
 		if( ! mCamera )
 			return;
@@ -190,9 +214,13 @@ class MayaCamUI {
 		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCamera->getPivotDistance() * ( 1 - multiplier ) );
 		mCamera->setEyePoint( newEye );
 		mCamera->setPivotDistance( mCamera->getPivotDistance() * multiplier );
+		
+		mSignalCameraChange.emit();
 	}
 	
+	//! Returns a reference to the currently controlled CameraPersp
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
+	//! Specifices which CameraPersp should be modified
 	void	setCamera( CameraPersp *camera )	{ mCamera = camera; }
 
 	//! Sets the size of the window in pixels when no WindowRef is supplied with connect()
@@ -221,8 +249,9 @@ class MayaCamUI {
 	float				mMouseWheelMultiplier;
 	int					mLastAction;
 	
-	app::WindowRef			mWindow;
 	ivec2					mWindowSize; // used when mWindow is null
+	app::WindowRef			mWindow;
+	int						mSignalPriority;
 	signals::Connection		mMouseDownConnection, mMouseDragConnection, mMouseWheelConnection;
 	signals::Connection		mWindowResizeConnection;
 	signals::Signal<void()>	mSignalCameraChange;

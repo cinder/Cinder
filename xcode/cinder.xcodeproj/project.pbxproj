@@ -365,7 +365,6 @@
 		0070500F1114F93F003FCAE4 /* Ray.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D2F3EF0F90394000A7189A /* Ray.h */; };
 		007050101114F93F003FCAE4 /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D2F6F30F9188FD00A7189A /* Sphere.h */; };
 		007050121114F93F003FCAE4 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
-		007050141114F93F003FCAE4 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
 		007050151114F93F003FCAE4 /* TriMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFC050FA50D0200E45AE0 /* TriMesh.h */; };
 		007050161114F93F003FCAE4 /* ObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFD530FA5602900E45AE0 /* ObjLoader.h */; };
 		0070501B1114F93F003FCAE4 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
@@ -465,7 +464,6 @@
 		007CE1FB127BB13B00799071 /* rapidxml_print.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F5127BB13B00799071 /* rapidxml_print.hpp */; };
 		007CE1FC127BB13B00799071 /* rapidxml.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 007CE1F6127BB13B00799071 /* rapidxml.hpp */; };
 		008876560F957E7300FD55C5 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
-		00887AC10F9C279700FD55C5 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
 		008B439D14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
 		008B439E14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
 		008B439F14F5F39100B55B07 /* Svg.h in Headers */ = {isa = PBXBuildFile; fileRef = 008B439A14F5F39100B55B07 /* Svg.h */; };
@@ -626,7 +624,6 @@
 		00CFD9701135C3520091E310 /* Ray.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D2F3EF0F90394000A7189A /* Ray.h */; };
 		00CFD9711135C3520091E310 /* Sphere.h in Headers */ = {isa = PBXBuildFile; fileRef = 00D2F6F30F9188FD00A7189A /* Sphere.h */; };
 		00CFD9731135C3520091E310 /* Arcball.h in Headers */ = {isa = PBXBuildFile; fileRef = 008876550F957E7300FD55C5 /* Arcball.h */; };
-		00CFD9751135C3520091E310 /* MayaCamUI.h in Headers */ = {isa = PBXBuildFile; fileRef = 00887AC00F9C279700FD55C5 /* MayaCamUI.h */; };
 		00CFD9761135C3520091E310 /* TriMesh.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFC050FA50D0200E45AE0 /* TriMesh.h */; };
 		00CFD9771135C3520091E310 /* ObjLoader.h in Headers */ = {isa = PBXBuildFile; fileRef = 002DFD530FA5602900E45AE0 /* ObjLoader.h */; };
 		00CFD97C1135C3520091E310 /* Display.h in Headers */ = {isa = PBXBuildFile; fileRef = 0071BD040FB9F4AD0092E7D6 /* Display.h */; };
@@ -720,6 +717,9 @@
 		00F601CC19F6CA2D00C83781 /* Ubo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F601CB19F6CA2D00C83781 /* Ubo.h */; };
 		00F601CD19F6CA2D00C83781 /* Ubo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F601CB19F6CA2D00C83781 /* Ubo.h */; };
 		00F601CE19F6CA2D00C83781 /* Ubo.h in Headers */ = {isa = PBXBuildFile; fileRef = 00F601CB19F6CA2D00C83781 /* Ubo.h */; };
+		00FF554D1AEADF9C0085071E /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
+		00FF554E1AEADF9C0085071E /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
+		00FF554F1AEADF9C0085071E /* CameraUi.h in Headers */ = {isa = PBXBuildFile; fileRef = 00FF554C1AEADF9C0085071E /* CameraUi.h */; };
 		00FFAED119DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */; };
 		00FFAED219DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */; };
 		00FFAED319DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */; };
@@ -1271,7 +1271,6 @@
 		007CE1F6127BB13B00799071 /* rapidxml.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; name = rapidxml.hpp; path = ../include/rapidxml/rapidxml.hpp; sourceTree = SOURCE_ROOT; };
 		008876550F957E7300FD55C5 /* Arcball.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Arcball.h; sourceTree = "<group>"; };
 		0088773B0F96671600FD55C5 /* FileDropEvent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDropEvent.h; path = app/FileDropEvent.h; sourceTree = "<group>"; };
-		00887AC00F9C279700FD55C5 /* MayaCamUI.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MayaCamUI.h; sourceTree = "<group>"; };
 		008B439A14F5F39100B55B07 /* Svg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; lineEnding = 0; name = Svg.h; path = svg/Svg.h; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objcpp; };
 		008B439C14F5F39100B55B07 /* SvgGl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SvgGl.h; path = svg/SvgGl.h; sourceTree = "<group>"; };
 		008B43A714F5F8F800B55B07 /* Svg.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Svg.cpp; path = svg/Svg.cpp; sourceTree = "<group>"; };
@@ -1369,6 +1368,7 @@
 		00F3BD1F0EBF89B700382AC1 /* Utilities.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utilities.h; sourceTree = "<group>"; };
 		00F601C719F6C9DD00C83781 /* Ubo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Ubo.cpp; path = gl/Ubo.cpp; sourceTree = "<group>"; };
 		00F601CB19F6CA2D00C83781 /* Ubo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Ubo.h; path = gl/Ubo.h; sourceTree = "<group>"; };
+		00FF554C1AEADF9C0085071E /* CameraUi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CameraUi.h; sourceTree = "<group>"; };
 		00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourceFileRadiance.cpp; sourceTree = "<group>"; };
 		00FFAED419DB5D330002CA8E /* ImageSourceFileRadiance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageSourceFileRadiance.h; sourceTree = "<group>"; };
 		0867D69BFE84028FC02AAC07 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -1977,7 +1977,7 @@
 				277C2CEC1366632B00178A29 /* Matrix22.h */,
 				277C2CED1366632B00178A29 /* Matrix33.h */,
 				277C2CEE1366632B00178A29 /* Matrix44.h */,
-				00887AC00F9C279700FD55C5 /* MayaCamUI.h */,
+				00FF554C1AEADF9C0085071E /* CameraUi.h */,
 				002DFD530FA5602900E45AE0 /* ObjLoader.h */,
 				00CFE37B113B85F60091E310 /* Path2d.h */,
 				00D2F1150F8D825C00A7189A /* Perlin.h */,
@@ -2744,7 +2744,6 @@
 				111A5F61191F7286005C3166 /* lookup.h in Headers */,
 				007050101114F93F003FCAE4 /* Sphere.h in Headers */,
 				007050121114F93F003FCAE4 /* Arcball.h in Headers */,
-				007050141114F93F003FCAE4 /* MayaCamUI.h in Headers */,
 				0003F4701992D67300647C8B /* VboMesh.h in Headers */,
 				007050151114F93F003FCAE4 /* TriMesh.h in Headers */,
 				007050161114F93F003FCAE4 /* ObjLoader.h in Headers */,
@@ -2782,6 +2781,7 @@
 				007050421114F93F003FCAE4 /* Premultiply.h in Headers */,
 				007050431114F93F003FCAE4 /* Resize.h in Headers */,
 				006D707F19942C31008149E2 /* QuickTimeImplLegacy.h in Headers */,
+				00FF554E1AEADF9C0085071E /* CameraUi.h in Headers */,
 				007050441114F93F003FCAE4 /* Threshold.h in Headers */,
 				0003F46D1992D67300647C8B /* Vbo.h in Headers */,
 				0003F4781992D6C100647C8B /* GeomIo.h in Headers */,
@@ -2894,7 +2894,6 @@
 				111A5F41191F7285005C3166 /* mdct.h in Headers */,
 				0003F47D1992DA7C00647C8B /* Log.h in Headers */,
 				00CFD9731135C3520091E310 /* Arcball.h in Headers */,
-				00CFD9751135C3520091E310 /* MayaCamUI.h in Headers */,
 				00CFD9761135C3520091E310 /* TriMesh.h in Headers */,
 				00CFD9771135C3520091E310 /* ObjLoader.h in Headers */,
 				00CFD97C1135C3520091E310 /* Display.h in Headers */,
@@ -2968,6 +2967,7 @@
 				00F601CE19F6CA2D00C83781 /* Ubo.h in Headers */,
 				005C0CEB14CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FD14C9BE580070C0D1 /* Frustum.h in Headers */,
+				00FF554F1AEADF9C0085071E /* CameraUi.h in Headers */,
 				0014408114CDB8D900D99000 /* Plane.h in Headers */,
 				006D707119942C31008149E2 /* QuickTime.h in Headers */,
 				43F78EF81516DAE200EB63B5 /* Json.h in Headers */,
@@ -3047,7 +3047,6 @@
 				00F601CC19F6CA2D00C83781 /* Ubo.h in Headers */,
 				006D708119942C31008149E2 /* QuickTimeUtils.h in Headers */,
 				111A5EBE191F703D005C3166 /* lsp.h in Headers */,
-				00887AC10F9C279700FD55C5 /* MayaCamUI.h in Headers */,
 				002DFC060FA50D0200E45AE0 /* TriMesh.h in Headers */,
 				002DFD540FA5602900E45AE0 /* ObjLoader.h in Headers */,
 				111A5ED1191F703D005C3166 /* setup_32.h in Headers */,
@@ -3164,6 +3163,7 @@
 				111A5EB0191F703D005C3166 /* codebook.h in Headers */,
 				277C2CF11366632B00178A29 /* Matrix33.h in Headers */,
 				277C2CF21366632B00178A29 /* Matrix44.h in Headers */,
+				00FF554D1AEADF9C0085071E /* CameraUi.h in Headers */,
 				111A5EF3191F7251005C3166 /* CinderAssert.h in Headers */,
 				005C0CE914CBB3DB00A12CD2 /* Base64.h in Headers */,
 				004172FA14C9BE520070C0D1 /* Frustum.h in Headers */,
