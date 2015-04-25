@@ -474,6 +474,7 @@
     <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\Camera.cpp" />
+    <ClCompile Include="..\src\cinder\CameraUi.cpp" />
     <ClCompile Include="..\src\cinder\Capture.cpp" />
     <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />

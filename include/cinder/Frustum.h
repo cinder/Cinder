@@ -30,7 +30,7 @@
 
 #pragma once
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	#pragma push_macro( "NEAR" )
 	#undef NEAR
 	#pragma push_macro( "FAR" )

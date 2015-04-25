@@ -786,6 +786,9 @@
     <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\CameraUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
