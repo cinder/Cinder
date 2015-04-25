@@ -19,6 +19,7 @@
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
 */
+
 #pragma once
 
 #include "cinder/Vector.h"
@@ -32,18 +33,18 @@ namespace cinder {
 class CameraUi {
  public:
 	CameraUi()
-		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
+		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
 	{}
 	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 )
-		: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f )
+		: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
 	{
 		connect( window, signalPriority );
 	}
 
 	CameraUi( const CameraUi &rhs )
 		: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
-			mWindow( rhs.mWindow ), mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ),
-			mSignalPriority( rhs.mSignalPriority )
+			mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
+			mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ), mMinimumPivotDistance( rhs.mMinimumPivotDistance )
 	{
 		connect( mWindow, mSignalPriority );
 	}
@@ -58,6 +59,7 @@ class CameraUi {
 		mCamera = rhs.mCamera;
 		mWindowSize = rhs.mWindowSize;
 		mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
+		mMinimumPivotDistance = rhs.mMinimumPivotDistance;
 		mWindow = rhs.mWindow;
 		mSignalPriority = rhs.mSignalPriority;
 		connect( mWindow, mSignalPriority );
@@ -72,6 +74,8 @@ class CameraUi {
 		if( window ) {
 			mMouseDownConnection = window->getSignalMouseDown().connect( signalPriority,
 				[this]( app::MouseEvent &event ) { mouseDown( event ); } );
+			mMouseUpConnection = window->getSignalMouseUp().connect( signalPriority,
+				[this]( app::MouseEvent &event ) { mouseUp( event ); } );
 			mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
 				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
 			mMouseWheelConnection = window->getSignalMouseWheel().connect( signalPriority,
@@ -92,6 +96,7 @@ class CameraUi {
 	void disconnect()
 	{
 		mMouseDownConnection.disconnect();
+		mMouseUpConnection.disconnect();
 		mMouseDragConnection.disconnect();
 		mMouseWheelConnection.disconnect();
 		mWindowResizeConnection.disconnect();
@@ -110,10 +115,21 @@ class CameraUi {
 		event.setHandled();
 	}
 
+	void mouseUp( app::MouseEvent &event )
+	{
+		mouseUp( event.getPos() );
+		event.setHandled();
+	}
+
 	void mouseWheel( app::MouseEvent &event )
 	{
 		mouseWheel( event.getWheelIncrement() );
 		event.setHandled();
+	}
+
+	void mouseUp( const ivec2 &mousePos )
+	{
+		mLastAction = ACTION_NONE;
 	}
 
 	void mouseDown( const ivec2 &mousePos )
@@ -170,7 +186,7 @@ class CameraUi {
 			vec3 oldTarget = mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance;
 			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newPivotDistance;
 			mCamera->setEyePoint( newEye );
-			mCamera->setPivotDistance( newPivotDistance );
+			mCamera->setPivotDistance( std::max<float>( newPivotDistance, mMinimumPivotDistance ) );
 		}
 		else if( action == ACTION_PAN ) { // panning
 			float deltaX = ( mousePos.x - mInitialMousePos.x ) / (float)getWindowSize().x * mInitialPivotDistance;
@@ -205,6 +221,10 @@ class CameraUi {
 	{
 		if( ! mCamera )
 			return;
+		
+		// some mice issue mouseWheel events during middle-clicks; filter that out
+		if( mLastAction != ACTION_NONE )
+			return;
 
 		float multiplier;
 		if( mMouseWheelMultiplier > 0 )
@@ -213,7 +233,7 @@ class CameraUi {
 			multiplier = powf( -mMouseWheelMultiplier, -increment );
 		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCamera->getPivotDistance() * ( 1 - multiplier ) );
 		mCamera->setEyePoint( newEye );
-		mCamera->setPivotDistance( mCamera->getPivotDistance() * multiplier );
+		mCamera->setPivotDistance( std::max<float>( mCamera->getPivotDistance() * multiplier, mMinimumPivotDistance ) );
 		
 		mSignalCameraChange.emit();
 	}
@@ -231,10 +251,15 @@ class CameraUi {
 	//! Returns the multiplier on mouse wheel zooming. Default is \c 1.2.
 	float	getMouseWheelMultiplier() const { return mMouseWheelMultiplier; }
 	
+	//! Sets the minimum allowable pivot distance. Default is \c 1.0.
+	void	setMinimumPivotDistance( float minPivotDistance ) { mMinimumPivotDistance = minPivotDistance; }
+	//! Returns the minimum allowable pivot distance. Default is \c 1.0.
+	float	getMinimumPivotDistance() const { return mMinimumPivotDistance; }
+	
  private:
 	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
 
-	ivec2		getWindowSize()
+	ivec2 getWindowSize() const
 	{
 		if( mWindow )
 			return mWindow->getSize();
@@ -246,13 +271,13 @@ class CameraUi {
 	CameraPersp			mInitialCam;
 	CameraPersp			*mCamera;
 	float				mInitialPivotDistance;
-	float				mMouseWheelMultiplier;
+	float				mMouseWheelMultiplier, mMinimumPivotDistance;
 	int					mLastAction;
 	
 	ivec2					mWindowSize; // used when mWindow is null
 	app::WindowRef			mWindow;
 	int						mSignalPriority;
-	signals::Connection		mMouseDownConnection, mMouseDragConnection, mMouseWheelConnection;
+	signals::Connection		mMouseDownConnection, mMouseUpConnection, mMouseDragConnection, mMouseWheelConnection;
 	signals::Connection		mWindowResizeConnection;
 	signals::Signal<void()>	mSignalCameraChange;
 };
