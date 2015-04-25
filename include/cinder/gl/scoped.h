@@ -67,6 +67,7 @@ struct ScopedState : private Noncopyable {
 struct ScopedColor : private Noncopyable {
 	ScopedColor();
 	ScopedColor( const ColorAf &color );
+	ScopedColor( float red, float green, float blue, float alpha = 1 );
 	~ScopedColor();
 
   private:
