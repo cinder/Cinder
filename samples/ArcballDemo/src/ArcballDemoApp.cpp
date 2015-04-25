@@ -65,4 +65,7 @@ void ArcballDemoApp::draw()
 	mEarth->draw();
 }
 
-CINDER_APP( ArcballDemoApp, RendererGl )
+CINDER_APP( ArcballDemoApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+}
+ )
