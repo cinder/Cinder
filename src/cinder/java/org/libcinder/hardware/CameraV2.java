@@ -76,7 +76,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
                     ByteBuffer buffer = image.getPlanes()[0].getBuffer();
 
-                    if (null == mPixels) {
+                    if ((null == mPixels) || (mPixels.length != buffer.remaining())) {
                         mPixels = new byte[buffer.remaining()];
                     }
                     buffer.get(mPixels);
@@ -195,7 +195,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
                             mPreviewRequest = mPreviewRequestBuilder.build();
                             mPreviewCaptureSession.setRepeatingRequest(mPreviewRequest, null, mCameraHandler);
                         } catch (Exception e) {
-                            Log.e(TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e);
+                            Log.e(TAG, "CameraCaptureSession.setRepeatingRequest failed: " + e.getMessage());
                         }
                     }
 
@@ -215,8 +215,15 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      *
      */
     private void stopPreview() {
-        if(null != mPreviewCaptureSession) {
-            mPreviewCaptureSession.close();;
+        if (null != mPreviewCaptureSession) {
+            try {
+                mPreviewCaptureSession.stopRepeating();
+            }
+            catch(Exception e) {
+                Log.e(TAG, "CameraCaptureSession.stopRepeating failed: " + e.getMessage());
+            }
+
+            mPreviewCaptureSession.close();
             mPreviewCaptureSession = null;
         }
 
@@ -240,25 +247,16 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             return;
         }
 
+        //
         try {
             mCameraHandlerThread = new HandlerThread("camera-handler-thread");
             mCameraHandlerThread.start();
-        }
-        catch(Exception e) {
-            Log.e(TAG, "camera HandlerThread allocation failed: " + e.getMessage());
-        }
 
-        try {
             mCameraHandler = new Handler(mCameraHandlerThread.getLooper());
-        }
-        catch(Exception e) {
-            Log.e(TAG, "camera Handler allocation failed: " + e.getMessage());
-        }
 
-        try {
             mCameraManager.openCamera(mActiveDeviceId, mStateCallback, mCameraHandler);
         } catch (Exception e) {
-            Log.e(TAG, "openCamera failed: " + e.getMessage());
+            Log.e(TAG, "startDevice failed: " + e.getMessage());
         }
     }
 
@@ -411,6 +409,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         if (mActiveDeviceId.equals(mBackDeviceId)) {
             return;
         }
+
 
         startDevice(mBackDeviceId);
     }

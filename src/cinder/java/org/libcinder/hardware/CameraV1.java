@@ -73,7 +73,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
         }
         catch(Exception e ) {
-            Log.e(Cinder.TAG, "CinderCamera.startDevice failed: " + e);
+            Log.e(Cinder.TAG, "CinderCamera.startDevice failed: " + e.getMessage());
         }
     }
 
@@ -91,7 +91,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             }
         }
         catch(Exception e ) {
-            Log.e(Cinder.TAG, "CinderCamera.stopDevice failed: " + e);
+            Log.e(Cinder.TAG, "CinderCamera.stopDevice failed: " + e.getMessage());
         }
     }
 
@@ -113,7 +113,10 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     public void onPreviewFrame(byte[] data, android.hardware.Camera camera) {
         lockPixels();
         try {
-            mPixels = data;
+            if ((null == mPixels) || (mPixels.length != data.length)) {
+                mPixels = new byte[data.length];
+            }
+            System.arraycopy(data, 0, mPixels, 0, data.length);
         }
         finally {
             unlockPixels();
