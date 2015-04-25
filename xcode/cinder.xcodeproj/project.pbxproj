@@ -590,6 +590,9 @@
 		00B729E8115DAC2B00CD71B9 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B729E7115DAC2B00CD71B9 /* Timer.h */; };
 		00B729E9115DAC2B00CD71B9 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B729E7115DAC2B00CD71B9 /* Timer.h */; };
 		00B729EA115DAC2B00CD71B9 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 00B729E7115DAC2B00CD71B9 /* Timer.h */; };
+		00B8C3981AEB4F240007ADAA /* CameraUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B8C3971AEB4F240007ADAA /* CameraUi.cpp */; };
+		00B8C3991AEB4F240007ADAA /* CameraUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B8C3971AEB4F240007ADAA /* CameraUi.cpp */; };
+		00B8C39A1AEB4F240007ADAA /* CameraUi.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00B8C3971AEB4F240007ADAA /* CameraUi.cpp */; };
 		00BC898B10D2BE9400D6DC59 /* DataTarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */; };
 		00BC898D10D2BEA200D6DC59 /* DataTarget.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC898C10D2BEA200D6DC59 /* DataTarget.h */; };
 		00BC89F210D2EA2200D6DC59 /* ImageTargetFileQuartz.h in Headers */ = {isa = PBXBuildFile; fileRef = 00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */; };
@@ -1334,6 +1337,7 @@
 		00B1337810FBBBCC00AC7369 /* Shape2d.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shape2d.cpp; sourceTree = "<group>"; };
 		00B729E2115DABD800CD71B9 /* Timer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Timer.cpp; sourceTree = "<group>"; };
 		00B729E7115DAC2B00CD71B9 /* Timer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Timer.h; sourceTree = "<group>"; };
+		00B8C3971AEB4F240007ADAA /* CameraUi.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CameraUi.cpp; sourceTree = "<group>"; };
 		00BC898A10D2BE9400D6DC59 /* DataTarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DataTarget.cpp; sourceTree = "<group>"; };
 		00BC898C10D2BEA200D6DC59 /* DataTarget.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DataTarget.h; sourceTree = "<group>"; };
 		00BC89F110D2EA2200D6DC59 /* ImageTargetFileQuartz.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ImageTargetFileQuartz.h; sourceTree = "<group>"; };
@@ -2034,6 +2038,7 @@
 				009EE56B0F803F5600F17CB1 /* BSplineFit.cpp */,
 				C70E1A01106AA39D00E63577 /* Buffer.cpp */,
 				00241ABC0E830DD5004D34EB /* Camera.cpp */,
+				00B8C3971AEB4F240007ADAA /* CameraUi.cpp */,
 				007438400EA7924F005DD3E6 /* Capture.cpp */,
 				C7FA5FC112124A790065683B /* CaptureImplAvFoundation.mm */,
 				00E5A41D163F5AC500AACB3A /* CaptureImplCocoaDummy.mm */,
@@ -3303,6 +3308,7 @@
 				111A5FDE191F72AE005C3166 /* InputNode.cpp in Sources */,
 				00F601C919F6C9DD00C83781 /* Ubo.cpp in Sources */,
 				007050511114F93F003FCAE4 /* Rand.cpp in Sources */,
+				00B8C3991AEB4F240007ADAA /* CameraUi.cpp in Sources */,
 				111A5FBD191F72AE005C3166 /* DelayNode.cpp in Sources */,
 				007050521114F93F003FCAE4 /* KeyEvent.cpp in Sources */,
 				007050531114F93F003FCAE4 /* Stream.cpp in Sources */,
@@ -3492,6 +3498,7 @@
 				111A5FDF191F72AE005C3166 /* InputNode.cpp in Sources */,
 				00F601CA19F6C9DD00C83781 /* Ubo.cpp in Sources */,
 				00CFD9A21135C3520091E310 /* Rand.cpp in Sources */,
+				00B8C39A1AEB4F240007ADAA /* CameraUi.cpp in Sources */,
 				111A5FBE191F72AE005C3166 /* DelayNode.cpp in Sources */,
 				00CFD9A31135C3520091E310 /* KeyEvent.cpp in Sources */,
 				00CFD9A41135C3520091E310 /* Stream.cpp in Sources */,
@@ -3810,6 +3817,7 @@
 				00FFAED119DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp in Sources */,
 				0003F4141992D64100647C8B /* Vao.cpp in Sources */,
 				11FD37E41A8EDB9E002B6EA9 /* Signals.cpp in Sources */,
+				00B8C3981AEB4F240007ADAA /* CameraUi.cpp in Sources */,
 				0055BE991AD099DE00813C09 /* Checkerboard.cpp in Sources */,
 				00A1140D1355369A00081873 /* priorityq.c in Sources */,
 				111A5FB6191F72AE005C3166 /* FileCoreAudio.cpp in Sources */,

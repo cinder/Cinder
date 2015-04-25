@@ -32,212 +32,30 @@ namespace cinder {
 //! Enables user interaction with a CameraPersp via the mouse
 class CameraUi {
  public:
-	CameraUi()
-		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
-	{}
-	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 )
-		: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
-	{
-		connect( window, signalPriority );
-	}
-
-	CameraUi( const CameraUi &rhs )
-		: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
-			mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
-			mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ), mMinimumPivotDistance( rhs.mMinimumPivotDistance )
-	{
-		connect( mWindow, mSignalPriority );
-	}
+	CameraUi();
+	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 );
+	CameraUi( const CameraUi &rhs );
+	~CameraUi();
 	
-	~CameraUi()
-	{
-		disconnect();
-	}
-
-	CameraUi& operator=( const CameraUi &rhs )
-	{
-		mCamera = rhs.mCamera;
-		mWindowSize = rhs.mWindowSize;
-		mMouseWheelMultiplier = rhs.mMouseWheelMultiplier;
-		mMinimumPivotDistance = rhs.mMinimumPivotDistance;
-		mWindow = rhs.mWindow;
-		mSignalPriority = rhs.mSignalPriority;
-		connect( mWindow, mSignalPriority );
-		return *this;
-	}
+	CameraUi& operator=( const CameraUi &rhs );
 
 	//! Connects to mouseDown, mouseDrag, mouseWheel and resize signals of \a window, with optional priority \a signalPriority
-	void connect( const app::WindowRef &window, int signalPriority = 0 )
-	{
-		mWindow = window;
-		mSignalPriority = signalPriority;
-		if( window ) {
-			mMouseDownConnection = window->getSignalMouseDown().connect( signalPriority,
-				[this]( app::MouseEvent &event ) { mouseDown( event ); } );
-			mMouseUpConnection = window->getSignalMouseUp().connect( signalPriority,
-				[this]( app::MouseEvent &event ) { mouseUp( event ); } );
-			mMouseDragConnection = window->getSignalMouseDrag().connect( signalPriority,
-				[this]( app::MouseEvent &event ) { mouseDrag( event ); } );
-			mMouseWheelConnection = window->getSignalMouseWheel().connect( signalPriority,
-				[this]( app::MouseEvent &event ) { mouseWheel( event ); } );
-			mWindowResizeConnection = window->getSignalResize().connect( signalPriority,
-				[this]() {
-					setWindowSize( mWindow->getSize() );
-					if( mCamera )
-						mCamera->setAspectRatio( mWindow->getAspectRatio() );
-				}
-			);
-		}
-		else
-			disconnect();
-	}
-
+	void connect( const app::WindowRef &window, int signalPriority = 0 );
 	//! Disconnects all signal handlers
-	void disconnect()
-	{
-		mMouseDownConnection.disconnect();
-		mMouseUpConnection.disconnect();
-		mMouseDragConnection.disconnect();
-		mMouseWheelConnection.disconnect();
-		mWindowResizeConnection.disconnect();
-		mWindow.reset();
-	}
+	void disconnect();
 
 	//! Signal emitted whenever the user modifies the camera
-	signals::Signal<void()>&	getSignalCameraChange()
-	{
-		return mSignalCameraChange;
-	}
-
-	void mouseDown( app::MouseEvent &event )
-	{
-		mouseDown( event.getPos() );
-		event.setHandled();
-	}
-
-	void mouseUp( app::MouseEvent &event )
-	{
-		mouseUp( event.getPos() );
-		event.setHandled();
-	}
-
-	void mouseWheel( app::MouseEvent &event )
-	{
-		mouseWheel( event.getWheelIncrement() );
-		event.setHandled();
-	}
-
-	void mouseUp( const ivec2 &mousePos )
-	{
-		mLastAction = ACTION_NONE;
-	}
-
-	void mouseDown( const ivec2 &mousePos )
-	{
-		if( ! mCamera )
-			return;
-
-		mInitialMousePos = mousePos;
-		mInitialCam = *mCamera;
-		mInitialPivotDistance = mCamera->getPivotDistance();
-		mLastAction = ACTION_NONE;
-	}
-
-	void mouseDrag( app::MouseEvent &event )
-	{
-		bool isLeftDown = event.isLeftDown();
-		bool isMiddleDown = event.isMiddleDown() || event.isAltDown();
-		bool isRightDown = event.isRightDown() || event.isControlDown();
-
-		if( isMiddleDown )
-			isLeftDown = false;
-
-		mouseDrag( event.getPos(), isLeftDown, isMiddleDown, isRightDown );
-		event.setHandled();
-	}
-
-	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
-	{
-		if( ! mCamera )
-			return;
-
-		int action;
-		if( rightDown || ( leftDown && middleDown ) )
-			action = ACTION_ZOOM;
-		else if( middleDown )
-			action = ACTION_PAN;
-		else if( leftDown )
-			action = ACTION_TUMBLE;
-		else
-			return;
-		
-		if( action != mLastAction ) {
-			mInitialCam = *mCamera;
-			mInitialPivotDistance = mCamera->getPivotDistance();
-			mInitialMousePos = mousePos;
-		}
-		
-		mLastAction = action;
+	signals::Signal<void()>&	getSignalCameraChange();
 	
-		if( action == ACTION_ZOOM ) { // zooming
-			int mouseDelta = ( mousePos.x - mInitialMousePos.x ) + ( mousePos.y - mInitialMousePos.y );
+	void mouseDown( app::MouseEvent &event );
+	void mouseUp( app::MouseEvent &event );
+	void mouseWheel( app::MouseEvent &event );
+	void mouseUp( const ivec2 &mousePos );
+	void mouseDown( const ivec2 &mousePos );
+	void mouseDrag( app::MouseEvent &event );
+	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown );
+	void mouseWheel( float increment );
 
-			float newPivotDistance = powf( 2.71828183f, 2 * -mouseDelta / length( vec2( getWindowSize() ) ) ) * mInitialPivotDistance;
-			vec3 oldTarget = mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance;
-			vec3 newEye = oldTarget - mInitialCam.getViewDirection() * newPivotDistance;
-			mCamera->setEyePoint( newEye );
-			mCamera->setPivotDistance( std::max<float>( newPivotDistance, mMinimumPivotDistance ) );
-		}
-		else if( action == ACTION_PAN ) { // panning
-			float deltaX = ( mousePos.x - mInitialMousePos.x ) / (float)getWindowSize().x * mInitialPivotDistance;
-			float deltaY = ( mousePos.y - mInitialMousePos.y ) / (float)getWindowSize().y * mInitialPivotDistance;
-			vec3 right, up;
-			mInitialCam.getBillboardVectors( &right, &up );
-			mCamera->setEyePoint( mInitialCam.getEyePoint() - right * deltaX + up * deltaY );
-		}
-		else { // tumbling
-			float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
-			float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
-			vec3 mW = normalize( mInitialCam.getViewDirection() );
-			bool invertMotion = ( mInitialCam.getOrientation() * glm::vec3( 0, 1, 0 ) ).y < 0.0f;
-			vec3 mU = normalize( cross( vec3( 0, 1, 0 ), mW ) );
-
-			if( invertMotion ) {
-				deltaX = -deltaX;
-				deltaY = -deltaY;
-			}
-
-			glm::vec3 rotatedVec = glm::angleAxis( deltaY, mU ) * ( -mInitialCam.getViewDirection() * mInitialPivotDistance );
-			rotatedVec = glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * rotatedVec;
-
-			mCamera->setEyePoint( mInitialCam.getEyePoint() + mInitialCam.getViewDirection() * mInitialPivotDistance + rotatedVec );
-			mCamera->setOrientation( glm::angleAxis( deltaX, glm::vec3( 0, 1, 0 ) ) * glm::angleAxis( deltaY, mU ) * mInitialCam.getOrientation() );
-		}
-		
-		mSignalCameraChange.emit();
-	}
-	
-	void mouseWheel( float increment )
-	{
-		if( ! mCamera )
-			return;
-		
-		// some mice issue mouseWheel events during middle-clicks; filter that out
-		if( mLastAction != ACTION_NONE )
-			return;
-
-		float multiplier;
-		if( mMouseWheelMultiplier > 0 )
-			multiplier = powf( mMouseWheelMultiplier, increment );
-		else
-			multiplier = powf( -mMouseWheelMultiplier, -increment );
-		vec3 newEye = mCamera->getEyePoint() + mCamera->getViewDirection() * ( mCamera->getPivotDistance() * ( 1 - multiplier ) );
-		mCamera->setEyePoint( newEye );
-		mCamera->setPivotDistance( std::max<float>( mCamera->getPivotDistance() * multiplier, mMinimumPivotDistance ) );
-		
-		mSignalCameraChange.emit();
-	}
-	
 	//! Returns a reference to the currently controlled CameraPersp
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
 	//! Specifices which CameraPersp should be modified
@@ -257,15 +75,9 @@ class CameraUi {
 	float	getMinimumPivotDistance() const { return mMinimumPivotDistance; }
 	
  private:
-	enum		{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
+	enum	{ ACTION_NONE, ACTION_ZOOM, ACTION_PAN, ACTION_TUMBLE };
 
-	ivec2 getWindowSize() const
-	{
-		if( mWindow )
-			return mWindow->getSize();
-		else
-			return mWindowSize;
-	}
+	ivec2	getWindowSize() const;
  
 	ivec2				mInitialMousePos;
 	CameraPersp			mInitialCam;
