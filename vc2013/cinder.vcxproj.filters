@@ -905,9 +905,6 @@
     <ClInclude Include="..\include\cinder\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\MayaCamUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\ObjLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1648,6 +1645,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Checkerboard.h">
       <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CameraUi.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

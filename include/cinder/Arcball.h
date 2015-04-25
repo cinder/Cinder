@@ -116,7 +116,7 @@ class Arcball {
 			// our angle addition is the screen-space distance between the mouse and the closest point on the sphere, divided into
 			// the screen-space radius of the sphere's projected ellipse, multiplied by pi
 			float screenRadius = std::max( length( axisA ), length( axisB ) );
-			*resultAngleAddition = distance( vec2(point), screenSpaceClosest ) / screenRadius * M_PI;
+			*resultAngleAddition = distance( vec2(point), screenSpaceClosest ) / screenRadius * (float)M_PI;
 		}
 	}
 

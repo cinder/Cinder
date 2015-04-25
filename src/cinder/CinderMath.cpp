@@ -47,8 +47,8 @@
  DEALINGS IN THE SOFTWARE.
 */
 
-
 #include "cinder/CinderMath.h"
+#include <algorithm>
 
 using namespace glm;
 
