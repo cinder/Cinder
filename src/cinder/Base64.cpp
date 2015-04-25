@@ -230,7 +230,7 @@ std::string toBase64( const std::string &input, int charsPerLine )
 
 std::string toBase64( const Buffer &input, int charsPerLine )
 {
-	return toBase64( input.getData(), input.getDataSize(), charsPerLine );
+	return toBase64( input.getData(), input.getSize(), charsPerLine );
 }
 
 std::string toBase64( const void *input, size_t inputSize, int charsPerLine )
@@ -260,7 +260,7 @@ Buffer fromBase64( const std::string &input )
 
 Buffer fromBase64( const Buffer &input )
 {
-	return fromBase64( input.getData(), input.getDataSize() );
+	return fromBase64( input.getData(), input.getSize() );
 }
 
 Buffer fromBase64( const void *input, size_t inputSize )
@@ -271,7 +271,7 @@ Buffer fromBase64( const void *input, size_t inputSize )
 		base64_decodestate decs;
 		base64_init_decodestate( &decs );
 		ptrdiff_t actualSize = base64_decode_block( reinterpret_cast<const char*>(input), inputSize, (char*)result.getData(), &decs );
-		result.setDataSize( actualSize );
+		result.setSize( actualSize );
 	}
 	return result;
 }

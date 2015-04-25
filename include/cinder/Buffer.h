@@ -40,11 +40,11 @@ class Buffer {
 
 	//! Creates a Buffer from a DataSource
 	explicit Buffer( const DataSourceRef &dataSource );
-	
-	size_t getAllocatedSize() const		{ return mAllocatedSize; }
-	size_t getDataSize() const			{ return mDataSize; }
-	void setDataSize( size_t size )		{ mDataSize = size; }
-	
+
+	void	setSize( size_t size )		{ mDataSize = size; }
+	size_t	getSize() const				{ return mDataSize; }
+	size_t	getAllocatedSize() const	{ return mAllocatedSize; }
+
 	void*		getData()				{ return mData; }
 	const void* getData() const			{ return mData; }
 	
@@ -54,7 +54,7 @@ class Buffer {
 	//TODO: copy from region of another buffer
 	
 	//! Writes a Buffer to a DataTarget
-	void	write( std::shared_ptr<class DataTarget> dataTarget );
+	void	write( const DataTargetRef &dataTarget );
 	
   private:
 	void*	mData;

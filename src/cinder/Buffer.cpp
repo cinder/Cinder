@@ -84,15 +84,15 @@ void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
 Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel, bool resizeResult )
 {
 	/*Initial output buffer size needs to be 0.1% larger than source buffer + 12 bytes*/
-	size_t outSize = (size_t)(( buffer.getDataSize() * 1.001f ) + 12);
+	size_t outSize = (size_t)(( buffer.getSize() * 1.001f ) + 12);
 	Buffer outBuffer = Buffer( outSize );
 	
-	int err = compress2( (Bytef *)outBuffer.getData(), (uLongf*)&outSize, (Bytef *)buffer.getData(), (uLongf)buffer.getDataSize(), compressionLevel );
+	int err = compress2( (Bytef *)outBuffer.getData(), (uLongf*)&outSize, (Bytef *)buffer.getData(), (uLongf)buffer.getSize(), compressionLevel );
 	if( err != Z_OK ) {
 		//TODO: throw
 	}
 	
-	outBuffer.setDataSize( outSize );
+	outBuffer.setSize( outSize );
 	if( resizeResult ) {
 		outBuffer.resize( outSize );
 	}
@@ -119,7 +119,7 @@ Buffer decompressBuffer( const Buffer &buffer, bool resizeResult, bool useGZip )
 	
 	size_t inOffset = 0;
 	const uint32_t chunkSize = 16384;
-	size_t inBufferSize = buffer.getDataSize();
+	size_t inBufferSize = buffer.getSize();
 	uint8_t * inPtr = (uint8_t *)buffer.getData();
 	
 	size_t outBufferSize = chunkSize;
@@ -166,7 +166,7 @@ Buffer decompressBuffer( const Buffer &buffer, bool resizeResult, bool useGZip )
 	
 	(void)inflateEnd(&strm);
 	
-	outBuffer.setDataSize( outOffset );
+	outBuffer.setSize( outOffset );
 	if( resizeResult ) {
 		outBuffer.resize( outOffset );
 	}

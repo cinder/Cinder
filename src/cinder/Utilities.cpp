@@ -84,7 +84,7 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 string loadString( DataSourceRef dataSource )
 {
 	Buffer loadedBuffer( dataSource );
-	size_t dataSize = loadedBuffer.getDataSize();
+	size_t dataSize = loadedBuffer.getSize();
 	Buffer padded( dataSize + 1 );
 	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
 	(static_cast<uint8_t*>( padded.getData() ))[dataSize] = 0;

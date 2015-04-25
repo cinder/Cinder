@@ -149,7 +149,7 @@ void IStreamCinder::readData( void *t, size_t size )
 
 void OStream::write( const Buffer &buffer )
 {
-	IOWrite( buffer.getData(), buffer.getDataSize() );
+	IOWrite( buffer.getData(), buffer.getSize() );
 }
 
 void OStream::writeData( const void *src, size_t size )
@@ -621,7 +621,7 @@ BufferRef loadStreamBuffer( IStreamRef is )
 
 			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result->getData() ) + offset, bufferSize );
 			offset += bytesRead;
-			result->setDataSize( offset );
+			result->setSize( offset );
 		}
 
 		return result;

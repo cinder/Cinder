@@ -71,7 +71,7 @@ SafeNsString::operator std::string() const
 SafeNsData::SafeNsData( const Buffer &buffer )
 	: mBuffer( buffer )
 {
-	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer.getData() ) length:buffer.getDataSize() freeWhenDone:NO], safeRelease );
+	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer.getData() ) length:buffer.getSize() freeWhenDone:NO], safeRelease );
 	if( mPtr.get() )
 		[mPtr.get() retain];
 }
@@ -393,7 +393,7 @@ int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco 
 
 CFDataRef createCfDataRef( const Buffer &buffer )
 {
-	return ::CFDataCreateWithBytesNoCopy( kCFAllocatorDefault, reinterpret_cast<const UInt8*>( buffer.getData() ), buffer.getDataSize(), kCFAllocatorNull );
+	return ::CFDataCreateWithBytesNoCopy( kCFAllocatorDefault, reinterpret_cast<const UInt8*>( buffer.getData() ), buffer.getSize(), kCFAllocatorNull );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
