@@ -38,11 +38,15 @@ class Camera {
   public:
 	virtual ~Camera() {}
 
+	//! Returns the position in world-space from which the Camera is viewing
 	vec3		getEyePoint() const { return mEyePoint; }
-	void		setEyePoint( const vec3 &aEyePoint );
-	
+	//! Sets the position in world-space from which the Camera is viewing
+	void		setEyePoint( const vec3 &eyePoint );
+
+	//! Returns the vector in world-space which represents "up" - typically vec3( 0, 1, 0 ) 
 	vec3		getWorldUp() const { return mWorldUp; }
-	void		setWorldUp( const vec3 &aWorldUp );
+	//! Sets the vector in world-space which represents "up" - typically vec3( 0, 1, 0 )
+	void		setWorldUp( const vec3 &worldUp );
 
 	//! Modifies the view direction to look from the current eyePoint to \a target. Also updates the pivot distance.
 	void		lookAt( const vec3 &target );
