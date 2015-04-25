@@ -63,7 +63,7 @@ class Buffer {
 	bool	mOwnsData;
 };
 
-Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
-Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult = true, bool useGZip = false );
+Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
+Buffer decompressBuffer( const Buffer &buffer, bool resizeResult = true, bool useGZip = false );
 
 } //namespace
