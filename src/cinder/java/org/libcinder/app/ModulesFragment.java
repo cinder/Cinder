@@ -82,6 +82,7 @@ public class ModulesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
+        setRetainInstance(true);
 
         this.checkCameraPresence();
     }
@@ -111,6 +112,10 @@ public class ModulesFragment extends Fragment {
     public void onResume() {
         Log.i(TAG, "onResume");
         super.onResume();
+
+        if(null != mCamera) {
+            mCamera.startSession();
+        }
     }
 
     /** onPause
@@ -120,6 +125,10 @@ public class ModulesFragment extends Fragment {
     public void onPause() {
         Log.i(TAG, "onPause");
         super.onPause();
+
+        if(null != mCamera) {
+            mCamera.stopSession();
+        }
     }
 
     /** onStop
@@ -129,6 +138,8 @@ public class ModulesFragment extends Fragment {
     public void onStop() {
         Log.i(TAG, "onStop");
         super.onStop();
+
+
     }
 
     /** onDestroy

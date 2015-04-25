@@ -21,6 +21,8 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
     private ReentrantLock mPixelsMutex  = null;
 
+    private boolean mUseDummyTexture = true;
+
     /** CameraV1
      *
      */
@@ -50,30 +52,37 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     /** startDevice
      *
      */
-    private void startDevice() {
-        // Bail if we don't have a valid camera id or mCamera isn't null
-        if ((null == mActiveDeviceId) || (null != mCamera)) {
+    private void startDevice(String deviceId) {
+        if((null != mActiveDeviceId) && mActiveDeviceId.equals(deviceId)) {
             return;
         }
 
+        if(null != mActiveDeviceId) {
+            stopDevice();
+        }
+
         try {
+            mActiveDeviceId = deviceId;
             mCamera = android.hardware.Camera.open(Integer.parseInt(mActiveDeviceId));
 
             Camera.Parameters params = mCamera.getParameters();
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
-            if(null == mDummyTexture) {
-                mDummyTexture = new SurfaceTexture(0);
+            if(mUseDummyTexture) {
+                if(null == mPreviewTexture) {
+                    mPreviewTexture = new SurfaceTexture(0);
+                }
             }
-            mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
 
-            mCamera.setPreviewTexture(mDummyTexture);
+            if(null != mPreviewTexture) {
+                mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
+                mCamera.setPreviewTexture(mPreviewTexture);
+            }
+
             mCamera.setPreviewCallback(this);
-            mCamera.startPreview();
-
         }
         catch(Exception e ) {
-            Log.e(Cinder.TAG, "CinderCamera.startDevice failed: " + e.getMessage());
+            Log.e(Cinder.TAG, "startDevice failed: " + e.getMessage());
         }
     }
 
@@ -82,6 +91,8 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     private void stopDevice() {
         try {
+            mActiveDeviceId = null;
+
             if (null != mCamera) {
                 mCamera.setPreviewTexture(null);
                 mCamera.setPreviewCallback(null);
@@ -95,15 +106,26 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
     }
 
-    private void startDevice(String deviceId) {
-        if((null != mActiveDeviceId) && (mActiveDeviceId.equals(deviceId))) {
+    /** startPreview
+     *
+     */
+    private void startPreview() {
+        if(null == mCamera) {
             return;
         }
 
-        stopDevice();
+        mCamera.startPreview();
+    }
 
-        mActiveDeviceId = deviceId;
-        startDevice();
+    /** stopPreview
+     *
+     */
+    private void stopPreview() {
+        if(null == mCamera) {
+            return;
+        }
+
+        mCamera.stopPreview();
     }
 
     /** onPreviewFrame
@@ -144,28 +166,37 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         mPixelsMutex = new ReentrantLock();
     }
 
-    /** setDummyTexture
+    /** setPreviewTexture
      *
      */
     @Override
-    protected void setDummyTextureImpl(SurfaceTexture dummyTexture) {
-        mDummyTexture = dummyTexture;
-        if(null != mCamera) {
-            try {
-                mCamera.setPreviewTexture(mDummyTexture);
+    protected void setPreviewTextureImpl(SurfaceTexture previewTexture) {
+        if(null == mCamera) {
+            return;
+        }
+
+        try {
+            mPreviewTexture = previewTexture;
+            if(null != mPreviewTexture) {
+                mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
             }
-            catch(Exception e) {
-                Log.w(TAG, "(setDummyTexture) Camera.setPreviewTexture failed");
-            }
+            mUseDummyTexture = false;
+
+            stopPreview();
+            mCamera.setPreviewTexture(mPreviewTexture);
+            startPreview();
+        }
+        catch(Exception e) {
+            Log.w(TAG, "failed setting preview texture: " + e.getMessage());
         }
     }
 
-    /** startCaptureImpl
+    /** startSessionImpl
      *
      */
     @Override
-    protected void startCaptureImpl(String deviceId) {
-        if(null != deviceId) {
+    protected void startSessionImpl(String deviceId) {
+        if (null != deviceId) {
             startDevice(deviceId);
         }
         else {
@@ -175,6 +206,25 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
                 startDevice(mFrontDeviceId);
             }
         }
+
+        startPreview();
+    }
+
+    /** stopSessionImpl
+     *
+     */
+    @Override
+    protected void stopSessionImpl() {
+        stopPreview();
+        stopDevice();
+    }
+
+    /** startCaptureImpl
+     *
+     */
+    @Override
+    protected void startCaptureImpl() {
+        startSession();
     }
 
     /** stopCaptureImpl
@@ -182,7 +232,8 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     @Override
     protected void stopCaptureImpl() {
-        stopDevice();
+        stopSession();
+        mPreviewTexture = null;
     }
 
     /** switchToBackCamera
@@ -194,7 +245,9 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             return;
         }
 
+        stopPreview();
         startDevice(mBackDeviceId);
+        startPreview();
     }
 
     /** switchToFrontCamera
@@ -206,7 +259,9 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             return;
         }
 
+        stopPreview();
         startDevice(mFrontDeviceId);
+        startPreview();
     }
 
     /** lockPixels

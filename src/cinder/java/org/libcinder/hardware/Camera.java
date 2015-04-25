@@ -7,7 +7,6 @@ import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.SensorManager;
-import android.hardware.camera2.CameraAccessException;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
@@ -23,6 +22,8 @@ public abstract class Camera extends Fragment {
     public interface DisplayLayoutListener {
         void onDisplayLayoutChanged(int width, int height, int orientation, int displayRotation);
     }
+
+    private boolean mInitialized = false;
 
     protected String mBackDeviceId   = null;
     protected String mFrontDeviceId  = null;
@@ -41,7 +42,7 @@ public abstract class Camera extends Fragment {
     protected int mDisplayRotation = -1;
     private DisplayLayoutListener mDisplayLayoutListener;
 
-    protected SurfaceTexture mDummyTexture = null;
+    protected SurfaceTexture mPreviewTexture = null;
 
     /**
      * If we're in Java, we might use a TextureView to draw the
@@ -107,9 +108,12 @@ public abstract class Camera extends Fragment {
     }
 
     public void initialize() {
-        initializeImpl();
+        if( ! mInitialized) {
+            initializeImpl();
+            mInitialized = true;
+        }
 
-        // Initial values
+        // Set these in case we're coming back from an activity restart or sleep.
         mOrientation = ModulesFragment.activity().getResources().getConfiguration().orientation;
         mDisplayRotation = ModulesFragment.get().getDefaultDisplay().getRotation();
     }
@@ -128,13 +132,13 @@ public abstract class Camera extends Fragment {
         //Log.i(TAG, "Camaera.setPreferredPreviewSize: " + mWidth + "x" + mHeight);
     }
 
-    public void setDummyTexture(SurfaceTexture dummyTexture) {
-        setDummyTextureImpl(dummyTexture);
-        //emitDisplayLayoutChanged();
+    public void setPreviewTexture(SurfaceTexture previewTexture) {
+        setPreviewTextureImpl(previewTexture);
+        emitDisplayLayoutChanged();
     }
 
-    public SurfaceTexture getDummyTexture() {
-        return mDummyTexture;
+    public SurfaceTexture getPreviewTexture() {
+        return mPreviewTexture;
     }
 
     protected void startOrientationListener() {
@@ -166,16 +170,41 @@ public abstract class Camera extends Fragment {
     protected void stopOrientationListener() {
         if(null != mOrientationListener) {
             mOrientationListener.disable();
+            mOrientationListener = null;
         }
     }
 
-    public void startCapture() {
-        startCaptureImpl(Camera.sLastDeviceId);
+    /** startSession
+     *
+     */
+    public void startSession() {
+        startSessionImpl(Camera.sLastDeviceId);
         Camera.sLastDeviceId = mActiveDeviceId;
     }
 
-    public void stopCapture() {
+    /** stopSession
+     *
+     */
+    public void stopSession() {
+        stopSessionImpl();
         stopOrientationListener();
+    }
+
+    /** startCapture
+     *
+     */
+    public void startCapture() {
+        if(! mInitialized) {
+            initialize();
+        }
+
+        startCaptureImpl();
+    }
+
+    /** stopCapture
+     *
+     */
+    public void stopCapture() {
         stopCaptureImpl();
     }
 
@@ -191,9 +220,13 @@ public abstract class Camera extends Fragment {
 
     protected abstract void initializeImpl();
 
-    protected abstract void setDummyTextureImpl(SurfaceTexture dummyTexture);
+    protected abstract void setPreviewTextureImpl(SurfaceTexture previewTexture);
 
-    protected abstract void startCaptureImpl(String deviceId);
+    protected abstract void startSessionImpl(String deviceId);
+
+    protected abstract void stopSessionImpl();
+
+    protected abstract void startCaptureImpl();
 
     protected abstract void stopCaptureImpl();
 
@@ -333,10 +366,6 @@ public abstract class Camera extends Fragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
-//        if(null != savedInstanceState) {
-//            mActiveDeviceId = savedInstanceState.getString("mActiveDeviceId");
-//        }
     }
 
     /** onStart
@@ -352,10 +381,6 @@ public abstract class Camera extends Fragment {
      */
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-
-//        if(null != mActiveDeviceId) {
-//            outState.putString("mActiveDeviceId", mActiveDeviceId);
-//        }
     }
 
     /** onResume
