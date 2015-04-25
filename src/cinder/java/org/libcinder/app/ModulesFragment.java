@@ -248,7 +248,6 @@ public class ModulesFragment extends Fragment {
     public Camera getCamera() {
         if(null == mCamera) {
             mCamera = Camera.create();
-            addCameraFragment(mCamera);
         }
         return mCamera;
     }
@@ -256,18 +255,7 @@ public class ModulesFragment extends Fragment {
     public Camera getCamera(int version) {
         if(null == mCamera) {
             mCamera = Camera.create(version);
-            addCameraFragment(mCamera);
         }
         return mCamera;
-    }
-
-    private void addCameraFragment(Camera camera) {
-        FragmentManager fragmentManager = getFragmentManager();
-        Fragment fragment = fragmentManager.findFragmentByTag(Camera.FRAGMENT_TAG);
-        if(null == fragment) {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(camera, Camera.FRAGMENT_TAG);
-            fragmentTransaction.commit();
-        }
     }
 }

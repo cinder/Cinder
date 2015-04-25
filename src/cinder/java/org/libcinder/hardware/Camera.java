@@ -46,7 +46,7 @@ public abstract class Camera extends Fragment {
     /**
      * If we're in Java, we might use a TextureView to draw the
      * preview. This matrix is used by CameraV2 to rotate and
-     * scale the preview so it looks correct. CamereV1 ignores it.
+     * scale the preview so it looks correct. CameraV1 ignores it.
      *
      */
     protected Matrix mPreviewTransform = new Matrix();
