@@ -1917,7 +1917,7 @@ std::shared_ptr<Surface8u> Image::parseDataImage( const string &data )
 	if( mime == "image/png" ) extension = "png";
 	else if( mime == "image/jpeg" ) extension = "jpeg";	
 	size_t len = data.size() - comma - 1;
-	Buffer buf = fromBase64( &data[comma + 1], len );
+	auto buf = make_shared<Buffer>( fromBase64( &data[comma + 1], len ) );
 	try {
 		shared_ptr<Surface8u> result( new Surface8u( ci::loadImage( DataSourceBuffer::create( buf ), ImageSource::Options(), extension ) ) );
 		return result;
@@ -2184,8 +2184,11 @@ DocRef Doc::createFromSvgz( DataSourceRef dataSource, const fs::path &filePath )
 	fs::path relativePath = filePath;
 	if( filePath.empty() )
 		relativePath = dataSource->getFilePathHint();
+
 	Buffer compressed( dataSource );
-	return DocRef( new svg::Doc( DataSourceBuffer::create( decompressBuffer( compressed, false, true ) ), relativePath ) );
+	BufferRef decompressed = make_shared<Buffer>( decompressBuffer( compressed, false, true ) );
+	
+	return DocRef( new svg::Doc( DataSourceBuffer::create( decompressed, relativePath ) ) );
 }
 
 void Doc::loadDoc( DataSourceRef source, fs::path filePath )
