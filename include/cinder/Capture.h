@@ -58,8 +58,7 @@ class Capture {
 	//! Creates a new Capture requesting (but not promising) a resolution of \a width x \a height pixels.
 	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
 
-	Capture() {}
-	~Capture() {}
+	~Capture();
 
 	//! Begin capturing video
 	void		start();
@@ -127,29 +126,14 @@ class Capture {
 		
  protected:
  	Capture( int32_t width, int32_t height, const DeviceRef device );
- 
-	struct Obj {
-		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
-		virtual ~Obj();
 
 #if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
-		CaptureImplAvFoundation			*mImpl;
+	CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
-		CaptureImplCocoaDummy			*mImpl;
+	CaptureImplCocoaDummy			*mImpl;
 #elif defined( CINDER_MSW )
-		CaptureImplDirectShow			*mImpl;
+	CaptureImplDirectShow			*mImpl;
 #endif
-	};
-	
-	std::shared_ptr<Obj>				mObj;
-	
-  public:
- 	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Capture::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Capture::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
 };
 
 class CaptureExc : public Exception {

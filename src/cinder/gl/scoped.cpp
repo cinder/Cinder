@@ -96,6 +96,13 @@ ScopedColor::ScopedColor( const ColorAf &color )
 	mCtx->setCurrentColor( color );
 }
 
+ScopedColor::ScopedColor( float red, float green, float blue, float alpha )
+	: mCtx( gl::context() )
+{
+	mColor = mCtx->getCurrentColor();
+	mCtx->setCurrentColor( ColorA( red, green, blue, alpha ) );	
+}
+
 ScopedColor::~ScopedColor()
 {
 	mCtx->setCurrentColor( mColor );
@@ -296,6 +303,39 @@ ScopedFaceCulling::~ScopedFaceCulling()
 	mCtx->popBoolState( GL_CULL_FACE );
 	if( mSaveFace )
 		mCtx->popCullFace();
+}
+	
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedDepth
+ScopedDepth::ScopedDepth( bool enableReadAndWrite )
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableReadAndWrite );
+	mCtx->pushDepthMask( enableReadAndWrite );
+}
+	
+ScopedDepth::ScopedDepth( bool enableRead, bool enableWrite )
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( false )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableRead );
+	mCtx->pushDepthMask( enableWrite );
+}
+	
+ScopedDepth::ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc )
+	: mCtx( gl::context() ), mSaveMask( true ), mSaveFunc( true )
+{
+	mCtx->pushBoolState( GL_DEPTH_TEST, enableRead );
+	mCtx->pushDepthMask( enableWrite );
+	mCtx->pushDepthFunc( depthFunc );
+}
+
+ScopedDepth::~ScopedDepth()
+{
+	mCtx->popBoolState( GL_DEPTH_TEST );
+	if( mSaveMask )
+		mCtx->popDepthMask();
+	if( mSaveFunc )
+		mCtx->popDepthFunc();
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////

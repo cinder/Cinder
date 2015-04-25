@@ -325,9 +325,28 @@ class Context {
 	void		popLineWidth( bool forceRestore = false );	
 	//! Returns the current line width.
 	float		getLineWidth();
-
-	//! Analogous to glDepthMask()
+	
+	//! Analogous to glDepthMask(). Enables or disables writing into the depth buffer.
 	void		depthMask( GLboolean enable );
+	//! Push the depth buffer writing flag.
+	void		pushDepthMask( GLboolean enable );
+	//! Push the depth buffer writing flag.
+	void		pushDepthMask();
+	//! Pops the depth buffer writing flag. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popDepthMask( bool forceRestore = false );
+	//! Returns the depth buffer writing flag.
+	GLboolean	getDepthMask();
+	
+	//! Set the depth buffer comparison function. Analogous to glDepthFunc(). Valid arguments are \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS. Default is \c GL_LESS.
+	void		depthFunc( GLenum func );
+	//! Push the depth buffer comparison function. Valid arguments are \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS. Default is \c GL_LESS.
+	void		pushDepthFunc( GLenum func );
+	//! Push the depth buffer comparison function.
+	void		pushDepthFunc();
+	//! Pops the depth buffer comparison function. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popDepthFunc( bool forceRestore = false );
+	//! Returns the depth buffer comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL or \c GL_ALWAYS.
+	GLenum		getDepthFunc();
 
 #if ! defined( CINDER_GL_ES )
 	//! Sets the current polygon rasterization mode. \a face must be \c GL_FRONT_AND_BACK. \c GL_POINT, \c GL_LINE & \c GL_FILL are legal values for \a mode.
@@ -454,6 +473,8 @@ class Context {
 	std::vector<GLenum>			mCullFaceStack;
 	std::vector<GLenum>			mFrontFaceStack;
 	std::vector<GLenum>			mPolygonModeStack;
+	std::vector<GLboolean>		mDepthMaskStack;
+	std::vector<GLenum>			mDepthFuncStack;
 	
 	std::map<GLenum,std::vector<GLboolean>>	mBoolStateStack;
 	// map<TextureUnit,map<TextureTarget,vector<Binding ID Stack>>>

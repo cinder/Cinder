@@ -67,6 +67,7 @@ struct ScopedState : private Noncopyable {
 struct ScopedColor : private Noncopyable {
 	ScopedColor();
 	ScopedColor( const ColorAf &color );
+	ScopedColor( float red, float green, float blue, float alpha = 1 );
 	~ScopedColor();
 
   private:
@@ -190,7 +191,7 @@ struct ScopedProjectionMatrix : private Noncopyable {
 	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
 };
 
-//! Preserves all
+//! Preserves all matrices
 struct ScopedMatrices : private Noncopyable {
 	ScopedMatrices()	{ gl::pushMatrices(); }
 	~ScopedMatrices()	{ gl::popMatrices(); }
@@ -207,6 +208,22 @@ struct ScopedFaceCulling : private Noncopyable {
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
+};
+
+//! Scopes state of depth testing and writing
+struct ScopedDepth : private Noncopyable {
+	//! Enables or disables both depth comparisons and writing to the depth buffer
+	ScopedDepth( bool enableReadAndWrite );
+	//! Enables or disables depth comparisons and/or writing to the depth buffer
+	ScopedDepth( bool enableRead, bool enableWrite );
+	//! Enables or disables depth comparisons, writing to the depth buffer and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
+	ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc );
+	~ScopedDepth();
+	
+  private:
+	Context		*mCtx;
+	bool		mSaveMask;
+	bool		mSaveFunc;
 };
 
 //! Scopes state of Renderbuffer binding

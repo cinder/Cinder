@@ -125,6 +125,9 @@ Sphere Sphere::calculateBoundingSphere( const vector<vec3> &points )
 
 Sphere Sphere::calculateBoundingSphere( const vec3 *points, size_t numPoints )
 {
+	if( ! numPoints )
+		return Sphere( vec3( 0 ), 0 );
+	
 	// compute minimal and maximal bounds
 	vec3 min(points[0]), max(points[0]);
 	for( size_t i = 1; i < numPoints; ++i ) {
@@ -209,6 +212,14 @@ float Sphere::calcProjectedArea( float focalLength, vec2 screenSizePixels ) cons
 	float area = -M_PI * focalLength * focalLength * r2 * sqrt( fabs((l2-r2)/(r2-z2)) ) / (r2-z2);
 	float aspectRatio = screenSizePixels.x / screenSizePixels.y;
 	return area * screenSizePixels.x * screenSizePixels.y * 0.25f / aspectRatio;
+}
+
+Sphere Sphere::transformed( const mat4 &transform )
+{
+	vec4 center = transform * vec4( mCenter, 1 );
+	vec4 radius = transform * vec4( mRadius, 0, 0, 0 );
+
+	return Sphere( vec3( center ), glm::length( radius ) );
 }
 
 } // namespace cinder

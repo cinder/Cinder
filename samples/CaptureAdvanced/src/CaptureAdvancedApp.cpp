@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Surface.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
 #include "cinder/Text.h"
 

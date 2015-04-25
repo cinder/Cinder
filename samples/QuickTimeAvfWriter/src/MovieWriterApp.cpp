@@ -29,13 +29,13 @@ void MovieWriterApp::setup()
 {
 #if defined( CINDER_COCOA_TOUCH )
 	auto format = qtime::MovieWriter::Format().codec( qtime::MovieWriter::JPEG ).fileType( qtime::MovieWriter::QUICK_TIME_MOVIE )
-					jpegQuality( 0.09f ).enableFrameReordering( false ).averageBitsPerSecond( 10000000 );
+					jpegQuality( 0.09f ).averageBitsPerSecond( 10000000 );
 	mMovieExporter = qtime::MovieWriter::create( getDocumentsDirectory() / "test.mov", getWindowWidth(), getWindowHeight(), format );
 #else
 	fs::path path = getSaveFilePath();
 	if( ! path.empty() ) {
 		auto format = qtime::MovieWriter::Format().codec( qtime::MovieWriter::H264 ).fileType( qtime::MovieWriter::QUICK_TIME_MOVIE )
-						jpegQuality( 0.09f ).enableFrameReordering( false ).averageBitsPerSecond( 10000000 );
+						.jpegQuality( 0.09f ).averageBitsPerSecond( 10000000 );
 		mMovieExporter = qtime::MovieWriter::create( path, getWindowWidth(), getWindowHeight(), format );
 	}
 #endif

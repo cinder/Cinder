@@ -226,7 +226,7 @@ void WindowTestApp::fileDrop( FileDropEvent event )
 
 void WindowTestApp::resize()
 {
-	CI_LOG_V( "Resized: " << getWindowSize() );
+	CI_LOG_V( "window pos: " << getWindowPos() << ", size: " << getWindowSize() );
 }
 
 void WindowTestApp::windowDraw()
@@ -261,5 +261,4 @@ void WindowTestApp::windowDraw()
 	gl::popMatrices();
 }
 
-// This line tells Flint to actually create the application
 CINDER_APP( WindowTestApp, RendererGl, WindowTestApp::prepareSettings )

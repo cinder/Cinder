@@ -3,18 +3,17 @@
 #include "cinder/ObjLoader.h"
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Arcball.h"
 #include "cinder/CameraUi.h"
 #include "cinder/Sphere.h"
-#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/ip/Checkerboard.h"
 
+#include "Resources.h"
+
 using namespace ci;
 using namespace ci::app;
-
-#include <list>
-using std::list;
 
 class ObjLoaderApp : public App {
   public:
@@ -24,7 +23,7 @@ class ObjLoaderApp : public App {
 	void	mouseDrag( MouseEvent event ) override;
 	void	keyDown( KeyEvent event ) override;
 
-	void	loadObjFile( const fs::path &filePath );
+	void	loadObj( const DataSourceRef &dataSource );
 	void	frameCurrentObject();
 	void	draw() override;
 	
@@ -53,7 +52,8 @@ void ObjLoaderApp::setup()
 	mCheckerTexture = gl::Texture::create( ip::checkerboard( 512, 512, 32 ) );
 	mCheckerTexture->bind( 0 );
 
-	loadObjFile( getAssetPath( "8lbs.obj" ) );
+	loadObj( loadResource( RES_8LBS_OBJ ) );
+
 	mArcball = Arcball( &mCam, mBoundingSphere );
 }
 
@@ -73,12 +73,14 @@ void ObjLoaderApp::mouseDrag( MouseEvent event )
 		mArcball.mouseDrag( event );
 }
 
-void ObjLoaderApp::loadObjFile( const fs::path &filePath )
+void ObjLoaderApp::loadObj( const DataSourceRef &dataSource )
 {
-	ObjLoader loader( (DataSourceRef)loadFile( filePath ) );
+	ObjLoader loader( dataSource );
 	mMesh = TriMesh::create( loader );
+
 	if( ! loader.getAvailableAttribs().count( geom::NORMAL ) )
 		mMesh->recalculateNormals();
+
 	mBatch = gl::Batch::create( *mMesh, mGlsl );
 	
 	mBoundingSphere = Sphere::calculateBoundingSphere( mMesh->getPositions<3>(), mMesh->getNumVertices() );
@@ -95,7 +97,7 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 	if( event.getChar() == 'o' ) {
 		fs::path path = getOpenFilePath();
 		if( ! path.empty() ) {
-			loadObjFile( path );
+			loadObj( loadFile( path ) );
 		}
 	}
 	else if( event.getChar() == 'f' ) {
@@ -119,4 +121,6 @@ void ObjLoaderApp::draw()
 }
 
 
-CINDER_APP( ObjLoaderApp, RendererGl )
+CINDER_APP( ObjLoaderApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )
