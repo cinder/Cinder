@@ -14,6 +14,8 @@ import android.view.OrientationEventListener;
 
 import org.libcinder.app.ModulesFragment;
 
+import java.util.concurrent.locks.ReentrantLock;
+
 public abstract class Camera extends Fragment {
 
     private static final String TAG = "Camera";
@@ -36,6 +38,7 @@ public abstract class Camera extends Fragment {
     private int mWidth = 0;
     private int mHeight = 0;
     protected byte[] mPixels = null;
+    protected ReentrantLock mPixelsMutex  = null;
 
     protected OrientationEventListener mOrientationListener;
     protected int mOrientation = -1;
@@ -43,6 +46,7 @@ public abstract class Camera extends Fragment {
     private DisplayLayoutListener mDisplayLayoutListener;
 
     protected SurfaceTexture mPreviewTexture = null;
+
 
     /**
      * If we're in Java, we might use a TextureView to draw the
@@ -198,14 +202,35 @@ public abstract class Camera extends Fragment {
             initialize();
         }
 
+        if(null == mPixelsMutex) {
+            mPixelsMutex = new ReentrantLock();
+        }
+
         startCaptureImpl();
     }
 
     /** stopCapture
      *
+     * Stops all threads that are used for capturing. Closes cameras and releases the devices
+     * associated with the. Sets all classes member variables to null or their default value.
+     *
      */
     public void stopCapture() {
         stopCaptureImpl();
+        mInitialized = false;
+        mActiveDeviceId = null;
+        mBackDeviceId = null;
+        mFrontDeviceId = null;
+        mPreferredPreviewWidth = 0;
+        mPreferredPreviewHeight = 0;
+        mWidth = 0;
+        mHeight = 0;
+        mPixels = null;
+        mPixelsMutex = null;
+        mOrientation = -1;
+        mDisplayRotation = -1;
+        mDisplayLayoutListener = null;
+        mPreviewTexture = null;
     }
 
     public void switchToBackCamera() {

@@ -8,8 +8,6 @@ import android.util.Log;
 import android.graphics.SurfaceTexture;
 import android.view.Surface;
 
-import java.util.concurrent.locks.ReentrantLock;
-
 /** \class CameraV1
  *
  */
@@ -19,9 +17,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
     private android.hardware.Camera mCamera = null;
 
-    private ReentrantLock mPixelsMutex  = null;
-
-    private boolean mUseDummyTexture = true;
+    private SurfaceTexture mDummyTexture = null;
 
     /** CameraV1
      *
@@ -68,15 +64,13 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             Camera.Parameters params = mCamera.getParameters();
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
-            if(mUseDummyTexture) {
-                if(null == mPreviewTexture) {
-                    mPreviewTexture = new SurfaceTexture(0);
-                }
-            }
-
             if(null != mPreviewTexture) {
                 mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
                 mCamera.setPreviewTexture(mPreviewTexture);
+            }
+            else {
+                mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
+                mCamera.setPreviewTexture(mDummyTexture);
             }
 
             mCamera.setPreviewCallback(this);
@@ -162,8 +156,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
                 mFrontDeviceId = Integer.toString(i);
             }
         }
-
-        mPixelsMutex = new ReentrantLock();
     }
 
     /** setPreviewTexture
@@ -180,7 +172,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             if(null != mPreviewTexture) {
                 mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
             }
-            mUseDummyTexture = false;
 
             stopPreview();
             mCamera.setPreviewTexture(mPreviewTexture);
@@ -224,6 +215,10 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      */
     @Override
     protected void startCaptureImpl() {
+        if(null == mDummyTexture) {
+            mDummyTexture = new SurfaceTexture(0);
+        }
+
         startSession();
     }
 
@@ -233,7 +228,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
     @Override
     protected void stopCaptureImpl() {
         stopSession();
-        mPreviewTexture = null;
+        mDummyTexture = null;
     }
 
     /** switchToBackCamera

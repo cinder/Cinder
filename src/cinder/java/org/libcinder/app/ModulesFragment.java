@@ -82,7 +82,7 @@ public class ModulesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         Log.i(TAG, "onCreate");
         super.onCreate(savedInstanceState);
-        setRetainInstance(true);
+        //setRetainInstance(true);
 
         this.checkCameraPresence();
     }
