@@ -1,7 +1,7 @@
 #include "cinder/Camera.h"
 #include "cinder/GeomIo.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -63,7 +63,7 @@ private:
 	bool				mEnableFaceFulling;
 
 	CameraPersp			mCamera;
-	MayaCamUI			mMayaCam;
+	CameraUi			mCamUi;
 	bool				mRecenterCamera;
 	vec3				mCameraTarget, mCameraLerpTarget;
 	double				mLastMouseDownTime;
@@ -124,7 +124,7 @@ void GeometryApp::setup()
 
 	// Setup the camera.
 	mCamera.lookAt( normalize( vec3( 3, 3, 6 ) ) * 5.0f, mCameraTarget );
-	mMayaCam = MayaCamUI( &mCamera );
+	mCamUi = CameraUi( &mCamera );
 
 	// Load and compile the shaders.
 	createPhongShader();
@@ -155,7 +155,6 @@ void GeometryApp::update()
 		vec3 eye = mCameraLerpTarget - lerp( distance, 5.0f, 0.1f ) * mCamera.getViewDirection();
 		mCameraTarget = lerp( mCameraTarget, mCameraLerpTarget, 0.25f );
 		mCamera.lookAt( eye, mCameraTarget );
-		mMayaCam.setCenterOfInterest( glm::distance( eye, vec3( 0 ) ) );
 	}
 }
 
@@ -258,7 +257,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 {
 	mRecenterCamera = false;
 
-	mMayaCam.mouseDown( event );
+	mCamUi.mouseDown( event );
 
 	if( getElapsedSeconds() - mLastMouseDownTime < 0.2f ) {
 		mPrimitiveSelected = static_cast<Primitive>( static_cast<int>(mPrimitiveSelected) +1 );
@@ -270,7 +269,7 @@ void GeometryApp::mouseDown( MouseEvent event )
 
 void GeometryApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event );
+	mCamUi.mouseDrag( event );
 }
 
 void GeometryApp::resize()

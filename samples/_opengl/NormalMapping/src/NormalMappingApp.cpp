@@ -30,7 +30,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #include "cinder/params/Params.h"
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Perlin.h"
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
@@ -91,7 +91,7 @@ private:
 	AxisAlignedBox3f	mMeshBounds;
 
 	CameraPersp			mCamera;
-	MayaCamUI			mMayaCamera;
+	CameraUi			mCamUi;
 
 	LightSource			mLightLantern;
 	LightSource			mLightAmbient;
@@ -230,8 +230,7 @@ void NormalMappingApp::setup()
 	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
 #endif
 
-	mMayaCamera = MayaCamUI( &mCamera );
-	mMayaCamera.connect( getWindow(), -1 );
+	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
@@ -286,7 +285,7 @@ void NormalMappingApp::draw()
 	if( isInitialized() ) {
 		// get ready to draw in 3D
 		gl::pushMatrices();
-		gl::setMatrices( mMayaCamera.getCamera() );
+		gl::setMatrices( mCamera );
 
 		gl::enableDepthRead();
 		gl::enableDepthWrite();

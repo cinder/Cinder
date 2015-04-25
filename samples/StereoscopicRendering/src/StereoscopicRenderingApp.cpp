@@ -49,7 +49,7 @@
 #include "cinder/Camera.h"
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
@@ -100,7 +100,7 @@ private:
 	FocusMethod				mFocusMethod;
 	RenderMethod			mRenderMethod;
 
-	MayaCamUI				mMayaCam;
+	CameraUi				mCamUi;
 	CameraStereo			mCamera;
 
 	StereoAutoFocuser		mAF;
@@ -151,8 +151,7 @@ void StereoscopicRenderingApp::setup()
 	mCamera.lookAt( vec3( 0.2f, 1.3f, -11.5f ), vec3( 0.5f, 1.5f, -0.1f ) );
 	mCamera.setFov( 60.0f );
 
-	mMayaCam = MayaCamUI( &mCamera );
-	mMayaCam.connect( getWindow() );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 
 	try {
 		// Load shaders.
@@ -232,7 +231,7 @@ void StereoscopicRenderingApp::update()
 	switch( mFocusMethod ) {
 	case SET_CONVERGENCE:
 		// Auto-focus by calculating distance to center of interest.
-		d = glm::distance( mMayaCam.getCenterOfInterestPoint(), mCamera.getEyePoint() );
+		d = glm::distance( mCamera.getPivotPoint(), mCamera.getEyePoint() );
 		f = math<float>::min( 5.0f, d * 0.5f );
 
 		// The setConvergence() method will not change the eye separation distance, 
@@ -242,7 +241,7 @@ void StereoscopicRenderingApp::update()
 		break;
 	case SET_FOCUS:
 		// Auto-focus by calculating distance to center of interest.
-		d = glm::distance( mMayaCam.getCenterOfInterestPoint(), mCamera.getEyePoint() );
+		d = glm::distance( mCamera.getPivotPoint(), mCamera.getEyePoint() );
 		f = math<float>::min( 5.0f, d * 0.5f );
 
 		// The setConvergence( value, true ) method will automatically calculate a fitting value for the eye separation distance.

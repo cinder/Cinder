@@ -6,7 +6,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/GlslProg.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Rect.h"
 
 #include "RayMarcher.h"
@@ -31,7 +31,7 @@ class RayMarcherApp : public App {
 
 	RayMarcher		mMarcher;
 	CameraPersp		mCamera;
-	MayaCamUI		mMayaCam;
+	CameraUi		mCamUi;
 	vec3			mStartEyePoint;
 	int				mCurrentLine;
 	
@@ -51,9 +51,8 @@ void RayMarcherApp::setup()
 	mCamera = CameraPersp();
 	mStartEyePoint = vec3( 15, 21, 27.5 ) * 0.65f;
 	mCamera.lookAt( mStartEyePoint, vec3( 0 ), vec3( 0, 1, 0 ) );
-	mMayaCam = MayaCamUI( &mCamera );
-	mMayaCam.connect( getWindow() );
-	mMayaCam.getSignalCameraChange().connect( [this] { mCurrentLine = 0; } );
+	mCamUi = CameraUi( &mCamera, getWindow() );
+	mCamUi.getSignalCameraChange().connect( [this] { mCurrentLine = 0; } );
 	
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
 								 .vertex( CI_GLSL( 150,

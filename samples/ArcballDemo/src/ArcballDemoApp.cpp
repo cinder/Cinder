@@ -5,7 +5,7 @@
 #include "cinder/Arcball.h"
 #include "cinder/Rand.h"
 #include "cinder/Sphere.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -21,13 +21,13 @@ class ArcballDemoApp : public App {
 	
 	Arcball			mArcball;
 	CameraPersp		mCam, mDebugCam;
-	MayaCamUI		mMayaCam;
+	CameraUi		mCamUi;
 	
 	Sphere			mEarthSphere;
 	gl::BatchRef	mEarth, mMarker, mConstraintAxis;
 	gl::TextureRef	mEarthTex;
 
-	bool			mUsingMayaCam = false;
+	bool			mUsingCameraUi = false;
 	float			mZLookAt;
 };
 
@@ -51,7 +51,7 @@ void ArcballDemoApp::setup()
 	mConstraintAxis = gl::Batch::create( cylinder, gl::getStockShader( gl::ShaderDef().color() ) );
 
 	mArcball = Arcball( &mCam, mEarthSphere );
-	mMayaCam = MayaCamUI( &mDebugCam );
+	mCamUi = CameraUi( &mDebugCam );
 }
 
 void ArcballDemoApp::keyDown( KeyEvent event )
@@ -60,8 +60,8 @@ void ArcballDemoApp::keyDown( KeyEvent event )
 		mCam.setPerspective( randFloat( 5, 140 ), getWindowAspectRatio(), 1.0f, 10.0f );
 	}
 	else if( event.getChar() == 'd' ) {
-		mUsingMayaCam = ! mUsingMayaCam;
-		if( mUsingMayaCam )
+		mUsingCameraUi = ! mUsingCameraUi;
+		if( mUsingCameraUi )
 			mDebugCam = mCam;
 	}
 	else if ( event.getChar() == 'c' ) {
@@ -89,23 +89,23 @@ void ArcballDemoApp::resize()
 
 void ArcballDemoApp::mouseDown( MouseEvent event )
 {
-	if( mUsingMayaCam )
-		mMayaCam.mouseDown( event.getPos() );
+	if( mUsingCameraUi )
+		mCamUi.mouseDown( event.getPos() );
 	else
 		mArcball.mouseDown( event.getPos(), getWindowSize() );
 }
 
 void ArcballDemoApp::mouseDrag( MouseEvent event )
 {
-	if( mUsingMayaCam )
-		mMayaCam.mouseDrag( event );
+	if( mUsingCameraUi )
+		mCamUi.mouseDrag( event );
 	else
 		mArcball.mouseDrag( event.getPos(), getWindowSize() );
 }
 
 void ArcballDemoApp::draw()
 {
-	CameraPersp &cam = ( mUsingMayaCam ) ? mDebugCam : mCam;
+	CameraPersp &cam = ( mUsingCameraUi ) ? mDebugCam : mCam;
 	gl::clear( Color( 0, 0.0f, 0.15f ) );
 	gl::setMatrices( cam );
 

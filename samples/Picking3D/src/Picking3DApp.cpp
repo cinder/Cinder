@@ -20,7 +20,7 @@
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
 #include "Resources.h"
@@ -83,7 +83,7 @@ class Picking3DApp : public App {
 	AxisAlignedBox3f	mObjectBounds; 	// the object space bounding box of the mesh
 	mat4				mTransform;		// transformations (translate, rotate, scale) of the model
 	CameraPersp			mCamera;
-	MayaCamUI			mMayaCam;		// our camera
+	CameraUi			mCamUi;
 	ivec2				mMousePos;		// keep track of the mouse
 	double				mTime;			// keep track of time
 
@@ -114,8 +114,7 @@ void Picking3DApp::setup()
 	// set up the camera
 	mCamera.lookAt( vec3( 5.0f, 10.0f, 10.0f ), vec3( 0.0f, 2.5f, 0.0f ) );
 	mCamera.setPerspective( 60.0f, getWindowAspectRatio(), 1.0f, 1000.0f );
-	mMayaCam = MayaCamUI( &mCamera );
-	mMayaCam.connect( getWindow() );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 	
 	// enable the depth buffer (after all, we are doing 3D)
 	gl::enableDepthRead();

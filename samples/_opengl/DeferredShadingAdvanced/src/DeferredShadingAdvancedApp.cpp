@@ -26,7 +26,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/params/Params.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
@@ -48,7 +48,7 @@ class DeferredShadingAdvancedApp : public ci::app::App
 
   private:
 	ci::CameraPersp				mCamera;
-	ci::MayaCamUI				mMayaCam;
+	ci::CameraUi				mCamUi;
 
 	std::vector<Light>			mLights;
 	std::vector<Material>		mMaterials;
@@ -168,8 +168,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	ivec2 windowSize = toPixels( getWindowSize() );
 	mCamera = CameraPersp( windowSize.x, windowSize.y, 60.0f, 1.0f, 100.0f );
 	mCamera.lookAt( vec3( 2.664f, -6.484f, 5.939f ), vec3( 0.469f, -5.430f, 1.146f ) );
-	mMayaCam = MayaCamUI( &mCamera );
-	mMayaCam.connect( getWindow(), -1 );
+	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 300 ) );

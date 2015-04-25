@@ -25,7 +25,7 @@
 
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/Frustum.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
@@ -96,7 +96,7 @@ class FrustumCullingReduxApp : public App {
 
 	// camera
 	CameraPersp		mRenderCam;
-	MayaCamUI		mMayaCam;
+	CameraUi		mCamUi;
 
 	// help text
 	gl::Texture2dRef	mHelp;
@@ -160,8 +160,7 @@ void FrustumCullingReduxApp::setup()
 	mCullingFov = 60;
 	mRenderCam.setPerspective( mCullingFov, getWindowAspectRatio(), 10, 10000 );
 	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
-	mMayaCam = MayaCamUI( &mRenderCam );
-	mMayaCam.connect( getWindow() );
+	mCamUi = CameraUi( &mRenderCam, getWindow() );
 
 	// track current time so we can calculate elapsed time
 	mCurrentSeconds = getElapsedSeconds();

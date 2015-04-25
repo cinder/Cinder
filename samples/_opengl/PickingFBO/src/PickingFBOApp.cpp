@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -50,7 +50,7 @@ class PickingFBOApp : public App {
 	int					mPickPixelSize;
 	ivec2				mPickPos;
 	CameraPersp			mCamera;
-	MayaCamUI			mMayaCam;
+	CameraUi			mCamUi;
 	vec4				mDefaultVertexColor;
 	vec4				mDefaultEdgeColor;
 	vec4				mSelectedVertexColor;
@@ -84,7 +84,7 @@ void PickingFBOApp::setup()
 	setupFbo();
 
 	mCamera.lookAt( vec3( 100, 100, 100 ), vec3( 0 ) );
-	mMayaCam = MayaCamUI( &mCamera );
+	mCamUi = CameraUi( &mCamera );
 
 	mBoxTransform = mat4( 1.0f );
 	mBoxTransform = glm::scale( mBoxTransform, vec3( 30.0f ) );
@@ -99,7 +99,7 @@ void PickingFBOApp::setup()
 
 void PickingFBOApp::resize()
 {
-	mMayaCam.setWindowSize( getWindowSize() );
+	mCamUi.setWindowSize( getWindowSize() );
 	mCamera.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	setupFbo();
@@ -163,18 +163,17 @@ void PickingFBOApp::mouseDown( MouseEvent event )
 	mPickPos = toPixels( event.getPos() );
 
 	int selection = pick( mPickPos );
-	if( selection != -1 ) {
+	if( selection != -1 )
 		setSelectedColors( selection );
-	}
-	else {
-		mMayaCam.mouseDown( mPickPos );
-	}
+	else
+		mCamUi.mouseDown( event );
+
 	mNeedsRedraw = true;
 }
 
 void PickingFBOApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mCamUi.mouseDrag( event );
 	mNeedsRedraw = true;
 }
 

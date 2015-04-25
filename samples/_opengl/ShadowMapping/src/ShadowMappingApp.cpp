@@ -52,7 +52,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/GeomIo.h"
 #include "cinder/Rand.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Log.h"
 #include "cinder/Color.h"
 
@@ -119,7 +119,7 @@ class ShadowMappingApp : public App {
 	
 	float						mFrameRate;
 	CameraPersp					mCamera;
-	MayaCamUI					mMayaCam;
+	CameraUi					mCamUi;
 	
 	gl::BatchRef				mTeapot, mTeapotShadowed;
 	gl::BatchRef				mSphere, mSphereShadowed;
@@ -222,8 +222,7 @@ void ShadowMappingApp::setup()
 
 	mCamera.setFov( 30.0f );
 	mCamera.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam = MayaCamUI( &mCamera );
-	mMayaCam.connect( getWindow() );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 }
 
 void ShadowMappingApp::update()
