@@ -16,6 +16,8 @@
 		00AA99840FB0A5100094126A /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00AA99810FB0A5100094126A /* CoreAudio.framework */; };
 		00BAE65A0E7ED9C10018A608 /* ArcballDemoApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* ArcballDemoApp.cpp */; };
 		00C073010FF32E5C004801EA /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00C073000FF32E5C004801EA /* Accelerate.framework */; };
+		00FF55511AEB2CFE0085071E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00FF55501AEB2CFE0085071E /* CinderApp.icns */; };
+		00FF55531AEB2D110085071E /* earth.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 00FF55521AEB2D110085071E /* earth.jpg */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -32,6 +34,8 @@
 		00AA99810FB0A5100094126A /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		00BAE6590E7ED9C10018A608 /* ArcballDemoApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ArcballDemoApp.cpp; path = ../src/ArcballDemoApp.cpp; sourceTree = SOURCE_ROOT; };
 		00C073000FF32E5C004801EA /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		00FF55501AEB2CFE0085071E /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../data/CinderApp.icns; sourceTree = "<group>"; };
+		00FF55521AEB2D110085071E /* earth.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = earth.jpg; path = ../../data/earth.jpg; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -131,6 +135,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				00FF55521AEB2D110085071E /* earth.jpg */,
+				00FF55501AEB2CFE0085071E /* CinderApp.icns */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 			);
 			name = Resources;
@@ -196,6 +202,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00FF55531AEB2D110085071E /* earth.jpg in Resources */,
+				00FF55511AEB2CFE0085071E /* CinderApp.icns in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -276,7 +284,7 @@
 				PREBINDING = NO;
 				SDKROOT = macosx;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Debug;
 		};
@@ -293,7 +301,7 @@
 				PREBINDING = NO;
 				SDKROOT = macosx;
 				SYMROOT = ./build;
-				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include";
+				USER_HEADER_SEARCH_PATHS = "$(CINDER_PATH)/include ../include";
 			};
 			name = Release;
 		};
