@@ -60,7 +60,7 @@ void Camera::setOrientation( const quat &orientation )
 	mModelViewCached = false;
 }
 
-// Derive from math presented in http://paulbourke.net/miscellaneous/lens/
+// Derived from math presented in http://paulbourke.net/miscellaneous/lens/
 float Camera::getFocalLength() const
 {
 	return 1 / ( tan( toRadians( mFov ) * 0.5f ) * 2 );
@@ -472,7 +472,6 @@ void CameraOrtho::calcProjection() const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
-
 vec3 CameraStereo::getEyePointShifted() const
 {	
 	if( ! mIsStereo )
@@ -482,6 +481,14 @@ vec3 CameraStereo::getEyePointShifted() const
 		return mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 	else 
 		return mEyePoint + glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
+}
+
+void CameraStereo::setConvergence( float distance, bool adjustEyeSeparation )
+{ 
+	mConvergence = distance; mProjectionCached = false;
+
+	if( adjustEyeSeparation )
+		mEyeSeparation = mConvergence / 30.0f;
 }
 
 void CameraStereo::getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const
