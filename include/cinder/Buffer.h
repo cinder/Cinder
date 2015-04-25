@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010-15, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -30,6 +30,7 @@ namespace cinder {
 
 typedef std::shared_ptr<class Buffer>		BufferRef;
 typedef std::shared_ptr<class DataSource>	DataSourceRef;
+typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
 class Buffer {
   public:

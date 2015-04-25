@@ -75,7 +75,7 @@ void Buffer::copyFrom( const void *data, size_t length )
 	memcpy( mData, data, length );
 }
 
-void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
+void Buffer::write( const DataTargetRef &dataTarget )
 {
 	OStreamRef os = dataTarget->getStream();
 	os->write( *this );
