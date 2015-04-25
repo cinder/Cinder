@@ -27,6 +27,7 @@
 #include "cinder/Quaternion.h"
 #include "cinder/Vector.h"
 #include "cinder/Sphere.h"
+#include "cinder/app/MouseEvent.h"
 
 namespace cinder {
 
@@ -43,12 +44,22 @@ class Arcball {
 	{
 	}
 	
+	void mouseDown( const app::MouseEvent &event )
+	{
+		mouseDown( event.getPos(), event.getWindow()->getSize() );
+	}
+	
 	void mouseDown( const ivec2 &mousePos, const ivec2 &windowSize )
 	{
 		mInitialMousePos = mousePos;
 		mInitialQuat = mCurrentQuat;
 		float temp;
 		mouseOnSphere( mInitialMousePos, windowSize, &mFromVector, &temp );
+	}
+
+	void mouseDrag( const app::MouseEvent &event )
+	{
+		mouseDrag( event.getPos(), event.getWindow()->getSize() );
 	}
 	
 	void mouseDrag( const ivec2 &mousePos, const ivec2 &windowSize )
