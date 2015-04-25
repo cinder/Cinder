@@ -65,6 +65,8 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		GLenum				getType() const { return mType; }
 		//! Returns the defined geom::Attrib semantic.
 		geom::Attrib		getAttributeSemantic() const { return mSemantic; }
+		//! Used to derive the expected layout for cpu types within glsl.
+		static void getShaderAttribLayout( GLenum type, uint32_t *numDimsPerVertexPointer, uint32_t *numLocationsExpected );
 		
 	private:
 		std::string		mName;

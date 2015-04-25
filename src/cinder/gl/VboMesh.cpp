@@ -398,12 +398,28 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 				auto shaderLoc = shaderAttribInfo->getLocation();
 				
 				auto numDims = (int)vertAttribInfo.getDims();
-				auto shaderAttribTypeDims = (int)typeToDimension( shaderAttribInfo->getType() );
-				auto shaderAttribTotalDims = shaderAttribTypeDims * shaderAttribInfo->getCount();
+				
+				// examples of glsl types and the expected layout
+				// in mat4 model	- 16 dims(vertArray), 16 dims(shader), count 1, 4 per, numTimes 4(split) * 1(count)
+				// in vec3 stuff[3] -  9 dims(vertArray),  3 dims(shader), count 3, 3 per, numTimes 1(split) * 3(count)
+				// in mat4 model[3] - 48 dims(vertArray), 16 dims(shader), count 4, 4 per, numTimes 4(split) * 3(count)
+				// in vec4 stuff	-  4 dims(vertArray),  4 dims(shader), count 1, 4 per, numTimes 1(split) * 1(count)
+				// in vec2 stuff[5] - 10 dims(vertArray),  2 dims(shader), count 5, 2 per, numTimes 1(split) * 5(count)
+				// in mat2x3 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 2 per, numTimes 3(split) * 1(count)
+				// in mat3x2 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 3 per, numTimes 2(split) * 1(count)
+				// in mat2x2 stuff[2]- 8 dims(vertArray),  4 dims(shader), count 2, 2 per, numTimes 2(split) * 2(count)
+				
+				// num array elements or 1 if not an array
+				uint32_t shaderAttribCount = shaderAttribInfo->getCount();
+				uint32_t numDimsPerVertexPointer;
+				uint32_t numLocationsExpected;
+				GlslProg::Attribute::getShaderAttribLayout( shaderAttribInfo->getType(), &numDimsPerVertexPointer, &numLocationsExpected );
+				uint32_t shaderAttribTotalDims = numDimsPerVertexPointer * numLocationsExpected * shaderAttribCount;
 				if( numDims != shaderAttribTotalDims ) {
-					// Many of the shaders cinder uses don't match type for position, so disregard for this case
-					if( vertAttribInfo.getAttrib() != geom::Attrib::POSITION ) {
-						CI_LOG_E( geom::attribToString( vertAttribInfo.getAttrib() ) + "'s BufferLayout defined dimensions does not match shader expected dimensions for " << shaderAttribInfo->getName() << ", skipping attribute");
+					if( numDims <= 4 )
+						numDimsPerVertexPointer = numDims;
+					else {
+						CI_LOG_E( geom::attribToString( vertAttribInfo.getAttrib() ) + "'s BufferLayout defined dimensions(" << numDims << ") does not match shader expected dimensions(" << shaderAttribTotalDims << ") for " << shaderAttribInfo->getName() << ", skipping attribute");
 						continue;
 					}
 				}
@@ -415,31 +431,19 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 					case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
 				}
 				
-				// This is a little weird but basically the shader defined attrib could have more than the max attribute dimensions per pointer.
-				// So we either use the cached shader attrib dimensions for cases of 4 or less, like vec3 or vec2, or we use the max of 4, in the
-				// case of matrices.
-				int dimensionsPerVertexPointer = shaderAttribTypeDims <= 4 ? shaderAttribTypeDims : 4;
-				
-				int numTimes = (numDims / dimensionsPerVertexPointer);
-				
+				uint32_t numTimes = numLocationsExpected * shaderAttribCount;
 				size_t currentInnerOffset = 0;
-				// the condition is a bit complicated because of the above case of mismatching types like position. If we've made it this far
-				// we need to allow it to execute at least the amount 
-				for( int i = 0; (i < numTimes || i < shaderAttribInfo->getCount()) && numDims > 0; i++ ) {
-					// here we decide how many dims to use for this iteration, if numDims / dimensionsPerVertexPointer > 0, then use the
-					// dimensionsPerVertexPointer number, or use numDims, which is the remainder being accumulated below.
-					uint8_t numDimsTaken = numDims / dimensionsPerVertexPointer > 0 ? dimensionsPerVertexPointer : numDims;
+				for( int i = 0; i < numTimes; i++ ) {
 					ctx->enableVertexAttribArray( shaderLoc + i );
 					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
-						ctx->vertexAttribPointer( shaderLoc + i, numDimsTaken, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
 #if ! defined( CINDER_GL_ES )
 					else
-						ctx->vertexAttribIPointer( shaderLoc + i, numDimsTaken, GL_INT, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+						ctx->vertexAttribIPointer( shaderLoc + i, numDimsPerVertexPointer, GL_INT, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
 #endif
 					if( vertAttribInfo.getInstanceDivisor() > 0 )
 						ctx->vertexAttribDivisor( shaderLoc + i, vertAttribInfo.getInstanceDivisor() );
-					numDims -= numDimsTaken;
-					currentInnerOffset += (numDimsTaken * dataTypeBytes);
+					currentInnerOffset += (numDimsPerVertexPointer * dataTypeBytes);
 				}
 				
 				enabledAttribs.insert( vertAttribInfo.getAttrib() );

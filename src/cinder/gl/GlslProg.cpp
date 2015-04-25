@@ -82,6 +82,74 @@ class UniformValueCache : cinder::Noncopyable {
 	std::unique_ptr<uint8_t[]>		mBuffer;
 	uint32_t						mBufferSize;
 };
+	
+//////////////////////////////////////////////////////////////////////////
+// GlslProg::Attribute
+	
+// This function and variable layout is based on the specification from
+// https://www.opengl.org/registry/specs/ARB/vertex_attrib_64bit.txt
+void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsPerVertexPointer, uint32_t *numLocationsExpected )
+{
+	switch ( type ) {
+		case GL_UNSIGNED_INT:
+		case GL_INT:
+		case GL_FLOAT:
+			*numDimsPerVertexPointer = 1; *numLocationsExpected = 1;
+		break;
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_UNSIGNED_INT_VEC2:
+#endif
+		case GL_INT_VEC2:
+		case GL_FLOAT_VEC2:
+			*numDimsPerVertexPointer = 2; *numLocationsExpected = 1;
+		break;
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_UNSIGNED_INT_VEC3:
+#endif
+		case GL_INT_VEC3:
+		case GL_FLOAT_VEC3:
+			*numDimsPerVertexPointer = 3; *numLocationsExpected = 1;
+		break;
+#if ! defined( CINDER_GL_ES_2 )
+		case GL_UNSIGNED_INT_VEC4:
+#endif
+		case GL_INT_VEC4:
+		case GL_FLOAT_VEC4:
+			*numDimsPerVertexPointer = 4; *numLocationsExpected = 1;
+		break;
+		case GL_FLOAT_MAT2:
+			*numDimsPerVertexPointer = 2; *numLocationsExpected = 2;
+		break;
+		case GL_FLOAT_MAT2x3:
+			*numDimsPerVertexPointer = 3; *numLocationsExpected = 2;
+		break;
+		case GL_FLOAT_MAT3x2:
+			*numDimsPerVertexPointer = 2; *numLocationsExpected = 3;
+		break;
+		case GL_FLOAT_MAT4x2:
+			*numDimsPerVertexPointer = 2; *numLocationsExpected = 4;
+		break;
+		case GL_FLOAT_MAT2x4:
+			*numDimsPerVertexPointer = 4; *numLocationsExpected = 2;
+		break;
+		case GL_FLOAT_MAT3:
+			*numDimsPerVertexPointer = 3; *numLocationsExpected = 3;
+		break;
+		case GL_FLOAT_MAT3x4:
+			*numDimsPerVertexPointer = 4; *numLocationsExpected = 3;
+		break;
+		case GL_FLOAT_MAT4x3:
+			*numDimsPerVertexPointer = 3; *numLocationsExpected = 4;
+		break;
+		case GL_FLOAT_MAT4:
+			*numDimsPerVertexPointer = 4; *numLocationsExpected = 4;
+		break;
+		default:
+			CI_LOG_E( "Unknown type for attrib: " << constantToString( type ) );
+			*numDimsPerVertexPointer = 0; *numLocationsExpected = 0;
+			break;
+	}
+}
 
 //////////////////////////////////////////////////////////////////////////
 // GlslProg::Format
