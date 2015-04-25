@@ -34,9 +34,21 @@ typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
 class Buffer {
   public:
-	Buffer() {}
-	Buffer( void *buffer, size_t size );
+	//! Constructs an empty Buffer
+	Buffer();
+	//! Constructs a Buffer of size \a size.
 	Buffer( size_t size );
+	//! Constructs a Buffer that points at \a buffer, does not assume ownership.
+	Buffer( void *buffer, size_t size );
+	//! copy constructor
+	Buffer( const Buffer &rhs );
+	//! move constructor
+	Buffer( Buffer &&rhs );
+	//! copy assignment operator
+	Buffer&	operator=( const Buffer &rhs );
+	//! move assignment operator
+	Buffer&	operator=( Buffer &&rhs );
+	//! destructor.
 	~Buffer();
 
 	//! Creates a Buffer from a DataSource

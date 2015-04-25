@@ -30,11 +30,9 @@
 
 namespace cinder {
 
-Buffer::~Buffer()
+Buffer::Buffer()
+	: mData( nullptr ), mAllocatedSize( 0 ), mDataSize( 0 ), mOwnsData( false )
 {
-	if( mOwnsData ) {
-		free( mData );
-	}
 }
 
 Buffer::Buffer( void *data, size_t size )
@@ -47,17 +45,56 @@ Buffer::Buffer( size_t size )
 {
 }
 
+Buffer::Buffer( const Buffer &rhs )
+	: mData( malloc( rhs.mAllocatedSize ) ), mAllocatedSize( rhs.mAllocatedSize ), mDataSize( rhs.mDataSize ), mOwnsData( true )
+{
+	memcpy( mData, rhs.mData, rhs.mDataSize );
+}
+
+Buffer::Buffer( Buffer &&rhs )
+	: mData( rhs.mData ), mAllocatedSize( rhs.mAllocatedSize ), mDataSize( rhs.mDataSize ), mOwnsData( rhs.mOwnsData )
+{
+}
+
+Buffer&	Buffer::operator=( const Buffer &rhs )
+{
+	mData = malloc( rhs.mDataSize );
+	memcpy( mData, rhs.mData, rhs.mDataSize );
+
+	mAllocatedSize = rhs.mAllocatedSize;
+	mDataSize = rhs.mDataSize;
+	mOwnsData = true;
+
+	return *this;
+}
+
+Buffer&	Buffer::operator=( Buffer &&rhs )
+{
+	mData = rhs.mData;
+	mAllocatedSize = rhs.mAllocatedSize;
+	mDataSize = rhs.mDataSize;
+	mOwnsData = true;
+
+	return *this;
+}
+
 Buffer::Buffer( const DataSourceRef &dataSource )
 	: mOwnsData( true )
 {
 	BufferRef otherBuffer = dataSource->getBuffer();
-	const size_t size = otherBuffer->getDataSize();
+	const size_t size = otherBuffer->getSize();
 
 	mData = malloc( size );
 	memcpy( mData, otherBuffer->getData(), size );
 
 	mAllocatedSize = size;
 	mDataSize = size;
+}
+
+Buffer::~Buffer()
+{
+	if( mOwnsData )
+		free( mData );
 }
 
 void Buffer::resize( size_t newSize )
