@@ -778,7 +778,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 		mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
 	}
 	else {
-		Buffer *buffer = new Buffer( dataSource->getBuffer() );
+		Buffer *buffer = new Buffer( *dataSource->getBuffer() );
 		std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( buffer, buffer->getData(), buffer->getDataSize(), releaseFontDataProviderBuffer ), ::CGDataProviderRelease );
 		if( ! dataProvider )
 			throw FontInvalidNameExc();

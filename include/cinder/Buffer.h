@@ -28,6 +28,7 @@
 
 namespace cinder {
 
+typedef std::shared_ptr<class Buffer>		BufferRef;
 typedef std::shared_ptr<class DataSource>	DataSourceRef;
 
 class Buffer {

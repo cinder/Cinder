@@ -50,11 +50,11 @@ Buffer::Buffer( size_t size )
 Buffer::Buffer( const DataSourceRef &dataSource )
 	: mOwnsData( true )
 {
-	Buffer &otherBuffer = dataSource->getBuffer();
-	const size_t size = otherBuffer.getDataSize();
+	BufferRef otherBuffer = dataSource->getBuffer();
+	const size_t size = otherBuffer->getDataSize();
 
 	mData = malloc( size );
-	memcpy( mData, otherBuffer.getData(), size );
+	memcpy( mData, otherBuffer->getData(), size );
 
 	mAllocatedSize = size;
 	mDataSize = size;
