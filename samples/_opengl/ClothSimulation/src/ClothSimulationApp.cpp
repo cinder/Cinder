@@ -64,7 +64,7 @@ ClothSimulationApp::ClothSimulationApp()
 					cos( mCurrentCamRotation ) * 140.0f );
 	vec3 target = vec3( 0.0f );
 	mCam.lookAt( eye, target );
-	mCam.setCenterOfInterest( distance(eye, target) );
+	mCam.setCenterOfInterest( ci::distance( eye, target ) );
 	
 	setupGlsl();
 	setupBuffers();
@@ -281,7 +281,7 @@ void ClothSimulationApp::updateRayPosition( const ci::ivec2 &mousePos, bool useD
 {
 	auto norm = vec2(mousePos) / vec2(getWindowSize());
 	auto ray = mCam.generateRay( norm.x, 1 - norm.y, getWindowAspectRatio() );
-	auto dist = distance( mCam.getEyePoint(), vec3() );
+	auto dist = ci::distance( mCam.getEyePoint(), vec3() );
 	auto rayPosition = ray.calcPosition( useDistance ? dist : 0 );
 	mUpdateGlsl->uniform( "rayPosition", rayPosition );
 }

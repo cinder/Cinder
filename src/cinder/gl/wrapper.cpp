@@ -856,7 +856,7 @@ void vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean norma
 	context()->vertexAttribPointer( index, size, type, normalized, stride, pointer );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer )
 {
 	context()->vertexAttribIPointer( index, size, type, stride, pointer );

@@ -13,22 +13,15 @@ using namespace std;
 class IntegerAttribTestApp : public App {
   public:
 	void setup() override;
-	void mouseDown( MouseEvent event ) override;
-	void update() override;
 	void draw() override;
 	
 	void setupBuffer();
 	void setupGlsl();
-	
-	void setupVanillaVao();
-	void setupCinderVao();
-	
+	void setupVao();
 	
 	gl::GlslProgRef mGlsl;
 	gl::VboRef		mVbo;
-	gl::VaoRef		mCinderVao;
-	GLuint			mVanillaVao;
-	bool			mUseVanillaVao;
+	gl::VaoRef		mVao;
 	
 	CameraPersp		mCam;
 };
@@ -37,13 +30,7 @@ void IntegerAttribTestApp::setup()
 {
 	setupBuffer();
 	setupGlsl();
-	
-	mUseVanillaVao = false;
-	
-	if( mUseVanillaVao )
-		setupVanillaVao();
-	else
-		setupCinderVao();
+	setupVao();
 	
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
 	mCam.lookAt( vec3( 0, 0, 5), vec3( 0, 0, 0 ) );
@@ -63,38 +50,25 @@ void IntegerAttribTestApp::setupBuffer()
 void IntegerAttribTestApp::setupGlsl()
 {
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
+#if ! defined( CINDER_GL_ES_3 )
 								 .vertex( loadAsset( "integer.vert" ) )
-								 .fragment( loadAsset( "integer.frag" ) ) );
+								 .fragment( loadAsset( "integer.frag" ) )
+#else
+								 .vertex( loadAsset( "integer_es3.vert" ) )
+								 .fragment( loadAsset( "integer_es3.frag" ) )
+#endif
+								 );
 }
 
-void IntegerAttribTestApp::setupVanillaVao()
+void IntegerAttribTestApp::setupVao()
 {
-	glGenVertexArrays( 1, &mVanillaVao );
-	glBindVertexArray( mVanillaVao );
+	mVao = gl::Vao::create();
 	
-	gl::ScopedBuffer scopeBuffer( mVbo );
-	
-	glEnableVertexAttribArray( 0 );
-	glVertexAttribIPointer( 0, 1, GL_INT, 0, (const GLvoid*) 0 );
-}
-
-void IntegerAttribTestApp::setupCinderVao()
-{
-	mCinderVao = gl::Vao::create();
-	
-	gl::ScopedVao scopeVao( mCinderVao );
+	gl::ScopedVao scopeVao( mVao );
 	gl::ScopedBuffer scopeBuffer( mVbo );
 	
 	gl::enableVertexAttribArray( 0 );
 	gl::vertexAttribIPointer( 0, 1, GL_INT, 0, (const GLvoid*) 0 );
-}
-
-void IntegerAttribTestApp::mouseDown( MouseEvent event )
-{
-}
-
-void IntegerAttribTestApp::update()
-{
 }
 
 void IntegerAttribTestApp::draw()
@@ -102,11 +76,8 @@ void IntegerAttribTestApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
 	gl::ScopedGlslProg scopglsl( mGlsl );
-	
-	if( mUseVanillaVao )
-		glBindVertexArray( mVanillaVao );
-	else
-		mCinderVao->bind();
+
+	gl::ScopedVao scopeVao( mVao );
 	
 	gl::setDefaultShaderVars();
 	

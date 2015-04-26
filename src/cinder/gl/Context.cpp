@@ -1713,7 +1713,7 @@ void Context::vertexAttribPointer( GLuint index, GLint size, GLenum type, GLbool
 		vao->vertexAttribPointerImpl( index, size, type, normalized, stride, pointer );
 }
 
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 void Context::vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer )
 {
 	Vao* vao = getVao();

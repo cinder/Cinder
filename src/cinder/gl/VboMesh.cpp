@@ -437,7 +437,7 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 					ctx->enableVertexAttribArray( shaderLoc + i );
 					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
 						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 					else
 						ctx->vertexAttribIPointer( shaderLoc + i, numDimsPerVertexPointer, GL_INT, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
 #endif

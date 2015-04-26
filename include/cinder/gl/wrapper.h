@@ -281,7 +281,7 @@ std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 // Vertex Attributes
 //! Analogous to glVertexAttribPointer
 void	vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer );
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 //! Analogous to glVertexAttribIPointer
 void	vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 #endif // ! defined( CINDER_GL_ES )
