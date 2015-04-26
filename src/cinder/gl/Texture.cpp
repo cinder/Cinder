@@ -1081,12 +1081,6 @@ void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mi
 	GLenum type = GL_UNSIGNED_BYTE;
 	if( std::is_same<uint16_t,T>::value )
 		type = GL_UNSIGNED_SHORT;
-	else if( std::is_same<int16_t,T>::value )
-		type = GL_SHORT;
-	else if( std::is_same<int32_t,T>::value )
-		type = GL_INT;
-	else if( std::is_same<uint32_t,T>::value )
-		type = GL_UNSIGNED_INT;
 	else if( std::is_same<float,T>::value )
 		type = GL_FLOAT;
 
