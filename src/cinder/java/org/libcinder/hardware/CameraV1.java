@@ -83,7 +83,6 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
             cameraSetPreviewTexture(mPreviewTexture);
-
             mCamera.setPreviewCallback(this);
         }
         catch(Exception e ) {
@@ -179,7 +178,9 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
 
         try {
+            stopPreview();
             cameraSetPreviewTexture(previewTexture);
+            startPreview();
         }
         catch(Exception e) {
             Log.w(TAG, "failed setting preview texture: " + e.getMessage());

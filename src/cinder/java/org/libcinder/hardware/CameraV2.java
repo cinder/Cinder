@@ -343,7 +343,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
         try {
             if (null != mCameraHandlerThread) {
-                mCameraHandler.removeCallbacksAndMessages(null);
+                flushCameraHandler();
 
                 mCameraHandlerThread.quitSafely();
                 mCameraHandlerThread.join();
@@ -524,6 +524,28 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         Log.i(TAG, "stopDevice EXIT");
     }
 
+    private void flushCameraHandler() {
+        try {
+            mPingBack.set(false);
+            if (null != mCameraHandler) {
+                mCameraHandler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        mPingBack.set(true);
+                    }
+                });
+
+                while (!mPingBack.get()) {
+                    Thread.sleep(1);
+                }
+                mCameraHandler.removeCallbacksAndMessages(null);
+            }
+        }
+        catch(Exception e) {
+            throw new RuntimeException("flushCamerHandler error: " + e.getMessage());
+        }
+    }
+
     /** updatePreviewTransform
      *
      */
@@ -600,20 +622,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         Log.i(TAG, "setPreviewTextureImpl ENTER");
 
         try {
-            mPingBack.set(false);
-            if(null != mCameraHandler) {
-                mCameraHandler.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        mPingBack.set(true);
-                    }
-                });
-
-                while(! mPingBack.get()) {
-                    Thread.sleep(1);
-                }
-                mCameraHandler.removeCallbacksAndMessages(null);
-            }
+            flushCameraHandler();
 
             stopPreview();
 
