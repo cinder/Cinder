@@ -283,6 +283,7 @@ public abstract class Camera extends Fragment {
     private void emitDisplayLayoutChanged() {
         Log.i(TAG, "Camera.emitDisplayLayoutChanged: orientation=" + mOrientation + ", displayRotation=" + mDisplayRotation);
 
+        /*
         if(Configuration.ORIENTATION_PORTRAIT == mOrientation) {
             mWidth = mPreferredPreviewWidth;
             mHeight = mPreferredPreviewHeight;
@@ -291,6 +292,7 @@ public abstract class Camera extends Fragment {
             mWidth = mPreferredPreviewHeight;
             mHeight = mPreferredPreviewWidth;
         }
+        */
 
         setDisplayOrientation(mDisplayRotation);
 

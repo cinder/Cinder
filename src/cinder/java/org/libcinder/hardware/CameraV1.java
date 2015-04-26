@@ -45,6 +45,24 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
     }
 
+    private void cameraSetPreviewTexture(SurfaceTexture previewTexture) {
+        try {
+            mPreviewTexture = previewTexture;
+            if (null != mPreviewTexture) {
+                mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
+                mCamera.setPreviewTexture(mPreviewTexture);
+            } else {
+                // If previewTexture is null - use the dummy texture. The camera expects
+                // a texture target to be present at all times to send frames to.
+                mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
+                mCamera.setPreviewTexture(mDummyTexture);
+            }
+        }
+        catch(Exception e) {
+            throw new RuntimeException(e.getMessage() + " (CameraV1.cameraSetPreviewTexture)");
+        }
+    }
+
     /** startDevice
      *
      */
@@ -64,19 +82,12 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             Camera.Parameters params = mCamera.getParameters();
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
-            if(null != mPreviewTexture) {
-                mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
-                mCamera.setPreviewTexture(mPreviewTexture);
-            }
-            else {
-                mDummyTexture.setDefaultBufferSize(getWidth(), getHeight());
-                mCamera.setPreviewTexture(mDummyTexture);
-            }
+            cameraSetPreviewTexture(mPreviewTexture);
 
             mCamera.setPreviewCallback(this);
         }
         catch(Exception e ) {
-            Log.e(Cinder.TAG, "startDevice failed: " + e.getMessage());
+            Log.e(Cinder.TAG, "startDevice error: " + e.getMessage());
         }
     }
 
@@ -96,7 +107,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
             }
         }
         catch(Exception e ) {
-            Log.e(Cinder.TAG, "CinderCamera.stopDevice failed: " + e.getMessage());
+            Log.e(Cinder.TAG, "CinderCamera.stopDevice error: " + e.getMessage());
         }
     }
 
@@ -168,14 +179,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
         }
 
         try {
-            mPreviewTexture = previewTexture;
-            if(null != mPreviewTexture) {
-                mPreviewTexture.setDefaultBufferSize(getWidth(), getHeight());
-            }
-
-            stopPreview();
-            mCamera.setPreviewTexture(mPreviewTexture);
-            startPreview();
+            cameraSetPreviewTexture(previewTexture);
         }
         catch(Exception e) {
             Log.w(TAG, "failed setting preview texture: " + e.getMessage());
