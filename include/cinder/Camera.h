@@ -212,7 +212,7 @@ class CameraPersp : public Camera {
 	
 	virtual bool	isPersp() const { return true; }
 
-	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation).
+	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation). Sets the result's pivotDistance to be the distance to \a worldSpaceSphere's center.
 	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
 
   protected:

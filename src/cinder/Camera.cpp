@@ -384,6 +384,7 @@ CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 	float xDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFovHorizontal() * 0.5f ) );
 	float yDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFov() * 0.5f ) );
 	result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * std::max( xDistance, yDistance ) );
+	result.mPivotDistance = distance( result.mEyePoint, worldSpaceSphere.getCenter() );
 	return result;
 }
 
