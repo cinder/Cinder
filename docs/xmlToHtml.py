@@ -152,6 +152,9 @@ def defineLinkTag( tag, attrib ):
 	if "linkid" in attrib :
 		href = "../../include/cinder/" + attrib["linkid"]
 
+	if "href" in attrib :
+		href = attrib["href"]	
+
 	tag["href"] = href
 
 
@@ -204,18 +207,23 @@ def genTypeDefs( bs4, tree ):
 	print typeDefs
 
 
-# def iterClassBase( tree, heirarchy ) :
-# 	base = tree.find( 'base' )
-# 	# tree.find( 'base' ).text
+def iterClassBase( tree, heirarchy ) :
+	base = tree.find( 'base' )
+	
+	# tree.find( 'base' ).text
 
-# 	if base is None:
-# 		return
-# 	else :
-# 		# add to heirarchy
-# 		heirarchy.push( base.text )
-# 		iterClassBase( tree, heirarchy )
+	if base is None:
+		return
+	else :
+		print "BASE: " + base.text
+		newTree = findClassTag( base.text )
+		# add to heirarchy
+		# heirarchy.append( base.text )
+		heirarchy.append( newTree )
+		iterClassBase( newTree, heirarchy )
 
 def genClassHierarchy( bs4, tree ):
+
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
 	sideEl.append( side )
@@ -223,26 +231,30 @@ def genClassHierarchy( bs4, tree ):
 	# fill heading
 	side.find('h4').append("Class Heirarchy:")
 
-	# get base from tagfile
-	base = tree.find( 'base' ).text
-	print "BASE: " + base
+	# first item in the list will be the original class
+	# heirarchy = [ tree.find('name').text ]
+	heirarchy = [ tree ]
 
+	# get the class' heirarchy
+	iterClassBase( tree, heirarchy )
 
-	# typeDefUl = None
-	# if len(typeDefs) > 0 :
-	# 	typeDefUl = genTag( bs4, "ul" )
-
-	# # fill list of typedefs
-	# for typeDef in typeDefs :
-	# 	typeDefLi = genTag( bs4, "li" )
-	# 	typeDefLi.append( typeDef.find("name").text );
-	# 	typeDefUl.append( typeDefLi )
-
-	# # plug into html
-	# if typeDefUl is not None:
-	# 	side.append(typeDefUl)
-
-	# print typeDefs
+	# print heirarchy
+	 
+	if len( heirarchy ) == 1 :
+		return
+	
+	ul = genTag( bs4, "ul" )
+	addClassToTag( ul, "inheritence" )
+	side.append( ul )
+	for index, base in enumerate( reversed( heirarchy ) ):
+		li = genTag( bs4, "li" )
+		addClassToTag( li, "depth" + str( index + 1 ) )
+		a = genTag( bs4, "a", [], base.find("name").text )
+		li.append( a )
+		defineLinkTag( a, {'href':base.find("filename").text} )
+		ul.append( li )
+		print index
+	
 
 
 def replaceTag( bs4, tree, parentTag, content ):
@@ -465,8 +477,18 @@ def clone(el) :
         copy.append(clone(child))
     return copy
 
+
 def getTemplate( bs4, elementId ) :
-	return clone( bs4.find( id=elementId ) )
+	templates = bs4.find_all( 'template' ) 
+	template = None
+
+	for t in templates :	
+		# [0] is a string before the enclosed div, so used [1] instead
+		template = clone( list(t.contents)[1] )
+
+	return template
+
+	# return clone( bs4.find( id=elementId ) )
 
 	
 def processClassXmlFile( inPath, outPath, html ):
@@ -507,7 +529,6 @@ def processClassXmlFile( inPath, outPath, html ):
 
 	# description area
 	descriptionEl = html.find( id="description" )
-	# descriptionEl = getTemplate( html, "description" )
 	descriptionProseEl = descriptionEl.find( "div", "prose" )
 	sideEl = descriptionEl.find( "div", "side" )
 	includeEl = sideEl.find( "div", "include" )
@@ -525,7 +546,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	genTypeDefs( html, fileTagTree )
 	genClassHierarchy( html, classTagTree )
 	
-
 
 	# +-----------+
 	#  Description
