@@ -44,6 +44,12 @@ class CameraUi {
 	void connect( const app::WindowRef &window, int signalPriority = 0 );
 	//! Disconnects all signal handlers
 	void disconnect();
+	//! Sets whether the CameraUi will modify its CameraPersp either through its Window signals or through the various mouse*() member functions. Does not prevent resize handling.
+	void enable( bool enable = true )	{ mEnabled = enable; }
+	//! Prevents the CameraUi from modifying its CameraPersp either through its Window signals or through the various mouse*() member functions. Does not prevent resize handling.
+	void disable()						{ mEnabled = false; }
+	//! Returns whether the CameraUi will modify its CameraPersp either through its Window signals or through the various mouse*() member functions. Does not prevent resize handling.
+	bool isEnabled() const				{ return mEnabled; }
 
 	//! Signal emitted whenever the user modifies the camera
 	signals::Signal<void()>&	getSignalCameraChange();
@@ -90,6 +96,7 @@ class CameraUi {
 	
 	ivec2					mWindowSize; // used when mWindow is null
 	app::WindowRef			mWindow;
+	bool					mEnabled;
 	int						mSignalPriority;
 	signals::Connection		mMouseDownConnection, mMouseUpConnection, mMouseDragConnection, mMouseWheelConnection;
 	signals::Connection		mWindowResizeConnection;

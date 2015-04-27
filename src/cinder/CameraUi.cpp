@@ -28,11 +28,13 @@
 namespace cinder {
 
 CameraUi::CameraUi()
-		: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
+	: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f ),
+		mEnabled( true )
 {}
 
 CameraUi::CameraUi( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
-	: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f )
+	: mCamera( camera ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f ),
+		mEnabled( true )
 {
 	connect( window, signalPriority );
 }
@@ -40,7 +42,8 @@ CameraUi::CameraUi( CameraPersp *camera, const app::WindowRef &window, int signa
 CameraUi::CameraUi( const CameraUi &rhs )
 	: mCamera( rhs.mCamera ), mWindowSize( rhs.mWindowSize ),
 		mWindow( rhs.mWindow ), mSignalPriority( rhs.mSignalPriority ),
-		mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ), mMinimumPivotDistance( rhs.mMinimumPivotDistance )
+		mMouseWheelMultiplier( rhs.mMouseWheelMultiplier ), mMinimumPivotDistance( rhs.mMinimumPivotDistance ),
+		mEnabled( rhs.mEnabled )
 {
 	connect( mWindow, mSignalPriority );
 }
@@ -58,6 +61,7 @@ CameraUi& CameraUi::operator=( const CameraUi &rhs )
 	mMinimumPivotDistance = rhs.mMinimumPivotDistance;
 	mWindow = rhs.mWindow;
 	mSignalPriority = rhs.mSignalPriority;
+	mEnabled = rhs.mEnabled;
 	connect( mWindow, mSignalPriority );
 	return *this;
 }
@@ -129,7 +133,7 @@ void CameraUi::mouseUp( const ivec2 &mousePos )
 
 void CameraUi::mouseDown( const ivec2 &mousePos )
 {
-	if( ! mCamera )
+	if( ! mCamera || ! mEnabled )
 		return;
 
 	mInitialMousePos = mousePos;
@@ -153,7 +157,7 @@ void CameraUi::mouseDrag( app::MouseEvent &event )
 
 void CameraUi::mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown )
 {
-	if( ! mCamera )
+	if( ! mCamera || ! mEnabled )
 		return;
 
 	int action;
@@ -214,7 +218,7 @@ void CameraUi::mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown,
 
 void CameraUi::mouseWheel( float increment )
 {
-	if( ! mCamera )
+	if( ! mCamera || ! mEnabled )
 		return;
 	
 	// some mice issue mouseWheel events during middle-clicks; filter that out
