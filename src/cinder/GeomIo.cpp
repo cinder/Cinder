@@ -305,44 +305,42 @@ template<typename T>
 void copyIndexDataForceTrianglesImpl( Primitive primitive, const uint32_t *source, size_t numIndices, T *target )
 {
 	switch( primitive ) {
-	case Primitive::LINES:
-	case Primitive::LINE_STRIP:
-	case Primitive::TRIANGLES:
-		memcpy( target, source, sizeof(uint32_t) * numIndices );
+		case Primitive::LINES:
+		case Primitive::LINE_STRIP:
+		case Primitive::TRIANGLES:
+			memcpy( target, source, sizeof(uint32_t) * numIndices );
 		break;
-	case Primitive::TRIANGLE_STRIP: { // ABC, CBD, CDE, EDF, etc
-		if( numIndices < 3 )
-			return;
-		size_t outIdx = 0; // (012, 213), (234, 435), etc : (odd,even), (odd,even), etc
-		for( size_t i = 0; i < numIndices - 2; ++i ) {
-			if( i & 1 ) { // odd
-				target[outIdx++] = source[i+1];
-				target[outIdx++] = source[i];
-				target[outIdx++] = source[i+2];
+		case Primitive::TRIANGLE_STRIP: { // ABC, CBD, CDE, EDF, etc
+			if( numIndices < 3 )
+				return;
+			size_t outIdx = 0; // (012, 213), (234, 435), etc : (odd,even), (odd,even), etc
+			for( size_t i = 0; i < numIndices - 2; ++i ) {
+				if( i & 1 ) { // odd
+					target[outIdx++] = source[i+1];
+					target[outIdx++] = source[i];
+					target[outIdx++] = source[i+2];
+				}
+				else { // even
+					target[outIdx++] = source[i];
+					target[outIdx++] = source[i+1];
+					target[outIdx++] = source[i+2];
+				}
 			}
-			else { // even
-				target[outIdx++] = source[i];
+		}
+		break;
+		case Primitive::TRIANGLE_FAN: { // ABC, ACD, ADE, etc
+			if( numIndices < 3 )
+				return;
+			size_t outIdx = 0;
+			for( size_t i = 0; i < numIndices - 2; ++i ) {
+				target[outIdx++] = source[0];
 				target[outIdx++] = source[i+1];
 				target[outIdx++] = source[i+2];
 			}
 		}
 		break;
-	}
-									
-	case Primitive::TRIANGLE_FAN: { // ABC, ACD, ADE, etc
-		if( numIndices < 3 )
-			return;
-		size_t outIdx = 0;
-		for( size_t i = 0; i < numIndices - 2; ++i ) {
-			target[outIdx++] = source[0];
-			target[outIdx++] = source[i+1];
-			target[outIdx++] = source[i+2];
-		}
-		break;
-	}
-	default:
-		throw ExcIllegalPrimitiveType();			
-		break;
+		default:
+			throw ExcIllegalPrimitiveType();
 	}
 }
 
