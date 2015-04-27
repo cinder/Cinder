@@ -1075,12 +1075,9 @@ void Texture2d::setData( const ChannelT<T> &original, bool createStorage, int mi
 
 	const ChannelT<T> &source = ( useIntermediate ) ? intermediate : original;
 
-#if defined( CINDER_GL_ES )
-	GLint dataFormat = GL_LUMINANCE;
-#else
-	GLint dataFormat = GL_RED;
-#endif
-
+	GLenum dataFormat;
+	getInternalFormatInfo( mInternalFormat, &dataFormat, nullptr, nullptr, nullptr, nullptr );
+	
 	GLenum type = GL_UNSIGNED_BYTE;
 	if( std::is_same<uint16_t,T>::value )
 		type = GL_UNSIGNED_SHORT;
