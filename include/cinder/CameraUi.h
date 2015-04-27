@@ -33,6 +33,7 @@ namespace cinder {
 class CameraUi {
  public:
 	CameraUi();
+	//! Constructs a CameraUi which manipulates \a camera directly (and consequently expects its pointer to remain valid). Optionally attaches to mouse/window signals of \a window, with priority \a signalPriority.
 	CameraUi( CameraPersp *camera, const app::WindowRef &window = nullptr, int signalPriority = 0 );
 	CameraUi( const CameraUi &rhs );
 	~CameraUi();
@@ -50,11 +51,12 @@ class CameraUi {
 	void mouseDown( app::MouseEvent &event );
 	void mouseUp( app::MouseEvent &event );
 	void mouseWheel( app::MouseEvent &event );
-	void mouseUp( const ivec2 &mousePos );
-	void mouseDown( const ivec2 &mousePos );
 	void mouseDrag( app::MouseEvent &event );
-	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown );
+
+	void mouseDown( const ivec2 &mousePos );
+	void mouseUp( const ivec2 &mousePos );
 	void mouseWheel( float increment );
+	void mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown, bool rightDown );
 
 	//! Returns a reference to the currently controlled CameraPersp
 	const	CameraPersp& getCamera() const		{ return *mCamera; }
@@ -69,7 +71,7 @@ class CameraUi {
 	//! Returns the multiplier on mouse wheel zooming. Default is \c 1.2.
 	float	getMouseWheelMultiplier() const { return mMouseWheelMultiplier; }
 	
-	//! Sets the minimum allowable pivot distance. Default is \c 1.0.
+	//! Sets the minimum allowable pivot distance. Default is \c 1.0. If the user dollies closer than \a minPivotDistance the pivotDistance remains \a minPivotDistance.
 	void	setMinimumPivotDistance( float minPivotDistance ) { mMinimumPivotDistance = minPivotDistance; }
 	//! Returns the minimum allowable pivot distance. Default is \c 1.0.
 	float	getMinimumPivotDistance() const { return mMinimumPivotDistance; }
