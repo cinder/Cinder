@@ -10,7 +10,7 @@ import java.net.URLDecoder;
 
 import android.util.Log;
 
-import org.libcinder.app.ModulesFragment;
+import org.libcinder.app.ComponentManager;
 
 /** \class UrlLoader
  *
@@ -74,7 +74,7 @@ public class UrlLoader {
                     mResponseMsg = responseMsg;
 
                     try {
-                        // Throw if we don't get a 200
+                        // Throw if we don't getInstance a 200
                         if(HttpURLConnection.HTTP_OK != responseCode) {
                             throw new UnknownServiceException(responseCode + ":" + responseMsg);
                         }
@@ -115,7 +115,7 @@ public class UrlLoader {
     public byte[] loadUrl(String url) {
         byte[] result = null;
 
-        if(ModulesFragment.permissions().INTERNET()) {
+        if(ComponentManager.permissions().INTERNET()) {
             try {
                 mUrl = url;
 
@@ -130,7 +130,7 @@ public class UrlLoader {
             }
         }
         else {
-            mExceptionMsg = ModulesFragment.permissions().missing().INTERNET();
+            mExceptionMsg = ComponentManager.permissions().missing().INTERNET();
         }
 
         return result;
@@ -212,7 +212,7 @@ public class UrlLoader {
 
 
                     try {
-                        // Throw if we don't get a 200
+                        // Throw if we don't getInstance a 200
                         if(HttpURLConnection.HTTP_OK != responseCode) {
                             throw new UnknownServiceException(responseCode + ":" + responseMsg);
                         }
@@ -246,28 +246,28 @@ public class UrlLoader {
         try {
             Log.i(Cinder.TAG, " (Java) Loading: " + URLDecoder.decode(url, "UTF-8"));
 
-            Impl loader = new Impl(sResult.get());
+            Impl loader = new Impl(sResult.getInstance());
             loader.start();
             loader.join();
-            result = sResult.get().mData;
+            result = sResult.getInstance().mData;
         }
         catch(Exception e) {
-            sResult.get().mExceptionMsg = e.toString();
+            sResult.getInstance().mExceptionMsg = e.toString();
         }
 
         return result;
     }
 
     public static int getResponseCode() {
-        return (null != sResult.get()) ? sResult.get().mResponseCode : -1;
+        return (null != sResult.getInstance()) ? sResult.getInstance().mResponseCode : -1;
     }
 
     public static String getResponseMsg() {
-        return (null != sResult.get()) ? sResult.get().mResponseMsg : null;
+        return (null != sResult.getInstance()) ? sResult.getInstance().mResponseMsg : null;
     }
 
     public static String getExceptionMsg() {
-        return (null != sResult.get()) ? sResult.get().mExceptionMsg : null;
+        return (null != sResult.getInstance()) ? sResult.getInstance().mExceptionMsg : null;
     }
 
 

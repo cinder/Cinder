@@ -84,6 +84,8 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
 
             cameraSetPreviewTexture(mPreviewTexture);
             mCamera.setPreviewCallback(this);
+
+            Log.i(TAG, "Started Camera " + deviceId + ": res=" + getWidth() + "x" + getHeight() + ", fmt=NV21");
         }
         catch(Exception e ) {
             Log.e(Cinder.TAG, "startDevice error: " + e.getMessage());
@@ -285,7 +287,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera implements android.h
      *
      */
     protected void setDisplayOrientation(int displayRotation) {
-        if((null != mActiveDeviceId) && (null == mCamera)) {
+        if((null == mActiveDeviceId) || (null == mCamera)) {
             return;
         }
 

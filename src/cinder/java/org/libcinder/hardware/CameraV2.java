@@ -1,6 +1,6 @@
 package org.libcinder.hardware;
 
-import org.libcinder.app.ModulesFragment;
+import org.libcinder.app.ComponentManager;
 
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -149,7 +149,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         back[0] = false;
         front[0] = false;
 
-        CameraManager cm = (CameraManager) ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
+        CameraManager cm = (CameraManager) ComponentManager.activity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             for (String cameraId : cm.getCameraIdList()) {
@@ -454,7 +454,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
 
             Size previewSize = getOptimalPreviewSize(mActiveDeviceId);
             if(null == previewSize) {
-                throw new RuntimeException("couldn't get preview size for Camera " + mCamera.getId());
+                throw new RuntimeException("couldn't getInstance preview size for Camera " + mCamera.getId());
             }
             setPreferredPreviewSize(previewSize.getWidth(), previewSize.getHeight());
 
@@ -475,6 +475,9 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             }
             Log.i(TAG, "Thread ID: " + Thread.currentThread().getId() + " | (CameraManager.openCamera)");
             mCameraManager.openCamera(mActiveDeviceId, mStateCallback, mCameraHandler);
+
+
+            Log.i(TAG, "Started Camera " + deviceId + ": res=" + getWidth() + "x" + getHeight() + ", fmt=" + Camera.imageFormatString(mPreviewImageFormat));
         }
         catch(Exception e) {
             Log.e(TAG, "startDevice error: " + e.getMessage());
@@ -596,7 +599,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      */
     @Override
     protected final void initializeImpl() {
-        mCameraManager = (CameraManager) ModulesFragment.activity().getSystemService(Context.CAMERA_SERVICE);
+        mCameraManager = (CameraManager) ComponentManager.activity().getSystemService(Context.CAMERA_SERVICE);
 
         try {
             for (String cameraId : mCameraManager.getCameraIdList()) {
@@ -810,7 +813,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         Size result = null;
         try {
             // Get the raw display size
-            Point displaySize = ModulesFragment.get().getDefaultDisplaySize();
+            Point displaySize = ComponentManager.getInstance().getDefaultDisplaySize();
             int rawDisplayWidth = displaySize.x;
             int rawDisplayHeight = displaySize.y;
             int rawDisplayArea = rawDisplayWidth*rawDisplayHeight;

@@ -25,10 +25,10 @@
 #include "cinder/android/AndroidDevLog.h" 
 #include <sstream>
 
-namespace cinder { namespace android {
+namespace cinder { namespace android { namespace net {
 
 std::string	UrlLoader::sJavaClassName			= "org/libcinder/net/UrlLoader";
-jclass		UrlLoader::sJavaClass 				= nullptr;
+jclass 		UrlLoader::sJavaClass 				= nullptr;
 jmethodID	UrlLoader::sJavaStaticMethodCreate	= nullptr;
 jmethodID	UrlLoader::sJavaMethodLoadUrl 		= nullptr;
 jfieldID 	UrlLoader::sJavaFieldResponseCode	= nullptr;
@@ -49,7 +49,6 @@ UrlLoader::~UrlLoader()
 
 void UrlLoader::cacheJni()
 {
-	const std::string className = "org/libcinder/net/UrlLoader";
 	if( JniHelper::Get()->AttachCurrentThread() ) {
 		jclass javaClass = JniHelper::Get()->RetrieveClass( UrlLoader::sJavaClassName );
 		if( nullptr != javaClass ) {
@@ -156,4 +155,4 @@ std::string UrlLoader::getExceptionMsg() const
 	return JniHelper::Get()->GetStringField( mJavaObject, UrlLoader::sJavaFieldExceptionMsg );
 }
 
-}} // namespace cinder::android
+}}} // namespace cinder::android::net

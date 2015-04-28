@@ -28,7 +28,7 @@ namespace cinder {
 IStreamUrlImplJni::IStreamUrlImplJni( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamUrlImpl( user, password, options )
 {
-	ci::android::UrlLoader urlLoader = ci::android::UrlLoader();
+	ci::android::net::UrlLoader urlLoader = ci::android::net::UrlLoader();
 	mData = urlLoader.loadUrl( url );
 }
 

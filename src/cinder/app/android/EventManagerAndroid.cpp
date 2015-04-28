@@ -24,6 +24,8 @@
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
+#include "cinder/android/app/ComponentManager.h"
+#include "cinder/android/JniHelper.h"
 #include "cinder/android/AndroidDevLog.h"
 using namespace ci::android;
 
@@ -417,6 +419,9 @@ void EventManagerAndroid::execute()
 	mProximitySensor     = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mSensorEventQueue    = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
+	ci::android::JniHelper::Initialize( mNativeApp->activity );
+	ci::android::app::ComponentManager::registerComponents();
+
 dbg_app_log( "Starting Event Loop" );
 	// Event loop
 	while( ! mShouldQuit ) {
@@ -466,6 +471,9 @@ dbg_app_log( "Starting Event Loop" );
 		}		
 	}
 dbg_app_log( "Ended Event Loop" );
+
+	ci::android::app::ComponentManager::deleteGlobalRefs();
+	ci::android::app::ComponentManager::unregisterComponents();
 
 	// Call AppBase::cleanupLaunch
 	if( mDeferredMainHasBeenCalled ) {

@@ -23,38 +23,43 @@
 
 #pragma once
 
+#include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
-//#include "cinder/Buffer.h"
 #include "cinder/Surface.h"
 
-namespace cinder { namespace app {
+namespace cinder { namespace android { namespace app {
 
-class PlatformAndroid;
+class ComponentManager;
 
-}} // namespace cinder::app
+}}} // namespace cinder::android::app
 
-namespace cinder { namespace android {
+namespace cinder { namespace android { namespace hardware {
 
-class CinderCamera {
+class Camera : public JniGlobalRefObject {
 public:
 
-	CinderCamera();
-	CinderCamera( const std::string& url );
-	virtual ~CinderCamera();
+	virtual ~Camera();
 
+	static Camera*		get();
 
-	ci::Surface			getSurface();
+	void 				startCapture();
+	void 				stopCapture();
 
 private:
-	static void 		cacheJni();
-	static void 		destroyJni();
+	static void 				cacheJni();
+	static void 				destroyJni();
 
-	static jclass		sJniClass;
-	
-	jobject 			mJavaObject;
+	static const std::string 	sJavaClassName;
+	static jclass 				sJavaClass; 
+	static jmethodID 			sJavaMethodStartCapture;
+	static jmethodID 			sJavaMethodStopCapture;	
 
+	Camera( jobject obj );
+	static std::unique_ptr<Camera>	sInstance;
 
-	friend class cinder::app::PlatformAndroid;
+	jobject				mJavaObject = nullptr;
+
+	friend class ComponentManager;
 };
 
-}} // namespace cinder::android
+}}} // namespace cinder::android::hardware

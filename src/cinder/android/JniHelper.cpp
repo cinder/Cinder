@@ -28,6 +28,70 @@
 
 namespace cinder { namespace android { 
 
+/** \class JniGlobalObject
+ *
+ */
+JniGlobalObject::JniGlobalObject( jobject globalRef )
+	: mJavaObject( globalRef )
+{
+}
+
+JniGlobalObject::~JniGlobalObject()
+{
+	deleteGlobalRef();
+}
+
+void JniGlobalObject::deleteGlobalRef()
+{
+	if( JniHelper::Get()->AttachCurrentThread() ) {
+		JniGlobalObjectRef obj = shared_from_this();
+		JniHelper::Get()->TrackedDeleteGlobalRef( obj );
+	}	
+}
+
+/** \class JniThreadVars
+ *
+ */
+class JniThreadVars {
+public:
+
+	JniThreadVars() {
+
+	}
+
+	virtual ~JniThreadVars() {
+		deleteAllGlobalRefs();
+	}
+
+	void trackGlobalRef( const JniGlobalObjectRef& ref ) {
+		if( ref ) {
+			auto iter = std::find( mGlobalRefs.begin(), mGlobalRefs.end(), ref );
+			if( mGlobalRefs.end() == iter ) {
+				mGlobalRefs.push_back( ref );
+			}
+		}
+	}
+
+	void removeGlobalRef( const JniGlobalObjectRef& ref ) {
+		mGlobalRefs.remove( ref );
+	}
+
+	void deleteAllGlobalRefs() {
+		if( JniHelper::Get()->AttachCurrentThread() ) {
+			for( JniGlobalObjectRef obj : mGlobalRefs ) {
+				jobject jobj = obj->getObject();
+				if( nullptr != jobj ) {
+					JniHelper::Get()->DeleteGlobalRef( jobj );
+				}
+			}
+		}
+		mGlobalRefs.clear();
+	}
+
+private:
+	std::list<JniGlobalObjectRef>	mGlobalRefs;
+};
+
 // Currently, the GCC implementation of thread_local does not handle
 // non-trivial destructors. This is a work around until a newer version
 // of GCC is available that handles non-trivial destructors.
@@ -40,9 +104,13 @@ static void JvmHelper_ThreadExit( void* block )
 //dbg_app_log("JVMAttach_ThreadExit");
 
 	if( nullptr != block ) {
+		JniThreadVars* threadVars = reinterpret_cast<JniThreadVars*>( block );
+		delete threadVars;
+		dbg_app_log("JVMAttach_ThreadExit -> deleted JNI threadVars (via pthread_key_create destructor)");		
+
 		if( nullptr != sJavaVm ) {
 			sJavaVm->DetachCurrentThread();
-dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread (via pthread_key_create destructor)");
+			dbg_app_log("JVMAttach_ThreadExit -> JavaVM::DetachCurrentThread (via pthread_key_create destructor)");
 		}
 		pthread_setspecific( sThreadExitKey, nullptr );
 	}
@@ -72,8 +140,15 @@ static JNIEnv* JvmHelper_Attach()
 		}
 	}
 
-	if( ! pthread_setspecific( sThreadExitKey, (void*)jniEnv ) ) {
-		// TODO: Handle error
+	void* value = pthread_getspecific( sThreadExitKey );
+	if( nullptr == value ) {
+		JniThreadVars* threadVars = new JniThreadVars();
+		if( pthread_setspecific( sThreadExitKey, (void*)threadVars ) ) {
+			dbg_app_log("JvmHelper_Attach -> allocated JNI threadVars (via pthread_setspecific)");			
+		}
+		else {
+			delete threadVars;
+		}
 	}
 
 	return jniEnv;
@@ -96,6 +171,16 @@ static void JvmHelper_Deatch()
 static JNIEnv* JvmHelper_CurrentJniEnv()
 {
 	return JvmHelper_Attach();
+}
+
+static JniThreadVars* JvmHelper_GetCurrentThreadVars()
+{
+	JniThreadVars* result = nullptr;
+	void* value = pthread_getspecific( sThreadExitKey );
+	if( nullptr != value ) {
+		result = reinterpret_cast<JniThreadVars*>( value );
+	}
+	return result;
 }
 
 /** \class JniHelper
@@ -609,6 +694,33 @@ void JniHelper::DeleteGlobalRef( jobject globalRef )
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		jniEnv->DeleteGlobalRef( globalRef );
+	}
+}
+
+JniGlobalObjectRef JniHelper::TrackedNewGlobalRef( jobject obj )
+{
+	JniGlobalObjectRef result;
+	jobject globalRef = NewGlobalRef( obj );
+	if( nullptr != globalRef ) {
+		JniGlobalObjectRef result = std::make_shared<JniGlobalObject>( globalRef );
+
+		JniThreadVars* currentThreadVars = JvmHelper_GetCurrentThreadVars();
+		if( nullptr != currentThreadVars ) {
+			currentThreadVars->trackGlobalRef( result );
+		}
+	}
+	return result;
+}
+
+void JniHelper::TrackedDeleteGlobalRef( const JniGlobalObjectRef& globalRef )
+{
+	if( globalRef ) {
+		JniThreadVars* currentThreadVars = JvmHelper_GetCurrentThreadVars();
+		if( nullptr != currentThreadVars ) {
+			currentThreadVars->removeGlobalRef( globalRef );
+		}
+
+		DeleteGlobalRef( globalRef->getObject() );
 	}
 }
 

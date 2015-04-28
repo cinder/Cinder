@@ -6,4 +6,10 @@
     <string name="title_activity_camera_devices">CameraDevices</string>
     <string name="title_activity_url_loader">UrlLoaderActivity</string>
     <string name="title_activity_camera_preview">CameraPreviewActivity</string>
+
+    <string name="title_activity_camera_preview_orient_locked">CameraPreviewOrientLockedActivity
+    </string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="title_activity_camera_orient_locked">CameraOrientLockedActivity</string>
 </resources>

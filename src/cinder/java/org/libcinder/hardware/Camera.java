@@ -2,7 +2,6 @@ package org.libcinder.hardware;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.content.res.Configuration;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
@@ -12,7 +11,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.OrientationEventListener;
 
-import org.libcinder.app.ModulesFragment;
+import org.libcinder.app.ComponentManager;
 
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -118,8 +117,8 @@ public abstract class Camera extends Fragment {
         }
 
         // Set these in case we're coming back from an activity restart or sleep.
-        mOrientation = ModulesFragment.activity().getResources().getConfiguration().orientation;
-        mDisplayRotation = ModulesFragment.get().getDefaultDisplay().getRotation();
+        mOrientation = ComponentManager.activity().getResources().getConfiguration().orientation;
+        mDisplayRotation = ComponentManager.getInstance().getDefaultDisplay().getRotation();
     }
 
     protected void setPreferredPreviewSize(int width, int height) {
@@ -148,11 +147,11 @@ public abstract class Camera extends Fragment {
     protected void startOrientationListener() {
         // Initialize orientation listener
         if(null == mOrientationListener) {
-            mOrientationListener = new OrientationEventListener(ModulesFragment.activity(), SensorManager.SENSOR_DELAY_NORMAL) {
+            mOrientationListener = new OrientationEventListener(ComponentManager.activity(), SensorManager.SENSOR_DELAY_NORMAL) {
                 @Override
                 public void onOrientationChanged(int so) {
-                    int orientation = ModulesFragment.activity().getResources().getConfiguration().orientation;
-                    int rotation = ModulesFragment.get().getDefaultDisplay().getRotation();
+                    int orientation = ComponentManager.activity().getResources().getConfiguration().orientation;
+                    int rotation = ComponentManager.getInstance().getDefaultDisplay().getRotation();
                     if ((orientation == mOrientation) && (rotation == mDisplayRotation)) {
                         return;
                     }

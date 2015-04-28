@@ -30,6 +30,23 @@
 
 namespace cinder { namespace android {
 
+class JniGlobalObject;
+typedef std::shared_ptr<JniGlobalObject> JniGlobalObjectRef;
+
+/** \class JniGlobalObject
+ *
+ */
+class JniGlobalObject : public std::enable_shared_from_this<JniGlobalObject> {
+public:
+	JniGlobalObject( jobject globalRef );
+	~JniGlobalObject();
+	void 			deleteGlobalRef();
+	jobject 		getObject() { return mJavaObject; }
+	const jobject 	getObject() const { return mJavaObject; }
+private:
+	jobject 		mJavaObject = nullptr;
+};
+
 /** \class JniHelper
  *
  */
@@ -288,8 +305,11 @@ public:
 	void SetStringField( jobject obj, jfieldID fieldId, const std::string& value );	
 
 
-	jobject 			NewGlobalRef( jobject obj );
+	jobject				NewGlobalRef( jobject obj );
 	void 				DeleteGlobalRef( jobject globalRef );
+
+	JniGlobalObjectRef	TrackedNewGlobalRef( jobject obj );
+	void 				TrackedDeleteGlobalRef( const JniGlobalObjectRef& globalRef );
 
 	jstring 			NewStringUTF( const std::string& str );	
 	void 				DeleteLocalRef( jobject localRef );

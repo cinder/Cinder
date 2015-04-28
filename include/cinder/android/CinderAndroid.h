@@ -34,5 +34,4 @@ bool exists( const ci::fs::path& path );
 
 } // namespace fs
 
-
-} } // namespace cinder::android
+}} // namespace cinder::android

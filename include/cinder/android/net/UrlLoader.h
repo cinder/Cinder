@@ -23,16 +23,17 @@
 
 #pragma once
 
+#include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
 #include "cinder/Buffer.h"
 
-namespace cinder { namespace app {
+namespace cinder { namespace android { namespace app {
 
-class PlatformAndroid;
+class ComponentManager;
 
-}} // namespace cinder::app
+}}} // namespace cinder::android::app
 
-namespace cinder { namespace android {
+namespace cinder { namespace android { namespace net {
 
 class UrlLoader {
 public:
@@ -62,11 +63,9 @@ private:
 
 	jobject 			mJavaObject = nullptr;
 	std::string 		mUrl;
-	//int 				mResponseCode = -1;
-	//std::string 		mResponseMsg;
-	//std::string 		mExceptionMsg;
 
-	friend class cinder::app::PlatformAndroid;
+private:
+	friend class ComponentManager;
 };
 
-}} // namespace cinder::android
+}}} // namespace cinder::android::net

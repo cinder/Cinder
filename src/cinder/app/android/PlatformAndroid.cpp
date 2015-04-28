@@ -28,10 +28,6 @@
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
 
-#include "cinder/android/JniHelper.h"
-#include "cinder/android/hardware/Camera.h"
-#include "cinder/android/net/UrlLoader.h"
-
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
@@ -40,11 +36,6 @@ namespace cinder { namespace app {
 PlatformAndroid::PlatformAndroid()
 	: mDisplaysInitialized( false )
 {
-
-	ci::android::JniHelper::Initialize( EventManagerAndroid::instance()->getNativeApp()->activity );
-	ci::android::UrlLoader::cacheJni();
-	//ci::android::CinderCamera::cacheJni();
-
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
 
