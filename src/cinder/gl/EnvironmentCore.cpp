@@ -202,19 +202,19 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 	else
 		s +=	"	gl_Position = ciModelViewProjection * ciPosition;\n"
 				;
+	if( shader.mTextureMapping ) {
+		if( shader.mUniformBasedPosAndTexCoord )
+			s+=	"	TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
+		else
+			s+=	"	TexCoord = ciTexCoord0;\n";
+				;
+	}
 	if( shader.mColor ) {
 		s +=	"	Color = ciColor;\n"
 				;
 	}
 	if( shader.mLambert ) {
 		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
-				;
-	}
-	if( shader.mTextureMapping ) {
-		if( shader.mUniformBasedPosAndTexCoord )
-			s+=	"	TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
-		else
-			s+=	"	TexCoord = ciTexCoord0;\n";
 				;
 	}
 	
@@ -232,14 +232,6 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 				"out vec4 oColor;\n"
 				;
 
-	if( shader.mColor ) {
-		s +=	"in vec4 Color;\n";
-	}
-
-	if( shader.mLambert ) {
-		s +=	"in vec3 Normal;\n";
-	}
-
 	if( shader.mTextureMapping ) {
 		if( shader.mTextureMappingRectangleArb )
 			s +="uniform sampler2DRect uTex0;\n";
@@ -247,6 +239,13 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 			s +="uniform sampler2D uTex0;\n";
 		s	+=	"in vec2	TexCoord;\n";
 				;
+	}
+	if( shader.mColor ) {
+		s +=	"in vec4 Color;\n";
+	}
+
+	if( shader.mLambert ) {
+		s +=	"in vec3 Normal;\n";
 	}
 
 	s +=		"void main( void )\n"
@@ -256,23 +255,23 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 	if( shader.mLambert ) {
 		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
 				"	vec3 N = normalize( Normal );\n"
-				"	float lambert = max( dot( N, L ), 0.0 );\n"
-				"\n"
 				;
 	}
 	
 	s += "	oColor = vec4( 1 )";
-	if( shader.mTextureMapping ) {
-		std::string textureSampleStr = "texture( uTex0, TexCoord.st )";
-		if( !Texture::supportsHardwareSwizzle() && !shader.isTextureSwizzleDefault() )
-			textureSampleStr += std::string( "." ) + shader.getTextureSwizzleString();
 
-		s +=	" * " + textureSampleStr;
-	}	
+	if( shader.mTextureMapping ) {
+		s +=	" * texture( uTex0, TexCoord.st )";
+		if( !Texture::supportsHardwareSwizzle() && !shader.isTextureSwizzleDefault() )
+			s += "." + shader.getTextureSwizzleString();
+	}
+
 	if( shader.mColor )
 		s +=	" * Color";
+
 	if( shader.mLambert )
-		s +=	" * lambert";
+		s +=	" * max( 0.0, dot( N, L ) )";
+
 	s +=	";\n";
 	
 	s +=	"}";
