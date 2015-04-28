@@ -162,26 +162,36 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 	
 	s +=		"#version 150\n"
 				"\n"
-				"uniform mat4	ciModelViewProjection;\n"
-				"\n"
-				"in vec4		ciPosition;\n"
+				"uniform mat4 ciModelViewProjection;\n"
+				;
+
+	if( shader.mLambert )
+		s +=	"uniform mat3 ciNormalMatrix;\n";
+
+	s +=		"\n"
+				"in vec4 ciPosition;\n"
 				;
 
 	if( shader.mUniformBasedPosAndTexCoord ) {
-		s +=	"uniform vec2	uPositionOffset, uPositionScale;\n";
+		s +=	"uniform vec2 uPositionOffset, uPositionScale;\n";
 		if( shader.mTextureMapping ) {
-			s+= "uniform vec2	uTexCoordOffset, uTexCoordScale;\n";
+			s+=	"uniform vec2 uTexCoordOffset, uTexCoordScale;\n";
 		}
 	}
 	
 	if( shader.mTextureMapping ) {
-		s +=	"in vec2		ciTexCoord0;\n"
-				"out highp vec2	TexCoord;\n"
+		s +=	"in vec2 ciTexCoord0;\n"
+				"out highp vec2 TexCoord;\n"
 				;
 	}
 	if( shader.mColor ) {
-		s +=	"in vec4		ciColor;\n"
-				"out lowp vec4	Color;\n"
+		s +=	"in vec4 ciColor;\n"
+				"out lowp vec4 Color;\n"
+				;
+	}
+	if( shader.mLambert ) {
+		s +=	"in vec3 ciNormal;\n"
+				"out highp vec3 Normal;\n"
 				;
 	}
 
@@ -190,21 +200,25 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 	if( shader.mUniformBasedPosAndTexCoord )
 		s +=	"	gl_Position = ciModelViewProjection * ( vec4( uPositionOffset, 0, 0 ) + vec4( uPositionScale, 1, 1 ) * ciPosition );\n";
 	else
-		s +=	"	gl_Position	= ciModelViewProjection * ciPosition;\n"
+		s +=	"	gl_Position = ciModelViewProjection * ciPosition;\n"
 				;
 	if( shader.mColor ) {
 		s +=	"	Color = ciColor;\n"
 				;
 	}
+	if( shader.mLambert ) {
+		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
+				;
+	}
 	if( shader.mTextureMapping ) {
 		if( shader.mUniformBasedPosAndTexCoord )
-			s+= "	TexCoord	= uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
+			s+=	"	TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
 		else
-			s+=	"	TexCoord	= ciTexCoord0;\n";
+			s+=	"	TexCoord = ciTexCoord0;\n";
 				;
 	}
 	
-	s +=		"}\n";
+	s +=		"}";
 	
 	return s;
 }
@@ -219,7 +233,11 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 				;
 
 	if( shader.mColor ) {
-		s +=	"in vec4		Color;\n";
+		s +=	"in vec4 Color;\n";
+	}
+
+	if( shader.mLambert ) {
+		s +=	"in vec3 Normal;\n";
 	}
 
 	if( shader.mTextureMapping ) {
@@ -234,27 +252,30 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 	s +=		"void main( void )\n"
 				"{\n"
 				;
+
+	if( shader.mLambert ) {
+		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
+				"	vec3 N = normalize( Normal );\n"
+				"	float lambert = max( dot( N, L ), 0.0 );\n"
+				"\n"
+				;
+	}
 	
+	s += "	oColor = vec4( 1 )";
 	if( shader.mTextureMapping ) {
 		std::string textureSampleStr = "texture( uTex0, TexCoord.st )";
-		if( ! Texture::supportsHardwareSwizzle() && ! shader.isTextureSwizzleDefault() )
-			textureSampleStr += std::string(".") + shader.getTextureSwizzleString();
-		if( shader.mColor ) {
-			s +=	"	oColor = " + textureSampleStr + " * Color;\n"
-					;
-		}
-		else {
-			s +=	"	oColor = " + textureSampleStr + ";\n"
-					;
-		}
-	}
-	else if( shader.mColor ) {
-		s +=	"	oColor = Color;\n"
-				;
-	}
+		if( !Texture::supportsHardwareSwizzle() && !shader.isTextureSwizzleDefault() )
+			textureSampleStr += std::string( "." ) + shader.getTextureSwizzleString();
+
+		s +=	" * " + textureSampleStr;
+	}	
+	if( shader.mColor )
+		s +=	" * Color";
+	if( shader.mLambert )
+		s +=	" * lambert";
+	s +=	";\n";
 	
-	s +=		"}\n"
-				;
+	s +=	"}";
 	
 	return s;
 }
