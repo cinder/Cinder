@@ -303,6 +303,12 @@ void TextureBase::getInternalFormatInfo( GLint internalFormat, GLenum *outDataFo
 		case GL_DEPTH_STENCIL:			dataFormat = GL_DEPTH_STENCIL;		dataType = GL_UNSIGNED_INT_24_8;		break;
 		case GL_RED:					dataFormat = GL_RED;				dataType = GL_UNSIGNED_BYTE;			break;
 		case GL_RG:						dataFormat = GL_RG;					dataType = GL_UNSIGNED_BYTE;			break;
+		case GL_R16:					dataFormat = GL_RED;				dataType = GL_UNSIGNED_SHORT;			break;
+		case GL_RG16:					dataFormat = GL_RG;					dataType = GL_UNSIGNED_SHORT;			break;
+		case GL_RGB16:					dataFormat = GL_RGB;				dataType = GL_UNSIGNED_SHORT;			break;
+		case GL_RGBA16:					dataFormat = GL_RGBA;				dataType = GL_UNSIGNED_SHORT;			break;
+		case GL_R16_SNORM:				dataFormat = GL_RED;				dataType = GL_SHORT;					break;
+		case GL_RG16_SNORM:				dataFormat = GL_RG;					dataType = GL_SHORT;					break;
 #endif // ! CINDER_GL_ES
 
 		// SIZED DEPTH FORMATS
