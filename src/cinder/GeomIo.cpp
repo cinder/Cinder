@@ -691,24 +691,26 @@ void Cube::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 		texCoords.reserve( numVertices );
 		texCoordsPtr = &texCoords;
 	}
+
+	vec3 sz = 0.5f * mSize;
 	
 	// +X
-	generateFace( vec3(mSize.x,0,0), vec3(0,0,mSize.z), vec3(0,mSize.y,0), mSubdivisions.z, mSubdivisions.y, &positions,
+	generateFace( vec3(sz.x,0,0), vec3(0,0,sz.z), vec3(0,sz.y,0), mSubdivisions.z, mSubdivisions.y, &positions,
 		normalsPtr, mColors[0], colorsPtr, texCoordsPtr, &indices );
 	// +Y
-	generateFace( vec3(0,mSize.y,0), vec3(mSize.x,0,0), vec3(0,0,mSize.z), mSubdivisions.x, mSubdivisions.z, &positions,
+	generateFace( vec3(0,sz.y,0), vec3(sz.x,0,0), vec3(0,0,sz.z), mSubdivisions.x, mSubdivisions.z, &positions,
 		normalsPtr, mColors[2], colorsPtr, texCoordsPtr, &indices );
 	// +Z
-	generateFace( vec3(0,0,mSize.z), vec3(0,mSize.y,0), vec3(mSize.x,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
+	generateFace( vec3(0,0,sz.z), vec3(0,sz.y,0), vec3(sz.x,0,0), mSubdivisions.y, mSubdivisions.x, &positions,
 		normalsPtr, mColors[4], colorsPtr, texCoordsPtr, &indices );
 	// -X
-	generateFace( vec3(-mSize.x,0,0), vec3(0,mSize.y,0), vec3(0,0,mSize.z), mSubdivisions.y, mSubdivisions.z, &positions,
+	generateFace( vec3(-sz.x,0,0), vec3(0,sz.y,0), vec3(0,0,sz.z), mSubdivisions.y, mSubdivisions.z, &positions,
 		normalsPtr, mColors[1], colorsPtr, texCoordsPtr, &indices );
 	// -Y
-	generateFace( vec3(0,-mSize.y,0), vec3(0,0,mSize.z), vec3(mSize.x,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
+	generateFace( vec3(0,-sz.y,0), vec3(0,0,sz.z), vec3(sz.x,0,0), mSubdivisions.z, mSubdivisions.x, &positions,
 		normalsPtr, mColors[3], colorsPtr, texCoordsPtr, &indices );
 	// -Z
-	generateFace( vec3(0,0,-mSize.z), vec3(mSize.x,0,0), vec3(0,mSize.y,0), mSubdivisions.x, mSubdivisions.y, &positions,
+	generateFace( vec3(0,0,-sz.z), vec3(sz.x,0,0), vec3(0,sz.y,0), mSubdivisions.x, mSubdivisions.y, &positions,
 		normalsPtr, mColors[5], colorsPtr, texCoordsPtr, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*)positions.data(), numVertices );
@@ -2950,8 +2952,8 @@ void WireCube::loadInto( Target *target, const AttribSet &requestedAttribs ) con
 	std::vector<vec3> positions;
 	positions.resize( numVertices );
 
-	vec3 d = -mSize;
-	vec3 s = 2.0f * mSize / vec3( mSubdivisions );
+	vec3 d = -0.5f * mSize;
+	vec3 s = mSize / vec3( mSubdivisions );
 
 	vec3 *ptr = positions.data();
 	*ptr++ = vec3( -d.x, d.y, d.z );
