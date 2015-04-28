@@ -35,20 +35,16 @@ void usample2D_testApp::setup()
     mShader->uniform("test", 0);
     
     vector<uint16_t> shorts;
+	for( int y = 0; y < getWindowHeight(); ++y ) {
+		for( int x = 0; x < getWindowWidth(); x++ ) {
+			if( y % 2 == 0 )
+				shorts.push_back( 65000 );
+			else
+				shorts.push_back( 0 );
+		}
+	}
     
-    for( int i = 0; i < getWindowWidth()*getWindowHeight();i++ ){
-        
-        if( i > getWindowWidth()*getWindowHeight()/2 )
-            shorts.push_back(65000);
-        else
-            shorts.push_back(0);
-        
-    }
-    
-    
-    mUSampler->update( Channel16u( getWindowWidth(), getWindowHeight(), getWindowWidth()*sizeof(uint16_t), sizeof(uint16_t), shorts.data() ));
-    
-    
+    mUSampler->update( Channel16u( getWindowWidth(), getWindowHeight(), getWindowWidth()*sizeof(uint16_t), 1, shorts.data() ));
 }
 
 void usample2D_testApp::mouseDown( MouseEvent event )
