@@ -72,7 +72,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1;
 		GLenum			mType = -1;
-		geom::Attrib	mSemantic = geom::Attrib::NUM_ATTRIBS;
+		geom::Attrib	mSemantic = geom::Attrib::USER_DEFINED;
 		
 		friend class GlslProg;
 	};

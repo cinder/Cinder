@@ -455,15 +455,22 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 	const auto &glslActiveAttribs = shader->getActiveAttributes();
 	for( auto &glslActiveAttrib : glslActiveAttribs ) {
 		bool attribMappingFound = false;
+		auto glslAttribName = glslActiveAttrib.getName();
 		for( auto & attrib : attributeMapping ) {
-			if( glslActiveAttrib.getName() == attrib.second ) {
+			if( glslAttribName == attrib.second ) {
 				attribMappingFound = true;
 			}
 		}
 		auto attribSemantic = glslActiveAttrib.getAttributeSemantic();
 		if( (attribSemantic != geom::Attrib::COLOR) &&
 		   (enabledAttribs.count( attribSemantic ) == 0) &&
-		   ! attribMappingFound )
+		   ! attribMappingFound &&
+		   /* From GL 4.3 core spec, section 11.1.1 (Vertex Attributes):
+			* "For GetActiveAttrib, all active vertex shader input variables
+			* are enumerated, including the special built-in inputs gl_VertexID
+			* and gl_InstanceID."
+			*/
+		   ( glslAttribName == "gl_InstanceID" || glslAttribName == "gl_VertexID") )
 			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << " but vertex data doesn't provide it." );
 	}
 	

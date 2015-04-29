@@ -51,6 +51,8 @@ std::string attribToString( Attrib attrib )
 {
 	if( attrib < Attrib::NUM_ATTRIBS )
 		return sAttribNames[(int)attrib];
+	else if( attrib == Attrib::USER_DEFINED )
+		return "USER_DEFINED";
 	else
 		return "";
 }

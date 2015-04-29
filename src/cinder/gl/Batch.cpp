@@ -79,7 +79,10 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	
 	ctx->popVao();
 	ctx->popBufferBinding( GL_ARRAY_BUFFER );
-
+	
+	if( ! mVao->getLayout().isVertexAttribArrayEnabled( 0 ) )
+		CI_LOG_W("VertexAttribArray at location 0 not enabled, this has performance implications.");
+	
 	mAttribMapping = attributeMapping;
 }
 

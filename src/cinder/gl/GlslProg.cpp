@@ -456,11 +456,37 @@ GlslProg::GlslProg( const Format &format )
     
     auto & userDefinedAttribs = format.getAttributes();
 	
+	bool foundPositionSemantic = false;
 	// if the user has provided a location make sure to bind that location before
 	// we go further, still don't know that this is good.
 	for( auto &attrib : userDefinedAttribs )
-		if( attrib.mLoc > -1 )
-			glBindAttribLocation( mHandle, attrib.mLoc, attrib.mName.c_str() );
+		if( attrib.mLoc > -1 ) {
+			if( attrib.mName == "ciPosition" || attrib.mSemantic == geom::Attrib::POSITION )
+				foundPositionSemantic = true;
+			
+			// The user may have defined a location for an attrib but is relying on the default
+			// name used by Cinder. Therefore, we need to find the attrib in the map and affix
+			// the default name.
+			std::string attribName = attrib.mName;
+			if( attribName == "" ) {
+				auto defaultAttribMap = getDefaultAttribNameToSemanticMap();
+				auto attribSemantic = attrib.mSemantic;
+				auto foundDefaultAttrib = find_if( defaultAttribMap.begin(), defaultAttribMap.end(),
+				[attribSemantic]( const std::pair<const std::string, geom::Attrib> &defaultAttrib ){
+					return defaultAttrib.second == attribSemantic;
+				});
+				if( foundDefaultAttrib != defaultAttribMap.end() )
+					attribName = foundDefaultAttrib->first;
+				else {
+					CI_LOG_E("Defined Location for unknown semantic and unknown name");
+					continue;
+				}
+			}
+			glBindAttribLocation( mHandle, attrib.mLoc, attribName.c_str() );
+		}
+	
+	if( ! foundPositionSemantic )
+		glBindAttribLocation( mHandle, 0, "ciPosition" );
 	
 #if ! defined( CINDER_GL_ES_2 )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
@@ -527,7 +553,7 @@ GlslProg::GlslProg( const Format &format )
 				active = true;
 				// check if the user defined attribute has cached what type
 				// of semantic this is
-				if( userAttrib.mSemantic != geom::Attrib::NUM_ATTRIBS ) {
+				if( userAttrib.mSemantic != geom::Attrib::USER_DEFINED ) {
 					activeAttrib.mSemantic = userAttrib.mSemantic;
 				}
 				break;
@@ -651,7 +677,7 @@ void GlslProg::cacheActiveAttribs()
 		glGetActiveAttrib( mHandle, (GLuint)i, 511, &nameLength, &count, &type, name );
 		auto loc = glGetAttribLocation( mHandle, name );
 		
-		geom::Attrib attributeSemantic = geom::Attrib::NUM_ATTRIBS;
+		geom::Attrib attributeSemantic = geom::Attrib::USER_DEFINED;
 		auto foundSemantic = semanticNameMap.find( name );
 		if( foundSemantic != semanticNameMap.end() ) {
 			attributeSemantic = foundSemantic->second;
