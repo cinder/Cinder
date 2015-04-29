@@ -14,7 +14,7 @@ tagDictionary = {
 	"linebreak": "br",
 	"emphasis": "em",
 	"ref": "a",
-	# "computeroutput": "code",
+	"computeroutput": "code",
 	"includes": "span",
 	"simplesect": "dl",
 	"para": "p"
@@ -116,19 +116,20 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 
 	# function name
 	definitionDiv = genTag( bs4, "div", ["definition"] )
+	print fnXml.find( "definition" )
 	emTag = genTag( bs4, "em", [], fnXml.find( "definition" ).text )
 	definitionDiv.append( emTag );
 	definitionDiv.append( fnXml.find( "argsstring" ).text )
 	definitionCol.append( definitionDiv );
 
 	# detailed description
-	# ET.dump(fnXml)
 	descriptionDiv = markupDescription( bs4, fnXml );
 	if descriptionDiv is not None :
 		definitionCol.append( descriptionDiv )
 		addClassToTag( li, "expandable" )
-	else :
-		print "NO DESCRIPTION"
+		
+	# else :
+		# print "NO DESCRIPTION"
 	
 	parent.append( li )
 
@@ -209,7 +210,7 @@ def genTypeDefs( bs4, tree ):
 	if typeDefUl is not None:
 		contentDiv.append( typeDefUl )
 
-	print typeDefs
+	# print typeDefs
 
 
 def iterClassBase( tree, heirarchy ) :
@@ -221,7 +222,7 @@ def iterClassBase( tree, heirarchy ) :
 	if base is None:
 		return
 	else :
-		print "BASE: " + base.text
+		# print "BASE: " + base.text
 		newTree = findClassTag( base.text )
 		# add to heirarchy
 		# heirarchy.append( base.text )
@@ -266,7 +267,6 @@ def genClassHierarchy( bs4, tree ):
 
 		li.append( a )
 		ul.append( li )
-		print index
 
 	
 def genClassList( bs4, tree ):
@@ -287,7 +287,7 @@ def genClassList( bs4, tree ):
 	classesUl = genTag( bs4, "ul" )
 	contentDiv = side.find('div', 'content')
 	for classDef in classes:
-		print classDef.attrib
+		# print classDef.attrib
 		li = genTag( bs4, "li" )
 		classesUl.append( li )
 
@@ -309,13 +309,23 @@ def replaceTag( bs4, tree, parentTag, content ):
 	if parentTag and parentTag.parent:
 		hasParent = True
 
+	# change parentTag if necessary
+	if tag == "codeline" :
+		parentTag = parentTag.code
+
 	# find html tag based on tag
-	if( tag == "para" ):
+	if tag == "para" :
 		if hasParent and parentTag.parent.dl :
 			tagName = "dd"
 		else :
 			tagName = tagDictionary[tag]
-	# elif tag == "computeroutput" :
+	elif tag == "sp" :
+		if content is None :
+			content = " "
+		else:
+			content.append( " " )
+	# 	print ET.dump(tree)
+
 		# if hasParent and parentTag.parent.pre :
 			# tagName = "code"
 			# addClassToTag( codeTag, "language-cpp" )
@@ -343,8 +353,9 @@ def replaceTag( bs4, tree, parentTag, content ):
 			seeTag.string = "See Also"
 		newTag.append( seeTag )
 
-	if tag == "computeroutput" :
-		print "pre--"
+	# if tag == "computeroutput" :
+	if tag == "programlisting" :
+		# print "pre--"
 		# preTag = bs4.new_tag( "pre" )
 		codeTag = bs4.new_tag( "code" )
 		addClassToTag( codeTag, "language-cpp" )
@@ -354,15 +365,15 @@ def replaceTag( bs4, tree, parentTag, content ):
 		# newTag.append( codeTag )
 		contentTag = codeTag
 		# contentTag = preTag
+	
 
+	
+		
 
 	# TODO: figure out why adding a <pre> instead of a <code> breaks the <p>
 
 	if content is not None :
 		contentTag.append( content )
-
-
-	# print "TAG: " + tagName
 	
 
 	# if tag == "computeroutput" :
@@ -379,6 +390,8 @@ def replaceTag( bs4, tree, parentTag, content ):
 	# else  :
 		# parentTag.append( newTag )
 	parentTag.append( newTag )
+
+
 
 	return newTag
 
@@ -419,10 +432,20 @@ def iterateMarkup( bs4, tree, parent ):
 	for child in list( tree ):
 		output = iterateMarkup( bs4, child, currentTag )
 
+	print "--"
+	print tree.tail
+	print "--"
+	print ""
+	
+
 	# tail is any extra text that isn't wrapped in another tag
 	# that exists before the next tag
 	if tree.tail != None:
 		parent.append( tree.tail.strip() )
+
+		if tree.tail.endswith( ";" ):
+			print "END LINE"
+			parent.append( genTag( bs4, "br") )
 	
 	return currentTag
 
@@ -445,10 +468,10 @@ def markupDescription( bs4, tree ):
 	if detailedDesc is not None:
 		iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )	
 
-	print '---'
-	print tree.find( r'briefdescription/' )
-	print tree.find( r'detaileddescription/' )
-	print ''
+	# print '---'
+	# print tree.find( r'briefdescription/' )
+	# print tree.find( r'detaileddescription/' )
+	# print ''
 	
 	return description_el
 
@@ -461,7 +484,8 @@ def replaceCodeChunks( bs4 ) :
 	for p in pTags :
 
 		# if the paragraph as a "div.computeroutput"
-		codeChunks = p.find_all( "div", "computeroutput" )
+		# codeChunks = p.find_all( "div", "computeroutput" )
+		codeChunks = p.find_all( "div", "programlisting" )
 		
 		if( len(codeChunks) > 0 ) :
 
@@ -480,16 +504,39 @@ def replaceCodeChunks( bs4 ) :
 
 				if type( c ) == Tag:
 					if c.has_attr("class") :
-						print c["class"]
+						# print c["class"]
 
 						# look for any tags with "computeroutput"
-						if "computeroutput" in c["class"] :
+						if "programlisting" in c["class"] :
 
 							# add a new pre
 							preTag = genTag( bs4, "pre" )
 							
+
 							for code in c.contents :
-								preTag.append( clone(code) )
+
+								# clone code
+								cClone = clone(code)
+								
+								# code string
+								codeString = ""
+								if type(code) == Tag:
+
+									# clear the original tag
+									code.clear()
+
+									# add clone to holder so that we can iterate through
+									holder = genTag(bs4, "div")
+									holder.append( cClone )
+									
+									# append line breaks for each line of code
+									for content in holder.code.contents :
+										codeString += content.getText() + "\n"
+
+								if len(cClone) > 0:
+									code.append( codeString )
+									preTag.append( code )
+
 							newTags.append( preTag )
 
 							# create a new p tag for any following content to add itself to
@@ -552,29 +599,41 @@ def processClassXmlFile( inPath, outPath, html ):
 	# soup = html;
 
 	print "Processing file: " + inPath + " > " + outPath;
-	tree = ET.parse( inPath )
+
+	try:
+		tree = ET.parse( inPath )
+
+	except ET.ParseError :
+		print "--- PARSE ERROR ---"
+		# write the file with error	
+		outFile = codecs.open( outPath, "w", "UTF-8" )
+		html.append( 'COULD NOT PARSE FILE: ' + inPath )
+		outFile.write( html.prettify() )
+		return
 
 	# add title
 	headTag = html.head
 	titleTag = html.new_tag( "title" )
 	compoundName = str(findCompoundName( tree )) 				# with "cinder::"
 	className = compoundName.rsplit( "cinder::", 1 )[1]			# without "cinder::"
-	includeDef = tree.findall( r"compounddef/includes" )[0].text
 
-	# print tagXml
-	# file info from tag file = includes file name text
-	# compound/file name
-	# print tagXml.findall( r'compound[@kind="file"]/[name="{includeName}"]' )
-	fileTags = tagXml.findall( r'compound[@kind="file"]' )
-	fileTagTree = findFileTag( includeDef )
-	# print ET.dump(fileTagTree)
+	# find include name
+	includeTrees = tree.findall( r"compounddef/includes" )
+	includeDef = None
+	if len( includeTrees ) > 0 :
+		includeDef = tree.findall( r"compounddef/includes" )[0].text
+
+	fileTagTree = None
+	if includeDef != None :
+		fileTags = tagXml.findall( r'compound[@kind="file"]' )
+		fileTagTree = findFileTag( includeDef )
+		# print ET.dump(fileTagTree)
 	
 	classTags = tagXml.findall( r'compound[@kind="class"]' )
 	# classTagTree = findClassTag( "cinder::CameraPersp" )
 	classTagTree = findClassTag( className )
 
 	# print ET.dump(classTagTree)
-	print className
 
 	titleTag.append( compoundName )
 	headTag.insert( 0, titleTag )
@@ -591,14 +650,16 @@ def processClassXmlFile( inPath, outPath, html ):
 	# ----------
 	#  Includes
 	# ----------
-	includeContent = genIncludesTag( html, includeDef );
-	includeEl.append( includeContent )
+	if includeDef != None :
+		includeContent = genIncludesTag( html, includeDef );
+		includeEl.append( includeContent )
 	
 	
 	# -----------
 	#  Side Area
 	# -----------
-	genTypeDefs( html, fileTagTree )
+	if fileTagTree != None:
+		genTypeDefs( html, fileTagTree )
 	genClassHierarchy( html, classTagTree )
 	genClassList( html, tree )
 	
@@ -621,21 +682,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	descTag = markupDescription( html, tree.find( r'compounddef' ) );
 	if descTag is not None :
 		descriptionProseEl.append( descTag )
-
-	# +-------+
-	#  Classes
-	# +-------+
-	# sectionTag = genTag( html, "section" )
-	# classesHeader = genTag( html, "h1", None, "Classes" )
-	# contentsTag.append( classesHeader )
-
-	# classesUl = genTag( html, "ul" )
-	# for classDef in tree.findall( r"compounddef/innerclass" ):
-	# 	classesUl.append( genTag( html, "li", ["row"], classDef.text ) )
-	# 	# TODO: pull class brief descrption from class page xml
-	# sectionTag.append( classesUl )
-	# sectionTag.append( genTag( html, "hr" ) )
-	# contentsTag.append( sectionTag );
 
 	# +----------------+
 	#  Member Functions
@@ -702,11 +748,38 @@ def parseTemplateHtml( templatePath ):
 if __name__ == "__main__":
 	htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 	doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
+	
 	# Load tag file
+	tagXml = ET.ElementTree( ET.parse( "doxygen/cinder.tag" ).getroot() )
+	
+	# parse template files
+	classTemplateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
 
-	if len( sys.argv ) == 3: # process a specific file
-		tagXml = ET.ElementTree( ET.parse( "doxygen/cinder.tag" ).getroot() )
-		templateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
-		processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, sys.argv[2] ), copy.deepcopy( templateHtml ) )
+	if len( sys.argv ) == 3: 
+		if os.path.isfile( sys.argv[1] ): # process a specific file
+
+	# if sys.argv[1] # if a file
+	# if a directory
+
+			templateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
+			processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, sys.argv[2] ), copy.deepcopy( templateHtml ) )
+
+		elif os.path.isdir( sys.argv[1] ): # process a directory
+		
+			count = 0
+	
+			# get list of files
+			# getTemplateType();
+
+			for file in os.listdir(sys.argv[1]):
+				if file.endswith(".xml"):
+					if file.startswith( "classcinder" ):
+						filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+						print(filePrefix)
+						processClassXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+						count = count + 1
+						#if count > 5:
+						#	break;
+
 	else:
 		print "Unknown usage"
