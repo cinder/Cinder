@@ -22,11 +22,11 @@ div
 	
 a
 	color: cinder-orange
-	font-weight: bold
+	font-weight: 700
 	
 em
 	font-style: italic
-	font-weight: bold
+	font-weight: 700
 	
 // code
 // 	margin: 1em 0
@@ -148,20 +148,86 @@ em
 				
 		p:last
 			margin-bottom: 0
+		
+
+		.row
+			padding-left: 18px
+			
+			.definition
+				margin-bottom: 5px
+			
+			.description
+				color: #7c827f
+				
+			button.expand
+				top: 12px
+				left: 9px
+
+
+.expandable
 	
+	position: relative
+	overflow: hidden
+	
+	.content
+		overflow: hidden
+		transition: all 350ms cubic-bezier(0.165, 0.840, 0.440, 1.000)
+
+	&.hidden	
+		button.expand
+			transform: rotate(0deg) translateZ(0)
+		
+		.content
+			height: 0 !important
+			
+button.expand
+		
+	transform: rotate(90deg) translateZ(0)
+	transition: all 200ms
+	background-image: url("images/expand_arrow.png");
+	background-repeat: no-repeat
+	background-size: 13px 13px
+	background-color: inherit
+	width: 13px
+	height: 13px
+	margin: 0
+	padding: 0
+	display: block
+	top: 11px
+	left: 7px
+	position: absolute
+	outline: none
+	z-index: 100
 
 .side
-	padding: 0
+	
+	margin-top: 40px
 
 	a
 		font-weight: normal
 	
 	h4
-		font-weight: bold
+		font-weight: 700
+		margin-bottom: 6px
 
 	.row
 		border: 1px solid #f0f0f0
-		padding: 10px 20px
+		padding: 10px 25px
+		margin-bottom: 2px
+		position: relative
+
+
+		&:nth-child(even)
+			background: #ebebeb
+		
+		&:nth-child(odd)
+			
+			&:first-child
+				background: #fff
+			
+			background: #f5f5f5
+			border-color: #f5f5f5
+		
 	
 	ul
 		&.inheritence
@@ -183,6 +249,5 @@ em
 				&.depth3
 					padding-left: 40px
 					 background-position: 13px -3px;
-
-		
+	
 
