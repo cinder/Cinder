@@ -51,7 +51,7 @@ class DataTarget {
 	
 	void	setFilePathHint( const fs::path &aFilePathHint );
 	
-	Buffer				mBuffer;
+//	Buffer				mBuffer; // TODO: is this used? if not remove
 	fs::path			mFilePath;
 	fs::path			mFilePathHint;
 	Url					mUrl;
