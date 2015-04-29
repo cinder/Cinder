@@ -12,10 +12,13 @@ to be used with OpenGL, the \ref cinder::gl::Texture "gl::Texture" is a natural 
 To manipulate individual pixels of a Surface, the \ref SurfaceT::Iter "Surface::Iter" class can be used.<br>
 <br>
 To allocate a Surface that is 640x480 and has an alpha channel, use:<br>
-<tt>Surface mySurface( 640, 480, true );</tt><br>
+\code
+Surface mySurface( 640, 480, true );
+\endcode
 A Surface can be created from an image file using the result of loadImage():<br>
-<tt>Surface bitmap( loadImage( "image.jpg" ) );</tt><br>
-<br>
+\code
+Surface bitmap( loadImage( "image.jpg" ) );
+\endcode
 The pixels of each row of a Surface are stored in contiguous memory, and the start of each row is offset from the previous by the stride (measured in bytes) returned
 by \ref cinder::SurfaceT::getRowBytes "getRowBytes()". Pixels can be ordered in memory in a number of configurations, specified using the SurfaceChannelOrder class.
 \sa
