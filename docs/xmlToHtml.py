@@ -124,9 +124,11 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	# detailed description
 	# ET.dump(fnXml)
 	descriptionDiv = markupDescription( bs4, fnXml );
-	# markupParagraph( tree.find( r'compounddef/detaileddescription/' ), descTag, html );
-	# descriptionDiv = genTag( bs4, "div", ["description"], "This is the detailed description" )
-	definitionCol.append( descriptionDiv )
+	if descriptionDiv is not None :
+		definitionCol.append( descriptionDiv )
+		addClassToTag( li, "expandable" )
+	else :
+		print "NO DESCRIPTION"
 	
 	parent.append( li )
 
@@ -138,12 +140,10 @@ def defineLinkTag( tag, attrib ):
 
 	if( "refid" in attrib ) :
 		refId = attrib["refid"]
-		# print "REF ID: " + refId
 		href = refId + ".html"
 
 	if( "kindref" in attrib ) :
 		kind = attrib["kindref"]
-		# print "KIND: " + kind
 
 		if kind == "member":
 			strList = refId.rsplit("_1", 1)
@@ -181,6 +181,12 @@ def genIncludesTag( bs4, text ):
 	return includeLink
 
 def genTypeDefs( bs4, tree ):
+	# get typedefs from fileTagTree in tagfile
+	typeDefs = tree.findall( r'member[@kind="typedef"]' )
+
+	if len(typeDefs) == 0 :
+		return
+
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
 	sideEl.append( side )
@@ -188,26 +194,26 @@ def genTypeDefs( bs4, tree ):
 	# fill heading
 	side.find('h4').append("Typedefs:")
 
-	# get typedefs from fileTagTree in tagfile
-	typeDefs = tree.findall( r'member[@kind="typedef"]' )
 	typeDefUl = None
+	contentDiv = side.find( "div", "content" )
 	if len(typeDefs) > 0 :
 		typeDefUl = genTag( bs4, "ul" )
 
 	# fill list of typedefs
 	for typeDef in typeDefs :
 		typeDefLi = genTag( bs4, "li" )
-		typeDefLi.append( typeDef.find("name").text );
+		typeDefLi.append( typeDef.find( "name" ).text );
 		typeDefUl.append( typeDefLi )
 
 	# plug into html
 	if typeDefUl is not None:
-		side.append(typeDefUl)
+		contentDiv.append( typeDefUl )
 
 	print typeDefs
 
 
 def iterClassBase( tree, heirarchy ) :
+
 	base = tree.find( 'base' )
 	
 	# tree.find( 'base' ).text
@@ -224,6 +230,19 @@ def iterClassBase( tree, heirarchy ) :
 
 def genClassHierarchy( bs4, tree ):
 
+	if tree is None:
+		return
+
+	# first item in the list will be the original class
+	heirarchy = [ tree ]
+
+	# get the class' heirarchy
+	iterClassBase( tree, heirarchy )
+	# print heirarchy
+	 
+	if len( heirarchy ) == 1 :
+		return
+	
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
 	sideEl.append( side )
@@ -231,30 +250,53 @@ def genClassHierarchy( bs4, tree ):
 	# fill heading
 	side.find('h4').append("Class Heirarchy:")
 
-	# first item in the list will be the original class
-	# heirarchy = [ tree.find('name').text ]
-	heirarchy = [ tree ]
-
-	# get the class' heirarchy
-	iterClassBase( tree, heirarchy )
-
-	# print heirarchy
-	 
-	if len( heirarchy ) == 1 :
-		return
-	
+	# create all of the markup
+	contentDiv = side.find('div', 'content')
 	ul = genTag( bs4, "ul" )
 	addClassToTag( ul, "inheritence" )
-	side.append( ul )
+	contentDiv.append( ul )
+
+	# go through the heirarchy and add a list item for each member
 	for index, base in enumerate( reversed( heirarchy ) ):
 		li = genTag( bs4, "li" )
 		addClassToTag( li, "depth" + str( index + 1 ) )
+		
 		a = genTag( bs4, "a", [], base.find("name").text )
-		li.append( a )
 		defineLinkTag( a, {'href':base.find("filename").text} )
+
+		li.append( a )
 		ul.append( li )
 		print index
+
 	
+def genClassList( bs4, tree ):
+
+	classes = tree.findall( r"compounddef/innerclass" )
+
+	if len( classes ) < 1 :
+		return
+
+	# create html from template
+	side = getTemplate( bs4, "side-expandable" )
+	sideEl.append( side )
+
+	# fill heading
+	side.find('h4').append("Classes:")
+
+	# create all of the markup
+	classesUl = genTag( bs4, "ul" )
+	contentDiv = side.find('div', 'content')
+	for classDef in classes:
+		print classDef.attrib
+		li = genTag( bs4, "li" )
+		classesUl.append( li )
+
+		a = genTag( bs4, "a", [], classDef.text )
+		defineLinkTag( a, classDef.attrib )
+		li.append( a )
+	
+	contentDiv.append( classesUl )
+
 
 
 def replaceTag( bs4, tree, parentTag, content ):
@@ -392,9 +434,22 @@ def markupDescription( bs4, tree ):
 	# parent.append( description_el )
 	# return iterateMarkup( paraXml, parent, html )
 
-	description_el = genTag( bs4, "div", ["description"] )
-	iterateMarkup( bs4, tree.find( r'briefdescription/' ), description_el )
-	iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )
+	description_el = genTag( bs4, "div", ["description", "content"] )
+	briefDesc = tree.find( r'briefdescription/' )
+	if briefDesc is None :
+		return
+	else :
+		iterateMarkup( bs4, tree.find( r'briefdescription/' ), description_el )
+	
+	detailedDesc = tree.find( r'detaileddescription/' )
+	if detailedDesc is not None:
+		iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )	
+
+	print '---'
+	print tree.find( r'briefdescription/' )
+	print tree.find( r'detaileddescription/' )
+	print ''
+	
 	return description_el
 
 # Looks though the html and replaces any code chunks that exist
@@ -452,8 +507,6 @@ def replaceCodeChunks( bs4 ) :
 
 			# add the newly organized tags to the new span
 			for t in newTags:
-				# print "TAG:"
-				# print t
 				replacementTag.append( t )
 
 			# unwrap / remove the span since that was only there to place this new content into
@@ -511,15 +564,17 @@ def processClassXmlFile( inPath, outPath, html ):
 	# print tagXml
 	# file info from tag file = includes file name text
 	# compound/file name
-	# print "INCLUDE FILE: " + includeDef
 	# print tagXml.findall( r'compound[@kind="file"]/[name="{includeName}"]' )
 	fileTags = tagXml.findall( r'compound[@kind="file"]' )
 	fileTagTree = findFileTag( includeDef )
 	# print ET.dump(fileTagTree)
 	
 	classTags = tagXml.findall( r'compound[@kind="class"]' )
-	classTagTree = findClassTag( "cinder::CameraPersp" )
+	# classTagTree = findClassTag( "cinder::CameraPersp" )
+	classTagTree = findClassTag( className )
+
 	# print ET.dump(classTagTree)
+	print className
 
 	titleTag.append( compoundName )
 	headTag.insert( 0, titleTag )
@@ -527,7 +582,7 @@ def processClassXmlFile( inPath, outPath, html ):
 	# find contents wrapper
 	contentsTag = html.find( "div", "contents" )
 
-	# description area
+	# descriptiogn area
 	descriptionEl = html.find( id="description" )
 	descriptionProseEl = descriptionEl.find( "div", "prose" )
 	sideEl = descriptionEl.find( "div", "side" )
@@ -540,11 +595,12 @@ def processClassXmlFile( inPath, outPath, html ):
 	includeEl.append( includeContent )
 	
 	
-	# ----------
-	#  Typedefs
-	# ----------
+	# -----------
+	#  Side Area
+	# -----------
 	genTypeDefs( html, fileTagTree )
 	genClassHierarchy( html, classTagTree )
+	genClassList( html, tree )
 	
 
 	# +-----------+
@@ -561,26 +617,25 @@ def processClassXmlFile( inPath, outPath, html ):
 
 	# markupDescription( tree.find( r'compounddef/briefdescription/' ), descTag, html );
 	# markupDescription( tree.find( r'compounddef/briefdescription/' ), descTag, html );
-	# print tree.dump( tree.find(r'compounddef/') )
+	# print ET.dump( tree.find(r'compounddef/') )
 	descTag = markupDescription( html, tree.find( r'compounddef' ) );
-	
-	
-	descriptionProseEl.append( descTag )
+	if descTag is not None :
+		descriptionProseEl.append( descTag )
 
 	# +-------+
 	#  Classes
 	# +-------+
-	sectionTag = genTag( html, "section" )
-	classesHeader = genTag( html, "h1", None, "Classes" )
-	contentsTag.append( classesHeader )
+	# sectionTag = genTag( html, "section" )
+	# classesHeader = genTag( html, "h1", None, "Classes" )
+	# contentsTag.append( classesHeader )
 
-	classesUl = genTag( html, "ul" )
-	for classDef in tree.findall( r"compounddef/innerclass" ):
-		classesUl.append( genTag( html, "li", ["row"], classDef.text ) )
-		# TODO: pull class brief descrption from class page xml
-	sectionTag.append( classesUl )
-	sectionTag.append( genTag( html, "hr" ) )
-	contentsTag.append( sectionTag );
+	# classesUl = genTag( html, "ul" )
+	# for classDef in tree.findall( r"compounddef/innerclass" ):
+	# 	classesUl.append( genTag( html, "li", ["row"], classDef.text ) )
+	# 	# TODO: pull class brief descrption from class page xml
+	# sectionTag.append( classesUl )
+	# sectionTag.append( genTag( html, "hr" ) )
+	# contentsTag.append( sectionTag );
 
 	# +----------------+
 	#  Member Functions
