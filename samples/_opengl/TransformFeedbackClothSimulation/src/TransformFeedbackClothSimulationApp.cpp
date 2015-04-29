@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/BufferTexture.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -283,4 +284,4 @@ void TransformFeedbackClothSimulationApp::loadBuffers()
 	mLineElementBuffer = gl::Vbo::create( GL_ELEMENT_ARRAY_BUFFER, lineIndices.size() * sizeof(uint32_t), lineIndices.data(), GL_STATIC_DRAW );
 }
 
-CINDER_APP( TransformFeedbackClothSimulationApp, RendererGl )
+CINDER_APP( TransformFeedbackClothSimulationApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

@@ -439,6 +439,6 @@ void TextureMipmappingApp::createUserResizedGenMip( const gl::Texture::Format &f
 	}
 }
 
-CINDER_APP( TextureMipmappingApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( TextureMipmappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), []( App::Settings *settings ) {
 	settings->setMultiTouchEnabled( false );
 } )

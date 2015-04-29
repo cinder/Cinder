@@ -85,4 +85,4 @@ void VboMeshApp::draw()
 }
 
 
-CINDER_APP( VboMeshApp, RendererGl )
+CINDER_APP( VboMeshApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

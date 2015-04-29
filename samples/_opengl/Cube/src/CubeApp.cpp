@@ -61,4 +61,4 @@ void RotatingCubeApp::draw()
 	mBatch->draw();
 }
 
-CINDER_APP( RotatingCubeApp, RendererGl )
+CINDER_APP( RotatingCubeApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

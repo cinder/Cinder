@@ -337,6 +337,6 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	gl::drawSolidRect( rect );
 }
 
-CINDER_APP( MotionBlurVelocityBufferApp, RendererGl( RendererGl::Options().msaa( 0 ) ), []( App::Settings *settings ) {
+CINDER_APP( MotionBlurVelocityBufferApp, RendererGl, []( App::Settings *settings ) {
 	settings->setWindowSize( 1280, 720 );
 } )

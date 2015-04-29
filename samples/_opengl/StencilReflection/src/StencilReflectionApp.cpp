@@ -122,6 +122,6 @@ void StencilReflectionApp::drawScene()
 }
 
 // Enabling stencil on the system framebuffer
-auto options = RendererGl::Options().stencil();
+auto options = RendererGl::Options().msaa( 16 ).stencil();
 
 CINDER_APP( StencilReflectionApp, RendererGl( options ) )
