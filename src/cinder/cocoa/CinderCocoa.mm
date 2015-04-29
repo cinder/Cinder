@@ -68,10 +68,10 @@ SafeNsString::operator std::string() const
 		return std::string( [mPtr.get() UTF8String] );
 }
 
-SafeNsData::SafeNsData( const Buffer &buffer )
+SafeNsData::SafeNsData( const BufferRef &buffer )
 	: mBuffer( buffer )
 {
-	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer.getData() ) length:buffer.getSize() freeWhenDone:NO], safeRelease );
+	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer->getData() ) length:buffer->getSize() freeWhenDone:NO], safeRelease );
 	if( mPtr.get() )
 		[mPtr.get() retain];
 }
