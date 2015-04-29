@@ -321,7 +321,7 @@ GlslProg::GlslProg( const Format &format )
 	}
 #endif
 
-#if ! defined( CINDER_GL_ES_2 )
+#if ! defined( CINDER_GL_ES )
 	// setup fragment data locations
 	for( const auto &fragDataLocation : format.getFragDataLocations() )
 		glBindFragDataLocation( mHandle, fragDataLocation.second, fragDataLocation.first.c_str() );
