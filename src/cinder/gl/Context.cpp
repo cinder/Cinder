@@ -106,12 +106,21 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// initial state for depth mask is enabled
 	mBoolStateStack[GL_DEPTH_WRITEMASK] = vector<GLboolean>();
 	mBoolStateStack[GL_DEPTH_WRITEMASK].push_back( GL_TRUE );
+	
+	// initial state for depth test is disabled
+	mBoolStateStack[GL_DEPTH_TEST] = vector<GLboolean>();
+	mBoolStateStack[GL_DEPTH_TEST].push_back( GL_FALSE );
+	
+	// push default depth function
+	pushDepthFunc();
+	
 	mActiveTextureStack.push_back( 0 );
 
 #if ! defined( CINDER_GL_ES )
 	// initial state for polygonMode is GL_FILL
 	mPolygonModeStack.push_back( GL_FILL );
 #endif
+	
 
 	mImmediateMode = gl::VertBatch::create();
 	
