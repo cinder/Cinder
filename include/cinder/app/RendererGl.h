@@ -64,11 +64,9 @@ class RendererGl : public Renderer {
 	  public:
 		Options() {
 #if defined( CINDER_COCOA_TOUCH )
-			mMsaaSamples = 0;
 			mCoreProfile = false;
 			mVersion = std::pair<int,int>( 2, 0 );
 #else
-			mMsaaSamples = 16;
 			mCoreProfile = true;
 			mVersion = std::pair<int,int>( 3, 2 );	
 #endif
@@ -77,6 +75,7 @@ class RendererGl : public Renderer {
 			mDebugLogSeverity = 0;
 			mDebugBreakSeverity = 0;
 #endif
+			mMsaaSamples = 0;
 			mObjectTracking = false;
 			mStencil = false;
 			mDepthBufferBits = 24;
