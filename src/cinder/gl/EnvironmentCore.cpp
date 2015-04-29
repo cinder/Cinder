@@ -77,7 +77,7 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName )
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
 
 		for( loop = 0; loop < numExtensions; loop++) {
-			std::string s = (const char *)glGetStringi(GL_EXTENSIONS, loop );
+			std::string s = (const char *)glGetStringi( GL_EXTENSIONS, loop );
 			std::transform( s.begin(), s.end(), s.begin(), static_cast<int(*)(int)>( tolower ) );
 			sExtensions.insert( s );
 		}
@@ -262,7 +262,7 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 
 	if( shader.mTextureMapping ) {
 		s +=	" * texture( uTex0, TexCoord.st )";
-		if( !Texture::supportsHardwareSwizzle() && !shader.isTextureSwizzleDefault() )
+		if( ! Texture::supportsHardwareSwizzle() && ! shader.isTextureSwizzleDefault() )
 			s += "." + shader.getTextureSwizzleString();
 	}
 
