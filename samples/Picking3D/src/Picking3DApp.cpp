@@ -18,8 +18,9 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
 #include "Resources.h"
@@ -69,11 +70,8 @@ class Picking3DApp : public App {
 	void setup() override;
 	void update() override;
 	void draw() override;
-	
 	void mouseMove( MouseEvent event ) override;
-	void mouseDown( MouseEvent event ) override;
-	void mouseDrag( MouseEvent event ) override;
-	void resize() override;
+	
   protected:
 	void drawGrid( float size=100.0f, float step=10.0f );
 	bool performPicking( vec3 *pickedPoint, vec3 *pickedNormal );
@@ -84,7 +82,8 @@ class Picking3DApp : public App {
 	TriMeshRef			mMesh;			// the model of a rubber duckys
 	AxisAlignedBox3f	mObjectBounds; 	// the object space bounding box of the mesh
 	mat4				mTransform;		// transformations (translate, rotate, scale) of the model
-	MayaCamUI			mMayaCam;		// our camera
+	CameraPersp			mCamera;
+	CameraUi			mCamUi;
 	ivec2				mMousePos;		// keep track of the mouse
 	double				mTime;			// keep track of time
 
@@ -113,11 +112,9 @@ void Picking3DApp::setup()
 	mObjectBounds = mMesh->calcBoundingBox();
 
 	// set up the camera
-	CameraPersp cam;
-	cam.setEyePoint( vec3( 5.0f, 10.0f, 10.0f ) );
-	cam.setCenterOfInterestPoint( vec3( 0.0f, 2.5f, 0.0f ) );
-	cam.setPerspective( 60.0f, getWindowAspectRatio(), 1.0f, 1000.0f );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.lookAt( vec3( 5.0f, 10.0f, 10.0f ), vec3( 0.0f, 2.5f, 0.0f ) );
+	mCamera.setPerspective( 60.0f, getWindowAspectRatio(), 1.0f, 1000.0f );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 	
 	// enable the depth buffer (after all, we are doing 3D)
 	gl::enableDepthRead();
@@ -153,7 +150,7 @@ void Picking3DApp::draw()
 
 	// set up the camera 
 	gl::ScopedMatrices push;
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCamera );
 
 	// draw the grid on the floor
 	drawGrid();
@@ -206,15 +203,12 @@ void Picking3DApp::drawGrid(float size, float step)
 
 bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 {
-	// get our camera 
-	CameraPersp cam = mMayaCam.getCamera();
-
 	// generate a ray from the camera into our world
 	float u = mMousePos.x / (float) getWindowWidth();
 	float v = mMousePos.y / (float) getWindowHeight();
 	// because OpenGL and Cinder use a coordinate system
 	// where (0, 0) is in the LOWERleft corner, we have to flip the v-coordinate
-	Ray ray = cam.generateRay(u , 1.0f - v, cam.getAspectRatio() );
+	Ray ray = mCamera.generateRay(u , 1.0f - v, mCamera.getAspectRatio() );
 
 	// draw the object space bounding box in yellow
 	gl::color( Color( 1, 1, 0 ) );
@@ -285,29 +279,5 @@ void Picking3DApp::mouseMove( MouseEvent event )
 	// keep track of the mouse
 	mMousePos = event.getPos();
 }
-
-void Picking3DApp::mouseDown( MouseEvent event )
-{	
-	// let the camera handle the interaction
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void Picking3DApp::mouseDrag( MouseEvent event )
-{
-	// keep track of the mouse
-	mMousePos = event.getPos();
-
-	// let the camera handle the interaction
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-}
-
-void Picking3DApp::resize()
-{
-	// adjust aspect ratio
-	CameraPersp cam = mMayaCam.getCamera();
-	cam.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( cam );
-}
-
 
 CINDER_APP( Picking3DApp, ci::app::RendererGl )

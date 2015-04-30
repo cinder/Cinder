@@ -474,6 +474,7 @@
     <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\Camera.cpp" />
+    <ClCompile Include="..\src\cinder\CameraUi.cpp" />
     <ClCompile Include="..\src\cinder\Capture.cpp" />
     <ClCompile Include="..\src\cinder\CaptureImplDirectShow.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />
@@ -707,6 +708,7 @@
     <ClInclude Include="..\include\cinder\audio\WaveTable.h" />
     <ClInclude Include="..\include\cinder\Base64.h" />
     <ClInclude Include="..\include\cinder\Breakpoint.h" />
+    <ClInclude Include="..\include\cinder\CameraUi.h" />
     <ClInclude Include="..\include\cinder\CaptureImplDirectShow.h" />
     <ClInclude Include="..\include\cinder\CinderAssert.h" />
     <ClInclude Include="..\include\cinder\CinderGlm.h" />
@@ -826,7 +828,6 @@
     <ClInclude Include="..\include\cinder\ImageTargetFileWic.h" />
     <ClInclude Include="..\include\cinder\KdTree.h" />
     <ClInclude Include="..\include\cinder\Matrix.h" />
-    <ClInclude Include="..\include\cinder\MayaCamUI.h" />
     <ClInclude Include="..\include\cinder\ObjLoader.h" />
     <ClInclude Include="..\include\cinder\Path2D.h" />
     <ClInclude Include="..\include\cinder\Perlin.h" />

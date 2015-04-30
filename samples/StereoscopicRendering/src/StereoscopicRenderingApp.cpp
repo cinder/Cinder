@@ -49,7 +49,7 @@
 #include "cinder/Camera.h"
 #include "cinder/Font.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/Rand.h"
 #include "cinder/TriMesh.h"
@@ -65,22 +65,19 @@ using namespace std;
 
 class StereoscopicRenderingApp : public App {
 public:
-	typedef enum { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS } FocusMethod;
-	typedef enum { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL } RenderMethod;
+	enum FocusMethod { SET_CONVERGENCE, SET_FOCUS, AUTO_FOCUS };
+	enum RenderMethod { MONO, ANAGLYPH_RED_CYAN, SIDE_BY_SIDE, OVER_UNDER, INTERLACED_HORIZONTAL };
 
 	typedef struct InstanceData {
 		vec3 position;
 		vec3 color;
-	};
+	} InstanceData;
 public:
 	void prepareSettings( Settings *settings );
 
 	void setup();
 	void update();
 	void draw();
-
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
 
 	void keyDown( KeyEvent event );
 
@@ -103,7 +100,7 @@ private:
 	FocusMethod				mFocusMethod;
 	RenderMethod			mRenderMethod;
 
-	MayaCamUI				mMayaCam;
+	CameraUi				mCamUi;
 	CameraStereo			mCamera;
 
 	StereoAutoFocuser		mAF;
@@ -151,11 +148,10 @@ void StereoscopicRenderingApp::setup()
 	mDrawAutoFocus = false;
 
 	// Setup the camera. This is very similar to a standard perspective camera.
-	mCamera.setEyePoint( vec3( 0.2f, 1.3f, -11.5f ) );
-	mCamera.setCenterOfInterestPoint( vec3( 0.5f, 1.5f, -0.1f ) );
+	mCamera.lookAt( vec3( 0.2f, 1.3f, -11.5f ), vec3( 0.5f, 1.5f, -0.1f ) );
 	mCamera.setFov( 60.0f );
 
-	mMayaCam.setCurrentCam( mCamera );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 
 	try {
 		// Load shaders.
@@ -235,7 +231,7 @@ void StereoscopicRenderingApp::update()
 	switch( mFocusMethod ) {
 	case SET_CONVERGENCE:
 		// Auto-focus by calculating distance to center of interest.
-		d = glm::distance( mCamera.getCenterOfInterestPoint(), mCamera.getEyePoint() );
+		d = glm::distance( mCamera.getPivotPoint(), mCamera.getEyePoint() );
 		f = math<float>::min( 5.0f, d * 0.5f );
 
 		// The setConvergence() method will not change the eye separation distance, 
@@ -245,7 +241,7 @@ void StereoscopicRenderingApp::update()
 		break;
 	case SET_FOCUS:
 		// Auto-focus by calculating distance to center of interest.
-		d = glm::distance( mCamera.getCenterOfInterestPoint(), mCamera.getEyePoint() );
+		d = glm::distance( mCamera.getPivotPoint(), mCamera.getEyePoint() );
 		f = math<float>::min( 5.0f, d * 0.5f );
 
 		// The setConvergence( value, true ) method will automatically calculate a fitting value for the eye separation distance.
@@ -261,24 +257,24 @@ void StereoscopicRenderingApp::update()
 		// to optimally detect details. This is not required, however.
 		// Use the UP and DOWN keys to adjust the intensity of the parallax effect.
 		switch( mRenderMethod ) {
-		case MONO:
-			break;
-		case SIDE_BY_SIDE:
-			// Sample half the left eye, half the right eye.
-			area = Area( gl::getViewport().first, gl::getViewport().first + gl::getViewport().second );
-			area.expand( -area.getWidth() / 4, 0 );
-			mAF.autoFocus( &mCamera, area );
-			break;
-		case OVER_UNDER:
-			// Sample half the left eye, half the right eye.
-			area = Area( gl::getViewport().first, gl::getViewport().first + gl::getViewport().second );
-			area.expand( 0, -area.getHeight() / 4 );
-			mAF.autoFocus( &mCamera, area );
-			break;
-		case ANAGLYPH_RED_CYAN:
-			// Sample the depth buffer of one of the FBO's.
-			mAF.autoFocus( &mCamera, mFbo );
-			break;
+			case MONO:
+				break;
+			case SIDE_BY_SIDE:
+				// Sample half the left eye, half the right eye.
+				area = Area( gl::getViewport().first, gl::getViewport().first + gl::getViewport().second );
+				area.expand( -area.getWidth() / 4, 0 );
+				mAF.autoFocus( &mCamera, area );
+				break;
+			case OVER_UNDER:
+				// Sample half the left eye, half the right eye.
+				area = Area( gl::getViewport().first, gl::getViewport().first + gl::getViewport().second );
+				area.expand( 0, -area.getHeight() / 4 );
+				mAF.autoFocus( &mCamera, area );
+				break;
+			case ANAGLYPH_RED_CYAN:
+				// Sample the depth buffer of one of the FBO's.
+				mAF.autoFocus( &mCamera, mFbo );
+				break;
 		}
 		break;
 	}
@@ -313,22 +309,6 @@ void StereoscopicRenderingApp::draw()
 
 	// draw auto focus visualizer
 	if( mDrawAutoFocus ) mAF.draw();
-}
-
-void StereoscopicRenderingApp::mouseDown( MouseEvent event )
-{
-	// Handle user interaction.
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void StereoscopicRenderingApp::mouseDrag( MouseEvent event )
-{
-	// Handle user interaction.
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-
-	// Update stereoscopic camera.
-	mCamera.setEyePoint( mMayaCam.getCamera().getEyePoint() );
-	mCamera.setCenterOfInterestPoint( mMayaCam.getCamera().getCenterOfInterestPoint() );
 }
 
 void StereoscopicRenderingApp::keyDown( KeyEvent event )
@@ -409,11 +389,6 @@ void StereoscopicRenderingApp::keyDown( KeyEvent event )
 
 void StereoscopicRenderingApp::resize()
 {
-	// Make sure the camera's aspect ratio remains correct.
-	mCamera.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( mCamera );
-
-	// Create/resize the Frame Buffer Object required for some of the render methods.
 	createFbo();
 }
 

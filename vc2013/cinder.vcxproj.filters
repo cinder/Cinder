@@ -786,6 +786,9 @@
     <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
       <Filter>Source Files\ip</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\CameraUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -903,9 +906,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\MayaCamUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\ObjLoader.h">
@@ -1648,6 +1648,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Checkerboard.h">
       <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CameraUi.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

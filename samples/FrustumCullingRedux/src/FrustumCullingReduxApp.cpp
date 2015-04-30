@@ -25,7 +25,7 @@
 
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/Frustum.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
@@ -55,9 +55,6 @@ public:
 
 	void toggleCullableFov();
 	void drawCullableFov();
-
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
 
 	void keyDown( KeyEvent event );
 
@@ -95,7 +92,7 @@ protected:
 	std::vector<CullableObjectRef>  mObjects;
 
 	// camera
-	MayaCamUI                       mMayaCam;
+	CameraUi						mCamUi;
 	CameraPersp                     mRenderCam;
 
 	// help text
@@ -155,8 +152,7 @@ void FrustumCullingReduxApp::setup()
 
 	mRenderCam.setPerspective( 60.0f, getWindowAspectRatio(), 10, 10000 );
 	mRenderCam.lookAt( vec3( 200 ), vec3( 0 ) );
-
-	mMayaCam.setCurrentCam( mRenderCam );
+	mCamUi = CameraUi( &mRenderCam, getWindow() );
 
 	// Track current time so we can calculate elapsed time.
 	mCurrentSeconds = getElapsedSeconds();
@@ -308,20 +304,6 @@ void FrustumCullingReduxApp::draw()
 		gl::draw( mHelp );
 		gl::disableAlphaBlending();
 	}
-}
-
-void FrustumCullingReduxApp::mouseDown( MouseEvent event )
-{
-	// Handle user interaction.
-	mMayaCam.setCurrentCam( mRenderCam );
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void FrustumCullingReduxApp::mouseDrag( MouseEvent event )
-{
-	// Handle user interaction.
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-	mRenderCam = mMayaCam.getCamera();
 }
 
 void FrustumCullingReduxApp::keyDown( KeyEvent event )

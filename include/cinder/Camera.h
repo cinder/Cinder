@@ -34,52 +34,70 @@ namespace cinder {
 
 class Sphere;
 
-// By default the camera is looking down -Z
 class Camera {
   public:
-	Camera() : mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ) {}
 	virtual ~Camera() {}
 
+	//! Returns the position in world-space from which the Camera is viewing
 	vec3		getEyePoint() const { return mEyePoint; }
-	void		setEyePoint( const vec3 &aEyePoint );
-	
-	float		getCenterOfInterest() const { return mCenterOfInterest; }
-	void		setCenterOfInterest( float aCenterOfInterest ) { mCenterOfInterest = aCenterOfInterest; }
-	
-	vec3		getCenterOfInterestPoint() const { return mEyePoint + mViewDirection * mCenterOfInterest; }
-	void		setCenterOfInterestPoint( const vec3 &centerOfInterestPoint );
-		
+	//! Sets the position in world-space from which the Camera is viewing
+	void		setEyePoint( const vec3 &eyePoint );
+
+	//! Returns the vector in world-space which represents "up" - typically vec3( 0, 1, 0 ) 
 	vec3		getWorldUp() const { return mWorldUp; }
-	void		setWorldUp( const vec3 &aWorldUp );
+	//! Sets the vector in world-space which represents "up" - typically vec3( 0, 1, 0 )
+	void		setWorldUp( const vec3 &worldUp );
 
+	//! Modifies the view direction to look from the current eyePoint to \a target. Also updates the pivot distance.
 	void		lookAt( const vec3 &target );
-	void		lookAt( const vec3 &aEyePoint, const vec3 &target );
-	void		lookAt( const vec3 &aEyePoint, const vec3 &target, const vec3 &aUp );
+	//! Modifies the eyePoint and view direction to look from \a eyePoint to \a target. Also updates the pivot distance.
+	void		lookAt( const vec3 &eyePoint, const vec3 &target );
+	//! Modifies the eyePoint and view direction to look from \a eyePoint to \a target with up vector \a up (to achieve camera roll). Also updates the pivot distance.
+	void		lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &up );
+	//! Returns the world-space vector along which the camera is oriented
 	vec3		getViewDirection() const { return mViewDirection; }
-	void		setViewDirection( const vec3 &aViewDirection );
+	//! Sets the world-space vector along which the camera is oriented
+	void		setViewDirection( const vec3 &viewDirection );
 
+	//! Returns the world-space quaternion that expresses the camera's orientation
 	quat		getOrientation() const { return mOrientation; }
-	void		setOrientation( const quat &aOrientation );
+	//! Sets the camera's orientation with world-space quaternion \a orientation
+	void		setOrientation( const quat &orientation );
 
 	//! Returns the camera's vertical field of view measured in degrees.
 	float	getFov() const { return mFov; }
 	//! Sets the camera's vertical field of view measured in degrees.
-	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	void	setFov( float verticalFov ) { mFov = verticalFov;  mProjectionCached = false; }
 	//! Returns the camera's horizontal field of view measured in degrees.
 	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
 	//! Sets the camera's horizontal field of view measured in degrees.
-	void	setFovHorizontal( float verticalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(verticalFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+	void	setFovHorizontal( float horizontalFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians( horizontalFov ) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
 	//! Returns the camera's focal length, calculating it based on the field of view.
 	float	getFocalLength() const;
 
-	float	getAspectRatio() const { return mAspectRatio; }
-	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
-	float	getNearClip() const { return mNearClip; }
-	void	setNearClip( float aNearClip ) { mNearClip = aNearClip; mProjectionCached = false; }
-	float	getFarClip() const { return mFarClip; }
-	void	setFarClip( float aFarClip ) { mFarClip = aFarClip; mProjectionCached = false; }
+	//! Primarily for user interaction, such as with CameraUi. Returns the distance from the camera along the view direction relative to which tumbling and dollying occur.
+	float	getPivotDistance() const { return mPivotDistance; }
+	//! Primarily for user interaction, such as with CameraUi. Sets the distance from the camera along the view direction relative to which tumbling and dollying occur.
+	void	setPivotDistance( float distance ) { mPivotDistance = distance; }
+	//! Primarily for user interaction, such as with CameraUi. Returns the world-space point relative to which tumbling and dollying occur.
+	vec3	getPivotPoint() const { return mEyePoint + mViewDirection * mPivotDistance; }
 
+	//! Returns the aspect ratio of the image plane - its width divided by its height
+	float	getAspectRatio() const { return mAspectRatio; }
+	//! Sets the aspect ratio of the image plane - its width divided by its height
+	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
+	//! Returns the distance along the view direction to the Near clipping plane.
+	float	getNearClip() const { return mNearClip; }
+	//! Sets the distance along the view direction to the Near clipping plane.
+	void	setNearClip( float nearClip ) { mNearClip = nearClip; mProjectionCached = false; }
+	//! Returns the distance along the view direction to the Far clipping plane.
+	float	getFarClip() const { return mFarClip; }
+	//! Sets the distance along the view direction to the Far clipping plane.
+	void	setFarClip( float farClip ) { mFarClip = farClip; mProjectionCached = false; }
+
+	//! Returns the four corners of the Camera's Near clipping plane, expressed in world-space
 	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
+	//! Returns the four corners of the Camera's Far clipping plane, expressed in world-space
 	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
 
 	//! Returns the coordinates of the camera's frustum, suitable for passing to \c glFrustum
@@ -87,25 +105,42 @@ class Camera {
 	//! Returns whether the camera represents a perspective projection instead of an orthographic
 	virtual bool isPersp() const = 0;
 	
+	//! Returns the Camera's Projection matrix, which converts view-space into clip-space
 	virtual const mat4&	getProjectionMatrix() const { if( ! mProjectionCached ) calcProjection(); return mProjectionMatrix; }
+	//! Returns the Camera's View matrix, which converts world-space into view-space
 	virtual const mat4&	getViewMatrix() const { if( ! mModelViewCached ) calcViewMatrix(); return mViewMatrix; }
+	//! Returns the Camera's Inverse View matrix, which converts view-space into world-space
 	virtual const mat4&	getInverseViewMatrix() const { if( ! mInverseModelViewCached ) calcInverseView(); return mInverseModelViewMatrix; }
 
+	//! Returns a Ray that passes through the image plane coordinates (\a u, \a v) (expressed in the range [0,1]) on an image plane of aspect ratio \a imagePlaneAspectRatio
 	Ray		generateRay( float u, float v, float imagePlaneAspectRatio ) const;
+	//! Returns a Ray that passes through the pixels coordinates \a posPixels on an image of size \a imageSizePixels
+	Ray		generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const;
+	//! Returns the \a right and \a up vectors suitable for billboarding relative to the Camera
 	void	getBillboardVectors( vec3 *right, vec3 *up ) const;
 
-	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based ona s screen which is \a screenWidth x \a screenHeight pixels.
- 	vec2 worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const;
+	//! Converts a world-space coordinate \a worldCoord to screen coordinates as viewed by the camera, based on a screen which is \a screenWidth x \a screenHeight pixels.
+	vec2 worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const;
+	//! Converts a eye-space coordinate \a eyeCoord to screen coordinates as viewed by the camera
+	vec2 eyeToScreen( const vec3 &eyeCoord, const vec2 &screenSizePixels ) const;
 	//! Converts a world-space coordinate \a worldCoord to eye-space, also known as camera-space. -Z is along the view direction.
- 	vec3 worldToEye( const vec3 &worldCoord )	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
- 	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
- 	float worldToEyeDepth( const vec3 &worldCoord ) const;
- 	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
- 	vec3 worldToNdc( const vec3 &worldCoord );
+	vec3 worldToEye( const vec3 &worldCoord ) const	{ return vec3( getViewMatrix() * vec4( worldCoord, 1 ) ); }
+	//! Converts a world-space coordinate \a worldCoord to the z axis of eye-space, also known as camera-space. -Z is along the view direction. Suitable for depth sorting.
+	float worldToEyeDepth( const vec3 &worldCoord ) const;
+	//! Converts a world-space coordinate \a worldCoord to normalized device coordinates
+	vec3 worldToNdc( const vec3 &worldCoord ) const;
 
+	//! Calculates the area of the screen-space elliptical projection of \a sphere
 	float	calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const;
+	//! Calculates the screen-space elliptical projection of \a sphere, putting the results in \a outCenter, \a outAxisA and \a outAxisB
+	void	calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
 
   protected:
+	Camera()
+		: mModelViewCached( false ), mProjectionCached( false ), mInverseModelViewCached( false ), mWorldUp( vec3( 0, 1, 0 ) ),
+			mPivotDistance( 0 )
+	{}
+
 	void			calcMatrices() const;
 
 	virtual void	calcViewMatrix() const;
@@ -115,13 +150,13 @@ class Camera {
 	vec3	mEyePoint;
 	vec3	mViewDirection;
 	quat	mOrientation;
-	float	mCenterOfInterest;
 	vec3	mWorldUp;
 
 	float	mFov; // vertical field of view in degrees
 	float	mAspectRatio;
 	float	mNearClip;		
 	float	mFarClip;
+	float	mPivotDistance;
 
 	mutable vec3	mU;	// Right vector
 	mutable vec3	mV;	// Readjust up-vector
@@ -139,9 +174,12 @@ class Camera {
 
 class CameraPersp : public Camera {
   public:
+	//! Creates a default camera with eyePoint at ( 28, 21, 28 ), looking at the origin, 35deg vertical field-of-view and a 1.333 aspect ratio.
 	CameraPersp();
-	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
-	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
+	//! Constructs screen-aligned camera
+	CameraPersp( int pixelWidth, int pixelHeight, float fov );
+	//! Constructs screen-aligned camera
+	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane );
 	
 	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
@@ -174,7 +212,7 @@ class CameraPersp : public Camera {
 	
 	virtual bool	isPersp() const { return true; }
 
-	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation).
+	//! Returns a Camera whose eyePoint is positioned to exactly frame \a worldSpaceSphere but is equivalent in other parameters (including orientation). Sets the result's pivotDistance to be the distance to \a worldSpaceSphere's center.
 	CameraPersp		calcFraming( const Sphere &worldSpaceSphere ) const;
 
   protected:
@@ -199,23 +237,19 @@ class CameraOrtho : public Camera {
 class CameraStereo : public CameraPersp {
   public:
 	CameraStereo() 
-		: mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {}
+		: mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {}
 	CameraStereo( int pixelWidth, int pixelHeight, float fov )
 		: CameraPersp( pixelWidth, pixelHeight, fov ), 
-		mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
+		mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {} // constructs screen-aligned camera
 	CameraStereo( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane )
 		: CameraPersp( pixelWidth, pixelHeight, fov, nearPlane, farPlane ), 
-		mConvergence(1.0f), mEyeSeparation(0.05f), mIsStereo(false), mIsLeft(true) {} // constructs screen-aligned camera
+		mConvergence( 1.0f ), mEyeSeparation( 0.05f ), mIsStereo( false ), mIsLeft( true ) {} // constructs screen-aligned camera
 
 	//! Returns the current convergence, which is the distance at which there is no parallax.
 	float			getConvergence() const { return mConvergence; }
 	//! Sets the convergence of the camera, which is the distance at which there is no parallax.
-	void			setConvergence( float distance, bool adjustEyeSeparation=false ) { 
-		mConvergence = distance; mProjectionCached = false;
-
-		if( adjustEyeSeparation )
-			mEyeSeparation = mConvergence / 30.0f;
-	}
+	void			setConvergence( float distance, bool adjustEyeSeparation = false );
+	
 	//! Returns the distance between the camera's for the left and right eyes.
 	float			getEyeSeparation() const { return mEyeSeparation; }
 	//! Sets the distance between the camera's for the left and right eyes. This affects the parallax effect. 
@@ -225,20 +259,23 @@ class CameraStereo : public CameraPersp {
 	
 	//! Enables the left eye camera.
 	void			enableStereoLeft() { mIsStereo = true; mIsLeft = true; }
+	//! Returns whether the left eye camera is enabled.
 	bool			isStereoLeftEnabled() const { return mIsStereo && mIsLeft; }
 	//! Enables the right eye camera.
 	void			enableStereoRight() { mIsStereo = true; mIsLeft = false; }
-	bool			isStereoRightEnabled() const { return mIsStereo && !mIsLeft; }
+	//! Returns whether the right eye camera is enabled.
+	bool			isStereoRightEnabled() const { return mIsStereo && ! mIsLeft; }
 	//! Disables stereoscopic rendering, converting the camera to a standard CameraPersp.
 	void			disableStereo() { mIsStereo = false; }
+	//! Returns whether stereoscopic rendering is enabled.
 	bool			isStereoEnabled() const { return mIsStereo; }
 
-	virtual void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
-	virtual void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const;
+	void	getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override;
+	void	getFarClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const override;
 	
-	virtual const mat4&	getProjectionMatrix() const override;
-	virtual const mat4&	getViewMatrix() const override;
-	virtual const mat4&	getInverseViewMatrix() const override;
+	const mat4&	getProjectionMatrix() const override;
+	const mat4&	getViewMatrix() const override;
+	const mat4&	getInverseViewMatrix() const override;
 
   protected:
 	mutable mat4	mProjectionMatrixLeft, mInverseProjectionMatrixLeft;

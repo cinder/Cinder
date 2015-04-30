@@ -351,6 +351,7 @@
     <ClInclude Include="..\include\cinder\BSplineFit.h" />
     <ClInclude Include="..\include\cinder\Buffer.h" />
     <ClInclude Include="..\include\cinder\Camera.h" />
+    <ClInclude Include="..\include\cinder\CameraUi.h" />
     <ClInclude Include="..\include\cinder\Channel.h" />
     <ClInclude Include="..\include\cinder\Cinder.h" />
     <ClInclude Include="..\include\cinder\CinderAssert.h" />
@@ -706,6 +707,7 @@
     <ClCompile Include="..\src\cinder\BSplineFit.cpp" />
     <ClCompile Include="..\src\cinder\Buffer.cpp" />
     <ClCompile Include="..\src\cinder\Camera.cpp" />
+    <ClCompile Include="..\src\cinder\CameraUi.cpp" />
     <ClCompile Include="..\src\cinder\Channel.cpp" />
     <ClCompile Include="..\src\cinder\CinderAssert.cpp" />
     <ClCompile Include="..\src\cinder\CinderMath.cpp" />

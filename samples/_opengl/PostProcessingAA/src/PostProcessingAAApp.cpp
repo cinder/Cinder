@@ -141,8 +141,7 @@ void PostProcessingAAApp::update()
 	float y = 150.0f * math<float>::sin( theta );
 	float z = 150.0f * math<float>::sin( phi ) * math<float>::cos( theta );
 
-	mCamera.setEyePoint( vec3( x, y, z ) );
-	mCamera.setCenterOfInterestPoint( vec3( 1, 50, 0 ) );
+	mCamera.lookAt( vec3( x, y, z ), vec3( 1, 50, 0 ) );
 	mCamera.setFov( 40.0f );
 
 	// Update the pistons.

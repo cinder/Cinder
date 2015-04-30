@@ -30,6 +30,7 @@
 #include "cinder/Triangulate.h"
 #include "cinder/BSpline.h"
 #include "cinder/Matrix.h"
+#include "cinder/Sphere.h"
 #include <algorithm>
 
 using namespace std;
@@ -1377,6 +1378,11 @@ void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 
 Sphere::Sphere()
 	: mSubdivisions( 18 ), mCenter( 0, 0, 0 ), mRadius( 1.0f ), mHasColors( false )
+{
+}
+
+Sphere::Sphere( const ci::Sphere &sphere )
+	: mSubdivisions( 18 ), mCenter( sphere.getCenter() ), mRadius( sphere.getRadius() ), mHasColors( false )
 {
 }
 

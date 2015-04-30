@@ -43,6 +43,7 @@ namespace cinder {
 	class TriMesh;
 	template<int D, typename T>
 	class BSpline;
+	class Sphere;
 }
 
 namespace cinder { namespace geom {
@@ -378,6 +379,7 @@ class Circle : public Source {
 class Sphere : public Source {
   public:
 	Sphere();
+	Sphere( const ci::Sphere &sphere );
 
 	Sphere&		colors( bool enable = true ) { mHasColors = enable; return *this; }
 	Sphere&		center( const vec3 &center ) { mCenter = center; return *this; }
