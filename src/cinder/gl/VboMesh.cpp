@@ -470,8 +470,8 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 			* are enumerated, including the special built-in inputs gl_VertexID
 			* and gl_InstanceID."
 			*/
-		   ( glslAttribName == "gl_InstanceID" || glslAttribName == "gl_VertexID") )
-			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << " but vertex data doesn't provide it." );
+		   ( glslAttribName != "gl_InstanceID" || glslAttribName != "gl_VertexID") )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << ", with name " << glslAttribName << " but vertex data doesn't provide it." );
 	}
 	
 	if( mIndices )
