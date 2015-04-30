@@ -75,7 +75,9 @@ struct ScopedColor : private Noncopyable {
 	ColorAf		mColor;
 };
 
+//! Controls the current blend mode for the current scope.
 struct ScopedBlend : private Noncopyable {
+	//! Enables or disables blending (`GL_BLEND`) state.
 	ScopedBlend( GLboolean enable );
 	//! Parallels glBlendFunc(), and implicitly enables blending
 	ScopedBlend( GLenum sfactor, GLenum dfactor );
@@ -88,15 +90,24 @@ struct ScopedBlend : private Noncopyable {
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
 };
 
-struct ScopedAlphaBlend : private ScopedBlend {
-	ScopedAlphaBlend( bool premultipliedAlpha )
-		: ScopedBlend( premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
+//! Enables blending state for the current scope and sets the blending function for standard alpha blending (`sfactor = GL_SRC_ALPHA, dfactor = GL_ONE_MINUS_SRC_ALPHA`).
+struct ScopedBlendAlpha : private ScopedBlend {
+	ScopedBlendAlpha()
+		: ScopedBlend( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
 	{}
 };
 
-struct ScopedAdditiveBlend : public ScopedBlend
+//! Enables blending state for the current scope and sets the blending function for premultiplied alpha blending (`sfactor = GL_ONE, dfactor = GL_ONE_MINUS_SRC_ALPHA`).
+struct ScopedBlendPremult : private ScopedBlend {
+	ScopedBlendPremult()
+		: ScopedBlend( GL_ONE, GL_ONE_MINUS_SRC_ALPHA )
+	{}
+};
+
+//! Enables blending state for the current scope and sets the blending function additive blending (`sfactor = GL_SRC_ALPHA, dfactor = GL_ONE`).
+struct ScopedBlendAdditive : public ScopedBlend
 {
-	ScopedAdditiveBlend()
+	ScopedBlendAdditive()
 		: ScopedBlend( GL_SRC_ALPHA, GL_ONE )
 	{}
 };
