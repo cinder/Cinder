@@ -1,13 +1,14 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -177,8 +178,10 @@ static BOOL sDevicesEnumerated = false;
 
 	// Specify the pixel format
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+#if ! defined( CINDER_COCOA_TOUCH )
 								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
 								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
+#endif
 								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA], (id)kCVPixelBufferPixelFormatTypeKey,
 								nil];
 	output.videoSettings = options;
