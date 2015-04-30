@@ -83,12 +83,10 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 
 string loadString( DataSourceRef dataSource )
 {
-	Buffer loadedBuffer( dataSource );
-	size_t dataSize = loadedBuffer.getDataSize();
-	Buffer padded( dataSize + 1 );
-	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
-	(static_cast<uint8_t*>( padded.getData() ))[dataSize] = 0;
-	return string( static_cast<const char*>( padded.getData() ) );
+	Buffer buffer( dataSource );
+	const char *data = static_cast<const char *>( buffer.getData() );
+
+	return string( data, data + buffer.getDataSize() );
 }
 
 void sleep( float milliseconds )

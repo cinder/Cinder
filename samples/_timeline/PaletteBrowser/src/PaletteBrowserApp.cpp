@@ -6,6 +6,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/Url.h"
@@ -26,15 +27,15 @@ using namespace std;
 
 class PaletteBrowserApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
+	void setup() override;
+	void mouseMove( MouseEvent event ) override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
+
 	void initData( const fs::path &path );
 	void createItem( const std::string &line, int lineNumber );
-	void mouseMove( MouseEvent event );
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
-	
+
 	vector<Item>			mItems;
 	vector<Item>::iterator	mMouseOverItem;
 	vector<Item>::iterator	mNewMouseOverItem;
@@ -54,12 +55,6 @@ class PaletteBrowserApp : public App {
 	Anim<float> mFgAlpha;
 	Anim<Color> mBgColor;
 };
-
-void PaletteBrowserApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( APP_WIDTH, APP_HEIGHT );
-}
-
 
 void PaletteBrowserApp::setup()
 {
@@ -229,4 +224,6 @@ void PaletteBrowserApp::draw()
 }
 
 
-CINDER_APP( PaletteBrowserApp, RendererGl )
+CINDER_APP( PaletteBrowserApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( APP_WIDTH, APP_HEIGHT );
+} )
