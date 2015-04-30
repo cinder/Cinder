@@ -38,6 +38,12 @@ Frustum<T>::Frustum( const Camera &cam )
 	// set planes using camera
 	set( cam );
 }
+	
+template<typename T>
+Frustum<T>::Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
+{
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
+}
 
 template<typename T>
 void Frustum<T>::set( const Camera &cam )
@@ -47,13 +53,8 @@ void Frustum<T>::set( const Camera &cam )
 
 	vec3 ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
-
-	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
-	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
-	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
-	mFrustumPlanes[RIGHT].set( nbr, ntr, fbr );
-	mFrustumPlanes[NEAR].set( ntl, ntr, nbr );
-	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
+	
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
 }
 
 template<typename T>
@@ -66,7 +67,13 @@ void Frustum<T>::set( const Camera &cam, const Vec3T &ntl, const Vec3T &ntr, con
 	Vec3T ftr = normalize( ntr - eye ) * farClip;
 	Vec3T fbl = normalize( nbl - eye ) * farClip;
 	Vec3T fbr = normalize( nbr - eye ) * farClip;
-
+	
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
+}
+	
+template<typename T>
+void Frustum<T>::set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
+{
 	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
 	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
 	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
