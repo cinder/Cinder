@@ -492,7 +492,7 @@
     <ClCompile Include="..\src\cinder\gl\Batch.cpp" />
     <ClCompile Include="..\src\cinder\gl\BufferObj.cpp" />
     <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp" />
-    <ClCompile Include="..\src\cinder\gl\ConstantStrings.cpp" />
+    <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp" />
     <ClCompile Include="..\src\cinder\gl\Context.cpp" />
     <ClCompile Include="..\src\cinder\gl\draw.cpp" />
     <ClCompile Include="..\src\cinder\gl\Environment.cpp" />

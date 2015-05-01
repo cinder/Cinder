@@ -42,7 +42,7 @@
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
 
 #include <set>
 

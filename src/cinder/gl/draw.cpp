@@ -61,6 +61,16 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 {
 	context()->drawElements( mode, count, type, indices );
 }
+	
+void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount​ )
+{
+	context()->drawArraysInstanced( mode, first, count, instanceCount​ );
+}
+	
+void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount )
+{
+	context()->drawElementsInstanced( mode, count, type, indices, instanceCount );
+}
 
 namespace {
 
@@ -545,9 +555,10 @@ void draw( const geom::Source &source )
 
 	// determine attribs requested by shader
 	geom::AttribSet requestedAttribs;
-	auto semantics = curGlslProg->getAttribSemantics();
-	for( auto &semantic : semantics )
-		requestedAttribs.insert( semantic.second );
+	auto activeAttribs = curGlslProg->getActiveAttributes();
+	for( auto &attrib : activeAttribs )
+		if( attrib.getAttributeSemantic() != geom::Attrib::NUM_ATTRIBS )
+			requestedAttribs.insert( attrib.getAttributeSemantic() );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();

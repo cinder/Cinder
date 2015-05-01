@@ -27,7 +27,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/TextureFormatParsers.h"
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/scoped.h"
 #include "cinder/ip/Flip.h"
 #include "cinder/Log.h"

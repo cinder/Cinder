@@ -83,7 +83,7 @@ void ParticleSphereGPUApp::setup()
 		float x = radius * sin( inclination * i ) * cos( azimuth * i );
 		float y = radius * cos( inclination * i );
 		float z = radius * sin( inclination * i ) * sin( azimuth * i );
-
+		
 		auto &p = particles.at( i );
 		p.pos = center + vec3( x, y, z );
 		p.home = p.pos;
@@ -91,25 +91,20 @@ void ParticleSphereGPUApp::setup()
 		p.damping = Rand::randFloat( 0.965f, 0.985f );
 		p.color = Color( CM_HSV, lmap<float>( i, 0.0f, particles.size(), 0.0f, 0.66f ), 1.0f, 1.0f );
 	}
-
+	
 	// Create particle buffers on GPU and copy data into the first buffer.
 	// Mark as static since we only write from the CPU once.
 	mParticleBuffer[mSourceIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), particles.data(), GL_STATIC_DRAW );
 	mParticleBuffer[mDestinationIndex] = gl::Vbo::create( GL_ARRAY_BUFFER, particles.size() * sizeof(Particle), nullptr, GL_STATIC_DRAW );
-
+	
 	// Create a default color shader.
-#if ! defined( CINDER_GL_ES )
 	mRenderProg = gl::getStockShader( gl::ShaderDef().color() );
-	gl::pointSize( 1.0f );
-#else
-	mRenderProg = gl::GlslProg::create( loadAsset( "draw_es3.vert" ), loadAsset( "draw_es3.frag" ) );
-#endif
-
+	
 	for( int i = 0; i < 2; ++i )
 	{	// Describe the particle layout for OpenGL.
 		mAttributes[i] = gl::Vao::create();
 		gl::ScopedVao vao( mAttributes[i] );
-
+		
 		// Define attributes as offsets into the bound particle buffer
 		gl::ScopedBuffer buffer( mParticleBuffer[i] );
 		gl::enableVertexAttribArray( 0 );
@@ -123,24 +118,24 @@ void ParticleSphereGPUApp::setup()
 		gl::vertexAttribPointer( 3, 3, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, home) );
 		gl::vertexAttribPointer( 4, 1, GL_FLOAT, GL_FALSE, sizeof(Particle), (const GLvoid*)offsetof(Particle, damping) );
 	}
-
+	
 	// Load our update program.
 	// Match up our attribute locations with the description we gave.
-
+	
 #if defined( CINDER_GL_ES_3 )
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate_es3.vs" ) )
-		.fragment( loadAsset( "no_op_es3.fs" ) )
+									   .fragment( loadAsset( "no_op_es3.fs" ) )
 #else
 	mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleUpdate.vs" ) )
 #endif
-		.feedbackFormat( GL_INTERLEAVED_ATTRIBS )
-		.feedbackVaryings( { "position", "pposition", "home", "color", "damping" } )
-		.attribLocation( "iPosition", 0 )
-		.attribLocation( "iColor", 1 )
-		.attribLocation( "iPPosition", 2 )
-		.attribLocation( "iHome", 3 )
-		.attribLocation( "iDamping", 4 )
-									   );
+			.feedbackFormat( GL_INTERLEAVED_ATTRIBS )
+			.feedbackVaryings( { "position", "pposition", "home", "color", "damping" } )
+			.attribLocation( "iPosition", 0 )
+			.attribLocation( "iColor", 1 )
+			.attribLocation( "iPPosition", 2 )
+			.attribLocation( "iHome", 3 )
+			.attribLocation( "iDamping", 4 )
+			);
 
 	// Listen to mouse events so we can send data as uniforms.
 	getWindow()->getSignalMouseDown().connect( [this]( MouseEvent event )

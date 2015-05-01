@@ -1173,9 +1173,6 @@
     <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\ConstantStrings.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Context.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -1406,6 +1403,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
       <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp">
+      <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\CameraUi.cpp">
       <Filter>Source Files</Filter>

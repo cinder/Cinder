@@ -23,6 +23,7 @@
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/Log.h"
 
 using namespace std;
@@ -376,36 +377,106 @@ void VboMesh::buildVao( const GlslProgRef &shader, const AttribGlslMap &attribut
 void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping )
 {
 	auto ctx = gl::context();
-	
-	// iterate all the vertex array VBOs; map<geom::BufferLayout,VboRef>
+	std::set<geom::Attrib> enabledAttribs;
+	// iterate all the vertex array VBOs
 	for( const auto &vertArrayVbo : mVertexArrayVbos ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
 		// now iterate the attributes associated with this VBO
-		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
-			int loc = -1;
+		for( const auto &vertAttribInfo : vertArrayVbo.first.getAttribs() ) {
+			const GlslProg::Attribute *shaderAttribInfo = nullptr;
 			// first see if we have a mapping in 'attributeMapping'
-			auto attributeMappingIt = attributeMapping.find( attribInfo.getAttrib() );
-			if( attributeMappingIt != attributeMapping.end() ) {
-				loc = shader->getAttribLocation( attributeMappingIt->second );
-			}
-			// otherwise, try to get the location of the attrib semantic in the shader if it's present
-			else if( shader->hasAttribSemantic( attribInfo.getAttrib() ) ) {
-				loc = shader->getAttribSemanticLocation( attribInfo.getAttrib() );			
-			}
+			auto attributeMappingIt = attributeMapping.find( vertAttribInfo.getAttrib() );
 			
-			// if either the shader's mapping or 'attributeMapping' has this semantic, add it to the VAO
-			if( loc != -1 ) {
-				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
-				if( attribInfo.getInstanceDivisor() > 0 )
-					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+			if( attributeMappingIt != attributeMapping.end() )
+				shaderAttribInfo = shader->findAttrib( attributeMappingIt->second );
+			// otherwise, try to get the location of the attrib semantic in the shader if it's present
+			else if( shader->hasAttribSemantic( vertAttribInfo.getAttrib() ) )
+				shaderAttribInfo = shader->findAttrib( vertAttribInfo.getAttrib() );
+			
+			if( shaderAttribInfo ) {
+				auto shaderLoc = shaderAttribInfo->getLocation();
+				
+				auto numDims = (int)vertAttribInfo.getDims();
+				
+				// examples of glsl types and the expected layout
+				// in mat4 model	- 16 dims(vertArray), 16 dims(shader), count 1, 4 per, numTimes 4(split) * 1(count)
+				// in vec3 stuff[3] -  9 dims(vertArray),  3 dims(shader), count 3, 3 per, numTimes 1(split) * 3(count)
+				// in mat4 model[3] - 48 dims(vertArray), 16 dims(shader), count 4, 4 per, numTimes 4(split) * 3(count)
+				// in vec4 stuff	-  4 dims(vertArray),  4 dims(shader), count 1, 4 per, numTimes 1(split) * 1(count)
+				// in vec2 stuff[5] - 10 dims(vertArray),  2 dims(shader), count 5, 2 per, numTimes 1(split) * 5(count)
+				// in mat2x3 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 2 per, numTimes 3(split) * 1(count)
+				// in mat3x2 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 3 per, numTimes 2(split) * 1(count)
+				// in mat2x2 stuff[2]- 8 dims(vertArray),  4 dims(shader), count 2, 2 per, numTimes 2(split) * 2(count)
+				
+				// num array elements or 1 if not an array
+				uint32_t shaderAttribCount = shaderAttribInfo->getCount();
+				uint32_t numDimsPerVertexPointer;
+				uint32_t numLocationsExpected;
+				GlslProg::Attribute::getShaderAttribLayout( shaderAttribInfo->getType(), &numDimsPerVertexPointer, &numLocationsExpected );
+				uint32_t shaderAttribTotalDims = numDimsPerVertexPointer * numLocationsExpected * shaderAttribCount;
+				if( numDims != shaderAttribTotalDims ) {
+					if( numDims <= 4 )
+						numDimsPerVertexPointer = numDims;
+					else {
+						CI_LOG_E( geom::attribToString( vertAttribInfo.getAttrib() ) + "'s BufferLayout defined dimensions(" << numDims << ") does not match shader expected dimensions(" << shaderAttribTotalDims << ") for " << shaderAttribInfo->getName() << ", skipping attribute");
+						continue;
+					}
+				}
+				
+				uint32_t dataTypeBytes = 0;
+				switch ( vertAttribInfo.getDataType() ) {
+					case geom::DataType::FLOAT: dataTypeBytes = 4; break;
+					case geom::DataType::INTEGER: dataTypeBytes = 4; break;
+					case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
+				}
+				
+				uint32_t numTimes = numLocationsExpected * shaderAttribCount;
+				size_t currentInnerOffset = 0;
+				for( int i = 0; i < numTimes; i++ ) {
+					ctx->enableVertexAttribArray( shaderLoc + i );
+					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
+						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+#if ! defined( CINDER_GL_ES_2 )
+					else
+						ctx->vertexAttribIPointer( shaderLoc + i, numDimsPerVertexPointer, GL_INT, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+#endif
+					if( vertAttribInfo.getInstanceDivisor() > 0 )
+						ctx->vertexAttribDivisor( shaderLoc + i, vertAttribInfo.getInstanceDivisor() );
+					currentInnerOffset += (numDimsPerVertexPointer * dataTypeBytes);
+				}
+				
+				enabledAttribs.insert( vertAttribInfo.getAttrib() );
 			}
 		}
 	}
 	
-	if( mNumIndices > 0 )
+	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
+	const auto &glslActiveAttribs = shader->getActiveAttributes();
+	for( auto &glslActiveAttrib : glslActiveAttribs ) {
+		bool attribMappingFound = false;
+		auto glslAttribName = glslActiveAttrib.getName();
+		for( auto & attrib : attributeMapping ) {
+			if( glslAttribName == attrib.second ) {
+				attribMappingFound = true;
+			}
+		}
+		auto attribSemantic = glslActiveAttrib.getAttributeSemantic();
+		if( (attribSemantic != geom::Attrib::COLOR) &&
+		   (enabledAttribs.count( attribSemantic ) == 0) &&
+		   ! attribMappingFound &&
+		   /* From GL 4.3 core spec, section 11.1.1 (Vertex Attributes):
+			* "For GetActiveAttrib, all active vertex shader input variables
+			* are enumerated, including the special built-in inputs gl_VertexID
+			* and gl_InstanceID."
+			*/
+		   ( glslAttribName != "gl_InstanceID" || glslAttribName != "gl_VertexID") )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << ", with name " << glslAttribName << " but vertex data doesn't provide it." );
+	}
+	
+	if( mIndices )
 		mIndices->bind();
+
 }
 
 void VboMesh::drawImpl( GLint first, GLsizei count )
