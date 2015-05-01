@@ -89,12 +89,12 @@ class ConcurrentCircularBuffer : private Noncopyable {
 		return true;
 	}
 
-	bool isNotEmpty() {
+	bool isNotEmpty() const {
 		std::lock_guard<std::mutex> lock( mMutex );
 		return is_not_empty_impl();
 	}
 
-	bool isNotFull() {
+	bool isNotFull() const {
 		std::lock_guard<std::mutex> lock( mMutex );
 		return is_not_full_impl();
 	}
@@ -110,7 +110,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 	size_t getCapacity() const { return (size_t)mContainer.capacity(); }
 	
 	//! Returns the number of items the buffer is currently holding
-	size_t getSize() {
+	size_t getSize() const {
 		std::lock_guard<std::mutex> lock( mMutex );
 		return mNumUnread;
 	}
@@ -121,7 +121,7 @@ class ConcurrentCircularBuffer : private Noncopyable {
 
 	size_type				mNumUnread;
 	container_type			mContainer;
-	std::mutex				mMutex;
+	mutable std::mutex		mMutex;
 	std::condition_variable	mNotEmptyCond;
 	std::condition_variable	mNotFullCond;
 	bool					mCanceled;
