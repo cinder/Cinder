@@ -794,8 +794,8 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	WCHAR familyName[1024];
 	Gdiplus::PrivateFontCollection privateFontCollection;
 
-	ci::Buffer buffer = dataSource->getBuffer();
-	privateFontCollection.AddMemoryFont( buffer.getData(), buffer.getSize() );
+	ci::BufferRef buffer = dataSource->getBuffer();
+	privateFontCollection.AddMemoryFont( buffer->getData(), buffer->getSize() );
 
 	// How many font families are in the private collection?
 	count = privateFontCollection.GetFamilyCount();
@@ -829,7 +829,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	// now that we know the name thanks to GDI+, let's load the HFONT
 	// this is only because we can't seem to get the LOGFONT -> HFONT to work down in finishSetup
 	DWORD numFonts = 0;
-	::AddFontMemResourceEx( buffer.getData(), buffer.getSize(), 0, &numFonts );
+	::AddFontMemResourceEx( buffer->getData(), buffer->getSize(), 0, &numFonts );
 	if( numFonts < 1 )
 		throw FontInvalidNameExc();
 
