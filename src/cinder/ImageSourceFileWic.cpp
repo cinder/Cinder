@@ -120,8 +120,8 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
 		mStream = msw::makeComShared( pIWICStream );
 		
-		mBuffer = dataSourceRef->getBuffer();
-		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer.getData() ), mBuffer.getDataSize() );
+		Buffer &buffer = dataSourceRef->getBuffer();
+		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( buffer.getData() ), buffer.getDataSize() );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
 		
