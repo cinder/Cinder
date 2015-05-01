@@ -26,13 +26,13 @@
 #pragma once
 
 #include <boost/circular_buffer.hpp>
-#include <boost/noncopyable.hpp>
+#include "cinder/Noncopyable.h"
 #include "cinder/Thread.h"
 
 namespace cinder {
 
 template<typename T>
-class ConcurrentCircularBuffer : public boost::noncopyable {
+class ConcurrentCircularBuffer : private Noncopyable {
   public:
 	typedef boost::circular_buffer<T> container_type;
 	typedef typename container_type::size_type size_type;

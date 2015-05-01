@@ -6,10 +6,8 @@
 using namespace ci;
 
 InfoPanel::InfoPanel()
+: mState( true ), mOpacity( 1.0f ), mFadeTime( 500 )
 {
-	mState		= true;
-	mOpacity	= 1.0f;
-	mFadeTime	= 500;
 }
 
 
@@ -30,7 +28,7 @@ void InfoPanel::createTexture()
 	layout.addLine( "f	toggle fullscreen" );
 	layout.addLine( "?	toggle information panel" );
 	
-	mTexture = gl::Texture( layout.render( true ) );
+	mTexture = gl::Texture2d::create( layout.render( true ) );
 }
 
 
@@ -53,10 +51,9 @@ void InfoPanel::update( float counter )
 
 void InfoPanel::render()
 {
-	float x = app::getWindowWidth() - mTexture.getWidth() - 40.0f;
-	float y = app::getWindowHeight() - mTexture.getHeight() - 25.0f;
-	glColor4f( 1, 1, 1, mOpacity );
-	gl::draw( mTexture, Vec2f( x, y ) );
+	float x = app::getWindowWidth() - mTexture->getWidth() - 40.0f;
+	float y = app::getWindowHeight() - mTexture->getHeight() - 25.0f;
+	gl::draw( mTexture, vec2( x, y ) );
 }
 
 

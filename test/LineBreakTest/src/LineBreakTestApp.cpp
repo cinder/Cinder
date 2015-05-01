@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Unicode.h"
 #include "cinder/Text.h"
@@ -9,10 +9,10 @@ using namespace ci::app;
 using namespace std;
 
 Font font;
-Vec2f pos;
+vec2 pos;
 int maxWidth = 230;
 
-class LineBreakTestApp : public AppNative {
+class LineBreakTestApp : public App {
   public:
 	void setup();
 	void mouseDrag( MouseEvent event );	
@@ -102,7 +102,7 @@ void LineBreakTestApp::draw()
 //	}
 	gl::color( ColorA( 1, 0, 0, 0.5 ) );
 	TextBox box;
-	box.setSize( Vec2i( maxWidth, TextBox::GROW ) );
+	box.setSize( ivec2( maxWidth, TextBox::GROW ) );
 	box.setFont( font );
 	box.setText( s );
 	gl::Texture t = box.render();
@@ -111,4 +111,4 @@ void LineBreakTestApp::draw()
 	gl::drawStrokedRect( Rectf( 0, 10, maxWidth, 800 ) );
 }
 
-CINDER_APP_NATIVE( LineBreakTestApp, RendererGl )
+CINDER_APP( LineBreakTestApp, RendererGl )

@@ -1,7 +1,9 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
+#include "cinder/ip/Fill.h"
 #include "cinder/svg/SvgGl.h"
 #include "cinder/cairo/Cairo.h"
 
@@ -9,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class SimpleViewerApp : public AppBasic {
+class SimpleViewerApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );
@@ -19,7 +21,7 @@ class SimpleViewerApp : public AppBasic {
 
 	bool					mUseCairo;
 	svg::DocRef				mDoc;
-	gl::Texture				mTex;
+	gl::TextureRef			mTex;
 };
 
 
@@ -38,19 +40,19 @@ void SimpleViewerApp::fileDrop( FileDropEvent event )
 	load( event.getFile( 0 ) );
 }
 
-gl::Texture renderCairoToTexture( svg::DocRef doc )
+gl::TextureRef renderCairoToTexture( svg::DocRef doc )
 {
-	cairo::SurfaceImage srf;
+	cairo::SurfaceImage srf( 640, 480, true );
 	if( doc->getWidth() && doc->getHeight() )
 		srf = cairo::SurfaceImage( doc->getWidth(), doc->getHeight(), true );
 	else
 		srf = cairo::SurfaceImage( 640, 480, true );
-	cairo::Context ctx( srf );
 
+	cairo::Context ctx( srf );
 	ctx.render( *doc );
-	srf.flush();
-	
-	return gl::Texture( srf.getSurface() );
+	ctx.flush();
+
+	return gl::Texture::create( srf.getSurface() );
 }
 
 void SimpleViewerApp::load( fs::path path )
@@ -63,8 +65,9 @@ void SimpleViewerApp::load( fs::path path )
 		
 		mTex = renderCairoToTexture( mDoc );
 	}
-	catch( ... ) {
-	} // ignore errors
+	catch( ci::Exception &exc ) {
+		console() << "exception caught parsing svg doc, what: " << exc.what() << endl;
+	}
 }
 
 void SimpleViewerApp::draw()
@@ -85,9 +88,9 @@ void SimpleViewerApp::draw()
 	}
 	else {
 		gl::drawStringCentered( "Drag & Drop an SVG file", getWindowCenter() );
-		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + Vec2f( 0, 20 ) );
+		gl::drawStringCentered( "Click to toggle between Cairo & OpenGL", getWindowCenter() + vec2( 0, 20 ) );
 	}
 }
 
 
-CINDER_APP_BASIC( SimpleViewerApp, RendererGl )
+CINDER_APP( SimpleViewerApp, RendererGl )

@@ -20,14 +20,14 @@ public:
 	Circle( float radius, ci::Color color )
 	: mRadius( 0.0f ), mRadiusDest( radius ), mColor( color ), mColorDest( color )
 	{}
-	void draw( const ci::Vec2f &pos ) {
+	void draw( const ci::vec2 &pos ) {
 		ci::gl::color( ci::ColorA( 0, 0, 0, 0.25f ) );
 		float r = mRadius + 2.0f;
 		
-		ci::Vec2f p = pos;
-		p += ci::Vec2f( 0.5f, 0.5f );
+		ci::vec2 p = pos;
+		p += ci::vec2( 0.5f, 0.5f );
 		ci::gl::drawSolidRect( ci::Rectf( p.x - r, p.y - r, p.x + r, p.y + r ) );
-		p += ci::Vec2f( 0.5f, 0.5f );
+		p += ci::vec2( 0.5f, 0.5f );
 		ci::gl::drawSolidRect( ci::Rectf( p.x - r, p.y - r, p.x + r, p.y + r ) );
 		
 		// color foreground
@@ -52,7 +52,7 @@ public:
 	void	setWord( const std::string &word ){ mWord = word; };
 	const std::string&	getWord() const { return mWord; }
 
-	void	addCircle(  const std::string &word, const ci::Color &color, const ci::Vec2f &dir );
+	void	addCircle(  const std::string &word, const ci::Color &color, const ci::vec2 &dir );
 	void	update( const WordNode &currentNode );
 	void	draw();
 	
@@ -62,7 +62,7 @@ public:
 	
 	int				mCounter;
 	float			mRadius;
-	ci::Anim<ci::Vec2f>	mTextPos;
+	ci::Anim<ci::vec2>	mTextPos;
 	ci::Anim<float>		mTextAlpha;
 protected:
 	std::string		mWord;

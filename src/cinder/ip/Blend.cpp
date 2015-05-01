@@ -36,7 +36,7 @@ namespace cinder { namespace ip {
 */
 
 template<bool DSTALPHA, bool DSTPREMULT, bool SRCPREMULT>
-void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Area &srcArea, Vec2i absOffset )
+void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Area &srcArea, ivec2 absOffset )
 {
 	bool SRCALPHA = foreground.hasAlpha();
 	const int32_t srcRowBytes = foreground.getRowBytes();
@@ -54,7 +54,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 	const int32_t width = srcArea.getWidth();
 	
 	if( ! SRCALPHA ) {// normal blend with no src alpha is a copy
-		Vec2i relativeOffset = absOffset - srcArea.getUL();
+		ivec2 relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
 		if( DSTALPHA )
 			ip::fill( &background->getChannelAlpha(), (uint8_t)255 );
@@ -110,7 +110,7 @@ void blendImpl_u8( Surface8u *background, const Surface8u &foreground, const Are
 }
 
 template<bool DSTALPHA, bool DSTPREMULT, bool SRCPREMULT>
-void blendImpl_float( Surface32f *background, const Surface32f &foreground, const Area &srcArea, Vec2i absOffset )
+void blendImpl_float( Surface32f *background, const Surface32f &foreground, const Area &srcArea, ivec2 absOffset )
 {
 	bool SRCALPHA = foreground.hasAlpha();
 	const int32_t srcRowBytes = foreground.getRowBytes();
@@ -128,7 +128,7 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 	const int32_t width = srcArea.getWidth();
 	
 	if( ! SRCALPHA ) {// normal blend with no src alpha is a copy
-		Vec2i relativeOffset = absOffset - srcArea.getUL();
+		ivec2 relativeOffset = absOffset - srcArea.getUL();
 		background->copyFrom( foreground, srcArea, relativeOffset );
 		if( DSTALPHA )
 			ip::fill( &background->getChannelAlpha(), 1.0f );
@@ -185,9 +185,9 @@ void blendImpl_float( Surface32f *background, const Surface32f &foreground, cons
 	}
 }
 
-void blend( Surface8u *background, const Surface8u &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset )
+void blend( Surface8u *background, const Surface8u &foreground, const Area &srcArea, const ivec2 &dstRelativeOffset )
 {
-	pair<Area,Vec2i> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );	
+	pair<Area,ivec2> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );	
 	if( background->hasAlpha() ) {
 		if( background->isPremultiplied() ) {
 			if( foreground.isPremultiplied() )
@@ -210,9 +210,9 @@ void blend( Surface8u *background, const Surface8u &foreground, const Area &srcA
 	}
 }
 
-void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const Vec2i &dstRelativeOffset )
+void blend( Surface32f *background, const Surface32f &foreground, const Area &srcArea, const ivec2 &dstRelativeOffset )
 {
-	pair<Area,Vec2i> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );
+	pair<Area,ivec2> srcDst = clippedSrcDst( foreground.getBounds(), srcArea, background->getBounds(), srcArea.getUL() + dstRelativeOffset );
 	if( background->hasAlpha() ) {
 		if( background->isPremultiplied() ) {
 			if( foreground.isPremultiplied() )

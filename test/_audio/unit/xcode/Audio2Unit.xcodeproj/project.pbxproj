@@ -12,6 +12,9 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		1124804719B767AD0086C183 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1124804519B767AD0086C183 /* AVFoundation.framework */; };
+		1124804819B767AD0086C183 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1124804619B767AD0086C183 /* CoreVideo.framework */; };
+		1124804A19B767CA0086C183 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1124804919B767CA0086C183 /* CoreMedia.framework */; };
 		1187CCB217D2E64300414EC4 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1187CCB017D2E64300414EC4 /* main.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -58,6 +61,9 @@
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		11172B9917FA88F0000EB0BF /* RingBufferUnit.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RingBufferUnit.h; path = ../src/RingBufferUnit.h; sourceTree = "<group>"; };
 		111A61D91921D290005C3166 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
+		1124804519B767AD0086C183 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		1124804619B767AD0086C183 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
+		1124804919B767CA0086C183 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		1187CCAE17D2E64300414EC4 /* BufferUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = BufferUnit.h; path = ../src/BufferUnit.h; sourceTree = "<group>"; };
 		1187CCAF17D2E64300414EC4 /* FftUnit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FftUnit.h; path = ../src/FftUnit.h; sourceTree = "<group>"; };
 		1187CCB017D2E64300414EC4 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../src/main.cpp; sourceTree = "<group>"; };
@@ -75,6 +81,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1124804A19B767CA0086C183 /* CoreMedia.framework in Frameworks */,
+				1124804719B767AD0086C183 /* AVFoundation.framework in Frameworks */,
+				1124804819B767AD0086C183 /* CoreVideo.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -166,6 +175,9 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1124804919B767CA0086C183 /* CoreMedia.framework */,
+				1124804519B767AD0086C183 /* AVFoundation.framework */,
+				1124804619B767AD0086C183 /* CoreVideo.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
 			);
@@ -330,7 +342,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";
@@ -347,7 +359,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = i386;
+				ARCHS = "$(ARCHS_STANDARD_64_BIT)";
 				CINDER_PATH = ../../../../;
 				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CLANG_CXX_LIBRARY = "libc++";

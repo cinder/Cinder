@@ -18,9 +18,9 @@ class ParticleController {
 	void renderParticles( float heat );
 	void renderTrails();
 
-	void addParticles( int amt, ci::Vec3f loc, ci::Vec3f vel, float heat, float radius );
-	void addGravity( ci::Vec3f loc, float radius );
-	void createConstraints( ci::Vec2f windowDim );
+	void addParticles( int amt, ci::vec3 loc, ci::vec3 vel, float heat, float radius );
+	void addGravity( ci::vec3 loc, float radius );
+	void createConstraints( ci::vec2 windowDim );
 	void adjustForcesOfType( int type, bool enable );
 	
 	std::list<Particle>			mParticles;

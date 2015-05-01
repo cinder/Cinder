@@ -52,9 +52,13 @@ class Triangulator {
 	void		addPath( const Path2d &path, float approximationScale = 1.0f );
 	//! Adds a PolyLine2f to the tesselation.
 	void		addPolyLine( const PolyLine2f &polyLine );
+	//! Adds a PolyLine defined as a series of vec2's
+	void		addPolyLine( const vec2 *points, size_t numPoints );
 
 	//! Performs the tesselation, returning a TriMesh2d
-	TriMesh2d		calcMesh( Winding winding = WINDING_ODD );
+	TriMesh		calcMesh( Winding winding = WINDING_ODD );
+	//! Performs the tesselation, returning a TriMesh2d
+	TriMeshRef	createMesh( Winding winding = WINDING_ODD );
 	
 	class Exception : public cinder::Exception {
 	};

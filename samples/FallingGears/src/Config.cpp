@@ -2,7 +2,7 @@
 #include "Config.h"
 
 #include "cinder/app/App.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 #include "cinder/ImageIo.h"
 #include "cinder/System.h"
 
@@ -10,15 +10,6 @@ using namespace std;
 using namespace ci;
 
 #define LOG_EXCEPTION( exc )	{ CI_LOG_E( "exception caught: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() ); }
-
-namespace {
-
-inline Vec2f parseVec2f( const JsonTree &json )
-{
-	return Vec2f( json.getValueAtIndex<float>( 0 ), json.getValueAtIndex<float>( 1 ) );
-}
-
-}
 
 Config::Config()
 {
@@ -34,7 +25,7 @@ void Config::reload()
 
 		CI_LOG_V( "successfully loaded config.json" );
 	}
-	catch( exception &exc ) {
+	catch( Exception &exc ) {
 		LOG_EXCEPTION( exc );
 	}
 }
@@ -56,7 +47,7 @@ ImageSourceRef Config::getBackgroundImage() const
 		string imageName = mData.getValueForKey( "background" );
 		result = loadImage( app::loadAsset( imageName ) );
 	}
-	catch( exception &exc ) {
+	catch( Exception &exc ) {
 		LOG_EXCEPTION( exc );
 	}
 

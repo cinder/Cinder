@@ -8,9 +8,11 @@
 //
 // Note: this sample is compiled with ARC enabled
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/app/CinderViewCocoaTouch.h"
 #include "cinder/gl/gl.h"
+#include "cinder/gl/Shader.h"
 #include "cinder/Camera.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Font.h"
@@ -21,22 +23,18 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NativeControlsApp : public AppNative {
+class NativeControlsApp : public App {
   public:
 	void prepareSettings( Settings *settings );
 	void setup();
-	void update();
 	void draw();
 
   private:
 	void setupVisuals();
 	void infoTapped();
 
-	Matrix44f		mCubeRotation;
-	gl::Texture 	mTex;
-	Font			mFont;
-
-	NativeViewController *mNativeController;
+	NativeViewController*	mNativeController;
+	gl::TextureRef			mTex;
 };
 
 void NativeControlsApp::prepareSettings( Settings *settings )
@@ -48,7 +46,7 @@ void NativeControlsApp::prepareSettings( Settings *settings )
 void NativeControlsApp::setup()
 {
 	setupVisuals();
-	
+
 	// Example of how to add Cinder's UIViewController to your native root UIViewViewController
 	[mNativeController addCinderViewToFront];
 
@@ -72,10 +70,7 @@ void NativeControlsApp::setupVisuals()
 		}
 	}
 
-	mTex = gl::Texture( surface );
-
-	mFont = Font( "Helvetica", 24 * getWindowContentScale() );
-	
+	mTex = gl::Texture::create( surface );
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 }
@@ -90,25 +85,21 @@ void NativeControlsApp::infoTapped()
 	[alert show];
 }
 
-void NativeControlsApp::update()
-{
-	mCubeRotation.rotate( Vec3f( 1, 1, 1 ), 0.03f );
-}
-
 void NativeControlsApp::draw()
 {
-	gl::clear( Color( 0, 0.0, 0.3 ) );
+	gl::clear( Color( 0, 0, 0.3f ) );
 
 	CameraPersp cam;
-	cam.lookAt( Vec3f( 3, 2, -3 ), Vec3f::zero() );
+	cam.lookAt( vec3( 3, 2, -3 ), vec3( 0 ) );
 	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 	gl::setMatrices( cam );
-	gl::multModelView( mCubeRotation );
 
-	gl::color( Color::white() );
-	mTex.enableAndBind();
-	gl::drawCube( Vec3f::zero(), Vec3f( 2.0f, 2.0f, 2.0f ) );
-	mTex.unbind();
+	gl::bindStockShader( gl::ShaderDef().texture() );
+	gl::ScopedTextureBind textureScope( mTex );
+	gl::ScopedModelMatrix modelScope;
+
+	gl::rotate( getElapsedSeconds() * 1.5f, vec3( 1 ) );
+	gl::drawCube( vec3( 0 ), vec3( 2 ) );
 }
 
-CINDER_APP_NATIVE( NativeControlsApp, RendererGl )
+CINDER_APP( NativeControlsApp, RendererGl )

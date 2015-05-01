@@ -15,31 +15,28 @@
 class Character {
   public:
 	Character() {}
-	Character( ci::gl::TextureFontRef textureFont, std::string character,  ci::Matrix44f matrix );
+	Character( ci::gl::TextureFontRef textureFont, std::string character,  ci::mat4 matrix );
 	
-	void	animIn( ci::Timeline &timeline,  ci::Matrix44f matrix );
-	void	animOut( ci::Timeline &timeline,  ci::Matrix44f matrix );
+	void	animIn( ci::Timeline &timeline,  ci::mat4 matrix );
+	void	animOut( ci::Timeline &timeline,  ci::mat4 matrix );
 	
 	void	draw() const;
 	
-	ci::Rectf		getKernBounds() const;
+	ci::Rectf	getKernBounds() const;
 	bool		isDead() const;
-	ci::Matrix44f	getDestMatrix() const;
+	ci::mat4	getDestMatrix() const;
 	
   protected:
 	void	onAnimOut();
 	
-	ci::Anim<ci::ColorAf>			mColorCur;
-	ci::Anim<ci::Matrix44f>			mMatrix;
+	ci::Anim<ci::ColorAf>		mColorCur;
+	ci::Anim<ci::mat4>			mMatrix;
 	
 	ci::ColorAf					mColorStart, mColorDest;
-	
-	ci::Matrix44f				mDestMatrix;
-	
+	ci::mat4					mDestMatrix;
 	std::string					mChar;
-	
+	bool						mIsDead;
+
 	ci::gl::TextureFontRef		mTextureFont;
 	ci::Rectf					mKernBounds;
-	
-	bool					mIsDead;
 };

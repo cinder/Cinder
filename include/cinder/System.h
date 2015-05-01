@@ -23,6 +23,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Exception.h"
 
 #include <vector>
 #include <string>
@@ -77,17 +78,21 @@ class System {
 	  public:
 		const std::string&	getName() const { return mName; }
 		const std::string&	getIpAddress() const { return mIpAddress; }
+		//! Returns the subnet mask as a string in the form "255.255.240.0". On WinRT returns the prefix length.
+		const std::string&	getSubnetMask() const { return mSubnetMask; }
 
-		NetworkAdapter( const std::string &name, const std::string &ip )
-			: mName( name ), mIpAddress( ip ) {}
+		NetworkAdapter( const std::string &name, const std::string &ip, const std::string &subnetMask )
+			: mName( name ), mIpAddress( ip ), mSubnetMask( subnetMask ) {}
 
 	  private:
-		std::string		mName, mIpAddress;
+		std::string		mName, mIpAddress, mSubnetMask;
 	};
 	//! Returns a list of the network adapters associated with the machine. Not cached.
 	static std::vector<NetworkAdapter>		getNetworkAdapters();
 	//! Returns a best guess at the machine's "IP address". Not cached. Computers often have multiple IP addresses, but this will attempt to select the "best". \sa getNetworkAdapaters().
 	static std::string						getIpAddress();
+	//! Returns the subnet mask of the "best" network adapter, as found by getIpAddress(). This can be used to calculate the proper broadcast IP address for a network. Not cached. \sa getNetworkAdapaters().\sa getIpAddress().
+	static std::string						getSubnetMask();
 	
   private:
 	 enum {	HAS_SSE2, HAS_SSE3, HAS_SSE4_1, HAS_SSE4_2, HAS_X86_64, HAS_ARM, PHYSICAL_CPUS, LOGICAL_CPUS, OS_MAJOR, OS_MINOR, OS_BUGFIX, MULTI_TOUCH, MAX_MULTI_TOUCH_POINTS, 
@@ -113,11 +118,11 @@ class System {
 
 inline std::ostream& operator<<( std::ostream &outp, const System::NetworkAdapter &adapter )
 {
-	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress();
+	outp << adapter.getName() << std::string(": IP: ") << adapter.getIpAddress() << " Subnet: " << adapter.getSubnetMask();
 	return outp;
 }
 
-class SystemExc : public std::exception {
+class SystemExc : public Exception {
 };
 
 class SystemExcFailedQuery : public SystemExc {

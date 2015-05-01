@@ -1,7 +1,8 @@
 // Map of Europe copyright Wikiepedia:
 // http://en.wikipedia.org/wiki/File:Blank_map_of_Europe_-_Atelier_graphique_colors.svg
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/TextureFont.h"
@@ -13,27 +14,28 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class EuroMapApp : public AppBasic {
+class EuroMapApp : public App {
   public:
-  	void prepareSettings( Settings *settings );
-	void setup();
-	void mouseMove( MouseEvent event );	
-	void draw();
-	
-	gl::Texture			mMapTex;
+	static void prepareSettings( Settings *settings );
+
+	void		setup() override;
+	void		mouseMove( MouseEvent event ) override;
+	void		draw() override;
+
+	gl::TextureRef		mMapTex;
 	gl::TextureFontRef	mFont;
 	svg::DocRef			mMapDoc;
 	svg::Node 			*mCurrentCountry;
 	Anim<float>			mCurrentCountryAlpha;
 };
 
-gl::Texture renderSvgToTexture( svg::DocRef doc, Vec2i size )
+gl::TextureRef renderSvgToTexture( svg::DocRef doc, ivec2 size )
 {
 	cairo::SurfaceImage srf( size.x, size.y, false );
 	cairo::Context ctx( srf );
 	ctx.render( *doc );
 	srf.flush();
-	return gl::Texture( srf.getSurface() );
+	return gl::Texture::create( srf.getSurface() );
 }
 
 void EuroMapApp::prepareSettings( Settings *settings )
@@ -65,6 +67,7 @@ void EuroMapApp::mouseMove( MouseEvent event )
 
 void EuroMapApp::draw()
 {
+	gl::clear();
 	gl::enableAlphaBlending();
 	glLineWidth( 2.0f );
 	
@@ -80,15 +83,15 @@ void EuroMapApp::draw()
 	
 		// draw the name
 		string countryName = mCurrentCountry->getId();
-		Vec2f pos = mCurrentCountry->getBoundingBoxAbsolute().getCenter();
+		vec2 pos = mCurrentCountry->getBoundingBoxAbsolute().getCenter();
 		pos.x -= mFont->measureString( countryName ).x / 2;
 		
 		gl::color( ColorA( 1, 1, 1, mCurrentCountryAlpha ) );
-		mFont->drawString( countryName, pos + Vec2f( 2, 2 ) );
+		mFont->drawString( countryName, pos + vec2( 2, 2 ) );
 		gl::color( ColorA( 0, 0, 0, mCurrentCountryAlpha ) );
 		mFont->drawString( countryName, pos );		
 	}
 }
 
 
-CINDER_APP_BASIC( EuroMapApp, RendererGl(0) )
+CINDER_APP( EuroMapApp, RendererGl, EuroMapApp::prepareSettings )

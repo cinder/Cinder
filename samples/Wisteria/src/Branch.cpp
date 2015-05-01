@@ -6,7 +6,7 @@ using std::vector;
 
 int Branch::sWindowWidth, Branch::sWindowHeight;
 
-Branch::Branch( const Vec2f &aOrigin, float flowerHue, int launchDelay )
+Branch::Branch( const vec2 &aOrigin, float flowerHue, int launchDelay )
 	: mOrigin( aOrigin )
 {
 	mIsRoot = true;
@@ -23,7 +23,7 @@ Branch::Branch( const Vec2f &aOrigin, float flowerHue, int launchDelay )
 	}
 }
 
-Branch::Branch( const Vec2f &aOrigin, int aLifespan, float aSpeed, int aLaunchDelay, float aAngle, float aAngleDelta, float aChangeProb, float aFlowerProb,
+Branch::Branch( const vec2 &aOrigin, int aLifespan, float aSpeed, int aLaunchDelay, float aAngle, float aAngleDelta, float aChangeProb, float aFlowerProb,
 	  float aStartEllipseRadius, float aEndEllipseRadius, ColorA aStartColor, ColorA aEndColor, ColorA aFlowerColor, float aScale )
 	: mOrigin( aOrigin ), mPos( aOrigin )
 { 
@@ -53,7 +53,7 @@ void Branch::update()
 	  return;
 
 	if( ( mLifespan > 0 ) && ( ! mIsRoot ) ) {
-		mPos += Vec2f( cos( mAngle ), sin( mAngle ) ) * ( mSpeed * 2.0f * mScale );
+		mPos += vec2( cos( mAngle ), sin( mAngle ) ) * ( mSpeed * 2.0f * mScale );
 		if( ! Area( 0, 0, sWindowWidth, sWindowHeight ).contains( mPos ) )
 			mLifespan = 0;
 
@@ -125,7 +125,7 @@ bool Branch::isAlive()
 	return false;
 }
 
-void Branch::createBranch( const Vec2f &origin, float baseHue, ColorA flowerColor, int launchDelay )
+void Branch::createBranch( const vec2 &origin, float baseHue, ColorA flowerColor, int launchDelay )
 {
 	float changeProb = 0.05f + Rand::randFloat( 0.05f );
 	float flowerProb = 0.05f + Rand::randFloat( 0.21f );

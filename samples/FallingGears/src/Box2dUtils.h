@@ -14,7 +14,7 @@ typedef std::shared_ptr<b2Body>	BodyRef;
 
 BodyRef	makeBodyShared( b2World *world, const b2BodyDef &bodyDef );
 
-ci::Vec2f toCinder( const b2Vec2 &vec );
+ci::vec2 toCinder( const b2Vec2 &vec );
 ci::Color toCinder( const b2Color &color );
 
 class DebugDraw : public b2Draw {

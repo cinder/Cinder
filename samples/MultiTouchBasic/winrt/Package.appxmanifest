@@ -1,24 +1,28 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest">
-  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca756e" Publisher="CN=dalestam" Version="1.0.0.0" />
+<Package xmlns="http://schemas.microsoft.com/appx/2010/manifest" xmlns:m2="http://schemas.microsoft.com/appx/2013/manifest">
+  <Identity Name="2fc9d4c2-3757-42d1-816d-732c0fca756e" Publisher="CN=dalestam" Version="1.1.0.0" />
   <Properties>
     <DisplayName>basicApp</DisplayName>
     <PublisherDisplayName>dalestam</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Prerequisites>
-    <OSMinVersion>6.2.1</OSMinVersion>
-    <OSMaxVersionTested>6.2.1</OSMaxVersionTested>
+    <OSMinVersion>6.3</OSMinVersion>
+    <OSMaxVersionTested>6.3</OSMaxVersionTested>
   </Prerequisites>
   <Resources>
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="basicApp.App">
-      <VisualElements DisplayName="basicApp" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="basicApp" ForegroundText="light" BackgroundColor="#000000">
-        <DefaultTile ShowName="allLogos" />
-        <SplashScreen Image="Assets\SplashScreen.png" />
-      </VisualElements>
+      <m2:VisualElements DisplayName="basicApp" Description="basicApp" BackgroundColor="#000000" ForegroundText="light" Square150x150Logo="Assets\Logo.png" Square30x30Logo="Assets\SmallLogo.png">
+        <m2:DefaultTile>
+          <m2:ShowNameOnTiles>
+            <m2:ShowOn Tile="square150x150Logo" />
+          </m2:ShowNameOnTiles>
+        </m2:DefaultTile>
+        <m2:SplashScreen Image="Assets\SplashScreen.png" />
+      </m2:VisualElements>
     </Application>
   </Applications>
   <Capabilities>

@@ -19,14 +19,40 @@
     <Image Include="Assets\SplashScreen.png">
       <Filter>Assets</Filter>
     </Image>
+    <Filter Include="ANGLE">
+      <UniqueIdentifier>{ec667231-9dad-4083-a978-ada8fc8280bc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\x86">
+      <UniqueIdentifier>{87d60ebb-bc9a-42f4-980e-3bd754f9da7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ANGLE\x64">
+      <UniqueIdentifier>{ed2cc250-0e42-47a7-8f46-13aba48ba345}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{e313be67-673b-46b9-b682-3d36c520b61f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" />
   </ItemGroup>
   <ItemGroup>
     <None Include="MultiTouch_TemporaryKey.pfx" />
+    <None Include="..\..\..\lib\winrt\x86\libEGL.dll">
+      <Filter>ANGLE\x86</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x86\libGLESv2.dll">
+      <Filter>ANGLE\x86</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x64\libEGL.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
+    <None Include="..\..\..\lib\winrt\x64\libGLESv2.dll">
+      <Filter>ANGLE\x64</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\MultiTouchAppWinRT.cpp" />
+    <ClCompile Include="..\src\MultiTouchApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

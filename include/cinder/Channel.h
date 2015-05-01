@@ -28,6 +28,8 @@
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
 
+#include <algorithm>
+
 namespace cinder {
 
 typedef std::shared_ptr<class ImageSource> ImageSourceRef;
@@ -35,89 +37,95 @@ typedef std::shared_ptr<class ImageSource> ImageSourceRef;
 //! A single channel of image data, either a color channel of a Surface or a grayscale image. \ImplShared
 template<typename T>
 class ChannelT {	 
- protected:
-	/// \cond
- 	struct Obj {
-		Obj( int32_t width, int32_t height );
-		Obj( int32_t aWidth, int32_t aHeight, int32_t aRowBytes, uint8_t aIncrement, bool aOwnsData, T *aData );
-		~Obj();
-			
-		int32_t						mWidth, mHeight, mRowBytes;
-		T							*mData;
-		uint8_t						mIncrement;
-		bool						mOwnsData;
-		
-		void						(*mDeallocatorFunc)(void *refcon);
-		void						*mDeallocatorRefcon;
-	};
-	/// \endcond
-
  public:
-	/*! Constructs an empty Channel, which is the equivalent of NULL and should not be used directly. */
-	ChannelT() {}
+	//! An null Channel.
+	ChannelT();
 	//! Allocates and owns a contiguous block of memory that is sizeof(T) * width * height
 	ChannelT( int32_t width, int32_t height );
 	//! Does not allocate or own memory pointed to by \a data
 	ChannelT( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data );
+	//! Does not allocate memory pointed to by \a data but holds a reference to \a dataStore
+	ChannelT( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore );
+	//! Creates a clone of \a rhs. Data is always stored planar regardless of the increment of \a rhs.
+	ChannelT( const ChannelT &rhs );
+	//! Move constructor. Receives data store of \a rhs.
+	ChannelT( ChannelT &&rhs );
 	//! Creates a ChannelT by loading from an ImageSource \a imageSource
-	ChannelT( ImageSourceRef imageSource );
+	ChannelT( const ImageSourceRef &imageSource );
 
+	ChannelT&	operator=( const ChannelT &rhs );
+	ChannelT&	operator=( ChannelT &&rhs );	
 	operator ImageSourceRef() const;
 
+	//! Allocates and owns a contiguous block of memory that is sizeof(T) * width * height
+	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height )
+	{ return std::make_shared<ChannelT<T>>( width, height ); }
+	
+	//! Does not allocate or own memory pointed to by \a data
+	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data )
+	{ return std::make_shared<ChannelT<T>>( width, height, rowBytes, increment, data ); }
+	
+	//! Does not allocate memory pointed to by \a data but holds a reference to \a dataStore
+	static std::shared_ptr<ChannelT<T>> create( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore )
+	{ return std::make_shared<ChannelT<T>>( width, height, rowBytes, increment, data, dataStore ); }
+	
+	//! Creates a clone of \a rhs. Data is always stored planar regardless of the increment of \a rhs.
+	static std::shared_ptr<ChannelT<T>> create( const ChannelT &rhs )
+	{ return std::make_shared<ChannelT<T>>( rhs ); }
+	
+	//! Creates a ChannelT by loading from an ImageSource \a imageSource
+	static std::shared_ptr<ChannelT<T>> create( const ImageSourceRef &imageSource )
+	{ return std::make_shared<ChannelT<T>>( imageSource ); }
+	
+
 	//! Returns a new Channel which is a duplicate. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized.
-	ChannelT			clone( bool copyPixels = true ) const;
+	ChannelT	clone( bool copyPixels = true ) const;
 	//! Returns a new Channel which is a duplicate of an Area \a area. If \a copyPixels the pixel values are copied, otherwise the clone's pixels remain uninitialized.
-	ChannelT			clone( const Area &area, bool copyPixels = true ) const;
+	ChannelT	clone( const Area &area, bool copyPixels = true ) const;
 	
 	//! Returns the width of the Channel in pixels
-	int32_t		getWidth() const { return mObj->mWidth; }
+	int32_t		getWidth() const { return mWidth; }
 	//! Returns the height of the Channel in pixels
-	int32_t		getHeight() const { return mObj->mHeight; }
+	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the Channel in pixels
-	Vec2i		getSize() const { return Vec2i( mObj->mWidth, mObj->mHeight ); }
+	ivec2		getSize() const { return ivec2( mWidth, mHeight ); }
 	//! Returns the Channel aspect ratio, which is its width / height
-	float		getAspectRatio() const { return mObj->mWidth / (float)mObj->mHeight; }
+	float		getAspectRatio() const { return mWidth / (float)mHeight; }
 	//! Returns the bounding Area of the Channel in pixels: [0,0]-(width,height)
-	Area		getBounds() const { return Area( 0, 0, mObj->mWidth, mObj->mHeight ); }
+	Area		getBounds() const { return Area( 0, 0, mWidth, mHeight ); }
 	//! Returns the width of a row of the Channel measured in bytes, which is not necessarily getWidth() * getPixelInc()
-	int32_t		getRowBytes() const { return mObj->mRowBytes; }
+	int32_t		getRowBytes() const { return mRowBytes; }
 	//! Returns the amount to increment a T* to increment by a pixel. For a planar channel this is \c 1, but for a Channel of a Surface this might be \c 3 or \c 4
-	uint8_t		getIncrement() const { return mObj->mIncrement; }
+	uint8_t		getIncrement() const { return mIncrement; }
 	//! Returns whether the Channel represents a tightly packed array of values. This will be \c false if the Channel is a member of a Surface. Analogous to <tt>getIncrement() == 1</tt>
-	bool		isPlanar() const { return mObj->mIncrement == 1; }
+	bool		isPlanar() const { return mIncrement == 1; }
 
 	//! Returns a pointer to the data of the Channel's first pixel. Result is a uint8_t* for Channel8u and a float* for Channel32f.
-	T*			getData() { return mObj->mData; }
+	T*			getData() { return mData; }
 	//! Returns a const pointer to the data of the Channel's first pixel. Result is a uint8_t* for Channel8u and a float* for Channel32f.
-	const T*	getData() const { return mObj->mData; }
+	const T*	getData() const { return mData; }
 	//! Returns a pointer to the data of the Channel's pixel at \a offset. Result is a uint8_t* for Channel8u and a float* for Channel32f.	
-	T*			getData( const Vec2i &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
+	T*			getData( const ivec2 &offset ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + offset.x * mIncrement ) + offset.y * mRowBytes ); }
 	//! Returns a const pointer to the data of the Channel's pixel at \a offset. Result is a uint8_t* for Channel8u and a float* for Channel32f.	
-	const T*	getData( const Vec2i &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + offset.x * mObj->mIncrement ) + offset.y * mObj->mRowBytes ); }
+	const T*	getData( const ivec2 &offset ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + offset.x * mIncrement ) + offset.y * mRowBytes ); }
 	//! Returns a pointer to the data of the Channel's pixel at (\a x, \a y). Result is a uint8_t* for Channel8u and a float* for Channel32f.		
-	T*			getData( int32_t x, int32_t y ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + x * mObj->mIncrement ) + y * mObj->mRowBytes ); }
+	T*			getData( int32_t x, int32_t y ) { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + x * mIncrement ) + y * mRowBytes ); }
 	//! Returns a const pointer to the data of the Channel's pixel at (\a x, \a y). Result is a uint8_t* for Channel8u and a float* for Channel32f.		
-	const T*	getData( int32_t x, int32_t y ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mObj->mData + x * mObj->mIncrement ) + y * mObj->mRowBytes ); }
+	const T*	getData( int32_t x, int32_t y ) const { return reinterpret_cast<T*>( reinterpret_cast<unsigned char*>( mData + x * mIncrement ) + y * mRowBytes ); }
 
 	//! Convenience method for getting a single value at pixel \a pos. For performance-sensitive code consider \ref ChannelT::Iter "Channel::Iter" instead. Exhibits clamping behavior when outside Channel boundaries.
-	T		getValue ( Vec2i pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); return *getData( pos ); }
+	T		getValue ( ivec2 pos ) const { pos.x = constrain<int32_t>( pos.x, 0, mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mHeight - 1 ); return *getData( pos ); }
 	//! Convenience method for setting a single value \a v at pixel \a pos. For performance-sensitive code consider \ref ChannelT::Iter "Channel::Iter" instead. Exhibits clamping behavior when outside Channel boundaries.
-	void	setValue( Vec2i pos, T v ) { pos.x = constrain<int32_t>( pos.x, 0, mObj->mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mObj->mHeight - 1 ); *getData( pos ) = v; }
+	void	setValue( ivec2 pos, T v ) { pos.x = constrain<int32_t>( pos.x, 0, mWidth - 1); pos.y = constrain<int32_t>( pos.y, 0, mHeight - 1 ); *getData( pos ) = v; }
 
 	//! Copies the Area \a srcArea of the Channel \a srcChannel to \a this Channel. The destination Area is \a srcArea offset by \a relativeOffset.
-	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset = Vec2i::zero() );
+	void		copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &relativeOffset = ivec2() );
 
 	//! Returns an averaged value for the Area defined by \a area
 	T			areaAverage( const Area &area ) const;
 
-	/** Sets the deallocator, an optional callback which will fire upon the Channel::Obj's destruction. This is useful when a Channel is wrapping another API's image data structure whose lifetime is tied to the Channel's. **/
-	void		setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon );
-	
-	/// \cond
-	typedef std::shared_ptr<Obj> ChannelT::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &ChannelT::mObj; }
-	void reset() { mObj.reset(); }
-	/// \endcond
+	//! Returns the shared_ptr used to store the Channel's data. In general prefer getData() instead.
+	std::shared_ptr<T>	getDataStore() const { return mDataStore; }
 
 	/*! Convenience class for iterating the pixels of a Channel. */
 	class Iter {
@@ -153,7 +161,7 @@ class ChannelT {
 		//! Returns the y coordinate of the pixel the Iter currently points to		
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -221,7 +229,7 @@ class ChannelT {
 		//! Returns the y coordinate of the pixel the Iter currently points to
 		const int32_t	y() const { return mY; }
 		//! Returns the coordinate of the pixel the Iter currently points to		
-		Vec2i			getPos() const { return Vec2i( mX, mY ); }
+		ivec2			getPos() const { return ivec2( mX, mY ); }
 
 		//! Increments which pixel of the current row the Iter points to, and returns \c false when no pixels remain in the current row.
 		bool pixel() {
@@ -265,17 +273,24 @@ class ChannelT {
 	ConstIter	getIter( const Area &area ) const { return ConstIter( *this, area ); }
 	
   protected:
- 	std::shared_ptr<Obj>		mObj;
+	int32_t						mWidth, mHeight, mRowBytes;
+	uint8_t						mIncrement;
+	T							*mData;
+	std::shared_ptr<T>			mDataStore;
 };
 
 
 //! 8-bit image channel. Synonym for Channel8u.
-typedef ChannelT<uint8_t>	Channel;
+typedef ChannelT<uint8_t>			Channel;
 //! 8-bit image channel
-typedef ChannelT<uint8_t>	Channel8u;
+typedef ChannelT<uint8_t>			Channel8u;
+typedef std::shared_ptr<Channel8u>	Channel8uRef;
+typedef std::shared_ptr<Channel8u>	ChannelRef;
 //! 16-bit image channel. Suitable as an intermediate representation and ImageIo but not a first-class citizen.	
-typedef ChannelT<uint16_t>	Channel16u;
+typedef ChannelT<uint16_t>			Channel16u;
+typedef std::shared_ptr<Channel16u>	Channel16uRef;
 //! 32-bit floating point image channel
-typedef ChannelT<float>		Channel32f;
+typedef ChannelT<float>				Channel32f;
+typedef std::shared_ptr<Channel32f>	Channel32fRef;
 
 } // namespace cinder

@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/Rand.h"
 #include "cinder/Timer.h"
 
@@ -8,7 +8,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class RandTestApp : public AppNative {
+class RandTestApp : public App {
   public:
 	void setup();
 };
@@ -138,4 +138,4 @@ void RandTestApp::setup()
 	}
 }
 
-CINDER_APP_NATIVE( RandTestApp, RendererGl )
+CINDER_APP( RandTestApp, RendererGl )

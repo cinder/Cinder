@@ -46,7 +46,7 @@ class CaptureImplDirectShow {
 	int32_t		getWidth() const { return mWidth; }
 	int32_t		getHeight() const { return mHeight; }
 	
-	Surface8u	getSurface() const;
+	Surface8uRef	getSurface() const;
 	
 	const Capture::DeviceRef getDevice() const { return mDevice; }
 	
@@ -72,9 +72,9 @@ class CaptureImplDirectShow {
 	bool								mIsCapturing;
 	std::shared_ptr<class SurfaceCache>	mSurfaceCache;
 
-	int32_t				mWidth, mHeight;
-	mutable Surface8u	mCurrentFrame;
-	Capture::DeviceRef	mDevice;
+	int32_t					mWidth, mHeight;
+	mutable Surface8uRef	mCurrentFrame;
+	Capture::DeviceRef		mDevice;
 
 	static bool							sDevicesEnumerated;
 	static std::vector<Capture::DeviceRef>	sDevices;

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageIO.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Perlin.h"
@@ -16,7 +16,7 @@ using std::stringstream;
 using namespace ci;
 using namespace ci::app;
 
-class TutorialApp : public AppBasic {
+class TutorialApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -33,8 +33,8 @@ class TutorialApp : public AppBasic {
 	Channel32f mChannel;
 	gl::Texture	mTexture;
 	
-	Vec2i mMouseLoc;
-	Vec2f mMouseVel;
+	ivec2 mMouseLoc;
+	vec2 mMouseVel;
 	bool mIsPressed;
 	
 	ParticleController mParticleController;
@@ -62,8 +62,8 @@ void TutorialApp::setup()
 	mChannel = Channel32f( loadImage( loadUrl( url ) ) );
 	mTexture = mChannel;
 
-	mMouseLoc = Vec2i( 0, 0 );
-	mMouseVel = Vec2f::zero();
+	mMouseLoc = ivec2( 0, 0 );
+	mMouseVel = vec2::zero();
 	
 	mDrawParticles	= true;
 	mDrawImage		= false;
@@ -151,4 +151,4 @@ void TutorialApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( TutorialApp, RendererGl )
+CINDER_APP( TutorialApp, RendererGl )

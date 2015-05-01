@@ -63,6 +63,6 @@ void Quake::setLoc()
 	float theta = toRadians( 90 - mLat );
     float phi	= toRadians( 180 - mLong );
     
-	mLoc		= Vec3f( sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi) );
+	mLoc		= vec3( sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi) );
 }
 

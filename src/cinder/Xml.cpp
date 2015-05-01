@@ -239,7 +239,7 @@ void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, con
 {
 	Buffer buf = dataSource->getBuffer();
 	size_t dataSize = buf.getDataSize();
-	shared_ptr<char> bufString( new char[dataSize+1], checked_array_deleter<char>() );
+	unique_ptr<char[]> bufString( new char[dataSize+1] );
 	memcpy( bufString.get(), buf.getData(), buf.getDataSize() );
 	bufString.get()[dataSize] = 0;
 	rapidxml::xml_document<> doc;    // character type defaults to char

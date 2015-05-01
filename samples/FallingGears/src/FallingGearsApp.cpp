@@ -12,7 +12,8 @@
 // through the circle of fifths.  The SceneController class maintains a Box2D physics world, which
 // triggers the interaction between visuals and audio.
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Timeline.h"
@@ -21,7 +22,6 @@
 #include "cinder/params/Params.h"
 
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
 #include "AudioController.h"
 
 #include "Config.h"
@@ -32,16 +32,15 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class FallingGearsApp : public AppNative {
+class FallingGearsApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void mouseUp( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void mouseUp( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void setupGraphics();
 	void setupParams();
@@ -58,11 +57,6 @@ class FallingGearsApp : public AppNative {
 	float					mFps;
 	float					mMasterGain;
 };
-
-void FallingGearsApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1200, 800 );
-}
 
 void FallingGearsApp::setup()
 {
@@ -92,7 +86,7 @@ void FallingGearsApp::setupGraphics()
 
 void FallingGearsApp::setupParams()
 {
-	mParams = params::InterfaceGl::create( "params", Vec2i( 250, 350 ) );
+	mParams = params::InterfaceGl::create( "params", ivec2( 250, 350 ) );
 	mParams->minimize();
 	
 	mParams->addParam( "fps", &mFps, "", true );
@@ -195,21 +189,21 @@ void FallingGearsApp::drawBackground()
 
 	gl::color( Color::white() );
 
-	gl::pushModelView();
+	gl::pushModelMatrix();
 	gl::translate( 0, decentMod * 0.5f );
 
 	gl::draw( mBackgroundTex, destRect, destRect );
 
-	gl::popModelView();
+	gl::popModelMatrix();
 }
 
 void FallingGearsApp::drawDebug()
 {
 	float pointsPerMeter = mScene.getPointsPerMeter();
-	gl::pushModelView();
+	gl::pushModelMatrix();
 		gl::scale( pointsPerMeter, pointsPerMeter );
 		mScene.getWorld()->DrawDebugData();
-	gl::popModelView();
+	gl::popModelMatrix();
 }
 
 void FallingGearsApp::drawInfo()
@@ -225,11 +219,13 @@ void FallingGearsApp::drawInfo()
 
 	auto tex = gl::Texture::create( layout.render( true ) );
 
-	Vec2f offset( getWindowWidth() - tex->getWidth() - 16, 10 );
+	vec2 offset( getWindowWidth() - tex->getWidth() - 16, 10 );
 	gl::color( Color::white() );
 	gl::draw( tex, offset );
 
 	gl::disableAlphaBlending();
 }
 
-CINDER_APP_NATIVE( FallingGearsApp, RendererGl )
+CINDER_APP( FallingGearsApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1200, 800 );
+} )

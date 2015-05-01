@@ -1,6 +1,6 @@
 #import "NativeViewController.h"
 
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/App.h"
 
 @interface NativeViewController ()
 

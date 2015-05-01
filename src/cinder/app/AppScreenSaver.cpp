@@ -23,47 +23,62 @@
 
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/Renderer.h"
+#include "cinder/CinderAssert.h"
 
 #if defined( CINDER_MAC )
-#	import "cinder/app/AppImplCocoaScreenSaver.h"
+	#import "cinder/app/cocoa/AppImplMacScreenSaver.h"
+	#include "cinder/app/cocoa/PlatformCocoa.h"
+	#include "cinder/ImageSourceFileQuartz.h"
+	#include "cinder/ImageTargetFileQuartz.h"	
 #elif defined( CINDER_MSW )
-#	include "cinder/app/AppImplMswScreenSaver.h"
+	#include "cinder/app/msw/AppImplMswScreenSaver.h"
 #endif
 
-cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = 0;
+cinder::app::AppScreenSaver *cinder::app::AppScreenSaver::sInstance = nullptr;
+#if defined( CINDER_MSW )
+HWND cinder::app::AppScreenSaver::sMainHwnd = 0;
+#endif
 
 namespace cinder { namespace app {
 
 #if defined( CINDER_MAC )
 //static cinder::app::AppScreenSaverFactory *CINDER_SCREENSAVER_FACTORY = 0;
 
-void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title )
+AppScreenSaver::AppScreenSaver()
+	: mImpl( nullptr )
 {
-	App::sInstance = sInstance = app;
-	App::executeLaunch( app, renderer, title, 0, 0 );
+	AppBase::sInstance = sInstance = this;
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
+	CI_ASSERT( settings );
 	
-	app->prepareSettings( &app->mSettings );
-}
+	auto platform = dynamic_cast<PlatformCocoa *>( Platform::get() );
+	CI_ASSERT_MSG( platform, "expected global Platform object to be of type PlatformCocoa" );
 
+	platform->setBundle( getBundle() );
+	platform->setExecutablePath( getAppPath() );
+	
+	ImageSourceFileQuartz::registerSelf();
+	ImageTargetFileQuartz::registerSelf();	
+}
 
 #elif defined( CINDER_MSW )
-void AppScreenSaver::executeLaunch( AppScreenSaver *app, RendererRef renderer, const char *title, ::HWND hwnd )
+AppScreenSaver::AppScreenSaver()
 {
-	App::sInstance = sInstance = app;
-	app->mImpl = 0; // initially we have no implementation; necessary for determining whether we can call impl->eventHandler() yet
-	App::executeLaunch( app, renderer, title, 0, 0 );
+	AppBase::sInstance = sInstance = this;
+	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 
-	app->launch( hwnd );
+	mImpl = new AppImplMswScreenSaver( this, sMainHwnd, *settings );
 }
 
-void AppScreenSaver::launch( HWND hWnd )
+void AppScreenSaver::launch( const char *title, int argc, char * const argv[] )
 {
-	prepareSettings( &mSettings );
-
-	mImpl = new AppImplMswScreenSaver( this );
-	mImpl->init( hWnd );
 	mImpl->run();
 // NOTHING AFTER THIS LINE RUNS
+}
+
+LRESULT AppScreenSaver::eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
+{
+	return mImpl->eventHandler( hWnd, message, wParam, lParam );
 }
 #endif
 
@@ -106,7 +121,7 @@ fs::path AppScreenSaver::getAppPath() const
 #if defined( CINDER_COCOA )
 NSBundle* AppScreenSaver::getBundle() const
 {
-	return [NSBundle bundleForClass:[mImpl class]];
+	return [NSBundle bundleForClass:[AppImplMacScreenSaver class]];
 }
 #endif
 

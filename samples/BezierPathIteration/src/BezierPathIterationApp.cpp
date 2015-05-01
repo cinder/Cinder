@@ -2,7 +2,8 @@
 // It loads an SVG and generates a Path2dCalcCache per curve.
 // It then generates 2000 random particles which move along the paths at a constant speed
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/svg/Svg.h"
 #include "cinder/Rand.h"
@@ -13,7 +14,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BezierPathIterationApp : public AppNative {
+class BezierPathIterationApp : public App {
   public:
 	void setup() override;
 	void loadSvg( const fs::path &fsPath );
@@ -28,11 +29,11 @@ class BezierPathIterationApp : public AppNative {
 		}
 		
 		const Path2dCalcCache&	mPathCache;
-		Vec2f					mLastPos;
+		vec2					mLastPos;
 		float					mCurrentDistance;
 	};
 	
-	Vec2f						mWindowOffset, mWindowScale;
+	vec2						mWindowOffset, mWindowScale;
 	vector<Path2dCalcCache>		mPathCaches;
 	// each path iterator has a reference to its path(cache) and its current position
 	vector<PathIter>			mPathIters;
@@ -60,7 +61,7 @@ void BezierPathIterationApp::loadSvg( const fs::path &fsPath )
 	gl::setMatricesWindow( getWindowSize() );
 	Rectf svgBounds = shape.calcPreciseBoundingBox();
 	Rectf fitRect = svgBounds.getCenteredFit( Rectf( getWindowBounds() ), false );
-	mWindowOffset = ( getWindowSize() - fitRect.getSize() ) / 2;
+	mWindowOffset = ( getWindowSize() - ivec2(fitRect.getSize()) ) / 2;
 	mWindowScale = fitRect.getSize() / svgBounds.getSize();
 	
 	// Generate 2000 PathIters, all assigned to random paths and random points along their respective paths
@@ -89,11 +90,11 @@ void BezierPathIterationApp::draw()
 	for( auto &pathIt : mPathIters ) {
 		pathIt.mCurrentDistance += 3.0f; // move 3 units along the path
 		float newTime = pathIt.mPathCache.calcTimeForDistance( pathIt.mCurrentDistance );
-		Vec2f pos = pathIt.mPathCache.getPosition( newTime );
+		vec2 pos = pathIt.mPathCache.getPosition( newTime );
 		
 		gl::drawLine( pathIt.mLastPos, pos );
 		pathIt.mLastPos = pos;
 	}
 }
 
-CINDER_APP_NATIVE( BezierPathIterationApp, RendererGl )
+CINDER_APP( BezierPathIterationApp, RendererGl )

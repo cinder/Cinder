@@ -7,12 +7,12 @@
 class Particle {
  public:
 	Particle();
-	Particle( ci::Vec2f );
+	Particle( ci::vec2 );
 	void update();
 	void draw();
 	
-	ci::Vec2f	mLoc;
-	ci::Vec2f	mDir;
+	ci::vec2	mLoc;
+	ci::vec2	mDir;
 	float		mVel;
 	
 	float		mRadius;

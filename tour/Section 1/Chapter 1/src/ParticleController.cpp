@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "ParticleController.h"
@@ -30,7 +30,7 @@ void ParticleController::addParticles( int amt )
 	{
 		float x = Rand::randFloat( app::getWindowWidth() );
 		float y = Rand::randFloat( app::getWindowHeight() );
-		mParticles.push_back( Particle( Vec2f( x, y ) ) );
+		mParticles.push_back( Particle( vec2( x, y ) ) );
 	}
 }
 

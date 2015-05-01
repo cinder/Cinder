@@ -26,25 +26,17 @@
 #include "cinder/Surface.h"
 #include "cinder/Exception.h"
 
-#if defined( CINDER_MAC )
+#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	#if defined( __OBJC__ )
-		@class CaptureImplQtKit;
-		@class QTCaptureDevice;
+		@class CaptureImplAvFoundation;
 	#else
-		class CaptureImplQtKit;
-		class QTCaptureDevice;
+		class CaptureImplAvFoundation;
 	#endif
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
 	#if defined( __OBJC__ )
 		@class CaptureImplCocoaDummy;
 	#else
 		class CaptureImplCocoaDummy;
-	#endif
-#elif defined( CINDER_COCOA_TOUCH_DEVICE )
-	#if defined( __OBJC__ )
-		@class CaptureImplAvFoundation;
-	#else
-		class CaptureImplAvFoundation;
 	#endif
 #elif defined( CINDER_MSW )
 	namespace cinder {
@@ -63,12 +55,10 @@ class Capture {
 	class Device;
 	typedef std::shared_ptr<Device> DeviceRef;
 
+	//! Creates a new Capture requesting (but not promising) a resolution of \a width x \a height pixels.
 	static CaptureRef	create( int32_t width, int32_t height, const DeviceRef device = DeviceRef() ) { return CaptureRef( new Capture( width, height, device ) ); }
 
-	Capture() {}
-	//! \deprecated Call Capture::create() instead
-	Capture( int32_t width, int32_t height, const DeviceRef device = DeviceRef() );
-	~Capture() {}
+	~Capture();
 
 	//! Begin capturing video
 	void		start();
@@ -85,14 +75,14 @@ class Capture {
 	//! Returns the height of the captured image in pixels.
 	int32_t		getHeight() const;
 	//! Returns the size of the captured image in pixels.
-	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the aspect ratio of the capture imagee, which is its width / height
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding rectangle of the capture imagee, which is Area( 0, 0, width, height )
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	
-	//! Returns a Surface representing the current captured frame.
-	Surface8u	getSurface() const;
+	//! Returns a SurfaceRef representing the current captured frame.
+	Surface8uRef	getSurface() const;
 	//! Returns the associated Device for this instace of Capture
 	const Capture::DeviceRef getDevice() const;
 
@@ -121,7 +111,7 @@ class Capture {
 		virtual bool						isConnected() const = 0;
 		//! Returns the OS-specific unique identifier
 		virtual Capture::DeviceIdentifier	getUniqueId() const = 0;
-		//! Returns an OS-specific pointer. QTCaptureDevice* on Mac OS X, AVCaptureDevice* on iOS. Not implemented on MSW.
+		//! Returns an OS-specific pointer. AVCaptureDevice* on OS X and iOS. Not implemented on MSW.
 #if defined( CINDER_COCOA )
 		virtual void*		getNative() const = 0;
 #endif
@@ -134,31 +124,16 @@ class Capture {
 		std::string		mName;
 	};
 		
- protected: 
-	struct Obj {
-		Obj( int32_t width, int32_t height, const Capture::DeviceRef device );
-		virtual ~Obj();
+ protected:
+ 	Capture( int32_t width, int32_t height, const DeviceRef device );
 
-#if defined( CINDER_MAC ) 
-		CaptureImplQtKit				*mImpl;
+#if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
+	CaptureImplAvFoundation			*mImpl;
 #elif defined( CINDER_COCOA_TOUCH_SIMULATOR )
-		CaptureImplCocoaDummy			*mImpl;
-#elif defined( CINDER_COCOA_TOUCH_DEVICE )
-		CaptureImplAvFoundation			*mImpl;
+	CaptureImplCocoaDummy			*mImpl;
 #elif defined( CINDER_MSW )
-		CaptureImplDirectShow			*mImpl;
+	CaptureImplDirectShow			*mImpl;
 #endif
-	};
-	
-	std::shared_ptr<Obj>				mObj;
-	
-  public:
- 	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Capture::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Capture::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
 };
 
 class CaptureExc : public Exception {

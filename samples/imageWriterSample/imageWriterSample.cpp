@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
@@ -8,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ImageWriterSampleApp : public AppBasic {
+class ImageWriterSampleApp : public App {
  public:	
 	void setup()
 	{
@@ -21,11 +22,11 @@ class ImageWriterSampleApp : public AppBasic {
 				writeImage( pngPath, srf, ImageTarget::Options().colorModel( ImageIo::CM_GRAY ).quality( 0.5f ) );
 			}
 		}
-		catch( ... ) {
-			console() << "unable to save the image file!" << std::endl;
+		catch( ci::Exception &exc ) {
+			console() << "unable to save the image file, what: " << exc.what() << std::endl;
 		}		
 	}
 };
 
 
-CINDER_APP_BASIC( ImageWriterSampleApp, RendererGl )
+CINDER_APP( ImageWriterSampleApp, RendererGl )

@@ -1,5 +1,5 @@
-#include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/System.h"
 #include "cinder/Rand.h"
 using namespace ci;
@@ -13,12 +13,12 @@ using namespace std;
 
 struct TouchPoint {
 	TouchPoint() {}
-	TouchPoint( const Vec2f &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
+	TouchPoint( const vec2 &initialPt, const Color &color ) : mColor( color ), mTimeOfDeath( -1.0 ) 
 	{
 		mLine.push_back( initialPt ); 
 	}
 	
-	void addPoint( const Vec2f &pt ) { mLine.push_back( pt ); }
+	void addPoint( const vec2 &pt ) { mLine.push_back( pt ); }
 	
 	void draw() const
 	{
@@ -34,16 +34,14 @@ struct TouchPoint {
 	
 	bool isDead() const { return getElapsedSeconds() > mTimeOfDeath; }
 	
-	PolyLine<Vec2f>	mLine;
+	PolyLine2f		mLine;
 	Color			mColor;
 	float			mTimeOfDeath;
 };
 
 // We'll create a new Cinder Application by deriving from the BasicApp class
-class MultiTouchApp : public AppNative {
+class MultiTouchApp : public App {
  public:
-	void	prepareSettings( Settings *settings );
-
 	void	mouseDown( MouseEvent event );
 	void	mouseDrag( MouseEvent event );	
 
@@ -53,7 +51,7 @@ class MultiTouchApp : public AppNative {
 
 	void	setup();
 	void	draw();
-	void	keyDown( KeyEvent event ) { setFullScreen( ! isFullScreen() ); }
+	void	keyDown( KeyEvent event ) { if( event.getChar() == 'f' ) setFullScreen( ! isFullScreen() ); }
 	
 	map<uint32_t,TouchPoint>	mActivePoints;
 	list<TouchPoint>			mDyingPoints;
@@ -64,9 +62,9 @@ void MultiTouchApp::setup()
 	console() << "MT: " << System::hasMultiTouch() << " Max points: " << System::getMaxMultiTouchPoints() << std::endl;
 }
 
-void MultiTouchApp::prepareSettings( Settings *settings )
+void prepareSettings( MultiTouchApp::Settings *settings )
 {
-	settings->enableMultiTouch();
+	settings->setMultiTouchEnabled( true );
 }
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
@@ -102,7 +100,7 @@ void MultiTouchApp::mouseDown( MouseEvent event )
 
 void MultiTouchApp::mouseDrag( MouseEvent event )
 {
-	console() << "Mouse drag: " << std::endl;	
+	console() << "Mouse drag: " << std::endl;
 }
 
 void MultiTouchApp::draw()
@@ -129,4 +127,4 @@ void MultiTouchApp::draw()
 		gl::drawStrokedCircle( touchIt->getPos(), 20.0f );
 }
 
-CINDER_APP_NATIVE( MultiTouchApp, RendererGl )
+CINDER_APP( MultiTouchApp, RendererGl, prepareSettings )

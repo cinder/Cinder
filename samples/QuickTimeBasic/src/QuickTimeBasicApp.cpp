@@ -1,7 +1,8 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/qtime/QuickTime.h"
+#include "cinder/qtime/QuickTimeGl.h"
 #include "cinder/Text.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
@@ -10,7 +11,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class QuickTimeSampleApp : public AppBasic {
+class QuickTimeSampleApp : public App {
  public:
 	void setup();
 
@@ -22,7 +23,7 @@ class QuickTimeSampleApp : public AppBasic {
 
 	void loadMovieFile( const fs::path &path );
 
-	gl::Texture				mFrameTexture, mInfoTexture;
+	gl::TextureRef			mFrameTexture, mInfoTexture;
 	qtime::MovieGlRef		mMovie;
 };
 
@@ -67,11 +68,11 @@ void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 		infoText.addLine( toString( mMovie->getNumFrames() ) + " frames" );
 		infoText.addLine( toString( mMovie->getFramerate() ) + " fps" );
 		infoText.setBorder( 4, 2 );
-		mInfoTexture = gl::Texture( infoText.render( true ) );
+		mInfoTexture = gl::Texture::create( infoText.render( true ) );
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
-		mMovie->reset();
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
+		mMovie.reset();
 		mInfoTexture.reset();
 	}
 
@@ -95,14 +96,13 @@ void QuickTimeSampleApp::draw()
 	gl::enableAlphaBlending();
 
 	if( mFrameTexture ) {
-		Rectf centeredRect = Rectf( mFrameTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
-		gl::draw( mFrameTexture, centeredRect  );
+		Rectf centeredRect = Rectf( mFrameTexture->getBounds() ).getCenteredFit( getWindowBounds(), true );
+		gl::draw( mFrameTexture, centeredRect );
 	}
 
 	if( mInfoTexture ) {
-		glDisable( GL_TEXTURE_RECTANGLE_ARB );
-		gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - mInfoTexture.getHeight() ) );
+		gl::draw( mInfoTexture, vec2( 20, getWindowHeight() - 20 - mInfoTexture->getHeight() ) );
 	}
 }
 
-CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl(0) );
+CINDER_APP( QuickTimeSampleApp, RendererGl );

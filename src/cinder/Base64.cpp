@@ -48,7 +48,7 @@ void base64_init_decodestate( base64_decodestate* state_in )
 	state_in->plainchar = 0;
 }
 
-int base64_decode_block( const char* code_in, const int length_in, char* plaintext_out, base64_decodestate* state_in )
+ptrdiff_t base64_decode_block( const char* code_in, const size_t length_in, char* plaintext_out, base64_decodestate* state_in )
 {
 	const char* codechar = code_in;
 	char* plainchar = plaintext_out;
@@ -136,7 +136,7 @@ char base64_encode_value(char value_in)
 	return encoding[(int)value_in];
 }
 
-int base64_encode_block(const char* plaintext_in, int length_in, char* code_out, base64_encodestate* state_in, int charsPerLine )
+ptrdiff_t base64_encode_block(const char* plaintext_in, size_t length_in, char* code_out, base64_encodestate* state_in, int charsPerLine )
 {
 	const char* plainchar = plaintext_in;
 	const char* const plaintextend = plaintext_in + length_in;
@@ -197,7 +197,7 @@ int base64_encode_block(const char* plaintext_in, int length_in, char* code_out,
 	return codechar - code_out;
 }
 
-int base64_encode_blockend( char* code_out, base64_encodestate* state_in )
+ptrdiff_t base64_encode_blockend( char* code_out, base64_encodestate* state_in )
 {
 	char* codechar = code_out;
 	
@@ -244,7 +244,7 @@ std::string toBase64( const void *input, size_t inputSize, int charsPerLine )
 
 	base64_encodestate encs;
 	base64_init_encodestate( &encs );
-	size_t resultSize = base64_encode_block( reinterpret_cast<const char*>(input), inputSize, &buffer[0], &encs, charsPerLine );
+	ptrdiff_t resultSize = base64_encode_block( reinterpret_cast<const char*>(input), inputSize, &buffer[0], &encs, charsPerLine );
 	resultSize += base64_encode_blockend( &buffer[resultSize], &encs );
 	buffer[resultSize] = 0; // null terminate the string
 	
@@ -270,7 +270,7 @@ Buffer fromBase64( const void *input, size_t inputSize )
 	if( inputSize >= 4 ) {
 		base64_decodestate decs;
 		base64_init_decodestate( &decs );
-		int actualSize = base64_decode_block( reinterpret_cast<const char*>(input), inputSize, (char*)result.getData(), &decs );
+		ptrdiff_t actualSize = base64_decode_block( reinterpret_cast<const char*>(input), inputSize, (char*)result.getData(), &decs );
 		result.setDataSize( actualSize );
 	}
 	return result;

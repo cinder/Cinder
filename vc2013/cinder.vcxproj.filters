@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -67,6 +67,9 @@
     <Filter Include="Source Files\jsoncpp">
       <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\json">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
+    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
     </Filter>
@@ -84,9 +87,6 @@
     </Filter>
     <Filter Include="Header Files\dx">
       <UniqueIdentifier>{1a305511-2204-4100-81d9-aecef552ae09}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\dx">
-      <UniqueIdentifier>{aaf12809-97ce-4c25-bb74-4c111e438a25}</UniqueIdentifier>
     </Filter>
     <Filter Include="Header Files\audio\dsp">
       <UniqueIdentifier>{547d2686-dd07-4302-befa-3d0815504249}</UniqueIdentifier>
@@ -133,11 +133,20 @@
     <Filter Include="Source Files\oggvorbis\vorbis\modes">
       <UniqueIdentifier>{54a3930c-e7ed-418e-83b6-977db7fadc51}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\jsoncpp">
-      <UniqueIdentifier>{89f1b95b-57f6-4a4d-8cec-0c0b6d1cd298}</UniqueIdentifier>
+    <Filter Include="Source Files\glload">
+      <UniqueIdentifier>{989dc751-89fb-4b63-adb6-f745dd03ccb9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\jsoncpp\json">
-      <UniqueIdentifier>{aecdcab0-b410-4781-a321-a61b4e0cdcc8}</UniqueIdentifier>
+    <Filter Include="Header Files\app\msw">
+      <UniqueIdentifier>{714beaed-38b5-4cf9-b6bb-f2ed1dd5eb1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app\msw">
+      <UniqueIdentifier>{d87b601e-f0bc-4dc1-8cd1-624ae4de33cb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\app\winrt">
+      <UniqueIdentifier>{5310b59c-654a-431d-9860-d270bb5eab0e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\app\winrt">
+      <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -261,59 +270,11 @@
     <ClCompile Include="..\src\cinder\Xml.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\App.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppBasic.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMsw.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswBasic.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGdi.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererGl.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\KeyEvent.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\app\Renderer.cpp">
       <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\DisplayList.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\gl.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\GLee.c">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\Light.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\Material.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\Texture.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TileRender.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\VBO.cpp">
-      <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\ip\EdgeDetect.cpp">
       <Filter>Source Files\ip</Filter>
@@ -417,9 +378,6 @@
     <ClCompile Include="..\src\cinder\Triangulate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Frustum.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -459,49 +417,7 @@
     <ClCompile Include="..\src\cinder\app\Window.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswScreenSaver.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\StereoAutoFocuser.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\QuickTime.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
-      <Filter>Source Files\qtime</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\AppImplMswRendererDx.cpp">
-      <Filter>Source Files\app</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DDSTextureLoader.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\dx.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxLight.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxTexture.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxTextureFont.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxVbo.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\HlslProg.cpp">
-      <Filter>Source Files\dx</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\app\RendererDx.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\MatrixStack.cpp">
@@ -509,9 +425,6 @@
     </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\dx\DxRenderTarget.cpp">
-      <Filter>Source Files\dx</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\ChannelRouterNode.cpp">
       <Filter>Source Files\audio</Filter>
@@ -687,8 +600,197 @@
     <ClCompile Include="..\src\cinder\CinderAssert.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Batch.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\BufferObj.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ConstantStrings.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Context.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Environment.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\EnvironmentCore.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Pbo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Shader.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Sync.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Texture.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFont.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TextureFormatParsers.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Vao.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\VaoImplCore.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\VaoImplEs.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\VaoImplSoftware.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Vbo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\VboMesh.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\MovieWriter.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeGlImplLegacy.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeImplLegacy.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\qtime\QuickTimeUtils.cpp">
+      <Filter>Source Files\qtime</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glload\gl_load.c">
+      <Filter>Source Files\glload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glload\gl_load_cpp.cpp">
+      <Filter>Source Files\glload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glload\wgl_load.c">
+      <Filter>Source Files\glload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\glload\wgl_load_cpp.cpp">
+      <Filter>Source Files\glload</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\GeomIo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\RendererGl.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Log.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\LoadOGLCore.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\AntTweakBar\TwOpenGLCore.cpp">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Query.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ImageSourceFileRadiance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\EnvironmentEs.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
     <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp">
       <Filter>Source Files\jsoncpp</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\AppBase.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\Platform.cpp">
+      <Filter>Source Files\app</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\Signals.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswBasic.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppImplMswScreenSaver.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\AppMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\PlatformMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImpl2dGdi.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlAngle.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\msw\RendererImplGlMsw.cpp">
+      <Filter>Source Files\app\msw</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRT.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\AppImplWinRTBasic.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\PlatformWinRt.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
+      <Filter>Source Files\app\winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\draw.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\scoped.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\wrapper.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CameraUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Blur.cpp">
+      <Filter>Source Files\ip</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -809,9 +911,6 @@
     <ClInclude Include="..\include\cinder\Matrix.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\MayaCamUI.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\ObjLoader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -881,81 +980,6 @@
     <ClInclude Include="..\include\cinder\Xml.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\App.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppBasic.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppDialog.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMsw.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswBasic.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRenderer.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGdi.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererGl.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswScreenSaver.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\KeyEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\MouseEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Renderer.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\TouchEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\DisplayList.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\Fbo.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\gl.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\GLee.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\GlslProg.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\Light.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\Material.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\Texture.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\TileRender.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\VBO.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\ip\EdgeDetect.h">
       <Filter>Header Files\ip</Filter>
     </ClInclude>
@@ -1001,12 +1025,6 @@
     <ClInclude Include="..\include\cinder\UrlImplWinInet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Event.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\ResizeEvent.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Function.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1027,9 +1045,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\Clipboard.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppNative.h">
-      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\src\libtess2\bucketalloc.h">
       <Filter>Source Files\libtess2</Filter>
@@ -1082,12 +1097,6 @@
     <ClInclude Include="..\include\cinder\Matrix44.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\MatrixAlgo.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\TextureFont.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\Base64.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -1109,20 +1118,8 @@
     <ClInclude Include="..\include\cinder\Unicode.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\app\Window.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\QuickTime.h">
-      <Filter>Header Files\qtime</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
-      <Filter>Header Files\qtime</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\DDS.h">
       <Filter>Header Files\dx</Filter>
@@ -1153,12 +1150,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
       <Filter>Header Files\dx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\AppImplMswRendererDx.h">
-      <Filter>Header Files\app</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\app\RendererDx.h">
-      <Filter>Header Files\app</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\MatrixStack.h">
       <Filter>Header Files</Filter>
@@ -1448,11 +1439,224 @@
     <ClInclude Include="..\include\cinder\CurrentFunction.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Batch.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\BufferObj.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\BufferTexture.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ConstantStrings.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Context.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Environment.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Fbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\gl.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\GlslProg.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Pbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Shader.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Sync.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Texture.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFont.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TextureFormatParsers.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\TransformFeedbackObj.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Vao.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Vbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\VboMesh.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\MovieWriter.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTime.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeGl.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeGlImplLegacy.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeImplLegacy.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\qtime\QuickTimeUtils.h">
+      <Filter>Header Files\qtime</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\GeomIo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Log.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\LoadOGLCore.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\AntTweakBar\TwOpenGLCore.h">
+      <Filter>Source Files\AntTweakBar</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CinderGlm.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Query.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ImageSourceFileRadiance.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ubo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json.h">
-      <Filter>Header Files\jsoncpp\json</Filter>
+      <Filter>Header Files\json</Filter>
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
-      <Filter>Header Files\jsoncpp\json</Filter>
+      <Filter>Header Files\json</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Signals.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\App.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppBase.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\AppScreenSaver.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Event.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\FileDropEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\KeyEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\MouseEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Platform.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Renderer.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererDx.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\RendererGl.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\TouchEvent.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\Window.h">
+      <Filter>Header Files\app</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswBasic.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppImplMswScreenSaver.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\PlatformMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\AppMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImpl2dGdi.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplDx.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlAngle.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplGlMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\msw\RendererImplMsw.h">
+      <Filter>Header Files\app\msw</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRTBasic.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\WinRTApp.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\AppImplWinRT.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
+      <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\draw.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\platform.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\scoped.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\wrapper.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Breakpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\audio.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Checkerboard.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CameraUi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Blur.h">
+      <Filter>Header Files\ip</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0087D25512CD809F002CD69F /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0087D25412CD809F002CD69F /* CoreText.framework */; };
+		00C0920B19D3928D001DAA8A /* assets in Resources */ = {isa = PBXBuildFile; fileRef = 00C0920A19D3928D001DAA8A /* assets */; };
 		00CFDF6B1138442D0091E310 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00CFDF6A1138442D0091E310 /* CoreGraphics.framework */; };
 		0481C935302240CE96A44D4D /* CinderApp_ios.png in Resources */ = {isa = PBXBuildFile; fileRef = 0E657E9CE1804A21815F8DDF /* CinderApp_ios.png */; };
 		0D635F8BFB654BE99338D5B8 /* CoreMotion.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A13567E68820416DB2095A0F /* CoreMotion.framework */; };
@@ -30,6 +31,7 @@
 /* Begin PBXFileReference section */
 		00692BCF14FF149000D0A05E /* Compass.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Compass.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		0087D25412CD809F002CD69F /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		00C0920A19D3928D001DAA8A /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		00CFDF6A1138442D0091E310 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		0E657E9CE1804A21815F8DDF /* CinderApp_ios.png */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; name = CinderApp_ios.png; path = ../resources/CinderApp_ios.png; sourceTree = "<group>"; };
 		1111EA52165DB012001D02BA /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
@@ -81,6 +83,7 @@
 		00692BC414FF149000D0A05E = {
 			isa = PBXGroup;
 			children = (
+				00C0920A19D3928D001DAA8A /* assets */,
 				99692BD914FF149000DFFFFF /* Blocks */,
 				99692BD914FF149000D0A05F /* Headers */,
 				00692BD914FF149000D0A05E /* Source */,
@@ -205,6 +208,8 @@
 /* Begin PBXProject section */
 		00692BC614FF149000D0A05E /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 00692BC914FF149000D0A05E /* Build configuration list for PBXProject "Compass" */;
 			compatibilityVersion = "Xcode 3.2";
 			developmentRegion = English;
@@ -227,6 +232,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00C0920B19D3928D001DAA8A /* assets in Resources */,
 				0481C935302240CE96A44D4D /* CinderApp_ios.png in Resources */,
 				AFB084E3E629413FBB874703 /* Default-568h@2x.png in Resources */,
 			);

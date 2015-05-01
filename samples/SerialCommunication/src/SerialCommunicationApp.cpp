@@ -1,7 +1,11 @@
-#include "cinder/app/AppBasic.h"
+// Demonstrates using the ci::Serial class
+
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Serial.h"
 #include "cinder/Text.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 
 #include <sstream>
 
@@ -12,143 +16,116 @@ using namespace std;
 #define BUFSIZE 80
 #define READ_INTERVAL 0.25
 
-
-// We'll create a new Cinder Application by deriving from the BasicApp class
-class SerialCommunicationApp : public AppBasic {
+class SerialCommunicationApp : public App {
  public:
-	// Cinder calls this function 30 times per second by default
-	void draw();
-	void update();
-	void setup();
-	void mouseDown(MouseEvent event);
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
+
+	bool		mSendSerialMessage;
+	SerialRef	mSerial;
+	uint8_t		mCounter;
+	string		mLastString;
 	
-	bool		bSendSerialMessage, bTextureComplete;			// a flag for sending serial
-	Serial serial;
-	uint8_t			ctr;
-	std::string lastString;
+	gl::TextureRef	mTexture;
 	
-	gl::Texture	mTexture;
-	
-	double sinceLastRead, lastUpdate;
+	double mLastRead, mLastUpdate;
 };
 
 void SerialCommunicationApp::setup()
 {
-	ctr = 0;
-	lastString = "";
-	sinceLastRead = 0.0;
-	lastUpdate = 0.0;
-	
-	bSendSerialMessage = false;
-	bTextureComplete = false;
+	mCounter = 0;
+	mLastRead = 0;
+	mLastUpdate = 0;
+	mSendSerialMessage = false;
 
 	// print the devices
-	const vector<Serial::Device> &devices( Serial::getDevices() );
-	for( vector<Serial::Device>::const_iterator deviceIt = devices.begin(); deviceIt != devices.end(); ++deviceIt ) {
-		console() << "Device: " << deviceIt->getName() << endl;
-	}
-	
+	for( const auto &dev : Serial::getDevices() )
+		console() << "Device: " << dev.getName() << endl;
+
 	try {
-		Serial::Device dev = Serial::findDeviceByNameContains("tty.usbserial");
-		serial = Serial( dev, 9600);
+		Serial::Device dev = Serial::findDeviceByNameContains( "tty.usbserial" );
+		mSerial = Serial::create( dev, 9600 );
 	}
-	catch( ... ) {
-		console() << "There was an error initializing the serial device!" << std::endl;
+	catch( SerialExc &exc ) {
+		CI_LOG_EXCEPTION( "coult not initialize the serial device", exc );
 		exit( -1 );
 	}
 	
 	// wait for * as a sign for first contact
 	char contact = 0;
-	while(contact != '*')
-	{
-		contact = (char) serial.readByte();
+	while( contact != '*' )	{
+		contact = (char)mSerial->readByte();
 	}
 	
 	// request actual data
-	serial.writeByte(ctr);
+	mSerial->writeByte( mCounter );
 	
 	// clear accumulated contact messages in buffer
 	char b = '*';
-	while(serial.getNumBytesAvailable() > -1)
-	{
-		b = serial.readByte();
+	while( mSerial->getNumBytesAvailable() > -1 ) {
+		b = mSerial->readByte();
 		console() << b << "_";
 	}
 		
-	serial.flush();
+	mSerial->flush();
+}
+
+void SerialCommunicationApp::mouseDown( MouseEvent event )
+{
+//	mSendSerialMessage = true;
 }
 
 void SerialCommunicationApp::update()
 {
-//	console() << "Bytes available: " << serial.getNumBytesAvailable() << std::endl;
+//	console() << "Bytes available: " << mSerial->getNumBytesAvailable() << std::endl;
 	
 	double now = getElapsedSeconds();
-	double deltaTime = now - lastUpdate;
-	lastUpdate = now;
-	sinceLastRead += deltaTime;
+	double deltaTime = now - mLastUpdate;
+	mLastUpdate = now;
+	mLastRead += deltaTime;
 	
-	if(sinceLastRead > READ_INTERVAL)
-	{
-		bSendSerialMessage = true;
-		sinceLastRead = 0.0;
+	if( mLastRead > READ_INTERVAL )	{
+		mSendSerialMessage = true;
+		mLastRead = 0.0;
 	}
-		
-	
-	if (bSendSerialMessage)
-	{
+
+	if( mSendSerialMessage ) {
 		// request next chunk
-		serial.writeByte(ctr);
+		mSerial->writeByte( mCounter );
 		
 		try{
 			// read until newline, to a maximum of BUFSIZE bytes
-			lastString = serial.readStringUntil('\n', BUFSIZE );
+			mLastString = mSerial->readStringUntil( '\n', BUFSIZE );
 
-		} catch(SerialTimeoutExc e) {
-			console() << "timeout" << endl;
+		}
+		catch( SerialTimeoutExc &exc ) {
+			CI_LOG_EXCEPTION( "timeout", exc );
 		}
 		
-		
-		bSendSerialMessage = false;
-		
-		ctr+=8;
-		console() << lastString << endl;
-		
+		mSendSerialMessage = false;
+		mCounter += 8;
+
+		console() << "last string: " << mLastString << endl;
 		
 		TextLayout simple;
 		simple.setFont( Font( "Arial Black", 24 ) );
 		simple.setColor( Color( .7, .7, .2 ) );
-		simple.addLine( lastString );
+		simple.addLine( mLastString );
 		simple.setLeadingOffset( 0 );
-		mTexture = gl::Texture( simple.render( true, false ) );
-		bTextureComplete = true;
-		
-		serial.flush();
+		mTexture = gl::Texture::create( simple.render( true, false ) );
+
+		mSerial->flush();
 	}
 }
-
-void SerialCommunicationApp::mouseDown(MouseEvent event){
-//	bSendSerialMessage = true;
-}
-
 
 void SerialCommunicationApp::draw()
 {
-	// this pair of lines is the standard way to clear the screen in OpenGL
-	//printf("click to test serial:\nnBytes read %i\nnTimes read %i\nread: %s\n(at time %0.3f)", nBytesRead, nTimesRead, lastString, readTime);
+	gl::clear();
 	
-	// this pair of lines is the standard way to clear the screen in OpenGL
-	glClearColor( 0.1f, 0.1f, 0.1f, 1.0f );
-	glClear( GL_COLOR_BUFFER_BIT );
-	
-	gl::enableAlphaBlending( false );
-	
-	if(bTextureComplete){
-		glColor3f( 1.0f, 1.0f, 1.0f );
-		gl::draw( mTexture, Vec2f( 10, 10 ) );
-	}
-	
-	
+	if( mTexture )
+		gl::draw( mTexture, vec2( 10, 10 ) );
 }
 
-// This line tells Cinder to actually create the application
-CINDER_APP_BASIC( SerialCommunicationApp, RendererGl )
+CINDER_APP( SerialCommunicationApp, RendererGl )

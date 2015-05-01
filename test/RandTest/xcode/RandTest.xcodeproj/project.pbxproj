@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* RandTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = RandTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C114C65120394026A889D0EB /* RandTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/RandTestApp.cpp; sourceTree = "<group>"; name = RandTestApp.cpp; };
 		ED2158064C2D40D3ADCE0B80 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		2E572DAE368045A1BE84F713 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		2E572DAE368045A1BE84F713 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		A7E0D33ADEE749A782286FAB /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		387CC74E6E8F4E7881E7C932 /* RandTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = RandTest_Prefix.pch; sourceTree = "<group>"; name = RandTest_Prefix.pch; };
 /* End PBXFileReference section */

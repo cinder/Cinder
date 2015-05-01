@@ -24,7 +24,7 @@
 
 #include "cinder/Color.h"
 #include "cinder/Quaternion.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 
 #include <string>
 #include <map>
@@ -47,16 +47,16 @@ typedef std::shared_ptr<class InterfaceGl>	InterfaceGlRef;
 class InterfaceGl {
   public:
 	//! Creates and returns an InterfaceGl referenced by \a title and with \a size dimensions. Optionally takes \a color.
-	static InterfaceGlRef create( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	static InterfaceGlRef create( const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	//! Creates and returns an InterfaceGl referenced by \a title that belongs to \a window, and with \a size dimensions. Optionally takes \a color.
-	static InterfaceGlRef create( const cinder::app::WindowRef &window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	static InterfaceGlRef create( const cinder::app::WindowRef &window, const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
 	//! \deprecated { use create() }
 	InterfaceGl() {}
 	//! \deprecated { use create() }
-	InterfaceGl( const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	InterfaceGl( const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 	//! \deprecated { use create() }
-	InterfaceGl( const cinder::app::WindowRef &window, const std::string &title, const Vec2i &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
+	InterfaceGl( const cinder::app::WindowRef &window, const std::string &title, const ivec2 &size, const ColorA &color = ColorA( 0.3f, 0.3f, 0.3f, 0.4f ) );
 
 	//! Base class for chainable options. \see Options<T>.
 	class OptionsBase {
@@ -149,7 +149,7 @@ class InterfaceGl {
 	//! Returns whether the interface is maximized or not. \see maximize(), minimize()
 	bool	isMaximized() const;
 	//! Sets the position of this interface instance
-	void	setPosition( const ci::Vec2i &pos );
+	void	setPosition( const ci::ivec2 &pos );
 	//! Adds \a target as a param to the interface, referring to it with \a name. \return Options<T> for chaining options to the param.
 	template <typename T>
 	Options<T>	addParam( const std::string &name, T *target, bool readOnly = false );
@@ -159,8 +159,10 @@ class InterfaceGl {
 	Options<T>	addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn );
 
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
-	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
-	
+	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, bool readOnly = false );
+	//! Adds an enumerated param to the interface with no target, but is instead accessed with \a setterFn and \a getterFn. The input parameter of \a setterFn and the return value of \a getterFn correspond to the indices of \a enumNames. \return Options<T> for chaining options to the param.
+	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn );
+
 	//! Adds a separator to the interface.
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
 	//! Adds text to the interface.
@@ -191,13 +193,13 @@ class InterfaceGl {
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, int32_t *intParam, const char *optionsStr, bool readOnly = false )		{ addParam( name, intParam, std::string( optionsStr ), readOnly ); }
 	//! \deprecated use addParam<T>() instead.
-	void	addParam( const std::string &name, Vec3f *vectorParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, vec3 *vectorParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
-	void	addParam( const std::string &name, Vec3f *vectorParam, const char *optionsStr, bool readOnly = false )		{ addParam( name, vectorParam, std::string( optionsStr ), readOnly ); }
+	void	addParam( const std::string &name, vec3 *vectorParam, const char *optionsStr, bool readOnly = false )		{ addParam( name, vectorParam, std::string( optionsStr ), readOnly ); }
 	//! \deprecated use addParam<T>() instead.
-	void	addParam( const std::string &name, Quatf *quatParam, const std::string &optionsStr, bool readOnly = false );
+	void	addParam( const std::string &name, quat *quatParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
-	void	addParam( const std::string &name, Quatf *quatParam, const char *optionsStr, bool readOnly = false )		{ addParam( name, quatParam, std::string( optionsStr ), readOnly ); }
+	void	addParam( const std::string &name, quat *quatParam, const char *optionsStr, bool readOnly = false )			{ addParam( name, quatParam, std::string( optionsStr ), readOnly ); }
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, Color *colorParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
@@ -210,9 +212,13 @@ class InterfaceGl {
 	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, std::string *strParam, const char *optionsStr, bool readOnly = false )	{ addParam( name, strParam, std::string( optionsStr ), readOnly ); }
+	//! \deprecated use addParam() variant that returns Options<int> instead.
+	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated use addParam() variant that returns Options<int> instead.
+	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const char *optionsStr, bool readOnly = false )	{ addParam( name, enumNames, param, std::string( optionsStr ), readOnly ); }
 
   protected:
-	void	init( app::WindowRef window, const std::string &title, const Vec2i &size, const ColorA color );
+	void	init( app::WindowRef window, const std::string &title, const ivec2 &size, const ColorA color );
 	void	implAddParamDeprecated( const std::string &name, void *param, int type, const std::string &optionsStr, bool readOnly );
 
 	template <typename T>

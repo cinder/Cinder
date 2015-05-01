@@ -23,8 +23,8 @@
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/cocoa/CinderCocoa.h"
 
+#include <ImageIO/ImageIO.h>
 #if defined( CINDER_COCOA_TOUCH )
-	#include <ImageIO/ImageIO.h>
 	#include <MobileCoreServices/MobileCoreServices.h>
 #else
 	#include <CoreServices/CoreServices.h>
@@ -36,7 +36,12 @@ namespace cinder {
 
 void ImageTargetFileQuartz::registerSelf()
 {
+	static bool alreadyRegistered = false;
 	const int32_t PRIORITY = 2;
+	
+	if( alreadyRegistered )
+		return;
+	alreadyRegistered = true;
 	
 	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileQuartz::createRef;
 	

@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Perlin.h"
 #include "cinder/ImageIo.h"
 #include "Resources.h"
@@ -17,10 +17,10 @@ bool		ALLOWFLOOR = false;
 bool		ALLOWGRAVITY = false;
 bool		ALLOWPERLIN = false;
 bool		ALLOWTRAILS = false;
-Vec3f		gravity( 0, 0.35f, 0 );
+vec3		gravity( 0, 0.35f, 0 );
 const int	CINDER_FACTOR = 10; // how many times more particles than the Java version
 
-class HodginParticlesApp : public AppBasic {
+class HodginParticlesApp : public App {
  public:	
 	Renderer* prepareRenderer() { return new RendererGl( RendererGl::AA_MSAA_2 ); }
 	void prepareSettings( Settings *settings );
@@ -37,7 +37,7 @@ class HodginParticlesApp : public AppBasic {
 	
 	Emitter		mEmitter;
 	bool		mouseIsDown;
-	Vec2i		mMousePos;
+	ivec2		mMousePos;
 };
 
 void HodginParticlesApp::prepareSettings( Settings *settings )
@@ -120,7 +120,7 @@ void HodginParticlesApp::draw()
 // without dealing with pushing and popping for every particle. The reason
 // I am doing it this longer way is due to a billboarding problem which will come
 // up later on.
-void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha )
+void renderImage( vec3 _loc, float _diam, Color _col, float _alpha )
 {
 	gl::pushMatrices();
 	gl::translate( _loc.x, _loc.y, _loc.z );
@@ -136,4 +136,4 @@ void renderImage( Vec3f _loc, float _diam, Color _col, float _alpha )
 }
 
 
-CINDER_APP_BASIC( HodginParticlesApp, RendererGl )
+CINDER_APP( HodginParticlesApp, RendererGl )

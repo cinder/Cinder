@@ -36,6 +36,7 @@
 	#include <getopt.h>
 	#include <dirent.h>
 #elif defined( CINDER_MSW )
+	#include <windows.h>
 	#include <setupapi.h>
 	#pragma comment(lib, "setupapi.lib")
 #endif
@@ -48,13 +49,29 @@ namespace cinder {
 bool							Serial::sDevicesInited = false;
 std::vector<Serial::Device>		Serial::sDevices;
 
+struct Serial::Impl {
+	Impl( const Serial::Device &device, int baudRate );
+	~Impl();
+
+#ifdef CINDER_MSW
+	::HANDLE		mDeviceHandle;
+	::COMMTIMEOUTS 	mSavedTimeouts;
+#else
+	int				mFd;
+	::termios		mSavedOptions;
+#endif
+};
+
 Serial::Serial( const Serial::Device &device, int baudRate )
-	: mObj( new Obj( device, baudRate ) )
+	: mDevice( device ), mImpl( new Impl( device, baudRate ) )
 {
 }
 
-Serial::Obj::Obj( const Serial::Device &device, int baudRate )
-	: mDevice( device )
+Serial::~Serial()
+{
+}
+
+Serial::Impl::Impl( const Serial::Device &device, int baudRate )
 {
 #if defined( CINDER_MAC )
 	mFd = open( ( "/dev/" + device.getName() ).c_str(), O_RDWR | O_NOCTTY | O_NONBLOCK );
@@ -92,7 +109,7 @@ Serial::Obj::Obj( const Serial::Device &device, int baudRate )
 	options.c_cflag |= CS8;
 	::tcsetattr( mFd, TCSANOW, &options );
 #elif defined( CINDER_MSW )
-	mDeviceHandle = ::CreateFileA( mDevice.getPath().c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0 );
+	mDeviceHandle = ::CreateFileA( device.getPath().c_str(), GENERIC_READ|GENERIC_WRITE, 0, 0, OPEN_EXISTING, 0, 0 );
 	if( mDeviceHandle == INVALID_HANDLE_VALUE ) {
 		throw SerialExcOpenFailed();
 	}
@@ -117,6 +134,18 @@ Serial::Obj::Obj( const Serial::Device &device, int baudRate )
 	timeOuts.ReadTotalTimeoutMultiplier = 0;
 	timeOuts.ReadTotalTimeoutConstant = 0;
 	::SetCommTimeouts( mDeviceHandle, &timeOuts );
+#endif
+}
+
+Serial::Impl::~Impl()
+{
+#if defined( CINDER_MAC )
+	// restore the termios from before we opened the port
+	::tcsetattr( mFd, TCSANOW, &mSavedOptions );
+	::close( mFd );
+#elif defined( CINDER_MSW )
+	::SetCommTimeouts( mDeviceHandle, &mSavedTimeouts );
+	::CloseHandle( mDeviceHandle );
 #endif
 }
 
@@ -166,6 +195,7 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 		}
 	}
 	
+	::closedir( dir );
 #elif defined( CINDER_MSW )
 	::HDEVINFO devInfoSet;
 	::DWORD devCount = 0;
@@ -210,21 +240,9 @@ const std::vector<Serial::Device>& Serial::getDevices( bool forceRefresh )
 	return sDevices;
 }
 
-Serial::Obj::~Obj()
-{
-#if defined( CINDER_MAC )
-	// restore the termios from before we opened the port
-	::tcsetattr( mFd, TCSANOW, &mSavedOptions );
-	::close( mFd );
-#elif defined( CINDER_MSW )
-	::SetCommTimeouts( mDeviceHandle, &mSavedTimeouts );
-	::CloseHandle( mDeviceHandle );
-#endif
-}
-
 const Serial::Device& Serial::getDevice() const
 {
-	return mObj->mDevice;
+	return mDevice;
 }
 
 void Serial::writeBytes( const void *data, size_t numBytes )
@@ -233,12 +251,12 @@ void Serial::writeBytes( const void *data, size_t numBytes )
 	
 	while( totalBytesWritten < numBytes ) {
 #if defined( CINDER_MAC )
-		long bytesWritten = ::write( mObj->mFd, data, numBytes - totalBytesWritten );
+		long bytesWritten = ::write( mImpl->mFd, data, numBytes - totalBytesWritten );
 		if( ( bytesWritten == -1 ) && ( errno != EAGAIN ) )
 			throw SerialExcReadFailure();	
 #elif defined( CINDER_MSW )
 		::DWORD bytesWritten;
-		if( ! ::WriteFile( mObj->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
+		if( ! ::WriteFile( mImpl->mDeviceHandle, data, numBytes - totalBytesWritten, &bytesWritten, 0 ) )
 			throw SerialExcWriteFailure();
 #endif
 		if( bytesWritten != -1 )
@@ -251,12 +269,12 @@ void Serial::readBytes( void *data, size_t numBytes )
 	size_t totalBytesRead = 0;
 	while( totalBytesRead < numBytes ) {
 #if defined( CINDER_MAC )
-		long bytesRead = ::read( mObj->mFd, data, numBytes - totalBytesRead );
+		long bytesRead = ::read( mImpl->mFd, data, numBytes - totalBytesRead );
 		if( ( bytesRead == -1 ) && ( errno != EAGAIN ) )
 			throw SerialExcReadFailure();
 #elif defined( CINDER_MSW )
 		::DWORD bytesRead = 0;
-		if( ! ::ReadFile( mObj->mDeviceHandle, data, numBytes - totalBytesRead, &bytesRead, 0 ) )
+		if( ! ::ReadFile( mImpl->mDeviceHandle, data, numBytes - totalBytesRead, &bytesRead, 0 ) )
 			throw SerialExcReadFailure();
 #endif
 		if( bytesRead != -1 )
@@ -270,10 +288,10 @@ void Serial::readBytes( void *data, size_t numBytes )
 size_t Serial::readAvailableBytes( void *data, size_t maximumBytes )
 {
 #if defined( CINDER_MAC )
-	long bytesRead = ::read( mObj->mFd, data, maximumBytes );
+	long bytesRead = ::read( mImpl->mFd, data, maximumBytes );
 #elif defined( CINDER_MSW )
 	::DWORD bytesRead = 0;
-	if( ! ::ReadFile( mObj->mDeviceHandle, data, maximumBytes, &bytesRead, 0 ) )
+	if( ! ::ReadFile( mImpl->mDeviceHandle, data, maximumBytes, &bytesRead, 0 ) )
 		throw SerialExcReadFailure();
 #endif
 
@@ -345,12 +363,12 @@ size_t Serial::getNumBytesAvailable() const
 	int result;
 	
 #if defined( CINDER_MAC )
-	::ioctl( mObj->mFd, FIONREAD, &result );
+	::ioctl( mImpl->mFd, FIONREAD, &result );
 #elif defined( CINDER_MSW )
 	::COMSTAT status;
 	::DWORD error;
-	if( ! ::ClearCommError( mObj->mDeviceHandle, &error, &status ) )
-		throw SerialExc();
+	if( ! ::ClearCommError( mImpl->mDeviceHandle, &error, &status ) )
+		throw SerialExc( "Serial failuture upon attempt to retreive information on device handle" );
 	else
 		result = status.cbInQue;
 #endif
@@ -371,14 +389,14 @@ void Serial::flush( bool input, bool output )
 	else
 		return;
 	
-	::tcflush( mObj->mFd, queue );
+	::tcflush( mImpl->mFd, queue );
 #elif defined( CINDER_MSW )
 	::DWORD flags = 0;
 	flags |= ( input ) ? PURGE_RXCLEAR : 0;
 	flags |= ( output ) ? PURGE_TXCLEAR : 0;
 	
 	if( input || output )
-		::PurgeComm( mObj->mDeviceHandle, flags );
+		::PurgeComm( mImpl->mDeviceHandle, flags );
 #endif
 }
 

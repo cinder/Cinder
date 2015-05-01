@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Camera.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/TileRender.h"
@@ -6,7 +6,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class GLTileRenderTestApp : public AppBasic {
+class GLTileRenderTestApp : public App {
  public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -42,7 +42,7 @@ static GLubyte smiley[] = // 16x16 smiley face, courtesy of OpenGL Super Bible
 void GLTileRenderTestApp::setup()
 {
 	CameraPersp cam;
-	mCam.lookAt( Vec3f( 0, 0, 10 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 0, 0, 10 ), vec3::zero() );
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 1, 50 );
 }
 
@@ -103,4 +103,4 @@ void GLTileRenderTestApp::draw()
 	drawFrame();
 }
 
-CINDER_APP_BASIC( GLTileRenderTestApp, RendererGL )
+CINDER_APP( GLTileRenderTestApp, RendererGL )

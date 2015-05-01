@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Path2d.h"
 #include "cinder/gl/gl.h"
 
@@ -8,7 +9,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class Path2dApp : public AppBasic {
+class Path2dApp : public App {
  public:
 	Path2dApp() : mTrackedPoint( -1 ) {}
 	
@@ -44,7 +45,7 @@ void Path2dApp::mouseDrag( MouseEvent event )
 	}
 	else { // first bit of dragging, so switch our line to a cubic or a quad if Shift is down
 		// we want to preserve the end of our current line, because it will still be the end of our curve
-		Vec2f endPt = mPath.getPoint( mPath.getNumPoints() - 1 );
+		vec2 endPt = mPath.getPoint( mPath.getNumPoints() - 1 );
 		// and now we'll delete that line and replace it with a curve
 		mPath.removeSegment( mPath.getNumSegments() - 1 );
 		
@@ -54,16 +55,16 @@ void Path2dApp::mouseDrag( MouseEvent event )
 			mPath.quadTo( event.getPos(), endPt );
 		}
 		else { // add a cubic curve segment
-			Vec2f tan1;
+			vec2 tan1;
 			if( prevType == Path2d::CUBICTO ) { 		// if the segment before was cubic, let's replicate and reverse its tangent
-				Vec2f prevDelta = mPath.getPoint( mPath.getNumPoints() - 2 ) - mPath.getPoint( mPath.getNumPoints() - 1 );
+				vec2 prevDelta = mPath.getPoint( mPath.getNumPoints() - 2 ) - mPath.getPoint( mPath.getNumPoints() - 1 );
 				tan1 = mPath.getPoint( mPath.getNumPoints() - 1 ) - prevDelta;
 			}
 			else if( prevType == Path2d::QUADTO ) {
 				// we can figure out what the equivalent cubic tangent would be using a little math
-				Vec2f quadTangent = mPath.getPoint( mPath.getNumPoints() - 2 );
-				Vec2f quadEnd = mPath.getPoint( mPath.getNumPoints() - 1 );
-				Vec2f prevDelta = ( quadTangent + ( quadEnd - quadTangent ) / 3 ) - quadEnd;
+				vec2 quadTangent = mPath.getPoint( mPath.getNumPoints() - 2 );
+				vec2 quadEnd = mPath.getPoint( mPath.getNumPoints() - 1 );
+				vec2 prevDelta = ( quadTangent + ( quadEnd - quadTangent ) / 3.0f ) - quadEnd;
 				tan1 = quadEnd - prevDelta;
 			}
 			else
@@ -115,7 +116,7 @@ void Path2dApp::draw()
 		// draw some tangents
 		gl::color( Color( 0.2f, 0.9f, 0.2f ) );	
 		for( float t = 0; t < 1; t += 0.2f )
-			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + mPath.getTangent( t ).normalized() * 80 );
+			gl::drawLine( mPath.getPosition( t ), mPath.getPosition( t ) + normalize( mPath.getTangent( t ) ) * 80.0f );
 		
 		// draw circles at 1/4, 2/4 and 3/4 the length
 		gl::color( ColorA( 0.2f, 0.9f, 0.9f, 0.5f ) );
@@ -125,4 +126,4 @@ void Path2dApp::draw()
 }
 
 
-CINDER_APP_BASIC( Path2dApp, RendererGl )
+CINDER_APP( Path2dApp, RendererGl )

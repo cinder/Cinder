@@ -24,7 +24,6 @@
 #include "cinder/audio/InputNode.h"
 #include "cinder/audio/Context.h"
 
-using namespace ci;
 using namespace std;
 
 namespace cinder { namespace audio {

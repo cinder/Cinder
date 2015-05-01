@@ -17,7 +17,7 @@ BodyRef makeBodyShared( b2World *world, const b2BodyDef &bodyDef )
 	return BodyRef( world->CreateBody( &bodyDef ), [world]( b2Body *body ) { world->DestroyBody( body ); } );
 }
 
-Vec2f toCinder( const b2Vec2 &vec )			{ return Vec2f( vec.x, vec.y ); }
+vec2 toCinder( const b2Vec2 &vec )			{ return vec2( vec.x, vec.y ); }
 Color toCinder( const b2Color &color )		{ return Color( color.r, color.g, color.b ); }
 
 DebugDraw::DebugDraw()

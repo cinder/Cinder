@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Rand.h"
@@ -14,7 +15,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ResizeTestApp : public AppBasic {
+class ResizeTestApp : public App {
  public:	
 	
 	void prepareSettings( Settings *settings );
@@ -24,7 +25,7 @@ class ResizeTestApp : public AppBasic {
 	static const int TEXTURE_WIDTH = 600, TEXTURE_HEIGHT = 200;
 	
 	Surface			mSurfaceComposite;
-	gl::Texture		mTexture;
+	gl::TextureRef	mTexture;
 };
 
 void ResizeTestApp::prepareSettings( Settings *settings )
@@ -44,14 +45,14 @@ void ResizeTestApp::setup()
 	ci::ip::resize( imageSurface, srcArea, &mSurfaceComposite, Area( 200, 0, 400, 200 ), FilterCubic() );
 	ci::ip::resize( imageSurface, srcArea, &mSurfaceComposite, Area( 400, 0, 600, 200 ), FilterSincBlackman() );
 	
-	mTexture = gl::Texture( mSurfaceComposite );
+	mTexture = gl::Texture::create( mSurfaceComposite );
 }
 
 void ResizeTestApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-	gl::draw( mTexture, Vec2f( 0, 0 ) );
+	gl::draw( mTexture, vec2( 0, 0 ) );
 }
 
 
-CINDER_APP_BASIC( ResizeTestApp, RendererGl )
+CINDER_APP( ResizeTestApp, RendererGl )

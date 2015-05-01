@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/svg/Svg.h"
@@ -14,7 +15,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class AnimatedRevealApp : public AppBasic {
+class AnimatedRevealApp : public App {
   public:
 	void update();
 	void draw();
@@ -22,7 +23,7 @@ class AnimatedRevealApp : public AppBasic {
 	void load( const fs::path &path );
 	
 	svg::DocRef		mDoc;
-	gl::Texture		mTex;
+	gl::TextureRef	mTex;
 	int				mMinRenderElement;
 	bool			mDone;
 	
@@ -62,7 +63,8 @@ void AnimatedRevealApp::load( const fs::path &path )
 		mMovie = qtime::MovieWriter( fs::path( getHomeDirectory() + "AnimatedReveal.mov" ), mDoc->getWidth(), mDoc->getHeight() );
 #endif
 	}
-	catch( ... ) {
+	catch( ci::Exception &exc ) {
+		console() << "failed to load doc, what: " << exc.what() << endl;
 	}
 }
 
@@ -134,7 +136,7 @@ void AnimatedRevealApp::update()
 		mMovie.finish();
 	}
 #endif
-	mTex = frame;
+	mTex = gl::Texture::create( frame );
 }
 
 void AnimatedRevealApp::draw()
@@ -148,4 +150,4 @@ void AnimatedRevealApp::draw()
 }
 
 
-CINDER_APP_BASIC( AnimatedRevealApp, RendererGl )
+CINDER_APP( AnimatedRevealApp, RendererGl )

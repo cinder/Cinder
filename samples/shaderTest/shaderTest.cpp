@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
@@ -8,7 +8,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class ImageFileTestApp : public AppBasic {
+class ImageFileTestApp : public App {
  public: 	
 	void setup();
 	void keyDown( KeyEvent event );
@@ -27,8 +27,8 @@ void ImageFileTestApp::setup()
 	try {
 		mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE_JPG ) ) );
 	}
-	catch( ... ) {
-		std::cout << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		std::cout << "unable to load the texture file, what: " << exc.what() << std::endl;
 	}
 	
 	try {
@@ -38,8 +38,8 @@ void ImageFileTestApp::setup()
 		std::cout << "Shader compile error: " << std::endl;
 		std::cout << exc.what();
 	}
-	catch( ... ) {
-		std::cout << "Unable to load shader" << std::endl;
+	catch( ci::Exception &exc ) {
+		std::cout << "Unable to load shader, what: " << exc.what() << std::endl;
 	}
 	
 	mAngle = 0.0f;
@@ -64,11 +64,11 @@ void ImageFileTestApp::draw()
 	mTexture->enableAndBind();
 	mShader->bind();
 	mShader->uniform( "tex0", 0 );
-	mShader->uniform( "sampleOffset", Vec2f( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
+	mShader->uniform( "sampleOffset", vec2( cos( mAngle ), sin( mAngle ) ) * ( 3.0f / getWindowWidth() ) );
 	gl::drawSolidRect( getWindowBounds() );
 
 	mTexture->unbind();
 }
 
 
-CINDER_APP_BASIC( ImageFileTestApp, RendererGl )
+CINDER_APP( ImageFileTestApp, RendererGl )

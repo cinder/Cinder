@@ -28,7 +28,7 @@
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix44.h"
 
-#include "cinder/app/AppCocoaTouch.h" // this is only for app::InterfaceOrientation, since it currently lives there
+#include "cinder/app/cocoa/AppCocoaTouch.h" // this is only for app::InterfaceOrientation, since it currently lives there
 
 namespace cinder {
 
@@ -60,15 +60,15 @@ class MotionManager {
 	static void		setShowsCalibrationView( bool shouldShow = true );
 
 	//! Direction of gravity expressed as acceleration in the x, y and z axes. The output is correct for \a orientation if other than Portrait.
-	static ci::Vec3f		getGravityDirection( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+	static ci::vec3		getGravityDirection( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 	//! Rotation represents the orientation of the device as the amount rotated from with the North Pole, which we define to be -Z when the device is upright. The output is correct for \a orientation if other than Portrait.
-    static ci::Quatf		getRotation( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+    static ci::quat		getRotation( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 	//! Convenience method for returning the rotation repesented as a matrix. The output is correct for \a orientation if other than Portrait.
-    static ci::Matrix44f	getRotationMatrix( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait ) { return getRotation( orientation ).toMatrix44(); }
-	//! Rotation rate along the x, y, and z axes, measured in radians per second. The output is correct for \a orientation if other than Portrait.
-	static ci::Vec3f		getRotationRate( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+    static ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait ) { return glm::toMat4( getRotation( orientation ) ); }
+		//! Rotation rate along the x, y, and z axes, measured in radians per second. The output is correct for \a orientation if other than Portrait.
+	static ci::vec3		getRotationRate( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 	//! Acceleration in G's along the x, y, and z axes.  Earth's gravity is filtered out. The output is correct for \a orientation if other than Portrait.
-	static ci::Vec3f		getAcceleration( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+	static ci::vec3		getAcceleration( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 
     //! Detect if the device is currently shaking using the current and previous acceleration, as defined by an acceleration of magnitude >= \a minShakeDeltaThreshold.  \note This method is meant to be polled at a regular rate.
     static bool     isShaking( float minShakeDeltaThreshold = 2.2f );
@@ -93,7 +93,7 @@ class MotionManager {
 
 	std::shared_ptr<MotionImplCoreMotion>	mImpl;
 	float mShakeDelta;
-	Vec3f mPrevAcceleration;
+	vec3 mPrevAcceleration;
 
 	static std::mutex sMutex;
 };

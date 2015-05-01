@@ -26,12 +26,14 @@
 #if defined( CINDER_AUDIO_XAUDIO2 )
 
 #include "cinder/audio/msw/DeviceManagerWasapi.h"
+#undef min
+#undef max
 #include "cinder/audio/dsp/Dsp.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Exception.h"
 #include "cinder/CinderAssert.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"

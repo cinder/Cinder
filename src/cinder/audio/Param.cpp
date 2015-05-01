@@ -24,7 +24,6 @@
 #include "cinder/audio/Param.h"
 #include "cinder/audio/Context.h"
 #include "cinder/audio/dsp/Dsp.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/CinderMath.h"
 
@@ -32,29 +31,29 @@ using namespace std;
 
 namespace cinder { namespace audio {
 
-void rampLinear( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange )
+void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
 		float factor( t );
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
 
-void rampInQuad( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange )
+void rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
 		float factor( t * t );
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
 
-void rampOutQuad( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange )
+void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd )
 {
 	for( size_t i = 0; i < count; i++ ) {
 		float factor( -t * ( t - 2 ) );
-		array[i] = lerp( valueRange.first, valueRange.second, factor );
+		array[i] = lerp( valueBegin, valueEnd, factor );
 		t += tIncr;
 	}
 }
@@ -299,7 +298,7 @@ bool Param::eval( double timeBegin, float *array, size_t arrayLength, size_t sam
 			if( event.getCopyValueOnBegin() )
 				event.setValueBegin( mValue ); // this is only copied the first block the Event is processed, as next block getCopyValueOnBegin() is false.
 
-			event.mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, make_pair( event.mValueBegin, event.mValueEnd ) );
+			event.mRampFn( array + startIndex, count, timeBeginNormalized, timeIncr, event.mValueBegin, event.mValueEnd );
 			samplesWritten += count;
 
 			// if this ramp ended with the current processing block, update mValue then remove event
