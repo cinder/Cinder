@@ -57,6 +57,7 @@ class AxisAlignedBox3f {
 	static bool calcTriangleIntersection( const Ray &ray, const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result );
 
  protected:
+ 	void recalculateVertices();
 	vec3 mExtents[2];
 	vec3 mVerts[8];
 };
