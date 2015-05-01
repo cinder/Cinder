@@ -120,6 +120,7 @@ void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsP
 		case GL_FLOAT_MAT2:
 			*numDimsPerVertexPointer = 2; *numLocationsExpected = 2;
 		break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_FLOAT_MAT2x3:
 			*numDimsPerVertexPointer = 3; *numLocationsExpected = 2;
 		break;
@@ -132,15 +133,18 @@ void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsP
 		case GL_FLOAT_MAT2x4:
 			*numDimsPerVertexPointer = 4; *numLocationsExpected = 2;
 		break;
+#endif
 		case GL_FLOAT_MAT3:
 			*numDimsPerVertexPointer = 3; *numLocationsExpected = 3;
 		break;
+#if ! defined( CINDER_GL_ES_2 )
 		case GL_FLOAT_MAT3x4:
 			*numDimsPerVertexPointer = 4; *numLocationsExpected = 3;
 		break;
 		case GL_FLOAT_MAT4x3:
 			*numDimsPerVertexPointer = 3; *numLocationsExpected = 4;
 		break;
+#endif
 		case GL_FLOAT_MAT4:
 			*numDimsPerVertexPointer = 4; *numLocationsExpected = 4;
 		break;
