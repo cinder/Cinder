@@ -51,8 +51,7 @@ class UniformValueCache : cinder::Noncopyable {
 	{
 		auto it = std::lower_bound( mCachedBeginningBytes.begin(),
 								   mCachedBeginningBytes.end(),
-								   value,
-								   std::greater<int>() );
+								   value );
 		mCachedBeginningBytes.insert( it, value );
 	}
 	
