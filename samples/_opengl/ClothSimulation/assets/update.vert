@@ -63,8 +63,8 @@ void main(void)
 	vec3 F = gravity * m - c * u;  // F is the force on the mass
 	bool fixed_node = true;        // Becomes false when force is applied
 	
-	for (int i = 0; i < 4; i++) {
-		if (connection[i] != -1) {
+	for( int i = 0; i < 4; i++) {
+		if( connection[i] != -1 ) {
 			// q is the position of the other vertex
 			vec3 q = texelFetch(tex_position, connection[i]).xyz;
 			vec3 d = q - p;
@@ -75,7 +75,7 @@ void main(void)
 	}
 	
 	// If this is a fixed node, reset force to zero
-	if (fixed_node) {
+	if( fixed_node ) {
 		F = vec3(0.0);
 	}
 	

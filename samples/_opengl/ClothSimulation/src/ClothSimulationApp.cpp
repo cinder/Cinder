@@ -3,7 +3,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/Log.h"
 #include "cinder/params/Params.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
@@ -45,7 +45,7 @@ class ClothSimulationApp : public App {
 	gl::GlslProgRef						mUpdateGlsl, mRenderGlsl;
 	
 	CameraPersp							mCam;
-	MayaCamUI							mMayaCam;
+	CameraUi							mCamUi;
 	float								mCurrentCamRotation;
 	uint32_t							mIterationsPerFrame, mIterationIndex;
 	bool								mDrawPoints, mDrawLines, mUpdate;
@@ -59,12 +59,11 @@ ClothSimulationApp::ClothSimulationApp()
 	mCurrentCamRotation( 0.0f ), mUpdate( true ),
 	mCam( getWindowWidth(), getWindowHeight(), 20.0f, 0.01f, 1000.0f )
 {
-	mMayaCam = MayaCamUI( &mCam );
+	mCamUi = CameraUi( &mCam );
 	vec3 eye = vec3( sin( mCurrentCamRotation ) * 140.0f, 0,
 					cos( mCurrentCamRotation ) * 140.0f );
 	vec3 target = vec3( 0.0f );
 	mCam.lookAt( eye, target );
-	mCam.setCenterOfInterest( ci::distance( eye, target ) );
 	
 	setupGlsl();
 	setupBuffers();
@@ -201,7 +200,7 @@ void ClothSimulationApp::update()
 	gl::ScopedGlslProg	scopeGlsl( mUpdateGlsl );
 	gl::ScopedState		scopeState( GL_RASTERIZER_DISCARD, true );
 	
-	for ( auto i = mIterationsPerFrame; i != 0; --i ) {
+	for( auto i = mIterationsPerFrame; i != 0; --i ) {
 		// Bind the vao that has the original vbo attached,
 		// these buffers will be used to read from.
 		gl::ScopedVao scopedVao( mVaos[mIterationIndex & 1] );
@@ -245,11 +244,11 @@ void ClothSimulationApp::draw()
 	gl::setMatrices( mCam );
 	gl::setDefaultShaderVars();
 	
-	if ( mDrawPoints ) {
+	if( mDrawPoints ) {
 		gl::pointSize( 4.0f);
 		gl::drawArrays( GL_POINTS, 0, POINTS_TOTAL );
 	}
-	if ( mDrawLines ) {
+	if( mDrawLines ) {
 		gl::ScopedBuffer scopeBuffer( mLineIndices );
 		gl::drawElements( GL_LINES, CONNECTIONS_TOTAL * 2, GL_UNSIGNED_INT, nullptr );
 	}
@@ -259,7 +258,7 @@ void ClothSimulationApp::draw()
 void ClothSimulationApp::mouseDown( MouseEvent event )
 {
 	if( event.isRightDown() )
-		mMayaCam.mouseDrag( event.getPos(), true, false, false );
+		mCamUi.mouseDrag( event.getPos(), true, false, false );
 	else
 		updateRayPosition( event.getPos(), true );
 }
@@ -267,7 +266,7 @@ void ClothSimulationApp::mouseDown( MouseEvent event )
 void ClothSimulationApp::mouseDrag( MouseEvent event )
 {
 	if( event.isRightDown() )
-		mMayaCam.mouseDrag( event.getPos(), true, false, false );
+		mCamUi.mouseDrag( event.getPos(), true, false, false );
 	else
 		updateRayPosition( event.getPos(), true );
 }
@@ -279,8 +278,7 @@ void ClothSimulationApp::mouseUp( MouseEvent event )
 
 void ClothSimulationApp::updateRayPosition( const ci::ivec2 &mousePos, bool useDistance )
 {
-	auto norm = vec2(mousePos) / vec2(getWindowSize());
-	auto ray = mCam.generateRay( norm.x, 1 - norm.y, getWindowAspectRatio() );
+	auto ray = mCam.generateRay( mousePos, getWindowSize() );
 	auto dist = ci::distance( mCam.getEyePoint(), vec3() );
 	auto rayPosition = ray.calcPosition( useDistance ? dist : 0 );
 	mUpdateGlsl->uniform( "rayPosition", rayPosition );
@@ -298,42 +296,42 @@ void ClothSimulationApp::setupParams()
 	mParams->addParam( "Update", &mUpdate );
 	mParams->addParam( "Updates/Frame", &mIterationsPerFrame ).min( 1 );
 	mParams->addParam( "Gravity", &gravity ).updateFn(
-	[&](){
-		mUpdateGlsl->uniform( "gravity", gravity );
-	});
+		[&](){
+			mUpdateGlsl->uniform( "gravity", gravity );
+		});
 	mParams->addParam( "Rest Length", &restLength )
-	.min( 0.0f ).max( 30.0f ).updateFn(
-	[&](){
-		mUpdateGlsl->uniform( "rest_length", restLength );
-	});
+		.min( 0.0f ).max( 30.0f ).updateFn(
+		[&](){
+			mUpdateGlsl->uniform( "rest_length", restLength );
+		});
 	mParams->addParam( "Damping Constant", &dampingConst )
-	.min( 1.5f ).max( 25.0f ).updateFn(
-	[&](){
-		mUpdateGlsl->uniform( "c", dampingConst );
-	});
+		.min( 1.5f ).max( 25.0f ).updateFn(
+		[&](){
+			mUpdateGlsl->uniform( "c", dampingConst );
+		});
 	mParams->addParam( "Spring Constant", &springConstant )
-	.min( 0.1f ).max( 17.0f ).updateFn(
-	[&](){
-		mUpdateGlsl->uniform( "k", springConstant );
-	});
+		.min( 0.1f ).max( 17.0f ).updateFn(
+		[&](){
+			mUpdateGlsl->uniform( "k", springConstant );
+		});
 	mParams->addButton( "Eject Button",
-	[&](){
-		restLength = 2.0;
-		mUpdateGlsl->uniform( "rest_length", restLength );
-		dampingConst = 5.0;
-		mUpdateGlsl->uniform( "c", dampingConst );
-	});
+		[&](){
+			restLength = 2.0;
+			mUpdateGlsl->uniform( "rest_length", restLength );
+			dampingConst = 5.0;
+			mUpdateGlsl->uniform( "c", dampingConst );
+		});
 	mParams->addButton( "Reset",
-	[&](){
-		gravity = vec3( 0.0, -0.08, 0.0 );
-		mUpdateGlsl->uniform( "gravity", gravity );
-		restLength = 0.88;
-		mUpdateGlsl->uniform( "rest_length", restLength );
-		dampingConst = 2.8;
-		mUpdateGlsl->uniform( "c", dampingConst );
-		springConstant = 7.1;
-		mUpdateGlsl->uniform( "k", springConstant );
-	});
+		[&](){
+			gravity = vec3( 0.0, -0.08, 0.0 );
+			mUpdateGlsl->uniform( "gravity", gravity );
+			restLength = 0.88;
+			mUpdateGlsl->uniform( "rest_length", restLength );
+			dampingConst = 2.8;
+			mUpdateGlsl->uniform( "c", dampingConst );
+			springConstant = 7.1;
+			mUpdateGlsl->uniform( "k", springConstant );
+		});
 	mParams->addSeparator();
 	mParams->addText( "Render Params" );
 	mParams->addParam( "Draw Lines", &mDrawLines );
@@ -342,6 +340,6 @@ void ClothSimulationApp::setupParams()
 }
 
 CINDER_APP( ClothSimulationApp, RendererGl(),
-[&]( App::Settings *settings ){
+[&]( App::Settings *settings ) {
 	settings->setWindowSize( 1280, 720 );
 })
