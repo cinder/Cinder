@@ -50,37 +50,38 @@ class UniformValueCache : cinder::Noncopyable {
 	{
 	}
 	
-	void insertBeginningByte( uint32_t value )
+	void insertByteOffset( uint32_t value )
 	{
-		auto it = std::lower_bound( mCachedBeginningBytes.begin(),
-								   mCachedBeginningBytes.end(),
+		auto it = std::lower_bound( mCachedByteOffsets.begin(),
+								   mCachedByteOffsets.end(),
 								   value );
-		mCachedBeginningBytes.insert( it, value );
+		mCachedByteOffsets.insert( it, value );
 	}
 	
-	bool shouldBuffer( uint32_t beginningByte, uint32_t size, const void * valuePointer )
+	bool shouldBuffer( uint32_t byteOffset, uint32_t size, const void* valuePointer )
 	{
-		auto ptr = (mBuffer.get() + beginningByte);
-		if( ! std::binary_search( mCachedBeginningBytes.begin(),
-							   mCachedBeginningBytes.end(),
-							   beginningByte ) ) {
-			insertBeginningByte( beginningByte );
-			memcpy( ptr, valuePointer, size );
+		uint8_t* cachePtr = mBuffer.get() + byteOffset;
+		// have we met this byteOffset before?
+		if( ! std::binary_search( mCachedByteOffsets.begin(), mCachedByteOffsets.end(), byteOffset ) ) {
+			// if not, record it and cache it
+			insertByteOffset( byteOffset );
+			memcpy( cachePtr, valuePointer, size );
 			return true;
 		}
 		else {
-			if( memcmp( ptr, valuePointer, size ) == 0 ) {
+			// we've seen this byteOffset before; did its value change?
+			if( memcmp( cachePtr, valuePointer, size ) == 0 ) {
 				return false;
 			}
-			else {
-				memcpy( ptr, valuePointer, size );
+			else { // yes? then cache the latest
+				memcpy( cachePtr, valuePointer, size );
 				return true;
 			}
 		}
 	}
 	
   private:
-	std::vector<uint32_t>			mCachedBeginningBytes;
+	std::vector<uint32_t>			mCachedByteOffsets;
 	std::unique_ptr<uint8_t[]>		mBuffer;
 	uint32_t						mBufferSize;
 };

@@ -46,10 +46,9 @@ namespace cinder { namespace gl {
 typedef std::shared_ptr<class GlslProg> GlslProgRef;
 	
 class UniformValueCache;
-
 class ShaderPreprocessor;
 
-class GlslProg : public std::enable_shared_from_this<GlslProg> {
+class GlslProg {
   public:
 	struct Attribute {
 		//! Returns a const reference of the name as defined in the Vertex Shader.
@@ -66,7 +65,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Used to derive the expected layout for cpu types within glsl.
 		static void getShaderAttribLayout( GLenum type, uint32_t *numDimsPerVertexPointer, uint32_t *numLocationsExpected );
 
-	private:
+	  private:
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1;
 		GLenum			mType = -1;
@@ -92,7 +91,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Returns the defined UniformSemantic.
 		UniformSemantic		getUniformSemantic() const { return mSemantic; }
 		
-	private:
+	  private:
 		std::string		mName;
 		GLint			mCount = 0, mLoc = -1, mIndex = -1;
 		GLenum			mType = -1;
@@ -133,7 +132,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! declared as an array.
 		std::map<GLenum, std::vector<GLint>> getActiveUniformInfo() const { return mActiveUniformInfo; }
 		
-	private:
+	  private:
 		std::string				mName;
 		GLint					mDataSize = 0, mLoc = -1, mBlockBinding;
 		std::vector<Uniform>	mActiveUniforms;
@@ -152,7 +151,7 @@ class GlslProg : public std::enable_shared_from_this<GlslProg> {
 		//! Returns the GLenum representation of the type of this transform feedback varying (for example, \c GL_FLOAT_VEC3)
 		GLenum				getType() const { return mType; }
 		
-	private:
+	  private:
 		std::string		mName;
 		GLint			mCount = 0;
 		GLenum			mType;
