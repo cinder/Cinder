@@ -256,49 +256,45 @@ void GlslProg::Format::setShaderSource( const std::string &source, std::string *
 
 GlslProg::Format& GlslProg::Format::attrib( geom::Attrib semantic, const std::string &attribName )
 {
-	bool exists = false;
-    for( auto & attrib : mAttributes ) {
-        if( attrib.mName == attribName ) {
-            attrib.mSemantic = semantic;
-            exists = true;
-            break;
-        }
-        else if( attrib.mSemantic == semantic ) {
-            attrib.mName = attribName;
-            exists = true;
-            break;
-        }
-    }
-    if( ! exists ) {
-        Attribute attrib;
-        attrib.mName = attribName;
-        attrib.mSemantic = semantic;
-        mAttributes.push_back( attrib );
-    }
+	for( auto& attrib : mAttributes ) {
+		if( attrib.mName == attribName ) {
+			attrib.mSemantic = semantic;
+			return *this;
+		}
+		else if( attrib.mSemantic == semantic ) {
+			attrib.mName = attribName;
+			return *this;
+		}
+	}
+
+	// no existing definition; add it
+	Attribute attrib;
+	attrib.mName = attribName;
+	attrib.mSemantic = semantic;
+	mAttributes.push_back( attrib );
+
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::uniform( UniformSemantic semantic, const std::string &uniformName )
 {
-    bool exists = false;
-    for( auto & uniform : mUniforms ) {
-        if( uniform.mName == uniformName ) {
-            uniform.mSemantic = semantic;
-            exists = true;
-            break;
-        }
-        else if( uniform.mSemantic == semantic ) {
-            uniform.mName = uniformName;
-            exists = true;
-            break;
-        }
-    }
-    if( ! exists ) {
-        Uniform uniform;
-        uniform.mName = uniformName;
-        uniform.mSemantic = semantic;
-        mUniforms.push_back( uniform );
-    }
+	for( auto& uniform : mUniforms ) {
+		if( uniform.mName == uniformName ) {
+			uniform.mSemantic = semantic;
+			return *this;
+		}
+		else if( uniform.mSemantic == semantic ) {
+			uniform.mName = uniformName;
+			return *this;
+		}
+	}
+
+	// no existing definition; add it
+	Uniform uniform;
+	uniform.mName = uniformName;
+	uniform.mSemantic = semantic;
+	mUniforms.push_back( uniform );
+
 	return *this;
 }
 
@@ -328,49 +324,44 @@ GlslProg::Format& GlslProg::Format::version( int version )
 
 GlslProg::Format& GlslProg::Format::attribLocation( const std::string &attribName, GLint location )
 {
-    bool exists = false;
-    for( auto & attrib : mAttributes ) {
-        if( attrib.mName == attribName ) {
-            attrib.mLoc = location;
-            exists = true;
-            break;
-        }
-        else if( attrib.mLoc == location ) {
-            attrib.mName = attribName;
-            exists = true;
-            break;
-        }
-    }
-    if( ! exists ) {
-        Attribute attrib;
-        attrib.mName = attribName;
-        attrib.mLoc = location;
-        mAttributes.push_back( attrib );
-    }
+	for( auto& attrib : mAttributes ) {
+		if( attrib.mName == attribName ) {
+			attrib.mLoc = location;
+			return *this;
+		}
+		else if( attrib.mLoc == location ) {
+			attrib.mName = attribName;
+			return *this;
+		}
+	}
+
+	// no existing definition; add it
+	Attribute attrib;
+	attrib.mName = attribName;
+	attrib.mLoc = location;
+	mAttributes.push_back( attrib );
+
 	return *this;
 }
 
 GlslProg::Format& GlslProg::Format::attribLocation( geom::Attrib attribSemantic, GLint location )
 {
-	bool exists = false;
-	for( auto & attrib : mAttributes ) {
+	for( auto& attrib : mAttributes ) {
 		if( attrib.mSemantic == attribSemantic ) {
 			attrib.mLoc = location;
-			exists = true;
-			break;
+			return *this;
 		}
 		else if( attrib.mLoc == location ) {
 			attrib.mSemantic = attribSemantic;
-			exists = true;
-			break;
+			return *this;
 		}
 	}
-	if( ! exists ) {
-		Attribute attrib;
-		attrib.mSemantic = attribSemantic;
-		attrib.mLoc = location;
-		mAttributes.push_back( attrib );
-	}
+
+	Attribute attrib;
+	attrib.mSemantic = attribSemantic;
+	attrib.mLoc = location;
+	mAttributes.push_back( attrib );
+
 	return *this;
 }
 
@@ -429,9 +420,9 @@ GlslProg::~GlslProg()
 // GlslProg
 
 GlslProg::GlslProg( const Format &format )
-: mUniformValueCache( nullptr )
+	: mUniformValueCache( nullptr )
 #if ! defined( CINDER_GL_ES_2 )
- , mTransformFeedbackFormat( -1 )
+		, mTransformFeedbackFormat( -1 )
 #endif
 {
 	mHandle = glCreateProgram();
@@ -463,9 +454,8 @@ GlslProg::GlslProg( const Format &format )
     auto & userDefinedAttribs = format.getAttributes();
 	
 	bool foundPositionSemantic = false;
-	// if the user has provided a location make sure to bind that location before
-	// we go further, still don't know that this is good.
-	for( auto &attrib : userDefinedAttribs )
+	// if the user has provided a location make sure to bind that location before we go further
+	for( auto &attrib : userDefinedAttribs ) {
 		if( attrib.mLoc > -1 ) {
 			if( attrib.mName == "ciPosition" || attrib.mSemantic == geom::Attrib::POSITION )
 				foundPositionSemantic = true;
@@ -474,12 +464,12 @@ GlslProg::GlslProg( const Format &format )
 			// name used by Cinder. Therefore, we need to find the attrib in the map and affix
 			// the default name.
 			std::string attribName = attrib.mName;
-			if( attribName == "" ) {
-				auto defaultAttribMap = getDefaultAttribNameToSemanticMap();
+			if( attribName.empty() ) {
+				const auto &defaultAttribMap = getDefaultAttribNameToSemanticMap();
 				auto attribSemantic = attrib.mSemantic;
 				auto foundDefaultAttrib = find_if( defaultAttribMap.begin(), defaultAttribMap.end(),
-				[attribSemantic]( const std::pair<const std::string, geom::Attrib> &defaultAttrib ){
-					return defaultAttrib.second == attribSemantic;
+					[attribSemantic]( const std::pair<const std::string, geom::Attrib> &defaultAttrib ){
+						return defaultAttrib.second == attribSemantic;
 				});
 				if( foundDefaultAttrib != defaultAttribMap.end() )
 					attribName = foundDefaultAttrib->first;
@@ -490,7 +480,10 @@ GlslProg::GlslProg( const Format &format )
 			}
 			glBindAttribLocation( mHandle, attrib.mLoc, attribName.c_str() );
 		}
+	}
 	
+	// we always want to force position to be at vertex attribute 0; an imperfect workaround for
+	// http://stackoverflow.com/questions/13348885/why-does-opengl-drawing-fail-when-vertex-attrib-array-zero-is-disabled
 	if( ! foundPositionSemantic )
 		glBindAttribLocation( mHandle, 0, "ciPosition" );
 	
@@ -1403,7 +1396,7 @@ void GlslProg::uniform( int location, const uint32_t *data, int count ) const
 template<>
 void GlslProg::uniformFunc( int location, const uint32_t *data, int count ) const
 {
-	ScopedGlslProg shaderBind( shared_from_this() );
+	ScopedGlslProg shaderBind( this );
 	glUniform1uiv( location, count, data );
 }
 
