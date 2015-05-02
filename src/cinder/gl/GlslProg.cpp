@@ -33,6 +33,9 @@
 
 #include <type_traits>
 
+// uncomment this in order to prevent uniform value caching
+//#define DISABLE_UNIFORM_CACHING
+
 using namespace std;
 
 namespace cinder { namespace gl {
@@ -738,9 +741,10 @@ void GlslProg::cacheActiveUniforms()
 		}
 	}
 	
-	if( numActiveUniforms ) {
+#if ! defined( DISABLE_UNIFORM_CACHING )
+	if( numActiveUniforms )
 		mUniformValueCache = new UniformValueCache( uniformValueCacheSize );
-	}
+#endif
 }
 
 #if ! defined( CINDER_GL_ES_2 )
@@ -1144,8 +1148,8 @@ bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int c
 {
 	if( mUniformValueCache )
 		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, uniform.mDataSize, val );
-	else
-		return false;
+	else // no uniform cache means we've disabled it
+		return true;
 }
 	
 template<typename LookUp, typename T>
