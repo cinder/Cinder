@@ -1867,6 +1867,11 @@ void Context::setDefaultShaderVars()
 					glslProg->uniform( uniform.getLocation(), projectionInverse );
 				}
 				break;
+				case UNIFORM_VIEW_PROJECTION: {
+					auto viewProjection = gl::getProjectionMatrix() * gl::getViewMatrix();
+					glslProg->uniform( uniform.getLocation(), viewProjection );
+				}
+				break;
 				case UNIFORM_NORMAL_MATRIX: {
 					auto normalMatrix = gl::calcNormalMatrix();
 					glslProg->uniform( uniform.getLocation(), normalMatrix );
