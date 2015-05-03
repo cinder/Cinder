@@ -1,3 +1,5 @@
+#version 100
+
 uniform samplerCube uCubeMapTex;
 
 varying highp vec3 NormalWorldSpace;
