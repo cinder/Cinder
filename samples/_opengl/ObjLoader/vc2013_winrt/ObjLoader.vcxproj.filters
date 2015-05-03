@@ -61,7 +61,7 @@
     <None Include="..\assets\shader_es2.vert">
       <Filter>Resource Files</Filter>
     </None>
-    <None Include="..\assets\8lbs.obj">
+    <None Include="..\..\..\data\models\8lbs.obj">
       <Filter>Resource Files</Filter>
     </None>
   </ItemGroup>
