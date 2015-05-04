@@ -1,11 +1,9 @@
-#version 330 core
+#include "precision.glsl"
 
 uniform sampler2D		uSamplerAlbedo;
 uniform sampler2D		uSamplerNormalEmissive;
 uniform sampler2D		uSamplerPosition;
 uniform sampler2DShadow uSamplerShadowMap;
-
-uniform bool	uDrawLightSource;
 
 uniform vec4	uLightColorAmbient;
 uniform vec4	uLightColorDiffuse;
@@ -29,15 +27,18 @@ out vec4 	oColor;
 
 void main( void )
 {
-
-	// Only draw fragment if it occurs inside the light volume
 	vec2 uv					= gl_FragCoord.xy / uWindowSize;
 	vec4 position			= texture( uSamplerPosition, uv );
-	if ( length( position.xyz ) == 0.0 ) {
+	
+	// Do not draw background
+	if ( length( position.xyz ) <= 0.0 ) {
 		discard;
 	}
+	
 	vec3 L 					= uLightPosition - position.xyz;
 	float d 				= length( L );
+	
+	// Only draw fragment if it occurs inside the light volume
 	if ( d > uLightRadius ) {
 		discard;
 	}
@@ -64,7 +65,7 @@ void main( void )
 
 	// Calculate shadow
 	if ( uShadowEnabled ) {
-		float bias			= 0.86;
+		const float bias	= 0.9986;
 		vec4 shadowClip		= uShadowMatrix * uViewMatrixInverse * position;
 		vec3 shadowCoord	= shadowClip.xyz / shadowClip.w;
 		shadowCoord 		= shadowCoord * 0.5 + 0.5;
@@ -72,11 +73,10 @@ void main( void )
 		float s				= 0.0;
 		if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
 			float depth	= texture( uSamplerShadowMap, shadowCoord );
-			if ( depth > shadowCoord.z - bias ) {
-				s			= 1.0;
+			if ( depth < shadowCoord.z - bias ) {
+				oColor		*= 0.2;
 			}
 		}
-		oColor				*= s;
 	}
 
 	// Add emissive
