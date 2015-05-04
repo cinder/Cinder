@@ -855,7 +855,7 @@ void DeferredShadingAdvancedApp::draw()
 			if ( mEnabledDoF ) {
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
 				
-				float d = glm::length( mCamera.getEyePoint() );
+				const float d = glm::length( mCamera.getEyePoint() );
 				const gl::ScopedTextureBind scopedTextureBind0( mFboGBuffer->getDepthTexture(), 0 );
 				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboPingPong[ pong ],	1 );
 				mBatchDofRect->getGlslProg()->uniform( "uFocalDepth",	d );
