@@ -1,15 +1,15 @@
-#version 330 core
+#include "precision.glsl"
 
 const int MODE_ALBEDO	= 0;
 const int MODE_NORMAL	= 1;
 const int MODE_POSITION	= 2;
 const int MODE_EMISSIVE	= 3;
 
-uniform sampler2D 	uSamplerAlbedo;
-uniform sampler2D 	uSamplerNormalEmissive;
-uniform sampler2D 	uSamplerPosition;
+uniform sampler2D uSamplerAlbedo;
+uniform sampler2D uSamplerNormalEmissive;
+uniform sampler2D uSamplerPosition;
 
-uniform int uMode = 0;
+uniform int uMode;
 
 in Vertex
 {
