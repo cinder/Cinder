@@ -1,15 +1,12 @@
 /*
  Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
-
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
-
     * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
     * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
-
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -31,16 +28,7 @@ AxisAlignedBox3f::AxisAlignedBox3f( const vec3 &aMin, const vec3 &aMax )
 	mExtents[0] = vec3( aMin.x, aMin.y, aMin.z );
 	mExtents[1] = vec3( aMax.x, aMax.y, aMax.z );
 
-	vec3 extent( aMax.x - aMin.x, aMax.y - aMin.y, aMax.z - aMin.z );
-	vec3 mid( ( aMin.x + aMax.x ) / 2.0f, ( aMin.y + aMax.y ) / 2.0f, ( aMin.z + aMax.z ) / 2.0f );
-	mVerts[0] = vec3( -0.5f, -0.5f, 0.5f ) * extent +  mid;
-	mVerts[1] = vec3( 0.5f, -0.5f, 0.5f ) * extent + mid;
-	mVerts[2] = vec3( -0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[3] = vec3( 0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[4] = vec3( -0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
-	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
+	mNeedsRecalculate = true;
 }
 
 bool AxisAlignedBox3f::intersects( const Ray &ray )
@@ -77,6 +65,8 @@ void AxisAlignedBox3f::include( const vec3 &point )
 	if(point.x > mExtents[1].x) mExtents[1].x = point.x;
 	if(point.y > mExtents[1].y) mExtents[1].y = point.y;
 	if(point.z > mExtents[1].z) mExtents[1].z = point.z;
+
+	mNeedsRecalculate = true;
 }
 
 void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
@@ -91,21 +81,14 @@ void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
 	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
 
-	// update vertices
-	vec3 extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
-	vec3 mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
-	mVerts[0] = vec3( -0.5f, -0.5f, 0.5f ) * extent +  mid;
-	mVerts[1] = vec3( 0.5f, -0.5f, 0.5f ) * extent + mid;
-	mVerts[2] = vec3( -0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[3] = vec3( 0.5f, 0.5f, 0.5f ) * extent + mid;
-	mVerts[4] = vec3( -0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
-	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
-	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
+	mNeedsRecalculate = true;
 }
 
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 {
+	if( mNeedsRecalculate )
+		recalculateVertices();
+	
 	int i = 0;
 	
 	if( ray.calcTriangleIntersection( mVerts[2], mVerts[0], mVerts[1], &intersections[i] ) ) { // +Z
@@ -188,8 +171,11 @@ vec3 AxisAlignedBox3f::getNegative(const vec3 &normal) const
 	return(result);
 }
 
-AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform ) const
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform )
 {
+	if ( mNeedsRecalculate )
+		recalculateVertices();
+	
 	vec3 verts[8];
 
 	for(size_t i=0;i<8;i++)
@@ -209,6 +195,23 @@ AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform ) const
 	}
 
 	return AxisAlignedBox3f(min, max);
+}
+
+void AxisAlignedBox3f::recalculateVertices()
+{
+	// update vertices
+	vec3 extent( mExtents[1].x - mExtents[0].x, mExtents[1].y - mExtents[0].y, mExtents[1].z - mExtents[0].z );
+	vec3 mid( ( mExtents[0].x + mExtents[1].x ) / 2.0f, ( mExtents[0].y + mExtents[1].y ) / 2.0f, ( mExtents[0].z + mExtents[1].z ) / 2.0f );
+	mVerts[0] = vec3( -0.5f, -0.5f, 0.5f ) * extent +  mid;
+	mVerts[1] = vec3( 0.5f, -0.5f, 0.5f ) * extent + mid;
+	mVerts[2] = vec3( -0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[3] = vec3( 0.5f, 0.5f, 0.5f ) * extent + mid;
+	mVerts[4] = vec3( -0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
+	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
+	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
+
+	mNeedsRecalculate = false;
 }
 
 } // namespace cinder
