@@ -28,7 +28,7 @@ AxisAlignedBox3f::AxisAlignedBox3f( const vec3 &aMin, const vec3 &aMax )
 	mExtents[0] = vec3( aMin.x, aMin.y, aMin.z );
 	mExtents[1] = vec3( aMax.x, aMax.y, aMax.z );
 
-	recalculateVertices();
+	mNeedsRecalculate = true;
 }
 
 bool AxisAlignedBox3f::intersects( const Ray &ray )
@@ -65,8 +65,8 @@ void AxisAlignedBox3f::include( const vec3 &point )
 	if(point.x > mExtents[1].x) mExtents[1].x = point.x;
 	if(point.y > mExtents[1].y) mExtents[1].y = point.y;
 	if(point.z > mExtents[1].z) mExtents[1].z = point.z;
-	
-	recalculateVertices();
+
+	mNeedsRecalculate = true;
 }
 
 void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
@@ -81,11 +81,14 @@ void AxisAlignedBox3f::include( const AxisAlignedBox3f &rhs )
 	if(maxB.y > mExtents[1].y) mExtents[1].y = maxB.y;
 	if(maxB.z > mExtents[1].z) mExtents[1].z = maxB.z;
 
-	recalculateVertices();
+	mNeedsRecalculate = true;
 }
 
 int AxisAlignedBox3f::intersect( const Ray &ray, float intersections[2] )
 {
+	if( mNeedsRecalculate )
+		recalculateVertices();
+	
 	int i = 0;
 	
 	if( ray.calcTriangleIntersection( mVerts[2], mVerts[0], mVerts[1], &intersections[i] ) ) { // +Z
@@ -168,8 +171,11 @@ vec3 AxisAlignedBox3f::getNegative(const vec3 &normal) const
 	return(result);
 }
 
-AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform ) const
+AxisAlignedBox3f AxisAlignedBox3f::transformed( const mat4 &transform )
 {
+	if ( mNeedsRecalculate )
+		recalculateVertices();
+	
 	vec3 verts[8];
 
 	for(size_t i=0;i<8;i++)
@@ -204,6 +210,8 @@ void AxisAlignedBox3f::recalculateVertices()
 	mVerts[5] = vec3( 0.5f, 0.5f, -0.5f ) * extent + mid;
 	mVerts[6] = vec3( -0.5f, -0.5f, -0.5f ) * extent + mid;
 	mVerts[7] = vec3( 0.5f, -0.5f, -0.5f ) * extent + mid;
+
+	mNeedsRecalculate = false;
 }
 
 } // namespace cinder
