@@ -65,7 +65,11 @@ void AxisAlignedBox3f::include( const vec3 &point )
 	if(point.x > mExtents[1].x) mExtents[1].x = point.x;
 	if(point.y > mExtents[1].y) mExtents[1].y = point.y;
 	if(point.z > mExtents[1].z) mExtents[1].z = point.z;
+<<<<<<< HEAD
 	
+=======
+
+>>>>>>> 7c3f064a50afaae66da4993bc57030a68616415c
 	mNeedsRecalculate = true;
 }
 
