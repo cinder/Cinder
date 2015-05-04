@@ -8,14 +8,17 @@ global-reset()
 cinder-orange = #c64b24
 light-gray = #949494
 
-gray-gradient-1 = linear-gradient(to bottom, #232524 0%,#292d2c 100%); /* W3C */
-gray-gradient-2 = linear-gradient(to bottom, #232524 0%,#292d2c 100%); /* W3C */
+background-gray = #252726
+background-gray-light = #292d2c
+gray-gradient-1 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
+gray-gradient-2 = linear-gradient(to bottom, background-gray 0%,#292d2c 100%); /* W3C */
 
 left-col-width = 300px
 
 body
 	font-size: 16px
 	font-family: 'Open Sans', sans-serif
+	background: background-gray-light gray-gradient-1 no-repeat
 	
 div
 	line-height: 16px
@@ -25,8 +28,11 @@ a
 	font-weight: 700
 	
 em
-	font-style: italic
+	font-style: normal
 	font-weight: 700
+	
+.row
+	max-width: 80rem
 	
 // code
 // 	margin: 1em 0
@@ -37,7 +43,7 @@ em
 // #container
 	
 #top-primary
-	background: gray-gradient-1
+	background: background-gray
 	
 	// padding: 0 0 48px 0
 	padding: 0 0 0 0
@@ -49,6 +55,24 @@ em
 		
 	#sub-nav
 		height: 50px
+		
+		ul
+			text-align: right
+			position: relative
+			top: 50%
+			transform: translateY(-50%)
+			
+			li
+				display: inline-block
+				margin-left: 10px
+				
+		a
+			color: #fff
+			font-weight: normal
+			font-size: .8em
+			
+			&:hover
+				text-decoration: underline
 
 	.content
 		// 
@@ -115,10 +139,17 @@ em
 	height: 100%
 	min-height: 250px
 
+.content-row
+	
+	background: #fff
+
+	> .columns
+		padding-top: 40px
+
 #container
 	background: white
 	height: auto
-	padding-top: 40px
+	// padding-top: 40px
 	font-size: 0.8em
 	line-height: 1em
 
@@ -141,7 +172,7 @@ em
 			li
 				
 				height: 100%
-				padding: 10px
+				padding: 6px 10px
 				transform: translateZ(0)
 				
 				&:nth-child(odd)
@@ -153,16 +184,28 @@ em
 
 		.row
 			padding-left: 18px
+			// margin: 5px 0
 			
-			.definition
-				margin-bottom: 5px
+			// .definition
+				// margin: 5px 0
 			
 			.description
+				// box-sizing: border-box
+				// padding-top: 5px
 				color: #7c827f
+			
+			p
+				margin: 0
+			
+				&:first-child
+					margin-top: 5px
 				
 			button.expand
-				top: 12px
+				top: 8px
 				left: 9px
+				
+	.returnCol
+		text-align: right
 
 
 .expandable
@@ -172,7 +215,7 @@ em
 	
 	.content
 		overflow: hidden
-		transition: all 350ms cubic-bezier(0.165, 0.840, 0.440, 1.000)
+		transition: all 300ms cubic-bezier(0.165, 0.840, 0.440, 1.000)
 
 	&.hidden	
 		button.expand
@@ -252,3 +295,56 @@ button.expand
 					 background-position: 13px -3px;
 	
 
+#side-nav
+	
+	background: #252726
+	
+	h3
+		color: cinder-orange
+		font-weight: 700
+	
+	input[type="checkbox"] + label
+		margin-left: -18px
+	
+	.css-treeview
+		
+		font-size: 0.8em
+		
+		label
+			color: #fff
+		
+		li
+			margin-left: 18px
+			margin-top: 5px;
+			margin-bottom: 5px;
+			
+			a
+				color: #fff
+			
+
+	.css-treeview label::before
+		background-image: url("images/expand_arrow.png");
+		background-repeat: no-repeat
+		background-size: 13px 13px
+		background-position: 0 0
+		width: 13px
+		height: 13px
+		margin: -2px 2px 0 0
+		
+	.css-treeview input:checked + label::before
+		
+		transform: rotate(90deg) translateZ(0)
+		transform-origin: 50% 50%;
+		
+	.css-treeview label
+		background-image: none
+		height: 20px
+		line-height: 20px
+		
+	.css-treeview input + label + ul
+		margin: 0
+
+footer
+	font-size: .8em
+	color: #fff
+	padding: 20px		
