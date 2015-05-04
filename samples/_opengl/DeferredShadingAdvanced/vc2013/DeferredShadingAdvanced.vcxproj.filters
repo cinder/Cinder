@@ -16,6 +16,27 @@
     <Filter Include="assets">
       <UniqueIdentifier>{a43608b8-9a4d-46f2-a0c0-d4aefa1b6a7b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="assets\common">
+      <UniqueIdentifier>{1a4e8b08-4f6d-452d-8898-7b7acc48f581}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\ao">
+      <UniqueIdentifier>{ef1331ea-e912-4d48-8d1a-4976fda119da}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\bloom">
+      <UniqueIdentifier>{dc265687-2f41-47ad-8858-46f5ddf2b039}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\post">
+      <UniqueIdentifier>{d7b57b89-1cb4-4eee-9e3c-df5f2ad7a3be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\ao\hbao">
+      <UniqueIdentifier>{f90d230e-c114-447b-9329-8020f6fc28a1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\ao\sao">
+      <UniqueIdentifier>{195df992-0cfc-4386-a575-c03850a178a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="assets\deferred">
+      <UniqueIdentifier>{a26ff318-5973-4cb3-a0e2-6597f34e43f2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\Light.cpp">
@@ -27,12 +48,18 @@
     <ClCompile Include="..\src\DeferredShadingAdvancedApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\Model.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Light.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\Material.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\Model.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -42,64 +69,92 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\blur.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\color.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\composite.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\debug.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\dof.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\emissive.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\fxaa.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\gbuffer.frag">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\gbuffer.vert">
-      <Filter>assets</Filter>
-    </None>
-    <None Include="..\assets\lbuffer.frag">
-      <Filter>assets</Filter>
-    </None>
     <None Include="..\assets\pass_through.vert">
       <Filter>assets</Filter>
     </None>
-    <None Include="..\assets\shadow_map.frag">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\composite.frag">
+      <Filter>assets\ao</Filter>
     </None>
-    <None Include="..\assets\shadow_map.vert">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\hbao\ao.frag">
+      <Filter>assets\ao\hbao</Filter>
     </None>
-    <None Include="..\assets\ssao.frag">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\hbao\blur.frag">
+      <Filter>assets\ao\hbao</Filter>
     </None>
-    <None Include="..\assets\ssao.vert">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\sao\ao.frag">
+      <Filter>assets\ao\sao</Filter>
     </None>
-    <None Include="..\assets\material.glsl">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\sao\blur.frag">
+      <Filter>assets\ao\sao</Filter>
     </None>
-    <None Include="..\assets\vertex_in.glsl">
-      <Filter>assets</Filter>
+    <None Include="..\assets\ao\sao\csz.frag">
+      <Filter>assets\ao\sao</Filter>
     </None>
-    <None Include="..\assets\vertex_out.glsl">
-      <Filter>assets</Filter>
+    <None Include="..\assets\bloom\blur.frag">
+      <Filter>assets\bloom</Filter>
     </None>
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png">
-      <Filter>assets</Filter>
-    </Image>
+    <None Include="..\assets\bloom\highpass.frag">
+      <Filter>assets\bloom</Filter>
+    </None>
+    <None Include="..\assets\common\light.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\common\material.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\common\offset.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\common\pi.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\common\vertex_in.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\common\vertex_out.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\deferred\debug.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\emissive.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\gbuffer.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\gbuffer.vert">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\lbuffer_light.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\lbuffer_light.vert">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\lbuffer_shadow.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\deferred\shadow_map.frag">
+      <Filter>assets\deferred</Filter>
+    </None>
+    <None Include="..\assets\post\color.frag">
+      <Filter>assets\post</Filter>
+    </None>
+    <None Include="..\assets\post\dof.frag">
+      <Filter>assets\post</Filter>
+    </None>
+    <None Include="..\assets\post\fog.frag">
+      <Filter>assets\post</Filter>
+    </None>
+    <None Include="..\assets\post\fxaa.frag">
+      <Filter>assets\post</Filter>
+    </None>
+    <None Include="..\assets\common\unpack.glsl">
+      <Filter>assets\common</Filter>
+    </None>
+    <None Include="..\assets\bloom\composite.frag">
+      <Filter>assets\bloom</Filter>
+    </None>
   </ItemGroup>
 </Project>

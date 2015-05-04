@@ -204,33 +204,43 @@
     <ClCompile Include="..\src\DeferredShadingAdvancedApp.cpp" />
     <ClCompile Include="..\src\Light.cpp" />
     <ClCompile Include="..\src\Material.cpp" />
+    <ClCompile Include="..\src\Model.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Light.h" />
     <ClInclude Include="..\include\Material.h" />
+    <ClInclude Include="..\include\Model.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\emissive.frag" />
-    <None Include="..\assets\blur.frag" />
-    <None Include="..\assets\color.frag" />
-    <None Include="..\assets\composite.frag" />
-    <None Include="..\assets\debug.frag" />
-    <None Include="..\assets\dof.frag" />
-    <None Include="..\assets\fxaa.frag" />
-    <None Include="..\assets\gbuffer.frag" />
-    <None Include="..\assets\gbuffer.vert" />
-    <None Include="..\assets\lbuffer.frag" />
-    <None Include="..\assets\material.glsl" />
+    <None Include="..\assets\ao\composite.frag" />
+    <None Include="..\assets\ao\hbao\ao.frag" />
+    <None Include="..\assets\ao\hbao\blur.frag" />
+    <None Include="..\assets\ao\sao\ao.frag" />
+    <None Include="..\assets\ao\sao\blur.frag" />
+    <None Include="..\assets\ao\sao\csz.frag" />
+    <None Include="..\assets\bloom\blur.frag" />
+    <None Include="..\assets\bloom\composite.frag" />
+    <None Include="..\assets\bloom\highpass.frag" />
+    <None Include="..\assets\common\unpack.glsl" />
+    <None Include="..\assets\common\light.glsl" />
+    <None Include="..\assets\common\material.glsl" />
+    <None Include="..\assets\common\offset.glsl" />
+    <None Include="..\assets\common\pi.glsl" />
+    <None Include="..\assets\common\vertex_in.glsl" />
+    <None Include="..\assets\common\vertex_out.glsl" />
+    <None Include="..\assets\deferred\debug.frag" />
+    <None Include="..\assets\deferred\emissive.frag" />
+    <None Include="..\assets\deferred\gbuffer.frag" />
+    <None Include="..\assets\deferred\gbuffer.vert" />
+    <None Include="..\assets\deferred\lbuffer_light.frag" />
+    <None Include="..\assets\deferred\lbuffer_light.vert" />
+    <None Include="..\assets\deferred\lbuffer_shadow.frag" />
+    <None Include="..\assets\deferred\shadow_map.frag" />
     <None Include="..\assets\pass_through.vert" />
-    <None Include="..\assets\shadow_map.frag" />
-    <None Include="..\assets\shadow_map.vert" />
-    <None Include="..\assets\ssao.frag" />
-    <None Include="..\assets\ssao.vert" />
-    <None Include="..\assets\vertex_in.glsl" />
-    <None Include="..\assets\vertex_out.glsl" />
-  </ItemGroup>
-  <ItemGroup>
-    <Image Include="..\assets\random.png" />
+    <None Include="..\assets\post\color.frag" />
+    <None Include="..\assets\post\dof.frag" />
+    <None Include="..\assets\post\fog.frag" />
+    <None Include="..\assets\post\fxaa.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
