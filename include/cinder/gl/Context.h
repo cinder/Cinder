@@ -162,6 +162,17 @@ class Context {
 	void					popFrontFace( bool forceRestore = false );
 	//! Returns the winding order defining front-facing polygons, either \c GL_CW or \c GL_CCW (the default).
 	GLenum					getFrontFace();
+	
+#if ! defined( CINDER_GL_ES )
+	//! Analogous to glLogicOp( \a mode ). Valid arguments are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
+	void		logicOp( GLenum mode );
+	//! Pushes the logical operation \a mode. Valid arguments are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
+	void		pushLogicOp( GLenum mode );
+	//! Pops the top of the Logic Op stack. If \a forceRestore then redundancy checks are skipped and the hardware state is always set.
+	void		popLogicOp( bool forceRestore = false );
+	//! Returns a GLenum representing the current logical operation.
+	GLenum		getLogicOp();
+#endif
 
 	//! Analogous to glBindBuffer( \a target, \a id )
 	void		bindBuffer( GLenum target, GLuint id );
@@ -472,7 +483,12 @@ class Context {
 
 	std::vector<GLenum>			mCullFaceStack;
 	std::vector<GLenum>			mFrontFaceStack;
+
+#if ! defined( CINDER_GL_ES )
+	std::vector<GLenum>			mLogicOpStack;
 	std::vector<GLenum>			mPolygonModeStack;
+#endif
+
 	std::vector<GLboolean>		mDepthMaskStack;
 	std::vector<GLenum>			mDepthFuncStack;
 	

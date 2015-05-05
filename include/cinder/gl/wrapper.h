@@ -126,6 +126,13 @@ void enableFaceCulling( bool enable = true );
 //! Specifies whether front or back-facing polygons are culled (as specified by \a face) when polygon culling is enabled. Valid values are \c GL_BACK and \c GL_FRONT.
 void cullFace( GLenum face );
 
+#if ! defined( CINDER_GL_ES )
+//! Specifies whether logic operations are enabled. Equivalent to calling enable( \c GL_COLOR_LOGIC_OP, \a enable ). Specify symbolic constants that selects the logical operation with gl::logicOp().
+void enableLogicOp( bool enable = true );
+//! Specifies a symbolic constant that selects a logical operation. Valid values are \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
+void logicOp( GLenum mode );
+#endif
+
 void disableDepthRead();
 void disableDepthWrite();
 void enableDepthRead( bool enable = true );
