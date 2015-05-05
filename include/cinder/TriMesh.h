@@ -100,7 +100,6 @@ class TriMesh : public geom::Source {
 	bool		hasTexCoords3() const { return ! mTexCoords3.empty(); }
 
 	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	// TODO: shouldn't this be called appendPosition()?
 	void		appendVertex( const vec2 &v ) { appendVertices( &v, 1 ); }
 	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
 	void		appendVertex( const vec3 &v ) { appendVertices( &v, 1 ); }
