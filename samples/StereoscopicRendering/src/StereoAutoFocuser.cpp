@@ -90,7 +90,7 @@ void StereoAutoFocuser::draw()
 	gl::ScopedColor color( ColorA( 0, 1, 1, 0.1f ) );
 	gl::drawSolidRect( mArea );
 	gl::color( ColorA( 0, 1, 1, 0.8f ) );
-	glLineWidth( 2.0f );
+	gl::lineWidth( 2.0f );
 	gl::drawLine( vec2( (float) mArea.getX1() + 0.5f, (float) mArea.getY2() - mNearest.y ),
 				  vec2( (float) mArea.getX2() + 0.5f, (float) mArea.getY2() - mNearest.y ) );
 	gl::drawLine( vec2( (float) mArea.getX1() + mNearest.x, (float) mArea.getY1() + 0.5f ),

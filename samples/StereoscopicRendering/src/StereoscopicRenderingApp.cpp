@@ -73,15 +73,15 @@ public:
 		vec3 color;
 	} InstanceData;
 public:
-	void prepareSettings( Settings *settings );
+	static void prepareSettings( Settings *settings );
 
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
-	void keyDown( KeyEvent event );
+	void keyDown( KeyEvent event ) override;
 
-	void resize();
+	void resize() override;
 private:
 	void createFbo();
 	void createGrid();
@@ -613,4 +613,4 @@ void StereoscopicRenderingApp::renderUI()
 #endif
 }
 
-CINDER_APP( StereoscopicRenderingApp, RendererGl( RendererGl::Options() ) )
+CINDER_APP( StereoscopicRenderingApp, RendererGl, StereoscopicRenderingApp::prepareSettings )
