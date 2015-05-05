@@ -83,7 +83,7 @@ bool AppMac::isFrameRateEnabled() const
 
 fs::path AppMac::getAppPath() const
 {
-	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
+	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] ).parent_path();
 }
 
 WindowRef AppMac::getWindow() const

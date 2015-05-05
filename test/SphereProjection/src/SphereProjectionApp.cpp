@@ -113,15 +113,21 @@ void SphereProjectionApp::draw()
 	for( int i = 0; i < 3; ++i ) {
 		vec3 cameraSpaceSpherePos( mCam.getViewMatrix() * vec4( mSpherePositions[i], 1 ) );
 		vec2 center, axisA, axisB;
+		Sphere worldSpaceSphere( mSpherePositions[i], mSphereRadii[i] );
 		Sphere cameraSpaceSphere( cameraSpaceSpherePos, mSphereRadii[i] );
 		cameraSpaceSphere.calcProjection( mCam.getFocalLength(), &center, &axisA, &axisB );
 
+		// draw ellipse projection
 		gl::color( 1, 1, 0 );
 		gl::disableDepthRead();
 		gl::drawSolidCircle( clipToScreenCoords( center ), 4.0f );
 		gl::drawLine( clipToScreenCoords( center - axisA ), clipToScreenCoords( center + axisA ) );
 		gl::drawLine( clipToScreenCoords( center - axisB ), clipToScreenCoords( center + axisB ) );
 		gl::color( 1, 1, 1, 1 );
+		
+		// draw bounding circle
+		mCam.calcScreenProjection( worldSpaceSphere, getWindowSize(), &center, &axisA, &axisB );
+		gl::drawStrokedCircle( center, std::max( length( axisA ), length( axisB ) ) );
 	}
 	
 	mParams->draw();

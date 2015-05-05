@@ -184,15 +184,19 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 {
 	std::string s;
 	
-	s +=		"uniform mat4	ciModelViewProjection;\n"
-				"\n"
+	s +=		"uniform mat4	ciModelViewProjection;\n";
+
+	if( shader.mLambert )
+		s +=	"uniform mat3	ciNormalMatrix;\n";
+
+	s +=		"\n"
 				"attribute vec4		ciPosition;\n"
 				;
 
 	if( shader.mUniformBasedPosAndTexCoord ) {
-		s +=	"uniform vec2	uPositionOffset, uPositionScale;\n";
+		s +=	"uniform vec2 uPositionOffset, uPositionScale;\n";
 		if( shader.mTextureMapping ) {
-			s+= "uniform vec2	uTexCoordOffset, uTexCoordScale;\n";
+			s+= "uniform vec2 uTexCoordOffset, uTexCoordScale;\n";
 		}
 	}
 
@@ -205,6 +209,11 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 		s +=	"attribute vec4		ciColor;\n"
 				"varying vec4		Color;\n"
 				;
+	}
+	if( shader.mLambert ) {
+		s += "attribute vec3		ciNormal;\n"
+			"varying highp vec3		Normal;\n"
+			;
 	}
 
 	s +=		"void main( void )\n"
@@ -227,6 +236,10 @@ std::string	EnvironmentEs::generateVertexShader( const ShaderDef &shader )
 		s +=	"	Color = ciColor;\n"
 				;
 	}
+	if( shader.mLambert ) {
+		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
+				;
+	}
 	
 	s +=		"}\n";
 	
@@ -237,38 +250,44 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 {
 	std::string s;
 
-	s +=		"precision highp float;\n"
-				;
+	s +=		"precision highp float;\n";
 
-	if( shader.mTextureMapping ) {	
+	if( shader.mTextureMapping ) {
 		s +=	"uniform sampler2D	uTex0;\n"
 				"varying highp vec2	TexCoord;\n"
 				;
 	}
-	if( shader.mColor ) {
-		s +=	"varying lowp vec4	Color;\n"
-				;
-	}
+
+	if( shader.mColor ) 
+		s +=	"varying lowp vec4	Color;\n";
+
+	if( shader.mLambert ) 
+		s +=	"varying highp vec3	Normal;\n";
 
 	s +=		"void main( void )\n"
 				"{\n"
 				;
-	
-	if( shader.mTextureMapping && shader.mColor ) {
-		s +=	"	gl_FragColor = texture2D( uTex0, TexCoord.st ) * Color;\n"
-				;
-	}
-	else if( shader.mTextureMapping ) {
-		s +=	"	gl_FragColor = texture2D( uTex0, TexCoord.st );\n"
-				;
-	}
-	else if( shader.mColor ) {
-		s +=	"	gl_FragColor = Color;\n"
+
+	if( shader.mLambert ) {
+		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
+				"	vec3 N = normalize( Normal );\n"
 				;
 	}
 	
-	s +=		"}\n"
-				;
+	s +=		"	gl_FragColor = vec4( 1 )";
+	
+	if( shader.mTextureMapping ) 
+		s +=	" * texture2D( uTex0, TexCoord.st )";
+	
+	if( shader.mColor ) 
+		s +=	" * Color";
+
+	if( shader.mLambert )
+		s +=	" * max( 0.0, dot( N, L ) )";
+
+	s +=		";\n";
+	
+	s +=		"}\n";
 	
 	return s;
 }

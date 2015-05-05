@@ -30,7 +30,7 @@ http://www.cgtrader.com/3d-models/character-people/fantasy/the-leprechaun-the-go
 #include "cinder/params/Params.h"
 #include "cinder/Camera.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Perlin.h"
 #include "cinder/Timeline.h"
 #include "cinder/Timer.h"
@@ -71,7 +71,6 @@ public:
 
 	void	update();
 	void	draw();
-	void	resize();
 
 	void	keyDown( KeyEvent event );
 
@@ -92,7 +91,7 @@ private:
 	AxisAlignedBox3f	mMeshBounds;
 
 	CameraPersp			mCamera;
-	MayaCamUI			mMayaCamera;
+	CameraUi			mCamUi;
 
 	LightSource			mLightLantern;
 	LightSource			mLightAmbient;
@@ -128,8 +127,7 @@ private:
 void NormalMappingApp::setup()
 {
 	// setup camera and lights
-	mCamera.setEyePoint( vec3( 0.2f, 0.4f, 1.0f ) );
-	mCamera.setCenterOfInterestPoint( vec3(0.0f, 0.425f, 0.0f) );
+	mCamera.lookAt( vec3( 0.2f, 0.4f, 1.0f ), vec3(0.0f, 0.425f, 0.0f) );
 	mCamera.setNearClip( 0.01f );
 	mCamera.setFarClip( 100.0f );
 
@@ -232,8 +230,7 @@ void NormalMappingApp::setup()
 	mParams->addParam( "Show Normals & Tangents", &mShowNormalsAndTangents );
 #endif
 
-	mMayaCamera = MayaCamUI( &mCamera );
-	mMayaCamera.connect( getWindow() );
+	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 
 	// keep track of time
 	mTime = (float) getElapsedSeconds();
@@ -288,7 +285,7 @@ void NormalMappingApp::draw()
 	if( isInitialized() ) {
 		// get ready to draw in 3D
 		gl::pushMatrices();
-		gl::setMatrices( mMayaCamera.getCamera() );
+		gl::setMatrices( mCamera );
 
 		gl::enableDepthRead();
 		gl::enableDepthWrite();
@@ -353,11 +350,6 @@ void NormalMappingApp::draw()
 		gl::draw( mCopyrightMap, centered );
 		gl::disableAlphaBlending();
 	}
-}
-
-void NormalMappingApp::resize()
-{
-	mCamera.setAspectRatio( getWindowAspectRatio() );
 }
 
 void NormalMappingApp::keyDown( KeyEvent event )

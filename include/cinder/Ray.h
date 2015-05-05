@@ -32,7 +32,7 @@ class Ray {
 	Ray( const vec3 &aOrigin, const vec3 &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }
 
 	void			setOrigin( const vec3 &aOrigin ) { mOrigin = aOrigin; }
-	const vec3&	getOrigin() const { return mOrigin; }
+	const vec3&		getOrigin() const { return mOrigin; }
 	
 	void setDirection( const vec3 &aDirection ) {
 		mDirection = aDirection;
@@ -48,7 +48,7 @@ class Ray {
 	char	getSignY() const { return mSignY; }
 	char	getSignZ() const { return mSignZ; }		
 	
-	vec3 calcPosition( float t ) const { return mOrigin + mDirection * t; }
+	vec3	calcPosition( float t ) const { return mOrigin + mDirection * t; }
 
 	bool calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result ) const;
 	bool calcPlaneIntersection( const vec3 &origin, const vec3 &normal, float *result ) const;

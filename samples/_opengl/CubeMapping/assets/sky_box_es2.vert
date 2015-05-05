@@ -1,3 +1,5 @@
+#version 100
+
 uniform mat4	ciModelViewProjection;
 
 attribute vec4		ciPosition;

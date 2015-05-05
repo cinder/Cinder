@@ -30,9 +30,11 @@
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#import <CFNetwork/CFNetwork.h>
-		#import <Foundation/NSArray.h>
 		#import <UIKit/UIDevice.h>
+	#elif defined( CINDER_MAC )
+		#import <objc/message.h>
 	#endif
+	#import <Foundation/Foundation.h>
 	#import <netinet/in.h>
 	#import <netdb.h>
 	#import <ifaddrs.h>
@@ -41,9 +43,6 @@
 	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
 	#include <cxxabi.h>
-		#if defined( CINDER_MAC )
-		#include <CoreServices/CoreServices.h>
-	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <windowsx.h>
@@ -52,7 +51,7 @@
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
-#elif defined( CINDER_WINRT)
+#elif defined( CINDER_WINRT )
 	#include <collection.h>
 	#include "cinder/winrt/WinRTUtils.h"
 	using namespace Windows::Devices::Input;
@@ -450,15 +449,31 @@ int System::getNumCores()
 	return instance()->mLogicalCPUs;
 }
 
+#if defined( CINDER_COCOA )
+typedef struct {
+	NSInteger majorVersion;
+	NSInteger minorVersion;
+	NSInteger patchVersion;
+} ShadowOSVersion;
+#endif
+
 int System::getOsMajorVersion()
 {
 	if( ! instance()->mCachedValues[OS_MAJOR] ) {
 #if defined( CINDER_COCOA_TOUCH )
 		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
 		instance()->mOSMajorVersion = [[sysVerComponents firstObject] intValue];
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSMajorVersion = (int32_t)version.majorVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
 #elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
@@ -479,10 +494,18 @@ int System::getOsMinorVersion()
 	if( ! instance()->mCachedValues[OS_MINOR] ) {
 #if defined( CINDER_COCOA_TOUCH )
 		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
-		instance()->mOSMinorVersion = [[sysVerComponents objectAtIndex:1] intValue];	
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>( &(instance()->mOSMinorVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
+		instance()->mOSMinorVersion = [[sysVerComponents objectAtIndex:1] intValue];
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSMinorVersion = (int32_t)version.minorVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>( &(instance()->mOSMinorVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
 #elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
@@ -507,10 +530,18 @@ int System::getOsBugFixVersion()
 			instance()->mOSBugFixVersion = [[sysVerComponents objectAtIndex:2] intValue];
 		else
 			instance()->mOSBugFixVersion = 0;
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>( &(instance()->mOSBugFixVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
-#elif defined( CINDER_MSW )	
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSBugFixVersion = (int32_t)version.patchVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>( &(instance()->mOSBugFixVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
+#elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
 		info.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
@@ -729,8 +760,6 @@ std::string System::getIpAddress()
 }
 #endif
 
-
-
 #if defined( CINDER_COCOA_TOUCH )
 bool System::isDeviceIphone()
 {
@@ -749,8 +778,6 @@ bool System::isDeviceIpad()
 	
 	return instance()->mCachedValues[IS_IPAD]; 
 }
-
 #endif
-
 
 } // namespace cinder

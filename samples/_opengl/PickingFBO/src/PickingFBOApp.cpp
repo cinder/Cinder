@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Utilities.h"
 #include "cinder/CinderAssert.h"
 #include "cinder/Log.h"
@@ -49,7 +49,8 @@ class PickingFBOApp : public App {
 	gl::GlslProgRef		mNotPickableProg;
 	int					mPickPixelSize;
 	ivec2				mPickPos;
-	MayaCamUI			mMayaCam;
+	CameraPersp			mCamera;
+	CameraUi			mCamUi;
 	vec4				mDefaultVertexColor;
 	vec4				mDefaultEdgeColor;
 	vec4				mSelectedVertexColor;
@@ -82,10 +83,8 @@ void PickingFBOApp::setup()
 	setupGeometry();
 	setupFbo();
 
-	CameraPersp cam( mMayaCam.getCamera() );
-	cam.lookAt( vec3( 100, 100, 100 ), vec3( 0 ) );
-	cam.setCenterOfInterestPoint( vec3( 0 ) );
-	mMayaCam.setCurrentCam( cam );
+	mCamera.lookAt( vec3( 100, 100, 100 ), vec3( 0 ) );
+	mCamUi = CameraUi( &mCamera );
 
 	mBoxTransform = mat4( 1.0f );
 	mBoxTransform = glm::scale( mBoxTransform, vec3( 30.0f ) );
@@ -100,9 +99,8 @@ void PickingFBOApp::setup()
 
 void PickingFBOApp::resize()
 {
-	CameraPersp cam( mMayaCam.getCamera() );
-	cam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	mMayaCam.setCurrentCam( cam );
+	mCamUi.setWindowSize( getWindowSize() );
+	mCamera.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
 
 	setupFbo();
 	mNeedsRedraw = true;
@@ -148,7 +146,7 @@ void PickingFBOApp::renderScene()
 	gl::pointSize( 6.0f ); // this is defined in the vertex shader in ES 3
 #endif
 	gl::pushMatrices();
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCamera );
 	mGridMesh->draw();
 	gl::multModelMatrix( mBoxTransform );
 	mEdgesBatch->draw();
@@ -165,18 +163,17 @@ void PickingFBOApp::mouseDown( MouseEvent event )
 	mPickPos = toPixels( event.getPos() );
 
 	int selection = pick( mPickPos );
-	if( selection != -1 ) {
+	if( selection != -1 )
 		setSelectedColors( selection );
-	}
-	else {
-		mMayaCam.mouseDown( mPickPos );
-	}
+	else
+		mCamUi.mouseDown( event );
+
 	mNeedsRedraw = true;
 }
 
 void PickingFBOApp::mouseDrag( MouseEvent event )
 {
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
+	mCamUi.mouseDrag( event );
 	mNeedsRedraw = true;
 }
 

@@ -1,6 +1,8 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project: http://libcinder.org
  All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -24,78 +26,110 @@
 
 #include "cinder/Quaternion.h"
 #include "cinder/Vector.h"
+#include "cinder/Sphere.h"
+#include "cinder/app/MouseEvent.h"
 
 namespace cinder {
 
 class Arcball {
  public:
 	Arcball()
+		: mCamera( nullptr ), mUseConstraint( false )
 	{
 		setNoConstraintAxis();
 	}
-	Arcball( const ivec2 &aScreenSize )
-		: mWindowSize( aScreenSize )
-	{	
-		setCenter( vec2( mWindowSize.x / 2.0f, mWindowSize.y / 2.0f ) );
-		mRadius = std::min( (float)mWindowSize.x / 2, (float)mWindowSize.y / 2 );
-		setNoConstraintAxis();
+
+	Arcball( CameraPersp *camera, const Sphere &sphere )
+		: mCamera( camera ), mUseConstraint( false ), mSphere( sphere )
+	{
 	}
 	
-	void mouseDown( const ivec2 &mousePos )
+	void mouseDown( const app::MouseEvent &event )
+	{
+		mouseDown( event.getPos(), event.getWindow()->getSize() );
+	}
+	
+	void mouseDown( const ivec2 &mousePos, const ivec2 &windowSize )
 	{
 		mInitialMousePos = mousePos;
 		mInitialQuat = mCurrentQuat;
+		float temp;
+		mouseOnSphere( mInitialMousePos, windowSize, &mFromVector, &temp );
+	}
+
+	void mouseDrag( const app::MouseEvent &event )
+	{
+		mouseDrag( event.getPos(), event.getWindow()->getSize() );
 	}
 	
-	void mouseDrag( const ivec2 &mousePos )
+	void mouseDrag( const ivec2 &mousePos, const ivec2 &windowSize )
 	{
-		vec3 from = mouseOnSphere( mInitialMousePos );
-		vec3 to = mouseOnSphere( mousePos );
+		float addition;
+		mouseOnSphere( mousePos, windowSize, &mToVector, &addition );
+		vec3 from = mFromVector, to = mToVector;
 		if( mUseConstraint ) {
 			from = constrainToAxis( from, mConstraintAxis );
 			to = constrainToAxis( to, mConstraintAxis );
 		}
-		
-		vec3 axis = cross( from, to );
-		mCurrentQuat = normalize( mInitialQuat * quat( dot( from, to ), axis.x, axis.y, axis.z ) );
+
+		quat rotation = glm::rotation( from, to );
+		vec3 axis = glm::axis( rotation );
+		float angle = glm::angle( rotation );
+		rotation = glm::angleAxis( angle + addition, axis );
+
+		mCurrentQuat = normalize( rotation * mInitialQuat );
 	}
 	
-	void			resetQuat()					{ mCurrentQuat = mInitialQuat = quat(); }
-	const quat& 	getQuat() const				{ return mCurrentQuat; }
-	void			setQuat( const quat &q )	{ mCurrentQuat = q; }
+	void			resetQuat()						{ mCurrentQuat = mInitialQuat = quat(); }
+	const quat& 	getQuat() const					{ return mCurrentQuat; }
+	void			setQuat( const quat &q )		{ mCurrentQuat = q; }
+	void			setSphere( const Sphere &s )	{ mSphere = s; }
+	const Sphere&	getSphere() const				{ return mSphere; }
 	
-	void			setWindowSize( const ivec2 &aWindowSize )	{ mWindowSize = aWindowSize; }
-	void			setCenter( const vec2 &aCenter )			{ mCenter = aCenter; }
-	const vec2&		getCenter() const							{ return mCenter; }
-
-	void	setRadius( float aRadius )	{ mRadius = aRadius; }
-	float	getRadius() const			{ return mRadius; }
-
-	void	setConstraintAxis( const vec3 &aConstraintAxis )	{ mConstraintAxis = aConstraintAxis; mUseConstraint = true; }
-	void	setNoConstraintAxis()								{ mUseConstraint = false; }
-	bool	isUsingConstraint() const							{ return mUseConstraint; }
-	const vec3&	getConstraintAxis() const						{ return mConstraintAxis; }
+	void		setConstraintAxis( const vec3 &constraintAxis )		{ mConstraintAxis = normalize( constraintAxis ); mUseConstraint = true; }
+	void		setNoConstraintAxis()								{ mUseConstraint = false; }
+	bool		isUsingConstraint() const							{ return mUseConstraint; }
+	const vec3&	getConstraintAxis() const							{ return mConstraintAxis; }
 	
-	vec3 mouseOnSphere( const ivec2 &point )
+	void mouseOnSphere( const ivec2 &point, const ivec2 &windowSize, vec3 *resultVector, float *resultAngleAddition )
 	{
-		vec3 result;
-		
-		result.x = ( point.x - mCenter.x ) / ( mRadius * 2 );
-		result.y = ( point.y - mCenter.y ) / ( mRadius * 2 );
-		result.z = 0.0f;
-
-		float mag = length2( result );
-		if( mag > 1.0f ) {
-			result = normalize( result );
+		float rayT;
+		Ray ray = mCamera->generateRay( point, windowSize );
+		if( mSphere.intersect( ray, &rayT ) > 0 ) { // is click inside the sphere?
+			// trace a ray through the pixel to the sphere
+			*resultVector = normalize( ray.calcPosition( rayT ) - mSphere.getCenter() );
+			*resultAngleAddition = 0;
 		}
-		else {
-			result.z = math<float>::sqrt( 1.0f - mag );
-			result = normalize( result );
+		else { // not inside the sphere
+			// first project the sphere according to the camera, resulting in an ellipse (possible a circle)
+			Sphere cameraSpaceSphere( vec3( mCamera->getViewMatrix() * vec4( mSphere.getCenter(), 1 ) ), mSphere.getRadius() );
+			vec2 center, axisA, axisB;
+			cameraSpaceSphere.calcProjection( mCamera->getFocalLength(), windowSize, &center, &axisA, &axisB );
+			// find the point closest on the screen-projected ellipse to the mouse
+			vec2 screenSpaceClosest = getClosestPointEllipse( center, axisA, axisB, point );
+			// and send a ray through that point, finding the closest point on the sphere to it
+			Ray newRay = mCamera->generateRay( screenSpaceClosest, windowSize );
+			vec3 closestPointOnSphere = mSphere.closestPoint( newRay );
+			// our result point is the vector between this closest point on the sphere and its center
+			*resultVector = normalize( closestPointOnSphere - mSphere.getCenter() );
+			
+			// our angle addition is the screen-space distance between the mouse and the closest point on the sphere, divided into
+			// the screen-space radius of the sphere's projected ellipse, multiplied by pi
+			float screenRadius = std::max( length( axisA ), length( axisB ) );
+			*resultAngleAddition = distance( vec2(point), screenSpaceClosest ) / screenRadius * (float)M_PI;
 		}
-
-		return result;
 	}
-	
+
+	vec3 getFromVector() const
+	{
+		return mFromVector;
+	}
+
+	vec3 getToVector() const
+	{
+		return mToVector;
+	}
+
  private:
 	// Force sphere point to be perpendicular to axis
 	vec3 constrainToAxis( const vec3 &loose, const vec3 &axis )
@@ -116,13 +150,12 @@ class Arcball {
 
 		return onPlane;
 	}
-	
-	ivec2		mWindowSize;
+
+	CameraPersp	*mCamera;
 	ivec2		mInitialMousePos;
-	vec2		mCenter;
 	quat		mCurrentQuat, mInitialQuat;
-	float		mRadius;
-	vec3		mConstraintAxis;
+	Sphere		mSphere;
+	vec3		mFromVector, mToVector, mConstraintAxis;
 	bool		mUseConstraint;
 };
 

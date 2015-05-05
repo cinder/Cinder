@@ -9,7 +9,7 @@
 #include "cinder/gl/gl.h"
 #include "cinder/GeomIO.h"
 #include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 
 #include "Resources.h"
 
@@ -29,7 +29,9 @@ class VboMeshApp : public App {
   private:
 	gl::VboMeshRef	mVboMesh;
 	gl::TextureRef	mTexture;
-	MayaCamUI		mMayaCam;
+	
+	CameraPersp		mCamera;
+	CameraUi		mCamUi;
 };
 
 void VboMeshApp::setup()
@@ -47,7 +49,8 @@ void VboMeshApp::setup()
 	mVboMesh = gl::VboMesh::create( plane, bufferLayout );
 
 	mTexture = gl::Texture::create( loadImage( loadResource( RES_IMAGE ) ), gl::Texture::Format().loadTopDown() );
-	mMayaCam.connect( getWindow() );
+	
+	mCamUi = CameraUi( &mCamera, getWindow() );
 }
 
 void VboMeshApp::keyDown( KeyEvent event )
@@ -76,7 +79,7 @@ void VboMeshApp::draw()
 {
 	gl::clear( Color( 0.15f, 0.15f, 0.15f ) );
 
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCamera );
 
 	gl::ScopedGlslProg glslScope( gl::getStockShader( gl::ShaderDef().texture() ) );
 	gl::ScopedTextureBind texScope( mTexture );

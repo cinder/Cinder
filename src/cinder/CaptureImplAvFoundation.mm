@@ -1,13 +1,14 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-	* Redistributions of source code must retain the above copyright notice, this list of conditions and
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -55,9 +56,9 @@ bool CaptureImplAvFoundationDevice::isConnected() const
 
 void frameDeallocator( void *refcon )
 {
-	CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>( refcon );
-	CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
-	CVBufferRelease( pixelBuffer );
+	::CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>( refcon );
+	::CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
+	::CVBufferRelease( pixelBuffer );
 }
 
 
@@ -177,8 +178,10 @@ static BOOL sDevicesEnumerated = false;
 
 	// Specify the pixel format
 	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+#if ! defined( CINDER_COCOA_TOUCH )
 								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
 								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
+#endif
 								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA], (id)kCVPixelBufferPixelFormatTypeKey,
 								nil];
 	output.videoSettings = options;
@@ -216,7 +219,7 @@ static BOOL sDevicesEnumerated = false;
 		[mSession stopRunning];
 
 		if( mWorkingPixelBuffer ) {
-			CVBufferRelease( mWorkingPixelBuffer );
+			::CVBufferRelease( mWorkingPixelBuffer );
 			mWorkingPixelBuffer = nullptr;
 		}
 		
@@ -257,17 +260,12 @@ static BOOL sDevicesEnumerated = false;
 		if( mIsCapturing ) {
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
-				CVBufferRelease( mWorkingPixelBuffer );
+				::CVBufferRelease( mWorkingPixelBuffer );
 				mWorkingPixelBuffer = nullptr;
 			}
 			
-			CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
-			// Lock the base address of the pixel buffer
-			//CVPixelBufferLockBaseAddress( videoFrame, 0 );
-			
-			CVBufferRetain( videoFrame );
-		
-			mWorkingPixelBuffer = (CVPixelBufferRef)videoFrame;
+			mWorkingPixelBuffer = ::CMSampleBufferGetImageBuffer(sampleBuffer);
+			::CVBufferRetain( mWorkingPixelBuffer );
 			mHasNewFrame = true;			
 		}
 	}	
@@ -279,19 +277,23 @@ static BOOL sDevicesEnumerated = false;
 		return mCurrentFrame;
 	}
 	
-	@synchronized (self) {
-		CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
+	@synchronized( self ) {
+		::CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
 		
-		uint8_t *data = (uint8_t *)CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
-		mExposedFrameBytesPerRow = (int32_t)CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
-		mExposedFrameWidth = (int32_t)CVPixelBufferGetWidth( mWorkingPixelBuffer );
-		mExposedFrameHeight = (int32_t)CVPixelBufferGetHeight( mWorkingPixelBuffer );
+		uint8_t *data = (uint8_t *)::CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
+		mExposedFrameBytesPerRow = (int32_t)::CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
+		mExposedFrameWidth = (int32_t)::CVPixelBufferGetWidth( mWorkingPixelBuffer );
+		mExposedFrameHeight = (int32_t)::CVPixelBufferGetHeight( mWorkingPixelBuffer );
 
+		auto captureWorkingPixelBuffer = mWorkingPixelBuffer;
 		mCurrentFrame = std::shared_ptr<cinder::Surface8u>( new cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA ),
-				[=]( cinder::Surface8u* s ){ delete s; frameDeallocator( mWorkingPixelBuffer ); } );
+				[captureWorkingPixelBuffer]( cinder::Surface8u* s ) {
+					delete s;
+					frameDeallocator( captureWorkingPixelBuffer );
+				} );
 		
 		// mark the working pixel buffer as empty since we have wrapped it in the current frame
-		mWorkingPixelBuffer = 0;
+		mWorkingPixelBuffer = nullptr;
 	}
 	
 	return mCurrentFrame;
@@ -300,7 +302,7 @@ static BOOL sDevicesEnumerated = false;
 - (bool)checkNewFrame
 {
 	bool result;
-	@synchronized (self) {
+	@synchronized( self ) {
 		result = mHasNewFrame;
 		mHasNewFrame = FALSE;
 	}

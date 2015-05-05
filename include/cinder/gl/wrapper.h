@@ -54,10 +54,12 @@ enum UniformSemantic {
 	UNIFORM_MODEL_VIEW_PROJECTION_INVERSE,
 	UNIFORM_PROJECTION_MATRIX,
 	UNIFORM_PROJECTION_MATRIX_INVERSE,
+	UNIFORM_VIEW_PROJECTION,
 	UNIFORM_NORMAL_MATRIX,
 	UNIFORM_VIEWPORT_MATRIX,
 	UNIFORM_WINDOW_SIZE,
-	UNIFORM_ELAPSED_SECONDS
+	UNIFORM_ELAPSED_SECONDS,
+	UNIFORM_USER_DEFINED
 };
 
 class Context* context();
@@ -280,7 +282,7 @@ std::string uniformSemanticToString( UniformSemantic uniformSemantic );
 // Vertex Attributes
 //! Analogous to glVertexAttribPointer
 void	vertexAttribPointer( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer );
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 //! Analogous to glVertexAttribIPointer
 void	vertexAttribIPointer( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer );
 #endif // ! defined( CINDER_GL_ES )
@@ -312,10 +314,6 @@ void	drawBuffer( GLenum dst );
 
 //! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
 void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
-
-void	drawArrays( GLenum mode, GLint first, GLsizei count );
-void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-
 
 class Exception : public cinder::Exception {
   public:

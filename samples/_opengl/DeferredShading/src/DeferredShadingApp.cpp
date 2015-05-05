@@ -12,23 +12,27 @@
 
 #include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/params/Params.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/ImageIo.h"
+#include "cinder/Rand.h"
+#include "cinder/Utilities.h"
 
 #include "Light.h"
 
 class DeferredShadingApp : public ci::app::App
 {
-public:
+  public:
 	DeferredShadingApp();
 
 	void						draw() override;
-	void						mouseDown( ci::app::MouseEvent event ) override;
-	void						mouseDrag( ci::app::MouseEvent event ) override;
 	void						resize() override;
 	void						update() override;
-private:
-	ci::MayaCamUI				mMayaCam;
+	
+  private:
+	ci::CameraPersp				mCamera;
+	ci::CameraUi				mCamUi;
 
 	std::vector<Light>			mLights;
 	
@@ -64,11 +68,6 @@ private:
 	void						screenShot();
 };
 
-#include "cinder/app/RendererGl.h"
-#include "cinder/ImageIo.h"
-#include "cinder/Rand.h"
-#include "cinder/Utilities.h"
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -97,10 +96,9 @@ DeferredShadingApp::DeferredShadingApp()
 
 	// Set up camera
 	ivec2 windowSize = toPixels( getWindowSize() );
-	CameraPersp cam( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
-	cam.setEyePoint( vec3( -2.221f, -4.083f, 15.859f ) );
-	cam.setCenterOfInterestPoint( vec3( -0.635f, -4.266f, 1.565f ) );
-	mMayaCam.setCurrentCam( cam );
+	mCamera = CameraPersp( windowSize.x, windowSize.y, 45.0f, 1.0f, 100.0f );
+	mCamera.lookAt( vec3( -2.221f, -4.083f, 15.859f ), vec3( -0.635f, -4.266f, 1.565f ) );
+	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
@@ -130,7 +128,7 @@ DeferredShadingApp::DeferredShadingApp()
 	
 	// Set up shadow camera
 	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
-								  mMayaCam.getCamera().getNearClip(), mMayaCam.getCamera().getFarClip() );
+								  mCamera.getNearClip(), mCamera.getFarClip() );
 	mShadowCamera.lookAt( vec3( 0.0 ), vec3( 0.0f, mFloor, 0.0f ) );
 
 	// Load shaders and create batches
@@ -211,7 +209,7 @@ void DeferredShadingApp::draw()
 		gl::enableDepthRead();
 		gl::enableDepthWrite( true );
 		gl::clear();
-		gl::setMatrices( mMayaCam.getCamera() );
+		gl::setMatrices( mCamera );
 
 		// Draw floor
 		mBatchGBufferRect->getGlslProg()->uniform( "uEmissive", 0.0f );
@@ -252,7 +250,7 @@ void DeferredShadingApp::draw()
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedAdditiveBlend scopedAdditiveBlend;
 		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-		gl::setMatrices( mMayaCam.getCamera() );
+		gl::setMatrices( mCamera );
 		gl::enableDepthRead();
 		gl::disableDepthWrite();
 	
@@ -265,14 +263,14 @@ void DeferredShadingApp::draw()
 		// Draw light volumes
 		mBatchLBufferCube->getGlslProg()->uniform( "uShadowEnabled",			mEnabledShadow );
 		mBatchLBufferCube->getGlslProg()->uniform( "uShadowMatrix",				shadowMatrix );
-		mBatchLBufferCube->getGlslProg()->uniform( "uViewMatrixInverse",		mMayaCam.getCamera().getInverseViewMatrix() );
+		mBatchLBufferCube->getGlslProg()->uniform( "uViewMatrixInverse",		mCamera.getInverseViewMatrix() );
 		
 		for ( const Light& light : mLights ) {
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorAmbient",	light.getColorAmbient() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorSpecular",	light.getColorSpecular() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightPosition", 
-										vec3( ( mMayaCam.getCamera().getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+										vec3( ( mCamera.getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightIntensity",		light.getIntensity() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightRadius",			light.getVolume() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uWindowSize",			vec2( getWindowSize() ) );
@@ -391,21 +389,9 @@ void DeferredShadingApp::loadShaders()
 	mBatchLBufferCube->getGlslProg()->uniform(	"uSamplerShadowMap",		3 );
 }
 
-void DeferredShadingApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void DeferredShadingApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-}
-
 void DeferredShadingApp::resize()
 {
-	CameraPersp camera = mMayaCam.getCamera();
-	camera.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( camera );
+	mCamera.setAspectRatio( getWindowAspectRatio() );
 
 	// Texture format
 	gl::Texture2d::Format textureFormat = gl::Texture2d::Format()

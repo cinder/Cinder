@@ -643,9 +643,11 @@ class Texture3d : public TextureBase {
 	};
 
 	static Texture3dRef create( GLint width, GLint height, GLint depth, Format format = Format() );
-	static Texture3dRef create( GLint width, GLint height, GLint depth, GLenum dataFormat, const uint8_t *data, Format format = Format() );	
+	static Texture3dRef create( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format = Format() );
   
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
+
+	void	update( GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum dataFormat, GLenum dataType, void *data, int mipLevel );
 	
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -660,7 +662,7 @@ class Texture3d : public TextureBase {
 
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
-	Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, const uint8_t *data, Format format );
+	Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 

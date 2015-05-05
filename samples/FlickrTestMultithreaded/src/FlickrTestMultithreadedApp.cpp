@@ -3,6 +3,7 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/gl/Sync.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Xml.h"
 #include "cinder/Timeline.h"
 #include "cinder/ImageIo.h"
