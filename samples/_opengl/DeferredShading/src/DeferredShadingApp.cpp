@@ -248,7 +248,7 @@ void DeferredShadingApp::draw()
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFbo->getSize() );
 		gl::clear();
 		gl::ScopedMatrices scopedMatrices;
-		gl::ScopedAdditiveBlend scopedAdditiveBlend;
+		gl::ScopedBlendAdditive scopedAdditiveBlend;
 		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::setMatrices( mCamera );
 		gl::enableDepthRead();

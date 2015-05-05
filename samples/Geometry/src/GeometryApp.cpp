@@ -201,7 +201,7 @@ void GeometryApp::draw()
 
 			if( mViewMode == WIREFRAME ) {
 				// We're using alpha blending, so render the back side first.
-				gl::ScopedAlphaBlend blendScope( false );
+				gl::ScopedBlendAlpha blendScope;
 				gl::ScopedFaceCulling cullScope( true, GL_FRONT );
 
 				mWireframeShader->uniform( "uBrightness", 0.5f );
@@ -215,7 +215,7 @@ void GeometryApp::draw()
 			}
 			else if( mTexturingMode == TRANSPARENT ) {
 				// We're using alpha blending, so render the back side first.
-				gl::ScopedAlphaBlend blendScope( false );
+				gl::ScopedBlendAlpha blendScope;
 				gl::ScopedFaceCulling cullScope( true, GL_FRONT );
 
 				mPrimitive->draw();

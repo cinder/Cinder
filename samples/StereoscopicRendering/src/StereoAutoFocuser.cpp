@@ -86,7 +86,7 @@ void StereoAutoFocuser::autoFocus( CameraStereo *cam, const Area &area, GLuint b
 void StereoAutoFocuser::draw()
 {
 	// visual debugging 
-	gl::ScopedAlphaBlend blend( false );
+	gl::ScopedBlendAlpha blend;
 	gl::ScopedColor color( ColorA( 0, 1, 1, 0.1f ) );
 	gl::drawSolidRect( mArea );
 	gl::color( ColorA( 0, 1, 1, 0.8f ) );
