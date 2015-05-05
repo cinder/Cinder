@@ -159,7 +159,7 @@
     <ClCompile>
       <AdditionalOptions>/MP %(AdditionalOptions)</AdditionalOptions>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\oggvorbis;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;..\src\r8brain;..\include\ANGLE;..\include\jsoncpp;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;..\boost;..\include\msw\png;..\include\msw\zlib;..\include\msw;..\include\oggvorbis;..\blocks\QuickTime\include\msw;..\src\AntTweakBar;..\src\libtess2;..\src\linebreak;..\src\r8brain;..\include\ANGLE;..\include\jsoncpp;..\src\husl;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;NOMINMAX;_WIN32_WINNT=0x0601;_CRT_SECURE_NO_WARNINGS;_SCL_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>false</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -591,6 +591,7 @@
     <ClCompile Include="..\src\glload\gl_load_cpp.cpp" />
     <ClCompile Include="..\src\glload\wgl_load.c" />
     <ClCompile Include="..\src\glload\wgl_load_cpp.cpp" />
+    <ClCompile Include="..\src\husl\husl.c" />
     <ClCompile Include="..\src\jsoncpp\jsoncpp.cpp" />
     <ClCompile Include="..\src\libtess2\bucketalloc.c" />
     <ClCompile Include="..\src\libtess2\dict.c" />
@@ -867,6 +868,7 @@
     <ClInclude Include="..\include\cinder\msw\OutputDebugStringStream.h" />
     <ClInclude Include="..\include\cinder\params\Params.h" />
     <ClInclude Include="..\include\msw\videoInput\videoInput.h" />
+    <ClInclude Include="..\src\husl\husl.h" />
     <ClInclude Include="..\src\libtess2\bucketalloc.h" />
     <ClInclude Include="..\src\libtess2\dict.h" />
     <ClInclude Include="..\src\libtess2\geom.h" />

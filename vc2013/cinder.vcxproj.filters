@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -147,6 +147,9 @@
     </Filter>
     <Filter Include="Source Files\app\winrt">
       <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\husl">
+      <UniqueIdentifier>{da3a512b-cc0c-46eb-a00a-29f019df77ab}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -791,6 +794,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp">
       <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\husl\husl.c">
+      <Filter>Source Files\husl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1657,6 +1663,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Blur.h">
       <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\husl\husl.h">
+      <Filter>Source Files\husl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
