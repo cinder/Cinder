@@ -81,7 +81,7 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 	return result;
 }
 
-string loadString( DataSourceRef dataSource )
+string loadString( const DataSourceRef &dataSource )
 {
 	Buffer buffer( dataSource );
 	const char *data = static_cast<const char *>( buffer.getData() );
