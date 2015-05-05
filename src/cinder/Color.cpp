@@ -181,6 +181,9 @@ vec3 ColorAT<T>::get( ColorModel cm ) const
 		case CM_HSV:
 			return rgbToHsv( Colorf( r, g, b ) );
 		break;
+        case CM_HUSL:
+            return rgbToHusl( Colorf( r, g, b ) );
+        break;
 		case CM_RGB:
 			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
 		break;
@@ -202,6 +205,13 @@ void ColorAT<T>::set( ColorModel cm, const vec4 &v )
 			b = CHANTRAIT<T>::convert( rgb.b );
 		}
 		break;
+        case CM_HUSL: {
+            Colorf rgb = huslToRgb( vec3( v ) );
+            r = CHANTRAIT<T>::convert( rgb.r );
+            g = CHANTRAIT<T>::convert( rgb.g );
+            b = CHANTRAIT<T>::convert( rgb.b );
+        }
+        break;
 		case CM_RGB:
 			r = CHANTRAIT<T>::convert( v.r );
 			g = CHANTRAIT<T>::convert( v.g );
