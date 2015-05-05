@@ -222,7 +222,7 @@ struct ScopedLogicOp : private Noncopyable {
 	
 private:
 	Context		*mCtx;
-	bool		mSaveOpcode;
+	bool		mSaveMode;
 };
 
 #endif

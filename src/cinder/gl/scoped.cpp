@@ -310,13 +310,13 @@ ScopedFaceCulling::~ScopedFaceCulling()
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedLogicOp
 ScopedLogicOp::ScopedLogicOp( bool enable )
-: mCtx( gl::context() ), mSaveOpcode( false )
+: mCtx( gl::context() ), mSaveMode( false )
 {
 	mCtx->pushBoolState( GL_COLOR_LOGIC_OP, enable );
 }
 
 ScopedLogicOp::ScopedLogicOp( bool enable, GLenum mode )
-: mCtx( gl::context() ), mSaveOpcode( true )
+: mCtx( gl::context() ), mSaveMode( true )
 {
 	mCtx->pushBoolState( GL_COLOR_LOGIC_OP, enable );
 	mCtx->pushLogicOp( mode );
@@ -325,7 +325,7 @@ ScopedLogicOp::ScopedLogicOp( bool enable, GLenum mode )
 ScopedLogicOp::~ScopedLogicOp()
 {
 	mCtx->popBoolState( GL_COLOR_LOGIC_OP );
-	if( mSaveOpcode )
+	if( mSaveMode )
 		mCtx->popLogicOp();
 }
 
