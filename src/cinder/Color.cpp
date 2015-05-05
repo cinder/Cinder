@@ -23,6 +23,7 @@
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
 #include "cinder/ImageIo.h"
+#include "husl.h"
 #include <boost/algorithm/string/case_conv.hpp>
 
 namespace cinder {
@@ -116,6 +117,9 @@ vec3 ColorT<T>::get( ColorModel cm ) const
 		case CM_HSV:
 			return rgbToHsv( Colorf( *this ) );
 		break;
+        case CM_HUSL:
+            return rgbToHusl( Colorf( *this ) );
+        break;
 		case CM_RGB:
 			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
 		break;
@@ -135,6 +139,13 @@ void ColorT<T>::set( ColorModel cm, const vec3 &v )
 			b = CHANTRAIT<T>::convert( rgb.b );
 		}
 		break;
+        case CM_HUSL: {
+            Colorf rgb = huslToRgb( v );
+            r = CHANTRAIT<T>::convert( rgb.r );
+            g = CHANTRAIT<T>::convert( rgb.g );
+            b = CHANTRAIT<T>::convert( rgb.b );
+        }
+        break;
 		case CM_RGB:
 			r = CHANTRAIT<T>::convert( v.x );
 			g = CHANTRAIT<T>::convert( v.y );
@@ -290,6 +301,20 @@ vec3 rgbToHsv( const Colorf &c )
     }
     
     return vec3( hue, sat, val );
+}
+
+Colorf huslToRgb( const vec3 &husl )
+{
+    Colorf rgb;
+    HUSLtoRGB( &rgb.r, &rgb.g, &rgb.b, husl.r * 360.f, husl.g * 100.f, husl.b * 100.f );
+    return rgb;
+}
+
+vec3 rgbToHusl( const Colorf &c )
+{
+    vec3 husl;
+    RGBtoHUSL( &husl.r, &husl.g, &husl.b, c.r, c.g, c.b );
+    return husl / vec3( 360.f, 100.f, 100.f );
 }
 
 ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )
