@@ -147,7 +147,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|x64'">
     <OutDir>..\lib\msw\$(PlatformTarget)\</OutDir>
-    <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
+    <TargetName>$(ProjectName)-$(PlatformToolset)-ANGLE</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <TargetName>$(ProjectName)-$(PlatformToolset)</TargetName>
