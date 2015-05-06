@@ -103,7 +103,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -130,7 +130,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -157,7 +157,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug_ANGLE|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost";"_TBOX_CINDER_PATH_\include\ANGLE"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\include\ANGLE"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;WIN32;_DEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -190,7 +190,7 @@ xcopy /y "_TBOX_CINDER_PATH_\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Comman
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader />
@@ -219,7 +219,7 @@ xcopy /y "_TBOX_CINDER_PATH_\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Comman
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -250,7 +250,7 @@ xcopy /y "_TBOX_CINDER_PATH_\lib\msw\x86\d3dcompiler_46.dll" "$(OutDir)"</Comman
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release_ANGLE|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\boost";"_TBOX_CINDER_PATH_\include\ANGLE"</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;"_TBOX_CINDER_PATH_\include";"_TBOX_CINDER_PATH_\include\ANGLE"</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>CINDER_GL_ANGLE;CINDER_GL_ES_3;WIN32;NDEBUG;_WINDOWS;NOMINMAX;_WIN32_WINNT=0x0502;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <Optimization>Disabled</Optimization>
