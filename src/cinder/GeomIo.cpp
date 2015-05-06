@@ -382,8 +382,10 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 		float t1 = w1.y - w0.y;
 		float t2 = w2.y - w0.y;
 
-		float r = 1.0f / (s1 * t2 - s2 * t1);
-		vec3 tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+		float r = (s1 * t2 - s2 * t1);
+		if( r != 0.0f ) r = 1.0 / r;
+
+		vec3 tangent( (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r );
 
 		(*resultTangents)[index0] += tangent;
 		(*resultTangents)[index1] += tangent;
@@ -393,7 +395,11 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 	for( size_t i = 0; i < numVertices; ++i ) {
 		vec3 normal = normals[i];
 		vec3 tangent = (*resultTangents)[i];
-		(*resultTangents)[i] = normalize( tangent - normal * dot( normal, tangent ) );
+		(*resultTangents)[i] = ( tangent - normal * dot( normal, tangent ) );
+
+		float len = length2( (*resultTangents)[i] );
+		if( len > 0.0f )
+			(*resultTangents)[i] /= sqrt( len );
 	}
 
 	if( resultBitangents ) {
