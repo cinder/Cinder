@@ -6,6 +6,7 @@
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Bspline.h"
 #include "cinder/Rand.h"
 #include "cinder/Camera.h"
