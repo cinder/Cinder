@@ -45,7 +45,7 @@ namespace cinder {
 
 } // namespace cinder
 
-#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) && ( _MSC_VER < 2000 ) )
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER < 1900 ) )
 //! kludge to work around VC120's lack of fs::canonical
 namespace std { namespace tr2 { namespace sys {
 template <typename PathT>
