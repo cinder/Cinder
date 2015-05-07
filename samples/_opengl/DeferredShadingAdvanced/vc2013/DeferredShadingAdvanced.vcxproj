@@ -241,6 +241,8 @@
     <None Include="..\assets\post\dof.frag" />
     <None Include="..\assets\post\fog.frag" />
     <None Include="..\assets\post\fxaa.frag" />
+    <None Include="..\assets\ray\occlude.frag" />
+    <None Include="..\assets\ray\scatter.frag" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

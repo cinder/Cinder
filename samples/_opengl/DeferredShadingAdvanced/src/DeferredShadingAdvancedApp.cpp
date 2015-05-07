@@ -60,6 +60,8 @@ private:
 	ci::gl::FboRef				mFboCsz;
 	ci::gl::FboRef				mFboGBuffer;
 	ci::gl::FboRef				mFboPingPong;
+	ci::gl::FboRef				mFboRayColor;
+	ci::gl::FboRef				mFboRayDepth;
 	ci::gl::FboRef				mFboShadowMap;
 	
 	ci::gl::Texture2dRef		mTextureFboAo[ 2 ];
@@ -95,6 +97,9 @@ private:
 	ci::gl::BatchRef			mBatchDofRect;
 	ci::gl::BatchRef			mBatchFogRect;
 	ci::gl::BatchRef			mBatchFxaaRect;
+
+	ci::gl::BatchRef			mBatchRayOccludeRect;
+	ci::gl::BatchRef			mBatchRayScatterRect;
 	
 	ci::gl::BatchRef			mBatchStockColorRect;
 	ci::gl::BatchRef			mBatchStockColorSphere;
@@ -108,6 +113,7 @@ private:
 	bool						mEnabledDoF;
 	bool						mEnabledFog;
 	bool						mEnabledFxaa;
+	bool						mEnabledRay;
 	bool						mEnabledShadow;
 	
 	ci::vec3					mSpherePosition;
@@ -155,6 +161,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledDoF			= true;
 	mEnabledFog			= false;
 	mEnabledFxaa		= true;
+	mEnabledRay			= true;
 	mEnabledShadow		= true;
 	mFrameRate			= 0.0f;
 	mFullScreen			= isFullScreen();
@@ -222,7 +229,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	// Set up parameters
 	const vector<string> ao = { "None", "HBAO", "SAO" };
 
-	mParams = params::InterfaceGl::create( "Params", toPixels( ivec2( 240, 360 ) ) );
+	mParams = params::InterfaceGl::create( "Params", toPixels( ivec2( 240, 380 ) ) );
 	mParams->addParam( "Frame rate",		&mFrameRate,					"", true );
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { createBatches(); },	"key=l" );
@@ -241,7 +248,8 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "Depth of field",	&mEnabledDoF ).key( "4" ).group( "Pass" );
 	mParams->addParam( "Fog",				&mEnabledFog ).key( "5" ).group( "Pass" );
 	mParams->addParam( "FXAA",				&mEnabledFxaa ).key( "6" ).group( "Pass" );
-	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "7" ).group( "Pass" );
+	mParams->addParam( "Rays",				&mEnabledRay ).key( "7" ).group( "Pass" );
+	mParams->addParam( "Shadows",			&mEnabledShadow ).key( "8" ).group( "Pass" );
 	
 	gl::enableVerticalSync();
 	gl::color( ColorAf::white() );
@@ -297,11 +305,13 @@ void DeferredShadingAdvancedApp::createBatches()
 	DataSourceRef fragPostDof				= loadAsset( "post/dof.frag" );
 	DataSourceRef fragPostFog				= loadAsset( "post/fog.frag" );
 	DataSourceRef fragPostFxaa				= loadAsset( "post/fxaa.frag" );
+	DataSourceRef fragRayOcclude			= loadAsset( "ray/occlude.frag" );
+	DataSourceRef fragRayScatter			= loadAsset( "ray/scatter.frag" );
 	
 	DataSourceRef vertDeferredGBuffer		= loadAsset( "deferred/gbuffer.vert" );
 	DataSourceRef vertDeferredLBufferLight	= loadAsset( "deferred/lbuffer_light.vert" );
 	DataSourceRef vertPassThrough			= loadAsset( "pass_through.vert" );
-	
+
 	// Create GLSL programs
 	string numLights				= toString( mLights.size() );
 	string numMaterials				= toString( mMaterials.size() );
@@ -370,6 +380,12 @@ void DeferredShadingAdvancedApp::createBatches()
 	gl::GlslProgRef postFxaa		= loadGlslProg( gl::GlslProg::Format().version( version )
 												   .vertex( vertPassThrough ).fragment( fragPostFxaa )
 												   .define( "TEX_COORD" ) );
+	gl::GlslProgRef rayOcclude		= loadGlslProg( gl::GlslProg::Format().version( version )
+												   .vertex( vertPassThrough ).fragment( fragRayOcclude )
+												   .define( "TEX_COORD" ) );
+	gl::GlslProgRef rayScatter		= loadGlslProg( gl::GlslProg::Format().version( version )
+												   .vertex( vertPassThrough ).fragment( fragRayScatter )
+												   .define( "TEX_COORD" ) );
 	gl::GlslProgRef stockColor		= gl::context()->getStockShader( gl::ShaderDef().color() );
 	gl::GlslProgRef stockTexture	= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
 	
@@ -403,6 +419,8 @@ void DeferredShadingAdvancedApp::createBatches()
 	mBatchHbaoBlurRect				= gl::Batch::create( rect,		aoHbaoBlur );
 	mBatchLBufferLightCube			= gl::Batch::create( cube,		lBufferLight );
 	mBatchLBufferShadowCube			= gl::Batch::create( cube,		lBufferShadow );
+	mBatchRayOccludeRect			= gl::Batch::create( rect,		rayOcclude );
+	mBatchRayScatterRect			= gl::Batch::create( rect,		rayScatter );
 	mBatchSaoAoRect					= gl::Batch::create( rect,		aoSaoAo );
 	mBatchSaoBlurRect				= gl::Batch::create( rect,		aoSaoBlur );
 	mBatchSaoCszRect				= gl::Batch::create( rect,		aoSaoCsz );
@@ -656,6 +674,59 @@ void DeferredShadingAdvancedApp::draw()
 		}
 		
 	}
+
+	//////////////////////////////////////////////////////////////////////////////////////////////
+	// LIGHT RAYS
+
+	if ( mEnabledRay ) {
+		
+		// Get the primary light
+		const Light& light = mLights.back();
+
+		// Draw primary light into depth buffer
+		{
+			const gl::ScopedFramebuffer scopedFrameBuffer( mFboRayDepth );
+			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
+			gl::clear();
+			gl::enableDepthRead();
+			gl::enableDepthWrite();
+			const gl::ScopedMatrices scopedMatrices;
+			gl::setMatrices( mCamera );
+			gl::translate( light.getPosition() );
+			gl::scale( vec3( light.getRadius() ) );
+			mBatchStockColorSphere->draw();
+		}
+
+		{
+			const gl::ScopedFramebuffer scopedFrameBuffer( mFboRayColor );
+			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayColor->getSize() );
+			gl::clear();
+			gl::enableDepthRead();
+			gl::disableDepthWrite();
+
+			// Draw light source into color buffer
+			{
+				const gl::ScopedMatrices scopedMatrices;
+				gl::setMatrices( mCamera );
+				const gl::ScopedColor scopedColor( light.getColorDiffuse() );
+				const gl::ScopedModelMatrix scopedModelMatrix;
+				gl::translate( light.getPosition() );
+				gl::scale( vec3( light.getRadius() ) );
+				mBatchStockColorSphere->draw();
+			}
+
+			// Draw occluders in front of light source
+			{
+				const gl::ScopedMatrices scopedMatrices;
+				gl::setMatricesWindow( mFboRayColor->getSize() );
+				gl::translate( mFboRayColor->getSize() / 2 );
+				gl::scale( mFboRayColor->getSize() );
+				const gl::ScopedTextureBind scopedTextureBind0( mFboGBuffer->getDepthTexture(),		0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mFboRayDepth->getDepthTexture(),	1 );
+				mBatchRayOccludeRect->draw();
+			}
+		}
+	}
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	/* AMBIENT OCCLUSION
@@ -791,11 +862,12 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),				3 );
 		const gl::ScopedTextureBind scopedTextureBind4( mTextureFboAo[ 0 ],							4 );
 		const gl::ScopedTextureBind scopedTextureBind5( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ],	5 );
+		const gl::ScopedTextureBind scopedTextureBind6( mFboRayColor->getColorTexture(),			6 );
 		
 		mBatchDebugRect->getGlslProg()->uniform( "uFar",				f );
 		mBatchDebugRect->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
 		mBatchDebugRect->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
-		for ( int32_t i = 0; i <= 11; ++i ) {
+		for ( int32_t i = 0; i <= 12; ++i ) {
 			const gl::ScopedModelMatrix scopedModelMatrix;
 			const vec2 pos( ( i % columns ) * sz.x, glm::floor( (float)i / (float)columns ) * sz.y );
 			gl::translate( pos + sz * 0.5f );
@@ -841,10 +913,27 @@ void DeferredShadingAdvancedApp::draw()
 			
 			if ( mEnabledFog ) {
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
-				const gl::ScopedAlphaBlend scopedAlphaBlend( false );
+				const gl::ScopedAdditiveBlend scopedAdditiveBlend;
 				const gl::ScopedTextureBind scopedTextureBind( mFboGBuffer->getDepthTexture(), 0 );
 				mBatchFogRect->draw();
 				
+				ping = pong;
+				pong = ( ping + 1 ) % 2;
+			}
+
+			//////////////////////////////////////////////////////////////////////////////////////////////
+			// LIGHT RAYS
+
+			if ( mEnabledRay ) {
+				vec4 lightPosition	= mCamera.getProjectionMatrix() * mCamera.getViewMatrix() * vec4( mLights.back().getPosition(), 1.0f );
+				lightPosition		/= lightPosition.w;
+
+				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
+				const gl::ScopedTextureBind scopedTextureBind0( mFboRayColor->getColorTexture(),	0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboPingPong[ pong ],		1 );
+				mBatchRayScatterRect->getGlslProg()->uniform( "uLightPosition", vec2( lightPosition ) * 0.5f + 0.5f );
+				mBatchRayScatterRect->draw();
+
 				ping = pong;
 				pong = ( ping + 1 ) % 2;
 			}
@@ -1101,6 +1190,23 @@ void DeferredShadingAdvancedApp::resize()
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::clear();
 	}
+
+	// Create FBO for light rays
+	{
+		ivec2 sz = mFboGBuffer->getSize();
+		mFboRayColor = gl::Fbo::create( w, h, gl::Fbo::Format().colorTexture( colorTextureFormat ) );
+		mFboRayDepth = gl::Fbo::create( sz.x, sz.y, gl::Fbo::Format().disableColor().depthTexture( depthTextureFormat ) );
+		{
+			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayColor );
+			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayColor->getSize() );
+			gl::clear();
+		}
+		{
+			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayDepth );
+			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
+			gl::clear();
+		}
+	}
 	
 	// Create shadow map buffer
 	{
@@ -1136,37 +1242,42 @@ void DeferredShadingAdvancedApp::screenShot()
 void DeferredShadingAdvancedApp::setUniforms()
 {
 	// Set sampler bindings
-	mBatchAoCompositeRect->getGlslProg()->uniform(		"uSampler",			0 );
-	mBatchAoCompositeRect->getGlslProg()->uniform(		"uSamplerAo",		1 );
-	mBatchBloomBlurRect->getGlslProg()->uniform(		"uSampler",			0 );
-	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uSamplerColor",	0 );
-	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uSamplerBloom",	1 );
-	mBatchBloomHighpassRect->getGlslProg()->uniform(	"uSampler",			0 );
-	mBatchColorRect->getGlslProg()->uniform(			"uSampler",			0 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAlbedo",	0 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerMaterial",	1 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerNormal",	2 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerDepth",	3 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAo",		4 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAccum",	5 );
-	mBatchDofRect->getGlslProg()->uniform(				"uSamplerDepth",	0 );
-	mBatchDofRect->getGlslProg()->uniform(				"uSamplerColor",	1 );
-	mBatchFogRect->getGlslProg()->uniform(				"uSampler",			0 );
-	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerAlbedo",	0 );
-	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerMaterial",	1 );
-	mBatchFxaaRect->getGlslProg()->uniform(				"uSampler",			0 );
-	mBatchHbaoAoRect->getGlslProg()->uniform(			"uSamplerDepth",	0 );
-	mBatchHbaoAoRect->getGlslProg()->uniform(			"uSamplerNormal",	1 );
-	mBatchHbaoBlurRect->getGlslProg()->uniform(			"uSampler",			0 );
-	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerAlbedo",	0 );
-	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerMaterial",	1 );
-	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerNormal",	2 );
-	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerDepth",	3 );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSampler",			0 );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSamplerDepth",	1 );
-	mBatchSaoAoRect->getGlslProg()->uniform(			"uSampler",			0 );
-	mBatchSaoBlurRect->getGlslProg()->uniform(			"uSampler",			0 );
-	mBatchSaoCszRect->getGlslProg()->uniform(			"uSamplerDepth",	0 );
+	mBatchAoCompositeRect->getGlslProg()->uniform(		"uSampler",				0 );
+	mBatchAoCompositeRect->getGlslProg()->uniform(		"uSamplerAo",			1 );
+	mBatchBloomBlurRect->getGlslProg()->uniform(		"uSampler",				0 );
+	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uSamplerColor",		0 );
+	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uSamplerBloom",		1 );
+	mBatchBloomHighpassRect->getGlslProg()->uniform(	"uSampler",				0 );
+	mBatchColorRect->getGlslProg()->uniform(			"uSampler",				0 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAlbedo",		0 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerMaterial",		1 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerNormal",		2 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerDepth",		3 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAo",			4 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAccum",		5 );
+	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerRay",			6 );
+	mBatchDofRect->getGlslProg()->uniform(				"uSamplerDepth",		0 );
+	mBatchDofRect->getGlslProg()->uniform(				"uSamplerColor",		1 );
+	mBatchFogRect->getGlslProg()->uniform(				"uSampler",				0 );
+	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerAlbedo",		0 );
+	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerMaterial",		1 );
+	mBatchFxaaRect->getGlslProg()->uniform(				"uSampler",				0 );
+	mBatchHbaoAoRect->getGlslProg()->uniform(			"uSamplerDepth",		0 );
+	mBatchHbaoAoRect->getGlslProg()->uniform(			"uSamplerNormal",		1 );
+	mBatchHbaoBlurRect->getGlslProg()->uniform(			"uSampler",				0 );
+	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerAlbedo",		0 );
+	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerMaterial",		1 );
+	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerNormal",		2 );
+	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerDepth",		3 );
+	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSampler",				0 );
+	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSamplerDepth",		1 );
+	mBatchRayOccludeRect->getGlslProg()->uniform(		"uSamplerDepth",		0 );
+	mBatchRayOccludeRect->getGlslProg()->uniform(		"uSamplerLightDepth",	1 );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uSamplerLight",		0 );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uSamplerColor",		1 );
+	mBatchSaoAoRect->getGlslProg()->uniform(			"uSampler",				0 );
+	mBatchSaoBlurRect->getGlslProg()->uniform(			"uSampler",				0 );
+	mBatchSaoCszRect->getGlslProg()->uniform(			"uSamplerDepth",		0 );
 	
 	// Bind uniform buffer blocks to shaders
 	mBatchDebugRect->getGlslProg()->uniformBlock(					"Materials",	1 );
@@ -1178,6 +1289,7 @@ void DeferredShadingAdvancedApp::setUniforms()
 	// Set uniforms which need to know about screen dimensions
 	const vec2 szGBuffer	= mFboGBuffer ? mFboGBuffer->getSize() : toPixels( getWindowSize() );
 	const vec2 szPingPong	= mFboGBuffer ? mTextureFboPingPong[ 0 ]->getSize() : toPixels( getWindowSize() );
+	const vec2 szRay		 = mFboRayColor ? mFboRayColor->getSize() : toPixels( getWindowSize() );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uOffset",		mOffset );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uPixel",		vec2( 1.0f ) / vec2( szPingPong ) );
@@ -1193,6 +1305,11 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
+	mBatchRayOccludeRect->getGlslProg()->uniform(		"uOffset",		mOffset );
+	mBatchRayOccludeRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uPixel",		1.0f / vec2( szRay ) );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 }
 
 void DeferredShadingAdvancedApp::update()
