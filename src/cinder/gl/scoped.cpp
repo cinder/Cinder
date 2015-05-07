@@ -304,7 +304,33 @@ ScopedFaceCulling::~ScopedFaceCulling()
 	if( mSaveFace )
 		mCtx->popCullFace();
 }
-	
+
+#if ! defined( CINDER_GL_ES )
+
+///////////////////////////////////////////////////////////////////////////////////////////
+// ScopedLogicOp
+ScopedLogicOp::ScopedLogicOp( bool enable )
+: mCtx( gl::context() ), mSaveMode( false )
+{
+	mCtx->pushBoolState( GL_COLOR_LOGIC_OP, enable );
+}
+
+ScopedLogicOp::ScopedLogicOp( bool enable, GLenum mode )
+: mCtx( gl::context() ), mSaveMode( true )
+{
+	mCtx->pushBoolState( GL_COLOR_LOGIC_OP, enable );
+	mCtx->pushLogicOp( mode );
+}
+
+ScopedLogicOp::~ScopedLogicOp()
+{
+	mCtx->popBoolState( GL_COLOR_LOGIC_OP );
+	if( mSaveMode )
+		mCtx->popLogicOp();
+}
+
+#endif
+
 ///////////////////////////////////////////////////////////////////////////////////////////
 // ScopedDepth
 ScopedDepth::ScopedDepth( bool enableReadAndWrite )

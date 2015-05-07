@@ -221,6 +221,23 @@ struct ScopedFaceCulling : private Noncopyable {
 	bool		mSaveFace;
 };
 
+#if ! defined( CINDER_GL_ES )
+
+//! Scopes state of logic op.
+struct ScopedLogicOp : private Noncopyable {
+	//! Enables or disables logical operation based on \a enable
+	ScopedLogicOp( bool enable );
+	//! Enables or disables logical operation based on \a enable and specifies a mode, \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
+	ScopedLogicOp( bool enable, GLenum mode );
+	~ScopedLogicOp();
+	
+private:
+	Context		*mCtx;
+	bool		mSaveMode;
+};
+
+#endif
+
 //! Scopes state of depth testing and writing
 struct ScopedDepth : private Noncopyable {
 	//! Enables or disables both depth comparisons and writing to the depth buffer

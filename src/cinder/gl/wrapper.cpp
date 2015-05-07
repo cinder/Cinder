@@ -326,6 +326,18 @@ void cullFace( GLenum face )
 	gl::context()->cullFace( face );
 }
 
+#if ! defined( CINDER_GL_ES )
+void enableLogicOp( bool enable )
+{
+	gl::context()->setBoolState( GL_COLOR_LOGIC_OP, enable );
+}
+
+void logicOp( GLenum mode )
+{
+	gl::context()->logicOp( mode );
+}
+#endif
+
 void disableDepthRead()
 {
 	gl::disable( GL_DEPTH_TEST );

@@ -485,6 +485,42 @@ GLenum Context::getFrontFace()
 }
 
 //////////////////////////////////////////////////////////////////
+// LogicOp
+#if ! defined( CINDER_GL_ES )
+void Context::logicOp( GLenum mode )
+{
+	if( setStackState( mLogicOpStack, mode ) )
+		glLogicOp( mode );
+}
+
+void Context::pushLogicOp( GLenum mode )
+{
+	if( pushStackState( mLogicOpStack, mode ) )
+		glLogicOp( mode );
+}
+
+void Context::popLogicOp( bool forceRefresh )
+{
+	if( mLogicOpStack.empty() )
+		CI_LOG_E( "Logic Op stack underflow" );
+	else if( popStackState( mLogicOpStack ) || forceRefresh )
+		glLogicOp( getLogicOp() );
+}
+
+GLenum Context::getLogicOp()
+{
+	if( mLogicOpStack.empty() ) {
+		GLint queriedInt;
+		glGetIntegerv( GL_LOGIC_OP_MODE, &queriedInt );
+		mLogicOpStack.push_back( queriedInt ); // push twice
+		mLogicOpStack.push_back( queriedInt );
+	}
+	
+	return mLogicOpStack.back();
+}
+#endif // ! defined( CINDER_GL_ES )
+
+//////////////////////////////////////////////////////////////////
 // Buffer
 void Context::bindBuffer( GLenum target, GLuint id )
 {
