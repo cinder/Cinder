@@ -95,13 +95,13 @@ bool CaptureImplJni::Device::isConnected() const
 	return false;
 }
 
-void CaptureImplJni::Device::start()
+void CaptureImplJni::Device::start(int width, int height)
 {
 	if( ! getNative() ) {
 		return;
 	}
 
-	getNative()->startCapture( getUniqueId() );
+	getNative()->startCapture( getUniqueId(), width, height );
 }
 
 void CaptureImplJni::Device::stop()
@@ -122,11 +122,6 @@ std::vector<Capture::DeviceRef>	CaptureImplJni::sDevices;
 CaptureImplJni::CaptureImplJni( int width, int height, const Capture::DeviceRef device )
 	: mWidth( width ), mHeight( height ), mDevice( device )
 {
-	// FOR TESTING:
-	mWidth = 1920;
-	mHeight = 1080;
-
-	mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::RGB, 4 ) );
 
 	if( ! mDevice ) {
 		auto devices = CaptureImplJni::getDevices();
@@ -139,6 +134,32 @@ CaptureImplJni::CaptureImplJni( int width, int height, const Capture::DeviceRef 
 		if( ( ! mDevice ) && ( ! devices.empty() ) ) {
 			mDevice = devices.front();
 		}
+	}
+
+	if( mDevice ) {
+		int targetArea = mWidth*mHeight;
+		int leastDiff = std::numeric_limits<int>::max();
+		int preferredWidth = mWidth;
+		int preferredHeight = mHeight;
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		if( fullDevice ) {
+			for( const auto& res : fullDevice->getSupportedResolutions() ) {
+				int area = res.x*res.y;
+				int diff = abs(area - targetArea);
+				if( diff < leastDiff ) {
+					leastDiff = diff;
+					preferredWidth = res.x;
+					preferredHeight = res.y;
+				}
+			}
+		}
+
+		mWidth = preferredWidth;
+		mHeight = preferredHeight;
+
+		ci::app::console() << "mWidth=" << mWidth << ", mHeight=" << mHeight << std::endl;
+
+		mSurfaceCache = std::shared_ptr<SurfaceCache>( new SurfaceCache( mWidth, mHeight, SurfaceChannelOrder::RGB, 4 ) );	
 	}
 }
 
@@ -161,7 +182,7 @@ void CaptureImplJni::start()
 
 	auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
 	if( fullDevice ) {
-		fullDevice->start();
+		fullDevice->start(mWidth, mHeight);
 	}
 }
 

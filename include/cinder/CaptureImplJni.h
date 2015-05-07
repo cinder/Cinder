@@ -67,7 +67,9 @@ public:
 		bool								isFrontFacing() const { return mFrontFacing; }
 		ci::android::hardware::Camera*		getNative() const { return mNativeDevice; }		
 
-		void 								start();
+		const std::vector<ivec2>&			getSupportedResolutions() const { return mSupportedResolutions; }
+
+		void 								start(int width, int height);
 		void 								stop();
 
 	private:

@@ -215,10 +215,17 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
             mCamera = android.hardware.Camera.open(Integer.parseInt(mActiveDeviceId));
 
             Camera.Parameters params = mCamera.getParameters();
+
+            if((mPreferredPreviewWidth > 0) && (mPreferredPreviewHeight > 0)) {
+                params.setPreviewSize(mPreferredPreviewWidth, mPreferredPreviewHeight);
+                mCamera.setParameters(params);
+            }
+
             setPreferredPreviewSize(params.getPreviewSize().width, params.getPreviewSize().height);
 
             if(null == mDummyTexture) {
                 mDummyTexture = new SurfaceTexture(0);
+                mDummyTexture.setDefaultBufferSize( params.getPreviewSize().width, params.getPreviewSize().height );
             }
 
             cameraSetPreviewTexture(mPreviewTexture);

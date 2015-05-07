@@ -86,7 +86,7 @@ public:
 	void 						initialize();
 	std::vector<DeviceInfoRef>	enumerateDevices() const;
 
-	void 						startCapture( const std::string& deviceId );
+	void 						startCapture( const std::string& deviceId, int width, int height );
 	void 						stopCapture();
 
 	bool 						isNewFrameAvailable() const;
@@ -111,9 +111,8 @@ private:
 
 	static std::unique_ptr<Camera>	sInstance;
 
-	int 							mWidth;
-	int 							mHeight;
-	mutable std::vector<uint8_t> 	mData;
+	int 							mWidth = 0;
+	int 							mHeight = 0;
 
 	friend class ci::android::app::CinderNativeActivity;
 };

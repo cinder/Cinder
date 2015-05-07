@@ -148,10 +148,6 @@ std::unique_ptr<Camera>	Camera::sInstance;
 
 Camera::Camera()
 {
-	// FOR TESTING:
-	mWidth = 1920;
-	mHeight = 1080;
-	mData.resize( 3*mWidth*mHeight );
 }
 
 Camera::~Camera()
@@ -170,7 +166,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 			if( nullptr != javaClass ) {
 				Java::hardware_camera_initialize 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_initialize", "(I)V" );
 				Java::hardware_camera_enumerateDevices 			= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_enumerateDevices", "()[Lorg/libcinder/hardware/Camera$DeviceInfo;" );
-				Java::hardware_camera_startCapture 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_startCapture", "()V" );
+				Java::hardware_camera_startCapture 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_startCapture", "(Ljava/lang/String;II)V" );
 				Java::hardware_camera_stopCapture 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_stopCapture", "()V" );
 				Java::hardware_camera_lockPixels 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_lockPixels", "()[B" );
 				Java::hardware_camera_unlockPixels 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_unlockPixels", "()V" );
@@ -313,17 +309,20 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 	return result;	
 }
 
-void Camera::startCapture( const std::string& deviceId )
+void Camera::startCapture( const std::string& deviceId, int width, int height )
 {
-	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture );	
+	mWidth = width;
+	mHeight = height;
 
 	/*
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
-	jstring jstrDeviceId = JniHelper::Get()->NewStringUTF( deviceId );	
-	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, jstrDeviceId );
-	JniHelper::Get()->DeleteLocalRef( jstrDeviceId );
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, (jint)mWidth, (jint)mHeight );	
 	*/
+	
+	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
+	jstring jstrDeviceId = JniHelper::Get()->NewStringUTF( deviceId );	
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_startCapture, jstrDeviceId, (jint)mWidth, (jint)mHeight );
+	JniHelper::Get()->DeleteLocalRef( jstrDeviceId );
 }
 
 void Camera::stopCapture()

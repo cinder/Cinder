@@ -180,8 +180,8 @@ public class CinderNativeActivity extends NativeActivity {
      * hardware_camera_startCapture
      *
      */
-    //public void hardware_camera_startCapture(final String deviceId) {
-    public void hardware_camera_startCapture() {
+    public void hardware_camera_startCapture(final String deviceId, final int width, final int height) {
+    //public void hardware_camera_startCapture() {
         Log.i(TAG, "hardware_camera_startCapture");
 
         //if(null == mCamera) {
@@ -195,14 +195,14 @@ public class CinderNativeActivity extends NativeActivity {
                 @Override
                 public void run() {
                     //mCamera = Camera.create(Build.VERSION_CODES.KITKAT, activity);
-                    mCamera.startCapture("0");
+                    mCamera.startCapture(deviceId, width, height);
                     condition.open();
                 }
             });
             condition.block();
         }
         else {
-            mCamera.startCapture("0");
+            mCamera.startCapture(deviceId, width, height);
         }
     }
 

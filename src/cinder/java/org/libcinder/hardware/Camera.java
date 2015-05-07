@@ -35,8 +35,8 @@ public abstract class Camera {
 
     private static String sLastDeviceId = null;
 
-    private int mPreferredPreviewWidth = 0;
-    private int mPreferredPreviewHeight = 0;
+    protected int mPreferredPreviewWidth = 0;
+    protected int mPreferredPreviewHeight = 0;
     private int mWidth = 0;
     private int mHeight = 0;
     protected byte[] mPixels = null;
@@ -286,10 +286,13 @@ public abstract class Camera {
      * startCapture
      *
      */
-    public void startCapture(String deviceId) {
+    public void startCapture(String deviceId, int width, int height) {
         Log.i(TAG, "startCapture: " + deviceId);
 
-        if (!mInitialized) {
+        mPreferredPreviewWidth = width;
+        mPreferredPreviewHeight = height;
+
+        if (! mInitialized) {
             initialize();
         }
 
@@ -499,9 +502,9 @@ public abstract class Camera {
      */
     public void toggleActiveCamera() {
         if (isBackCameraActive() && isFrontCameraAvailable()) {
-            startCapture(mFrontDeviceId);
+            startCapture(mFrontDeviceId, mPreferredPreviewWidth, mPreferredPreviewHeight);
         } else if (isFrontCameraActive() && isBackCameraAvailable()) {
-            startCapture(mBackDeviceId);
+            startCapture(mBackDeviceId, mPreferredPreviewWidth, mPreferredPreviewHeight);
         }
     }
 }
