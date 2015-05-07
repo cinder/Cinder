@@ -53,6 +53,9 @@ em
 		height: 105px
 		border-bottom: 2px solid white
 		
+		.columns
+			height: 105px
+		
 	#sub-nav
 		height: 50px
 		
@@ -121,6 +124,11 @@ em
 			display: inline-block
 			height: 100%
 			margin-right: 20px
+			
+			&.current
+				border-bottom: solid 2px cinder-orange
+				a
+					color: cinder-orange
 
 			a
 				display: inline-block
@@ -156,11 +164,14 @@ em
 	p
 		margin-bottom: 1em
 
-	h1
+	h1, h2, h3
 		font-size: 1.5em
 		font-family: 'Open Sans', sans-serif;
 		font-weight: 300
 		margin-bottom: 0.5em
+	
+	h2
+		font-size: 1.25em
 		
 	section
 		margin-bottom: 1em
