@@ -29,37 +29,93 @@
 
 namespace cinder { namespace android { namespace app {
 
-class ComponentManager;
+class CinderNativeActivity;
 
 }}} // namespace cinder::android::app
 
 namespace cinder { namespace android { namespace hardware {
 
-class Camera : public JniGlobalRefObject {
+/** \class Camera
+ *
+ */
+class Camera {
 public:
 
+	class DeviceInfo;
+	using DeviceInfoRef = std::shared_ptr<DeviceInfo>;
+
+	/** \class DeviceInfo
+	 *
+	 */
+	class DeviceInfo {
+	public:
+		std::string 		id;
+		bool 				frontFacing = false;
+		std::vector<ivec2>	resolutions;
+
+		DeviceInfo( jobject obj );
+		virtual ~DeviceInfo();
+
+		void sync();
+
+	private:
+		struct Java {
+			static jclassID		ClassName;
+			static jclass 		ClassObject;
+			static jfieldID		id;
+			static jfieldID		frontFacing;
+			static jfieldID		resolutions;
+		};
+
+		static void 		cacheJni();
+		static void 		destroyJni();
+
+		JniGlobalObjectRef	mJavaObject;
+
+		friend class Camera;
+	};
+
+	////////////////////////////////////////////////////////////////////////////////////////////////
+	// Camera
+
+	Camera();
 	virtual ~Camera();
 
-	static Camera*		get();
+	static Camera*				getInstance();
 
-	void 				startCapture();
-	void 				stopCapture();
+	void 						initialize();
+	std::vector<DeviceInfoRef>	enumerateDevices() const;
+
+	void 						startCapture( const std::string& deviceId );
+	void 						stopCapture();
+
+	bool 						isNewFrameAvailable() const;
+	void 						clearNewFrameAvailable();
+
+	void						getPixels( Surface8u* outSurface ) const;
 
 private:
+	struct Java {
+		static jmethodID		hardware_camera_enumerateDevices;
+		static jmethodID 		hardware_camera_initialize;
+		static jmethodID		hardware_camera_startCapture;
+		static jmethodID		hardware_camera_stopCapture;
+		static jmethodID 		hardware_camera_lockPixels;
+		static jmethodID 		hardware_camera_unlockPixels;
+		static jmethodID 		hardware_camera_isNewFrameAvailable;
+		static jmethodID 		hardware_camera_clearNewFrameAvailable;
+	};
+
 	static void 				cacheJni();
 	static void 				destroyJni();
 
-	static const std::string 	sJavaClassName;
-	static jclass 				sJavaClass; 
-	static jmethodID 			sJavaMethodStartCapture;
-	static jmethodID 			sJavaMethodStopCapture;	
-
-	Camera( jobject obj );
 	static std::unique_ptr<Camera>	sInstance;
 
-	jobject				mJavaObject = nullptr;
+	int 							mWidth;
+	int 							mHeight;
+	mutable std::vector<uint8_t> 	mData;
 
-	friend class ComponentManager;
+	friend class ci::android::app::CinderNativeActivity;
 };
 
 }}} // namespace cinder::android::hardware

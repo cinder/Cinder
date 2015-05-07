@@ -28,6 +28,8 @@
 #include <memory>
 #include <string>
 
+using jclassID = const std::string;
+
 namespace cinder { namespace android {
 
 class JniGlobalObject;
@@ -47,6 +49,9 @@ private:
 	jobject 		mJavaObject = nullptr;
 };
 
+#define JNI_THROW_CPP_EXC( _jniEnv, _msg, _clearEx ) \
+  JniHelper::ThrowAsCppExceptionFull( _jniEnv, __FILE__, __LINE__, __FUNCTION__, _msg, _clearEx )
+
 /** \class JniHelper
  *
  */
@@ -62,9 +67,11 @@ public:
 
 	jobject 			GetActivityObject() { return mActivityObject; }
 
-	jclass				RetrieveClass( const std::string& name );	
+	jclass				RetrieveClass( const std::string& name, bool clearExc = true );	
 
 	static std::string 	StdStringFromJString( JNIEnv* jniEnv, jstring jstr );
+	static void 		ThrowAsCppException( JNIEnv* jniEnv, const std::string& msg, bool clearExc = true );
+	static void 		ThrowAsCppExceptionFull( JNIEnv* jniEnv, const std::string& file, const int line, const std::string& fn, const std::string& msg, bool clearExc = true );
 
 	JNIEnv*				AttachCurrentThread();
 	void 				DeatchCurrentThread();
@@ -139,11 +146,11 @@ public:
 	// ---------------------------------------------------------------------------------------------
 	// Java Static Fields
 	// ---------------------------------------------------------------------------------------------
-	jfieldID GetStaticFieldID( jclass clazz, const std::string& name, const std::string& sig );
-	jfieldID GetStaticObjectFieldID( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetStaticFieldId( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetStaticObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
 
 	#define CI_GET_STATIC_TYPE_FIELDID_DECL( _jname ) \
-		jfieldID GetStatic##_jname##FieldID( jclass clazz, const std::string& name );	
+		jfieldID GetStatic##_jname##FieldId( jclass clazz, const std::string& name );	
 
 		//
 		// GetStaticBooleanFieldID
@@ -222,11 +229,11 @@ public:
 	// ---------------------------------------------------------------------------------------------
 	// Java Fields
 	// ---------------------------------------------------------------------------------------------
-	jfieldID GetFieldID( jclass clazz, const std::string& name, const std::string& sig );
-	jfieldID GetObjectFieldID( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetFieldId( jclass clazz, const std::string& name, const std::string& sig );
+	jfieldID GetObjectFieldId( jclass clazz, const std::string& name, const std::string& sig );
 
 	#define CI_GET_TYPE_FIELDID_DECL( _jname ) \
-		jfieldID Get##_jname##FieldID( jclass clazz, const std::string& name );	
+		jfieldID Get##_jname##FieldId( jclass clazz, const std::string& name );	
 
 		//
 		// GetBooleanFieldID
@@ -315,25 +322,45 @@ public:
 	void 				DeleteLocalRef( jobject localRef );
 
 	jsize 				GetArrayLength( jarray array );
+
+	jobject				GetObjectArrayElements( jobjectArray array, jsize index );
+
 	jbyte* 				GetByteArrayElements( jbyteArray array, jboolean* isCopy );
+	jint* 				GetIntArrayElements( jintArray array, jboolean* isCopy );
 
 	void 				ReleaseByteArrayElements( jbyteArray array, jbyte* elems, jint mode );
+	void 				ReleaseIntArrayElements( jintArray array, jint* elems, jint mode );
+
+	jthrowable 			ExceptionOccurred();
+	void 				ExceptionDescribe();
+	void 				ExceptionClear();
+	jboolean 			ExceptionCheck();
+
+	/*
+	std::string 		ThrowableGetMessage( jthrowable jexc, bool clearExc = true );
+	std::string 		ThrowableToString( jthrowable jexc, bool clearExc = true );
+	std::string			GetPendingExceptionMessage( bool clearExc = true );
+	std::string			GetPendingExceptionString( bool clearExc = true );
+	*/
 
 private:	
 	static std::unique_ptr<JniHelper>	sInstance;
 
 	JniHelper( ANativeActivity* nativeActivity );
 
-	//JavaVM*		mJavaVm;
-	//JNIEnv*		mJniEnv;
-	jobject			mActivityObject 		= NULL;
-	jclass 			mActivityClass 			= NULL;
+	jobject			mActivityObject 		= nullptr;
+	jclass 			mActivityClass 			= nullptr;
 
-	jmethodID		mGetClassLoaderMethodId	= NULL;
-	jobject 		mClassLoaderObject		= NULL;
-	jclass 			mClassLoaderClass		= NULL;
-	jmethodID		mLoadClassMethodId		= NULL;
+	jmethodID		mGetClassLoaderMethodId	= nullptr;
+	jobject 		mClassLoaderObject		= nullptr;
+	jclass 			mClassLoaderClass		= nullptr;
+	jmethodID		mLoadClassMethodId		= nullptr;
 
+	/*
+	jclass 			mThrowableClass 				= nullptr;
+	jmethodID 		mThrowableGetMessageMethodId	= nullptr;
+	jmethodID		mThrowableToStringMethodId 		= nullptr;
+	*/
 };	
 
 }} // namespace cinder::android

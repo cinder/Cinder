@@ -1,33 +1,36 @@
 package org.libcinder.hardware;
 
 import android.app.Activity;
-import android.app.Fragment;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.SurfaceTexture;
 import android.hardware.SensorManager;
 import android.os.Build;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.OrientationEventListener;
 
-import org.libcinder.app.ComponentManager;
+import org.libcinder.app.CinderNativeActivity;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.ReentrantLock;
 
-public abstract class Camera extends Fragment {
+/** \class Camera
+ *
+ *
+ */
+public abstract class Camera {
 
-    private static final String TAG = "Camera";
-    public static final String FRAGMENT_TAG = "fragment:org.libcinder.hardware.Camera";
+    private static final String TAG = "cinder|Camera";
 
     public interface DisplayLayoutListener {
         void onDisplayLayoutChanged(int width, int height, int orientation, int displayRotation);
     }
 
+    private Activity mActivity = null;
     private boolean mInitialized = false;
 
-    protected String mBackDeviceId   = null;
-    protected String mFrontDeviceId  = null;
+    protected String mBackDeviceId = null;
+    protected String mFrontDeviceId = null;
     protected String mActiveDeviceId = null;
 
     private static String sLastDeviceId = null;
@@ -37,15 +40,34 @@ public abstract class Camera extends Fragment {
     private int mWidth = 0;
     private int mHeight = 0;
     protected byte[] mPixels = null;
-    protected ReentrantLock mPixelsMutex  = null;
+    protected ReentrantLock mPixelsMutex = null;
 
-    protected OrientationEventListener mOrientationListener;
+    protected OrientationEventListener mOrientationListener = null;
     protected int mOrientation = -1;
     protected int mDisplayRotation = -1;
-    private DisplayLayoutListener mDisplayLayoutListener;
+    private DisplayLayoutListener mDisplayLayoutListener = null;
 
     protected SurfaceTexture mPreviewTexture = null;
 
+    protected AtomicBoolean mNewFrameAvailable = new AtomicBoolean(false);
+
+    /** \class DeviceInfo
+     *
+     *
+     */
+    public class DeviceInfo {
+        public String id;
+        public boolean frontFacing = false;
+        public int[] resolutions;
+
+        DeviceInfo(String id, boolean frontFacing, int[] resolutions) {
+            this.id = id;
+            this.frontFacing = frontFacing;
+            this.resolutions = resolutions;
+        }
+    }
+
+    protected DeviceInfo[] mCachedDeviceInfos;
 
     /**
      * If we're in Java, we might use a TextureView to draw the
@@ -55,84 +77,127 @@ public abstract class Camera extends Fragment {
      */
     protected Matrix mPreviewTransform = new Matrix();
 
-    /** Camera
+    /**
+     * Camera
      *
      */
-    public Camera() {
-        // @TODO
+    public Camera(Activity activity) {
+        mActivity = activity;
     }
 
-    public static Camera create() {
+    /**
+     * getActivity
+     *
+     */
+    public Activity getActivity() {
+        return mActivity;
+    }
+
+    /**
+     * create
+     *
+     */
+    public static Camera create(int apiLevel, Activity activity) {
         Camera result = null;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            result = new CameraV2();
-        }
-        else {
-            result = new CameraV1();
+        if (apiLevel >= Build.VERSION_CODES.LOLLIPOP) {
+            result = new CameraV2(activity);
+        } else {
+            result = new CameraV1(activity);
         }
         return result;
     }
 
-    public static Camera create(int version) {
-        Camera result = null;
-        if((2 == version) && (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)) {
-            result = new CameraV2();
-        }
-        else if(1 == version) {
-            result = new CameraV1();
-        }
-        return result;
-    }
-
-
+    /**
+     * checkCameraPresence
+     *
+     */
     public static void checkCameraPresence(boolean[] back, boolean[] front) {
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        Log.i(TAG, "checkCameraPresence: ThreadID=" + Thread.currentThread().getId());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             CameraV2.checkCameraPresence(back, front);
-        }
-        else {
+        } else {
             CameraV1.checkCameraPresence(back, front);
         }
     }
 
+    /**
+     * enumerateDevices
+     *
+     */
+    public abstract DeviceInfo[] enumerateDevices();
+
+    /**
+     * imageFormatString
+     *
+     */
     public static String imageFormatString(int imageFormat) {
         String result = null;
-        switch(imageFormat) {
-            case ImageFormat.RGB_565     : result = "RGB_565";     break;
-            case ImageFormat.NV16        : result = "NV16";        break;
-            case ImageFormat.YUY2        : result = "YUY2";        break;
-            case ImageFormat.YV12        : result = "YV12";        break;
-            case ImageFormat.JPEG        : result = "JPEG";        break;
-            case ImageFormat.NV21        : result = "NV21";        break;
-            case ImageFormat.YUV_420_888 : result = "YUV_420_888"; break;
-            case ImageFormat.RAW_SENSOR  : result = "RAW_SENSOR";  break;
-            case ImageFormat.RAW10       : result = "RAW10";       break;
+        switch (imageFormat) {
+            case ImageFormat.RGB_565:
+                result = "RGB_565";
+                break;
+            case ImageFormat.NV16:
+                result = "NV16";
+                break;
+            case ImageFormat.YUY2:
+                result = "YUY2";
+                break;
+            case ImageFormat.YV12:
+                result = "YV12";
+                break;
+            case ImageFormat.JPEG:
+                result = "JPEG";
+                break;
+            case ImageFormat.NV21:
+                result = "NV21";
+                break;
+            case ImageFormat.YUV_420_888:
+                result = "YUV_420_888";
+                break;
+            case ImageFormat.RAW_SENSOR:
+                result = "RAW_SENSOR";
+                break;
+            case ImageFormat.RAW10:
+                result = "RAW10";
+                break;
         }
         return result;
     }
 
+    /**
+     * initialize
+     *
+     */
     public void initialize() {
-        if( ! mInitialized) {
+        Log.i(TAG, "intialize: ThreadId=" + Thread.currentThread().getId());
+
+        if (!mInitialized) {
             initializeImpl();
             mInitialized = true;
         }
 
         // Set these in case we're coming back from an activity restart or sleep.
-        mOrientation = ComponentManager.activity().getResources().getConfiguration().orientation;
-        mDisplayRotation = ComponentManager.getInstance().getDefaultDisplay().getRotation();
+        mOrientation = getActivity().getResources().getConfiguration().orientation;
+        mDisplayRotation = ((CinderNativeActivity)getActivity()).getDefaultDisplay().getRotation();
     }
 
+    /**
+     * setPreferredPreviewSize
+     *
+     */
     protected void setPreferredPreviewSize(int width, int height) {
         mPreferredPreviewWidth = width;
         mPreferredPreviewHeight = height;
         mWidth = mPreferredPreviewWidth;
         mHeight = mPreferredPreviewHeight;
 
-        if(null == mOrientationListener) {
+        if (null == mOrientationListener) {
             startOrientationListener();
         }
 
         emitDisplayLayoutChanged();
-        //Log.i(TAG, "Camaera.setPreferredPreviewSize: " + mWidth + "x" + mHeight);
+        Log.i(TAG, "Camera.setPreferredPreviewSize: " + mWidth + "x" + mHeight);
     }
 
     public void setPreviewTexture(SurfaceTexture previewTexture) {
@@ -144,14 +209,18 @@ public abstract class Camera extends Fragment {
         return mPreviewTexture;
     }
 
+    /**
+     * startOrientationListener
+     *
+     */
     protected void startOrientationListener() {
         // Initialize orientation listener
-        if(null == mOrientationListener) {
-            mOrientationListener = new OrientationEventListener(ComponentManager.activity(), SensorManager.SENSOR_DELAY_NORMAL) {
+        if (null == mOrientationListener) {
+            mOrientationListener = new OrientationEventListener(getActivity(), SensorManager.SENSOR_DELAY_NORMAL) {
                 @Override
                 public void onOrientationChanged(int so) {
-                    int orientation = ComponentManager.activity().getResources().getConfiguration().orientation;
-                    int rotation = ComponentManager.getInstance().getDefaultDisplay().getRotation();
+                    int orientation = getActivity().getResources().getConfiguration().orientation;
+                    int rotation = ((CinderNativeActivity)getActivity()).getDefaultDisplay().getRotation();
                     if ((orientation == mOrientation) && (rotation == mDisplayRotation)) {
                         return;
                     }
@@ -165,27 +234,47 @@ public abstract class Camera extends Fragment {
             };
         }
 
-        if(mOrientationListener.canDetectOrientation()) {
+        if (mOrientationListener.canDetectOrientation()) {
             mOrientationListener.enable();
         }
     }
 
+    /**
+     * stopOrientationListener
+     *
+     */
     protected void stopOrientationListener() {
-        if(null != mOrientationListener) {
+        if (null != mOrientationListener) {
             mOrientationListener.disable();
             mOrientationListener = null;
         }
     }
 
-    /** startSession
+    /**
+     * startSession
      *
      */
-    public void startSession() {
-        startSessionImpl(Camera.sLastDeviceId);
+    public void startSession(String deviceId) {
+        Log.i(TAG, "startSession: " + deviceId);
+
+        if (null != mActiveDeviceId) {
+            stopSession();
+        }
+
+        startSessionImpl(deviceId);
         Camera.sLastDeviceId = mActiveDeviceId;
     }
 
-    /** stopSession
+    /**
+     * startSession
+     *
+     */
+    public void startSession() {
+        startSession(Camera.sLastDeviceId);
+    }
+
+    /**
+     * stopSession
      *
      */
     public void stopSession() {
@@ -193,29 +282,54 @@ public abstract class Camera extends Fragment {
         stopOrientationListener();
     }
 
-    /** startCapture
+    /**
+     * startCapture
      *
      */
-    public void startCapture() {
-        if(! mInitialized) {
+    public void startCapture(String deviceId) {
+        Log.i(TAG, "startCapture: " + deviceId);
+
+        if (!mInitialized) {
             initialize();
         }
 
-        if(null == mPixelsMutex) {
+        if (null == mPixelsMutex) {
             mPixelsMutex = new ReentrantLock();
         }
 
-        startCaptureImpl();
+        startCaptureImpl(deviceId);
+        startSession(deviceId);
     }
 
-    /** stopCapture
+//    /**
+//     * startCapture
+//     */
+//    public void startCapture() {
+//        Log.i(TAG, "startCapture");
+//
+//        if (!mInitialized) {
+//            initialize();
+//        }
+//
+//        String deviceId = Camera.sLastDeviceId;
+//        if (null == deviceId) {
+//            deviceId = (null != mBackDeviceId) ? mBackDeviceId : ((null != mFrontDeviceId) ? mFrontDeviceId : null);
+//        }
+//
+//        startCapture(deviceId);
+//    }
+
+    /**
+     * stopCapture
      *
      * Stops all threads that are used for capturing. Closes cameras and releases the devices
      * associated with the. Sets all classes member variables to null or their default value.
      *
      */
     public void stopCapture() {
+        stopSession();
         stopCaptureImpl();
+
         mInitialized = false;
         mActiveDeviceId = null;
         mBackDeviceId = null;
@@ -232,6 +346,7 @@ public abstract class Camera extends Fragment {
         mPreviewTexture = null;
     }
 
+    /*
     public void switchToBackCamera() {
         switchToBackCameraImpl();
         Camera.sLastDeviceId = mActiveDeviceId;
@@ -241,6 +356,7 @@ public abstract class Camera extends Fragment {
         switchToFrontCameraImpl();
         Camera.sLastDeviceId = mActiveDeviceId;
     }
+    */
 
     protected abstract void initializeImpl();
 
@@ -250,33 +366,45 @@ public abstract class Camera extends Fragment {
 
     protected abstract void stopSessionImpl();
 
-    protected abstract void startCaptureImpl();
+    protected abstract void startCaptureImpl(String deviceId);
 
     protected abstract void stopCaptureImpl();
 
-    protected abstract void switchToBackCameraImpl();
+    //protected abstract void switchToBackCameraImpl();
 
-    protected abstract void switchToFrontCameraImpl();
+    //protected abstract void switchToFrontCameraImpl();
 
     public abstract byte[] lockPixels();
 
     public abstract void unlockPixels();
 
-    /** setDisplayOrientation
+    public boolean isNewFrameAvailable() {
+        boolean result = mNewFrameAvailable.get();
+        return result;
+    }
+
+    public void clearNewFrameAvailable() {
+        mNewFrameAvailable.set(false);
+    }
+
+    /**
+     * setDisplayOrientation
      *
      */
     protected void setDisplayOrientation(int displayRotation) {
         // CameraV1 overrides this
     }
 
-    /** setDisplayLayoutListener
+    /**
+     * setDisplayLayoutListener
      *
      */
     public void setDisplayLayoutListener(DisplayLayoutListener listener) {
         mDisplayLayoutListener = listener;
     }
 
-    /** emitDisplayLayoutChanged
+    /**
+     * emitDisplayLayoutChanged
      *
      */
     private void emitDisplayLayoutChanged() {
@@ -295,157 +423,85 @@ public abstract class Camera extends Fragment {
 
         setDisplayOrientation(mDisplayRotation);
 
-        if(null != mDisplayLayoutListener) {
+        if (null != mDisplayLayoutListener) {
             mDisplayLayoutListener.onDisplayLayoutChanged(mWidth, mHeight, mOrientation, mDisplayRotation);
         }
 
     }
 
-    /** getWidth
+    /**
+     * getWidth
      *
      */
     public int getWidth() {
         return mWidth;
     }
 
-    /** getHeight
+    /**
+     * getHeight
      *
      */
     public int getHeight() {
         return mHeight;
     }
 
-    /** updatePreviewTransform
+    /**
+     * updatePreviewTransform
      *
      */
     public void updatePreviewTransform(int viewWidth, int viewHeight, int orientation, int displayRotation) {
         // CameraV2 overrides this.
     }
 
-    /** getPreviewTransform
+    /**
+     * getPreviewTransform
      *
      */
     public Matrix getPreviewTransform() {
         return mPreviewTransform;
     }
 
-    /** isBackCameraAvailable
+    /**
+     * isBackCameraAvailable
      *
      */
     public boolean isBackCameraAvailable() {
         return (null != mBackDeviceId);
     }
 
-    /** isFrontCameraAvailable
+    /**
+     * isFrontCameraAvailable
      *
      */
     public boolean isFrontCameraAvailable() {
         return (null != mFrontDeviceId);
     }
 
-    /** isBackCameraActive
+    /**
+     * isBackCameraActive
      *
      */
     public boolean isBackCameraActive() {
         return ((null != mBackDeviceId) && (mActiveDeviceId.equals(mBackDeviceId)));
     }
 
-    /** isFrontCameraActive
+    /**
+     * isFrontCameraActive
      *
      */
     public boolean isFrontCameraActive() {
         return ((null != mFrontDeviceId) && (mActiveDeviceId.equals(mFrontDeviceId)));
     }
 
-    /** toggleActiveCamera
+    /**
+     * toggleActiveCamera
      *
      */
     public void toggleActiveCamera() {
-        if(isBackCameraActive() && isFrontCameraAvailable()) {
-            switchToFrontCamera();
+        if (isBackCameraActive() && isFrontCameraAvailable()) {
+            startCapture(mFrontDeviceId);
+        } else if (isFrontCameraActive() && isBackCameraAvailable()) {
+            startCapture(mBackDeviceId);
         }
-        else if(isFrontCameraActive() && isBackCameraAvailable()) {
-            switchToBackCamera();;
-        }
-    }
-
-    /** onAttach
-     *
-     */
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        initializeImpl();
-    }
-
-    /** onCreate
-     *
-     */
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-    }
-
-    /** onActivityCreated
-     *
-     */
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
-
-    /** onStart
-     *
-     */
-    @Override
-    public void onStart() {
-        super.onStart();
-    }
-
-    /** onSaveInstanceState
-     *
-     */
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-    }
-
-    /** onResume
-     *
-     */
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    /** onPause
-     *
-     */
-    @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    /** onStop
-     *
-     */
-    @Override
-    public void onStop() {
-        super.onStop();
-    }
-
-    /** onDestroy
-     *
-     */
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-    }
-
-    /** onDetach
-     *
-     */
-    @Override
-    public void onDetach() {
-        super.onDestroy();
     }
 }

@@ -32,8 +32,6 @@ namespace cinder { namespace app {
 AppAndroid::AppAndroid()
 	: AppBase()
 {
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );
-
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
@@ -42,8 +40,6 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	Platform::get()->setExecutablePath( getAppPath() );
 
 	mImpl.reset( new AppImplAndroid( this, *settings ) );	
-
-dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 AppAndroid::~AppAndroid()
@@ -59,15 +55,11 @@ void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRende
 
 void AppAndroid::launch( const char *title, int argc, char * const argv[] )
 {
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );
-
 	mImpl->setup();
 
 	//
 	// NOTE: Don't call AppImplAndroid's event loop functions from here.
 	//
-	
-dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 WindowRef AppAndroid::createWindow( const Window::Format &format )

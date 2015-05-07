@@ -120,15 +120,7 @@ AppBase::~AppBase()
 // static
 void AppBase::prepareLaunch()
 {	
-#if defined( CINDER_ANDROID )
-dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
-#endif
-
 	Platform::get()->prepareLaunch();
-
-#if defined( CINDER_ANDROID )
-dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
-#endif
 }
 
 // static

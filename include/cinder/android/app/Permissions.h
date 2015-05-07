@@ -21,57 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/android/AndroidDevLog.h"
+namespace cinder { namespace android { namespace app {
 
-#include <android/log.h>
-#include <sstream>
 
-#define DBG_APP_LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder_app", __VA_ARGS__))
 
-namespace cinder { namespace android {
-
-void dbg_app_log( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGI( ss.str().c_str() );
-}	
-
-void dbg_app_warn( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGW( ss.str().c_str() );
-}
-
-void dbg_app_error( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGE( ss.str().c_str() );
-}
-
-void dbg_app_fn_enter( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[FN]: " << s << " entered";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
-
-void dbg_app_fn_exit( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[FN]: " << s << " exited";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
-
-void dbg_obtained_fn( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[JNI]: " << s << " method obtained";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
-
-}} // namespace cinder::android
+}}} // namespace cinder::android::app

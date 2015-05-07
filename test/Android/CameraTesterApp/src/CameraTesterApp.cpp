@@ -3,13 +3,9 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Surface.h"
 #include <list>
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
-
-#include "cinder/android/CinderCamera.h"
-#include "cinder/android/CinderCamera2.h"
 
 // We'll create a new Cinder Application by deriving from the App class
 class CameraTesterApp : public App {
@@ -24,16 +20,10 @@ class CameraTesterApp : public App {
 
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
-
-    ci::android::CinderCamera2  mCamera;
 };
 
 void CameraTesterApp::setup()
 {
-    mCamera.initialize();
-    mCamera.startCapture();
-
-    console() << "Camera Size: " << mCamera.getWidth() << "x" << mCamera.getHeight() << std::endl;
 }
 
 void CameraTesterApp::mouseDrag( MouseEvent event )
@@ -66,13 +56,6 @@ void CameraTesterApp::draw()
 		gl::vertex( *pointIter );
 	}
 	gl::end();
-
-    Surface surf = mCamera.getSurface();
-    gl::TextureRef tex = gl::Texture::create( surf );
-    if( tex ) {
-        gl::color( 1.0f, 1.0f, 1.0f );
-        gl::draw( tex );
-    }
 }
 
 // This line tells Cinder to actually create the application

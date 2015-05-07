@@ -51,7 +51,7 @@ private:
 	static void 		cacheJni();
 	static void 		destroyJni();
 
-	static std::string 	sJavaClassName;
+	static jclassID		sJavaClassName;
 	static jclass		sJavaClass;
 	static jmethodID	sJavaStaticMethodCreate;
 	static jmethodID	sJavaMethodLoadUrl;
@@ -65,7 +65,7 @@ private:
 	std::string 		mUrl;
 
 private:
-	friend class ComponentManager;
+	friend class ci::android::app::ComponentManager;
 };
 
 }}} // namespace cinder::android::net

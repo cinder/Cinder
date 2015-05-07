@@ -3,9 +3,10 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
-
 using namespace ci;
 using namespace ci::app;
+
+#include "cinder/android/app/CinderNativeActivity.h"
 
 class CaptureBasicApp : public App {
   public:
@@ -30,6 +31,7 @@ void CaptureBasicApp::setup()
 					<< std::endl;
 	}
 
+
 	try {
 		mCapture = Capture::create( 640, 480 );
 		mCapture->start();
@@ -37,6 +39,8 @@ void CaptureBasicApp::setup()
 	catch( ci::Exception &exc ) {
 		console() << "Failed to initialize capture, what: " << exc.what() << std::endl;
 	}
+
+    //ci::android::app::CinderNativeActivity::getInstance()->startCapture();
 }
 
 void CaptureBasicApp::keyDown( KeyEvent event )
@@ -51,6 +55,7 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 
 void CaptureBasicApp::update()
 {
+
 	if( mCapture && mCapture->checkNewFrame() ) {
 		if( ! mTexture ) {
 			// Capture images come back as top-down, and it's more efficient to keep them that way
@@ -60,17 +65,18 @@ void CaptureBasicApp::update()
 			mTexture->update( *mCapture->getSurface() );
 		}
 	}
+
 }
 
 void CaptureBasicApp::draw()
 {
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
-	
+
 	if( mTexture ) {
     gl::pushModelMatrix();
-#if defined( CINDER_COCOA_TOUCH )
-		//change iphone to landscape orientation
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+		//change iPhone/Android to landscape orientation
 		gl::rotate( M_PI / 2 );
 		gl::translate( 0.0f, -getWindowWidth() );
 

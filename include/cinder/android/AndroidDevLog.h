@@ -26,6 +26,8 @@
 namespace cinder { namespace android {
 
 void dbg_app_log( const std::string& s );
+void dbg_app_warn( const std::string& s );
+void dbg_app_error( const std::string& s );
 void dbg_app_fn_enter( const std::string& s );
 void dbg_app_fn_exit( const std::string& s );
 
@@ -33,7 +35,7 @@ void dbg_app_fn_exit( const std::string& s );
  	if( nullptr != __FNREF__ ) {							\
  		dbg_app_log( #__FNREF__ " successfully obtained" );	\
  	} else {												\
- 		dbg_app_log( #__FNREF__ " obtain failed" ); 		\
+ 		dbg_app_warn( #__FNREF__ " obtain failed" ); 		\
  	}						
 
 }} // namespace cinder::android 

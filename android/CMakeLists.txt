@@ -531,7 +531,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/android/CinderAndroid.cpp
     ${CINDER_SRC_DIR}/cinder/android/JniHelper.cpp
     ${CINDER_SRC_DIR}/cinder/android/LogCatStream.cpp
-    #${CINDER_SRC_DIR}/cinder/android/hardware/Camera.cpp
+    ${CINDER_SRC_DIR}/cinder/android/hardware/Camera.cpp
     ${CINDER_SRC_DIR}/cinder/android/app/CinderNativeActivity.cpp
     ${CINDER_SRC_DIR}/cinder/android/app/ComponentManager.cpp
     ${CINDER_SRC_DIR}/cinder/android/media/ExMediaPlayer.cpp
@@ -603,6 +603,8 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
     ${CINDER_SRC_DIR}/cinder/Buffer.cpp
     ${CINDER_SRC_DIR}/cinder/Camera.cpp
+    ${CINDER_SRC_DIR}/cinder/Capture.cpp
+    ${CINDER_SRC_DIR}/cinder/CaptureImplJni.cpp
     ${CINDER_SRC_DIR}/cinder/Channel.cpp
     ${CINDER_SRC_DIR}/cinder/CinderAssert.cpp
     ${CINDER_SRC_DIR}/cinder/CinderMath.cpp

@@ -3,6 +3,7 @@ package org.libcinder.hardware;
 import org.libcinder.app.ComponentManager;
 
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.content.Context;
 import android.graphics.Point;
 import android.graphics.ImageFormat;
@@ -22,6 +23,7 @@ import android.util.Size;
 import android.view.Surface;
 
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -36,7 +38,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @TargetApi(21)
 public class CameraV2 extends org.libcinder.hardware.Camera {
 
-    private static final String TAG = "CameraV2";
+    private static final String TAG = "cinder|CameraV2";
 
     private CameraManager mCameraManager = null;
 
@@ -75,11 +77,12 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
             try {
                 Image image = reader.acquireLatestImage();
                 if ((null != image) && (image.getPlanes().length > 0)) {
+                    /*
                     //Log.i(TAG, "Number of planes:" + image.getPlanes().length);
 
-                    ByteBuffer buf0 = image.getPlanes()[0].getBuffer();
-                    ByteBuffer buf1 = image.getPlanes()[1].getBuffer();
-                    ByteBuffer buf2 = image.getPlanes()[2].getBuffer();
+                    //ByteBuffer buf0 = image.getPlanes()[0].getBuffer();
+                    //ByteBuffer buf1 = image.getPlanes()[1].getBuffer();
+                    //ByteBuffer buf2 = image.getPlanes()[2].getBuffer();
                     //Log.i(TAG, "...plane[0] size:" + buf0.remaining());
                     //Log.i(TAG, "...plane[1] size:" + buf1.remaining());
                     //Log.i(TAG, "...plane[2] size:" + buf2.remaining());
@@ -92,10 +95,17 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
                     buffer.get(mPixels);
 
                     image.close();
+                    image = null;
+
+                    mNewFrameAvailable.set(true);
+                    */
                 }
             }
             finally {
                 unlockPixels();
+
+                reader.close();
+                reader = null;
             }
         }
     };
@@ -138,8 +148,9 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
     /** CameraV2
      *
      */
-    public CameraV2() {
-        // @TODO
+    public CameraV2(Activity activity) {
+        super(activity);
+        Log.i(TAG, "CameraV2 constructed");
     }
 
     /** checkCameraPresence
@@ -165,6 +176,44 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         } catch (Exception e) {
             throw new RuntimeException("failed getting camera: " + e);
         }
+    }
+
+    public DeviceInfo[] enumerateDevices() {
+        ArrayList<DeviceInfo> devices = new ArrayList<>();
+
+        try {
+            CameraManager cm = (CameraManager) ComponentManager.activity().getSystemService(Context.CAMERA_SERVICE);
+            for (String id : cm.getCameraIdList()) {
+                CameraCharacteristics info = cm.getCameraCharacteristics(id);
+
+                int facing = info.get(CameraCharacteristics.LENS_FACING);
+                boolean frontFacing = (CameraCharacteristics.LENS_FACING_FRONT == facing);
+
+                StreamConfigurationMap scm = info.get(CameraCharacteristics.SCALER_STREAM_CONFIGURATION_MAP);
+                List<Size> sizes = Arrays.asList(scm.getOutputSizes(SurfaceTexture.class));
+                int[] resolutions = new int[2*sizes.size()];
+                for(int j = 0; j < sizes.size(); ++j) {
+                    Size size = sizes.get(j);
+                    resolutions[2*j + 0] = size.getWidth();
+                    resolutions[2*j + 1] = size.getHeight();
+                }
+
+                devices.add(new DeviceInfo(id, frontFacing, resolutions));
+            }
+        }
+        catch(Exception e ) {
+            Log.w(TAG, "enumerateDevices error: unable to get camera device list");
+        }
+
+        DeviceInfo[] result = null;
+        if(! devices.isEmpty()) {
+            result = new DeviceInfo[devices.size()];
+            for(int i = 0; i < devices.size(); ++i) {
+                result[i] = devices.get(i);
+            }
+        }
+
+        return result;
     }
 
     /** cameraThreadFn_setPreviewTexture
@@ -727,7 +776,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
      *
      */
     @Override
-    protected void startCaptureImpl() {
+    protected void startCaptureImpl(String deviceId) {
         // Create dummy texture
         if(null == mDummyTexture) {
             mDummyTexture = new SurfaceTexture(0);
@@ -739,7 +788,7 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         }
 
         startCameraThread();
-        startSession();
+        startSession(deviceId);
     }
 
     /** stopCaptureImpl
@@ -757,33 +806,33 @@ public class CameraV2 extends org.libcinder.hardware.Camera {
         Log.i(TAG, "stopCaptureImpl EXIT");
     }
 
-    /** switchToBackCameraImpl
-     *
-     */
-    @Override
-    protected void switchToBackCameraImpl() {
-        if (mActiveDeviceId.equals(mBackDeviceId)) {
-            return;
-        }
-
-        stopPreview();
-        startDevice(mBackDeviceId);
-        startPreview();
-    }
-
-    /** switchToFrontCameraImpl
-     *
-     */
-    @Override
-    protected void switchToFrontCameraImpl() {
-        if (mActiveDeviceId.equals(mFrontDeviceId)) {
-            return;
-        }
-
-        stopPreview();
-        startDevice(mFrontDeviceId);
-        startPreview();
-    }
+//    /** switchToBackCameraImpl
+//     *
+//     */
+//    @Override
+//    protected void switchToBackCameraImpl() {
+//        if (mActiveDeviceId.equals(mBackDeviceId)) {
+//            return;
+//        }
+//
+//        stopPreview();
+//        startDevice(mBackDeviceId);
+//        startPreview();
+//    }
+//
+//    /** switchToFrontCameraImpl
+//     *
+//     */
+//    @Override
+//    protected void switchToFrontCameraImpl() {
+//        if (mActiveDeviceId.equals(mFrontDeviceId)) {
+//            return;
+//        }
+//
+//        stopPreview();
+//        startDevice(mFrontDeviceId);
+//        startPreview();
+//    }
 
     /** lockPixels
      *

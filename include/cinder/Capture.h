@@ -42,6 +42,10 @@
 	namespace cinder {
 		class CaptureImplDirectShow;
 	}
+#elif defined( CINDER_ANDROID )
+	namespace cinder {
+		class CaptureImplJni;
+	}	
 #endif
 
 #include <map>
@@ -94,7 +98,7 @@ class Capture {
 	//! Finds the first device whose name contains the string \a nameFragment
 	static DeviceRef findDeviceByNameContains( const std::string &nameFragment );
 
-#if defined( CINDER_COCOA )
+#if defined( CINDER_COCOA ) || defined( CINDER_ANDROID )
 	typedef std::string DeviceIdentifier;
 #else
 	typedef int DeviceIdentifier;
@@ -116,7 +120,7 @@ class Capture {
 #if defined( CINDER_COCOA )
 		virtual void*		getNative() const = 0;
 #endif
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 		//! Returns whether device is front-facing. False implies rear-facing.
 		virtual bool		isFrontFacing() const = 0;
 #endif
@@ -138,6 +142,8 @@ class Capture {
 		CaptureImplCocoaDummy			*mImpl;
 #elif defined( CINDER_MSW )
 		CaptureImplDirectShow			*mImpl;
+#elif defined( CINDER_ANDROID )
+		CaptureImplJni					*mImpl;		
 #endif
 	};
 	

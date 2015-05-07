@@ -21,57 +21,47 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/android/AndroidDevLog.h"
+#include "cinder/android/CinderAndroid.h"
+#include "cinder/android/JniHelper.h"
 
-#include <android/log.h>
-#include <sstream>
+namespace cinder { namespace app { 
 
-#define DBG_APP_LOGI(...) ((void)__android_log_print(ANDROID_LOG_INFO, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder_app", __VA_ARGS__))
-#define DBG_APP_LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder_app", __VA_ARGS__))
+class EventManagerAndroid;
 
-namespace cinder { namespace android {
+}} // namespace cinder::app 
 
-void dbg_app_log( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGI( ss.str().c_str() );
-}	
+namespace cinder { namespace android { namespace app {
 
-void dbg_app_warn( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGW( ss.str().c_str() );
-}
+/** \class CinderNativeActivity
+ *
+ */
+class CinderNativeActivity {
+public:
 
-void dbg_app_error( const std::string& s )
-{
-	std::stringstream ss;
-	ss << s;
-	DBG_APP_LOGE( ss.str().c_str() );
-}
+	CinderNativeActivity( jobject obj );
+	virtual ~CinderNativeActivity();
 
-void dbg_app_fn_enter( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[FN]: " << s << " entered";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
+	static CinderNativeActivity*	getInstance();
+	static jclass 					getJavaClass();
+	static jobject 					getJavaObject();
 
-void dbg_app_fn_exit( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[FN]: " << s << " exited";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
+private:
+	static void 			cacheJni();
+	static void 			destroyJni();
 
-void dbg_obtained_fn( const std::string& s )
-{
-	std::stringstream ss;
-	ss << "[JNI]: " << s << " method obtained";
-	DBG_APP_LOGI( ss.str().c_str() );
-}
+	struct Java {
+		static jclassID		ClassName;
+		static jclass 		ClassObject;
+	};
 
-}} // namespace cinder::android
+	static std::unique_ptr<CinderNativeActivity> sInstance;
+
+	jobject					mJavaObject = nullptr;
+
+private:
+	static void registerComponents();
+	static void unregisterComponents();	
+	friend class cinder::app::EventManagerAndroid;
+};
+
+}}} // namespace cinder::android::app

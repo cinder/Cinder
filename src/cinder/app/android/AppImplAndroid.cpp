@@ -129,8 +129,10 @@ void AppImplAndroid::sleepUntilNextFrame()
 
 	// sleep and process messages until next frame
 	if( ( mFrameRateEnabled ) && ( mNextFrameTime > currentSeconds ) ) {
-		sleep(mNextFrameTime - currentSeconds);
-	}	
+		double sleepTime = std::max( mNextFrameTime - currentSeconds, 0.0 );
+		unsigned long sleepMicroSecs = sleepTime*1000000L;
+		usleep(sleepMicroSecs);
+	}
 }
 
 void AppImplAndroid::updateAndDraw()

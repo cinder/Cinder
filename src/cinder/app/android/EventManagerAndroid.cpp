@@ -24,7 +24,7 @@
 #include "cinder/app/android/EventManagerAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
-#include "cinder/android/app/ComponentManager.h"
+#include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/android/JniHelper.h"
 #include "cinder/android/AndroidDevLog.h"
 using namespace ci::android;
@@ -233,7 +233,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * (or NULL).
 		 */
 		case APP_CMD_INPUT_CHANGED: {
-			LOGI( "APP_CMD_INPUT_CHANGED" );
+			//LOGI( "APP_CMD_INPUT_CHANGED" );
 		}
 		break;
 
@@ -243,15 +243,15 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * surface.
 		 */
 		case APP_CMD_INIT_WINDOW: {
-			LOGI( "APP_CMD_INIT_WINDOW" );
+			//LOGI( "APP_CMD_INIT_WINDOW" );
 
 			if( nullptr != ndkApp->window ) {
 				if( ! eventMan->deferredMainHasBeenCalled() ) {
-					LOGI("APP_CMD_INIT_WINDOW -- callDeferredMain");
+					//LOGI("APP_CMD_INIT_WINDOW -- callDeferredMain");
 					eventMan->callDeferredMain();
 				}
 				else {
-					LOGI("APP_CMD_INIT_WINDOW -- reinitializeWindowSurface");
+					//LOGI("APP_CMD_INIT_WINDOW -- reinitializeWindowSurface");
 					eventMan->reinitializeWindowSurface();
 				}
 			}
@@ -265,7 +265,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * it will be set to NULL.
 		 */
 		case APP_CMD_TERM_WINDOW: {
-			LOGI( "APP_CMD_TERM_WINDOW" );	
+			//LOGI( "APP_CMD_TERM_WINDOW" );	
 
 			// NOTE: Do not kill or quit here. This message is swent when 
 			//       the app is APP_CMD_PAUSE is sent. Quitting here will 
@@ -278,7 +278,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Please redraw with its new size.
 		 */
 		case APP_CMD_WINDOW_RESIZED: {
-			LOGI( "APP_CMD_WINDOW_RESIZED" );			
+			//LOGI( "APP_CMD_WINDOW_RESIZED" );			
 		}
 		break;
 
@@ -288,7 +288,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * android_app_exec_cmd() in order to avoid transient drawing glitches.
 		 */
 		case APP_CMD_WINDOW_REDRAW_NEEDED: {
-			LOGI( "APP_CMD_WINDOW_REDRAW_NEEDED" );			
+			//LOGI( "APP_CMD_WINDOW_REDRAW_NEEDED" );			
 		}
 		break;
 
@@ -298,7 +298,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * find the new content rect in android_app::contentRect.
 		 */
 		case APP_CMD_CONTENT_RECT_CHANGED: {
-			LOGI( "APP_CMD_CONTENT_RECT_CHANGED" );			
+			//LOGI( "APP_CMD_CONTENT_RECT_CHANGED" );			
 		}
 		break;
 
@@ -307,7 +307,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * input focus.
 		 */
 		case APP_CMD_GAINED_FOCUS: {
-			LOGI( "APP_CMD_GAINED_FOCUS" );
+			//LOGI( "APP_CMD_GAINED_FOCUS" );
 
 			eventMan->appGainedFocus();
 		}
@@ -318,7 +318,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * input focus.
 		 */
 		case APP_CMD_LOST_FOCUS: {
-			LOGI( "APP_CMD_LOST_FOCUS" );
+			//LOGI( "APP_CMD_LOST_FOCUS" );
 
 			eventMan->appLostFocus();
 		}
@@ -328,7 +328,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the current device configuration has changed.
 		 */
 		case APP_CMD_CONFIG_CHANGED: {
-			LOGI( "APP_CMD_CONFIG_CHANGED" );			
+			//LOGI( "APP_CMD_CONFIG_CHANGED" );			
 		}
 		break;
 
@@ -337,7 +337,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Try to reduce your memory use.
 		 */
 		case APP_CMD_LOW_MEMORY: {
-			LOGI( "APP_CMD_LOW_MEMORY" );			
+			//LOGI( "APP_CMD_LOW_MEMORY" );			
 		}
 		break;
 
@@ -345,7 +345,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been started.
 		 */
 		case APP_CMD_START: {
-			LOGI( "APP_CMD_START" );	
+			//LOGI( "APP_CMD_START" );	
 		}
 		break;
 
@@ -353,7 +353,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been resumed.
 		 */
 		case APP_CMD_RESUME: {
-			LOGI( "APP_CMD_RESUME" );
+			//LOGI( "APP_CMD_RESUME" );
 
 			eventMan->appResume();
 		}
@@ -367,7 +367,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * later.
 		 */
 		case APP_CMD_SAVE_STATE: {
-			LOGI( "APP_CMD_SAVE_STATE" );
+			//LOGI( "APP_CMD_SAVE_STATE" );
 		}
 		break;
 
@@ -375,7 +375,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been paused.
 		 */
 		case APP_CMD_PAUSE: {
-			LOGI( "APP_CMD_PAUSE" );
+			//LOGI( "APP_CMD_PAUSE" );
 
 			eventMan->appPause();
 		}
@@ -385,7 +385,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * Command from main thread: the app's activity has been stopped.
 		 */
 		case APP_CMD_STOP: {
-			LOGI( "APP_CMD_STOP" );
+			//LOGI( "APP_CMD_STOP" );
 		}
 		break;
 
@@ -398,7 +398,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 *
 		 */
 		case APP_CMD_DESTROY: {
-			LOGI( "APP_CMD_DESTROY" );
+			//LOGI( "APP_CMD_DESTROY" );
 			eventMan->appQuit();
 		}
 		break;
@@ -420,7 +420,7 @@ void EventManagerAndroid::execute()
 	mSensorEventQueue    = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
-	ci::android::app::ComponentManager::registerComponents();
+	ci::android::app::CinderNativeActivity::registerComponents();
 
 dbg_app_log( "Starting Event Loop" );
 	// Event loop
@@ -472,8 +472,7 @@ dbg_app_log( "Starting Event Loop" );
 	}
 dbg_app_log( "Ended Event Loop" );
 
-	ci::android::app::ComponentManager::deleteGlobalRefs();
-	ci::android::app::ComponentManager::unregisterComponents();
+	ci::android::app::CinderNativeActivity::unregisterComponents();
 
 	// Call AppBase::cleanupLaunch
 	if( mDeferredMainHasBeenCalled ) {
