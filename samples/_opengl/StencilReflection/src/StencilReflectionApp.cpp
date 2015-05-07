@@ -102,7 +102,7 @@ void StencilReflectionApp::drawScene()
 			// draw into that stenciled area
 			{
 				gl::ScopedModelMatrix	scopeModel;
-				gl::ScopedAlphaBlend	scopeAlphaBlend( false );
+				gl::ScopedBlendAlpha	scopeAlphaBlend;
 				gl::ScopedState			scopeCull( GL_CULL_FACE, true );
 				gl::multModelMatrix( translate( vec3( 0, 0, 1 ) ) );
 				gl::color( ColorA( 1.0f, 1.0f, 1.0f, .09f ) );
