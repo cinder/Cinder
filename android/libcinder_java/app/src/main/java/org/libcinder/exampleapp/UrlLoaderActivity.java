@@ -13,7 +13,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.libcinder.app.ComponentManager;
 import org.libcinder.exampleapp.widgets.DebugTextView;
 import org.libcinder.net.UrlLoader;
 
@@ -25,7 +24,7 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
 
     private static final String TAG = "UrlLoaderActivity";
 
-    private ComponentManager mComponentManager;
+    //private ComponentManager mComponentManager;
 
     private DebugTextView mLog;
 
@@ -36,11 +35,13 @@ public class UrlLoaderActivity extends Activity implements Button.OnClickListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_url_loader);
 
+        /*
         mComponentManager = new ComponentManager();
         FragmentManager fragmentManager = getFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
         fragmentTransaction.add(mComponentManager, ComponentManager.FRAGMENT_TAG);
         fragmentTransaction.commit();
+        */
 
         mLog = (DebugTextView)findViewById(R.id.textView);
         mLog.setMovementMethod(new ScrollingMovementMethod());

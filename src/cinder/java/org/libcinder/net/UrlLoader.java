@@ -10,7 +10,7 @@ import java.net.URLDecoder;
 
 import android.util.Log;
 
-import org.libcinder.app.ComponentManager;
+import org.libcinder.app.CinderNativeActivity;
 
 /** \class UrlLoader
  *
@@ -115,7 +115,7 @@ public class UrlLoader {
     public byte[] loadUrl(String url) {
         byte[] result = null;
 
-        if(ComponentManager.permissions().INTERNET()) {
+        if(CinderNativeActivity.permissions().INTERNET()) {
             try {
                 mUrl = url;
 
@@ -130,7 +130,7 @@ public class UrlLoader {
             }
         }
         else {
-            mExceptionMsg = ComponentManager.permissions().missing().INTERNET();
+            mExceptionMsg = CinderNativeActivity.permissions().missing().INTERNET();
         }
 
         return result;

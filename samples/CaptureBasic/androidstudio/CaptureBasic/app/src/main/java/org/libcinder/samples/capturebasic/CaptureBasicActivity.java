@@ -8,14 +8,14 @@ import android.os.Build;
 import android.os.Bundle;
 
 import org.libcinder.app.CinderNativeActivity;
-import org.libcinder.app.ComponentManager;
+//import org.libcinder.app.ComponentManager;
 import org.libcinder.hardware.Camera;
 
 //public class CaptureBasicActivity extends NativeActivity {
 public class CaptureBasicActivity extends CinderNativeActivity {
     static final String TAG = "CaptureBasicActivity";
 
-    private ComponentManager mComponentManager;
+    //private ComponentManager mComponentManager;
     private Camera mCamera;
 
     @Override

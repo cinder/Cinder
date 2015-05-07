@@ -41,6 +41,21 @@ namespace cinder { namespace android { namespace hardware {
 class Camera {
 public:
 
+	enum ImageFormat {
+		UNKNOWN 	= 0,
+		RGB_565		= 4,
+		YV12		= 0x32315659,
+		Y8 			= 0x20203859,
+		Y16 		= 0x20363159,
+		NV16 		= 0x10,
+		NV21 		= 0x11,
+		YUY2 		= 0x14,
+		JPEG 		= 0x100,
+		YUV_420_888	= 0x23,
+		RAW_SENSOR 	= 0x20,
+		RAW10 		= 0x25,
+	};
+
 	class DeviceInfo;
 	using DeviceInfoRef = std::shared_ptr<DeviceInfo>;
 

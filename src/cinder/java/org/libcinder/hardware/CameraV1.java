@@ -1,6 +1,7 @@
 package org.libcinder.hardware;
 
 import org.libcinder.Cinder;
+import org.libcinder.app.CinderNativeActivity;
 
 import android.app.Activity;
 import android.hardware.Camera;
@@ -61,7 +62,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
     /** CameraV1
      *
      */
-    public CameraV1(Activity activity) {
+    public CameraV1(CinderNativeActivity activity) {
         super(activity);
         Log.i(TAG, "CameraV1 constructed: ThreadId=" + Thread.currentThread().getId());
     }

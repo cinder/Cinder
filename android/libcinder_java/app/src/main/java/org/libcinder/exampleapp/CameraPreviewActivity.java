@@ -15,7 +15,6 @@ import android.view.TextureView;
 import android.view.View;
 import android.widget.Button;
 
-import org.libcinder.app.ComponentManager;
 import org.libcinder.hardware.Camera;
 
 import java.util.Set;
@@ -27,7 +26,7 @@ public class CameraPreviewActivity extends Activity
 {
     private static final String TAG = "CameraPreviewActivity";
 
-    private ComponentManager mComponentManager;
+    //private ComponentManager mComponentManager;
 
     private Camera mCamera;
 
@@ -38,6 +37,7 @@ public class CameraPreviewActivity extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_camera_preview);
 
+        /*
         FragmentManager fragmentManager = getFragmentManager();
         Fragment fragment = fragmentManager.findFragmentByTag(ComponentManager.FRAGMENT_TAG);
         if(null == fragment) {
@@ -51,6 +51,7 @@ public class CameraPreviewActivity extends Activity
             Log.i(TAG, "ModulesFragment found - casting");
             mComponentManager = (ComponentManager)fragment;
         }
+        */
 
         //mCamera = mComponentManager.getCamera(Build.VERSION_CODES.KITKAT);
         //mCamera = mModulesFragment.getCamera(1);

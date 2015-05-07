@@ -29,6 +29,10 @@ public class CinderNativeActivity extends NativeActivity {
 
     private Handler mHandler = null;
 
+    public static CinderNativeActivity getInstance() {
+        return sInstance;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -144,10 +148,11 @@ public class CinderNativeActivity extends NativeActivity {
 
         if(1 != Thread.currentThread().getId()) {
             final ConditionVariable condition = new ConditionVariable(false);
-            final Activity activity = this;
+            final CinderNativeActivity activity = this;
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    //mCamera = Camera.create(Build.VERSION_CODES.KITKAT, activity);
                     mCamera = Camera.create(apiLevel, activity);
                     mCamera.initialize();
                     condition.open();
@@ -190,7 +195,7 @@ public class CinderNativeActivity extends NativeActivity {
 
         if(1 != Thread.currentThread().getId()) {
             final ConditionVariable condition = new ConditionVariable(false);
-            final Activity activity = this;
+            final CinderNativeActivity activity = this;
             mHandler.post(new Runnable() {
                 @Override
                 public void run() {

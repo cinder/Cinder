@@ -26,7 +26,7 @@ public abstract class Camera {
         void onDisplayLayoutChanged(int width, int height, int orientation, int displayRotation);
     }
 
-    private Activity mActivity = null;
+    private CinderNativeActivity mActivity = null;
     private boolean mInitialized = false;
 
     protected String mBackDeviceId = null;
@@ -81,7 +81,7 @@ public abstract class Camera {
      * Camera
      *
      */
-    public Camera(Activity activity) {
+    public Camera(CinderNativeActivity activity) {
         mActivity = activity;
     }
 
@@ -89,7 +89,7 @@ public abstract class Camera {
      * getActivity
      *
      */
-    public Activity getActivity() {
+    public CinderNativeActivity getActivity() {
         return mActivity;
     }
 
@@ -97,7 +97,7 @@ public abstract class Camera {
      * create
      *
      */
-    public static Camera create(int apiLevel, Activity activity) {
+    public static Camera create(int apiLevel, CinderNativeActivity activity) {
         Camera result = null;
         if (apiLevel >= Build.VERSION_CODES.LOLLIPOP) {
             result = new CameraV2(activity);
@@ -179,7 +179,7 @@ public abstract class Camera {
 
         // Set these in case we're coming back from an activity restart or sleep.
         mOrientation = getActivity().getResources().getConfiguration().orientation;
-        mDisplayRotation = ((CinderNativeActivity)getActivity()).getDefaultDisplay().getRotation();
+        mDisplayRotation = getActivity().getDefaultDisplay().getRotation();
     }
 
     /**
@@ -220,7 +220,7 @@ public abstract class Camera {
                 @Override
                 public void onOrientationChanged(int so) {
                     int orientation = getActivity().getResources().getConfiguration().orientation;
-                    int rotation = ((CinderNativeActivity)getActivity()).getDefaultDisplay().getRotation();
+                    int rotation = getActivity().getDefaultDisplay().getRotation();
                     if ((orientation == mOrientation) && (rotation == mDisplayRotation)) {
                         return;
                     }
