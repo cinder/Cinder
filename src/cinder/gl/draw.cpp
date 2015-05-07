@@ -646,60 +646,111 @@ void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPe
 		CI_LOG_E( "No GLSL program bound" );
 		return;
 	}
+	
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	
 	// automatically determine the number of segments from the circumference
 	if( numSegmentsPerCorner <= 0 ) {
 		numSegmentsPerCorner = (int)math<double>::floor( cornerRadius * M_PI * 2 / 4 );
 	}
 	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
 	
+	auto numVertices = (numSegmentsPerCorner+1) * 4 + 2;
+	
+	size_t worstCaseSize = numVertices * sizeof(float) * ( 2 + 2 + 3 );
+	VboRef defaultVbo = ctx->getDefaultArrayVbo( worstCaseSize );
+	ScopedBuffer vboScp( defaultVbo );
+	size_t dataSizeBytes = 0;
+	
+	size_t vertsOffset, texCoordsOffset, normalsOffset;
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		vertsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int texLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::TEX_COORD_0 );
+	if( texLoc >= 0 ) {
+		enableVertexAttribArray( texLoc );
+		vertexAttribPointer( texLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)dataSizeBytes );
+		texCoordsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 2 * sizeof(float);
+	}
+	int normalLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::NORMAL );
+	if( normalLoc >= 0 ) {
+		enableVertexAttribArray( normalLoc );
+		vertexAttribPointer( normalLoc, 3, GL_FLOAT, GL_FALSE, 0, (void*)(dataSizeBytes) );
+		normalsOffset = dataSizeBytes;
+		dataSizeBytes += numVertices * 3 * sizeof(float);
+	}
+	
+	unique_ptr<uint8_t[]> data( new uint8_t[dataSizeBytes] );
+	vec2 *verts = ( posLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + vertsOffset ) : nullptr;
+	vec2 *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + texCoordsOffset ) : nullptr;
+	vec3 *normals = ( normalLoc >= 0 ) ? reinterpret_cast<vec3*>( data.get() + normalsOffset ) : nullptr;
+	
 	auto center = r.getCenter();
 	
-	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4+4];
-	verts[0] = center.x;
-	verts[1] = center.y;
+	if( verts )
+		verts[0] = center;
+	if( texCoords )
+		texCoords[0] = vec2( 0.5f, 0.5f );
+	if( normals )
+		normals[0] = vec3( 0, 0, 1 );
+	
 	size_t tri = 1;
 	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
-	const float cornerCenterVerts[8] = {
-		r.x2 - cornerRadius,
-		r.y2 - cornerRadius,
-		r.x1 + cornerRadius,
-		r.y2 - cornerRadius,
-		r.x1 + cornerRadius,
-		r.y1 + cornerRadius,
-		r.x2 - cornerRadius,
-		r.y1 + cornerRadius
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( r.x2 - cornerRadius, r.y2 - cornerRadius ),
+		vec2( r.x1 + cornerRadius, r.y2 - cornerRadius ),
+		vec2( r.x1 + cornerRadius, r.y1 + cornerRadius ),
+		vec2( r.x2 - cornerRadius, r.y1 + cornerRadius )
+	};
+	vec2 texCoordOffset = (cornerRadius / r.getSize());
+	const std::array<vec2, 4> cornerCenterTexCoords = {
+		vec2( 1 - texCoordOffset.x, texCoordOffset.y + 0 ), // lower right
+		vec2( texCoordOffset.x + 0, texCoordOffset.y + 0 ), // lower left
+		vec2( texCoordOffset.x + 0, 1 - texCoordOffset.y ), // upper left
+		vec2( 1 - texCoordOffset.x, 1 - texCoordOffset.y )	// upper right
 	};
 	for( size_t corner = 0; corner < 4; ++corner ) {
 		float angle = corner * M_PI / 2.0f;
-		vec2 cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		vec2 cornerCenter( cornerCenterVerts[corner] );
+		vec2 cornerTexCoord( cornerCenterTexCoords[corner] );
 		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
-			vec2 pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
-			verts[tri*2+0] = pt.x;
-			verts[tri*2+1] = pt.y;
+			auto cosVal = math<float>::cos( angle );
+			auto sinVal = math<float>::sin( angle );
+			if( verts ) {
+				verts[tri] = vec2( cornerCenter.x + cosVal * cornerRadius,
+								  cornerCenter.y + sinVal * cornerRadius );
+			}
+			if( texCoords ) {
+				texCoords[tri] = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
+									  cornerTexCoord.y - sinVal * texCoordOffset.y);
+			}
+			if( normals ) {
+				normals[tri] = vec3( 0, 0, 1 );
+			}
 			++tri;
 			angle += angleDelta;
 		}
 	}
 	// close it off
-	verts[tri*2+0] = r.x2;
-	verts[tri*2+1] = r.y2 - cornerRadius;
+	if( verts )
+		verts[tri] = vec2( r.x2, r.y2 - cornerRadius );
+	if( texCoords )
+		texCoords[tri] = vec2( 1, texCoordOffset.y );
+	if( normals )
+		normals[tri] = vec3( 0, 0, 1 );
 	
-	ctx->pushVao();
-	ctx->getDefaultVao()->replacementBindBegin();
-	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*(numSegmentsPerCorner+2)*2*4+4 );
-	ScopedBuffer bufferBindScp( defaultVbo );
-	defaultVbo->bufferSubData( 0, sizeof(float)*(numSegmentsPerCorner+2)*2*4+4, verts );
-	
-	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
-	if( posLoc >= 0 ) {
-		enableVertexAttribArray( posLoc );
-		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (void*)0 );
-	}
+	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
 	ctx->getDefaultVao()->replacementBindEnd();
+
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( GL_TRIANGLE_FAN, 0, (numSegmentsPerCorner+1) * 4 + 2 );
 	ctx->popVao();
-	delete [] verts;
 }
 
 void drawStrokedRect( const Rectf &rect )
@@ -814,7 +865,8 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 		float angle = corner * M_PI / 2.0f;
 		vec2 cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
 		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
-			vec2 pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius, cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
+			vec2 pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
+					cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
 			verts[tri*2+0] = pt.x;
 			verts[tri*2+1] = pt.y;
 			++tri;
@@ -1000,6 +1052,7 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 		if( normals )
 			normals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
+		cout << texCoords[s+1] << endl;
 	}
 
 	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
