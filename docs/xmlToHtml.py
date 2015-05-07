@@ -266,18 +266,81 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	emTag = genTag( bs4, "em", [], fnXml.find( "name" ).text )    
 	definitionDiv.append( emTag )
 	
-	# print ET.dump(fnXml)
 	argstring = fnXml.find( "argsstring" )
 	if argstring is None :
 		argstring = fnXml.find( "arglist" )
+	argstringText = argstring.text if argstring.text is not None else ""
+	
 	# print argstring
-	definitionDiv.append( argstring.text )
+	definitionDiv.append( argstringText )
 	definitionCol.append( definitionDiv );
 
 	# detailed description
 	descriptionDiv = markupDescription( bs4, fnXml );
 	if descriptionDiv is not None :
 		definitionCol.append( descriptionDiv )
+		addClassToTag( li, "expandable" )
+		
+	# else :
+		# print "NO DESCRIPTION"
+	
+	parent.append( li )
+
+def markupEnum( bs4, fnXml, parent ):
+
+	# create new line
+	# left side = return type
+	# right side = function name
+	# under right side = definition
+	# 
+	# ---------------------------------------------------
+	# | returnType	| function( param1, param2, etc )   |
+	# ---------------------------------------------------
+	# | 			| description 						|
+	# ---------------------------------------------------
+	
+	li = genTag( bs4, "li", ["row"] )
+
+	# wrapper
+	enumDiv = genTag( bs4, "div", ["enumDef"] )
+	li.append( enumDiv )
+
+	# left side / return type
+	leftDiv = genTag( bs4, "div", ["returnCol columns large-2"] )
+	leftDiv.append("enum")
+	# enumDiv.append( leftDiv )
+
+
+	# right side (function name and description)
+	rightDiv = genTag( bs4, "div", ["definitionCol columns"] )
+	addClassToTag(rightDiv, "large-12")
+
+	enumDiv.append( rightDiv )
+
+	# function name
+	definitionDiv = genTag( bs4, "div", ["definition"] )
+	
+	emTag = genTag( bs4, "em", [], fnXml.find( "name" ).text )    
+	definitionDiv.append( emTag )
+	rightDiv.append( definitionDiv );
+
+	# detailed description
+	descriptionDiv = markupDescription( bs4, fnXml );
+
+	# iterate all of the enumvalues
+	print fnXml.findall("enumvalue")
+	enumUl = genTag(bs4, "ul")
+	for enum in fnXml.findall("enumvalue") :
+		enumLi = genTag(bs4, "li", [], enum.find("name").text )
+		enumUl.append(enumLi)
+
+	if descriptionDiv is None and len(list(enumUl.children)) > 0 :
+		descriptionDiv = genTag(bs4, "div", ["description", "content"])
+
+	descriptionDiv.append( enumUl );
+
+	if descriptionDiv is not None :
+		rightDiv.append( descriptionDiv )
 		addClassToTag( li, "expandable" )
 		
 	# else :
@@ -988,15 +1051,31 @@ def processClassXmlFile( inPath, outPath, html ):
 	outFile = codecs.open( outPath, "w", "UTF-8" )
 	outFile.write( html.prettify() )
 
-def addRowLi( bs4, container, leftContent, rightContent ) :
-	li = genTag( bs4, "li", ["row"] )
-	leftDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
-	rightDiv = genTag( bs4, "div", ["definitionCol columns large-9"] )
-	li.append( leftDiv )
-	li.append( rightDiv )
+def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 
-	leftDiv.append( leftContent )
+	leftCol = "3"
+	rightCol = "9"
+	if colBreakdown is not None :
+		cols = colBreakdown.split("-")
+		leftCol = cols[0]
+		rightCol = cols[1]
+		# print leftCol + " and " + rightCol 
+
+	li = genTag( bs4, "li", ["row"] )
+
+	#left side
+	leftDiv = genTag( bs4, "div", ["returnCol columns"] )
+	addClassToTag( leftDiv, "large-" + leftCol )
+	if leftContent is not None:
+		leftDiv.append( leftContent )
+		li.append( leftDiv )
+	
+	#right side
+	rightDiv = genTag( bs4, "div", ["definitionCol columns"] )
+	addClassToTag( rightDiv, "large-" + rightCol )
+	li.append( rightDiv )
 	rightDiv.append( rightContent )
+
 	container.append( li )
 
 def processNamespaceXmlFile( inPath, outPath, html ):
@@ -1060,12 +1139,11 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	contentsTag.append( namespacesSection )
 
 	namespacesUl = genTag( html, "ul" )
-	namespaces = namespaceTag.findall("namespace")
+	namespaces = tree.findall(r"compounddef/innernamespace")
 	if namespaces is not None:
 		for c in namespaces :
-			link = findNamespaceLink( c.text )
-			namespaceLinkTag = genLinkTag( html, c.text, link )
-			addRowLi( html, namespacesUl, "namespace", namespaceLinkTag )
+			namespaceLinkTag = genLinkTag( html, c.text, c.attrib["refid"] + ".html" )
+			addRowLi( html, namespacesUl, None, namespaceLinkTag )
 		
 		namespacesSection.append( genTag( html, "h2", [], "Namespaces") )
 		namespacesSection.append( namespacesUl )
@@ -1079,10 +1157,11 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	classesSection.append( genTag( html, "h2", [], "Classes") )
 	classUl = genTag( html, "ul" )
-	for c in namespaceTag.findall("class") :
-		link = findClassLink( c.text )
+	for c in tree.findall(r"compounddef/innerclass") :
+		link = c.attrib["refid"] + ".html"
+		kind = "struct" if link.startswith("struct") else "class"
 		linkTag = genLinkTag( html, c.text, link )
-		addRowLi( html, classUl, c.attrib["kind"], linkTag)
+		addRowLi( html, classUl, kind, linkTag, "1-11")
 	classesSection.append( classUl )
 
 	contentsTag.append( genTag( html, "br" ) )
@@ -1093,15 +1172,8 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	typedefSection.append( genTag( html, "h2", [], "Typedefs") )
 	typedefUl = genTag( html, "ul" )
-	for c in namespaceTag.findall( r"member/[@kind='typedef']") :
-
-		# kind of a big task to get the description for the typedef
-		# loop through all of the classes in the namespace
-		# open the class file
-		# if the typedef is in the class, return it
-
-		typeContent = c.find('type').text
-		addRowLi( html, typedefUl, typeContent, c.find( 'name' ).text )
+	for c in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']") :
+		markupFunction( html, c, typedefUl, False )
 	typedefSection.append( typedefUl )
 
 	contentsTag.append( genTag( html, "br" ) )
@@ -1112,8 +1184,11 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	enumSection.append( genTag( html, "h2", [], "Enumerations") )
 	enumUl = genTag( html, "ul" )
-	for c in namespaceTag.findall( r"member/[@kind='enumeration']") :
-		addRowLi( html, enumUl, "enum", c.find( 'name' ).text )
+	# for c in namespaceTag.findall( r"member/[@kind='enumeration']") :
+	# print tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']") 
+	for c in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']") :
+		# addRowLi( html, enumUl, "enum", c.find( 'name' ).text )
+		markupEnum(html, c, enumUl)
 	enumSection.append( enumUl )
 
 	contentsTag.append( genTag( html, "br" ) )
@@ -1124,11 +1199,7 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	functionSection.append( genTag( html, "h2", [], "Functions") )
 	functionUl = genTag( html, "ul" )
-	for c in namespaceTag.findall( r"member/[@kind='function']") :
-		# typeStr = c.find('type').text
-		# if typeStr == None:
-			# typeStr = ""
-		# addRowLi( html, functionUl, typeStr, c.find( 'name' ).text + c.find( 'arglist' ).text )
+	for c in tree.findall( r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']") :
 		markupFunction( html, c, functionUl, False )
 	functionSection.append( functionUl )
 
@@ -1140,11 +1211,15 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	varsSection.append( genTag( html, "h2", [], "Variables") )
 	varsUl = genTag( html, "ul" )
-	for c in namespaceTag.findall( r"member/[@kind='variable']") :
+	for c in tree.findall( r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']") :
 		typeStr = c.find('type').text
+		name = c.find( 'name' ).text
+		initializer = c.find('initializer').text if c.find('initializer') else None
 		if typeStr == None:
 			typeStr = ""
-		addRowLi( html, varsUl, typeStr, c.find( 'name' ).text )
+		if initializer is not None:
+			name += initializer
+		addRowLi( html, varsUl, typeStr, name )
 	varsSection.append( varsUl )
 
 
