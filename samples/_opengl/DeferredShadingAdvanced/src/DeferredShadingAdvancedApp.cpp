@@ -159,7 +159,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledColor		= true;
 	mEnabledBloom		= true;
 	mEnabledDoF			= true;
-	mEnabledFog			= false;
+	mEnabledFog			= true;
 	mEnabledFxaa		= true;
 	mEnabledRay			= true;
 	mEnabledShadow		= true;
@@ -913,8 +913,8 @@ void DeferredShadingAdvancedApp::draw()
 			
 			if ( mEnabledFog ) {
 				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
-				const gl::ScopedAdditiveBlend scopedAdditiveBlend;
-				const gl::ScopedTextureBind scopedTextureBind( mFboGBuffer->getDepthTexture(), 0 );
+				const gl::ScopedTextureBind scopedTextureBind0( mFboGBuffer->getDepthTexture(),	0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboPingPong[ pong ],	1 );
 				mBatchFogRect->draw();
 				
 				ping = pong;
@@ -1258,7 +1258,8 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerRay",			6 );
 	mBatchDofRect->getGlslProg()->uniform(				"uSamplerDepth",		0 );
 	mBatchDofRect->getGlslProg()->uniform(				"uSamplerColor",		1 );
-	mBatchFogRect->getGlslProg()->uniform(				"uSampler",				0 );
+	mBatchFogRect->getGlslProg()->uniform(				"uSamplerDepth",		0 );
+	mBatchFogRect->getGlslProg()->uniform(				"uSamplerColor",		1 );
 	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerAlbedo",		0 );
 	mBatchEmissiveRect->getGlslProg()->uniform(			"uSamplerMaterial",		1 );
 	mBatchFxaaRect->getGlslProg()->uniform(				"uSampler",				0 );
