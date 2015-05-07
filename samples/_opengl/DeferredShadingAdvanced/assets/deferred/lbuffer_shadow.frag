@@ -21,7 +21,7 @@ void main( void )
 	
 	float v 			= 1.0;
 	float e				= 0.0625;
-	if ( shadowCoord.x >= 0.0 && shadowCoord.x <= 1.0 && shadowCoord.y >= 0.0 && shadowCoord.y <= 1.0 ) {
+	if ( shadowClip.w > 1.0 ) {
 		float d = shadowCoord.z - kShadowBias;
 		if ( texture( uSampler, shadowCoord + vec3( vec2( -0.06095261, -0.1337204 )   * kShadowBlurSize, 0.0 ) ) > d ) {
 			v -= e;
