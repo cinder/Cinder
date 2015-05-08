@@ -62,9 +62,9 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 	context()->drawElements( mode, count, type, indices );
 }
 	
-void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount​ )
+void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount )
 {
-	context()->drawArraysInstanced( mode, first, count, instanceCount​ );
+	context()->drawArraysInstanced( mode, first, count, instanceCount );
 }
 	
 void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount )
