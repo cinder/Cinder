@@ -5,5 +5,7 @@
 - To build the html files, run xmlToHtml.py xml/ html/
 
 ### To build the stylsheets:
+- install homebrew
+- install npm
 - from the stylsrc dir, run `npm install`
 - then run `gulp build`
