@@ -97,7 +97,7 @@ void ExtrudeApp::makeGeom()
 	// get the shape for this character
 	Shape2d shape = mFont.getGlyphShape( mFont.getGlyphChar( mCurrentChar ) );
 	auto bounds = shape.calcPreciseBoundingBox();
-	shape.transform( MatrixAffine2f::makeTranslate( -bounds.getCenter() ) );
+	shape.transform( glm::translate( mat3(), -bounds.getCenter() ) );
 
 	// this remaps the TEX_COORD_0s to color; it has to be so explicit because VC++ balks about ambiguous calls
 	std::function<Colorf(vec3)> texCoordToColor = []( vec3 v ) ->Colorf { return Colorf( v.x, v.y, v.z ); };
