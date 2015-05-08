@@ -742,7 +742,7 @@ void DeferredShadingAdvancedApp::draw()
 	 * this image along a line between the light position and each fragment; resulting 
 	 * in some very pretty streaks.
 	 *
-	 * This is probably the most expensive operation in the pipeline, performing 401 samples 
+	 * This is probably the most expensive operation in the pipeline, performing 101 samples 
 	 * per fragment by default. If you are getting poor performance, turn it off or reduce 
 	 * kNumSamples in scatter.frag. You may also modify scatter.frag to not perform bilateral 
 	 * filtering, but the resulting image may look pixelated or overly streaked.
@@ -1380,7 +1380,6 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerDepth",		3 );
 	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAo",			4 );
 	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerAccum",		5 );
-	mBatchDebugRect->getGlslProg()->uniform(			"uSamplerRay",			6 );
 	mBatchDofRect->getGlslProg()->uniform(				"uSamplerDepth",		0 );
 	mBatchDofRect->getGlslProg()->uniform(				"uSamplerColor",		1 );
 	mBatchFogRect->getGlslProg()->uniform(				"uSamplerDepth",		0 );
@@ -1415,7 +1414,6 @@ void DeferredShadingAdvancedApp::setUniforms()
 	// Set uniforms which need to know about screen dimensions
 	const vec2 szGBuffer	= mFboGBuffer ? mFboGBuffer->getSize() : toPixels( getWindowSize() );
 	const vec2 szPingPong	= mFboGBuffer ? mTextureFboPingPong[ 0 ]->getSize() : toPixels( getWindowSize() );
-	const vec2 szRay		 = mFboRayColor ? mFboRayColor->getSize() : toPixels( getWindowSize() );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uOffset",		mOffset );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uPixel",		vec2( 1.0f ) / vec2( szPingPong ) );
@@ -1431,10 +1429,7 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
-	mBatchRayOccludeRect->getGlslProg()->uniform(		"uOffset",		mOffset );
-	mBatchRayOccludeRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uPixel",		1.0f / vec2( szRay ) );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 }
 
