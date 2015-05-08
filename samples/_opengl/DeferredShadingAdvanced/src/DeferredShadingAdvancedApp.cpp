@@ -1414,7 +1414,6 @@ void DeferredShadingAdvancedApp::setUniforms()
 	// Set uniforms which need to know about screen dimensions
 	const vec2 szGBuffer	= mFboGBuffer ? mFboGBuffer->getSize() : toPixels( getWindowSize() );
 	const vec2 szPingPong	= mFboGBuffer ? mTextureFboPingPong[ 0 ]->getSize() : toPixels( getWindowSize() );
-	const vec2 szRay		 = mFboRayColor ? mFboRayColor->getSize() : toPixels( getWindowSize() );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uOffset",		mOffset );
 	mBatchAoCompositeRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 	mBatchBloomCompositeRect->getGlslProg()->uniform(	"uPixel",		vec2( 1.0f ) / vec2( szPingPong ) );
@@ -1431,7 +1430,6 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uPixel",		1.0f / vec2( szRay ) );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
 }
 
