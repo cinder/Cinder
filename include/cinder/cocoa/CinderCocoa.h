@@ -88,7 +88,7 @@ class SafeNsData {
   public:
 	SafeNsData() {}
 	//! Creates a SafeNsData using an existing cinder::Buffer. The SafeNsData retains a copy of the buffer in order to prevent its deletion
-	SafeNsData( const Buffer &buffer );
+	SafeNsData( const BufferRef &buffer );
 	
 	operator NSData* const() { if( mPtr ) return mPtr.get(); else return 0; }
 	
@@ -96,7 +96,7 @@ class SafeNsData {
 	static void safeRelease( const NSData *ptr );
 	
 	std::shared_ptr<NSData>	mPtr;
-	const Buffer			mBuffer;
+	const BufferRef			mBuffer;
 };
 
 //! Represents an exception-safe NSAutoreleasePool. Replaces the global NSAutoreleasePool for its lifetime
@@ -169,7 +169,7 @@ void convertCgPath( CGPathRef cgPath, Shape2d *resultShape, bool flipVertical = 
 int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco );
 #endif
 
-//! Creates a CFDataRef from a cinder::Buffer \a buffer. The result does not assume ownership of the data and should be freed using CFRelease().
+//! Creates a CFDataRef from a cinder::Buffer \a buffer. The result does not copy or assume ownership of the data and should be freed using CFRelease().
 CFDataRef createCfDataRef( const cinder::Buffer &buffer );
 
 

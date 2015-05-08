@@ -235,9 +235,9 @@ void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string 
 {
 	if( dataSource ) {
 		Buffer buffer( dataSource );
-		shaderSourceDest->resize( buffer.getDataSize() + 1 );
-		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getDataSize() );
-		(*shaderSourceDest)[buffer.getDataSize()] = 0;
+		shaderSourceDest->resize( buffer.getSize() + 1 );
+		memcpy( (void *)shaderSourceDest->data(), buffer.getData(), buffer.getSize() );
+		(*shaderSourceDest)[buffer.getSize()] = 0;
 		if( dataSource->isFilePath() )
 			*shaderPathDest = dataSource->getFilePath();
 		else

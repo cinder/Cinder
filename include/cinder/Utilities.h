@@ -52,7 +52,7 @@ std::vector<std::string> split( const std::string &str, char separator, bool com
 std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress = true );
 
 //! Loads the contents of \a dataSource and returns it as a std::string
-std::string loadString( DataSourceRef dataSource );
+std::string loadString( const DataSourceRef &dataSource );
 
 //! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on Mac OS X.
 void sleep( float milliseconds );
