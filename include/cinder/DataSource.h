@@ -43,7 +43,7 @@ class DataSource {
 	const Url&			getUrl();
 	const fs::path&		getFilePathHint();
 
-	Buffer&				getBuffer();
+	BufferRef			getBuffer();
 	virtual IStreamRef	createStream() = 0;
 
   protected:
@@ -56,7 +56,7 @@ class DataSource {
 	
 	void	setFilePathHint( const fs::path &aFilePathHint );
 	
-	Buffer				mBuffer;
+	BufferRef			mBuffer;
 	fs::path			mFilePath;
 	fs::path			mFilePathHint;
 	Url					mUrl;
@@ -115,7 +115,7 @@ typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:
-	static DataSourceBufferRef		create( Buffer buffer, const fs::path &filePathHint = "" );
+	static DataSourceBufferRef		create( const BufferRef &buffer, const fs::path &filePathHint = "" );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }
@@ -123,7 +123,7 @@ class DataSourceBuffer : public DataSource {
 	virtual IStreamRef	createStream();
 	
   protected:
-	DataSourceBuffer( Buffer aBuffer );
+	DataSourceBuffer( const BufferRef &buffer );
 	
 	virtual	void	createBuffer();
 	

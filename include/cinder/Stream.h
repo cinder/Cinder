@@ -324,8 +324,8 @@ IoStreamFileRef readWriteFileStream( const fs::path &path );
 
 //! Loads the contents of a stream into a contiguous block of memory, pointed to by \a resultData. The size of this block is stored in \a resultDataSize.
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize );
-//! Loads the contents of a stream into a Buffer
-Buffer loadStreamBuffer( IStreamRef is );
+//! Loads the contents of a stream into a ref counted Buffer
+BufferRef loadStreamBuffer( IStreamRef is );
 
 
 // Stream exception
