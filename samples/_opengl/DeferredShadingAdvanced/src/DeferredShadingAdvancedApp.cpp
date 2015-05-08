@@ -373,7 +373,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::ScopedFramebuffer scopedFrameBuffer( mFboPingPong );
 		gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboPingPong->getSize() );
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + ping );
-		gl::ScopedAdditiveBlend scopedAdditiveBlend;
+		gl::ScopedBlendAdditive scopedAdditiveBlend;
 		gl::ScopedMatrices scopedMatrices;
 		gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::setMatrices( mCamera );
@@ -433,12 +433,12 @@ void DeferredShadingAdvancedApp::draw()
 				
 		// Dim last frame (produces light trails)
 		{
-			gl::ScopedAlphaBlend scopedAlphaBlend( false );
+			gl::ScopedBlendAlpha scopedAlphaBlend;
 			gl::ScopedColor scopedColor( ColorAf( Colorf::black(), 0.43f ) );
 			mBatchStockColorRect->draw();
 		}
 		{
-			gl::ScopedAdditiveBlend scopedAdditiveBlend;
+			gl::ScopedBlendAdditive scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ], 0 );
 			gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ], 1 );
 			mBatchEmissiveRect->draw();
@@ -472,7 +472,7 @@ void DeferredShadingAdvancedApp::draw()
 		// SSAO
 
 		if ( mEnabledSsao ) {
-			gl::ScopedAlphaBlend scopedAlphaBlend( true );
+			gl::ScopedBlendAdditive scopedAdditiveBlend;
 			
 			// SSAO pass
 			{
@@ -650,14 +650,14 @@ void DeferredShadingAdvancedApp::draw()
 
 		// Draw light accumulation
 		{
-			gl::ScopedAdditiveBlend scopedAdditiveBlend;
+			gl::ScopedBlendAdditive scopedAdditiveBlend;
 			gl::ScopedTextureBind scopedTextureBind( mTextureFboSmall[ mEnabledBloom ? 2 : 0 ], 0 );
 			mBatchStockTextureRect->draw();
 		}
 
 		// Draw light volumes
 		if ( mDrawLightVolume ) {
-			gl::ScopedAlphaBlend scopedAlphaBlend( false );
+			gl::ScopedBlendAlpha scopedBlend;
 			gl::ScopedPolygonMode scopedPolygonMode( GL_LINE );
 			gl::ScopedMatrices scopedMatrices;
 			gl::setMatrices( mCamera );

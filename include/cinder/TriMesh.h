@@ -71,7 +71,7 @@ class TriMesh : public geom::Source {
 	static TriMeshRef	create( const geom::Source &source ) { return TriMeshRef( new TriMesh( source ) ); }
 	static TriMeshRef	create( const geom::Source &source, const Format &format ) { return TriMeshRef( new TriMesh( source, format ) ); }
 
-	TriMesh( const Format &format );
+	TriMesh( const Format &format = Format().positions().normals().texCoords() );
 	TriMesh( const geom::Source &source );
 	TriMesh( const geom::Source &source, const Format &format );
 	

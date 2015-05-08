@@ -30,6 +30,8 @@
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) \
 	ID		TYPE 	QUOTE_PATH( ./##LOCALPREFIX##PATH )
 #elif defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
+	#include <winapifamily.h>
+
 	#if defined(WINAPI_PARTITION_DESKTOP) // MSW RESOURCE
 		#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 			#define QUOTE_PATH(x) #x
@@ -41,7 +43,7 @@
 	#else // MSW RESOURCE
 		#define QUOTE_PATH(x) #x
 		#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) \
-		QUOTE_PATH(PATH)
+		QUOTE_PATH(LOCALPREFIX##PATH),ID,#TYPE
 	#endif
 #else // MAC or iOS RESOURCE
 	#define CINDER_RESOURCE( LOCALPREFIX, PATH, ID, TYPE ) #PATH

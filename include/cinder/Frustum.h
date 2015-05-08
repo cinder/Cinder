@@ -49,11 +49,14 @@ class Frustum {
   public:
 	Frustum() {}
 	Frustum( const Camera &cam );
+	Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
 
 	//! Creates a frustum based on the camera's parameters.
 	void set( const Camera &cam );
 	//! Creates a frustum based on the camera's parameters and four corners of a portal.
 	void set( const Camera &cam, const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr );
+	//! Creates a frustum based on the corners of a near and far portal.
+	void set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr );
 
 	//! Returns true if point is within frustum.
 	bool contains( const Vec3T &loc ) const;

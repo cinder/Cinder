@@ -122,7 +122,7 @@ void drawSolidTriangle( const vec2 pts[3], const vec2 texCoord[3] = nullptr );
 	
 void	drawArrays( GLenum mode, GLint first, GLsizei count );
 void	drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices );
-void	drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount​ );
-void	drawElementsInstanced( GLenum mode​, GLsizei count​, GLenum type​, const GLvoid *indices​, GLsizei instanceCount​ );
+void	drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount );
+void	drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, GLsizei instanceCount );
 
 } } // namespace cinder::gl

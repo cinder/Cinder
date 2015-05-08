@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <Filter Include="Source Files">
@@ -1448,9 +1448,6 @@
     <ClInclude Include="..\include\cinder\gl\BufferTexture.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\ConstantStrings.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\Context.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -1657,6 +1654,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\ip\Blur.h">
       <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
