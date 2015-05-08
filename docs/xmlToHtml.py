@@ -48,6 +48,74 @@ global_structTags = None
 global_structTagsDict = {}
 
 namespaceNav = None
+g_symbolMap = None
+
+# mapping for the tag file with helper functions
+class SymbolMap (object):
+	def __init__( self  ):
+		self.classes = {}
+		self.typedefs = {}
+		self.functions = {}
+
+	class Class (object):
+		def __init__( self, name, base, fileName ):
+			self.name = name
+			self.base = base
+			self.fileName = fileName
+		
+	class Typedef (object):
+		def __init__( self, type, path ):
+			self.type = type
+			self.path = path
+
+	class Function (object):
+		def __init__( self, name, base, path ):
+			self.name = name
+			self.base = base
+			self.path = path
+	
+	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
+	def findClass( self, name ):
+		# replace leading ci:: with cinder:: instead
+		if name.find( "ci::" ) == 0:
+			name.replace( "ci::", "cinder::" )
+
+		if name in self.classes:
+			return self.classes[name]
+		elif ("cinder::" + name) in self.classes:
+			return self.classes["cinder::"+name]
+		else:
+			return None
+
+	def findTypedef( self, name ):
+		return self.typedefs.get( name )
+
+	def findFunction( self, name ):
+		# find class
+		return self.functions.get( name )
+
+	def getClassAncestors( self, name ):
+		result = []
+		existingClass = self.findClass( name )
+		while existingClass and existingClass.base:
+			result.insert( 0, existingClass )
+			existingClass = self.findClass( existingClass.base )
+		
+		if result:
+			return result
+		else:
+			return []
+
+	def getClassDescendants( self, name ):
+		result = []
+		for aClass in self.classes:
+			if self.classes[aClass].base == name:
+				result.append( self.classes[aClass] )
+		
+		if result:
+			return result
+		else:
+			return []
 
 class FileData:
 	m_compoundName = ""		# fill compound name (with namespace if present)
@@ -60,13 +128,11 @@ class FileData:
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
 		for compoundName in tree.iter( "compoundname" ):
-			print compoundName.text
 			return compoundName.text
 
 def findClassTag( className ):
 	# find the class definition in tag file
 	for c in global_classTags :
-		# print c.find('name').text
 		if c.find('name').text == className:
 			return c
 
@@ -206,7 +272,6 @@ def defineLinkTag( tag, attrib ):
 		data = attrib["typedef"]
 		fileName = data.find("anchorfile").text
 		anchor = data.find("anchor").text
-		# print "FILE NAME: " + anchor
 		href = fileName + "#" + anchor
 
 	if href is None :
@@ -237,7 +302,6 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	# left side / return type
 	if not isConstructor:
 		returnDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
-		# print "RETURN COL"
 		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
 		functionDiv.append( returnDiv )
 
@@ -264,7 +328,6 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 		argstring = fnXml.find( "arglist" )
 	argstringText = argstring.text if argstring.text is not None else ""
 	
-	# print argstring
 	definitionDiv.append( argstringText )
 	definitionCol.append( definitionDiv );
 
@@ -319,7 +382,6 @@ def markupEnum( bs4, fnXml, parent ):
 	descriptionDiv = markupDescription( bs4, fnXml );
 
 	# iterate all of the enumvalues
-	print fnXml.findall("enumvalue")
 	enumUl = genTag(bs4, "ul")
 	for enum in fnXml.findall("enumvalue") :
 		enumLi = genTag(bs4, "li", [], enum.find("name").text )
@@ -386,8 +448,6 @@ def genTypeDefs( bs4, tree ):
 	if typeDefUl is not None:
 		contentDiv.append( typeDefUl )
 
-	# print typeDefs
-
 
 def iterClassBase( tree, heirarchy ) :
 
@@ -412,7 +472,6 @@ def genClassHierarchy( bs4, tree ):
 
 	# get the class' heirarchy
 	iterClassBase( tree, heirarchy )
-	# print heirarchy
 	 
 	if len( heirarchy ) == 1 :
 		return
@@ -615,7 +674,6 @@ def replaceCodeChunks( bs4 ) :
 
 				if type( c ) == Tag:
 					if c.has_attr("class") :
-						# print c["class"]
 
 						# look for any tags with "computeroutput"
 						if "programlisting" in c["class"] :
@@ -1023,7 +1081,6 @@ def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 		cols = colBreakdown.split("-")
 		leftCol = cols[0]
 		rightCol = cols[1]
-		# print leftCol + " and " + rightCol 
 
 	li = genTag( bs4, "li", ["row"] )
 
@@ -1208,14 +1265,88 @@ def constructTemplate( templates ) :
 		# masterTemplate += file
 
 	masterTemplate.decode("UTF-8")
-	# print masterTemplate
 	return BeautifulSoup( masterTemplate )
+
+# returns a dictionary from Cinder class name to file path
+def getSymbolToFileMap( path ):	
+	print "Parsing tag file: " + path
+
+	tagDom = ET.ElementTree( ET.parse( path ).getroot() )
+	
+	symbolMap = SymbolMap()
+	# find namespaces
+	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
+		
+	for ns in nsTags :
+		namespaceName = ns.find('name').text
+		
+		for member in ns.findall(r"member/[@kind='typedef']"):
+			name = member.find("name").text
+			type = member.find("type").text
+			name = namespaceName+"::"+name
+			type = namespaceName+"::"+type
+			filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
+			symbolMap.typedefs[name] = SymbolMap.Typedef( type, filePath )
+		
+	# find classes
+	classTags = tagXml.findall( r'compound/[@kind="class"]')
+	for c in classTags :
+		name = c.find('name').text
+		filePath = c.find('filename').text
+		baseClass = c.find('base').text if c.find('base') is not None else ""
+		symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
+
+		# find functions and add to symbol map
+		members = c.findall(r"member[@kind='function']")
+		for member in members:
+			
+			fnName = member.find("name").text
+			anchor = member.find("anchor").text
+			filePath = member.find("anchorfile").text + "#" + anchor
+			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+			
+	return symbolMap
 
 def parseTemplateHtml( templatePath ):
 	file = codecs.open( templatePath, "r", "UTF-8" )
 	return BeautifulSoup( file )
 
+def processFile( inPath, outPath ):
+	
+	file = inPath
+	filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+
+	if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
+		processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, outPath ), copy.deepcopy( classTemplateHtml ) )
+
+	elif filePrefix.startswith( "namespace" ) :
+		processNamespaceXmlFile( inPath, os.path.join( doxygenHtmlPath, outPath ), copy.deepcopy( namespaceTemplateHtml ) )
+
+def processDir(inPath, outPath):
+	inPath = sys.argv[1]
+	outPath = sys.argv[2]
+	for file in os.listdir(inPath):
+		if file.endswith(".xml"):
+			filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+			
+			if file.startswith( "class" ) or file.startswith( "struct" ):
+				# name minus file extension
+				processClassXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+
+			elif file.startswith( "namespace" ) :
+				processNamespaceXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
+
+			elif file.startswith( "_" ) :
+				print "TODO: parse source file type"
+			else :
+				print "PARSE " + file
+				# base template and just iterate do an html iteration
+				# 
+				# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+
 if __name__ == "__main__":
+	# global g_symbolMap
+
 	htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 	doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
 	
@@ -1244,43 +1375,36 @@ if __name__ == "__main__":
 	# copy files from assets/ to html/
 	copy_tree("assets/", "html/")
 
+	# generate symbol map from tag file
+	g_symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
+
 	if len( sys.argv ) == 3: 
 
 		if os.path.isfile( sys.argv[1] ): # process a specific file
-			file = sys.argv[1]
-			filePrefix = os.path.splitext( os.path.basename( file ) )[0]
-			print filePrefix
-
-			if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
-				processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, sys.argv[2] ), copy.deepcopy( classTemplateHtml ) )
-
-			elif filePrefix.startswith( "namespace" ) :
-				processNamespaceXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, sys.argv[2] ), copy.deepcopy( namespaceTemplateHtml ) )
-
-			# templateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
+			processFile( sys.argv[1], sys.argv[2] )
 
 		elif os.path.isdir( sys.argv[1] ): # process a directory
-			
-			inPath = sys.argv[1]
-			outPath = sys.argv[2]
-			for file in os.listdir(sys.argv[1]):
-				if file.endswith(".xml"):
-					filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+			processDir( sys.argv[1], sys.argv[2])
+			# inPath = sys.argv[1]
+			# outPath = sys.argv[2]
+			# for file in os.listdir(sys.argv[1]):
+			# 	if file.endswith(".xml"):
+			# 		filePrefix = os.path.splitext( os.path.basename( file ) )[0]
 					
-					if file.startswith( "class" ) or file.startswith( "struct" ):
-						# name minus file extension
-						processClassXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+			# 		if file.startswith( "class" ) or file.startswith( "struct" ):
+			# 			# name minus file extension
+			# 			processClassXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
-					elif file.startswith( "namespace" ) :
-						processNamespaceXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
+			# 		elif file.startswith( "namespace" ) :
+			# 			processNamespaceXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
 
-					elif file.startswith( "_" ) :
-						print "TODO: parse source file type"
-					else :
-						print "PARSE " + file
-						# base template and just iterate do an html iteration
-						# 
-						# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+			# 		elif file.startswith( "_" ) :
+			# 			print "TODO: parse source file type"
+			# 		else :
+			# 			print "PARSE " + file
+			# 			# base template and just iterate do an html iteration
+			# 			# 
+			# 			# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
 		
 	else:
