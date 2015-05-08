@@ -36,8 +36,10 @@ protected:
 	ci::ColorAf			mColorAmbient;
 	ci::ColorAf			mColorDiffuse;
 	ci::ColorAf			mColorSpecular;
+	ci::vec3			mPosition;
 	float				mIntensity;
 	float				mRadius;
 	float				mVolume;
-	ci::vec3			mPosition;
+	uint32_t			mPad0;
+	uint32_t			mPad1;
 };
