@@ -864,12 +864,11 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),				3 );
 		const gl::ScopedTextureBind scopedTextureBind4( mTextureFboAo[ 0 ],							4 );
 		const gl::ScopedTextureBind scopedTextureBind5( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ],	5 );
-		const gl::ScopedTextureBind scopedTextureBind6( mFboRayColor->getColorTexture(),			6 );
 		
 		mBatchDebugRect->getGlslProg()->uniform( "uFar",				f );
 		mBatchDebugRect->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
 		mBatchDebugRect->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
-		for ( int32_t i = 0; i <= 12; ++i ) {
+		for ( int32_t i = 0; i <= 11; ++i ) {
 			const gl::ScopedModelMatrix scopedModelMatrix;
 			const vec2 pos( ( i % columns ) * sz.x, glm::floor( (float)i / (float)columns ) * sz.y );
 			gl::translate( pos + sz * 0.5f );
