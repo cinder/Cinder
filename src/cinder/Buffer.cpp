@@ -54,15 +54,17 @@ Buffer::Buffer( const Buffer &rhs )
 Buffer::Buffer( Buffer &&rhs )
 	: mData( rhs.mData ), mAllocatedSize( rhs.mAllocatedSize ), mDataSize( rhs.mDataSize ), mOwnsData( rhs.mOwnsData )
 {
+	rhs.mOwnsData = false;
 }
 
 Buffer&	Buffer::operator=( const Buffer &rhs )
 {
-	mData = malloc( rhs.mDataSize );
-	memcpy( mData, rhs.mData, rhs.mDataSize );
-
-	mAllocatedSize = rhs.mAllocatedSize;
 	mDataSize = rhs.mDataSize;
+	
+	mData = malloc( mDataSize );
+	memcpy( mData, rhs.mData, mDataSize );
+
+	mAllocatedSize = mDataSize;
 	mOwnsData = true;
 
 	return *this;
@@ -73,7 +75,8 @@ Buffer&	Buffer::operator=( Buffer &&rhs )
 	mData = rhs.mData;
 	mAllocatedSize = rhs.mAllocatedSize;
 	mDataSize = rhs.mDataSize;
-	mOwnsData = true;
+	mOwnsData = rhs.mOwnsData;
+	rhs.mOwnsData = false;
 
 	return *this;
 }
@@ -99,10 +102,15 @@ Buffer::~Buffer()
 
 void Buffer::resize( size_t newSize )
 {
-	if( ! mOwnsData )
-		return;
-	
-	mData = realloc( mData, newSize );
+	if( mOwnsData )
+		mData = realloc( mData, newSize );
+	else {
+		void *newData = malloc( newSize );
+		memcpy( newData, mData, mDataSize );
+		mData = newData;
+		mOwnsData = true;
+	}
+
 	mDataSize = newSize;
 	mAllocatedSize = newSize;
 }
