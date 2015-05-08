@@ -7,9 +7,9 @@ import copy
 import re
 import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup, Tag, NavigableString
+from distutils.dir_util import copy_tree
 
-# soup = None
-
+# convert docygen markup to html markup
 tagDictionary = {
 	"linebreak": "br",
 	"emphasis": "em",
@@ -63,11 +63,6 @@ def findCompoundName( tree ):
 			print compoundName.text
 			return compoundName.text
 
-def findClassDescription( className ):
-	# find the xml file for that class
-	# within that xml file, find the brief description
-	return ""
-
 def findClassTag( className ):
 	# find the class definition in tag file
 	for c in global_classTags :
@@ -97,7 +92,6 @@ def findClassLink( className ) :
 		link = global_structTagsDict[className].find('filename').text
 	else :
 		link = ""
-	
 	return link
 
 def findFileKind( tree ) :
@@ -161,7 +155,6 @@ def parseFile( bs4, inPath, outPath ) :
 		# return tree
 
 	return tree
-
 
 # Generates a new html element and optionally adds classes and content
 # bs4		beautiful soup
@@ -308,8 +301,6 @@ def markupEnum( bs4, fnXml, parent ):
 	# left side / return type
 	leftDiv = genTag( bs4, "div", ["returnCol columns large-2"] )
 	leftDiv.append("enum")
-	# enumDiv.append( leftDiv )
-
 
 	# right side (function name and description)
 	rightDiv = genTag( bs4, "div", ["definitionCol columns"] )
@@ -343,9 +334,6 @@ def markupEnum( bs4, fnXml, parent ):
 		rightDiv.append( descriptionDiv )
 		addClassToTag( li, "expandable" )
 		
-	# else :
-		# print "NO DESCRIPTION"
-	
 	parent.append( li )
 
 
@@ -362,13 +350,8 @@ def defineTag( bs4, tagName, tree ):
 # generate includes tag group
 def genIncludesTag( bs4, text ):
 
-	# wrap the content in <code> tag
-	# prepend with "#include"
-	# wrapperEl = genTag( bs4, "span", ["include"], "#include" )
-	# wrap include file name in <a> tag
 	includeLink = genTag( bs4, "a", None, text )
 	defineLinkTag( includeLink, {'linkid':text} )
-	# wrapperEl.append( includeLink )
 	return includeLink
 
 def genTypeDefs( bs4, tree ):
@@ -409,8 +392,6 @@ def genTypeDefs( bs4, tree ):
 def iterClassBase( tree, heirarchy ) :
 
 	base = tree.find( 'base' )
-	
-	# tree.find( 'base' ).text
 
 	if base is None:
 		return
@@ -572,7 +553,6 @@ def iterateMarkup( bs4, tree, parent ):
 
 		# if tree parent == <p> && newTag == <pre>
 		# add a new pre tag in and make that the current parent again
-
 		currentTag = htmlTag	
 	
 	
@@ -593,12 +573,6 @@ def iterateMarkup( bs4, tree, parent ):
 
 def markupDescription( bs4, tree ):
 
-	# print "\n-- MARKING UP PARAGRAPH --"
-	
-	# description_el = iterateMarkup( paraXml, parent, html )
-	# parent.append( description_el )
-	# return iterateMarkup( paraXml, parent, html )
-
 	description_el = genTag( bs4, "div", ["description", "content"] )
 	briefDesc = tree.find( r'briefdescription/' )
 	if briefDesc is None :
@@ -609,11 +583,6 @@ def markupDescription( bs4, tree ):
 	detailedDesc = tree.find( r'detaileddescription/' )
 	if detailedDesc is not None:
 		iterateMarkup( bs4, tree.find( r'detaileddescription/' ), description_el )	
-
-	# print '---'
-	# print tree.find( r'briefdescription/' )
-	# print tree.find( r'detaileddescription/' )
-	# print ''
 	
 	return description_el
 
@@ -654,7 +623,6 @@ def replaceCodeChunks( bs4 ) :
 							# add a new pre
 							preTag = genTag( bs4, "pre" )
 							
-
 							for code in c.contents :
 
 								# clone code
@@ -720,6 +688,7 @@ def clone(el) :
 	return copy
 
 
+# pull a templated chunk of html out of the selected bs4 file
 def getTemplate( bs4, elementId ) :
 	templates = bs4.find_all( 'template' ) 
 	template = None
@@ -729,8 +698,6 @@ def getTemplate( bs4, elementId ) :
 		template = clone( list(t.contents)[1] )
 
 	return template
-
-	# return clone( bs4.find( id=elementId ) )
 
 
 def iterateNamespace( bs4, namespaces, tree, index, label ) :
@@ -742,7 +709,6 @@ def iterateNamespace( bs4, namespaces, tree, index, label ) :
 		parentNs = namespaces[index-1].find('name').text
 
 	thisNamespace = namespaces[index].find('name').text
-	# label = label + str(index)
 
 	count = index
 	childCount = 0
@@ -844,8 +810,6 @@ def generateNamespaceNav( bs4 ) :
 	global global_nsTags
 	namespaces = global_nsTags
 
-	# namespaces = tagXml.findall( r'compound/[@kind="namespace"]')
-	# namespaces = tagXml.findall( r'compound/[@kind="namespace_test"]')
 	tree = genTag( bs4, "div" )
 	ul = genTag( bs4, "ul" )
 	tree.append( ul )
@@ -1126,7 +1090,6 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# +-----------+
 	#  Description
 	# +-----------+
-	# 
 	namespaceTag = findNamespaceTag(compoundName)
 	if namespaceTag is None:
 		return
@@ -1134,7 +1097,9 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# description title
 	populateHeader( fileData )
 
-	# Namespaces
+	# +----------+
+	#  Namespaces
+	# +----------+
 	namespacesSection = genTag( html, "section" )
 	contentsTag.append( namespacesSection )
 
@@ -1151,7 +1116,9 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	contentsTag.append( genTag( html, "br" ) )
 	
-	# Classes
+	# +-------+
+	#  Classes
+	# +-------+
 	classesSection = genTag( html, "section" )
 	contentsTag.append( classesSection )
 
@@ -1166,7 +1133,9 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	contentsTag.append( genTag( html, "br" ) )
 
-	# TypeDefs
+	# +--------+
+	#  TypeDefs
+	# +--------+
 	typedefSection = genTag( html, "section" )
 	contentsTag.append( typedefSection )
 
@@ -1178,22 +1147,23 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	contentsTag.append( genTag( html, "br" ) )
 	
-	# Enumerations
+	# +------------+
+	#  Enumerations
+	# +------------+
 	enumSection = genTag( html, "section" )
 	contentsTag.append( enumSection )
 
 	enumSection.append( genTag( html, "h2", [], "Enumerations") )
 	enumUl = genTag( html, "ul" )
-	# for c in namespaceTag.findall( r"member/[@kind='enumeration']") :
-	# print tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']") 
 	for c in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']") :
-		# addRowLi( html, enumUl, "enum", c.find( 'name' ).text )
 		markupEnum(html, c, enumUl)
 	enumSection.append( enumUl )
 
 	contentsTag.append( genTag( html, "br" ) )
 
-	# Functions
+	# +---------+
+	#  Functions
+	# +---------+
 	functionSection = genTag( html, "section" )
 	contentsTag.append( functionSection )
 
@@ -1205,7 +1175,9 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 
 	contentsTag.append( genTag( html, "br" ) )
 
-	# Variables
+	# +---------+
+	#  Variables
+	# +---------+
 	varsSection = genTag( html, "section" )
 	contentsTag.append( varsSection )
 
@@ -1222,18 +1194,11 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		addRowLi( html, varsUl, typeStr, name )
 	varsSection.append( varsUl )
 
-
-	 
-	# # description prose
-	# descTag = markupDescription( html, tree.find( r'compounddef' ) );
-	# if descTag is not None :
-	# 	descriptionProseEl.append( descTag )
-
-
 	# write the file
 	outFile = codecs.open( outPath, "w", "UTF-8" )
 	outFile.write( html.prettify() )
 
+# puts together a beautiful soup instance by mashing a bunch of html files together
 def constructTemplate( templates ) :
 
 	masterTemplate = ""
@@ -1245,7 +1210,6 @@ def constructTemplate( templates ) :
 	masterTemplate.decode("UTF-8")
 	# print masterTemplate
 	return BeautifulSoup( masterTemplate )
-
 
 def parseTemplateHtml( templatePath ):
 	file = codecs.open( templatePath, "r", "UTF-8" )
@@ -1277,6 +1241,9 @@ if __name__ == "__main__":
 	for s in global_structTags :
 		global_structTagsDict[s.find( 'name' ).text] = s	
 
+	# copy files from assets/ to html/
+	copy_tree("assets/", "html/")
+
 	if len( sys.argv ) == 3: 
 
 		if os.path.isfile( sys.argv[1] ): # process a specific file
@@ -1293,7 +1260,9 @@ if __name__ == "__main__":
 			# templateHtml = parseTemplateHtml( os.path.join( htmlSourcePath, "cinderClassTemplate.html" ) )
 
 		elif os.path.isdir( sys.argv[1] ): # process a directory
-		
+			
+			inPath = sys.argv[1]
+			outPath = sys.argv[2]
 			for file in os.listdir(sys.argv[1]):
 				if file.endswith(".xml"):
 					filePrefix = os.path.splitext( os.path.basename( file ) )[0]
@@ -1313,5 +1282,6 @@ if __name__ == "__main__":
 						# 
 						# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
+		
 	else:
 		print "Unknown usage"
