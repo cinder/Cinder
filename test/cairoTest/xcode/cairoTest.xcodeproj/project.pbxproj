@@ -257,7 +257,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../../../boost_1_36_0,
+					../../../../include_1_36_0,
 					../../../include/macosx,
 				);
 				PREBINDING = NO;
@@ -273,7 +273,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					../../../../boost_1_36_0,
+					../../../../include_1_36_0,
 					../../../include/macosx,
 				);
 				PREBINDING = NO;

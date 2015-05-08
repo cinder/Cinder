@@ -250,7 +250,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				BOOST_PATH = ../../../../boost_1_36_0;
+				BOOST_PATH = ../../../../include_1_36_0;
 				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
@@ -266,7 +266,7 @@
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ARCHS = i386;
-				BOOST_PATH = ../../../../boost_1_36_0;
+				BOOST_PATH = ../../../../include_1_36_0;
 				CINDER_PATH = ../../..;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;

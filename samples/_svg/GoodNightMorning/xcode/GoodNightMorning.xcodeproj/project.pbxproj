@@ -313,7 +313,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/boost\"",
+					"\"$(CINDER_PATH)/include\"",
 					../../../../blocks/Cairo/include/macosx,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
@@ -333,7 +333,7 @@
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = (
-					"\"$(CINDER_PATH)/boost\"",
+					"\"$(CINDER_PATH)/include\"",
 					../../../../blocks/Cairo/include/macosx,
 				);
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
