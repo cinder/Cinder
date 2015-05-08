@@ -75,7 +75,9 @@ struct ScopedColor : private Noncopyable {
 	ColorAf		mColor;
 };
 
+//! Controls the current blend mode for the current scope.
 struct ScopedBlend : private Noncopyable {
+	//! Enables or disables blending (`GL_BLEND`) state.
 	ScopedBlend( GLboolean enable );
 	//! Parallels glBlendFunc(), and implicitly enables blending
 	ScopedBlend( GLenum sfactor, GLenum dfactor );
@@ -88,15 +90,24 @@ struct ScopedBlend : private Noncopyable {
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
 };
 
-struct ScopedAlphaBlend : private ScopedBlend {
-	ScopedAlphaBlend( bool premultipliedAlpha )
-		: ScopedBlend( premultipliedAlpha ? GL_ONE : GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
+//! Enables blending state for the current scope and sets the blending function for standard alpha blending (`sfactor = GL_SRC_ALPHA, dfactor = GL_ONE_MINUS_SRC_ALPHA`).
+struct ScopedBlendAlpha : private ScopedBlend {
+	ScopedBlendAlpha()
+		: ScopedBlend( GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA )
 	{}
 };
 
-struct ScopedAdditiveBlend : public ScopedBlend
+//! Enables blending state for the current scope and sets the blending function for premultiplied alpha blending (`sfactor = GL_ONE, dfactor = GL_ONE_MINUS_SRC_ALPHA`).
+struct ScopedBlendPremult : private ScopedBlend {
+	ScopedBlendPremult()
+		: ScopedBlend( GL_ONE, GL_ONE_MINUS_SRC_ALPHA )
+	{}
+};
+
+//! Enables blending state for the current scope and sets the blending function additive blending (`sfactor = GL_SRC_ALPHA, dfactor = GL_ONE`).
+struct ScopedBlendAdditive : public ScopedBlend
 {
-	ScopedAdditiveBlend()
+	ScopedBlendAdditive()
 		: ScopedBlend( GL_SRC_ALPHA, GL_ONE )
 	{}
 };
@@ -209,6 +220,23 @@ struct ScopedFaceCulling : private Noncopyable {
 	Context		*mCtx;
 	bool		mSaveFace;
 };
+
+#if ! defined( CINDER_GL_ES )
+
+//! Scopes state of logic op.
+struct ScopedLogicOp : private Noncopyable {
+	//! Enables or disables logical operation based on \a enable
+	ScopedLogicOp( bool enable );
+	//! Enables or disables logical operation based on \a enable and specifies a mode, \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
+	ScopedLogicOp( bool enable, GLenum mode );
+	~ScopedLogicOp();
+	
+private:
+	Context		*mCtx;
+	bool		mSaveMode;
+};
+
+#endif
 
 //! Scopes state of depth testing and writing
 struct ScopedDepth : private Noncopyable {

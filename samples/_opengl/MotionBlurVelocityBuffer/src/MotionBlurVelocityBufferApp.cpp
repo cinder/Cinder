@@ -215,7 +215,7 @@ void MotionBlurVelocityBufferApp::fillGBuffer()
 	gl::enableDepthWrite();
 
 	gl::ScopedFramebuffer fbo( mGBuffer );
-	gl::ScopedAlphaBlend blend( false );
+	gl::ScopedBlendAlpha blend;
 	gl::clear( ColorA( 0.0f, 0.0f, 0.0f, 0.0f ) );
 
 	gl::ScopedGlslProg prog( mVelocityProg );
@@ -267,7 +267,7 @@ void MotionBlurVelocityBufferApp::drawBlurredContent()
 	gl::ScopedTextureBind velTex( mGBuffer->getTexture( G_VELOCITY ), 1 );
 	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( DILATE_NEIGHBOR_MAX ), 2 );
 	gl::ScopedGlslProg prog( mMotionBlurProg );
-	gl::ScopedAlphaBlend blend( true );
+	gl::ScopedBlendPremult blend;
 
 	mMotionBlurProg->uniform( "uColorMap", 0 );
 	mMotionBlurProg->uniform( "uVelocityMap", 1 );
@@ -293,7 +293,7 @@ void MotionBlurVelocityBufferApp::draw()
 	fillGBuffer();
 
 	if( ! mBlurEnabled ) {
-		gl::ScopedAlphaBlend blend( false );
+		gl::ScopedBlendAlpha blend;
 		gl::draw( mGBuffer->getColorTexture() );
 	}
 	else {

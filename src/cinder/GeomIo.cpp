@@ -382,8 +382,10 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 		float t1 = w1.y - w0.y;
 		float t2 = w2.y - w0.y;
 
-		float r = 1.0f / (s1 * t2 - s2 * t1);
-		vec3 tangent((t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r);
+		float r = (s1 * t2 - s2 * t1);
+		if( r != 0.0f ) r = 1.0 / r;
+
+		vec3 tangent( (t2 * x1 - t1 * x2) * r, (t2 * y1 - t1 * y2) * r, (t2 * z1 - t1 * z2) * r );
 
 		(*resultTangents)[index0] += tangent;
 		(*resultTangents)[index1] += tangent;
@@ -393,7 +395,11 @@ void calculateTangentsImpl( size_t numIndices, const uint32_t *indices, size_t n
 	for( size_t i = 0; i < numVertices; ++i ) {
 		vec3 normal = normals[i];
 		vec3 tangent = (*resultTangents)[i];
-		(*resultTangents)[i] = normalize( tangent - normal * dot( normal, tangent ) );
+		(*resultTangents)[i] = ( tangent - normal * dot( normal, tangent ) );
+
+		float len = length2( (*resultTangents)[i] );
+		if( len > 0.0f )
+			(*resultTangents)[i] /= sqrt( len );
 	}
 
 	if( resultBitangents ) {
@@ -747,9 +753,34 @@ float Icosahedron::sPositions[12*3] = {
 	0.0f, -PHI, 1.0f,   0.0f,  PHI, 1.0f,   0.0f, -PHI,-1.0f,   0.0f,  PHI,-1.0f,
 	1.0f, 0.0f, -PHI,   1.0f, 0.0f,  PHI,  -1.0f, 0.0f, -PHI,  -1.0f, 0.0f,  PHI };
 
+float Icosahedron::sTexCoords[60 * 2] = {
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	0.0f, 0.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+
+	1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f,
+
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+	1.0f, 1.0f, 0.0f, 1.0f, 1.0f, 0.0f,
+
+	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+	1.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f };
+
 uint32_t Icosahedron::sIndices[60] ={
 	0,11, 5, 0, 5, 1, 0, 1, 7, 0, 7,10, 0,10,11,
-	1, 5, 9, 5,11, 4,11,10, 2,10, 7, 6, 7, 1, 8,
+	5,11, 4, 1, 5, 9, 7, 1, 8,10, 7, 6,11,10, 2,
 	3, 9, 4, 3, 4, 2, 3, 2, 6, 3, 6, 8, 3, 8, 9,
 	4, 9, 5, 2, 4,11, 6, 2,10, 8, 6, 7, 9, 8, 1 };
 
@@ -768,15 +799,17 @@ size_t Icosahedron::getNumIndices() const
 	return 60;
 }
 
-void Icosahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<uint32_t> *indices ) const
+void Icosahedron::calculate( vector<vec3> *positions, vector<vec3> *normals, vector<vec3> *colors, vector<vec2> *texcoords, vector<uint32_t> *indices ) const
 {
 	positions->reserve( 60 );
 	normals->resize( 60 ); // needs to be resize rather than reserve
 	colors->reserve( 60 );
+	texcoords->reserve( 60 );
 	indices->reserve( 60 );
 
 	for( size_t i = 0; i < 60; ++i ) {
 		positions->emplace_back( *reinterpret_cast<const vec3*>(&sPositions[sIndices[i]*3]) );
+		texcoords->emplace_back( *reinterpret_cast<const vec2*>(&sTexCoords[i*2]) );
 		indices->push_back( (uint32_t)i );
 	}
 
@@ -809,6 +842,7 @@ uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 		case Attrib::POSITION: return 3;
 		case Attrib::NORMAL: return 3;
 		case Attrib::COLOR: return mHasColors ? 3 : 0;
+		case Attrib::TEX_COORD_0: return 2;
 		default:
 			return 0;
 	}
@@ -816,19 +850,21 @@ uint8_t	Icosahedron::getAttribDims( Attrib attr ) const
 
 AttribSet Icosahedron::getAvailableAttribs() const
 {
-	return { Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR };
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::COLOR, Attrib::TEX_COORD_0 };
 }
 
 void Icosahedron::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 {
 	vector<vec3> positions, normals, colors;
+	vector<vec2> texcoords;
 	vector<uint32_t> indices;
 	
-	calculate( &positions, &normals, &colors, &indices );
+	calculate( &positions, &normals, &colors, &texcoords, &indices );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
 	target->copyAttrib( Attrib::COLOR, 3, 0, value_ptr( *colors.data() ), colors.size() );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, value_ptr( *texcoords.data() ), texcoords.size() );
 
 	target->copyIndices( Primitive::TRIANGLES, indices.data(), indices.size(), 1 );
 }

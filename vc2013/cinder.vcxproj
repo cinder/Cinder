@@ -732,7 +732,7 @@
     <ClInclude Include="..\include\cinder\gl\Batch.h" />
     <ClInclude Include="..\include\cinder\gl\BufferObj.h" />
     <ClInclude Include="..\include\cinder\gl\BufferTexture.h" />
-    <ClInclude Include="..\include\cinder\gl\ConstantStrings.h" />
+    <ClInclude Include="..\include\cinder\gl\ConstantConversions.h" />
     <ClInclude Include="..\include\cinder\gl\Context.h" />
     <ClInclude Include="..\include\cinder\gl\draw.h" />
     <ClInclude Include="..\include\cinder\gl\Environment.h" />

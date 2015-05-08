@@ -272,7 +272,7 @@ void DeferredShadingApp::draw()
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
 		gl::clear();
 		const gl::ScopedMatrices scopedMatrices;
-		const gl::ScopedAdditiveBlend scopedAdditiveBlend;
+		const gl::ScopedBlendAdditive scopedAdditiveBlend;
 		const gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		gl::setMatrices( mCamera );
 		gl::enableDepthRead();
@@ -542,3 +542,4 @@ CINDER_APP( DeferredShadingApp, RendererGl, []( App::Settings* settings )
 	settings->setWindowSize( 1280, 720 );
 } )
 #endif
+ 

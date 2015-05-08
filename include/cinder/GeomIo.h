@@ -280,10 +280,11 @@ class Icosahedron : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
 
 	bool			mHasColors;
 	static float	sPositions[12*3];
+	static float	sTexCoords[60*2];
 	static uint32_t	sIndices[60];
 	
 	friend class Icosphere;

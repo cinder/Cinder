@@ -1262,8 +1262,8 @@
 		007364D51AC0B8EC00A3C155 /* AvfWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AvfWriter.h; path = qtime/AvfWriter.h; sourceTree = "<group>"; };
 		007438400EA7924F005DD3E6 /* Capture.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; path = Capture.cpp; sourceTree = "<group>"; };
 		007438DE0EA7975A005DD3E6 /* Capture.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Capture.h; sourceTree = "<group>"; };
-		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = ../../../../../../Developer/SDKs/MacOSX10.5.sdk/System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
-		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = SDKs/MacOSX10.5.sdk/System/Library/Frameworks/CoreVideo.framework; sourceTree = DEVELOPER_DIR; };
+		007439920EA7BB47005DD3E6 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
+		0074399D0EA7BB7D005DD3E6 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		0076581B11226084005547DF /* CinderResources.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CinderResources.h; sourceTree = "<group>"; };
 		00782613171CD91400B47F9C /* ConvexHull.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ConvexHull.h; sourceTree = "<group>"; };
 		00782617171CD9D800B47F9C /* ConvexHull.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ConvexHull.cpp; sourceTree = "<group>"; };

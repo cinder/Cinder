@@ -581,7 +581,7 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Draw light volumes
 		{
-			const gl::ScopedAdditiveBlend scopedAdditiveBlend;
+			const gl::ScopedBlendAdditive scopedBlendAdditive;
 			const gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],			0 );
 			const gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],			1 );
 			const gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],			2 );
@@ -595,7 +595,6 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Draw shadows
 		if ( mEnabledShadow ) {
-			const gl::ScopedAlphaBlend scopedAlphaBlend( false );
 			const gl::ScopedTextureBind scopedTextureBind0( mFboShadowMap->getDepthTexture(),	0 );
 			const gl::ScopedTextureBind scopedTextureBind1( mFboGBuffer->getDepthTexture(),		1 );
 			
@@ -604,6 +603,7 @@ void DeferredShadingAdvancedApp::draw()
 			mBatchLBufferShadowCube->getGlslProg()->uniform( "uProjView",			mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix() );
 			mBatchLBufferShadowCube->getGlslProg()->uniform( "uViewMatrixInverse",	mCamera.getInverseViewMatrix() );
 			
+			const gl::ScopedBlendAlpha scopedBlendAlpha;
 			const gl::ScopedModelMatrix scopedModelMatrix;
 			gl::scale( vec3( 30.0f ) );
 			mBatchLBufferShadowCube->draw();
@@ -629,12 +629,12 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Dim last frame (produces light trails)
 		{
-			const gl::ScopedAlphaBlend scopedAlphaBlend( false );
+			const gl::ScopedBlendAlpha scopedBlendAlpha;
 			const gl::ScopedColor scopedColor( ColorAf( Colorf::black(), 0.43f ) );
 			mBatchStockColorRect->draw();
 		}
 		{
-			const gl::ScopedAdditiveBlend scopedAdditiveBlend;
+			const gl::ScopedBlendAdditive scopedBlendAdditive;
 			const gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ], 0 );
 			const gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ], 1 );
 			mBatchEmissiveRect->draw();
@@ -653,7 +653,7 @@ void DeferredShadingAdvancedApp::draw()
 			
 			// Next, we add the light trails from the accumulation buffer onto the image.
 			{
-				const gl::ScopedAdditiveBlend scopedAdditiveBlend;
+				const gl::ScopedBlendAdditive scopedBlendAdditive;
 				const gl::ScopedTextureBind scopedTextureBind( mTextureFboAccum[ 0 ], 0 );
 				mBatchStockTextureRect->draw();
 			}
@@ -778,7 +778,7 @@ void DeferredShadingAdvancedApp::draw()
 			gl::disableDepthWrite();
 			gl::translate( mFboAo->getSize() / 2 );
 			gl::scale( mFboAo->getSize() );
-			const gl::ScopedAlphaBlend scopedAlphaBlend( true );
+			const gl::ScopedBlendPremult scopedBlendPremult;
 			
 			// Perform selected AO method
 			if ( mAo == Ao_Hbao ) {
@@ -997,7 +997,7 @@ void DeferredShadingAdvancedApp::draw()
 			
 			// Draw light volumes
 			if ( mDrawLightVolume ) {
-				const gl::ScopedAlphaBlend scopedAlphaBlend( false );
+				const gl::ScopedBlendAlpha scopedBlendAlpha;
 				const gl::ScopedPolygonMode scopedPolygonMode( GL_LINE );
 				const gl::ScopedMatrices scopedMatrices;
 				gl::setMatrices( mCamera );
