@@ -4,10 +4,10 @@ using namespace ci;
 using namespace std;
 
 Light::Light() 
-: mColorAmbient( Colorf::black() ), 
-mColorDiffuse( Colorf::white() ), mColorSpecular( Colorf::white() ), 
-mIntensity( 1.0f ), mPosition( vec3( 0.0f ) ), mRadius( 1.0f ), 
-mVolume( 10.0f )
+: mColorAmbient( ColorAf::black() ), 
+mColorDiffuse( ColorAf::white() ), mColorSpecular( ColorAf::white() ), 
+mIntensity( 1.0f ), mPosition( vec3( 0.0f ) ), mPad0( 0 ), mPad1( 0 ),
+mRadius( 1.0f ), mVolume( 10.0f )
 {
 	setPosition( vec3( 0.0f ) );
 }
