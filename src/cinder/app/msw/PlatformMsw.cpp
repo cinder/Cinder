@@ -74,7 +74,7 @@ DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID
 		throw ResourceLoadExcMsw( mswID, mswType );
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ), resourcePath );
+	return DataSourceBuffer::create( make_shared<Buffer>( dataPtr, dataSize ), resourcePath );
 }
 
 fs::path PlatformMsw::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )

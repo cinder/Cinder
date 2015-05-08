@@ -10,7 +10,7 @@ using namespace std;
 
 class TextBoxApp : public App {
   public:
-	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
+	void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup();
 	void mouseDrag( MouseEvent event );	
 	void update();

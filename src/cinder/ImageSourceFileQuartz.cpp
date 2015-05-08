@@ -107,7 +107,7 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 		::CFRelease( urlRef );		
 	}
 	else { // last ditch, we'll use a dataref from the buffer
-		::CFDataRef dataRef = cocoa::createCfDataRef( dataSourceRef->getBuffer() );
+		::CFDataRef dataRef = cocoa::createCfDataRef( *dataSourceRef->getBuffer() );
 		if( ! dataRef )
 			throw ImageIoExceptionFailedLoad( "Could not create CFDataRef from data source." );
 		
