@@ -389,8 +389,7 @@ def markupEnum( bs4, fnXml, parent ):
 
 	if descriptionDiv is None and len(list(enumUl.children)) > 0 :
 		descriptionDiv = genTag(bs4, "div", ["description", "content"])
-
-	descriptionDiv.append( enumUl );
+		descriptionDiv.append( enumUl );
 
 	if descriptionDiv is not None :
 		rightDiv.append( descriptionDiv )
@@ -1385,26 +1384,6 @@ if __name__ == "__main__":
 
 		elif os.path.isdir( sys.argv[1] ): # process a directory
 			processDir( sys.argv[1], sys.argv[2])
-			# inPath = sys.argv[1]
-			# outPath = sys.argv[2]
-			# for file in os.listdir(sys.argv[1]):
-			# 	if file.endswith(".xml"):
-			# 		filePrefix = os.path.splitext( os.path.basename( file ) )[0]
-					
-			# 		if file.startswith( "class" ) or file.startswith( "struct" ):
-			# 			# name minus file extension
-			# 			processClassXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
-
-			# 		elif file.startswith( "namespace" ) :
-			# 			processNamespaceXmlFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
-
-			# 		elif file.startswith( "_" ) :
-			# 			print "TODO: parse source file type"
-			# 		else :
-			# 			print "PARSE " + file
-			# 			# base template and just iterate do an html iteration
-			# 			# 
-			# 			# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
 		
 	else:
