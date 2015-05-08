@@ -744,8 +744,7 @@ void DeferredShadingAdvancedApp::draw()
 	 *
 	 * This is probably the most expensive operation in the pipeline, performing 101 samples 
 	 * per fragment by default. If you are getting poor performance, turn it off or reduce 
-	 * kNumSamples in scatter.frag. You may also modify scatter.frag to not perform bilateral 
-	 * filtering, but the resulting image may look pixelated or overly streaked.
+	 * kNumSamples in scatter.frag.
 	 */
 
 	if ( mEnabledRay ) {
