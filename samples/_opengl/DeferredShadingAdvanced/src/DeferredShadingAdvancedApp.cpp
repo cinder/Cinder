@@ -114,6 +114,7 @@ private:
 	bool						mEnabledFog;
 	bool						mEnabledFxaa;
 	bool						mEnabledRay;
+	bool						mEnabledRayPrev;
 	bool						mEnabledShadow;
 	
 	ci::vec3					mSpherePosition;
@@ -162,6 +163,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledFog			= true;
 	mEnabledFxaa		= true;
 	mEnabledRay			= true;
+	mEnabledRayPrev		= mEnabledRay;
 	mEnabledShadow		= true;
 	mFrameRate			= 0.0f;
 	mFullScreen			= isFullScreen();
@@ -1192,7 +1194,7 @@ void DeferredShadingAdvancedApp::resize()
 	}
 
 	// Create FBO for light rays
-	{
+	if ( mEnabledRay ) {
 		ivec2 sz = mFboGBuffer->getSize();
 		mFboRayColor = gl::Fbo::create( w, h, gl::Fbo::Format().colorTexture( colorTextureFormat ) );
 		mFboRayDepth = gl::Fbo::create( sz.x, sz.y, gl::Fbo::Format().disableColor().depthTexture( depthTextureFormat ) );
@@ -1328,10 +1330,12 @@ void DeferredShadingAdvancedApp::update()
 	
 	// Call resize to rebuild buffers when render quality
 	// or AO method changes
-	if ( mAoPrev			!= mAo		||
+	if ( mAoPrev			!= mAo			||
+		mEnabledRayPrev		!= mEnabledRay	||
 		mHighQualityPrev	!= mHighQuality ) {
 		resize();
 		mAoPrev				= mAo;
+		mEnabledRayPrev		= mEnabledRay;
 		mHighQualityPrev	= mHighQuality;
 	}
 	
