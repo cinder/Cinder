@@ -29,8 +29,6 @@
 
 namespace cinder {
 
-template<typename T> class MatrixAffine2;
-
 template<typename T>
 class RectT {
  public:
