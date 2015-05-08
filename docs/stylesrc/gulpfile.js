@@ -18,7 +18,7 @@ gulp.task( 'styles', function() {
             use: [ nib() ]
         }))
         .pipe(filter.restore())
-        .pipe( gulp.dest( './../html' ) );
+        .pipe( gulp.dest( './../html/css' ) );
 });
 
 gulp.task( 'watch', [ 'styles' ], function() {
