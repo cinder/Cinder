@@ -748,7 +748,7 @@ void DeferredShadingAdvancedApp::draw()
 	 * is in screen space, and it will sample the image along a line between the light 
 	 * position and each fragment; resulting in some very pretty streaks.
 	 *
-	 * This is an expensive operation. If you are getting poor performance, turn it off 
+	 * This is a fairly expensive operation. If you are getting poor performance, turn it off 
 	 * or reduce kNumSamples in scatter.frag.
 	 */
 
@@ -1104,22 +1104,22 @@ void DeferredShadingAdvancedApp::draw()
 			mBatchDebugRect->draw();
 		} else {
 			
+			// Composite light rays into image
+			if ( mEnabledRay ) {
+				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ], 1 );
+				mBatchRayCompositeRect->draw();
+
+				ping = pong;
+				pong = ( ping + 1 ) % 2;
+			}
+
 			// Composite light accumulation / bloom into our final image.
+			gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
 			{
 				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
 				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ], 1 );
 				mBatchBloomCompositeRect->draw();
-			}
-
-			// Composite light rays into image
-			if ( mEnabledRay ) {
-				ping = pong;
-				pong = ( ping + 1 ) % 2;
-
-				gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
-				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],	0 );
-				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ],		1 );
-				mBatchRayCompositeRect->draw();
 			}
 			
 			// Draw light volumes for debugging.
@@ -1324,27 +1324,27 @@ void DeferredShadingAdvancedApp::resize()
 
 	// Create FBO sfor light rays (volumetric light scattering)
 	if ( mEnabledRay ) {
-		gl::Fbo::Format fboFormat;
-		fboFormat.disableDepth();
-		for ( size_t i = 0; i < 2; ++i ) {
-			mTextureFboRayColor[ i ] = gl::Texture2d::create( w / 2, h / 2, colorTextureFormatLinear );
-			fboFormat.attachment( GL_COLOR_ATTACHMENT0 + (GLenum)i, mTextureFboRayColor[ i ] );
-		}
-		mFboRayColor = gl::Fbo::create( w / 2, h / 2, fboFormat );
 		{
+			gl::Fbo::Format fboFormat;
+			fboFormat.disableDepth();
+			ivec2 sz( w / 2, h / 2 );
+			for ( size_t i = 0; i < 2; ++i ) {
+				mTextureFboRayColor[ i ] = gl::Texture2d::create( sz.x, sz.y, colorTextureFormatLinear );
+				fboFormat.attachment( GL_COLOR_ATTACHMENT0 + (GLenum)i, mTextureFboRayColor[ i ] );
+			}
+			mFboRayColor = gl::Fbo::create( sz.x, sz.y, fboFormat );
 			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayColor );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayColor->getSize() );
 			gl::clear();
 		}
-
-		ivec2 sz		= mFboGBuffer->getSize();
-		mFboRayDepth	= gl::Fbo::create( sz.x / 2, sz.y / 2, 
-										  gl::Fbo::Format().disableColor().depthTexture( depthTextureFormat ) );
 		{
+			ivec2 sz		= mFboGBuffer->getSize() / 2;
+			mFboRayDepth	= gl::Fbo::create( sz.x, sz.y, 
+											  gl::Fbo::Format().disableColor().depthTexture( depthTextureFormat ) );
 			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayDepth );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
 			gl::clear();
-		}
+			}
 	}
 	
 	// Create shadow map buffer
