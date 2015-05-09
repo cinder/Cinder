@@ -1571,5 +1571,5 @@ CINDER_APP( DeferredShadingAdvancedApp, RendererGl( RendererGl::Options().versio
 {
 	settings->disableFrameRate();
 	settings->setHighDensityDisplayEnabled( true );
-	settings->setWindowSize( 1920, 1080 );
+	settings->setWindowSize( 1280, 720 );
 } )
