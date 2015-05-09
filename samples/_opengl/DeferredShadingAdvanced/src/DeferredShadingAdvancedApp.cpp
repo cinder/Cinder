@@ -561,7 +561,11 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Draw light sources
 		mBatchGBufferLightSourceSphere->getGlslProg()->uniform( "uMaterialId", 2 );
-		mBatchGBufferLightSourceSphere->drawInstanced( (GLsizei)mLights.size() );
+		GLsizei count = (GLsizei)mLights.size();
+		if ( mEnabledRay ) {
+			--count;
+		}
+		mBatchGBufferLightSourceSphere->drawInstanced( count );
 		
 		////// END DRAW STUFF //////////////////////////////////////////////////
 		
