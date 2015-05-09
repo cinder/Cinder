@@ -165,5 +165,8 @@
     <None Include="..\assets\ray\scatter.frag">
       <Filter>assets\ray</Filter>
     </None>
+    <None Include="..\assets\ray\composite.frag">
+      <Filter>assets\ray</Filter>
+    </None>
   </ItemGroup>
 </Project>

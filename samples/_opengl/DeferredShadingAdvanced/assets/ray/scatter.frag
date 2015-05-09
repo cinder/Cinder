@@ -10,8 +10,7 @@ const int	kNumSamples	= 100;
 const float kWeight		= 5.65;
 
 uniform vec2		uLightPosition;
-uniform sampler2D	uSamplerColor;
-uniform sampler2D	uSamplerLight;
+uniform sampler2D	uSampler;
 
 layout (location = 0) out vec4 oColor;
 
@@ -24,13 +23,11 @@ void main( void )
 	d			*= 1.0 / float( kNumSamples ) * kDensity;
 	float decay	= 1.0;
 
-	vec3 color	= vec3( 0.0 );
     for ( int i = 0; i < kNumSamples; ++i ) {
 		uv		-= d;
-		color	+= texture( uSamplerLight, uv ).rgb * decay * kWeight;
+		oColor	+= texture( uSampler, uv ) * decay * kWeight;
 		decay	*= kDecay;
 	}
-	color		*= kExposure;
-	oColor		= texture( uSamplerColor, vertex.uv ) + vec4( color, 0.0 );
+	oColor		*= kExposure;
 }
  

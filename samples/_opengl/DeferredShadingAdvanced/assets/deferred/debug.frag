@@ -14,11 +14,13 @@ const int MODE_SHININESS	= 8;
 const int MODE_MATERIAL_ID	= 9;
 const int MODE_ACCUM		= 10;
 const int MODE_AO			= 11;
+const int MODE_RAY			= 12;
 
-uniform sampler2D	uSamplerAccum;
-uniform sampler2D 	uSamplerAlbedo;
-uniform sampler2D 	uSamplerAo;
-uniform sampler2D	uSamplerNormal;
+uniform sampler2D uSamplerAccum;
+uniform sampler2D uSamplerAlbedo;
+uniform sampler2D uSamplerAo;
+uniform sampler2D uSamplerNormal;
+uniform sampler2D uSamplerRay;
 
 uniform float	uFar;
 uniform int		uMode;
@@ -69,6 +71,9 @@ void main( void )
 		break;
 	case MODE_AO:
 		color 	= texture( uSamplerAo, vertex.uv ).rrr;
+		break;
+	case MODE_RAY:
+		color 	= texture( uSamplerRay, vertex.uv ).rgb;
 		break;
 	}
 	oColor 		= vec4( color, 1.0 );
