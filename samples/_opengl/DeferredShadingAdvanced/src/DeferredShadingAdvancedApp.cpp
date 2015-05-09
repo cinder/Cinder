@@ -1505,21 +1505,21 @@ void DeferredShadingAdvancedApp::update()
 	}
 	
 	// Update spheres
-	const float scale = 0.85f;
+	const float scale			= 0.85f;
 	if ( !mPaused ) {
-		const float ground = scale;
-		const float dampen = 0.092f;
-		mSpherePosition.y += mSphereVelocity;
+		const float ground		= scale;
+		const float dampen		= 0.092f;
+		mSpherePosition.y		+= mSphereVelocity;
 		if ( mSphereVelocity > 0.0f ) {
-			mSphereVelocity *= ( 1.0f - dampen );
+			mSphereVelocity		*= ( 1.0f - dampen );
 		} else if ( mSphereVelocity < 0.0f ) {
-			mSphereVelocity *= ( 1.0f + dampen );
+			mSphereVelocity		*= ( 1.0f + dampen );
 		}
 		if ( mSpherePosition.y < ground ) {
-			mSpherePosition.y = ground;
-			mSphereVelocity = -mSphereVelocity;
+			mSpherePosition.y	= ground;
+			mSphereVelocity		= -mSphereVelocity;
 		} else if ( mSphereVelocity > 0.0f && mSphereVelocity < 0.02f ) {
-			mSphereVelocity = -0.01f;
+			mSphereVelocity		= -0.01f;
 		}
 	}
 	{
@@ -1562,9 +1562,9 @@ void DeferredShadingAdvancedApp::update()
 			}
 			mLights.at( i ).setPosition( p );
 		}
-		t		= e * 0.333f;
-		vec3 p	= vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 3.0f ;
-		p.y		= 7.5f;
+		t					= e * 0.333f;
+		vec3 p				= vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 3.0f ;
+		p.y					= 7.5f;
 		mLights.back().setPosition( p );
 		
 		// Update light positions in UBO
