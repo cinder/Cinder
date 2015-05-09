@@ -238,7 +238,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	// Set up parameters
 	const vector<string> ao = { "None", "HBAO", "SAO" };
 
-	mParams = params::InterfaceGl::create( "Params", toPixels( ivec2( 240, 380 ) ) );
+	mParams = params::InterfaceGl::create( "Params", toPixels( ivec2( 240, 400 ) ) );
 	mParams->addParam( "Frame rate",		&mFrameRate,					"", true );
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { createBatches(); },	"key=l" );
