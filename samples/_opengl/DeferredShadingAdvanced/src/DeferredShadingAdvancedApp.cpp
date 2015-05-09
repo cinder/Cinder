@@ -1474,37 +1474,38 @@ void DeferredShadingAdvancedApp::update()
 		mHighQualityPrev	= mHighQuality;
 	}
 
-	if ( !mPaused ) {
-	
-		// Update icosahedrons
-		{
-			Model* icosahedron	= (Model*)mVboInstancedIcosahedrons->mapWriteOnly( true );
-			float t				= e * 0.165f;
-			const float d		= ( (float)M_PI * 2.0f ) / (float)mNumIcosahedrons;
-			const float r		= 4.5f;
-			for ( int32_t i = 0; i < mNumIcosahedrons; ++i, t += d ) {
+	// Update icosahedrons
+	{
+		Model* icosahedron		= (Model*)mVboInstancedIcosahedrons->map( GL_READ_WRITE );
+		float t					= e * 0.165f;
+		const float d			= ( (float)M_PI * 2.0f ) / (float)mNumIcosahedrons;
+		const float r			= 4.5f;
+		for ( int32_t i = 0; i < mNumIcosahedrons; ++i, t += d ) {
+			mat4 m( 1.0f );
+			if ( mPaused ) {
+				m				= icosahedron->getModelMatrix();
+			} else {
 				const float x	= glm::cos( t );
 				const float z	= glm::sin( t );
 				vec3 p			= vec3( x, 0.0f, z ) * r;
 				p.y				= 0.625f;
-			
-				mat4 m( 1.0f );
 				m				= glm::translate( m, p );
 				m				= glm::rotate( m, e + t, vec3( 1.0f ) );
 				m				= glm::scale( m, vec3( 0.5f ) );
-			
 				icosahedron->setModelMatrix( m );
-				icosahedron->setNormalMatrix( glm::inverseTranspose( mat3( mCamera.getViewMatrix() * m ) ) );
-				++icosahedron;
 			}
-			mVboInstancedIcosahedrons->unmap();
+			icosahedron->setNormalMatrix( glm::inverseTranspose( mat3( mCamera.getViewMatrix() * m ) ) );
+			++icosahedron;
 		}
+		mVboInstancedIcosahedrons->unmap();
+	}
 	
-		// Update sphere positions
-		const float scale	= 0.85f;
-		const float ground	= scale;
-		const float dampen	= 0.092f;
-		mSpherePosition.y	+= mSphereVelocity;
+	// Update spheres
+	const float scale = 0.85f;
+	if ( !mPaused ) {
+		const float ground = scale;
+		const float dampen = 0.092f;
+		mSpherePosition.y += mSphereVelocity;
 		if ( mSphereVelocity > 0.0f ) {
 			mSphereVelocity *= ( 1.0f - dampen );
 		} else if ( mSphereVelocity < 0.0f ) {
@@ -1512,65 +1513,66 @@ void DeferredShadingAdvancedApp::update()
 		}
 		if ( mSpherePosition.y < ground ) {
 			mSpherePosition.y = ground;
-			mSphereVelocity	= -mSphereVelocity;
+			mSphereVelocity = -mSphereVelocity;
 		} else if ( mSphereVelocity > 0.0f && mSphereVelocity < 0.02f ) {
-			mSphereVelocity	= -0.01f;
+			mSphereVelocity = -0.01f;
 		}
-		{
-			Model* sphere = (Model*)mVboInstancedSpheres->mapWriteOnly( true );
-			float t				= e * -0.21f;
-			const float d		= ( (float)M_PI * 2.0f ) / (float)mNumSpheres;
-			const float r		= 1.75f;
-			for ( int32_t i = 0; i < mNumSpheres; ++i, t += d ) {
+	}
+	{
+		Model* sphere = (Model*)mVboInstancedSpheres->map( GL_READ_WRITE );
+		float t					= e * -0.21f;
+		const float d			= ( (float)M_PI * 2.0f ) / (float)mNumSpheres;
+		const float r			= 1.75f;
+		for ( int32_t i = 0; i < mNumSpheres; ++i, t += d ) {
+			mat4 m( 1.0f );
+			if ( mPaused ) {
+				m				= sphere->getModelMatrix();
+			} else {
 				const float x	= glm::cos( t );
 				const float z	= glm::sin( t );
 				vec3 p			= vec3( x, 0.0f, z ) * r + mSpherePosition;
-	
-				mat4 m( 1.0f );
-				m = glm::translate( m, p );
-				m = glm::rotate( m, e + t, vec3( 1.0f ) );
-				m = glm::scale( m, vec3( scale ) );
-	
+				m				= glm::translate( m, p );
+				m				= glm::rotate( m, e + t, vec3( 1.0f ) );
+				m				= glm::scale( m, vec3( scale ) );
 				sphere->setModelMatrix( m );
-				sphere->setNormalMatrix( glm::inverseTranspose( mat3( mCamera.getViewMatrix() * m ) ) );
-				++sphere;
 			}
-			mVboInstancedSpheres->unmap();
+			sphere->setNormalMatrix( glm::inverseTranspose( mat3( mCamera.getViewMatrix() * m ) ) );
+			++sphere;
 		}
+		mVboInstancedSpheres->unmap();
+	}
 	
-		// Update light positions
-		{
-			float t				= e;
-			const float d		= ( (float)M_PI * 2.0f ) / (float)mNumBouncingLights;
-			const float r		= 3.5f;
-			for ( int32_t i = 0; i < mNumBouncingLights; ++i, t += d ) {
-				const float y	= 0.1f;
-				const float x	= glm::cos( t );
-				const float z	= glm::sin( t );
-				vec3 p			= vec3( x, 0.0f, z ) * r;
-				p.y				= y + glm::sin( t + e * (float)M_PI ) * 2.0f;
-				if ( p.y < y ) {
-					p.y			+= ( y - p.y ) * 2.0f;
-				}
-				mLights.at( i ).setPosition( p );
+	// Update light positions
+	if ( !mPaused ) {
+		float t				= e;
+		const float d		= ( (float)M_PI * 2.0f ) / (float)mNumBouncingLights;
+		const float r		= 3.5f;
+		for ( int32_t i = 0; i < mNumBouncingLights; ++i, t += d ) {
+			const float y	= 0.1f;
+			const float x	= glm::cos( t );
+			const float z	= glm::sin( t );
+			vec3 p			= vec3( x, 0.0f, z ) * r;
+			p.y				= y + glm::sin( t + e * (float)M_PI ) * 2.0f;
+			if ( p.y < y ) {
+				p.y			+= ( y - p.y ) * 2.0f;
 			}
-			t		= e * 0.333f;
-			vec3 p	= vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 3.0f ;
-			p.y		= 7.5f;
-			mLights.back().setPosition( p );
-		
-			// Update light positions in UBO
-			Light* lights = (Light*)mUboLight->mapWriteOnly( false );
-			for ( const Light& light : mLights ) {
-				lights->setPosition( light.getPosition() );
-				++lights;
-			}
-			mUboLight->unmap();
+			mLights.at( i ).setPosition( p );
 		}
+		t		= e * 0.333f;
+		vec3 p	= vec3( glm::sin( t ), 0.0f, glm::cos( t ) ) * 3.0f ;
+		p.y		= 7.5f;
+		mLights.back().setPosition( p );
+		
+		// Update light positions in UBO
+		Light* lights = (Light*)mUboLight->mapWriteOnly( false );
+		for ( const Light& light : mLights ) {
+			lights->setPosition( light.getPosition() );
+			++lights;
+		}
+		mUboLight->unmap();
 	
 		// Update shadow camera
 		mShadowCamera.setEyePoint( mLights.back().getPosition() + vec3( 0.0f, 3.0f, 0.0f ) );
-
 	}
 }
 
