@@ -1,5 +1,5 @@
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 
 #include "cinder/audio/Context.h"
@@ -14,12 +14,12 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeAdvancedApp : public AppNative {
+class NodeAdvancedApp : public App {
   public:
-	void setup();
-	void mouseMove( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseMove( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	audio::GenNodeRef				mGen;		// GenNode's generate audio signals
 	audio::FilterLowPassNodeRef		mLowpass;	// lowpass filter to reduce high frequency content.
@@ -115,7 +115,7 @@ void NodeAdvancedApp::draw()
 	float circleX = percent * getWindowWidth();
 
 	gl::color( 0, 0.8f, 0.8f );
-	gl::drawSolidCircle( Vec2f( circleX, getWindowCenter().y ), 50 );
+	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
-CINDER_APP_NATIVE( NodeAdvancedApp, RendererGl )
+CINDER_APP( NodeAdvancedApp, RendererGl )

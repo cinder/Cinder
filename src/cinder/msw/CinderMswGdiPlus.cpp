@@ -47,7 +47,7 @@ Surface8u convertGdiplusBitmap( Gdiplus::Bitmap &bitmap )
 	const uint8_t *srcDataBase = (uint8_t*)bitmapData.Scan0;
 	int32_t width = bitmap.GetWidth();
 	for( uint32_t y = 0; y < bitmap.GetHeight(); ++y ) {
-		memcpy( result.getData( Vec2i( 0, y ) ), srcDataBase + y * bitmapData.Stride, width * result.getPixelInc() );
+		memcpy( result.getData( ivec2( 0, y ) ), srcDataBase + y * bitmapData.Stride, width * result.getPixelInc() );
 	}
 
 	bitmap.UnlockBits( &bitmapData );

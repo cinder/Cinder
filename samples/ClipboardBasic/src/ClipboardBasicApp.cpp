@@ -1,9 +1,8 @@
-﻿#include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+﻿#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Clipboard.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Utilities.h"
+#include "cinder/gl/Texture.h"
 
 #include "Resources.h"
 
@@ -11,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ClipboardBasicApp : public AppNative {
+class ClipboardBasicApp : public App {
   public:
 	void keyDown( KeyEvent event );	
 	void draw();
@@ -35,11 +34,11 @@ void ClipboardBasicApp::draw()
 	gl::enableAlphaBlending();
 	
 	if( Clipboard::hasImage() )
-		gl::draw( gl::Texture( Clipboard::getImage() ) );
+		gl::draw( gl::Texture::create( Clipboard::getImage() ) );
 	else if( Clipboard::hasString() )
-		gl::drawString( Clipboard::getString(), Vec2f( 0, getWindowCenter().y ) );
+		gl::drawString( Clipboard::getString(), vec2( 0, getWindowCenter().y ) );
 	else
-		gl::drawString( "Clipboard contents unknown", Vec2f( 0, getWindowCenter().y ) );
+		gl::drawString( "Clipboard contents unknown", vec2( 0, getWindowCenter().y ) );
 }
 
-CINDER_APP_NATIVE( ClipboardBasicApp, RendererGl )
+CINDER_APP( ClipboardBasicApp, RendererGl )

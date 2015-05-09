@@ -21,7 +21,7 @@
 */
 
 #include "cinder/DataTarget.h"
-#include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 namespace cinder {
 
@@ -85,8 +85,10 @@ DataTargetStream::DataTargetStream( OStreamRef stream )
 // Free functions
 DataTargetPathRef writeFile( const fs::path &path, bool createParents )
 {
-	if( createParents )
-		createDirectories( path ); 
+	if( createParents ) {
+		if( ! path.parent_path().empty() )
+			fs::create_directories( path.parent_path() );
+	}
 	
  	return DataTargetPath::createRef( path );
 }

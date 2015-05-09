@@ -75,7 +75,7 @@ float Perlin::fBm( float v ) const
 	return result;
 }
 
-float Perlin::fBm( const Vec2f &v ) const
+float Perlin::fBm( const vec2 &v ) const
 {
 	float result = 0.0f;
 	float amp = 0.5f;
@@ -91,7 +91,7 @@ float Perlin::fBm( const Vec2f &v ) const
 	return result;
 }
 
-float Perlin::fBm( const Vec3f &v ) const
+float Perlin::fBm( const vec3 &v ) const
 {
 	float result = 0.0f;
 	float amp = 0.5f;
@@ -122,9 +122,9 @@ float Perlin::fBm( const Vec3f &v ) const
 	return result;
 }*/
 
-Vec2f Perlin::dfBm( const Vec2f &v ) const
+vec2 Perlin::dfBm( const vec2 &v ) const
 {
-	Vec2f result = Vec2f::zero();
+	vec2 result;
 	float amp = 0.5f;
 
 	float x = v.x, y = v.y;
@@ -138,9 +138,9 @@ Vec2f Perlin::dfBm( const Vec2f &v ) const
 	return result;
 }
 
-Vec3f Perlin::dfBm( const Vec3f &v ) const
+vec3 Perlin::dfBm( const vec3 &v ) const
 {
-	Vec3f result = Vec3f::zero();
+	vec3 result;
 	float amp = 0.5f;
 	float x = v.x, y = v.y, z = v.z;
 
@@ -220,7 +220,7 @@ throw; //TODO
 */
 
 // Credit for the ideas for analytical Perlin derivatives below are due to Iñigo Quílez
-Vec2f Perlin::dnoise( float x, float y ) const
+vec2 Perlin::dnoise( float x, float y ) const
 {
 	int32_t X = ((int32_t)x) & 255, Y = ((int32_t)y) & 255;
 	x -= floorf(x); y -= floorf(y);
@@ -241,10 +241,10 @@ Vec2f Perlin::dnoise( float x, float y ) const
     const float k2 =   c - a;
     const float k4 =   a - b - c + d;
 
-	return Vec2f( du * ( k1 + k4 * v ), dv * ( k2 + k4 * u ) );
+	return vec2( du * ( k1 + k4 * v ), dv * ( k2 + k4 * u ) );
 }
 
-Vec3f Perlin::dnoise( float x, float y, float z ) const
+vec3 Perlin::dnoise( float x, float y, float z ) const
 {
 	int32_t X = ((int32_t)floorf(x)) & 255, Y = ((int32_t)floorf(y)) & 255, Z = ((int32_t)floorf(z)) & 255;
 	x -= floorf(x); y -= floorf(y); z -= floorf(z);
@@ -274,7 +274,7 @@ Vec3f Perlin::dnoise( float x, float y, float z ) const
     const float k6 =   a - b - e + f;
     const float k7 =  -a + b + c - d + e - f - g + h;
 
-	return Vec3f(	du * ( k1 + k4*v + k6*w + k7*v*w ),
+	return vec3(	du * ( k1 + k4*v + k6*w + k7*v*w ),
 					dv * ( k2 + k5*w + k4*u + k7*w*u ),
 					dw * ( k3 + k6*u + k5*v + k7*u*v ) );
 }

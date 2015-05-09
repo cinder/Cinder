@@ -383,7 +383,7 @@ public:
 		}
 
 		double* ip = ip0;
-		double* op;
+		double* op = nullptr;
 		int i;
 
 		for( i = 0; i < ConvCount; i++ )

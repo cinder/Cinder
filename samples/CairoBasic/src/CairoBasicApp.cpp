@@ -1,7 +1,7 @@
 #include <vector>
 using std::vector;
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Path2d.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/ip/Fill.h"
@@ -13,7 +13,7 @@ using namespace ci::app;
 
 class Flower {
   public:
-	Flower( Vec2f loc, float radius, float petalOutsideRadius, float petalInsideRadius, int numPetals, ColorA color )
+	Flower( vec2 loc, float radius, float petalOutsideRadius, float petalInsideRadius, int numPetals, ColorA color )
 		: mLoc( loc ), mRadius( radius ), mPetalOutsideRadius( petalOutsideRadius ), mPetalInsideRadius( petalInsideRadius ), mNumPetals( numPetals ), mColor( color )
 	{}
 
@@ -22,8 +22,8 @@ class Flower {
 		for( int petal = 0; petal < mNumPetals; ++petal ) {
 			ctx.newSubPath();
 			float petalAngle = ( petal / (float)mNumPetals ) * 2 * M_PI;
-			Vec2f outsideCircleCenter = mLoc + Vec2f::xAxis() * cos( petalAngle ) * mRadius + Vec2f::yAxis() * sin( petalAngle ) * mRadius;
-			Vec2f insideCircleCenter = mLoc + Vec2f::xAxis() * cos( petalAngle ) * mPetalInsideRadius + Vec2f::yAxis() * sin( petalAngle ) * mPetalInsideRadius;
+			vec2 outsideCircleCenter = mLoc + vec2( 1, 0 ) * (float)cos( petalAngle ) * mRadius + vec2( 0, 1 ) * (float)sin( petalAngle ) * mRadius;
+			vec2 insideCircleCenter = mLoc + vec2( 1, 0 ) * (float)cos( petalAngle ) * mPetalInsideRadius + vec2( 0, 1 ) * (float)sin( petalAngle ) * mPetalInsideRadius;
 			ctx.arc( outsideCircleCenter, mPetalOutsideRadius, petalAngle + M_PI / 2 + M_PI, petalAngle + M_PI / 2 );
 			ctx.arc( insideCircleCenter, mPetalInsideRadius, petalAngle + M_PI / 2, petalAngle + M_PI / 2 + M_PI );
 			ctx.closePath();
@@ -44,13 +44,13 @@ class Flower {
 	};
 	
   private:
-	Vec2f		mLoc;
+	vec2		mLoc;
 	float		mRadius, mPetalOutsideRadius, mPetalInsideRadius;
 	int			mNumPetals;
 	ColorA		mColor;
 };
 
-class CairoBasicApp : public AppBasic {
+class CairoBasicApp : public App {
   public:
 	void mouseDown( MouseEvent event );
 	void keyDown( KeyEvent event );
@@ -116,4 +116,4 @@ void CairoBasicApp::draw()
 	renderScene( ctx );
 }
 
-CINDER_APP_BASIC( CairoBasicApp, Renderer2d )
+CINDER_APP( CairoBasicApp, Renderer2d )

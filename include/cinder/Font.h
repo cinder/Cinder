@@ -27,16 +27,16 @@
 #include "cinder/Exception.h"
 #include "cinder/DataSource.h"
 #if defined( CINDER_WINRT )
-#include <ft2build.h>
+	#include <ft2build.h>
 
-// Note: generic is a reserved word in winrt c++/cx
-// need to redefine it for freetype.h
-#define generic GenericFromFreeTypeLibrary
-#include FT_FREETYPE_H
-#include FT_OUTLINE_H
-#undef generic
+	// Note: generic is a reserved word in winrt c++/cx
+	// need to redefine it for freetype.h
+	#define generic GenericFromFreeTypeLibrary
+	#include FT_FREETYPE_H
+	#include FT_OUTLINE_H
+	#undef generic
 
-#include FT_GLYPH_H
+	#include FT_GLYPH_H
 #endif
 
 #include <string>
@@ -48,16 +48,18 @@
 		typedef const struct __CTFont * CTFontRef;
 	#endif
 #elif defined( CINDER_MSW )
-	#include <windows.h>
-	#undef min
-	#undef max
-
+	#include "cinder/msw/CinderWindowsFwd.h"
+	struct tagLOGFONTW;
+	typedef tagLOGFONTW LOGFONTW;
+	typedef LOGFONTW LOGFONT;
 	namespace Gdiplus {
 		class Font;
 	}
 #endif
 
 namespace cinder {
+
+class FontObj;
 
 //! Represents an instance of a font at a point size. \ImplShared
 class Font {
@@ -91,7 +93,7 @@ class Font {
 	Rectf					getGlyphBoundingBox( Glyph glyph ) const;
 
 #if defined( CINDER_WINRT )
-	FT_Face					getFace() const { return mObj->mFace; }
+	FT_Face					getFreetypeFace() const;
 #endif
 	
 	static const std::vector<std::string>&		getNames( bool forceRefresh = false );
@@ -101,48 +103,19 @@ class Font {
 	CGFontRef				getCgFontRef() const;
 	CTFontRef				getCtFontRef() const;
 #elif defined( CINDER_MSW )
-	::LOGFONT				getLogfont() const { return mObj->mLogFont; }
-	::HFONT					getHfont() const { return mObj->mHfont; }
-	const Gdiplus::Font*	getGdiplusFont() const { return mObj->mGdiplusFont.get(); }
+	const LOGFONT&			getLogfont() const;
+	::HFONT					getHfont() const;
+	const Gdiplus::Font*	getGdiplusFont() const;
 	static HDC				getGlobalDc();
 #endif
 
  private:
-	class Obj {
-	 public:
-		Obj( const std::string &aName, float aSize );
-		Obj( DataSourceRef dataSource, float size );
-		~Obj();
-		
-		void		finishSetup();
-		
-		
-		std::string				mName;
-		float					mSize;
-#if defined( CINDER_COCOA )
-		CGFontRef				mCGFont;
-		const struct __CTFont*	mCTFont;
-#elif defined( CINDER_MSW )
-		::TEXTMETRIC					mTextMetric;
-		::LOGFONTW						mLogFont;
-		::HFONT							mHfont;
-		std::shared_ptr<Gdiplus::Font>	mGdiplusFont;
-		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-		void *mFileData;
-#elif defined( CINDER_WINRT )
-		std::vector<std::pair<uint16_t,uint16_t> >	mUnicodeRanges;
-		void *mFileData;
-		FT_Face mFace;
-#endif 		
-		size_t					mNumGlyphs;
-	};
-
-	std::shared_ptr<Obj>			mObj;
+	std::shared_ptr<FontObj>			mObj;
 	
   public:
  	//@{
 	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Font::*unspecified_bool_type;
+	typedef std::shared_ptr<FontObj> Font::*unspecified_bool_type;
 	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Font::mObj; }
 	void reset() { mObj.reset(); }
 	//@}

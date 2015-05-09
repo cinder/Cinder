@@ -1,7 +1,7 @@
+#include "cinder/app/AppScreenSaver.h"
+
 #import "MacConfigDialog.h"
 #import <ScreenSaver/ScreenSaver.h>
-
-#include "cinder/app/AppScreenSaver.h"
 
 // NOTE: It is important that your NIB has its Window's "Visible at Launch" set to FALSE
 

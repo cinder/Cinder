@@ -25,6 +25,8 @@
 #include "cinder/Tween.h"
 #include "cinder/Timeline.h"
 
+#include <algorithm>
+
 using namespace std;
 
 namespace cinder {

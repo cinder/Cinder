@@ -1,5 +1,5 @@
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 
 #include <Box2D/Box2D.h>
 
@@ -9,14 +9,14 @@ using namespace std;
 
 const float BOX_SIZE = 10;
 
-class _TBOX_PREFIX_App : public AppNative {
+class _TBOX_PREFIX_App : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 	
-	void addBox( const Vec2f &pos );
+	void addBox( const vec2 &pos );
 	
 	b2World				*mWorld;
 	vector<b2Body*>		mBoxes;
@@ -29,7 +29,7 @@ void _TBOX_PREFIX_App::setup()
 
 	b2BodyDef groundBodyDef;
 	groundBodyDef.position.Set( 0.0f, getWindowHeight() );
-	b2Body* groundBody = mWorld->CreateBody(&groundBodyDef);
+	b2Body* groundBody = mWorld->CreateBody( &groundBodyDef );
 
 	// Define the ground box shape.
 	b2PolygonShape groundBox;
@@ -38,11 +38,11 @@ void _TBOX_PREFIX_App::setup()
 	groundBox.SetAsBox( getWindowWidth(), 10.0f );
 
 	// Add the ground fixture to the ground body.
-	groundBody->CreateFixture(&groundBox, 0.0f);
+	groundBody->CreateFixture( &groundBox, 0.0f );
 	
 }
 
-void _TBOX_PREFIX_App::addBox( const Vec2f &pos )
+void _TBOX_PREFIX_App::addBox( const vec2 &pos )
 {
 	b2BodyDef bodyDef;
 	bodyDef.type = b2_dynamicBody;
@@ -76,23 +76,18 @@ void _TBOX_PREFIX_App::update()
 
 void _TBOX_PREFIX_App::draw()
 {
-	// clear out the window with black
-	gl::clear( Color( 0, 0, 0 ) );
+	gl::clear();
 	
-	gl::color( Color( 1, 0.5f, 0.25f ) );
-	for( vector<b2Body*>::const_iterator boxIt = mBoxes.begin(); boxIt != mBoxes.end(); ++boxIt ) {
-		Vec2f pos( (*boxIt)->GetPosition().x, (*boxIt)->GetPosition().y );
-		float t = toDegrees( (*boxIt)->GetAngle() );
+	gl::color( 1, 0.5f, 0.25f );
+	for( const auto &box : mBoxes ) {
+		gl::pushModelMatrix();
+		gl::translate( box->GetPosition().x, box->GetPosition().y );
+		gl::rotate( box->GetAngle() );
 
-		glPushMatrix();
-		gl::translate( pos );
-		gl::rotate( t );
+		gl::drawSolidRect( Rectf( -BOX_SIZE, -BOX_SIZE, BOX_SIZE, BOX_SIZE ) );
 
-		Rectf rect( -BOX_SIZE, -BOX_SIZE, BOX_SIZE, BOX_SIZE );
-		gl::drawSolidRect( rect );
-
-		glPopMatrix();	
+		gl::popModelMatrix();
 	}
 }
 
-CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererGl )
+CINDER_APP( _TBOX_PREFIX_App, RendererGl )

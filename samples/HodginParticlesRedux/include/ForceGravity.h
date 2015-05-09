@@ -10,8 +10,8 @@
 
 class ForceGravity : public Force {
  public:
-	ForceGravity( int type, ci::Vec3f axis, float magnitude );
+	ForceGravity( int type, ci::vec3 axis, float magnitude );
 	void apply( std::list<Particle> &particles, int counter );
 	
-	ci::Vec3f mAxis;
+	ci::vec3 mAxis;
 };

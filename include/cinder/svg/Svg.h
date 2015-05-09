@@ -27,17 +27,17 @@
 #include "cinder/Cinder.h"
 #include "cinder/Xml.h"
 #include "cinder/Vector.h"
+#include "cinder/Matrix.h"
 #include "cinder/Color.h"
 #include "cinder/Shape2d.h"
 #include "cinder/PolyLine.h"
 #include "cinder/Exception.h"
-#include "cinder/MatrixAffine2.h"
 #include "cinder/Surface.h"
 #include "cinder/Font.h"
-#include "cinder/Function.h"
+#include "cinder/Noncopyable.h"
 
+#include <functional>
 #include <map>
-#include <boost/noncopyable.hpp>
 
 namespace cinder { namespace svg {
 
@@ -83,7 +83,7 @@ class Renderer {
 	virtual void	drawImage( const svg::Image &image ) {}
 	virtual void	drawTextSpan( const svg::TextSpan &span ) {}
 
-	virtual void	pushMatrix( const MatrixAffine2f &m ) {}
+	virtual void	pushMatrix( const mat3 &m ) {}
 	virtual void	popMatrix() {}
 	virtual void	pushStyle( const svg::Style &style ) {}
 	virtual void	popStyle( const svg::Style &style ) {}	
@@ -103,7 +103,7 @@ class Renderer {
 	virtual void	popLineCap() {}	
 	virtual void	pushLineJoin( LineJoin lineJoin ) {}
 	virtual void	popLineJoin() {}
-	virtual void	pushTextPen( const Vec2f &penPos ) {}
+	virtual void	pushTextPen( const vec2 &penPos ) {}
 	virtual void	popTextPen() {}
 	virtual void	pushTextRotation( float rotation ) {}
 	virtual void	popTextRotation() {}
@@ -162,20 +162,20 @@ class Paint {
 	size_t			getNumColors() const { return mStops.size(); }
 	
 	// only apply to gradients
-	Vec2f			getCoords0() const { return mCoords0; } // (x1,y1) on linear, (cx,cy) on radial
-	Vec2f			getCoords1() const { return mCoords1; } // (x2,y2) on linear, (fx,fy) on radial
+	vec2			getCoords0() const { return mCoords0; } // (x1,y1) on linear, (cx,cy) on radial
+	vec2			getCoords1() const { return mCoords1; } // (x2,y2) on linear, (fx,fy) on radial
 	float			getRadius() const { return mRadius; } // radial-only
 	bool			useObjectBoundingBox() const { return mUseObjectBoundingBox; }
 	bool			specifiesTransform() const { return mSpecifiesTransform; }
-	MatrixAffine2f	getTransform() const { return mTransform; }
+	mat3			getTransform() const { return mTransform; }
 	
 	uint8_t									mType;
 	std::vector<std::pair<float,ColorA8u> >	mStops;
 	
-	Vec2f				mCoords0, mCoords1;
+	vec2				mCoords0, mCoords1;
 	float				mRadius;
 	bool				mUseObjectBoundingBox;
-	MatrixAffine2f		mTransform;
+	mat3				mTransform;
 	bool				mSpecifiesTransform;
 };
 
@@ -331,7 +331,7 @@ class Node {
 	Style				calcInheritedStyle() const;
 
 	//! Returns whether the point \a pt is inside of the Node's shape.
-	virtual bool	containsPoint( const Vec2f &pt ) const { return false; }
+	virtual bool	containsPoint( const vec2 &pt ) const { return false; }
 	
 	//! Renders the node and its descendants.
 	void			render( Renderer &renderer ) const;
@@ -342,19 +342,19 @@ class Node {
 	Paint					findPaintInAncestors( const std::string &paintName ) const;
 
 	//! Returns whether this Node specifies a transformation
-	bool			specifiesTransform() const { return mSpecifiesTransform; }
+	bool				specifiesTransform() const { return mSpecifiesTransform; }
 	//! Returns the local transformation of this node. Returns identity if the Node's transform isn't specified.
-	MatrixAffine2f		getTransform() const { return mTransform; }
+	mat3				getTransform() const { return mTransform; }
 	//! Sets the local transformation of this node.
-	void				setTransform( const MatrixAffine2f &transform ) { mTransform = transform; mSpecifiesTransform = true; }
+	void				setTransform( const mat3 &transform ) { mTransform = transform; mSpecifiesTransform = true; }
 	//! Removes the local transformation of this node, effectively making it the identity matrix.
 	void				unspecifyTransform() { mSpecifiesTransform = false; }
 	//! Returns the inverse of the local transformation of this node. Returns identity if the Node's transform isn't specified.
-	MatrixAffine2f		getTransformInverse() const { return ( mSpecifiesTransform ) ? mTransform.invertCopy() : MatrixAffine2f::identity(); }
+	mat3				getTransformInverse() const { return ( mSpecifiesTransform ) ? inverse( mTransform ) : mat3(); }
 	//! Returns the absolute transformation of this node, which includes inherited transformations.
-	MatrixAffine2f		getTransformAbsolute() const;
+	mat3				getTransformAbsolute() const;
 	//! Returns the inverse of the absolute transformation of this node, which includes inherited transformations.
-	MatrixAffine2f		getTransformAbsoluteInverse() const { return getTransformAbsolute().invertCopy(); }
+	mat3				getTransformAbsoluteInverse() const { return inverse( getTransformAbsolute() ); }
 
 	//! Returns the local bounding box of the Node. Calculated and cached the first time it is requested.
 	Rectf			getBoundingBox() const { if( ! mBoundingBoxCached ) { mBoundingBox = calcBoundingBox(); mBoundingBoxCached = true; } return mBoundingBox;  }
@@ -406,8 +406,8 @@ class Node {
 	virtual Rectf	calcBoundingBox() const { return Rectf( 0, 0, 0, 0 ); }
 
 	static Paint		parsePaint( const char *value, bool *specified, const Node *parentNode );
-	static MatrixAffine2f	parseTransform( const std::string &value );
-	static bool			parseTransformComponent( const char **c, MatrixAffine2f *result );
+	static mat3			parseTransform( const std::string &value );
+	static bool			parseTransformComponent( const char **c, mat3 *result );
 	
 	static std::string	findStyleValue( const std::string &styleString, const std::string &key );
 	void				parseStyle( const std::string &value );
@@ -417,7 +417,7 @@ class Node {
 	std::string		mId;
 	Style			mStyle;
 	bool			mSpecifiesTransform;
-	MatrixAffine2f	mTransform;
+	mat3			mTransform;
 	mutable bool	mBoundingBoxCached;
 	mutable Rectf	mBoundingBox;
 	
@@ -454,10 +454,10 @@ class Gradient : public Node {
 	Paint		asPaint() const;
 
   	std::vector<Stop>	mStops;
-	Vec2f				mCoords0, mCoords1;
+	vec2				mCoords0, mCoords1;
 	bool				mUseObjectBoundingBox;
 	bool				mSpecifiesTransform;
-	MatrixAffine2f		mTransform;
+	mat3				mTransform;
 };
 
 //! SVG Linear gradient
@@ -493,10 +493,10 @@ class Circle : public Node {
 	Circle( const Node *parent ) : Node( parent ) {}
 	Circle( const Node *parent, const XmlTree &xml );
 	
-	Vec2f		getCenter() const { return mCenter; }
+	vec2		getCenter() const { return mCenter; }
 	float		getRadius() const { return mRadius; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return pt.distanceSquared( mCenter ) < mRadius * mRadius; }
+	virtual bool	containsPoint( const vec2 &pt ) const { return distance2( pt, mCenter ) < mRadius * mRadius; }
 
 	virtual Shape2d	getShape() const;
 
@@ -504,7 +504,7 @@ class Circle : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadius, mCenter.y - mRadius, mCenter.x + mRadius, mCenter.y + mRadius ); }
 
-	Vec2f		mCenter;
+	vec2		mCenter;
 	float		mRadius;	
 };
 
@@ -514,11 +514,11 @@ class Ellipse : public Node {
 	Ellipse( const Node *parent ) : Node( parent ) {}
 	Ellipse( const Node *parent, const XmlTree &xml );
 	
-	Vec2f		getCenter() const { return mCenter; }
+	vec2		getCenter() const { return mCenter; }
 	float		getRadiusX() const { return mRadiusX; }
 	float		getRadiusY() const { return mRadiusY; }
 
-	bool 			containsPoint( const Vec2f &pt ) const;
+	bool 			containsPoint( const vec2 &pt ) const;
 
 	virtual Shape2d	getShape() const;
 
@@ -526,7 +526,7 @@ class Ellipse : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;
 	virtual Rectf	calcBoundingBox() const { return Rectf( mCenter.x - mRadiusX, mCenter.y - mRadiusY, mCenter.x + mRadiusX, mCenter.y + mRadiusY ); }
   
-	Vec2f		mCenter;
+	vec2		mCenter;
 	float		mRadiusX, mRadiusY;
 };
 
@@ -539,7 +539,7 @@ class Path : public Node {
 	const Shape2d&		getShape2d() const { return mPath; }
 	void				appendShape2d( Shape2d *appendTo ) const;
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPath.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPath.contains( pt ); }
 
 	virtual Shape2d	getShape() const { return mPath; }
 
@@ -556,8 +556,8 @@ class Line : public Node {
 	Line( const Node *parent ) : Node( parent ) {}
 	Line( const Node *parent, const XmlTree &xml );
 	
-	const Vec2f&	getPoint1() const { return mPoint1; }
-	const Vec2f&	getPoint2() const { return mPoint2; }
+	const vec2&	getPoint1() const { return mPoint1; }
+	const vec2&	getPoint2() const { return mPoint2; }
 
 	virtual Shape2d	getShape() const;
 	
@@ -565,7 +565,7 @@ class Line : public Node {
 	virtual void	renderSelf( Renderer &renderer ) const;  
 	virtual Rectf	calcBoundingBox() const { return Rectf( mPoint1, mPoint2 ); }	
 	
-	Vec2f		mPoint1, mPoint2;
+	vec2		mPoint1, mPoint2;
 };
 
 //! SVG Rect element: http://www.w3.org/TR/SVG/shapes.html#RectElement
@@ -576,7 +576,7 @@ class Rect : public Node {
 	
 	const Rectf&	getRect() const { return mRect; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mRect.contains( pt ); }	
+	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }	
 
 	virtual Shape2d	getShape() const;
 
@@ -596,7 +596,7 @@ class Polygon : public Node {
 	const PolyLine2f&	getPolyLine() const { return mPolyLine; }
 	PolyLine2f&			getPolyLine() { return mPolyLine; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPolyLine.contains( pt ); }		
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }		
 
 	virtual Shape2d	getShape() const;
 		
@@ -616,7 +616,7 @@ class Polyline : public Node {
 	const PolyLine2f&	getPolyLine() const { return mPolyLine; }
 	PolyLine2f&			getPolyLine() { return mPolyLine; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mPolyLine.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mPolyLine.contains( pt ); }
 
 	virtual Shape2d	getShape() const;
 
@@ -653,7 +653,7 @@ class Image : public Node {
 	const Rectf&						getRect() const { return mRect; }
 	const std::shared_ptr<Surface8u>	getSurface() const { return mImage; }
 
-	virtual bool	containsPoint( const Vec2f &pt ) const { return mRect.contains( pt ); }
+	virtual bool	containsPoint( const vec2 &pt ) const { return mRect.contains( pt ); }
 
   protected:
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -692,8 +692,8 @@ class TextSpan : public Node {
 	const std::string&							getString() const { return mString; }
 	const std::shared_ptr<Font>					getFont() const;
 	//! Returns a vector of glyph IDs and positions for the string, ignoring rotation. Cached and lazily calculated.
-	std::vector<std::pair<uint16_t,Vec2f> > 	getGlyphMeasures() const;
-	Vec2f										getTextPen() const;
+	std::vector<std::pair<uint16_t,vec2> > 	getGlyphMeasures() const;
+	vec2										getTextPen() const;
 	float						getRotation() const;
 	
   protected:
@@ -703,7 +703,7 @@ class TextSpan : public Node {
 	Attributes						mAttributes;
 	std::string						mString;
 	mutable std::shared_ptr<Font>	mFont;
-	mutable std::shared_ptr<std::vector<std::pair<uint16_t,Vec2f> > > mGlyphMeasures;
+	mutable std::shared_ptr<std::vector<std::pair<uint16_t,vec2> > > mGlyphMeasures;
 	mutable std::shared_ptr<Shape2d>	mShape;
 	
 	std::vector<TextSpanRef>		mSpans;
@@ -716,7 +716,7 @@ class Text : public Node {
   public:
   	Text( const Node *parent, const XmlTree &xml );
 
-	Vec2f 	getTextPen() const;
+	vec2 	getTextPen() const;
 	float	getRotation() const;
 	
   protected:
@@ -728,7 +728,7 @@ class Text : public Node {
 };
 
 //! Represents a group of SVG elements. http://www.w3.org/TR/SVG/struct.html#Groups
-class Group : public Node, private boost::noncopyable {
+class Group : public Node, private Noncopyable {
   public:
 	Group( const Node *parent ) : Node( parent ) {}
 	Group( const Node *parent, const XmlTree &xml );
@@ -741,7 +741,7 @@ class Group : public Node, private boost::noncopyable {
 	const Node*				findNode( const std::string &id, bool recurse = true ) const;
 	//! Recursively searches for a child element of type <tt>svg::T</tt> whose name contains \a idPartial. Returns NULL on failure to find the object or if it is not of type T.
     template<typename T>
-	const T*				findByIdContains( const std::string &idPartial ) { return dynamic_cast<const T*>( findNodeByIdContains( idPartial ) ); }
+	const T*				findByIdContains( const std::string &idPartial ) const { return dynamic_cast<const T*>( findNodeByIdContains( idPartial ) ); }
 	//! Recursively searches for a child element whose name contains \a idPartial. Returns NULL on failure. (null_ptr later?)
 	const Node*				findNodeByIdContains( const std::string &idPartial, bool recurse = true ) const;
 	virtual const Node*		findInAncestors( const std::string &elementId ) const;
@@ -762,7 +762,7 @@ class Group : public Node, private boost::noncopyable {
 	std::list<Node*>&		getChildren() { return mChildren; }
 
   protected:
-	Node*		nodeUnderPoint( const Vec2f &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const;
+	Node*		nodeUnderPoint( const vec2 &absolutePoint, const mat3 &parentInverseMatrix ) const;
 	Shape2d		getMergedShape2d() const;
 
 	virtual void	renderSelf( Renderer &renderer ) const;
@@ -793,7 +793,7 @@ class Doc : public Group {
 	//! Returns the height of the document in pixels
 	int32_t		getHeight() const { return mHeight; }
 	//! Returns the size of the document in pixels
-	Vec2i		getSize() const { return Vec2i( getWidth(), getHeight() ); }	
+	ivec2		getSize() const { return ivec2( getWidth(), getHeight() ); }	
 	//! Returns the aspect ratio of the Doc (width / height)
 	float		getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounds of the Doc (0,0,width,height)
@@ -803,7 +803,7 @@ class Doc : public Group {
 	float		getDpi() const { return 72.0f; }
 	
 	//! Returns the top-most Node which contains \a pt. Returns NULL if no Node contains the point.
-	Node*		nodeUnderPoint( const Vec2f &pt );
+	Node*		nodeUnderPoint( const vec2 &pt );
 	
 	//! Utility function to load an image relative to the document. Caches results.
 	std::shared_ptr<Surface8u>	loadImage( fs::path relativePath );
@@ -838,12 +838,7 @@ class TransformParseExc : public Exc
 
 class ExcChildNotFound : public Exc {
   public:
-	ExcChildNotFound( const std::string &child ) throw();
-  
-	virtual const char* what() const throw() { return mMessage; }
-  
-  private:
-	char mMessage[2048];
+	ExcChildNotFound( const std::string &child );
 };
 
 

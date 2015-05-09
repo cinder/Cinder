@@ -82,7 +82,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\\include&quot;;&quot;..\..\..\\boost&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\include&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MinimalRebuild>true</MinimalRebuild>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
@@ -93,7 +93,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>&quot;..\..\..\\include&quot;;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>&quot;..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
@@ -109,7 +109,7 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\\include&quot;;&quot;..\..\..\\boost&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\include&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
@@ -120,7 +120,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>&quot;..\..\..\\include&quot;;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>&quot;..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset)_d.lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
@@ -135,7 +135,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\\include&quot;;&quot;..\..\..\\boost&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\include&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader/>
@@ -147,7 +147,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>&quot;..\..\..\\include&quot;;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>&quot;..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>
@@ -164,7 +164,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\\include&quot;;&quot;..\..\..\\boost&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\include;&quot;..\..\..\include&quot;;..\..\..\blocks\Cairo\include;..\..\..\blocks\Cairo\include\msw</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;NDEBUG;_WINDOWS;NOMINMAX;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <PrecompiledHeader>
@@ -177,7 +177,7 @@
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
     </ProjectReference>
     <ResourceCompile>
-      <AdditionalIncludeDirectories>&quot;..\..\..\\include&quot;;..\include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>&quot;..\..\..\include&quot;;..\include</AdditionalIncludeDirectories>
     </ResourceCompile>
     <Link>
       <AdditionalDependencies>cinder-$(PlatformToolset).lib;%(AdditionalDependencies);..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\cairo-static.lib;..\..\..\blocks\Cairo\lib\msw\$(PlatformTarget)\pixman-1.lib;libpng.lib</AdditionalDependencies>

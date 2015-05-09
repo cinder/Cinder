@@ -1664,27 +1664,27 @@ template <typename T> void TestMatrix33( std::ostream& os )
 
 	{
 		bool result = true;
-		Vec3f vec;
+		vec3 vec;
 		
 		// test principal axes
-		vec = Vec3f::yAxis();
+		vec = vec3::yAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = -Vec3f::yAxis();
+		vec = -vec3::yAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = Vec3f::xAxis();
+		vec = vec3::xAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = -Vec3f::xAxis();
+		vec = -vec3::xAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = Vec3f::zAxis();
+		vec = vec3::zAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = -Vec3f::zAxis();
+		vec = -vec3::zAxis();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
-		vec = Vec3f::zero();
+		vec = vec3::zero();
 		result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
 		
 		// test some random vectors
 		for( int i = 0; i < 100; ++i ) {
-			vec = Vec3f( randFloat(), randFloat(), randFloat() ).safeNormalized();
+			vec = vec3( randFloat(), randFloat(), randFloat() ).safeNormalized();
 			result = result && ( vec.getOrthogonal().dot( vec ) < EPSILON );
 		}
 	

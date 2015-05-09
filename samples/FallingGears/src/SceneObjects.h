@@ -12,11 +12,11 @@ struct SceneObject {
 	SceneObject( AudioController *audio ) : mAudio( audio )	{}
 	virtual ~SceneObject()	{}
 
-	virtual void handleCollision( const Gear *gear, const ci::Vec2f &contactPoint ) = 0;
+	virtual void handleCollision( const Gear *gear, const ci::vec2 &contactPoint ) = 0;
 	virtual void draw() = 0;
 
-	void		setPosition( const ci::Vec2f &pos );
-	ci::Vec2f	getPos() const;
+	void		setPosition( const ci::vec2 &pos );
+	ci::vec2	getPos() const;
 
 	AudioController*	mAudio;
 	box2d::BodyRef		mBody;
@@ -26,7 +26,7 @@ struct SceneObject {
 struct Gear : public SceneObject {
 	Gear( AudioController *audio ) : SceneObject( audio )	{}
 
-	void handleCollision( const Gear *gear, const ci::Vec2f &contactPoint )	override	{}
+	void handleCollision( const Gear *gear, const ci::vec2 &contactPoint )	override	{}
 	void draw() override;
 
 	int64_t				mIdentifier;
@@ -39,10 +39,10 @@ struct Island : public SceneObject {
 
 	void makeBumpers();
 
-	void handleCollision( const Gear *gear, const ci::Vec2f &contactPoint ) override;
+	void handleCollision( const Gear *gear, const ci::vec2 &contactPoint ) override;
 	void draw() override;
 
-	std::vector<ci::Vec2f> mOuterVerts, mInnerVerts;
+	std::vector<ci::vec2> mOuterVerts, mInnerVerts;
 
 	std::vector<ci::Path2d>				mBumpers;
 	std::vector<ci::Rectf>				mBumperBoundingBoxes;
@@ -55,7 +55,7 @@ struct Island : public SceneObject {
 struct Wall : public SceneObject {
 	Wall( AudioController *audio ) : SceneObject( audio ), mVibrationLevel( 0 ), mFundamentalMidi( 0 ), mWidth( 0 )	{}
 
-	void handleCollision( const Gear *gear, const ci::Vec2f &contactPoint ) override;
+	void handleCollision( const Gear *gear, const ci::vec2 &contactPoint ) override;
 	void draw() override;
 
 	ci::Anim<float> mVibrationLevel;

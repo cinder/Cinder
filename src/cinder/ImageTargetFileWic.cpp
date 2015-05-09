@@ -24,6 +24,7 @@
 #include "cinder/Utilities.h"
 #include "cinder/msw/CinderMsw.h"
 
+#include <memory>
 #include <map>
 
 #if (_WIN32_WINNT >= _WIN32_WINNT_WIN8) || defined(_WIN7_PLATFORM_UPDATE)
@@ -55,7 +56,7 @@ map<string,const GUID*>& getExtensionMap()
 void ImageTargetFileWic::registerSelf()
 {
 	const int32_t PRIORITY = 2;
-	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileWic::createRef;
+	ImageIoRegistrar::TargetCreationFunc func = ImageTargetFileWic::create;
 	
 	ImageIoRegistrar::registerTargetType( "png", func, PRIORITY, "png" );
 	getExtensionMap()["png"] = &GUID_ContainerFormatPng;
@@ -72,7 +73,7 @@ void ImageTargetFileWic::registerSelf()
 	getExtensionMap()["wmp"] = &GUID_ContainerFormatWmp;
 }
 
-ImageTargetRef ImageTargetFileWic::createRef( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
+ImageTargetRef ImageTargetFileWic::create( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const string &extensionData )
 {
 	return ImageTargetRef( new ImageTargetFileWic( dataTarget, imageSource, options, extensionData ) );
 }
@@ -195,7 +196,7 @@ ImageTargetFileWic::ImageTargetFileWic( DataTargetRef dataTarget, ImageSourceRef
 	
 	setupPixelFormat( formatGUID );
 	
-	mData = shared_ptr<uint8_t>( new uint8_t[mHeight * mRowBytes], boost::checked_array_delete<uint8_t> );
+	mData = shared_ptr<uint8_t>( new uint8_t[mHeight * mRowBytes], std::default_delete<uint8_t[]>() );
 }
 
 void ImageTargetFileWic::setupPixelFormat( const GUID &guid )

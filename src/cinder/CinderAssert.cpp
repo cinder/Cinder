@@ -22,32 +22,22 @@
  */
 
 #include "cinder/CinderAssert.h"
+#include "cinder/Breakpoint.h"
 
 #include <iostream>
-#include <csignal>
 
 namespace cinder { namespace detail {
 
 void assertionFailedBreak( char const *expr, char const *function, char const *file, long line )
 {
 	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << std::endl;
-
-#if defined( CINDER_MSW )
-	__debugbreak();
-#else
-	std::raise( SIGINT );
-#endif
+	CI_BREAKPOINT();
 }
 
 void assertionFailedMessageBreak( char const *expr, char const *msg, char const *function, char const *file, long line )
 {
 	std::cerr << "*** Assertion Failed (break) *** | expression: ( " << expr << " ), location: " << file << "[" << line << "], " << function << "\n\tmessage: " << msg << std::endl;
-
-#if defined( CINDER_MSW )
-	__debugbreak();
-#else
-	std::raise( SIGINT );
-#endif
+	CI_BREAKPOINT();
 }
 
 void assertionFailedMessageAbort( char const *expr, char const *msg, char const *function, char const *file, long line )

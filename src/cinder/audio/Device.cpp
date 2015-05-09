@@ -23,7 +23,7 @@
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/Device.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -140,7 +140,7 @@ void Device::updateFormat( const Format &format )
 
 	auto deviceMgr = Context::deviceManager();
 
-	mSignalParamsWillChange();
+	mSignalParamsWillChange.emit();
 
 	if( sampleRate && sampleRate != mSampleRate ) {
 		// set the samplerate to 0, forcing it to refresh on next get.
@@ -154,7 +154,7 @@ void Device::updateFormat( const Format &format )
 	}
 
 	if( ! deviceMgr->isFormatUpdatedAsync() )
-		mSignalParamsDidChange();
+		mSignalParamsDidChange.emit();
 }
 
 string Device::printDevicesToString()
@@ -211,7 +211,7 @@ DeviceRef DeviceManager::addDevice( const string &key )
 
 void DeviceManager::emitParamsWillChange( const DeviceRef &device )
 {
-	device->mSignalParamsWillChange();
+	device->mSignalParamsWillChange.emit();
 }
 
 void DeviceManager::emitParamsDidChange( const DeviceRef &device )
@@ -220,7 +220,7 @@ void DeviceManager::emitParamsDidChange( const DeviceRef &device )
 	device->mSampleRate = 0;
 	device->mFramesPerBlock = 0;
 
-	device->mSignalParamsDidChange();
+	device->mSignalParamsDidChange.emit();
 }
 
 } } // namespace cinder::audio

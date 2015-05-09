@@ -23,6 +23,9 @@
 
 #pragma once
 
+#if defined( WINAPI_PARTITION_DESKTOP )
+  #if WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
+
 #if ( _WIN32_WINNT < 0x0502 ) || defined( CI_ENABLE_XAUDIO2 )
 	#define CINDER_AUDIO_XAUDIO2
 
@@ -31,7 +34,7 @@
 		#error "XAudio2 targeting minimum win8 cannot use v110_xp, switch to v110."
 	#endif
 
-#error "how the fuck is this resolving to true"
+#error "how is this resolving to true"
 	#define CINDER_XAUDIO_2_8
 #else
 	#define CINDER_XAUDIO_2_7
@@ -146,3 +149,5 @@ private:
 } } } // namespace cinder::audio::msw
 
 #endif //  CINDER_AUDIO_XAUDIO2
+#endif // WINAPI_FAMILY_PARTITION( WINAPI_PARTITION_DESKTOP )
+#endif // defined( WINAPI_FAMILY_PARTITION )

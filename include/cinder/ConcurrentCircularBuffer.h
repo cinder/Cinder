@@ -26,13 +26,13 @@
 #pragma once
 
 #include <boost/circular_buffer.hpp>
-#include <boost/noncopyable.hpp>
+#include "cinder/Noncopyable.h"
 #include "cinder/Thread.h"
 
 namespace cinder {
 
 template<typename T>
-class ConcurrentCircularBuffer : public boost::noncopyable {
+class ConcurrentCircularBuffer : private Noncopyable {
   public:
 	typedef boost::circular_buffer<T> container_type;
 	typedef typename container_type::size_type size_type;
@@ -70,7 +70,7 @@ class ConcurrentCircularBuffer : public boost::noncopyable {
 	//! Attempts to push \a item to the front of the buffer, but does not wait for an availability. Returns success as true or false.
 	bool tryPushFront( param_type item ) {
 		// param_type represents the "best" way to pass a parameter of type value_type to a method
-		std::unique_lock<std::mutex> lock( mMutex );
+		std::lock_guard<std::mutex> lock( mMutex );
 		if( ! is_not_full_impl() )
 			return false;
 		mContainer.push_front( item );
@@ -81,7 +81,7 @@ class ConcurrentCircularBuffer : public boost::noncopyable {
 
 	//! Attempts to pop an item from the back of the buffer, but does not wait for an availability. Returns success as true or false.
 	bool tryPopBack( value_type* pItem ) {
-		std::unique_lock<std::mutex> lock( mMutex );
+		std::lock_guard<std::mutex> lock( mMutex );
 		if( ! is_not_empty_impl() )
 			return false;
 		*pItem = mContainer[--mNumUnread];
@@ -89,13 +89,13 @@ class ConcurrentCircularBuffer : public boost::noncopyable {
 		return true;
 	}
 
-	bool isNotEmpty() {
-		std::unique_lock<std::mutex> lock( mMutex );
+	bool isNotEmpty() const {
+		std::lock_guard<std::mutex> lock( mMutex );
 		return is_not_empty_impl();
 	}
 
-	bool isNotFull() {
-		std::unique_lock<std::mutex> lock( mMutex );
+	bool isNotFull() const {
+		std::lock_guard<std::mutex> lock( mMutex );
 		return is_not_full_impl();
 	}
 	
@@ -107,7 +107,13 @@ class ConcurrentCircularBuffer : public boost::noncopyable {
 	}
 	
 	//! Returns the number of items the buffer can hold
-	size_t size() const { return (size_t)mContainer.capacity(); }
+	size_t getCapacity() const { return (size_t)mContainer.capacity(); }
+	
+	//! Returns the number of items the buffer is currently holding
+	size_t getSize() const {
+		std::lock_guard<std::mutex> lock( mMutex );
+		return mNumUnread;
+	}
 
   private:
 	bool is_not_empty_impl() const { return mNumUnread > 0; }
@@ -115,7 +121,7 @@ class ConcurrentCircularBuffer : public boost::noncopyable {
 
 	size_type				mNumUnread;
 	container_type			mContainer;
-	std::mutex				mMutex;
+	mutable std::mutex		mMutex;
 	std::condition_variable	mNotEmptyCond;
 	std::condition_variable	mNotFullCond;
 	bool					mCanceled;

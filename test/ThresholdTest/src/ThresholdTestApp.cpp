@@ -6,7 +6,7 @@
 using namespace fli;
 using namespace fli::app;
 
-class ThresholdTestApp : public AppBasic {
+class ThresholdTestApp : public App {
  public:
 	void setup();
 	void loadFile( const std::string &path );

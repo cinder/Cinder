@@ -112,6 +112,8 @@ class ImageSource : public ImageIo {
 	float		getPixelAspectRatio() const;
 	//! Returns whether the ImageSource's color data has been premultiplied by its alpha channel
 	bool		isPremultiplied() const;
+	//! Returns the number of bytes necessary to represent a row of the ImageSource
+	size_t		getRowBytes() const;	
 
 	virtual void	load( ImageTargetRef target ) = 0;
 
@@ -200,10 +202,7 @@ void			writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource
 
 class ImageIoException : public Exception {
   public:
-	ImageIoException( const std::string &description = "" ) : mDescription( description ) {}
-	virtual const char* what() const throw()	{ return mDescription.c_str(); }
-  protected:
-	std::string mDescription;
+	ImageIoException( const std::string &description = "" ) : Exception( description ) {}
 };
 
 class ImageIoExceptionFailedLoad : public ImageIoException {
@@ -267,28 +266,6 @@ struct ImageIoRegistrar {
 	static ImageIoRegistrar::Inst*	instance();		
 		
 	friend class ImageIo;
-};
-
-template<typename T>
-struct ImageIoRegistrant {
-	ImageIoRegistrant() {
-		(void) register_object;
-	}
-  private:
-	struct exec_register {
-		exec_register() {
-			T::registerSelf();
-		}
-	};
-	
-	static exec_register register_object;
-};
-
-template<typename D> typename ImageIoRegistrant<D>::exec_register ImageIoRegistrant<D>::register_object;
-
-#define REGISTER_IMAGE_IO_FILE_HANDLER( TYPE ) \
-struct ImageIoRegisterT##TYPE : public ImageIoRegistrant<TYPE> { \
-	ImageIoRegisterT##TYPE() : ImageIoRegistrant<TYPE>() {} \
 };
 
 } // namespace cinder

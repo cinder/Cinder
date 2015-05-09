@@ -37,6 +37,7 @@
 namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class TextureFont>	TextureFontRef;
+typedef std::shared_ptr<class GlslProg>		GlslProgRef;
 
 class TextureFont {
   public:
@@ -98,10 +99,15 @@ class TextureFont {
 		//! Sets the scale at which the type is rendered. 2 is double size. Default \c 1
 		DrawOptions&	scale( float sc ) { mScale = sc; return *this; }
 
+		//! Returns the user-specified glsl program if set. Otherwise returns nullptr.
+		const GlslProgRef& getGlslProg() const { return mGlslProg; }
+		//! Sets a custom shader to use when the type is rendered.
+		DrawOptions&	glslProg( const GlslProgRef &glslProg ) { mGlslProg = glslProg; return *this; }
 
 	  protected:
 		bool		mClipHorizontal, mClipVertical, mPixelSnap, mLigate;
 		float		mScale;
+		GlslProgRef	mGlslProg;
 	};
 
 	//! Creates a new TextureFontRef with font \a font, ensuring that glyphs necessary to render \a supportedChars are renderable, and format \a format
@@ -109,29 +115,29 @@ class TextureFont {
 	{ return TextureFontRef( new TextureFont( font, supportedChars, format ) ); }
 	
 	//! Draws string \a str at baseline \a baseline with DrawOptions \a options
-	void	drawString( const std::string &str, const Vec2f &baseline, const DrawOptions &options = DrawOptions() );
+	void	drawString( const std::string &str, const vec2 &baseline, const DrawOptions &options = DrawOptions() );
 	//! Draws string \a str fit inside \a fitRect vertically, with internal offset \a offset and DrawOptions \a options
-	void	drawString( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
+	void	drawString( const std::string &str, const Rectf &fitRect, const vec2 &offset = vec2(), const DrawOptions &options = DrawOptions() );
 	//! Draws word-wrapped string \a str fit inside \a fitRect, with internal offset \a offset and DrawOptions \a options. Mac & iOS only.
-	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const Vec2f &offset = Vec2f::zero(), const DrawOptions &options = DrawOptions() );
+	void	drawStringWrapped( const std::string &str, const Rectf &fitRect, const vec2 &offset = vec2(), const DrawOptions &options = DrawOptions() );
 	//! Draws the glyphs in \a glyphMeasures at baseline \a baseline with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Vec2f &baseline, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyphMeasures, const vec2 &baseline, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
 	//! Draws the glyphs in \a glyphMeasures clipped by \a clip, with \a offset added to each of the glyph offsets with DrawOptions \a options. \a glyphMeasures is a vector of pairs of glyph indices and offsets for the glyph baselines.
-	void	drawGlyphs( const std::vector<std::pair<uint16_t,Vec2f> > &glyphMeasures, const Rectf &clip, Vec2f offset, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
+	void	drawGlyphs( const std::vector<std::pair<uint16_t,vec2> > &glyphMeasures, const Rectf &clip, vec2 offset, const DrawOptions &options = DrawOptions(), const std::vector<ColorA8u> &colors = std::vector<ColorA8u>() );
 
 	//! Returns the size in pixels necessary to render the string \a str with DrawOptions \a options.
-	Vec2f	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
+	vec2	measureString( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 #if defined( CINDER_COCOA )
 	//! Returns the size in pixels necessary to render the word-wrapped string \a str fit inside \a fitRect with DrawOptions \a options. Mac & iOS only.
-	Vec2f	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
+	vec2	measureStringWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 #endif
     
 	//! Returns a vector of glyph/placement pairs representing \a str, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
+	std::vector<std::pair<uint16_t,vec2> >		getGlyphPlacements( const std::string &str, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
+	std::vector<std::pair<uint16_t,vec2> >		getGlyphPlacements( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 	//! Returns a  word-wrapped vector of glyph/placement pairs representing \a str fit inside \a fitRect, suitable for use with drawGlyphs. Useful for caching placement and optimizing batching. Mac & iOS only.
-	std::vector<std::pair<uint16_t,Vec2f> >		getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
+	std::vector<std::pair<uint16_t,vec2> >		getGlyphPlacementsWrapped( const std::string &str, const Rectf &fitRect, const DrawOptions &options = DrawOptions() ) const;
 
 	//! Returns the font the TextureFont represents
 	const Font&		getFont() const { return mFont; }
@@ -154,7 +160,7 @@ class TextureFont {
 	struct GlyphInfo {
 		uint8_t		mTextureIndex;
 		Area		mTexCoords;
-		Vec2f		mOriginOffset;
+		vec2		mOriginOffset;
 	};
 	
 #if defined( _MSC_VER ) && ( _MSC_VER >= 1600 ) || defined( _LIBCPP_VERSION )
@@ -162,7 +168,7 @@ class TextureFont {
 #else
 	boost::unordered_map<Font::Glyph, GlyphInfo>	mGlyphMap;
 #endif
-	std::vector<gl::Texture>						mTextures;
+	std::vector<gl::TextureRef>						mTextures;
 	Font											mFont;
 	Format											mFormat;
 };

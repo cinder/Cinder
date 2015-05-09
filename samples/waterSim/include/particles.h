@@ -9,7 +9,7 @@
 struct Particles{
 	Grid &grid;
 	int np; // number of particles
-	std::vector<ci::Vec2f> x, u; // positions and velocities
+	std::vector<ci::vec2> x, u; // positions and velocities
 	// transfer stuff
 	Array2f sum;
 
@@ -18,7 +18,7 @@ struct Particles{
 	   sum(grid_.pressure.nx+1, grid_.pressure.ny+1)
 	{}
 
-	void add_particle(const ci::Vec2f &px, const ci::Vec2f &pu);
+	void add_particle(const ci::vec2 &px, const ci::vec2 &pu);
 	void clear_particles();
 	void transfer_to_grid(void);
 	void update_from_grid(void);

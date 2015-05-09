@@ -10,8 +10,8 @@
  * author: Richard Eakin (2014)
  */
 
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/TextureFont.h"
 
 #include "cinder/audio/Context.h"
@@ -24,12 +24,12 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class InputAnalyzer : public AppNative {
+class InputAnalyzer : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void drawLabels();
 	void printBinInfo( int mouseX );
@@ -95,21 +95,21 @@ void InputAnalyzer::drawLabels()
 
 	// draw x-axis label
 	string freqLabel = "Frequency (hertz)";
-	mTextureFont->drawString( freqLabel, Vec2f( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
+	mTextureFont->drawString( freqLabel, vec2( getWindowCenter().x - mTextureFont->measureString( freqLabel ).x / 2, (float)getWindowHeight() - 20 ) );
 
 	// draw y-axis label
 	string dbLabel = "Magnitude (decibels, linear)";
 	gl::pushModelView();
 		gl::translate( 30, getWindowCenter().y + mTextureFont->measureString( dbLabel ).x / 2 );
-		gl::rotate( -90 );
-		mTextureFont->drawString( dbLabel, Vec2f::zero() );
+		gl::rotate( -M_PI / 2 );
+		mTextureFont->drawString( dbLabel, vec2( 0 ) );
 	gl::popModelView();
 }
 
 void InputAnalyzer::printBinInfo( int mouseX )
 {
 	size_t numBins = mMonitorSpectralNode->getFftSize() / 2;
-	size_t bin = min( numBins - 1, size_t( ( numBins * ( mouseX - mSpectrumPlot.getBounds().x1 ) ) / mSpectrumPlot.getBounds().getWidth() ) );
+	size_t bin = std::min( numBins - 1, size_t( ( numBins * ( mouseX - mSpectrumPlot.getBounds().x1 ) ) / mSpectrumPlot.getBounds().getWidth() ) );
 
 	float binFreqWidth = mMonitorSpectralNode->getFreqForBin( 1 ) - mMonitorSpectralNode->getFreqForBin( 0 );
 	float freq = mMonitorSpectralNode->getFreqForBin( bin );
@@ -118,4 +118,4 @@ void InputAnalyzer::printBinInfo( int mouseX )
 	console() << "bin: " << bin << ", freqency (hertz): " << freq << " - " << freq + binFreqWidth << ", magnitude (decibels): " << mag << endl;
 }
 
-CINDER_APP_NATIVE( InputAnalyzer, RendererGl )
+CINDER_APP( InputAnalyzer, RendererGl )

@@ -25,7 +25,6 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/Utilities.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
 
 using namespace std;
 

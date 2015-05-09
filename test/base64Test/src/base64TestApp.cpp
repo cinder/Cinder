@@ -1,12 +1,12 @@
-#include "cinder/app/AppBasic.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Base64.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class base64TestApp : public AppBasic {
+class base64TestApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
@@ -61,4 +61,4 @@ void base64TestApp::draw()
 }
 
 
-CINDER_APP_BASIC( base64TestApp, RendererGl )
+CINDER_APP( base64TestApp, RendererGl )

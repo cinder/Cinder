@@ -24,7 +24,6 @@
 #include "cinder/audio/Source.h"
 #include "cinder/audio/dsp/Converter.h"
 #include "cinder/audio/FileOggVorbis.h"
-#include "cinder/audio/Debug.h"
 
 #include "cinder/Utilities.h"
 
@@ -45,7 +44,11 @@ unique_ptr<SourceFile> SourceFile::create( const DataSourceRef &dataSource, size
 {
 	unique_ptr<SourceFile> result;
 
-	if( getPathExtension( dataSource->getFilePathHint().extension().string() ) == "ogg" )
+#if ! defined( CINDER_WINRT ) || ( _MSC_VER > 1800 )
+	if( dataSource->getFilePathHint().extension().string() == ".ogg" )
+#else
+	if( dataSource->getFilePathHint().extension() == ".ogg" )
+#endif
 		result.reset( new SourceFileOggVorbis( dataSource, sampleRate ) );
 	else {
 #if defined( CINDER_COCOA )
@@ -151,7 +154,7 @@ BufferRef SourceFile::loadBuffer()
 		Buffer converterDestBuffer( mConverter->getDestMaxFramesPerBlock(), getNumChannels() );
 		size_t readCount = 0;
 		while( true ) {
-			size_t framesNeeded = min( getMaxFramesPerRead(), mFileNumFrames - readCount );
+			size_t framesNeeded = std::min( getMaxFramesPerRead(), mFileNumFrames - readCount );
 			if( framesNeeded == 0 )
 				break;
 

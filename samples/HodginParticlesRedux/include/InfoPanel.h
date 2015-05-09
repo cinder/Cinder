@@ -8,11 +8,11 @@ class InfoPanel {
  public:
 	InfoPanel();
 	void createTexture();
-	void update( ci::Vec2f windowDim, float counter );
-	void render( ci::Vec2f windowDim );
+	void update( ci::vec2 windowDim, float counter );
+	void render( ci::vec2 windowDim );
 	void toggleState();
 	
-	ci::Vec2f			mLoc;
+	ci::vec2			mLoc;
 	
 	float				mOpacity;
 	float				mCounter;

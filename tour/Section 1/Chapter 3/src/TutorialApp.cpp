@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageIO.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Channel.h"
@@ -15,7 +15,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class TutorialApp : public AppBasic {
+class TutorialApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -28,7 +28,7 @@ class TutorialApp : public AppBasic {
 	Channel32f mChannel;
 	gl::Texture	mTexture;
 	
-	Vec2i mMouseLoc;
+	ivec2 mMouseLoc;
 	
 	ParticleController mParticleController;
 	
@@ -69,7 +69,7 @@ void TutorialApp::setup()
 
 	mParticleController = ParticleController( RESOLUTION );
 	
-	mMouseLoc = Vec2i( 0, 0 );
+	mMouseLoc = ivec2( 0, 0 );
 	
 	mDrawParticles = true;
 	mDrawImage = false;
@@ -97,4 +97,4 @@ void TutorialApp::draw()
 	}
 }
 
-CINDER_APP_BASIC( TutorialApp, RendererGl )
+CINDER_APP( TutorialApp, RendererGl )

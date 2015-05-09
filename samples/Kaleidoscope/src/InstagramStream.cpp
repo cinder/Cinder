@@ -6,13 +6,14 @@
 //	Copyright (c) 2012 The Barbarian Group. All rights reserved.
 //
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Rand.h"
 #include "cinder/Thread.h"
 #include "cinder/Function.h"
 #include "cinder/Json.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
+#include "cinder/Log.h"
 
 #include "InstagramStream.h"
 
@@ -54,7 +55,7 @@ mClientId( clientId )
 }
 
 
-InstagramStream::InstagramStream(ci::Vec2f loc, float dist, int minTs, int maxTs, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, float dist, int minTs, int maxTs, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )
@@ -62,7 +63,7 @@ mClientId( clientId )
 	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&min_timestamp=" + toString(minTs) + "&max_timestamp=" + toString(maxTs) + "&client_id="+ mClientId);
 }
 
-InstagramStream::InstagramStream(ci::Vec2f loc, float dist, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, float dist, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )
@@ -70,7 +71,7 @@ mClientId( clientId )
 	startThread(INSTAGRAM_API_URL + "/media/search?lat=" + toString(loc.x) + "&lng=" + toString(loc.y) + "&distance=" + toString(dist) + "&client_id="+ mClientId);
 }
 
-InstagramStream::InstagramStream(ci::Vec2f loc, std::string clientId )
+InstagramStream::InstagramStream(ci::vec2 loc, std::string clientId )
 : mBuffer( BUFFER_SIZE ), // our buffer of instagrams can hold up to 10
 mCanceled( false ),
 mClientId( clientId )
@@ -131,17 +132,16 @@ void InstagramStream::serviceGrams(string url)
 				try {
 					nextQueryString = queryResult["pagination"].getChild("next_url").getValue();
 				}
-				catch(...) {
-					
+				catch( ci::Exception &exc ) {
+					// ignoring pagination exception..
 				}
 				
 				searchResults = queryResult.getChild("data");
 				resultIt = searchResults.begin();
 				mIsConnected = true;
 			}
-			catch( ... ) {
-				
-				console() << "something broke" << endl;
+			catch( ci::Exception &exc ) {				
+				CI_LOG_W( "exception caught, what: " << exc.what() );
 				console() << queryResult << endl;
 				console() << nextQueryString << endl;
 				
@@ -165,8 +165,8 @@ void InstagramStream::serviceGrams(string url)
 				// string imageUrl = "http://distilleryimage5.s3.amazonaws.com/1dd174cca14611e1af7612313813f8e8_7.jpg"; // Test image
 				mBuffer.pushFront( Instagram( userName, imageUrl, image ) );
 			}
-			catch( ... ) { // just ignore any errors
-				console() << "ERRORS FOUND" << endl;
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "exception caught, what: " << exc.what() );
 			}
 			++resultIt;
 		}

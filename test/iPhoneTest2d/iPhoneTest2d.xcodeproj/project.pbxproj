@@ -10,6 +10,13 @@
 		0005641211517D7000ECFD91 /* iPhoneTest2dApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005641111517D7000ECFD91 /* iPhoneTest2dApp.cpp */; };
 		00056448115184D500ECFD91 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00056447115184D500ECFD91 /* OpenGLES.framework */; };
 		0005644B115184F100ECFD91 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0005644A115184F100ECFD91 /* QuartzCore.framework */; };
+		119B06481A86881500CC36BB /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B06461A86881500CC36BB /* AVFoundation.framework */; };
+		119B06491A86881500CC36BB /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B06471A86881500CC36BB /* CoreMedia.framework */; };
+		119B064C1A86882500CC36BB /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B064A1A86882500CC36BB /* AudioToolbox.framework */; };
+		119B064F1A86885600CC36BB /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B064E1A86885600CC36BB /* ImageIO.framework */; };
+		119B06511A86887E00CC36BB /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B06501A86887E00CC36BB /* CoreText.framework */; };
+		119B06531A86888800CC36BB /* Accelerate.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B06521A86888800CC36BB /* Accelerate.framework */; };
+		119B06551A8688D000CC36BB /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119B06541A8688D000CC36BB /* MobileCoreServices.framework */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
 		1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1DF5F4DF0D08C38300B7A737 /* UIKit.framework */; };
 		288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 288765FC0DF74451002DB57D /* CoreGraphics.framework */; };
@@ -19,6 +26,14 @@
 		0005641111517D7000ECFD91 /* iPhoneTest2dApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = iPhoneTest2dApp.cpp; path = src/iPhoneTest2dApp.cpp; sourceTree = "<group>"; };
 		00056447115184D500ECFD91 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		0005644A115184F100ECFD91 /* QuartzCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QuartzCore.framework; path = System/Library/Frameworks/QuartzCore.framework; sourceTree = SDKROOT; };
+		119B06461A86881500CC36BB /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		119B06471A86881500CC36BB /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		119B064A1A86882500CC36BB /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
+		119B064B1A86882500CC36BB /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
+		119B064E1A86885600CC36BB /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
+		119B06501A86887E00CC36BB /* CoreText.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreText.framework; path = System/Library/Frameworks/CoreText.framework; sourceTree = SDKROOT; };
+		119B06521A86888800CC36BB /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		119B06541A8688D000CC36BB /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D6058910D05DD3D006BFB54 /* iPhoneTest2d.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iPhoneTest2d.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1DF5F4DF0D08C38300B7A737 /* UIKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UIKit.framework; path = System/Library/Frameworks/UIKit.framework; sourceTree = SDKROOT; };
@@ -32,6 +47,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				119B06481A86881500CC36BB /* AVFoundation.framework in Frameworks */,
+				119B06491A86881500CC36BB /* CoreMedia.framework in Frameworks */,
+				119B064F1A86885600CC36BB /* ImageIO.framework in Frameworks */,
+				119B06551A8688D000CC36BB /* MobileCoreServices.framework in Frameworks */,
+				119B06531A86888800CC36BB /* Accelerate.framework in Frameworks */,
+				119B06511A86887E00CC36BB /* CoreText.framework in Frameworks */,
+				119B064C1A86882500CC36BB /* AudioToolbox.framework in Frameworks */,
 				1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */,
 				1DF5F4E00D08C38300B7A737 /* UIKit.framework in Frameworks */,
 				288765FD0DF74451002DB57D /* CoreGraphics.framework in Frameworks */,
@@ -90,6 +112,14 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				119B06541A8688D000CC36BB /* MobileCoreServices.framework */,
+				119B06521A86888800CC36BB /* Accelerate.framework */,
+				119B06501A86887E00CC36BB /* CoreText.framework */,
+				119B064E1A86885600CC36BB /* ImageIO.framework */,
+				119B064A1A86882500CC36BB /* AudioToolbox.framework */,
+				119B064B1A86882500CC36BB /* AudioUnit.framework */,
+				119B06461A86881500CC36BB /* AVFoundation.framework */,
+				119B06471A86881500CC36BB /* CoreMedia.framework */,
 				0005644A115184F100ECFD91 /* QuartzCore.framework */,
 				00056447115184D500ECFD91 /* OpenGLES.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
@@ -124,9 +154,15 @@
 /* Begin PBXProject section */
 		29B97313FDCFA39411CA2CEA /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "iPhoneTest2d" */;
 			compatibilityVersion = "Xcode 3.1";
+			developmentRegion = English;
 			hasScannedForEncodings = 1;
+			knownRegions = (
+				en,
+			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -169,7 +205,7 @@
 				GCC_PREFIX_HEADER = iPhoneTest2d_Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = "iPhoneTest2d-Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 3.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.0;
 				OTHER_LDFLAGS = "";
 				"OTHER_LDFLAGS[sdk=iphoneos*][arch=*]" = (
 					"$(CINDER_PATH)/lib/libcinder-iphone_d.a",
@@ -192,7 +228,6 @@
 					AVFoundation,
 				);
 				PRODUCT_NAME = iPhoneTest2d;
-				SDKROOT = iphonesimulator4.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -215,8 +250,9 @@
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CINDER_PATH = ../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -226,15 +262,16 @@
 					"$(CINDER_PATH)/boost",
 				);
 				PREBINDING = NO;
-				SDKROOT = iphonesimulator3.1;
+				SDKROOT = iphoneos;
 			};
 			name = Debug;
 		};
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
 				CINDER_PATH = ../..;
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
+				CLANG_CXX_LIBRARY = "libc++";
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				GCC_C_LANGUAGE_STANDARD = c99;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -244,7 +281,7 @@
 					"$(CINDER_PATH)/boost",
 				);
 				PREBINDING = NO;
-				SDKROOT = iphoneos3.1.3;
+				SDKROOT = iphoneos;
 			};
 			name = Release;
 		};

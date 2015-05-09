@@ -24,25 +24,10 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 
-#if defined( CINDER_MAC )
-	#if defined( __OBJC__ )
-		@class NSScreen;
-	#else
-		class NSScreen;
-	#endif
-	typedef uint32_t CGDirectDisplayID;
-#elif defined( CINDER_COCOA_TOUCH )
-	#if defined( __OBJC__ )
-		@class UIScreen;
-	#else
-		class UIScreen;
-	#endif
-#elif defined( CINDER_MSW )
-	#include <windows.h>
-	#undef min
-	#undef max
+#if defined( CINDER_MSW )
+	#include "cinder/msw/CinderWindowsFwd.h"
 #endif
 
 #include <map>
@@ -54,21 +39,21 @@ typedef std::shared_ptr<class Display> 	DisplayRef;
 
 class Display {
   public:
-	~Display();
+	virtual ~Display() {}
 
 	//! Returns the width of the screen measured in points
 	int				getWidth() const { return mArea.getWidth(); }
 	//! Returns the height of the screen measured in points
 	int				getHeight() const { return mArea.getHeight(); }
 	//! Returns the size of the Display measured in points
-	Vec2i			getSize() const { return Vec2i( getWidth(), getHeight() ); }
+	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }
 	//! Returns the Display aspect ratio, which is its width / height
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
 	Area			getBounds() const;
 	
 	//! Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative \a displayRelativeCoordinate. The results are suitable for use with app::Window's position functions.
-	Vec2i			getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const;
+	ivec2			getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const;
 
 	//! Returns the bits per pixel for the display. Typically 24 bits.
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
@@ -76,68 +61,26 @@ class Display {
 	float	getContentScale() const { return mContentScale; }
 
 	//! Returns whether the Display's coordinates contain \a pt.
-	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }
-
-#if defined( CINDER_MAC )
-	NSScreen*			getNsScreen() const { return mScreen; }
-	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
-#elif defined( CINDER_COCOA_TOUCH )
-	UIScreen*			getUiScreen() const { return mUiScreen; }
-	//! Returns a vector of resolutions the Display supports
-	const std::vector<Vec2i>&	getSupportedResolutions() const { return mSupportedResolutions; }
-	//! Sets the resolution of the Display. Rounds to the nearest supported resolution.
-	void				setResolution( const Vec2i &resolution );
-#endif
+	bool	contains( const ivec2 &pt ) const { return mArea.contains( pt ); }
 
 	//! Returns the system's primary display
 	static DisplayRef						getMainDisplay();
 	//! Returns a vector of all displays connected to the system
 	static const std::vector<DisplayRef>&	getDisplays();
 	//! Returns the Display which contains a given point, measured relative to the upper-left corner of the primary display. Returns a NULL DisplayRef on failure
-	static DisplayRef						getDisplayForPoint( const Vec2i &pt );
+	static DisplayRef						getDisplayForPoint( const ivec2 &pt );
 	//! Returns the Area which spans all Displays
 	static Area								getSpanningArea();
 	
-#if defined( CINDER_MAC )
-	static DisplayRef			findFromCgDirectDisplayId( CGDirectDisplayID displayID );
-	static DisplayRef			findFromNsScreen( NSScreen *nsScreen );
-#elif defined( CINDER_MSW )
-	//! Finds a Display based on its HMONITOR. Returns the primary display if it's not found
-	static DisplayRef			findFromHmonitor( HMONITOR hMonitor );
-	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
-#endif
-
 	friend std::ostream& operator<<( std::ostream &o, const Display &display )
 	{
 		return o << display.mArea << " @ " << display.mBitsPerPixel << "bpp @ scale " << display.mContentScale;
 	}	
-	
-#if defined( CINDER_COCOA_TOUCH )
-	//! Returns the signal emitted when a display is connected or disconnected
-	signals::signal<void()>&	getSignalDisplaysChanged() { return mSignalDisplaysChanged; }
-	template<typename T, typename Y>
-	void						connectDisplaysChanged( T fn, Y *inst ) { getSignalDisplaysChanged().connect( std::bind( fn, inst ) ); }
-#endif
-	
-  private:
+
+  protected:
 	Area		mArea;
 	int			mBitsPerPixel;
 	float		mContentScale;
-#if defined( CINDER_MAC )
-	NSScreen			*mScreen;
-	CGDirectDisplayID	mDirectDisplayID;
-#elif defined( CINDER_COCOA_TOUCH )
-	UIScreen				*mUiScreen;
-	std::vector<Vec2i>		mSupportedResolutions;
-	signals::signal<void()>	mSignalDisplaysChanged;
-#elif defined( CINDER_MSW )
-	HMONITOR			mMonitor;
-#endif
-	
-	static void		enumerateDisplays();
-	
-	static std::vector<DisplayRef>	sDisplays;
-	static bool						sDisplaysInitialized;
 };
 
 } // namespace cinder

@@ -6,8 +6,8 @@ using namespace ci;
 
 Emitter::Emitter()
 {
-	mLoc		= Vec3f::zero();
-	mVel		= Vec3f::zero();
+	mLoc		= vec3::zero();
+	mVel		= vec3::zero();
 	mRadius		= 50.0f;
 	mRadiusDest = 50.0f;
 	mHeat		= 0.0f;
@@ -15,9 +15,9 @@ Emitter::Emitter()
 }
 
 
-void Emitter::update( Vec3f mouseLoc, bool enableConstraints, bool mouseIsDown )
+void Emitter::update( vec3 mouseLoc, bool enableConstraints, bool mouseIsDown )
 {
-	Vec3f mouseVel( mouseLoc.x - mLoc.x, mouseLoc.y - mLoc.y, 0 );
+	vec3 mouseVel( mouseLoc.x - mLoc.x, mouseLoc.y - mLoc.y, 0 );
 	mVel -= ( mVel - mouseVel ) * 0.1f;
 	
 	mLoc += mVel;

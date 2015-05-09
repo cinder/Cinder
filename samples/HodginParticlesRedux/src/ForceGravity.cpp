@@ -5,7 +5,7 @@
 using namespace ci;
 using std::list;
 
-ForceGravity::ForceGravity( int type, Vec3f axis, float magnitude )
+ForceGravity::ForceGravity( int type, vec3 axis, float magnitude )
 	: Force( type, magnitude )
 {
 	mAxis = axis;

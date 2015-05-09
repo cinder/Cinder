@@ -5,7 +5,7 @@
 
 using namespace ci;
 
-Particle::Particle( Vec3f aLoc, Vec3f aVel )
+Particle::Particle( vec3 aLoc, vec3 aVel )
 {
 	
 	mLen			= 15;
@@ -15,7 +15,7 @@ Particle::Particle( Vec3f aLoc, Vec3f aVel )
 	}
 
 	mVel			= aVel;
-	mAcc			= Vec3f::zero();
+	mAcc			= vec3::zero();
 	
 	mRadius			= Rand::randFloat( 1.0f, 3.0f );
 	if( Rand::randFloat() < 0.01f )
@@ -39,7 +39,7 @@ Particle::Particle( Vec3f aLoc, Vec3f aVel )
 
 void Particle::move()
 {
-	if( mVel != Vec3f::zero() )
+	if( mVel != vec3::zero() )
 		mVel += mAcc;
 
 	
@@ -66,7 +66,7 @@ void Particle::update()
 
 void Particle::render( float heat )
 {
-	if( mIsDying && mVel == Vec3f::zero() ){
+	if( mIsDying && mVel == vec3::zero() ){
 		glColor4f( mAgePer * 0.5f, mAgePer * 0.35f, 1.0f - mAgePer, mAgePer + Rand::randFloat( 0.25f ) );
 	} else {
 		glColor4f( mAgePer, mAgePer * 0.75f, 1.0f - mAgePer + 0.15f, mAgePer + Rand::randFloat( 0.5f ) );
@@ -119,12 +119,12 @@ void Particle::renderQuadStripTrail()
 	for( int i=0; i<mLen-2; i++ ){
 		float per	= i / (float)(mLen-1);
 
-		Vec3f perp0	= Vec3f( mLoc[i].x, mLoc[i].y, 0.0f ) - Vec3f( mLoc[i+1].x, mLoc[i+1].y, 0.0f );
-		Vec3f perp1	= perp0.cross( Vec3f::zAxis() );
-		Vec3f perp2	= perp0.cross( perp1 );
+		vec3 perp0	= vec3( mLoc[i].x, mLoc[i].y, 0.0f ) - vec3( mLoc[i+1].x, mLoc[i+1].y, 0.0f );
+		vec3 perp1	= perp0.cross( vec3::zAxis() );
+		vec3 perp2	= perp0.cross( perp1 );
 			  perp1	= perp0.cross( perp2 ).normalized();
 			  
-		Vec3f off	= perp1 * ( mRadius * ( 1.0f - per ) * 0.25f  );
+		vec3 off	= perp1 * ( mRadius * ( 1.0f - per ) * 0.25f  );
 
 		glColor4f( ( 1.0f - per ) * 0.75f, 0.15f, per * 0.5f, ( 1.0f - per ) * mAgePer * 0.25f );
 		gl::vertex( mLoc[i] - off );

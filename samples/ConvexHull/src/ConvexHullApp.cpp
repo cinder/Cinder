@@ -1,14 +1,15 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/ConvexHull.h"
 #include "cinder/Rand.h"
-#include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
+#include "cinder/Font.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ConvexHullApp : public AppNative {
+class ConvexHullApp : public App {
   public:
 	void setup();
 	void makeNewLetter();
@@ -18,7 +19,7 @@ class ConvexHullApp : public AppNative {
 	void draw();
 
 	bool				mUsingShape;
-	vector<Vec2f>		mPoints;
+	vector<vec2>		mPoints;
 	Shape2d				mShape;
 
 	PolyLine2f			mConvexHull;
@@ -29,8 +30,8 @@ class ConvexHullApp : public AppNative {
 void ConvexHullApp::setup()
 {
 	mUsingShape = true;
-	mParams = params::InterfaceGl::create( "App parameters", Vec2i( 180, 100 ) );
-	mParams->addParam( "Use Shape", &mUsingShape );
+	mParams = params::InterfaceGl::create( "App parameters", ivec2( 180, 100 ) );
+	mParams->addParam( "Use Glyph", &mUsingShape );
 	mParams->addButton( "Clear Points", [&] { mPoints.clear(); } );
 	
 	if( mUsingShape )
@@ -41,7 +42,7 @@ void ConvexHullApp::makeNewLetter()
 {
 	Font arial( "Times", 512 );
 	mShape = arial.getGlyphShape( arial.getGlyphChar( '!' + randInt( 92 ) ) );
-	MatrixAffine2f transform = MatrixAffine2f::makeTranslate( Vec2f( 100, getWindowHeight() - 100 ) );
+	MatrixAffine2f transform = MatrixAffine2f::makeTranslate( vec2( 100, getWindowHeight() - 100 ) );
 	mShape.transform( transform );
 }
 
@@ -77,13 +78,13 @@ void ConvexHullApp::draw()
 	gl::enableAlphaBlending();
 
 	// draw solid convex hull
-	gl::color( ColorA( 0.8f, 0, 1.0f, 0.2f ) );	
+	gl::color( ColorA( 0.8f, 0, 1.0f, 0.2f ) );
 	gl::drawSolid( mConvexHull );
-	gl::color( ColorA( 0.8f, 0, 1.0f, 0.8f ) );	
+	gl::color( ColorA( 0.8f, 0, 1.0f, 0.8f ) );
 	gl::draw( mConvexHull );
 	
 	// draw convex hull points
-	gl::color( Color( 0.0f, 0, 1.0f ) );	
+	gl::color( Color( 0.0f, 0, 1.0f ) );
 	for( auto ptIt = mConvexHull.begin(); ptIt != mConvexHull.end(); ++ptIt ) {
 		gl::drawSolidCircle( *ptIt, 4 );
 	}
@@ -95,10 +96,10 @@ void ConvexHullApp::draw()
 	else {
 		for( auto ptIt = mPoints.begin(); ptIt != mPoints.end(); ++ptIt ) {
 			gl::drawSolidCircle( *ptIt, 3 );
-		}	
+		}
 	}
 		
 	mParams->draw();
 }
 
-CINDER_APP_NATIVE( ConvexHullApp, RendererGl )
+CINDER_APP( ConvexHullApp, RendererGl )

@@ -24,7 +24,6 @@
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/dsp/RingBuffer.h"
 #include "cinder/audio/dsp/Fft.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/CinderMath.h"
 
 using namespace std;
@@ -60,7 +59,7 @@ void MonitorNode::initialize()
 
 void MonitorNode::process( Buffer *buffer )
 {
-	size_t numFrames = min( buffer->getNumFrames(), mRingBuffers[0].getSize() );
+	size_t numFrames = std::min( buffer->getNumFrames(), mRingBuffers[0].getSize() );
 	for( size_t ch = 0; ch < getNumChannels(); ch++ ) {
 		if( ! mRingBuffers[ch].write( buffer->getChannel( ch ), numFrames ) )
 			return;
@@ -163,7 +162,7 @@ const std::vector<float>& MonitorSpectralNode::getMagSpectrum()
 	for( size_t i = 0; i < mMagSpectrum.size(); i++ ) {
 		float re = real[i];
 		float im = imag[i];
-		mMagSpectrum[i] = mMagSpectrum[i] * mSmoothingFactor + sqrt( re * re + im * im ) * magScale * ( 1 - mSmoothingFactor );
+		mMagSpectrum[i] = mMagSpectrum[i] * mSmoothingFactor + std::sqrt( re * re + im * im ) * magScale * ( 1 - mSmoothingFactor );
 	}
 
 	return mMagSpectrum;

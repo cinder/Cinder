@@ -5,6 +5,7 @@
 #include "cinder/Json.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Surface.h"
+#include "cinder/Log.h"
 
 #include <boost/algorithm/string/replace.hpp>
 
@@ -53,9 +54,10 @@ void TweetStream::serviceTweets()
 				searchResults = queryResult.getChild( "results" );
 				resultIt = searchResults.begin();
 			}
-			catch( ... ) {
+			catch( ci::Exception &exc ) {
 				// our API query failed: put up a "tweet" with our error
-				mBuffer.pushFront( Tweet( "Twitter API query failed", "sadness", Surface() ) );
+				CI_LOG_W( "exception caught parsing query: " << exc.what() );
+				mBuffer.pushFront( Tweet( "Twitter API query failed", "sadness", SurfaceRef() ) );
 				ci::sleep( 2000 ); // try again in 2 seconds
 			}
 		}
@@ -63,13 +65,14 @@ void TweetStream::serviceTweets()
 			try {
 				// get the URL and load the image for this profile
 				Url profileImgUrl = (*resultIt)["profile_image_url"].getValue<Url>();
-				Surface userIcon( loadImage( loadUrl( profileImgUrl ) ) );
+				SurfaceRef userIcon = Surface::create( loadImage( loadUrl( profileImgUrl ) ) );
 				// pull out the text of the tweet and replace any XML-style escapes
 				string text = replaceEscapes( (*resultIt)["text"].getValue() );
 				string userName = (*resultIt)["from_user"].getValue();
 				mBuffer.pushFront( Tweet( text, userName, userIcon ) );
 			}
-			catch( ... ) { // just ignore any errors
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "exception caught parsing search results: " << exc.what() );
 			}
 			++resultIt;
 		}
