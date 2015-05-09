@@ -14,8 +14,8 @@
 	</platform>
 	<platform os="msw">
 		<includePath>include/msw</includePath>
-		<staticLibrary>lib/msw/CVClient.lib</staticLibrary>
-		<staticLibrary>lib/msw/QTMLClient.lib</staticLibrary>
+		<staticLibrary>lib/msw/x86/CVClient.lib</staticLibrary>
+		<staticLibrary>lib/msw/x86/QTMLClient.lib</staticLibrary>
 	</platform>
 	<includePath>include</includePath>	
 </block>

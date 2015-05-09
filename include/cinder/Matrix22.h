@@ -154,8 +154,8 @@ public:
 	void				transpose();
 	Matrix22<T>			transposed() const;
 
-	void				invert (T epsilon = EPSILON ) { *this = inverted( epsilon ); }
-	Matrix22<T>			inverted( T epsilon = EPSILON ) const;
+	void				invert (T epsilon = FLT_MIN ) { *this = inverted( epsilon ); }
+	Matrix22<T>			inverted( T epsilon = FLT_MIN ) const;
 
 	// pre-multiplies row vector v - no divide by w
 	Vec2<T>				preMultiply( const Vec2<T> &v ) const;

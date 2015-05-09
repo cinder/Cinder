@@ -39,7 +39,7 @@ namespace cinder { namespace osc {
 		OscSender();
 		~OscSender();
 		
-		void setup( std::string hostname, int port, bool multicast );
+		void setup( std::string hostname, int port, bool broadcast = false );
 		
 		void sendMessage( const Message &message );
 		void sendBundle( const Bundle &bundle );
@@ -65,11 +65,12 @@ OscSender::~OscSender(){
 		shutdown();
 }
 
-void OscSender::setup( std::string hostname, int port, bool multicast )
+void OscSender::setup( std::string hostname, int port, bool broadcast )
 {
 	if( socket )
 		shutdown();
-	socket = new UdpTransmitSocket( IpEndpointName(hostname.c_str(), port), multicast );
+	socket = new UdpTransmitSocket( IpEndpointName(hostname.c_str(), port) );
+	socket->SetEnableBroadcast( broadcast );
 }
 
 void OscSender::shutdown(){
@@ -95,10 +96,8 @@ void OscSender::sendMessage( const Message &message )
 	char buffer[OUTPUT_BUFFER_SIZE];
 	::osc::OutboundPacketStream p(buffer, OUTPUT_BUFFER_SIZE);
 	
-	p << ::osc::BeginBundleImmediate;
 	appendMessage(message, p);
-	p << ::osc::EndBundle;
-	
+
 	socket->Send(p.Data(), p.Size());
 }
 
@@ -137,14 +136,14 @@ Sender::Sender()
 	oscSender = std::shared_ptr<OscSender>( new OscSender );
 }
 
-void Sender::setup( std::string hostname, int port, bool multicast )
+void Sender::setup( std::string hostname, int port, bool broadcast )
 {
-	oscSender->setup( hostname, port, multicast );
+	oscSender->setup( hostname, port, broadcast );
 }
 
 void Sender::sendMessage( const Message& message )
 {
-	oscSender->sendMessage(message);
+	oscSender->sendMessage( message );
 }
 
 void Sender::sendBundle( const Bundle& bundle )

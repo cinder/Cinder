@@ -172,7 +172,7 @@ TimelineItemRef Timeline::findLast( void *target ) const
 {
 	s_const_iter result = mItems.end();
 	for( s_const_iter iter = mItems.begin(); iter != mItems.end(); ++iter ) {
-		if( iter->second->getTarget() == target ) {
+		if( iter->second->getTarget() == target && ( ! iter->second->mMarkedForRemoval ) ) {
 			if( result == mItems.end() )
 				result = iter;
 			else if( iter->second->getStartTime() > result->second->getStartTime() )
@@ -189,7 +189,7 @@ TimelineItemRef Timeline::findLastEnd( void *target ) const
 
 	s_const_iter result = mItems.end();
 	for( s_const_iter iter = range.first; iter != range.second; ++iter ) {
-		if( iter->second->getTarget() == target ) {
+		if( iter->second->getTarget() == target && ( ! iter->second->mMarkedForRemoval ) ) {
 			if( result == mItems.end() )
 				result = iter;
 			else if( iter->second->getEndTime() > result->second->getEndTime() )
@@ -209,7 +209,7 @@ float Timeline::findEndTimeOf( void *target, bool *found ) const
 
 	s_const_iter result = mItems.end();
 	for( s_const_iter iter = range.first; iter != range.second; ++iter ) {
-		if( iter->second->getTarget() == target ) {
+		if( iter->second->getTarget() == target && ( ! iter->second->mMarkedForRemoval ) ) {
 			if( result == mItems.end() )
 				result = iter;
 			else if( iter->second->getEndTime() > result->second->getEndTime() )
@@ -273,16 +273,14 @@ void Timeline::cloneAndReplaceTarget( void *target, void *replacementTarget )
 
 void Timeline::replaceTarget( void *target, void *replacementTarget )
 {
-	if( target == 0 )
+	if( target == nullptr )
 		return;
 
-	pair<s_iter,s_iter> range = mItems.equal_range( target );
-	for( s_iter iter = range.first; iter != range.second; ) {
-		s_iter oldIter = iter;
-		++iter;
-		oldIter->second->setTarget( replacementTarget );
-		mItems.insert( make_pair( replacementTarget, oldIter->second ) );
-		mItems.erase( oldIter );
+	s_iter iter = mItems.find( target );
+	while( ( iter != mItems.end() ) && ( iter->first == target ) ) {
+		iter->second->setTarget( replacementTarget );
+		mItems.insert( make_pair( replacementTarget, iter->second ) );
+		iter = mItems.erase( iter );
 	}
 }
 

@@ -140,7 +140,7 @@ ImageTargetFileQuartz::ImageTargetFileQuartz( DataTargetRef dataTarget, ImageSou
 	}
 	
 	if( ! mImageDest )
-		throw ImageIoExceptionFailedWrite();
+		throw ImageIoExceptionFailedWrite( "Failed to write CGImageDestinationRef." );
 		
 	setupImageDestOptions( options );
 }
@@ -150,9 +150,9 @@ void ImageTargetFileQuartz::finalize()
 	ImageTargetCgImage::finalize();
 	
 	::CGImageDestinationAddImage( mImageDest, mImageRef, mImageDestOptions.get() );
-	if( ! ::CGImageDestinationFinalize( mImageDest ) ) { // failed to write
+	if( ! ::CGImageDestinationFinalize( mImageDest ) ) {
 		::CFRelease( mImageDest );
-		throw ImageIoExceptionFailedWrite();
+		throw ImageIoExceptionFailedWrite( "Write Failed, could not finalize CGImage.");
 	}
 
 	// clean up

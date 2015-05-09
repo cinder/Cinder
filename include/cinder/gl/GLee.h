@@ -52,12 +52,17 @@
 	#error glxext.h included before glee.h
 #endif
 
-#ifdef WIN32
+#if defined(_WIN32) || defined(__WIN32__) || defined(WIN32)
 	#define WIN32_LEAN_AND_MEAN
 	#include <windows.h>
 	#undef min
 	#undef max
-	#include <GL/gl.h>
+	#if defined( CINDER_WINRT )
+		#include "cinder/dx/gldx.h"
+	#else
+		#include <GL/gl.h>
+	#endif
+
 #elif defined(__APPLE__) || defined(__APPLE_CC__)
     #define GL_GLEXT_LEGACY
 	#include <OpenGL/gl.h>

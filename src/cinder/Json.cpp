@@ -2,6 +2,8 @@
  Copyright (c) 2012, The Cinder Project
  All rights reserved.
  
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -23,19 +25,21 @@
 */
 
 
-#include "boost/algorithm/string.hpp"
-#include "json/json.h"
+#include <boost/algorithm/string.hpp>
+#include <json/json.h>
 
 #include "cinder/Json.h"
 #include "cinder/Stream.h"
 #include "cinder/Utilities.h"
+
+#include <cstdlib>
 
 using namespace std;
 
 namespace cinder {
 	
 JsonTree::ParseOptions::ParseOptions() 
-: mIgnoreErrors( false ) 
+	: mIgnoreErrors( false ), mAllowComments( true )
 {
 }
 	
@@ -50,8 +54,19 @@ bool JsonTree::ParseOptions::getIgnoreErrors() const
 	return mIgnoreErrors; 
 }
 
+JsonTree::ParseOptions& JsonTree::ParseOptions::allowComments( bool allow )
+{
+	mAllowComments = allow;
+	return *this;
+}
+
+bool JsonTree::ParseOptions::getAllowComments() const
+{
+	return mAllowComments;
+}
+
 JsonTree::WriteOptions::WriteOptions()
-: mCreateDocument( false ), mIndented( true )
+	: mCreateDocument( false ), mIndented( true )
 {
 }
 
@@ -263,8 +278,8 @@ void JsonTree::init( const string &key, const Json::Value &value, bool setType, 
 Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions parseOptions )
 {
 	Json::Features features;
-	features.allowComments_ = false;
-	features.strictRoot_ = !parseOptions.getIgnoreErrors();
+	features.allowComments_ = parseOptions.getAllowComments();
+	features.strictRoot_ = ! parseOptions.getIgnoreErrors();
 	Json::Reader reader( features );
 	Json::Value value;
     try {
@@ -273,7 +288,7 @@ Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions 
 	catch ( ... ) {
 		throw ExcJsonParserError( "Unknown error." );
     }
-	if( !parseOptions.getIgnoreErrors() ) {
+	if( ! parseOptions.getIgnoreErrors() ) {
 		string errorMessage = reader.getFormattedErrorMessages();
 		if( errorMessage.length() > 0 ) {
 			throw ExcJsonParserError( errorMessage );
@@ -285,6 +300,12 @@ Json::Value JsonTree::deserializeNative( const string &jsonString, ParseOptions 
 void JsonTree::clear()
 {
 	mChildren.clear();
+}
+
+JsonTree& JsonTree::addChild( const JsonTree &newChild )
+{
+	pushBack( newChild );
+	return *this;
 }
 
 void JsonTree::pushBack( const JsonTree &newChild )
@@ -664,13 +685,8 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 
 		// This routine serializes JsonCpp data and formats it
 		if( writeOptions.getIndented() ) {
-			Json::StyledWriter writer;
-			jsonString = writer.write( value.toStyledString() );
-			boost::replace_all( jsonString, "\\n", "\r\n" );
-			boost::replace_all( jsonString, "\\\"", "\"" );
-			if( jsonString.length() >= 3 ) {
-				jsonString = jsonString.substr( 1, boost::trim_copy( jsonString ).length() - 2 );
-			}
+			jsonString = value.toStyledString();
+			boost::replace_all( jsonString, "\n", "\r\n" );
 		} else {
 			Json::FastWriter writer;
 			jsonString = writer.write( value );
@@ -693,17 +709,29 @@ void JsonTree::write( DataTargetRef target, JsonTree::WriteOptions writeOptions 
 
 JsonTree::ExcChildNotFound::ExcChildNotFound( const JsonTree &node, const string &childPath ) throw()
 {
+#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
+#else
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
+#endif
 }
 
 JsonTree::ExcNonConvertible::ExcNonConvertible( const JsonTree &node ) throw()
 {
+#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
+#else
 	sprintf( mMessage, "Unable to convert value for node: %s", node.getPath().c_str() );
+#endif
 }
 
 JsonTree::ExcJsonParserError::ExcJsonParserError( const string &errorMessage ) throw()
 {
+#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );
+#else
 	sprintf( mMessage, "Unable to parse JSON\n: %s", errorMessage.c_str() );
+#endif
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////

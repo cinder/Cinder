@@ -23,6 +23,7 @@
 #include "cinder/ip/Trim.h"
 
 #include <boost/preprocessor/seq.hpp>
+#include <algorithm>
 
 namespace cinder { namespace ip {
 

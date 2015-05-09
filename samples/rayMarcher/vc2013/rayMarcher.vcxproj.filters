@@ -1,0 +1,68 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="Blocks">
+      <UniqueIdentifier>{38FCB21C-C008-4E51-A2FA-009A7B35C2F0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cairo">
+      <UniqueIdentifier>{1A275241-3010-4597-BC1E-487D467389F2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cairo\src">
+      <UniqueIdentifier>{17E8A191-9BA1-4393-9EB7-C71341D2376E}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cairo\include">
+      <UniqueIdentifier>{230F56DE-2C4E-4EF2-8A60-2BA648C246A1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cairo\include\cinder">
+      <UniqueIdentifier>{F9890D36-6FAB-4E49-8D05-ADEA230E3657}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Blocks\Cairo\include\cinder\cairo">
+      <UniqueIdentifier>{BBE6B313-B0E1-4234-8E86-8AA873F7EE5C}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\src\RayMarcherApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\RayMarcherApp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClCompile Include="..\..\..\blocks\Cairo\src\Cairo.cpp">
+      <Filter>Blocks\Cairo\src</Filter>
+    </ClCompile>
+    <ClInclude Include="..\..\..\blocks\Cairo\include\cinder\cairo\Cairo.h">
+      <Filter>Blocks\Cairo\include\cinder\cairo</Filter>
+    </ClInclude>
+    <ClCompile Include="..\src\RayMarcher.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\include\Resources.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\RayMarcher.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources.rc">
+      <Filter>Resource Files</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>

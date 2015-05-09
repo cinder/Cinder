@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+﻿#include "cinder/app/AppBasic.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
@@ -43,7 +43,14 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 	else if( event.getChar() == 'o' ) {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() )
-			mTexture = gl::Texture( loadImage( path.string() ) );
+			mTexture = gl::Texture( loadImage( path ) );
+	}
+	else if( event.getChar() == 's' ) {
+		fs::path path = getSaveFilePath();
+		if( ! path.empty() ) {
+			Surface s8( mTexture );
+			writeImage( writeFile( path ), s8 );
+		}
 	}
 }
 

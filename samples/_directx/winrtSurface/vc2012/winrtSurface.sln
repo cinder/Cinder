@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winrtSurface", "winrtSurface.vcxproj", "{9FB0D5F4-5EBD-4676-9A3C-8387CE1FED51}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9FB0D5F4-5EBD-4676-9A3C-8387CE1FED51}.Debug|Win32.ActiveCfg = Debug|Win32
+		{9FB0D5F4-5EBD-4676-9A3C-8387CE1FED51}.Debug|Win32.Build.0 = Debug|Win32
+		{9FB0D5F4-5EBD-4676-9A3C-8387CE1FED51}.Release|Win32.ActiveCfg = Release|Win32
+		{9FB0D5F4-5EBD-4676-9A3C-8387CE1FED51}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

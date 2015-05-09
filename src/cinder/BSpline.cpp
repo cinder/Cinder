@@ -406,53 +406,6 @@ void BSplineBasis::compute( float fTime, unsigned int uiOrder, int &riMinIndex, 
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////
-// Integration functions for arc length
-template<typename T>
-typename T::TYPE getSpeedWithData( float fTime, void* pvData)
-{
-    return ((BSpline<T>*)pvData)->getSpeed( fTime );
-}
-
-template<typename Real>
-Real rombergIntegral( int iOrder, Real fA, Real fB, Real (*oF)(Real,void*), void* pvUserData )
-{
-    assert(iOrder > 0);
-    Real** aafRom;
-    //Allocate<Real>(iOrder,2,aafRom);
-    allocate2D<Real>( iOrder, 2, aafRom );
-
-    Real fH = fB - fA;
-
-    aafRom[0][0] = ((Real)0.5)*fH*(oF(fA,pvUserData)+oF(fB,pvUserData));
-    for (int i0=2, iP0=1; i0 <= iOrder; i0++, iP0 *= 2, fH *= (Real)0.5)
-    {
-        // approximations via the trapezoid rule
-        Real fSum = (Real)0.0;
-        int i1;
-        for (i1 = 1; i1 <= iP0; i1++)
-        {
-            fSum += oF(fA + fH*(i1-((Real)0.5)),pvUserData);
-        }
-
-        // Richardson extrapolation
-        aafRom[1][0] = ((Real)0.5)*(aafRom[0][0] + fH*fSum);
-        for (int i2 = 1, iP2 = 4; i2 < i0; i2++, iP2 *= 4)
-        {
-            aafRom[1][i2] = (iP2*aafRom[1][i2-1] - aafRom[0][i2-1])/(iP2-1);
-        }
-
-        for (i1 = 0; i1 < i0; i1++)
-        {
-            aafRom[0][i1] = aafRom[1][i1];
-        }
-    }
-
-    Real fResult = aafRom[0][iOrder-1];
-    deallocate2D<Real>( aafRom );
-    return fResult;
-}
-
-//////////////////////////////////////////////////////////////////////////////////////////////
 // BSpline
 template<typename T>
 BSpline<T>::BSpline( const std::vector<T> &points, int degree, bool loop, bool open )
@@ -662,7 +615,7 @@ float BSpline<T>::getLength( float fT0, float fT1 ) const
 	if( fT0 >= fT1 )
 		return (float)0.0;
 
-    return rombergIntegral<typename T::TYPE>( 10, fT0, fT1, getSpeedWithData<T>, (void*)this );
+    return rombergIntegral<typename T::TYPE,10>( fT0, fT1, std::bind( &BSpline<T>::getSpeed, this, std::placeholders::_1 ) );
 }
 
 template<typename T>

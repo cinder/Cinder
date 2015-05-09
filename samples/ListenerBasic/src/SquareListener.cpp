@@ -12,8 +12,8 @@ SquareListener::SquareListener( app::WindowRef window )
 	mRect.offset( window->getCenter() );
 	mSelected = false;
 	
-	mCbMouseDown = mWindow->getSignalMouseDown().connect( std::bind( &SquareListener::mouseDown, this, std::_1 ) );
-	mCbMouseDrag = mWindow->getSignalMouseDrag().connect( std::bind( &SquareListener::mouseDrag, this, std::_1 ) );	
+	mCbMouseDown = mWindow->getSignalMouseDown().connect( std::bind( &SquareListener::mouseDown, this, std::placeholders::_1 ) );
+	mCbMouseDrag = mWindow->getSignalMouseDrag().connect( std::bind( &SquareListener::mouseDrag, this, std::placeholders::_1 ) );	
 }
  
 void SquareListener::mouseDown( MouseEvent &event )

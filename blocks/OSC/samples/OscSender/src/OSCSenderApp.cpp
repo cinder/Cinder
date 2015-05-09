@@ -73,9 +73,8 @@ void OSCSenderApp::update()
 	positionX = cos(freq * getElapsedSeconds()) / 2.0f + .5f;
 	
 	osc::Message message;
-	message.addFloatArg(positionX);
 	message.setAddress("/cinder/osc/1");
-	message.setRemoteEndpoint(host, port);
+	message.addFloatArg(positionX);
 	sender.sendMessage(message);
 }
 

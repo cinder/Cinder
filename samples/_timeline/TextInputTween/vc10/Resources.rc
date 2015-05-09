@@ -1,5 +1,0 @@
-#include "Resources.h"
-
-ID ICON "..\\resources\\cinder_app_icon.ico"
-
-RES_CUSTOM_FONT

@@ -197,11 +197,11 @@ bool isExtensionAvailable( const std::string &extName )
 	std::map<std::string,bool>::const_iterator extIt = sExtMap.find( extName );
 	if( extIt == sExtMap.end() ) {
 		bool found = false;
-		int extNameLen = extName.size();
+		size_t extNameLen = extName.size();
 		const char *p = sExtStr;
 		const char *end = sExtStr + strlen( sExtStr );
 		while( p < end ) {
-			int n = strcspn( p, " " );
+			size_t n = strcspn( p, " " );
 			if( (extNameLen == n) && ( strncmp(extName.c_str(), p, n) == 0)) {
 				found = true;
 				break;
@@ -834,7 +834,7 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
 
 	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4];
-	size_t tri = 0;
+	GLsizei tri = 0;
 	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
 	const float cornerCenterVerts[8] = { r.x2 - cornerRadius, r.y2 - cornerRadius, r.x1 + cornerRadius, r.y2 - cornerRadius,
 			r.x1 + cornerRadius, r.y1 + cornerRadius, r.x2 - cornerRadius, r.y1 + cornerRadius };
@@ -1138,7 +1138,7 @@ void draw( const PolyLine<Vec2f> &polyLine )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
-	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, polyLine.size() );
+	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)polyLine.size() );
 	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
@@ -1146,7 +1146,7 @@ void draw( const PolyLine<Vec3f> &polyLine )
 {
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 3, GL_FLOAT, 0, &(polyLine.getPoints()[0]) );
-	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, polyLine.size() );
+	glDrawArrays( ( polyLine.isClosed() ) ? GL_LINE_LOOP : GL_LINE_STRIP, 0, (GLsizei)polyLine.size() );
 	glDisableClientState( GL_VERTEX_ARRAY );
 }
 
@@ -1157,7 +1157,7 @@ void draw( const Path2d &path2d, float approximationScale )
 	std::vector<Vec2f> points = path2d.subdivide( approximationScale );
 	glEnableClientState( GL_VERTEX_ARRAY );
 	glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-	glDrawArrays( GL_LINE_STRIP, 0, points.size() );
+	glDrawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
 
@@ -1169,7 +1169,7 @@ void draw( const Shape2d &shape2d, float approximationScale )
 			continue;
 		std::vector<Vec2f> points = contourIt->subdivide( approximationScale );
 		glVertexPointer( 2, GL_FLOAT, 0, &(points[0]) );
-		glDrawArrays( GL_LINE_STRIP, 0, points.size() );
+		glDrawArrays( GL_LINE_STRIP, 0, (GLsizei)points.size() );
 	}
 	glDisableClientState( GL_VERTEX_ARRAY );	
 }
@@ -1223,10 +1223,10 @@ void draw( const TriMesh2d &mesh )
 	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
+	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
 	delete [] indices;
 #else
-	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
 #endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
@@ -1269,10 +1269,10 @@ void drawRange( const TriMesh2d &mesh, size_t startTriangle, size_t triangleCoun
 	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
+	glDrawElements( GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
 	delete [] indices;
 #else
-	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+	glDrawRangeElements( GL_TRIANGLES, 0, (GLuint)mesh.getNumVertices(), (GLsizei)triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
 #endif
 	
 	glDisableClientState( GL_VERTEX_ARRAY );
@@ -1316,10 +1316,10 @@ void draw( const TriMesh &mesh )
 	for ( size_t i = 0; i < mesh.getIndices().size(); i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
+	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getIndices().size(), GL_UNSIGNED_SHORT, (const GLvoid*)indices );
 	delete [] indices;
 #else
-	glDrawElements( GL_TRIANGLES, mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
+	glDrawElements( GL_TRIANGLES, (GLsizei)mesh.getNumIndices(), GL_UNSIGNED_INT, &(mesh.getIndices()[0]) );
 #endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
@@ -1367,10 +1367,10 @@ void drawRange( const TriMesh &mesh, size_t startTriangle, size_t triangleCount 
 	for ( size_t i = 0; i < max; i++ ) {
 		indices[ i ] = static_cast<GLushort>( mesh.getIndices()[ i ] );
 	}
-	glDrawElements( GL_TRIANGLES, count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
+	glDrawElements( GL_TRIANGLES, (GLsizei)count, GL_UNSIGNED_SHORT, (const GLvoid*)( indices + start ) );
 	delete [] indices;
 #else
-	glDrawRangeElements( GL_TRIANGLES, 0, mesh.getNumVertices(), triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
+	glDrawRangeElements( GL_TRIANGLES, 0, (GLuint)mesh.getNumVertices(), (GLsizei)triangleCount * 3, GL_UNSIGNED_INT, &(mesh.getIndices()[startTriangle*3]) );
 #endif
 
 	glDisableClientState( GL_VERTEX_ARRAY );
@@ -1385,7 +1385,7 @@ void draw( const VboMesh &vbo )
 	if( vbo.getNumIndices() > 0 )
 		drawRange( vbo, (size_t)0, vbo.getNumIndices() );
 	else
-		drawArrays( vbo, 0, vbo.getNumVertices() );
+		drawArrays( vbo, 0, (GLsizei)vbo.getNumVertices() );
 }
 
 void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int vertexStart, int vertexEnd )
@@ -1394,12 +1394,12 @@ void drawRange( const VboMesh &vbo, size_t startIndex, size_t indexCount, int ve
 		return;
 
 	if( vertexStart < 0 ) vertexStart = 0;
-	if( vertexEnd < 0 ) vertexEnd = vbo.getNumVertices();
+	if( vertexEnd < 0 ) vertexEnd = (int)vbo.getNumVertices();
 
 	vbo.enableClientStates();
 	vbo.bindAllData();
 	
-	glDrawRangeElements( vbo.getPrimitiveType(), vertexStart, vertexEnd, indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
+	glDrawRangeElements( vbo.getPrimitiveType(), vertexStart, vertexEnd, (GLsizei)indexCount, GL_UNSIGNED_INT, (GLvoid*)( sizeof(uint32_t) * startIndex ) );
 	
 	gl::VboMesh::unbindBuffers();
 	vbo.disableClientStates();

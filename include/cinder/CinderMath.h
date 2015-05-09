@@ -27,10 +27,11 @@
 #include "cinder/Cinder.h"
 #include <cmath>
 #include <climits>
-#if defined( CINDER_MSW )
+#include <cfloat>
+#include <functional>
+#if defined( CINDER_MSW ) || defined( CINDER_WINRT )
 	#undef min
 	#undef max
-	#include <float.h>
 #endif
 
 namespace cinder {
@@ -177,6 +178,13 @@ T constrain( T val, T minVal, T maxVal )
 	else return val;
 }
 
+//! Returns the fractional part of \a x, calculated as `x - floor( x )`
+template<typename T>
+T fract( T x )
+{
+	return x - math<T>::floor( x );
+}
+
 // Don Hatch's version of sin(x)/x, which is accurate for very small x.
 // Returns 1 for x == 0.
 template <class T>
@@ -214,6 +222,12 @@ inline uint32_t nextPowerOf2( uint32_t x )
     return(x+1);
 }
 
+//! Returns true if \a x is a power of two, false otherwise.
+inline bool isPowerOf2( size_t x )
+{
+	return ( x & ( x - 1 ) ) == 0;
+}
+
 template<typename T>
 inline int solveLinear( T a, T b, T result[1] )
 {
@@ -242,14 +256,51 @@ inline int solveQuadratic( T a, T b, T c, T result[2] )
 	return 2;
 }
 
+template<typename T,int ORDER>
+T rombergIntegral( T a, T b, const std::function<T(T)> &SPEEDFN )
+{
+	static_assert(ORDER > 2, "ORDER must be greater than 2" );
+	T rom[2][ORDER];
+	T half = b - a;
+
+	rom[0][0] = ((T)0.5) * half * ( SPEEDFN(a)+SPEEDFN(b) );
+	for( int i0=2, iP0=1; i0 <= ORDER; i0++, iP0 *= 2, half *= (T)0.5) {
+		// approximations via the trapezoid rule
+		T sum = 0;
+		for( int i1 = 1; i1 <= iP0; i1++ )
+			sum += SPEEDFN(a + half*(i1-((T)0.5)));
+
+		// Richardson extrapolation
+		rom[1][0] = ((T)0.5)*(rom[0][0] + half*sum);
+		for( int i2 = 1, iP2 = 4; i2 < i0; i2++, iP2 *= 4 )
+			rom[1][i2] = (iP2*rom[1][i2-1] - rom[0][i2-1])/(iP2-1);
+		for( int i1 = 0; i1 < i0; i1++ )
+			rom[0][i1] = rom[1][i1];
+	}
+
+	return rom[0][ORDER-1];
+}
+
 template<typename T>
 int solveCubic( T a, T b, T c, T d, T result[3] );
 
 } // namespace cinder
 
-#if defined( _MSC_VER )
+#if defined( _MSC_VER ) && ( _MSC_VER < 1800 )
+// define math.h functions that aren't defined until vc120
 namespace std {
-	inline bool isfinite( float arg ) { return _finite( arg ) != 0; }
-	inline bool isfinite( double arg ) { return _finite( arg ) != 0; }
-}
-#endif
+
+inline bool isfinite( float arg )	{ return _finite( arg ) != 0; }
+inline bool isfinite( double arg )	{ return _finite( arg ) != 0; }
+inline bool isnan( float arg )		{ return _isnan( arg ) != 0; }
+inline bool isnan( double arg )		{ return _isnan( arg ) != 0; }
+
+// note that while these round* variants follow the basic premise of c99 implementations (numbers with fractional parts of 0.5 should be
+// rounded away from zero), they are not 100% compliable implementations since they do not cover all edge cases like NaN's, inifinite numbers, etc.
+inline double	round( double x )	{ return floor( x < 0 ? x - 0.5 : x + 0.5 ); }
+inline float	roundf( float x )	{ return floorf( x < 0 ? x - 0.5f : x + 0.5f );	}
+inline long int lround( double x )	{ return (long int)( x < 0 ? x - 0.5 : x + 0.5 ); }
+inline long int lroundf( float x )	{ return (long int)( x < 0 ? x - 0.5f : x + 0.5f );	}
+
+} // namespace std
+#endif // defined( _MSC_VER ) && ( _MSC_VER < 1800 )

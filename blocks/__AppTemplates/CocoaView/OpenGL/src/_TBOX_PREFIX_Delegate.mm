@@ -17,6 +17,8 @@
 	mApp->prepareLaunch();
 	mApp->setupCinderView( cinderView, cinder::app::RendererGl::create() );
 	mApp->launch();
+
+	[window setAcceptsMouseMovedEvents:YES];
 	
 	colorWell.color = [NSColor colorWithCalibratedRed:mApp->mColor.r green:mApp->mColor.g blue:mApp->mColor.b alpha:1.0f]; 
 }

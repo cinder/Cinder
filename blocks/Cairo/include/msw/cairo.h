@@ -1,4 +1,4 @@
-/* cairo - a vector graphics library with display and print output
+﻿/* cairo - a vector graphics library with display and print output
  *
  * Copyright © 2002 University of Southern California
  * Copyright © 2005 Red Hat, Inc.
@@ -37,6 +37,8 @@
 
 #ifndef CAIRO_H
 #define CAIRO_H
+
+#define CAIRO_WIN32_STATIC_BUILD 1
 
 #include "cairo-version.h"
 #include "cairo-features.h"

@@ -27,7 +27,7 @@
 #include "cinder/Exception.h"
 
 struct png_struct_def;
-struct png_info_struct;
+typedef struct png_info_def png_info;
 
 namespace cinder {
 
@@ -51,12 +51,14 @@ class ImageSourcePng : public ImageSource {
 	
 	std::shared_ptr<ci_png_info>	mCiInfoPtr;
 	png_struct_def					*mPngPtr;
-	png_info_struct					*mInfoPtr;
+	png_info						*mInfoPtr;
 };
 
 REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourcePng )
 
 class ImageSourcePngException : public ImageIoException {
+  public:
+	ImageSourcePngException( const std::string &description ) : ImageIoException( description ) {}
 };
 
 } // namespace cinder

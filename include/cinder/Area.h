@@ -112,6 +112,8 @@ class Area {
 	Area&		operator+=( const Vec2i &o ) { offset( o ); return *this; }
 	Area&		operator-=( const Vec2i &o ) { offset( -o ); return *this; }
 
+	//! Constructs an Area with all values initialized to zero.
+	static	Area zero()				{ return Area( 0, 0, 0, 0 ); }
 	static Area	proportionalFit( const Area &srcArea, const Area &dstArea, bool center, bool expand = false );
 
 	friend std::ostream& operator<<( std::ostream &o, const Area &area )

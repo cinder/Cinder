@@ -37,7 +37,7 @@ class Sender  {
   public:
 	Sender();
 	
-	void setup( std::string hostname, int port, bool multicast = false );
+	void setup( std::string hostname, int port, bool broadcast = false );
 	
 	void sendMessage( const Message& message );
 	void sendBundle( const Bundle& bundle );

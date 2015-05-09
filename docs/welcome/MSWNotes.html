@@ -21,11 +21,8 @@
 
 	<center><img src="msw_notes/vc_target.png" /></center>
 
-	<h2>Visual C++ 2010 Support</h2>
-	<p>The Visual C++ 2010 compiler (sometimes abbreviated VC10) is fully supported by Cinder. In order to build Cinder itself, or to use Cinder's built-in audio with this compiler, you will need to install the <a href="http://www.microsoft.com/en-us/download/details.aspx?id=6812">DirectX June 2010 SDK</a>. Unfortunately some people run into an installer bug with this SDK. If you see an error S1023, follow the instructions in <a href="http://blogs.msdn.com/b/chuckw/archive/2011/12/09/known-issue-directx-sdk-june-2010-setup-and-the-s1023-error.aspx">this document from Microsoft</a>.</p>
-	
 	<h2>Visual C++ 2012 Support</h2>
-	<p>The Visual C++ 2012 compiler (sometimes abbreviated VC11) is fully supported by Cinder. This version of Visual C++ has two toolsets associated with it, called <em>v110</em> and <em>v110_xp</em>. The former comes installed automatically, and is able to target Windows Vista, Windows 7 and Windows 8. Cinder's audio requirements complicate the situation a bit (see note below), but if you don't need to target Windows XP the v110 compiler is typically the best choice. However if you do need XP support, you'll need to get the v110_xp compiler from Microsoft. This is available with the <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio 2012 Update 2</a>.</p>
+	<p>The Visual C++ 2012 and 2013 compilers (sometimes abbreviated VC11 and VC12, respectively) are fully supported by Cinder. These versions of Visual C++ have two toolsets (roughly, <em>compilers</em>) associated with them. For VC 2012 they are <em>v110</em> and <em>v110_xp</em>. For VC 2013 they are <em>v120</em> and <em>v120_xp</em>. The non-XP variants come installed automatically, and are able to target Windows Vista, Windows 7 and Windows 8. Cinder's audio requirements complicate the situation a bit (see note below), but if you don't need to target Windows XP the v110 or v120 compilers are typically the best choice. However if you do need XP support, you'll need to get the v110_xp or v120_xp compiler from Microsoft. For VC 2012 this is available with the <a href="http://www.microsoft.com/visualstudio/eng/downloads#d-visual-studio-2012-update">Visual Studio 2012 Update 2</a>.</p>
 	<br />
 	<p>After installing the update you can change the toolset of your project in the <b>General</b> properties in the <b>Platform Toolset</b> field.</p>
 	<center><img src="msw_notes/vc_toolset.png" /></center>
@@ -34,7 +31,7 @@
 	</p>You'll need to do this for Cinder and rebuild it, as well as modifying your project in the same way. A longer discussion of this topic is available from Microsoft in <a href="http://msdn.microsoft.com/en-us/library/vstudio/jj851139.aspx">this document</a>.</p>
 	
 	<h2>Audio Requirements</h2>
-	<p>Cinder's audio support is written around XAudio2 on Windows. Unfortunately there is a schism between the Windows 8 SDK and prior versions. Specifically, the SDK included with Visual C++ 2012 uses version 2.8 of this API, while previously the API was only available via the DirectX SDK, and it shipped version 2.7.</p>
+	<p>Cinder's audio support is written around XAudio2 on Windows. Unfortunately there is a schism between the Windows 8 SDK and prior versions. Specifically, the SDK included with Visual C++ 2012 and 2013 use version 2.8 of this API, while previously the API was only available via the DirectX SDK, and it shipped version 2.7.</p>
 	<br />
 	<p>Various pieces of Microsoft documentation describe the technical particulars. The document <a href="http://msdn.microsoft.com/en-us/library/windows/desktop/ee415802(v=vs.85).aspx">XAudio2 Versions</a> is informative.</p>
 	<br />
@@ -44,9 +41,9 @@
 	</thead>
 	<tbody>
 	<tr>
-	  <td>Win XP SP2+</td><td>Visual C++ 2010</td><td>2.7</td>
-	    <td>Requires DirectX SDK 2010</td>
-	</tr>
+      <td>Win XP SP2+</td><td>Visual C++ 2013 (v120_xp)</td><td>2.7</td>
+  	     <td>Requires DirectX SDK 2010, see note above on v120_xp</td>
+  	</tr>
 	<tr>
       <td>Win XP SP2+</td><td>Visual C++ 2012 (v110_xp)</td><td>2.7</td>
   	     <td>Requires DirectX SDK 2010, see note above on v110_xp</td>

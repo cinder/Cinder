@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -332,6 +333,154 @@ int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
 	else
 		return sKeyTable[nativeKeyCode];
 }
-#endif // defined( CINDER_MSW )
+#elif defined( CINDER_WINRT )
+
+using namespace Windows::System;
+
+static bool sTableInited = false;
+static const int MAX_KEYCODE = 256;
+int sKeyTable[MAX_KEYCODE];
+
+// Much of this keyTable is courtesy of SDL's keyboard handling code
+// http://msdn.microsoft.com/en-US/library/windows/apps/xaml/windows.system.virtualkey
+static void initKeyTable()
+{
+	for( int c = 0; c < MAX_KEYCODE; ++c )
+		sKeyTable[c] = KeyEvent::KEY_UNKNOWN;
+
+	sKeyTable[(int)VirtualKey::Back] = KeyEvent::KEY_BACKSPACE;
+	sKeyTable[(int)VirtualKey::Tab] = KeyEvent::KEY_TAB;
+	sKeyTable[(int)VirtualKey::Clear] = KeyEvent::KEY_CLEAR;
+	sKeyTable[(int)VirtualKey::Enter] = KeyEvent::KEY_RETURN;
+	sKeyTable[(int)VirtualKey::Pause] = KeyEvent::KEY_PAUSE;
+	sKeyTable[(int)VirtualKey::Escape] = KeyEvent::KEY_ESCAPE;
+	sKeyTable[(int)VirtualKey::Space] = KeyEvent::KEY_SPACE;
+	//sKeyTable[0xDE] = KeyEvent::KEY_QUOTE;
+	//sKeyTable[0xBC] = KeyEvent::KEY_COMMA;
+	//sKeyTable[0xDD] = KeyEvent::KEY_MINUS;
+	//sKeyTable[0xBE] = KeyEvent::KEY_PERIOD;
+	//sKeyTable[0xBF] = KeyEvent::KEY_SLASH;
+	sKeyTable[(int)VirtualKey::Number0] = KeyEvent::KEY_0;
+	sKeyTable[(int)VirtualKey::Number1] = KeyEvent::KEY_1;
+	sKeyTable[(int)VirtualKey::Number2] = KeyEvent::KEY_2;
+	sKeyTable[(int)VirtualKey::Number3] = KeyEvent::KEY_3;
+	sKeyTable[(int)VirtualKey::Number4] = KeyEvent::KEY_4;
+	sKeyTable[(int)VirtualKey::Number5] = KeyEvent::KEY_5;
+	sKeyTable[(int)VirtualKey::Number6] = KeyEvent::KEY_6;
+	sKeyTable[(int)VirtualKey::Number7] = KeyEvent::KEY_7;
+	sKeyTable[(int)VirtualKey::Number8] = KeyEvent::KEY_8;
+	sKeyTable[(int)VirtualKey::Number9] = KeyEvent::KEY_9;
+	//sKeyTable[0xBA] = KeyEvent::KEY_SEMICOLON;
+	//sKeyTable[0xBB] = KeyEvent::KEY_EQUALS;
+	//sKeyTable[0xDB] = KeyEvent::KEY_LEFTBRACKET;
+	//sKeyTable[0xDC] = KeyEvent::KEY_BACKSLASH;
+	//sKeyTable[VK_OEM_102] = KeyEvent::KEY_LESS;
+	//sKeyTable[0xDD] = KeyEvent::KEY_RIGHTBRACKET;
+	//sKeyTable[0xC0] = KeyEvent::KEY_BACKQUOTE;
+	//sKeyTable[0xDF] = KeyEvent::KEY_BACKQUOTE;
+	sKeyTable[(int)VirtualKey::A] = KeyEvent::KEY_a;
+	sKeyTable[(int)VirtualKey::B] = KeyEvent::KEY_b;
+	sKeyTable[(int)VirtualKey::C] = KeyEvent::KEY_c;
+	sKeyTable[(int)VirtualKey::D] = KeyEvent::KEY_d;
+	sKeyTable[(int)VirtualKey::E] = KeyEvent::KEY_e;
+	sKeyTable[(int)VirtualKey::F] = KeyEvent::KEY_f;
+	sKeyTable[(int)VirtualKey::G] = KeyEvent::KEY_g;
+	sKeyTable[(int)VirtualKey::H] = KeyEvent::KEY_h;
+	sKeyTable[(int)VirtualKey::I] = KeyEvent::KEY_i;
+	sKeyTable[(int)VirtualKey::J] = KeyEvent::KEY_j;
+	sKeyTable[(int)VirtualKey::K] = KeyEvent::KEY_k;
+	sKeyTable[(int)VirtualKey::L] = KeyEvent::KEY_l;
+	sKeyTable[(int)VirtualKey::M] = KeyEvent::KEY_m;
+	sKeyTable[(int)VirtualKey::N] = KeyEvent::KEY_n;
+	sKeyTable[(int)VirtualKey::O] = KeyEvent::KEY_o;
+	sKeyTable[(int)VirtualKey::P] = KeyEvent::KEY_p;
+	sKeyTable[(int)VirtualKey::Q] = KeyEvent::KEY_q;
+	sKeyTable[(int)VirtualKey::R] = KeyEvent::KEY_r;
+	sKeyTable[(int)VirtualKey::S] = KeyEvent::KEY_s;
+	sKeyTable[(int)VirtualKey::T] = KeyEvent::KEY_t;
+	sKeyTable[(int)VirtualKey::U] = KeyEvent::KEY_u;
+	sKeyTable[(int)VirtualKey::V] = KeyEvent::KEY_v;
+	sKeyTable[(int)VirtualKey::W] = KeyEvent::KEY_w;
+	sKeyTable[(int)VirtualKey::X] = KeyEvent::KEY_x;
+	sKeyTable[(int)VirtualKey::Y] = KeyEvent::KEY_y;
+	sKeyTable[(int)VirtualKey::Z] = KeyEvent::KEY_z;
+	sKeyTable[(int)VirtualKey::Delete] = KeyEvent::KEY_DELETE;
+
+	sKeyTable[(int)VirtualKey::NumberPad0] = KeyEvent::KEY_KP0;
+	sKeyTable[(int)VirtualKey::NumberPad1] = KeyEvent::KEY_KP1;
+	sKeyTable[(int)VirtualKey::NumberPad2] = KeyEvent::KEY_KP2;
+	sKeyTable[(int)VirtualKey::NumberPad3] = KeyEvent::KEY_KP3;
+	sKeyTable[(int)VirtualKey::NumberPad4] = KeyEvent::KEY_KP4;
+	sKeyTable[(int)VirtualKey::NumberPad5] = KeyEvent::KEY_KP5;
+	sKeyTable[(int)VirtualKey::NumberPad6] = KeyEvent::KEY_KP6;
+	sKeyTable[(int)VirtualKey::NumberPad7] = KeyEvent::KEY_KP7;
+	sKeyTable[(int)VirtualKey::NumberPad8] = KeyEvent::KEY_KP8;
+	sKeyTable[(int)VirtualKey::NumberPad9] = KeyEvent::KEY_KP9;
+	sKeyTable[(int)VirtualKey::Decimal] = KeyEvent::KEY_KP_PERIOD;
+	sKeyTable[(int)VirtualKey::Divide] = KeyEvent::KEY_KP_DIVIDE;
+	sKeyTable[(int)VirtualKey::Multiply] = KeyEvent::KEY_KP_MULTIPLY;
+	sKeyTable[(int)VirtualKey::Subtract] = KeyEvent::KEY_KP_MINUS;
+	sKeyTable[(int)VirtualKey::Add] = KeyEvent::KEY_KP_PLUS;
+
+	sKeyTable[(int)VirtualKey::Up] = KeyEvent::KEY_UP;
+	sKeyTable[(int)VirtualKey::Down] = KeyEvent::KEY_DOWN;
+	sKeyTable[(int)VirtualKey::Right] = KeyEvent::KEY_RIGHT;
+	sKeyTable[(int)VirtualKey::Left] = KeyEvent::KEY_LEFT;
+	sKeyTable[(int)VirtualKey::Insert] = KeyEvent::KEY_INSERT;
+	sKeyTable[(int)VirtualKey::Home] = KeyEvent::KEY_HOME;
+	sKeyTable[(int)VirtualKey::End] = KeyEvent::KEY_END;
+	sKeyTable[(int)VirtualKey::PageUp] = KeyEvent::KEY_PAGEUP;
+	sKeyTable[(int)VirtualKey::PageDown] = KeyEvent::KEY_PAGEDOWN;
+
+	sKeyTable[(int)VirtualKey::F1] = KeyEvent::KEY_F1;
+	sKeyTable[(int)VirtualKey::F2] = KeyEvent::KEY_F2;
+	sKeyTable[(int)VirtualKey::F3] = KeyEvent::KEY_F3;
+	sKeyTable[(int)VirtualKey::F4] = KeyEvent::KEY_F4;
+	sKeyTable[(int)VirtualKey::F5] = KeyEvent::KEY_F5;
+	sKeyTable[(int)VirtualKey::F6] = KeyEvent::KEY_F6;
+	sKeyTable[(int)VirtualKey::F7] = KeyEvent::KEY_F7;
+	sKeyTable[(int)VirtualKey::F8] = KeyEvent::KEY_F8;
+	sKeyTable[(int)VirtualKey::F9] = KeyEvent::KEY_F9;
+	sKeyTable[(int)VirtualKey::F10] = KeyEvent::KEY_F10;
+	sKeyTable[(int)VirtualKey::F11] = KeyEvent::KEY_F11;
+	sKeyTable[(int)VirtualKey::F12] = KeyEvent::KEY_F12;
+	sKeyTable[(int)VirtualKey::F13] = KeyEvent::KEY_F13;
+	sKeyTable[(int)VirtualKey::F14] = KeyEvent::KEY_F14;
+	sKeyTable[(int)VirtualKey::F15] = KeyEvent::KEY_F15;
+
+	sKeyTable[(int)VirtualKey::NumberKeyLock] = KeyEvent::KEY_NUMLOCK;
+	sKeyTable[(int)VirtualKey::CapitalLock] = KeyEvent::KEY_CAPSLOCK;
+	sKeyTable[(int)VirtualKey::Scroll] = KeyEvent::KEY_SCROLLOCK;
+	sKeyTable[(int)VirtualKey::RightShift] = KeyEvent::KEY_RSHIFT;
+	sKeyTable[(int)VirtualKey::LeftShift] = KeyEvent::KEY_LSHIFT;
+	sKeyTable[(int)VirtualKey::RightControl] = KeyEvent::KEY_RCTRL;
+	sKeyTable[(int)VirtualKey::LeftControl] = KeyEvent::KEY_LCTRL;
+	sKeyTable[(int)VirtualKey::RightMenu] = KeyEvent::KEY_RALT;
+	sKeyTable[(int)VirtualKey::LeftMenu] = KeyEvent::KEY_LALT;
+	sKeyTable[(int)VirtualKey::RightWindows] = KeyEvent::KEY_RSUPER;
+	sKeyTable[(int)VirtualKey::LeftWindows] = KeyEvent::KEY_LSUPER;
+
+	sKeyTable[(int)VirtualKey::Help] = KeyEvent::KEY_HELP;
+	sKeyTable[(int)VirtualKey::Print] = KeyEvent::KEY_PRINT;
+	sKeyTable[(int)VirtualKey::Snapshot] = KeyEvent::KEY_PRINT;
+	sKeyTable[(int)VirtualKey::Cancel] = KeyEvent::KEY_BREAK;
+	sKeyTable[(int)VirtualKey::Application] = KeyEvent::KEY_MENU;
+	
+	sTableInited = true;
+}
+
+int	KeyEvent::translateNativeKeyCode( int nativeKeyCode )
+{
+	if( ! sTableInited )
+		initKeyTable();
+	
+	if( nativeKeyCode >= MAX_KEYCODE )
+		return KeyEvent::KEY_UNKNOWN;
+	else
+		return sKeyTable[nativeKeyCode];
+}
+
+
+#endif // defined( CINDER_WINRT )
 	
 } } // namespace cinder::app

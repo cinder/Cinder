@@ -41,6 +41,7 @@
 		#undef __STDC_CONSTANT_MACROS
 		#if _MSC_VER >= 1600 // VC10 or greater
 			#define _STDINT_H
+			#define __FP__
 		#endif
 		#include <QTML.h>
 		#include <Movies.h>

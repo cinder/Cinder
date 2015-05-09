@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -39,7 +41,7 @@ class DataSource {
 	
 	const fs::path&		getFilePath();
 	const Url&			getUrl();
-	const std::string&	getFilePathHint();
+	const fs::path&		getFilePathHint();
 
 	Buffer&				getBuffer();
 	virtual IStreamRef	createStream() = 0;
@@ -52,11 +54,11 @@ class DataSource {
 	
 	virtual	void	createBuffer() = 0;
 	
-	void	setFilePathHint( const std::string &aFilePathHint );
+	void	setFilePathHint( const fs::path &aFilePathHint );
 	
 	Buffer				mBuffer;
 	fs::path			mFilePath;
-	std::string			mFilePathHint;
+	fs::path			mFilePathHint;
 	Url					mUrl;
 };
 
@@ -82,6 +84,7 @@ class DataSourcePath : public DataSource {
 
 DataSourceRef	loadFile( const fs::path &path );
 
+#if !defined( CINDER_WINRT )
 typedef std::shared_ptr<class DataSourceUrl>	DataSourceUrlRef;
 
 class DataSourceUrl : public DataSource {
@@ -103,6 +106,7 @@ class DataSourceUrl : public DataSource {
 	UrlOptions		mOptions;
 	IStreamUrlRef	mStream;
 };
+#endif // if !defined( CINDER_WINRT )
 
 DataSourceRef			loadUrl( const Url &Url, const UrlOptions &options = UrlOptions() );
 inline DataSourceRef	loadUrl( const std::string &urlString, const UrlOptions &options = UrlOptions() ) { return loadUrl( Url( urlString ), options ); }
@@ -111,7 +115,7 @@ typedef std::shared_ptr<class DataSourceBuffer>	DataSourceBufferRef;
 
 class DataSourceBuffer : public DataSource {
   public:
-	static DataSourceBufferRef		create( Buffer buffer, const std::string &filePathHint = "" );
+	static DataSourceBufferRef		create( Buffer buffer, const fs::path &filePathHint = "" );
 
 	virtual bool	isFilePath() { return false; }
 	virtual bool	isUrl() { return false; }

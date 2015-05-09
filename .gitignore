@@ -3,13 +3,19 @@
 *.mode1v3
 *.mode2v3
 *.user
-*.xcworkspace/
+project.xcworkspace
 xcuserdata/
+*.xccheckout
 .DS_Store
 
 build/
 lib/libcinder*.a
-lib/cinder*.lib
+lib/msw/x86/cinder*.lib
+lib/msw/x64/cinder*.lib
+lib/msw/x86/cinder*.idb
+lib/msw/x64/cinder*.idb
+lib/msw/x86/cinder*.pdb
+lib/msw/x64/cinder*.pdb
 
 # Windows cruft
 *.suo
@@ -19,3 +25,7 @@ lib/cinder*.lib
 Debug/
 Release/
 ipch/
+
+# doxygen generated files
+docs/html
+docs/doxygen/cinder.tag

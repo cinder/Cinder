@@ -65,7 +65,7 @@ class Display {
 	//! Returns the Display aspect ratio, which is its width / height
 	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
 	//! Returns the bounding Area of the Display in points, measured relative to primary display's upper-left corner.
-	Area			getBounds() const { return mArea; }
+	Area			getBounds() const;
 	
 	//! Returns the system position (relative to the system's primary display's upper-left corner) of a Display-relative \a displayRelativeCoordinate. The results are suitable for use with app::Window's position functions.
 	Vec2i			getSystemCoordinate( const Vec2i &displayRelativeCoordinate ) const;
@@ -73,7 +73,7 @@ class Display {
 	//! Returns the bits per pixel for the display. Typically 24 bits.
 	int		getBitsPerPixel() const { return mBitsPerPixel; }
 	//! Returns the factor which multiplies points to pixels. 2.0f for high-density (Retina) displays; 1.0f for others
-	float	getContentScale() const;
+	float	getContentScale() const { return mContentScale; }
 
 	//! Returns whether the Display's coordinates contain \a pt.
 	bool	contains( const Vec2i &pt ) const { return mArea.contains( pt ); }

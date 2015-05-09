@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -56,37 +58,47 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	hr = ::CoCreateInstance( CLSID_WICImagingFactory, NULL, CLSCTX_INPROC_SERVER, IID_PPV_ARGS(&IWICFactoryP) );
 #endif
 	if( ! SUCCEEDED( hr ) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoException( "Could not create WIC Image Factory." );
+
 	std::shared_ptr<IWICImagingFactory> IWICFactory = msw::makeComShared( IWICFactoryP );
 	
     // Create a decoder
 	IWICBitmapDecoder *decoderP = NULL;
+#if defined( CINDER_WINRT)
+		std::string s = dataSourceRef->getFilePath().string();
+		std::wstring filePath =	std::wstring(s.begin(), s.end());                 
+#else
+		std::wstring filePath =	dataSourceRef->getFilePath().wstring().c_str();
+#endif
+
 	if( dataSourceRef->isFilePath() ) {
 		hr = IWICFactory->CreateDecoderFromFilename(
-				dataSourceRef->getFilePath().wstring().c_str(),                      // Image to be decoded
+				filePath.c_str(),                      // Image to be decoded
+//				dataSourceRef->getFilePath().wstring().c_str(),                      // Image to be decoded
 				NULL,                            // Do not prefer a particular vendor
 				GENERIC_READ,                    // Desired read access to the file
 				WICDecodeMetadataCacheOnDemand,  // Cache metadata when needed
 				&decoderP                        // Pointer to the decoder
 			);
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from filename." );
+
 	}
 	else { // have to use a buffer
 		IWICStream *pIWICStream = NULL;
 		hr = IWICFactory->CreateStream( &pIWICStream );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
 		std::shared_ptr<IWICStream> stream = msw::makeComShared( pIWICStream );
 		
 		Buffer buffer = dataSourceRef->getBuffer();
 		hr = stream->InitializeFromMemory( reinterpret_cast<BYTE*>( buffer.getData() ), buffer.getDataSize() );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
 		
 		hr = IWICFactory->CreateDecoderFromStream( stream.get(), NULL, WICDecodeMetadataCacheOnDemand, &decoderP );
 		if( ! SUCCEEDED(hr) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from stream." );
 	}
 	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
@@ -94,7 +106,7 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	IWICBitmapFrameDecode *frameP = NULL;
 	hr = decoder->GetFrame( options.getIndex(), &frameP );
 	if( ! SUCCEEDED(hr) )
-		throw ImageIoExceptionFailedLoad();
+		throw ImageIoExceptionFailedLoad( "Could not retrieve index frame from WIC Decoder." );
 	std::shared_ptr<IWICBitmapFrameDecode> frame = msw::makeComShared( frameP );
 
 	UINT width = 0, height = 0;
@@ -113,12 +125,11 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 		IWICFormatConverter *pIFormatConverter = NULL;	
 		hr = IWICFactory->CreateFormatConverter( &pIFormatConverter );
 		if( ! SUCCEEDED( hr ) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not create WIC Format Converter." );
 		std::shared_ptr<IWICFormatConverter> formatConverter = msw::makeComShared( pIFormatConverter );
-		hr = formatConverter->Initialize( frame.get(), convertPixelFormat, WICBitmapDitherTypeNone,
-					NULL, 0.f, WICBitmapPaletteTypeCustom );
+		hr = formatConverter->Initialize( frame.get(), convertPixelFormat, WICBitmapDitherTypeNone, NULL, 0.f, WICBitmapPaletteTypeCustom );
 		if( ! SUCCEEDED( hr ) )
-			throw ImageIoExceptionFailedLoad();
+			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Format Converter." );
 		hr = formatConverter->CopyPixels( NULL, (UINT)mRowBytes, mRowBytes * mHeight, mData.get() );
 	}
 	else
@@ -134,14 +145,16 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		( guid == GUID_WICPixelFormat8bppIndexed ) ||
 		( guid == GUID_WICPixelFormat16bppBGR555 ) ||
 		( guid == GUID_WICPixelFormat16bppBGR565 ) ) {
-		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat24bppRGB;
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
 		return true;
 	}
 	else if( guid == GUID_WICPixelFormat24bppBGR ) {		
-		setChannelOrder( ImageIo::BGR ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
 	}
 	else if( guid == GUID_WICPixelFormat24bppRGB ) {
-		setChannelOrder( ImageIo::RGB ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 ); *convertGUID = GUID_WICPixelFormat32bppRGBA;
+		return true;
 	}
 	else if( guid == GUID_WICPixelFormat32bppBGR ) {
 		setChannelOrder( ImageIo::BGRX ); setColorModel( ImageIo::CM_RGB ); setDataType( ImageIo::UINT8 );
@@ -174,7 +187,7 @@ bool ImageSourceFileWic::processFormat( const ::GUID &guid, ::GUID *convertGUID 
 		setChannelOrder( ImageIo::Y ); setColorModel( ImageIo::CM_GRAY ); setDataType( ImageIo::FLOAT32 );
 	}
 	else
-		throw ImageIoExceptionFailedLoad(); // a format we can't process
+		throw ImageIoException( "Unsupported format." );
 
 	return false;
 }

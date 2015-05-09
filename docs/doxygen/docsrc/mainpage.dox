@@ -18,6 +18,7 @@ If you are just getting started, we recommend you begin with the \ref helloCinde
 \ref CinderResources "Assets & Resources in Cinder" \n
 \ref ScreensaverPage "Screensavers" \n
 \ref guide_Images "Images in Cinder" \n
+\ref guide_audio "Audio in Cinder" \n
 \ref guide_XmlTree "XML in Cinder" \n
 \ref CinderBoost "Cinder + Boost" \n
 \ref anatomypage "The Anatomy of a Cinder App" \n

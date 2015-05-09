@@ -229,7 +229,7 @@ SurfaceImage::SurfaceImage( ImageSourceRef imageSource )
 }
 
 SurfaceImage::SurfaceImage( const SurfaceImage &other )
-	: SurfaceBase( other )
+	: SurfaceBase( other ), mCinderSurface( other.mCinderSurface )
 {
 }
 

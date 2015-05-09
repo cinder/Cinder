@@ -13,11 +13,15 @@
 			buildPhases = (
 			);
 			dependencies = (
+				00D494F01988A30500A44E4C /* PBXTargetDependency */,
+				00D494F21988A30500A44E4C /* PBXTargetDependency */,
+				00D494F41988A30500A44E4C /* PBXTargetDependency */,
+				00D494F61988A30500A44E4C /* PBXTargetDependency */,
+				00D494F81988A30500A44E4C /* PBXTargetDependency */,
 				009709F116CC6AC9005DC014 /* PBXTargetDependency */,
 				009709F316CC6AC9005DC014 /* PBXTargetDependency */,
 				0095452B1680EA00008ECA02 /* PBXTargetDependency */,
 				009F6EAE14C0FEF30036C292 /* PBXTargetDependency */,
-				0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */,
 				0087D32F12CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33112CD82C2002CD69F /* PBXTargetDependency */,
 				0087D33512CD82C2002CD69F /* PBXTargetDependency */,
@@ -35,20 +39,6 @@
 			proxyType = 2;
 			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
 			remoteInfo = MultiTouch_iPhone;
-		};
-		0087D1D912CD7F1A002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
-			remoteInfo = AudioInputSample;
-		};
-		0087D1DB12CD7F1F002CD69F /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
-			remoteInfo = AudioInputSample;
 		};
 		0087D25A12CD80A7002CD69F /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -155,11 +145,143 @@
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = DragTween;
 		};
+		00D494D51988A2C000A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494D11988A2C000A44E4C /* BufferPlayer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = BufferPlayer;
+		};
+		00D494DB1988A2CD00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = InputAnalyzer;
+		};
+		00D494E11988A2D700A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494DD1988A2D700A44E4C /* NodeAdvanced.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = NodeAdvanced;
+		};
+		00D494E71988A2E200A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = NodeBasic;
+		};
+		00D494ED1988A2F300A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = VoiceBasic;
+		};
+		00D494EF1988A30500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = VoiceBasic;
+		};
+		00D494F11988A30500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = NodeBasic;
+		};
+		00D494F31988A30500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494DD1988A2D700A44E4C /* NodeAdvanced.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = NodeAdvanced;
+		};
+		00D494F51988A30500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = InputAnalyzer;
+		};
+		00D494F71988A30500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494D11988A2C000A44E4C /* BufferPlayer.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 00692BCE14FF149000D0A05E;
+			remoteInfo = BufferPlayer;
+		};
+		00D494FD1988A31F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = BezierPathIteration;
+		};
+		00D495031988A35200A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D494FF1988A35200A44E4C /* Compass.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = Compass;
+		};
+		00D495091988A37500A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = iosKeyboard;
+		};
+		00D4950F1988A38900A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = NativeControls;
+		};
+		00D495151988A3A700A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495111988A3A700A44E4C /* Instascope.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = Instascope;
+		};
+		00D4951B1988A3D200A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = Renderer2d;
+		};
+		00D495211988A3EA00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 00692BCF14FF149000D0A05E;
+			remoteInfo = RetinaSample;
+		};
+		00D495271988A40B00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = TextBox_iOS;
+		};
+		00D4952D1988A41F00A44E4C /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 00D495291988A41F00A44E4C /* TextureFont.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1D6058910D05DD3D006BFB54;
+			remoteInfo = TextureFont;
+		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = MultiTouch_iOS.xcodeproj; path = ../../MultiTouchBasic/xcode/MultiTouch_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
-		0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = AudioInputSample_iOS.xcodeproj; path = ../../AudioInputSample/xcode/AudioInputSample_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ClipboardBasic_iOS.xcodeproj; path = ../../ClipboardBasic/xcode_iOS/ClipboardBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = FBOBasic_iOS.xcodeproj; path = ../../FBOBasic/xcode/FBOBasic_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
 		0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextTest_iOS.xcodeproj; path = ../../TextTest/xcode_iOS/TextTest_iOS.xcodeproj; sourceTree = SOURCE_ROOT; };
@@ -167,21 +289,44 @@
 		009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = CaptureBasic.xcodeproj; path = ../../CaptureBasic/xcode_ios/CaptureBasic.xcodeproj; sourceTree = "<group>"; };
 		009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = LocationManager.xcodeproj; path = ../../LocationManager/xcode_ios/LocationManager.xcodeproj; sourceTree = "<group>"; };
 		009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DragTween.xcodeproj; path = ../../_timeline/DragTween/xcode_iOS/DragTween.xcodeproj; sourceTree = "<group>"; };
+		00D494D11988A2C000A44E4C /* BufferPlayer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BufferPlayer.xcodeproj; path = ../../_audio/BufferPlayer/xcode_ios/BufferPlayer.xcodeproj; sourceTree = "<group>"; };
+		00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = InputAnalyzer.xcodeproj; path = ../../_audio/InputAnalyzer/xcode_ios/InputAnalyzer.xcodeproj; sourceTree = "<group>"; };
+		00D494DD1988A2D700A44E4C /* NodeAdvanced.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeAdvanced.xcodeproj; path = ../../_audio/NodeAdvanced/xcode_ios/NodeAdvanced.xcodeproj; sourceTree = "<group>"; };
+		00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NodeBasic.xcodeproj; path = ../../_audio/NodeBasic/xcode_ios/NodeBasic.xcodeproj; sourceTree = "<group>"; };
+		00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = VoiceBasic.xcodeproj; path = ../../_audio/VoiceBasic/xcode_ios/VoiceBasic.xcodeproj; sourceTree = "<group>"; };
+		00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = BezierPathIteration.xcodeproj; path = ../../BezierPathIteration/xcode_ios/BezierPathIteration.xcodeproj; sourceTree = "<group>"; };
+		00D494FF1988A35200A44E4C /* Compass.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Compass.xcodeproj; path = ../../Compass/xcode_ios/Compass.xcodeproj; sourceTree = "<group>"; };
+		00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = iosKeyboard.xcodeproj; path = ../../iosKeyboard/xcode_ios/iosKeyboard.xcodeproj; sourceTree = "<group>"; };
+		00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = NativeControls.xcodeproj; path = ../../iosNativeControls/xcode_ios/NativeControls.xcodeproj; sourceTree = "<group>"; };
+		00D495111988A3A700A44E4C /* Instascope.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Instascope.xcodeproj; path = ../../Kaleidoscope/xcode_ios/Instascope.xcodeproj; sourceTree = "<group>"; };
+		00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Renderer2d.xcodeproj; path = ../../Renderer2dBasic/xcode_ios/Renderer2d.xcodeproj; sourceTree = "<group>"; };
+		00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RetinaSample.xcodeproj; path = ../../RetinaSample/xcode_ios/RetinaSample.xcodeproj; sourceTree = "<group>"; };
+		00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextBox_iOS.xcodeproj; path = ../../TextBox/xcode_iOS/TextBox_iOS.xcodeproj; sourceTree = "<group>"; };
+		00D495291988A41F00A44E4C /* TextureFont.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = TextureFont.xcodeproj; path = ../../TextureFont/xcode_iOS/TextureFont.xcodeproj; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
 		0087D08412CD7DC5002CD69F = {
 			isa = PBXGroup;
 			children = (
-				009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */,
-				009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */,
+				00D494D01988A2B300A44E4C /* _audio */,
 				009F6EA214C0FED70036C292 /* _timeline */,
-				009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */,
-				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
-				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
+				00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */,
+				009709E416CC6AB4005DC014 /* CaptureBasic.xcodeproj */,
 				0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */,
+				00D494FF1988A35200A44E4C /* Compass.xcodeproj */,
+				0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */,
+				00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */,
+				00D495111988A3A700A44E4C /* Instascope.xcodeproj */,
+				00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */,
+				009709EA16CC6AC1005DC014 /* LocationManager.xcodeproj */,
+				009545201680E9E4008ECA02 /* MotionBasic.xcodeproj */,
 				0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */,
-				0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */,
+				00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */,
+				00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */,
+				00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */,
+				00D495291988A41F00A44E4C /* TextureFont.xcodeproj */,
+				0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */,
 			);
 			sourceTree = "<group>";
 		};
@@ -189,14 +334,6 @@
 			isa = PBXGroup;
 			children = (
 				0087D1B712CD7E7A002CD69F /* MultiTouch.app */,
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
-		0087D1D312CD7F1A002CD69F /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				0087D1DA12CD7F1A002CD69F /* AudioInputSample.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -265,11 +402,137 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
+		00D494D01988A2B300A44E4C /* _audio */ = {
+			isa = PBXGroup;
+			children = (
+				00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */,
+				00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */,
+				00D494DD1988A2D700A44E4C /* NodeAdvanced.xcodeproj */,
+				00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */,
+				00D494D11988A2C000A44E4C /* BufferPlayer.xcodeproj */,
+			);
+			name = _audio;
+			sourceTree = "<group>";
+		};
+		00D494D21988A2C000A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494D61988A2C000A44E4C /* BufferPlayer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494D81988A2CD00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494DC1988A2CD00A44E4C /* InputAnalyzer.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494DE1988A2D700A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494E21988A2D700A44E4C /* NodeAdvanced.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494E41988A2E200A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494E81988A2E200A44E4C /* NodeBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494EA1988A2F300A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494EE1988A2F300A44E4C /* VoiceBasic.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D494FA1988A31F00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D494FE1988A31F00A44E4C /* BezierPathIteration.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D495001988A35200A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D495041988A35200A44E4C /* Compass.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D495061988A37500A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4950A1988A37500A44E4C /* iosKeyboard.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4950C1988A38900A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D495101988A38900A44E4C /* NativeControls.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D495121988A3A700A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D495161988A3A700A44E4C /* Instascope.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D495181988A3D200A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4951C1988A3D200A44E4C /* Renderer2d.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4951E1988A3EA00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D495221988A3EA00A44E4C /* RetinaSample.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D495241988A40A00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D495281988A40B00A44E4C /* TextBox_iOS.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		00D4952A1988A41F00A44E4C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				00D4952E1988A41F00A44E4C /* TextureFont.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXProject section */
 		0087D08612CD7DC5002CD69F /* Project object */ = {
 			isa = PBXProject;
+			attributes = {
+			};
 			buildConfigurationList = 0087D08912CD7DC5002CD69F /* Build configuration list for PBXProject "_AllSamples_iOS" */;
 			compatibilityVersion = "Xcode 2.4";
 			developmentRegion = English;
@@ -284,8 +547,12 @@
 			projectDirPath = "";
 			projectReferences = (
 				{
-					ProductGroup = 0087D1D312CD7F1A002CD69F /* Products */;
-					ProjectRef = 0087D1D212CD7F1A002CD69F /* AudioInputSample_iOS.xcodeproj */;
+					ProductGroup = 00D494FA1988A31F00A44E4C /* Products */;
+					ProjectRef = 00D494F91988A31F00A44E4C /* BezierPathIteration.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494D21988A2C000A44E4C /* Products */;
+					ProjectRef = 00D494D11988A2C000A44E4C /* BufferPlayer.xcodeproj */;
 				},
 				{
 					ProductGroup = 009709E516CC6AB4005DC014 /* Products */;
@@ -296,12 +563,28 @@
 					ProjectRef = 0087D25612CD80A7002CD69F /* ClipboardBasic_iOS.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D495001988A35200A44E4C /* Products */;
+					ProjectRef = 00D494FF1988A35200A44E4C /* Compass.xcodeproj */;
+				},
+				{
 					ProductGroup = 009F6EA414C0FEEB0036C292 /* Products */;
 					ProjectRef = 009F6EA314C0FEEB0036C292 /* DragTween.xcodeproj */;
 				},
 				{
 					ProductGroup = 0087D2D412CD81D3002CD69F /* Products */;
 					ProjectRef = 0087D2D312CD81D3002CD69F /* FBOBasic_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494D81988A2CD00A44E4C /* Products */;
+					ProjectRef = 00D494D71988A2CD00A44E4C /* InputAnalyzer.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D495121988A3A700A44E4C /* Products */;
+					ProjectRef = 00D495111988A3A700A44E4C /* Instascope.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D495061988A37500A44E4C /* Products */;
+					ProjectRef = 00D495051988A37500A44E4C /* iosKeyboard.xcodeproj */;
 				},
 				{
 					ProductGroup = 009709EB16CC6AC1005DC014 /* Products */;
@@ -316,8 +599,40 @@
 					ProjectRef = 0087D1AE12CD7E7A002CD69F /* MultiTouch_iOS.xcodeproj */;
 				},
 				{
+					ProductGroup = 00D4950C1988A38900A44E4C /* Products */;
+					ProjectRef = 00D4950B1988A38900A44E4C /* NativeControls.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494DE1988A2D700A44E4C /* Products */;
+					ProjectRef = 00D494DD1988A2D700A44E4C /* NodeAdvanced.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494E41988A2E200A44E4C /* Products */;
+					ProjectRef = 00D494E31988A2E200A44E4C /* NodeBasic.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D495181988A3D200A44E4C /* Products */;
+					ProjectRef = 00D495171988A3D200A44E4C /* Renderer2d.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D4951E1988A3EA00A44E4C /* Products */;
+					ProjectRef = 00D4951D1988A3EA00A44E4C /* RetinaSample.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D495241988A40A00A44E4C /* Products */;
+					ProjectRef = 00D495231988A40A00A44E4C /* TextBox_iOS.xcodeproj */;
+				},
+				{
 					ProductGroup = 0087D32612CD828A002CD69F /* Products */;
 					ProjectRef = 0087D32512CD828A002CD69F /* TextTest_iOS.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D4952A1988A41F00A44E4C /* Products */;
+					ProjectRef = 00D495291988A41F00A44E4C /* TextureFont.xcodeproj */;
+				},
+				{
+					ProductGroup = 00D494EA1988A2F300A44E4C /* Products */;
+					ProjectRef = 00D494E91988A2F300A44E4C /* VoiceBasic.xcodeproj */;
 				},
 			);
 			projectRoot = "";
@@ -333,13 +648,6 @@
 			fileType = wrapper.application;
 			path = MultiTouch.app;
 			remoteRef = 0087D1B612CD7E7A002CD69F /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		0087D1DA12CD7F1A002CD69F /* AudioInputSample.app */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.application;
-			path = AudioInputSample.app;
-			remoteRef = 0087D1D912CD7F1A002CD69F /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
 		0087D25B12CD80A7002CD69F /* ClipboardBasic_iOS.app */ = {
@@ -391,14 +699,107 @@
 			remoteRef = 009F6EAB14C0FEEC0036C292 /* PBXContainerItemProxy */;
 			sourceTree = BUILT_PRODUCTS_DIR;
 		};
+		00D494D61988A2C000A44E4C /* BufferPlayer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BufferPlayer.app;
+			remoteRef = 00D494D51988A2C000A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494DC1988A2CD00A44E4C /* InputAnalyzer.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = InputAnalyzer.app;
+			remoteRef = 00D494DB1988A2CD00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494E21988A2D700A44E4C /* NodeAdvanced.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NodeAdvanced.app;
+			remoteRef = 00D494E11988A2D700A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494E81988A2E200A44E4C /* NodeBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NodeBasic.app;
+			remoteRef = 00D494E71988A2E200A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494EE1988A2F300A44E4C /* VoiceBasic.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = VoiceBasic.app;
+			remoteRef = 00D494ED1988A2F300A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D494FE1988A31F00A44E4C /* BezierPathIteration.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = BezierPathIteration.app;
+			remoteRef = 00D494FD1988A31F00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D495041988A35200A44E4C /* Compass.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Compass.app;
+			remoteRef = 00D495031988A35200A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4950A1988A37500A44E4C /* iosKeyboard.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = iosKeyboard.app;
+			remoteRef = 00D495091988A37500A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D495101988A38900A44E4C /* NativeControls.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = NativeControls.app;
+			remoteRef = 00D4950F1988A38900A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D495161988A3A700A44E4C /* Instascope.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Instascope.app;
+			remoteRef = 00D495151988A3A700A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4951C1988A3D200A44E4C /* Renderer2d.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = Renderer2d.app;
+			remoteRef = 00D4951B1988A3D200A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D495221988A3EA00A44E4C /* RetinaSample.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = RetinaSample.app;
+			remoteRef = 00D495211988A3EA00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D495281988A40B00A44E4C /* TextBox_iOS.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TextBox_iOS.app;
+			remoteRef = 00D495271988A40B00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		00D4952E1988A41F00A44E4C /* TextureFont.app */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.application;
+			path = TextureFont.app;
+			remoteRef = 00D4952D1988A41F00A44E4C /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 /* End PBXReferenceProxy section */
 
 /* Begin PBXTargetDependency section */
-		0087D1DC12CD7F1F002CD69F /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = AudioInputSample;
-			targetProxy = 0087D1DB12CD7F1F002CD69F /* PBXContainerItemProxy */;
-		};
 		0087D32F12CD82C2002CD69F /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = MultiTouch_iOS;
@@ -438,6 +839,31 @@
 			isa = PBXTargetDependency;
 			name = DragTween;
 			targetProxy = 009F6EAD14C0FEF30036C292 /* PBXContainerItemProxy */;
+		};
+		00D494F01988A30500A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = VoiceBasic;
+			targetProxy = 00D494EF1988A30500A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494F21988A30500A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NodeBasic;
+			targetProxy = 00D494F11988A30500A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494F41988A30500A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = NodeAdvanced;
+			targetProxy = 00D494F31988A30500A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494F61988A30500A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = InputAnalyzer;
+			targetProxy = 00D494F51988A30500A44E4C /* PBXContainerItemProxy */;
+		};
+		00D494F81988A30500A44E4C /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = BufferPlayer;
+			targetProxy = 00D494F71988A30500A44E4C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 

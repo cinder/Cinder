@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -23,6 +25,7 @@
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 #if defined( CINDER_MSW )
 	#include <Shlwapi.h>
 	#include "cinder/UrlImplWinInet.h"
@@ -31,6 +34,13 @@
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
+#elif defined( CINDER_WINRT )
+	#include "cinder/WinRTUtils.h"
+	#include "cinder/msw/CinderMsw.h"
+	#include <wrl/client.h>
+	#include <agile.h>
+	using namespace Windows::Storage;
+	using namespace Windows::System;
 #else
 	#include "cinder/UrlImplCurl.h"
 	typedef cinder::IStreamUrlImplCurl		IStreamUrlPlatformImpl;
@@ -55,13 +65,19 @@ std::string Url::encode( const std::string &unescaped )
 	::CFRelease( escaped );
 	return result;
 #elif defined( CINDER_MSW )
-	wchar_t buffer[4096];
+	char16_t buffer[4096];
 	DWORD bufferSize = 4096;
-	std::wstring wideUnescaped = toUtf16( unescaped );
-	UrlEscape( wideUnescaped.c_str(), buffer, &bufferSize, 0 );
-	return toUtf8( std::wstring( buffer ) );
+	std::u16string wideUnescaped = toUtf16( unescaped );
+	UrlEscape( (wchar_t*)wideUnescaped.c_str(), (wchar_t*)buffer, &bufferSize, 0 );
+	return toUtf8( buffer );
+#elif defined( CINDER_WINRT )
+	std::wstring urlStr = msw::toWideString( unescaped );
+	auto uri = ref new Windows::Foundation::Uri(ref new Platform::String(urlStr.c_str()));
+	return msw::toUtf8String( std::wstring( uri->AbsoluteCanonicalUri->Data()));
 #endif	
 }
+
+#if !defined( CINDER_WINRT)
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // IStreamUrl
@@ -71,7 +87,7 @@ IStreamUrlRef IStreamUrl::create( const Url &url, const std::string &user, const
 }
 
 IStreamUrl::IStreamUrl( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
-	: IStream()
+	: IStreamCinder()
 {
 	setFileName( url );
 	mImpl = std::shared_ptr<IStreamUrlImpl>( new IStreamUrlPlatformImpl( url, user, password, options ) );
@@ -88,6 +104,7 @@ IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, co
 {
 	return IStreamUrl::create( Url( url ), user, password, options );
 }
+#endif
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // UrlLoadExc

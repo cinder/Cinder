@@ -22,7 +22,11 @@
 */
 
 #include "cinder/app/Renderer.h"
-#include "cinder/gl/gl.h"
+
+#if !defined( CINDER_WINRT)
+	#include "cinder/gl/gl.h"
+#endif
+
 #include "cinder/app/App.h"
 
 #if defined( CINDER_COCOA )

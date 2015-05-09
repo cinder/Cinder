@@ -103,7 +103,9 @@ class RectT {
 
 	/** \return Scaled copy with the same aspect ratio centered relative to and scaled to fit inside \a other. If \a expand then the rectangle is expanded if it is smaller than \a other */
 	RectT		getCenteredFit( const RectT &other, bool expand ) const;
-
+	/** \return Scaled copy with the same aspect ratio centered relative to and scaled so it completely fills \a other. If \a contract then the rectangle is contracted if it is larger than \a other */
+	RectT		getCenteredFill( const RectT &other, bool contract ) const;
+	
 	/** Expands the Rect to include \a point in its interior **/
 	void		include( const Vec2<T> &point );
 	/** Expands the Rect to include all points in \a points in its interior **/
@@ -123,6 +125,9 @@ class RectT {
 	RectT<T>&		operator-=( const Vec2<T> &o ) { offset( -o ); return *this; }
 	RectT<T>&		operator*=( T s ) { scale( s ); return *this; }
 	RectT<T>&		operator/=( T s ) { scale( ((T)1) / s ); return *this; }	
+
+	//! Constructs a rectangle with all values initialized to zero.
+	static	RectT zero()			{ return RectT( 0, 0, 0, 0 ); }
 
 	T			x1, y1, x2, y2;
 	

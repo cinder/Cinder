@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -65,16 +67,11 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 //! Loads the contents of \a dataSource and returns it as a std::string
 std::string loadString( DataSourceRef dataSource );
 
-//! Returns a utf-16 encoded std::wstring by converting the utf-8 encoded string \a utf8
-std::wstring toUtf16( const std::string &utf8 );
-//! Returns a utf-8 encoded std::string by converting the utf-16 encoded string \a utf16
-std::string toUtf8( const std::wstring &utf16 );
-
 //! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on Mac OS X.
 void sleep( float milliseconds );
 
 //! Returns the path separator for the host operating system's file system, \c '\' on Windows and \c '/' on Mac OS
-#if defined( CINDER_MSW )
+#if (defined( CINDER_MSW ) || defined( CINDER_WINRT ))
 inline char getPathSeparator() { return '\\'; }
 #else
 inline char getPathSeparator() { return '/'; }
@@ -87,6 +84,11 @@ inline T fromString( const std::string &s ) { return boost::lexical_cast<T>( s )
 // This specialization seems to only be necessary with more recent versions of Boost
 template<>
 inline Url fromString( const std::string &s ) { return Url( s ); }
+#if defined(CINDER_COCOA_TOUCH)
+// Necessary because boost::lexical_cast crashes when trying to convert a string to a double on iOS
+template<>
+inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
+#endif
 
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 std::vector<std::string> stackTrace();

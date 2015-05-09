@@ -1,30 +1,27 @@
 #include "cinder/app/AppBasic.h"
 #include "cinder/Json.h"
+
 #include "Resources.h"
 
-class JsonTestApp : public ci::app::AppBasic 
-{
+#include "jsoncpp/json/json.h"
 
+class JsonTestApp : public ci::app::AppBasic {
   public:
+	void mouseDown( ci::app::MouseEvent event );
+	void setup();
 
-      void draw();
-	  void mouseDown( ci::app::MouseEvent event );
-	  void setup();
-
+	void testComments();
 };
+
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-void JsonTestApp::draw()
-{
-    gl::clear();
-}
-
 void JsonTestApp::setup()
 {
-    
+	console() << "jsoncpp version: " << JSONCPP_VERSION_STRING << endl;
+
     JsonTree value( "key", "value" );
     console() << value << endl;
 
@@ -67,7 +64,8 @@ void JsonTestApp::setup()
     console() << firstTrackRef.getPath() << endl;
 	firstTrackRef = JsonTree( firstTrackRef.getKey(), string( "Replacement name" ) );
 	console() << doc.getChild( "library.albums[0].tracks[0].title" ) << endl;
-	
+
+	console() << "attempting invalid json (should cause ExcJsonParserError next).." << endl;
 	try {
 		JsonTree invalid( "%%%%%%%%" );
 	} catch ( JsonTree::ExcJsonParserError ex ) {
@@ -86,7 +84,10 @@ void JsonTestApp::setup()
 	JsonTree test64( "int64", int64_t( math<int64_t>::pow( 2, 64 ) ) - 1 );
 	console() << test64;
 	console() << test64.getValue() << endl;
-	
+
+	testComments();
+
+	console() << "complete." << endl;
 }
 
 void JsonTestApp::mouseDown( MouseEvent event )
@@ -96,9 +97,11 @@ void JsonTestApp::mouseDown( MouseEvent event )
 	JsonTree library = JsonTree::makeObject( "library" );
 	JsonTree album = JsonTree::makeArray( "album" );
 	
-	album.pushBack( JsonTree( "musician", string( "Sufjan Stevens" ) ) );
-	album.pushBack( JsonTree( "year", string( "2004" ) ) );
-	album.pushBack( JsonTree( "title", string( "Seven Swans" ) ) );
+	album.addChild( 
+		JsonTree( "musician", string( "Sufjan Stevens" ) ) ).addChild( 
+		JsonTree( "year", string( "2004" ) ) ).addChild( 
+		JsonTree( "title", string( "Seven Swans" ) ) 
+		);
 
 	JsonTree tracks = JsonTree::makeArray( "tracks" );
 
@@ -129,24 +132,17 @@ void JsonTestApp::mouseDown( MouseEvent event )
 			break;
 		}
 
-		track.pushBack( title );
+		track.addChild( title ).addChild( track );
 		tracks.pushBack( track );
-
 	}
 	
 	for ( JsonTree::Iter trackIt = tracks.begin(); trackIt != tracks.end(); ++trackIt ) {
 		if ( trackIt->getChild( "id" ).getValue<int>() == 3 ) {
-			JsonTree track;
-			track.pushBack( JsonTree( "id", 3 ) );
-			track.pushBack( JsonTree( "title", "In the Devil's Territory" ) );
-			tracks.replaceChild( trackIt, track );
+			tracks.replaceChild( trackIt, JsonTree().addChild( JsonTree( "id", 3 ) ).addChild( JsonTree( "title", "In the Devil's Territory" ) ) );
 		}
 	}
 	
-	JsonTree track;
-	track.pushBack( JsonTree( "id", 4 ) );
-	track.pushBack( JsonTree( "title", "To Be Alone With You" ) );
-	tracks.replaceChild( 3, track );
+	tracks.replaceChild( 3, JsonTree().addChild( JsonTree( "id", 4 ) ).addChild( JsonTree( "title", "To Be Alone With You" ) ) );
 	
 	tracks.removeChild( 4 );
 	
@@ -166,7 +162,22 @@ void JsonTestApp::mouseDown( MouseEvent event )
 	
 	doc.write( writeFile( getDocumentsDirectory() / "testoutput.json" ), JsonTree::WriteOptions() );
 	doc.write( writeFile( getDocumentsDirectory() / "testoutput_fast.json" ), JsonTree::WriteOptions().indented( false ) );
-
 }
 
-CINDER_APP_BASIC( JsonTestApp, RendererGl )
+void JsonTestApp::testComments()
+{
+	console() << "testing json with comments.." << endl;
+
+	try {
+		JsonTree json( loadAsset( "test_comments.json" ) );
+		console() << "test_comments.json parsed contents: " << json << endl;
+	}
+	catch( ci::JsonTree::Exception &exc ) {
+		console() << "caught json exception, what: " << exc.what() << endl;
+	}
+	catch( AssetLoadExc &exc ) {
+		console() << "AssetLoadExc, what: " << exc.what() << endl;
+	}
+}
+
+CINDER_APP_BASIC( JsonTestApp, Renderer2d )

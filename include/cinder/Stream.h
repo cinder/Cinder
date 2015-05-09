@@ -43,14 +43,16 @@ class StreamBase : private boost::noncopyable {
 	
 	enum Endianness { STREAM_BIG_ENDIAN, STREAM_LITTLE_ENDIAN };
  
-	/** Returns the platform's endianness as a StreamBase::Endianness **/
+	//! Returns the platform's endianness as a StreamBase::Endianness
 	static uint8_t		getNativeEndianness()
+	{
 #ifdef CINDER_LITTLE_ENDIAN
-		{ return STREAM_LITTLE_ENDIAN; }
+		 return STREAM_LITTLE_ENDIAN;
 #else
-		{ return STREAM_BIG_ENDIAN; }
+		 return STREAM_BIG_ENDIAN;
 #endif
- 
+	}
+
 	//! Returns the file name of the path from which a Stream originated when relevant. Empty string when undefined.
   	const fs::path&		getFileName() const { return mFileName; }
 	//! Sets the file name of the path from which a Stream originated when relevant. Empty string when undefined.
@@ -83,7 +85,6 @@ class OStream : public virtual StreamBase {
 
 	//! Writes null-terminated string, including terminator
 	void		write( const std::string &s ) { writeData( s.c_str(), s.length() + 1 ); }
-	void		write( const fs::path &p ) { writeData( p.string().c_str(), p.string().length() + 1 ); }
 	template<typename T>
 	void		write( T t ) { IOWrite( &t, sizeof(T) ); }
 	template<typename T>
@@ -105,9 +106,9 @@ class OStream : public virtual StreamBase {
 
 typedef std::shared_ptr<class OStream>	OStreamRef;
 
-class IStream : public virtual StreamBase {
+class IStreamCinder : public virtual StreamBase {
  public:
-	virtual ~IStream() {};
+	virtual ~IStreamCinder() {};
 
 	template<typename T>
 	void		read( T *t ) { IORead( t, sizeof(T) ); }
@@ -132,18 +133,18 @@ class IStream : public virtual StreamBase {
 	virtual bool		isEof() const = 0;
 
  protected:
-	IStream() : StreamBase() {}
+	IStreamCinder() : StreamBase() {}
 
 	virtual void		IORead( void *t, size_t size ) = 0;
 		
 	static const int	MINIMUM_BUFFER_SIZE = 8; // minimum bytes of random access a stream must offer relative to the file start
 };
-typedef std::shared_ptr<IStream>		IStreamRef;
+typedef std::shared_ptr<IStreamCinder>		IStreamRef;
 
 
-class IoStream : public IStream, public OStream {
+class IoStream : public IStreamCinder, public OStream {
  public:
-	IoStream() : IStream(), OStream() {}
+	IoStream() : IStreamCinder(), OStream() {}
 	virtual ~IoStream() {}
 };
 typedef std::shared_ptr<IoStream>		IoStreamRef;
@@ -151,7 +152,7 @@ typedef std::shared_ptr<IoStream>		IoStreamRef;
 
 typedef std::shared_ptr<class IStreamFile>	IStreamFileRef;
 
-class IStreamFile : public IStream {
+class IStreamFile : public IStreamCinder {
  public:
 	//! Creates a new IStreamFileRef from a C-style file pointer \a FILE as returned by fopen(). If \a ownsFile the returned stream will destroy the stream upon its own destruction.
 	static IStreamFileRef create( FILE *file, bool ownsFile = true, int32_t defaultBufferSize = 2048 );
@@ -248,7 +249,7 @@ class IoStreamFile : public IoStream {
 
 
 typedef std::shared_ptr<class IStreamMem>	IStreamMemRef;
-class IStreamMem : public IStream {
+class IStreamMem : public IStreamCinder {
  public:
 	//! Creates a new IStreamMemRef from the memory pointed to by \a data which is of size \a size bytes.
 	static IStreamMemRef		create( const void *data, size_t size );
@@ -299,7 +300,7 @@ class OStreamMem : public OStream {
 
 	virtual void		IOWrite( const void *t, size_t size );
 
-	void			*mBuffer;
+	void*			mBuffer;
 	size_t			mDataSize;
 	size_t			mOffset;
 };
@@ -308,14 +309,15 @@ class OStreamMem : public OStream {
 // This class is a utility to save and restore a stream's state
 class IStreamStateRestore {
  public:
-	IStreamStateRestore( IStream &aStream ) : mStream( aStream ), mOffset( aStream.tell() ) {}
-	~IStreamStateRestore() {
+	IStreamStateRestore( IStreamCinder &aStream ) : mStream( aStream ), mOffset( aStream.tell() ) {}
+	~IStreamStateRestore()
+	{
 		mStream.seekAbsolute( mOffset );
 	}
 	
  private:
-	IStream		&mStream;
-	off_t		mOffset;
+	IStreamCinder&	mStream;
+	off_t			mOffset;
 };
 
 //! Opens the file lcoated at \a path for read access as a stream.

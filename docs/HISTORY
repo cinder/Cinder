@@ -1,4 +1,24 @@
-* 0.8.5		---
+* 0.8.6		Aug 8, 2014
+	Completely rewritten Audio API
+	Experimental DirectX Renderer
+	Experimental WinRT / Windows RT support
+	64-bit Windows support
+	Visual C++ 2013 support
+	Tangent calculations on Path2d
+	Arc-length parameterized iteration on Path2d
+	Support for conversion between UTF-8, UTF-16 and UTF-32 strings
+	Event signals for app activation and resignation
+	Wide/UTF-8 file path support throughout Cinder
+	Params update callbacks and improved API
+	Improved support for iOS keybaord, new sample iosKeyboard
+	CI_ASSERT macro
+	Color constructor accepting HTML color names
+	Updates to CinderMath.h: frac(), isPow2()
+	Improved ImageIO exception handling
+	OSC library updated
+	New FallingGears sample demonstrating Box2D + audio synthesis	
+	Upgraded to Boost 1.55
+* 0.8.5		Apr 24, 2013
 	Rewritten TinderBox with CinderBlock support
 	Multi-window support
 	Redesigned event system based on Boost.Signals

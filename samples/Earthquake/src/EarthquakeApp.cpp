@@ -5,13 +5,14 @@
 
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/Xml.h"
+#include "cinder/Json.h"
 #include "cinder/Url.h"
 #include "cinder/Vector.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/TileRender.h"
+
 using namespace ci;
 using namespace ci::app;
 
@@ -98,7 +99,7 @@ void EarthquakeApp::setup()
 	mPov			= POV( this, ci::Vec3f( 0.0f, 0.0f, 1000.0f ), ci::Vec3f( 0.0f, 0.0f, 0.0f ) );
 	mEarth			= Earth( earthDiffuse, earthNormal, earthMask );
 	
-	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/catalogs/7day-M2.5.xml" );
+	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson" );
 	
 	mEarth.setQuakeLocTip();
 }
@@ -242,18 +243,17 @@ void EarthquakeApp::draw()
 
 void EarthquakeApp::parseEarthquakes( const string &url )
 {
-	const XmlTree xml( loadUrl( Url( url ) ) );
-	for( XmlTree::ConstIter itemIter = xml.begin( "feed/entry" ); itemIter != xml.end(); ++itemIter ) {
-		string titleLine( itemIter->getChild( "title" ).getValue() );
-		size_t firstComma = titleLine.find( ',' );
-		float magnitude = fromString<float>( titleLine.substr( titleLine.find( ' ' ) + 1, firstComma - 2 ) );
-		string title = titleLine.substr( firstComma + 2 );
-
-		istringstream locationString( itemIter->getChild( "georss:point" ).getValue() );
-		Vec2f locationVector;
-		locationString >> locationVector.x >> locationVector.y;
-		
-		mEarth.addQuake( locationVector.x, locationVector.y, magnitude, title );		
+	try {
+		const JsonTree json( loadUrl( url ) );
+		for( auto &feature : json["features"].getChildren() ) {
+			auto &coords = feature["geometry"]["coordinates"];
+			float mag = feature["properties"]["mag"].getValue<float>();
+			string title = feature["properties"]["title"].getValue();
+			mEarth.addQuake( coords[0].getValue<float>(), coords[1].getValue<float>(), mag, title );
+		}
+	}
+	catch( ... ) {
+		console() << "Failed to parse." << std::endl;
 	}
 	
 	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );

@@ -23,6 +23,7 @@
 
 #include "cinder/app/AppImplMswScreenSaver.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 
 #include <Shellapi.h>
 
@@ -45,7 +46,7 @@ void AppImplMswScreenSaver::init( HWND aWnd )
 	if( szArglist && nArgs ) {
 		OutputDebugStringA( "args: " );
 		for( int i = 0; i < nArgs; ++i ) {
-			utf8Args.push_back( toUtf8( szArglist[i] ) );
+			utf8Args.push_back( toUtf8( (char16_t*)szArglist[i] ) );
 			OutputDebugStringA( utf8Args.back().c_str() );
 		}
 		OutputDebugStringA( "}" );

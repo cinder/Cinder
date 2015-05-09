@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Barbarian Group
  All rights reserved.
 
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
@@ -23,6 +25,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 
+#include <boost/utility.hpp>
 #include <boost/type_traits/is_same.hpp>
 #include <cctype>
 
@@ -31,6 +34,15 @@
 	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
 #elif defined( CINDER_COCOA )
 	#include "cinder/cocoa/CinderCocoa.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/ImageSourceFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	#include "cinder/ImageTargetFileWic.h" // this is necessary to force the instantiation of the IMAGEIO_REGISTER macro
+	#include <ppltasks.h>
+	#include "cinder/WinRTUtils.h"
+	#include "cinder/Utilities.h"
+	#include "cinder/msw/CinderMsw.h"
+	using namespace Windows::Storage;
+	using namespace Concurrency;
 #endif
 
 using namespace std;
@@ -57,8 +69,8 @@ void ImageIo::translateRgbColorModelToOffsets( ChannelOrder channelOrder, int8_t
 		case XBGR:	*red = 3; *green = 2; *blue = 1; *alpha = -1;	*inc = 4;	break;
 		case RGB:	*red = 0; *green = 1; *blue = 2; *alpha = -1;	*inc = 3;	break;
 		case BGR:	*red = 2; *green = 1; *blue = 0; *alpha = -1;	*inc = 3;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -67,8 +79,8 @@ void ImageIo::translateGrayColorModelToOffsets( ChannelOrder channelOrder, int8_
 	switch( channelOrder ) {
 		case Y:		*gray = 0;	*alpha = -1;	*inc = 1;	break;
 		case YA:	*gray = 0;	*alpha = 1;		*inc = 2;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -87,8 +99,8 @@ int8_t ImageIo::channelOrderNumChannels( ChannelOrder channelOrder )
 		case BGR:	return 3;	break;
 		case Y:		return 1;	break;
 		case YA:	return 2;	break;
-		default: // we've ended up somewhere very bad
-			throw ImageIoExceptionIllegalChannelOrder();
+		default:
+			throw ImageIoExceptionIllegalChannelOrder( "Unexpected channel order." );
 	}
 }
 
@@ -113,7 +125,7 @@ uint8_t	ImageIo::dataTypeBytes( DataType dataType )
 		case UINT16: return 2;
 		case FLOAT32: return 4;
 		default:
-			throw; // this should never happen
+			throw ImageIoExceptionIllegalDataType( "Unexpected data type." );
 	}
 }
 
@@ -298,8 +310,9 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypesAndTargetColorModel( Image
 				return &ImageSource::rowFuncSourceGray<SD,TD,TCM,false>;
 		}
 		break;
+		case CM_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalColorModel();
+			throw ImageIoExceptionIllegalColorModel( "Unknown color model." );
 	}
 }
 
@@ -315,7 +328,7 @@ ImageSource::RowFunc ImageSource::setupRowFuncForTypes( ImageTargetRef target )
 		break;
 		case CM_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalColorModel();
+			throw ImageIoExceptionIllegalColorModel( "Unknown color model." );
 	}
 }
 
@@ -334,7 +347,7 @@ ImageSource::RowFunc ImageSource::setupRowFuncForSourceType( ImageTargetRef targ
 		break;
 		case DATA_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalDataType();
+			throw ImageIoExceptionIllegalDataType( "Unknown data type." );
 	}
 }
 
@@ -352,10 +365,41 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 		break;
 		case DATA_UNKNOWN:
 		default:
-			throw ImageIoExceptionIllegalDataType();
+			throw ImageIoExceptionIllegalDataType( "Unknown data type." );
 	}
 }
 
+
+#if defined( CINDER_WINRT )
+void loadImageAsync(const fs::path path, std::function<void (ImageSourceRef)> callback, ImageSource::Options options, std::string extension)
+{
+	auto loadImageTask = create_task([path, options, extension]() -> ImageSourceRef
+	{
+		return loadImage(path, options, extension);
+	});
+
+    auto c2 = loadImageTask.then([path, options, extension, callback](task<ImageSourceRef> previousTask)
+    {
+        // If we get an ImageIoExceptionFailedLoad, we try to copy the image to the Application temp folder and try again
+        try
+        {
+			// Image was loaded. This callback is on the main UI thread
+			callback(previousTask.get());
+        }
+        catch (const ImageIoExceptionFailedLoad&)
+        {
+			auto copyTask = winrt::copyFileToTempDirAsync(path);
+			copyTask.then([options, extension, callback](StorageFile^ file) 
+			{
+				fs::path temp = fs::path( msw::toUtf8String( file->Path->Data() ) );
+				// Image was loaded. This callback is on the main UI thread
+				callback(loadImage(temp, options, extension));
+				winrt::deleteFileAsync(temp);
+			});
+        }
+    });
+}
+#endif
 
 ///////////////////////////////////////////////////////////////////////////////
 ImageSourceRef loadImage( const fs::path &path, ImageSource::Options options, string extension )
@@ -370,8 +414,11 @@ ImageSourceRef loadImage( DataSourceRef dataSource, ImageSource::Options options
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataSource->getFilePathHint() );
-	
+#if ! defined( CINDER_WINRT )
+		extension = dataSource->getFilePathHint().extension().string();
+#else
+		extension = dataSource->getFilePathHint().extension();
+#endif	
 	return ImageIoRegistrar::createSource( dataSource, options, extension );
 }
 
@@ -387,14 +434,18 @@ void writeImage( DataTargetRef dataTarget, const ImageSourceRef &imageSource, Im
 #endif
 
 	if( extension.empty() )
-		extension = getPathExtension( dataTarget->getFilePathHint() );
-	
+#if ! defined( CINDER_WINRT )
+		extension = getPathExtension( dataTarget->getFilePathHint().extension().string() );
+#else
+		extension = getPathExtension( dataTarget->getFilePathHint().extension() );
+#endif
+
 	ImageTargetRef imageTarget = ImageIoRegistrar::createTarget( dataTarget, imageSource, options, extension );
 	if( imageTarget ) {
 		writeImage( imageTarget, imageSource );
 	}
 	else
-		throw ImageIoExceptionUnknownExtension();
+		throw ImageIoExceptionUnknownExtension( "Could not create target for image with extension: " + extension );
 }
 
 void writeImage( ImageTargetRef imageTarget, const ImageSourceRef &imageSource )
@@ -449,23 +500,28 @@ ImageSourceRef ImageIoRegistrar::Inst::createSource( DataSourceRef dataSource, I
 				try {
 					return (*(sourcesIt->second))( dataSource, options );
 				}
-				catch( ... ) { // we'll ignore exceptions and move to the next handler
+				catch( ImageIoException &exc ) {
+					// if we're out of handlers, rethrow the exception, otherwise continue on
+					if( options.getThrowOnFirstException() || ( boost::next( sourcesIt ) == sIt->second.end() && mGenericSources.empty() ) )
+						throw;
 				}
 			}
 		}
 	}
 
-	// if there is no extension, or none of the registered types got it, we'll have try the generic loaders	
+	// if there is no extension, or none of the registered types got it, we'll have to try the generic loaders
 	for( map<int32_t, ImageIoRegistrar::SourceCreationFunc>::const_iterator genericIt = mGenericSources.begin(); genericIt != mGenericSources.end(); ++genericIt ) {
 		try {
 			return (*(genericIt->second))( dataSource, options );
 		}
-		catch( ... ) { // we'll ignore exceptions and move to the next handler
+		catch( ImageIoException &exc ) {
+			// if we're out of handlers, rethrow the exception, otherwise continue on
+			if( options.getThrowOnFirstException() || boost::next( genericIt ) == mGenericSources.end() )
+				throw;
 		}
 	}
-	
-	// failure
-	throw ImageIoExceptionFailedLoad();
+
+	assert( 0 && "unreachable" );
 }
 
 void ImageIoRegistrar::registerSourceType( string extension, SourceCreationFunc func, int32_t priority )

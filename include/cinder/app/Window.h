@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -28,10 +29,13 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/Vector.h"
 #include "cinder/Function.h"
+#include "cinder/Rect.h"
 #include "cinder/app/MouseEvent.h"
 #include "cinder/app/TouchEvent.h"
 #include "cinder/app/KeyEvent.h"
 #include "cinder/app/FileDropEvent.h"
+#include "cinder/Exception.h"
+
 
 namespace cinder { namespace app {
 
@@ -79,6 +83,10 @@ typedef std::shared_ptr<Window>		WindowRef;
 	#if defined( CINDER_COCOA_TOUCH )
 		class UIViewController;
 	#endif
+#elif defined( CINDER_WINRT )
+	namespace cinder { namespace app {
+		class WindowImplWinRT;
+	} } // namespace cinder::app
 #elif defined( CINDER_MSW )
 	namespace cinder { namespace app {
 		class WindowImplMsw;
@@ -190,7 +198,7 @@ class Window : public std::enable_shared_from_this<Window> {
 
 #if defined( CINDER_COCOA_TOUCH )
 		//! Returns the root UIViewController for the associated UIWindow on iOS
-		UIViewController*	getRootViewController() { return mRootViewController;}
+		UIViewController*	getRootViewController() const { return mRootViewController;}
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
 		void				setRootViewController( UIViewController *v ) { mRootViewController = v; }
 		//! Sets the root UIViewController for the associated UIWindow on iOS. Use this to enable a view heirarchy that contains native components at the root and later add Cinder's UIView / UIViewController
@@ -335,6 +343,8 @@ class Window : public std::enable_shared_from_this<Window> {
 #if defined( CINDER_COCOA_TOUCH )
 	//! Returns the UIViewController instance that manages the assoicated UIView on iOS
 	UIViewController* getNativeViewController();
+#elif defined( CINDER_WINRT )
+	DX_WINDOW_TYPE getNativeCoreWindow();
 #endif
 #if defined( CINDER_MSW )
 	//! Returns the Window's HDC on MSW. Suitable for GDI+ calls with Renderer2d.
@@ -344,42 +354,42 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalMouse&	getSignalMouseDown() { return mSignalMouseDown; }
 	void				emitMouseDown( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseDown( T fn, Y *inst ) { return getSignalMouseDown().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseDown( T fn, Y *inst ) { return getSignalMouseDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseDrag() { return mSignalMouseDrag; }
 	void				emitMouseDrag( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseDrag( T fn, Y *inst ) { return getSignalMouseDrag().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseDrag( T fn, Y *inst ) { return getSignalMouseDrag().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseUp() { return mSignalMouseUp; }
 	void				emitMouseUp( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseUp( T fn, Y *inst ) { return getSignalMouseUp().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseUp( T fn, Y *inst ) { return getSignalMouseUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseMove() { return mSignalMouseMove; }
 	void				emitMouseMove( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseMove( T fn, Y *inst ) { return getSignalMouseMove().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseMove( T fn, Y *inst ) { return getSignalMouseMove().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalMouse&	getSignalMouseWheel() { return mSignalMouseWheel; }
 	void				emitMouseWheel( MouseEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectMouseWheel( T fn, Y *inst ) { return getSignalMouseWheel().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectMouseWheel( T fn, Y *inst ) { return getSignalMouseWheel().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesBegan() { return mSignalTouchesBegan; }
 	void				emitTouchesBegan( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesBegan( T fn, Y *inst ) { return getSignalTouchesBegan().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesBegan( T fn, Y *inst ) { return getSignalTouchesBegan().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesMoved() { return mSignalTouchesMoved; }
 	void				emitTouchesMoved( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesMoved( T fn, Y *inst ) { return getSignalTouchesMoved().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesMoved( T fn, Y *inst ) { return getSignalTouchesMoved().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalTouch&	getSignalTouchesEnded() { return mSignalTouchesEnded; }
 	void				emitTouchesEnded( TouchEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectTouchesEnded( T fn, Y *inst ) { return getSignalTouchesEnded().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectTouchesEnded( T fn, Y *inst ) { return getSignalTouchesEnded().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	//! Returns a std::vector of all active touches
 	const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
@@ -387,12 +397,12 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalKey&		getSignalKeyDown() { return mSignalKeyDown; }
 	void				emitKeyDown( KeyEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectKeyDown( T fn, Y *inst ) { return getSignalKeyDown().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectKeyDown( T fn, Y *inst ) { return getSignalKeyDown().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 
 	EventSignalKey&		getSignalKeyUp() { return mSignalKeyUp; }
 	void				emitKeyUp( KeyEvent *event );
 	template<typename T, typename Y>
-	signals::connection	connectKeyUp( T fn, Y *inst ) { return getSignalKeyUp().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection	connectKeyUp( T fn, Y *inst ) { return getSignalKeyUp().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 	
 	EventSignalWindow&	getSignalDraw() { return mSignalDraw; }
 	//! Fires the 'draw' signal. Note in general this should not be called directly as it doesn't perform all necessary setup.
@@ -430,7 +440,7 @@ class Window : public std::enable_shared_from_this<Window> {
 	EventSignalFileDrop&	getSignalFileDrop() { return mSignalFileDrop; }
 	void					emitFileDrop( FileDropEvent *event );
 	template<typename T, typename Y>
-	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::_1 ) ); }
+	signals::connection		connectFileDrop( T fn, Y *inst ) { return getSignalFileDrop().connect( std::bind( fn, inst, std::placeholders::_1 ) ); }
 	
 	//! Returns the window-specific data associated with this Window.
 	template<typename T>
@@ -449,6 +459,8 @@ class Window : public std::enable_shared_from_this<Window> {
 	static WindowRef		privateCreate__( id<WindowImplCocoa> impl, App *app )
 #elif defined( CINDER_MSW )
 	static WindowRef		privateCreate__( WindowImplMsw *impl, App *app )
+#elif defined( CINDER_WINRT )
+	static WindowRef		privateCreate__( WindowImplWinRT *impl, App *app )
 #else
 	static WindowRef		privateCreate__( WindowImplCocoa *impl, App *app )
 #endif
@@ -481,6 +493,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	void		setImpl( WindowImplMsw *impl ) { mImpl = impl; }
+#elif defined( CINDER_WINRT )
+	void		setImpl( WindowImplWinRT *impl ) { mImpl = impl; }
 #endif
 
 	App							*mApp;
@@ -501,6 +515,8 @@ class Window : public std::enable_shared_from_this<Window> {
   #endif
 #elif defined( CINDER_MSW )
 	WindowImplMsw		*mImpl;
+#elif defined( CINDER_WINRT )
+	WindowImplWinRT *mImpl;
 #endif
 };
 

@@ -2,6 +2,8 @@
  Copyright (c) 2010, The Cinder Project
  All rights reserved.
  
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
+
  This code is designed for use with the Cinder C++ library, http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -419,12 +421,20 @@ void XmlTree::write( DataTargetRef target, bool createDocument )
 
 XmlTree::ExcChildNotFound::ExcChildNotFound( const XmlTree &node, const string &childPath ) throw()
 {
+#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
+#else
 	sprintf( mMessage, "Could not find child: %s for node: %s", childPath.c_str(), node.getPath().c_str() );
+#endif
 }
 
 XmlTree::ExcAttrNotFound::ExcAttrNotFound( const XmlTree &node, const string &attrName ) throw()
 {
+#if (defined (CINDER_MSW ) || defined( CINDER_WINRT ))
+	sprintf_s( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );
+#else
 	sprintf( mMessage, "Could not find attribute: %s for node: %s", attrName.c_str(), node.getPath().c_str() );
+#endif
 }
 
 } // namespace cinder

@@ -1,6 +1,0 @@
-#include "..\include\Resources.h"
-
-ID ICON "..\\resources\\cinder_app_icon.ico"
-
-RES_OPEN_SANS
-RES_KREON_BOLD

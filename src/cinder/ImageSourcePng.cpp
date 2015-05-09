@@ -40,7 +40,7 @@ static void ci_PNG_stream_reader( png_structp mPngPtr, png_bytep data, png_size_
 		((ci_png_info*)png_get_io_ptr(mPngPtr))->srcStreamRef->readData( data, (size_t)length );
 	}
 	catch ( ... ) {
-		longjmp( mPngPtr->jmpbuf, 1 );
+		longjmp( png_jmpbuf(mPngPtr), 1 );
 	}
 }
 
@@ -54,7 +54,7 @@ static void ci_png_warning( png_structp mPngPtr, png_const_charp message )
 static void ci_png_error( png_structp mPngPtr, png_const_charp message )
 {
     ci_png_warning(NULL, message);
-    longjmp( mPngPtr->jmpbuf, 1 );
+    longjmp( png_jmpbuf(mPngPtr), 1 );
 }
 
 } // extern "C"
@@ -79,7 +79,7 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Option
 {
 	mPngPtr = png_create_read_struct( PNG_LIBPNG_VER_STRING, (png_voidp)NULL, NULL, NULL );
 	if( ! mPngPtr ) {
-		throw ImageSourcePngException(); 
+		throw ImageSourcePngException( "Could not create png struct." );
 	}
 
 	mCiInfoPtr = shared_ptr<ci_png_info>( new ci_png_info );
@@ -91,11 +91,11 @@ ImageSourcePng::ImageSourcePng( DataSourceRef dataSourceRef, ImageSource::Option
 	if( ! mInfoPtr ) {
 		png_destroy_read_struct( &mPngPtr, (png_infopp)NULL, (png_infopp)NULL );
 		mPngPtr = 0;
-		throw ImageSourcePngException();
+		throw ImageSourcePngException( "Could not destroy png read struct." );
 	}
 	
 	if( ! loadHeader() )
-		throw ImageSourcePngException();		
+		throw ImageSourcePngException( "Could not load png header." );
 }
 
 // part of this being separated allows for us to play nicely with the setjmp of libpng
@@ -103,7 +103,7 @@ bool ImageSourcePng::loadHeader()
 {
 	bool success = true;
 
-	if( setjmp( mPngPtr->jmpbuf ) ) {
+	if( setjmp( png_jmpbuf(mPngPtr) ) ) {
 		success = false;
 	}
 	else {
@@ -144,7 +144,7 @@ bool ImageSourcePng::loadHeader()
 				setChannelOrder( ImageIo::RGBA );
 			break;
 			default:
-				throw ImageSourcePngException();
+				throw ImageSourcePngException( "Unexpected png color type." );
 		}	
 
 		png_set_expand_gray_1_2_4_to_8( mPngPtr );
@@ -166,7 +166,7 @@ ImageSourcePng::~ImageSourcePng()
 void ImageSourcePng::load( ImageTargetRef target )
 {
 	bool success = true;
-	if( setjmp( mPngPtr->jmpbuf ) ) {
+	if( setjmp( png_jmpbuf(mPngPtr) ) ) {
 		png_destroy_read_struct( &mPngPtr, &mInfoPtr, (png_infopp)NULL );
 		mPngPtr = 0;
 		success = false;
@@ -183,7 +183,7 @@ void ImageSourcePng::load( ImageTargetRef target )
 	}
 	
 	if( ! success )
-		throw ImageSourcePngException(); // this is not a hot idea but I don't have time to fix it atm
+		throw ImageSourcePngException( "Failure during load." );
 }
 
 } // namespace cinder

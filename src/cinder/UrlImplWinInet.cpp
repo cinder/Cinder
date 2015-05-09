@@ -22,6 +22,7 @@
 
 #include "cinder/UrlImplWinInet.h"
 #include "cinder/Utilities.h"
+#include "cinder/Unicode.h"
 
 #include <Windows.h>
 #include <Wininet.h>
@@ -53,7 +54,7 @@ void testAndThrowHttpStatus( HINTERNET hInternet )
 IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std::string &user, const std::string &password, const UrlOptions &options )
 	: IStreamUrlImpl( user, password, options ), mIsFinished( false ), mBuffer( 0 ), mBufferFileOffset( 0 )
 {
-	std::wstring wideUrl = toUtf16( url );
+	std::u16string wideUrl = toUtf16( url );
 
 	// we need to break the URL up into its constituent parts so we can choose a scheme
 	URL_COMPONENTS urlComponents;
@@ -62,7 +63,7 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	urlComponents.dwSchemeLength = 1;
 	urlComponents.dwHostNameLength = 1;
 	urlComponents.dwUrlPathLength = 1;
-	BOOL success = ::InternetCrackUrl( wideUrl.c_str(), 0, 0, &urlComponents );
+	BOOL success = ::InternetCrackUrl( (wchar_t*)wideUrl.c_str(), 0, 0, &urlComponents );
 	if( ! success )
 		throw StreamExc();
 
@@ -83,17 +84,17 @@ IStreamUrlImplWinInet::IStreamUrlImplWinInet( const std::string &url, const std:
 	if( ! mSession )
 		throw StreamExc();
 
-	std::wstring wideUser = toUtf16( user );
-	std::wstring widePassword = toUtf16( password );
+	std::u16string wideUser = toUtf16( user );
+	std::u16string widePassword = toUtf16( password );
     
     //check for HTTP and HTTPS here because they both require the same flag in InternetConnect()
 	if( ( urlComponents.nScheme == INTERNET_SCHEME_HTTP ) ||
        ( urlComponents.nScheme == INTERNET_SCHEME_HTTPS ) ) {
-	mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), INTERNET_SERVICE_HTTP, 0, NULL ),
+	mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wchar_t*)((wideUser.empty()) ? NULL : wideUser.c_str()), (wchar_t*)((widePassword.empty()) ? NULL : widePassword.c_str()), INTERNET_SERVICE_HTTP, 0, NULL ),
 										safeInternetCloseHandle );
     }else{
         //otherwise we just want to take our best shot at the Scheme type.
-        mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wideUser.empty()) ? NULL : wideUser.c_str(), (widePassword.empty()) ? NULL : widePassword.c_str(), urlComponents.nScheme, 0, NULL ),
+        mConnection = std::shared_ptr<void>( ::InternetConnect( mSession.get(), host, urlComponents.nPort, (wchar_t*)((wideUser.empty()) ? NULL : wideUser.c_str()), (wchar_t*)((widePassword.empty()) ? NULL : widePassword.c_str()), urlComponents.nScheme, 0, NULL ),
                                             safeInternetCloseHandle );
     }
 	if( ! mConnection )

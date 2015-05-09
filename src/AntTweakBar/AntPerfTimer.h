@@ -23,9 +23,22 @@
     #include <windows.h>
     #include <tchar.h>
 
+#if defined( CINDER_WINRT )
+	#include "cinder/WinRTUtils.h"
+#endif
+
     struct PerfTimer
     {
-        inline        PerfTimer()   { if( !QueryPerformanceFrequency(&Freq) ) MessageBox(NULL, _T("Precision timer not supported"), _T("Problem"), MB_ICONEXCLAMATION); Reset(); }
+        inline        PerfTimer()
+		{
+			if( !QueryPerformanceFrequency(&Freq) )
+#if defined( CINDER_MSW )
+				MessageBox(NULL, _T("Precision timer not supported"), _T("Problem"), MB_ICONEXCLAMATION);
+#elif defined( CINDER_WINRT )
+				cinder::winrt::WinRTMessageBox("Precision timer not supported", "OK");
+#endif
+			Reset();
+		}
         inline void   Reset()       { QueryPerformanceCounter(&Start); }
         inline double GetTime()     { if( QueryPerformanceCounter(&End) ) return ((double)End.QuadPart - (double)Start.QuadPart)/((double)Freq.QuadPart); else return 0; }
     protected:

@@ -61,6 +61,9 @@ class Camera {
 
 	float	getFov() const { return mFov; }
 	void	setFov( float aFov ) { mFov = aFov;  mProjectionCached = false; }
+	float	getFovHorizontal() const { return toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(mFov) * 0.5f ) * mAspectRatio ) ); }
+	void	setFovHorizontal( float aFov ) { mFov = toDegrees( 2.0f * math<float>::atan( math<float>::tan( toRadians(aFov) * 0.5f ) / mAspectRatio ) );  mProjectionCached = false; }
+
 	float	getAspectRatio() const { return mAspectRatio; }
 	void	setAspectRatio( float aAspectRatio ) { mAspectRatio = aAspectRatio; mProjectionCached = false; }
 	float	getNearClip() const { return mNearClip; }
@@ -133,7 +136,7 @@ class CameraPersp : public Camera {
 	CameraPersp( int pixelWidth, int pixelHeight, float fov ); // constructs screen-aligned camera
 	CameraPersp( int pixelWidth, int pixelHeight, float fov, float nearPlane, float farPlane ); // constructs screen-aligned camera
 	
-	void	setPerspective( float horizFovDegrees, float aspectRatio, float nearPlane, float farPlane );
+	void	setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane );
 	
 	/** Returns both the horizontal and vertical lens shift. 
 		A horizontal lens shift of 1 (-1) will shift the view right (left) by half the width of the viewport.

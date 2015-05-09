@@ -1,5 +1,6 @@
 /*
  Copyright (c) 2012, The Cinder Project, All rights reserved.
+ Copyright (c) Microsoft Open Technologies, Inc. All rights reserved.
 
  This code is intended for use with the Cinder C++ library: http://libcinder.org
 
@@ -24,9 +25,24 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/gl/gl.h"  // necessary to give GLee the jump on Cocoa.h
+#include "cinder/MatrixStack.h"
+
+#if defined( CINDER_MSW )
+	struct HWND__;
+	typedef HWND__* DX_WINDOW_TYPE;
+#elif defined( CINDER_WINRT )
+	#include <agile.h>
+	typedef Platform::Agile<Windows::UI::Core::CoreWindow>	DX_WINDOW_TYPE;
+	#undef min
+	#undef max
+#endif
+
+#if !defined( CINDER_WINRT )
+	#include "cinder/gl/gl.h"  // necessary to give GLee the jump on Cocoa.h
+#endif
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
+
 
 #if defined( CINDER_MAC )
 	#include <ApplicationServices/ApplicationServices.h>
@@ -63,14 +79,23 @@
 
 namespace cinder { namespace app {
 
+class Window;
+typedef std::shared_ptr<Window>		WindowRef;
+
 class App;
 
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
+	enum RendererType
+	{
+		RENDERER_GL,
+		RENDERER_DX
+	};
 	virtual ~Renderer() {};
 	
 	virtual RendererRef	clone() const = 0;
+	virtual RendererType getRendererType() const { return RENDERER_GL; }
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
@@ -95,6 +120,12 @@ class Renderer {
 
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
+#elif defined( CINDER_WINRT)
+	virtual void setup( App *aApp, DX_WINDOW_TYPE wnd) = 0;
+
+	virtual void prepareToggleFullScreen() {}
+	virtual void finishToggleFullScreen() {}
+	virtual void kill() {}
 #endif
 
 	virtual Surface	copyWindowSurface( const Area &area ) = 0;
@@ -111,6 +142,7 @@ class Renderer {
 	App			*mApp;
 };
 
+#if !defined( CINDER_WINRT )
 typedef std::shared_ptr<class RendererGl>	RendererGlRef;
 class RendererGl : public Renderer {
   public:
@@ -240,5 +272,7 @@ class Renderer2d : public Renderer {
 };
 
 #endif
+#endif // !defined( CINDER_WINRT )
+
 
 } } // namespace cinder::app

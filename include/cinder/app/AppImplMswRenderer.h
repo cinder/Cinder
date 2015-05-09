@@ -38,7 +38,11 @@ class AppImplMswRenderer {
  public:
 	AppImplMswRenderer( App *aApp ) : mApp( aApp ) {}
 	
+#if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
+#elif defined( CINDERT_WINRT)
+	virtual bool	initialize( DX_WINDOW_TYPE wnd ) = 0;
+#endif
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}
 	virtual void	kill() = 0;
@@ -47,7 +51,7 @@ class AppImplMswRenderer {
 	virtual void	makeCurrentContext() = 0;
 
  protected:
-	HWND				mWnd;
+	DX_WINDOW_TYPE		mWnd;
 	App					*mApp;
 };
 

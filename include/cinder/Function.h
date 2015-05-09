@@ -34,9 +34,6 @@ namespace cinder { namespace signals {
 } } // cinder::signals
 
 #include <functional>
-namespace std {
-	using namespace std::placeholders;
-}
 
 namespace cinder {
 
