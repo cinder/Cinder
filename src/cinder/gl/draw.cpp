@@ -638,7 +638,7 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	ctx->popVao();
 }
 	
-void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
 {
 	auto ctx = context();
 	const GlslProg* curGlslProg = ctx->getGlslProg();
@@ -691,12 +691,15 @@ void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPe
 	vec2 *texCoords = ( texLoc >= 0 ) ? reinterpret_cast<vec2*>( data.get() + texCoordsOffset ) : nullptr;
 	vec3 *normals = ( normalLoc >= 0 ) ? reinterpret_cast<vec3*>( data.get() + normalsOffset ) : nullptr;
 	
-	auto center = r.getCenter();
+	auto posCenter = r.getCenter();
+	
+	Rectf texCoordRect( upperLeftTexCoord.x, lowerRightTexCoord.y, lowerRightTexCoord.x, upperLeftTexCoord.y );
+	auto texCenter = texCoordRect.getCenter();
 	
 	if( verts )
-		verts[0] = center;
+		verts[0] = posCenter;
 	if( texCoords )
-		texCoords[0] = vec2( 0.5f, 0.5f );
+		texCoords[0] = texCenter;
 	if( normals )
 		normals[0] = vec3( 0, 0, 1 );
 	
@@ -708,12 +711,12 @@ void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPe
 		vec2( r.x1 + cornerRadius, r.y1 + cornerRadius ),
 		vec2( r.x2 - cornerRadius, r.y1 + cornerRadius )
 	};
-	vec2 texCoordOffset = (cornerRadius / r.getSize());
+	vec2 texCoordOffset = (cornerRadius / r.getSize()) * texCoordRect.getSize();
 	const std::array<vec2, 4> cornerCenterTexCoords = {
-		vec2( 1 - texCoordOffset.x, texCoordOffset.y + 0 ), // lower right
-		vec2( texCoordOffset.x + 0, texCoordOffset.y + 0 ), // lower left
-		vec2( texCoordOffset.x + 0, 1 - texCoordOffset.y ), // upper left
-		vec2( 1 - texCoordOffset.x, 1 - texCoordOffset.y )	// upper right
+		vec2( lowerRightTexCoord.x - texCoordOffset.x, texCoordOffset.y + lowerRightTexCoord.y ), // lower right
+		vec2( texCoordOffset.x + upperLeftTexCoord.x, texCoordOffset.y + lowerRightTexCoord.y ), // lower left
+		vec2( texCoordOffset.x + upperLeftTexCoord.x, upperLeftTexCoord.y - texCoordOffset.y ), // upper left
+		vec2( lowerRightTexCoord.x - texCoordOffset.x, upperLeftTexCoord.y - texCoordOffset.y )	// upper right
 	};
 	for( size_t corner = 0; corner < 4; ++corner ) {
 		float angle = corner * M_PI / 2.0f;
@@ -741,7 +744,7 @@ void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPe
 	if( verts )
 		verts[tri] = vec2( r.x2, r.y2 - cornerRadius );
 	if( texCoords )
-		texCoords[tri] = vec2( 1, texCoordOffset.y );
+		texCoords[tri] = vec2( lowerRightTexCoord.x, texCoordOffset.y + lowerRightTexCoord.y );
 	if( normals )
 		normals[tri] = vec3( 0, 0, 1 );
 	
@@ -848,27 +851,21 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	}
 	if( numSegmentsPerCorner < 2 ) numSegmentsPerCorner = 2;
 	
-	GLfloat *verts = new float[(numSegmentsPerCorner+2)*2*4];
+	std::vector<vec2> verts( (numSegmentsPerCorner+2)*2*4 );
 	GLsizei tri = 0;
 	const float angleDelta = 1 / (float)numSegmentsPerCorner * M_PI / 2;
-	const float cornerCenterVerts[8] = {
-		r.x2 - cornerRadius,
-		r.y2 - cornerRadius,
-		r.x1 + cornerRadius,
-		r.y2 - cornerRadius,
-		r.x1 + cornerRadius,
-		r.y1 + cornerRadius,
-		r.x2 - cornerRadius,
-		r.y1 + cornerRadius
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( r.x2 - cornerRadius, r.y2 - cornerRadius ),
+		vec2( r.x1 + cornerRadius, r.y2 - cornerRadius ),
+		vec2( r.x1 + cornerRadius, r.y1 + cornerRadius ),
+		vec2( r.x2 - cornerRadius, r.y1 + cornerRadius )
 	};
 	for( size_t corner = 0; corner < 4; ++corner ) {
 		float angle = corner * M_PI / 2.0f;
 		vec2 cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
 		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
-			vec2 pt( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
-					cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
-			verts[tri*2+0] = pt.x;
-			verts[tri*2+1] = pt.y;
+			verts[tri] = vec2( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
+							  cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
 			++tri;
 			angle += angleDelta;
 		}
@@ -877,7 +874,7 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	ctx->getDefaultVao()->replacementBindBegin();
 	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*(numSegmentsPerCorner+2)*2*4 );
 	ScopedBuffer bufferBindScp( defaultVbo );
-	defaultVbo->bufferSubData( 0, sizeof(float)*(numSegmentsPerCorner+2)*2*4, verts );
+	defaultVbo->bufferSubData( 0, sizeof(float)*(numSegmentsPerCorner+2)*2*4, verts.data() );
 	
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
@@ -888,7 +885,6 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	ctx->setDefaultShaderVars();
 	ctx->drawArrays( GL_LINE_LOOP, 0, tri );
 	ctx->popVao();
-	delete [] verts;
 }
 
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
@@ -1052,7 +1048,6 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 		if( normals )
 			normals[s+1] = vec3( 0, 0, 1 );
 		t += tDelta;
-		cout << texCoords[s+1] << endl;
 	}
 
 	defaultVbo->bufferSubData( 0, dataSizeBytes, data.get() );
