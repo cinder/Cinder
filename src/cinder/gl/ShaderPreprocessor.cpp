@@ -81,6 +81,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 		}
 		else
 			output << line;
+
 		output << endl;
 	}
 	
@@ -103,7 +104,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	
 	return directivesString + output.str();
 }
-	
+
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )
 {
 	set<fs::path> includeTree;
