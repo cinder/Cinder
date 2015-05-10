@@ -93,9 +93,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 		version = "#version " + to_string( mVersion ) + "\n";
 #endif
 	}
-	else
-		version += "\n";
-	
+
 	// copy the preprocessor directives to a string starting with the version
 	std::string directivesString = version;
 	for( auto define : mDefineDirectives ) {
