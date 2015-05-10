@@ -567,6 +567,207 @@ void Rect::setDefaultTexCoords()
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cube
+RoundedRect::RoundedRect()
+	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
+{
+	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
+	updateVertexCount();
+	setDefaultColors();
+	setDefaultTexCoords();
+}
+	
+RoundedRect::RoundedRect( const Rectf &r )
+	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
+{
+	rect( r );
+	updateVertexCount();
+	setDefaultColors();
+	setDefaultTexCoords();
+}
+	
+RoundedRect& RoundedRect::cornerSubdivisions( int cornerSubdivisions )
+{
+	mSubdivisions = cornerSubdivisions;
+	updateVertexCount();
+	return *this;
+}
+
+RoundedRect& RoundedRect::cornerRadius( float cornerRadius )
+{
+	mCornerRadius = cornerRadius;
+	updateVertexCount();
+	return *this;
+}
+
+RoundedRect& RoundedRect::texCoords( const vec2 &upperLeft, const vec2 &lowerRight )
+{
+	mRectTexCoords = Rectf( upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y );
+	return *this;
+}
+
+RoundedRect& RoundedRect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
+{
+	// TODO: figure out order
+	mColors[0] = upperLeft;  // upper-left
+	mColors[1] = upperRight; // upper-right
+	mColors[2] = lowerRight; // lower-right
+	mColors[3] = lowerLeft;  // lower-left
+	return *this;
+}
+	
+void RoundedRect::updateVertexCount()
+{
+	if( mSubdivisions <= 0 ) {
+		mSubdivisions = (int)math<double>::floor( mCornerRadius * M_PI * 2 / 4 );
+	}
+	if( mSubdivisions < 2 ) mSubdivisions = 2;
+	
+	mNumVertices = ( mSubdivisions + 1 ) * 4 + 2;
+}
+	
+uint8_t	RoundedRect::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
+		case Attrib::TANGENT: return 3;
+		default:
+			return 0;
+	}
+}
+
+AttribSet RoundedRect::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
+}
+	
+void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> positions;
+	if( requestedAttribs.count( geom::Attrib::POSITION ) )
+		positions.resize( mNumVertices );
+	std::vector<vec2> texCoords;
+	if( requestedAttribs.count( geom::Attrib::TEX_COORD_0 ) )
+		texCoords.resize( mNumVertices );
+	std::vector<vec4> colors;
+	if( requestedAttribs.count( geom::Attrib::COLOR ) )
+		colors.resize( mNumVertices );
+	std::vector<vec3> normals;
+	if( requestedAttribs.count( geom::Attrib::NORMAL ) )
+		normals.resize( mNumVertices );
+	std::vector<vec3> tangents;
+	if( requestedAttribs.count( geom::Attrib::TANGENT ) )
+		tangents.resize( mNumVertices );
+	
+	auto posCenter = mRectPositions.getCenter();
+	auto texCenter = mRectTexCoords.getCenter();
+	
+	auto bufferPositions = ! positions.empty();
+	auto bufferTexCoords = ! texCoords.empty();
+	auto bufferNormals = ! normals.empty();
+	auto bufferTangents = ! tangents.empty();
+	auto bufferColors = ! colors.empty();
+	
+	if( bufferPositions )
+		positions[0] = posCenter;
+	if( bufferTexCoords )
+		texCoords[0] = texCenter;
+	if( bufferNormals )
+		normals[0] = vec3( 0, 0, 1 );
+	if( bufferTangents )
+		tangents[0] = vec3( 0.7071067f, 0.7071067f, 0 );
+	if( bufferColors )
+		colors[0] = (mColors[0] / 4.0f) + (mColors[1] / 4.0f) + (mColors[2] / 4.0f) + (mColors[3] / 4.0f);
+	
+	size_t tri = 1;
+	const float angleDelta = 1 / (float)mSubdivisions * M_PI / 2;
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+	};
+	vec2 texCoordOffset = ( mCornerRadius / mRectPositions.getSize() ) * mRectTexCoords.getSize();
+	const std::array<vec2, 4> cornerCenterTexCoords = {
+		vec2( mRectTexCoords.x2 - texCoordOffset.x, texCoordOffset.y + mRectTexCoords.y1 ), // lower right
+		vec2( texCoordOffset.x + mRectTexCoords.x1, texCoordOffset.y + mRectTexCoords.y1 ), // lower left
+		vec2( texCoordOffset.x + mRectTexCoords.x1, mRectTexCoords.y2 - texCoordOffset.y ), // upper left
+		vec2( mRectTexCoords.x2 - texCoordOffset.x, mRectTexCoords.y2 - texCoordOffset.y )	// upper right
+	};
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		vec2 cornerCenter( cornerCenterVerts[corner] );
+		vec2 cornerTexCoord( cornerCenterTexCoords[corner] );
+		vec4 cornerColor( mColors[corner] );
+		for( int s = 0; s <= mSubdivisions; s++ ) {
+			auto cosVal = math<float>::cos( angle );
+			auto sinVal = math<float>::sin( angle );
+			if( bufferPositions )
+				positions[tri] = vec2( cornerCenter.x + cosVal * mCornerRadius,
+									   cornerCenter.y + sinVal * mCornerRadius );
+			if( bufferTexCoords )
+				texCoords[tri] = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
+									   cornerTexCoord.y - sinVal * texCoordOffset.y );
+			if( bufferNormals )
+				normals[tri] = vec3( 0, 0, 1 );
+			if( bufferTangents )
+				tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
+			if( bufferColors ) {
+				// TODO: Assigning the corner color to each edge looks fine but in terms of
+				// interpolation, it is incorrect. It should be some percentage but the below
+				// is also not correct
+//				float pointInRadius = (float(s) / float(mSubdivisions)) * 2.0f - 1.0f;
+//				uint32_t whichColorToCombine = pointInRadius > 0.0f ? (corner + 1) % 4 : (corner - 1) % 4;
+//				vec4 color1 = cornerColor * ( abs( pointInRadius ) );
+//				vec4 color2 = mColors[whichColorToCombine] * (1.0f - abs( pointInRadius ) );
+				colors[tri] = cornerColor;
+			}
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	// close it off
+	if( bufferPositions )
+		positions[tri] = vec2( mRectPositions.x2, mRectPositions.y2 - mCornerRadius );
+	if( bufferTexCoords )
+		texCoords[tri] = vec2( mRectTexCoords.x2, texCoordOffset.y + mRectTexCoords.y1 );
+	if( bufferNormals )
+		normals[tri] = vec3( 0, 0, 1 );
+	if( bufferTangents )
+		tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
+	if( bufferColors )
+		colors[tri] = mColors[0];
+	
+	if( bufferPositions )
+		target->copyAttrib( geom::Attrib::POSITION, 2, 0, value_ptr( *positions.data() ), positions.size() );
+	if( bufferTexCoords )
+		target->copyAttrib( geom::Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	if( bufferNormals )
+		target->copyAttrib( geom::Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	if( bufferTangents )
+		target->copyAttrib( geom::Attrib::TANGENT, 3, 0, value_ptr( *tangents.data() ), tangents.size() );
+	if( bufferColors )
+		target->copyAttrib( geom::Attrib::COLOR, 4, 0, value_ptr( *colors.data() ), colors.size() );
+}
+	
+void RoundedRect::setDefaultColors()
+{
+	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f ); // upper-right
+	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f ); // upper-left
+	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f ); // lower-right
+	mColors[3] = ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ); // lower-left
+}
+
+void RoundedRect::setDefaultTexCoords()
+{
+	mRectTexCoords = Rectf( 0.0f, 0.0f, 1.0f, 1.0f );
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Cube
 Cube::Cube()
 	: mSubdivisions( 1 ), mSize( 1 ), mHasColors( false )
 {

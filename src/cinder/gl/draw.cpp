@@ -862,7 +862,7 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	};
 	for( size_t corner = 0; corner < 4; ++corner ) {
 		float angle = corner * M_PI / 2.0f;
-		vec2 cornerCenter( cornerCenterVerts[corner*2+0], cornerCenterVerts[corner*2+1] );
+		vec2 cornerCenter( cornerCenterVerts[corner] );
 		for( int s = 0; s <= numSegmentsPerCorner; s++ ) {
 			verts[tri] = vec2( cornerCenter.x + math<float>::cos( angle ) * cornerRadius,
 							  cornerCenter.y + math<float>::sin( angle ) * cornerRadius );
@@ -874,7 +874,7 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 	ctx->getDefaultVao()->replacementBindBegin();
 	VboRef defaultVbo = ctx->getDefaultArrayVbo( sizeof(float)*(numSegmentsPerCorner+2)*2*4 );
 	ScopedBuffer bufferBindScp( defaultVbo );
-	defaultVbo->bufferSubData( 0, sizeof(float)*(numSegmentsPerCorner+2)*2*4, verts.data() );
+	defaultVbo->bufferSubData( 0, verts.size() * sizeof(vec2), verts.data() );
 	
 	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
 	if( posLoc >= 0 ) {
