@@ -40,25 +40,26 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
 	const Area &area( srcDst.first );
 	const ivec2 &dstOffset( srcDst.second );
-	typename CHANTRAIT<T>::Sum sumX, sumY;
+	typename CHANTRAIT<T>::SignedSum sumX, sumY;
 
-	int32_t srcRowBytes = srcChannel.getRowBytes() / sizeof(T);
-	int8_t srcPixelBytes = srcChannel.getIncrement();
-	int8_t dstPixelBytes = dstChannel->getIncrement();
+	int32_t srcRowInc = srcChannel.getRowBytes() / sizeof(T);
+	int8_t srcPixelInc = srcChannel.getIncrement();
+	int8_t dstPixelInc = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 1; y < area.getHeight() - 1; ++y ) {
 		const T *srcLine = srcChannel.getData( area.getX1() + 1, area.getY1() + y );
 		T *dstLine = dstChannel->getData( dstOffset.x + area.getX1() + 1, dstOffset.y + y );
 		for( int32_t x = area.getX1() + 1; x < area.getX2() - 1; ++x ) {
-//			sumX = -srcLine[-srcRowPixels-srcPixelStride] + srcLine[-srcRowPixels+srcPixelStride] - 2 * srcLine[-srcPixelStride] + 2 * srcLine[srcPixelStride] - srcLine[srcRowPixels-srcPixelStride] + srcLine[srcRowPixels+srcPixelStride];
-			sumX = -*(T*)(srcLine-srcRowBytes-srcPixelBytes) + *(T*)(srcLine-srcRowBytes+srcPixelBytes) - 2 * *(T*)(srcLine-srcPixelBytes) + 2 * *(T*)(srcLine+srcPixelBytes) - *(T*)(srcLine+srcRowBytes-srcPixelBytes) + *(T*)(srcLine+srcRowBytes+srcPixelBytes);
-//			sumY = srcLine[-srcRowPixels-srcPixelStride] + 2 * srcLine[-srcRowPixels] + srcLine[-srcRowPixels + srcPixelStride]				- srcLine[srcRowPixels-srcPixelStride] - 2 * srcLine[srcRowPixels] - srcLine[srcRowPixels+srcPixelStride];
-			sumY = *(T*)(srcLine-srcRowBytes-srcPixelBytes) + 2 * *(T*)(srcLine-srcRowBytes) + *(T*)(srcLine-srcRowBytes+srcPixelBytes) - *(T*)(srcLine+srcRowBytes-srcPixelBytes) - 2 * *(T*)(srcLine+srcPixelBytes) - *(T*)(srcLine+srcRowBytes+srcPixelBytes);
-			sumX = static_cast<typename CHANTRAIT<T>::Sum>( math<float>::sqrt( float( sumX * sumX + sumY * sumY ) ) );
-			if( sumX > maxValue ) sumX = maxValue;
+			sumX = -*(srcLine-srcRowInc-srcPixelInc) + *(srcLine-srcRowInc+srcPixelInc) - 2 * *(srcLine-srcPixelInc)
+							+ 2 * *(srcLine+srcPixelInc) - *(srcLine+srcRowInc-srcPixelInc) + *(srcLine+srcRowInc+srcPixelInc);
+			sumY = *(srcLine-srcRowInc-srcPixelInc) + 2 * *(srcLine-srcRowInc) + *(srcLine-srcRowInc+srcPixelInc)
+							- *(srcLine+srcRowInc-srcPixelInc) - 2 * *(srcLine+srcPixelInc) - *(srcLine+srcRowInc+srcPixelInc);
+			sumX = (typename CHANTRAIT<T>::SignedSum)math<float>::sqrt( (float)sumX * sumX + (float)sumY * sumY );
+			if( sumX > maxValue )
+				sumX = maxValue;
 			*dstLine = static_cast<T>( sumX );
-			dstLine += dstPixelBytes;
-			srcLine += srcPixelBytes;
+			dstLine += dstPixelInc;
+			srcLine += srcPixelInc;
 		}
 	}
 }
@@ -92,7 +93,7 @@ void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSuface )
 	template void edgeDetectSobel( const ChannelT<T> &srcChannel, ChannelT<T> *dstChannel );	\
 	template void edgeDetectSobel( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface );	
 
-BOOST_PP_SEQ_FOR_EACH( edgeDetect_PROTOTYPES, ~, CHANNEL_TYPES )
+BOOST_PP_SEQ_FOR_EACH( edgeDetect_PROTOTYPES, ~, (uint8_t)(uint16_t)(float) )
 
 
 } } // namespace cinder::ip
