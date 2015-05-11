@@ -523,6 +523,9 @@ class DefaultVboTarget : public geom::Target {
 
 	void copyIndices( geom::Primitive primitive, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
 	{
+		if( numIndices == 0 )
+			return;
+
 		mIndexType = GL_UNSIGNED_INT;
 		mElementVbo->bufferSubData( 0, numIndices * requiredBytesPerIndex, sourceData );
 	}
