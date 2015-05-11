@@ -972,7 +972,7 @@ void DeferredShadingAdvancedApp::draw()
 		const gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),				3 );
 		const gl::ScopedTextureBind scopedTextureBind4( mTextureFboAo[ 0 ],							4 );
 		const gl::ScopedTextureBind scopedTextureBind5( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ],	5 );
-		if ( mEnabledRay ) {
+		if ( mTextureFboRayColor[ 1 ] ) {
 			mTextureFboRayColor[ 1 ]->bind( 6 );
 		}
 		
@@ -989,7 +989,7 @@ void DeferredShadingAdvancedApp::draw()
 			mBatchDebugRect->draw();
 		}
 
-		if ( mEnabledRay ) {
+		if ( mTextureFboRayColor[ 1 ] ) {
 			mTextureFboRayColor[ 1 ]->unbind();
 		}
 	} else {
