@@ -607,11 +607,10 @@ RoundedRect& RoundedRect::texCoords( const vec2 &upperLeft, const vec2 &lowerRig
 
 RoundedRect& RoundedRect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
-	// TODO: figure out order
-	mColors[0] = upperLeft;  // upper-left
-	mColors[1] = upperRight; // upper-right
-	mColors[2] = lowerRight; // lower-right
-	mColors[3] = lowerLeft;  // lower-left
+	mColors[0] = lowerLeft;  
+	mColors[1] = lowerRight; 
+	mColors[2] = upperRight; 
+	mColors[3] = upperLeft;
 	return *this;
 }
 	
@@ -704,41 +703,43 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 		for( int s = 0; s <= mSubdivisions; s++ ) {
 			auto cosVal = math<float>::cos( angle );
 			auto sinVal = math<float>::sin( angle );
+			// Need this calculation for texCoords and colors
+			auto currentTexCoord = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
+										cornerTexCoord.y - sinVal * texCoordOffset.y );
 			if( bufferPositions )
 				positions[tri] = vec2( cornerCenter.x + cosVal * mCornerRadius,
 									   cornerCenter.y + sinVal * mCornerRadius );
 			if( bufferTexCoords )
-				texCoords[tri] = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
-									   cornerTexCoord.y - sinVal * texCoordOffset.y );
+				texCoords[tri] = currentTexCoord;
 			if( bufferNormals )
 				normals[tri] = vec3( 0, 0, 1 );
 			if( bufferTangents )
 				tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
 			if( bufferColors ) {
-				// TODO: Assigning the corner color to each edge looks fine but in terms of
-				// interpolation, it is incorrect. It should be some percentage but the below
-				// is also not correct
-//				float pointInRadius = (float(s) / float(mSubdivisions)) * 2.0f - 1.0f;
-//				uint32_t whichColorToCombine = pointInRadius > 0.0f ? (corner + 1) % 4 : (corner - 1) % 4;
-//				vec4 color1 = cornerColor * ( abs( pointInRadius ) );
-//				vec4 color2 = mColors[whichColorToCombine] * (1.0f - abs( pointInRadius ) );
-				colors[tri] = cornerColor;
+				auto colorU0 = lerp( mColors[2], mColors[3], currentTexCoord.x / mRectTexCoords.getWidth() );
+				auto colorU1 = lerp( mColors[0], mColors[1], currentTexCoord.x / mRectTexCoords.getWidth() );
+				colors[tri] = lerp( colorU0, colorU1, currentTexCoord.y / mRectTexCoords.getHeight() );
 			}
 			++tri;
 			angle += angleDelta;
 		}
 	}
+	// Need this calculation for texCoords and colors
+	auto currentTexCoord = vec2( mRectTexCoords.x2, texCoordOffset.y + mRectTexCoords.y1 );
 	// close it off
 	if( bufferPositions )
 		positions[tri] = vec2( mRectPositions.x2, mRectPositions.y2 - mCornerRadius );
 	if( bufferTexCoords )
-		texCoords[tri] = vec2( mRectTexCoords.x2, texCoordOffset.y + mRectTexCoords.y1 );
+		texCoords[tri] = currentTexCoord;
 	if( bufferNormals )
 		normals[tri] = vec3( 0, 0, 1 );
 	if( bufferTangents )
 		tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
-	if( bufferColors )
-		colors[tri] = mColors[0];
+	if( bufferColors ) {
+		auto colorU0 = lerp( mColors[2], mColors[3], currentTexCoord.x / mRectTexCoords.getWidth() );
+		auto colorU1 = lerp( mColors[0], mColors[1], currentTexCoord.x / mRectTexCoords.getWidth() );
+		colors[tri] = lerp( colorU0, colorU1, currentTexCoord.y / mRectTexCoords.getHeight() );
+	}
 	
 	if( bufferPositions )
 		target->copyAttrib( geom::Attrib::POSITION, 2, 0, value_ptr( *positions.data() ), positions.size() );
@@ -754,10 +755,10 @@ void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &reque
 	
 void RoundedRect::setDefaultColors()
 {
-	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f ); // upper-right
-	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f ); // upper-left
-	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f ); // lower-right
-	mColors[3] = ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ); // lower-left
+	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f ); // lower-left
+	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f ); // lower-right
+	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f ); // upper-right
+	mColors[3] = ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ); // upper-left
 }
 
 void RoundedRect::setDefaultTexCoords()
