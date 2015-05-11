@@ -686,6 +686,8 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 			continue;
 
 		vec3 normal = cross( e0, e1 );
+
+		// if not weighted, every normal has an equal contribution
 		if( ! weighted )
 			normal = normalize( normal );
 
@@ -694,7 +696,7 @@ bool TriMesh::recalculateNormals( bool smooth, bool weighted )
 		mNormals[ index2 ] += normal;
 	}
 
-	// ???: Is this extra normalizing necessary? It is done in the above loop if weighted = true
+	// now normalize the summed normals
 	for( auto &normal : mNormals ) {
 		normal = normalize( normal );
 	}
