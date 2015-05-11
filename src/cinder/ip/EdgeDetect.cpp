@@ -42,13 +42,13 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 	const ivec2 &dstOffset( srcDst.second );
 	typename CHANTRAIT<T>::Sum sumX, sumY;
 
-	int32_t srcRowBytes = srcChannel.getRowBytes();
-	int8_t srcPixelBytes = srcChannel.getIncrement() * sizeof(T);
-	int8_t dstPixelBytes = dstChannel->getIncrement() * sizeof(T);
+	int32_t srcRowBytes = srcChannel.getRowBytes() / sizeof(T);
+	int8_t srcPixelBytes = srcChannel.getIncrement();
+	int8_t dstPixelBytes = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 1; y < area.getHeight() - 1; ++y ) {
-		const uint8_t *srcLine = reinterpret_cast<const uint8_t*>( srcChannel.getData( area.getX1() + 1, area.getY1() + y ) );
-		uint8_t *dstLine = reinterpret_cast<uint8_t*>( dstChannel->getData( dstOffset.x + area.getX1() + 1, dstOffset.y + y ) );
+		const T *srcLine = srcChannel.getData( area.getX1() + 1, area.getY1() + y );
+		T *dstLine = dstChannel->getData( dstOffset.x + area.getX1() + 1, dstOffset.y + y );
 		for( int32_t x = area.getX1() + 1; x < area.getX2() - 1; ++x ) {
 //			sumX = -srcLine[-srcRowPixels-srcPixelStride] + srcLine[-srcRowPixels+srcPixelStride] - 2 * srcLine[-srcPixelStride] + 2 * srcLine[srcPixelStride] - srcLine[srcRowPixels-srcPixelStride] + srcLine[srcRowPixels+srcPixelStride];
 			sumX = -*(T*)(srcLine-srcRowBytes-srcPixelBytes) + *(T*)(srcLine-srcRowBytes+srcPixelBytes) - 2 * *(T*)(srcLine-srcPixelBytes) + 2 * *(T*)(srcLine+srcPixelBytes) - *(T*)(srcLine+srcRowBytes-srcPixelBytes) + *(T*)(srcLine+srcRowBytes+srcPixelBytes);
@@ -56,7 +56,7 @@ void edgeDetectSobel( const ChannelT<T> &srcChannel, const Area &srcArea, const 
 			sumY = *(T*)(srcLine-srcRowBytes-srcPixelBytes) + 2 * *(T*)(srcLine-srcRowBytes) + *(T*)(srcLine-srcRowBytes+srcPixelBytes) - *(T*)(srcLine+srcRowBytes-srcPixelBytes) - 2 * *(T*)(srcLine+srcPixelBytes) - *(T*)(srcLine+srcRowBytes+srcPixelBytes);
 			sumX = static_cast<typename CHANTRAIT<T>::Sum>( math<float>::sqrt( float( sumX * sumX + sumY * sumY ) ) );
 			if( sumX > maxValue ) sumX = maxValue;
-			*dstLine = static_cast<uint8_t>( sumX );
+			*dstLine = static_cast<T>( sumX );
 			dstLine += dstPixelBytes;
 			srcLine += srcPixelBytes;
 		}
