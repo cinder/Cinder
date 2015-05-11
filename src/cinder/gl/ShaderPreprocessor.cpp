@@ -81,6 +81,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 		}
 		else
 			output << line;
+
 		output << endl;
 	}
 	
@@ -92,9 +93,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 		version = "#version " + to_string( mVersion ) + "\n";
 #endif
 	}
-	else
-		version += "\n";
-	
+
 	// copy the preprocessor directives to a string starting with the version
 	std::string directivesString = version;
 	for( auto define : mDefineDirectives ) {
@@ -103,7 +102,7 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	
 	return directivesString + output.str();
 }
-	
+
 string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )
 {
 	set<fs::path> includeTree;
