@@ -1,6 +1,5 @@
 #include "cinder/Cinder.h"
 #include "cinder/Signals.h"
-#include "cinder/System.h"
 #include "cinder/app/Event.h"
 
 #include <iostream>
@@ -16,6 +15,19 @@ std::string toString( float value, int precision )
 	std::ostringstream out;
 	out << std::fixed << std::setprecision( precision ) << value;
 	return out.str();
+}
+
+inline string demangleTypeName( const char *mangledName )
+{
+#if defined( CINDER_COCOA )
+	int status = 0;
+
+	std::unique_ptr<char, void(*)(void *)> result { abi::__cxa_demangle( mangledName, NULL, NULL, &status ), std::free };
+
+	return ( status == 0 ) ? result.get() : mangledName;
+#else
+	return mangledName;
+#endif
 }
 
 struct BasicSignalTests {
@@ -521,7 +533,7 @@ struct TestConnectionToggling {
 template <typename TestT>
 void runTest()
 {
-	cout << System::demangleTypeName( typeid( TestT ).name() ) << ": ";
+	cout << demangleTypeName( typeid( TestT ).name() ) << ": ";
 	TestT::run();
 	cout << "OK" << endl;
 }
