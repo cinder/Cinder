@@ -25,7 +25,7 @@
 
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/cocoa/AppCocoaTouch.h"
 
 #include "MotionManager.h"
 
@@ -57,10 +57,10 @@ class MotionImplCoreMotion {
 	void setUpdateFrequency( float updateFrequency );
 	void setShowsCalibrationView( bool shouldShow );
 
-	ci::Vec3f	getGravityDirection( app::InterfaceOrientation orientation );
-    ci::Quatf	getRotation( app::InterfaceOrientation orientation );
-	ci::Vec3f	getRotationRate( app::InterfaceOrientation orientation );
-	ci::Vec3f	getAcceleration( app::InterfaceOrientation orientation );
+	ci::vec3	getGravityDirection( app::InterfaceOrientation orientation );
+    ci::quat	getRotation( app::InterfaceOrientation orientation );
+	ci::vec3	getRotationRate( app::InterfaceOrientation orientation );
+	ci::vec3	getAcceleration( app::InterfaceOrientation orientation );
 
 	float		getAccelFilter() const { return mAccelFilter; }
 	void		setAccelFilter( float filtering ) { mAccelFilter = filtering; }
@@ -69,8 +69,9 @@ class MotionImplCoreMotion {
 	CMMotionManager				*mMotionManager;
 	MotionManager::SensorMode	mSensorMode;
 
-	ci::Vec3f					mLastAccel;
+	ci::vec3					mLastAccel;
 	float						mAccelFilter;
+	bool						mLastAccelValid;
 };
 
 } // namespace cinder

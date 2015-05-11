@@ -1,6 +1,7 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Surface.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
 #include "cinder/Text.h"
 
@@ -10,7 +11,7 @@ using namespace std;
 
 static const int WIDTH = 640, HEIGHT = 480;
 
-class CaptureApp : public AppBasic {
+class CaptureApp : public App {
  public:	
 	void setup();
 	void keyDown( KeyEvent event );
@@ -21,7 +22,7 @@ class CaptureApp : public AppBasic {
 	vector<CaptureRef>		mCaptures;
 	vector<gl::TextureRef>	mTextures;
 	vector<gl::TextureRef>	mNameTextures;
-	vector<Surface>			mRetainedSurfaces;
+	vector<SurfaceRef>		mRetainedSurfaces;
 };
 
 void CaptureApp::setup()
@@ -80,8 +81,12 @@ void CaptureApp::update()
 {
 	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {
 		if( (*cIt)->checkNewFrame() ) {
-			Surface8u surf = (*cIt)->getSurface();
-			mTextures[cIt - mCaptures.begin()] = gl::Texture::create( surf );
+			Surface8uRef surf = (*cIt)->getSurface();
+			// Capture images come back as top-down, and it's more efficient to keep them that way
+			if( ! mTextures[cIt - mCaptures.begin()] )
+				mTextures[cIt - mCaptures.begin()] = gl::Texture2d::create( *surf, gl::Texture2d::Format().loadTopDown() );
+			else
+				mTextures[cIt - mCaptures.begin()]->update( *surf );
 		}
 	}
 }
@@ -105,13 +110,13 @@ void CaptureApp::draw()
 			
 		// draw the name
 		gl::color( Color::black() );	
-		gl::draw( mNameTextures[cIt-mCaptures.begin()], Vec2f( x + 10 + 1, y + 10 + 1 ) );
+		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10 + 1, y + 10 + 1 ) );
 		gl::color( Color( 0.5, 0.75, 1 ) );
-		gl::draw( mNameTextures[cIt-mCaptures.begin()], Vec2f( x + 10, y + 10 ) );
+		gl::draw( mNameTextures[cIt-mCaptures.begin()], vec2( x + 10, y + 10 ) );
 
 		x += width;
 	}
 }
 
 
-CINDER_APP_BASIC( CaptureApp, RendererGl )
+CINDER_APP( CaptureApp, RendererGl )

@@ -8,11 +8,11 @@
 #include "cinder/Rand.h"
 
 using namespace std;
-using ci::Vec2f;
+using ci::vec2;
 using ci::Rand;
 
 void Grid::
-init( Vec2f gravity_, int cell_nx, int cell_ny, float lx_)
+init( vec2 gravity_, int cell_nx, int cell_ny, float lx_)
 {
 	gravity=gravity_;
 	lx=lx_;

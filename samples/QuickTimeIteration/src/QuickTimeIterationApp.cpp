@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -12,7 +12,7 @@ using namespace ci;
 using namespace ci::app;
 using std::string;
 
-class QTimeIterApp : public AppBasic {
+class QTimeIterApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -99,8 +99,8 @@ void QTimeIterApp::loadMovieFile( const fs::path &moviePath )
 		mMovie.seekToStart();
 		mMovie.play();
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
 	}	
 }
 
@@ -128,4 +128,4 @@ void QTimeIterApp::draw()
 }
 
 
-CINDER_APP_BASIC( QTimeIterApp, RendererGl )
+CINDER_APP( QTimeIterApp, RendererGl )

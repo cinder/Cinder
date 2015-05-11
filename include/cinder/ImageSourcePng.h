@@ -54,8 +54,6 @@ class ImageSourcePng : public ImageSource {
 	png_info						*mInfoPtr;
 };
 
-REGISTER_IMAGE_IO_FILE_HANDLER( ImageSourcePng )
-
 class ImageSourcePngException : public ImageIoException {
   public:
 	ImageSourcePngException( const std::string &description ) : ImageIoException( description ) {}

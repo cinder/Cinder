@@ -6,18 +6,18 @@
 class Particle {
  public:
 	Particle();
-	Particle( ci::Vec3f pos, ci::Vec3f vel );
-	void pullToCenter( const ci::Vec3f &center );
+	Particle( ci::vec3 pos, ci::vec3 vel );
+	void pullToCenter( const ci::vec3 &center );
 	void update( bool flatten );
 	void limitSpeed();
 	void draw();
 	void drawTail();
 	
-	ci::Vec3f	mPos;
-	ci::Vec3f	mTailPos;
-	ci::Vec3f	mVel;
-	ci::Vec3f	mVelNormal;
-	ci::Vec3f	mAcc;
+	ci::vec3	mPos;
+	ci::vec3	mTailPos;
+	ci::vec3	mVel;
+	ci::vec3	mVelNormal;
+	ci::vec3	mAcc;
 	
 	float		mDecay;
 	float		mRadius;

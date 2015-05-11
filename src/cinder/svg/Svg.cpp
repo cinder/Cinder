@@ -29,6 +29,7 @@
 #include "cinder/ImageIo.h"
 #include "cinder/Base64.h"
 #include "cinder/Text.h"
+#include "cinder/Log.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
@@ -226,9 +227,9 @@ Paint Paint::parse( const char *value, bool *specified, const Node *parentNode )
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
@@ -608,7 +609,7 @@ Node::Node( const Node *parent, const XmlTree &xml )
 		mTransform = parseTransform( xml["transform"] );
 	}
 	else
-		mTransform.setToIdentity();
+		mTransform = mat3();
 }
 
 Doc* Node::getDoc() const
@@ -745,9 +746,9 @@ Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNo
 			for( int c = 0; c < 3; ++c ) {
 				char ch = toupper( value[1+c] );
 				uint32_t col = ch - ( ( ch > '9' ) ? ( 'A' - 10 ) : '0' );
-				v += col << ( (5-c*2+0) * 4 );
-				v += col << ( (5-c*2+1) * 4 );
-			}		
+				v += col << ( (5-(c*2+0)) * 4 );
+				v += col << ( (5-(c*2+1)) * 4 );
+			}
 		}
 		*specified = true;
 		return Paint( ColorA8u( v >> 16, ( v >> 8 ) & 255, v & 255, 255 ) );
@@ -785,33 +786,32 @@ Paint Node::parsePaint( const char *value, bool *specified, const Node *parentNo
 	}
 }
 
-MatrixAffine2f Node::parseTransform( const std::string &value )
+mat3 Node::parseTransform( const std::string &value )
 {
 	const char *c = value.c_str();
-	MatrixAffine2f curMat;
-	curMat.setToIdentity();
-	MatrixAffine2f nextMat;
+	mat3 curMat;
+	mat3 nextMat;
 	while( parseTransformComponent( &c, &nextMat ) ) {
 		curMat = curMat * nextMat;
 	}
 	return curMat;
 }
 
-bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
+bool Node::parseTransformComponent( const char **c, mat3 *result )
 {
 	// skip leading whitespace
-	while( **c && isspace( **c ) )
+	while( **c && ( isspace( **c ) || ( **c == ',' ) ) )
 		(*c)++;
 	
-	MatrixAffine2f m;
+	mat3 m;
 	if( ! strncmp( *c, "scale", 5 ) ) {
 		*c += 5; //strlen( "scale" );
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
-			m = MatrixAffine2f::makeScale( v[0] );
+			m = glm::scale( mat3(), vec2( v[0] ) );
 		}
 		else if( v.size() == 2 ) {
-			m = MatrixAffine2f::makeScale( Vec2f( v[0], v[1] ) );
+			m = glm::scale( mat3(), vec2( v[0], v[1] ) );
 		}
 		else
 			throw TransformParseExc();
@@ -820,9 +820,9 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		*c += 9; //strlen( "translate" );
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 )
-			m = MatrixAffine2f::makeTranslate( Vec2f( v[0], v[0] ) );
+			m = glm::translate( mat3(), vec2( v[0], 0 ) );
 		else if( v.size() == 2 ) {
-			m = MatrixAffine2f::makeTranslate( Vec2f( v[0], v[1] ) );
+			m = glm::translate( mat3(), vec2( v[0], v[1] ) );
 		}
 		else
 			throw TransformParseExc();
@@ -832,14 +832,16 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
-			m = MatrixAffine2f::makeRotate( a );
+			m = glm::rotate( mat3(), a );
 			//m33[0] = math<float>::cos( a ); m33[1] = math<float>::sin( a );
 			//m33[3] = -math<float>::sin( a ); m33[4] = math<float>::cos( a );
 		}
 		else if( v.size() == 3 ) { // rotate around point
 			float a = toRadians( v[0] );
-			Vec2f v; v.x = v[0]; v.y = v[1];
-			m = MatrixAffine2f::makeRotate( a, v );
+			vec2 origin( v[1], v[2] );
+			m = glm::translate( mat3(), origin );
+			m = glm::rotate( m, a );
+			m = glm::translate( m, -origin );
 		}
 		else
 			throw TransformParseExc();
@@ -847,9 +849,8 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 	else if( ! strncmp( *c, "matrix", 6 ) ) {
 		*c += 6; //strlen( "matrix" );
 		vector<float> v = parseFloatList( c );
-		if( v.size() == 6 ) {
-			m = MatrixAffine2f( &v[0] );
-		}
+		if( v.size() == 6 )
+			m = mat3( v[0], v[1], 0, v[2], v[3], 0, v[4], v[5], 1 );
 		else
 			throw TransformParseExc();
 	}
@@ -858,8 +859,7 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		vector<float> v = parseFloatList( c );
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
-			m = MatrixAffine2f::makeSkewX( a );
-			//m33[3] = math<float>::tan( a );
+			m = glm::shearY2D( mat3(), tan( a ) );
 		}
 		else
 			throw TransformParseExc();
@@ -870,7 +870,7 @@ bool Node::parseTransformComponent( const char **c, MatrixAffine2f *result )
 		if( v.size() == 1 ) {
 			float a = toRadians( v[0] );
 			//m33[1] = math<float>::tan( a );
-			m = MatrixAffine2f::makeSkewY( a );
+			m = glm::shearX2D( mat3(), tan( a ) );
 		}
 		else
 			throw TransformParseExc();
@@ -973,13 +973,13 @@ Paint Node::findPaintInAncestors( const std::string &paintName ) const
 		return Paint();
 }
 
-MatrixAffine2f Node::getTransformAbsolute() const
+mat3 Node::getTransformAbsolute() const
 {
-	MatrixAffine2f result;
+	mat3 result;
 	if( mSpecifiesTransform )
 		result = mTransform;
 	else
-		result.setToIdentity();
+		result = mat3();
 	
 	const Node *parent = mParent;
 	while( parent ) {
@@ -1163,7 +1163,7 @@ void Ellipse::renderSelf( Renderer &renderer ) const
 	renderer.drawEllipse( *this );
 }
 
-bool Ellipse::containsPoint( const Vec2f &pt ) const
+bool Ellipse::containsPoint( const vec2 &pt ) const
 {
 	float x = (pt.x - mCenter.x) * (pt.x - mCenter.x) / ( mRadiusX * mRadiusX );
 	float y = (pt.y - mCenter.y) * (pt.y - mCenter.y) / ( mRadiusY * mRadiusY );
@@ -1175,13 +1175,13 @@ Shape2d	Ellipse::getShape() const
 	Shape2d result;
 
 	const float magic =	0.552284749830793398402f; // 4/3*(sqrt(2)-1)
-	const Vec2f offset( mRadiusX * magic, mRadiusY * magic );
+	const vec2 offset( mRadiusX * magic, mRadiusY * magic );
 
-	result.moveTo( Vec2f( mCenter.x - mRadiusX, mCenter.y ) );
-	result.curveTo( Vec2f( mCenter.x - mRadiusX, mCenter.y - offset.y ), Vec2f( mCenter.x - offset.x, mCenter.y - mRadiusY ), Vec2f( mCenter.x, mCenter.y - mRadiusY ) );
-	result.curveTo( Vec2f( mCenter.x + offset.x, mCenter.y - mRadiusY ), Vec2f( mCenter.x + mRadiusX, mCenter.y - offset.y ), Vec2f( mCenter.x + mRadiusX, mCenter.y ) );
-	result.curveTo( Vec2f( mCenter.x + mRadiusX, mCenter.y + offset.y ), Vec2f( mCenter.x + offset.x, mCenter.y + mRadiusY ), Vec2f( mCenter.x, mCenter.y + mRadiusY ) );
-	result.curveTo( Vec2f( mCenter.x - offset.x, mCenter.y + mRadiusY ), Vec2f( mCenter.x - mRadiusX, mCenter.y + offset.y ), Vec2f( mCenter.x - mRadiusX, mCenter.y ) );
+	result.moveTo( vec2( mCenter.x - mRadiusX, mCenter.y ) );
+	result.curveTo( vec2( mCenter.x - mRadiusX, mCenter.y - offset.y ), vec2( mCenter.x - offset.x, mCenter.y - mRadiusY ), vec2( mCenter.x, mCenter.y - mRadiusY ) );
+	result.curveTo( vec2( mCenter.x + offset.x, mCenter.y - mRadiusY ), vec2( mCenter.x + mRadiusX, mCenter.y - offset.y ), vec2( mCenter.x + mRadiusX, mCenter.y ) );
+	result.curveTo( vec2( mCenter.x + mRadiusX, mCenter.y + offset.y ), vec2( mCenter.x + offset.x, mCenter.y + mRadiusY ), vec2( mCenter.x, mCenter.y + mRadiusY ) );
+	result.curveTo( vec2( mCenter.x - offset.x, mCenter.y + mRadiusY ), vec2( mCenter.x - mRadiusX, mCenter.y + offset.y ), vec2( mCenter.x - mRadiusX, mCenter.y ) );
 	result.close();
 
 	return result;
@@ -1195,7 +1195,7 @@ void ellipticalArc( Shape2d &path, float x1, float y1, float x2, float y2, float
 	// http://www.w3.org/TR//implnote.html#ArcImplementationNotes
 	float cosXAxisRotation = cosf( xAxisRotation );
 	float sinXAxisRotation = sinf( xAxisRotation );
-	const Vec2f cPrime( cosXAxisRotation * (x2 - x1) * 0.5f + sinXAxisRotation * (y2 - y1) * 0.5f, -sinXAxisRotation * (x2 - x1) * 0.5f + cosXAxisRotation * (y2 - y1) * 0.5f );
+	const vec2 cPrime( cosXAxisRotation * (x2 - x1) * 0.5f + sinXAxisRotation * (y2 - y1) * 0.5f, -sinXAxisRotation * (x2 - x1) * 0.5f + cosXAxisRotation * (y2 - y1) * 0.5f );
 
 	// http://www.w3.org/TR//implnote.html#ArcCorrectionOutOfRangeRadii
 	float radiiScale = (cPrime.x * cPrime.x) / ( rx * rx ) + (cPrime.y * cPrime.y) / ( ry * ry );
@@ -1205,22 +1205,22 @@ void ellipticalArc( Shape2d &path, float x1, float y1, float x2, float y2, float
 		ry *= radiiScale;
 	}
 
-	Vec2f invRadius( 1.0f / rx, 1.0f / ry );
-	Vec2f point1 = Vec2f( cosXAxisRotation * x1 + sinXAxisRotation * y1, -sinXAxisRotation * x1 + cosXAxisRotation * y1 ) * invRadius;
-	Vec2f point2 = Vec2f( cosXAxisRotation * x2 + sinXAxisRotation * y2, -sinXAxisRotation * x2 + cosXAxisRotation * y2 ) * invRadius;
-	Vec2f delta = point2 - point1;
+	vec2 invRadius( 1.0f / rx, 1.0f / ry );
+	vec2 point1 = vec2( cosXAxisRotation * x1 + sinXAxisRotation * y1, -sinXAxisRotation * x1 + cosXAxisRotation * y1 ) * invRadius;
+	vec2 point2 = vec2( cosXAxisRotation * x2 + sinXAxisRotation * y2, -sinXAxisRotation * x2 + cosXAxisRotation * y2 ) * invRadius;
+	vec2 delta = point2 - point1;
 	float d = delta.x * delta.x + delta.y * delta.y;
 	if( d <= 0 )
 		return;
 	
 	float theta1, thetaDelta;
-	Vec2f center;
+	vec2 center;
 		
 	float s = math<float>::sqrt( std::max<float>( 1 / d - 0.25f, 0 ) );
 	if( sweepFlag == largeArcFlag )
 		s = -s;
 
-	center = Vec2f( 0.5f * (point1.x + point2.x) - delta.y * s, 0.5f * (point1.y + point2.y) + delta.x * s );
+	center = vec2( 0.5f * (point1.x + point2.x) - delta.y * s, 0.5f * (point1.y + point2.y) + delta.x * s );
 
 	theta1 = math<float>::atan2( point1.y - center.y, point1.x - center.x );
 	float theta2 = math<float>::atan2( point2.y - center.y, point2.x - center.x );
@@ -1242,12 +1242,12 @@ void ellipticalArc( Shape2d &path, float x1, float y1, float x2, float y2, float
 		float sinThetaEnd = math<float>::sin( thetaEnd );
 		float cosThetaEnd = math<float>::cos( thetaEnd );
 
-		Vec2f startPoint = Vec2f( cosThetaStart - t * sinThetaStart, sinThetaStart + t * cosThetaStart ) + center;
-		startPoint = Vec2f( cosXAxisRotation * startPoint.x * rx - sinXAxisRotation * startPoint.y * ry, sinXAxisRotation * startPoint.x * rx + cosXAxisRotation * startPoint.y * ry );
-		Vec2f endPoint = Vec2f( cosThetaEnd, sinThetaEnd ) + center;
-		Vec2f transformedEndPoint = Vec2f( cosXAxisRotation * endPoint.x * rx - sinXAxisRotation * endPoint.y * ry, sinXAxisRotation * endPoint.x * rx + cosXAxisRotation * endPoint.y * ry );
-		Vec2f midPoint = endPoint + Vec2f( t * sinThetaEnd, -t * cosThetaEnd );
-		midPoint = Vec2f( cosXAxisRotation * midPoint.x * rx - sinXAxisRotation * midPoint.y * ry, sinXAxisRotation * midPoint.x * rx + cosXAxisRotation * midPoint.y * ry );
+		vec2 startPoint = vec2( cosThetaStart - t * sinThetaStart, sinThetaStart + t * cosThetaStart ) + center;
+		startPoint = vec2( cosXAxisRotation * startPoint.x * rx - sinXAxisRotation * startPoint.y * ry, sinXAxisRotation * startPoint.x * rx + cosXAxisRotation * startPoint.y * ry );
+		vec2 endPoint = vec2( cosThetaEnd, sinThetaEnd ) + center;
+		vec2 transformedEndPoint = vec2( cosXAxisRotation * endPoint.x * rx - sinXAxisRotation * endPoint.y * ry, sinXAxisRotation * endPoint.x * rx + cosXAxisRotation * endPoint.y * ry );
+		vec2 midPoint = endPoint + vec2( t * sinThetaEnd, -t * cosThetaEnd );
+		midPoint = vec2( cosXAxisRotation * midPoint.x * rx - sinXAxisRotation * midPoint.y * ry, sinXAxisRotation * midPoint.x * rx + cosXAxisRotation * midPoint.y * ry );
 		path.curveTo( startPoint, midPoint, transformedEndPoint );
     }
 }
@@ -1316,8 +1316,8 @@ bool nextItemIsFloat( const char *s )
 Shape2d parsePath( const std::string &p )
 {
 	const char* s = p.c_str();
-	Vec2f v0, v1, v2;
-	Vec2f lastPoint = Vec2f::zero(), lastPoint2 = Vec2f::zero();
+	vec2 v0, v1, v2;
+	vec2 lastPoint, lastPoint2;
 
 	Shape2d result;
 	bool done = false;
@@ -1358,7 +1358,7 @@ Shape2d parsePath( const std::string &p )
 			case 'h':
 				do {
 					float x = parseFloat( &s );
-					v0 = Vec2f( ( cmd == 'h' ) ? (lastPoint.x + x) : x, lastPoint.y );
+					v0 = vec2( ( cmd == 'h' ) ? (lastPoint.x + x) : x, lastPoint.y );
 					result.lineTo( v0 );
 					lastPoint2 = lastPoint;
 					lastPoint = v0;
@@ -1368,7 +1368,7 @@ Shape2d parsePath( const std::string &p )
 			case 'v':
 				do {
 					float y = parseFloat( &s );
-					v0 = Vec2f( lastPoint.x, ( cmd == 'v' ) ? (lastPoint.y + y) : (y) );
+					v0 = vec2( lastPoint.x, ( cmd == 'v' ) ? (lastPoint.y + y) : (y) );
 					result.lineTo( v0 );
 					lastPoint2 = lastPoint;
 					lastPoint = v0;
@@ -1458,7 +1458,7 @@ Shape2d parsePath( const std::string &p )
 			case 'Z':
 				result.close();
 				lastPoint2 = lastPoint;
-				lastPoint = (result.empty() || result.getContours().back().empty() ) ? Vec2f::zero() : result.getContours().back().getPoint(0);
+				lastPoint = (result.empty() || result.getContours().back().empty() ) ? vec2() : result.getContours().back().getPoint(0);
 			break;
 			case '\0':
 			default: // technically noise at the end of the string is acceptable according to the spec; see W3C_SVG_11/paths-data-18.svg
@@ -1561,9 +1561,9 @@ Shape2d	Rect::getShape() const
 
 ////////////////////////////////////////////////////////////////////////////////////
 // Polygon
-vector<Vec2f> parsePointList( const std::string &p )
+vector<vec2> parsePointList( const std::string &p )
 {
-	vector<Vec2f> result;
+	vector<vec2> result;
 	
 	if( ! p.empty() ) {
 		char item[64];
@@ -1575,7 +1575,7 @@ vector<Vec2f> parsePointList( const std::string &p )
 			if( ! odd )
 				lastVal = (float)atof( item );
 			else
-				result.push_back( Vec2f( lastVal, (float)atof( item ) ) );
+				result.push_back( vec2( lastVal, (float)atof( item ) ) );
 			odd = ! odd;
 		}
 	}
@@ -1603,7 +1603,7 @@ Shape2d	Polygon::getShape() const
 		return result;
 	
 	result.moveTo( mPolyLine.getPoints()[0] );
-	for( vector<Vec2f>::const_iterator ptIt = mPolyLine.getPoints().begin() + 1; ptIt != mPolyLine.getPoints().end(); ++ptIt )
+	for( vector<vec2>::const_iterator ptIt = mPolyLine.getPoints().begin() + 1; ptIt != mPolyLine.getPoints().end(); ++ptIt )
 		result.lineTo( *ptIt );
 
 	result.close();
@@ -1633,7 +1633,7 @@ Shape2d	Polyline::getShape() const
 		return result;
 	
 	result.moveTo( mPolyLine.getPoints()[0] );
-	for( vector<Vec2f>::const_iterator ptIt = mPolyLine.getPoints().begin() + 1; ptIt != mPolyLine.getPoints().end(); ++ptIt )
+	for( vector<vec2>::const_iterator ptIt = mPolyLine.getPoints().begin() + 1; ptIt != mPolyLine.getPoints().end(); ++ptIt )
 		result.lineTo( *ptIt );
 	
 	return result;
@@ -1745,12 +1745,12 @@ const Node* Group::findNode( const std::string &id, bool recurse ) const
 	return NULL;
 }
 
-Node* Group::nodeUnderPoint( const Vec2f &absolutePoint, const MatrixAffine2f &parentInverseMatrix ) const
+Node* Group::nodeUnderPoint( const vec2 &absolutePoint, const mat3 &parentInverseMatrix ) const
 {
-	MatrixAffine2f invTransform = parentInverseMatrix;
+	mat3 invTransform = parentInverseMatrix;
 	if( mSpecifiesTransform )
-		invTransform = mTransform.invertCopy() * invTransform;
-	Vec2f localPt = invTransform * absolutePoint;
+		invTransform = inverse( mTransform ) * invTransform;
+	vec2 localPt = vec2( invTransform * vec3( absolutePoint, 1 ) );
 	
 	for( list<Node*>::const_reverse_iterator nodeIt = mChildren.rbegin(); nodeIt != mChildren.rend(); ++nodeIt ) {
 		if( typeid(**nodeIt) == typeid(svg::Group) ) {
@@ -1760,8 +1760,8 @@ Node* Group::nodeUnderPoint( const Vec2f &absolutePoint, const MatrixAffine2f &p
 		}
 		else {
 			if( (*nodeIt)->specifiesTransform() ) {
-				MatrixAffine2f childInvTransform = (*nodeIt)->getTransformInverse() * invTransform;
-				if( (*nodeIt)->containsPoint( childInvTransform * absolutePoint) )
+				mat3 childInvTransform = (*nodeIt)->getTransformInverse() * invTransform;
+				if( (*nodeIt)->containsPoint( vec2( childInvTransform * vec3( absolutePoint, 1 ) ) ) )
 					return *nodeIt;	
 			}
 			else if( (*nodeIt)->containsPoint( localPt ) )
@@ -1836,7 +1836,7 @@ Rectf Group::calcBoundingBox() const
 	for( list<Node*>::const_iterator childIt = mChildren.begin(); childIt != mChildren.end(); ++childIt ) {
 		Rectf childBounds = (*childIt)->getBoundingBoxAbsolute();
 		// only use child area if it exists (text nodes return [0,0,0,0])
-		if( childBounds.calcArea() > 0 ) {
+		if( ( childBounds.getWidth() > 0 ) || ( childBounds.getHeight() > 0 ) ) {
 			if( empty ) {
 				result = childBounds;
 				empty = false;
@@ -1917,12 +1917,14 @@ std::shared_ptr<Surface8u> Image::parseDataImage( const string &data )
 	if( mime == "image/png" ) extension = "png";
 	else if( mime == "image/jpeg" ) extension = "jpeg";	
 	size_t len = data.size() - comma - 1;
-	Buffer buf = fromBase64( &data[comma + 1], len );
+	auto buf = make_shared<Buffer>( fromBase64( &data[comma + 1], len ) );
 	try {
 		shared_ptr<Surface8u> result( new Surface8u( ci::loadImage( DataSourceBuffer::create( buf ), ImageSource::Options(), extension ) ) );
 		return result;
 	}
-	catch( ... ) {}
+	catch( std::exception &exc ) {
+		CI_LOG_W( "failed to parse data image, what: " << exc.what() );
+	}
 	return std::shared_ptr<Surface8u>();
 }
 
@@ -1958,13 +1960,13 @@ Shape2d Text::getShape() const
 }
 #endif
 
-Vec2f Text::getTextPen() const
+vec2 Text::getTextPen() const
 {
 	if( ( mAttributes.mX.size() != 1 ) || ( mAttributes.mY.size() != 1 ) ) {
-		return Vec2f::zero();
+		return vec2();
 	}
 	else
-		return Vec2f( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
+		return vec2( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
 }
 
 float Text::getRotation() const
@@ -1979,7 +1981,7 @@ float Text::getRotation() const
 
 void Text::renderSelf( Renderer &renderer ) const
 {
-	renderer.pushTextPen( Vec2f::zero() ); // this may be overridden by the attributes, but that's ok
+	renderer.pushTextPen( vec2() ); // this may be overridden by the attributes, but that's ok
 	mAttributes.startRender( renderer );
 	for( vector<TextSpanRef>::const_iterator spanIt = mSpans.begin(); spanIt != mSpans.end(); ++spanIt ) {
 		(*spanIt)->renderSelf( renderer );
@@ -2034,12 +2036,12 @@ void TextSpan::renderSelf( Renderer &renderer ) const
 	finishRender( renderer, style );		
 }
 
-std::vector<std::pair<uint16_t,Vec2f> > TextSpan::getGlyphMeasures() const
+std::vector<std::pair<uint16_t,vec2> > TextSpan::getGlyphMeasures() const
 {
 	if( ! mGlyphMeasures ) {
 		TextBox tbox = TextBox().font( *getFont() ).text( mString );
-		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,Vec2f> > >( 
-			new std::vector<std::pair<uint16_t,Vec2f> >( tbox.measureGlyphs() ) );
+		mGlyphMeasures = shared_ptr<std::vector<std::pair<uint16_t,vec2> > >( 
+			new std::vector<std::pair<uint16_t,vec2> >( tbox.measureGlyphs() ) );
 	}
 	
 	return *mGlyphMeasures;
@@ -2057,13 +2059,13 @@ Shape2d TextSpan::getShape() const
 			if( ! font )
 				return Shape2d();
 			TextBox tbox = TextBox().font( *font ).text( mString );
-			vector<pair<uint16_t,Vec2f> > glyphs = getGlyphMeasures();
-			Vec2f textPen = getTextPen();
+			vector<pair<uint16_t,vec2> > glyphs = getGlyphMeasures();
+			vec2 textPen = getTextPen();
 			float rotation = getRotation();
 			bool shouldRotate = fabs( rotation ) > 0.0001f;
 			MatrixAffine2f rotationMatrix = MatrixAffine2f::makeRotate( toRadians( rotation ) );
 			for( size_t g = 0; g < glyphs.size(); ++g ) {
-				MatrixAffine2f m = MatrixAffine2f::makeTranslate( textPen + Vec2f( glyphs[g].second.x, 0 ) );
+				MatrixAffine2f m = MatrixAffine2f::makeTranslate( textPen + vec2( glyphs[g].second.x, 0 ) );
 				if( shouldRotate )
 					m *= rotationMatrix;
 				mShape->append( font->getGlyphShape( glyphs[g].first ).getTransform( m ) );
@@ -2099,7 +2101,8 @@ const std::shared_ptr<Font>	TextSpan::getFont() const
 				mFont = shared_ptr<Font>( new Font( *familyIt, fontSize ) );
 				break;
 			}
-			catch( ... ) {
+			catch( ci::Exception &exc ) {
+				CI_LOG_W( "failed to load font with name: " << *familyIt << ", size: " << fontSize << ". what: " << exc.what() << "\t - loading default font." );
 				mFont = shared_ptr<Font>( new Font( Font::getDefault() ) );
 			}
 		}
@@ -2108,16 +2111,16 @@ const std::shared_ptr<Font>	TextSpan::getFont() const
 	return mFont;
 }
 
-Vec2f TextSpan::getTextPen() const
+vec2 TextSpan::getTextPen() const
 {
 	if( mIgnoreAttributes || ( mAttributes.mX.size() != 1 ) || ( mAttributes.mY.size() != 1 ) ) {
-		if( ! mParent ) return Vec2f::zero();
+		if( ! mParent ) return vec2();
 		else if( typeid(*mParent) == typeid(TextSpan) ) return reinterpret_cast<const TextSpan*>( mParent )->getTextPen();
 		else if( typeid(*mParent) == typeid(Text) ) return reinterpret_cast<const Text*>( mParent )->getTextPen();
-		else return Vec2f::zero();
+		else return vec2();
 	}
 	else
-		return Vec2f( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
+		return vec2( mAttributes.mX[0].asUser(), mAttributes.mY[0].asUser() );
 }
 
 float TextSpan::getRotation() const
@@ -2135,7 +2138,7 @@ float TextSpan::getRotation() const
 void TextSpan::Attributes::startRender( Renderer &renderer ) const
 {
 	if( mX.size() == 1 && mY.size() == 1 )
-		renderer.pushTextPen( Vec2f( mX[0].asUser(), mY[0].asUser() ) );
+		renderer.pushTextPen( vec2( mX[0].asUser(), mY[0].asUser() ) );
 	if( mRotate.size() == 1 )
 		renderer.pushTextRotation( mRotate[0].asUser() );
 	else
@@ -2181,8 +2184,11 @@ DocRef Doc::createFromSvgz( DataSourceRef dataSource, const fs::path &filePath )
 	fs::path relativePath = filePath;
 	if( filePath.empty() )
 		relativePath = dataSource->getFilePathHint();
+
 	Buffer compressed( dataSource );
-	return DocRef( new svg::Doc( DataSourceBuffer::create( decompressBuffer( compressed, false, true ) ), relativePath ) );
+	BufferRef decompressed = make_shared<Buffer>( decompressBuffer( compressed, false, true ) );
+	
+	return DocRef( new svg::Doc( DataSourceBuffer::create( decompressed, relativePath ) ) );
 }
 
 void Doc::loadDoc( DataSourceRef source, fs::path filePath )
@@ -2225,14 +2231,14 @@ void Doc::loadDoc( DataSourceRef source, fs::path filePath )
 
 	bool needsViewBoxMapping = mViewBox.getWidth() > 0 && mViewBox.getHeight() > 0 && mWidth > 0 && mHeight > 0;
 	if( needsViewBoxMapping ) {
-		MatrixAffine2f m33; m33.setToIdentity();
-		m33[0] = mViewBox.getWidth() / (float)mWidth; m33[3] = mViewBox.getHeight() / (float)mHeight;
-		m33[4] = (float)-mViewBox.x1; m33[5] = (float)-mViewBox.y1;
+		mat3 m33;
+		m33[0][0] = mViewBox.getWidth() / (float)mWidth; m33[1][1] = mViewBox.getHeight() / (float)mHeight;
+		m33[2][0] = (float)-mViewBox.x1; m33[2][1] = (float)-mViewBox.y1;
 		mTransform = m33;
 		mSpecifiesTransform = true;
 	}
 	else
-		mTransform.setToIdentity();
+		mTransform = mat3();
 
 	// we can't parse the group w/o having parsed the viewBox, dimensions, etc, so we have to do this manually:
 	if( xml.hasChild( "switch" ) )		// when saved with "preserve Illustrator editing capabilities", svg data is inside a "switch"
@@ -2264,9 +2270,9 @@ shared_ptr<Surface8u> Doc::loadImage( fs::path relativePath )
 		return shared_ptr<Surface8u>();
 }
 
-Node* Doc::nodeUnderPoint( const Vec2f &pt )
+Node* Doc::nodeUnderPoint( const vec2 &pt )
 {
-	return Group::nodeUnderPoint( pt, MatrixAffine2f::identity() );
+	return Group::nodeUnderPoint( pt, mat3() );
 }
 
 void Doc::renderSelf( Renderer &renderer ) const
@@ -2274,9 +2280,9 @@ void Doc::renderSelf( Renderer &renderer ) const
 	Group::renderSelf( renderer );
 }
 
-ExcChildNotFound::ExcChildNotFound( const string &child ) throw()
+ExcChildNotFound::ExcChildNotFound( const string &child )
 {
-	sprintf( mMessage, "Could not find child: %s", child.c_str() );
+	setDescription( "Could not find child: " + child );
 }
 
 } } // namespace cinder::svg

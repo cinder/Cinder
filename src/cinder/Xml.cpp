@@ -237,10 +237,10 @@ void parseItem( const rapidxml::xml_node<> &node, XmlTree *parent, XmlTree *resu
 
 void XmlTree::loadFromDataSource( DataSourceRef dataSource, XmlTree *result, const XmlTree::ParseOptions &parseOptions )
 {
-	Buffer buf = dataSource->getBuffer();
-	size_t dataSize = buf.getDataSize();
-	shared_ptr<char> bufString( new char[dataSize+1], checked_array_deleter<char>() );
-	memcpy( bufString.get(), buf.getData(), buf.getDataSize() );
+	auto buf = dataSource->getBuffer();
+	size_t dataSize = buf->getSize();
+	unique_ptr<char[]> bufString( new char[dataSize+1] );
+	memcpy( bufString.get(), buf->getData(), buf->getSize() );
 	bufString.get()[dataSize] = 0;
 	rapidxml::xml_document<> doc;    // character type defaults to char
 	if( parseOptions.getParseComments() )

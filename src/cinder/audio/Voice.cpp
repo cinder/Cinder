@@ -25,7 +25,6 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/PanNode.h"
-#include "cinder/audio/Debug.h"
 
 #include <map>
 

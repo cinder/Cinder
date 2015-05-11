@@ -20,7 +20,7 @@ class SceneController : public b2ContactListener {
 	void setup( AudioController *audio );
 	void reload();
 	void update();
-	void addGear( const ci::Vec2f &pos );
+	void addGear( const ci::vec2 &pos );
 
 	b2World* getWorld() const		{ return mWorld.get(); }
 
@@ -59,15 +59,15 @@ class SceneController : public b2ContactListener {
 
 
 	void BeginContact( b2Contact* contact ) override;
-	void handleIslandCollision( Island *island, SceneObject *object, const ci::Vec2f &contactPoint  );
-	void handleWallCollision( Wall *wall, SceneObject *object, const ci::Vec2f &contactPoint  );
+	void handleIslandCollision( Island *island, SceneObject *object, const ci::vec2 &contactPoint  );
+	void handleWallCollision( Wall *wall, SceneObject *object, const ci::vec2 &contactPoint  );
 	void reConfigIslandGroup( IslandContainerT &islandGroup, float yOffset );
 
 	ci::gl::TextureRef	getRandomGearTex() const;
 	size_t calcNextFundamental();
 
-	std::vector<ci::Vec2f> calcNextOuterBumperVerts( float baseHeight, float topHeight, float baseWidth, float topWidth ) const;
-	std::vector<ci::Vec2f> calcInnerBumperVerts( float baseHeight, float topHeight, float baseWidth ) const;
+	std::vector<ci::vec2> calcNextOuterBumperVerts( float baseHeight, float topHeight, float baseWidth, float topWidth ) const;
+	std::vector<ci::vec2> calcInnerBumperVerts( float baseHeight, float topHeight, float baseWidth ) const;
 
 	std::unique_ptr<b2World>		mWorld;
 	AudioController*				mAudio;

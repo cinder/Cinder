@@ -46,8 +46,8 @@ using namespace std;
 	self = [super init];
 	
 	mDevice = device;
-	mSurface = cinder::Surface8u( width, height, false );
-	cinder::ip::fill( &mSurface, cinder::Color8u( 0, 0, 0 ) );
+	mSurface = cinder::Surface8u::create( width, height, false );
+	cinder::ip::fill( mSurface.get(), cinder::Color8u( 0, 0, 0 ) );
 	
 	return self;
 }
@@ -70,7 +70,7 @@ using namespace std;
 	return mCapturing;
 }
 
-- (cinder::Surface8u)getCurrentFrame
+- (cinder::Surface8uRef)getCurrentFrame
 {
 	return mSurface;
 }
@@ -87,12 +87,12 @@ using namespace std;
 
 - (int32_t)getWidth
 {
-	return mSurface.getWidth();
+	return mSurface->getWidth();
 }
 
 - (int32_t)getHeight
 {
-	return mSurface.getHeight();
+	return mSurface->getHeight();
 }
 
 @end

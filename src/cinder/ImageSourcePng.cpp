@@ -21,6 +21,7 @@
 */
 
 #include "cinder/ImageSourcePng.h"
+#include "cinder/Log.h"
 #include <png.h>
 
 using namespace std;
@@ -39,7 +40,8 @@ static void ci_PNG_stream_reader( png_structp mPngPtr, png_bytep data, png_size_
 	try {
 		((ci_png_info*)png_get_io_ptr(mPngPtr))->srcStreamRef->readData( data, (size_t)length );
 	}
-	catch ( ... ) {
+	catch( std::exception &exc ) {
+		CI_LOG_W( "failed to read png, what: " << exc.what() );
 		longjmp( png_jmpbuf(mPngPtr), 1 );
 	}
 }
@@ -175,7 +177,7 @@ void ImageSourcePng::load( ImageTargetRef target )
 		// get a pointer to the ImageSource function appropriate for handling our data configuration
 		ImageSource::RowFunc func = setupRowFunc( target );
 		//int number_passes = png_set_interlace_handling( mPngPtr );
-		shared_ptr<png_byte> row_pointer( new png_byte[png_get_rowbytes( mPngPtr, mInfoPtr )], checked_array_deleter<png_byte>() );
+		unique_ptr<png_byte[]> row_pointer( new png_byte[png_get_rowbytes( mPngPtr, mInfoPtr )] );
 		for( int32_t row = 0; row < mHeight; ++row ) {
 			png_read_row( mPngPtr, row_pointer.get(), NULL );
 			((*this).*func)( target, row, row_pointer.get() );

@@ -36,7 +36,7 @@ template<typename T>
 void resize( const SurfaceT<T> &srcSurface, const Area &srcArea, SurfaceT<T> *dstSurface, const Area &dstArea, const FilterBase &filter = FilterTriangle() );
 //! Returns a new Surface which is a copy of \a srcSurface's area \a srcArea scaled to size \a dstSize using filter \a filter
 template<typename T>
-SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const Vec2i &dstSize, const FilterBase &filter = FilterTriangle() );
+SurfaceT<T> resizeCopy( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &dstSize, const FilterBase &filter = FilterTriangle() );
 template<typename T>
 void resize( const ChannelT<T> &srcChannel, const Area &srcArea, ChannelT<T> *dstChannel, const Area &dstArea, const FilterBase &filter = FilterTriangle() );
 

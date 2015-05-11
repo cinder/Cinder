@@ -9,17 +9,17 @@
 class Tweet {
   public:
 	Tweet() {}
-	Tweet( const std::string &phrase, const std::string &user, const ci::Surface &icon )
+	Tweet( const std::string &phrase, const std::string &user, const ci::SurfaceRef &icon )
 		: mPhrase( phrase ), mUser( user ), mIcon( icon )
 	{}
   
-	const std::string&	getPhrase() const { return mPhrase; }
-	const std::string&	getUser() const { return mUser; }
-	const ci::Surface&	getIcon() const { return mIcon; }
+	const std::string&		getPhrase() const { return mPhrase; }
+	const std::string&		getUser() const { return mUser; }
+	const ci::SurfaceRef&	getIcon() const { return mIcon; }
 	
   private:
 	std::string		mPhrase, mUser;
-	ci::Surface		mIcon;
+	ci::SurfaceRef	mIcon;
 };
 
 class TweetStream {

@@ -2,7 +2,7 @@
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
+#include "cinder/Log.h"
 
 #define ALTO_BANK_SIZE 70
 #define BASS_BANK_SIZE 40

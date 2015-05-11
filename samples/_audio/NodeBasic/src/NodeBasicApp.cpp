@@ -1,5 +1,5 @@
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
@@ -9,12 +9,11 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeBasic : public AppNative {
+class NodeBasic : public App {
   public:
-	void prepareSettings( Settings *settings )	{ settings->enableMultiTouch( false ); }
-	void setup();
+	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
-	void draw();
+	void draw() override;
 
 	audio::GenNodeRef	mGen;	// Gen's generate audio signals
 	audio::GainNodeRef	mGain;	// Gain modifies the volume of the signal
@@ -22,7 +21,7 @@ class NodeBasic : public AppNative {
 
 void NodeBasic::setup()
 {
-	// a Context is required for making new audio Node's.
+	// You use the audio::Context to make new audio::Node instances (audio::master() is the speaker-facing Context).
 	auto ctx = audio::master();
 	mGen = ctx->makeNode( new audio::GenSineNode );
 	mGain = ctx->makeNode( new audio::GainNode );
@@ -51,4 +50,6 @@ void NodeBasic::draw()
 	gl::clear( Color( 0, mGain->getValue(), 0.2f ) );
 }
 
-CINDER_APP_NATIVE( NodeBasic, RendererGl )
+CINDER_APP( NodeBasic, RendererGl, []( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+} )

@@ -24,21 +24,16 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include "cinder/Noncopyable.h"
 
 #include <string>
 #include <vector>
 
-#if defined( CINDER_MAC )
-	#include <termios.h>
-#elif defined( CINDER_MSW )
-	#include <windows.h>
-	#undef min
-	#undef max
-#endif
-
 namespace cinder {
 
-class Serial {
+typedef std::shared_ptr<class Serial>		SerialRef;
+
+class Serial : private Noncopyable {
   public:
 	class Device {
 	  public:
@@ -60,10 +55,10 @@ class Serial {
 	static Serial::Device findDeviceByName( const std::string &name, bool forceRefresh = false );
 	//! Returns the first Serial::Device whose name contains the string \a searchString. Returns a null Serial::Device if none are found. Uses a cached list of the serial devices unless \a forceRefresh.
 	static Serial::Device findDeviceByNameContains( const std::string &searchString, bool forceRefresh = false );
-	
-	
-	Serial() {}
-	Serial( const Serial::Device &device, int baudRate );
+
+	//! Creates and returns a shared Serial object.
+	static SerialRef create( const Serial::Device &device, int baudRate )	{ return SerialRef( new Serial( device, baudRate ) ); }
+	~Serial();
 
 	//! Returns the Device associated with this Serial port
 	const Device&	getDevice() const;
@@ -92,46 +87,58 @@ class Serial {
 	size_t	getNumBytesAvailable() const;
 	
   protected:
-	struct Obj {
-		Obj();
-		Obj( const Serial::Device &device, int baudRate );
-		~Obj();
-	
-		Device			mDevice;
-		
-#ifdef CINDER_MSW
-		::HANDLE		mDeviceHandle;
-		::COMMTIMEOUTS 	mSavedTimeouts;
-#else
-		int				mFd;
-		::termios		mSavedOptions;
-#endif	
-	};
-	
-	std::shared_ptr<Obj>		mObj;
-	
+	Serial( const Serial::Device &device, int baudRate );
+
   private:
+	Device			mDevice;
+
+	struct Impl;
+	std::unique_ptr<Impl> mImpl;
 
 	static bool							sDevicesInited;
-	static std::vector<Serial::Device>	sDevices;	
+	static std::vector<Serial::Device>	sDevices;
 };
 	
 class SerialExc : public Exception {
+  public:
+	SerialExc( const std::string &description )
+		: Exception( description )
+	{}
 };
 
 class SerialExcOpenFailed : public SerialExc {
+  public:
+	SerialExcOpenFailed()
+		: SerialExc( "Serial failed to open." )
+	{}
 };
 
 class SerialExcDeviceEnumerationFailed : public SerialExc {
+  public:
+	SerialExcDeviceEnumerationFailed()
+		: SerialExc( "Serial device enumeration failed." )
+	{}
 };
 
 class SerialExcReadFailure : public SerialExc {
+  public:
+	SerialExcReadFailure()
+		: SerialExc( "Serial failed to read." )
+	{}
 };
 
 class SerialExcWriteFailure : public SerialExc {
+  public:
+	SerialExcWriteFailure()
+		: SerialExc( "Serial failed to write." )
+	{}
 };
 
 class SerialTimeoutExc : public SerialExc {	
+  public:
+	SerialTimeoutExc()
+		: SerialExc( "Serial timed out." )
+	{}
 };
 		
 } // namespace cinder

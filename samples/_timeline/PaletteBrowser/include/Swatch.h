@@ -17,7 +17,7 @@
 
 class Swatch {
   public:
-	Swatch( ci::Color color, ci::Vec2f pos, ci::Rectf rect );
+	Swatch( ci::Color color, ci::vec2 pos, ci::Rectf rect );
 	
 	void mouseOver( ci::Timeline &timeline );
 	void mouseOff( ci::Timeline &timeline );
@@ -27,8 +27,8 @@ class Swatch {
 	void setSelected(){ mIsSelected = true; };
 	void setDeselected(){ mIsSelected = false; };
 
-	ci::Vec2f mAnchorPos;
-	ci::Anim<ci::Vec2f> mPos;
+	ci::vec2 mAnchorPos;
+	ci::Anim<ci::vec2> mPos;
 	ci::Anim<ci::Color> mColor;
 	ci::Anim<float> mScale;
 	ci::Anim<float> mAlpha;

@@ -24,7 +24,6 @@
 #include "cinder/audio/cocoa/DeviceManagerCoreAudio.h"
 #include "cinder/cocoa/CinderCocoa.h"
 #include "cinder/audio/Exception.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/CinderAssert.h"
 
 using namespace std;

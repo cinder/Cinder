@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Surface.h"
 #include "cinder/ConcurrentCircularBuffer.h"
 #include "cinder/Thread.h"
@@ -45,9 +45,9 @@ class InstagramStream {
 	InstagramStream( const std::string &searchPhrase, const int &minId, const int &maxId, const std::string &clientId );
 	
 	// Search for media in a given area.
-	InstagramStream( ci::Vec2f loc, float dist, int minTs, int maxTs, std::string clientId);
-	InstagramStream( ci::Vec2f loc, float dist, std::string clientId);
-	InstagramStream( ci::Vec2f loc, std::string clientId);
+	InstagramStream( ci::vec2 loc, float dist, int minTs, int maxTs, std::string clientId);
+	InstagramStream( ci::vec2 loc, float dist, std::string clientId);
+	InstagramStream( ci::vec2 loc, std::string clientId);
 	
 	~InstagramStream();
 	

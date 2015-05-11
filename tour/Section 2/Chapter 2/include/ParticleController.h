@@ -6,7 +6,7 @@ class ParticleController {
  public:
 	ParticleController();
 	void applyForceToParticles( float zoneRadiusSqrd );
-	void pullToCenter( const ci::Vec3f &center );
+	void pullToCenter( const ci::vec3 &center );
 	void update( bool flatten );
 	void draw();
 	void addParticles( int amt );

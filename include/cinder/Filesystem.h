@@ -27,7 +27,7 @@
 #include "cinder/Cinder.h"
 
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
 	#include <filesystem>
 #else
 	#define BOOST_FILESYSTEM_VERSION 3
@@ -37,10 +37,21 @@
 
 namespace cinder {
 
-#if defined( CINDER_WINRT )
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
 	namespace fs = std::tr2::sys;
 #else
 	namespace fs = boost::filesystem;
 #endif
 
 } // namespace cinder
+
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) && ( _MSC_VER < 2000 ) )
+//! kludge to work around VC120's lack of fs::canonical
+namespace std { namespace tr2 { namespace sys {
+template <typename PathT>
+PathT canonical( const PathT &p )
+{
+	return p;
+}
+} } } // namespace std::tr2::sys
+#endif

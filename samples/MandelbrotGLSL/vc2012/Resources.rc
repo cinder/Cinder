@@ -1,5 +1,0 @@
-#include "..\include\Resources.h"
-
-RES_VERT_GLSL
-RES_FRAG_GLSL
-RES_COLORS_PNG

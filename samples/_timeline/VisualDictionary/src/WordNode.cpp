@@ -19,9 +19,9 @@ WordNode::WordNode( const string &word )
 	mWordPixelLength	= sFont->measureString( mWord ).x;
 }
 
-bool WordNode::isPointInside( const Vec2f &pt ) const
+bool WordNode::isPointInside( const vec2 &pt ) const
 {
-	return pt.distance( mPos ) < mRadius;
+	return distance( pt, mPos() ) < mRadius;
 }
 
 void WordNode::setShouldBeDeleted()
@@ -48,10 +48,10 @@ void WordNode::draw() const
 {
 	// draw shadows
 	gl::color( ColorA( 0, 0, 0, mColor().a * 0.5f ) );
-	Vec2f p	= mPos();
-	p += Vec2f( 1.0f, 1.0f );
+	vec2 p	= mPos();
+	p += vec2( 1.0f, 1.0f );
 	gl::drawSolidRect( Rectf( p.x - mRadius, p.y - mRadius, p.x + mRadius, p.y + mRadius ) );
-	p += Vec2f( 1.0f, 1.0f );
+	p += vec2( 1.0f, 1.0f );
 	gl::drawSolidRect( Rectf( p.x - mRadius, p.y - mRadius, p.x + mRadius, p.y + mRadius ) );
 
 	
@@ -67,10 +67,10 @@ void WordNode::draw() const
 	float pixelScale = std::min( squareSide / mWordPixelLength, squareSide / 72 ) * 2.25f;
 	gl::TextureFont::DrawOptions options = gl::TextureFont::DrawOptions().scale( pixelScale ).pixelSnap( false );
 
-	const Vec2f offset = (Vec2f)mPos + Vec2f( -mRadius + ( mRadius * 2 - mWordPixelLength * pixelScale ) / 2, mRadius - (mRadius * 2.0f - 20 * pixelScale ) / 2 );
+	const vec2 offset = (vec2)mPos + vec2( -mRadius + ( mRadius * 2 - mWordPixelLength * pixelScale ) / 2, mRadius - (mRadius * 2.0f - 20 * pixelScale ) / 2 );
 
 	gl::color( ColorA( Color::black(), mColor().a * 0.5f ) );
-	sFont->drawString( mWord, offset + Vec2f( pixelScale, pixelScale ) * 1.5f, options );
+	sFont->drawString( mWord, offset + vec2( pixelScale, pixelScale ) * 1.5f, options );
 
 	gl::color( ColorA( ( mColor() + Color::white() ) * 0.65f, mColor().a ) );
 	sFont->drawString( mWord, offset, options );

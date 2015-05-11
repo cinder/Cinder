@@ -25,8 +25,7 @@
 
 #include "cinder/audio/Buffer.h"
 #include "cinder/DataSource.h"
-
-#include <boost/noncopyable.hpp>
+#include "cinder/Noncopyable.h"
 
 namespace cinder { namespace audio {
 	
@@ -38,7 +37,7 @@ namespace dsp {
 }
 
 //! Base class that is used to load and read from an audio source.
-class Source : public boost::noncopyable {
+class Source : private Noncopyable {
   public:
 	virtual ~Source();
 

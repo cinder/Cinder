@@ -1,6 +1,6 @@
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
-#include "cinder/Rand.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/Batch.h"
 
 #include "FMOD.hpp"
 
@@ -8,10 +8,10 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class _TBOX_PREFIX_App : public AppNative {
+class _TBOX_PREFIX_App : public App {
   public:
-	void setup();
-	void draw();
+	void setup() override;
+	void draw() override;
 
 	FMOD::System	*mSystem;
     FMOD::Sound    	*mSound;
@@ -31,22 +31,20 @@ void _TBOX_PREFIX_App::setup()
 
 void _TBOX_PREFIX_App::draw()
 {
-	gl::clear( Color( 0, 0, 0 ) );
+	gl::clear();
 	
 	// grab 512 samples of the wave data
 	float waveData[512];
 	mSystem->getWaveData( waveData, 512, 0 );
 	
-	// prep 512 Vec2fs as the positions to render our waveform
-	vector<Vec2f> vertices;
+	// render the 512 samples to a VertBatch
+	gl::VertBatch vb( GL_LINE_STRIP );
 	for( int i = 0; i < 512; ++i )
-		vertices.push_back( Vec2f( getWindowWidth() / 512.0f * i, getWindowCenter().y + 100 * waveData[i] ) );
+		vb.vertex( getWindowWidth() / 512.0f * i, getWindowCenter().y + 100 * waveData[i] );
 
 	// draw the points as a line strip
-	glEnableClientState( GL_VERTEX_ARRAY );
 	gl::color( Color( 1.0f, 0.5f, 0.25f ) );
-    glVertexPointer( 2, GL_FLOAT, 0, &vertices[0] );
-    glDrawArrays( GL_LINE_STRIP, 0, vertices.size() );
+	vb.draw();
 }
 
-CINDER_APP_NATIVE( _TBOX_PREFIX_App, RendererGl )
+CINDER_APP( _TBOX_PREFIX_App, RendererGl )

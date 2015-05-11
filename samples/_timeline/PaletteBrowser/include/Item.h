@@ -19,7 +19,7 @@
 
 class Item {
   public:
-	Item( int index, ci::Vec2f pos, const std::string &title, const std::string &desc, ci::Surface palette );
+	Item( int index, ci::vec2 pos, const std::string &title, const std::string &desc, ci::Surface palette );
 	void setColors();
 	void mouseOver( ci::Timeline &timeline );
 	void mouseOff( ci::Timeline &timeline );
@@ -35,7 +35,7 @@ class Item {
 	
 	std::string getTitle() const { return mTitle; };
 	bool getSelected() const { return mIsSelected; };
-	bool isPointIn( const ci::Vec2f &pt ) const;
+	bool isPointIn( const ci::vec2 &pt ) const;
 	bool isBelowTextThreshold() const;
 	
 	int mIndex;
@@ -44,29 +44,29 @@ class Item {
 	
   private:
 	// title
-	std::string			mTitle;
-	ci::gl::Texture		mTitleTex, mTitleBigTex;
-	ci::Anim<ci::Vec2f>	mTitlePos;
-	ci::Vec2f			mTitleStart, mTitleDest1, mTitleDest2, mTitleFinish;
-	ci::Vec2f			mMouseOverDest;
-	ci::Anim<ci::Color> mTitleColor;
-	ci::Anim<float>		mTitleAlpha;
-	ci::Area			mTitleArea;
-	float				mTitleWidth, mTitleHeight;
+	std::string				mTitle;
+	ci::gl::Texture2dRef		mTitleTex, mTitleBigTex;
+	ci::Anim<ci::vec2>		mTitlePos;
+	ci::vec2				mTitleStart, mTitleDest1, mTitleDest2, mTitleFinish;
+	ci::vec2				mMouseOverDest;
+	ci::Anim<ci::Color>		mTitleColor;
+	ci::Anim<float>			mTitleAlpha;
+	ci::Area				mTitleArea;
+	float					mTitleWidth, mTitleHeight;
 	
 	// desc
-	std::string			mDesc;
-	ci::gl::Texture		mDescTex;
-	ci::Anim<ci::Vec2f> mDescPos;
-	ci::Vec2f			mDescStart, mDescDest;
-	ci::Anim<float>		mDescAlpha;
+	std::string				mDesc;
+	ci::gl::Texture2dRef	mDescTex;
+	ci::Anim<ci::vec2>		mDescPos;
+	ci::vec2				mDescStart, mDescDest;
+	ci::Anim<float>			mDescAlpha;
 	
 	// swatches
 	ci::Surface			mPalette;	
 	std::vector<Swatch> mSwatches;	
 	
 	// bar
-	ci::Vec2f			mBarPos;
+	ci::vec2			mBarPos;
 	ci::Anim<float>		mBarWidth, mBarHeight;
 	float				mMaxBarWidth;
 	ci::Rectf			mBarRect;

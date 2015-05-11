@@ -31,11 +31,12 @@
 	#include "cinder/UrlImplWinInet.h"
 	typedef cinder::IStreamUrlImplWinInet	IStreamUrlPlatformImpl;
 #elif defined( CINDER_COCOA )
+	#include <CoreFoundation/CoreFoundation.h>
 	#include "cinder/cocoa/CinderCocoa.h"
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #elif defined( CINDER_WINRT )
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/msw/CinderMsw.h"
 	#include <wrl/client.h>
 	#include <agile.h>
@@ -109,7 +110,7 @@ IStreamUrlRef loadUrlStream( const std::string &url, const std::string &user, co
 //////////////////////////////////////////////////////////////////////////////////////////////////////
 // UrlLoadExc
 UrlLoadExc::UrlLoadExc( int code, const std::string &message )
-	: mMessage( message ), mStatusCode( code )
+	: Exception( message ), mStatusCode( code )
 {
 }
 

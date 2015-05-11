@@ -37,15 +37,15 @@ typedef std::shared_ptr<class Node>			NodeRef;
 
 //! A Reference to Event's returned by the ramping methods. \see applyRamp() \see appendRamp()
 typedef std::shared_ptr<class Event>			EventRef;
-//! note: unless we want to add _VARIADIC_MAX=6 in preprocessor definitions to all projects, number of args here has to be 5 or less for vc11 support
-typedef std::function<void ( float *, size_t, double, double, const std::pair<float, float>& )>	RampFn;
+//! Ramping function that determines the curvature of a ramp.
+typedef std::function<void ( float *, size_t, double, double, float, float )>	RampFn;
 
 //! Array-based linear ramping function.
-void rampLinear( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange );
+void rampLinear( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 //! Array-based quadradic (t^2) ease-in ramping function.
-void rampInQuad( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange );
+void rampInQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 //! Array-based quadradic (t^2) ease-out ramping function.
-void rampOutQuad( float *array, size_t count, double t, double tIncr, const std::pair<float, float> &valueRange );
+void rampOutQuad( float *array, size_t count, double t, double tIncr, float valueBegin, float valueEnd );
 
 //! Class representing a sample-accurate parameter control instruction. \see Param::applyRamp(), Param::appendRamp()
 class Event {

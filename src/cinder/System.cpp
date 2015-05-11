@@ -30,9 +30,11 @@
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_COCOA_TOUCH )
 		#import <CFNetwork/CFNetwork.h>
-		#import <Foundation/NSArray.h>
 		#import <UIKit/UIDevice.h>
+	#elif defined( CINDER_MAC )
+		#import <objc/message.h>
 	#endif
+	#import <Foundation/Foundation.h>
 	#import <netinet/in.h>
 	#import <netdb.h>
 	#import <ifaddrs.h>
@@ -41,9 +43,6 @@
 	#import <net/if_dl.h>
 	#include <sys/sysctl.h>
 	#include <cxxabi.h>
-		#if defined( CINDER_MAC )
-		#include <CoreServices/CoreServices.h>
-	#endif
 #elif defined( CINDER_MSW )
 	#include <windows.h>
 	#include <windowsx.h>
@@ -52,9 +51,9 @@
 	namespace cinder {
 		void cpuidwrap( int *p, unsigned int param );
 	}
-#elif defined( CINDER_WINRT)
+#elif defined( CINDER_WINRT )
 	#include <collection.h>
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	using namespace Windows::Devices::Input;
 	using namespace Windows::Foundation::Collections;
 	using namespace Windows::ApplicationModel;
@@ -104,7 +103,7 @@ static std::string getSysCtlString( const std::string &key )
 	if( error )
 		throw SystemExcFailedQuery();
 	// make a string big enough
-	std::shared_ptr<char> str( new char[len], checked_array_deleter<char>() );
+	std::unique_ptr<char[]> str( new char[len] );
 	// call again, this time actually getting the value
 	error = sysctlbyname( key.c_str(), str.get(), &len, NULL, 0 );
 	if( error )
@@ -276,7 +275,7 @@ bool System::hasSse2()
 #elif defined( CINDER_WINRT )
 		instance()->mHasSSE2 = IsProcessorFeaturePresent(PF_XMMI64_INSTRUCTIONS_AVAILABLE) != 0;
 #else
-	throw std::exception( "Not implemented" );
+	throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE2] = true;
 	}
@@ -296,7 +295,7 @@ bool System::hasSse3()
 #elif defined( CINDER_WINRT )
 		instance()->mHasSSE3 = IsProcessorFeaturePresent(PF_SSE3_INSTRUCTIONS_AVAILABLE) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE3] = true;
 	}
@@ -314,7 +313,7 @@ bool System::hasSse4_1()
 #elif defined( CINDER_MSW )
 		instance()->mHasSSE4_1 = ( instance()->mCPUID_ECX & ( 1 << 19 ) ) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[HAS_SSE4_1] = true;
 	}
@@ -332,7 +331,7 @@ bool System::hasSse4_2()
 #elif defined( CINDER_MSW )
 		instance()->mHasSSE4_2 = ( instance()->mCPUID_ECX & ( 1 << 20 ) ) != 0;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 		instance()->mCachedValues[HAS_SSE4_2] = true;
 	}
@@ -371,7 +370,7 @@ bool System::hasX86_64()
 		::GetNativeSystemInfo(&info);
 		instance()->mHasX86_64 = info.wProcessorArchitecture == PROCESSOR_ARCHITECTURE_AMD64;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 
 		instance()->mCachedValues[HAS_X86_64] = true;
@@ -418,7 +417,7 @@ int System::getNumCpus()
 		// unlock from a particular logical processor
 		::SetProcessAffinityMask( GetCurrentProcess(), processAffinityMask );
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif		
 
 		instance()->mCachedValues[PHYSICAL_CPUS] = true;
@@ -442,7 +441,7 @@ int System::getNumCores()
 		::GetSystemInfo( &sys );
 		instance()->mLogicalCPUs = sys.dwNumberOfProcessors;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[LOGICAL_CPUS] = true;
 	}
@@ -450,15 +449,31 @@ int System::getNumCores()
 	return instance()->mLogicalCPUs;
 }
 
+#if defined( CINDER_COCOA )
+typedef struct {
+	NSInteger majorVersion;
+	NSInteger minorVersion;
+	NSInteger patchVersion;
+} ShadowOSVersion;
+#endif
+
 int System::getOsMajorVersion()
 {
 	if( ! instance()->mCachedValues[OS_MAJOR] ) {
 #if defined( CINDER_COCOA_TOUCH )
 		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
-		instance()->mOSMajorVersion = [[sysVerComponents objectAtIndex:0] intValue];
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
+		instance()->mOSMajorVersion = [[sysVerComponents firstObject] intValue];
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSMajorVersion = (int32_t)version.majorVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionMajor, reinterpret_cast<SInt32*>( &(instance()->mOSMajorVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
 #elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
@@ -466,7 +481,7 @@ int System::getOsMajorVersion()
 		::GetVersionEx( (OSVERSIONINFO *)&info );
 		instance()->mOSMajorVersion = info.dwMajorVersion;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_MAJOR] = true;
 	}
@@ -479,10 +494,18 @@ int System::getOsMinorVersion()
 	if( ! instance()->mCachedValues[OS_MINOR] ) {
 #if defined( CINDER_COCOA_TOUCH )
 		NSArray *sysVerComponents = [[[UIDevice currentDevice] systemVersion] componentsSeparatedByString:@"."];
-		instance()->mOSMinorVersion = [[sysVerComponents objectAtIndex:1] intValue];	
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>( &(instance()->mOSMinorVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
+		instance()->mOSMinorVersion = [[sysVerComponents objectAtIndex:1] intValue];
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSMinorVersion = (int32_t)version.minorVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionMinor, reinterpret_cast<SInt32*>( &(instance()->mOSMinorVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
 #elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
@@ -490,7 +513,7 @@ int System::getOsMinorVersion()
 		::GetVersionEx( reinterpret_cast<LPOSVERSIONINFO>( &info ) );
 		instance()->mOSMinorVersion = info.dwMinorVersion;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_MINOR] = true;
 	}
@@ -507,17 +530,25 @@ int System::getOsBugFixVersion()
 			instance()->mOSBugFixVersion = [[sysVerComponents objectAtIndex:2] intValue];
 		else
 			instance()->mOSBugFixVersion = 0;
-#elif defined( CINDER_COCOA )	
-		if( Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>( &(instance()->mOSBugFixVersion) ) ) != noErr)
-			throw SystemExcFailedQuery();
-#elif defined( CINDER_MSW )	
+#elif defined( CINDER_MAC )
+		if( [[NSProcessInfo processInfo] respondsToSelector:@selector(operatingSystemVersion)] ) {
+			ShadowOSVersion version = ((ShadowOSVersion(*)(id, SEL))objc_msgSend_stret)([NSProcessInfo processInfo], @selector(operatingSystemVersion));
+			instance()->mOSBugFixVersion = (int32_t)version.patchVersion;
+		} else {
+	#pragma clang diagnostic push
+	#pragma clang diagnostic ignored "-Wdeprecated-declarations"
+			if( Gestalt(gestaltSystemVersionBugFix, reinterpret_cast<SInt32*>( &(instance()->mOSBugFixVersion) ) ) != noErr )
+				throw SystemExcFailedQuery();
+	#pragma clang diagnostic pop
+		}
+#elif defined( CINDER_MSW )
 		::OSVERSIONINFOEX info;
 		::ZeroMemory( &info, sizeof( OSVERSIONINFOEX ) );
 		info.dwOSVersionInfoSize = sizeof( OSVERSIONINFOEX );
 		::GetVersionEx( reinterpret_cast<LPOSVERSIONINFO>( &info ) );
 		instance()->mOSBugFixVersion = info.wServicePackMajor;
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[OS_BUGFIX] = true;
 	}
@@ -548,7 +579,7 @@ bool System::hasMultiTouch()
 			}
 		});
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[MULTI_TOUCH] = true;
 	}
@@ -576,7 +607,7 @@ int32_t System::getMaxMultiTouchPoints()
 		instance()->mMaxMultiTouchPoints = maxContacts;
 
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 		instance()->mCachedValues[MAX_MULTI_TOUCH_POINTS] = true;
 	}
@@ -610,13 +641,19 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
 		currentInterface = interfaces;
 		while( currentInterface ) {
 			if( currentInterface->ifa_addr->sa_family == AF_INET ) {
-				char host[NI_MAXHOST];
+				char host[NI_MAXHOST], subnetMask[NI_MAXHOST];
 				int result = getnameinfo( currentInterface->ifa_addr,
                            (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
                            host, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
 				if( result != 0 )
 					continue;
-				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host ) );
+				result = getnameinfo( currentInterface->ifa_netmask,
+                           (currentInterface->ifa_addr->sa_family == AF_INET) ? sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6),
+                           subnetMask, NI_MAXHOST, NULL, 0, NI_NUMERICHOST );
+				if( result != 0 )
+					continue;
+				adapters.push_back( System::NetworkAdapter( currentInterface->ifa_name, host, subnetMask ) );
+
 			}
 			currentInterface = currentInterface->ifa_next;
 		}
@@ -645,7 +682,7 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
     if( (dwRetVal = ::GetAdaptersInfo( pAdapterInfo, &ulOutBufLen )) == NO_ERROR ) {
         pAdapter = pAdapterInfo;
         while( pAdapter ) {
-			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String ) );
+			adapters.push_back( System::NetworkAdapter( pAdapter->Description, pAdapter->IpAddressList.IpAddress.String, pAdapter->IpAddressList.IpMask.String ) );
             pAdapter = pAdapter->Next;
         }
     }
@@ -654,15 +691,30 @@ vector<System::NetworkAdapter> System::getNetworkAdapters()
         ::HeapFree( ::GetProcessHeap(), 0, pAdapterInfo );
 #elif defined( CINDER_WINRT )
 	auto hosts = NetworkInformation::GetHostNames();
-	std::for_each(begin(hosts), end(hosts), [&](HostName^ n) {
-		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName) ) );
+	std::for_each( begin(hosts), end(hosts), [&](HostName^ n) {
+		std::string subnetMask;
+		if( n->IPInformation && n->IPInformation->PrefixLength )
+			subnetMask = PlatformStringToString( n->IPInformation->PrefixLength->ToString() );
+		
+		adapters.push_back( System::NetworkAdapter( PlatformStringToString(n->CanonicalName), PlatformStringToString(n->DisplayName), subnetMask ) );
 	});
 #else
-		throw std::exception( "Not implemented" );
+		throw Exception( "Not implemented" );
 #endif
 
 	return adapters;
 
+}
+
+std::string System::getSubnetMask() {
+	auto preferredIpAddress = System::getIpAddress();
+	vector<System::NetworkAdapter> adapters = getNetworkAdapters();
+	for (vector<System::NetworkAdapter>::const_iterator adaptIt = adapters.begin(); adaptIt != adapters.end(); ++adaptIt) {
+		if (adaptIt->getIpAddress() == preferredIpAddress) {
+			return adaptIt->getSubnetMask();
+		}
+	}
+	return "0.0.0.0";
 }
 
 #if defined( CINDER_WINRT )
@@ -708,8 +760,6 @@ std::string System::getIpAddress()
 }
 #endif
 
-
-
 #if defined( CINDER_COCOA_TOUCH )
 bool System::isDeviceIphone()
 {
@@ -728,8 +778,6 @@ bool System::isDeviceIpad()
 	
 	return instance()->mCachedValues[IS_IPAD]; 
 }
-
 #endif
-
 
 } // namespace cinder

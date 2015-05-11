@@ -7,9 +7,9 @@
 class ParticleController {
  public:
 	ParticleController();
-	void update( const ci::Perlin &perlin, const ci::Channel32f &channel, const ci::Vec2i &mouseLoc );
+	void update( const ci::Perlin &perlin, const ci::Channel32f &channel, const ci::ivec2 &mouseLoc );
 	void draw();
-	void addParticles( int amt, const ci::Vec2i &mouseLoc, const ci::Vec2f &mouseVel );
+	void addParticles( int amt, const ci::ivec2 &mouseLoc, const ci::vec2 &mouseVel );
 	void removeParticles( int amt );
 	
 	std::list<Particle>	mParticles;

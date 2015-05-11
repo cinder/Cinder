@@ -22,7 +22,6 @@
 */
 
 #include "cinder/audio/cocoa/CinderCoreAudio.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/Cinder.h"
 
 using namespace std;

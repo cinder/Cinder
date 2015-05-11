@@ -14,6 +14,29 @@
 #if !defined ANT_TW_OPENGL_INCLUDED
 #define ANT_TW_OPENGL_INCLUDED
 
+// Cinder: this makes use of glload just for its core type declerations; no function pointers
+#include "TwPrecomp.h"
+typedef unsigned int GLenum;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef void GLvoid;
+typedef signed char GLbyte;
+typedef short GLshort;
+typedef int GLint;
+typedef unsigned char GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int GLuint;
+typedef int GLsizei;
+#if defined( ANT_OSX )
+	typedef long GLintptr;
+	typedef long GLsizeiptr;
+#endif
+typedef float GLfloat;
+typedef float GLclampf;
+typedef double GLdouble;
+typedef double GLclampd;
+typedef char GLchar;
+
 #include "TwGraph.h"
 
 //  ---------------------------------------------------------------------------

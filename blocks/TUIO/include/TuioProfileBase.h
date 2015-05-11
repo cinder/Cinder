@@ -40,15 +40,16 @@ class ProfileBase {
 	{
 	}
 		
-	int32_t	getSessionId() const{ return mSessionId; }
+	int32_t	getSessionId() const { return mSessionId; }
+	const std::string & getSource() const { return mSource; }
 
 	//! Translates into a ci::TouchEvent::Touch
-	app::TouchEvent::Touch getTouch( double time, const Vec2f &posScale ) const {
+	app::TouchEvent::Touch getTouch( double time, const vec2 &posScale ) const {
 		return app::TouchEvent::Touch( getPos() * posScale, getPrevPos() * posScale, (uint32_t)getSessionId(), time, NULL );
 	}
 
-	virtual Vec2f	getPos() const = 0;
-	virtual Vec2f	getPrevPos() const = 0;
+	virtual vec2	getPos() const = 0;
+	virtual vec2	getPrevPos() const = 0;
 
   protected:
 	int32_t		mSessionId;

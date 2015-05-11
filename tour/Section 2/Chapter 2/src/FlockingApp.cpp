@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Vector.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
@@ -11,7 +11,7 @@
 using namespace ci;
 using namespace ci::app;
 
-class FlockingApp : public AppBasic {
+class FlockingApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void keyDown( KeyEvent event );
@@ -24,8 +24,8 @@ class FlockingApp : public AppBasic {
 	
 	// CAMERA
 	CameraPersp			mCam;
-	Quatf				mSceneRotation;
-	Vec3f				mEye, mCenter, mUp;
+	quat				mSceneRotation;
+	vec3				mEye, mCenter, mUp;
 	float				mCameraDistance;
 	
 	ParticleController	mParticleController;
@@ -51,13 +51,13 @@ void FlockingApp::setup()
 	
 	// SETUP CAMERA
 	mCameraDistance = 500.0f;
-	mEye			= Vec3f( 0.0f, 0.0f, mCameraDistance );
-	mCenter			= Vec3f::zero();
-	mUp				= Vec3f::yAxis();
+	mEye			= vec3( 0.0f, 0.0f, mCameraDistance );
+	mCenter			= vec3::zero();
+	mUp				= vec3::yAxis();
 	mCam.setPerspective( 75.0f, getWindowAspectRatio(), 5.0f, 2000.0f );
 
 	// SETUP PARAMS
-	mParams = params::InterfaceGl::create( "Flocking", Vec2i( 200, 220 ) );
+	mParams = params::InterfaceGl::create( "Flocking", ivec2( 200, 220 ) );
 	mParams->addParam( "Scene Rotation", &mSceneRotation, "opened=1" );
 	mParams->addSeparator();
 	mParams->addParam( "Eye Distance", &mCameraDistance, "min=50.0 max=1500.0 step=50.0 keyIncr=s keyDecr=w" );
@@ -82,7 +82,7 @@ void FlockingApp::keyDown( KeyEvent event )
 void FlockingApp::update()
 {
 	// UPDATE CAMERA
-	mEye = Vec3f( 0.0f, 0.0f, mCameraDistance );
+	mEye = vec3( 0.0f, 0.0f, mCameraDistance );
 	mCam.lookAt( mEye, mCenter, mUp );
 	gl::setMatrices( mCam );
 	gl::rotate( mSceneRotation );
@@ -107,17 +107,17 @@ void FlockingApp::draw()
 	gl::disableDepthWrite();
 	gl::setMatricesWindow( getWindowSize() );
 	gl::pushModelView();
-		gl::translate( Vec3f( 117.0f, getWindowHeight() - 117.0f, 0.0f ) );
+		gl::translate( vec3( 117.0f, getWindowHeight() - 117.0f, 0.0f ) );
 		
 		gl::color( ColorA( 0.25f, 0.25f, 1.0f, 1.0f ) );
-		gl::drawSolidCircle( Vec2f::zero(), mZoneRadius );
+		gl::drawSolidCircle( vec2::zero(), mZoneRadius );
 		
 		gl::color( ColorA( 1.0f, 1.0f, 1.0f, 0.25f ) );
-		gl::drawStrokedCircle( Vec2f::zero(), 100.0f );
+		gl::drawStrokedCircle( vec2::zero(), 100.0f );
 	gl::popModelView();
 	
 	// DRAW PARAMS WINDOW
 	mParams->draw();
 }
 
-CINDER_APP_BASIC( FlockingApp, RendererGl )
+CINDER_APP( FlockingApp, RendererGl )

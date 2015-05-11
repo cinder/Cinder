@@ -54,7 +54,7 @@ class CaptureImplCocoaDummyDevice : public Capture::Device {
 
 @interface CaptureImplCocoaDummy : NSObject {
 	bool							mCapturing;
-	cinder::Surface8u				mSurface;
+	cinder::Surface8uRef			mSurface;
 	cinder::Capture::DeviceRef		mDevice;
 }
 
@@ -65,7 +65,7 @@ class CaptureImplCocoaDummyDevice : public Capture::Device {
 - (void)startCapture;
 - (void)stopCapture;
 - (bool)isCapturing;
-- (cinder::Surface8u)getCurrentFrame;
+- (cinder::Surface8uRef)getCurrentFrame;
 - (bool)checkNewFrame;
 - (const cinder::Capture::DeviceRef)getDevice;
 - (int32_t)getWidth;

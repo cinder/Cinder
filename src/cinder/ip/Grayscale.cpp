@@ -38,8 +38,8 @@ void grayscale( const SurfaceT<T> &srcSurface, SurfaceT<T> *dstSurface )
 	uint8_t dstRedOffset = dstSurface->getRedOffset(), dstGreenOffset = dstSurface->getGreenOffset(), dstBlueOffset = dstSurface->getBlueOffset();	
 	int8_t dstPixelInc = dstSurface->getPixelInc();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
-		T *dstPtr = dstSurface->getData( Vec2i( area.getX1(), y ) );
-		const T *srcPtr = srcSurface.getData( Vec2i( area.getX1(), y ) );
+		T *dstPtr = dstSurface->getData( ivec2( area.getX1(), y ) );
+		const T *srcPtr = srcSurface.getData( ivec2( area.getX1(), y ) );
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			T gray = CHANTRAIT<T>::grayscale( srcPtr[srcRedOffset], srcPtr[srcGreenOffset], srcPtr[srcBlueOffset] );
 			dstPtr[dstRedOffset] = gray;
@@ -60,8 +60,8 @@ void grayscale( const SurfaceT<T> &srcSurface, ChannelT<T> *dstChannel )
 	uint8_t srcRedOffset = srcSurface.getRedOffset(), srcGreenOffset = srcSurface.getGreenOffset(), srcBlueOffset = srcSurface.getBlueOffset();
 	int8_t dstPixelInc = dstChannel->getIncrement();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
-		T *dstPtr = dstChannel->getData( Vec2i( area.getX1(), y ) );
-		const T *srcPtr = srcSurface.getData( Vec2i( area.getX1(), y ) );
+		T *dstPtr = dstChannel->getData( ivec2( area.getX1(), y ) );
+		const T *srcPtr = srcSurface.getData( ivec2( area.getX1(), y ) );
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			*dstPtr = CHANTRAIT<T>::grayscale( srcPtr[srcRedOffset], srcPtr[srcGreenOffset], srcPtr[srcBlueOffset] );
 			dstPtr += dstPixelInc;
@@ -80,8 +80,8 @@ void grayscale( const Surface8u &srcSurface, Channel8u *dstChannel )
 	int8_t dstPixelInc = dstChannel->getIncrement();
 	const uint8_t redWeight = 74, greenWeight = 147, blueWeight = 35;
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
-		uint8_t *dstPtr = dstChannel->getData( Vec2i( area.getX1(), y ) );
-		const uint8_t *srcPtr = srcSurface.getData( Vec2i( area.getX1(), y ) );
+		uint8_t *dstPtr = dstChannel->getData( ivec2( area.getX1(), y ) );
+		const uint8_t *srcPtr = srcSurface.getData( ivec2( area.getX1(), y ) );
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			uint32_t sum = srcPtr[srcRedOffset] * redWeight + srcPtr[srcGreenOffset] * greenWeight + srcPtr[srcBlueOffset] * blueWeight;
 			*dstPtr = static_cast<uint8_t>( sum >> 8 );

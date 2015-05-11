@@ -1,12 +1,13 @@
 #include "cinder/Cinder.h"
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class CaptureBasicApp : public AppNative {
+class CaptureBasicApp : public App {
   public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -33,8 +34,8 @@ void CaptureBasicApp::setup()
 		mCapture = Capture::create( 640, 480 );
 		mCapture->start();
 	}
-	catch( ... ) {
-		console() << "Failed to initialize capture" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Failed to initialize capture, what: " << exc.what() << std::endl;
 	}
 }
 
@@ -51,7 +52,13 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 void CaptureBasicApp::update()
 {
 	if( mCapture && mCapture->checkNewFrame() ) {
-		mTexture = gl::Texture::create( mCapture->getSurface() );
+		if( ! mTexture ) {
+			// Capture images come back as top-down, and it's more efficient to keep them that way
+			mTexture = gl::Texture::create( *mCapture->getSurface(), gl::Texture::Format().loadTopDown() );
+		}
+		else {
+			mTexture->update( *mCapture->getSurface() );
+		}
 	}
 }
 
@@ -61,10 +68,10 @@ void CaptureBasicApp::draw()
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 	
 	if( mTexture ) {
-		glPushMatrix();
+    gl::pushModelMatrix();
 #if defined( CINDER_COCOA_TOUCH )
 		//change iphone to landscape orientation
-		gl::rotate( 90.0f );
+		gl::rotate( M_PI / 2 );
 		gl::translate( 0.0f, -getWindowWidth() );
 
 		Rectf flippedBounds( 0.0f, 0.0f, getWindowHeight(), getWindowWidth() );
@@ -72,8 +79,8 @@ void CaptureBasicApp::draw()
 #else
 		gl::draw( mTexture );
 #endif
-		glPopMatrix();
+    gl::popModelMatrix();
 	}
 }
 
-CINDER_APP_NATIVE( CaptureBasicApp, RendererGl )
+CINDER_APP( CaptureBasicApp, RendererGl )
