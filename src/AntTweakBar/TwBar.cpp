@@ -6522,10 +6522,10 @@ bool CTwBar::MouseWheel(int _Pos, int _PrevPos, int _MouseX, int _MouseY)
 
         if( _Pos!=_PrevPos )
         {
-            Handled = true;
             if( m_EditInPlace.m_Active )
                 EditInPlaceEnd(true);
         }
+		Handled = true;
     }
 
     return Handled;

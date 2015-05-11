@@ -5499,8 +5499,8 @@ static int TwMouseEvent(ETwMouseAction _EventType, TwMouseButtonID _Button, int 
                 Handled = Bar->MouseButton(_Button, (_EventType==TW_MOUSE_PRESSED), _MouseX, _MouseY);
             else if( _EventType==TW_MOUSE_WHEEL )
             {
-                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
-                    Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
+//                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
+					Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
             }
             if( Handled )
                 break;
