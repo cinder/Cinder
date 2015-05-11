@@ -488,6 +488,12 @@ struct TestCollectorAppEvent {
 
 	static void	run()
 	{
+		testStandard();
+		testWithPriorties();
+	}
+
+	static void testStandard()
+	{
 		Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
 
 		bool check1 = false;
@@ -506,6 +512,25 @@ struct TestCollectorAppEvent {
 		assert( check2 );
 		assert( ! check3 );
 	}
+
+	static void testWithPriorties()
+	{
+		Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
+
+		bool check1 = false;
+		bool check2 = false;
+
+		sig.connect( [&]( TestEvent &event ) { check1 = true; event.setHandled(); } );
+		sig.connect( -1, [&]( TestEvent &event ) { check2 = true; } );
+
+		TestEvent event;
+		app::CollectorEvent<TestEvent> collector( &event );
+		sig.emit( collector, event );
+
+		assert( check1 );
+		assert( ! check2 );
+	}
+
 };
 
 struct TestConnectionToggling {

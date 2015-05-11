@@ -265,14 +265,16 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 	//! Emit a signal, i.e. invoke all its callbacks and collect return types with \a collector.
 	void emit( Collector &collector, Args... args )
 	{
+		bool continueEmission = true;
 		for( auto &lp : mLinks ) {
 			SignalLink *link = lp.second;
 			link->incrRef();
 			do {
 				if( link->mCallbackFn && link->isEnabled() ) {
-					const bool continueEmission = this->invoke( collector, link->mCallbackFn, args... );
-					if( ! continueEmission )
+					continueEmission = this->invoke( collector, link->mCallbackFn, args... );
+					if( ! continueEmission ) {
 						break;
+					}
 				}
 
 				SignalLink *old = link;
@@ -284,6 +286,9 @@ class SignalProto<R ( Args... ), Collector> : private CollectorInvocation<Collec
 			while( link != lp.second );
 			
 			link->decrRef();
+
+			if( ! continueEmission )
+				break;
 		}
 	}
 
