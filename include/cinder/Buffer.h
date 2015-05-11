@@ -54,6 +54,9 @@ class Buffer {
 	//! Creates a Buffer from a DataSource
 	explicit Buffer( const DataSourceRef &dataSource );
 
+	static BufferRef	create( size_t size ) { return std::make_shared<Buffer>( size ); }
+	static BufferRef	create( void *buffer, size_t size ) { return std::make_shared<Buffer>( buffer, size ); }
+
 	void	setSize( size_t size )		{ mDataSize = size; }
 	size_t	getSize() const				{ return mDataSize; }
 	size_t	getAllocatedSize() const	{ return mAllocatedSize; }

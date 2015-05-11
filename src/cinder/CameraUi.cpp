@@ -29,7 +29,7 @@ namespace cinder {
 
 CameraUi::CameraUi()
 	: mCamera( nullptr ), mWindowSize( 640, 480 ), mMouseWheelMultiplier( 1.2f ), mMinimumPivotDistance( 1.0f ),
-		mEnabled( true )
+		mEnabled( true ), mLastAction( ACTION_NONE )
 {}
 
 CameraUi::CameraUi( CameraPersp *camera, const app::WindowRef &window, int signalPriority )
@@ -90,6 +90,8 @@ void CameraUi::connect( const app::WindowRef &window, int signalPriority )
 	}
 	else
 		disconnect();
+		
+	mLastAction = ACTION_NONE;
 }
 
 //! Disconnects all signal handlers
