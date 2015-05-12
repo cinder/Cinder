@@ -435,6 +435,10 @@ GlslProg::GlslProg( const Format &format )
 		for( const auto &define : format.getDefineDirectives() )
 			mShaderPreprocessor->addDefine( define );
 
+		// copy search directories
+		for( const auto &dir : format.mPreprocessorSearchDirectories )
+			mShaderPreprocessor->addSearchDirectory( dir );
+
 		if( format.getVersion() )
 			mShaderPreprocessor->setVersion( format.getVersion() );
 	}

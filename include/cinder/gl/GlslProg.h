@@ -243,6 +243,8 @@ class GlslProg {
 		int	getVersion() const										{ return mVersion; }
 		//! Returns the list of `#define` directives.
 		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+		//! Adds a custom search directory to the ShaderPreprocessor's search list.
+		Format&	addPreprocessorSearchDirectory( const fs::path &dir )	{ mPreprocessorSearchDirectories.push_back( dir ); return *this; }
 		
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -299,6 +301,7 @@ class GlslProg {
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;
+		std::vector<fs::path>					mPreprocessorSearchDirectories;
 
 		friend class		GlslProg;
 	};
