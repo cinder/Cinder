@@ -1215,7 +1215,7 @@ inline bool GlslProg::validateUniform( const Uniform &uniform, const T *val, int
 		return false;
 	}
 	else {
-		return checkUniformValue( uniform, &val, 1 );
+		return checkUniformValue( uniform, val, 1 );
 	}
 }
 
