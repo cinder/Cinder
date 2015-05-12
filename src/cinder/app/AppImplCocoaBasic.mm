@@ -555,9 +555,15 @@
 
 	[mAppImpl setActiveWindow:self];
 
-	if( displayID != mDisplay->getCgDirectDisplayId() ) {
+	if( mDisplay ) {
+		if( displayID != mDisplay->getCgDirectDisplayId() ) {
+			mDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
+			mWindowRef->emitDisplayChange();
+		}
+	}
+	else {
 		mDisplay = cinder::Display::findFromCgDirectDisplayId( displayID );
-		mWindowRef->emitDisplayChange();
+		if ( mDisplay ) mWindowRef->emitDisplayChange();
 	}
 	
 	mWindowRef->emitMove();
