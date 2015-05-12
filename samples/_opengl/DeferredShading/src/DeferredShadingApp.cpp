@@ -26,20 +26,6 @@
 
 #include "Light.h"
 
-#if defined( CINDER_GL_ES_3 )
-namespace cinder { namespace gl {
-	void drawBuffer( GLenum dst )
-	{
-		{
-			const static GLenum bufs[] = {
-				dst
-			};
-			drawBuffers( 1, bufs );
-		}
-	}
-} }
-#endif
-
 class DeferredShadingApp : public ci::app::App
 {
 public:

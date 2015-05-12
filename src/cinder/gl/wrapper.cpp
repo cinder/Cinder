@@ -917,14 +917,17 @@ void drawBuffers( GLsizei num, const GLenum *bufs )
 {
 	glDrawBuffers( num, bufs );
 }
-#endif
 
-#if ! defined( CINDER_GL_ES )
 void drawBuffer( GLenum dst )
 {
+#if ! defined( CINDER_GL_ES )
 	glDrawBuffer( dst );
-}
+#else
+	const GLenum bufs[] = { dst };
+	glDrawBuffers( 1, bufs );
 #endif
+}
+#endif // ! defined( CINDER_GL_ES_2 )
 
 void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data )
 {
