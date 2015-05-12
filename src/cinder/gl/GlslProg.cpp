@@ -475,7 +475,7 @@ GlslProg::GlslProg( const Format &format )
 				if( foundDefaultAttrib != defaultAttribMap.end() )
 					attribName = foundDefaultAttrib->first;
 				else {
-					CI_LOG_E("Defined Location for unknown semantic and unknown name");
+					CI_LOG_E( "Defined Location for unknown semantic and unknown name" );
 					continue;
 				}
 			}
@@ -537,7 +537,7 @@ GlslProg::GlslProg( const Format &format )
 			}
 		}
 		if( ! foundUserDefined ) {
-			CI_LOG_E( "Unknown uniform: \"" << userUniform.mName << "\"" );
+			CI_LOG_W( "Unknown uniform: \"" << userUniform.mName << "\"" );
 			mLoggedUniformNames.insert( userUniform.mName );
 		}
 	}
@@ -559,7 +559,7 @@ GlslProg::GlslProg( const Format &format )
 				break;
 			}
 		}
-		if( !active ) {
+		if( ! active ) {
 			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
@@ -890,7 +890,7 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 void GlslProg::logMissingUniform( const std::string &name ) const
 {
 	if( mLoggedUniformNames.count( name ) == 0 ) {
-		CI_LOG_E( "Unknown uniform: \"" << name << "\"" );
+		CI_LOG_W( "Unknown uniform: \"" << name << "\"" );
 		mLoggedUniformNames.insert( name );
 	}
 }
@@ -898,7 +898,7 @@ void GlslProg::logMissingUniform( const std::string &name ) const
 void GlslProg::logMissingUniform( int location ) const
 {
 	if( mLoggedUniformLocations.count( location ) == 0 ) {
-		CI_LOG_E( "Unknown uniform location: \"" << location << "\"" );
+		CI_LOG_W( "Unknown uniform location: \"" << location << "\"" );
 		mLoggedUniformLocations.insert( location );
 	}
 }
@@ -1076,7 +1076,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 		}
 	}
 	else {
-		CI_LOG_E("Uniform block at " << loc << " location not found");
+		CI_LOG_E( "Uniform block at " << loc << " location not found" );
 	}
 }
 
@@ -1090,7 +1090,7 @@ void GlslProg::uniformBlock( const std::string &name, GLint binding )
 		}
 	}
 	else {
-		CI_LOG_E("Uniform block \"" << name << "\" not found");
+		CI_LOG_E( "Uniform block \"" << name << "\" not found" );
 	}
 }
 
