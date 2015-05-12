@@ -1105,7 +1105,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
 		
-		// Fill screen with AO in AO view mode.
+		// Fill screen with AO in AO view mode
 		if ( mDrawAo ) {
 			const gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 0 ], 4 );
 			mBatchDebugRect->getGlslProg()->uniform( "uMode", 11 );
@@ -1114,23 +1114,23 @@ void DeferredShadingAdvancedApp::draw()
 			
 			// Composite light rays into image
 			if ( mEnabledRay ) {
-				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
-				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ], 1 );
+				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],	0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ],		1 );
 				mBatchRayCompositeRect->draw();
 
 				ping = pong;
 				pong = ( ping + 1 ) % 2;
 			}
 
-			// Composite light accumulation / bloom into our final image.
+			// Composite light accumulation / bloom into our final image
 			gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
 			{
-				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
-				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ], 1 );
+				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],				0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ],	1 );
 				mBatchBloomCompositeRect->draw();
 			}
 			
-			// Draw light volumes for debugging.
+			// Draw light volumes for debugging
 			if ( mDrawLightVolume ) {
 				const gl::ScopedBlendAlpha scopedBlendAlpha;
 				const gl::ScopedPolygonMode scopedPolygonMode( GL_LINE );
@@ -1171,7 +1171,7 @@ void DeferredShadingAdvancedApp::draw()
 		mBatchFxaaRect->draw();
 	} else {
 		
-		// Draw to screen without FXAA.
+		// Draw to screen without FXAA
 		mBatchStockTextureRect->draw();
 	}
 	
