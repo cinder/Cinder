@@ -520,9 +520,9 @@ class GlslProg {
 	
 	GLuint									mHandle;
 	
-	std::vector<Attribute>					mAttributes;
-	std::vector<Uniform>					mUniforms;
-	mutable UniformValueCache				*mUniformValueCache;
+	std::vector<Attribute>						mAttributes;
+	std::vector<Uniform>						mUniforms;
+	mutable std::unique_ptr<UniformValueCache>	mUniformValueCache;
 #if ! defined( CINDER_GL_ES_2 )
 	std::vector<UniformBlock>				mUniformBlocks;
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;

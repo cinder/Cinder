@@ -738,7 +738,7 @@ void GlslProg::cacheActiveUniforms()
 	
 #if ! defined( DISABLE_UNIFORM_CACHING )
 	if( numActiveUniforms )
-		mUniformValueCache = new UniformValueCache( uniformValueCacheSize );
+		mUniformValueCache = unique_ptr<UniformValueCache>( new UniformValueCache( uniformValueCacheSize ) );
 #endif
 }
 
