@@ -1330,7 +1330,7 @@ void DeferredShadingAdvancedApp::resize()
 		gl::clear();
 	}
 
-	// Create FBO sfor light rays (volumetric light scattering)
+	// Create FBOs for light rays (volumetric light scattering)
 	if ( mEnabledRay ) {
 		{
 			gl::Fbo::Format fboFormat;
@@ -1352,7 +1352,7 @@ void DeferredShadingAdvancedApp::resize()
 			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayDepth );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
 			gl::clear();
-			}
+		}
 	}
 	
 	// Create shadow map buffer
@@ -1450,8 +1450,8 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
 	mBatchRayCompositeRect->getGlslProg()->uniform(		"uPixel",		vec2( 1.0f ) / vec2( szRay ) );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset * (  szRay / szGBuffer ) );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szRay );
 }
 
 void DeferredShadingAdvancedApp::update()
