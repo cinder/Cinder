@@ -32,10 +32,6 @@
 #include "glm/fwd.hpp"
 
 #include <cstdint>
-#include <boost/version.hpp>
-#if BOOST_VERSION < 105500
-	#error "Cinder requires Boost version 1.55 or later"
-#endif
 
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
