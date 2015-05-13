@@ -1270,6 +1270,9 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		case GL_SAMPLER_BUFFER_EXT: return std::is_same<T, int32_t>::value;
 		case GL_INT_SAMPLER_2D: return std::is_same<T, int32_t>::value;
 		case GL_SAMPLER_2D_RECT: return std::is_same<T, int32_t>::value;
+		case GL_INT_SAMPLER_2D_RECT: return std::is_same<T, int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_2D: return std::is_same<T, int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_2D_RECT: return std::is_same<T, int32_t>::value;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
 		case GL_UNSIGNED_INT_VEC2: return std::is_same<T,glm::uvec2>::value;

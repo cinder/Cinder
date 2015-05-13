@@ -72,6 +72,10 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_SAMPLER_2D_RECT] = "SAMPLER_2D_RECT";
 		sSymbols[GL_SAMPLER_1D_SHADOW] = "SAMPLER_1D_SHADOW";
 		sSymbols[GL_SAMPLER_2D_SHADOW] = "SAMPLER_2D_SHADOW";
+		sSymbols[GL_INT_SAMPLER_2D] = "INT_SAMPLER_2D";
+		sSymbols[GL_INT_SAMPLER_2D_RECT] = "INT_SAMPLER_2D_RECT";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D] = "UNSIGNED_INT_SAMPLER_2D";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D_RECT] = "UNSIGNED_INT_SAMPLER_2D_RECT";
 		sSymbols[GL_HALF_FLOAT] = "HALF_FLOAT";
 		sSymbols[GL_DOUBLE] = "DOUBLE";
 		sSymbols[GL_INT_2_10_10_10_REV] = "INT_2_10_10_10_REV";
@@ -281,7 +285,10 @@ uint8_t typeToBytes( GLenum type )
 #if ! defined( CINDER_GL_ES )
 		case GL_SAMPLER_BUFFER_EXT: return sizeof(int); break;
 		case GL_INT_SAMPLER_2D:		return sizeof(int); break;
+		case GL_INT_SAMPLER_2D_RECT: return sizeof(int); break;
 		case GL_SAMPLER_2D_RECT:	return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_2D: return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_2D_RECT: return sizeof(int); break;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
 		case GL_SAMPLER_2D_SHADOW:	return sizeof(int); break;
