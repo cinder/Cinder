@@ -438,6 +438,9 @@ class GlslProg {
 	
 	std::string		getShaderLog( GLuint handle ) const;
 
+	//! Returns a list of included files (via the `#include` directive) detected and parsed by the ShaderPreprocessor.
+	std::vector<fs::path>	getIncludedFiles() const	{ return mShaderPreprocessorIncludedFiles; }
+
 	//! Returns the debugging label associated with the Program.
 	const std::string&	getLabel() const { return mLabel; }
 	//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
@@ -537,6 +540,7 @@ class GlslProg {
 	mutable std::set<int>					mLoggedUniformLocations;
 	std::string								mLabel; // debug label
 	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
+	std::vector<fs::path>					mShaderPreprocessorIncludedFiles;
 
 	friend class Context;
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );
