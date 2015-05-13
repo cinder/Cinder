@@ -222,6 +222,23 @@ Surface8uRef CaptureImplJni::getSurface() const
 	return mCurrentFrame;
 }
 
+gl::Texture2dRef CaptureImplJni::getTexture() const
+{
+	if( ! mCurrentTexture ) {
+		mCurrentTexture = gl::Texture2d::create( mWidth, mHeight );
+
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		fullDevice->getNative()->initPreviewTexture( mCurrentTexture->getId() );		
+	}
+
+	if( checkNewFrame() ) {
+		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
+		fullDevice->getNative()->updateTexImage();				
+	}
+
+	return mCurrentTexture;
+}
+
 const std::vector<Capture::DeviceRef>& CaptureImplJni::getDevices( bool forceRefresh )
 {
 	if( ( ! CaptureImplJni::sDevicesEnumerated ) || forceRefresh ) {

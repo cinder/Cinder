@@ -107,6 +107,9 @@ public:
 	bool 						isNewFrameAvailable() const;
 	void 						clearNewFrameAvailable();
 
+	void 						initPreviewTexture(int textureId);
+	void 						updateTexImage();
+
 	void						getPixels( Surface8u* outSurface ) const;
 
 private:
@@ -119,6 +122,8 @@ private:
 		static jmethodID 		hardware_camera_unlockPixels;
 		static jmethodID 		hardware_camera_isNewFrameAvailable;
 		static jmethodID 		hardware_camera_clearNewFrameAvailable;
+		static jmethodID 		hardware_camera_initPreviewTexture;
+		static jmethodID 		hardware_camera_updateTexImage;
 	};
 
 	static void 				cacheJni();

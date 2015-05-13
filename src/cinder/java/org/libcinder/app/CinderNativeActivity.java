@@ -17,6 +17,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
+import android.view.Surface;
 import android.view.WindowManager;
 
 import org.libcinder.hardware.Camera;
@@ -287,6 +288,31 @@ public class CinderNativeActivity extends NativeActivity {
 
         if(null != mCamera) {
             mCamera.clearNewFrameAvailable();
+        }
+    }
+
+    /**
+     * hardware_camera_initPreviewTexture
+     *
+     */
+    public void hardware_camera_initPreviewTexture(int texName) {
+        //Log.i(TAG, "hardware_camera_initPreviewTexture");
+
+        if(null != mCamera) {
+            SurfaceTexture previewTexture = new SurfaceTexture(texName);
+            mCamera.setPreviewTexture(previewTexture);
+        }
+    }
+
+    /**
+     * hardware_camera_updateTexImage
+     *
+     */
+    public void hardware_camera_updateTexImage() {
+        //Log.i(TAG, "hardware_camera_updateTexImage");
+
+        if(null != mCamera) {
+
         }
     }
 }

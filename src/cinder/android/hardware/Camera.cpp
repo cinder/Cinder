@@ -143,6 +143,8 @@ jmethodID Camera::Java::hardware_camera_lockPixels 				= nullptr;
 jmethodID Camera::Java::hardware_camera_unlockPixels 			= nullptr;
 jmethodID Camera::Java::hardware_camera_isNewFrameAvailable 	= nullptr;
 jmethodID Camera::Java::hardware_camera_clearNewFrameAvailable 	= nullptr;
+jmethodID Camera::Java::hardware_camera_initPreviewTexture 		= nullptr;
+jmethodID Camera::Java::hardware_camera_updateTexImage 			= nullptr;
 
 std::unique_ptr<Camera>	Camera::sInstance;
 
@@ -172,6 +174,8 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 				Java::hardware_camera_unlockPixels 				= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_unlockPixels", "()V" );
 				Java::hardware_camera_isNewFrameAvailable 		= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_isNewFrameAvailable", "()Z" );
 				Java::hardware_camera_clearNewFrameAvailable	= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_clearNewFrameAvailable", "()V" );
+				Java::hardware_camera_initPreviewTexture		= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_initPreviewTexture", "(I)V" );
+				Java::hardware_camera_updateTexImage			= JniHelper::Get()->GetMethodId( javaClass, "hardware_camera_updateTexImage", "()V" );
 				jni_obtained_check( Camera::Java::hardware_camera_enumerateDevices );
 				jni_obtained_check( Camera::Java::hardware_camera_initialize );
 				jni_obtained_check( Camera::Java::hardware_camera_startCapture );
@@ -180,6 +184,8 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 				jni_obtained_check( Camera::Java::hardware_camera_unlockPixels );
 				jni_obtained_check( Camera::Java::hardware_camera_isNewFrameAvailable );
 				jni_obtained_check( Camera::Java::hardware_camera_clearNewFrameAvailable );
+				jni_obtained_check( Camera::Java::hardware_camera_initPreviewTexture );
+				jni_obtained_check( Camera::Java::hardware_camera_updateTexImage );
 			}
 
 			/*
@@ -228,7 +234,8 @@ void Camera::destroyJni()
 		Java::hardware_camera_unlockPixels 				= nullptr;
 		Java::hardware_camera_isNewFrameAvailable 		= nullptr;
 		Java::hardware_camera_clearNewFrameAvailable 	= nullptr;
-
+		Java::hardware_camera_initPreviewTexture 		= nullptr;
+		Java::hardware_camera_updateTexImage 			= nullptr;
 
 		/*
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
@@ -343,6 +350,19 @@ void Camera::clearNewFrameAvailable()
 	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
 	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_clearNewFrameAvailable );
 }
+
+void Camera::initPreviewTexture(int textureId)
+{
+	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_initPreviewTexture, (jint)textureId );	
+}
+
+void Camera::updateTexImage()
+{
+	jobject javaObject = ci::android::app::CinderNativeActivity::getJavaObject();
+	JniHelper::Get()->CallVoidMethod( javaObject, Java::hardware_camera_updateTexImage );
+}
+
 
 // Conversion from yuv nv21 to rgb24 adapted from
 // videonet conversion from YUV420 to RGB24

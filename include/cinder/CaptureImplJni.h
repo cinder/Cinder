@@ -24,6 +24,7 @@
 
 #include "cinder/Capture.h"
 #include "cinder/android/hardware/Camera.h"
+#include "cinder/gl/Texture.h"
 
 namespace cinder {
 
@@ -37,16 +38,18 @@ public:
 	CaptureImplJni( int width, int height, const Capture::DeviceRef device );
 	virtual ~CaptureImplJni();
 
-	void 			start();
-	void 			stop();
+	void 				start();
+	void 				stop();
 
-	bool			isCapturing();
-	bool			checkNewFrame() const;
+	bool				isCapturing();
+	bool				checkNewFrame() const;
 
-	int32_t			getWidth() const { return mWidth; }
-	int32_t			getHeight() const { return mHeight; }
+	int32_t				getWidth() const { return mWidth; }
+	int32_t				getHeight() const { return mHeight; }
 
-	Surface8uRef	getSurface() const;
+	Surface8uRef		getSurface() const;
+
+	gl::Texture2dRef	getTexture() const;
 
 	const Capture::DeviceRef getDevice() const { return mDevice; }
 
@@ -87,6 +90,8 @@ private:
 
 	std::shared_ptr<class SurfaceCache>	mSurfaceCache;
 	mutable Surface8uRef				mCurrentFrame;
+
+	mutable gl::Texture2dRef 			mCurrentTexture;
 
 	static bool 							sDevicesEnumerated;
 	static std::vector<Capture::DeviceRef>	sDevices;	

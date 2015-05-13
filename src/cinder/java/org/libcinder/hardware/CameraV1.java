@@ -351,11 +351,26 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
      *
      */
     @Override
-    protected void setPreviewTextureImpl(SurfaceTexture previewTexture) {
+    protected void setPreviewTextureImpl(final SurfaceTexture previewTexture) {
         if(null == mCamera) {
             return;
         }
 
+        mCameraHandler.post(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    stopPreview();
+                    cameraSetPreviewTexture(previewTexture);
+                    startPreview();
+                }
+                catch(Exception e) {
+                    Log.w(TAG, "failed setting preview texture: " + e.getMessage());
+                }
+            }
+        });
+
+        /*
         try {
             stopPreview();
             cameraSetPreviewTexture(previewTexture);
@@ -364,6 +379,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
         catch(Exception e) {
             Log.w(TAG, "failed setting preview texture: " + e.getMessage());
         }
+        */
     }
 
     /** startSessionImpl
