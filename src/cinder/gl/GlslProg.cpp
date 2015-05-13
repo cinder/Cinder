@@ -435,6 +435,10 @@ GlslProg::GlslProg( const Format &format )
 		for( const auto &define : format.getDefineDirectives() )
 			mShaderPreprocessor->addDefine( define );
 
+		// copy search directories
+		for( const auto &dir : format.mPreprocessorSearchDirectories )
+			mShaderPreprocessor->addSearchDirectory( dir );
+
 		if( format.getVersion() )
 			mShaderPreprocessor->setVersion( format.getVersion() );
 	}
@@ -620,7 +624,10 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 {
 	GLuint handle = glCreateShader( shaderType );
 	if( mShaderPreprocessor ) {
-		string preprocessedSource = mShaderPreprocessor->parse( shaderSource, shaderPath );
+		set<fs::path> includedFiles;
+		string preprocessedSource = mShaderPreprocessor->parse( shaderSource, shaderPath, &includedFiles );
+		mShaderPreprocessorIncludedFiles.insert( mShaderPreprocessorIncludedFiles.end(), includedFiles.begin(), includedFiles.end() );
+
 		const char *cStr = preprocessedSource.c_str();
 		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	}

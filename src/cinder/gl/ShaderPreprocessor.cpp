@@ -52,18 +52,29 @@ ShaderPreprocessor::ShaderPreprocessor()
 #endif
 }
 
-string ShaderPreprocessor::parse( const fs::path &sourcePath )
+string ShaderPreprocessor::parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles )
 {
-	set<fs::path> includeTree;
+	set<fs::path> localIncludeTree;
+	if( ! includedFiles )
+		includedFiles = &localIncludeTree;
+	else
+		includedFiles->clear();
 
-	return parseDirectives( parseRecursive( sourcePath, fs::path(), includeTree ) );
+	return parseDirectives( parseRecursive( sourcePath, fs::path(), *includedFiles ) );
 }
 
-string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath )
+string ShaderPreprocessor::parse( const std::string &source, const fs::path &sourcePath, set<fs::path> *includedFiles )
 {
 	CI_ASSERT( ! fs::is_directory( sourcePath ) );
 
-	return parseDirectives( parseTopLevel( source, sourcePath.parent_path() ) );
+	set<fs::path> localIncludeTree;
+	if( ! includedFiles )
+		includedFiles = &localIncludeTree;
+	else
+		includedFiles->clear();
+
+
+	return parseDirectives( parseTopLevel( source, sourcePath.parent_path(), *includedFiles ) );
 }
 
 std::string ShaderPreprocessor::parseDirectives( const std::string &source )
@@ -103,10 +114,8 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	return directivesString + output.str();
 }
 
-string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory )
+string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &currentDirectory, set<fs::path> &includedFiles )
 {
-	set<fs::path> includeTree;
-
 	stringstream output;
 	istringstream input( source );
 
@@ -118,7 +127,7 @@ string ShaderPreprocessor::parseTopLevel( const string &source, const fs::path &
 
 	while( getline( input, line ) ) {
 		if( regex_search( line, matches, sIncludeRegex ) ) {
-			output << parseRecursive( matches[1].str(), currentDirectory, includeTree );
+			output << parseRecursive( matches[1].str(), currentDirectory, includedFiles );
 			output << "#line " << lineNumber << endl;
 		}
 		else
