@@ -225,7 +225,12 @@ Surface8uRef CaptureImplJni::getSurface() const
 gl::Texture2dRef CaptureImplJni::getTexture() const
 {
 	if( ! mCurrentTexture ) {
-		mCurrentTexture = gl::Texture2d::create( mWidth, mHeight );
+		gl::Texture2d::Format texFmt;
+		texFmt.target( GL_TEXTURE_EXTERNAL_OES );
+		texFmt.minFilter( GL_LINEAR );
+		texFmt.magFilter( GL_LINEAR );
+		texFmt.wrap( GL_CLAMP_TO_EDGE );
+		mCurrentTexture = gl::Texture2d::create( mWidth, mHeight, texFmt );
 
 		auto fullDevice = std::dynamic_pointer_cast<CaptureImplJni::Device>( mDevice );	
 		fullDevice->getNative()->initPreviewTexture( mCurrentTexture->getId() );		

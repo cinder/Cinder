@@ -26,6 +26,10 @@
 #include "cinder/Surface.h"
 #include "cinder/Exception.h"
 
+#if defined( CINDER_ANDROID )
+  #include "cinder/gl/Texture.h"
+#endif 
+
 #if defined( CINDER_MAC ) || defined( CINDER_COCOA_TOUCH_DEVICE )
 	#if defined( __OBJC__ )
 		@class CaptureImplAvFoundation;
@@ -88,6 +92,11 @@ class Capture {
 	
 	//! Returns a SurfaceRef representing the current captured frame.
 	Surface8uRef	getSurface() const;
+
+#if defined( CINDER_ANDROID )
+	gl::Texture2dRef	getTexture() const;
+#endif
+
 	//! Returns the associated Device for this instace of Capture
 	const Capture::DeviceRef getDevice() const;
 

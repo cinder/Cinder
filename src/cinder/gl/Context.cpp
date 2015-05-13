@@ -38,6 +38,8 @@
 
 #if defined( CINDER_MSW )
 	#include <Windows.h>
+#elif defined( CINDER_ANDROID )
+    #include "cinder/android/AndroidDevLog.h" 
 #endif
 
 using namespace std;
@@ -1701,9 +1703,20 @@ GlslProgRef	Context::getStockShader( const ShaderDef &shaderDef )
 {
 	auto existing = mStockShaders.find( shaderDef );
 	if( existing == mStockShaders.end() ) {
+#if defined( CINDER_ANDROID )		
+		try {
+			auto result = gl::env()->buildShader( shaderDef );
+			mStockShaders[shaderDef] = result;
+			return result;
+		}
+		catch( const exception& e ) {
+			ci::android::dbg_app_error( std::string( "getStockShader error: " ) + e.what() );
+		}
+#else
 		auto result = gl::env()->buildShader( shaderDef );
 		mStockShaders[shaderDef] = result;
 		return result;
+#endif		
 	}
 	else
 		return existing->second;

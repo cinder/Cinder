@@ -296,11 +296,16 @@ public class CinderNativeActivity extends NativeActivity {
      *
      */
     public void hardware_camera_initPreviewTexture(int texName) {
-        //Log.i(TAG, "hardware_camera_initPreviewTexture");
+        Log.i(TAG, "hardware_camera_initPreviewTexture: " + texName);
 
         if(null != mCamera) {
-            SurfaceTexture previewTexture = new SurfaceTexture(texName);
-            mCamera.setPreviewTexture(previewTexture);
+            try {
+                SurfaceTexture previewTexture = new SurfaceTexture(texName);
+                mCamera.setPreviewTexture(previewTexture);
+            }
+            catch(Exception e) {
+                Log.e(TAG, "hardware_camera_initPreviewTexture error: " + e.getMessage());
+            }
         }
     }
 
@@ -311,8 +316,19 @@ public class CinderNativeActivity extends NativeActivity {
     public void hardware_camera_updateTexImage() {
         //Log.i(TAG, "hardware_camera_updateTexImage");
 
-        if(null != mCamera) {
-
+        if ((null != mCamera) && (null != mCamera.getPreviewTexture())) {
+            mCamera.getPreviewTexture().updateTexImage();
         }
+
+        /*
+        try {
+            if ((null != mCamera) && (null != mCamera.getPreviewTexture())) {
+                mCamera.getPreviewTexture().updateTexImage();
+            }
+        }
+        catch(Exception e) {
+            Log.e(TAG, "hardware_camera_updateTexImage error:" + e.getMessage());
+        }
+        */
     }
 }

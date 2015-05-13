@@ -250,14 +250,36 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 {
 	std::string s;
 
+#if defined( CINDER_ANDROID )
+	if( shader.mTextureMappingExternalOes) {
+		s += 	"#extension GL_OES_EGL_image_external : require\n"
+				;
+	}
+#endif	
+
 	s +=		"precision highp float;\n"
 				;
 
+#if defined( CINDER_ANDROID )
+	if( shader.mTextureMapping ) {	
+		if( shader.mTextureMappingExternalOes ) {
+			s +=	"uniform samplerExternalOES	uTex0;\n"
+					"varying highp vec2			TexCoord;\n"
+					;
+		}
+		else {
+			s +=	"uniform sampler2D	uTex0;\n"
+					"varying highp vec2	TexCoord;\n"
+					;
+		}
+	}
+#else				
 	if( shader.mTextureMapping ) {	
 		s +=	"uniform sampler2D	uTex0;\n"
 				"varying highp vec2	TexCoord;\n"
 				;
 	}
+#endif	
 	if( shader.mColor ) {
 		s +=	"varying lowp vec4	Color;\n"
 				;

@@ -267,6 +267,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
             return;
         }
 
+        mNewFrameAvailable.set(false);
         //mCamera.setPreviewCallback(this);
         mCamera.setPreviewCallback(mPreviewCallback);
         mCamera.startPreview();
@@ -282,6 +283,7 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
             return;
         }
 
+        mNewFrameAvailable.set(false);
         mCamera.stopPreview();
     }
 

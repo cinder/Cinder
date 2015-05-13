@@ -9,7 +9,7 @@ android {
     println "BUILD DIR  : ${buildDir}"
 
     defaultConfig {
-        applicationId "org.libcinder.samples.capturebasic"
+        applicationId "org.libcinder.tests.opengltest"
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
@@ -65,10 +65,10 @@ android {
     }
 
     cinder {
-        ndkDir = "${projectDir}/../../../../../../android-ndk-r10d"
-        cinderDir = "${projectDir}/../../../../.."
+        ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
+        cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
-        moduleName = "CaptureBasic"
+        moduleName = "OpenGLTest"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {
@@ -115,7 +115,7 @@ android {
 repositories {
     jcenter()
     flatDir {
-        dirs "${projectDir}/../../../../../lib/android"
+        dirs "${projectDir}/../../../../../../lib/android"
     }
 }
 
@@ -124,3 +124,4 @@ dependencies {
     debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
     releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
 }
+

@@ -55,7 +55,11 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 
 void CaptureBasicApp::update()
 {
+	if( mCapture && mCapture->checkNewFrame() ) {
+	    mTexture = mCapture->getTexture();
+	}
 
+/*
 	if( mCapture && mCapture->checkNewFrame() ) {
 		if( ! mTexture ) {
 			// Capture images come back as top-down, and it's more efficient to keep them that way
@@ -65,7 +69,7 @@ void CaptureBasicApp::update()
 			mTexture->update( *mCapture->getSurface() );
 		}
 	}
-
+*/
 }
 
 void CaptureBasicApp::draw()

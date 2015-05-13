@@ -52,6 +52,9 @@ class ShaderDef {
   protected:
 	bool					mTextureMapping;
 	bool					mTextureMappingRectangleArb;
+#if defined( CINDER_ANDROID )
+	bool 					mTextureMappingExternalOes;
+#endif	
 	std::array<GLint,4>		mTextureSwizzleMask;
 	bool					mUniformBasedPosAndTexCoord;
 

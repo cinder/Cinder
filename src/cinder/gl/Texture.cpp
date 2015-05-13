@@ -1222,6 +1222,8 @@ Rectf Texture2d::getAreaTexCoords( const Area &area ) const
 	if( mTarget == GL_TEXTURE_2D
 #if ! defined( CINDER_GL_ES )
 		|| mTarget == GL_TEXTURE_2D_MULTISAMPLE 
+#elif defined( CINDER_ANDROID )
+		|| mTarget == GL_TEXTURE_EXTERNAL_OES		
 #endif
 	   ) {
 		result.x1 = area.x1 / (float)getCleanWidth();

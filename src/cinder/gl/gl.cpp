@@ -22,6 +22,8 @@
 	#include "glload/wgl_all.h"
 #elif defined( CINDER_MAC )
 	#include <OpenGL/OpenGL.h>
+#elif defined( CINDER_ANDROID )
+	#include "cinder/app/App.h"
 #endif
 
 using namespace std;
