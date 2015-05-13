@@ -3447,6 +3447,10 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	if( texCoords )
 		ctx->copyAttrib( Attrib::TEX_COORD_0, texCoordDims, 0, (const float*)outTexCoord0.data(), numVertices );
 
+	// if the upstream has mAttrib, we should clear that out too; otherwise we are likely to get an error about incorrect count if the
+	// consumer were expecting that attribute. For example, geom::Cube >> geom::VertexNormalLines() rendered with a Lambert would error
+	ctx->clearAttrib( mAttrib );
+
 	// if the upstream was indexed, we need to clear that out
 	ctx->clearIndices();
 }
