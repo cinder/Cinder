@@ -543,7 +543,7 @@ IStreamFileRef loadFileStream( const fs::path &path )
 
 std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createParents )
 {
-	if( createParents ) {
+	if( createParents && path.has_parent_path() ) {
 		fs::create_directories( path.parent_path() );
 	}
 #if defined( CINDER_MSW )
