@@ -656,6 +656,11 @@ void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord, const vec2 &l
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 4 );
 	ctx->popVao();
 }
+	
+void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner, const vec2 &upperLeftTexCoord, const vec2 &lowerRightTexCoord )
+{
+	draw( geom::RoundedRect( r ).cornerRadius( cornerRadius ).cornerSubdivisions( numSegmentsPerCorner ).texCoords( upperLeftTexCoord, lowerRightTexCoord ) );
+}
 
 void drawStrokedRect( const Rectf &rect )
 {
@@ -736,6 +741,11 @@ void drawStrokedRect( const Rectf &rect, float lineWidth )
 	ctx->getDefaultVao()->replacementBindEnd();	
 	ctx->drawArrays( GL_TRIANGLE_STRIP, 0, 16 );
 	ctx->popVao();
+}
+	
+void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner )
+{
+	draw( geom::WireRoundedRect( r, cornerRadius ).cornerSubdivisions( numSegmentsPerCorner ) );
 }
 
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
