@@ -566,7 +566,7 @@ void Rect::setDefaultTexCoords()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
-// Cube
+// RoundedRect
 RoundedRect::RoundedRect()
 	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
 {
@@ -576,8 +576,8 @@ RoundedRect::RoundedRect()
 	setDefaultTexCoords();
 }
 	
-RoundedRect::RoundedRect( const Rectf &r )
-	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
+RoundedRect::RoundedRect( const Rectf &r, float cornerRadius )
+	: mSubdivisions( -1 ), mCornerRadius( cornerRadius ), mHasColors( false ), mNumVertices( 0 )
 {
 	rect( r );
 	updateVertexCount();
@@ -765,7 +765,6 @@ void RoundedRect::setDefaultTexCoords()
 {
 	mRectTexCoords = Rectf( 0.0f, 0.0f, 1.0f, 1.0f );
 }
-
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // Cube
@@ -3151,7 +3150,77 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
+	
+///////////////////////////////////////////////////////////////////////////////////////
+// WireRoundedRect
+WireRoundedRect::WireRoundedRect()
+	: mCornerSubdivisions( -1 ), mCornerRadius( 1.0f ), mNumVertices( 0 )
+{
+	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
+	updateVertexCount();
+}
+	
+WireRoundedRect::WireRoundedRect( const Rectf &r, float cornerRadius )
+	: mCornerSubdivisions( -1 ), mCornerRadius( cornerRadius ), mNumVertices( 0 )
+{
+	rect( r );
+	updateVertexCount();
+}
+	
+WireRoundedRect& WireRoundedRect::cornerSubdivisions( int cornerSubdivisions )
+{
+	mCornerSubdivisions = cornerSubdivisions;
+	updateVertexCount();
+	return *this;
+}
 
+WireRoundedRect& WireRoundedRect::cornerRadius( float cornerRadius )
+{
+	mCornerRadius = cornerRadius;
+	updateVertexCount();
+	return *this;
+}
+
+void WireRoundedRect::updateVertexCount()
+{
+	if( mCornerSubdivisions <= 0 ) {
+		mCornerSubdivisions = (int)math<double>::floor( mCornerRadius * M_PI * 2 / 4 );
+	}
+	if( mCornerSubdivisions < 2 ) mCornerSubdivisions = 2;
+	
+	mNumVertices = (2 * ( mCornerSubdivisions + 1 ) * 4) + 1;
+}
+	
+void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> verts( mNumVertices );
+	vec2* ptr = verts.data();
+	const float angleDelta = 1 / (float)mCornerSubdivisions * M_PI / 2;
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+	};
+	// provide the last vert as the starting point to loop around to.
+	*ptr++ = vec2( cornerCenterVerts[3].x + math<float>::cos( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius,
+				 cornerCenterVerts[3].y + math<float>::sin( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius );
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		vec2 cornerCenter( cornerCenterVerts[corner] );
+		for( int s = 0; s <= mCornerSubdivisions; s++ ) {
+			// This is the ending point of the first line
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
+						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
+			// This is the starting point of the next line
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
+						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
+			angle += angleDelta;
+		}
+	}
+	
+	target->copyAttrib( geom::Attrib::POSITION, 2, 0, value_ptr( *verts.data() ), verts.size() );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCube

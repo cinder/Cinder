@@ -238,7 +238,7 @@ class Rect : public Source {
 class RoundedRect : public Source {
   public:
 	RoundedRect();
-	RoundedRect( const Rectf &r );
+	RoundedRect( const Rectf &r, float cornerRadius = 1.0f );
 	
 	RoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
 	RoundedRect&	colors( bool enable = true ) { mHasColors = enable; return *this; }
@@ -772,7 +772,26 @@ class WireCircle : public WireSource {
 	int			mNumSegments;
 	size_t		mNumVertices;
 };
-
+	
+class WireRoundedRect : public WireSource {
+  public:
+	WireRoundedRect();
+	WireRoundedRect( const Rectf &r, float cornerRadius = 1.0f );
+	
+	WireRoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
+	WireRoundedRect&	cornerSubdivisions( int cornerSubdivisions );
+	WireRoundedRect&	cornerRadius( float cornerRadius );
+	
+	size_t		getNumVertices() const override { return mNumVertices; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updateVertexCount();
+	
+	Rectf						mRectPositions;
+	int							mCornerSubdivisions, mNumVertices;
+	float						mCornerRadius;
+};
 
 class WireCube : public WireSource {
   public:
