@@ -835,7 +835,7 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 
 	finishSetup();
 #elif defined( CINDER_WINRT )
-	FT_New_Memory_Face(FontManager::instance()->mLibrary, (FT_Byte*)dataSource->getBuffer().getData(), dataSource->getBuffer().getSize(), 0, &mFace);
+	FT_New_Memory_Face(FontManager::instance()->mLibrary, (FT_Byte*)dataSource->getBuffer()->getData(), dataSource->getBuffer()->getSize(), 0, &mFace);
 	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
 #endif
 }
