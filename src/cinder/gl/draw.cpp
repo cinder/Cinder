@@ -489,6 +489,12 @@ class DefaultVboTarget : public geom::Target {
 		return mIndexType;
 	}
 
+	//! Returns whether \a attr has data
+	bool attribHasData( geom::Attrib attr ) const
+	{
+		return find( mReceivedAttribs.begin(), mReceivedAttribs.end(), attr ) != mReceivedAttribs.end();
+	}
+
 	// TODO: what about stride?
 	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *sourceData, size_t count ) override
 	{
@@ -519,6 +525,8 @@ class DefaultVboTarget : public geom::Target {
 			mContext->vertexAttribPointer( loc, dims, GL_FLOAT, GL_FALSE, 0, (void*)mArrayVboOffset );
 			mArrayVboOffset += totalBytes;
 		}
+		
+		mReceivedAttribs.push_back( attr );
 	}
 
 	void copyIndices( geom::Primitive primitive, const uint32_t *sourceData, size_t numIndices, uint8_t requiredBytesPerIndex ) override
@@ -532,7 +540,7 @@ class DefaultVboTarget : public geom::Target {
 
 	const geom::Source*		mSource;
 	Context*				mContext;
-	vector<geom::Attrib>	mRequestedAttribs;
+	vector<geom::Attrib>	mRequestedAttribs, mReceivedAttribs;
 
 	gl::VboRef			mArrayVbo, mElementVbo;
 	const gl::GlslProg*	mGlslProg;
@@ -560,8 +568,8 @@ void draw( const geom::Source &source )
 	geom::AttribSet requestedAttribs;
 	auto activeAttribs = curGlslProg->getActiveAttributes();
 	for( auto &attrib : activeAttribs )
-		if( attrib.getAttributeSemantic() != geom::Attrib::NUM_ATTRIBS )
-			requestedAttribs.insert( attrib.getAttributeSemantic() );
+		if( attrib.getSemantic() != geom::Attrib::NUM_ATTRIBS )
+			requestedAttribs.insert( attrib.getSemantic() );
 
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
@@ -570,6 +578,14 @@ void draw( const geom::Source &source )
 	source.loadInto( &target, requestedAttribs );
 
 	ctx->getDefaultVao()->replacementBindEnd();
+
+	// test for all expected attribs received
+	for( auto &attrib : activeAttribs ) {
+		geom::Attrib attribSemantic = attrib.getSemantic();
+		if( ( attribSemantic != geom::Attrib::COLOR ) && ( ! target.attribHasData( attribSemantic ) ) )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << ", with name "
+				<< attrib.getName() << " but vertex data doesn't provide it." );
+	}
 
 	ctx->setDefaultShaderVars();
 

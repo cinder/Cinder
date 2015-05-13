@@ -1790,7 +1790,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Loc: " << attrib.getLocation() << std::endl;
 		os << "\t\t Count: " << attrib.getCount() << std::endl;
 		os << "\t\t Type: " << gl::constantToString( attrib.getType() ) << std::endl;
-		os << "\t\t Semantic: <" << geom::attribToString( attrib.getAttributeSemantic() ) << ">" << std::endl;
+		os << "\t\t Semantic: <" << geom::attribToString( attrib.getSemantic() ) << ">" << std::endl;
 	}
 	
 	os << "\tUniforms: " << std::endl;
