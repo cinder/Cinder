@@ -30,7 +30,7 @@ namespace cinder {
 
 class AxisAlignedBox3f {
  public:
-	AxisAlignedBox3f() { mNeedsRecalculate = false; }
+	AxisAlignedBox3f() {}
 	AxisAlignedBox3f( const vec3 &aMin, const vec3 &aMax );
 
 	bool	intersects( const Ray &ray );
@@ -43,7 +43,7 @@ class AxisAlignedBox3f {
 	void			include( const vec3 &point );
 	//! Expands the box so that it contains \a box
 	void			include( const AxisAlignedBox3f &box );
-	
+
 	const vec3&	getMin() const { return mExtents[0]; }
 	const vec3&	getMax() const { return mExtents[1]; }
 
@@ -52,13 +52,13 @@ class AxisAlignedBox3f {
 	vec3	getPositive( const vec3 &normal ) const;
 
 	//! converts axis-aligned box to another coordinate space
-	AxisAlignedBox3f transformed( const mat4 &transform );
-	
+	AxisAlignedBox3f transformed( const mat4 &transform ) const;
+
 	static bool calcTriangleIntersection( const Ray &ray, const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result );
 
  protected:
- 	bool mNeedsRecalculate;
- 	void recalculateVertices();
+	void updateVertices();
+
 	vec3 mExtents[2];
 	vec3 mVerts[8];
 };
