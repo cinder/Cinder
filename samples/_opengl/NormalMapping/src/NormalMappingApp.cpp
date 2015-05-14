@@ -409,4 +409,4 @@ gl::VboMeshRef NormalMappingApp::createDebugMesh( const TriMesh& mesh )
 	return result;
 }
 
-CINDER_APP( NormalMappingApp, RendererGl, prepareSettings )
+CINDER_APP( NormalMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), prepareSettings )

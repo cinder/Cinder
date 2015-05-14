@@ -330,7 +330,7 @@ void ShadowMappingApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP( ShadowMappingApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( ShadowMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), []( App::Settings *settings ) {
 //	settings->enableHighDensityDisplay();
 	settings->setWindowSize( 900, 900 );
 } )
