@@ -61,7 +61,7 @@ class GlslProg {
 		//! Returns the GLenum representation of the type of this attribute (for example, \c GL_FLOAT_VEC3)
 		GLenum				getType() const { return mType; }
 		//! Returns the defined geom::Attrib semantic.
-		geom::Attrib		getAttributeSemantic() const { return mSemantic; }
+		geom::Attrib		getSemantic() const { return mSemantic; }
 		//! Used to derive the expected layout for cpu types within glsl.
 		static void getShaderAttribLayout( GLenum type, uint32_t *numDimsPerVertexPointer, uint32_t *numLocationsExpected );
 
@@ -243,6 +243,8 @@ class GlslProg {
 		int	getVersion() const										{ return mVersion; }
 		//! Returns the list of `#define` directives.
 		const std::vector<std::string>& getDefineDirectives() const { return mDefineDirectives; }
+		//! Adds a custom search directory to the ShaderPreprocessor's search list.
+		Format&	addPreprocessorSearchDirectory( const fs::path &dir )	{ mPreprocessorSearchDirectories.push_back( dir ); return *this; }
 		
 		//! Returns the debugging label associated with the Program.
 		const std::string&	getLabel() const { return mLabel; }
@@ -299,6 +301,7 @@ class GlslProg {
 		
 		bool									mPreprocessingEnabled;
 		std::string								mLabel;
+		std::vector<fs::path>					mPreprocessorSearchDirectories;
 
 		friend class		GlslProg;
 	};
@@ -435,6 +438,9 @@ class GlslProg {
 	
 	std::string		getShaderLog( GLuint handle ) const;
 
+	//! Returns a list of included files (via the `#include` directive) detected and parsed by the ShaderPreprocessor.
+	std::vector<fs::path>	getIncludedFiles() const	{ return mShaderPreprocessorIncludedFiles; }
+
 	//! Returns the debugging label associated with the Program.
 	const std::string&	getLabel() const { return mLabel; }
 	//! Sets the debugging label associated with the Program. Calls glObjectLabel() when available.
@@ -520,9 +526,9 @@ class GlslProg {
 	
 	GLuint									mHandle;
 	
-	std::vector<Attribute>					mAttributes;
-	std::vector<Uniform>					mUniforms;
-	mutable UniformValueCache				*mUniformValueCache;
+	std::vector<Attribute>						mAttributes;
+	std::vector<Uniform>						mUniforms;
+	mutable std::unique_ptr<UniformValueCache>	mUniformValueCache;
 #if ! defined( CINDER_GL_ES_2 )
 	std::vector<UniformBlock>				mUniformBlocks;
 	std::vector<TransformFeedbackVaryings>  mTransformFeedbackVaryings;
@@ -534,6 +540,7 @@ class GlslProg {
 	mutable std::set<int>					mLoggedUniformLocations;
 	std::string								mLabel; // debug label
 	std::unique_ptr<ShaderPreprocessor>		mShaderPreprocessor;
+	std::vector<fs::path>					mShaderPreprocessorIncludedFiles;
 
 	friend class Context;
 	friend std::ostream& operator<<( std::ostream &os, const GlslProg &rhs );

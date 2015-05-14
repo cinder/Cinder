@@ -234,6 +234,37 @@ class Rect : public Source {
 	bool					mHasColors;
 	static const float		sNormals[4*3], sTangents[4*3];
 };
+	
+class RoundedRect : public Source {
+  public:
+	RoundedRect();
+	RoundedRect( const Rectf &r, float cornerRadius = 1.0f );
+	
+	RoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
+	RoundedRect&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	RoundedRect&	cornerSubdivisions( int cornerSubdivisions );
+	RoundedRect&	cornerRadius( float cornerRadius );
+	RoundedRect&	texCoords( const vec2 &upperLeft, const vec2 &lowerRight );
+	RoundedRect&	colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
+	
+	size_t		getNumVertices() const override { return mNumVertices; }
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updateVertexCount();
+	void setDefaultColors();
+	void setDefaultTexCoords();
+	
+	Rectf						mRectPositions, mRectTexCoords;
+	std::array<vec4, 4>			mColors;
+	bool						mHasColors;
+	int							mSubdivisions, mNumVertices;
+	float						mCornerRadius;
+};
 
 class Cube : public Source {
   public:
@@ -259,10 +290,10 @@ class Cube : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	ivec3		mSubdivisions;
-	vec3		mSize;
-	bool		mHasColors;
-	ColorAf		mColors[6];
+	ivec3					mSubdivisions;
+	vec3					mSize;
+	bool					mHasColors;
+	std::array<ColorAf, 6>	mColors;
 };
 
 class Icosahedron : public Source {
@@ -742,7 +773,26 @@ class WireCircle : public WireSource {
 	int			mNumSegments;
 	size_t		mNumVertices;
 };
-
+	
+class WireRoundedRect : public WireSource {
+  public:
+	WireRoundedRect();
+	WireRoundedRect( const Rectf &r, float cornerRadius = 1.0f );
+	
+	WireRoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
+	WireRoundedRect&	cornerSubdivisions( int cornerSubdivisions );
+	WireRoundedRect&	cornerRadius( float cornerRadius );
+	
+	size_t		getNumVertices() const override { return mNumVertices; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updateVertexCount();
+	
+	Rectf						mRectPositions;
+	int							mCornerSubdivisions, mNumVertices;
+	float						mCornerRadius;
+};
 
 class WireCube : public WireSource {
   public:

@@ -435,6 +435,10 @@ GlslProg::GlslProg( const Format &format )
 		for( const auto &define : format.getDefineDirectives() )
 			mShaderPreprocessor->addDefine( define );
 
+		// copy search directories
+		for( const auto &dir : format.mPreprocessorSearchDirectories )
+			mShaderPreprocessor->addSearchDirectory( dir );
+
 		if( format.getVersion() )
 			mShaderPreprocessor->setVersion( format.getVersion() );
 	}
@@ -475,7 +479,7 @@ GlslProg::GlslProg( const Format &format )
 				if( foundDefaultAttrib != defaultAttribMap.end() )
 					attribName = foundDefaultAttrib->first;
 				else {
-					CI_LOG_E("Defined Location for unknown semantic and unknown name");
+					CI_LOG_E( "Defined Location for unknown semantic and unknown name" );
 					continue;
 				}
 			}
@@ -537,7 +541,7 @@ GlslProg::GlslProg( const Format &format )
 			}
 		}
 		if( ! foundUserDefined ) {
-			CI_LOG_E( "Unknown uniform: \"" << userUniform.mName << "\"" );
+			CI_LOG_W( "Unknown uniform: \"" << userUniform.mName << "\"" );
 			mLoggedUniformNames.insert( userUniform.mName );
 		}
 	}
@@ -559,7 +563,7 @@ GlslProg::GlslProg( const Format &format )
 				break;
 			}
 		}
-		if( !active ) {
+		if( ! active ) {
 			CI_LOG_E( "Unknown attribute: \"" << userAttrib.mName << "\"" );
 		}
 	}
@@ -620,7 +624,10 @@ void GlslProg::loadShader( const string &shaderSource, const fs::path &shaderPat
 {
 	GLuint handle = glCreateShader( shaderType );
 	if( mShaderPreprocessor ) {
-		string preprocessedSource = mShaderPreprocessor->parse( shaderSource, shaderPath );
+		set<fs::path> includedFiles;
+		string preprocessedSource = mShaderPreprocessor->parse( shaderSource, shaderPath, &includedFiles );
+		mShaderPreprocessorIncludedFiles.insert( mShaderPreprocessorIncludedFiles.end(), includedFiles.begin(), includedFiles.end() );
+
 		const char *cStr = preprocessedSource.c_str();
 		glShaderSource( handle, 1, reinterpret_cast<const GLchar**>( &cStr ), NULL );
 	}
@@ -738,7 +745,7 @@ void GlslProg::cacheActiveUniforms()
 	
 #if ! defined( DISABLE_UNIFORM_CACHING )
 	if( numActiveUniforms )
-		mUniformValueCache = new UniformValueCache( uniformValueCacheSize );
+		mUniformValueCache = unique_ptr<UniformValueCache>( new UniformValueCache( uniformValueCacheSize ) );
 #endif
 }
 
@@ -890,7 +897,7 @@ std::string GlslProg::getShaderLog( GLuint handle ) const
 void GlslProg::logMissingUniform( const std::string &name ) const
 {
 	if( mLoggedUniformNames.count( name ) == 0 ) {
-		CI_LOG_E( "Unknown uniform: \"" << name << "\"" );
+		CI_LOG_W( "Unknown uniform: \"" << name << "\"" );
 		mLoggedUniformNames.insert( name );
 	}
 }
@@ -898,7 +905,7 @@ void GlslProg::logMissingUniform( const std::string &name ) const
 void GlslProg::logMissingUniform( int location ) const
 {
 	if( mLoggedUniformLocations.count( location ) == 0 ) {
-		CI_LOG_E( "Unknown uniform location: \"" << location << "\"" );
+		CI_LOG_W( "Unknown uniform location: \"" << location << "\"" );
 		mLoggedUniformLocations.insert( location );
 	}
 }
@@ -1076,7 +1083,7 @@ void GlslProg::uniformBlock( int loc, int binding )
 		}
 	}
 	else {
-		CI_LOG_E("Uniform block at " << loc << " location not found");
+		CI_LOG_E( "Uniform block at " << loc << " location not found" );
 	}
 }
 
@@ -1090,7 +1097,7 @@ void GlslProg::uniformBlock( const std::string &name, GLint binding )
 		}
 	}
 	else {
-		CI_LOG_E("Uniform block \"" << name << "\" not found");
+		CI_LOG_E( "Uniform block \"" << name << "\" not found" );
 	}
 }
 
@@ -1267,16 +1274,28 @@ bool GlslProg::checkUniformType( GLenum uniformType ) const
 		// unigned int
 		case GL_UNSIGNED_INT: return std::is_same<T,uint32_t>::value;
 #if ! defined( CINDER_GL_ES )
-		case GL_SAMPLER_BUFFER_EXT: return std::is_same<T, int32_t>::value;
-		case GL_INT_SAMPLER_2D: return std::is_same<T, int32_t>::value;
-		case GL_SAMPLER_2D_RECT: return std::is_same<T, int32_t>::value;
+		case GL_SAMPLER_BUFFER_EXT:		return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_2D_RECT:		return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_2D_RECT:	return std::is_same<T,int32_t>::value;		
 #endif
 #if ! defined( CINDER_GL_ES_2 )
-		case GL_UNSIGNED_INT_VEC2: return std::is_same<T,glm::uvec2>::value;
-		case GL_UNSIGNED_INT_VEC3: return std::is_same<T,glm::uvec3>::value;
-		case GL_UNSIGNED_INT_VEC4: return std::is_same<T,glm::uvec4>::value;
-		case GL_SAMPLER_2D_SHADOW: return std::is_same<T,int32_t>::value;
-		case GL_SAMPLER_3D: return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_3D:						return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_VEC2:				return std::is_same<T,glm::uvec2>::value;
+		case GL_UNSIGNED_INT_VEC3:				return std::is_same<T,glm::uvec3>::value;
+		case GL_UNSIGNED_INT_VEC4:				return std::is_same<T,glm::uvec4>::value;
+		case GL_SAMPLER_2D_SHADOW:				return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_2D_ARRAY:				return std::is_same<T,int32_t>::value;		
+		case GL_SAMPLER_2D_ARRAY_SHADOW:		return std::is_same<T,int32_t>::value;
+		case GL_SAMPLER_CUBE_SHADOW:			return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_2D:					return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_3D:					return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_CUBE:				return std::is_same<T,int32_t>::value;
+		case GL_INT_SAMPLER_2D_ARRAY:			return std::is_same<T,int32_t>::value;		
+		case GL_UNSIGNED_INT_SAMPLER_2D:		return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_3D:		return std::is_same<T,int32_t>::value;
+		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return std::is_same<T,int32_t>::value;		
+		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return std::is_same<T,int32_t>::value;
 #else
 		case GL_SAMPLER_2D_SHADOW_EXT: return std::is_same<T,int32_t>::value;
 #endif
@@ -1778,7 +1797,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Loc: " << attrib.getLocation() << std::endl;
 		os << "\t\t Count: " << attrib.getCount() << std::endl;
 		os << "\t\t Type: " << gl::constantToString( attrib.getType() ) << std::endl;
-		os << "\t\t Semantic: <" << geom::attribToString( attrib.getAttributeSemantic() ) << ">" << std::endl;
+		os << "\t\t Semantic: <" << geom::attribToString( attrib.getSemantic() ) << ">" << std::endl;
 	}
 	
 	os << "\tUniforms: " << std::endl;

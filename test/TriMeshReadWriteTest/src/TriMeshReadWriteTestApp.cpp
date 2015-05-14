@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/MayaCamUI.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Sphere.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/ImageIo.h"
@@ -18,15 +18,12 @@ class TriMeshReadWriteTestApp : public App {
 	void	setup() override;
 	void	resize() override;
 
-	void	mouseDown( MouseEvent event ) override;
-	void	mouseDrag( MouseEvent event ) override;
-	void	keyDown( KeyEvent event ) override;
-
 	void	testObjFileWriteRead();
 	void	loadObjFile( const fs::path &filePath );
 	void	draw() override;
 	
-	MayaCamUI		mMayaCam;
+	CameraUi		mCamUi;
+	CameraPersp		mCam;
 	TriMeshRef		mMesh;
 	gl::BatchRef	mBatch;
 	gl::GlslProgRef	mGlsl;
@@ -38,9 +35,8 @@ void TriMeshReadWriteTestApp::setup()
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
 	mGlsl->uniform( "uTex0", 0 );
 
-	CameraPersp initialCam;
-	initialCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
-	mMayaCam.setCurrentCam( initialCam );
+	mCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1, 10000 );
+	mCamUi = CameraUi( &mCam, getWindow() );
 
 	testObjFileWriteRead();
 
@@ -94,30 +90,14 @@ void TriMeshReadWriteTestApp::testObjFileWriteRead()
 
 void TriMeshReadWriteTestApp::resize()
 {
-	auto cam = mMayaCam.getCamera();
-	cam.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( cam );
-}
-
-void TriMeshReadWriteTestApp::mouseDown( MouseEvent event )
-{
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void TriMeshReadWriteTestApp::mouseDrag( MouseEvent event )
-{
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-}
-
-void TriMeshReadWriteTestApp::keyDown( KeyEvent event )
-{
+	mCam.setAspectRatio( getWindowAspectRatio() );
 }
 
 void TriMeshReadWriteTestApp::draw()
 {
 	gl::clear( Color( 0.45f, 0.22f, 0.1f ) );
 
-	gl::setMatrices( mMayaCam.getCamera() );
+	gl::setMatrices( mCam );
 
 	mBatch->draw();
 }

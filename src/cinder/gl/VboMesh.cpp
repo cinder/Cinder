@@ -461,7 +461,7 @@ void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMa
 				attribMappingFound = true;
 			}
 		}
-		auto attribSemantic = glslActiveAttrib.getAttributeSemantic();
+		auto attribSemantic = glslActiveAttrib.getSemantic();
 		if( (attribSemantic != geom::Attrib::COLOR) &&
 		   (enabledAttribs.count( attribSemantic ) == 0) &&
 		   ! attribMappingFound &&

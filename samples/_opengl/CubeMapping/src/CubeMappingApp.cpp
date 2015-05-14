@@ -77,4 +77,4 @@ void CubeMappingApp::draw()
 	gl::popMatrices();		
 }
 
-CINDER_APP( CubeMappingApp, RendererGl )
+CINDER_APP( CubeMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )
