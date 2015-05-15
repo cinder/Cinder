@@ -801,6 +801,54 @@ void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 	ctx->popVao();
 }
 
+void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments )
+{
+	auto ctx = context();
+	const GlslProg* curGlslProg = ctx->getGlslProg();
+	if( !curGlslProg ) {
+		CI_LOG_E( "No GLSL program bound" );
+		return;
+	}
+
+	if( numSegments <= 0 ) {
+		numSegments = static_cast<int>( math<double>::floor( radius * M_PI * 2 ) );
+	}
+	if( numSegments < 3 ) {
+		numSegments = 3;
+	}
+	// construct circle
+	const size_t numVertices = numSegments * 2;
+	vector<vec2> positions;
+	positions.assign( numVertices + 2, center );	// all vertices start at center
+	const float tDelta = 2.0f * static_cast<float>( M_PI ) * ( 2.0f / numVertices );
+	float t = 0;
+	for( size_t i = 0; i <= numVertices; ) {
+		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		positions[i++] += unit * ( radius - 0.5f * lineWidth );	// push out from center
+		positions[i++] += unit * ( radius + 0.5f * lineWidth );	// push out from center
+		t += tDelta;
+	}
+	// copy data to GPU
+	const size_t size = positions.size() * sizeof( vec2 );
+	auto arrayVbo = ctx->getDefaultArrayVbo( size );
+	arrayVbo->bufferSubData( 0, size, (GLvoid*) positions.data() );
+	// set attributes
+	ctx->pushVao();
+	ctx->getDefaultVao()->replacementBindBegin();
+	ScopedBuffer bufferBindScp( arrayVbo );
+
+	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
+	if( posLoc >= 0 ) {
+		enableVertexAttribArray( posLoc );
+		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, ( GLvoid* )nullptr );
+	}
+	ctx->getDefaultVao()->replacementBindEnd();
+	ctx->setDefaultShaderVars();
+	// draw
+	drawArrays( GL_TRIANGLE_STRIP, 0, (GLsizei) positions.size() );
+	ctx->popVao();
+}
+
 void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
 {
 	auto ctx = context();
