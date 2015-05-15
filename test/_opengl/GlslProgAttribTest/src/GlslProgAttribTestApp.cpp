@@ -1,5 +1,6 @@
-// Should render as rotating circle of color cubes
-// And forward/backward moving pair of R/G/B triple of spheres, one offset on Y from the other
+// * Should render as rotating circle of color cubes using per-instance mat4 attribute
+// * Forward/backward moving pair of R/G/B triple of spheres, one offset on Y from the other
+// 'c' key should change RGB -> CMY, testing uploading uniform arrays
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
@@ -23,6 +24,7 @@ class GlslProgAttribTestApp : public App {
 	void setup() override;
 	void mouseDown( MouseEvent event ) override { mCamUi.mouseDown( event ); }
 	void mouseDrag( MouseEvent event ) override { mCamUi.mouseDrag( event ); }
+	void keyDown( KeyEvent event ) override;
 	void update() override;
 	void draw() override;
 	
@@ -36,7 +38,8 @@ class GlslProgAttribTestApp : public App {
 	
 	CameraPersp			mCam;
 	CameraUi			mCamUi;
-	ColorA				mColors[3];
+	ColorA				mColorsRgb[3], mColorsCmy[3];
+	bool				mRgbNotCmy;
 };
 
 void GlslProgAttribTestApp::setup()
@@ -61,6 +64,16 @@ void GlslProgAttribTestApp::setup()
 	
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
+
+	mRgbNotCmy = true;
+	
+	mColorsRgb[0] = ColorA( 1, 0, 0, 1 );
+	mColorsRgb[1] = ColorA( 0, 1, 0, 1 );
+	mColorsRgb[2] = ColorA( 0, 0, 1, 1 );
+
+	mColorsCmy[0] = ColorA( 0, 1, 1, 1 );
+	mColorsCmy[1] = ColorA( 1, 0, 1, 1 );
+	mColorsCmy[2] = ColorA( 1, 1, 0, 1 );
 }
 
 void GlslProgAttribTestApp::setupBuffers()
@@ -77,16 +90,21 @@ void GlslProgAttribTestApp::setupBuffers()
 	
 	mCube = gl::Batch::create( cubeVboMesh, mGlsl, { { geom::CUSTOM_0, "aModelMatrix" } } );
 
-	auto sphere1 = geom::Sphere() >> geom::Translate( vec3( -1, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 0; } );
-	auto sphere2 = geom::Sphere() >> geom::Translate( vec3( 0, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 1; } );
-	auto sphere3 = geom::Sphere() >> geom::Translate( vec3( 1, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 2; } );
+	auto sphere1 = geom::Sphere() >> geom::Translate( vec3( -1, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(0,0); } );
+	auto sphere2 = geom::Sphere() >> geom::Translate( vec3( 0, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(1,0); } );
+	auto sphere3 = geom::Sphere() >> geom::Translate( vec3( 1, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(2,0); } );
 	mSpheres = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl );
-	mSpheres2 = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl2 );	
+	mSpheres2 = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl2 );
 	
-	// initially all red
-	mColors[0] = ColorA( 1, 0, 0, 1 );
-	mColors[1] = ColorA( 0, 1, 0, 1 );
-	mColors[2] = ColorA( 0, 0, 1, 1 );
+	// this should issue an error
+	mUniformGlsl->uniform( "uColors[a]", vec4() );
+}
+
+void GlslProgAttribTestApp::keyDown( KeyEvent event )
+{
+	if( event.getChar() == 'c' ) {
+		mRgbNotCmy = ! mRgbNotCmy;
+	}
 }
 
 void GlslProgAttribTestApp::update()
@@ -113,13 +131,6 @@ void GlslProgAttribTestApp::update()
 	mModelMatricesVbo->bufferSubData( 0,
 									 mModelMatricesCpu.size() * sizeof(mat4),
 									 mModelMatricesCpu.data() );
-
-	// test uploading all 3 as one array
-	mSpheres->getGlslProg()->uniform( "uColors", (vec4*)mColors, 3 );
-	
-	// test uploading by index and index+array
-	mSpheres2->getGlslProg()->uniform( "uColors[0]", mColors[0] );
-	mSpheres2->getGlslProg()->uniform( "uColors[1]", (vec4*)&mColors[1], 2 );	
 }
 
 void GlslProgAttribTestApp::draw()
@@ -127,6 +138,17 @@ void GlslProgAttribTestApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
 	mCube->drawInstanced( mModelMatricesCpu.size() );
+
+	if( mRgbNotCmy ) {
+		mSpheres->getGlslProg()->uniform( "uColors", (vec4*)mColorsRgb, 3 );
+		mSpheres2->getGlslProg()->uniform( "uColors[0]", mColorsRgb[0] );
+		mSpheres2->getGlslProg()->uniform( "uColors[1]", (vec4*)&mColorsRgb[1], 2 );
+	}
+	else {
+		mSpheres->getGlslProg()->uniform( "uColors", (vec4*)mColorsCmy, 3 );
+		mSpheres2->getGlslProg()->uniform( "uColors[0]", mColorsCmy[0] );
+		mSpheres2->getGlslProg()->uniform( "uColors[1]", (vec4*)&mColorsCmy[1], 2 );
+	}
 
 	gl::translate( 0, 0, 5 * sin( getElapsedSeconds() ) );	
 	mSpheres->draw();
