@@ -1,3 +1,6 @@
+// Should render as rotating circle of color cubes
+// And forward/backward moving pair of R/G/B triple of spheres, one offset on Y from the other
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
@@ -25,14 +28,15 @@ class GlslProgAttribTestApp : public App {
 	
 	void setupBuffers();
 	
-	gl::BatchRef		mCube;
-	gl::GlslProgRef		mGlsl;
+	gl::BatchRef		mCube, mSpheres, mSpheres2;
+	gl::GlslProgRef		mGlsl, mUniformGlsl, mUniformGlsl2;
 	gl::VboRef			mModelMatricesVbo;
 	
 	std::vector<mat4>	mModelMatricesCpu;
 	
 	CameraPersp			mCam;
 	CameraUi			mCamUi;
+	ColorA				mColors[3];
 };
 
 void GlslProgAttribTestApp::setup()
@@ -42,6 +46,13 @@ void GlslProgAttribTestApp::setup()
 	mGlsl = gl::GlslProg::create( gl::GlslProg::Format()
 								 .vertex( loadAsset( "InstancedModelMatrix.vert" ) )
 								 .fragment( loadAsset( "InstancedModelMatrix.frag" ) ) );
+	mUniformGlsl  = gl::GlslProg::create( gl::GlslProg::Format()
+								 .vertex( loadAsset( "UniformTest.vert" ) )
+								 .fragment( loadAsset( "UniformTest.frag" ) ) );
+	mUniformGlsl2  = gl::GlslProg::create( gl::GlslProg::Format()
+								 .vertex( loadAsset( "UniformTest.vert" ) )
+								 .fragment( loadAsset( "UniformTest.frag" ) ) );
+
 	setupBuffers();
 	
 	mCam.setPerspective( 60.0f, getWindowAspectRatio(), .01f, 1000.0f );
@@ -65,6 +76,17 @@ void GlslProgAttribTestApp::setupBuffers()
 	cubeVboMesh->appendVbo( layout, mModelMatricesVbo );
 	
 	mCube = gl::Batch::create( cubeVboMesh, mGlsl, { { geom::CUSTOM_0, "aModelMatrix" } } );
+
+	auto sphere1 = geom::Sphere() >> geom::Translate( vec3( -1, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 0; } );
+	auto sphere2 = geom::Sphere() >> geom::Translate( vec3( 0, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 1; } );
+	auto sphere3 = geom::Sphere() >> geom::Translate( vec3( 1, 0, 0 ) ) >> geom::AttribFn<float,float>( geom::TEX_COORD_0, []( float ) { return 2; } );
+	mSpheres = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl );
+	mSpheres2 = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl2 );	
+	
+	// initially all red
+	mColors[0] = ColorA( 1, 0, 0, 1 );
+	mColors[1] = ColorA( 0, 1, 0, 1 );
+	mColors[2] = ColorA( 0, 0, 1, 1 );
 }
 
 void GlslProgAttribTestApp::update()
@@ -91,6 +113,13 @@ void GlslProgAttribTestApp::update()
 	mModelMatricesVbo->bufferSubData( 0,
 									 mModelMatricesCpu.size() * sizeof(mat4),
 									 mModelMatricesCpu.data() );
+
+	// test uploading all 3 as one array
+	mSpheres->getGlslProg()->uniform( "uColors", (vec4*)mColors, 3 );
+	
+	// test uploading by index and index+array
+	mSpheres2->getGlslProg()->uniform( "uColors[0]", mColors[0] );
+	mSpheres2->getGlslProg()->uniform( "uColors[1]", (vec4*)&mColors[1], 2 );	
 }
 
 void GlslProgAttribTestApp::draw()
@@ -98,6 +127,11 @@ void GlslProgAttribTestApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::setMatrices( mCam );
 	mCube->drawInstanced( mModelMatricesCpu.size() );
+
+	gl::translate( 0, 0, 5 * sin( getElapsedSeconds() ) );	
+	mSpheres->draw();
+	gl::translate( 0, 1, 0 );
+	mSpheres2->draw();
 }
 
 CINDER_APP( GlslProgAttribTestApp, RendererGl, []( App::Settings *settings ){ settings->setMultiTouchEnabled( false ); } )
