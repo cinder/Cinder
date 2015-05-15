@@ -1,15 +1,17 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
  All rights reserved.
  
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and
- the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
- the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -18,7 +20,7 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Context.h"
@@ -46,35 +48,40 @@ static GlslProg::AttribSemanticMap	sDefaultAttribNameToSemanticMap;
 class UniformValueCache : cinder::Noncopyable {
   public:
 	UniformValueCache( uint32_t bufferSize )
-		: mBuffer( new uint8_t[bufferSize] ), mBufferSize( bufferSize )
+		: mBuffer( new uint8_t[bufferSize] ), mValidBytes( new bool[bufferSize] ), mBufferSize( bufferSize )
 	{
+		for( uint32_t b = 0; b < bufferSize; ++b )
+			mValidBytes[b] = false;
 	}
 	
-	void insertByteOffset( uint32_t value )
+	// 'uniformByteOffset' expresses where the first element of an array is: example[0], although 'arrayIndex' may be >0
+	bool shouldBuffer( uint32_t uniformByteOffset, uint32_t typeSize, int arrayIndex, int indexCount, const void* valuePointer )
 	{
-		auto it = std::lower_bound( mCachedByteOffsets.begin(),
-								   mCachedByteOffsets.end(),
-								   value );
-		mCachedByteOffsets.insert( it, value );
-	}
+		// are all the bytes in this range valid?
+		bool cacheValid = true;
+		for( uint32_t b = uniformByteOffset + arrayIndex * typeSize; b < uniformByteOffset + ( arrayIndex + indexCount ) * typeSize; ++b ) {
+			if( mValidBytes[b] == false ) {
+				cacheValid = false;
+				break;
+			}
+		}
 	
-	bool shouldBuffer( uint32_t byteOffset, uint32_t size, const void* valuePointer )
-	{
-		uint8_t* cachePtr = mBuffer.get() + byteOffset;
-		// have we met this byteOffset before?
-		if( ! std::binary_search( mCachedByteOffsets.begin(), mCachedByteOffsets.end(), byteOffset ) ) {
-			// if not, record it and cache it
-			insertByteOffset( byteOffset );
-			memcpy( cachePtr, valuePointer, size );
+		uint8_t* cachePtr = mBuffer.get() + uniformByteOffset + arrayIndex * typeSize;
+		
+		if( ! cacheValid ) { // if not, record it and cache it
+			for( uint32_t b = uniformByteOffset + arrayIndex * typeSize; b < uniformByteOffset + ( arrayIndex + indexCount ) * typeSize; ++b )
+				mValidBytes[b] = true;
+
+			memcpy( cachePtr, valuePointer, typeSize * indexCount );
 			return true;
 		}
 		else {
 			// we've seen this byteOffset before; did its value change?
-			if( memcmp( cachePtr, valuePointer, size ) == 0 ) {
+			if( memcmp( cachePtr, valuePointer, typeSize * indexCount ) == 0 ) {
 				return false;
 			}
 			else { // yes? then cache the latest
-				memcpy( cachePtr, valuePointer, size );
+				memcpy( cachePtr, valuePointer, typeSize * indexCount );
 				return true;
 			}
 		}
@@ -83,6 +90,7 @@ class UniformValueCache : cinder::Noncopyable {
   private:
 	std::vector<uint32_t>			mCachedByteOffsets;
 	std::unique_ptr<uint8_t[]>		mBuffer;
+	std::unique_ptr<bool[]>			mValidBytes;
 	uint32_t						mBufferSize;
 };
 	
@@ -735,10 +743,10 @@ void GlslProg::cacheActiveUniforms()
 			uniform.mIndex			= i;
 			uniform.mCount			= count;
 			uniform.mType			= type;
-			uniform.mDataSize		= count * gl::typeToBytes( type );
+			uniform.mTypeSize		= gl::typeToBytes( type );
 			uniform.mSemantic		= uniformSemantic;
 			uniform.mBytePointer	= uniformValueCacheSize;
-			uniformValueCacheSize  += uniform.mDataSize;
+			uniformValueCacheSize  += uniform.mTypeSize * count;
 			mUniforms.push_back( uniform );
 		}
 	}
@@ -933,11 +941,12 @@ void GlslProg::setLabel( const std::string &label )
 
 GLint GlslProg::getUniformLocation( const std::string &name ) const
 {
-	auto found = findUniform( name );
-	if( found )
-		return found->mLoc;
+	int uniformLocation;
+	const Uniform *uniform = findUniform( name, &uniformLocation );
+	if( uniform )
+		return uniformLocation;
 	else
-		return  -1;
+		return -1;
 }
 	
 GlslProg::Attribute* GlslProg::findAttrib( const std::string &name )
@@ -976,39 +985,47 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 	return ret;
 }
 	
-GlslProg::Uniform* GlslProg::findUniform( const std::string &name )
+const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
-	Uniform* ret = nullptr;
-	for( auto & uniform : mUniforms ) {
-		if( uniform.mName == name ) {
+	size_t nameLeftSquareBracket = name.find( '[' );
+	const Uniform* ret = nullptr;
+	for( const auto & uniform : mUniforms ) {
+		if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
 			ret = &uniform;
 			break;
 		}
+	}
+
+	if( resultLocation ) { // if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
+		if( nameLeftSquareBracket != string::npos ) {
+			try {
+				string testStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
+				*resultLocation = ret->mLoc + stoi( testStr, nullptr );
+			}
+			catch(...) {
+				CI_LOG_E( "Failed to parse index: " << name );
+				return nullptr;
+			}
+		}
+		else
+			*resultLocation = ret->mLoc;
 	}
 	return ret;
 }
-	
-const GlslProg::Uniform* GlslProg::findUniform( const std::string &name ) const
+
+const GlslProg::Uniform* GlslProg::findUniform( int location, int *resultLocation ) const
 {
 	const Uniform* ret = nullptr;
 	for( const auto & uniform : mUniforms ) {
-		if( uniform.mName == name ) {
+		if( ( location >= uniform.mLoc ) && ( location < uniform.mLoc + uniform.mCount ) ) {
 			ret = &uniform;
+			// '*resultLocation' becomes 'location' to match signature & behavior of findUniform( const string& )
+			if( resultLocation )
+				*resultLocation = location;
 			break;
 		}
 	}
-	return ret;
-}
 	
-const GlslProg::Uniform* GlslProg::findUniform( int location ) const
-{
-	const Uniform* ret = nullptr;
-	for( const auto & uniform : mUniforms ) {
-		if( uniform.mLoc == location ) {
-			ret = &uniform;
-			break;
-		}
-	}
 	return ret;
 }
     
@@ -1146,10 +1163,10 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 }
 #endif // ! defined( CINDER_GL_ES_2 )
 	
-bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int count ) const
+bool GlslProg::checkUniformValueCache( const Uniform &uniform, int location, const void *val, int count ) const
 {
 	if( mUniformValueCache )
-		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, uniform.mDataSize, val );
+		return mUniformValueCache->shouldBuffer( uniform.mBytePointer, uniform.mTypeSize, location - uniform.mLoc, count, val );
 	else // no uniform cache means we've disabled it
 		return true;
 }
@@ -1157,72 +1174,76 @@ bool GlslProg::checkUniformValue( const Uniform &uniform, const void *val, int c
 template<typename LookUp, typename T>
 inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
 {
-	auto found = findUniform( lookUp );
+	int uniformLocation;
+	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
 		return;
 	}
-	if( validateUniform( *found, data ) )
-		uniformFunc( found->mLoc, data );
+	if( validateUniform( *found, uniformLocation, data ) )
+		uniformFunc( uniformLocation, data );
 }
 
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool transpose ) const
 {
-	auto found = findUniform( lookUp );
+	int uniformLocation;
+	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
 		return;
 	}
-	if( validateUniform( *found, data ) )
-		uniformMatFunc( found->mLoc, data, transpose );
+	if( validateUniform( *found, uniformLocation, data ) )
+		uniformMatFunc( uniformLocation, data, transpose );
 }
 
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int count ) const
 {
-	auto found = findUniform( lookUp );
+	int uniformLocation;
+	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
 		return;
 	}
-	if( validateUniform( *found, data, count ) )
-		uniformFunc( found->mLoc, data, count );
+	if( validateUniform( *found, uniformLocation, data, count ) )
+		uniformFunc( uniformLocation, data, count );
 }
 
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const
 {
-	auto found = findUniform( lookUp );
+	int uniformLocation;
+	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
 		return;
 	}
-	if( validateUniform( *found, data, count ) )
-		uniformMatFunc( found->mLoc, data, count, transpose );
+	if( validateUniform( *found, uniformLocation, data, count ) )
+		uniformMatFunc( uniformLocation, data, count, transpose );
 }
 	
 template<typename T>
-inline bool GlslProg::validateUniform( const Uniform &uniform, const T &val ) const
+inline bool GlslProg::validateUniform( const Uniform &uniform, int uniformLocation, const T &val ) const
 {
 	if( ! checkUniformType<T>( uniform.mType ) ) {
 		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() );
 		return false;
 	}
 	else {
-		return checkUniformValue( uniform, &val, 1 );
+		return checkUniformValueCache( uniform, uniformLocation, &val, 1 );
 	}
 }
 
 template<typename T>
-inline bool GlslProg::validateUniform( const Uniform &uniform, const T *val, int count ) const
+inline bool GlslProg::validateUniform( const Uniform &uniform, int uniformLocation, const T *val, int count ) const
 {
 	if( ! checkUniformType<T>( uniform.mType ) ) {
 		logUniformWrongType( uniform.mName, uniform.mType, cppTypeToGlslTypeName<T>() + "[" + to_string( count ) + "]" );
 		return false;
 	}
 	else {
-		return checkUniformValue( uniform, val, 1 );
+		return checkUniformValueCache( uniform, uniformLocation, val, count );
 	}
 }
 

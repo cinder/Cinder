@@ -1,15 +1,17 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010, The Cinder Project
  All rights reserved.
  
+ This code is designed for use with the Cinder C++ library, http://libcinder.org
+
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
- 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and
- the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
- the following disclaimer in the documentation and/or other materials provided with the distribution.
- 
+
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	the following disclaimer.
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	the following disclaimer in the documentation and/or other materials provided with the distribution.
+
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
  WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
  PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
@@ -18,7 +20,7 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #pragma once
 
@@ -97,9 +99,9 @@ class GlslProg {
 		GLenum			mType = -1;
 		UniformSemantic mSemantic = UniformSemantic::UNIFORM_USER_DEFINED;
 		
-		//! mDataSize is used internally for the value cache.
-		GLint			mDataSize = 0;
-		//! mBytePointer is used internally for the value cache.
+		//! Used internally for the value cache. Size of a single element.
+		GLint			mTypeSize = 0;
+		//! Used internally for the value cache.
 		GLint			mBytePointer = 0;
 		
 		friend class GlslProg;
@@ -413,8 +415,8 @@ class GlslProg {
 	GLint							getUniformLocation( const std::string &name ) const;
 	//! Returns a const reference to the Active Uniform cache.
 	const std::vector<Uniform>&		getActiveUniforms() const { return mUniforms; }
-	//! Returns a const pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist.
-	const Uniform*					findUniform( const std::string &name ) const;
+	//! Returns a const pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist. The uniform location (accounting for indices, like "example[2]") is stored in \a resultLocation if it's non-null.
+	const Uniform*					findUniform( const std::string &name, int *resultLocation ) const;
 
 #if ! defined( CINDER_GL_ES_2 )
 	// Uniform blocks
@@ -460,10 +462,8 @@ class GlslProg {
 	Attribute*		findAttrib( const std::string &name );
 	//! Caches all active Uniforms after linrking.
 	void			cacheActiveUniforms();
-	//! Returns a pointer to the Uniform that matches \a name. Returns nullptr if the uniform doesn't exist.
-	Uniform*		findUniform( const std::string &name );
 	//! Returns a pointer to the Uniform that matches \a location. Returns nullptr if the uniform doesn't exist.
-	const Uniform*	findUniform( int location ) const;
+	const Uniform*	findUniform( int location, int *resultLocation ) const;
 	
 	//! Performs the finding, validation, and implementation of single uniform variables. Ends by calling the location
 	//! variant uniform function.
@@ -498,12 +498,12 @@ class GlslProg {
 	void			logUniformWrongType( const std::string &name, GLenum uniformType, const std::string &userType ) const;
 	//! Checks the validity of the settings on this uniform, specifically type and value
 	template<typename T>
-	bool			validateUniform( const Uniform &uniform, const T &val ) const;
+	bool			validateUniform( const Uniform &uniform, int uniformLocation, const T &val ) const;
 	//! Checks the validity of the settings on this uniform, specifically type and value
 	template<typename T>
-	bool			validateUniform( const Uniform &uniform, const T *val, int count ) const;
+	bool			validateUniform( const Uniform &uniform, int uniformLocation, const T *val, int count ) const;
 	//! Implementing later for CPU Uniform Buffer Cache.
-	bool			checkUniformValue( const Uniform &uniform, const void *val, int count ) const;
+	bool			checkUniformValueCache( const Uniform &uniform, int location, const void *val, int count ) const;
 	//! Checks the type of the uniform against the provided type of data in validateUniform. If the provided
 	//! type, \a uniformType, and the type T match this function returns true, otherwise it returns false.
 	template<typename T>

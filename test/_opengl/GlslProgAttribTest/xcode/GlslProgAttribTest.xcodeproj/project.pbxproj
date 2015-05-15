@@ -14,6 +14,8 @@
 		00B784B40FF439BC000DE1D7 /* AudioToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */; };
 		00B784B50FF439BC000DE1D7 /* AudioUnit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B10FF439BC000DE1D7 /* AudioUnit.framework */; };
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
+		00D034A01B0643E700BCA509 /* UniformTest.frag in Resources */ = {isa = PBXBuildFile; fileRef = 00D0349E1B0643E700BCA509 /* UniformTest.frag */; };
+		00D034A11B0643E700BCA509 /* UniformTest.vert in Resources */ = {isa = PBXBuildFile; fileRef = 00D0349F1B0643E700BCA509 /* UniformTest.vert */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		63A5220B59C1431496DE4C8A /* GlslProgAttribTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B546F866B17144F5B4FA81D0 /* GlslProgAttribTestApp.cpp */; };
@@ -30,6 +32,8 @@
 		00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		00B784B10FF439BC000DE1D7 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
 		00B784B20FF439BC000DE1D7 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
+		00D0349E1B0643E700BCA509 /* UniformTest.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = UniformTest.frag; path = ../assets/UniformTest.frag; sourceTree = "<group>"; };
+		00D0349F1B0643E700BCA509 /* UniformTest.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = UniformTest.vert; path = ../assets/UniformTest.vert; sourceTree = "<group>"; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -139,6 +143,8 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				00D0349E1B0643E700BCA509 /* UniformTest.frag */,
+				00D0349F1B0643E700BCA509 /* UniformTest.vert */,
 				7C1B560279EF4E868BF8AE44 /* Info.plist */,
 				B3E322801AF66B94001BDFA9 /* InstancedModelMatrix.vert */,
 				B3E322821AF66BE7001BDFA9 /* InstancedModelMatrix.frag */,
@@ -208,7 +214,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3E322831AF66BE7001BDFA9 /* InstancedModelMatrix.frag in Resources */,
+				00D034A01B0643E700BCA509 /* UniformTest.frag in Resources */,
 				B3E322811AF66B94001BDFA9 /* InstancedModelMatrix.vert in Resources */,
+				00D034A11B0643E700BCA509 /* UniformTest.vert in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
