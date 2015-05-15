@@ -67,7 +67,6 @@ class UniformValueCache : cinder::Noncopyable {
 		uint8_t* cachePtr = mBuffer.get() + uniformByteOffset + arrayIndex * typeSize;
 		
 		if( ! cacheValid ) { // if not, record it and cache it
-//std::cout << "First encounter with bytes " << uniformByteOffset + arrayIndex * typeSize << " to " << uniformByteOffset + ( arrayIndex + indexCount ) * typeSize << std::endl;
 			for( uint32_t b = uniformByteOffset + arrayIndex * typeSize; b < uniformByteOffset + ( arrayIndex + indexCount ) * typeSize; ++b )
 				mValidBytes[b] = true;
 
@@ -77,11 +76,9 @@ class UniformValueCache : cinder::Noncopyable {
 		else {
 			// we've seen this byteOffset before; did its value change?
 			if( memcmp( cachePtr, valuePointer, typeSize * indexCount ) == 0 ) {
-//std::cout << "No change with bytes " << uniformByteOffset + arrayIndex * typeSize << " to " << uniformByteOffset + ( arrayIndex + indexCount ) * typeSize << std::endl;
 				return false;
 			}
 			else { // yes? then cache the latest
-//std::cout << "Change with bytes " << uniformByteOffset + arrayIndex * typeSize << " to " << uniformByteOffset + ( arrayIndex + indexCount ) * typeSize << std::endl;
 				memcpy( cachePtr, valuePointer, typeSize * indexCount );
 				return true;
 			}
