@@ -9,7 +9,7 @@
 	<key>CFBundleIconFile</key>
 	<string>CinderApp.icns</string>
 	<key>CFBundleIdentifier</key>
-	<string>com.barbariangroup.MultiTouchBasic2</string>
+	<string>com.barbariangroup.MultiTouchBasic</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>

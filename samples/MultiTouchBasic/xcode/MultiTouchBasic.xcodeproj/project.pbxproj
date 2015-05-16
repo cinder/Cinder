@@ -19,7 +19,7 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
-		C756CC2012085F5700922E67 /* MultiTouchApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756CC1F12085F5700922E67 /* MultiTouchApp.cpp */; };
+		C756CC2012085F5700922E67 /* MultiTouchBasicApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = C756CC1F12085F5700922E67 /* MultiTouchBasicApp.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -38,9 +38,9 @@
 		5323E6B10EAFCA74003A9687 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = /System/Library/Frameworks/CoreVideo.framework; sourceTree = "<absolute>"; };
 		5323E6B50EAFCA7E003A9687 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = /System/Library/Frameworks/QTKit.framework; sourceTree = "<absolute>"; };
 		53E3CDFB0E86099300238D2B /* Carbon.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Carbon.framework; path = /System/Library/Frameworks/Carbon.framework; sourceTree = "<absolute>"; };
-		C756CC1F12085F5700922E67 /* MultiTouchApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchApp.cpp; path = ../src/MultiTouchApp.cpp; sourceTree = SOURCE_ROOT; };
+		C756CC1F12085F5700922E67 /* MultiTouchBasicApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MultiTouchBasicApp.cpp; path = ../src/MultiTouchBasicApp.cpp; sourceTree = SOURCE_ROOT; };
 		C756CC2112085F5700922E67 /* MultiTouch.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MultiTouch.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		C756CC64120860D200922E67 /* MultiTouch_OSX-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MultiTouch_OSX-Info.plist"; sourceTree = "<group>"; };
+		C756CC64120860D200922E67 /* MultiTouchBasic-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MultiTouchBasic-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -69,7 +69,7 @@
 		080E96DDFE201D6D7F000001 /* Source */ = {
 			isa = PBXGroup;
 			children = (
-				C756CC1F12085F5700922E67 /* MultiTouchApp.cpp */,
+				C756CC1F12085F5700922E67 /* MultiTouchBasicApp.cpp */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -131,7 +131,7 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				C756CC64120860D200922E67 /* MultiTouch_OSX-Info.plist */,
+				C756CC64120860D200922E67 /* MultiTouchBasic-Info.plist */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -175,7 +175,7 @@
 			isa = PBXProject;
 			attributes = {
 			};
-			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MultiTouch_OSX" */;
+			buildConfigurationList = C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MultiTouchBasic" */;
 			compatibilityVersion = "Xcode 3.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 1;
@@ -209,7 +209,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C756CC2012085F5700922E67 /* MultiTouchApp.cpp in Sources */,
+				C756CC2012085F5700922E67 /* MultiTouchBasicApp.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -227,7 +227,7 @@
 				GCC_OPTIMIZATION_LEVEL = 0;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = "MultiTouch_OSX-Info.plist";
+				INFOPLIST_FILE = "MultiTouchBasic-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
 				PRODUCT_NAME = MultiTouch;
@@ -247,7 +247,7 @@
 				GCC_OPTIMIZATION_LEVEL = 3;
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
-				INFOPLIST_FILE = "MultiTouch_OSX-Info.plist";
+				INFOPLIST_FILE = "MultiTouchBasic-Info.plist";
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
 				PRODUCT_NAME = MultiTouchBasic2;
@@ -304,7 +304,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MultiTouch_OSX" */ = {
+		C01FCF4E08A954540054247B /* Build configuration list for PBXProject "MultiTouchBasic" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				C01FCF4F08A954540054247B /* Debug */,
