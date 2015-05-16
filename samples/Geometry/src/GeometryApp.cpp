@@ -385,9 +385,9 @@ void GeometryApp::createGeometry()
 		mPrimitiveSelected = CAPSULE;
 	case CAPSULE:
 		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Capsule(), geom::WireCube() ); break;
-		case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCube() ); break;
-		case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCube() ); break;
+		case DEFAULT:	loadGeomSource( geom::Capsule(), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
+		case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
+		case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
 		}
 		break;
 	case CONE:
@@ -419,7 +419,7 @@ void GeometryApp::createGeometry()
 		}
 		break;
 	case ICOSAHEDRON:
-		loadGeomSource( geom::Icosahedron(), geom::WireCube() );
+		loadGeomSource( geom::Icosahedron(), geom::WireIcosahedron() );
 		break;
 	case ICOSPHERE:
 		switch( mQualityCurrent ) {
