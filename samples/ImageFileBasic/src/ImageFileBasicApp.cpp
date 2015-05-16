@@ -1,10 +1,9 @@
 ﻿#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
-
-// Uncomment this line to enable specialized PNG handling
-//#include "cinder/ImageSourcePng.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -12,10 +11,10 @@ using namespace std;
 
 class ImageFileBasicApp : public App {
   public:
-	void setup();
-	void keyDown( KeyEvent event );
-	void fileDrop( FileDropEvent event );	
-	void draw();
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void fileDrop( FileDropEvent event ) override;
+	void draw() override;
 	
 	gl::TextureRef		mTexture;
 };
@@ -28,20 +27,14 @@ void ImageFileBasicApp::setup()
 			mTexture = gl::Texture::create( loadImage( path ) );
 		}
 	}
-	catch( ci::Exception &exc ) {
-		console() << "unable to load the texture file, what: " << exc.what() << endl;
+	catch( Exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load image.", exc );
 	}
 }
 
 void ImageFileBasicApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 'f' ) {
-		setFullScreen( ! isFullScreen() );
-	}
-	else if( event.getCode() == app::KeyEvent::KEY_ESCAPE ) {
-		setFullScreen( false );
-	}
-	else if( event.getChar() == 'o' ) {
+	if( event.getChar() == 'o' ) {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() )
 			mTexture = gl::Texture::create( loadImage( path ) );
@@ -60,8 +53,8 @@ void ImageFileBasicApp::fileDrop( FileDropEvent event )
 	try {
 		mTexture = gl::Texture::create( loadImage( event.getFile( 0 ) ) );
 	}
-	catch( ci::Exception &exc ) {
-		console() << "unable to load the texture file, what: " << exc.what() << endl;
+	catch( Exception &exc ) {
+		CI_LOG_EXCEPTION( "failed to load image: " << event.getFile( 0 ), exc );
 	}
 }
 
