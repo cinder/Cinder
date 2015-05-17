@@ -6,9 +6,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -26,25 +26,51 @@
 #include "cinder/Cinder.h"
 #include "cinder/ImageIo.h"
 
+#include <set>
+
 namespace cinder {
 
-//! Singleton representing the system's clipboard
-class Clipboard {
-  public:
+class ScopedClipboard {
+public:
+	ScopedClipboard();
+	~ScopedClipboard();
+
 	//! Returns whether the clipboard contains a string
-	static bool			hasString();
+	bool hasString();
 	//! Returns whether the clipboard contains an image
-	static bool			hasImage();
+	bool hasImage();
 
 	//! Returns the clipboard contents as a UTF-8 string or an empty string if the clipboard does not contain a string
-	static std::string		getString();
+	std::string    getString();
 	//! Returns the clipboard contents as an ImageSourceRef or a null if the clipboard does not contain an image
-	static ImageSourceRef	getImage();
+	ImageSourceRef getImage();
 
 	//! Sets the clipboard contents to the UTF-8 string \a str
-	static void				setString( const std::string &str );
+	void setString( const std::string &str );
 	//! Sets the clipboard contents to the ImageSource \a image
-	static void				setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() );	
+	void setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() );
+
+#if defined( CINDER_MSW )
+	bool clipboardContainsFormat( const std::set<unsigned int> &formats );
+#endif
+};
+
+class Clipboard {
+public:
+	//! Returns whether the clipboard contains a string
+	static bool hasString() { ScopedClipboard cb; return cb.hasString(); }
+	//! Returns whether the clipboard contains an image
+	static bool hasImage() { ScopedClipboard cb; return cb.hasImage(); }
+
+	//! Returns the clipboard contents as a UTF-8 string or an empty string if the clipboard does not contain a string
+	static std::string    getString() { ScopedClipboard cb; return cb.getString(); }
+	//! Returns the clipboard contents as an ImageSourceRef or a null if the clipboard does not contain an image
+	static ImageSourceRef getImage() { ScopedClipboard cb; return cb.getImage(); }
+
+	//! Sets the clipboard contents to the UTF-8 string \a str
+	static void setString( const std::string &str ) { ScopedClipboard cb; cb.setString( str ); }
+	//! Sets the clipboard contents to the ImageSource \a image
+	static void setImage( ImageSourceRef image, ImageTarget::Options options = ImageTarget::Options() ) { ScopedClipboard cb; cb.setImage( image, options ); }
 };
 
 } // namespace cinder
