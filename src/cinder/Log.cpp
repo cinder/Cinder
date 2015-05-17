@@ -113,6 +113,19 @@ int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
 		default: CI_ASSERT_NOT_REACHABLE();
 	}
 }
+#elif defined( CINDER_MSW )
+int cinderLogLevelToEventLogLevel( Level cinderLogLevel )
+{
+	switch( cinderLogLevel ) {
+		// MSDN Event Types don't seem particularly granular, hence the repeats
+		case LEVEL_FATAL:	return EVENTLOG_ERROR_TYPE;
+		case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
+		case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
+		case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
+		case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
+		default: CI_ASSERT_NOT_REACHABLE();
+	}
+}
 #endif
 
 } // anonymous namespace
@@ -268,9 +281,12 @@ void LogManager::enableSystemLogging()
 
 #if defined( CINDER_COCOA )
 	addLogger( new LoggerSysLog );
+#elif defined( CINDER_MSW )
+	addLogger(new LoggerEventLog );
+#endif
+
 	setSystemLoggingLevel( mSystemLoggingLevel );
 	mSystemLoggingEnabled = true;
-#endif
 }
 
 void LogManager::setSystemLoggingLevel( Level level )
@@ -280,6 +296,9 @@ void LogManager::setSystemLoggingLevel( Level level )
 #if defined( CINDER_COCOA )
 	int sysLevel = cinderLogLevelToSysLogLevel( level );
 	setlogmask( LOG_UPTO( sysLevel ) );
+#elif defined( CINDER_MSW )
+	auto logger = mLoggerMulti->findType<LoggerEventLog>();
+	logger->setMinLoggingLevel( level );
 #endif
 }
 
@@ -500,6 +519,64 @@ void LoggerSysLog::write( const Metadata &meta, const string &text )
 {
 	int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
 	syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
+}
+
+#elif defined( CINDER_MSW )
+
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerEventLog
+// ----------------------------------------------------------------------------------------------------
+
+LoggerEventLog::LoggerEventLog()
+{
+	char filename[MAX_PATH];
+	wchar_t wFilename[MAX_PATH];
+	string stem;
+
+	DWORD size = GetModuleFileNameA( NULL, filename, MAX_PATH );
+	if( size ) { 
+		boost::filesystem::path exePath(filename);
+		stem = exePath.stem().string();
+	} else {
+		app::Platform::get()->console() << "Could not determine application name, defaulting to 'CinderApp'" << endl;
+		stem = "CinderApp";
+	}
+
+	mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
+	mHLog = RegisterEventSourceW( 0, wFilename );
+
+	if( ! mHLog ) {
+		app::Platform::get()->console() << "RegisterEventSourceW() failed with " << GetLastError() << endl;
+	}
+}
+
+LoggerEventLog::~LoggerEventLog()
+{
+	if( mHLog ) {
+		CloseEventLog(mHLog);
+	}
+}
+
+void LoggerEventLog::write( const Metadata &meta, const string &text )
+{
+	// Check in case we failed to initialize the eventlog and make sure we have min required level
+	if( ! mHLog || meta.mLevel < mMinLoggingLevel ) {
+		return;
+	}
+
+	int eventLevel = cinderLogLevelToEventLogLevel( meta.mLevel );
+	
+	std::wstring wMeta = mConverter.from_bytes( meta.toString() );
+	std::wstring wText = mConverter.from_bytes( text );
+
+	LPCTSTR wStrings[2];
+	wStrings[0] = wMeta.c_str();
+	wStrings[1] = wText.c_str();
+
+	BOOL res = ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
+	if( ! res ) {
+		app::Platform::get()->console() << "ReportEventW() failed with " << GetLastError() << endl;
+	}
 }
 
 #endif

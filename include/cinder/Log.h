@@ -35,6 +35,11 @@
 #include <memory>
 #include <mutex>
 
+#if defined( CINDER_MSW )
+#include <Windows.h>
+#include <codecvt>
+#endif
+
 namespace cinder { namespace log {
 
 typedef enum {
@@ -136,7 +141,6 @@ class LoggerBreakpoint : public Logger {
 };
 
 #if defined( CINDER_COCOA )
-
 class LoggerSysLog : public Logger {
 public:
 	LoggerSysLog();
@@ -144,7 +148,19 @@ public:
 
 	void write( const Metadata &meta, const std::string &text ) override;
 };
+#elif defined( CINDER_MSW )
+class LoggerEventLog : public Logger {
+public:
+	LoggerEventLog();
+	virtual ~LoggerEventLog();
 
+	void write( const Metadata& meta, const std::string& text ) override;
+	void setMinLoggingLevel( Level minLevel ) { mMinLoggingLevel = minLevel; }
+protected:
+	HANDLE			mHLog;
+	Level			mMinLoggingLevel;
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
+};
 #endif
 
 class LoggerImplMulti;
