@@ -1,131 +1,139 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Vector.h"
 #include "cinder/Perlin.h"
 #include "cinder/Color.h"
-#include "cinder/gl/gl.h"
 
-#include <list>
-using std::list;
+#include <vector>
 
 using namespace ci;
 using namespace ci::app;
+using namespace std;
 
 class Particle {
- public:
-	Particle( vec2 aPosition )
-		: mPosition( aPosition ), mLastPosition( aPosition ), mVelocity( vec2( 0 ) ), mZ( 0 )
-	{}
- 
+public:
+	Particle( const vec2 &position )
+		: mPosition( position ), mLastPosition( position ), mVelocity( vec2( 0 ) ), mZ( 0 ) {}
+
+	void reset( const vec2 &position )
+	{
+		mPosition = mLastPosition = position;
+		mVelocity = vec2( 0 );
+		mZ = 0;
+	}
+
 	vec2 mPosition, mVelocity, mLastPosition;
 	float mZ;
 };
 
 class BasicParticleApp : public App {
- public:	
+public:
 	void	setup();
-	void	mouseDown( MouseEvent event );
-	void	keyDown( KeyEvent event );
-	
-	bool	isOffscreen( const vec2 &v );
-	
 	void	update();
-	void	draw();	
+	void	draw();
 
-	float				CONSERVATION_OF_VELOCITY, SPEED;
-	static const int	NUM_INITIAL_PARTICLES = 10000;
-	static const int	NUM_CLICKED_PARTICLES = 1000;
-	
-	Perlin			mPerlin;
-	list<Particle>	mParticles;
-	float			mAnimationCounter;
+	void	keyDown( KeyEvent event );
+
+	bool	isOffscreen( const vec2 &v );
+
+public:
+	static const int	NUM_PARTICLES = 10000;
+
+	float				mConservationOfVelocity;
+	float				mSpeed;
+	float				mAnimationCounter;
+
+	Perlin				mPerlin;
+	vector<Particle>	mParticles;
 };
 
 void BasicParticleApp::setup()
 {
+	// Randomize the Perlin noise function.
 	mPerlin.setSeed( clock() );
 
-	mAnimationCounter = 0;
-	for( int s = 0; s < NUM_INITIAL_PARTICLES; ++s )
+	// Create particles.
+	mParticles.reserve( NUM_PARTICLES );
+	for( int s = 0; s < NUM_PARTICLES; ++s )
 		mParticles.push_back( Particle( vec2( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) ) );
 
-	CONSERVATION_OF_VELOCITY = 0.9f;
-	SPEED = 5.0f;
-
-	// Turn on additive blending
-	gl::enableAlphaBlending();
-}
-
-void BasicParticleApp::mouseDown( MouseEvent event )
-{
-	// Add a bunch of random particles at the mouse point
-	for( int s = 0; s < NUM_CLICKED_PARTICLES; ++s )
-		mParticles.push_back( Particle( vec2( event.getPos() ) + Rand::randVec2f() * Rand::randFloat( 60 ) ) );
-}
-
-void BasicParticleApp::keyDown( KeyEvent event )
-{
-	if( event.getChar() == 'f' )
-		setFullScreen( ! isFullScreen() );
-	else if( event.getChar() == 'v' )
-		gl::enableVerticalSync( ! gl::isVerticalSyncEnabled() );
-	else if( event.getChar() == 'x' )
-		mParticles.clear();
-}
-
-// Returns whether a given point is visible onscreen or not
-bool BasicParticleApp::isOffscreen( const vec2 &v )
-{
-	return ( ( v.x < 0 ) || ( v.x > getWindowWidth() ) || ( v.y < 0 ) || ( v.y > getWindowHeight() ) );
+	mConservationOfVelocity = 0.9f;
+	mSpeed = 5.0f;
+	mAnimationCounter = 0.0f;
 }
 
 void BasicParticleApp::update()
 {
-	mAnimationCounter += 10.0f; // move ahead in time, which becomes the z-axis of our 3D noise
+	// Move ahead in time, which becomes the z-axis of our 3D noise.
+	mAnimationCounter += 10.0f;
 
-	// Save off the last position for drawing lines
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt )
-		partIt->mLastPosition = partIt->mPosition;
+	for( auto &particle : mParticles ) {
+		// Save off the last position for drawing lines.
+		particle.mLastPosition = particle.mPosition;
 
-	// Add some perlin noise to the velocity
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
-		vec3 deriv = mPerlin.dfBm( vec3( partIt->mPosition.x, partIt->mPosition.y, mAnimationCounter ) * 0.001f );
-		partIt->mZ = deriv.z;
+		// Add some perlin noise to the velocity.
+		vec3 deriv = mPerlin.dfBm( vec3( particle.mPosition.x, particle.mPosition.y, mAnimationCounter ) * 0.001f );
+		particle.mZ = deriv.z;
 		vec2 deriv2 = normalize( vec2( deriv.x, deriv.y ) );
-		partIt->mVelocity += deriv2 * SPEED;
-	}
-		
-	// Move the particles according to their velocities
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt )
-		partIt->mPosition += partIt->mVelocity;
+		particle.mVelocity += deriv2 * mSpeed;
 
-	// Dampen the velocities for the next frame
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt )
-		partIt->mVelocity *= CONSERVATION_OF_VELOCITY;
-		
-	// Replace any particles that have gone offscreen with a random onscreen position
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
-		if( isOffscreen( partIt->mPosition ) )
-			*partIt = Particle( vec2( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) );
+		// Move the particles according to their velocities.
+		particle.mPosition += particle.mVelocity;
+
+		// Dampen the velocities for the next frame.
+		particle.mVelocity *= mConservationOfVelocity;
+
+		// Replace any particles that have gone offscreen with a random onscreen position.
+		if( isOffscreen( particle.mPosition ) )
+			particle.reset( vec2( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) ) );
 	}
 }
 
 void BasicParticleApp::draw()
 {
-	// clear out the screen
-	gl::clear( Color( 0.1f, 0.1f, 0.1f ) );
-	
-	// draw all the particles as lines from mPosition to mLastPosition
-  gl::begin( GL_LINES );
-	for( list<Particle>::iterator partIt = mParticles.begin(); partIt != mParticles.end(); ++partIt ) {
-		// color according to velocity
-		gl::color( 0.5f + partIt->mVelocity.x / ( SPEED * 2 ), 0.5f + partIt->mVelocity.y / ( SPEED * 2 ), 0.5f + partIt->mZ * 0.5f );
-    gl::vertex( partIt->mLastPosition );
-    gl::vertex( partIt->mPosition );
+	// Clear the window.
+	gl::clear( Color::gray( 0.1f ) );
+
+	// Enable additive blending.
+	gl::ScopedBlendAdditive blend;
+
+	// Draw all the particles as lines from mPosition to mLastPosition.
+	// We use the convenience methods begin(), color(), vertex() and end() for simplicity,
+	// see the ParticleSphere* samples for a faster method.
+	gl::begin( GL_LINES );
+	for( auto &particle : mParticles ) {
+		// Color according to velocity.
+		gl::color( 0.5f + particle.mVelocity.x / ( mSpeed * 2 ), 0.5f + particle.mVelocity.y / ( mSpeed * 2 ), 0.5f + particle.mZ * 0.5f );
+		gl::vertex( particle.mLastPosition );
+		gl::vertex( particle.mPosition );
 	}
-  gl::end();
+	gl::end();
 }
 
+void BasicParticleApp::keyDown( KeyEvent event )
+{
+	switch( event.getCode() ) {
+		case KeyEvent::KEY_ESCAPE:
+			if( isFullScreen() )
+				setFullScreen( false );
+			else
+				quit();
+			break;
+		case KeyEvent::KEY_f:
+			setFullScreen( !isFullScreen() );
+			break;
+		case KeyEvent::KEY_v:
+			gl::enableVerticalSync( !gl::isVerticalSyncEnabled() );
+			break;
+	}
+}
+
+// Returns \c true if a given point is visible onscreen.
+bool BasicParticleApp::isOffscreen( const vec2 &v )
+{
+	return ( ( v.x < 0 ) || ( v.x > getWindowWidth() ) || ( v.y < 0 ) || ( v.y > getWindowHeight() ) );
+}
 
 CINDER_APP( BasicParticleApp, RendererGl )
