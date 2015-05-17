@@ -15,7 +15,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\BasicParticleApp.cpp">
+    <ClCompile Include="..\src\ParticlesBasicApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
