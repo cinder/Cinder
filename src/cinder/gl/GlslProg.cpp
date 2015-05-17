@@ -1007,7 +1007,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 				return nullptr;
 			}
 		}
-		else
+		else if( ret )
 			*resultLocation = ret->mLoc;
 	}
 	return ret;
