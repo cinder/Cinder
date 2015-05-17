@@ -23,6 +23,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
+#include "cinder/gl/gl.h"
+
 #include "cinder/AxisAlignedBox.h"
 #include "cinder/Frustum.h"
 #include "cinder/CameraUi.h"
@@ -31,11 +33,6 @@
 #include "cinder/Rand.h"
 #include "cinder/Timeline.h"
 #include "cinder/Utilities.h"
-
-#include "cinder/gl/gl.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/Context.h"
 
 #include "CullableObject.h"
 
@@ -58,14 +55,13 @@ public:
 
 	void keyDown( KeyEvent event );
 
-
 	void resize() override;
 
 protected:
 	//! Load the heart shaped mesh.
-	void			loadObject();
+	void loadObject();
 	//! Renders the help menu.
-	void			renderHelpToTexture();
+	void renderHelpToTexture();
 
 protected:
 	// keep track of time
@@ -92,7 +88,7 @@ protected:
 	std::vector<CullableObjectRef>  mObjects;
 
 	// camera
-	CameraUi						mCamUi;
+	CameraUi                        mCamUi;
 	CameraPersp                     mRenderCam;
 
 	// help text
@@ -115,7 +111,7 @@ void FrustumCullingReduxApp::setup()
 	mPerformCulling = true;
 	mCullWithSpheres = true;
 	mDrawWorldSpaceBounds = false;
-	mDrawObjectSpaceBounds = false;
+	mDrawObjectSpaceBounds = true;
 	mShowRevealingFov = true;
 	mShowHelp = true;
 
@@ -250,7 +246,7 @@ void FrustumCullingReduxApp::draw()
 
 					gl::ScopedModelMatrix mtx;
 					gl::translate( worldBoundingBox.getCenter() );
-					gl::scale( 0.5f * worldBoundingBox.getSize() );
+					gl::scale( worldBoundingBox.getSize() );
 					mBoxBatch->draw();
 				}
 
@@ -278,7 +274,7 @@ void FrustumCullingReduxApp::draw()
 						gl::ScopedModelMatrix mtx;
 						gl::multModelMatrix( obj->getTransform() );
 						gl::translate( mObjectBoundingBox.getCenter() );
-						gl::scale( 0.5f * mObjectBoundingBox.getSize() );
+						gl::scale( mObjectBoundingBox.getSize() );
 						mBoxBatch->draw();
 					}
 				}

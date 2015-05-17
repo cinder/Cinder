@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\FrustumCullingReduxApp.cpp">
+    <ClCompile Include="..\src\FrustumCullingApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\CullableObject.cpp">
