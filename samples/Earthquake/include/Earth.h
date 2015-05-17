@@ -9,7 +9,7 @@
 class Earth {
  public:
 	Earth();
-	Earth( ci::gl::Texture aTexDiffuse, ci::gl::Texture aTexNormal, ci::gl::Texture aTexMask );
+	Earth( const ci::gl::Texture2dRef &aTexDiffuse, const ci::gl::Texture2dRef &aTexNormal, const ci::gl::Texture2dRef &aTexMask );
 	
 	void setQuakeLocTip();
 	void update();
@@ -23,9 +23,9 @@ class Earth {
 	void setMinMagToRender( float amt );
 	ci::vec3 mLoc;
 	float mRadius;
-	ci::gl::Texture mTexDiffuse;
-	ci::gl::Texture mTexNormal;
-	ci::gl::Texture mTexMask;
+	ci::gl::Texture2dRef mTexDiffuse;
+	ci::gl::Texture2dRef mTexNormal;
+	ci::gl::Texture2dRef mTexMask;
 	std::list<Quake> mQuakes;
 	float mMinMagToRender;
 };

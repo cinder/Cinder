@@ -19,50 +19,51 @@ Quake::Quake()
 {
 }
 
-Quake::Quake( float aLat, float aLong, float aMag, string aTitle )
+Quake::Quake( float aLat, float aLong, float aMag, const string &aTitle )
 {
-	mLat	= aLat;
-	mLong	= aLong;
-	mMag	= aMag;
-	mTitle	= aTitle;
-	
+	mLat = aLat;
+	mLong = aLong;
+	mMag = aMag;
+	mTitle = aTitle;
+
 	TextLayout layout;
 	ostringstream os;
 	os << mMag;
-	if( os.str().length() == 1 ){
+	if( os.str().length() == 1 ) {
 		os << ".0";
 	}
-	
-	
-	
-	if( mMag > 5.5 ){
+
+
+
+	if( mMag > 5.5 ) {
 		layout.setFont( Font( "HelveticaNeue-Bold", mMag * mMag + 26.0f ) );
 		layout.setColor( Color( 1, 0, 0 ) );
-	} else {
+	}
+	else {
 		layout.setFont( Font( "HelveticaNeue-Bold", mMag * mMag + 10.0f ) );
 		layout.setColor( Color( 1, 1, 1 ) );
 	}
 	layout.addCenteredLine( os.str() );
-	
-	
-	if( mMag > 5.5 ){
+
+
+	if( mMag > 5.5 ) {
 		layout.setLeadingOffset( -10 );
 		layout.setFont( Font( "HelveticaNeue", mMag + 16 ) );
 		layout.setColor( Color( 1, 1, 1 ) );
 		layout.addCenteredLine( mTitle );
 	}
-	
 
-	mLabel = gl::Texture( layout.render( true ) );
-	
+
+	mLabel = gl::Texture2d::create( layout.render( true ) );
+
 	setLoc();
 }
 
 void Quake::setLoc()
 {
-	float theta = toRadians( 90 - mLat );
-    float phi	= toRadians( 180 - mLong );
-    
-	mLoc		= vec3( sin(theta) * cos(phi), cos(theta), sin(theta) * sin(phi) );
+	float theta = glm::radians( 90 - mLat );
+	float phi = glm::radians( 180 - mLong );
+
+	mLoc = vec3( sin( theta ) * cos( phi ), cos( theta ), sin( theta ) * sin( phi ) );
 }
 

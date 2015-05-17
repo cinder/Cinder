@@ -8,7 +8,7 @@
 class Quake {
  public:
 	Quake();
-	Quake( float aLat, float aLong, float aMag, std::string aTitle );
+	Quake( float aLat, float aLong, float aMag, const std::string &aTitle );
 	void setLoc();
 	
 	float mLat;
@@ -19,5 +19,5 @@ class Quake {
 	ci::vec3 mLoc;
 	ci::vec3 mLocTip;
 	ci::vec3 mLocTipAnchor;
-	ci::gl::Texture mLabel;
+	ci::gl::Texture2dRef mLabel;
 };
