@@ -25,6 +25,8 @@
 #include "cinder/Cinder.h"
 #include "cinder/Surface.h"
 
+#include <vector>
+
 namespace cinder { namespace ip {
 
 //! Thresholds \a surface setting any values below \a value to zero and any values above to unity inside the Area \a area
@@ -58,19 +60,20 @@ void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, C
 template<typename T>
 class AdaptiveThresholdT {
   public:
-	AdaptiveThresholdT();
-	AdaptiveThresholdT( ChannelT<T> *channel );
-	~AdaptiveThresholdT();
+	AdaptiveThresholdT()	{}
+	//! Uses \a channel as source, but not assume ownership
+	AdaptiveThresholdT( const ChannelT<T> *channel );
+
 	void calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel );
 
  private:
 	typedef typename CHANTRAIT<T>::Accum SUMT;
 
-	ChannelT<T>	* mChannel;
-	int32_t		mImageWidth;
-	int32_t		mImageHeight;
-	int8_t		mIncrement;
-	SUMT		* mIntegralImage;
+	const ChannelT<T>*	mChannel;
+	int32_t				mImageWidth;
+	int32_t				mImageHeight;
+	int8_t				mIncrement;
+	std::vector<SUMT>	mIntegralImage;
 };
 
 typedef AdaptiveThresholdT<uint8_t>		AdaptiveThreshold;

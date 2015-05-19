@@ -326,7 +326,7 @@ void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, C
 }
 
 template<typename T>
-AdaptiveThresholdT<T>::AdaptiveThresholdT( ChannelT<T> *channel )
+AdaptiveThresholdT<T>::AdaptiveThresholdT( const ChannelT<T> *channel )
 	: mChannel( channel )
 {
 	mImageWidth = mChannel->getWidth();
@@ -334,23 +334,17 @@ AdaptiveThresholdT<T>::AdaptiveThresholdT( ChannelT<T> *channel )
 	mIncrement = mChannel->getIncrement();
 
 	// create the integral image
-	mIntegralImage = (SUMT *)malloc( mImageWidth * mImageHeight * sizeof( typename CHANTRAIT<T>::Accum ) );
-	calculateIntegralImage( *channel, mIntegralImage );
-}
-
-template<typename T>
-AdaptiveThresholdT<T>::~AdaptiveThresholdT()
-{
-	free( mIntegralImage );
+	mIntegralImage.resize( mImageWidth * mImageHeight );
+	calculateIntegralImage( *channel, mIntegralImage.data() );
 }
 
 template<typename T>
 void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel )
 {
 	if( percentageDelta < 0.0001f ) {
-		calculateAdaptiveThresholdZero( mChannel, mIntegralImage, windowSize, dstChannel );
+		calculateAdaptiveThresholdZero( mChannel, mIntegralImage.data(), windowSize, dstChannel );
 	} else {
-		calculateAdaptiveThreshold( mChannel, mIntegralImage, windowSize, percentageDelta, dstChannel );
+		calculateAdaptiveThreshold( mChannel, mIntegralImage.data(), windowSize, percentageDelta, dstChannel );
 	}
 }
 
