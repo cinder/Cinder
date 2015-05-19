@@ -219,7 +219,7 @@ class AppBase {
 	
 	//! Override to cleanup any resources before app destruction
 	virtual void	cleanup() {}
-	//! Quits the application gracefully
+	//! Requests that the application exit gracefully. Use std::terminate() instead to end application immediately.
 	virtual void	quit() = 0;
 
 	//! Emitted at the start of each application update cycle
