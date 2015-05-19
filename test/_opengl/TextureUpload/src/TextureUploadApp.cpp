@@ -17,7 +17,7 @@ class TextureUploadApp : public App {
 	void setupTexUpdate();
 
 	template<typename T>
-	void setupVoidStarConstructor( int64_t maxV );
+	void setupVoidStar( int64_t maxV );
 
 	void mouseDown( MouseEvent event ) override;
 	void draw() override;
@@ -150,7 +150,7 @@ void TextureUploadApp::setupTexUpdate()
 
 // This is for the constructor variant that accepts a void* to data, rather than a Surface/Channel
 template<typename T>
-void TextureUploadApp::setupVoidStarConstructor( int64_t maxV )
+void TextureUploadApp::setupVoidStar( int64_t maxV )
 {
 	GLenum dataType;
 	if( std::is_same<T,uint8_t>::value )
@@ -218,19 +218,19 @@ void TextureUploadApp::setup()
 
 	// 8bit unsigned void*
 	{
-		setupVoidStarConstructor<uint8_t>( 255 );
+		setupVoidStar<uint8_t>( 255 );
 	}	
 	// 16bit signed void*
 	{
-		setupVoidStarConstructor<int16_t>( 32767 );
+		setupVoidStar<int16_t>( 32767 );
 	}
 	// 32bit signed void*
 	{
-		setupVoidStarConstructor<int32_t>( 2147483647 );
+		setupVoidStar<int32_t>( 2147483647 );
 	}
 	// 32bit unsigned void*
 	{
-		setupVoidStarConstructor<uint32_t>( 4294967295 );
+		setupVoidStar<uint32_t>( 4294967295 );
 	}
 	
 	// 8 bit
