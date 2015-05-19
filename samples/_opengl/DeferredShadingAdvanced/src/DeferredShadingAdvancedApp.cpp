@@ -141,7 +141,6 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
-	bool						mQuit;
 	void						screenShot();
 };
 
@@ -181,7 +180,6 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mNumSpheres			= 3;
 	mOffset				= vec2( 0.0f );
 	mPaused				= false;
-	mQuit				= false;
 	mSpherePosition		= vec3( 0.0f, 4.0f, 0.0f );
 	mSphereVelocity		= -0.1f;
 
@@ -243,7 +241,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { createBatches(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },		"key=space" );
-	mParams->addParam( "Quit",				&mQuit ).key( "q" );
+	mParams->addButton( "Quit",				[ & ]() { quit(); },			"key=q" );
 	mParams->addSeparator();
 	mParams->addParam( "AO view",			&mDrawAo ).key( "o" ).group( "Draw" );
 	mParams->addParam( "Debug view",		&mDrawDebug ).key( "d" ).group( "Draw" );
@@ -1459,10 +1457,6 @@ void DeferredShadingAdvancedApp::update()
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
 	
-	if ( mQuit ) {
-		quit();
-		return;
-	}
 	if ( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );
 	}
