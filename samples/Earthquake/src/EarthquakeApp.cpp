@@ -6,9 +6,9 @@
 #include "cinder/Json.h"
 #include "cinder/Log.h"
 #include "cinder/Url.h"
+#include "cinder/Unicode.h"
 #include "cinder/Utilities.h"
 #include "cinder/Vector.h"
-//#include "cinder/gl/TileRender.h"
 
 #include "Earth.h"
 #include "POV.h"
@@ -36,10 +36,8 @@ public:
 	void parseEarthquakes( const string &url );
 
 public:
-	gl::GlslProgRef   mEarthShader;
-	gl::GlslProgRef   mQuakeShader;
-
 	gl::Texture2dRef  mStars;
+	gl::BatchRef      mStarSphere;
 
 	POV               mPov;
 	Earth             mEarth;
@@ -47,20 +45,13 @@ public:
 	vec2              mLastMouse;
 	vec2              mCurrentMouse;
 
-	vec3              sBillboardUp, sBillboardRight;
-	vec3              billboardVecs[2];
+	vec3              mBillboardUp, mBillboardRight;
 
-	vec3			mLightDir;
-
-	float			mCounter;
-	int				mCurrentFrame;
-	bool			mSaveFrames;
-	bool			mShowStars;
-	bool			mShowEarth;
-	bool			mShowLand;
-	bool			mShowOcean;
-	bool			mShowText;
-	bool			mShowQuakes;
+	bool              mSaveFrames;
+	bool              mShowStars;
+	bool              mShowEarth;
+	bool              mShowText;
+	bool              mShowQuakes;
 };
 
 void EarthquakeApp::prepareSettings( Settings *settings )
@@ -73,32 +64,17 @@ void EarthquakeApp::prepareSettings( Settings *settings )
 
 void EarthquakeApp::setup()
 {
-	auto earthDiffuse = gl::Texture2d::create( loadImage( loadResource( RES_EARTHDIFFUSE ) ) );
-	auto earthNormal = gl::Texture2d::create( loadImage( loadResource( RES_EARTHNORMAL ) ) );
-	auto earthMask = gl::Texture2d::create( loadImage( loadResource( RES_EARTHMASK ) ) );
-	earthDiffuse->setWrap( GL_REPEAT, GL_REPEAT );
-	earthNormal->setWrap( GL_REPEAT, GL_REPEAT );
-	earthMask->setWrap( GL_REPEAT, GL_REPEAT );
-
 	mStars = gl::Texture2d::create( loadImage( loadResource( RES_STARS_PNG ) ) );
+	mStarSphere = gl::Batch::create( geom::Sphere().radius( 15000 ).subdivisions( 60 ), gl::getStockShader( gl::ShaderDef().texture() ) );
 
-	mEarthShader = gl::GlslProg::create( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_EARTH_FRAG ) );
-	mQuakeShader = gl::GlslProg::create( loadResource( RES_QUAKE_VERT ), loadResource( RES_QUAKE_FRAG ) );
-
-	mCounter = 0.0f;
-	mCurrentFrame = 0;
 	mSaveFrames = false;
-	mShowStars = false;
-	mShowEarth = false;
+	mShowStars = true;
+	mShowEarth = true;
 	mShowQuakes = true;
-	mShowText = false;
-	mLightDir = glm::normalize( vec3( 0.025f, 0.25f, 1.0f ) );
+	mShowText = true;
 	mPov = POV( this, ci::vec3( 0.0f, 0.0f, 1000.0f ), ci::vec3( 0.0f, 0.0f, 0.0f ) );
-	mEarth = Earth( earthDiffuse, earthNormal, earthMask );
 
 	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson" );
-
-	mEarth.setQuakeLocTip();
 }
 
 void EarthquakeApp::keyDown( KeyEvent event )
@@ -133,19 +109,6 @@ void EarthquakeApp::keyDown( KeyEvent event )
 	else if( event.getCode() == app::KeyEvent::KEY_DOWN ) {
 		mPov.adjustDist( 10.0f );
 	}
-	/*//
-	else if( event.getChar() == ' ' ) {
-		gl::TileRender tr( 5000, 5000 );
-		CameraPersp cam;
-		cam.lookAt( mPov.mEye, mPov.mCenter );
-		cam.setPerspective( 60.0f, tr.getImageAspectRatio(), 1, 20000 );
-		tr.setMatrices( cam );
-		while( tr.nextTile() ) {
-			draw();
-		}
-		writeImage( getHomeDirectory() / "output.png", tr.getSurface() );
-	}
-	//*/
 }
 
 
@@ -174,12 +137,7 @@ void EarthquakeApp::mouseMove( MouseEvent event )
 void EarthquakeApp::update()
 {
 	mPov.update();
-	mPov.mCam.getBillboardVectors( &sBillboardRight, &sBillboardUp );
-
-	//mLightDir = vec3( sin( mCounter ), 0.25f, cos( mCounter ) );
 	mEarth.update();
-
-	mCounter += 0.1f;
 }
 
 void EarthquakeApp::draw()
@@ -187,44 +145,36 @@ void EarthquakeApp::draw()
 	gl::clear( Color( 1, 0, 0 ) );
 
 	gl::ScopedDepth       depth( true, true );
-	gl::ScopedBlendAlpha  blend;
 	gl::ScopedColor       color( 1, 1, 1 );
 
 	// Draw stars.
 	if( mShowStars ) {
 		gl::ScopedTextureBind tex0( mStars, 0 );
 		gl::ScopedFaceCulling cull( true, GL_FRONT );
-		gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().texture() ) );
-		gl::drawSphere( vec3( 0, 0, 0 ), 15000.0f, 64 );
+		mStarSphere->draw();
 	}
 
 	// Draw Earth.
 	if( mShowEarth ) {
-		gl::ScopedGlslProg shader( mEarthShader );
-		mEarthShader->uniform( "texDiffuse", 0 );
-		mEarthShader->uniform( "texNormal", 1 );
-		mEarthShader->uniform( "texMask", 2 );
-		mEarthShader->uniform( "counter", mCounter );
-		mEarthShader->uniform( "lightDir", mLightDir );
 		mEarth.draw();
 	}
 
 	// Draw quakes.
 	if( mShowQuakes ) {
-		gl::ScopedGlslProg shader( mQuakeShader );
-		mQuakeShader->uniform( "lightDir", mLightDir );
 		mEarth.drawQuakes();
 	}
 
+	// Draw labels.
 	if( mShowText ) {
-		gl::ScopedDepth depth( true, false );
-		//mEarth.drawQuakeLabelsOnBillboard( sBillboardRight, sBillboardUp );
 		mEarth.drawQuakeLabelsOnSphere( mPov.mEyeNormal, mPov.mDist );
+
+		//mPov.mCam.getBillboardVectors( &mBillboardRight, &mBillboardUp );
+		//mEarth.drawQuakeLabelsOnBillboard( mBillboardRight, mBillboardUp );
 	}
 
 	if( mSaveFrames ) {
-		writeImage( getHomeDirectory() / "CinderScreengrabs" / ( "Highoutput_" + toString( mCurrentFrame ) + ".png" ), copyWindowSurface() );
-		mCurrentFrame++;
+		static int currentFrame = 0;
+		writeImage( getHomeDirectory() / "CinderScreengrabs" / ( "Highoutput_" + toString( currentFrame++ ) + ".png" ), copyWindowSurface() );
 	}
 }
 
@@ -235,8 +185,8 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		for( auto &feature : json["features"].getChildren() ) {
 			auto &coords = feature["geometry"]["coordinates"];
 			float mag = feature["properties"]["mag"].getValue<float>();
-			string title = feature["properties"]["title"].getValue();
-			CI_LOG_I( "Adding quake:" << title );
+			const string &title = feature["properties"]["title"].getValue();
+
 			mEarth.addQuake( coords[0].getValue<float>(), coords[1].getValue<float>(), mag, title );
 		}
 	}
@@ -244,8 +194,10 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		console() << "Failed to parse json, what: " << exc.what() << std::endl;
 	}
 
-	//mEarth.addQuake( 37.7f, -122.0f, 8.6f, "San Francisco" );
+	//mEarth.addQuake( 37.7833f, -122.4167f, 8.6f, "San Francisco" );
+
+	mEarth.setQuakeLocTips();
 }
 
 
-CINDER_APP( EarthquakeApp, RendererGl, &EarthquakeApp::prepareSettings )
+CINDER_APP( EarthquakeApp, RendererGl( RendererGl::Options().msaa( 16 ) ), &EarthquakeApp::prepareSettings )
