@@ -700,9 +700,9 @@ Texture1dRef Texture1d::create( const Surface8u &surface, Format format )
 	return Texture1dRef( new Texture1d( surface, format ) );
 }
 
-Texture1dRef Texture1d::create( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+Texture1dRef Texture1d::create( const void *data, GLenum dataFormat, int width, Format format )
 {
-	return Texture1dRef( new Texture1d( width, dataFormat, data, format ) );
+	return Texture1dRef( new Texture1d( data, dataFormat, width, format ) );
 }
 
 Texture1d::Texture1d( GLint width, Format format )
@@ -733,7 +733,7 @@ Texture1d::Texture1d( const Surface8u &surface, Format format )
 	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, surface.getData() );
 }
 
-Texture1d::Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format )
+Texture1d::Texture1d( const void *data, GLenum dataFormat, int width, Format format )
 	: mWidth( width )
 {
 	glGenTextures( 1, &mTextureId );
@@ -741,7 +741,7 @@ Texture1d::Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Forma
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
-	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, GL_UNSIGNED_BYTE, data );
+	glTexImage1D( mTarget, 0, mInternalFormat, mWidth, 0, dataFormat, format.getDataType(), data );
 }
 
 void Texture1d::update( const Surface8u &surface, int mipLevel )
@@ -752,12 +752,17 @@ void Texture1d::update( const Surface8u &surface, int mipLevel )
 		
 	ivec2 mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	if( surface.getSize() != mipMapSize )
-		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
+		throw TextureResizeExc( "Invalid Texture1d::update() surface dimensions", surface.getSize(), mipMapSize );
 
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	glTexSubImage1D( mTarget, mipLevel,
-		0, // offsets
-		mipMapSize.x, dataFormat, type, surface.getData() );
+	glTexSubImage1D( mTarget, mipLevel, 0, // offsets
+				mipMapSize.x, dataFormat, type, surface.getData() );
+}
+
+void Texture1d::update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int offset )
+{
+	ScopedTextureBind tbs( mTarget, mTextureId );
+	glTexSubImage1D( mTarget, mipLevel, offset, width, dataFormat, dataType, data );	
 }
 
 void Texture1d::printDims( std::ostream &os ) const

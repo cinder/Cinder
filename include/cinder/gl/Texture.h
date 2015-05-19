@@ -410,10 +410,13 @@ class Texture1d : public TextureBase {
 	static Texture1dRef create( GLint width, Format format = Format() );
 	//! Constructs a Texture1d using the top row of \a surface
 	static Texture1dRef create( const Surface8u &surface, Format format = Format() );
-	static Texture1dRef create( GLint width, GLenum dataFormat, const uint8_t *data, Format format = Format() );
+	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
+	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, Format format = Format() );
 	
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
+	//! Updates the pixels of a Texture1d with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size \a width.
+	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int offset = 0 );
 	
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -429,7 +432,7 @@ class Texture1d : public TextureBase {
   protected:
   	Texture1d( GLint width, Format format );
 	Texture1d( const Surface8u &surface, Format format );
-	Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format );
+	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 
@@ -516,7 +519,7 @@ class Texture2d : public TextureBase {
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
 
 	//! Updates the pixels of a Texture with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size (\a width, \a height). \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
-	void			update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );	
+	void			update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
 	void			update( const Surface8u &surface, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
