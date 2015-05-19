@@ -23,7 +23,7 @@ Earth::Earth()
 	mLightDir = glm::normalize( vec3( 0.025f, 0.25f, 1.0f ) );
 
 	// Load the textures for the Earth.
-	auto fmt = gl::Texture2d::Format().wrap( GL_REPEAT );
+	auto fmt = gl::Texture2d::Format().wrap( GL_REPEAT ).mipmap().minFilter( GL_LINEAR_MIPMAP_LINEAR );
 	mTexDiffuse = gl::Texture2d::create( loadImage( loadResource( RES_EARTHDIFFUSE ) ), fmt );
 	mTexNormal = gl::Texture2d::create( loadImage( loadResource( RES_EARTHNORMAL ) ), fmt );
 	mTexMask = gl::Texture2d::create( loadImage( loadResource( RES_EARTHMASK ) ), fmt );
@@ -33,7 +33,7 @@ Earth::Earth()
 	earthShader->uniform( "texDiffuse", 0 );
 	earthShader->uniform( "texNormal", 1 );
 	earthShader->uniform( "texMask", 2 );
-	mEarth = gl::Batch::create( geom::Sphere().radius( mRadius ).subdivisions( 60 ), earthShader );
+	mEarth = gl::Batch::create( geom::Sphere().radius( mRadius ).subdivisions( 120 ), earthShader );
 
 	// Create a cone mesh with a custom shader, which we use to visualize earthquakes.
 	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Cone().ratio( 0.3f ).subdivisionsHeight( 6 ).subdivisionsAxis( 30 ) );

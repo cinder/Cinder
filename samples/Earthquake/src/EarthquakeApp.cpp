@@ -65,7 +65,7 @@ void EarthquakeApp::prepareSettings( Settings *settings )
 void EarthquakeApp::setup()
 {
 	mStars = gl::Texture2d::create( loadImage( loadResource( RES_STARS_PNG ) ) );
-	mStarSphere = gl::Batch::create( geom::Sphere().radius( 15000 ).subdivisions( 60 ), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mStarSphere = gl::Batch::create( geom::Sphere().radius( 15000 ).subdivisions( 30 ), gl::getStockShader( gl::ShaderDef().texture() ) );
 
 	mSaveFrames = false;
 	mShowStars = true;

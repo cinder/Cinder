@@ -21,7 +21,7 @@ public:
 
 	void addQuake( float aLat, float aLong, float aMag, const std::string &aTitle );
 
-	void setMinMagToRender( float amt ) { mMinMagToRender = ci::math<float>::clamp( mMinMagToRender + amt, 2.0f, 8.0f ); }
+	void setMinMagToRender( float amt ) { mMinMagToRender = ci::math<float>::clamp( mMinMagToRender + amt, 2.0f, 8.0f ); mNumQuakes = 0; }
 
 public:
 	static const int MAX_NUMBER_OF_QUAKES = 1024;
