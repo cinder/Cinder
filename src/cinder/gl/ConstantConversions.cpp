@@ -293,6 +293,7 @@ uint8_t typeToBytes( GLenum type )
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
 #if ! defined( CINDER_GL_ES )
+		case GL_SAMPLER_1D:						return sizeof(int); break;
 		case GL_SAMPLER_BUFFER_EXT:				return sizeof(int); break;
 		case GL_SAMPLER_2D_RECT:				return sizeof(int); break;
 		case GL_INT_SAMPLER_2D_RECT:			return sizeof(int); break;
