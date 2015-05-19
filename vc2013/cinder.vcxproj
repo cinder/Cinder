@@ -467,7 +467,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\Voice.cpp" />
     <ClCompile Include="..\src\cinder\audio\WaveTable.cpp" />
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
     <ClCompile Include="..\src\cinder\Base64.cpp" />
     <ClCompile Include="..\src\cinder\BSpline.cpp" />

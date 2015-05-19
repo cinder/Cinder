@@ -153,9 +153,6 @@
     <ClCompile Include="..\src\cinder\Area.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>

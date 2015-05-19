@@ -5,9 +5,9 @@
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
-    * Redistributions of source code must retain the above copyright notice, this list of conditions and
+	* Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
-    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+	* Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -27,33 +27,34 @@
 namespace cinder {
 
 class Ray {
- public:
+  public:
 	Ray() {}
 	Ray( const vec3 &aOrigin, const vec3 &aDirection ) : mOrigin( aOrigin ) { setDirection( aDirection ); }
 
 	void			setOrigin( const vec3 &aOrigin ) { mOrigin = aOrigin; }
 	const vec3&		getOrigin() const { return mOrigin; }
-	
-	void setDirection( const vec3 &aDirection ) {
-		mDirection = aDirection;
-        mInvDirection = vec3( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
-        mSignX = ( mDirection.x < 0.0f ) ? 1 : 0;
-        mSignY = ( mDirection.y < 0.0f ) ? 1 : 0;
-        mSignZ = ( mDirection.z < 0.0f ) ? 1 : 0;		
+
+	void setDirection( const vec3 &aDirection )
+	{
+		mDirection = glm::normalize( aDirection );
+		mInvDirection = vec3( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
+		mSignX = ( mDirection.x < 0.0f ) ? 1 : 0;
+		mSignY = ( mDirection.y < 0.0f ) ? 1 : 0;
+		mSignZ = ( mDirection.z < 0.0f ) ? 1 : 0;
 	}
 	const vec3&	getDirection() const { return mDirection; }
 	const vec3&	getInverseDirection() const { return mInvDirection; }
-	
+
 	char	getSignX() const { return mSignX; }
 	char	getSignY() const { return mSignY; }
-	char	getSignZ() const { return mSignZ; }		
-	
+	char	getSignZ() const { return mSignZ; }
+
 	vec3	calcPosition( float t ) const { return mOrigin + mDirection * t; }
 
 	bool calcTriangleIntersection( const vec3 &vert0, const vec3 &vert1, const vec3 &vert2, float *result ) const;
 	bool calcPlaneIntersection( const vec3 &origin, const vec3 &normal, float *result ) const;
 
- protected:
+protected:
 	vec3	mOrigin;
 	vec3	mDirection;
 	// these are helpful to certain ray intersection algorithms
