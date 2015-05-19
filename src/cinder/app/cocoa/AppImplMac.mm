@@ -341,7 +341,7 @@ using namespace cinder::app;
 	if( ! mApp->privateEmitShouldQuit() )
 		return;
 
-	[NSApp terminate:nil];
+	[NSApp stop:nil];
 }
 
 - (float)getFrameRate

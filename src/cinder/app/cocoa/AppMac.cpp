@@ -49,6 +49,7 @@ AppMac::~AppMac()
 void AppMac::launch()
 {
 	[[NSApplication sharedApplication] run];
+	emitCleanup();
 }
 
 WindowRef AppMac::createWindow( const Window::Format &format )
