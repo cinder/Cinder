@@ -647,11 +647,12 @@ class Texture3d : public TextureBase {
 	};
 
 	static Texture3dRef create( GLint width, GLint height, GLint depth, Format format = Format() );
-	static Texture3dRef create( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format = Format() );
+	//! Constructs a texture of size(\a width, \a height, \a depth). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
+	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, Format format = Format() );
   
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 
-	void	update( GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum dataFormat, GLenum dataType, void *data, int mipLevel );
+	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset = 0, int yOffset = 0, int zOffset = 0 );
 	
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -666,7 +667,7 @@ class Texture3d : public TextureBase {
 
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
-	Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format );
+	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 

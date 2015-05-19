@@ -1535,9 +1535,9 @@ Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, Format f
 	return Texture3dRef( new Texture3d( width, height, depth, format ) );
 }
 
-Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format )
+Texture3dRef Texture3d::create( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
 {
-	return Texture3dRef( new Texture3d( width, height, depth, dataFormat, dataType, data, format ) );
+	return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ) );
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
@@ -1552,7 +1552,7 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
 	env()->allocateTexStorage3d( mTarget, format.mMaxMipmapLevel + 1, mInternalFormat, mWidth, mHeight, mDepth, format.isImmutableStorage() );
 }
 
-Texture3d::Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format )
+Texture3d::Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
 	: mWidth( width ), mHeight( height ), mDepth( depth )
 {
 	glGenTextures( 1, &mTextureId );
@@ -1560,28 +1560,26 @@ Texture3d::Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat,
 	ScopedTextureBind texBindScope( mTarget, mTextureId );
 	TextureBase::initParams( format, GL_RGB, GL_UNSIGNED_BYTE );
 
-	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, dataType, data );
+	glTexImage3D( mTarget, 0, mInternalFormat, mWidth, mHeight, mDepth, 0, dataFormat, format.getDataType(), data );
 }
 
 void Texture3d::update( const Surface8u &surface, int depth, int mipLevel )
 {
 	GLint dataFormat;
-	GLenum type;
-	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &type );
+	GLenum dataType;
+	SurfaceChannelOrderToDataFormatAndType<uint8_t>( surface.getChannelOrder(), &dataFormat, &dataType );
 		
 	ivec2 mipMapSize = calcMipLevelSize( mipLevel, getWidth(), getHeight() );
 	if( surface.getSize() != mipMapSize )
 		throw TextureResizeExc( "Invalid Texture3d::update() surface dimensions", surface.getSize(), mipMapSize );
 	
-	update(0, 0, depth, mipMapSize.x, mipMapSize.y, 1, dataFormat, type, (void*)surface.getData(), mipLevel);
+	update( (void*)surface.getData(), dataFormat, dataType, mipLevel, mipMapSize.x, mipMapSize.y, 1, 0, 0, depth );
 }
 
-void Texture3d::update( GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum dataFormat, GLenum dataType,  void *data, int mipLevel )
+void Texture3d::update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset, int yOffset, int zOffset )
 {
 	ScopedTextureBind tbs( mTarget, mTextureId );
-	glTexSubImage3D( mTarget, mipLevel,
-					xoffset, yoffset, zoffset, // offsets
-					width, height, depth, dataFormat, dataType, data );
+	glTexSubImage3D( mTarget, mipLevel, xOffset, yOffset, zOffset, width, height, depth, dataFormat, dataType, data );
 }
 
 void Texture3d::printDims( std::ostream &os ) const
