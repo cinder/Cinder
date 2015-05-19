@@ -21,12 +21,15 @@ class ThresholdTestApp : public App {
 	bool					mUseAdaptiveThreshold = false;
 	bool					mUseAdaptivePercentage = false;
 	bool					mShowOriginalGrayScale = false;
+	bool					mUseClassVersion = true;
 	int						mThresholdValue, mAdaptiveThresholdKernel;
 	float					mAdaptiveThresholdPercentage;
 	params::InterfaceGlRef	mParams;
 	gl::TextureRef			mTexture;
 	Surface8uRef			mSurface;
 	Channel8u				mGraySurface, mThresholded;
+
+	ip::AdaptiveThreshold		mThresholdClass;
 };
 
 void ThresholdTestApp::setup()
@@ -36,6 +39,7 @@ void ThresholdTestApp::setup()
 	mParams->addButton( "open file", [this] { loadFile( getOpenFilePath() ); }, "key=o" );
 	mParams->addSeparator();
 	mParams->addParam( "Use Adapative", &mUseAdaptiveThreshold );
+	mParams->addParam( "Use Adapative class", &mUseClassVersion );
 	mParams->addParam( "Use Adapative percentage", &mUseAdaptivePercentage );
 	mParams->addParam( "Show Grayscale", &mShowOriginalGrayScale );
 	mParams->addParam( "Adaptive Kernel", &mAdaptiveThresholdKernel, "min=0 max=1000 keyIncr=k keyDecr=K" );
@@ -55,13 +59,18 @@ void ThresholdTestApp::loadFile( const fs::path &path )
 		mGraySurface = Channel( mSurface->getWidth(), mSurface->getHeight() );
 		mThresholded = Channel( mSurface->getWidth(), mSurface->getHeight() );
 		ip::grayscale( *mSurface, &mGraySurface );
+
+		mThresholdClass = ip::AdaptiveThreshold( &mGraySurface );
 	}
 }
 
 void ThresholdTestApp::update()
 {
 	if( mSurface ) {
-		if( mUseAdaptiveThreshold ) {
+		if( mUseClassVersion ) {
+			mThresholdClass.calculate( mAdaptiveThresholdKernel, mAdaptiveThresholdPercentage, &mThresholded );
+		}
+		else if( mUseAdaptiveThreshold ) {
 			if( mUseAdaptivePercentage )
 				ip::adaptiveThreshold<uint8_t>( mGraySurface, mAdaptiveThresholdKernel, mAdaptiveThresholdPercentage, &mThresholded );
 			else {
