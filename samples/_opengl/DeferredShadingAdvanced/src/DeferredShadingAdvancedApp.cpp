@@ -81,7 +81,7 @@ private:
 	ci::gl::BatchRef			mBatchGBufferLightSourceSphere;
 	ci::gl::BatchRef			mBatchGBufferSphere;
 	ci::gl::BatchRef			mBatchLBufferLightCube;
-	ci::gl::BatchRef			mBatchLBufferShadowCube;
+	ci::gl::BatchRef			mBatchLBufferShadowRect;
 	ci::gl::BatchRef			mBatchShadowMapIcosahedron;
 	ci::gl::BatchRef			mBatchShadowMapSphere;
 	
@@ -429,7 +429,7 @@ void DeferredShadingAdvancedApp::createBatches()
 	mBatchHbaoAoRect				= gl::Batch::create( rect,		aoHbao );
 	mBatchHbaoBlurRect				= gl::Batch::create( rect,		aoHbaoBlur );
 	mBatchLBufferLightCube			= gl::Batch::create( cube,		lBufferLight );
-	mBatchLBufferShadowCube			= gl::Batch::create( cube,		lBufferShadow );
+	mBatchLBufferShadowRect			= gl::Batch::create( rect,		lBufferShadow );
 	mBatchRayCompositeRect			= gl::Batch::create( rect,		rayComposite );
 	mBatchRayOccludeRect			= gl::Batch::create( rect,		rayOcclude );
 	mBatchRayScatterRect			= gl::Batch::create( rect,		rayScatter );
@@ -616,18 +616,18 @@ void DeferredShadingAdvancedApp::draw()
 		
 		gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
 		gl::enableDepthRead();
-		gl::enableDepthWrite();
-		const gl::ScopedMatrices scopedMatrices;
-		gl::setMatrices( mCamera );
-		const gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 		
 		// Draw light volumes into L-buffer, reading G-buffer to perform shading
 		{
+			gl::enableDepthWrite();
+			const gl::ScopedMatrices scopedMatrices;
+			gl::setMatrices( mCamera );
+			const gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
 			const gl::ScopedBlendAdditive scopedBlendAdditive;
-			const gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],			0 );
-			const gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],			1 );
-			const gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],			2 );
-			const gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),		3 );
+			const gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],		0 );
+			const gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],		1 );
+			const gl::ScopedTextureBind scopedTextureBind2( mTextureFboGBuffer[ 2 ],		2 );
+			const gl::ScopedTextureBind scopedTextureBind3( mFboGBuffer->getDepthTexture(),	3 );
 			
 			mBatchLBufferLightCube->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
 			mBatchLBufferLightCube->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
@@ -637,18 +637,20 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Draw shadows onto L-buffer
 		if ( mEnabledShadow ) {
+			gl::disableDepthWrite();
 			const gl::ScopedTextureBind scopedTextureBind0( mFboShadowMap->getDepthTexture(),	0 );
 			const gl::ScopedTextureBind scopedTextureBind1( mFboGBuffer->getDepthTexture(),		1 );
 			
-			mBatchLBufferShadowCube->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
-			mBatchLBufferShadowCube->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
-			mBatchLBufferShadowCube->getGlslProg()->uniform( "uProjView",			mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix() );
-			mBatchLBufferShadowCube->getGlslProg()->uniform( "uViewMatrixInverse",	mCamera.getInverseViewMatrix() );
+			mBatchLBufferShadowRect->getGlslProg()->uniform( "uProjMatrixInverse",	projMatrixInverse );
+			mBatchLBufferShadowRect->getGlslProg()->uniform( "uProjectionParams",	projectionParams );
+			mBatchLBufferShadowRect->getGlslProg()->uniform( "uProjView",			mShadowCamera.getProjectionMatrix() * mShadowCamera.getViewMatrix() );
+			mBatchLBufferShadowRect->getGlslProg()->uniform( "uViewMatrixInverse",	mCamera.getInverseViewMatrix() );
 			
 			const gl::ScopedBlendAlpha scopedBlendAlpha;
 			const gl::ScopedModelMatrix scopedModelMatrix;
-			gl::scale( vec3( 30.0f ) );
-			mBatchLBufferShadowCube->draw();
+			gl::translate( mFboPingPong->getSize() / 2 );
+			gl::scale( mFboPingPong->getSize() );
+			mBatchLBufferShadowRect->draw();
 		}
 		
 		ping = pong;
@@ -1405,8 +1407,8 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerMaterial",		1 );
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerNormal",		2 );
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uSamplerDepth",		3 );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSampler",				0 );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uSamplerDepth",		1 );
+	mBatchLBufferShadowRect->getGlslProg()->uniform(	"uSampler",				0 );
+	mBatchLBufferShadowRect->getGlslProg()->uniform(	"uSamplerDepth",		1 );
 	mBatchRayCompositeRect->getGlslProg()->uniform(		"uSamplerColor",		0 );
 	mBatchRayCompositeRect->getGlslProg()->uniform(		"uSamplerRay",			1 );
 	mBatchRayOccludeRect->getGlslProg()->uniform(		"uSamplerDepth",		0 );
@@ -1440,8 +1442,8 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchFxaaRect->getGlslProg()->uniform(				"uPixel",		1.0f / vec2( szPingPong ) );
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uOffset",		mOffset );
 	mBatchLBufferLightCube->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
-	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
+	mBatchLBufferShadowRect->getGlslProg()->uniform(	"uOffset",		mOffset );
+	mBatchLBufferShadowRect->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
 	mBatchRayCompositeRect->getGlslProg()->uniform(		"uPixel",		vec2( 1.0f ) / vec2( szRay ) );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset * (  szRay / szGBuffer ) );
 	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szRay );
