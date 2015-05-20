@@ -45,10 +45,10 @@ namespace cinder { namespace gl {
 class ShaderPreprocessor {
   public:
 	ShaderPreprocessor();
-	//! \brief Parses and processes the shader source at \a sourcePath.  \return a preprocessed source string.
-	std::string		parse( const fs::path &sourcePath );
-	//! Parses and processes the shader source \a source, which can be found at \a sourcePath. \return a preprocessed source string.
-	std::string		parse( const std::string &source, const fs::path &sourcePath );
+	//! \brief Parses and processes the shader source at \a sourcePath. If \a includedFiles is provided, this will be filled with paths to any files detected as `#include`ed. \return a preprocessed source string.
+	std::string		parse( const fs::path &sourcePath, std::set<fs::path> *includedFiles = nullptr );
+	//! Parses and processes the shader source \a source, which can be found at \a sourcePath. If \a includedFiles is provided, this will be filled with paths to any files detected as `#include`ed. \return a preprocessed source string.
+	std::string		parse( const std::string &source, const fs::path &sourcePath, std::set<fs::path> *includedFiles = nullptr );
 
 	//! Adds a custom search directory to the search list. The last directory added will be searched first.
 	void	addSearchDirectory( const fs::path &directory );
@@ -63,9 +63,9 @@ class ShaderPreprocessor {
 	void	setDefineDirectives( const std::vector<std::string> &defines );
 	//! Specifies the #version directive to add to the shader sources
 	void	setVersion( int version )	{ mVersion = version; }
-	
+
   private:
-	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory );
+	std::string		parseTopLevel( const std::string &source, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
 	std::string		parseRecursive( const fs::path &path, const fs::path &currentDirectory, std::set<fs::path> &includeTree );
 	std::string		parseDirectives( const std::string &source );
 	fs::path		findFullPath( const fs::path &includePath, const fs::path &currentPath );

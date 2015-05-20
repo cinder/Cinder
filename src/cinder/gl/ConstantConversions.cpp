@@ -53,6 +53,18 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_UNSIGNED_INT_VEC2] = "UNSIGNED_INT_VEC2";
 		sSymbols[GL_UNSIGNED_INT_VEC3] = "UNSIGNED_INT_VEC3";
 		sSymbols[GL_UNSIGNED_INT_VEC4] = "UNSIGNED_INT_VEC4";
+		sSymbols[GL_INT_SAMPLER_2D] = "INT_SAMPLER_2D";
+		sSymbols[GL_INT_SAMPLER_3D] = "INT_SAMPLER_3D";
+		sSymbols[GL_INT_SAMPLER_CUBE] = "INT_SAMPLER_CUBE";
+		sSymbols[GL_INT_SAMPLER_2D_ARRAY] = "GL_INT_SAMPLER_2D_ARRAY";
+		sSymbols[GL_SAMPLER_3D] = "SAMPLER_3D";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D] = "UNSIGNED_INT_SAMPLER_2D";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_3D] = "UNSIGNED_INT_SAMPLER_3D";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D_ARRAY] = "UNSIGNED_INT_SAMPLER_2D_ARRAY";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_CUBE] = "UNSIGNED_INT_SAMPLER_CUBE";		
+		sSymbols[GL_SAMPLER_2D_SHADOW] = "SAMPLER_2D_SHADOW";
+		sSymbols[GL_SAMPLER_2D_ARRAY_SHADOW] = "SAMPLER_2D_ARRAY_SHADOW";
+		sSymbols[GL_SAMPLER_CUBE_SHADOW] = "GL_SAMPLER_CUBE_SHADOW";
 #endif
 		sSymbols[GL_INT_VEC2] = "INT_VEC2";
 		sSymbols[GL_INT_VEC3] = "INT_VEC3";
@@ -68,10 +80,10 @@ std::string	constantToString( GLenum constant )
 		sSymbols[GL_SAMPLER_CUBE] = "SAMPLER_CUBE";
 #if ! defined( CINDER_GL_ES )
 		sSymbols[GL_SAMPLER_1D] = "SAMPLER_1D";
-		sSymbols[GL_SAMPLER_3D] = "SAMPLER_3D";
+		sSymbols[GL_INT_SAMPLER_2D_RECT] = "INT_SAMPLER_2D_RECT";
+		sSymbols[GL_UNSIGNED_INT_SAMPLER_2D_RECT] = "UNSIGNED_INT_SAMPLER_2D_RECT";
 		sSymbols[GL_SAMPLER_2D_RECT] = "SAMPLER_2D_RECT";
 		sSymbols[GL_SAMPLER_1D_SHADOW] = "SAMPLER_1D_SHADOW";
-		sSymbols[GL_SAMPLER_2D_SHADOW] = "SAMPLER_2D_SHADOW";
 		sSymbols[GL_HALF_FLOAT] = "HALF_FLOAT";
 		sSymbols[GL_DOUBLE] = "DOUBLE";
 		sSymbols[GL_INT_2_10_10_10_REV] = "INT_2_10_10_10_REV";
@@ -80,25 +92,27 @@ std::string	constantToString( GLenum constant )
 		// Buffer bindings
 		sSymbols[GL_ARRAY_BUFFER] = "GL_ARRAY_BUFFER";
 		sSymbols[GL_ELEMENT_ARRAY_BUFFER] = "GL_ELEMENT_ARRAY_BUFFER";
-#if ! defined( CINDER_GL_ES )
-		sSymbols[GL_ATOMIC_COUNTER_BUFFER] = "GL_ATOMIC_COUNTER_BUFFER";
-		sSymbols[GL_COPY_READ_BUFFER] = "GL_COPY_READ_BUFFER";
-		sSymbols[GL_COPY_WRITE_BUFFER] = "GL_COPY_WRITE_BUFFER";
-		sSymbols[GL_DRAW_INDIRECT_BUFFER] = "GL_DRAW_INDIRECT_BUFFER";
-		sSymbols[GL_DISPATCH_INDIRECT_BUFFER] = "GL_DISPATCH_INDIRECT_BUFFER";
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_PIXEL_PACK_BUFFER] = "GL_PIXEL_PACK_BUFFER";
 		sSymbols[GL_PIXEL_UNPACK_BUFFER] = "GL_PIXEL_UNPACK_BUFFER";
+		sSymbols[GL_COPY_READ_BUFFER] = "GL_COPY_READ_BUFFER";
+		sSymbols[GL_COPY_WRITE_BUFFER] = "GL_COPY_WRITE_BUFFER";
+		sSymbols[GL_TRANSFORM_FEEDBACK_BUFFER] = "GL_TRANSFORM_FEEDBACK_BUFFER";
+		sSymbols[GL_UNIFORM_BUFFER] = "GL_UNIFORM_BUFFER";
+#endif
+#if ! defined( CINDER_GL_ES )
+		sSymbols[GL_ATOMIC_COUNTER_BUFFER] = "GL_ATOMIC_COUNTER_BUFFER";
+		sSymbols[GL_DRAW_INDIRECT_BUFFER] = "GL_DRAW_INDIRECT_BUFFER";
+		sSymbols[GL_DISPATCH_INDIRECT_BUFFER] = "GL_DISPATCH_INDIRECT_BUFFER";
 		sSymbols[GL_QUERY_BUFFER] = "GL_QUERY_BUFFER";
 		sSymbols[GL_SHADER_STORAGE_BUFFER] = "GL_SHADER_STORAGE_BUFFER";
 		sSymbols[GL_TEXTURE_BUFFER] = "GL_TEXTURE_BUFFER";
-		sSymbols[GL_TRANSFORM_FEEDBACK_BUFFER] = "GL_TRANSFORM_FEEDBACK_BUFFER";
-		sSymbols[GL_UNIFORM_BUFFER] = "GL_UNIFORM_BUFFER";
 #endif
 		// Buffer usage
 		sSymbols[GL_STREAM_DRAW] = "GL_STREAM_DRAW";
 		sSymbols[GL_STATIC_DRAW] = "GL_STATIC_DRAW";
 		sSymbols[GL_DYNAMIC_DRAW] = "GL_DYNAMIC_DRAW";
-#if ! defined( CINDER_GL_ES )
+#if ! defined( CINDER_GL_ES_2 )
 		sSymbols[GL_STREAM_READ] = "GL_STREAM_READ";
 		sSymbols[GL_STREAM_COPY] = "GL_STREAM_COPY";
 		sSymbols[GL_STATIC_READ] = "GL_STATIC_READ";
@@ -274,18 +288,31 @@ uint8_t typeToDimension( GLenum type )
 	
 uint8_t typeToBytes( GLenum type )
 {
-	switch (type) {
+	switch( type ) {
 		case GL_UNSIGNED_INT:		return sizeof(uint32_t); break;
 		case GL_INT:				return sizeof(int); break;
 		case GL_SAMPLER_2D:			return sizeof(int); break;
 #if ! defined( CINDER_GL_ES )
-		case GL_SAMPLER_BUFFER_EXT: return sizeof(int); break;
-		case GL_INT_SAMPLER_2D:		return sizeof(int); break;
-		case GL_SAMPLER_2D_RECT:	return sizeof(int); break;
+		case GL_SAMPLER_1D:						return sizeof(int); break;
+		case GL_SAMPLER_BUFFER_EXT:				return sizeof(int); break;
+		case GL_SAMPLER_2D_RECT:				return sizeof(int); break;
+		case GL_INT_SAMPLER_2D_RECT:			return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_2D_RECT:	return sizeof(int); break;
 #endif
 #if ! defined( CINDER_GL_ES_2 )
-		case GL_SAMPLER_2D_SHADOW:	return sizeof(int); break;
-		case GL_SAMPLER_3D:			return sizeof(int); break;
+		case GL_SAMPLER_2D_ARRAY:				return sizeof(int); break;
+		case GL_SAMPLER_2D_SHADOW:				return sizeof(int); break;
+		case GL_SAMPLER_2D_ARRAY_SHADOW:		return sizeof(int); break;
+		case GL_SAMPLER_CUBE_SHADOW:			return sizeof(int); break;						
+		case GL_INT_SAMPLER_2D:					return sizeof(int); break;
+		case GL_INT_SAMPLER_3D:					return sizeof(int); break;
+		case GL_INT_SAMPLER_CUBE:				return sizeof(int); break;
+		case GL_INT_SAMPLER_2D_ARRAY:			return sizeof(int); break;		
+		case GL_SAMPLER_3D:						return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_2D:		return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_3D:		return sizeof(int); break;
+		case GL_UNSIGNED_INT_SAMPLER_CUBE:		return sizeof(int); break;		
+		case GL_UNSIGNED_INT_SAMPLER_2D_ARRAY:	return sizeof(int); break;
 #else
 		case GL_SAMPLER_2D_SHADOW_EXT: return sizeof(int); break;
 #endif

@@ -86,4 +86,4 @@ void TessellationBezierApp::draw()
 	}
 }
 
-CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
+CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().msaa( 16 ).version( 4, 0 ) ) )

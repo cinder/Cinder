@@ -68,7 +68,7 @@ class RendererGl : public Renderer {
 			mCoreProfile = false;
 			mVersion = std::pair<int,int>( 2, 0 );
 #else
-			mMsaaSamples = 16;
+			mMsaaSamples = 0;
 			mCoreProfile = true;
 			mVersion = std::pair<int,int>( 3, 2 );	
 #endif
@@ -93,7 +93,7 @@ class RendererGl : public Renderer {
 		void				setVersion( int major, int minor ) { mVersion = std::make_pair( major, minor ); }
 		void				setVersion( std::pair<int,int> version ) { mVersion = version; }
 		
-		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 16 on desktop and \c 0 on iOS.
+		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 0.
 		Options&	msaa( int samples ) { mMsaaSamples = samples; return *this; }
 		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
 		int			getMsaa() const { return mMsaaSamples; }

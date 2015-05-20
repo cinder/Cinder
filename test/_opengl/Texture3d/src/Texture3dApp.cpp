@@ -55,8 +55,8 @@ void Texture3dApp::setup()
 	mShader2dArray->uniform( "uTex0", 0 );
 
 	// setup batches
-	mTex3dBatch = gl::Batch::create( geom::Rect().scale( vec2( 200, 200 ) ).position( vec2( 100, 100 ) ), mShader3d );
-	mTex2dArrayBatch = gl::Batch::create( geom::Rect().scale( vec2( 200, 200 ) ).position( vec2( 100, 300 ) ), mShader2dArray );
+	mTex3dBatch = gl::Batch::create( geom::Rect( Rectf( 100, 100, 300, 300 ) ), mShader3d );
+	mTex2dArrayBatch = gl::Batch::create( geom::Rect( Rectf( 150, 150, 250, 250 ) ), mShader2dArray );
 }
 
 void Texture3dApp::draw()

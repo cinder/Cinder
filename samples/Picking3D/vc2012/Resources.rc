@@ -1,6 +1,0 @@
-#include "../include/Resources.h"
-
-RES_DUCKY_MESH	
-RES_DUCKY_TEX	
-RES_SHADER_FRAG
-RES_SHADER_VERT

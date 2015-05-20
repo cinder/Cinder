@@ -572,6 +572,207 @@ void Rect::setDefaultTexCoords()
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
+// RoundedRect
+RoundedRect::RoundedRect()
+	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
+{
+	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
+	updateVertexCount();
+	setDefaultColors();
+	setDefaultTexCoords();
+}
+	
+RoundedRect::RoundedRect( const Rectf &r, float cornerRadius )
+	: mSubdivisions( -1 ), mCornerRadius( cornerRadius ), mHasColors( false ), mNumVertices( 0 )
+{
+	rect( r );
+	updateVertexCount();
+	setDefaultColors();
+	setDefaultTexCoords();
+}
+	
+RoundedRect& RoundedRect::cornerSubdivisions( int cornerSubdivisions )
+{
+	mSubdivisions = cornerSubdivisions;
+	updateVertexCount();
+	return *this;
+}
+
+RoundedRect& RoundedRect::cornerRadius( float cornerRadius )
+{
+	mCornerRadius = cornerRadius;
+	updateVertexCount();
+	return *this;
+}
+
+RoundedRect& RoundedRect::texCoords( const vec2 &upperLeft, const vec2 &lowerRight )
+{
+	mRectTexCoords = Rectf( upperLeft.x, lowerRight.y, lowerRight.x, upperLeft.y );
+	return *this;
+}
+
+RoundedRect& RoundedRect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
+{
+	mColors[0] = lowerLeft;  
+	mColors[1] = lowerRight; 
+	mColors[2] = upperRight; 
+	mColors[3] = upperLeft;
+	return *this;
+}
+	
+void RoundedRect::updateVertexCount()
+{
+	if( mSubdivisions <= 0 ) {
+		mSubdivisions = (int)math<double>::floor( mCornerRadius * M_PI * 2 / 4 );
+	}
+	if( mSubdivisions < 2 ) mSubdivisions = 2;
+	
+	mNumVertices = ( mSubdivisions + 1 ) * 4 + 2;
+}
+	
+uint8_t	RoundedRect::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		case Attrib::COLOR: return mHasColors ? 4 : 0;
+		case Attrib::TANGENT: return 3;
+		default:
+			return 0;
+	}
+}
+
+AttribSet RoundedRect::getAvailableAttribs() const
+{
+	return { Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0, Attrib::COLOR, Attrib::TANGENT };
+}
+	
+void RoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> positions;
+	if( requestedAttribs.count( geom::Attrib::POSITION ) )
+		positions.resize( mNumVertices );
+	std::vector<vec2> texCoords;
+	if( requestedAttribs.count( geom::Attrib::TEX_COORD_0 ) )
+		texCoords.resize( mNumVertices );
+	std::vector<vec4> colors;
+	if( requestedAttribs.count( geom::Attrib::COLOR ) )
+		colors.resize( mNumVertices );
+	std::vector<vec3> normals;
+	if( requestedAttribs.count( geom::Attrib::NORMAL ) )
+		normals.resize( mNumVertices );
+	std::vector<vec3> tangents;
+	if( requestedAttribs.count( geom::Attrib::TANGENT ) )
+		tangents.resize( mNumVertices );
+	
+	auto posCenter = mRectPositions.getCenter();
+	auto texCenter = mRectTexCoords.getCenter();
+	
+	auto bufferPositions = ! positions.empty();
+	auto bufferTexCoords = ! texCoords.empty();
+	auto bufferNormals = ! normals.empty();
+	auto bufferTangents = ! tangents.empty();
+	auto bufferColors = ! colors.empty();
+	
+	if( bufferPositions )
+		positions[0] = posCenter;
+	if( bufferTexCoords )
+		texCoords[0] = texCenter;
+	if( bufferNormals )
+		normals[0] = vec3( 0, 0, 1 );
+	if( bufferTangents )
+		tangents[0] = vec3( 0.7071067f, 0.7071067f, 0 );
+	if( bufferColors )
+		colors[0] = (mColors[0] / 4.0f) + (mColors[1] / 4.0f) + (mColors[2] / 4.0f) + (mColors[3] / 4.0f);
+	
+	size_t tri = 1;
+	const float angleDelta = 1 / (float)mSubdivisions * M_PI / 2;
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+	};
+	vec2 texCoordOffset = ( mCornerRadius / mRectPositions.getSize() ) * mRectTexCoords.getSize();
+	const std::array<vec2, 4> cornerCenterTexCoords = {
+		vec2( mRectTexCoords.x2 - texCoordOffset.x, texCoordOffset.y + mRectTexCoords.y1 ), // lower right
+		vec2( texCoordOffset.x + mRectTexCoords.x1, texCoordOffset.y + mRectTexCoords.y1 ), // lower left
+		vec2( texCoordOffset.x + mRectTexCoords.x1, mRectTexCoords.y2 - texCoordOffset.y ), // upper left
+		vec2( mRectTexCoords.x2 - texCoordOffset.x, mRectTexCoords.y2 - texCoordOffset.y )	// upper right
+	};
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		vec2 cornerCenter( cornerCenterVerts[corner] );
+		vec2 cornerTexCoord( cornerCenterTexCoords[corner] );
+		vec4 cornerColor( mColors[corner] );
+		for( int s = 0; s <= mSubdivisions; s++ ) {
+			auto cosVal = math<float>::cos( angle );
+			auto sinVal = math<float>::sin( angle );
+			// Need this calculation for texCoords and colors
+			auto currentTexCoord = vec2( cornerTexCoord.x + cosVal * texCoordOffset.x,
+										cornerTexCoord.y - sinVal * texCoordOffset.y );
+			if( bufferPositions )
+				positions[tri] = vec2( cornerCenter.x + cosVal * mCornerRadius,
+									   cornerCenter.y + sinVal * mCornerRadius );
+			if( bufferTexCoords )
+				texCoords[tri] = currentTexCoord;
+			if( bufferNormals )
+				normals[tri] = vec3( 0, 0, 1 );
+			if( bufferTangents )
+				tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
+			if( bufferColors ) {
+				auto colorU0 = lerp( mColors[2], mColors[3], currentTexCoord.x / mRectTexCoords.getWidth() );
+				auto colorU1 = lerp( mColors[0], mColors[1], currentTexCoord.x / mRectTexCoords.getWidth() );
+				colors[tri] = lerp( colorU0, colorU1, currentTexCoord.y / mRectTexCoords.getHeight() );
+			}
+			++tri;
+			angle += angleDelta;
+		}
+	}
+	// Need this calculation for texCoords and colors
+	auto currentTexCoord = vec2( mRectTexCoords.x2, texCoordOffset.y + mRectTexCoords.y1 );
+	// close it off
+	if( bufferPositions )
+		positions[tri] = vec2( mRectPositions.x2, mRectPositions.y2 - mCornerRadius );
+	if( bufferTexCoords )
+		texCoords[tri] = currentTexCoord;
+	if( bufferNormals )
+		normals[tri] = vec3( 0, 0, 1 );
+	if( bufferTangents )
+		tangents[tri] = vec3( 0.7071067f, 0.7071067f, 0 );
+	if( bufferColors ) {
+		auto colorU0 = lerp( mColors[2], mColors[3], currentTexCoord.x / mRectTexCoords.getWidth() );
+		auto colorU1 = lerp( mColors[0], mColors[1], currentTexCoord.x / mRectTexCoords.getWidth() );
+		colors[tri] = lerp( colorU0, colorU1, currentTexCoord.y / mRectTexCoords.getHeight() );
+	}
+	
+	if( bufferPositions )
+		target->copyAttrib( geom::Attrib::POSITION, 2, 0, value_ptr( *positions.data() ), positions.size() );
+	if( bufferTexCoords )
+		target->copyAttrib( geom::Attrib::TEX_COORD_0, 2, 0, value_ptr( *texCoords.data() ), texCoords.size() );
+	if( bufferNormals )
+		target->copyAttrib( geom::Attrib::NORMAL, 3, 0, value_ptr( *normals.data() ), normals.size() );
+	if( bufferTangents )
+		target->copyAttrib( geom::Attrib::TANGENT, 3, 0, value_ptr( *tangents.data() ), tangents.size() );
+	if( bufferColors )
+		target->copyAttrib( geom::Attrib::COLOR, 4, 0, value_ptr( *colors.data() ), colors.size() );
+}
+	
+void RoundedRect::setDefaultColors()
+{
+	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f ); // lower-left
+	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f ); // lower-right
+	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f ); // upper-right
+	mColors[3] = ColorAf( 1.0f, 1.0f, 1.0f, 1.0f ); // upper-left
+}
+
+void RoundedRect::setDefaultTexCoords()
+{
+	mRectTexCoords = Rectf( 0.0f, 0.0f, 1.0f, 1.0f );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
 // Cube
 Cube::Cube()
 	: mSubdivisions( 1 ), mSize( 1 ), mHasColors( false )
@@ -2985,7 +3186,77 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
+	
+///////////////////////////////////////////////////////////////////////////////////////
+// WireRoundedRect
+WireRoundedRect::WireRoundedRect()
+	: mCornerSubdivisions( -1 ), mCornerRadius( 1.0f ), mNumVertices( 0 )
+{
+	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
+	updateVertexCount();
+}
+	
+WireRoundedRect::WireRoundedRect( const Rectf &r, float cornerRadius )
+	: mCornerSubdivisions( -1 ), mCornerRadius( cornerRadius ), mNumVertices( 0 )
+{
+	rect( r );
+	updateVertexCount();
+}
+	
+WireRoundedRect& WireRoundedRect::cornerSubdivisions( int cornerSubdivisions )
+{
+	mCornerSubdivisions = cornerSubdivisions;
+	updateVertexCount();
+	return *this;
+}
 
+WireRoundedRect& WireRoundedRect::cornerRadius( float cornerRadius )
+{
+	mCornerRadius = cornerRadius;
+	updateVertexCount();
+	return *this;
+}
+
+void WireRoundedRect::updateVertexCount()
+{
+	if( mCornerSubdivisions <= 0 ) {
+		mCornerSubdivisions = (int)math<double>::floor( mCornerRadius * M_PI * 2 / 4 );
+	}
+	if( mCornerSubdivisions < 2 ) mCornerSubdivisions = 2;
+	
+	mNumVertices = (2 * ( mCornerSubdivisions + 1 ) * 4) + 1;
+}
+	
+void WireRoundedRect::loadInto( cinder::geom::Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> verts( mNumVertices );
+	vec2* ptr = verts.data();
+	const float angleDelta = 1 / (float)mCornerSubdivisions * M_PI / 2;
+	const std::array<vec2, 4> cornerCenterVerts = {
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y2 - mCornerRadius ),
+		vec2( mRectPositions.x1 + mCornerRadius, mRectPositions.y1 + mCornerRadius ),
+		vec2( mRectPositions.x2 - mCornerRadius, mRectPositions.y1 + mCornerRadius )
+	};
+	// provide the last vert as the starting point to loop around to.
+	*ptr++ = vec2( cornerCenterVerts[3].x + math<float>::cos( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius,
+				 cornerCenterVerts[3].y + math<float>::sin( ( 3 * M_PI / 2.0f ) + ( angleDelta * mCornerSubdivisions ) ) * mCornerRadius );
+	for( size_t corner = 0; corner < 4; ++corner ) {
+		float angle = corner * M_PI / 2.0f;
+		vec2 cornerCenter( cornerCenterVerts[corner] );
+		for( int s = 0; s <= mCornerSubdivisions; s++ ) {
+			// This is the ending point of the first line
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
+						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
+			// This is the starting point of the next line
+			*ptr++ = vec2( cornerCenter.x + math<float>::cos( angle ) * mCornerRadius,
+						  cornerCenter.y + math<float>::sin( angle ) * mCornerRadius );
+			angle += angleDelta;
+		}
+	}
+	
+	target->copyAttrib( geom::Attrib::POSITION, 2, 0, value_ptr( *verts.data() ), verts.size() );
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCube
@@ -3447,6 +3718,10 @@ void VertexNormalLines::process( SourceModsContext *ctx, const AttribSet &reques
 	if( texCoords )
 		ctx->copyAttrib( Attrib::TEX_COORD_0, texCoordDims, 0, (const float*)outTexCoord0.data(), numVertices );
 
+	// if the upstream has mAttrib, we should clear that out too; otherwise we are likely to get an error about incorrect count if the
+	// consumer were expecting that attribute. For example, geom::Cube >> geom::VertexNormalLines() rendered with a Lambert would error
+	ctx->clearAttrib( mAttrib );
+
 	// if the upstream was indexed, we need to clear that out
 	ctx->clearIndices();
 }
@@ -3898,7 +4173,7 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
-	: mNumIndices( 0 ), mNumVertices( 0 )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mAttribMask( nullptr )
 {
 	mSource = sourceMods->getSource();
 	
@@ -3913,7 +4188,7 @@ SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
 }
 
 SourceModsContext::SourceModsContext()
-	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr ), mAttribMask( nullptr )
 {
 }
 
@@ -3958,7 +4233,9 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 {
 	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
 	if( mModiferStack.empty() ) {
+		mAttribMask = &requestedAttribs;
 		mSource->loadInto( this, requestedAttribs );
+		mAttribMask = nullptr;
 	}
 	else {
 		// we want the Params to reflect upstream from the current Modifier
@@ -4017,6 +4294,13 @@ uint32_t* SourceModsContext::getIndicesData()
 
 void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
+	// The attribMask is used to ignore attributes coming from the source which were not directly requested
+	// A Source is allowed to supply attributes that weren't requested; this allows us to ignore them; without it,
+	// a chain like: sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ) >> geom::Translate( ... )
+	// can crash, because geom::Translate could be processing residual attributes from further up the chain
+	if( mAttribMask && mAttribMask->count( attr ) == 0 )
+		return;
+
 	// theoretically this should be the same for all calls to copyAttrib from a given modifier. If it's not at loadInto(), we'll log an error
 	mNumVertices = count;
 

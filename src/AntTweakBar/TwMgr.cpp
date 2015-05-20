@@ -26,9 +26,6 @@
 #   include "TwDirect3D10.h"
 #   include "TwDirect3D11.h"
 #   include "resource.h"
-#   ifdef _DEBUG
-#       include <crtdbg.h>
-#   endif // _DEBUG
 #	undef min
 #	undef max
 #endif // ANT_WINDOWS
@@ -1914,10 +1911,6 @@ static int TwInitMgr()
 
 int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
 {
-#if defined(_DEBUG) && defined(ANT_WINDOWS)
-    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
-#endif
-
     if( g_TwMasterMgr!=NULL )
     {
         g_TwMasterMgr->SetLastError(g_ErrInit);

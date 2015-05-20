@@ -25,6 +25,8 @@
 #include "cinder/Cinder.h"
 #include "cinder/Surface.h"
 
+#include <vector>
+
 namespace cinder { namespace ip {
 
 //! Thresholds \a surface setting any values below \a value to zero and any values above to unity inside the Area \a area
@@ -57,31 +59,21 @@ void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, C
 
 template<typename T>
 class AdaptiveThresholdT {
+  public:
+	AdaptiveThresholdT()	{}
+	//! Uses \a channel as source, but not assume ownership
+	AdaptiveThresholdT( const ChannelT<T> *channel );
+
+	void calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel );
+
  private:
 	typedef typename CHANTRAIT<T>::Accum SUMT;
-	struct Obj {
-		Obj( ChannelT<T> *channel );
-		~Obj();
-	
-		ChannelT<T>	* mChannel;
-		int32_t		mImageWidth;
-		int32_t		mImageHeight;
-		int8_t		mIncrement;
-		SUMT		* mIntegralImage;
-	};
- public:
-	AdaptiveThresholdT() {};
-	AdaptiveThresholdT( ChannelT<T> *channel );
-	void calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel );
-	
-	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> AdaptiveThresholdT::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &AdaptiveThresholdT::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
- private:
-	std::shared_ptr<Obj>		mObj;
+
+	const ChannelT<T>*	mChannel;
+	int32_t				mImageWidth;
+	int32_t				mImageHeight;
+	int8_t				mIncrement;
+	std::vector<SUMT>	mIntegralImage;
 };
 
 typedef AdaptiveThresholdT<uint8_t>		AdaptiveThreshold;

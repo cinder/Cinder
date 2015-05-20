@@ -142,4 +142,4 @@ void DynamicCubeMappingApp::draw()
 	gl::popMatrices();
 }
 
-CINDER_APP( DynamicCubeMappingApp, RendererGl )
+CINDER_APP( DynamicCubeMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

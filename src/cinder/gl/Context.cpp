@@ -1935,7 +1935,7 @@ void Context::setDefaultShaderVars()
 
 		const auto &attribs = glslProg->getActiveAttributes();
 		for( const auto &attrib : attribs ) {
-			switch( attrib.getAttributeSemantic() ) {
+			switch( attrib.getSemantic() ) {
 				case geom::Attrib::COLOR: {
 					ColorA c = ctx->getCurrentColor();
 					gl::vertexAttrib4f( attrib.getLocation(), c.r, c.g, c.b, c.a );
