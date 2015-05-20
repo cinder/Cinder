@@ -187,7 +187,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 
 	// Set up camera
 	const vec2 windowSize = toPixels( getWindowSize() );
-	mCamera = CameraPersp( windowSize.x, windowSize.y, 60.0f, 0.01f, 100.0f );
+	mCamera = CameraPersp( (int32_t)windowSize.x, (int32_t)windowSize.y, 60.0f, 0.01f, 100.0f );
 	mCamera.lookAt( vec3( 0.0f, 0.5f, 7.0f ), vec3( 0.0f, 2.7f, 0.0f ) );
 	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 	
@@ -863,7 +863,6 @@ void DeferredShadingAdvancedApp::draw()
 	{
 		// Clear AO buffer whether we use it or not
 		const gl::ScopedFramebuffer scopedFrameBuffer( mFboAo );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboAo->getSize() );
 		gl::clear();
 		
@@ -1357,7 +1356,7 @@ void DeferredShadingAdvancedApp::resize()
 	
 	// Create shadow map buffer
 	{
-		int32_t sz = toPixels( mHighQuality ? 2048 : 1024 );
+		int32_t sz = (int32_t)toPixels( mHighQuality ? 2048.0f : 1024.0f );
 		mFboShadowMap = gl::Fbo::create( sz, sz,
 										gl::Fbo::Format().depthTexture( depthTextureFormat ) );
 		mFboShadowMap->getDepthTexture()->setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
