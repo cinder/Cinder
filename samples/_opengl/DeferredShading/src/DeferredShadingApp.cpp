@@ -65,6 +65,7 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
+	bool						mQuit;
 	void						screenShot();
 #endif
 };
@@ -92,10 +93,11 @@ DeferredShadingApp::DeferredShadingApp()
 	return;
 #endif
 	
-	// Set draw flags
+	// Define properties
 	mDebugMode		= false;
 	mEnabledFxaa	= true;
 	mEnabledShadow	= true;
+	mQuit			= false;
 
 	// Set up lights
 	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
@@ -145,7 +147,7 @@ DeferredShadingApp::DeferredShadingApp()
 	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",	[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
+	mParams->addParam( "Quit",			&mQuit ).key( "q" );
 	mParams->addSeparator();
 	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
 	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
@@ -479,6 +481,11 @@ void DeferredShadingApp::screenShot()
 
 void DeferredShadingApp::update()
 {
+	if ( mQuit ) {
+		quit();
+		return;
+	}
+
 #if ! defined( CINDER_COCOA_TOUCH )
 	mFrameRate	= getAverageFps();
 	

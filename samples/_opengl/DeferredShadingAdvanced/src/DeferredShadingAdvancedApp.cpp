@@ -141,6 +141,7 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
+	bool						mQuit;
 	void						screenShot();
 };
 
@@ -180,12 +181,13 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mNumSpheres			= 3;
 	mOffset				= vec2( 0.0f );
 	mPaused				= false;
+	mQuit				= false;
 	mSpherePosition		= vec3( 0.0f, 4.0f, 0.0f );
 	mSphereVelocity		= -0.1f;
 
 	// Set up camera
 	const vec2 windowSize = toPixels( getWindowSize() );
-	mCamera = CameraPersp( windowSize.x, windowSize.y, 60.0f, 0.01f, 100.0f );
+	mCamera = CameraPersp( (int32_t)windowSize.x, (int32_t)windowSize.y, 60.0f, 0.01f, 100.0f );
 	mCamera.lookAt( vec3( 0.0f, 0.5f, 7.0f ), vec3( 0.0f, 2.7f, 0.0f ) );
 	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
 	
@@ -241,7 +243,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mParams->addParam( "Fullscreen",		&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",		[ & ]() { createBatches(); },	"key=l" );
 	mParams->addButton( "Screen shot",		[ & ]() { screenShot(); },		"key=space" );
-	mParams->addButton( "Quit",				[ & ]() { quit(); },			"key=q" );
+	mParams->addParam( "Quit",				&mQuit ).key( "q" );
 	mParams->addSeparator();
 	mParams->addParam( "AO view",			&mDrawAo ).key( "o" ).group( "Draw" );
 	mParams->addParam( "Debug view",		&mDrawDebug ).key( "d" ).group( "Draw" );
@@ -559,11 +561,7 @@ void DeferredShadingAdvancedApp::draw()
 		
 		// Draw light sources
 		mBatchGBufferLightSourceSphere->getGlslProg()->uniform( "uMaterialId", 2 );
-		GLsizei count = (GLsizei)mLights.size();
-		if ( mEnabledRay ) {
-			--count;
-		}
-		mBatchGBufferLightSourceSphere->drawInstanced( count );
+		mBatchGBufferLightSourceSphere->drawInstanced( (GLsizei)mLights.size() );
 		
 		////// END DRAW STUFF //////////////////////////////////////////////////
 		
@@ -861,7 +859,6 @@ void DeferredShadingAdvancedApp::draw()
 	{
 		// Clear AO buffer whether we use it or not
 		const gl::ScopedFramebuffer scopedFrameBuffer( mFboAo );
-		gl::drawBuffer( GL_COLOR_ATTACHMENT0 );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboAo->getSize() );
 		gl::clear();
 		
@@ -1103,7 +1100,7 @@ void DeferredShadingAdvancedApp::draw()
 		gl::disableDepthRead();
 		gl::disableDepthWrite();
 		
-		// Fill screen with AO in AO view mode.
+		// Fill screen with AO in AO view mode
 		if ( mDrawAo ) {
 			const gl::ScopedTextureBind scopedTextureBind( mTextureFboAo[ 0 ], 4 );
 			mBatchDebugRect->getGlslProg()->uniform( "uMode", 11 );
@@ -1112,23 +1109,23 @@ void DeferredShadingAdvancedApp::draw()
 			
 			// Composite light rays into image
 			if ( mEnabledRay ) {
-				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
-				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ], 1 );
+				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],	0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboRayColor[ 1 ],		1 );
 				mBatchRayCompositeRect->draw();
 
 				ping = pong;
 				pong = ( ping + 1 ) % 2;
 			}
 
-			// Composite light accumulation / bloom into our final image.
+			// Composite light accumulation / bloom into our final image
 			gl::drawBuffer( GL_COLOR_ATTACHMENT0 + (GLenum)ping );
 			{
-				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ], 0 );
-				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ], 1 );
+				const gl::ScopedTextureBind scopedTextureBind0( mTextureFboPingPong[ pong ],				0 );
+				const gl::ScopedTextureBind scopedTextureBind1( mTextureFboAccum[ mEnabledBloom ? 2 : 0 ],	1 );
 				mBatchBloomCompositeRect->draw();
 			}
 			
-			// Draw light volumes for debugging.
+			// Draw light volumes for debugging
 			if ( mDrawLightVolume ) {
 				const gl::ScopedBlendAlpha scopedBlendAlpha;
 				const gl::ScopedPolygonMode scopedPolygonMode( GL_LINE );
@@ -1169,7 +1166,7 @@ void DeferredShadingAdvancedApp::draw()
 		mBatchFxaaRect->draw();
 	} else {
 		
-		// Draw to screen without FXAA.
+		// Draw to screen without FXAA
 		mBatchStockTextureRect->draw();
 	}
 	
@@ -1328,7 +1325,7 @@ void DeferredShadingAdvancedApp::resize()
 		gl::clear();
 	}
 
-	// Create FBO sfor light rays (volumetric light scattering)
+	// Create FBOs for light rays (volumetric light scattering)
 	if ( mEnabledRay ) {
 		{
 			gl::Fbo::Format fboFormat;
@@ -1350,12 +1347,12 @@ void DeferredShadingAdvancedApp::resize()
 			const gl::ScopedFramebuffer scopedFramebuffer( mFboRayDepth );
 			const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboRayDepth->getSize() );
 			gl::clear();
-			}
+		}
 	}
 	
 	// Create shadow map buffer
 	{
-		int32_t sz = toPixels( mHighQuality ? 2048 : 1024 );
+		int32_t sz = (int32_t)toPixels( mHighQuality ? 2048.0f : 1024.0f );
 		mFboShadowMap = gl::Fbo::create( sz, sz,
 										gl::Fbo::Format().depthTexture( depthTextureFormat ) );
 		mFboShadowMap->getDepthTexture()->setCompareMode( GL_COMPARE_REF_TO_TEXTURE );
@@ -1448,12 +1445,17 @@ void DeferredShadingAdvancedApp::setUniforms()
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uOffset",		mOffset );
 	mBatchLBufferShadowCube->getGlslProg()->uniform(	"uWindowSize",	szGBuffer );
 	mBatchRayCompositeRect->getGlslProg()->uniform(		"uPixel",		vec2( 1.0f ) / vec2( szRay ) );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset );
-	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szGBuffer );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uOffset",		mOffset * (  szRay / szGBuffer ) );
+	mBatchRayScatterRect->getGlslProg()->uniform(		"uWindowSize",	szRay );
 }
 
 void DeferredShadingAdvancedApp::update()
 {
+	if ( mQuit ) {
+		quit();
+		return;
+	}
+
 	float e		= (float)getElapsedSeconds();
 	mFrameRate	= getAverageFps();
 	
