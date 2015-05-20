@@ -61,8 +61,8 @@ void ExtrudeApp::setup()
 	mParams->addParam( "Draw Normals", &mDrawNormals ).updateFn( [=] { makeGeom(); } );
 
 	mCam.lookAt( vec3( 30, 20, 40 ), vec3( 0 ) );
-	
-	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+
+	mGlsl = gl::getStockShader( gl::ShaderDef().color().lambert() );
 	
 	mFont = Font( "Georgia", 32 );
 	mCurrentChar = '&';

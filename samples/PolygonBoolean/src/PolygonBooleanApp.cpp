@@ -128,7 +128,7 @@ void PolygonBooleanApp::draw()
 	gl::color( ColorA( 0.25f, 1.0f, 0.5f, 0.15f ) );
 	gl::draw( *mPolyBMesh );
 	
-	glLineWidth( 2.0f );
+	gl::lineWidth( 2.0f );
 	gl::color( ColorA( 1.0f, 0.5f, 0.25f, 1.0f ) );
 	for( size_t c = 0; c < mPolyResult.size(); ++c )
 		gl::draw( mPolyResult[c] );	

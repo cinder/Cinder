@@ -1186,10 +1186,13 @@ void drawCoordinateFrame( float axisLength, float headLength, float headRadius )
 	
 void drawVector( const vec3& start, const vec3& end, float headLength, float headRadius )
 {
-	gl::drawLine( start, end );
 	vec3 dir = end - start;
 	vec3 ori = end - normalize( dir ) * headLength;
 	gl::draw( geom::Cone().base( headRadius ).height( headLength ).origin( ori ).direction( dir ) );
+
+	// Since lines don't have normals, let's make sure we're only rendering colors.
+	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color() ) );
+	gl::drawLine( start, end );
 }
 
 namespace {

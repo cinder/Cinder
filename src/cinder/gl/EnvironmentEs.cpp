@@ -271,6 +271,7 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 	if( shader.mLambert ) {
 		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
 				"	vec3 N = normalize( Normal );\n"
+				"	float lambert = max( 0.0, dot( N, L ) );\n"
 				;
 	}
 	
@@ -283,7 +284,7 @@ std::string	EnvironmentEs::generateFragmentShader( const ShaderDef &shader )
 		s +=	" * Color";
 
 	if( shader.mLambert )
-		s +=	" * max( 0.0, dot( N, L ) )";
+		s +=	" * vec4( vec3( lambert ), 1.0 )";
 
 	s +=		";\n";
 	

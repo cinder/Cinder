@@ -88,6 +88,7 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 
 	AppMac *app = static_cast<AppMac *>( new AppT );
 	app->executeLaunch();
+	delete app;
 
 	AppBase::cleanupLaunch();
 }

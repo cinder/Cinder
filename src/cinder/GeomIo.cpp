@@ -4173,7 +4173,7 @@ void SourceModsBase::addModifier( const Modifier &modifier )
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // SourceModsContext
 SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
-	: mNumIndices( 0 ), mNumVertices( 0 )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mAttribMask( nullptr )
 {
 	mSource = sourceMods->getSource();
 	
@@ -4188,7 +4188,7 @@ SourceModsContext::SourceModsContext( const SourceModsBase *sourceMods )
 }
 
 SourceModsContext::SourceModsContext()
-	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr )
+	: mNumIndices( 0 ), mNumVertices( 0 ), mSource( nullptr ), mAttribMask( nullptr )
 {
 }
 
@@ -4233,7 +4233,9 @@ void SourceModsContext::processUpstream( const AttribSet &requestedAttribs )
 {
 	// next 'modifier' is actually the Source, because we're at the end of the stack of modifiers
 	if( mModiferStack.empty() ) {
+		mAttribMask = &requestedAttribs;
 		mSource->loadInto( this, requestedAttribs );
+		mAttribMask = nullptr;
 	}
 	else {
 		// we want the Params to reflect upstream from the current Modifier
@@ -4292,6 +4294,13 @@ uint32_t* SourceModsContext::getIndicesData()
 
 void SourceModsContext::copyAttrib( Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count )
 {
+	// The attribMask is used to ignore attributes coming from the source which were not directly requested
+	// A Source is allowed to supply attributes that weren't requested; this allows us to ignore them; without it,
+	// a chain like: sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ) >> geom::Translate( ... )
+	// can crash, because geom::Translate could be processing residual attributes from further up the chain
+	if( mAttribMask && mAttribMask->count( attr ) == 0 )
+		return;
+
 	// theoretically this should be the same for all calls to copyAttrib from a given modifier. If it's not at loadInto(), we'll log an error
 	mNumVertices = count;
 

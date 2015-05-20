@@ -65,7 +65,6 @@ private:
 	float						mFrameRate;
 	bool						mFullScreen;
 	ci::params::InterfaceGlRef	mParams;
-	bool						mQuit;
 	void						screenShot();
 #endif
 };
@@ -138,7 +137,6 @@ DeferredShadingApp::DeferredShadingApp()
 #if !defined( CINDER_COCOA_TOUCH )
 	mFrameRate	= 0.0f;
 	mFullScreen	= isFullScreen();
-	mQuit		= false;
 	
 	// Set up parameters
 	mParams = params::InterfaceGl::create( "Params", ivec2( 220, 220 ) );
@@ -147,7 +145,7 @@ DeferredShadingApp::DeferredShadingApp()
 	mParams->addParam( "Fullscreen",	&mFullScreen ).key( "f" );
 	mParams->addButton( "Load shaders",	[ & ]() { loadShaders(); },	"key=l" );
 	mParams->addButton( "Screen shot",	[ & ]() { screenShot(); },	"key=space" );
-	mParams->addParam( "Quit",			&mQuit ).key( "q" );
+	mParams->addButton( "Quit",			[ & ]() { quit(); },		"key=q" );
 	mParams->addSeparator();
 	mParams->addParam( "FXAA",			&mEnabledFxaa ).key( "a" );
 	mParams->addParam( "Shadows",		&mEnabledShadow ).key( "s" );
@@ -481,15 +479,10 @@ void DeferredShadingApp::screenShot()
 
 void DeferredShadingApp::update()
 {
-#if !defined( CINDER_COCOA_TOUCH )
+#if ! defined( CINDER_COCOA_TOUCH )
 	mFrameRate	= getAverageFps();
 	
-	if ( mQuit ) {
-		quit();
-		return;
-	}
-	
-	if ( mFullScreen != isFullScreen() ) {
+	if( mFullScreen != isFullScreen() ) {
 		setFullScreen( mFullScreen );
 	}
 #endif
