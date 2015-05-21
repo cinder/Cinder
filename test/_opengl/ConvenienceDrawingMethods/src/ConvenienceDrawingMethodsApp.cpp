@@ -46,7 +46,7 @@ void ConvenienceDrawingMethodsApp::setup()
 
 	Rand r;
 	for( int i = 0; i < 50; ++i ) {
-		mPolyline2D.push_back( r.nextVec2f() * cCircleRadius );
+		mPolyline2D.push_back( r.nextVec2() * cCircleRadius );
 	}
 
 	// line wrapping around a sphere

@@ -106,7 +106,7 @@ class Rand {
 	}
 	
 	//! returns a random vec3 that represents a point on the unit sphere	
-	vec3 nextVec3f()
+	vec3 nextVec3()
 	{
 		float phi = nextFloat( (float)M_PI * 2.0f );
 		float costheta = nextFloat( -1.0f, 1.0f );
@@ -120,7 +120,7 @@ class Rand {
 	}
 
 	//! returns a random vec2 that represents a point on the unit circle	
-	vec2 nextVec2f()
+	vec2 nextVec2()
 	{
 		float theta = nextFloat( (float)M_PI * 2.0f );
 		return vec2( math<float>::cos( theta ), math<float>::sin( theta ) );
