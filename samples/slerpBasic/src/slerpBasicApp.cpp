@@ -52,8 +52,8 @@ void slerpBasicApp::update()
 
 void slerpBasicApp::setupSlerp()
 {
-	mVecA = randVec3f();
-	mVecB = randVec3f();
+	mVecA = randVec3();
+	mVecB = randVec3();
 	mSlerpAmt = 0;
 }
 
