@@ -11,7 +11,7 @@ using namespace std;
 
 static const int WIDTH = 640, HEIGHT = 480;
 
-class CaptureApp : public App {
+class CaptureTestApp : public App {
  public:	
 	void setup();
 	void keyDown( KeyEvent event );
@@ -25,7 +25,7 @@ class CaptureApp : public App {
 	vector<SurfaceRef>		mRetainedSurfaces;
 };
 
-void CaptureApp::setup()
+void CaptureTestApp::setup()
 {	
 	// list out the devices
 	vector<Capture::DeviceRef> devices( Capture::getDevices() );
@@ -56,7 +56,7 @@ void CaptureApp::setup()
 	}
 }
 
-void CaptureApp::keyDown( KeyEvent event )
+void CaptureTestApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
@@ -77,7 +77,7 @@ void CaptureApp::keyDown( KeyEvent event )
 	}
 }
 
-void CaptureApp::update()
+void CaptureTestApp::update()
 {
 	for( vector<CaptureRef>::iterator cIt = mCaptures.begin(); cIt != mCaptures.end(); ++cIt ) {
 		if( (*cIt)->checkNewFrame() ) {
@@ -91,7 +91,7 @@ void CaptureApp::update()
 	}
 }
 
-void CaptureApp::draw()
+void CaptureTestApp::draw()
 {
 	gl::enableAlphaBlending();
 	gl::clear( Color::black() );
@@ -119,4 +119,4 @@ void CaptureApp::draw()
 }
 
 
-CINDER_APP( CaptureApp, RendererGl )
+CINDER_APP( CaptureTestApp, RendererGl )
