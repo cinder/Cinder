@@ -359,12 +359,12 @@ class Node {
 	//! Returns the local bounding box of the Node. Calculated and cached the first time it is requested.
 	Rectf			getBoundingBox() const { if( ! mBoundingBoxCached ) { mBoundingBox = calcBoundingBox(); mBoundingBoxCached = true; } return mBoundingBox;  }
 	//! Returns the absolute bounding box of the Node. Calculated and cached the first time it is requested.
-	Rectf			getBoundingBoxAbsolute() const { return getBoundingBox().transformCopy( getTransformAbsolute() ); }
+	Rectf			getBoundingBoxAbsolute() const { return getBoundingBox().transformed( getTransformAbsolute() ); }
 
 	//! Returns a Shape2d representing the node in local coordinates. Not supported for Text.
 	virtual Shape2d	getShape() const { return Shape2d(); }
 	//! Returns a Shape2d representing the node in absolute coordinates. Not supported for Text.
-	Shape2d			getShapeAbsolute() const { return getShape().transformCopy( getTransformAbsolute() ); }
+	Shape2d			getShapeAbsolute() const { return getShape().transformed( getTransformAbsolute() ); }
 
 	//! Returns node's fill, or the first among its ancestors when it has none
 	const Paint&	getFill() const;

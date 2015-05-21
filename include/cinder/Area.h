@@ -23,6 +23,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
+#include "cinder/Matrix.h"
 #include "cinder/Vector.h"
 
 #include <iostream>
@@ -98,6 +99,11 @@ class Area {
 	vec2		closestPoint( const vec2 &pt ) const;
 	ivec2		closestPoint( const ivec2 &pt ) const;
 	dvec2		closestPoint( const dvec2 &pt ) const;
+
+	//! Transforms the Area by \a matrix. Represents the bounding box of the transformed Area when \a matrix expresses non-scale/translate operations.
+	void		transform( const mat3 &matrix );
+	//! Returns a copy of the Area transformed by \a matrix. Represents the bounding box of the transformed Area when \a matrix expresses non-scale/translate operations.
+	Area		transformed( const mat3 &matrix ) const;
 
 	int32_t			x1, y1, x2, y2;
 

@@ -85,7 +85,7 @@ class Path2d {
 	//! Transforms the Path2d by \a matrix.
 	void		transform( const mat3 &matrix );
 	//! Returns a copy transformed by \a matrix.
-	Path2d		transformCopy( const mat3 &matrix ) const;
+	Path2d		transformed( const mat3 &matrix ) const;
 
 
 	const std::vector<vec2>&	getPoints() const { return mPoints; }

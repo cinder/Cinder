@@ -198,19 +198,36 @@ RectT<T> RectT<T>::scaled( const Vec2T &scale ) const
 }
 
 template<typename T>
-RectT<T> RectT<T>::transformCopy( const Mat3T& matrix ) const
+RectT<T> RectT<T>::transformed( const Mat3T& matrix ) const
 {
-	RectT<T> result;
-	result.x1 = numeric_limits<T>::max();
-	result.x2 = -numeric_limits<T>::max();
-	result.y1 = numeric_limits<T>::max();
-	result.y2 = -numeric_limits<T>::max();
-	result.include( Vec2T( matrix * Vec3T( x1, y1, 1 ) ) );
-	result.include( Vec2T( matrix * Vec3T( x2, y1, 1 ) ) );
-	result.include( Vec2T( matrix * Vec3T( x2, y2, 1 ) ) );
-	result.include( Vec2T( matrix * Vec3T( x1, y2, 1 ) ) );
-	
-	return result;
+	Vec2T center = Vec2T( x1 + x2, y1 + y2 ) / (T) 2;
+	Vec2T extents = glm::abs( Vec2T( x2, y2 ) - center );
+
+	Vec3T x = matrix * Vec3T( extents.x, 0, 0 );
+	Vec3T y = matrix * Vec3T( 0, extents.y, 0 );
+
+	extents = Vec2T( glm::abs( x ) + glm::abs( y ) );
+	center = Vec2T( matrix * Vec3T( center, 0 ) );
+
+	return RectT<T>( center.x - extents.x, center.y - extents.y, center.x + extents.x, center.y + extents.y );
+}
+
+template<typename T>
+void RectT<T>::transform( const Mat3T &matrix )
+{
+	Vec2T center = Vec2T( x1 + x2, y1 + y2 ) / (T) 2;
+	Vec2T extents = glm::abs( Vec2T( x2, y2 ) - center );
+
+	Vec3T x = matrix * Vec3T( extents.x, 0, 0 );
+	Vec3T y = matrix * Vec3T( 0, extents.y, 0 );
+
+	extents = Vec2T( glm::abs( x ) + glm::abs( y ) );
+	center = Vec2T( matrix * Vec3T( center, 0 ) );
+
+	x1 = center.x - extents.x;
+	y1 = center.y - extents.y;
+	x2 = center.x + extents.x;
+	y2 = center.y + extents.y;
 }
 
 template<typename T>
