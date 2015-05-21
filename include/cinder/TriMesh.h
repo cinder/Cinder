@@ -99,18 +99,18 @@ class TriMesh : public geom::Source {
 	//! Returns whether the TriMesh has texture coordinates for unit 3
 	bool		hasTexCoords3() const { return ! mTexCoords3.empty(); }
 
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec2 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec3 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec4 &v ) { appendVertices( &v, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec2 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec3 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec4 &position ) { appendPositions( &position, 1 ); }
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec2 *verts, size_t num );
+	void		appendPositions( const vec2 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec3 *verts, size_t num );
+	void		appendPositions( const vec3 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec4 *verts, size_t num );
+	void		appendPositions( const vec4 *positions, size_t num );
 	//! Appends a single normal  
 	void		appendNormal( const vec3 &v ) { mNormals.push_back( v ); }
 	//! Functions similarly to appendVertices(), appending multiple normals at once.

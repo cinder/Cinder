@@ -110,7 +110,7 @@ TriMesh Triangulator::calcMesh( Winding winding )
 	TriMesh result( TriMesh::Format().positions( 2 ) );
 	
 	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
-	result.appendVertices( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result.appendPositions( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result.appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
 	
 	return result;
@@ -121,7 +121,7 @@ TriMeshRef Triangulator::createMesh( Winding winding )
 	TriMeshRef result = make_shared<TriMesh>( TriMesh::Format().positions( 2 ) );
 	
 	tessTesselate( mTess.get(), (int)winding, TESS_POLYGONS, 3, 2, 0 );
-	result->appendVertices( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
+	result->appendPositions( (vec2*)tessGetVertices( mTess.get() ), tessGetVertexCount( mTess.get() ) );
 	result->appendIndices( (uint32_t*)( tessGetElements( mTess.get() ) ), tessGetElementCount( mTess.get() ) * 3 );
 	
 	return result;

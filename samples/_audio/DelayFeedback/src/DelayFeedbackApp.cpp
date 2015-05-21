@@ -228,16 +228,16 @@ void DelayFeedback::loadBatch()
 
 	TriMesh mesh( TriMesh::Format().positions( 2 ).texCoords( 2 ) );
 
-	mesh.appendVertex( boundingBox.getUpperLeft() );
+	mesh.appendPosition( boundingBox.getUpperLeft() );
 	mesh.appendTexCoord( vec2( -1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerLeft() );
+	mesh.appendPosition( boundingBox.getLowerLeft() );
 	mesh.appendTexCoord( vec2( -1, 1 ) );
 
-	mesh.appendVertex( boundingBox.getUpperRight() );
+	mesh.appendPosition( boundingBox.getUpperRight() );
 	mesh.appendTexCoord( vec2( 1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerRight() );
+	mesh.appendPosition( boundingBox.getLowerRight() );
 	mesh.appendTexCoord( vec2( 1, 1 ) );
 
 	mesh.appendTriangle( 0, 1, 2 );
