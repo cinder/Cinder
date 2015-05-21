@@ -112,21 +112,21 @@ class TriMesh : public geom::Source {
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
 	void		appendPositions( const vec4 *positions, size_t num );
 	//! Appends a single normal  
-	void		appendNormal( const vec3 &v ) { mNormals.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple normals at once.
+	void		appendNormal( const vec3 &normal ) { mNormals.push_back( normal ); }
+	//! Functions similarly to appendPositions(), appending multiple normals at once.
 	void		appendNormals( const vec3 *normals, size_t num );
 	//! Appends a single tangent  
-	void		appendTangent( const vec3 &v ) { mTangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple tangents at once.
+	void		appendTangent( const vec3 &tangent ) { mTangents.push_back( tangent ); }
+	//! Functions similarly to appendPositions(), appending multiple tangents at once.
 	void		appendTangents( const vec3 *tangents, size_t num );
 	//! Appends a single bitangent
-	void		appendBitangent( const vec3 &v ) { mBitangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple bitangents at once.
+	void		appendBitangent( const vec3 &bitangent ) { mBitangents.push_back( bitangent ); }
+	//! Functions similarly to appendPositions(), appending multiple bitangents at once.
 	void		appendBitangents( const vec3 *bitangents, size_t num );
 	//! Appends a single RGB color
-	void		appendColorRgb( const Color &rgb ) { appendColors( &rgb, 1 ); }
+	void		appendColorRgb( const Color &color ) { appendColors( &color, 1 ); }
 	//! Appends a single RGBA color
-	void		appendColorRgba( const ColorA &rgba ) { appendColors( &rgba, 1 ); }
+	void		appendColorRgba( const ColorA &color ) { appendColors( &color, 1 ); }
 
 	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
 	void		appendTexCoord( const vec2 &v ) { appendTexCoords0( &v, 1 ); }
