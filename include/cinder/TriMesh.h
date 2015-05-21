@@ -234,10 +234,10 @@ class TriMesh : public geom::Source {
 	const std::vector<vec3>&		getBitangents() const { return mBitangents; }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	typename VECDIM<DIM,float>::TYPE*		getColors() { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	typename COLORDIM<DIM,float>::TYPE*			getColors() { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	const typename VECDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	const typename COLORDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the TexCoord0 values of the TriMesh vec<DIM>*. For example, if the TriMesh has 2D TexCoord0 values, use getTexCoords0<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords0() { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
