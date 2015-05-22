@@ -76,7 +76,7 @@ public:
 		float fmin = glm::max( glm::max( glm::min( min.x, max.x ), glm::min( min.y, max.y ) ), glm::min( min.z, max.z ) );
 		float fmax = glm::min( glm::min( glm::max( min.x, max.x ), glm::max( min.y, max.y ) ), glm::max( min.z, max.z ) );
 
-		return ( fmax >= fmin && fmin >= 0 );
+		return ( fmax >= fmin );
 	}
 
 	//! Performs ray intersections and returns the number of intersections (0, 1 or 2). Returns \a min and \a max distance from the ray origin.
@@ -88,16 +88,14 @@ public:
 		float fmin = glm::max( glm::max( glm::min( _min.x, _max.x ), glm::min( _min.y, _max.y ) ), glm::min( _min.z, _max.z ) );
 		float fmax = glm::min( glm::min( glm::max( _min.x, _max.x ), glm::max( _min.y, _max.y ) ), glm::max( _min.z, _max.z ) );
 
-		if( fmin >= 0 ) {
-			if( fmax >= fmin ) {
-				*min = fmin;
-				*max = fmax;
+		if( fmax >= fmin ) {
+			*min = fmin;
+			*max = fmax;
 
-				if( fmax > fmin )
-					return 2;
-				else
-					return 1;
-			}
+			if( fmax > fmin )
+				return 2;
+			else
+				return 1;
 		}
 
 		return 0;
