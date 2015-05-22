@@ -293,9 +293,9 @@ class TriMesh : public geom::Source {
 	std::vector<float>& getBufferTexCoords3() { return mTexCoords3; }
 
 	//! Calculates the bounding box of all vertices. Fails if the positions are not 3D.
-	AxisAlignedBox3f	calcBoundingBox() const;
+	AxisAlignedBox	calcBoundingBox() const;
 	//! Calculates the bounding box of all vertices as transformed by \a transform. Fails if the positions are not 3D.
-	AxisAlignedBox3f	calcBoundingBox( const mat4 &transform ) const;
+	AxisAlignedBox	calcBoundingBox( const mat4 &transform ) const;
 
 	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
 	void		read( const DataSourceRef &dataSource );

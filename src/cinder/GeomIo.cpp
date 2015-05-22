@@ -3979,7 +3979,7 @@ void Bounds::process( SourceModsContext *ctx, const AttribSet &requestedAttribs 
 	}
 	
 	if( mResult )
-		*mResult = AxisAlignedBox3f( minResult, maxResult );
+		*mResult = AxisAlignedBox( minResult, maxResult );
 }
 
 //////////////////////////////////////////////////////////////////////////////////////

@@ -255,4 +255,35 @@ vec2 Area::closestPoint( const vec2 &pt ) const			{ return calcClosestPoint( *th
 ivec2 Area::closestPoint( const ivec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
 dvec2 Area::closestPoint( const dvec2 &pt ) const		{ return calcClosestPoint( *this, pt ); }
 
+void Area::transform( const mat3 &matrix )
+{
+	ivec2 center = ivec2( x1 + x2, y1 + y2 ) / 2;
+	ivec2 extents = glm::abs( ivec2( x2, y2 ) - center );
+
+	ivec3 x = matrix * ivec3( extents.x, 0, 0 );
+	ivec3 y = matrix * ivec3( 0, extents.y, 0 );
+
+	extents = ivec2( glm::abs( x ) + glm::abs( y ) );
+	center = ivec2( matrix * ivec3( center, 0 ) );
+
+	x1 = center.x - extents.x;
+	y1 = center.y - extents.y;
+	x2 = center.x + extents.x;
+	y2 = center.y + extents.y;
+}
+
+Area Area::transformed( const mat3 &matrix ) const
+{
+	ivec2 center = ivec2( x1 + x2, y1 + y2 ) / 2;
+	ivec2 extents = glm::abs( ivec2( x2, y2 ) - center );
+
+	ivec3 x = matrix * ivec3( extents.x, 0, 0 );
+	ivec3 y = matrix * ivec3( 0, extents.y, 0 );
+
+	extents = ivec2( glm::abs( x ) + glm::abs( y ) );
+	center = ivec2( matrix * ivec3( center, 0 ) );
+
+	return Area( center.x - extents.x, center.y - extents.y, center.x + extents.x, center.y + extents.y );
+}
+
 } // namespace cinder

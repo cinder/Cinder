@@ -387,11 +387,11 @@ void TriMesh::getTriangleBitangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) con
 	*c = mBitangents[mIndices[idx * 3 + 2]];
 }
 
-AxisAlignedBox3f TriMesh::calcBoundingBox() const
+AxisAlignedBox TriMesh::calcBoundingBox() const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( vec3(), vec3() );
+		return AxisAlignedBox( vec3(), vec3() );
 
 	vec3 min(*(const vec3*)(&mPositions[0])), max(*(const vec3*)(&mPositions[0]));
 	for( size_t i = 1; i < mPositions.size() / 3; ++i ) {
@@ -410,14 +410,14 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 			max.z = v.z;
 	}
 	
-	return AxisAlignedBox3f( min, max );
+	return AxisAlignedBox( min, max );
 }
 
-AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
+AxisAlignedBox TriMesh::calcBoundingBox( const mat4 &transform ) const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( vec3(), vec3() );
+		return AxisAlignedBox( vec3(), vec3() );
 
 	const vec3 &temp = *(const vec3*)(&mPositions[0]);
 	vec3 min = vec3( transform * vec4( temp, 1 ) );
@@ -440,7 +440,7 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 			max.z = v.z;
 	}
 
-	return AxisAlignedBox3f( min, max );
+	return AxisAlignedBox( min, max );
 }
 
 void TriMesh::read( const DataSourceRef &dataSource )

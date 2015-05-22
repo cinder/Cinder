@@ -88,7 +88,7 @@ private:
 	ViewMode			mViewMode;
 
 	mat4				mMeshTransform;
-	AxisAlignedBox3f	mMeshBounds;
+	AxisAlignedBox	mMeshBounds;
 
 	CameraPersp			mCamera;
 	CameraUi			mCamUi;
@@ -141,7 +141,7 @@ void NormalMappingApp::setup()
 	mPerlin = Perlin(4, 65535);
 
 	// default settings
-	mMeshBounds = AxisAlignedBox3f( vec3( 0 ), vec3( 1 ) );
+	mMeshBounds = AxisAlignedBox( vec3( 0 ), vec3( 1 ) );
 
 	mAutoRotate = true;
 	mAutoRotateAngle = 0.0f;
