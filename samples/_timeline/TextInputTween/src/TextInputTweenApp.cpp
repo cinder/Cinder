@@ -101,8 +101,8 @@ void TextInputTweenApp::addChar( char c )
 		mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
 
 	mat4 randStartMatrix = mSceneDestMatrix;
-	randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
-	randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
+	randStartMatrix *= translate( randVec3() * randFloat( 100.0f, 600.0f ) );
+	randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3() );
 	mCharacters.push_back( Character( mTextureFont, string( &c, 1 ), randStartMatrix ) );
 
 	mSceneDestMatrix *= translate( vec3( mCharacters.back().getKernBounds().getWidth() / 2.0f, 0.0f, 0.0f ) );
@@ -128,8 +128,8 @@ void TextInputTweenApp::removeChar()
 			mSceneDestMatrix = mat4();
 
 		mat4 randStartMatrix = mSceneDestMatrix;
-		randStartMatrix *= translate( randVec3f() * randFloat( 100.0f, 600.0f ) );
-		randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3f() );
+		randStartMatrix *= translate( randVec3() * randFloat( 100.0f, 600.0f ) );
+		randStartMatrix *= rotate( randFloat( 2.0f, 6.0f ), randVec3() );
 
 		mDyingCharacters.back().animOut( timeline(), randStartMatrix );
 
