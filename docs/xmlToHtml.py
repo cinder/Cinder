@@ -9,6 +9,10 @@ import xml.etree.ElementTree as ET
 from bs4 import BeautifulSoup, Tag, NavigableString
 from distutils.dir_util import copy_tree
 
+XML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'xml' + os.sep
+DOXYGEN_HTML_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
+HTML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
+
 # convert docygen markup to html markup
 tagDictionary = {
 	"linebreak": "br",
@@ -42,8 +46,6 @@ sideEl = None
 global_fileTags = None
 global_classTags = None
 global_classTagsDict = {}
-global_nsTags = None
-global_nsTagsDict = {}
 global_structTags = None
 global_structTagsDict = {}
 
@@ -53,6 +55,7 @@ g_symbolMap = None
 # mapping for the tag file with helper functions
 class SymbolMap (object):
 	def __init__( self  ):
+		self.namespaces = {}
 		self.classes = {}
 		self.typedefs = {}
 		self.functions = {}
@@ -61,6 +64,11 @@ class SymbolMap (object):
 		def __init__( self, name, base, fileName ):
 			self.name = name
 			self.base = base
+			self.fileName = fileName
+
+	class Namespace( object ):
+		def __init__( self, name, fileName ):
+			self.name = name
 			self.fileName = fileName
 		
 	class Typedef (object):
@@ -86,6 +94,22 @@ class SymbolMap (object):
 			return self.classes["cinder::"+name]
 		else:
 			return None
+
+	def findNamespace( self, name ):
+		return self.namespaces.get( name );
+
+	def getOrderedNamespaces( self ):
+		# create an array of strings that include all of the namespaces and return 
+		# the array in alphabetical order
+		namespaces = []
+		for nsKey in self.namespaces:
+			ns = self.namespaces[nsKey]
+			namespaces.append( ns )
+
+		# sort by lowercased name
+		namespaces = sorted( namespaces, key=lambda s: s.name.lower() )
+		
+		return namespaces
 
 	def findTypedef( self, name ):
 		return self.typedefs.get( name )
@@ -141,14 +165,6 @@ def findFileTag( includeFile ):
 	for f in global_fileTags :
 		if f.find('name').text == includeFile:
 			return f
-
-def findNamespaceTag( name ) :
-	for ns in global_nsTags :
-		if ns.find("name").text == name:
-			return ns
-
-def findNamespaceLink( namespace ) :
-	return global_nsTagsDict[namespace].find('filename').text
 
 def findClassLink( className ) :
 	link = None
@@ -450,16 +466,23 @@ def genTypeDefs( bs4, tree ):
 
 def iterClassBase( tree, heirarchy ) :
 
+	if tree is None:
+		return False
+
 	base = tree.find( 'base' )
+	print "ITER CLASS BASE"
+	print base
 
 	if base is None:
-		return
+		return False
 	else :
 		newTree = findClassTag( base.text )
 		# add to heirarchy
 		# heirarchy.append( base.text )
-		heirarchy.append( newTree )
-		iterClassBase( newTree, heirarchy )
+		if( iterClassBase( newTree, heirarchy ) is not False ) :
+			heirarchy.append( newTree )
+
+		
 
 def genClassHierarchy( bs4, tree ):
 
@@ -468,6 +491,7 @@ def genClassHierarchy( bs4, tree ):
 
 	# first item in the list will be the original class
 	heirarchy = [ tree ]
+	# heirarchy = tree
 
 	# get the class' heirarchy
 	iterClassBase( tree, heirarchy )
@@ -488,11 +512,18 @@ def genClassHierarchy( bs4, tree ):
 	addClassToTag( ul, "inheritence" )
 	contentDiv.append( ul )
 
+	# print "GEN CLASS HIERACHY"
+	# print tree
+	# print heirarchy
 	# go through the heirarchy and add a list item for each member
 	for index, base in enumerate( reversed( heirarchy ) ):
 		li = genTag( bs4, "li" )
 		addClassToTag( li, "depth" + str( index + 1 ) )
 		
+		# print base
+		# if( base == None ):
+			# return
+
 		a = genTag( bs4, "a", [], base.find("name").text )
 		defineLinkTag( a, {'href':base.find("filename").text} )
 
@@ -763,16 +794,16 @@ def iterateNamespace( bs4, namespaces, tree, index, label ) :
 	if index == 0:
 		parentNs = ""
 	else :
-		parentNs = namespaces[index-1].find('name').text
+		parentNs = namespaces[index-1].name
 
-	thisNamespace = namespaces[index].find('name').text
+	thisNamespace = namespaces[index].name
 
 	count = index
 	childCount = 0
 
 	# iterate to find all children of parentNs
 	for ns in namespaces[index:] :
-		namespace = ns.find('name').text					# full namespace
+		namespace = ns.name					# full namespace
 		nsParts = namespace.split("::")
 		prefix = "::".join( nsParts[:-1] )	# parent namespace up to last ::
 		name = "".join( nsParts[-1] )
@@ -786,7 +817,7 @@ def iterateNamespace( bs4, namespaces, tree, index, label ) :
 		
 		# create link for each item
 		aTag = genTag( bs4, "a")
-		defineLinkTag( aTag, {"href": ns.find('filename').text} )
+		defineLinkTag( aTag, {"href": ns.fileName} )
 		aTag.append( name )
 
 		# is decendent of parent namespace
@@ -854,7 +885,7 @@ def hasAncestor( namespaces, compareNamespace ):
 	comparePrefix = "::".join( compareNamespace.split("::")[0] )
 	hasAncestor = False
 	for ns in namespaces :
-		namespace = ns.find('name').text
+		namespace = ns.name
 		prefix = "::".join( namespace.split("::")[0] )
 		if prefix == comparePrefix and compareNamespace != namespace :
 			return True
@@ -864,16 +895,17 @@ def hasAncestor( namespaces, compareNamespace ):
 
 def generateNamespaceNav( bs4 ) :
 
-	global global_nsTags
-	namespaces = global_nsTags
+	namespaces = g_symbolMap.getOrderedNamespaces()
+	# print g_symbolMap.getOrderedNamespaces()
 
 	tree = genTag( bs4, "div" )
 	ul = genTag( bs4, "ul" )
 	tree.append( ul )
 	addClassToTag( tree, "css-treeview" )
 
-	for ns in namespaces :
-		namespace = ns.find('name').text
+	# for ns in namespaces :
+		# namespace = ns.find('name').text
+	
 
 	iterateNamespace( bs4, namespaces, ul, 0, "" )
 	return tree
@@ -929,7 +961,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	# find class tree in tag file, which is all of the class nodes
 	classTagTree = findClassTag( className )
 
-	# print ET.dump(classTagTree)
 
 	# +-------------+
 	#  Page metadata
@@ -1100,8 +1131,6 @@ def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 
 def processNamespaceXmlFile( inPath, outPath, html ):
 
-	global global_nsTags
-
 	print "Processing namespace file: " + inPath + " > " + outPath;
 
 	# define the tree that contains all the data we need to populate this page
@@ -1146,7 +1175,7 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# +-----------+
 	#  Description
 	# +-----------+
-	namespaceTag = findNamespaceTag(compoundName)
+	namespaceTag = g_symbolMap.findNamespace( compoundName )
 	if namespaceTag is None:
 		return
 	
@@ -1242,7 +1271,7 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	for c in tree.findall( r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']") :
 		typeStr = c.find('type').text
 		name = c.find( 'name' ).text
-		initializer = c.find('initializer').text if c.find('initializer') else None
+		initializer = c.find('initializer').text if c.find('initializer') is not None else None
 		if typeStr == None:
 			typeStr = ""
 		if initializer is not None:
@@ -1260,7 +1289,7 @@ def constructTemplate( templates ) :
 	masterTemplate = ""
 	for templatePath in templates :
 		# file = codecs.open( os.path.join( htmlSourcePath, templatePath ), "r", "UTF-8" )
-		masterTemplate += open(os.path.join( htmlSourcePath, templatePath )).read()
+		masterTemplate += open(os.path.join( HTML_SOURCE_PATH, templatePath )).read()
 		# masterTemplate += file
 
 	masterTemplate.decode("UTF-8")
@@ -1277,7 +1306,15 @@ def getSymbolToFileMap( path ):
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
 		
 	for ns in nsTags :
+
 		namespaceName = ns.find('name').text
+		fileName = ns.find('filename').text
+
+		# skip namespaces with '@' in them
+		if namespaceName.find('@') > -1:
+			continue
+
+		symbolMap.namespaces[namespaceName] = SymbolMap.Namespace( namespaceName, fileName )
 		
 		for member in ns.findall(r"member/[@kind='typedef']"):
 			name = member.find("name").text
@@ -1303,8 +1340,14 @@ def getSymbolToFileMap( path ):
 			anchor = member.find("anchor").text
 			filePath = member.find("anchorfile").text + "#" + anchor
 			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+
+	# store namespaces
+	# TODO: filter out anything that begins with @
 			
 	return symbolMap
+
+def getFilePrefix( filePath ):
+	return os.path.splitext( os.path.basename( filePath ) )[0]
 
 def parseTemplateHtml( templatePath ):
 	file = codecs.open( templatePath, "r", "UTF-8" )
@@ -1316,10 +1359,10 @@ def processFile( inPath, outPath ):
 	filePrefix = os.path.splitext( os.path.basename( file ) )[0]
 
 	if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
-		processClassXmlFile( sys.argv[1], os.path.join( doxygenHtmlPath, outPath ), copy.deepcopy( classTemplateHtml ) )
+		processClassXmlFile( sys.argv[1], os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( classTemplateHtml ) )
 
 	elif filePrefix.startswith( "namespace" ) :
-		processNamespaceXmlFile( inPath, os.path.join( doxygenHtmlPath, outPath ), copy.deepcopy( namespaceTemplateHtml ) )
+		processNamespaceXmlFile( inPath, os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( namespaceTemplateHtml ) )
 
 def processDir(inPath, outPath):
 	inPath = sys.argv[1]
@@ -1343,24 +1386,19 @@ def processDir(inPath, outPath):
 				# 
 				# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
-if __name__ == "__main__":
-	# global g_symbolMap
 
-	htmlSourcePath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
-	doxygenHtmlPath = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
-	
+# -- Main Function --
+# Can pass in a single xml file to process by passing in path to xml file and optionally, the resulting html file
+# If no out path is supplied, outputs to DOXYGEN_HTML_PATH
+# Can alternatively pass in a directory to process by providing the xml directory
+if __name__ == "__main__":
+
 	# Load tag file
 	tagXml = ET.ElementTree( ET.parse( "doxygen/cinder.tag" ).getroot() )
 
-	# construct template out of multiple templates
+	# construct full template out of multiple html templates
 	classTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderClassTemplate.html", "footerTemplate.html"] )
 	namespaceTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"] )
-
-	# find all namespace definitions and store for retrieval later
-	global_nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
-	for ns in global_nsTags :
-		global_nsTagsDict[ns.find( 'name' ).text] = ns
-	namespaceNav = generateNamespaceNav( classTemplateHtml )
 
 	# find all class definitions and store for retrieval later
 	global_classTags = tagXml.findall( r'compound[@kind="class"]' )
@@ -1377,14 +1415,17 @@ if __name__ == "__main__":
 	# generate symbol map from tag file
 	g_symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
 
-	if len( sys.argv ) == 3: 
+	namespaceNav = generateNamespaceNav( classTemplateHtml )
 
-		if os.path.isfile( sys.argv[1] ): # process a specific file
-			processFile( sys.argv[1], sys.argv[2] )
+	inPath = sys.argv[1]
+	if os.path.isfile( inPath ): # process a specific file
+		outPath = sys.argv[2] if len( sys.argv) > 2 else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
+		print outPath
+		processFile( inPath, outPath )
 
-		elif os.path.isdir( sys.argv[1] ): # process a directory
-			processDir( sys.argv[1], sys.argv[2])
+	elif os.path.isdir( inPath ): # process a directory
+		if len( sys.argv ) == 3: 
+			processDir( inPath, sys.argv[2])
 
-		
 	else:
 		print "Unknown usage"
