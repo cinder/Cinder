@@ -634,7 +634,7 @@ void MovieBase::loadAsset()
 void MovieBase::updateFrame()
 {
 	if( mPlayerVideoOutput && mPlayerItem ) {
-		CMTime vTime = [mPlayerVideoOutput itemTimeForHostTime:CACurrentMediaTime()];
+		CMTime vTime = [mPlayer currentTime];
 		if( [mPlayerVideoOutput hasNewPixelBufferForItemTime:vTime] ) {
 			releaseFrame();
 			

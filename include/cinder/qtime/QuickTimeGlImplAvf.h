@@ -61,7 +61,7 @@ class MovieGl : public MovieBase {
 	gl::TextureRef	getTexture();
 	
   protected:
-	MovieGl() : MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr ) {}
+	MovieGl();
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
@@ -72,11 +72,10 @@ class MovieGl : public MovieBase {
 	virtual void		releaseFrame() override;
 	
 #if defined( CINDER_COCOA_TOUCH )
-	CVOpenGLESTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLESTextureRef mVideoTextureRef;
+	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;
+	CVOpenGLESTextureRef		mVideoTextureRef;
 #else
-	CVOpenGLTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLTextureRef mVideoTextureRef;
+	std::vector<GLuint>			mAvailableTextures;
 #endif
 	
 	gl::TextureRef		mTexture;
