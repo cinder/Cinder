@@ -28,10 +28,10 @@
 
 namespace cinder {
 
-class AxisAlignedBox3f {
+class AxisAlignedBox {
 public:
-	AxisAlignedBox3f() : mCenter( 0 ), mExtents( 0 ) {}
-	AxisAlignedBox3f( const vec3 &min, const vec3 &max ) { set( min, max ); }
+	AxisAlignedBox() : mCenter( 0 ), mExtents( 0 ) {}
+	AxisAlignedBox( const vec3 &min, const vec3 &max ) { set( min, max ); }
 
 	//! Returns the center of the axis-aligned box.
 	const vec3& getCenter() const { return mCenter; }
@@ -62,7 +62,7 @@ public:
 	}
 
 	//! Returns \c true if the axis-aligned boxes intersect.
-	bool intersects( const AxisAlignedBox3f &box ) const
+	bool intersects( const AxisAlignedBox &box ) const
 	{
 		return glm::all( glm::lessThanEqual( glm::abs( box.mCenter - mCenter ), box.mExtents + mExtents ) );
 	}
@@ -127,7 +127,7 @@ public:
 	}
 
 	//! Expands the box so that it contains \a box.
-	void include( const AxisAlignedBox3f &box )
+	void include( const AxisAlignedBox &box )
 	{
 		vec3 min = glm::min( getMin(), box.getMin() );
 		vec3 max = glm::max( getMax(), box.getMax() );
@@ -183,14 +183,14 @@ public:
 	}
 
 	//! Converts axis-aligned box to another coordinate space.
-	AxisAlignedBox3f transformed( const mat4 &transform ) const
+	AxisAlignedBox transformed( const mat4 &transform ) const
 	{
 		mat3 m = mat3( transform );
 		vec3 x = m * vec3( mExtents.x, 0, 0 );
 		vec3 y = m * vec3( 0, mExtents.y, 0 );
 		vec3 z = m * vec3( 0, 0, mExtents.z );
 
-		AxisAlignedBox3f result;
+		AxisAlignedBox result;
 		result.mExtents = glm::abs( x ) + glm::abs( y ) + glm::abs( z );
 		result.mCenter = vec3( transform * vec4( mCenter, 1 ) );
 

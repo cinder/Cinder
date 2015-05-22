@@ -12,7 +12,7 @@ vec3 RayMarcher::sLightDir = normalize( vec3( 1 ) );
 RayMarcher::RayMarcher( const ci::CameraPersp *aCamera )
 	: mCamera( aCamera ), mPerlin( 8 )
 {
-	mBoundingBox = AxisAlignedBox3f( vec3( -10 ), vec3( 10 ) );
+	mBoundingBox = AxisAlignedBox( vec3( -10 ), vec3( 10 ) );
 	
 	randomScene();
 }

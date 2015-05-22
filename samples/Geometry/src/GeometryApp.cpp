@@ -464,7 +464,7 @@ void GeometryApp::loadGeomSource( const geom::Source &source, const geom::Source
 		fmt.colors();
 
 	TriMesh mesh( source, fmt );
-	AxisAlignedBox3f bbox = mesh.calcBoundingBox();
+	AxisAlignedBox bbox = mesh.calcBoundingBox();
 	mCameraLerpTarget = mesh.calcBoundingBox().getCenter();
 	mRecenterCamera = true;
 

@@ -1202,7 +1202,7 @@ class Combine : public Modifier {
 //! Calculates the 3D bounding box of the geometry.
 class Bounds : public Modifier {
   public:
-	Bounds( AxisAlignedBox3f *result, Attrib attrib = POSITION )
+	Bounds( AxisAlignedBox *result, Attrib attrib = POSITION )
 		: mResult( result ), mAttrib( attrib )
 	{}
 	
@@ -1211,7 +1211,7 @@ class Bounds : public Modifier {
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	AxisAlignedBox3f	*mResult;
+	AxisAlignedBox	*mResult;
 	Attrib				mAttrib;
 };
 

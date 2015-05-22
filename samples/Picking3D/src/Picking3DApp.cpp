@@ -33,11 +33,11 @@ public:
 	void mouseMove( MouseEvent event ) override;
 
 	bool performPicking( vec3 *pickedPoint, vec3 *pickedNormal );
-	void drawCube( const AxisAlignedBox3f &bounds, const Color &color );
+	void drawCube( const AxisAlignedBox &bounds, const Color &color );
 
 private:
 	TriMeshRef			mTriMesh;		//! The 3D mesh.
-	AxisAlignedBox3f	mObjectBounds; 	//! The object space bounding box of the mesh.
+	AxisAlignedBox	mObjectBounds; 	//! The object space bounding box of the mesh.
 	mat4				mTransform;		//! Transformations (translate, rotate, scale) of the mesh.
 										
 	//! By caching a 3D model and its shader on the GPU, we can draw it faster.
@@ -138,11 +138,11 @@ bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 	// The coordinates of the bounding box are in object space, not world space,
 	// so if the model was translated, rotated or scaled, the bounding box would not
 	// reflect that. One solution would be to pass the transformation to the calcBoundingBox() function:
-	AxisAlignedBox3f worldBoundsExact = mTriMesh->calcBoundingBox( mTransform ); // slow
+	AxisAlignedBox worldBoundsExact = mTriMesh->calcBoundingBox( mTransform ); // slow
 
 	// But if you already have an object space bounding box, it's much faster to
 	// approximate the world space bounding box like this:
-	AxisAlignedBox3f worldBoundsApprox = mObjectBounds.transformed( mTransform ); // fast
+	AxisAlignedBox worldBoundsApprox = mObjectBounds.transformed( mTransform ); // fast
 
 	// Draw the object space bounding box in yellow. It will not animate,
 	// because animation is done in world space.
@@ -199,7 +199,7 @@ bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 		return false;
 }
 
-void Picking3DApp::drawCube( const AxisAlignedBox3f &bounds, const Color & color )
+void Picking3DApp::drawCube( const AxisAlignedBox &bounds, const Color & color )
 {
 	gl::ScopedColor clr( color );
 	gl::ScopedModelMatrix model;

@@ -15,7 +15,7 @@ public:
 
 	void mouseMove( MouseEvent event ) override;
 
-	AxisAlignedBox3f mBox;
+	AxisAlignedBox mBox;
 	gl::BatchRef     mCube;
 	CameraPersp      mCam;
 	CameraUi         mCamUi;
@@ -29,11 +29,11 @@ void AABBtestApp::setup()
 	mBox.include( vec3( 3, 2, 1 ) );
 	assert( mBox.getSize() == vec3( 3, 2, 1 ) );
 	assert( mBox.getCenter() == vec3( 1.5f, 1.0f, 0.5f ) );
-	mBox.include( AxisAlignedBox3f( vec3( -3, -2, -1 ), vec3( 0 ) ) );
+	mBox.include( AxisAlignedBox( vec3( -3, -2, -1 ), vec3( 0 ) ) );
 	assert( mBox.getSize() == vec3( 6, 4, 2 ) );
 
-	assert( mBox.intersects( AxisAlignedBox3f( vec3( -1 ), vec3( 1 ) ) ) );
-	assert( mBox.intersects( AxisAlignedBox3f( vec3( 3, 0, 1 ), vec3( 3, 1, 0 ) ) ) );
+	assert( mBox.intersects( AxisAlignedBox( vec3( -1 ), vec3( 1 ) ) ) );
+	assert( mBox.intersects( AxisAlignedBox( vec3( 3, 0, 1 ), vec3( 3, 1, 0 ) ) ) );
 	assert( !mBox.intersects( Ray( vec3( 4, 0, -10 ), vec3( 0, 0, 1 ) ) ) );	
 
 	mCube = gl::Batch::create( geom::WireCube().size( 1, 1, 1 ), gl::getStockShader( gl::ShaderDef().color() ) );

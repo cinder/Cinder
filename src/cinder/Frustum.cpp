@@ -110,7 +110,7 @@ template<typename T>
 bool Frustum<T>::contains( const Vec3T &center, const Vec3T &size ) const
 {
 	vec3 halfSize = vec3( size ) * 0.5f;
-	AxisAlignedBox3f box( vec3( center ) - halfSize, vec3( center ) + halfSize );
+	AxisAlignedBox box( vec3( center ) - halfSize, vec3( center ) + halfSize );
 	return contains( box );
 }
 
@@ -121,7 +121,7 @@ bool Frustum<T>::contains( const Sphere &sphere ) const
 }
 
 template<typename T>
-bool Frustum<T>::contains( const AxisAlignedBox3f &box ) const
+bool Frustum<T>::contains( const AxisAlignedBox &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance( Vec3T( box.getPositive( vec3( mFrustumPlanes[i].getNormal() ) ) ) ) < 0 )
@@ -156,7 +156,7 @@ template<typename T>
 bool Frustum<T>::intersects( const Vec3T &center, const Vec3T &size ) const
 {
 	vec3 halfSize = vec3( size ) * 0.5f;
-	AxisAlignedBox3f box( vec3( center ) - halfSize, vec3( center ) + halfSize );
+	AxisAlignedBox box( vec3( center ) - halfSize, vec3( center ) + halfSize );
 	return intersects( box );
 };
 
@@ -167,7 +167,7 @@ bool Frustum<T>::intersects( const Sphere &sphere ) const
 }
 
 template<typename T>
-bool Frustum<T>::intersects( const AxisAlignedBox3f &box ) const
+bool Frustum<T>::intersects( const AxisAlignedBox &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance( Vec3T( box.getPositive( vec3( mFrustumPlanes[i].getNormal() ) ) ) ) < 0 )
