@@ -37,7 +37,7 @@ class Ray {
 
 	void setDirection( const vec3 &aDirection )
 	{
-		mDirection = glm::normalize( aDirection );
+		mDirection = aDirection;
 		mInvDirection = vec3( 1.0f / mDirection.x, 1.0f / mDirection.y, 1.0f / mDirection.z );
 		mSignX = ( mDirection.x < 0.0f ) ? 1 : 0;
 		mSignY = ( mDirection.y < 0.0f ) ? 1 : 0;

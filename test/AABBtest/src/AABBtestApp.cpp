@@ -56,8 +56,9 @@ void AABBtestApp::draw()
 
 	// Animate box.
 	float t = (float) getElapsedSeconds() * 0.2f;
-	mat4 transform = glm::translate( vec3( 7.0f * glm::sin( t ), 0, 0 ) );
+	mat4 transform = glm::translate( vec3( 5.0f * glm::sin( t ), 0, 0 ) );
 	transform *= glm::rotate( t, glm::normalize( vec3( 1, 2, 3 ) ) );
+	transform *= glm::scale( vec3( 0.75f ) );
 
 	// Start drawing.
 	gl::pushMatrices();
