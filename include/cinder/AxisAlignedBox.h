@@ -86,6 +86,9 @@ public:
 	//! Returns \c true if the ray intersects the axis-aligned box.
 	bool intersects( const Ray &ray ) const
 	{
+		if( glm::length2( ray.getDirection() ) < FLT_EPSILON )
+			return false;
+
 		vec3 min = ( getMin() - ray.getOrigin() ) / ray.getDirection();
 		vec3 max = ( getMax() - ray.getOrigin() ) / ray.getDirection();
 
@@ -98,6 +101,9 @@ public:
 	//! Performs ray intersections and returns the number of intersections (0, 1 or 2). Returns \a min and \a max distance from the ray origin.
 	int intersect( const Ray &ray, float *min, float *max ) const
 	{
+		if( glm::length2( ray.getDirection() ) < FLT_EPSILON )
+			return 0;
+
 		vec3 _min = ( getMin() - ray.getOrigin() ) / ray.getDirection();
 		vec3 _max = ( getMax() - ray.getOrigin() ) / ray.getDirection();
 
