@@ -65,10 +65,11 @@ class MovieGl : public MovieBase {
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
 	
-	virtual void		allocateVisualContext() override;
-	virtual void		deallocateVisualContext() override;
-	virtual void		newFrame( CVImageBufferRef cvImage ) override;
-	virtual void		releaseFrame() override;
+	NSDictionary*	avPlayerItemOutputDictionary() const override;
+	void			allocateVisualContext() override;
+	void			deallocateVisualContext() override;
+	void			newFrame( CVImageBufferRef cvImage ) override;
+	void			releaseFrame() override;
 	
 #if defined( CINDER_COCOA_TOUCH )
 	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;

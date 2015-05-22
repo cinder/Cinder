@@ -21,6 +21,8 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <CoreFoundation/CoreFoundation.h>
+
 #include "cinder/Cinder.h"
 #include "cinder/gl/Scoped.h"
 
@@ -169,6 +171,14 @@ gl::TextureRef MovieGl::getTexture()
 	unlock();
 	
 	return result;
+}
+
+NSDictionary* MovieGl::avPlayerItemOutputDictionary() const
+{
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+				[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+				[NSDictionary dictionary], kCVPixelBufferIOSurfacePropertiesKey,
+				[NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey, nil];
 }
 	
 void MovieGl::allocateVisualContext()

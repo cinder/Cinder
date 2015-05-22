@@ -693,13 +693,9 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 #endif
 }
 
-void MovieBase::createPlayerItemOutput(const AVPlayerItem* playerItem)
+void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
-NSDictionary *pixBuffAttributes = [NSDictionary dictionaryWithObjectsAndKeys:
-    [NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
-    [NSDictionary dictionary], kCVPixelBufferIOSurfacePropertiesKey,
-    [NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey, nil];
-//	NSDictionary* pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA)};
+	NSDictionary *pixBuffAttributes = avPlayerItemOutputDictionary();
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
 	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL)];
 	mPlayerVideoOutput.suppressesPlayerRendering = YES;
@@ -816,7 +812,14 @@ MovieSurface::~MovieSurface()
 {
 	deallocateVisualContext();
 }
-		
+
+NSDictionary* MovieSurface::avPlayerItemOutputDictionary() const
+{
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+				[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+				nil];
+}
+
 bool MovieSurface::hasAlpha() const
 {
 	if( mPlayerVideoOutput && mPlayer && [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]] ) {
