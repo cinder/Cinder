@@ -24,7 +24,7 @@ class QuickTimeSampleApp : public App {
 
 	void loadMovieFile( const fs::path &path );
 
-	gl::TextureRef			mFrameTexture, mInfoTexture;
+	gl::TextureRef			mFrameTexture, mInfoTexture, mGrabbedFrame;
 	qtime::MovieGlRef		mMovie;
 };
 
@@ -49,6 +49,16 @@ void QuickTimeSampleApp::keyDown( KeyEvent event )
 		mMovie->setRate( 0.5f );
 	else if( event.getChar() == '2' )
 		mMovie->setRate( 2 );
+	else if( event.getChar() == 'x' ) {
+		mMovie.reset();
+		mFrameTexture.reset();
+	}
+	else if( event.getChar() == 'g' ) {
+		if( mGrabbedFrame )
+			mGrabbedFrame.reset();
+		else
+			mGrabbedFrame = mMovie->getTexture();
+	}
 }
 
 void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
@@ -96,7 +106,9 @@ void QuickTimeSampleApp::draw()
 	gl::clear( Color( 0, 0, 0 ) );
 	gl::enableAlphaBlending();
 
-	if( mFrameTexture ) {
+	if( mGrabbedFrame )
+		gl::draw( mGrabbedFrame );
+	else if( mFrameTexture ) {
 		Rectf centeredRect = Rectf( mFrameTexture->getBounds() ).getCenteredFit( getWindowBounds(), true );
 		gl::draw( mFrameTexture, centeredRect );
 	}
