@@ -22,6 +22,7 @@
 
 #pragma once
 
+#include "cinder/Matrix.h"
 #include "cinder/Vector.h"
 
 namespace cinder {
@@ -48,6 +49,21 @@ class Ray {
 	char	getSignX() const { return mSignX; }
 	char	getSignY() const { return mSignY; }
 	char	getSignZ() const { return mSignZ; }
+
+	void	transform( const mat4 &matrix )
+	{
+		mOrigin = vec3( matrix * vec4( mOrigin, 1 ) );
+		setDirection( mat3( matrix ) * mDirection );
+	}
+
+	Ray		transformed( const mat4 &matrix ) const
+	{
+		Ray result;
+		result.mOrigin = vec3( matrix * vec4( mOrigin, 1 ) );
+		result.setDirection( mat3( matrix ) * mDirection );
+
+		return result;
+	}
 
 	vec3	calcPosition( float t ) const { return mOrigin + mDirection * t; }
 
