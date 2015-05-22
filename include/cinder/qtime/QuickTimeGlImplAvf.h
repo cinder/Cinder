@@ -61,7 +61,6 @@ class MovieGl : public MovieBase {
 	gl::TextureRef	getTexture();
 	
   protected:
-	MovieGl();
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
@@ -75,7 +74,8 @@ class MovieGl : public MovieBase {
 	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;
 	CVOpenGLESTextureRef		mVideoTextureRef;
 #else
-	std::vector<GLuint>			mAvailableTextures;
+	class TextureCache;
+	std::shared_ptr<TextureCache>		mTextureCache;
 #endif
 	
 	gl::TextureRef		mTexture;

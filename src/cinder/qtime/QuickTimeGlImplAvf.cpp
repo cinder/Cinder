@@ -41,18 +41,74 @@
 #endif
 
 namespace cinder { namespace qtime {
+
 /////////////////////////////////////////////////////////////////////////////////
-// MovieGl
-MovieGl::MovieGl()
-#if defined( CINDER_COCOA_TOUCH )
-	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
-#endif
+// MovieGl::TextureCache
+#if defined( CINDER_MAC )
+class MovieGl::TextureCache : public std::enable_shared_from_this<MovieGl::TextureCache> {
+  public:
+	~TextureCache();
+	gl::TextureRef		add( CVImageBufferRef cvImage );
+	void				remove( GLuint texId );
+	
+  private:
+	std::vector<GLuint>		mTextures;
+};
+
+MovieGl::TextureCache::~TextureCache()
 {
+	for( auto &texId : mTextures )
+		glDeleteTextures( 1, &texId );
 }
 
+gl::TextureRef MovieGl::TextureCache::add( CVImageBufferRef cvImage )
+{
+	IOSurfaceRef ioSurface = ::CVPixelBufferGetIOSurface( cvImage );
+
+	::IOSurfaceIncrementUseCount( ioSurface );
+	GLsizei texWidth = (GLsizei)::IOSurfaceGetWidth( ioSurface );
+	GLsizei texHeight = (GLsizei)::IOSurfaceGetHeight( ioSurface );
+
+	// find an available id or generate one if necessary
+	if( mTextures.empty() ) {
+		GLuint newId;
+		glGenTextures( 1, &newId );
+		mTextures.push_back( newId );
+	}
+	GLuint texId = mTextures.back();
+	mTextures.pop_back();
+
+	auto sharedThis = shared_from_this();
+	auto deleter = [cvImage, ioSurface, sharedThis] ( gl::Texture *texture ) {
+		::IOSurfaceDecrementUseCount( ioSurface );
+		sharedThis->remove( texture->getId() );
+		delete texture;
+		::CVPixelBufferRelease( cvImage );
+	};
+		
+	auto result = gl::Texture2d::create( GL_TEXTURE_RECTANGLE, texId, texWidth, texHeight, true, deleter );
+	result->setTopDown( true );
+
+	gl::ScopedTextureBind bind( result );
+	CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, ioSurface, 0);        
+	
+	return result;
+}
+
+void MovieGl::TextureCache::remove( GLuint texId )
+{
+	mTextures.push_back( texId );
+}
+
+#endif
+
+/////////////////////////////////////////////////////////////////////////////////
+// MovieGl
 MovieGl::MovieGl( const Url& url )
 #if defined( CINDER_COCOA_TOUCH )
 	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
 #endif
 {
 	MovieBase::initFromUrl( url );
@@ -61,6 +117,8 @@ MovieGl::MovieGl( const Url& url )
 MovieGl::MovieGl( const fs::path& path )
 #if defined( CINDER_COCOA_TOUCH )
 	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
 #endif
 {
 	MovieBase::initFromPath( path );
@@ -69,6 +127,8 @@ MovieGl::MovieGl( const fs::path& path )
 MovieGl::MovieGl( const MovieLoader &loader )
 #if defined( CINDER_COCOA_TOUCH )
 	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
 #endif
 {
 	MovieBase::initFromLoader( loader );
@@ -96,11 +156,6 @@ bool MovieGl::hasAlpha() const
 #elif defined ( CINDER_COCOA )
 	return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
 #endif
-	
-	/*
-	CGColorSpaceRef color_space = CVImageBufferGetColorSpace(mVideoTextureRef);
-	size_t components = CGColorSpaceGetNumberOfComponents(color_space);
-	return components > 3;
 	*/
 return false;
 }
@@ -195,32 +250,7 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	mTexture->setCleanSize( mWidth, mHeight );
 	mTexture->setTopDown( topDown );
 #elif defined( CINDER_MAC )
-	IOSurfaceRef ioSurface = ::CVPixelBufferGetIOSurface( cvImage );
-
-	::IOSurfaceIncrementUseCount( ioSurface );
-	GLsizei texWidth = (GLsizei)::IOSurfaceGetWidth( ioSurface );
-	GLsizei texHeight = (GLsizei)::IOSurfaceGetHeight( ioSurface );
-
-	if( mAvailableTextures.empty() ) {
-		GLuint newName;
-		glGenTextures( 1, &newName );
-		mAvailableTextures.push_back( newName );
-	}
-
-	auto deleter = [cvImage, ioSurface, this] ( gl::Texture *texture ) {
-		::IOSurfaceDecrementUseCount( ioSurface );
-		mAvailableTextures.push_back( texture->getId() );
-		delete texture;
-		::CVPixelBufferRelease( cvImage );
-	};
-	
-	GLuint textureName = mAvailableTextures.back();
-	mAvailableTextures.pop_back();
-	mTexture = gl::Texture2d::create( GL_TEXTURE_RECTANGLE, textureName, texWidth, texHeight, true, deleter );
-	mTexture->setTopDown( true );
-
-	gl::ScopedTextureBind bind( mTexture );
-	CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, ioSurface, 0);        
+	mTexture = mTextureCache->add( cvImage );
 #endif
 }
 
