@@ -55,6 +55,22 @@ public:
 		mExtents = glm::abs( max - mCenter );
 	}
 
+	//! Expands the box so that it contains \a point.
+	void include( const vec3 &point )
+	{
+		vec3 min = glm::min( getMin(), point );
+		vec3 max = glm::max( getMax(), point );
+		set( min, max );
+	}
+
+	//! Expands the box so that it contains \a box.
+	void include( const AxisAlignedBox &box )
+	{
+		vec3 min = glm::min( getMin(), box.getMin() );
+		vec3 max = glm::max( getMax(), box.getMax() );
+		set( min, max );
+	}
+
 	//! Returns \c true if the axis-aligned box contains \a point.
 	bool contains( const vec3 &point ) const
 	{
@@ -101,12 +117,6 @@ public:
 		return 0;
 	}
 
-	//! Performs ray intersections and returns the number of intersections (0, 1 or 2).
-	int intersect( const Ray &ray, float intersections[2] ) const
-	{
-		return intersect( ray, &intersections[0], &intersections[1] );
-	}
-
 	//! Given a plane through the origin with \a normal, returns the minimum and maximum distance to the axis-aligned box.
 	void project( const vec3 &normal, float *min, float *max ) const
 	{
@@ -116,23 +126,7 @@ public:
 		*max = p + d;
 	}
 
-	//! Expands the box so that it contains \a point.
-	void include( const vec3 &point )
-	{
-		vec3 min = glm::min( getMin(), point );
-		vec3 max = glm::max( getMax(), point );
-		set( min, max );
-	}
-
-	//! Expands the box so that it contains \a box.
-	void include( const AxisAlignedBox &box )
-	{
-		vec3 min = glm::min( getMin(), box.getMin() );
-		vec3 max = glm::max( getMax(), box.getMax() );
-		set( min, max );
-	}
-
-	//! For use in frustum culling.
+	//! Given a plane through the origin with \a normal, returns the corner closest to the plane.
 	vec3 getNegative( const vec3 &normal ) const
 	{
 		vec3 result = getMin();
@@ -150,7 +144,7 @@ public:
 		return result;
 	}
 
-	//! For use in frustum culling.
+	//! Given a plane through the origin with \a normal, returns the corner farthest from the plane.
 	vec3 getPositive( const vec3 &normal ) const
 	{
 		vec3 result = getMin();
