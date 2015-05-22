@@ -22,6 +22,7 @@
  */
 
 #include "cinder/Cinder.h"
+#include "cinder/gl/Scoped.h"
 
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for >=Mac OS 10.8
 #if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) ) || defined( CINDER_COCOA_TOUCH )
@@ -116,9 +117,9 @@ void MovieGl::allocateVisualContext()
 		}
 		
 #elif defined( CINDER_COCOA )
-		CGLContextObj context = app::AppBase::get()->getRenderer()->getCglContext();
-		CGLPixelFormatObj pixelFormat = app::AppBase::get()->getRenderer()->getCglPixelFormat();
-		err = ::CVOpenGLTextureCacheCreate( kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef );		
+//		CGLContextObj context = app::AppBase::get()->getRenderer()->getCglContext();
+//		CGLPixelFormatObj pixelFormat = app::AppBase::get()->getRenderer()->getCglPixelFormat();
+//		err = ::CVOpenGLTextureCacheCreate( kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef );		
 #endif
 		if( err )
 			throw AvfTextureErrorExc();
@@ -143,6 +144,37 @@ void MovieGl::deallocateVisualContext()
 	}
 }
 
+#if 1
+static IOSurfaceRef _currentSurface = nullptr;
+static CVImageBufferRef _lastImg = nullptr;
+void MovieGl::newFrame( CVImageBufferRef cvImage )
+{
+	static GLuint _textureName = 0;
+	IOSurfaceRef newSurface = CVPixelBufferGetIOSurface( cvImage );
+//std::cout << "Acquiring " << newSurface << std::endl;
+	_currentSurface = newSurface;
+//auto ct = IOSurfaceGetUseCount( _currentSurface );
+		IOSurfaceIncrementUseCount( _currentSurface );
+		GLsizei texWidth = (int) IOSurfaceGetWidth(_currentSurface);
+		GLsizei texHeight = (int) IOSurfaceGetHeight(_currentSurface);
+
+		if( ! _textureName ) {
+			GLuint name;
+			glGenTextures(1, &name);
+			_textureName = name;
+			mTexture = gl::Texture2d::create( GL_TEXTURE_RECTANGLE, name, texWidth, texHeight, true );
+			mTexture->setTopDown( true );
+		}
+
+		//    glBindTexture( GL_TEXTURE_RECTANGLE_ARB, _textureName );
+		gl::ScopedTextureBind bind( mTexture );
+		CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, _currentSurface, 0);        
+//    glBindTexture(GL_TEXTURE_RECTANGLE_ARB, 0);}
+//auto ct2 = IOSurfaceGetUseCount( _currentSurface );
+	_lastImg = cvImage;
+}
+
+#else
 void MovieGl::newFrame( CVImageBufferRef cvImage )
 {
 	::CVPixelBufferLockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
@@ -205,6 +237,8 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 #elif defined( CINDER_MAC )
 	GLenum target = ::CVOpenGLTextureGetTarget( videoTextureRef );
 	GLuint name = ::CVOpenGLTextureGetName( videoTextureRef );
+std::cout << name << std::endl;
+
 	bool topDown = ::CVOpenGLTextureIsFlipped( videoTextureRef );
 
 	// custom deleter fires when last reference to Texture goes out of scope
@@ -218,15 +252,26 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	::CVOpenGLTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
 	mTexture->setCleanSize( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
 	mTexture->setTopDown( topDown );
-
+//CGLTexImageIOSurface2D
 	::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
 	::CVPixelBufferRelease( cvImage );
 #endif
 }
+#endif
 
 void MovieGl::releaseFrame()
 {
-	mTexture.reset();
+	if( _currentSurface ) {
+//std::cout << "releasing " << _currentSurface << std::endl;
+//		auto ct = IOSurfaceGetUseCount(_currentSurface); 
+		IOSurfaceDecrementUseCount(_currentSurface);
+		_currentSurface = nullptr;
+	}
+	if( _lastImg ) {
+		CVPixelBufferRelease( _lastImg );
+		_lastImg = nullptr;
+	}
+//	mTexture.reset();
 }
 	
 } } // namespace cinder::qtime
