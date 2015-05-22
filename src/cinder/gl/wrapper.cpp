@@ -664,9 +664,15 @@ void end()
 	if( ctx->immediate().empty() )
 		return;
 	else {
-		ScopedGlslProg ScopedGlslProg( ctx->getStockShader( ShaderDef().color() ) );
+		const GlslProg* curGlslProg = ctx->getGlslProg();
+		if( ! curGlslProg )
+			ctx->pushGlslProg( ctx->getStockShader( ShaderDef().color() ).get() );
+
 		ctx->immediate().draw();
 		ctx->immediate().clear();
+
+		if( ! curGlslProg )
+			ctx->popGlslProg();
 	}
 }
 

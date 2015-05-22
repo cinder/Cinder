@@ -36,7 +36,7 @@ Earth::Earth()
 	mEarth = gl::Batch::create( geom::Sphere().radius( mRadius ).subdivisions( 120 ), earthShader );
 
 	// Create a cone mesh with a custom shader, which we use to visualize earthquakes.
-	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Cone().ratio( 0.3f ).subdivisionsHeight( 6 ).subdivisionsAxis( 30 ) );
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Cone().height( 1 ).ratio( 0.2f ).subdivisionsHeight( 6 ).subdivisionsAxis( 30 ) );
 
 	// Create an array of initial per-instance model matrices.
 	std::vector<mat4> transforms;
@@ -60,7 +60,7 @@ Earth::Earth()
 
 void Earth::update()
 {
-	// repelLocTips(); // Seems to no longer work. Disabled for now.
+	repelLocTips(); // Seems to no longer work. Disabled for now.
 
 	mEarth->getGlslProg()->uniform( "lightDir", mLightDir );
 	mQuake->getGlslProg()->uniform( "lightDir", mLightDir );
@@ -75,9 +75,9 @@ void Earth::update()
 				if( quake.mMag < mMinMagToRender )
 					continue;
 
-				mat4 transform = glm::translate( quake.mLoc * mRadius );
-				transform *= glm::scale( vec3( quake.mMag ) );
+				mat4 transform = glm::translate( quake.mLocTipAnchor );
 				transform *= glm::toMat4( glm::rotation( vec3( 0, 1, 0 ), glm::normalize( quake.mLoc - mLoc ) ) );
+				transform *= glm::scale( vec3( quake.mMag, glm::distance( quake.mLocTip, quake.mLocTipAnchor ), quake.mMag ) );
 
 				*data++ = transform;
 
@@ -145,8 +145,11 @@ void Earth::drawQuakeLabelsOnBillboard( const vec3 &aRight, const vec3 &aUp )
 
 void Earth::drawQuakeLabelsOnSphere( const vec3 &eyeNormal, const float eyeDist )
 {
-	gl::ScopedBlend blend( false );
-	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().texture() ) );
+	gl::ScopedDepth depth( true, false );
+	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color().texture() ) );
+
+	gl::ScopedColor color( 1, 1, 1 );
+	gl::ScopedBlendAlpha blend;
 
 	const float distMulti = eyeDist * 0.001f;
 	for( auto &quake : mQuakes ) {
@@ -172,15 +175,15 @@ void Earth::drawQuakeLabelsOnSphere( const vec3 &eyeNormal, const float eyeDist 
 		float h = quake.mLabel->getHeight() * dp * distMulti;
 
 		// Render billboard.
-		gl::ScopedTextureBind tex0( quake.mLabel );
+		gl::ScopedTextureBind tex0( quake.mLabel, 0 );
 		gl::begin( GL_TRIANGLE_STRIP );
-		gl::texCoord( 0, 1 );
-		gl::vertex( x + perp1.x * w - perp2.x * h, y + perp1.y * w - perp2.y * h, z + perp1.z * w - perp2.z * h );
-		gl::texCoord( 1, 1 );
-		gl::vertex( x - perp1.x * w - perp2.x * h, y - perp1.y * w - perp2.y * h, z - perp1.z * w - perp2.z * h );
 		gl::texCoord( 0, 0 );
-		gl::vertex( x + perp1.x * w + perp2.x * h, y + perp1.y * w + perp2.y * h, z + perp1.z * w + perp2.z * h );
+		gl::vertex( x + perp1.x * w - perp2.x * h, y + perp1.y * w - perp2.y * h, z + perp1.z * w - perp2.z * h );
 		gl::texCoord( 1, 0 );
+		gl::vertex( x - perp1.x * w - perp2.x * h, y - perp1.y * w - perp2.y * h, z - perp1.z * w - perp2.z * h );
+		gl::texCoord( 0, 1 );
+		gl::vertex( x + perp1.x * w + perp2.x * h, y + perp1.y * w + perp2.y * h, z + perp1.z * w + perp2.z * h );
+		gl::texCoord( 1, 1 );
 		gl::vertex( x - perp1.x * w + perp2.x * h, y - perp1.y * w + perp2.y * h, z - perp1.z * w + perp2.z * h );
 		gl::end();
 	}
@@ -198,7 +201,7 @@ void Earth::setQuakeLocTips()
 {
 	for( auto &quake : mQuakes ) {
 		quake.mLoc += Rand::randVec3f() * 0.001f;
-		quake.mLocTip = mLoc + quake.mLoc * ( mRadius + quake.mMag * quake.mMag );
+		quake.mLocTip = mLoc + quake.mLoc * ( mRadius + quake.mMag * quake.mMag ); // quake.mLoc * ( quake.mMag * quake.mMag ); // 
 		quake.mLocTipAnchor = mLoc + quake.mLoc * mRadius;
 	}
 }
@@ -234,11 +237,12 @@ void Earth::repelLocTips()
 				if( F > 2.0f )
 					F = 2.0f;
 
-				glm::normalize( dir );
-				dir *= F * per;
+				dir = F * per * glm::normalize( dir );
 
-				quake1->mLocTip += dir;
-				quake2->mLocTip -= dir;
+				quake1->mLocTip = quake1->mLocTipAnchor + ( quake1->mMag * quake1->mMag ) * dir;
+				quake2->mLocTip = quake2->mLocTipAnchor - ( quake2->mMag * quake2->mMag ) * dir;
+
+
 			}
 		}
 	}
@@ -247,11 +251,11 @@ void Earth::repelLocTips()
 		vec3 dir = quake->mLocTip - quake->mLocTipAnchor;
 		float limit = ( 10.0f - quake->mMag ) * ( 10.0f - quake->mMag ) * 0.75f + 15.0f;
 		if( glm::length( dir ) > limit ) {
-			glm::normalize( dir );
+			dir = glm::normalize( dir );
 			quake->mLocTip = quake->mLocTipAnchor + dir * limit;
 		}
 
-		glm::normalize( quake->mLocTip );
+		quake->mLocTip = glm::normalize( quake->mLocTip );
 		quake->mLocTip *= mRadius + quake->mMag + 10.0f;
 	}
 }

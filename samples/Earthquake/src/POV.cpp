@@ -29,8 +29,7 @@ void POV::update()
 	mEye.x = sin( mAngle ) * mDist;
 	mEye.z = cos( mAngle ) * mDist;
 
-	mEyeNormal = mEye - mCenter;
-	glm::normalize( mEyeNormal );
+	mEyeNormal = glm::normalize( mEye - mCenter );
 
 	mCam.lookAt( mEye, mCenter );
 	mCam.setPerspective( mFOV, mApp->getWindowAspectRatio(), 1, 20000 );
