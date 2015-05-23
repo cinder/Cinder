@@ -72,7 +72,7 @@ void ShadowMappingBasic::setup()
 	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, fboFormat );
 	
 	// Set up camera from the light's viewpoint
-	mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.5f, 7.0f );
+	mLightCam.setPerspective( 100.0f, mFbo->getAspectRatio(), 0.5f, 10.0f );
 	mLightCam.lookAt( mLightPos, vec3( 0.0f ) );
 	
 	try {
