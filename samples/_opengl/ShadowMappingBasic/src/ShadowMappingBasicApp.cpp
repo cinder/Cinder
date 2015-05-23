@@ -21,6 +21,7 @@ class ShadowMappingBasic : public App {
   public:
 	static void prepareSettings( Settings *settings );
 	void setup() override;
+	void resize() override;
 	void update() override;
 	void draw() override;
 	
@@ -69,6 +70,8 @@ void ShadowMappingBasic::setup()
 	depthFormat.setCompareFunc( GL_LEQUAL );
 	
 	mShadowMapTex = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT, depthFormat );
+
+	mCam.setPerspective( 40.0f, getWindowAspectRatio(), 0.5f, 500.0f );
 		
 	gl::Fbo::Format fboFormat;
 	fboFormat.attachment( GL_DEPTH_ATTACHMENT, mShadowMapTex );
@@ -102,11 +105,15 @@ void ShadowMappingBasic::setup()
 	gl::enableDepthWrite();
 }
 
+void ShadowMappingBasic::resize()
+{
+	mCam.setAspectRatio( getWindowAspectRatio() );
+}
+
 void ShadowMappingBasic::update()
 {
 	// Store time so each render pass uses the same value
 	mTime = getElapsedSeconds();
-	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.5f, 500.0f );
 	mCam.lookAt( vec3( sin( mTime ) * 5.0f, sin( mTime ) * 2.5f + 2, 5.0f ), vec3( 0.0f ) );
 }
 
@@ -118,7 +125,7 @@ void ShadowMappingBasic::renderDepthFbo()
 
 	// Render scene to fbo from the view of the light
 	gl::ScopedFramebuffer fbo( mFbo );
-	gl::viewport( vec2( 0.0f ), mFbo->getSize() );
+	gl::ScopedViewport viewport( vec2( 0.0f ), mFbo->getSize() );
 	gl::clear( Color::black() );
 	gl::color( Color::white() );
 	gl::setMatrices( mLightCam );
