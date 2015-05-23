@@ -19,7 +19,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{A6143DD7-D49A-48D0-9700-1E9DEF425BDE}</ProjectGuid>
-    <RootNamespace>rotatingBox</RootNamespace>
+    <RootNamespace>CaptureCube</RootNamespace>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
