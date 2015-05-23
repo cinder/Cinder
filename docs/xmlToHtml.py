@@ -220,9 +220,7 @@ def genAnchorTag( bs4, anchorName ) :
 	anchor["name"] = anchorName
 	return anchor
 
-
 def parseFile( bs4, inPath, outPath ) :
-
 	tree = None;
 	try:
 		xml_file = codecs.open( inPath, "r", "UTF-8" )
@@ -454,7 +452,6 @@ def genTypeDefs( bs4, typeDefs ):
 
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	# g_sideEl.append( side )
 	contentDiv = side.find( "div", "content" )
 
 	# fill heading
@@ -552,11 +549,7 @@ def genClassHierarchy( bs4, classDef ):
 			li.append( base.name )
 		ul.append( li )
 
-
-
-	
 def genClassList( bs4, tree ):
-
 	classes = tree.findall( r"compounddef/innerclass" )
 
 	if len( classes ) < 1 :
@@ -564,7 +557,6 @@ def genClassList( bs4, tree ):
 
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	# g_sideEl.append( side )
 
 	# fill heading
 	side.find('h4').append("Classes:")
@@ -586,7 +578,6 @@ def genClassList( bs4, tree ):
 
 
 def replaceTag( bs4, tree, parentTag, content ):
-
 	tag = tree.tag
 	attrib = tree.attrib
 	hasParent = False
@@ -648,7 +639,6 @@ def replaceTag( bs4, tree, parentTag, content ):
 
 
 def iterateMarkup( bs4, tree, parent ):
-
 	if tree == None :
 		return
 	
@@ -686,7 +676,6 @@ def iterateMarkup( bs4, tree, parent ):
 	return currentTag
 
 def markupDescription( bs4, tree ):
-
 	description_el = genTag( bs4, "div", ["description", "content"] )
 	briefDesc = tree.find( r'briefdescription/' )
 	if briefDesc is None :
@@ -700,10 +689,10 @@ def markupDescription( bs4, tree ):
 	
 	return description_el
 
-# Looks though the html and replaces any code chunks that exist
-# in a paragraph and splits them up so that we can use pre tags.
 def replaceCodeChunks( bs4 ) :
-
+	""" Looks though the html and replaces any code chunks that exist
+		in a paragraph and splits them up so that we can use pre tags.
+	"""
 	# find all p tags
 	pTags = bs4.find_all( "p" )
 	for p in pTags :
@@ -987,7 +976,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	#  Namespace Nav
 	# +-------------+
 	sideNavTag.append( g_namespaceNav )
-
 
 	# +---------------+
 	#  Side Area Nodes
@@ -1415,7 +1403,6 @@ if __name__ == "__main__":
 	# process a specific file
 	if os.path.isfile( inPath ):
 		outPath = sys.argv[2] if len( sys.argv) > 2 else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
-		print outPath
 		processFile( inPath, outPath )
 
 	# process a directory
