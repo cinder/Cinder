@@ -1,5 +1,0 @@
-#pragma once
-#include "..\include\Resources.h"
-
-RES_SHADOWMAP_VERT
-RES_SHADOWMAP_FRAG
