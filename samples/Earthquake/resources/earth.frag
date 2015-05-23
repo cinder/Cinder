@@ -16,9 +16,9 @@ out vec4 fragColor;
 void main()
 {
 	vec2 texCoord			= vec2( vertTexCoord0.s, vertTexCoord0.t );
-	vec3 diffuseSample		= texture2D( texDiffuse, texCoord ).rgb;
-	vec3 normalSample		= texture2D( texNormal, texCoord ).rgb * 2.0 - 1.0;
-	vec3 texSample			= texture2D( texMask, texCoord ).rgb;
+	vec3 diffuseSample		= texture( texDiffuse, texCoord ).rgb;
+	vec3 normalSample		= texture( texNormal, texCoord ).rgb * 2.0 - 1.0;
+	vec3 texSample			= texture( texMask, texCoord ).rgb;
 	
 	
 	// use green channel for land elevation data

@@ -22,15 +22,15 @@
 		00C07B9A0FFDB78B004801EA /* earthDiffuse.png in Resources */ = {isa = PBXBuildFile; fileRef = 00C07B950FFDB78B004801EA /* earthDiffuse.png */; };
 		00C07B9B0FFDB78B004801EA /* stars.jpg in Resources */ = {isa = PBXBuildFile; fileRef = 00C07B960FFDB78B004801EA /* stars.jpg */; };
 		00C07B9C0FFDB78B004801EA /* earthNormal.png in Resources */ = {isa = PBXBuildFile; fileRef = 00C07B970FFDB78B004801EA /* earthNormal.png */; };
-		00C07B9D0FFDB78B004801EA /* passThru_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 00C07B980FFDB78B004801EA /* passThru_vert.glsl */; };
-		00C07B9E0FFDB78B004801EA /* earth_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = 00C07B990FFDB78B004801EA /* earth_frag.glsl */; };
+		111FB9C21B1016EB00A23DDB /* earth.frag in Resources */ = {isa = PBXBuildFile; fileRef = 111FB9BE1B1016EB00A23DDB /* earth.frag */; };
+		111FB9C31B1016EB00A23DDB /* earth.vert in Resources */ = {isa = PBXBuildFile; fileRef = 111FB9BF1B1016EB00A23DDB /* earth.vert */; };
+		111FB9C41B1016EB00A23DDB /* quake.frag in Resources */ = {isa = PBXBuildFile; fileRef = 111FB9C01B1016EB00A23DDB /* quake.frag */; };
+		111FB9C51B1016EB00A23DDB /* quake.vert in Resources */ = {isa = PBXBuildFile; fileRef = 111FB9C11B1016EB00A23DDB /* quake.vert */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		E10A4FE60FFE8DCB000B8149 /* earthMask.png in Resources */ = {isa = PBXBuildFile; fileRef = E10A4FE50FFE8DCB000B8149 /* earthMask.png */; };
-		E11D28D50FFDCF7A005537A6 /* quake_frag.glsl in Resources */ = {isa = PBXBuildFile; fileRef = E11D28D30FFDCF7A005537A6 /* quake_frag.glsl */; };
-		E11D28D60FFDCF7A005537A6 /* quake_vert.glsl in Resources */ = {isa = PBXBuildFile; fileRef = E11D28D40FFDCF7A005537A6 /* quake_vert.glsl */; };
 		E18AF1C10FFDE76A0048FFE3 /* stars.png in Resources */ = {isa = PBXBuildFile; fileRef = E18AF1C00FFDE76A0048FFE3 /* stars.png */; };
 /* End PBXBuildFile section */
 
@@ -53,9 +53,11 @@
 		00C07B950FFDB78B004801EA /* earthDiffuse.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = earthDiffuse.png; path = ../resources/earthDiffuse.png; sourceTree = SOURCE_ROOT; };
 		00C07B960FFDB78B004801EA /* stars.jpg */ = {isa = PBXFileReference; lastKnownFileType = image.jpeg; name = stars.jpg; path = ../resources/stars.jpg; sourceTree = SOURCE_ROOT; };
 		00C07B970FFDB78B004801EA /* earthNormal.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = earthNormal.png; path = ../resources/earthNormal.png; sourceTree = SOURCE_ROOT; };
-		00C07B980FFDB78B004801EA /* passThru_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = passThru_vert.glsl; path = ../resources/passThru_vert.glsl; sourceTree = SOURCE_ROOT; };
-		00C07B990FFDB78B004801EA /* earth_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = earth_frag.glsl; path = ../resources/earth_frag.glsl; sourceTree = SOURCE_ROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		111FB9BE1B1016EB00A23DDB /* earth.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = earth.frag; path = ../resources/earth.frag; sourceTree = "<group>"; };
+		111FB9BF1B1016EB00A23DDB /* earth.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = earth.vert; path = ../resources/earth.vert; sourceTree = "<group>"; };
+		111FB9C01B1016EB00A23DDB /* quake.frag */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quake.frag; path = ../resources/quake.frag; sourceTree = "<group>"; };
+		111FB9C11B1016EB00A23DDB /* quake.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = quake.vert; path = ../resources/quake.vert; sourceTree = "<group>"; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -66,8 +68,6 @@
 		8D1107310486CEB800E47090 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		8D1107320486CEB800E47090 /* Earthquake.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Earthquake.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		E10A4FE50FFE8DCB000B8149 /* earthMask.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = earthMask.png; path = ../resources/earthMask.png; sourceTree = SOURCE_ROOT; };
-		E11D28D30FFDCF7A005537A6 /* quake_frag.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = quake_frag.glsl; path = ../resources/quake_frag.glsl; sourceTree = "<group>"; };
-		E11D28D40FFDCF7A005537A6 /* quake_vert.glsl */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = quake_vert.glsl; path = ../resources/quake_vert.glsl; sourceTree = "<group>"; };
 		E18AF1C00FFDE76A0048FFE3 /* stars.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = stars.png; path = ../resources/stars.png; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
@@ -164,15 +164,15 @@
 		29B97317FDCFA39411CA2CEA /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E11D28D30FFDCF7A005537A6 /* quake_frag.glsl */,
-				E11D28D40FFDCF7A005537A6 /* quake_vert.glsl */,
+				111FB9BE1B1016EB00A23DDB /* earth.frag */,
+				111FB9BF1B1016EB00A23DDB /* earth.vert */,
+				111FB9C01B1016EB00A23DDB /* quake.frag */,
+				111FB9C11B1016EB00A23DDB /* quake.vert */,
 				E10A4FE50FFE8DCB000B8149 /* earthMask.png */,
 				00C07B950FFDB78B004801EA /* earthDiffuse.png */,
 				00C07B970FFDB78B004801EA /* earthNormal.png */,
 				E18AF1C00FFDE76A0048FFE3 /* stars.png */,
 				00C07B960FFDB78B004801EA /* stars.jpg */,
-				00C07B980FFDB78B004801EA /* passThru_vert.glsl */,
-				00C07B990FFDB78B004801EA /* earth_frag.glsl */,
 				8D1107310486CEB800E47090 /* Info.plist */,
 			);
 			name = Resources;
@@ -252,15 +252,15 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				111FB9C21B1016EB00A23DDB /* earth.frag in Resources */,
 				00C07B9A0FFDB78B004801EA /* earthDiffuse.png in Resources */,
 				00C07B9B0FFDB78B004801EA /* stars.jpg in Resources */,
 				00C07B9C0FFDB78B004801EA /* earthNormal.png in Resources */,
-				00C07B9D0FFDB78B004801EA /* passThru_vert.glsl in Resources */,
-				00C07B9E0FFDB78B004801EA /* earth_frag.glsl in Resources */,
-				E11D28D50FFDCF7A005537A6 /* quake_frag.glsl in Resources */,
-				E11D28D60FFDCF7A005537A6 /* quake_vert.glsl in Resources */,
+				111FB9C31B1016EB00A23DDB /* earth.vert in Resources */,
 				E18AF1C10FFDE76A0048FFE3 /* stars.png in Resources */,
+				111FB9C51B1016EB00A23DDB /* quake.vert in Resources */,
 				E10A4FE60FFE8DCB000B8149 /* earthMask.png in Resources */,
+				111FB9C41B1016EB00A23DDB /* quake.frag in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
