@@ -8,10 +8,14 @@
 #include "cinder/Camera.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Fbo.h"
+#include "cinder/Log.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+const int	FBO_WIDTH = 2048;
+const int	FBO_HEIGHT = 2048;
 
 class ShadowMappingBasic : public App {
   public:
@@ -25,8 +29,7 @@ class ShadowMappingBasic : public App {
 	
   private:
 	gl::FboRef			mFbo;
-	static const int	FBO_WIDTH = 2048, FBO_HEIGHT = 2048;
-	
+
 	CameraPersp			mCam;
 	CameraPersp			mLightCam;
 	vec3				mLightPos;
@@ -82,9 +85,9 @@ void ShadowMappingBasic::setup()
 		mGlsl = gl::GlslProg::create( loadAsset( "shadow_shader.vert" ), loadAsset( "shadow_shader.frag" ) );
 #endif
 	}
-	catch ( std::exception& e ) {
-		console() << e.what() << endl;
-		quit();
+	catch ( Exception &exc ) {
+		CI_LOG_EXCEPTION( "glsl load failed", exc );
+		std::terminate();
 	}
 	
 	auto teapot				= geom::Teapot().subdivisions( 8 );
@@ -132,14 +135,20 @@ void ShadowMappingBasic::drawScene( bool shadowMap )
 	gl::color( Color( 0.4f, 0.6f, 0.9f ) );
 	gl::rotate( mTime * 2.0f, 1.0f, 1.0f, 1.0f );
 
-	shadowMap ? mTeapotBatch->draw() : mTeapotShadowedBatch->draw();
+	if( shadowMap )
+		mTeapotBatch->draw();
+	else
+		mTeapotShadowedBatch->draw();
 
 	gl::popModelMatrix();
 	
 	gl::color( Color( 0.7f, 0.7f, 0.7f ) );
 	gl::translate( 0.0f, -2.0f, 0.0f );
 	
-	shadowMap ? mFloorBatch->draw() : mFloorShadowedBatch->draw();
+	if( shadowMap )
+		mFloorBatch->draw();
+	else
+		mFloorShadowedBatch->draw();
 }
 
 void ShadowMappingBasic::draw()
@@ -148,11 +157,11 @@ void ShadowMappingBasic::draw()
 
 	gl::clear( Color::black() );
 	gl::setMatrices( mCam );
-	gl::viewport( toPixels( getWindowSize() ) );
-	
-	gl::ScopedTextureBind tex( mShadowMapTex, (uint8_t) 0 );
-	vec3 mvLightPos		= vec3( gl::getModelView() * vec4( mLightPos, 1.0f ) ) ;
-	mat4 shadowMatrix	= mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
+
+	gl::ScopedTextureBind texScope( mShadowMapTex, (uint8_t) 0 );
+
+	vec3 mvLightPos	= vec3( gl::getModelView() * vec4( mLightPos, 1.0f ) ) ;
+	mat4 shadowMatrix = mLightCam.getProjectionMatrix() * mLightCam.getViewMatrix();
 
 	mGlsl->uniform( "uShadowMap", 0 );
 	mGlsl->uniform( "uLightPos", mvLightPos );
