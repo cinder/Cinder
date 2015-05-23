@@ -43,7 +43,6 @@ sideEl = None
 
 # globals that may change, but may need to accessed by other routines.
 # Sometimes stored since they are costly to parse
-global_fileTags = None
 global_classTags = None
 global_classTagsDict = {}
 global_structTags = None
@@ -59,6 +58,7 @@ class SymbolMap (object):
 		self.classes = {}
 		self.typedefs = {}
 		self.functions = {}
+		self.files = {}
 
 	class Class (object):
 		def __init__( self, name, base, fileName ):
@@ -72,7 +72,8 @@ class SymbolMap (object):
 			self.fileName = fileName
 		
 	class Typedef (object):
-		def __init__( self, type, path ):
+		def __init__( self, name, type, path ):
+			self.name = name
 			self.type = type
 			self.path = path
 
@@ -81,6 +82,12 @@ class SymbolMap (object):
 			self.name = name
 			self.base = base
 			self.path = path
+
+	class File (object):
+		def __init__( self, name, path, typedefs ):
+			self.name = name
+			self.path = path
+			self.typedefs = typedefs
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
@@ -115,8 +122,13 @@ class SymbolMap (object):
 		return self.typedefs.get( name )
 
 	def findFunction( self, name ):
-		# find class
 		return self.functions.get( name )
+
+	def findFile( self, name ):
+		return self.files.get( name )
+
+	def findFileTypedefs( self, name ):
+		return self.findFile( name ).typedefs
 
 	def getClassAncestors( self, name ):
 		result = []
@@ -159,12 +171,6 @@ def findClassTag( className ):
 	for c in global_classTags :
 		if c.find('name').text == className:
 			return c
-
-def findFileTag( includeFile ):
-	# find the file definition in tag file
-	for f in global_fileTags :
-		if f.find('name').text == includeFile:
-			return f
 
 def findClassLink( className ) :
 	link = None
@@ -424,38 +430,43 @@ def defineTag( bs4, tagName, tree ):
 	
 	return newTag
 
-# generate includes tag group
+# Generate includes tag group
 def genIncludesTag( bs4, text ):
 
 	includeLink = genTag( bs4, "a", None, text )
 	defineLinkTag( includeLink, {'linkid':text} )
 	return includeLink
 
-def genTypeDefs( bs4, tree ):
+def genTypeDefs( bs4, typeDefs ):
+	"""	Generates the typedefs side bar, with each linking out
+		to its full definition.
 
-	# get typedefs from fileTagTree in tagfile
-	typeDefs = tree.findall( r'member[@kind="typedef"]' )
+	Args:
+		bs4: The current beautifulSoup html instance
+		typeDefs: An array of SymbolMap::TypeDef Objects
 
+	Returns:
+		Empty if the typeDefs list is empty
+	"""
+
+	# return if empty array
 	if len(typeDefs) == 0 :
 		return
 
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
 	sideEl.append( side )
+	contentDiv = side.find( "div", "content" )
 
 	# fill heading
 	side.find('h4').append("Typedefs:")
-
-	typeDefUl = None
-	contentDiv = side.find( "div", "content" )
-	if len(typeDefs) > 0 :
-		typeDefUl = genTag( bs4, "ul" )
-
+	
 	# fill list of typedefs
+	typeDefUl = genTag( bs4, "ul" )
 	for typeDef in typeDefs :
 		typeDefLi = genTag( bs4, "li" )
-		aTag = genTag( bs4, "a", [], typeDef.find( "name" ).text )
-		defineLinkTag( aTag, {"typedef": typeDef } )
+		aTag = genTag( bs4, "a", [], typeDef.name )
+		defineLinkTag( aTag, {"href": typeDef.path } )
 		typeDefLi.append( aTag );
 		typeDefUl.append( typeDefLi )
 
@@ -914,7 +925,6 @@ def generateNamespaceNav( bs4 ) :
 def processClassXmlFile( inPath, outPath, html ):
 
 	global sideEl
-	global global_fileTags
 	global global_classTags
 
 	# define the tree that contains all the data we need to populate this page
@@ -944,7 +954,6 @@ def processClassXmlFile( inPath, outPath, html ):
 
 	print "Processing file: " + inPath + " > " + outPath;
 
-	
 	# find include name (header file)
 	includeTrees = tree.findall( r"compounddef/includes" )
 	includeDef = None
@@ -952,11 +961,9 @@ def processClassXmlFile( inPath, outPath, html ):
 		includeDef = tree.findall( r"compounddef/includes" )[0].text
 
 	# find file tree in tag file, which is a list of all of the file nodes
-	fileTagTree = None
+	fileDef = None
 	if includeDef != None :
-		global_fileTags = tagXml.findall( r'compound[@kind="file"]' )
-		fileTagTree = findFileTag( includeDef )
-		# print ET.dump(fileTagTree)
+		fileDef = g_symbolMap.findFile( includeDef )
 	
 	# find class tree in tag file, which is all of the class nodes
 	classTagTree = findClassTag( className )
@@ -995,8 +1002,8 @@ def processClassXmlFile( inPath, outPath, html ):
 		includeContent = genIncludesTag( html, includeDef );
 		includeEl.append( includeContent )	
 	# typedefs
-	if fileTagTree != None:
-		genTypeDefs( html, fileTagTree )
+	if fileDef != None:
+		genTypeDefs( html, fileDef.typedefs )
 	# class heirarchy
 	genClassHierarchy( html, classTagTree )
 	# class list
@@ -1006,7 +1013,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	# +-----------+
 	#  Description
 	# +-----------+
-	
 	# page title
 	populateHeader( fileData )
 
@@ -1018,7 +1024,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	# +----------------+
 	#  Member Functions
 	# +----------------+
-
 	# create regular and static member function ul wrappers
 	ulTag = html.new_tag( "ul" )
 	staticUlTag = html.new_tag( "ul" )
@@ -1306,7 +1311,6 @@ def getSymbolToFileMap( path ):
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
 		
 	for ns in nsTags :
-
 		namespaceName = ns.find('name').text
 		fileName = ns.find('filename').text
 
@@ -1322,7 +1326,7 @@ def getSymbolToFileMap( path ):
 			name = namespaceName+"::"+name
 			type = namespaceName+"::"+type
 			filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
-			symbolMap.typedefs[name] = SymbolMap.Typedef( type, filePath )
+			symbolMap.typedefs[name] = SymbolMap.Typedef( name, type, filePath )
 		
 	# find classes
 	classTags = tagXml.findall( r'compound/[@kind="class"]')
@@ -1341,9 +1345,20 @@ def getSymbolToFileMap( path ):
 			filePath = member.find("anchorfile").text + "#" + anchor
 			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
 
-	# store namespaces
-	# TODO: filter out anything that begins with @
-			
+	# find files
+	fileTags = tagXml.findall( r'compound/[@kind="file"]')
+	for f in fileTags:
+		name = f.find('name').text
+		filePath = f.find('filename').text
+		typedefs = []
+		for t in f.findall( r'member[@kind="typedef"]'):
+			tdName = t.find("name").text
+			type = t.find("type").text
+			filePath = t.find('anchorfile').text + "#" + t.find("anchor").text
+			typedef = SymbolMap.Typedef( tdName, type, filePath )
+			typedefs.append( typedef )
+		symbolMap.files[name] = SymbolMap.File( name, filePath, typedefs )
+
 	return symbolMap
 
 def getFilePrefix( filePath ):
