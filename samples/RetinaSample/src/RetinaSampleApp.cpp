@@ -25,8 +25,8 @@ class RetinaSampleApp : public App {
 
 void prepareSettings( RetinaSampleApp::Settings *settings )
 {
-	settings->enableHighDensityDisplay(); // try removing this line
-	settings->enableMultiTouch( false );
+	settings->setHighDensityDisplayEnabled(); // try removing this line
+	settings->setMultiTouchEnabled( false );
 	
 	// on iOS we want to make a Window per monitor
 #if defined( CINDER_COCOA_TOUCH )
