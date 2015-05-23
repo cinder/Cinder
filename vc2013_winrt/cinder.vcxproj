@@ -136,7 +136,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -160,7 +160,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -183,7 +183,7 @@
       <SDLCheck>true</SDLCheck>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;%(PreprocessorDefinitions);CINDER_GL_ANGLE</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
@@ -206,7 +206,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;_LITTLE_ENDIAN;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -227,7 +227,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_DEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <DisableSpecificWarnings>4996;4264;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
@@ -246,7 +246,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <CompileAsWinRT>true</CompileAsWinRT>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\include\jsoncpp;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\src\AntTweakBar;..\include\cinder;..\include;..\src\linebreak;..\src\zlib-1.2.3;..\include\ANGLE;..\src\r8brain;..\include\oggvorbis;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>NDEBUG;FT2_BUILD_LIBRARY;WINRT_BOOST_VERSION=105300;CINDER_GL_ANGLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeaderFile />
       <PrecompiledHeaderOutputFile />
@@ -701,7 +701,6 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\audio\Voice.cpp" />
     <ClCompile Include="..\src\cinder\audio\WaveTable.cpp" />
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp" />
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp" />
     <ClCompile Include="..\src\cinder\Base64.cpp" />
     <ClCompile Include="..\src\cinder\BSpline.cpp" />

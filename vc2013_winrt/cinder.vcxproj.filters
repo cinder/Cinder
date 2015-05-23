@@ -840,9 +840,6 @@
     <ClCompile Include="..\src\cinder\BSplineFit.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\Display.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
