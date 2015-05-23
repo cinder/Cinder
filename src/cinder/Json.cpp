@@ -197,7 +197,7 @@ JsonTree::JsonTree( const string &key, uint64_t value )
 {
 	init( key, Json::Value( value ), true, NODE_VALUE, VALUE_UINT );
 }
-
+	
 JsonTree JsonTree::makeArray( const std::string &key )
 {
 	JsonTree result;
