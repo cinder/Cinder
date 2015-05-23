@@ -37,19 +37,8 @@ headerDictionary = {
 }
 
 tagXml = None
-
-# various HTML elements on the page
-sideEl = None
-
-# globals that may change, but may need to accessed by other routines.
-# Sometimes stored since they are costly to parse
-global_classTags = None
-global_classTagsDict = {}
-global_structTags = None
-global_structTagsDict = {}
-
-namespaceNav = None
 g_symbolMap = None
+g_currentFile = None
 
 # mapping for the tag file with helper functions
 class SymbolMap (object):
@@ -65,6 +54,7 @@ class SymbolMap (object):
 			self.name = name
 			self.base = base
 			self.fileName = fileName
+
 
 	class Namespace( object ):
 		def __init__( self, name, fileName ):
@@ -153,34 +143,59 @@ class SymbolMap (object):
 		else:
 			return []
 
-class FileData:
-	m_compoundName = ""		# fill compound name (with namespace if present)
-	m_name = ""				# stripped name (w/o namespace)
-	m_tree = None			# xml file that describes the page
-	m_bs4 = None			# html file of the actual page
-	m_kind = ""				# kind of file that we are parsing (class, namespace, etc)
+class FileData (object):
+	def __init__( self, tree, bs4 ):
 
+		self.tree = tree			# xml file that describes the page
+		self.bs4 = bs4				# html file of the actual page
+		
+		# fill compound name (with namespace if present)
+		self.compoundName = str(findCompoundName( tree )) 		
+
+		# stripped name (w/o namespace)
+		nameParts = self.compoundName.rsplit( "cinder::", 1 )
+		if len( nameParts ) > 1 :
+			self.name = nameParts[1]			# without "cinder::"
+		else :
+			self.name = nameParts[0]
+
+		# kind of file that we are parsing (class, namespace, etc)
+		self.kind = findFileKind( tree )		
+
+		# find any common html elements and populate common elements
+		self.parseTemplate();
+
+
+	def parseTemplate( self ):
+		if self.kind == "class" or self.kind == "struct":
+			self.descriptionEl = self.bs4.find( id="description" )
+			self.descriptionProseEl = self.descriptionEl.find( "div", "prose" )
+			self.sideEl = self.descriptionEl.find( "div", "side" )
+		self.sideNavEl = self.bs4.find( id="side-nav" )
+
+		self.populateTitle()
+		self.populateHeader()
+
+	def populateTitle( self ) :
+		# find tags
+		headTag = self.bs4.head
+		titleTag = self.bs4.new_tag( "title" )
+
+		# populate tags
+		titleTag.append( titleDictionary[self.kind] + " | " + self.name )	
+		headTag.insert( 0, titleTag )
+
+	def populateHeader( self ) :
+		headerTag = self.bs4.find( id="page-title" )
+		headerTag.string = self.compoundName + " " + headerDictionary[self.kind]
+
+	def appendToSideEl( self, el ):
+		self.sideEl.append( el )
 
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
 		for compoundName in tree.iter( "compoundname" ):
 			return compoundName.text
-
-def findClassTag( className ):
-	# find the class definition in tag file
-	for c in global_classTags :
-		if c.find('name').text == className:
-			return c
-
-def findClassLink( className ) :
-	link = None
-	if className in global_classTagsDict:
-		link = global_classTagsDict[className].find('filename').text
-	elif className in global_structTagsDict :
-		link = global_structTagsDict[className].find('filename').text
-	else :
-		link = ""
-	return link
 
 def findFileKind( tree ) :
 	kind = tree.find( r"compounddef").attrib['kind']
@@ -205,22 +220,6 @@ def genAnchorTag( bs4, anchorName ) :
 	anchor["name"] = anchorName
 	return anchor
 
-def populateTitle( bs4, tree ) :
-	# find tags
-	headTag = bs4.head
-	titleTag = bs4.new_tag( "title" )
-
-	# find text
-	kind = findFileKind( tree )
-	name = findCompoundNameStripped( tree )
-
-	# populate tags
-	titleTag.append( titleDictionary[kind] + " | " + name )	
-	headTag.insert( 0, titleTag )
-
-def populateHeader( fileData ) :
-	headerTag = fileData.m_bs4.find( id="page-title" )
-	headerTag.string = fileData.m_compoundName + " " + headerDictionary[fileData.m_kind]
 
 def parseFile( bs4, inPath, outPath ) :
 
@@ -455,7 +454,7 @@ def genTypeDefs( bs4, typeDefs ):
 
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	sideEl.append( side )
+	# g_sideEl.append( side )
 	contentDiv = side.find( "div", "content" )
 
 	# fill heading
@@ -474,45 +473,61 @@ def genTypeDefs( bs4, typeDefs ):
 	if typeDefUl is not None:
 		contentDiv.append( typeDefUl )
 
+	# append to the current file's side element
+	g_currentFile.appendToSideEl( side )
 
-def iterClassBase( tree, heirarchy ) :
 
-	if tree is None:
+def iterClassBase( classDef, hierarchy ) :
+	""" Iterates the class to find all of their base classes
+		and iterate through them
+
+	Args:
+		classDef: The instance of SymbolMap::Class Object whose base we are searching for
+		hierachy: The current hierachy of classes to append to if we find another base
+	"""
+
+	if classDef is None or hasattr(classDef, 'name') == False:
 		return False
 
-	base = tree.find( 'base' )
-	print "ITER CLASS BASE"
-	print base
+	base = classDef.base
 
 	if base is None:
 		return False
 	else :
-		newTree = findClassTag( base.text )
-		# add to heirarchy
-		# heirarchy.append( base.text )
-		if( iterClassBase( newTree, heirarchy ) is not False ) :
-			heirarchy.append( newTree )
+		newTree = g_symbolMap.findClass( base )
+		# add to hierarchy if it continues
+		if( iterClassBase( newTree, hierarchy ) is not False ) :
+			hierarchy.append( newTree )
 
 		
+def genClassHierarchy( bs4, classDef ):
+	"""	Generates the class heirarchy side bar, with each class linking 
+		out to its class file.
 
-def genClassHierarchy( bs4, tree ):
+	Args:
+		bs4: The current beautifulSoup html instance
+		classDef: The instance of SymbolMap::Class Object that we are generating 
+			the hierachy for
 
-	if tree is None:
+	Returns:
+		Empty if there is no base class
+	"""
+
+	if classDef is None:
 		return
 
 	# first item in the list will be the original class
-	heirarchy = [ tree ]
-	# heirarchy = tree
+	hierarchy = [ classDef ]
 
-	# get the class' heirarchy
-	iterClassBase( tree, heirarchy )
+	# get the class' hierarchy
+	iterClassBase( classDef, hierarchy )
 	 
-	if len( heirarchy ) == 1 :
+	if len( hierarchy ) == 1 :
 		return
 	
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	sideEl.append( side )
+	
 
 	# fill heading
 	side.find('h4').append("Class Heirarchy:")
@@ -523,23 +538,21 @@ def genClassHierarchy( bs4, tree ):
 	addClassToTag( ul, "inheritence" )
 	contentDiv.append( ul )
 
-	# print "GEN CLASS HIERACHY"
-	# print tree
-	# print heirarchy
-	# go through the heirarchy and add a list item for each member
-	for index, base in enumerate( reversed( heirarchy ) ):
+	# go through the hierarchy and add a list item for each member
+	for index, base in enumerate( reversed( hierarchy ) ):
 		li = genTag( bs4, "li" )
 		addClassToTag( li, "depth" + str( index + 1 ) )
-		
-		# print base
-		# if( base == None ):
-			# return
 
-		a = genTag( bs4, "a", [], base.find("name").text )
-		defineLinkTag( a, {'href':base.find("filename").text} )
-
-		li.append( a )
+		# link out only if a base class, not the original class
+		if( index < len(hierarchy) - 1 ) :
+			a = genTag( bs4, "a", [], base.name )
+			defineLinkTag( a, {'href':base.fileName} )
+			li.append( a )
+		else :
+			li.append( base.name )
 		ul.append( li )
+
+
 
 	
 def genClassList( bs4, tree ):
@@ -551,7 +564,7 @@ def genClassList( bs4, tree ):
 
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	sideEl.append( side )
+	# g_sideEl.append( side )
 
 	# fill heading
 	side.find('h4').append("Classes:")
@@ -560,7 +573,6 @@ def genClassList( bs4, tree ):
 	classesUl = genTag( bs4, "ul" )
 	contentDiv = side.find('div', 'content')
 	for classDef in classes:
-		# print classDef.attrib
 		li = genTag( bs4, "li" )
 		classesUl.append( li )
 
@@ -569,6 +581,8 @@ def genClassList( bs4, tree ):
 		li.append( a )
 	
 	contentDiv.append( classesUl )
+
+	g_currentFile.appendToSideEl( side )
 
 
 def replaceTag( bs4, tree, parentTag, content ):
@@ -907,7 +921,6 @@ def hasAncestor( namespaces, compareNamespace ):
 def generateNamespaceNav( bs4 ) :
 
 	namespaces = g_symbolMap.getOrderedNamespaces()
-	# print g_symbolMap.getOrderedNamespaces()
 
 	tree = genTag( bs4, "div" )
 	ul = genTag( bs4, "ul" )
@@ -916,7 +929,6 @@ def generateNamespaceNav( bs4 ) :
 
 	# for ns in namespaces :
 		# namespace = ns.find('name').text
-	
 
 	iterateNamespace( bs4, namespaces, ul, 0, "" )
 	return tree
@@ -924,8 +936,9 @@ def generateNamespaceNav( bs4 ) :
 
 def processClassXmlFile( inPath, outPath, html ):
 
-	global sideEl
-	global global_classTags
+	global g_currentFile
+
+	print "Processing file: " + inPath + " > " + outPath;
 
 	# define the tree that contains all the data we need to populate this page
 	tree = parseFile( html, inPath, outPath )
@@ -933,26 +946,13 @@ def processClassXmlFile( inPath, outPath, html ):
 		return
 
 	# get common data for the file
-	compoundName = str(findCompoundName( tree )) 				# with "cinder::"
-	nameParts = compoundName.rsplit( "cinder::", 1 )
-	if len( nameParts ) > 1 :
-		className = nameParts[1]			# without "cinder::"
-	else :
-		className = nameParts[0]
-	kind = findFileKind( tree )
-
-	# store data in a FileData type
-	fileData = FileData()
-	fileData.m_compoundName = compoundName
-	fileData.m_name = className
-	fileData.m_tree = tree
-	fileData.m_bs4 = html
-	fileData.m_kind = kind
+	g_currentFile = FileData( tree, html )
+	compoundName = g_currentFile.compoundName
+	className = g_currentFile.name
+	kind = g_currentFile.kind
 	
 	# dictionary for subnav anchors
 	subnavAnchors = []
-
-	print "Processing file: " + inPath + " > " + outPath;
 
 	# find include name (header file)
 	includeTrees = tree.findall( r"compounddef/includes" )
@@ -966,13 +966,8 @@ def processClassXmlFile( inPath, outPath, html ):
 		fileDef = g_symbolMap.findFile( includeDef )
 	
 	# find class tree in tag file, which is all of the class nodes
-	classTagTree = findClassTag( className )
-
-
-	# +-------------+
-	#  Page metadata
-	# +-------------+
-	populateTitle( html, tree )
+	# classTagTree = findClassTag( className )
+	classDef = g_symbolMap.findClass(className)
 
 	# +-----------------------------------------+
 	#  find parts in template that already exist
@@ -985,13 +980,13 @@ def processClassXmlFile( inPath, outPath, html ):
 
 	# side area
 	sideNavTag = html.find( id="side-nav" )
-	sideEl = descriptionTag.find( "div", "side" )
+	sideEl = g_currentFile.sideEl
 	includeEl = sideEl.find( "div", "include" )
 
 	# +-------------+
 	#  Namespace Nav
 	# +-------------+
-	sideNavTag.append( namespaceNav )
+	sideNavTag.append( g_namespaceNav )
 
 
 	# +---------------+
@@ -1004,8 +999,8 @@ def processClassXmlFile( inPath, outPath, html ):
 	# typedefs
 	if fileDef != None:
 		genTypeDefs( html, fileDef.typedefs )
-	# class heirarchy
-	genClassHierarchy( html, classTagTree )
+	# class hierarchy
+	genClassHierarchy( html, classDef )
 	# class list
 	genClassList( html, tree )
 	
@@ -1013,9 +1008,6 @@ def processClassXmlFile( inPath, outPath, html ):
 	# +-----------+
 	#  Description
 	# +-----------+
-	# page title
-	populateHeader( fileData )
-
 	# description prose
 	descTag = markupDescription( html, tree.find( r'compounddef' ) );
 	if descTag is not None :
@@ -1144,24 +1136,10 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		return
 
 	# get common data for the file
-	compoundName = str(findCompoundName( tree )) 				# with "cinder::"
-	nameParts = compoundName.rsplit( "cinder::", 1 )
-	if len( nameParts ) > 1 :
-		className = nameParts[1]			# without "cinder::"
-	else :
-		className = nameParts[0]
-	kind = findFileKind( tree )
-
-	# store data in a FileData type
-	fileData = FileData()
-	fileData.m_compoundName = compoundName
-	fileData.m_name = className
-	fileData.m_tree = tree
-	fileData.m_bs4 = html
-	fileData.m_kind = kind
-
-
-	populateTitle( html, tree )
+	g_currentFile = FileData( tree, html )
+	compoundName = g_currentFile.compoundName
+	className = g_currentFile.name
+	kind = g_currentFile.kind
 
 	
 	# +-----------------------------------------+
@@ -1174,7 +1152,7 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# +-------------+
 	# side area
 	sideNavTag = html.find( id="side-nav" )
-	sideNavTag.append( namespaceNav )
+	sideNavTag.append( g_namespaceNav )
 
 
 	# +-----------+
@@ -1183,9 +1161,6 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	namespaceTag = g_symbolMap.findNamespace( compoundName )
 	if namespaceTag is None:
 		return
-	
-	# description title
-	populateHeader( fileData )
 
 	# +----------+
 	#  Namespaces
@@ -1288,25 +1263,21 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	outFile = codecs.open( outPath, "w", "UTF-8" )
 	outFile.write( html.prettify() )
 
-# puts together a beautiful soup instance by mashing a bunch of html files together
 def constructTemplate( templates ) :
-
+	""" Constructs a beautiful soup instance by mashing a bunch of html files together
+	"""
 	masterTemplate = ""
 	for templatePath in templates :
-		# file = codecs.open( os.path.join( htmlSourcePath, templatePath ), "r", "UTF-8" )
 		masterTemplate += open(os.path.join( HTML_SOURCE_PATH, templatePath )).read()
-		# masterTemplate += file
-
 	masterTemplate.decode("UTF-8")
 	return BeautifulSoup( masterTemplate )
 
-# returns a dictionary from Cinder class name to file path
-def getSymbolToFileMap( path ):	
-	print "Parsing tag file: " + path
-
-	tagDom = ET.ElementTree( ET.parse( path ).getroot() )
-	
+def getSymbolToFileMap( tagDom ):	
+	""" Returns a dictionary from Cinder class name to file path
+	"""
+	print "generating symbol map from tag file"
 	symbolMap = SymbolMap()
+
 	# find namespaces
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
 		
@@ -1351,6 +1322,8 @@ def getSymbolToFileMap( path ):
 		name = f.find('name').text
 		filePath = f.find('filename').text
 		typedefs = []
+
+		# find typedefs for each file
 		for t in f.findall( r'member[@kind="typedef"]'):
 			tdName = t.find("name").text
 			type = t.find("type").text
@@ -1369,9 +1342,14 @@ def parseTemplateHtml( templatePath ):
 	return BeautifulSoup( file )
 
 def processFile( inPath, outPath ):
-	
+	""" Generate documentation for a single file
+
+		Args:
+			inPath: The file to process
+			outPath: The file to save the generated html file to
+	"""
 	file = inPath
-	filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+	filePrefix = getFilePrefix( file )
 
 	if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
 		processClassXmlFile( sys.argv[1], os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( classTemplateHtml ) )
@@ -1380,65 +1358,68 @@ def processFile( inPath, outPath ):
 		processNamespaceXmlFile( inPath, os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( namespaceTemplateHtml ) )
 
 def processDir(inPath, outPath):
-	inPath = sys.argv[1]
-	outPath = sys.argv[2]
+	""" Iterates a directory and generates documentation for each xml file
+		in the directory as long as it is a class, struct or namespace
+		
+		Args:
+			inPath: The directory to process
+			outPath: The directory to save the generated html file to
+	"""
+
 	for file in os.listdir(inPath):
 		if file.endswith(".xml"):
-			filePrefix = os.path.splitext( os.path.basename( file ) )[0]
+			# name minus file extension
+			filePrefix = getFilePrefix( file )
 			
+			# process class and struct files
 			if file.startswith( "class" ) or file.startswith( "struct" ):
-				# name minus file extension
 				processClassXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
-			elif file.startswith( "namespace" ) :
+			# process namespace files
+			elif file.startswith( "namespaces" ) :
 				processNamespaceXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
 
-			elif file.startswith( "_" ) :
-				print "TODO: parse source file type"
 			else :
-				print "PARSE " + file
-				# base template and just iterate do an html iteration
-				# 
-				# processOtherFile( os.path.join( sys.argv[1], file ), os.path.join( sys.argv[2], filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
+				print "SKIPPING: " + file
+				# TODO: base template and just iterate do an html iteration
 
-
-# -- Main Function --
-# Can pass in a single xml file to process by passing in path to xml file and optionally, the resulting html file
-# If no out path is supplied, outputs to DOXYGEN_HTML_PATH
-# Can alternatively pass in a directory to process by providing the xml directory
 if __name__ == "__main__":
+	""" Main Function for generating html documentation from doxygen generated xml files
+	
+	Args:
+		- 	Can pass in a single xml file to process by passing in path to xml file 
+			and optionally, the resulting html file.
+			if no out path is supplied, outputs to DOXYGEN_HTML_PATH
+			Ex: python xmlToHtml.py xml/classcinder_1_1_surface_t.xml 
+		- 	Can alternatively pass in a directory to process by providing the xml directory
+			Ex: python xmlToHtml.py xml/ html/
+	"""
 
 	# Load tag file
+	print "parsing tag file"
 	tagXml = ET.ElementTree( ET.parse( "doxygen/cinder.tag" ).getroot() )
+	# generate symbol map from tag file
+	g_symbolMap = getSymbolToFileMap( tagXml )
 
 	# construct full template out of multiple html templates
 	classTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderClassTemplate.html", "footerTemplate.html"] )
 	namespaceTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"] )
 
-	# find all class definitions and store for retrieval later
-	global_classTags = tagXml.findall( r'compound[@kind="class"]' )
-	for c in global_classTags :
-		global_classTagsDict[c.find( 'name' ).text] = c
-
-	global_structTags = tagXml.findall( r'compound[@kind="struct"]' )
-	for s in global_structTags :
-		global_structTagsDict[s.find( 'name' ).text] = s	
-
 	# copy files from assets/ to html/
 	copy_tree("assets/", "html/")
 
-	# generate symbol map from tag file
-	g_symbolMap = getSymbolToFileMap( "doxygen/cinder.tag" )
-
-	namespaceNav = generateNamespaceNav( classTemplateHtml )
+	# generate namespace navigation
+	g_namespaceNav = generateNamespaceNav( classTemplateHtml )
 
 	inPath = sys.argv[1]
-	if os.path.isfile( inPath ): # process a specific file
+	# process a specific file
+	if os.path.isfile( inPath ):
 		outPath = sys.argv[2] if len( sys.argv) > 2 else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
 		print outPath
 		processFile( inPath, outPath )
 
-	elif os.path.isdir( inPath ): # process a directory
+	# process a directory
+	elif os.path.isdir( inPath ): 
 		if len( sys.argv ) == 3: 
 			processDir( inPath, sys.argv[2])
 
