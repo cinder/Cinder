@@ -4064,13 +4064,12 @@
 					../include,
 					../include/macosx/png,
 					../include/macosx/cairo,
-					../include/jsoncpp,
 					../include/oggvorbis,
 				);
 				OBJROOT = build/;
 				OTHER_CPLUSPLUSFLAGS = "$(OTHER_CFLAGS)";
 				SYMROOT = ../lib;
-				USER_HEADER_SEARCH_PATHS = "../include ../include/json ../src/oggvorbis/vorbis ../src/r8brain";
+				USER_HEADER_SEARCH_PATHS = "../include ../src/oggvorbis/vorbis ../src/r8brain";
 			};
 			name = Debug;
 		};
@@ -4092,7 +4091,6 @@
 					../include,
 					../include/macosx/png,
 					../include/macosx/cairo,
-					../include/jsoncpp,
 					../include/oggvorbis,
 				);
 				OBJROOT = build/;
