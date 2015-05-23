@@ -1,16 +1,13 @@
 #include "POV.h"
+
 #include "cinder/gl/gl.h"
 #include "cinder/CinderMath.h"
 
 POV::POV( ci::app::App *aApp, ci::vec3 aEye, ci::vec3 aCenter )
+	: mApp( aApp ), mEye( aEye ), mCenter( aCenter )
 {
-	mApp = aApp;
-
 	mAspectRatio = mApp->getWindowAspectRatio();
 	mFOV = 60.0f;
-
-	mEye = aEye;
-	mCenter = aCenter;
 
 	mAngle = 0.0f;
 	mAngleDest = 0.0f;
@@ -20,9 +17,6 @@ POV::POV( ci::app::App *aApp, ci::vec3 aEye, ci::vec3 aCenter )
 
 void POV::update()
 {
-	//mAngleDest += 0.01f;
-	//mEye.y = sin( mAngleDest * 0.1f + 1.5707963f ) * 250.0f;
-
 	mAngle -= ( mAngle - mAngleDest ) * 0.1f;
 	mDist -= ( mDist - mDistDest ) * 0.1f;
 
@@ -33,6 +27,7 @@ void POV::update()
 
 	mCam.lookAt( mEye, mCenter );
 	mCam.setPerspective( mFOV, mApp->getWindowAspectRatio(), 1, 20000 );
+
 	ci::gl::setMatrices( mCam );
 }
 

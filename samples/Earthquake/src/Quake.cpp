@@ -9,7 +9,8 @@
 
 #include "Quake.h"
 #include "cinder/CinderMath.h"
-#include "cinder/Utilities.h"
+
+#include <sstream>
 
 using namespace ci;
 using namespace std;
@@ -21,11 +22,9 @@ Quake::Quake( float aLat, float aLong, float aMag, const string &aTitle )
 	mMag = aMag;
 	mTitle = aTitle;
 
-	TextLayout layout;
-
 	std::string magnitudeStr = toString( mMag );
-	if( magnitudeStr.length() == 1 )
-		magnitudeStr += ".0";
+
+	TextLayout layout;
 
 	if( mMag > 5.5 ) {
 		layout.setFont( Font( "HelveticaNeue-Bold", mMag * mMag + 26.0f ) );
@@ -50,4 +49,12 @@ Quake::Quake( float aLat, float aLong, float aMag, const string &aTitle )
 	float phi = glm::radians( 180 + mLong );
 
 	mLoc = vec3( sin( theta ) * sin( phi ), cos( theta ), sin( theta ) * cos( phi ) );
+}
+
+std::string Quake::toString( float f, uint8_t precision )
+{
+	std::stringstream result;
+	result << std::fixed << std::setprecision( precision ) << f;
+
+	return result.str();
 }

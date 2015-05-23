@@ -9,6 +9,8 @@ public:
 	Quake() {}
 	Quake( float aLat, float aLong, float aMag, const std::string &aTitle );
 
+	std::string toString( float f, uint8_t precision = 1 );
+
 public:
 	float                 mLat;
 	float                 mLong;

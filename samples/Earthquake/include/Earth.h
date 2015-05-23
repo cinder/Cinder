@@ -13,7 +13,6 @@ public:
 	void draw();
 
 	void drawQuakes();
-	void drawQuakeLabelsOnBillboard( const ci::vec3 &aRight, const ci::vec3 &aUp );
 	void drawQuakeLabelsOnSphere( const ci::vec3 &aEyeNormal, const float aEyeDist );
 
 	void setQuakeLocTips();

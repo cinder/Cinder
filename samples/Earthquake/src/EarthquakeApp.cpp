@@ -2,21 +2,14 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/CameraUi.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Json.h"
-#include "cinder/Log.h"
 #include "cinder/Url.h"
-#include "cinder/Unicode.h"
-#include "cinder/Utilities.h"
-#include "cinder/Vector.h"
 
 #include "Earth.h"
 #include "POV.h"
-#include "Resources.h"
 
-#include <vector>
-#include <sstream>
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -40,10 +33,7 @@ public:
 	gl::Texture2dRef  mStars;
 	gl::BatchRef      mStarSphere;
 
-	CameraPersp       mCamera;
-	CameraUi          mCameraUi;
-
-	//POV               mPov;
+	POV               mPov;
 	Earth             mEarth;
 
 	vec2              mLastMouse;
@@ -68,31 +58,35 @@ void EarthquakeApp::prepareSettings( Settings *settings )
 
 void EarthquakeApp::setup()
 {
+	// Load the texture and create the sphere for the background.
 	mStars = gl::Texture2d::create( loadImage( loadResource( RES_STARS_PNG ) ) );
 	mStarSphere = gl::Batch::create( geom::Sphere().radius( 15000 ).subdivisions( 30 ), gl::getStockShader( gl::ShaderDef().texture() ) );
 
+	// Initialize state.
 	mSaveFrames = false;
 	mShowStars = true;
 	mShowEarth = true;
 	mShowQuakes = true;
 	mShowText = true;
-	//mPov = POV( this, ci::vec3( 0.0f, 0.0f, 1000.0f ), ci::vec3( 0.0f, 0.0f, 0.0f ) );
 
-	mCamera.setPerspective( 40.0f, 1.0f, 1.0f, 25000.0f );
-	mCamera.lookAt( vec3( 0, 0, -1000 ), vec3( 0 ) );
-	mCameraUi.setCamera( &mCamera );
-	mCameraUi.connect( getWindow() );
+	// Create the camera controller.
+	mPov = POV( this, ci::vec3( 0.0f, 0.0f, 1000.0f ), ci::vec3( 0.0f, 0.0f, 0.0f ) );
 
+	// Load the latest earthquake information.
 	parseEarthquakes( "http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_week.geojson" );
 }
 
 void EarthquakeApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' ) {
+		// Toggle full screen.
 		setFullScreen( !isFullScreen() );
 	}
 	else if( event.getCode() == app::KeyEvent::KEY_ESCAPE ) {
-		setFullScreen( false );
+		if( isFullScreen() )
+			setFullScreen( false );
+		else
+			quit();
 	}
 	else if( event.getChar() == 's' ) {
 		mSaveFrames = !mSaveFrames;
@@ -113,47 +107,44 @@ void EarthquakeApp::keyDown( KeyEvent event )
 		mEarth.setMinMagToRender( 1.0f );
 	}
 	else if( event.getCode() == app::KeyEvent::KEY_UP ) {
-		//mPov.adjustDist( -10.0f );
+		mPov.adjustDist( -10.0f );
 	}
 	else if( event.getCode() == app::KeyEvent::KEY_DOWN ) {
-		//mPov.adjustDist( 10.0f );
+		mPov.adjustDist( 10.0f );
 	}
 }
-
 
 void EarthquakeApp::mouseWheel( MouseEvent event )
 {
-	//mPov.adjustDist( event.getWheelIncrement() * -2.0f );
+	mPov.adjustDist( event.getWheelIncrement() * -5.0f );
 }
-
 
 void EarthquakeApp::mouseMove( MouseEvent event )
 {
 	static bool firstMouseMove = true;
-	if( !firstMouseMove )
+
+	if( !firstMouseMove ) {
 		mLastMouse = mCurrentMouse;
+	}
 	else {
 		mLastMouse = event.getPos();
 		firstMouseMove = false;
 	}
-	mCurrentMouse = event.getPos();;
 
-	float xd = ( mCurrentMouse.x - mLastMouse.x ) * 0.01f;
+	mCurrentMouse = event.getPos();
 
-	//mPov.adjustAngle( -xd, mCurrentMouse.y - ( getWindowHeight() * 0.5f ) );
+	mPov.adjustAngle( ( mLastMouse.x - mCurrentMouse.x ) * 0.01f, mCurrentMouse.y - ( getWindowHeight() * 0.5f ) );
 }
 
 void EarthquakeApp::update()
 {
-	//mPov.update();
+	mPov.update();
 	mEarth.update();
 }
 
 void EarthquakeApp::draw()
 {
 	gl::clear( Color( 1, 0, 0 ) );
-
-	gl::setMatrices( mCamera );
 
 	gl::ScopedDepth       depth( true, true );
 	gl::ScopedColor       color( 1, 1, 1 );
@@ -177,11 +168,7 @@ void EarthquakeApp::draw()
 
 	// Draw labels.
 	if( mShowText ) {
-		//mEarth.drawQuakeLabelsOnSphere( mPov.mEyeNormal, mPov.mDist );
-		mEarth.drawQuakeLabelsOnSphere( -mCamera.getViewDirection(), mCamera.getPivotDistance() );
-
-		//mPov.mCam.getBillboardVectors( &mBillboardRight, &mBillboardUp );
-		//mEarth.drawQuakeLabelsOnBillboard( mBillboardRight, mBillboardUp );
+		mEarth.drawQuakeLabelsOnSphere( mPov.mEyeNormal, mPov.mDist );
 	}
 
 	if( mSaveFrames ) {
@@ -206,10 +193,10 @@ void EarthquakeApp::parseEarthquakes( const string &url )
 		console() << "Failed to parse json, what: " << exc.what() << std::endl;
 	}
 
-	mEarth.addQuake( 37.7833f, -122.4167f, 8.6f, "San Francisco" );
+	// Test to see if quakes show up in the right spot:
+	// mEarth.addQuake( 37.7833f, -122.4167f, 8.6f, "San Francisco" );
 
 	mEarth.setQuakeLocTips();
 }
-
 
 CINDER_APP( EarthquakeApp, RendererGl( RendererGl::Options().msaa( 16 ) ), &EarthquakeApp::prepareSettings )
