@@ -15,8 +15,8 @@ using namespace std;
 
 class Renderer2dApp : public App {
   public:
-	void setup();
-	void draw();
+	void setup() override;
+	void draw() override;
 	
 #if defined( CINDER_COCOA )
 	CGImageRef	mImage;
