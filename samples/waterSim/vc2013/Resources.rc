@@ -1,5 +1,0 @@
-#include "..\include\Resources.h"
-
-RES_LOGO
-RES_ARROW
-RES_INFO
