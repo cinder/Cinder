@@ -1000,11 +1000,11 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 	if( resultLocation ) {
 		if( nameLeftSquareBracket != string::npos ) {
 			try {
-				string testStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
-				*resultLocation = ret->mLoc + stoi( testStr, nullptr );
+				string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
+				*resultLocation = ret->mLoc + stoi( indexStr );
 			}
-			catch(...) {
-				CI_LOG_E( "Failed to parse index: " << name );
+			catch( std::exception &exc ) {
+				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
 				return nullptr;
 			}
 		}
@@ -1045,7 +1045,7 @@ GLint GlslProg::getAttribSemanticLocation( geom::Attrib semantic ) const
     auto found = find_if( mAttributes.begin(), mAttributes.end(),
                          [semantic]( const Attribute &attrib ) {
                              return attrib.mSemantic == semantic;
-                         });
+                         } );
 
     if( found != mAttributes.end() )
         return found->mLoc;
