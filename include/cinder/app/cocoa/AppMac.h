@@ -40,6 +40,9 @@ class AppMac : public AppBase {
 	AppMac();
 	virtual ~AppMac();
 
+	void		enablePowerManagement( bool powerManagement = true ) override;
+	bool		isPowerManagementEnabled() const override;
+
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
 

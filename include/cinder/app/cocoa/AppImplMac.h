@@ -63,6 +63,9 @@
 - (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)quit;
 
+- (void)setPowerManagementEnabled:(BOOL)flag;
+- (BOOL)isPowerManagementEnabled;
+
 - (cinder::app::WindowRef)createWindow:(const cinder::app::Window::Format &)format;
 
 - (float)getFrameRate;
