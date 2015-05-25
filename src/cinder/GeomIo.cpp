@@ -3484,7 +3484,6 @@ void WirePlane::loadInto( Target *target, const AttribSet &requestedAttribs ) co
 	vec3 *ptr = positions.data();
 
 	const vec2 stepIncr = vec2( 1, 1 ) / vec2( mSubdivisions );
-	const vec3 normal = cross( mAxisV, mAxisU );
 
 	for( int x = 0; x <= mSubdivisions.x; ++x ) {
 		float u = x * stepIncr.x - 0.5f;
