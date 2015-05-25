@@ -22,6 +22,7 @@ Some things to facilitate acceptance of your pull request:
 * Keep the changes as concise as possible. It is best if a pull request addresses a single issue.
 * Follow our style guide as described below.
 * Write clear and concise commit messages.
+* For sample / test code, try to keep binary data to a minimum. For test assets, the folder [samples/data](samples/data) contains some assets you can possibly make use of, or adding new assets there means they can be used by future samples. App icons should also be referenced from this folder, reducing our overall binary weight and also making it easy to update in the future.
 
 In general, we review pull requests first that best adhere to these suggestions.
 
