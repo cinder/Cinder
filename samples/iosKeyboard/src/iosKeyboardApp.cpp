@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
@@ -59,7 +60,7 @@ void iosKeyboardApp::setup()
 
 	// You can further customize the way the iOS virtual keyboard looks by directly manipulating the managed UITextField:
 	// (note: requires that you build this source file as Obj-C++).
-	getkeyboardTextView().keyboardAppearance = UIKeyboardAppearanceAlert;
+	getKeyboardTextView().keyboardAppearance = UIKeyboardAppearanceAlert;
 }
 
 void iosKeyboardApp::touchesBegan( TouchEvent event )
@@ -162,7 +163,9 @@ void iosKeyboardApp::drawTextView( const TextView &textView )
 		tbox.color( Color( "FireBrick" ) ).text( textView.mText );
 	}
 	gl::color( Color::white() );
-	gl::draw( tbox.render(), fitRect.getUpperLeft() );
+
+	auto tex = gl::Texture::create( tbox.render() );
+	gl::draw( tex, fitRect.getUpperLeft() );
 }
 
 void iosKeyboardApp::layoutTextViews()
