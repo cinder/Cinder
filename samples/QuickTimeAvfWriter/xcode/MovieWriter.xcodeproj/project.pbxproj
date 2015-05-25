@@ -83,6 +83,8 @@
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				418D14971794807D0039589D /* AVFoundation.framework */,
 				1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */,
 				00B784B20FF439BC000DE1D7 /* CoreAudio.framework */,

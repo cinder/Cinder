@@ -153,6 +153,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				1124804B19B772D30086C183 /* AVFoundation.framework */,
 				1124804C19B772D30086C183 /* CoreMedia.framework */,
 				1124804D19B772D30086C183 /* CoreVideo.framework */,

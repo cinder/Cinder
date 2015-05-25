@@ -89,6 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				B0245F4919BECF3100BC878D /* QTKit.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				B0245F4419BECEC500BC878D /* AVFoundation.framework */,
 				B0245F4219BECEC000BC878D /* CoreMedia.framework */,
 				B0245F4619BECEF900BC878D /* CoreVideo.framework */,

@@ -160,6 +160,8 @@
 			isa = PBXGroup;
 			children = (
 				00633EAD1A80866300FDBA53 /* CoreMedia.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				00633EAB1A80865D00FDBA53 /* AVFoundation.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
 				1058C7A2FEA54F0111CA2CBB /* Other Frameworks */,
