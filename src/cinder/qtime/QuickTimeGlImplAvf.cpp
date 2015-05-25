@@ -21,8 +21,6 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
-#import <CoreFoundation/CoreFoundation.h>
-
 #include "cinder/Cinder.h"
 #include "cinder/gl/Scoped.h"
 
@@ -35,6 +33,7 @@
 
 #include <CoreVideo/CoreVideo.h>
 #include <CoreVideo/CVBase.h>
+#import <Foundation/Foundation.h>
 #if defined( CINDER_MAC )
 	#include <CoreVideo/CVOpenGLTextureCache.h>
 	#include <CoreVideo/CVOpenGLTexture.h>
