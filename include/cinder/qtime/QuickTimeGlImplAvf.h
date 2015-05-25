@@ -61,22 +61,22 @@ class MovieGl : public MovieBase {
 	gl::TextureRef	getTexture();
 	
   protected:
-	MovieGl() : MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr ) {}
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
 	
-	virtual void		allocateVisualContext() override;
-	virtual void		deallocateVisualContext() override;
-	virtual void		newFrame( CVImageBufferRef cvImage ) override;
-	virtual void		releaseFrame() override;
+	NSDictionary*	avPlayerItemOutputDictionary() const override;
+	void			allocateVisualContext() override;
+	void			deallocateVisualContext() override;
+	void			newFrame( CVImageBufferRef cvImage ) override;
+	void			releaseFrame() override;
 	
 #if defined( CINDER_COCOA_TOUCH )
-	CVOpenGLESTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLESTextureRef mVideoTextureRef;
+	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;
+	CVOpenGLESTextureRef		mVideoTextureRef;
 #else
-	CVOpenGLTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLTextureRef mVideoTextureRef;
+	class TextureCache;
+	std::shared_ptr<TextureCache>		mTextureCache;
 #endif
 	
 	gl::TextureRef		mTexture;

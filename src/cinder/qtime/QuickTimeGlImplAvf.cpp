@@ -21,7 +21,10 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#import <CoreFoundation/CoreFoundation.h>
+
 #include "cinder/Cinder.h"
+#include "cinder/gl/Scoped.h"
 
 // This path is not used on 64-bit Mac or Windows. On the Mac we only use this path for >=Mac OS 10.8
 #if ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) ) || ( defined( CINDER_MSW ) && ( ! defined( _WIN64 ) ) ) || defined( CINDER_COCOA_TOUCH )
@@ -40,22 +43,95 @@
 #endif
 
 namespace cinder { namespace qtime {
+
+/////////////////////////////////////////////////////////////////////////////////
+// MovieGl::TextureCache
+#if defined( CINDER_MAC )
+class MovieGl::TextureCache : public std::enable_shared_from_this<MovieGl::TextureCache> {
+  public:
+	~TextureCache();
+	gl::TextureRef		add( CVImageBufferRef cvImage );
+	void				remove( GLuint texId );
+	
+  private:
+	std::vector<GLuint>		mTextures;
+};
+
+MovieGl::TextureCache::~TextureCache()
+{
+	for( auto &texId : mTextures )
+		glDeleteTextures( 1, &texId );
+}
+
+gl::TextureRef MovieGl::TextureCache::add( CVImageBufferRef cvImage )
+{
+	IOSurfaceRef ioSurface = ::CVPixelBufferGetIOSurface( cvImage );
+
+	::IOSurfaceIncrementUseCount( ioSurface );
+	GLsizei texWidth = (GLsizei)::IOSurfaceGetWidth( ioSurface );
+	GLsizei texHeight = (GLsizei)::IOSurfaceGetHeight( ioSurface );
+
+	// find an available id or generate one if necessary
+	if( mTextures.empty() ) {
+		GLuint newId;
+		glGenTextures( 1, &newId );
+		mTextures.push_back( newId );
+	}
+	GLuint texId = mTextures.back();
+	mTextures.pop_back();
+
+	auto sharedThis = shared_from_this();
+	auto deleter = [cvImage, ioSurface, sharedThis] ( gl::Texture *texture ) {
+		::IOSurfaceDecrementUseCount( ioSurface );
+		sharedThis->remove( texture->getId() );
+		delete texture;
+		::CVPixelBufferRelease( cvImage );
+	};
+		
+	auto result = gl::Texture2d::create( GL_TEXTURE_RECTANGLE, texId, texWidth, texHeight, true, deleter );
+	result->setTopDown( true );
+
+	gl::ScopedTextureBind bind( result );
+	CGLTexImageIOSurface2D( app::AppBase::get()->getRenderer()->getCglContext(), GL_TEXTURE_RECTANGLE, GL_RGBA, texWidth, texHeight, GL_BGRA, GL_UNSIGNED_INT_8_8_8_8_REV, ioSurface, 0);        
+	
+	return result;
+}
+
+void MovieGl::TextureCache::remove( GLuint texId )
+{
+	mTextures.push_back( texId );
+}
+
+#endif
+
 /////////////////////////////////////////////////////////////////////////////////
 // MovieGl
 MovieGl::MovieGl( const Url& url )
-	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#if defined( CINDER_COCOA_TOUCH )
+	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
+#endif
 {
 	MovieBase::initFromUrl( url );
 }
 
 MovieGl::MovieGl( const fs::path& path )
-	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#if defined( CINDER_COCOA_TOUCH )
+	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
+#endif
 {
 	MovieBase::initFromPath( path );
 }
 	
 MovieGl::MovieGl( const MovieLoader &loader )
-	: MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#if defined( CINDER_COCOA_TOUCH )
+	: mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr )
+#else
+	: mTextureCache( new TextureCache() )
+#endif
 {
 	MovieBase::initFromLoader( loader );
 }
@@ -67,7 +143,7 @@ MovieGl::~MovieGl()
 	
 bool MovieGl::hasAlpha() const
 {
-	if( ! mVideoTextureRef )
+/*	if( ! mVideoTextureRef )
 		return false;
 	
 	::CVPixelBufferLockBaseAddress( mVideoTextureRef, 0 );
@@ -82,12 +158,8 @@ bool MovieGl::hasAlpha() const
 #elif defined ( CINDER_COCOA )
 	return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
 #endif
-	
-	/*
-	CGColorSpaceRef color_space = CVImageBufferGetColorSpace(mVideoTextureRef);
-	size_t components = CGColorSpaceGetNumberOfComponents(color_space);
-	return components > 3;
 	*/
+return false;
 }
 
 gl::TextureRef MovieGl::getTexture()
@@ -100,12 +172,21 @@ gl::TextureRef MovieGl::getTexture()
 	
 	return result;
 }
+
+NSDictionary* MovieGl::avPlayerItemOutputDictionary() const
+{
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+				[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+				[NSDictionary dictionary], kCVPixelBufferIOSurfacePropertiesKey,
+				[NSNumber numberWithBool:YES], kCVPixelBufferOpenGLCompatibilityKey, nil];
+}
 	
 void MovieGl::allocateVisualContext()
 {
+#if defined( CINDER_COCOA_TOUCH )
 	if( ! mVideoTextureCacheRef ) {
 		CVReturn err = 0;
-#if defined( CINDER_COCOA_TOUCH )
+
 		app::RendererGl *renderer = dynamic_cast<app::RendererGl*>( app::AppBase::get()->getRenderer().get() );
 		if( renderer ) {
 			EAGLContext* context = renderer->getEaglContext();
@@ -114,47 +195,34 @@ void MovieGl::allocateVisualContext()
 		else {
 			throw AvfTextureErrorExc();
 		}
-		
-#elif defined( CINDER_COCOA )
-		CGLContextObj context = app::AppBase::get()->getRenderer()->getCglContext();
-		CGLPixelFormatObj pixelFormat = app::AppBase::get()->getRenderer()->getCglPixelFormat();
-		err = ::CVOpenGLTextureCacheCreate( kCFAllocatorDefault, NULL, context, pixelFormat, NULL, &mVideoTextureCacheRef );		
+	}	
 #endif
-		if( err )
-			throw AvfTextureErrorExc();
-	}
 }
 
 void MovieGl::deallocateVisualContext()
 {
+#if defined( CINDER_COCOA_TOUCH )
 	if( mVideoTextureRef ) {
 		::CFRelease( mVideoTextureRef );
 		mVideoTextureRef = nullptr;
 	}
 	
 	if( mVideoTextureCacheRef ) {
-#if defined( CINDER_COCOA_TOUCH )
 		::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 );
-#elif defined( CINDER_COCOA )
-		::CVOpenGLTextureCacheFlush( mVideoTextureCacheRef, 0 );
-#endif
 		::CFRelease( mVideoTextureCacheRef );
 		mVideoTextureCacheRef = nullptr;
 	}
+#endif
 }
 
 void MovieGl::newFrame( CVImageBufferRef cvImage )
 {
-	::CVPixelBufferLockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
-	
 #if defined( CINDER_COCOA_TOUCH )
-	::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 ); // Periodic texture cache flush every frame
-#elif defined( CINDER_COCOA )
-	::CVOpenGLTextureCacheFlush( mVideoTextureCacheRef, 0 ); // Periodic texture cache flush every frame
-#endif
-	
 	CVReturn err = 0;
-#if defined( CINDER_COCOA_TOUCH )
+	::CVPixelBufferLockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
+
+	::CVOpenGLESTextureCacheFlush( mVideoTextureCacheRef, 0 ); // Periodic texture cache flush every frame
+
 	CVOpenGLESTextureRef videoTextureRef;
 	err = ::CVOpenGLESTextureCacheCreateTextureFromImage( kCFAllocatorDefault,		 // CFAllocatorRef allocator
 															mVideoTextureCacheRef,   // CVOpenGLESTextureCacheRef textureCache
@@ -169,20 +237,9 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 															0,                       // size_t planeIndex
 															&videoTextureRef );      // CVOpenGLESTextureRef *textureOut
 	
-#elif defined( CINDER_MAC )
-	CVOpenGLTextureRef videoTextureRef;
-	err = ::CVOpenGLTextureCacheCreateTextureFromImage( kCFAllocatorDefault,       // CFAllocatorRef allocator
-														mVideoTextureCacheRef,     // CVOpenGLESTextureCacheRef textureCache
-														cvImage,                   // CVImageBufferRef sourceImage
-														NULL,                      // CFDictionaryRef textureAttributes
-														&videoTextureRef );        // CVOpenGLTextureRef *textureOut
-#endif
-	
-	if( err ) {
+	if( err )
 		throw AvfTextureErrorExc();
-	}
 	
-#if defined( CINDER_COCOA_TOUCH )
 	GLenum target = ::CVOpenGLESTextureGetTarget( videoTextureRef );
 	GLuint name = ::CVOpenGLESTextureGetName( videoTextureRef );
 	bool topDown = ::CVOpenGLESTextureIsFlipped( videoTextureRef );
@@ -203,24 +260,7 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	mTexture->setCleanSize( mWidth, mHeight );
 	mTexture->setTopDown( topDown );
 #elif defined( CINDER_MAC )
-	GLenum target = ::CVOpenGLTextureGetTarget( videoTextureRef );
-	GLuint name = ::CVOpenGLTextureGetName( videoTextureRef );
-	bool topDown = ::CVOpenGLTextureIsFlipped( videoTextureRef );
-
-	// custom deleter fires when last reference to Texture goes out of scope
-	auto deleter = [videoTextureRef] ( gl::Texture *texture ) {
-		::CVOpenGLTextureRelease( videoTextureRef );
-		delete texture;
-	};
-	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, deleter );
-
-	vec2 t0, lowerRight, t2, upperLeft;
-	::CVOpenGLTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
-	mTexture->setCleanSize( std::max( upperLeft.x, lowerRight.x ), std::max( upperLeft.y, lowerRight.y ) );
-	mTexture->setTopDown( topDown );
-
-	::CVPixelBufferUnlockBaseAddress( cvImage, kCVPixelBufferLock_ReadOnly );
-	::CVPixelBufferRelease( cvImage );
+	mTexture = mTextureCache->add( cvImage );
 #endif
 }
 
