@@ -22,9 +22,7 @@
         <div id="description" class="row">
           <div class="prose columns large-9"></div>
           <div class="side columns large-3">
-            <div class="row">
-              <div class="include"><h4>#include</h4></div>
-            </div>
+            
           </div>
         </div>
 
@@ -48,9 +46,16 @@
 
 <!-- Templates -->
 
+<template id="side-static" >
+  <div class="row side">
+    <h4></h4>
+    <div class="content">
+    </div>
+  </div>
+</template>
+
 <template id="side-expandable" >
   <div class="row side expandable">
-    <!-- <button class="expand"></button> -->
     <h4></h4>
     <div class="content">
     </div>

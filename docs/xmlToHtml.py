@@ -55,7 +55,6 @@ class SymbolMap (object):
 			self.base = base
 			self.fileName = fileName
 
-
 	class Namespace( object ):
 		def __init__( self, name, fileName ):
 			self.name = name
@@ -143,6 +142,13 @@ class SymbolMap (object):
 		else:
 			return []
 
+	def getLinkForClass( self, className ):
+		""" Get the link for the definition of a class.
+			It may include namespace or not.
+		"""
+		# strip down to the name of the class (without namespace)
+		return ""
+
 class FileData (object):
 	def __init__( self, tree, bs4 ):
 
@@ -167,6 +173,7 @@ class FileData (object):
 
 
 	def parseTemplate( self ):
+		self.contentsEl = self.bs4.find( "div", "contents" )
 		if self.kind == "class" or self.kind == "struct":
 			self.descriptionEl = self.bs4.find( id="description" )
 			self.descriptionProseEl = self.descriptionEl.find( "div", "prose" )
@@ -220,33 +227,16 @@ def genAnchorTag( bs4, anchorName ) :
 	anchor["name"] = anchorName
 	return anchor
 
-def parseFile( bs4, inPath, outPath ) :
-	tree = None;
-	try:
-		xml_file = codecs.open( inPath, "r", "UTF-8" )
-		tree = ET.parse(xml_file)
-		# tree = ET.parse( inPath )
-
-	except:
-		exc = sys.exc_info()[0]
-		print "\n--- PARSE ERROR ---"
-		print "COULD NOT PARSE FILE: " + inPath
-		print exc
-		# write the file with error	
-		outFile = codecs.open( outPath, "w", "UTF-8" )
-		bs4.append( 'COULD NOT PARSE FILE: ' + inPath )
-		outFile.write( bs4.prettify() )
-		print "-------------------\n"
-		# return tree
-
-	return tree
-
-# Generates a new html element and optionally adds classes and content
-# bs4		beautiful soup
-# tagType	html tag/element (p, a, em, etc)
-# classes 	array of strings that you want as classes for the element
-# contents	any content that you want to populate your tag with, if known
 def genTag( bs4, tagType, classes = None, contents = None ):
+	""" Generates a new html element and optionally adds classes and content
+		
+	Args:
+		bs4:		beautiful soup
+		tagType:	html tag/element (p, a, em, etc)
+		classes: 	array of strings that you want as classes for the element
+		contents:	any content that you want to populate your tag with, if known
+	"""
+	
 	newTag = bs4.new_tag( tagType )
 
 	if classes :
@@ -300,17 +290,19 @@ def defineLinkTag( tag, attrib ):
 
 
 def markupFunction( bs4, fnXml, parent, isConstructor ):
-
-	# create new line
-	# left side = return type
-	# right side = function name
-	# under right side = definition
-	# 
-	# ---------------------------------------------------
-	# | returnType	| function( param1, param2, etc )   |
-	# ---------------------------------------------------
-	# | 			| description 						|
-	# ---------------------------------------------------
+	""" Mark up a function using the function definition
+	
+	create new line
+	left side = return type
+	right side = function name
+	under right side = definition
+	
+	---------------------------------------------------
+	| returnType	| function( param1, param2, etc ) |
+	---------------------------------------------------
+	| 				| description 					  |
+	---------------------------------------------------
+	"""
 	
 	li = genTag( bs4, "li", ["row"] )
 
@@ -362,17 +354,19 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	parent.append( li )
 
 def markupEnum( bs4, fnXml, parent ):
-
-	# create new line
-	# left side = return type
-	# right side = function name
-	# under right side = definition
-	# 
-	# ---------------------------------------------------
-	# | returnType	| function( param1, param2, etc )   |
-	# ---------------------------------------------------
-	# | 			| description 						|
-	# ---------------------------------------------------
+	""" Mark up an enum using the function definition
+	
+	create new line
+	left side = return type
+	right side = function name
+	under right side = definition
+	
+	---------------------------------------------------
+	| returnType	| function( param1, param2, etc ) |
+	---------------------------------------------------
+	| 				| description 					  |
+	---------------------------------------------------
+	"""
 	
 	li = genTag( bs4, "li", ["row"] )
 
@@ -427,12 +421,23 @@ def defineTag( bs4, tagName, tree ):
 	
 	return newTag
 
-# Generate includes tag group
-def genIncludesTag( bs4, text ):
+def genIncludes( includeDef ):
 
-	includeLink = genTag( bs4, "a", None, text )
-	defineLinkTag( includeLink, {'linkid':text} )
-	return includeLink
+	bs4 = g_currentFile.bs4
+
+	# create html from template
+	side = getTemplate( bs4, "side-static" )
+	contentDiv = side.find( "div", "content" )
+
+	# fill heading
+	side.find('h4').append("#include")
+
+	# add include link
+	includeLink = genTag( bs4, "a", None, includeDef )
+	defineLinkTag( includeLink, {'linkid':includeDef} )
+	contentDiv.append( includeLink )
+
+	g_currentFile.appendToSideEl( side )
 
 def genTypeDefs( bs4, typeDefs ):
 	"""	Generates the typedefs side bar, with each linking out
@@ -524,7 +529,6 @@ def genClassHierarchy( bs4, classDef ):
 	
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
-	
 
 	# fill heading
 	side.find('h4').append("Class Heirarchy:")
@@ -568,7 +572,7 @@ def genClassList( bs4, tree ):
 		li = genTag( bs4, "li" )
 		classesUl.append( li )
 
-		a = genTag( bs4, "a", [], classDef.text )
+		a = genTag( bs4, "a", [], stripCompoundName( classDef.text ) )
 		defineLinkTag( a, classDef.attrib )
 		li.append( a )
 	
@@ -659,12 +663,10 @@ def iterateMarkup( bs4, tree, parent ):
 		# add a new pre tag in and make that the current parent again
 		currentTag = htmlTag	
 	
-	
 	# iterate through children tags
 	for child in list( tree ):
 		output = iterateMarkup( bs4, child, currentTag )
 	
-
 	# tail is any extra text that isn't wrapped in another tag
 	# that exists before the next tag
 	if tree.tail != None:
@@ -795,15 +797,17 @@ def getTemplate( bs4, elementId ) :
 	templates = bs4.find_all( 'template' ) 
 	template = None
 
-	for t in templates :	
+	for t in templates :
 		# [0] is a string before the enclosed div, so used [1] instead
-		template = clone( list(t.contents)[1] )
+		if t['id'] == elementId:
+			template = clone( list(t.contents)[1] )
+		else:
+			continue
 
 	return template
 
 
 def iterateNamespace( bs4, namespaces, tree, index, label ) :
-
 	# Get namespace of previous child, unless first
 	if index == 0:
 		parentNs = ""
@@ -864,7 +868,6 @@ def iterateNamespace( bs4, namespaces, tree, index, label ) :
 					nsLi.append( aTag )
 
 		else :
-
 			# has no direct descendent on the parent, so add it independently
 			if parentIsDerived == False and index == 0:
 				childCount += 1
@@ -924,13 +927,11 @@ def generateNamespaceNav( bs4 ) :
 
 
 def processClassXmlFile( inPath, outPath, html ):
-
 	global g_currentFile
-
 	print "Processing file: " + inPath + " > " + outPath;
 
 	# define the tree that contains all the data we need to populate this page
-	tree = parseFile( html, inPath, outPath )
+	tree = parseHtml( html, inPath, outPath )
 	if tree == None:
 		return
 
@@ -949,41 +950,32 @@ def processClassXmlFile( inPath, outPath, html ):
 	if len( includeTrees ) > 0 :
 		includeDef = tree.findall( r"compounddef/includes" )[0].text
 
-	# find file tree in tag file, which is a list of all of the file nodes
+	# find file definition for the include file
 	fileDef = None
 	if includeDef != None :
 		fileDef = g_symbolMap.findFile( includeDef )
 	
-	# find class tree in tag file, which is all of the class nodes
-	# classTagTree = findClassTag( className )
+	# find class definition
 	classDef = g_symbolMap.findClass(className)
 
 	# +-----------------------------------------+
 	#  find parts in template that already exist
 	# +-----------------------------------------+
-	contentsTag = html.find( "div", "contents" )
-
-	# description area
-	descriptionTag = html.find( id="description" )
-	descriptionProseEl = descriptionTag.find( "div", "prose" )
-
-	# side area
-	sideNavTag = html.find( id="side-nav" )
-	sideEl = g_currentFile.sideEl
-	includeEl = sideEl.find( "div", "include" )
+	contentsEl = g_currentFile.contentsEl
+	sideNavEl = g_currentFile.sideNavEl
 
 	# +-------------+
 	#  Namespace Nav
 	# +-------------+
-	sideNavTag.append( g_namespaceNav )
+	sideNavEl.append( g_namespaceNav )
 
 	# +---------------+
 	#  Side Area Nodes
 	# +---------------+
 	# includes
 	if includeDef != None :
-		includeContent = genIncludesTag( html, includeDef );
-		includeEl.append( includeContent )	
+		genIncludes( includeDef )
+
 	# typedefs
 	if fileDef != None:
 		genTypeDefs( html, fileDef.typedefs )
@@ -992,14 +984,13 @@ def processClassXmlFile( inPath, outPath, html ):
 	# class list
 	genClassList( html, tree )
 	
-
 	# +-----------+
 	#  Description
 	# +-----------+
 	# description prose
 	descTag = markupDescription( html, tree.find( r'compounddef' ) );
 	if descTag is not None :
-		descriptionProseEl.append( descTag )
+		g_currentFile.descriptionProseEl.append( descTag )
 
 	# +----------------+
 	#  Member Functions
@@ -1036,7 +1027,7 @@ def processClassXmlFile( inPath, outPath, html ):
 		# add anchor tag to page
 		anchor = genAnchorTag( html, "public-member-functions" )
 		subnavAnchors.append({"name":"Public Member Functions", "link": anchor})
-		contentsTag.append( anchor )
+		contentsEl.append( anchor )
 
 		# public member functions
 		header = html.new_tag( "h1")
@@ -1044,7 +1035,7 @@ def processClassXmlFile( inPath, outPath, html ):
 		sectionTag = genTag( html, "section" );
 		sectionTag.append( header )
 		sectionTag.append( ulTag )
-		contentsTag.append( sectionTag );
+		contentsEl.append( sectionTag );
 		sectionTag.append( genTag( html, "hr" ) )
 
 
@@ -1053,7 +1044,7 @@ def processClassXmlFile( inPath, outPath, html ):
 
 		anchor = genAnchorTag( html, "static-public-member-functions" )
 		subnavAnchors.append({"name":"Static Public Member Functions", "link":anchor})
-		contentsTag.append( anchor )
+		contentsEl.append( anchor )
 
 		# static public member functions
 		header = html.new_tag( "h1")
@@ -1061,32 +1052,49 @@ def processClassXmlFile( inPath, outPath, html ):
 		sectionTag = genTag( html, "section" );
 		sectionTag.append( header )
 		sectionTag.append( staticUlTag )
-		contentsTag.append( sectionTag )
-		# sectionTag.append( genTag( html, "hr" ) )
+		contentsEl.append( sectionTag )
 
 	# replace any code chunks with <pre> tags, which is not possible on initial creation
 	replaceCodeChunks( html )
 
+	# # +-------------------------------------------------+
+	# #  SubNav
+	# #  Fill subnav based on what is actually in the page
+	# # +-------------------------------------------------+
+	# subnavEl = html.find( id="sub-nav" )
+	# subnavUl = genTag( html, "ul" )
 
+	# # for all of the subnav anchors, add a link into the subnav list
+	# for anchor in subnavAnchors :
+	# 	li = genTag( html, "li" )
+	# 	link = genTag( html, "a", [], anchor["name"] )
+	# 	defineLinkTag( link, {"href": "#" + anchor["link"]["name"]} )
+	# 	li.append( link )
+	# 	subnavUl.append( li )
+	# subnavEl.append( subnavUl )
+	
+	genSubNav( subnavAnchors )
+
+	# write the file
+	writeHtml( html, outPath )
+
+def genSubNav( subnavAnchors ):
 	# +-------------------------------------------------+
 	#  SubNav
 	#  Fill subnav based on what is actually in the page
 	# +-------------------------------------------------+
-	subnavEl = html.find( id="sub-nav" )
-	subnavUl = genTag( html, "ul" )
+	bs4 = g_currentFile.bs4
+	subnavEl = bs4.find( id="sub-nav" )
+	subnavUl = genTag( bs4, "ul" )
 
 	# for all of the subnav anchors, add a link into the subnav list
 	for anchor in subnavAnchors :
-		li = genTag( html, "li" )
-		link = genTag( html, "a", [], anchor["name"] )
+		li = genTag( bs4, "li" )
+		link = genTag( bs4, "a", [], anchor["name"] )
 		defineLinkTag( link, {"href": "#" + anchor["link"]["name"]} )
 		li.append( link )
 		subnavUl.append( li )
 	subnavEl.append( subnavUl )
-	
-	# write the file
-	outFile = codecs.open( outPath, "w", "UTF-8" )
-	outFile.write( html.prettify() )
 
 def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 
@@ -1114,12 +1122,18 @@ def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 
 	container.append( li )
 
-def processNamespaceXmlFile( inPath, outPath, html ):
+def dropAnchor(anchorList, anchorName, linkName):
+	bs4 = g_currentFile.bs4
+	anchor = genAnchorTag( bs4, anchorName )
+	anchorList.append({"name":linkName, "link": anchor})
+	g_currentFile.contentsEl.append( anchor )
 
+def processNamespaceXmlFile( inPath, outPath, html ):
+	global g_currentFile
 	print "Processing namespace file: " + inPath + " > " + outPath;
 
 	# define the tree that contains all the data we need to populate this page
-	tree = parseFile( html, inPath, outPath )
+	tree = parseHtml( html, inPath, outPath )
 	if tree == None:
 		return
 
@@ -1129,11 +1143,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	className = g_currentFile.name
 	kind = g_currentFile.kind
 
-	
+	# dictionary for subnav anchors
+	subnavAnchors = []
+
 	# +-----------------------------------------+
 	#  find parts in template that already exist
 	# +-----------------------------------------+
-	contentsTag = html.find( "div", "contents" )
+	# contentsTag = html.find( "div", "contents" )
+	contentsEl = g_currentFile.contentsEl
 
 	# +-------------+
 	#  Namespace Nav
@@ -1141,7 +1158,6 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# side area
 	sideNavTag = html.find( id="side-nav" )
 	sideNavTag.append( g_namespaceNav )
-
 
 	# +-----------+
 	#  Description
@@ -1153,12 +1169,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# +----------+
 	#  Namespaces
 	# +----------+
+	dropAnchor( subnavAnchors, "namespaces", "Namespaces" );
 	namespacesSection = genTag( html, "section" )
-	contentsTag.append( namespacesSection )
+	contentsEl.append( namespacesSection )
 
 	namespacesUl = genTag( html, "ul" )
 	namespaces = tree.findall(r"compounddef/innernamespace")
 	if namespaces is not None:
+
 		for c in namespaces :
 			namespaceLinkTag = genLinkTag( html, c.text, c.attrib["refid"] + ".html" )
 			addRowLi( html, namespacesUl, None, namespaceLinkTag )
@@ -1167,13 +1185,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		namespacesSection.append( namespacesUl )
 
 
-	contentsTag.append( genTag( html, "br" ) )
+	contentsEl.append( genTag( html, "br" ) )
 	
 	# +-------+
 	#  Classes
 	# +-------+
+	dropAnchor( subnavAnchors, "classes", "Classes" );
 	classesSection = genTag( html, "section" )
-	contentsTag.append( classesSection )
+	contentsEl.append( classesSection )
 
 	classesSection.append( genTag( html, "h2", [], "Classes") )
 	classUl = genTag( html, "ul" )
@@ -1184,13 +1203,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		addRowLi( html, classUl, kind, linkTag, "1-11")
 	classesSection.append( classUl )
 
-	contentsTag.append( genTag( html, "br" ) )
+	contentsEl.append( genTag( html, "br" ) )
 
 	# +--------+
 	#  TypeDefs
 	# +--------+
+	dropAnchor( subnavAnchors, "typedefs", "Typedefs" );
 	typedefSection = genTag( html, "section" )
-	contentsTag.append( typedefSection )
+	contentsEl.append( typedefSection )
 
 	typedefSection.append( genTag( html, "h2", [], "Typedefs") )
 	typedefUl = genTag( html, "ul" )
@@ -1198,13 +1218,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		markupFunction( html, c, typedefUl, False )
 	typedefSection.append( typedefUl )
 
-	contentsTag.append( genTag( html, "br" ) )
+	contentsEl.append( genTag( html, "br" ) )
 	
 	# +------------+
 	#  Enumerations
 	# +------------+
+	dropAnchor( subnavAnchors, "enumerations", "Enumerations" );
 	enumSection = genTag( html, "section" )
-	contentsTag.append( enumSection )
+	contentsEl.append( enumSection )
 
 	enumSection.append( genTag( html, "h2", [], "Enumerations") )
 	enumUl = genTag( html, "ul" )
@@ -1212,13 +1233,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		markupEnum(html, c, enumUl)
 	enumSection.append( enumUl )
 
-	contentsTag.append( genTag( html, "br" ) )
+	contentsEl.append( genTag( html, "br" ) )
 
 	# +---------+
 	#  Functions
 	# +---------+
+	dropAnchor( subnavAnchors, "functions", "Functions" );
 	functionSection = genTag( html, "section" )
-	contentsTag.append( functionSection )
+	contentsEl.append( functionSection )
 
 	functionSection.append( genTag( html, "h2", [], "Functions") )
 	functionUl = genTag( html, "ul" )
@@ -1226,13 +1248,14 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		markupFunction( html, c, functionUl, False )
 	functionSection.append( functionUl )
 
-	contentsTag.append( genTag( html, "br" ) )
+	contentsEl.append( genTag( html, "br" ) )
 
 	# +---------+
 	#  Variables
 	# +---------+
+	dropAnchor( subnavAnchors, "variables", "Variables" );
 	varsSection = genTag( html, "section" )
-	contentsTag.append( varsSection )
+	contentsEl.append( varsSection )
 
 	varsSection.append( genTag( html, "h2", [], "Variables") )
 	varsUl = genTag( html, "ul" )
@@ -1247,9 +1270,10 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		addRowLi( html, varsUl, typeStr, name )
 	varsSection.append( varsUl )
 
+	genSubNav( subnavAnchors )
+
 	# write the file
-	outFile = codecs.open( outPath, "w", "UTF-8" )
-	outFile.write( html.prettify() )
+	writeHtml( html, outPath )
 
 def constructTemplate( templates ) :
 	""" Constructs a beautiful soup instance by mashing a bunch of html files together
@@ -1325,9 +1349,27 @@ def getSymbolToFileMap( tagDom ):
 def getFilePrefix( filePath ):
 	return os.path.splitext( os.path.basename( filePath ) )[0]
 
-def parseTemplateHtml( templatePath ):
-	file = codecs.open( templatePath, "r", "UTF-8" )
-	return BeautifulSoup( file )
+def parseHtml( bs4, inPath, outPath ) :
+	tree = None;
+	try:
+		xml_file = codecs.open( inPath, "r", "UTF-8" )
+		tree = ET.parse(xml_file)
+
+	except:
+		exc = sys.exc_info()[0]
+		print "\n--- PARSE ERROR ---"
+		print "COULD NOT PARSE FILE: " + inPath
+		print exc
+		# write the file with error	
+		bs4.append( 'COULD NOT PARSE FILE: ' + inPath )
+		writeHtml( bs4, outPath )
+		print "-------------------\n"
+
+	return tree
+
+def writeHtml( html, savePath ):
+	outFile = codecs.open( savePath, "w", "UTF-8" )
+	outFile.write( html.prettify() )
 
 def processFile( inPath, outPath ):
 	""" Generate documentation for a single file
