@@ -33,7 +33,9 @@
 
 #include <CoreVideo/CoreVideo.h>
 #include <CoreVideo/CVBase.h>
-#import <Foundation/Foundation.h>
+
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSValue.h>
 #if defined( CINDER_MAC )
 	#include <CoreVideo/CVOpenGLTextureCache.h>
 	#include <CoreVideo/CVOpenGLTexture.h>

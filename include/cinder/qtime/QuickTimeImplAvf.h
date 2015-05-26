@@ -42,6 +42,7 @@ typedef CVBufferRef CVImageBufferRef;
 	@class AVAsset, AVURLAsset, AVAssetTrack, AVAssetReader;
 	@class MovieDelegate;
 	@class NSURL;
+	@class NSDictionary;
 #else
 	class AVPlayer;
 	class AVPlayerItem;
