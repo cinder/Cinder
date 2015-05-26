@@ -12,6 +12,7 @@ from distutils.dir_util import copy_tree
 XML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'xml' + os.sep
 DOXYGEN_HTML_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
 HTML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
+TEMPLATE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep + "_templates" + os.sep
 
 # convert docygen markup to html markup
 tagDictionary = {
@@ -1118,22 +1119,7 @@ def processClassXmlFile( inPath, outPath, html ):
 	# replace any code chunks with <pre> tags, which is not possible on initial creation
 	replaceCodeChunks( html )
 
-	# # +-------------------------------------------------+
-	# #  SubNav
-	# #  Fill subnav based on what is actually in the page
-	# # +-------------------------------------------------+
-	# subnavEl = html.find( id="sub-nav" )
-	# subnavUl = genTag( html, "ul" )
-
-	# # for all of the subnav anchors, add a link into the subnav list
-	# for anchor in subnavAnchors :
-	# 	li = genTag( html, "li" )
-	# 	link = genTag( html, "a", [], anchor["name"] )
-	# 	defineLinkTag( link, {"href": "#" + anchor["link"]["name"]} )
-	# 	li.append( link )
-	# 	subnavUl.append( li )
-	# subnavEl.append( subnavUl )
-	
+	# generate subnav
 	genSubNav( subnavAnchors )
 
 	# write the file
@@ -1266,7 +1252,7 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		for c in classes :
 			link = c.attrib["refid"] + ".html"
 			kind = "struct" if link.startswith("struct") else "class"
-			linkTag = genLinkTag( html, c.text, link )
+			linkTag = genLinkTag( html, stripCompoundName( c.text ), link )
 			addRowLi( html, classUl, kind, linkTag, "1-11")
 		classesSection.append( classUl )
 
@@ -1357,7 +1343,7 @@ def constructTemplate( templates ) :
 	"""
 	masterTemplate = ""
 	for templatePath in templates :
-		masterTemplate += open(os.path.join( HTML_SOURCE_PATH, templatePath )).read()
+		masterTemplate += open(os.path.join( HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath )).read()
 	masterTemplate.decode("UTF-8")
 	return BeautifulSoup( masterTemplate )
 
@@ -1490,6 +1476,10 @@ def processDir(inPath, outPath):
 				print "SKIPPING: " + file
 				# TODO: base template and just iterate do an html iteration
 
+def processHtmlDir(inPath, outPath):
+	# process all html files in dirs in the html source dir that do not start with "_"
+	return None
+
 if __name__ == "__main__":
 	""" Main Function for generating html documentation from doxygen generated xml files
 	
@@ -1527,7 +1517,8 @@ if __name__ == "__main__":
 	# process a directory
 	elif os.path.isdir( inPath ): 
 		if len( sys.argv ) == 3: 
-			processDir( inPath, sys.argv[2])
+			processDir( inPath, sys.argv[2] )
+			processHtmlDir( HTML_SOURCE_PATH, sys.argv[2] )
 
 	else:
 		print "Unknown usage"
