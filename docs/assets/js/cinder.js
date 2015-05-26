@@ -22,7 +22,7 @@ $(document).ready(function() {
  		}); 		
  		
  		// Hide all of the definition tags
- 		if( $this.find( ".functionDef, .enumDef" ).length > 0 ){
+ 		if( $this.find( ".functionDef, .enumDef, .definitionCol" ).length > 0 ){
  			$this.addClass("hidden");
  		}
  	});

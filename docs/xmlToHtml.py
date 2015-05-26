@@ -350,7 +350,68 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 		
 	# else :
 		# print "NO DESCRIPTION"
+	""" Mark up a function using the function definition
 	
+	create new line
+	left side = return type
+	right side = function name
+	under right side = definition
+	
+	---------------------------------------------------
+	| returnType	| function( param1, param2, etc ) |
+	---------------------------------------------------
+	| 				| description 					  |
+	---------------------------------------------------
+	"""
+	
+	li = genTag( bs4, "li", ["row"] )
+
+	# wrapper
+	functionDiv = genTag( bs4, "div", ["functionDef"] )
+	li.append( functionDiv )
+
+	# left side / return type
+	if not isConstructor:
+		returnDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
+		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
+		functionDiv.append( returnDiv )
+
+
+	# right side (function name and description)
+	definitionCol = genTag( bs4, "div", ["definitionCol columns"] )
+
+	# width is dependent on if it has the return column
+	if isConstructor:
+		addClassToTag(definitionCol, "large-12")
+	else:
+		addClassToTag(definitionCol, "large-9")
+
+	functionDiv.append( definitionCol )
+
+	# function name
+	definitionDiv = genTag( bs4, "div", ["definition"] )
+	
+	emTag = genTag( bs4, "em", [], fnXml.find( "name" ).text )    
+	definitionDiv.append( emTag )
+	
+	argstring = fnXml.find( "argsstring" )
+	if argstring is None :
+		argstring = fnXml.find( "arglist" )
+	argstringText = argstring.text if argstring.text is not None else ""
+	
+	definitionDiv.append( argstringText )
+	definitionCol.append( definitionDiv );
+
+	# detailed description
+	descriptionDiv = markupDescription( bs4, fnXml );
+	if descriptionDiv is not None :
+		definitionCol.append( descriptionDiv )
+		addClassToTag( li, "expandable" )
+		
+	# else :
+		# print "NO DESCRIPTION"
+	
+	parent.append( li )
 	parent.append( li )
 
 def markupEnum( bs4, fnXml, parent ):
@@ -1096,7 +1157,7 @@ def genSubNav( subnavAnchors ):
 		subnavUl.append( li )
 	subnavEl.append( subnavUl )
 
-def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
+def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None, dropdownContent=None ) :
 
 	leftCol = "3"
 	rightCol = "9"
@@ -1121,6 +1182,12 @@ def addRowLi( bs4, container, leftContent, rightContent, colBreakdown=None ) :
 	rightDiv.append( rightContent )
 
 	container.append( li )
+
+	# if there is dropdown content, the right side will have an additional row below it
+	if dropdownContent is not None:
+		rightDiv.append( dropdownContent )
+		addClassToTag( li, "expandable" )
+
 
 def dropAnchor(anchorList, anchorName, linkName):
 	bs4 = g_currentFile.bs4
@@ -1169,14 +1236,13 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# +----------+
 	#  Namespaces
 	# +----------+
-	dropAnchor( subnavAnchors, "namespaces", "Namespaces" );
-	namespacesSection = genTag( html, "section" )
-	contentsEl.append( namespacesSection )
-
-	namespacesUl = genTag( html, "ul" )
 	namespaces = tree.findall(r"compounddef/innernamespace")
-	if namespaces is not None:
+	if len( namespaces ) > 0:
+		dropAnchor( subnavAnchors, "namespaces", "Namespaces" );
+		namespacesSection = genTag( html, "section" )
+		contentsEl.append( namespacesSection )
 
+		namespacesUl = genTag( html, "ul" )
 		for c in namespaces :
 			namespaceLinkTag = genLinkTag( html, c.text, c.attrib["refid"] + ".html" )
 			addRowLi( html, namespacesUl, None, namespaceLinkTag )
@@ -1184,91 +1250,102 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 		namespacesSection.append( genTag( html, "h2", [], "Namespaces") )
 		namespacesSection.append( namespacesUl )
 
-
-	contentsEl.append( genTag( html, "br" ) )
+		contentsEl.append( genTag( html, "br" ) )
 	
 	# +-------+
 	#  Classes
 	# +-------+
-	dropAnchor( subnavAnchors, "classes", "Classes" );
-	classesSection = genTag( html, "section" )
-	contentsEl.append( classesSection )
+	classes = tree.findall(r"compounddef/innerclass")
+	if len( classes ) > 0:
+		dropAnchor( subnavAnchors, "classes", "Classes" );
+		classesSection = genTag( html, "section" )
+		contentsEl.append( classesSection )
 
-	classesSection.append( genTag( html, "h2", [], "Classes") )
-	classUl = genTag( html, "ul" )
-	for c in tree.findall(r"compounddef/innerclass") :
-		link = c.attrib["refid"] + ".html"
-		kind = "struct" if link.startswith("struct") else "class"
-		linkTag = genLinkTag( html, c.text, link )
-		addRowLi( html, classUl, kind, linkTag, "1-11")
-	classesSection.append( classUl )
+		classesSection.append( genTag( html, "h2", [], "Classes") )
+		classUl = genTag( html, "ul" )
+		for c in classes :
+			link = c.attrib["refid"] + ".html"
+			kind = "struct" if link.startswith("struct") else "class"
+			linkTag = genLinkTag( html, c.text, link )
+			addRowLi( html, classUl, kind, linkTag, "1-11")
+		classesSection.append( classUl )
 
-	contentsEl.append( genTag( html, "br" ) )
+		contentsEl.append( genTag( html, "br" ) )
 
 	# +--------+
 	#  TypeDefs
 	# +--------+
-	dropAnchor( subnavAnchors, "typedefs", "Typedefs" );
-	typedefSection = genTag( html, "section" )
-	contentsEl.append( typedefSection )
+	typedefs = tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']") 
+	if len( typedefs ) > 0:
+		dropAnchor( subnavAnchors, "typedefs", "Typedefs" );
+		typedefSection = genTag( html, "section" )
+		contentsEl.append( typedefSection )
 
-	typedefSection.append( genTag( html, "h2", [], "Typedefs") )
-	typedefUl = genTag( html, "ul" )
-	for c in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']") :
-		markupFunction( html, c, typedefUl, False )
-	typedefSection.append( typedefUl )
+		typedefSection.append( genTag( html, "h2", [], "Typedefs") )
+		typedefUl = genTag( html, "ul" )
+		for c in typedefs:
+			markupFunction( html, c, typedefUl, False )
+		typedefSection.append( typedefUl )
 
-	contentsEl.append( genTag( html, "br" ) )
+		contentsEl.append( genTag( html, "br" ) )
 	
 	# +------------+
 	#  Enumerations
 	# +------------+
-	dropAnchor( subnavAnchors, "enumerations", "Enumerations" );
-	enumSection = genTag( html, "section" )
-	contentsEl.append( enumSection )
+	enumerations = tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']")
+	if len( enumerations ) > 0:
+		dropAnchor( subnavAnchors, "enumerations", "Enumerations" );
+		enumSection = genTag( html, "section" )
+		contentsEl.append( enumSection )
 
-	enumSection.append( genTag( html, "h2", [], "Enumerations") )
-	enumUl = genTag( html, "ul" )
-	for c in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']") :
-		markupEnum(html, c, enumUl)
-	enumSection.append( enumUl )
+		enumSection.append( genTag( html, "h2", [], "Enumerations") )
+		enumUl = genTag( html, "ul" )
+		for c in enumerations :
+			markupEnum(html, c, enumUl)
+		enumSection.append( enumUl )
 
-	contentsEl.append( genTag( html, "br" ) )
+		contentsEl.append( genTag( html, "br" ) )
 
 	# +---------+
 	#  Functions
 	# +---------+
-	dropAnchor( subnavAnchors, "functions", "Functions" );
-	functionSection = genTag( html, "section" )
-	contentsEl.append( functionSection )
+	functions = tree.findall( r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']")
+	if len( functions ) > 0:
+		dropAnchor( subnavAnchors, "functions", "Functions" );
+		functionSection = genTag( html, "section" )
+		contentsEl.append( functionSection )
 
-	functionSection.append( genTag( html, "h2", [], "Functions") )
-	functionUl = genTag( html, "ul" )
-	for c in tree.findall( r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']") :
-		markupFunction( html, c, functionUl, False )
-	functionSection.append( functionUl )
+		functionSection.append( genTag( html, "h2", [], "Functions") )
+		functionUl = genTag( html, "ul" )
+		for c in functions:
+			markupFunction( html, c, functionUl, False )
+		functionSection.append( functionUl )
 
-	contentsEl.append( genTag( html, "br" ) )
+		contentsEl.append( genTag( html, "br" ) )
 
 	# +---------+
 	#  Variables
 	# +---------+
-	dropAnchor( subnavAnchors, "variables", "Variables" );
-	varsSection = genTag( html, "section" )
-	contentsEl.append( varsSection )
+	vars = tree.findall( r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']")
+	if len( vars ) > 0:
+		dropAnchor( subnavAnchors, "variables", "Variables" );
+		varsSection = genTag( html, "section" )
+		contentsEl.append( varsSection )
 
-	varsSection.append( genTag( html, "h2", [], "Variables") )
-	varsUl = genTag( html, "ul" )
-	for c in tree.findall( r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']") :
-		typeStr = c.find('type').text
-		name = c.find( 'name' ).text
-		initializer = c.find('initializer').text if c.find('initializer') is not None else None
-		if typeStr == None:
-			typeStr = ""
-		if initializer is not None:
-			name += initializer
-		addRowLi( html, varsUl, typeStr, name )
-	varsSection.append( varsUl )
+		varsSection.append( genTag( html, "h2", [], "Variables") )
+		varsUl = genTag( html, "ul" )
+		for c in vars:
+			typeStr = c.find('type').text
+			name = genTag( html, "div" )
+			name.append( genTag( html, "b", [], c.find( 'name' ).text ) )
+			initializer = c.find('initializer').text if c.find('initializer') is not None else None
+			description = markupDescription( html, c );
+			if typeStr == None:
+				typeStr = ""
+			if initializer is not None:
+				name.append( " " + initializer )
+			addRowLi( html, varsUl, typeStr, name, None, description )
+		varsSection.append( varsUl )
 
 	genSubNav( subnavAnchors )
 
@@ -1406,7 +1483,7 @@ def processDir(inPath, outPath):
 				processClassXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( classTemplateHtml ) )
 
 			# process namespace files
-			elif file.startswith( "namespaces" ) :
+			elif file.startswith( "namespace" ) :
 				processNamespaceXmlFile( os.path.join( inPath, file ), os.path.join( outPath, filePrefix + ".html" ), copy.deepcopy( namespaceTemplateHtml ) )
 
 			else :
