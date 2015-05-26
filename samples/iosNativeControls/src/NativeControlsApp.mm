@@ -50,11 +50,13 @@ void NativeControlsApp::setup()
 {
 	setupVisuals();
 
+#if 1
 	// Example of how to add Cinder's UIViewController to your native root UIViewViewController
 	[sNativeController addCinderViewToFront];
-
-	// Example of how to add Cinder's UIView to your view heirarchy (comment above out first)
-//	[sNativeController addCinderViewAsBarButton];
+#else
+	// Example of how to add Cinder's UIView to your view heirarchy
+	[sNativeController addCinderViewAsBarButton];
+#endif
 
 	// Example of how to add a std::function callback from a UIControl (NativeViewController's info button in the upper right)
 	[sNativeController setInfoButtonCallback: bind( &NativeControlsApp::infoTapped, this ) ];
