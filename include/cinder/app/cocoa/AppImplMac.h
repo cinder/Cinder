@@ -44,7 +44,7 @@
 @interface AppImplMac : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
 	NSTimer*						mAnimationTimer;
-	class cinder::app::AppMac*	mApp;
+	class cinder::app::AppMac*		mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
@@ -54,8 +54,8 @@
 	NSMutableArray*					mWindows;
 	WindowImplBasicCocoa*			mActiveWindow;
 
-	IOPMAssertionID					_idleSleepAssertionID;
-	IOPMAssertionID					_displaySleepAssertionID;
+	::IOPMAssertionID				mIdleSleepAssertionID;
+	::IOPMAssertionID				mDisplaySleepAssertionID;
 }
 
 @property(retain, nonatomic) NSMutableArray *windows;

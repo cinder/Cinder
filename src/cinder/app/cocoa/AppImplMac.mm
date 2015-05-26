@@ -61,8 +61,8 @@ using namespace cinder::app;
 
 @synthesize windows = mWindows;
 
-@synthesize idleSleepAssertionID = _idleSleepAssertionID;
-@synthesize displaySleepAssertionID = _displaySleepAssertionID;
+@synthesize idleSleepAssertionID = mIdleSleepAssertionID;
+@synthesize displaySleepAssertionID = mDisplaySleepAssertionID;
 
 - (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
 {	
@@ -348,12 +348,12 @@ using namespace cinder::app;
 {
 	if( flag && ![self isPowerManagementEnabled] ) {
 		CFStringRef reasonForActivity = CFSTR( "Cinder Application Execution" );
-		IOReturn status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &_idleSleepAssertionID );
+		IOReturn status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &mIdleSleepAssertionID );
 		if( status != kIOReturnSuccess ) {
 			CI_LOG_E( "failed to create power management assertion to prevent idle system sleep" );
 		}
 
-		status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &_displaySleepAssertionID );
+		status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &mDisplaySleepAssertionID );
 		if( status != kIOReturnSuccess ) {
 			CI_LOG_E( "failed to create power management assertion to prevent idle display sleep" );
 		}
