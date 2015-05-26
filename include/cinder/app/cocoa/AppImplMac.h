@@ -36,6 +36,8 @@
 
 #include <list>
 
+#import <IOKit/pwr_mgt/IOPMLib.h>
+
 @class CinderWindow; // inherits from NSWindow
 @class WindowImplBasicCocoa;
 
@@ -51,6 +53,9 @@
 	
 	NSMutableArray*					mWindows;
 	WindowImplBasicCocoa*			mActiveWindow;
+
+	IOPMAssertionID					_idleSleepAssertionID;
+	IOPMAssertionID					_displaySleepAssertionID;
 }
 
 @property(retain, nonatomic) NSMutableArray *windows;

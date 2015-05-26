@@ -31,7 +31,6 @@
 #include <memory>
 
 #import <OpenGL/OpenGL.h>
-#import <IOKit/pwr_mgt/IOPMLib.h>
 
 using namespace cinder;
 using namespace cinder::app;
@@ -61,6 +60,9 @@ using namespace cinder::app;
 @implementation AppImplMac
 
 @synthesize windows = mWindows;
+
+@synthesize idleSleepAssertionID = _idleSleepAssertionID;
+@synthesize displaySleepAssertionID = _displaySleepAssertionID;
 
 - (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
 {	
