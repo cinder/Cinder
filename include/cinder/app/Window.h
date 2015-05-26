@@ -254,7 +254,7 @@ class Window : public std::enable_shared_from_this<Window> {
 		bool					mTitleSpecified;
 
 #if defined( CINDER_COCOA_TOUCH )
-		UIViewController *mRootViewController;
+		__unsafe_unretained UIViewController *mRootViewController;
 #endif
 	};
 
