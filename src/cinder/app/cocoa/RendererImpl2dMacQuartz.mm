@@ -78,24 +78,31 @@
 	return rep;
 }
 
-- (void)makeCurrentContext
+- (void)startDraw
 {
 	if( currentRef )
 		return;
 
-	currentGraphicsContext = [NSGraphicsContext currentContext];
+	currentGraphicsContext = [[view window] graphicsContext];
+	[currentGraphicsContext saveGraphicsState];
 	currentRef = (CGContextRef)[currentGraphicsContext graphicsPort];
 	CGContextRetain( currentRef );
+
+	// set the clipping rectangle to be the parent (CinderView)'s bounds
+	CGRect boundsRect = [[view superview] bounds];
+	CGContextClipToRect( currentRef, boundsRect );
 	
+	// undo any previously transformations, so that we start with identity CTM
 	CGAffineTransform originalCtm = ::CGContextGetCTM( currentRef );
 	CGAffineTransform originalCtmInv = ::CGAffineTransformInvert( originalCtm );
-	::CGContextConcatCTM( currentRef, originalCtmInv );
+	::CGContextConcatCTM( currentRef, originalCtmInv );	
 }
 
-- (void)flushBuffer
+- (void)finishDraw
 {
 	CGContextFlush( currentRef );
 	CGContextRelease( currentRef );
+	[currentGraphicsContext restoreGraphicsState];
 	currentRef = nil;
 }
 
