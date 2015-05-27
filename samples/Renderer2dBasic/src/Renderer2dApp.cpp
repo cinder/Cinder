@@ -49,11 +49,9 @@ void Renderer2dApp::draw()
 	::CGContextDrawLinearGradient( context, gradient, CGPointMake( 0, 0 ), CGPointMake( 0, getWindowHeight() ), 0 );
 	::CGGradientRelease(gradient), gradient = NULL;
 
-	// CoreGraphics is "upside down" by default; setup CTM to flip and center it
 	ivec2 imgSize( ::CGImageGetWidth( mImage ), ::CGImageGetHeight( mImage ) );
-	ivec2 centerMargin( ( getWindowWidth() - imgSize.x ) / 2, ( getWindowHeight() - imgSize.y ) / 2 );	
-	::CGContextTranslateCTM( context, centerMargin.x, imgSize.y + centerMargin.y );
-	::CGContextScaleCTM( context, 1.0, -1.0 );
+	ivec2 centerMargin( ( getWindowWidth() - imgSize.x ) / 2, ( getWindowHeight() - imgSize.y ) / 2 );
+	::CGContextTranslateCTM( context, centerMargin.x, centerMargin.y );
 	::CGContextDrawImage( context, CGRectMake( 0, 0, imgSize.x, imgSize.y ), mImage );
 #elif defined( CINDER_MSW ) // Render using GDI+ on Windows
 	Gdiplus::Graphics graphics( getWindow()->getDc() );
