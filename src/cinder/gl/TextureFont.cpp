@@ -110,7 +110,6 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				ip::unpremultiply( &surface );
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
@@ -135,6 +134,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				}
 			}
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.back()->setTopDown( true );
 
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = vec2();
