@@ -16,6 +16,8 @@
 		79DC121993C14837A63C7E54 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = B88B347126554EB1955F2CFE /* CinderApp.icns */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
 		B0245F4319BECEC000BC878D /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0245F4219BECEC000BC878D /* CoreMedia.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		B0245F4519BECEC500BC878D /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0245F4419BECEC500BC878D /* AVFoundation.framework */; };
 		B0245F4819BECF0F00BC878D /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0245F4619BECEF900BC878D /* CoreVideo.framework */; };
 		B0245F4B19BECF3700BC878D /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B0245F4919BECF3100BC878D /* QTKit.framework */; };
@@ -35,6 +37,8 @@
 		8D1107320486CEB800E47090 /* TessellationBasic.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TessellationBasic.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		9010AA5E818349198AFBE54A /* TessellationBasicApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = TessellationBasicApp.cpp; path = ../src/TessellationBasicApp.cpp; sourceTree = "<group>"; };
 		B0245F4219BECEC000BC878D /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B0245F4419BECEC500BC878D /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B0245F4619BECEF900BC878D /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		B0245F4919BECF3100BC878D /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
@@ -50,6 +54,8 @@
 			files = (
 				B0245F4B19BECF3700BC878D /* QTKit.framework in Frameworks */,
 				B0245F4819BECF0F00BC878D /* CoreVideo.framework in Frameworks */,
+				00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+				00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
 				B0245F4519BECEC500BC878D /* AVFoundation.framework in Frameworks */,
 				B0245F4319BECEC000BC878D /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -83,6 +89,8 @@
 			isa = PBXGroup;
 			children = (
 				B0245F4919BECF3100BC878D /* QTKit.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				B0245F4419BECEC500BC878D /* AVFoundation.framework */,
 				B0245F4219BECEC000BC878D /* CoreMedia.framework */,
 				B0245F4619BECEF900BC878D /* CoreVideo.framework */,

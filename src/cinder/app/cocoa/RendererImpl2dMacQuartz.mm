@@ -36,6 +36,11 @@
 	[[self superview] rightMouseDown:theEvent];
 }
 
+- (BOOL)isFlipped
+{
+	return YES;
+}
+
 @end
 
 /////////////////////////////////////////////////////////////////////////////////////////
@@ -75,6 +80,9 @@
 
 - (void)makeCurrentContext
 {
+	if( currentRef )
+		return;
+
 	currentGraphicsContext = [NSGraphicsContext currentContext];
 	currentRef = (CGContextRef)[currentGraphicsContext graphicsPort];
 	CGContextRetain( currentRef );
@@ -86,7 +94,9 @@
 
 - (void)flushBuffer
 {
+	CGContextFlush( currentRef );
 	CGContextRelease( currentRef );
+	currentRef = nil;
 }
 
 - (void)setFrameSize:(CGSize)newSize
@@ -100,11 +110,6 @@
 - (CGContextRef)getCGContextRef
 {
 	return currentRef;
-}
-
-- (BOOL)isFlipped
-{
-	return YES;
 }
 
 @end

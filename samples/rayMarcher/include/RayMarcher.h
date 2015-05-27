@@ -29,5 +29,5 @@ class RayMarcher {
 	ci::Perlin					mPerlin;
 	std::vector<ci::Sphere>		mSpheres;
 	std::vector<ci::Sphere>		mTransformedSpheres;
-	ci::AxisAlignedBox3f		mBoundingBox;
+	ci::AxisAlignedBox		mBoundingBox;
 };

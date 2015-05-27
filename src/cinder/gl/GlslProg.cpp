@@ -951,8 +951,8 @@ GLint GlslProg::getUniformLocation( const std::string &name ) const
 	
 GlslProg::Attribute* GlslProg::findAttrib( const std::string &name )
 {
-	Attribute* ret = nullptr;
-	for( auto & attrib : mAttributes ) {
+	Attribute *ret = nullptr;
+	for( auto &attrib : mAttributes ) {
 		if( attrib.mName == name ) {
 			ret = &attrib;
 			break;
@@ -964,7 +964,7 @@ GlslProg::Attribute* GlslProg::findAttrib( const std::string &name )
 const GlslProg::Attribute* GlslProg::findAttrib( const std::string &name ) const
 {
 	const Attribute* ret = nullptr;
-	for( auto & attrib : mAttributes ) {
+	for( auto &attrib : mAttributes ) {
 		if( attrib.mName == name ) {
 			ret = &attrib;
 			break;
@@ -975,8 +975,8 @@ const GlslProg::Attribute* GlslProg::findAttrib( const std::string &name ) const
 	
 const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 {
-	const Attribute* ret = nullptr;
-	for( auto & attrib : mAttributes ) {
+	const Attribute *ret = nullptr;
+	for( const auto &attrib : mAttributes ) {
 		if( attrib.mSemantic == semantic ) {
 			ret = &attrib;
 			break;
@@ -996,14 +996,15 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 		}
 	}
 
-	if( resultLocation ) { // if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
+	// if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
+	if( resultLocation ) {
 		if( nameLeftSquareBracket != string::npos ) {
 			try {
-				string testStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
-				*resultLocation = ret->mLoc + stoi( testStr, nullptr );
+				string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
+				*resultLocation = ret->mLoc + stoi( indexStr );
 			}
-			catch(...) {
-				CI_LOG_E( "Failed to parse index: " << name );
+			catch( std::exception &exc ) {
+				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
 				return nullptr;
 			}
 		}
@@ -1031,20 +1032,21 @@ const GlslProg::Uniform* GlslProg::findUniform( int location, int *resultLocatio
     
 bool GlslProg::hasAttribSemantic( geom::Attrib semantic ) const
 {
-    return find_if( mAttributes.begin(),
-                   mAttributes.end(),
-                   [ semantic ]( const Attribute & attrib ){
+    auto found = find_if( mAttributes.begin(), mAttributes.end(),
+                   [semantic]( const Attribute &attrib ) {
                        return attrib.mSemantic == semantic;
-                   }) != mAttributes.end();
+				   } );
+
+	return found != mAttributes.end();
 }
     
 GLint GlslProg::getAttribSemanticLocation( geom::Attrib semantic ) const
 {
-    auto found = find_if( mAttributes.begin(),
-                         mAttributes.end(),
-                         [ semantic ]( const Attribute &attrib ){
+    auto found = find_if( mAttributes.begin(), mAttributes.end(),
+                         [semantic]( const Attribute &attrib ) {
                              return attrib.mSemantic == semantic;
-                         });
+                         } );
+
     if( found != mAttributes.end() )
         return found->mLoc;
     else
@@ -1064,8 +1066,8 @@ GLint GlslProg::getAttribLocation( const std::string &name ) const
 
 GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name )
 {
-	UniformBlock* ret = nullptr;
-	for( auto & uniformBlock : mUniformBlocks ) {
+	UniformBlock *ret = nullptr;
+	for( auto &uniformBlock : mUniformBlocks ) {
 		if( uniformBlock.mName == name ) {
 			ret = &uniformBlock;
 			break;
@@ -1076,8 +1078,8 @@ GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name )
 	
 const GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name ) const
 {
-	const UniformBlock* ret = nullptr;
-	for( auto & uniformBlock : mUniformBlocks ) {
+	const UniformBlock *ret = nullptr;
+	for( auto &uniformBlock : mUniformBlocks ) {
 		if( uniformBlock.mName == name ) {
 			ret = &uniformBlock;
 			break;
@@ -1088,11 +1090,11 @@ const GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &nam
 
 void GlslProg::uniformBlock( int loc, int binding )
 {
-	auto found = find_if( mUniformBlocks.begin(),
-						 mUniformBlocks.end(),
-						 [=]( const UniformBlock &block ){
+	auto found = find_if( mUniformBlocks.begin(), mUniformBlocks.end(),
+						 [loc]( const UniformBlock &block ) {
 							 return block.mLoc == loc;
-						 });
+						 } );
+
 	if( found != mUniformBlocks.end() ) {
 		if( found->mBlockBinding != binding ) {
 			found->mBlockBinding = binding;
@@ -1129,11 +1131,11 @@ GLint GlslProg::getUniformBlockLocation( const std::string &name ) const
 
 GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 {
-	auto found = find_if( mUniformBlocks.begin(),
-						 mUniformBlocks.end(),
-						 [=]( const UniformBlock &block ){
+	auto found = find_if( mUniformBlocks.begin(), mUniformBlocks.end(),
+						 [=]( const UniformBlock &block ) {
 							 return block.mBlockBinding == blockBinding;
-						 });
+						 } );
+
 	if( found != mUniformBlocks.end() )
 		return found->mDataSize;
 	else
@@ -1142,8 +1144,8 @@ GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 	
 const GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name ) const
 {
-	const TransformFeedbackVaryings* ret = nullptr;
-	for( const auto & varying : mTransformFeedbackVaryings ) {
+	const TransformFeedbackVaryings *ret = nullptr;
+	for( const auto &varying : mTransformFeedbackVaryings ) {
 		if( varying.mName == name ) {
 			ret = &varying;
 		}
@@ -1153,8 +1155,8 @@ const GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryin
 	
 GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name )
 {
-	TransformFeedbackVaryings* ret = nullptr;
-	for( auto & varying : mTransformFeedbackVaryings ) {
+	TransformFeedbackVaryings *ret = nullptr;
+	for( auto &varying : mTransformFeedbackVaryings ) {
 		if( varying.mName == name ) {
 			ret = &varying;
 		}

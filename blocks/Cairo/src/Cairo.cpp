@@ -1742,7 +1742,7 @@ void Context::setFont( const cinder::Font &font )
 #if defined( CINDER_COCOA )
 	cairo_font_face_t *cairoFont = cairo_quartz_font_face_create_for_cgfont( font.getCgFontRef() );
 #elif defined( CINDER_MSW )
-	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( &font.getLogfont() );
+	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( const_cast<LOGFONTW*>( &font.getLogfont() ) );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
 	cairo_set_font_size( mCairo, font.getSize() );
@@ -1806,7 +1806,11 @@ cairo::SurfaceGdi createWindowSurface()
 #elif defined( CINDER_MAC )
 cairo::SurfaceQuartz createWindowSurface()
 {
-	return cairo::SurfaceQuartz( cinder::app::App::get()->getRenderer()->getCgContext(), cinder::app::getWindowWidth(), cinder::app::getWindowHeight() );
+	auto cgContext = cinder::app::App::get()->getRenderer()->getCgContext();
+	auto height = cinder::app::getWindowHeight();
+	CGContextTranslateCTM( cgContext, 0.0, height );
+	CGContextScaleCTM( cgContext, 1.0, -1.0 );
+	return cairo::SurfaceQuartz( cgContext, cinder::app::getWindowWidth(), height );
 }
 #endif
 

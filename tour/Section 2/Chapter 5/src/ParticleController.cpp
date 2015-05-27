@@ -197,8 +197,8 @@ void ParticleController::addPredators( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		vec3 pos = Rand::randVec3f() * Rand::randFloat( 500.0f, 750.0f );
-		vec3 vel = Rand::randVec3f();
+		vec3 pos = Rand::randVec3() * Rand::randFloat( 500.0f, 750.0f );
+		vec3 vel = Rand::randVec3();
 		mPredators.push_back( Predator( pos, vel ) );
 	}
 }
@@ -207,8 +207,8 @@ void ParticleController::addParticles( int amt )
 {
 	for( int i=0; i<amt; i++ )
 	{
-		vec3 pos = Rand::randVec3f() * Rand::randFloat( 100.0f, 200.0f );
-		vec3 vel = Rand::randVec3f();
+		vec3 pos = Rand::randVec3() * Rand::randFloat( 100.0f, 200.0f );
+		vec3 vel = Rand::randVec3();
 		
 		bool followed = false;
 		if( mParticles.size() == 0 ) followed = true;

@@ -247,6 +247,9 @@ void drawStrokedCube( const vec3 &center, const vec3 &size )
 
 void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect )
 {
+	if( ! texture )
+		return;
+
 	auto ctx = context();
 
 	Rectf texRect = texture->getAreaTexCoords( srcArea );
@@ -269,6 +272,9 @@ void draw( const TextureRef &texture, const Area &srcArea, const Rectf &dstRect 
 
 void draw( const TextureRef &texture, const Rectf &dstRect )
 {
+	if( ! texture )
+		return;
+
 	draw( texture, texture->getBounds(), dstRect );
 }
 
@@ -277,6 +283,7 @@ void draw( const TextureRef &texture, const vec2 &dstOffset )
 {
 	if( ! texture )
 		return;
+	
 	draw( texture, texture->getBounds(), Rectf( texture->getBounds() ) + dstOffset );
 }
 

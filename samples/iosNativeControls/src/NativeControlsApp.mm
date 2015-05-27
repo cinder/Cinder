@@ -10,7 +10,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/app/CinderViewCocoaTouch.h"
+#include "cinder/app/cocoa/CinderViewCocoaTouch.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/Camera.h"
@@ -23,38 +23,48 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
+// Allocate the custom view controller up front, this will be passed to the Window::Format from within the prepareSettings function
+NativeViewController *sNativeController = [[NativeViewController alloc] init];
+
 class NativeControlsApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void draw();
+	static void prepareSettings( Settings *settings );
+	void setup() override;
+	void cleanup() override;
+	void draw() override;
 
   private:
 	void setupVisuals();
 	void infoTapped();
 
-	NativeViewController*	mNativeController;
 	gl::TextureRef			mTex;
 };
 
+// static
 void NativeControlsApp::prepareSettings( Settings *settings )
 {
-	mNativeController = [NativeViewController new];
-	settings->prepareWindow( Window::Format().rootViewController( mNativeController ) );
+	settings->prepareWindow( Window::Format().rootViewController( sNativeController ) );
 }
 
 void NativeControlsApp::setup()
 {
 	setupVisuals();
 
+#if 1
 	// Example of how to add Cinder's UIViewController to your native root UIViewViewController
-	[mNativeController addCinderViewToFront];
-
-	// Example of how to add Cinder's UIView to your view heirarchy (comment above out first)
-//	[mNativeController addCinderViewAsBarButton];
+	[sNativeController addCinderViewToFront];
+#else
+	// Example of how to add Cinder's UIView to your view heirarchy
+	[sNativeController addCinderViewAsBarButton];
+#endif
 
 	// Example of how to add a std::function callback from a UIControl (NativeViewController's info button in the upper right)
-	[mNativeController setInfoButtonCallback: bind( &NativeControlsApp::infoTapped, this ) ];
+	[sNativeController setInfoButtonCallback: bind( &NativeControlsApp::infoTapped, this ) ];
+}
+
+void NativeControlsApp::cleanup()
+{
+	sNativeController = nil; // nil out our strong reference to the native view controller
 }
 
 void NativeControlsApp::setupVisuals()
@@ -102,4 +112,4 @@ void NativeControlsApp::draw()
 	gl::drawCube( vec3( 0 ), vec3( 2 ) );
 }
 
-CINDER_APP( NativeControlsApp, RendererGl )
+CINDER_APP( NativeControlsApp, RendererGl, NativeControlsApp::prepareSettings )
