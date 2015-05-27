@@ -48,12 +48,13 @@ They each illustrate an example of how to use the frame for different scenarios.
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/Arcball.h"
 #include "cinder/Camera.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Text.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
+#include "cinder/gl/gl.h"
 
 #include "Tube.h"
 
@@ -63,14 +64,10 @@ using namespace std;
 
 class TubularApp : public App {
   public:
-    void prepareSettings();
-	void setup();
-	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void resize();
-	void update();
-	void draw();
+	void setup() override;
+	void keyDown( KeyEvent event ) override;
+	void update() override;
+	void draw() override;
 	
   private:
 	Tube					mTube;
@@ -93,13 +90,9 @@ class TubularApp : public App {
 	
 	int32_t					mNumSegs;
 	int						mShape;
-	Arcball					mArcball;
+	CameraUi				mCamUi;
 	params::InterfaceGlRef	mParams;
 };
-
-void TubularApp::prepareSettings()
-{
-}
 
 void TubularApp::setup()
 {
@@ -137,9 +130,7 @@ void TubularApp::setup()
 	mPause				= false;
 	
 	// Arcball
-	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( getWindowCenter() );
-	mArcball.setRadius( 150 );		
+	mCamUi = CameraUi( &mCam, getWindow() );
 
 	mTubeMesh = TriMesh::create( TriMesh::Format().positions() );
 
@@ -163,26 +154,6 @@ void TubularApp::keyDown( KeyEvent event )
 			mPause = ! mPause;
 		break;
 	}
-}
-
-void TubularApp::mouseDown( MouseEvent event )
-{
-	ivec2 P = event.getPos();
-	P.y = getWindowHeight() - P.y;
-	mArcball.mouseDown( P );
-}
-
-void TubularApp::mouseDrag( MouseEvent event )
-{	
-	ivec2 P = event.getPos();
-	P.y = getWindowHeight() - P.y;
-	mArcball.mouseDrag( P );
-}
-
-void TubularApp::resize()
-{
-	mCam.setPerspective( 60, getWindowAspectRatio(), 1, 1000 );
-	gl::setMatrices( mCam );	
 }
 
 void TubularApp::update()
@@ -245,7 +216,6 @@ void TubularApp::draw()
 	gl::clear( Color( 0, 0, 0 ) ); 
 
 	gl::setMatrices( mCam );
-	gl::rotate( mArcball.getQuat() );
 
 	gl::disableAlphaBlending();
 	if( mWireframe && mTubeMesh->getNumTriangles() ) {
