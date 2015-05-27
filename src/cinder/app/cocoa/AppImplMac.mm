@@ -25,6 +25,7 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
 #include "cinder/app/cocoa/PlatformCocoa.h"
+#include "cinder/Log.h"
 #import "cinder/cocoa/CinderCocoa.h"
 
 #include <memory>
@@ -50,9 +51,18 @@ using namespace cinder::app;
 - (BOOL)canBecomeKeyWindow { return YES; }
 @end
 
+// private properties
+@interface AppImplMac()
+@property(nonatomic) IOPMAssertionID idleSleepAssertionID;
+@property(nonatomic) IOPMAssertionID displaySleepAssertionID;
+@end
+
 @implementation AppImplMac
 
 @synthesize windows = mWindows;
+
+@synthesize idleSleepAssertionID = mIdleSleepAssertionID;
+@synthesize displaySleepAssertionID = mDisplaySleepAssertionID;
 
 - (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
 {	
@@ -130,16 +140,6 @@ using namespace cinder::app;
 
 - (void)timerFired:(NSTimer *)t
 {
-	// note: this would not work if the frame rate were set to something absurdly low
-	if( ! mApp->isPowerManagementEnabled() ) {
-		static double lastSystemActivity = 0;
-		double curTime = mApp->getElapsedSeconds();
-		if( curTime - lastSystemActivity >= 30 ) { // every thirty seconds call this to prevent sleep
-			::UpdateSystemActivity( OverallAct );
-			lastSystemActivity = curTime;
-		}
-	}
-
 	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
 		// issue update() event
 		mApp->privateUpdate__();
@@ -341,7 +341,40 @@ using namespace cinder::app;
 	if( ! mApp->privateEmitShouldQuit() )
 		return;
 
-	[NSApp terminate:nil];
+	[NSApp stop:nil];
+}
+
+- (void)setPowerManagementEnabled:(BOOL)flag
+{
+	if( flag && ![self isPowerManagementEnabled] ) {
+		CFStringRef reasonForActivity = CFSTR( "Cinder Application Execution" );
+		IOReturn status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &mIdleSleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to create power management assertion to prevent idle system sleep" );
+		}
+
+		status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &mDisplaySleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to create power management assertion to prevent idle display sleep" );
+		}
+	} else if( !flag && [self isPowerManagementEnabled] ) {
+		IOReturn status = IOPMAssertionRelease( self.idleSleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle system sleep" );
+		}
+		self.idleSleepAssertionID = 0;
+
+		status = IOPMAssertionRelease( self.displaySleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle display sleep" );
+		}
+		self.displaySleepAssertionID = 0;
+	}
+}
+
+- (BOOL)isPowerManagementEnabled
+{
+	return self.idleSleepAssertionID != 0 && self.displaySleepAssertionID != 0;
 }
 
 - (float)getFrameRate

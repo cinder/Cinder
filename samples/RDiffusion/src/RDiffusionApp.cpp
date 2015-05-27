@@ -1,9 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Shader.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
 #include "cinder/params/Params.h"
@@ -17,7 +15,7 @@ using namespace std;
 
 class RDiffusionApp : public App {
   public:
-	void	prepareSettings( Settings *settings ) override;
+	static void	prepareSettings( Settings *settings );
 	void	setup() override;
 	void	update() override;
 	void	draw() override;
@@ -170,4 +168,4 @@ void RDiffusionApp::keyDown( KeyEvent event )
 	}
 }
 
-CINDER_APP( RDiffusionApp, RendererGl )
+CINDER_APP( RDiffusionApp, RendererGl, RDiffusionApp::prepareSettings )

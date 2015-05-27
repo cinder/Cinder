@@ -36,13 +36,15 @@
 
 #include <list>
 
+#import <IOKit/pwr_mgt/IOPMLib.h>
+
 @class CinderWindow; // inherits from NSWindow
 @class WindowImplBasicCocoa;
 
 @interface AppImplMac : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
 	NSTimer*						mAnimationTimer;
-	class cinder::app::AppMac*	mApp;
+	class cinder::app::AppMac*		mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
@@ -51,6 +53,9 @@
 	
 	NSMutableArray*					mWindows;
 	WindowImplBasicCocoa*			mActiveWindow;
+
+	::IOPMAssertionID				mIdleSleepAssertionID;
+	::IOPMAssertionID				mDisplaySleepAssertionID;
 }
 
 @property(retain, nonatomic) NSMutableArray *windows;
@@ -62,6 +67,9 @@
 - (void)applicationDidBecomeActive:(NSNotification *)notification;
 - (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)quit;
+
+- (void)setPowerManagementEnabled:(BOOL)flag;
+- (BOOL)isPowerManagementEnabled;
 
 - (cinder::app::WindowRef)createWindow:(const cinder::app::Window::Format &)format;
 

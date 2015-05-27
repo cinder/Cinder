@@ -81,7 +81,7 @@ protected:
 	gl::BatchRef                    mBatch, mSphereBatch, mBoxBatch, mGridBatch;
 
 	// caches the heart's bounding box and sphere in object space coordinates
-	AxisAlignedBox3f                mObjectBoundingBox;
+	AxisAlignedBox                mObjectBoundingBox;
 	Sphere                          mObjectBoundingSphere;
 
 	// objects
@@ -191,7 +191,7 @@ void FrustumCullingReduxApp::update()
 		}
 		else {
 			// Use the object's bounding box, converted to world space.
-			AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
+			AxisAlignedBox worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 
 			// Check if the bounding box intersects the camera's view frustum.
 			obj->setCulled( !visibleWorld.intersects( worldBoundingBox ) );
@@ -242,7 +242,7 @@ void FrustumCullingReduxApp::draw()
 				else {
 					// Create a fast approximation of the world space bounding box by transforming the
 					// eight corners and using them to create a new axis aligned bounding box.
-					AxisAlignedBox3f worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
+					AxisAlignedBox worldBoundingBox = mObjectBoundingBox.transformed( obj->getTransform() );
 
 					gl::ScopedModelMatrix mtx;
 					gl::translate( worldBoundingBox.getCenter() );

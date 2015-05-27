@@ -93,8 +93,11 @@ void GlslProgAttribTestApp::setupBuffers()
 	auto sphere1 = geom::Sphere() >> geom::Translate( vec3( -1, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(0,0); } );
 	auto sphere2 = geom::Sphere() >> geom::Translate( vec3( 0, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(1,0); } );
 	auto sphere3 = geom::Sphere() >> geom::Translate( vec3( 1, 0, 0 ) ) >> geom::AttribFn<vec2,vec2>( geom::TEX_COORD_0, []( vec2 ) { return vec2(2,0); } );
-	mSpheres = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl );
-	mSpheres2 = gl::Batch::create( sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 ), mUniformGlsl2 );
+	auto spheres = sphere1 >> geom::Combine( &sphere2 ) >> geom::Combine( &sphere3 );
+	
+	mSpheres = gl::Batch::create( spheres, mUniformGlsl );
+	// without fbf9c8f2c813e562a23c561c147babc72e064c5e this line would crash
+	mSpheres2 = gl::Batch::create( spheres >> geom::Translate( 0, 1, 0 ), mUniformGlsl2 );
 	
 	// this should issue an error
 	mUniformGlsl->uniform( "uColors[a]", vec4() );
@@ -152,7 +155,6 @@ void GlslProgAttribTestApp::draw()
 
 	gl::translate( 0, 0, 5 * sin( getElapsedSeconds() ) );	
 	mSpheres->draw();
-	gl::translate( 0, 1, 0 );
 	mSpheres2->draw();
 }
 

@@ -12,7 +12,7 @@ vec3 RayMarcher::sLightDir = normalize( vec3( 1 ) );
 RayMarcher::RayMarcher( const ci::CameraPersp *aCamera )
 	: mCamera( aCamera ), mPerlin( 8 )
 {
-	mBoundingBox = AxisAlignedBox3f( vec3( -10 ), vec3( 10 ) );
+	mBoundingBox = AxisAlignedBox( vec3( -10 ), vec3( 10 ) );
 	
 	randomScene();
 }
@@ -21,7 +21,7 @@ void RayMarcher::randomScene()
 {
 	mSpheres.clear();
 	for( int s = 0; s < 50; ++s ) {
-		mSpheres.push_back( Sphere( Rand::randVec3f() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
+		mSpheres.push_back( Sphere( Rand::randVec3() * Rand::randFloat( 8 ), Rand::randFloat( 1, 4 ) ) );
 	}
 }
 
@@ -90,15 +90,15 @@ float RayMarcher::sampleDensity( const vec3 &v )
 float RayMarcher::marchSecondary( const Ray &ray )
 {
 	const float RAY_EPSILON = 0.50f;
-	float boxTimes[2];
-	if( mBoundingBox.intersect( ray, boxTimes ) != 2 )
+	float min, max;
+	if( mBoundingBox.intersect( ray, &min, &max ) != 2 )
 		return 0;
 		
 	vec3 pointOfDeparture;
-	if( boxTimes[0] >= 0 )
-		pointOfDeparture = ray.calcPosition( boxTimes[0] );
+	if( min >= 0 )
+		pointOfDeparture = ray.calcPosition( min );
 	else
-		pointOfDeparture = ray.calcPosition( boxTimes[1] );
+		pointOfDeparture = ray.calcPosition( max );
 	float span = distance( ray.getOrigin(), pointOfDeparture );
 	int numSteps = (int)( span / RAY_EPSILON );
 	if( numSteps <= 0 ) 
@@ -123,18 +123,18 @@ float RayMarcher::marchSecondary( const Ray &ray )
 ColorA RayMarcher::march( const Ray &ray )
 {
 	const float RAY_EPSILON = 0.25f;
-	float boxTimes[2];
-	if( mBoundingBox.intersect( ray, boxTimes ) < 2 )
+	float min, max;
+	if( mBoundingBox.intersect( ray, &min, &max ) < 2 )
 		return ColorA::zero();
 
 	vec3 pos0, pos1;
-	if( boxTimes[0] < boxTimes[1] ) {
-		pos0 = ray.calcPosition( boxTimes[0] );
-		pos1 = ray.calcPosition( boxTimes[1] );	
+	if( min < max ) {
+		pos0 = ray.calcPosition( min );
+		pos1 = ray.calcPosition( max );	
 	}
 	else {
-		pos0 = ray.calcPosition( boxTimes[1] );
-		pos1 = ray.calcPosition( boxTimes[0] );		
+		pos0 = ray.calcPosition( max );
+		pos1 = ray.calcPosition( min );		
 	}
 
 	float span = distance( pos0, pos1 );

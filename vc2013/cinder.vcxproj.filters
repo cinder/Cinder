@@ -67,9 +67,6 @@
     <Filter Include="Source Files\jsoncpp">
       <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\json">
-      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
     </Filter>
@@ -148,12 +145,12 @@
     <Filter Include="Source Files\app\winrt">
       <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\jsoncpp">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp">
@@ -1536,10 +1533,10 @@
       <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json.h">
-      <Filter>Header Files\json</Filter>
+      <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
-      <Filter>Header Files\json</Filter>
+      <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Signals.h">
       <Filter>Header Files</Filter>

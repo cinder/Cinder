@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		002ADAE51624D5B200C1936A /* Asap-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 002ADAE31624D5B200C1936A /* Asap-Regular.ttf */; };
 		002ADAE61624D5B200C1936A /* Kreon-Bold.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 002ADAE41624D5B200C1936A /* Kreon-Bold.ttf */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		006D72E2199532E6008149E2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72E0199532E6008149E2 /* AVFoundation.framework */; };
 		006D72E3199532E6008149E2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 006D72E1199532E6008149E2 /* CoreMedia.framework */; };
 		0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0091D8F80E81B9330029341E /* OpenGL.framework */; };
@@ -31,6 +33,8 @@
 /* Begin PBXFileReference section */
 		002ADAE31624D5B200C1936A /* Asap-Regular.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Asap-Regular.ttf"; path = "../resources/Asap-Regular.ttf"; sourceTree = "<group>"; };
 		002ADAE41624D5B200C1936A /* Kreon-Bold.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = "Kreon-Bold.ttf"; path = "../resources/Kreon-Bold.ttf"; sourceTree = "<group>"; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		006D72E0199532E6008149E2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		006D72E1199532E6008149E2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		0091D8F80E81B9330029341E /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = /System/Library/Frameworks/OpenGL.framework; sourceTree = "<absolute>"; };
@@ -64,6 +68,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+				00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
 				006D72E2199532E6008149E2 /* AVFoundation.framework in Frameworks */,
 				006D72E3199532E6008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -165,6 +171,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				006D72E0199532E6008149E2 /* AVFoundation.framework */,
 				006D72E1199532E6008149E2 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
