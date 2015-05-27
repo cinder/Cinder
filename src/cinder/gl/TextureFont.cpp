@@ -242,6 +242,10 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	BYTE *pBuff = new BYTE[bufferSize];
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		DWORD dwBuffSize = ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix );
+		if( dwBuffSize == GDI_ERROR ) {
+			++glyphIt;
+			continue;
+		}
 		if( dwBuffSize > bufferSize ) {
 			delete[] pBuff;
 			pBuff = new BYTE[dwBuffSize];
@@ -253,10 +257,12 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		}
 
 		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_METRICS | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix ) == GDI_ERROR ) {
+			++glyphIt;
 			continue;
 		}
 
 		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, dwBuffSize, pBuff, &identityMatrix ) == GDI_ERROR ) {
+			++glyphIt;
 			continue;
 		}
 
