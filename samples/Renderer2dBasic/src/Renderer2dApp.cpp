@@ -39,21 +39,21 @@ void Renderer2dApp::setup()
 
 void Renderer2dApp::draw()
 {
-	// Render using CoreGraphics on the mac
+	// Render using CoreGraphics on the mac; origin is lower left
 #if defined( CINDER_COCOA )
 	CGContextRef context = cocoa::getWindowContext();
 	CGColorSpaceRef baseSpace = CGColorSpaceCreateDeviceRGB();
 	CGFloat colors[8] = { 0, 0, 0, 1, 0.866, 0.866, 0.866, 1 };
 	CGGradientRef gradient = CGGradientCreateWithColorComponents( baseSpace, colors, NULL, 2 );
 	::CGColorSpaceRelease( baseSpace ), baseSpace = NULL;
-	::CGContextDrawLinearGradient( context, gradient, CGPointMake( 0, 0 ), CGPointMake( 0, getWindowHeight() ), 0 );
+	::CGContextDrawLinearGradient( context, gradient, CGPointMake( 0, getWindowHeight() ), CGPointMake( 0, 0 ), 0 );
 	::CGGradientRelease(gradient), gradient = NULL;
 
 	ivec2 imgSize( ::CGImageGetWidth( mImage ), ::CGImageGetHeight( mImage ) );
 	ivec2 centerMargin( ( getWindowWidth() - imgSize.x ) / 2, ( getWindowHeight() - imgSize.y ) / 2 );
 	::CGContextTranslateCTM( context, centerMargin.x, centerMargin.y );
 	::CGContextDrawImage( context, CGRectMake( 0, 0, imgSize.x, imgSize.y ), mImage );
-#elif defined( CINDER_MSW ) // Render using GDI+ on Windows
+#elif defined( CINDER_MSW ) // Render using GDI+ on Windows; origin is upper left
 	Gdiplus::Graphics graphics( getWindow()->getDc() );
 	Gdiplus::LinearGradientBrush brush( Gdiplus::Rect( 0, 0, getWindowWidth(), getWindowHeight() ),
 		Gdiplus::Color( 0, 0, 0 ), Gdiplus::Color( 220, 220, 220 ), Gdiplus::LinearGradientModeVertical );
