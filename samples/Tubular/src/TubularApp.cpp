@@ -129,9 +129,6 @@ void TubularApp::setup()
 	mWireframe			= true;
 	mPause				= false;
 	
-	// Arcball
-	mCamUi = CameraUi( &mCam, getWindow() );
-
 	mTubeMesh = TriMesh::create( TriMesh::Format().positions() );
 
 	mParams = params::InterfaceGl::create( getWindow(), "Parameters", ivec2( 200, 200 ) );
@@ -141,10 +138,11 @@ void TubularApp::setup()
 	mParams->addParam( "Draw Mesh", &mDrawMesh, "keyIncr=m" );
 	mParams->addParam( "Draw Slices", &mDrawSlices, "keyIncr=l" );
 	mParams->addParam( "Draw Frames", &mDrawFrames, "keyIncr=t" );
-	vector<string> shapes;
-	shapes.push_back( "circle" ); shapes.push_back( "star" ); shapes.push_back( "hypotrochoid" ); shapes.push_back( "epicycloid" );
+	vector<string> shapes = { "circle", "star", "hypotrochoid", "epicycloid" };
 	mParams->addParam( "Shape", shapes, &mShape, "keyIncr=s" );
 	mParams->addParam( "Segments", &mNumSegs, "min=4 max=1024 keyIncr== keyDecr=-" );
+
+	mCamUi = CameraUi( &mCam, getWindow() );
 }
 
 void TubularApp::keyDown( KeyEvent event )
