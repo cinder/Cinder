@@ -482,4 +482,12 @@ typedef ColorAT<float>		ColorA;
 typedef ColorAT<float>		ColorAf;
 typedef ColorAT<uint8_t>	ColorA8u;
 
+
+template<uint8_t DIM, typename T> struct COLORDIM {};
+
+template<> struct COLORDIM<3, float>	{ typedef Colorf	TYPE; };
+template<> struct COLORDIM<3, uint8_t>	{ typedef Color8u	TYPE; };
+template<> struct COLORDIM<4, float>	{ typedef ColorAf	TYPE; };
+template<> struct COLORDIM<4, uint8_t>	{ typedef ColorA8u	TYPE; };
+
 } // namespace cinder
