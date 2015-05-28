@@ -67,6 +67,10 @@ void QTimeAdvApp::keyDown( KeyEvent event )
 		mMovies.clear();
 		mLoadingMovies.clear();
 	}
+	else if( event.getChar() == '2' ) {
+		if( ! mMovies.empty() )
+			mMovies.back()->setRate( 2.0f );
+	}
 	else if( event.getChar() == 'd' ) {
 		if( ! mMovies.empty() )
 			mMovies.erase( mMovies.begin() + ( rand() % mMovies.size() ) );
