@@ -1,4 +1,3 @@
-
 /*
  *
  * All photos copyright Trey Ratcliff
@@ -199,5 +198,4 @@ void ImageAccordionApp::draw()
 	}
 }
 
-
-CINDER_APP( ImageAccordionApp, RendererGl )
+CINDER_APP( ImageAccordionApp, RendererGl( RendererGl::Options().msaa( 4 ) ) )

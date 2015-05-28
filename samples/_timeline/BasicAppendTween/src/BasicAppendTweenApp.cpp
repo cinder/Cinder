@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Rand.h"
 
@@ -9,11 +10,11 @@ using namespace std;
 
 class BasicAppendTweenApp : public App {
   public:
-	void setup();
+	void setup() override;
 	void setDestinations();
 	void startTweening();
-	void mouseDown( MouseEvent event );	
-	void draw();
+	void mouseDown( MouseEvent event ) override;	
+	void draw() override;
 	
 	Anim<vec2>		mPos;
 	
