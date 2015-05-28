@@ -379,7 +379,7 @@ inline typename CHANTRAIT<T>::Accum length2( const ColorAT<T> &c )
 template<typename T>
 inline typename CHANTRAIT<T>::Accum dot( const ColorT<T> &c0, const ColorT<T> &c1 )
 {
-	return (CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b );
+	return (typename CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b );
 }
 
 template<typename T>
