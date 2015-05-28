@@ -89,7 +89,7 @@
 	CGContextRetain( currentRef );
 
 	// set the clipping rectangle to be the parent (CinderView)'s bounds
-	CGRect boundsRect = [[view superview] bounds];
+	CGRect boundsRect = NSRectToCGRect([[view superview] bounds]);
 	CGContextClipToRect( currentRef, boundsRect );
 	
 	// undo any previously transformations, so that we start with identity CTM
