@@ -203,8 +203,8 @@ RectT<T> RectT<T>::transformed( const Mat3T& matrix ) const
 	Vec2T center = Vec2T( x1 + x2, y1 + y2 ) / (T) 2;
 	Vec2T extents = glm::abs( Vec2T( x2, y2 ) - center );
 
-	Vec3T x = matrix * Vec3T( extents.x, 0, 1 );
-	Vec3T y = matrix * Vec3T( 0, extents.y, 1 );
+	Vec3T x = matrix * Vec3T( extents.x, 0, 0 );
+	Vec3T y = matrix * Vec3T( 0, extents.y, 0 );
 
 	extents = Vec2T( glm::abs( x ) + glm::abs( y ) );
 	center = Vec2T( matrix * Vec3T( center, 1 ) );
@@ -218,8 +218,8 @@ void RectT<T>::transform( const Mat3T &matrix )
 	Vec2T center = Vec2T( x1 + x2, y1 + y2 ) / (T) 2;
 	Vec2T extents = glm::abs( Vec2T( x2, y2 ) - center );
 
-	Vec3T x = matrix * Vec3T( extents.x, 0, 1 );
-	Vec3T y = matrix * Vec3T( 0, extents.y, 1 );
+	Vec3T x = matrix * Vec3T( extents.x, 0, 0 );
+	Vec3T y = matrix * Vec3T( 0, extents.y, 0 );
 
 	extents = Vec2T( glm::abs( x ) + glm::abs( y ) );
 	center = Vec2T( matrix * Vec3T( center, 1 ) );
