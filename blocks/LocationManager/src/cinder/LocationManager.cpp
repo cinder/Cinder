@@ -75,7 +75,7 @@
 {
     cinder::vec3 data( heading.x, heading.y, heading.z );
     std::string description( [heading.description UTF8String] );
-	mMgr->emitHeadingChanged( cinder::HeadingEvent( heading.magneticHeading, heading.trueHeading, heading.headingAccuracy, description, data ) );
+	mMgr->emitHeadingChanged( cinder::HeadingEvent( glm::radians( heading.magneticHeading ), glm::radians( heading.trueHeading ), heading.headingAccuracy, description, data ) );
 }
 #endif
 

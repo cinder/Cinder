@@ -90,9 +90,9 @@ class HeadingEvent {
 	std::string		getDescription() const { return mDescription; }
 	//! Returns heading accuracy of heading event
 	float			getHeadingAccuracy() const { return mHeadingAccuracy; }
-	//! Returns magnetic heading in degrees of the heading event
+	//! Returns magnetic heading in radians of the heading event
 	float			getMagneticHeading() const { return mMagneticHeading; }
-	//! Returns true heading in degrees of heading event
+	//! Returns true heading in radians of heading event
 	float			getTrueHeading() const { return mTrueHeading; }
 	
   private:	
