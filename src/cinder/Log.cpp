@@ -282,7 +282,7 @@ void LogManager::enableSystemLogging()
 #if defined( CINDER_COCOA )
 	addLogger( new LoggerSysLog );
 #elif defined( CINDER_MSW )
-	addLogger(new LoggerEventLog );
+	addLogger( new LoggerEventLog );
 #endif
 
 	setSystemLoggingLevel( mSystemLoggingLevel );
@@ -533,27 +533,29 @@ LoggerEventLog::LoggerEventLog()
 	wchar_t wFilename[MAX_PATH];
 	string stem;
 
-	DWORD size = GetModuleFileNameA( NULL, filename, MAX_PATH );
+	DWORD size = ::GetModuleFileNameA( NULL, filename, MAX_PATH );
 	if( size ) { 
-		boost::filesystem::path exePath(filename);
+		fs::path exePath( filename );
 		stem = exePath.stem().string();
 	} else {
-		app::Platform::get()->console() << "Could not determine application name, defaulting to 'CinderApp'" << endl;
+		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+			<< "] could not determine application name, defaulting to 'CinderApp'" << endl;
 		stem = "CinderApp";
 	}
 
-	mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
-	mHLog = RegisterEventSourceW( 0, wFilename );
+	::mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
+	mHLog = ::RegisterEventSourceW( 0, wFilename );
 
 	if( ! mHLog ) {
-		app::Platform::get()->console() << "RegisterEventSourceW() failed with " << GetLastError() << endl;
+		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+			<< "] RegisterEventSourceW() failed with " << GetLastError() << endl;
 	}
 }
 
 LoggerEventLog::~LoggerEventLog()
 {
 	if( mHLog ) {
-		CloseEventLog(mHLog);
+		::CloseEventLog( mHLog );
 	}
 }
 
@@ -573,10 +575,7 @@ void LoggerEventLog::write( const Metadata &meta, const string &text )
 	wStrings[0] = wMeta.c_str();
 	wStrings[1] = wText.c_str();
 
-	BOOL res = ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
-	if( ! res ) {
-		app::Platform::get()->console() << "ReportEventW() failed with " << GetLastError() << endl;
-	}
+	::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
 }
 
 #endif

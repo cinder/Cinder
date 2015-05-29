@@ -31,7 +31,7 @@ class DebugTestApp : public App {
 void DebugTestApp::setup()
 {
 	//testEnableFileLogger();
-//	testEnableSysLogger();
+	testEnableSysLogger();
 //	testEnableBadFilePath();
 //	testEnableDisable();
 //	testAddRemove();
@@ -41,7 +41,7 @@ void DebugTestApp::setup()
 	//testAddFile();
 	//testAddRemove();
 	//testAsserts();
-	testBreakOnLog();
+	//testBreakOnLog();
 }
 
 void DebugTestApp::testAsserts()
