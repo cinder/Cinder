@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/Function.h"
+#include "cinder/Signals.h"
 #include "cinder/Vector.h"
 
 #if defined __OBJC__
@@ -71,7 +71,7 @@ class LocationEvent {
 	float			mHorizontalAccuracy;
 };
 
-typedef signals::signal<void (const LocationEvent&)>	EventSignalLocation;
+typedef signals::Signal<void (const LocationEvent&)>	EventSignalLocation;
 
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -104,8 +104,7 @@ class HeadingEvent {
 	
 };
 
-typedef signals::signal<void (const HeadingEvent&)>		EventSignalHeading;
-
+typedef signals::Signal<void (const HeadingEvent&)>		EventSignalHeading;
 
 #endif
 
@@ -116,11 +115,11 @@ class LocationManager {
 	static bool		isEnabled();
 	
 	static EventSignalLocation&	getSignalLocationChanged() { return get()->mSignalLocationChanged; }
-	static void					emitLocationChanged( const LocationEvent &event ) { get()->mSignalLocationChanged( event ); }
+	static void					emitLocationChanged( const LocationEvent &event ) { get()->mSignalLocationChanged.emit( event ); }
 
 #if defined( CINDER_COCOA_TOUCH )
 	static EventSignalHeading&	getSignalHeadingChanged() { return get()->mSignalHeadingChanged; }
-	static void					emitHeadingChanged( const HeadingEvent &event ) { get()->mSignalHeadingChanged( event ); }
+	static void					emitHeadingChanged( const HeadingEvent &event ) { get()->mSignalHeadingChanged.emit( event ); }
 #endif
 
 	static LocationEvent		getMostRecentLocation() { return sMostRecentLocation; }
