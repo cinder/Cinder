@@ -600,8 +600,8 @@ class Cone : public Cylinder {
 	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
 	//! Specifies the apex radius.
 	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
-	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
-	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
+	//! Specifies the base radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
+	Cone&	ratio( float ratio ) { mRadiusBase = math<float>::max( mRadiusApex + ratio * mHeight, 0.f ); return *this; }
 	//! Specifies the base and apex radius separately.
 	Cone&	radius( float base, float apex ) { mRadiusBase = math<float>::max(0.f, base); mRadiusApex = math<float>::max(0.f, apex); return *this; }
 	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
@@ -1202,7 +1202,7 @@ class Combine : public Modifier {
 //! Calculates the 3D bounding box of the geometry.
 class Bounds : public Modifier {
   public:
-	Bounds( AxisAlignedBox3f *result, Attrib attrib = POSITION )
+	Bounds( AxisAlignedBox *result, Attrib attrib = POSITION )
 		: mResult( result ), mAttrib( attrib )
 	{}
 	
@@ -1211,7 +1211,7 @@ class Bounds : public Modifier {
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	AxisAlignedBox3f	*mResult;
+	AxisAlignedBox	*mResult;
 	Attrib				mAttrib;
 };
 
@@ -1267,6 +1267,8 @@ class SourceModsContext : public Target {
   private:
 	const Source					*mSource;
 	std::vector<Modifier*>			mModiferStack;
+	
+	const AttribSet					*mAttribMask;
 	
 	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;

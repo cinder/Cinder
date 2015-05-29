@@ -3,6 +3,7 @@
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
 #include "cinder/Rand.h"
+#include "cinder/gl/gl.h"
 #include "cinder/gl/TextureFont.h"
 #include "cinder/Utilities.h"
 
@@ -12,11 +13,12 @@ using namespace std;
 
 class TextureFontApp : public App {
   public:
-	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
-	void setup();
-	void mouseDown( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void draw();
+	static void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
+
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+	void draw() override;
 
 	Font				mFont;
 	gl::TextureFontRef	mTextureFont;
@@ -51,9 +53,14 @@ void TextureFontApp::keyDown( KeyEvent event )
 
 void TextureFontApp::mouseDown( MouseEvent event )
 {
-	mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont.getSize() );
-	console() << mFont.getName() << std::endl;
-	mTextureFont = gl::TextureFont::create( mFont );
+	while( true ) { // find the next random font with a letter 'a' in it
+		mFont = Font( Font::getNames()[Rand::randInt() % Font::getNames().size()], mFont.getSize() );
+		if( mFont.getGlyphChar( 'a' ) == 0 )
+			continue;
+		console() << mFont.getName() << std::endl;
+		mTextureFont = gl::TextureFont::create( mFont );
+		break;
+	}
 }
 
 void TextureFontApp::draw()
@@ -78,5 +85,4 @@ void TextureFontApp::draw()
 	mTextureFont->drawString( mTextureFont->getName(), vec2( getWindowWidth() - fontNameWidth - 10, getWindowHeight() - mTextureFont->getDescent() ) );
 }
 
-
-CINDER_APP( TextureFontApp, RendererGl )
+CINDER_APP( TextureFontApp, RendererGl, TextureFontApp::prepareSettings )

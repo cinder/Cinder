@@ -22,7 +22,7 @@ Dictionary::Dictionary( DataSourceRef dataSource )
 	Buffer decompressed = decompressBuffer( Buffer( dataSource ), false, true );
 	
 	// read out all the words, which are separated by lines and are already alphabetized
-	IStreamMemRef stream = IStreamMem::create( decompressed.getData(), decompressed.getDataSize() );
+	IStreamMemRef stream = IStreamMem::create( decompressed.getData(), decompressed.getSize() );
 	while( ! stream->isEof() )
 		mWords.push_back( stream->readLine() );
 }

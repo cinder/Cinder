@@ -709,7 +709,7 @@ void Path2d::transform( const mat3 &matrix )
 		*ptIt = vec2( matrix * vec3( *ptIt, 1 ) );
 }
 
-Path2d Path2d::transformCopy( const mat3 &matrix ) const
+Path2d Path2d::transformed( const mat3 &matrix ) const
 {
 	Path2d result = *this;
 	for( vector<vec2>::iterator ptIt = result.mPoints.begin(); ptIt != result.mPoints.end(); ++ptIt )

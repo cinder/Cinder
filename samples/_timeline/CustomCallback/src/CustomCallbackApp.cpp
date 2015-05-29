@@ -5,6 +5,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
 
 using namespace ci;
@@ -80,6 +81,5 @@ void CustomCallbackApp::draw()
 	gl::clear( gBackgroundColor ); 	
 	mCircle.draw();
 }
-
 
 CINDER_APP( CustomCallbackApp, RendererGl )

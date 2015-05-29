@@ -265,18 +265,10 @@ bool MovieBase::checkNewFrame()
 	if( ! mPlayer || ! mPlayerVideoOutput )
 		return false;
 	
-	bool result;
-	
-	lock();
-	if (mPlayerVideoOutput) {
-		result = [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]];
-	}
-	else {
-		result = false;
-	}
-	unlock();
-	
-	return result;
+	if( mPlayerVideoOutput )
+		return [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]];
+	else
+		return false;
 }
 
 float MovieBase::getCurrentTime() const
@@ -641,20 +633,19 @@ void MovieBase::loadAsset()
 
 void MovieBase::updateFrame()
 {
-	lock();
 	if( mPlayerVideoOutput && mPlayerItem ) {
-		if( [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayerItem currentTime]] ) {
+		CMTime vTime = [mPlayer currentTime];
+		if( [mPlayerVideoOutput hasNewPixelBufferForItemTime:vTime] ) {
 			releaseFrame();
 			
 			CVImageBufferRef buffer = nil;
-			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
+			buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:vTime itemTimeForDisplay:nil];
 			if( buffer ) {
 				newFrame( buffer );
 				mSignalNewFrame.emit();
 			}
 		}
 	}
-	unlock();
 }
 
 uint32_t MovieBase::countFrames() const
@@ -702,11 +693,12 @@ void MovieBase::processAssetTracks( AVAsset* asset )
 #endif
 }
 
-void MovieBase::createPlayerItemOutput(const AVPlayerItem* playerItem)
+void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
-	NSDictionary* pixBuffAttributes = @{(id)kCVPixelBufferPixelFormatTypeKey: @(kCVPixelFormatType_32BGRA)};
+	NSDictionary *pixBuffAttributes = avPlayerItemOutputDictionary();
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
 	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL)];
+	mPlayerVideoOutput.suppressesPlayerRendering = YES;
 	[playerItem addOutput:mPlayerVideoOutput];
 }
 
@@ -820,29 +812,12 @@ MovieSurface::~MovieSurface()
 {
 	deallocateVisualContext();
 }
-		
-bool MovieSurface::hasAlpha() const
+
+NSDictionary* MovieSurface::avPlayerItemOutputDictionary() const
 {
-	if( mPlayerVideoOutput && mPlayer && [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]] ) {
-		CVImageBufferRef pixel_buffer = nil;
-		pixel_buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
-		if( pixel_buffer != nil ) {
-			CVPixelBufferLockBaseAddress( pixel_buffer, 0 );
-			OSType type = CVPixelBufferGetPixelFormatType(pixel_buffer);
-			CVPixelBufferUnlockBaseAddress( pixel_buffer, 0 );
-#if defined ( CINDER_COCOA_TOUCH)
-			return (type == kCVPixelFormatType_32ARGB ||
-					type == kCVPixelFormatType_32BGRA ||
-					type == kCVPixelFormatType_32ABGR ||
-					type == kCVPixelFormatType_32RGBA ||
-					type == kCVPixelFormatType_64ARGB);
-#elif defined ( CINDER_COCOA )
-			return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
-#endif
-		}
-	}
-	
-	return mSurface->hasAlpha();
+	return [NSDictionary dictionaryWithObjectsAndKeys:
+				[NSNumber numberWithInt:kCVPixelFormatType_32BGRA], kCVPixelBufferPixelFormatTypeKey,
+				nil];
 }
 
 Surface8uRef MovieSurface::getSurface()

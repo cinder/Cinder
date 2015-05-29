@@ -58,20 +58,20 @@ Renderer::Renderer( const Renderer &renderer )
 #if defined( CINDER_COCOA )
 
 Renderer2d::Renderer2d( const Renderer2d &renderer )
-	: Renderer( renderer )
+	: Renderer( renderer ), mImpl( nullptr )
 {
-	mImpl = 0;
 }
 
 Renderer2d::Renderer2d()
-	: Renderer(), mImpl( 0 )
+	: Renderer(), mImpl( nullptr )
 {
 }
 
 #if defined( CINDER_MAC )
 Renderer2d::~Renderer2d()
 {
-	::CFRelease( mImpl );
+	if( mImpl )
+		::CFRelease( mImpl );
 }
 
 void Renderer2d::setup( CGRect frame, NSView *cinderView, RendererRef /*sharedRenderer*/, bool retinaEnabled )
@@ -97,12 +97,12 @@ CGContextRef Renderer2d::getCgContext()
 
 void Renderer2d::startDraw()
 {
-	[mImpl makeCurrentContext];
+	[mImpl startDraw];
 }
 
 void Renderer2d::finishDraw()
 {
-	[mImpl flushBuffer];
+	[mImpl finishDraw];
 }
 
 void Renderer2d::setFrameSize( int width, int height )
@@ -119,7 +119,6 @@ void Renderer2d::defaultResize()
 
 void Renderer2d::makeCurrentContext( bool /*force*/ )
 {
-	[mImpl makeCurrentContext];
 }
 
 Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )

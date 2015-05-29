@@ -213,22 +213,22 @@ void TriMesh::clear()
 	mIndices.clear();
 }
 
-void TriMesh::appendVertices( const vec2 *verts, size_t num )
+void TriMesh::appendPositions( const vec2 *positions, size_t num )
 {
 	assert( mPositionsDims == 2 );
-	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 2 );
+	mPositions.insert( mPositions.end(), (const float*)positions, (const float*)positions + num * 2 );
 }
 
-void TriMesh::appendVertices( const vec3 *verts, size_t num )
+void TriMesh::appendPositions( const vec3 *positions, size_t num )
 {
 	assert( mPositionsDims == 3 );
-	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 3 );
+	mPositions.insert( mPositions.end(), (const float*)positions, (const float*)positions + num * 3 );
 }
 
-void TriMesh::appendVertices( const vec4 *verts, size_t num )
+void TriMesh::appendPositions( const vec4 *positions, size_t num )
 {
 	assert( mPositionsDims == 4 );
-	mPositions.insert( mPositions.end(), (const float*)verts, (const float*)verts + num * 4 );
+	mPositions.insert( mPositions.end(), (const float*)positions, (const float*)positions + num * 4 );
 }
 
 void TriMesh::appendIndices( const uint32_t *indices, size_t num )
@@ -387,11 +387,11 @@ void TriMesh::getTriangleBitangents( size_t idx, vec3 *a, vec3 *b, vec3 *c ) con
 	*c = mBitangents[mIndices[idx * 3 + 2]];
 }
 
-AxisAlignedBox3f TriMesh::calcBoundingBox() const
+AxisAlignedBox TriMesh::calcBoundingBox() const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( vec3(), vec3() );
+		return AxisAlignedBox( vec3(), vec3() );
 
 	vec3 min(*(const vec3*)(&mPositions[0])), max(*(const vec3*)(&mPositions[0]));
 	for( size_t i = 1; i < mPositions.size() / 3; ++i ) {
@@ -410,14 +410,14 @@ AxisAlignedBox3f TriMesh::calcBoundingBox() const
 			max.z = v.z;
 	}
 	
-	return AxisAlignedBox3f( min, max );
+	return AxisAlignedBox( min, max );
 }
 
-AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
+AxisAlignedBox TriMesh::calcBoundingBox( const mat4 &transform ) const
 {
 	assert( mPositionsDims == 3 );
 	if( mPositions.empty() )
-		return AxisAlignedBox3f( vec3(), vec3() );
+		return AxisAlignedBox( vec3(), vec3() );
 
 	const vec3 &temp = *(const vec3*)(&mPositions[0]);
 	vec3 min = vec3( transform * vec4( temp, 1 ) );
@@ -440,7 +440,7 @@ AxisAlignedBox3f TriMesh::calcBoundingBox( const mat4 &transform ) const
 			max.z = v.z;
 	}
 
-	return AxisAlignedBox3f( min, max );
+	return AxisAlignedBox( min, max );
 }
 
 void TriMesh::read( const DataSourceRef &dataSource )
@@ -812,19 +812,19 @@ void TriMesh::subdivide( int division, bool normalize )
 						const vec2 &v0 = *(const vec2*)(&mPositions[index0*2]);
 						const vec2 &v1 = *(const vec2*)(&mPositions[index1*2]);
 						const vec2 &v2 = *(const vec2*)(&mPositions[index2*2]);
-						appendVertex( lerpBilinear2( v0, v1, v2 ) );
+						appendPosition( lerpBilinear2( v0, v1, v2 ) );
 					}
 					else if( mPositionsDims == 3 ) {
 						const vec3 &v0 = *(const vec3*)(&mPositions[index0*3]);
 						const vec3 &v1 = *(const vec3*)(&mPositions[index1*3]);
 						const vec3 &v2 = *(const vec3*)(&mPositions[index2*3]);
-						appendVertex( lerpBilinear3( v0, v1, v2 ) );
+						appendPosition( lerpBilinear3( v0, v1, v2 ) );
 					}
 					else if( mPositionsDims == 4 ) {
 						const vec4 &v0 = *(const vec4*)(&mPositions[index0*4]);
 						const vec4 &v1 = *(const vec4*)(&mPositions[index1*4]);
 						const vec4 &v2 = *(const vec4*)(&mPositions[index2*4]);
-						appendVertex( lerpBilinear4( v0, v1, v2 ) );
+						appendPosition( lerpBilinear4( v0, v1, v2 ) );
 					}
 
 					if( hasNormals() ) {

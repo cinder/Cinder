@@ -49,6 +49,17 @@ AppMac::~AppMac()
 void AppMac::launch()
 {
 	[[NSApplication sharedApplication] run];
+	emitCleanup();
+}
+
+void AppMac::enablePowerManagement( bool powerManagement )
+{
+	[mImpl setPowerManagementEnabled:powerManagement ? YES : NO];
+}
+
+bool AppMac::isPowerManagementEnabled() const
+{
+	return 	[mImpl isPowerManagementEnabled];
 }
 
 WindowRef AppMac::createWindow( const Window::Format &format )

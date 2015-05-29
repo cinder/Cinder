@@ -457,16 +457,6 @@ using namespace cinder::app;
 
 - (void)timerFired:(NSTimer *)t
 {
-	// note: this would not work if the frame rate were set to something absurdly low
-	if( ! mApp->isPowerManagementEnabled() ) {
-		static double lastSystemActivity = 0;
-		double curTime = cinder::app::getElapsedSeconds();
-		if( curTime - lastSystemActivity >= 30 ) { // every thirty seconds call this to prevent sleep
-			::UpdateSystemActivity( OverallAct );
-			lastSystemActivity = curTime;
-		}
-	}
-
 	// issue update() event
 	mApp->privateUpdate__();
 	

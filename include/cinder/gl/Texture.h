@@ -294,7 +294,7 @@ class TextureBase {
 	TextureBase();
 	TextureBase( GLenum target, GLuint textureId, GLint internalFormat );
 	
-	void			initParams( Format &format, GLint defaultInternalFormat );
+	void			initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 
 	virtual void	printDims( std::ostream &os ) const = 0;
 	
@@ -410,10 +410,13 @@ class Texture1d : public TextureBase {
 	static Texture1dRef create( GLint width, Format format = Format() );
 	//! Constructs a Texture1d using the top row of \a surface
 	static Texture1dRef create( const Surface8u &surface, Format format = Format() );
-	static Texture1dRef create( GLint width, GLenum dataFormat, const uint8_t *data, Format format = Format() );
+	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
+	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, Format format = Format() );
 	
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
+	//! Updates the pixels of a Texture1d with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size \a width.
+	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int offset = 0 );
 	
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -429,7 +432,7 @@ class Texture1d : public TextureBase {
   protected:
   	Texture1d( GLint width, Format format );
 	Texture1d( const Surface8u &surface, Format format );
-	Texture1d( GLint width, GLenum dataFormat, const uint8_t *data, Format format );
+	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 
@@ -482,8 +485,8 @@ class Texture2d : public TextureBase {
 	
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
 	static Texture2dRef	create( int width, int height, Format format = Format() );
-	/** \brief Constructs a texture of size(\a width, \a height), storing the data in internal format \a aInternalFormat. Pixel data is provided by \a data and is expected to be interleaved and in format \a dataFormat, for which \c GL_RGB or \c GL_RGBA would be typical values. **/
-	static Texture2dRef	create( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
+	//! Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
+	static Texture2dRef	create( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
 	static Texture2dRef	create( const Surface8u &surface, Format format = Format() );
 	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
@@ -514,7 +517,9 @@ class Texture2d : public TextureBase {
 
 	//! Allows specification of some size other than the Texture's true size for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to whichever origin is appropriate to the Texture's "top-downness".
 	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
-	
+
+	//! Updates the pixels of a Texture with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size (\a width, \a height). \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
+	void			update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a surface. Expects \a surface's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
 	void			update( const Surface8u &surface, int mipLevel = 0, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
 	//! Updates the pixels of a Texture with contents of \a channel. Expects \a channel's size to match the Texture's at \a mipLevel. \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
@@ -581,7 +586,7 @@ class Texture2d : public TextureBase {
 	virtual void	printDims( std::ostream &os ) const override;
 
 	Texture2d( int width, int height, Format format = Format() );
-	Texture2d( const unsigned char *data, int dataFormat, int width, int height, Format format = Format() );
+	Texture2d( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
 	Texture2d( const Surface8u &surface, Format format = Format() );
 	Texture2d( const Surface16u &surface, Format format = Format() );
 	Texture2d( const Surface32f &surface, Format format = Format() );
@@ -592,14 +597,13 @@ class Texture2d : public TextureBase {
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
 	Texture2d( const TextureData &data, Format format );
 	
-	void	initParams( Format &format, GLint defaultInternalFormat );
+	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 	void	initMaxMipmapLevel();
 	template<typename T>
 	void	setData( const SurfaceT<T> &surface, bool createStorage, int mipLevel, const ivec2 &offset );
 	template<typename T>
 	void	setData( const ChannelT<T> &channel, bool createStorage, int mipLevel, const ivec2 &offset );
-	void	initData( const unsigned char *data, GLenum dataFormat, GLenum type, const Format &format );
-	void	initData( const float *data, GLint dataFormat, const Format &format );
+	void	initData( const void *data, GLenum dataFormat, const Format &format );
 	void	initData( const ImageSourceRef &imageSource, const Format &format );
 #if ! defined( CINDER_GL_ES )
 	void	initDataImageSourceWithPboImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray, const PboRef &pbo );
@@ -643,11 +647,12 @@ class Texture3d : public TextureBase {
 	};
 
 	static Texture3dRef create( GLint width, GLint height, GLint depth, Format format = Format() );
-	static Texture3dRef create( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format = Format() );
+	//! Constructs a texture of size(\a width, \a height, \a depth). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
+	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, Format format = Format() );
   
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 
-	void	update( GLint xoffset, GLint yoffset, GLint zoffset, GLsizei width, GLsizei height, GLsizei depth, GLenum dataFormat, GLenum dataType, void *data, int mipLevel );
+	void	update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, int depth, int xOffset = 0, int yOffset = 0, int zOffset = 0 );
 	
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -662,7 +667,7 @@ class Texture3d : public TextureBase {
 
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
-	Texture3d( GLint width, GLint height, GLint depth, GLenum dataFormat, GLenum dataType, const void *data, Format format );
+	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
 	virtual void	printDims( std::ostream &os ) const override;
 

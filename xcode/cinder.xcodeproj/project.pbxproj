@@ -258,9 +258,6 @@
 		00419C8611057CDB007EC9AD /* Resize.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7D11057CDB007EC9AD /* Resize.h */; };
 		00419C8711057CDB007EC9AD /* Threshold.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7E11057CDB007EC9AD /* Threshold.h */; };
 		00419C8811057CDB007EC9AD /* Trim.h in Headers */ = {isa = PBXBuildFile; fileRef = 00419C7F11057CDB007EC9AD /* Trim.h */; };
-		0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */; };
-		0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */; };
-		0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */; };
 		0049A34D116EE675007DDFB0 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
 		0049A34E116EE675007DDFB0 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
 		0049A34F116EE675007DDFB0 /* AxisAlignedBox.h in Headers */ = {isa = PBXBuildFile; fileRef = 0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */; };
@@ -1224,7 +1221,6 @@
 		00419C7D11057CDB007EC9AD /* Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Resize.h; path = ip/Resize.h; sourceTree = "<group>"; };
 		00419C7E11057CDB007EC9AD /* Threshold.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Threshold.h; path = ip/Threshold.h; sourceTree = "<group>"; };
 		00419C7F11057CDB007EC9AD /* Trim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Trim.h; path = ip/Trim.h; sourceTree = "<group>"; };
-		0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = AxisAlignedBox.cpp; sourceTree = "<group>"; };
 		0049A34C116EE675007DDFB0 /* AxisAlignedBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AxisAlignedBox.h; sourceTree = "<group>"; };
 		0049C1B31010E5A40015B4B9 /* Renderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Renderer.h; path = app/Renderer.h; sourceTree = "<group>"; };
 		0049C1B61010E5B10015B4B9 /* Renderer.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = Renderer.cpp; path = app/Renderer.cpp; sourceTree = "<group>"; };
@@ -1241,7 +1237,7 @@
 		006D703F19940F25008149E2 /* RendererGl.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = RendererGl.cpp; path = app/RendererGl.cpp; sourceTree = "<group>"; };
 		006D704319942BF5008149E2 /* AvfUtils.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = AvfUtils.mm; path = qtime/AvfUtils.mm; sourceTree = "<group>"; };
 		006D704419942BF5008149E2 /* MovieWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MovieWriter.cpp; path = qtime/MovieWriter.cpp; sourceTree = "<group>"; };
-		006D704519942BF5008149E2 /* QuickTimeGlImplAvf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeGlImplAvf.cpp; path = qtime/QuickTimeGlImplAvf.cpp; sourceTree = "<group>"; };
+		006D704519942BF5008149E2 /* QuickTimeGlImplAvf.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = QuickTimeGlImplAvf.cpp; path = qtime/QuickTimeGlImplAvf.cpp; sourceTree = "<group>"; };
 		006D704619942BF5008149E2 /* QuickTimeGlImplLegacy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = QuickTimeGlImplLegacy.cpp; path = qtime/QuickTimeGlImplLegacy.cpp; sourceTree = "<group>"; };
 		006D704719942BF5008149E2 /* QuickTimeImplAvf.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = QuickTimeImplAvf.mm; path = qtime/QuickTimeImplAvf.mm; sourceTree = "<group>"; };
 		006D704819942BF5008149E2 /* QuickTimeImplLegacy.cpp */ = {isa = PBXFileReference; explicitFileType = sourcecode.cpp.objcpp; fileEncoding = 4; name = QuickTimeImplLegacy.cpp; path = qtime/QuickTimeImplLegacy.cpp; sourceTree = "<group>"; };
@@ -2036,7 +2032,6 @@
 				111A5E98191F703D005C3166 /* r8brain */,
 				008B43A614F5F39B00B55B07 /* svg */,
 				008CE8410E94679D00644A05 /* Area.cpp */,
-				0049A348116EE655007DDFB0 /* AxisAlignedBox.cpp */,
 				009EE56A0F803F5600F17CB1 /* BandedMatrix.cpp */,
 				005C0CEC14CBB47500A12CD2 /* Base64.cpp */,
 				009EE56C0F803F5600F17CB1 /* BSpline.cpp */,
@@ -3401,7 +3396,6 @@
 				0039FD23115B123B00BA0BAD /* CinderCocoaTouch.mm in Sources */,
 				001E355F115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E4115DABD800CD71B9 /* Timer.cpp in Sources */,
-				0049A34A116EE65C007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F51194F584004D686E /* Text.cpp in Sources */,
 				11C97CA3192F275300A510B5 /* CinderAssert.cpp in Sources */,
 				005374F71194F588004D686E /* Font.cpp in Sources */,
@@ -3592,7 +3586,6 @@
 				0039FD22115B123B00BA0BAD /* CinderCocoaTouch.mm in Sources */,
 				001E3560115D5EFA000C228C /* Xml.cpp in Sources */,
 				00B729E5115DABD800CD71B9 /* Timer.cpp in Sources */,
-				0049A34B116EE65D007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				005374F61194F584004D686E /* Text.cpp in Sources */,
 				11C97CA4192F275300A510B5 /* CinderAssert.cpp in Sources */,
 				005374F81194F589004D686E /* Font.cpp in Sources */,
@@ -3803,7 +3796,6 @@
 				00B729E3115DABD800CD71B9 /* Timer.cpp in Sources */,
 				111A5FBF191F72AE005C3166 /* Device.cpp in Sources */,
 				111A5EA4191F703D005C3166 /* bitwise.c in Sources */,
-				0049A349116EE655007DDFB0 /* AxisAlignedBox.cpp in Sources */,
 				0003F47F1992DA9A00647C8B /* Log.cpp in Sources */,
 				111A5EB4191F703D005C3166 /* floor0.c in Sources */,
 				00F601C819F6C9DD00C83781 /* Ubo.cpp in Sources */,

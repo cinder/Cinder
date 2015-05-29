@@ -42,6 +42,7 @@ typedef CVBufferRef CVImageBufferRef;
 	@class AVAsset, AVURLAsset, AVAssetTrack, AVAssetReader;
 	@class MovieDelegate;
 	@class NSURL;
+	@class NSDictionary;
 #else
 	class AVPlayer;
 	class AVPlayerItem;
@@ -54,6 +55,7 @@ typedef CVBufferRef CVImageBufferRef;
 	class AVURLAsset;
 	class NSArray;
 	class NSError;
+	class NSDictionary;
 	// -- 
 	class MovieDelegate;
 #endif
@@ -177,6 +179,7 @@ class MovieBase {
 	void removeObservers();
 	void addObservers();
 
+	virtual NSDictionary* avPlayerItemOutputDictionary() const = 0;
 	virtual void allocateVisualContext() = 0;
 	virtual void deallocateVisualContext() = 0;
 	virtual void newFrame( CVImageBufferRef cvImage ) = 0;
@@ -222,9 +225,6 @@ class MovieSurface : public MovieBase {
 	static MovieSurfaceRef create( const fs::path& path ) { return MovieSurfaceRef( new MovieSurface( path ) ); }
 	static MovieSurfaceRef create( const MovieLoaderRef &loader ) { return MovieSurfaceRef( new MovieSurface( *loader ) ); }
 
-	//! \inherit
-	virtual bool hasAlpha() const;
-	
 	//! Returns the Surface8u representing the Movie's current frame
 	Surface8uRef		getSurface();
 
@@ -234,10 +234,11 @@ class MovieSurface : public MovieBase {
 	MovieSurface( const fs::path& path );
 	MovieSurface( const MovieLoader& loader );
 	
-	virtual void		allocateVisualContext() override { /* no-op */ }
-	virtual void		deallocateVisualContext() override { /* no-op */ }
-	virtual void		newFrame( CVImageBufferRef cvImage ) override;
-	virtual void		releaseFrame() override;
+	NSDictionary*	avPlayerItemOutputDictionary() const override;
+	void			allocateVisualContext() override { /* no-op */ }
+	void			deallocateVisualContext() override { /* no-op */ }
+	void			newFrame( CVImageBufferRef cvImage ) override;
+	void			releaseFrame() override;
 
 	Surface8uRef		mSurface;
 };

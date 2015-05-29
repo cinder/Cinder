@@ -19,15 +19,15 @@ const int HEIGHT = 480;
 
 class WisteriaApp : public App {
  public:
-	void prepareSettings( Settings *settings );
-	void setup();
+	static void prepareSettings( Settings *settings );
+	void setup() override;
 	
 	void renderScene( cairo::Context &ctx );
-	void keyDown( KeyEvent event );
-	void mouseDown( MouseEvent event );
+	void keyDown( KeyEvent event ) override;
+	void mouseDown( MouseEvent event ) override;
 	
-	void update();
-	void draw();
+	void update() override;
+	void draw() override;
 
 	cairo::SurfaceImage		mOffscreenBuffer;
 	cairo::Context			mOffscreenContext;
@@ -67,9 +67,8 @@ void WisteriaApp::setup()
 
 void WisteriaApp::renderScene( cairo::Context &ctx )
 {
-	for( vector<Branch>::iterator blossomIt = mBlossoms.begin(); blossomIt != mBlossoms.end(); ++blossomIt ) {
+	for( vector<Branch>::iterator blossomIt = mBlossoms.begin(); blossomIt != mBlossoms.end(); ++blossomIt )
 		blossomIt->draw( ctx );
-	}
 }
 
 void WisteriaApp::keyDown( KeyEvent event )
@@ -107,9 +106,9 @@ void WisteriaApp::update()
 			mOffscreenContext.paint();
 			
 			mBlossoms.clear();
-			mBlossoms.push_back( Branch( vec2( Rand::randFloat( WIDTH ), Rand::randFloat( HEIGHT ) ), Branch::randomHue(), 0 ) );
-			mBlossoms.push_back( Branch( vec2( Rand::randFloat( WIDTH ), Rand::randFloat( HEIGHT ) ), Branch::randomHue(), 180 ) );
-			mBlossoms.push_back( Branch( vec2( Rand::randFloat( WIDTH ), Rand::randFloat( HEIGHT ) ), Branch::randomHue(), 320 ) );
+			mBlossoms.push_back( Branch( vec2( Rand::randFloat( (float)WIDTH ), Rand::randFloat( (float)HEIGHT ) ), Branch::randomHue(), 0 ) );
+			mBlossoms.push_back( Branch( vec2( Rand::randFloat( (float)WIDTH ), Rand::randFloat( (float)HEIGHT ) ), Branch::randomHue(), 180 ) );
+			mBlossoms.push_back( Branch( vec2( Rand::randFloat( (float)WIDTH ), Rand::randFloat( (float)HEIGHT ) ), Branch::randomHue(), 320 ) );
 			
 			mIsIdle = false;
 		}
@@ -123,4 +122,4 @@ void WisteriaApp::draw()
 	ctx.copySurface( mOffscreenBuffer, mOffscreenBuffer.getBounds() );
 }
 
-CINDER_APP( WisteriaApp, Renderer2d )
+CINDER_APP( WisteriaApp, Renderer2d, WisteriaApp::prepareSettings )

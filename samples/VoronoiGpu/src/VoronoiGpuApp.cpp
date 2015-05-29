@@ -1,7 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/ip/Hdr.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "VoronoiGpu.h"
 
 #include <vector>
@@ -12,7 +12,6 @@ using namespace std;
 
 class VoronoiGpuApp : public App {
  public:
-	void prepareSettings( Settings *settings ) { settings->enableHighDensityDisplay( true ); }
 	void setup();
 	void calculateVoronoiTexture();
 	

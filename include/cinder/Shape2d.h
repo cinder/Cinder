@@ -69,7 +69,7 @@ class Shape2d {
 	//! Transforms the Shape2d by \a matrix.
 	void		transform( const mat3 &matrix );
 	//! Returns a copy transformed by \a matrix.
-	Shape2d		transformCopy( const mat3 &matrix ) const;
+	Shape2d		transformed( const mat3 &matrix ) const;
 
 	//! Returns the bounding box of the Shape's control points. Note that this is not necessarily the bounding box of the path's shape.
 	Rectf	calcBoundingBox() const;

@@ -9,12 +9,15 @@ using namespace std;
 
 class TextureUploadApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override { settings->enableMultiTouch( false ); }
+	static void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup();
 	template<typename T>
 	void setupTexConstructor();
 	template<typename T>
 	void setupTexUpdate();
+
+	template<typename T>
+	void setupVoidStar( int64_t maxV );
 
 	void mouseDown( MouseEvent event ) override;
 	void draw() override;
@@ -145,12 +148,90 @@ void TextureUploadApp::setupTexUpdate()
 	);
 }
 
+// This is for the constructor variant that accepts a void* to data, rather than a Surface/Channel
+template<typename T>
+void TextureUploadApp::setupVoidStar( int64_t maxV )
+{
+	GLenum dataType;
+	if( std::is_same<T,uint8_t>::value )
+		dataType = GL_UNSIGNED_BYTE;	
+	else if( std::is_same<T,int16_t>::value )
+		dataType = GL_SHORT;
+	else if( std::is_same<T,int32_t>::value )
+		dataType = GL_INT;
+	else if( std::is_same<T,uint32_t>::value )
+		dataType = GL_UNSIGNED_INT;
+	else
+		throw;
+
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "void* Constructor: " << typeid(T).name() << sizeof(T) * 8 << "-bit" << std::endl;
+			Surface8u temp( mImg );
+			std::unique_ptr<T[]> data( new T[mImg->getWidth() * mImg->getHeight() * 3] );
+
+			for( int y = 0; y < temp.getHeight(); ++y ) {
+				for( int x = 0; x < temp.getWidth(); ++x ) {
+					ColorA8u color = temp.getPixel( ivec2( x, y ) );
+					data[(y*temp.getWidth()+x)*3 + 0] = color.r / 255.0f * maxV;
+					data[(y*temp.getWidth()+x)*3 + 1] = color.g / 255.0f * maxV;
+					data[(y*temp.getWidth()+x)*3 + 2] = color.b / 255.0f * maxV;
+				}
+			}
+			gl::TextureRef result = gl::Texture::create( data.get(), GL_RGB, temp.getWidth(), temp.getHeight(),
+											gl::Texture2d::Format().dataType( dataType ).internalFormat( GL_RGB ) );
+			result->setTopDown( true );
+
+			return result;
+		}
+	);	
+	
+	mTexGenFns.push_back( [=](void)->gl::TextureRef {
+			app::console() << "void* update: " << typeid(T).name() << sizeof(T) * 8 << "-bit" << std::endl;
+			Surface8u temp( mImg );
+			Surface8u temp2( mImg2 );
+			std::unique_ptr<T[]> data( new T[mImg2->getWidth() * mImg2->getHeight() * 3] );
+
+			for( int y = 0; y < temp2.getHeight(); ++y ) {
+				for( int x = 0; x < temp2.getWidth(); ++x ) {
+					ColorA8u color = temp2.getPixel( ivec2( x, y ) );
+					data[(y*temp2.getWidth()+x)*3 + 0] = color.r / 255.0f * maxV;
+					data[(y*temp2.getWidth()+x)*3 + 1] = color.g / 255.0f * maxV;
+					data[(y*temp2.getWidth()+x)*3 + 2] = color.b / 255.0f * maxV;
+				}
+			}
+			
+			gl::TextureRef result = gl::Texture::create( temp );
+			result->update( data.get(), GL_RGB, dataType, 0, temp2.getWidth(), temp2.getHeight() );
+			result->setTopDown( true );
+
+			return result;
+		}
+	);	
+}
+
 void TextureUploadApp::setup()
 {
 	mImg = loadImage( loadAsset( "fish.jpg" ) );
 	mImgAlpha = loadImage( loadAsset( "fish_alpha.png" ) );
 	mImg2 = loadImage( loadAsset( "fish2.jpg" ) );
 	mImg2Alpha = loadImage( loadAsset( "fish2_alpha.png" ) );
+
+	// 8bit unsigned void*
+	{
+		setupVoidStar<uint8_t>( 255 );
+	}	
+	// 16bit signed void*
+	{
+		setupVoidStar<int16_t>( 32767 );
+	}
+	// 32bit signed void*
+	{
+		setupVoidStar<int32_t>( 2147483647 );
+	}
+	// 32bit unsigned void*
+	{
+		setupVoidStar<uint32_t>( 4294967295 );
+	}
 	
 	// 8 bit
 	{
@@ -188,4 +269,4 @@ void TextureUploadApp::draw()
 	gl::draw( mCurTex );
 }
 
-CINDER_APP( TextureUploadApp, RendererGl )
+CINDER_APP( TextureUploadApp, RendererGl, TextureUploadApp::prepareSettings )

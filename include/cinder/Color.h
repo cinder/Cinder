@@ -191,7 +191,7 @@ class ColorAT {
 	{}
 	
 	ColorAT( const vec4 &src )
-		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( 1.0f ) )
+		: r( CHANTRAIT<T>::convert( src.r ) ), g( CHANTRAIT<T>::convert( src.g ) ), b( CHANTRAIT<T>::convert( src.b ) ), a( CHANTRAIT<T>::convert( src.a ) )
 	{
 	}
 
@@ -379,7 +379,7 @@ inline typename CHANTRAIT<T>::Accum length2( const ColorAT<T> &c )
 template<typename T>
 inline typename CHANTRAIT<T>::Accum dot( const ColorT<T> &c0, const ColorT<T> &c1 )
 {
-	return (CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b );
+	return (typename CHANTRAIT<T>::Accum)( c0.r * c1.r + c0.g * c1.g + c0.b * c1.b );
 }
 
 template<typename T>
@@ -481,5 +481,13 @@ typedef ColorT<uint8_t>		Color8u;
 typedef ColorAT<float>		ColorA;
 typedef ColorAT<float>		ColorAf;
 typedef ColorAT<uint8_t>	ColorA8u;
+
+
+template<uint8_t DIM, typename T> struct COLORDIM {};
+
+template<> struct COLORDIM<3, float>	{ typedef Colorf	TYPE; };
+template<> struct COLORDIM<3, uint8_t>	{ typedef Color8u	TYPE; };
+template<> struct COLORDIM<4, float>	{ typedef ColorAf	TYPE; };
+template<> struct COLORDIM<4, uint8_t>	{ typedef ColorA8u	TYPE; };
 
 } // namespace cinder

@@ -148,7 +148,7 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 	
 	for( auto normalIt = normals.begin(); normalIt != normals.end(); ++normalIt ) {
 		// Creating a random velocity for each particle in a unit sphere
-		*normalIt = ci::randVec3f() * mix( 0.0f, 1.5f, mRand.nextFloat() );
+		*normalIt = ci::randVec3() * mix( 0.0f, 1.5f, mRand.nextFloat() );
 	}
 	
 	// Create the Velocity Buffer using the newly buffered velocities

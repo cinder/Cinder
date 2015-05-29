@@ -16,6 +16,8 @@
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8C12B8485FCE42ABAFE3E880 /* ShadowMappingApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = F2A5BC0FF6744957B838C6FB /* ShadowMappingApp.cpp */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		B048597019A7007200929168 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B048596F19A7007200929168 /* AVFoundation.framework */; };
 		B048597119A700AE00929168 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B048596D19A7003600929168 /* CoreMedia.framework */; };
 		F3E2CD8C16C8419B9B82AB1E /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 8124497D57F0411DA660CA6F /* CinderApp.icns */; };
@@ -38,6 +40,8 @@
 		8D7FA060970440C499EE0616 /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
 		B00297AD198F144500E7DE5D /* assets */ = {isa = PBXFileReference; lastKnownFileType = folder; name = assets; path = ../assets; sourceTree = "<group>"; };
 		B048596D19A7003600929168 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B048596F19A7007200929168 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		C07043088350481CB61EC4FE /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		F2A5BC0FF6744957B838C6FB /* ShadowMappingApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; name = ShadowMappingApp.cpp; path = ../src/ShadowMappingApp.cpp; sourceTree = "<group>"; };
@@ -49,6 +53,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B048597119A700AE00929168 /* CoreMedia.framework in Frameworks */,
+				00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+				00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
 				B048597019A7007200929168 /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -138,6 +144,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				B048596F19A7007200929168 /* AVFoundation.framework */,
 				B048596D19A7003600929168 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,

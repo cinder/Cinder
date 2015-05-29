@@ -20,6 +20,8 @@
 		B39A4C001884D70B002A63AF /* renderSmoke.frag in Resources */ = {isa = PBXBuildFile; fileRef = B39A4BF81884D6F8002A63AF /* renderSmoke.frag */; };
 		B39A4C011884D70B002A63AF /* renderSmoke.vert in Resources */ = {isa = PBXBuildFile; fileRef = B39A4BF91884D6F8002A63AF /* renderSmoke.vert */; };
 		B39A4C021884D70B002A63AF /* updateSmoke.vert in Resources */ = {isa = PBXBuildFile; fileRef = B39A4BFB1884D6F8002A63AF /* updateSmoke.vert */; };
+		00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995591B128DF400A5C623 /* IOSurface.framework */; };
+		00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B995581B128DF400A5C623 /* IOKit.framework */; };
 		B3AC833C19A5314C00B29ABF /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AC833B19A5314C00B29ABF /* AVFoundation.framework */; };
 		B3AC833E19A5315500B29ABF /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = B3AC833D19A5315500B29ABF /* CoreMedia.framework */; };
 /* End PBXBuildFile section */
@@ -43,6 +45,8 @@
 		B39A4BF91884D6F8002A63AF /* renderSmoke.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = renderSmoke.vert; path = ../assets/renderSmoke.vert; sourceTree = "<group>"; };
 		B39A4BFA1884D6F8002A63AF /* smoke_blur.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = smoke_blur.png; path = ../assets/smoke_blur.png; sourceTree = "<group>"; };
 		B39A4BFB1884D6F8002A63AF /* updateSmoke.vert */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.glsl; name = updateSmoke.vert; path = ../assets/updateSmoke.vert; sourceTree = "<group>"; };
+		00B995591B128DF400A5C623 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
+		00B995581B128DF400A5C623 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		B3AC833B19A5314C00B29ABF /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		B3AC833D19A5315500B29ABF /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		B8C69CCE28AC469EADC09A2B /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = Resources.h; path = ../include/Resources.h; sourceTree = "<group>"; };
@@ -54,6 +58,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				B3AC833E19A5315500B29ABF /* CoreMedia.framework in Frameworks */,
+				00B9955B1B128DF400A5C623 /* IOSurface.framework in Frameworks */,
+				00B9955A1B128DF400A5C623 /* IOKit.framework in Frameworks */,
 				B3AC833C19A5314C00B29ABF /* AVFoundation.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
@@ -88,6 +94,8 @@
 			isa = PBXGroup;
 			children = (
 				B3AC833D19A5315500B29ABF /* CoreMedia.framework */,
+				00B995581B128DF400A5C623 /* IOKit.framework */,
+				00B995591B128DF400A5C623 /* IOSurface.framework */,
 				B3AC833B19A5314C00B29ABF /* AVFoundation.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,

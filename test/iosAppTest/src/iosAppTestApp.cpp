@@ -87,8 +87,9 @@ TestCallbackOrder	sOrderTester;
 
 class iosAppTestApp : public AppCocoaTouch {
   public:
-iosAppTestApp();
 	static 	void prepareSettings( AppCocoaTouch::Settings *settings );
+
+	iosAppTestApp();
 
 	void	setup()								override;
 	void	resize()							override;
@@ -134,13 +135,6 @@ iosAppTestApp();
 };
 
 // static
-iosAppTestApp::iosAppTestApp()
-{
-	CI_LOG_V( "Displays" );
-	for( auto &display : Display::getDisplays() )
-		CI_LOG_V( *display );
-}
-
 void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 {
 	sOrderTester.setState( TestCallbackOrder::PREPARESETTINGS );
@@ -152,7 +146,14 @@ void iosAppTestApp::prepareSettings( AppCocoaTouch::Settings *settings )
 //	settings->setMultiTouchEnabled( false );
 //	settings->enableHighDensityDisplay( false ); // FIXME: currently doesn't do anything
 	settings->setPowerManagementEnabled( false );
-	settings->setStatusBarEnabled( false );
+//	settings->setStatusBarEnabled( true ); // disabled by default
+}
+
+iosAppTestApp::iosAppTestApp()
+{
+	CI_LOG_V( "Displays" );
+	for( auto &display : Display::getDisplays() )
+		CI_LOG_V( *display );
 }
 
 void iosAppTestApp::setup()

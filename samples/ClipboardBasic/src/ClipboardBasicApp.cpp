@@ -34,8 +34,13 @@ void ClipboardBasicApp::draw()
 	gl::setMatricesWindow( getWindowSize() );
 	gl::enableAlphaBlending();
 	
-	if( Clipboard::hasImage() )
-		gl::draw( gl::Texture::create( Clipboard::getImage() ) );
+	if( Clipboard::hasImage() ) {
+		auto img = Clipboard::getImage();
+		// be aware of a race condition here; the clipboard might have changed between hasImage() and getImage()
+		// so we test for null 'img'
+		if( img )
+			gl::draw( gl::Texture::create( img ) );
+	}
 	else if( Clipboard::hasString() )
 		gl::drawString( Clipboard::getString(), vec2( 0, getWindowCenter().y ) );
 	else

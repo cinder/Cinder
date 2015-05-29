@@ -170,7 +170,7 @@ using namespace cinder::app;
 
 - (void)makeCurrentContext
 {
-	mRenderer->startDraw();
+	mRenderer->makeCurrentContext();
 }
 
 - (void)drawRect:(NSRect)rect

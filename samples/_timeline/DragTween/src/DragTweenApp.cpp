@@ -37,7 +37,7 @@ class Circle {
 
 class DragTweenApp : public App {
   public:
-    void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
+    static void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup();
 	void mouseDown( MouseEvent event );
 	void mouseDrag( MouseEvent event );
