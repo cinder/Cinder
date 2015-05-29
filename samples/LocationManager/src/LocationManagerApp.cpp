@@ -1,3 +1,7 @@
+// Demonstrates location and heading from LocationManager
+// NOTE:
+//  On iOS 8: you need an NSLocationAlwaysUsageDescription in your application's Info.plist
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
