@@ -137,9 +137,9 @@ void StereoscopicRenderingApp::prepareSettings( Settings *settings )
 
 void StereoscopicRenderingApp::setup()
 {
-    kGridSize = 100;
-    kNumNotes = 2 * kGridSize + 1;
-    
+	kGridSize = 100;
+	kNumNotes = 2 * kGridSize + 1;
+
 	// Enable stereoscopic rendering by default.
 	mRenderMethod = SIDE_BY_SIDE;
 
@@ -608,9 +608,9 @@ void StereoscopicRenderingApp::renderUI()
 	for( size_t i = 0; i < 4; ++i ) {
 		gl::drawString( left[i], vec2( w - 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
 		gl::drawStringRight( right[i], vec2( w + 350.0f, h - 150.0f + i * mFont.getSize() * 0.9f ), Color::black(), mFont );
-}
+	}
 	gl::disableAlphaBlending();
 #endif
 }
 
-CINDER_APP( StereoscopicRenderingApp, RendererGl, StereoscopicRenderingApp::prepareSettings )
+CINDER_APP( StereoscopicRenderingApp, RendererGl( RendererGl::Options().msaa( 16 ) ), StereoscopicRenderingApp::prepareSettings )

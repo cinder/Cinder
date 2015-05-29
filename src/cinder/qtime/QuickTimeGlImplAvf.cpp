@@ -141,27 +141,6 @@ MovieGl::~MovieGl()
 {
 	deallocateVisualContext();
 }
-	
-bool MovieGl::hasAlpha() const
-{
-/*	if( ! mVideoTextureRef )
-		return false;
-	
-	::CVPixelBufferLockBaseAddress( mVideoTextureRef, 0 );
-	OSType type = ::CVPixelBufferGetPixelFormatType(mVideoTextureRef);
-	::CVPixelBufferUnlockBaseAddress( mVideoTextureRef, 0 );
-#if defined ( CINDER_COCOA_TOUCH)
-	return (type == kCVPixelFormatType_32ARGB ||
-			type == kCVPixelFormatType_32BGRA ||
-			type == kCVPixelFormatType_32ABGR ||
-			type == kCVPixelFormatType_32RGBA ||
-			type == kCVPixelFormatType_64ARGB);
-#elif defined ( CINDER_COCOA )
-	return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
-#endif
-	*/
-return false;
-}
 
 gl::TextureRef MovieGl::getTexture()
 {

@@ -11,10 +11,10 @@ using namespace std;
 class MovieWriterApp : public App {
   public:
 	static void prepareSettings( Settings *settings );
-	void setup();
-	void mouseDown( MouseEvent event );	
-	void update();
-	void draw();
+
+	void setup() override;
+	void update() override;
+	void draw() override;
 	void cleanup() override { mMovieExporter.reset(); }
 	
 	qtime::MovieWriterRef mMovieExporter;
@@ -42,10 +42,6 @@ void MovieWriterApp::setup()
 	gl::bindStockShader( gl::ShaderDef().color() );
 }
 
-void MovieWriterApp::mouseDown( MouseEvent event )
-{
-}
-
 void MovieWriterApp::update()
 {
 	const int maxFrames = 100;
@@ -53,6 +49,7 @@ void MovieWriterApp::update()
 		mMovieExporter->addFrame( copyWindowSurface() );
 	else if( mMovieExporter && getElapsedFrames() >= maxFrames ) {
 		mMovieExporter->finish();
+		mMovieExporter.reset();
 	}
 }
 

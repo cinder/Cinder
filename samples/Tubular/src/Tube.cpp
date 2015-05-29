@@ -3,10 +3,10 @@
 
 void addQuadToMesh( TriMesh& mesh, const vec3& P0, const vec3& P1, const vec3& P2, const vec3& P3 )
 {
-	mesh.appendVertex( P0 );
-	mesh.appendVertex( P1 );
-	mesh.appendVertex( P2 );
-	mesh.appendVertex( P3 );
+	mesh.appendPosition( P0 );
+	mesh.appendPosition( P1 );
+	mesh.appendPosition( P2 );
+	mesh.appendPosition( P3 );
 	int vert0 = mesh.getNumVertices() - 4;
 	int vert1 = mesh.getNumVertices() - 1;
 	int vert2 = mesh.getNumVertices() - 2;

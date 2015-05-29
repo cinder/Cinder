@@ -1,9 +1,10 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/ArcBall.h"
+#include "cinder/CameraUi.h"
 #include "cinder/Camera.h"
 #include "cinder/Surface.h"
 #include "cinder/ImageIo.h"
+#include "cinder/gl/gl.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/Batch.h"
 #include "cinder/gl/Shader.h"
@@ -13,12 +14,9 @@ using namespace ci::app;
 
 class ImageHFApp : public App {
  public:
-	void    setup();
-	void    resize();
-	void    mouseDown( MouseEvent event );
-	void    mouseDrag( MouseEvent event );
-	void    keyDown( KeyEvent event );
-	void    draw();
+	void    setup() override;
+	void    keyDown( KeyEvent event ) override;
+	void    draw() override;
 	void	openFile();
 
  private:
@@ -27,8 +25,8 @@ class ImageHFApp : public App {
 	};
 	void updateData( ColorSwitch whichColor );
  
-	CameraPersp mCam;
-	Arcball     mArcball;
+	CameraPersp		mCam;
+	CameraUi		mCamUi;
 
 	uint32_t    mWidth, mHeight;
 
@@ -43,8 +41,9 @@ void ImageHFApp::setup()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();    
 
-	// initialize the arcball with a semi-arbitrary rotation just to give an interesting angle
-	mArcball.setQuat( quat( 0.28f, vec3( 0.0577576f, -0.956794f, 0.284971f ) ) );
+	mCamUi = CameraUi( &mCam, getWindow() );
+	mCam.setNearClip( 10 );
+	mCam.setFarClip( 2000 );
 
 	openFile();
 }
@@ -62,28 +61,8 @@ void ImageHFApp::openFile()
 		mPointsBatch = gl::Batch::create( mVboMesh, gl::getStockShader( gl::ShaderDef().color() ) );
 
 		updateData( kColor );		
+		mCam.lookAt( vec3( mWidth / 2, 50, mHeight / 2 ), vec3( 0 ) );
 	}
-}
-
-void ImageHFApp::resize()
-{
-	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( vec2( getWindowWidth() / 2.0f, getWindowHeight() / 2.0f ) );
-	mArcball.setRadius( getWindowHeight() / 2.0f );
-
-	mCam.lookAt( vec3( 0.0f, 0.0f, -150 ), vec3( 0, 0, 0 ) );
-	mCam.setPerspective( 60.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
-	gl::setMatrices( mCam );
-}
-
-void ImageHFApp::mouseDown( MouseEvent event )
-{
-    mArcball.mouseDown( event.getPos() );
-}
-
-void ImageHFApp::mouseDrag( MouseEvent event )
-{
-    mArcball.mouseDrag( event.getPos() );
 }
 
 void ImageHFApp::keyDown( KeyEvent event )
@@ -111,12 +90,9 @@ void ImageHFApp::draw()
 {
     gl::clear();
 
-    gl::pushModelView();
-		gl::translate( vec3( 0.0f, 0.0f, mHeight / 2.0f ) );
-		gl::rotate( mArcball.getQuat() );
-		if( mVboMesh )
-			gl::draw( mVboMesh );
-    gl::popModelView();
+	gl::setMatrices( mCam );
+	if( mPointsBatch )
+		mPointsBatch->draw();
 }
 
 void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
@@ -134,18 +110,18 @@ void ImageHFApp::updateData( ImageHFApp::ColorSwitch whichColor )
 			// calculate the height based on a weighted average of the RGB, and emphasize either the red green or blue color in each of those modes
 			switch( whichColor ) {
 				case kColor:
-					height = color.dot( Color( 0.3333f, 0.3333f, 0.3333f ) );
+					height = dot( color, Color( 0.3333f, 0.3333f, 0.3333f ) );
 				break;
 				case kRed:
-					height = color.dot( Color( 1, 0, 0 ) );
+					height = dot( color, Color( 1, 0, 0 ) );
 					color *= Color( 1, muteColor, muteColor );
 				break;
 				case kGreen:
-					height = color.dot( Color( 0, 1, 0 ) );
+					height = dot( color, Color( 0, 1, 0 ) );
 					color *= Color( muteColor, 1, muteColor );
 				break;
 				case kBlue:
-					height = color.dot( Color( 0, 0, 1 ) );
+					height = dot( color, Color( 0, 0, 1 ) );
 					color *= Color( muteColor, muteColor, 1 );					
 				break;            
 			}

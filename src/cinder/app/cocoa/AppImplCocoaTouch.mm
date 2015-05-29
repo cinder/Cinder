@@ -37,6 +37,8 @@ using namespace cinder::app;
 	mApp = AppCocoaTouch::get();
 	mAppImpl = mApp->privateGetImpl();
 
+	[UIApplication sharedApplication].statusBarHidden = mAppImpl->mStatusBarShouldHide;
+
 	for( auto &windowImpl : mAppImpl->mWindows )
 		[windowImpl finishLoad];
 
@@ -101,10 +103,8 @@ using namespace cinder::app;
 	mSetupHasFired = NO;
 	mProximityStateIsClose = NO;
 	mIsUnplugged = NO;
+	mStatusBarShouldHide = ! settings.isStatusBarEnabled();
 	mBatteryLevel = -1.0f;
-
-	if( ! settings.isStatusBarEnabled() )
-		[UIApplication sharedApplication].statusBarHidden = YES;
 
 	NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
 	[center addObserver:self selector:@selector(screenDidConnect:) name:UIScreenDidConnectNotification object:nil];
@@ -415,6 +415,11 @@ using namespace cinder::app;
 {
 	[super loadView];
 	self.view = mCinderView;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+	return mAppImpl->mStatusBarShouldHide;
 }
 
 // pre iOS 6

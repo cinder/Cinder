@@ -54,9 +54,6 @@ class MovieGl : public MovieBase {
 	static MovieGlRef create( const fs::path& path ) { return MovieGlRef( new MovieGl( path ) ); }
 	static MovieGlRef create( const MovieLoaderRef &loader ) { return MovieGlRef( new MovieGl( *loader ) ); }
 	
-	//! \inherit
-	virtual bool hasAlpha() const;
-	
 	//! Returns the gl::Texture representing the Movie's current frame, bound to the \c GL_TEXTURE_RECTANGLE_ARB target
 	gl::TextureRef	getTexture();
 	

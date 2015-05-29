@@ -99,34 +99,34 @@ class TriMesh : public geom::Source {
 	//! Returns whether the TriMesh has texture coordinates for unit 3
 	bool		hasTexCoords3() const { return ! mTexCoords3.empty(); }
 
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec2 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec3 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec4 &v ) { appendVertices( &v, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec2 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec3 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec4 &position ) { appendPositions( &position, 1 ); }
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec2 *verts, size_t num );
+	void		appendPositions( const vec2 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec3 *verts, size_t num );
+	void		appendPositions( const vec3 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec4 *verts, size_t num );
+	void		appendPositions( const vec4 *positions, size_t num );
 	//! Appends a single normal  
-	void		appendNormal( const vec3 &v ) { mNormals.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple normals at once.
+	void		appendNormal( const vec3 &normal ) { mNormals.push_back( normal ); }
+	//! Functions similarly to appendPositions(), appending multiple normals at once.
 	void		appendNormals( const vec3 *normals, size_t num );
 	//! Appends a single tangent  
-	void		appendTangent( const vec3 &v ) { mTangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple tangents at once.
+	void		appendTangent( const vec3 &tangent ) { mTangents.push_back( tangent ); }
+	//! Functions similarly to appendPositions(), appending multiple tangents at once.
 	void		appendTangents( const vec3 *tangents, size_t num );
 	//! Appends a single bitangent
-	void		appendBitangent( const vec3 &v ) { mBitangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple bitangents at once.
+	void		appendBitangent( const vec3 &bitangent ) { mBitangents.push_back( bitangent ); }
+	//! Functions similarly to appendPositions(), appending multiple bitangents at once.
 	void		appendBitangents( const vec3 *bitangents, size_t num );
 	//! Appends a single RGB color
-	void		appendColorRgb( const Color &rgb ) { appendColors( &rgb, 1 ); }
+	void		appendColorRgb( const Color &color ) { appendColors( &color, 1 ); }
 	//! Appends a single RGBA color
-	void		appendColorRgba( const ColorA &rgba ) { appendColors( &rgba, 1 ); }
+	void		appendColorRgba( const ColorA &color ) { appendColors( &color, 1 ); }
 
 	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
 	void		appendTexCoord( const vec2 &v ) { appendTexCoords0( &v, 1 ); }
@@ -234,10 +234,10 @@ class TriMesh : public geom::Source {
 	const std::vector<vec3>&		getBitangents() const { return mBitangents; }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	typename VECDIM<DIM,float>::TYPE*		getColors() { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	typename COLORDIM<DIM,float>::TYPE*			getColors() { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	const typename VECDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	const typename COLORDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the TexCoord0 values of the TriMesh vec<DIM>*. For example, if the TriMesh has 2D TexCoord0 values, use getTexCoords0<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords0() { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
