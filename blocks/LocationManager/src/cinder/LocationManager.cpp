@@ -126,7 +126,7 @@ void LocationManager::enableImpl( float accuracyInMeters, float distanceFilter, 
 #endif
 	[mClLocationManager startUpdatingLocation];
 	CLLocation *newLocation = mClLocationManager.location;	
-	sMostRecentLocation = cinder::LocationEvent( cinder::vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
+	sMostRecentLocation = LocationEvent( vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
 								   newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy );
 }
 

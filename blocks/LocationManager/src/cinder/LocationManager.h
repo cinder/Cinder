@@ -41,8 +41,8 @@ namespace cinder {
 //! Represents a location event
 class LocationEvent {
   public:
-	LocationEvent( const cinder::vec2 & coord = cinder::vec2(0), float speed = 0.0f, float altitude = 0.0f,
-				   float horizontalAccuracy = 0.0f, float verticalAccuracy = 0.0f ) 
+	LocationEvent( const vec2 & coord = vec2(0), float speed = 0, float altitude = 0,
+				   float horizontalAccuracy = 0, float verticalAccuracy = 0 )
 		: mAltitude( altitude ), mCoordinate( coord ), mHorizontalAccuracy( horizontalAccuracy ),
 		  mSpeed( speed ), mVerticalAccuracy( verticalAccuracy )
 	{
@@ -51,7 +51,7 @@ class LocationEvent {
 	//! Returns the altitude in meters of the location event
 	float			getAltitude() const { return mAltitude; }
 	//! Returns the coordinate of the location event as a Vec2f where x is latitude and y is longitude
-	cinder::vec2	getCoordinate() const { return mCoordinate; }
+	vec2	getCoordinate() const { return mCoordinate; }
 	//! Returns the latitude coordinate of the location event
 	float			getLatitude() const { return mCoordinate.x; }
 	//! Returns the latitude coordinate of the location event
@@ -65,7 +65,7 @@ class LocationEvent {
 	
   private:	
 	float			mAltitude;
-	cinder::vec2	mCoordinate;
+	vec2	mCoordinate;
 	float			mSpeed;
 	float			mVerticalAccuracy;
 	float			mHorizontalAccuracy;
@@ -78,14 +78,14 @@ typedef signals::Signal<void (const LocationEvent&)>	EventSignalLocation;
 //! Represents a heading event
 class HeadingEvent {
   public:	
-	HeadingEvent( float magneticHeading = 0.0f, float trueHeading = 0.0f, float headingAccuracy = 0.0f, 
-				 const std::string &description = "", const cinder::vec3 &data = vec3( 0 ) )
+	HeadingEvent( float magneticHeading = 0, float trueHeading = 0, float headingAccuracy = 0, 
+				 const std::string &description = "", const vec3 &data = vec3( 0 ) )
 		: mData( data ), mDescription( description ), mHeadingAccuracy( headingAccuracy ), 
 		  mMagneticHeading( magneticHeading ), mTrueHeading( trueHeading )
 	{}
 	
 	//! Returns raw geo magnetism vector from heading event
-	cinder::vec3   getData() const { return mData; }
+	vec3   getData() const { return mData; }
 	//! Returns description of heading event
 	std::string		getDescription() const { return mDescription; }
 	//! Returns heading accuracy of heading event
@@ -96,7 +96,7 @@ class HeadingEvent {
 	float			getTrueHeading() const { return mTrueHeading; }
 	
   private:	
-	cinder::vec3	mData;
+	vec3			mData;
 	std::string		mDescription;
 	float			mHeadingAccuracy;
 	float			mMagneticHeading;
@@ -110,7 +110,7 @@ typedef signals::Signal<void (const HeadingEvent&)>		EventSignalHeading;
 
 class LocationManager {
   public:
-  	static void 	enable( float accuracyInMeters = 20.0f, float distanceFilter = 0.0f, float headingFilter = 0.1f );
+  	static void 	enable( float accuracyInMeters = 20, float distanceFilter = 0, float headingFilter = 0.1f );
 	static void		disable();
 	static bool		isEnabled();
 	
