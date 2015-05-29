@@ -22,6 +22,7 @@
 */
 
 #include "LocationManager.h"
+#include "cinder/Log.h"
 
 #include <CoreLocation/CoreLocation.h>
 
@@ -119,6 +120,16 @@ void LocationManager::enableImpl( float accuracyInMeters, float distanceFilter, 
 		mClLocationManager = [[CLLocationManager alloc] init];
 		mDelegate = [[LocationManagerDelegate alloc] init:this mostRecentLocationPtr:&sMostRecentLocation];
 		mClLocationManager.delegate = mDelegate;
+#if defined( CINDER_COCOA_TOUCH )
+		auto authStatus = [CLLocationManager authorizationStatus];
+		if( (authStatus == kCLAuthorizationStatusDenied) || (authStatus == kCLAuthorizationStatusRestricted) ) {
+			CI_LOG_E( "Location Services restricted or denied." );
+		}
+		if( [mClLocationManager respondsToSelector:@selector(requestAlwaysAuthorization)] ) {
+			if( authStatus == kCLAuthorizationStatusNotDetermined )
+				[mClLocationManager requestAlwaysAuthorization];
+		}
+#endif
 	}
 
 #if defined( CINDER_COCOA_TOUCH )
