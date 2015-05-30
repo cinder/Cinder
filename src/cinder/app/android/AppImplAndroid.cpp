@@ -159,10 +159,21 @@ void AppImplAndroid::onTouchBegan( int id, float x, float y )
 	updateActiveTouches();	
 
 	// Emit
-	TouchEvent event( getWindow(), beganTouches );
-	getWindow()->emitTouchesBegan( &event );		
+	if( mApp->isMultiTouchEnabled() ) {
+		TouchEvent event( getWindow(), beganTouches );
+		getWindow()->emitTouchesBegan( &event );
+	}
+	else {
+		if( -1 == mMouseTouchId ) {
+			mMouseTouchId = id;
+			mMouseTouchPos = ivec2( tt.x, tt.y );
+			MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+			getWindow()->emitMouseDown( &event );
+		}
+	}
 }
 
+/*
 void AppImplAndroid::onTouchMoved( int id, float x, float y )
 {
 	double currentTime = app::getElapsedSeconds();
@@ -181,10 +192,16 @@ void AppImplAndroid::onTouchMoved( int id, float x, float y )
 		updateActiveTouches();	
 	
 		// Emit	
-		TouchEvent event( getWindow(), movedTouches );
-		getWindow()->emitTouchesMoved( &event );		
+		if( mApp->isMultiTouchEnabled() ) {
+			TouchEvent event( getWindow(), movedTouches );
+			getWindow()->emitTouchesMoved( &event );
+		}
+		else {
+
+		}
 	}
 }
+*/
 
 void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTouch>& moveTrackedTouches )
 {
@@ -208,8 +225,20 @@ void AppImplAndroid::onTouchesMoved( const std::vector<AppImplAndroid::TrackedTo
 
 	// Emit
 	if( ! movedTouches.empty() ) {
-		TouchEvent event( getWindow(), movedTouches );
-		getWindow()->emitTouchesMoved( &event );		
+		if( mApp->isMultiTouchEnabled() ) {
+			TouchEvent event( getWindow(), movedTouches );
+			getWindow()->emitTouchesMoved( &event );
+		}
+		else {
+			if( -1 != mMouseTouchId ) {
+				auto iter = mTrackedTouches.find( mMouseTouchId );
+				TrackedTouch& tt = iter->second;
+				mMouseTouchPos = ivec2( tt.x, tt.y );
+				
+				MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+				getWindow()->emitMouseDrag( &event );	
+			}
+		}
 	}
 }
 
@@ -228,11 +257,32 @@ void AppImplAndroid::onTouchEnded( int id, float x, float y )
 		endedTouches.push_back( TouchEvent::Touch( pos, prevPos, tt.id, tt.currentTime, nullptr ) );
 		
 		// Emit
-		TouchEvent event( getWindow(), endedTouches );
-		getWindow()->emitTouchesEnded( &event );		
+		if( mApp->isMultiTouchEnabled() ) {
+			TouchEvent event( getWindow(), endedTouches );
+			getWindow()->emitTouchesEnded( &event );
+		}
+		else {
+			if( id == mMouseTouchId ) {
+				mMouseTouchId = -1;
+				MouseEvent event( getWindow(), MouseEvent::LEFT_DOWN, tt.x, tt.y, 0, 0.0f, 0 );
+				getWindow()->emitMouseUp( &event );
+			}
+		}
 
 		// Remove the tracked touch
-		mTrackedTouches.erase( id );	
+		mTrackedTouches.erase( id );
+
+		// Find the next recent touch to map mouse to
+		if( ( ! mApp->isMultiTouchEnabled() ) && ( -1 == mMouseTouchId ) && ( ! mTrackedTouches.empty() ) ) {
+			TrackedTouch tt = mTrackedTouches.begin()->second;
+			for( auto& iter : mTrackedTouches ) {
+				if( iter.second.currentTime < tt.currentTime ) {
+					tt = iter.second;
+				}
+			}
+			mMouseTouchId = tt.id;
+			mMouseTouchPos = ivec2( tt.x, tt.y );
+		}
 	}
 
 	// Update active touches
@@ -404,9 +454,7 @@ void AppImplAndroid::showCursor()
 
 ivec2 AppImplAndroid::getMousePos() const
 {
-	throw (std::string(__FUNCTION__) + " not implemented yet").c_str();
-
-	return ivec2( -1, -1 );	
+	return mMouseTouchPos;
 }
 
 fs::path AppImplAndroid::getAppPath()

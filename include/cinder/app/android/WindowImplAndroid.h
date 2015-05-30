@@ -52,6 +52,8 @@ class WindowImplAndroid {
 	virtual const std::vector<TouchEvent::Touch>&	getActiveTouches() const;
 	virtual void*		getNative() { return mNativeWindow; }
 
+	void 				enableMultiTouch();
+
 	bool			    isBorderless() const { return true; }
 	void			    setBorderless( bool borderless );
 	bool			    isAlwaysOnTop() const { return true; }

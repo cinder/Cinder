@@ -29,7 +29,7 @@
 
 namespace cinder { namespace android { namespace app {
 
-class ComponentManager;
+class CinderNativeActivity;
 
 }}} // namespace cinder::android::app
 
@@ -65,7 +65,7 @@ private:
 	std::string 		mUrl;
 
 private:
-	friend class ci::android::app::ComponentManager;
+	friend class ci::android::app::CinderNativeActivity;
 };
 
 }}} // namespace cinder::android::net

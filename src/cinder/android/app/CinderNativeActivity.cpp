@@ -23,6 +23,8 @@
 
 #include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/android/hardware/Camera.h"
+#include "cinder/android/net/UrlLoader.h"
+#include "cinder/android/video/VideoPlayer.h"
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
@@ -83,6 +85,8 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 	CinderNativeActivity::cacheJni();
 	ci::android::hardware::Camera::cacheJni();
+	ci::android::net::UrlLoader::cacheJni();
+	ci::android::video::VideoPlayer::cacheJni();
 
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
@@ -93,6 +97,8 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 	CinderNativeActivity::destroyJni();
 	ci::android::hardware::Camera::destroyJni();
+	ci::android::net::UrlLoader::destroyJni();
+	ci::android::video::VideoPlayer::destroyJni();
 	
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }

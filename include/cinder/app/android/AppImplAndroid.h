@@ -93,7 +93,7 @@ public:
 
  protected:
  	void 				onTouchBegan( int id, float x, float y );
- 	void 				onTouchMoved( int id, float x, float y );
+ 	//void 				onTouchMoved( int id, float x, float y );
 	void 				onTouchesMoved( const std::vector<AppImplAndroid::TrackedTouch>& movedTouches );
  	void 				onTouchEnded( int id, float x, float y );
 
@@ -108,6 +108,8 @@ public:
  private:
  	std::map<int, TrackedTouch>		mTrackedTouches;
  	std::vector<TouchEvent::Touch>	mActiveTouches;
+ 	int 							mMouseTouchId = -1;
+ 	ivec2 							mMouseTouchPos = ivec2( 0, 0 );
 
 	AppAndroid			*mApp;
 	android_app			*mNativeApp; 

@@ -377,13 +377,17 @@ jclass JniHelper::FindClass( const std::string& name )
 // -------------------------------------------------------------------------------------------------
 jmethodID JniHelper::GetStaticMethodId( jclass clazz, const std::string& name, const std::string& sig )
 {
+	if( name.empty() ) {
+		throw std::runtime_error( "(GetStaticMethodId) parameter 'name' is an empty string" );
+	}
+
 	jmethodID result = nullptr;
 
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->GetStaticMethodID( clazz, name.c_str(), sig.c_str() );
 		if( jniEnv->ExceptionCheck() ) {
-			throw std::runtime_error( "GetStaticMethodID error: name=" + name + ", sig=" + sig );
+			throw std::runtime_error( "(GetStaticMethodID) couldn't find matching name=" + name + ", sig=" + sig );
 		}
 
 	}
@@ -443,13 +447,18 @@ void JniHelper::CallStaticVoidMethod( jclass clazz, jmethodID methodId, ... )
 // -------------------------------------------------------------------------------------------------
 jmethodID JniHelper::GetMethodId( jclass clazz, const std::string& name, const std::string& sig )
 {
+	if( name.empty() ) {
+		throw std::runtime_error( "(GetMethodId) parameter 'name' is an empty string" );
+	}
+
 	jmethodID result = nullptr;
 
 	auto jniEnv = JvmHelper_CurrentJniEnv();
 	if( jniEnv ) {
 		result = jniEnv->GetMethodID( clazz, name.c_str(), sig.c_str() );
 		if( jniEnv->ExceptionCheck() ) {
-			throw std::runtime_error( "GetMethodID error: name=" + name + ", sig=" + sig );
+			//throw std::runtime_error( "GetMethodID error: name=" + name + ", sig=" + sig );
+			throw std::runtime_error( "(GetMethodId) couldn't find matching name=" + name + ", sig=" + sig );
 		}
 	}
 

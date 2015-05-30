@@ -179,7 +179,6 @@ int32_t EventManagerAndroid::NativeHandleInput( android_app *ndkApp, AInputEvent
 					moveTrackedTouches.push_back( AppImplAndroid::TrackedTouch( id, x, y ) );
 			    }
 				eventMan->getAppImplInst()->onTouchesMoved( moveTrackedTouches );
-
 			}
 			break;
 

@@ -26,7 +26,7 @@
 #include "cinder/Cinder.h"
 #include "cinder/android/ExMediaPlayer" 
 
-namespace cinder { namespace android {
+namespace cinder { namespace android { namespace video {
 
 class MovieGl;
 typedef std::shared_ptr<MovieGl>	MovieGlRef;
@@ -53,7 +53,7 @@ public:
 	//! the Area defining the Movie's bounds in pixels: [0,0]-[width,height]
 	Area		getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	//! Returns the movie's pixel aspect ratio. Returns 1.0 if the movie does not contain an explicit pixel aspect ratio.
-	float		getPixelAspectRatio() const;
+	float		getPixelAspectRatio() const { return 1.0f; }
 	//! Returns the movie's length measured in seconds
 	float		getDuration() const { return mMoviePlayer->getDuration(); }
 	//! Returns the movie's framerate measured as frames per second
@@ -80,7 +80,7 @@ public:
 
 };
 
-}} // namespace cinder::android
+}}} // namespace cinder::android::video
 
 namespace cinder { namespace qtime {
 

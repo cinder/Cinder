@@ -134,6 +134,7 @@ private:
 	int 							mWidth = 0;
 	int 							mHeight = 0;
 
+private:
 	friend class ci::android::app::CinderNativeActivity;
 };
 

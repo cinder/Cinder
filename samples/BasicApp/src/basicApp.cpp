@@ -25,6 +25,7 @@ void BasicApp::mouseDrag( MouseEvent event )
 	mPoints.push_back( event.getPos() );
 }
 
+/*
 #if defined( CINDER_ANDROID )
 void BasicApp::touchesBegan( TouchEvent event )
 {
@@ -33,6 +34,8 @@ void BasicApp::touchesBegan( TouchEvent event )
 	}
 }
 #endif
+*/
+
 void BasicApp::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
