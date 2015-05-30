@@ -6,6 +6,7 @@ import shutil
 import copy
 import re
 import xml.etree.ElementTree as ET
+import glob, os, shutil
 from bs4 import BeautifulSoup, Tag, NavigableString
 from distutils.dir_util import copy_tree
 
@@ -1338,6 +1339,48 @@ def processNamespaceXmlFile( inPath, outPath, html ):
 	# write the file
 	writeHtml( html, outPath )
 
+def processHtmlFile( inPath, outPath ):
+	""" Parses an html file.
+	- Adds template around the html
+	- Copy original css and js links into new hmtl
+	- Save html in destination dir
+	"""
+
+	# construct template
+	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "htmlContentTemplate.html", "footerTemplate.html"] )
+	# parse original html file
+	origHtml = generateBs4( inPath )	
+	
+	# replace all of the bs4 css and js links and make them relative to the outpath
+	for link in bs4.find_all("link"):
+		if link.has_attr("href"):
+			link["href"] = updateLink( link["href"], outPath )
+
+	for script in bs4.find_all("script"):
+		if script.has_attr("src"):
+			script["src"] = updateLink( script["src"], outPath )
+
+	for img in bs4.find_all("img"):
+		if img.has_attr("src"):
+			img["src"] = updateLink( img["src"], outPath )
+
+
+	# copy all js and css paths that may be in the original html and paste into new file
+
+	# plug original html content into template
+	bs4.body.find(id="template-content").append(origHtml.body)
+	
+	writeHtml( bs4, outPath )
+
+def updateLink( link, path ):
+	if link.startswith("http"):
+		return link
+	depth = len( path.split("html/")[1].split("/") ) - 1
+	pathPrepend = ""
+	for i in range( depth ):
+		pathPrepend = "../"
+	return pathPrepend + link
+
 def constructTemplate( templates ) :
 	""" Constructs a beautiful soup instance by mashing a bunch of html files together
 	"""
@@ -1346,6 +1389,11 @@ def constructTemplate( templates ) :
 		masterTemplate += open(os.path.join( HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath )).read()
 	masterTemplate.decode("UTF-8")
 	return BeautifulSoup( masterTemplate )
+
+def generateBs4( filePath ):
+	ouputFile = open(os.path.join( filePath )).read()
+	ouputFile.decode("UTF-8")
+	return BeautifulSoup( ouputFile )
 
 def getSymbolToFileMap( tagDom ):	
 	""" Returns a dictionary from Cinder class name to file path
@@ -1412,6 +1460,9 @@ def getSymbolToFileMap( tagDom ):
 def getFilePrefix( filePath ):
 	return os.path.splitext( os.path.basename( filePath ) )[0]
 
+def getFileExtension( filePath ):
+	return os.path.splitext( os.path.basename( filePath ) )[1]
+
 def parseHtml( bs4, inPath, outPath ) :
 	tree = None;
 	try:
@@ -1431,8 +1482,11 @@ def parseHtml( bs4, inPath, outPath ) :
 	return tree
 
 def writeHtml( html, savePath ):
-	outFile = codecs.open( savePath, "w", "UTF-8" )
-	outFile.write( html.prettify() )
+	if not os.path.exists(os.path.dirname(savePath)):
+	    os.makedirs(os.path.dirname(savePath))
+	with codecs.open(savePath, "w", "UTF-8") as outFile:
+		outFile.write( html.prettify() )
+	
 
 def processFile( inPath, outPath ):
 	""" Generate documentation for a single file
@@ -1440,15 +1494,27 @@ def processFile( inPath, outPath ):
 		Args:
 			inPath: The file to process
 			outPath: The file to save the generated html file to
-	"""
+	""" 
 	file = inPath
 	filePrefix = getFilePrefix( file )
+	isHtmlFile = True if getFileExtension( file ).lower() == ".html" else False
 
-	if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
-		processClassXmlFile( sys.argv[1], os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( classTemplateHtml ) )
+	if isHtmlFile:
+		filePath = "/".join( inPath.split('/')[1:] )
+		savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + filePath
+	else:
+		savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
 
-	elif filePrefix.startswith( "namespace" ) :
-		processNamespaceXmlFile( inPath, os.path.join( DOXYGEN_HTML_PATH, outPath ), copy.deepcopy( namespaceTemplateHtml ) )
+	if isHtmlFile:
+		processHtmlFile( inPath, savePath )
+	else :
+		if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
+			processClassXmlFile( sys.argv[1], os.path.join( DOXYGEN_HTML_PATH, savePath ), copy.deepcopy( classTemplateHtml ) )
+
+		elif filePrefix.startswith( "namespace" ) :
+			processNamespaceXmlFile( inPath, os.path.join( DOXYGEN_HTML_PATH, savePath ), copy.deepcopy( namespaceTemplateHtml ) )
+
+
 
 def processDir(inPath, outPath):
 	""" Iterates a directory and generates documentation for each xml file
@@ -1478,7 +1544,8 @@ def processDir(inPath, outPath):
 
 def processHtmlDir(inPath, outPath):
 	# process all html files in dirs in the html source dir that do not start with "_"
-	return None
+	processHtmlFile( inPath, outPath )
+	
 
 if __name__ == "__main__":
 	""" Main Function for generating html documentation from doxygen generated xml files
@@ -1505,14 +1572,19 @@ if __name__ == "__main__":
 	# copy files from assets/ to html/
 	copy_tree("assets/", "html/")
 
+	# copy all files from "htmlsrc" into "html" except .html file
+	# files = glob.iglob(os.path.join(source_dir, "*.ext"))
+	# for file in files:
+	#     if os.path.isfile(file):
+	#         shutil.copy2(file, dest_dir)
+
 	# generate namespace navigation
 	g_namespaceNav = generateNamespaceNav( classTemplateHtml )
 
 	inPath = sys.argv[1]
 	# process a specific file
 	if os.path.isfile( inPath ):
-		outPath = sys.argv[2] if len( sys.argv) > 2 else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
-		processFile( inPath, outPath )
+		processFile( inPath, sys.argv[2] if len( sys.argv ) > 2 else None )
 
 	# process a directory
 	elif os.path.isdir( inPath ): 
