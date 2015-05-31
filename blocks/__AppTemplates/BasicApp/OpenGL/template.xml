@@ -17,6 +17,7 @@
 	<platform os="ios">
 		<resource>resources/CinderApp_ios.png</resource>
 		<resource>xcode_ios/Images.xcassets/</resource>
+		<resource>xcode_ios/LaunchScreen.xib</resource>
 		<resource replaceContents="true" buildExclude="true">xcode_ios/Info.plist</resource>
 		<header replaceName="true" isPCH="true">xcode_ios/_TBOX_PREFIX__Prefix.pch</header>
 	</platform>

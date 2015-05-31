@@ -48,6 +48,7 @@ rm -rf stage
 cp stage/lib/*.a ../lib/ios\n
 </tt>
 <b>iOS Simulator</b>\n
+This requires executing with two separate <tt>-arch</tt> arguments and then manually lipo'ing together to create a fat binary.\n
 <tt>
 rm -rf stage
 ./b2 -a -j4 toolset=clang-ios_sim link=static stage\n
