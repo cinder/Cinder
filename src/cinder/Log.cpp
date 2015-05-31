@@ -573,7 +573,7 @@ LoggerSystem::LoggerEventLog::~LoggerEventLog()
 void LoggerSystem::LoggerEventLog::write( const Metadata &meta, const string &text )
 {
 	// Check in case we failed to initialize the eventlog and make sure we have min required level
-	if( ! mHLog || meta.mLevel < mMinLoggingLevel ) {
+	if( ! mHLog || meta.mLevel < mLoggingLevel ) {
 		return;
 	}
 
