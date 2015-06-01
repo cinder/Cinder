@@ -1537,6 +1537,13 @@
 		111A5FA4191F72AE005C3166 /* Utilities.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Utilities.cpp; sourceTree = "<group>"; };
 		111A5FA5191F72AE005C3166 /* Voice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Voice.cpp; sourceTree = "<group>"; };
 		111A5FA6191F72AE005C3166 /* WaveTable.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = WaveTable.cpp; sourceTree = "<group>"; };
+		111FBA7D1B1C1B2000A23DDB /* ImageSourceFileWic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourceFileWic.cpp; sourceTree = "<group>"; };
+		111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourceFileStbImage.cpp; sourceTree = "<group>"; };
+		111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTargetFileStbImage.cpp; sourceTree = "<group>"; };
+		111FBA801B1C1B2000A23DDB /* ImageTargetFileWic.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageTargetFileWic.cpp; sourceTree = "<group>"; };
+		111FBA811B1C1B2000A23DDB /* ImageSourcePng.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = ImageSourcePng.cpp; sourceTree = "<group>"; };
+		111FBA821B1C1B2000A23DDB /* UrlImplCurl.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UrlImplCurl.cpp; sourceTree = "<group>"; };
+		111FBA831B1C1B2000A23DDB /* UrlImplWinInet.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.cpp; path = UrlImplWinInet.cpp; sourceTree = "<group>"; };
 		114B7552192B2F9800E30153 /* MonitorNode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = MonitorNode.cpp; sourceTree = "<group>"; };
 		114B7556192B2FB400E30153 /* MonitorNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MonitorNode.h; sourceTree = "<group>"; };
 		1168DB441A8D90C900660ED3 /* Signals.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Signals.h; sourceTree = "<group>"; };
@@ -2059,6 +2066,11 @@
 				009FD55610CAB8B700D63B1B /* ImageSourceFileQuartz.cpp */,
 				00BC8A0810D2EE2000D6DC59 /* ImageTargetFileQuartz.cpp */,
 				00FFAED019DB5CFD0002CA8E /* ImageSourceFileRadiance.cpp */,
+				111FBA7D1B1C1B2000A23DDB /* ImageSourceFileWic.cpp */,
+				111FBA7E1B1C1B2000A23DDB /* ImageSourceFileStbImage.cpp */,
+				111FBA7F1B1C1B2000A23DDB /* ImageTargetFileStbImage.cpp */,
+				111FBA801B1C1B2000A23DDB /* ImageTargetFileWic.cpp */,
+				111FBA811B1C1B2000A23DDB /* ImageSourcePng.cpp */,
 				43F78EF11516DAB700EB63B5 /* Json.cpp */,
 				0003F47E1992DA9A00647C8B /* Log.cpp */,
 				00241ABD0E830DD5004D34EB /* Matrix.cpp */,
@@ -2087,6 +2099,8 @@
 				0034C317151A5B7F003F2E30 /* Unicode.cpp */,
 				00D92FB70EB8AE5200EE9D75 /* Url.cpp */,
 				43ED0FDD12209488003AEB0B /* UrlImplCocoa.mm */,
+				111FBA821B1C1B2000A23DDB /* UrlImplCurl.cpp */,
+				111FBA831B1C1B2000A23DDB /* UrlImplWinInet.cpp */,
 				00F3BD1C0EBF88AA00382AC1 /* Utilities.cpp */,
 				001E355E115D5EFA000C228C /* Xml.cpp */,
 			);
