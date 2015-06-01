@@ -1550,16 +1550,10 @@ def processHtmlDir(inPath, outPath):
 def copyFiles():
 	src = HTML_SOURCE_PATH
 	dest =  DOXYGEN_HTML_PATH
-	# ignore_func = lambda d, files: 
-		# [f for f in files if usfil]
+
 	try:
-		# shutil.copytree( src, dest, ignore = shutil.ignore_patterns("_templates*", "*.html") )
 		copytree( src, dest, ignore = shutil.ignore_patterns("_templates*", "*.html") )
 	except OSError as e:
-
-		# if e.errno == erno.ENOTDIR:
-			# shutil.copy(src, dist)
-		# else:
 		print( 'Directory not copied. Error: %s' % e)
 
 # from http://stackoverflow.com/a/22331852/680667
@@ -1620,7 +1614,7 @@ if __name__ == "__main__":
 	namespaceTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"] )
 
 	# copy files from assets/ to html/
-	copy_tree("assets/", "html/")
+	# copy_tree("assets/", "html/")
 
 	# copy all files from "htmlsrc" into "html" except .html file
 	# allfiles = glob.iglob(os.path.join( HTML_SOURCE_PATH, "*.*") )

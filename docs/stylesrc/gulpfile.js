@@ -18,8 +18,8 @@ gulp.task( 'styles', function() {
             use: [ nib() ]
         }))
         .pipe(filter.restore())
-        .pipe( gulp.dest( './../html/css' ) )
-        .pipe( gulp.dest( './../assets/css' ) );
+        .pipe( gulp.dest( './../html/assets/css' ) )
+        .pipe( gulp.dest( './../htmlsrc/assets/css' ) );
 });
 
 gulp.task( 'watch', [ 'styles' ], function() {
