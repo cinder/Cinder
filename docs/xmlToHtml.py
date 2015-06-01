@@ -1546,6 +1546,56 @@ def processHtmlDir(inPath, outPath):
 	# process all html files in dirs in the html source dir that do not start with "_"
 	processHtmlFile( inPath, outPath )
 	
+# def copyFiles( HTML_SOURCE_PATH, DOXYGEN_HTML_PATH ):
+def copyFiles():
+	src = HTML_SOURCE_PATH
+	dest =  DOXYGEN_HTML_PATH
+	# ignore_func = lambda d, files: 
+		# [f for f in files if usfil]
+	try:
+		# shutil.copytree( src, dest, ignore = shutil.ignore_patterns("_templates*", "*.html") )
+		copytree( src, dest, ignore = shutil.ignore_patterns("_templates*", "*.html") )
+	except OSError as e:
+
+		# if e.errno == erno.ENOTDIR:
+			# shutil.copy(src, dist)
+		# else:
+		print( 'Directory not copied. Error: %s' % e)
+
+# from http://stackoverflow.com/a/22331852/680667
+def copytree(src, dst, symlinks = False, ignore = None):
+	""" Copies all of the files from the source directory
+		to a destination directory. Pass in anything that should be ignored.
+	"""
+
+	if not os.path.exists( dst ):
+		os.makedirs(dst)
+		shutil.copystat(src, dst)
+	lst = os.listdir(src)
+	
+	# make list of files and directories minus the ignored stuff
+	if ignore:
+		excl = ignore(src, lst)
+		lst = [x for x in lst if x not in excl]
+
+	for item in lst:
+		s = os.path.join(src, item)
+		d = os.path.join(dst, item)
+
+		if symlinks and os.path.islink(s):
+			if os.path.lexists(d):
+				os.remove(d)
+				os.symlink(os.readlink(s), d)
+			try:
+				st = os.lstat(s)
+				mode = stat.S_IMODE(st.st_mode)
+				os.lchmod(d, mode)
+			except:
+				pass # lchmod not available
+		elif os.path.isdir(s):
+			copytree(s, d, symlinks, ignore)
+		else:
+			shutil.copy2(s, d)
 
 if __name__ == "__main__":
 	""" Main Function for generating html documentation from doxygen generated xml files
@@ -1573,10 +1623,13 @@ if __name__ == "__main__":
 	copy_tree("assets/", "html/")
 
 	# copy all files from "htmlsrc" into "html" except .html file
-	# files = glob.iglob(os.path.join(source_dir, "*.ext"))
-	# for file in files:
+	# allfiles = glob.iglob(os.path.join( HTML_SOURCE_PATH, "*.*") )
+	# print allfiles
+	# for file in allfiles:
+		# print file
 	#     if os.path.isfile(file):
 	#         shutil.copy2(file, dest_dir)
+	copyFiles()
 
 	# generate namespace navigation
 	g_namespaceNav = generateNamespaceNav( classTemplateHtml )
