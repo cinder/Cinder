@@ -402,7 +402,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
 		vec3 inferredNormal;
-		bool forceUnique = !mOptimizeVertices;
+		bool forceUnique = ! mOptimizeVertices;
 		Color rgb;
 		if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
@@ -486,7 +486,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 			}
         }
 		vec3 inferredNormal;
-		bool forceUnique = !mOptimizeVertices;
+		bool forceUnique = ! mOptimizeVertices;
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
 			vec3 edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			vec3 edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
@@ -547,7 +547,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 				rgb.b = 1;
 			}
 		}
-		bool forceUnique = !mOptimizeVertices;
+		bool forceUnique = ! mOptimizeVertices;
 		if( group.mFaces[f].mTexCoordIndices.empty() )
 			forceUnique = true;
 		
