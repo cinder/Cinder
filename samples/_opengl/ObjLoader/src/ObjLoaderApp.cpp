@@ -93,7 +93,7 @@ void ObjLoaderApp::writeObj()
 	fs::path filePath = getSaveFilePath();
 	if( ! filePath.empty() ) {
 		console() << "writing mesh to file path: " << filePath << std::endl;
-		objWrite( writeFile( filePath ), mMesh );
+		writeObj( writeFile( filePath ), mMesh );
 	}
 }
 

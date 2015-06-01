@@ -743,7 +743,7 @@ void ObjWriteTarget::copyIndices( geom::Primitive primitive, const uint32_t *sou
 }
 } // anonymous namespace
 
-void objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals, bool includeTexCoords )
+void writeObj( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals, bool includeTexCoords )
 {
 	OStreamRef stream = dataTarget->getStream();
 	
