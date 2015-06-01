@@ -154,11 +154,12 @@ class ObjLoader : public geom::Source {
 
 };
 
-//! Writes a new OBJ file to \a dataTarget.
-void		objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
-inline void	objWrite( DataTargetRef dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
+//! Writes \a source to a new OBJ file to \a dataTarget.
+void		writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
+//! Writes \a source to a new OBJ file to \a dataTarget.
+inline void	writeObj( const DataTargetRef &dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
 {
-	objWrite( dataTarget, *source, includeNormals, includeTexCoords );
+	writeObj( dataTarget, *source, includeNormals, includeTexCoords );
 }
 
 } // namespace cinder
