@@ -42,6 +42,7 @@ Please make sure your code conforms to the following general guidelines. If some
 * Use tabs for indentation, with a tab stop value of 4.
 * Anything inside a namespace starts with no indentation.
 * Place spaces between braces, braces and arguments, etc.
+* Place a space between `!` and variables to negate them, ex. `if( ! mEnabled ) { ...`
 * Brackets for class methods and functions begin on a new line. Brackets for everything else (class declarations, if / for / while loops, etc. ) begin on the same line following a space.
 
 #### Types
