@@ -408,6 +408,32 @@ class Circle : public Source {
 	size_t		mNumVertices;
 };
 
+class Ring : public Source {
+public:
+	Ring();
+
+	Ring&		center( const vec2 &center ) { mCenter = center; return *this; }
+	Ring&		radius( float radius );
+	Ring&		width( float width );
+	Ring&		subdivisions( int subdivs );
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	void	updateVertexCounts();
+
+	vec2		mCenter;
+	float		mRadius;
+	float		mWidth;
+	int			mRequestedSubdivisions, mNumSubdivisions;
+	size_t		mNumVertices;
+};
+
 class Sphere : public Source {
   public:
 	Sphere();

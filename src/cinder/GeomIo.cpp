@@ -476,11 +476,11 @@ const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.707
 Rect::Rect()
 	: mHasColors( false )
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mPositions[0] = vec2(  0.5f, -0.5f );
-	mPositions[1] = vec2( -0.5f, -0.5f );
-	mPositions[2] = vec2(  0.5f,  0.5f );
-	mPositions[3] = vec2( -0.5f,  0.5f );
+	// upper-left, upper-right, lower-left, lower-right
+	mPositions[0] = vec2( -0.5f, -0.5f );
+	mPositions[1] = vec2( 0.5f, -0.5f );
+	mPositions[2] = vec2( -0.5f, 0.5f );
+	mPositions[3] = vec2( 0.5f, 0.5f );
 	setDefaultColors();
 	setDefaultTexCoords();
 }
@@ -494,30 +494,30 @@ Rect::Rect( const Rectf &r )
 }
 
 Rect& Rect::rect( const Rectf &r )
-{ 
-	mPositions[0] = r.getUpperRight();
-	mPositions[1] = r.getUpperLeft();
-	mPositions[2] = r.getLowerRight();
-	mPositions[3] = r.getLowerLeft();
+{
+	mPositions[0] = r.getUpperLeft();
+	mPositions[1] = r.getUpperRight();
+	mPositions[2] = r.getLowerLeft();
+	mPositions[3] = r.getLowerRight();
 	return *this;
 }
 
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
 	mHasColors = true;
-	mColors[0] = upperRight;
-	mColors[1] = upperLeft;
-	mColors[2] = lowerRight;
-	mColors[3] = lowerLeft;
+	mColors[0] = upperLeft;
+	mColors[1] = upperRight;
+	mColors[2] = lowerLeft;
+	mColors[3] = lowerRight;
 	return *this;
 }
 
 Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft )
 {
-	mTexCoords[0] = upperRight;
-	mTexCoords[1] = upperLeft;
-	mTexCoords[2] = lowerRight;
-	mTexCoords[3] = lowerLeft;
+	mTexCoords[0] = upperLeft;
+	mTexCoords[1] = upperRight;
+	mTexCoords[2] = lowerLeft;
+	mTexCoords[3] = lowerRight;
 	return *this;
 }
 
@@ -555,20 +555,20 @@ AttribSet Rect::getAvailableAttribs() const
 
 void Rect::setDefaultColors()
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mColors[0] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f );
-	mColors[1] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f );	
-	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f );
-	mColors[3] = ColorAf( 1.0f, 1.0f, 0.0f, 1.0f );
+	// upper-left, upper-right, lower-left, lower-right
+	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f );
+	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f );
+	mColors[2] = ColorAf( 1.0f, 1.0f, 0.0f, 1.0f );
+	mColors[3] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f );
 }
 
 void Rect::setDefaultTexCoords()
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mTexCoords[0] = vec2( 1.0f, 1.0f );
-	mTexCoords[1] = vec2( 0.0f, 1.0f );
-	mTexCoords[2] = vec2( 1.0f, 0.0f );
-	mTexCoords[3] = vec2( 0.0f, 0.0f );
+	// upper-left, upper-right, lower-left, lower-right
+	mTexCoords[0] = vec2( 0.0f, 1.0f );
+	mTexCoords[1] = vec2( 1.0f, 1.0f );
+	mTexCoords[2] = vec2( 0.0f, 0.0f );
+	mTexCoords[3] = vec2( 1.0f, 0.0f );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1610,6 +1610,98 @@ void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions.data(), mNumVertices );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), mNumVertices );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), mNumVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Ring
+Ring::Ring()
+	: mRequestedSubdivisions( -1 ), mCenter( 0, 0 ), mRadius( 1.0f ), mWidth( 0.5f )
+{
+	updateVertexCounts();
+}
+
+Ring&	Ring::subdivisions( int subdivs )
+{
+	mRequestedSubdivisions = subdivs;
+	updateVertexCounts();
+	return *this;
+}
+
+Ring&	Ring::radius( float radius )
+{
+	mRadius = radius;
+	updateVertexCounts();
+	return *this;
+}
+
+Ring&	Ring::width( float width )
+{
+	mWidth = width;
+	return *this;
+}
+
+// If numSegments<0, calculate based on radius
+void Ring::updateVertexCounts()
+{
+	if( mRequestedSubdivisions <= 0 )
+		mNumSubdivisions = (int) math<double>::floor( mRadius * float( M_PI * 2 ) );
+	else
+		mNumSubdivisions = mRequestedSubdivisions;
+
+	if( mNumSubdivisions < 3 ) mNumSubdivisions = 3;
+	mNumVertices = ( mNumSubdivisions + 1 ) * 2;
+}
+
+size_t Ring::getNumVertices() const
+{
+	return mNumVertices;
+}
+
+uint8_t	Ring::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		default:
+			return 0;
+	}
+}
+
+AttribSet Ring::getAvailableAttribs() const
+{
+	return{ Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Ring::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> positions, texCoords;
+	std::vector<vec3> normals;
+
+	positions.reserve( mNumVertices );
+	texCoords.reserve( mNumVertices );
+	normals.reserve( mNumVertices );
+
+	float innerRadius = mRadius - 0.5f * mWidth;
+	float outerRadius = mRadius + 0.5f * mWidth;
+
+	// iterate the segments
+	const float tDelta = 1 / (float) mNumSubdivisions * 2.0f * 3.14159f;
+	float t = 0;
+	for( int s = 0; s <= mNumSubdivisions; s++ ) {
+		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		positions.emplace_back( mCenter + unit * innerRadius );
+		positions.emplace_back( mCenter + unit * outerRadius );
+		texCoords.emplace_back( vec2( 1, s / (float) mNumSubdivisions ) );
+		texCoords.emplace_back( vec2( 0, s / (float) mNumSubdivisions ) );
+		normals.emplace_back( 0, 0, 1 );
+		normals.emplace_back( 0, 0, 1 );
+		t += tDelta;
+	}
+
+	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*) positions.data(), mNumVertices );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*) normals.data(), mNumVertices );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*) texCoords.data(), mNumVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3160,6 +3252,11 @@ template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCircle
+WireCircle::WireCircle()
+	: mRadius( 1 ), mNumSegments( 12 )
+{
+}
+
 size_t WireCircle::getNumVertices() const
 {
 	return 2 * mNumSegments;
@@ -3176,13 +3273,13 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 	float angle = float( 2.0 * M_PI / mNumSegments );
 
-	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
 	for( int i = 1; i < mNumSegments; ++i ) {
 		vec3 v = mCenter + mRadius * vec3( glm::cos( i * angle ), glm::sin( i * angle ), 0 );
 		*ptr++ = v;
 		*ptr++ = v;
 	}
-	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }

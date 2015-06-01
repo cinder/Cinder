@@ -1,5 +1,7 @@
 #version 100
 
+#extension GL_OES_standard_derivatives : enable
+
 precision highp float;
 
 varying vec4 Position;
@@ -10,8 +12,8 @@ varying vec2 TexCoord;
 // Based on OpenGL Programming Guide (8th edition), p 457-459.
 highp float checkered( in vec2 uv, in int freq )
 {
-	highp vec2 checker = fract( uv * freq );
-	highp vec2 edge = fwidth( uv ) * freq;
+	highp vec2 checker = fract( uv * float( freq ) );
+	highp vec2 edge = fwidth( uv ) * float( freq );
 	highp float mx = max( edge.x, edge.y );
 
 	highp vec2 pattern = smoothstep( vec2(0.5), vec2(0.5) + edge, checker );
@@ -41,7 +43,7 @@ void main()
 	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
 
 	// texCoord checkerboard
-	diffuse *= 0.5 + 0.5 * checkered( TexCoord );
+	diffuse *= 0.5 + 0.5 * checkered( TexCoord, 20 );
 
 	// texCoord checkerboard with protection against edge case\n"
 	const float kEpsilon = 0.0001;

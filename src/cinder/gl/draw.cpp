@@ -756,49 +756,12 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 {
-	auto ctx = context();
-	const GlslProg* curGlslProg = ctx->getGlslProg();
-	if( ! curGlslProg ) {
-		CI_LOG_E( "No GLSL program bound" );
-		return;
-	}
-	
-	if( numSegments <= 0 ) {
-		numSegments = static_cast<int>(math<double>::floor( radius * M_PI * 2 ) );
-	}
-	if( numSegments < 3 ) {
-		numSegments = 3;
-	}
-	// construct circle
-	const size_t numVertices = numSegments;
-	vector<vec2> positions;
-	positions.assign( numVertices, center );	// all vertices start at center
-	const float tDelta = 2.0f * static_cast<float>(M_PI) * (1.0f / numVertices);
-	float t = 0;
-	for( auto &pos : positions ) {
-		const vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
-		pos += unit * radius;	// push out from center
-		t += tDelta;
-	}
-	// copy data to GPU
-	const size_t size = positions.size() * sizeof( vec2 );
-	auto arrayVbo = ctx->getDefaultArrayVbo( size );
-	arrayVbo->bufferSubData( 0, size, (GLvoid*)positions.data() );
-	// set attributes
-	ctx->pushVao();
-	ctx->getDefaultVao()->replacementBindBegin();
-	ScopedBuffer bufferBindScp( arrayVbo );
+	gl::draw( geom::WireCircle().center( center ).radius( radius ).subdivisions( numSegments ) );
+}
 
-	int posLoc = curGlslProg->getAttribSemanticLocation( geom::Attrib::POSITION );
-	if( posLoc >= 0 ) {
-		enableVertexAttribArray( posLoc );
-		vertexAttribPointer( posLoc, 2, GL_FLOAT, GL_FALSE, 0, (GLvoid*)nullptr );
-	}
-	ctx->getDefaultVao()->replacementBindEnd();
-	ctx->setDefaultShaderVars();
-	// draw
-	drawArrays( GL_LINE_LOOP, 0, (GLsizei)positions.size() );
-	ctx->popVao();
+void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments )
+{
+	gl::draw( geom::Ring().center( center ).radius( radius ).width( lineWidth ).subdivisions( numSegments ) );
 }
 
 void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments )
