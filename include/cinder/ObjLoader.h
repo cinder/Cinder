@@ -155,9 +155,9 @@ class ObjLoader : public geom::Source {
 };
 
 //! Writes \a source to a new OBJ file to \a dataTarget.
-void		writeObj( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
+void		writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
 //! Writes \a source to a new OBJ file to \a dataTarget.
-inline void	writeObj( DataTargetRef dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
+inline void	writeObj( const DataTargetRef &dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
 {
 	writeObj( dataTarget, *source, includeNormals, includeTexCoords );
 }
