@@ -107,9 +107,9 @@ bool PolyLine<T>::contains( const Vec2f &pt ) const
 	return (crossings & 1) == 1;
 }
 
-
 namespace {
-typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
+typedef boost::geometry::model::d2::point_xy<double> point;
+typedef boost::geometry::model::polygon<point> polygon;
 
 template<typename T>
 std::vector<PolyLine<T> > convertBoostGeometryPolygons( std::vector<polygon> &polygons )
@@ -140,11 +140,11 @@ polygon convertPolyLinesToBoostGeometry( const std::vector<PolyLine<T> > &a )
 	polygon result;
 	
 	for( typename std::vector<T>::const_iterator ptIt = a[0].getPoints().begin(); ptIt != a[0].getPoints().end(); ++ptIt )
-		result.outer().push_back( boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( ptIt->x, ptIt->y ) );
+		result.outer().push_back( boost::geometry::make<point>( ptIt->x, ptIt->y ) );
 	for( typename std::vector<PolyLine<T> >::const_iterator plIt = a.begin() + 1; plIt != a.end(); ++plIt ) {
 		polygon::ring_type ring;
 		for( typename std::vector<T>::const_iterator ptIt = plIt->getPoints().begin(); ptIt != plIt->getPoints().end(); ++ptIt )
-			ring.push_back( boost::geometry::make<boost::geometry::model::d2::point_xy<double> >( ptIt->x, ptIt->y ) );
+			ring.push_back( boost::geometry::make<point>( ptIt->x, ptIt->y ) );
 		result.inners().push_back( ring );
 	}
 	
@@ -152,13 +152,37 @@ polygon convertPolyLinesToBoostGeometry( const std::vector<PolyLine<T> > &a )
 	
 	return result;
 }
+
+template<typename T>
+polygon convertPolyLineToBoostGeometry( const PolyLine<T> &p )
+{
+	polygon result;
+
+	for( typename std::vector<T>::const_iterator ptIt = p.getPoints().begin(); ptIt != p.getPoints().end(); ++ptIt )
+		result.outer().push_back( boost::geometry::make<point>( ptIt->x, ptIt->y ) );
+
+	return result;
+}
+
 } // anonymous namespace
+
+template<typename T>
+double PolyLine<T>::area() const
+{
+	return boost::geometry::area( convertPolyLineToBoostGeometry ( *this ) );
+}
+
+template<typename T>
+T PolyLine<T>::centroid() const
+{
+	point p = boost::geometry::return_centroid<point>( convertPolyLineToBoostGeometry ( *this ) );
+	return T( p.x(), p.y() );
+}
+
 
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcUnion( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
@@ -176,8 +200,6 @@ std::vector<PolyLine<T> > PolyLine<T>::calcUnion( const std::vector<PolyLine<T> 
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcIntersection( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
@@ -195,8 +217,6 @@ std::vector<PolyLine<T> > PolyLine<T>::calcIntersection( const std::vector<PolyL
 template<typename T>
 std::vector<PolyLine<T> > PolyLine<T>::calcXor( const std::vector<PolyLine<T> > &a, std::vector<PolyLine<T> > &b )
 {
-	typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
-
 	if( a.empty() )
 		return b;
 	else if( b.empty() )
