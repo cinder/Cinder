@@ -648,6 +648,9 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
+
+    ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
+    ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp
 )
 
 set( CMAKE_DEBUG_POSTFIX "_d" )

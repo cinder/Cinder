@@ -51,9 +51,15 @@ static std::thread::id		sPrimaryThreadId = std::this_thread::get_id();
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // AppBase::Settings
 
+#if defined( CINDER_ANDROID )
 AppBase::Settings::Settings()
 	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
-		mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
+	  mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( true )
+#else
+AppBase::Settings::Settings()
+	: mShouldQuit( false ), mQuitOnLastWindowClose( true ), mPowerManagementEnabled( false ),
+	  mFrameRate( 60 ), mFrameRateEnabled( true ), mHighDensityDisplayEnabled( false ), mMultiTouchEnabled( false )
+#endif		
 {
 }
 

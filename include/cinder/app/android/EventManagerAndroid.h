@@ -24,6 +24,8 @@
 #pragma once
 
 #include "cinder/app/android/android_native_app_glue.h"
+#include "cinder/Vector.h"
+
 #include <android/sensor.h>
 #include <functional>
 
@@ -32,7 +34,10 @@ namespace cinder { namespace app {
 class AppImplAndroid;
 
 class EventManagerAndroid {
- public:
+public:
+
+	typedef std::function<void(ci::vec3)> SensorCallbackFn;
+
 	EventManagerAndroid( android_app *nativeApp, std::function<void()> deferredMainFn, std::function<void()> cleanupLaunchFn );
 	virtual ~EventManagerAndroid();
 
@@ -40,6 +45,24 @@ class EventManagerAndroid {
 
 	android_app*				getNativeApp();
 	AppImplAndroid*				getAppImplInst();
+
+	bool 						isAccelerometerAvailable() const;
+	bool  						isMagneticFieldAvailable() const;
+	bool 						isGyroscopeAvailable() const;
+
+	void 						enableAccelerometer( SensorCallbackFn updateFn, int32_t usec = -1 );
+	void 						enableMagneticField( SensorCallbackFn updateFn, int32_t usec = -1 );
+	void 						enableGyroscope( SensorCallbackFn updateFn, int32_t usec = -1 );
+
+private:
+	bool 						enableAccelerometer();
+	bool 						enableMagneticField();
+	bool 						enableGyroscope();
+
+public:
+	void 						disableAccelerometer();
+	void 						disableMagneticField();
+	void 						disableGyroscope();
 
 	void 						execute();
 
@@ -66,13 +89,21 @@ class EventManagerAndroid {
 	bool 						mShouldQuit;
 	
 	android_app 				*mNativeApp;
-	ASensorManager				*mSensorManager;
-	const ASensor 				*mAccelerometerSensor;
-	const ASensor 				*mMagneticFieldSensor;
-	const ASensor 				*mGyroscopeSensor;
-	const ASensor 				*mLightSensor;
-	const ASensor 				*mProximitySensor;
- 	ASensorEventQueue 			*mSensorEventQueue;
+
+
+	struct Sensor {
+		bool 				mRequested = false;
+		const ASensor 		*mSensor = nullptr;
+		SensorCallbackFn	mCallbackFn;
+	};
+
+	ASensorManager				*mSensorManager = nullptr;
+	std::shared_ptr<Sensor>		mAccelerometerSensor;
+	std::shared_ptr<Sensor> 	mMagneticFieldSensor;
+	std::shared_ptr<Sensor> 	mGyroscopeSensor;
+	std::shared_ptr<Sensor> 	mLightSensor;
+	std::shared_ptr<Sensor> 	mProximitySensor;
+ 	ASensorEventQueue 			*mSensorEventQueue = nullptr;
 
 	bool 						mDeferredMainHasBeenCalled;
 	std::function<void()> 		mDeferredMainFn;

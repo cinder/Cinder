@@ -19,7 +19,7 @@
  HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
  NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  POSSIBILITY OF SUCH DAMAGE.
- */
+*/
 
 #pragma once
 
@@ -27,12 +27,19 @@
 #include "cinder/Thread.h"
 #include "cinder/Quaternion.h"
 #include "cinder/Matrix44.h"
+#include "cinder/Vector.h" 
 
-#include "cinder/app/AppCocoaTouch.h" // this is only for app::InterfaceOrientation, since it currently lives there
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+  #include "cinder/app/AppBase.h" // this is only for app::InterfaceOrientation, since it currently lives there
+#endif
 
 namespace cinder {
 
-class MotionImplCoreMotion;
+#if defined( CINDER_COCOA_TOUCH )
+  class MotionImplCoreMotion;
+#elif defined( CINDER_ANDROID )
+  class MotionImplAndroid;
+#endif
 
 /*!
  Singleton object that provides information from the device motion sensors in a variety of forms, ideally polled from the App's update method.
@@ -64,7 +71,7 @@ class MotionManager {
 	//! Rotation represents the orientation of the device as the amount rotated from with the North Pole, which we define to be -Z when the device is upright. The output is correct for \a orientation if other than Portrait.
     static ci::quat		getRotation( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 	//! Convenience method for returning the rotation repesented as a matrix. The output is correct for \a orientation if other than Portrait.
-    static ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait ) { return glm::toMat4( getRotation( orientation ) ); }
+    static ci::mat4		getRotationMatrix( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait ) { return glm::toMat4( getRotation( orientation ) ); }
 		//! Rotation rate along the x, y, and z axes, measured in radians per second. The output is correct for \a orientation if other than Portrait.
 	static ci::vec3		getRotationRate( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
 	//! Acceleration in G's along the x, y, and z axes.  Earth's gravity is filtered out. The output is correct for \a orientation if other than Portrait.
@@ -90,8 +97,12 @@ class MotionManager {
 	float	getAccelerometerFilterImpl();
 	void	setAccelerometerFilterImpl( float filtering );
 
-
+#if defined( CINDER_COCOA_TOUCH )
 	std::shared_ptr<MotionImplCoreMotion>	mImpl;
+#elif defined( CINDER_ANDROID )
+	std::shared_ptr<MotionImplAndroid>		mImpl;
+#endif	
+
 	float mShakeDelta;
 	vec3 mPrevAcceleration;
 

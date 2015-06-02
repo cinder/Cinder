@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/MotionManager.h"
 #include <list>
 
 using namespace ci;
@@ -7,8 +8,9 @@ using namespace ci::app;
 using namespace std;
 
 // We'll create a new Cinder Application by deriving from the App class
-class BasicApp : public App {
+class Sensors : public App {
   public:
+	void setup();
 	void mouseDrag( MouseEvent event );
 #if defined( CINDER_ANDROID )
     void touchesBegan( TouchEvent event );
@@ -20,13 +22,18 @@ class BasicApp : public App {
 	list<vec2>		mPoints;
 };
 
-void BasicApp::mouseDrag( MouseEvent event )
+void Sensors::setup()
+{
+	MotionManager::enable();
+}
+
+void Sensors::mouseDrag( MouseEvent event )
 {
 	mPoints.push_back( event.getPos() );
 }
 
 #if defined( CINDER_ANDROID )
-void BasicApp::touchesBegan( TouchEvent event )
+void Sensors::touchesBegan( TouchEvent event )
 {
 	for( vector<TouchEvent::Touch>::const_iterator touchIt = event.getTouches().begin(); touchIt != event.getTouches().end(); ++touchIt ) {
         mPoints.push_back( touchIt->getPos() );
@@ -34,13 +41,13 @@ void BasicApp::touchesBegan( TouchEvent event )
 }
 #endif
 
-void BasicApp::keyDown( KeyEvent event )
+void Sensors::keyDown( KeyEvent event )
 {
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
 }
 
-void BasicApp::draw()
+void Sensors::draw()
 {
 	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 
@@ -53,4 +60,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP( BasicApp, RendererGl )
+CINDER_APP( Sensors, RendererGl )

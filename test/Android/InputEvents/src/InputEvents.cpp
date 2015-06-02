@@ -27,6 +27,11 @@ private:
 	ivec2 	mMousePos;
 };
 
+void prepareSettings( InputEvents::Settings *settings )
+{
+	settings->setMultiTouchEnabled();
+}
+
 void InputEvents::setup()
 {
 	mUseGetMousePos = true;
@@ -90,4 +95,4 @@ void InputEvents::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP( InputEvents, RendererGl )
+CINDER_APP( InputEvents, RendererGl, prepareSettings )

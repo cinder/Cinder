@@ -37,6 +37,10 @@ using namespace ci::android;
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
 
+enum {
+	LOOPER_ID_USER_SENSORS = LOOPER_ID_USER,
+};
+
 namespace cinder { namespace app { 
 
 EventManagerAndroid* EventManagerAndroid::sInstance = nullptr;
@@ -55,12 +59,11 @@ EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, std::function<
 	sInstance = this;
 
 	// Sensors
-	mSensorManager			= nullptr;
-	mAccelerometerSensor	= nullptr;
-	mMagneticFieldSensor	= nullptr;
-	mGyroscopeSensor		= nullptr;
-	mLightSensor			= nullptr;
-	mProximitySensor		= nullptr;	
+	mAccelerometerSensor	= std::make_shared<Sensor>();
+	mMagneticFieldSensor	= std::make_shared<Sensor>();
+	mGyroscopeSensor		= std::make_shared<Sensor>();
+	mLightSensor			= std::make_shared<Sensor>();
+	mProximitySensor		= std::make_shared<Sensor>();	
 }
 
 EventManagerAndroid::~EventManagerAndroid()
@@ -87,14 +90,144 @@ android_app *EventManagerAndroid::getNativeApp()
 	return mNativeApp; 
 }
 
+bool EventManagerAndroid::isAccelerometerAvailable() const
+{
+	return mAccelerometerSensor && (nullptr != mAccelerometerSensor->mSensor);
+}
+
+bool EventManagerAndroid::isMagneticFieldAvailable() const
+{
+	return mMagneticFieldSensor && (nullptr != mMagneticFieldSensor->mSensor);
+}
+
+bool EventManagerAndroid::isGyroscopeAvailable() const
+{
+	return mGyroscopeSensor && (nullptr != mGyroscopeSensor->mSensor);
+}
+
+void EventManagerAndroid::enableAccelerometer( SensorCallbackFn updateFn, int32_t usec )
+{
+	if( enableAccelerometer() ) {
+		mAccelerometerSensor->mRequested = true;
+		mAccelerometerSensor->mCallbackFn = updateFn;
+
+		usec = std::max( (int32_t)ASensor_getMinDelay( mAccelerometerSensor->mSensor ), usec );
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mAccelerometerSensor->mSensor, usec );
+	}
+}
+
+void EventManagerAndroid::enableMagneticField( SensorCallbackFn updateFn, int32_t usec )
+{
+	if( enableMagneticField() ) {
+		mMagneticFieldSensor->mRequested = true;
+		mMagneticFieldSensor->mCallbackFn = updateFn;
+
+		usec = std::max( (int32_t)ASensor_getMinDelay( mMagneticFieldSensor->mSensor ), usec );
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mMagneticFieldSensor->mSensor, usec );		
+	}
+}
+
+void EventManagerAndroid::enableGyroscope( SensorCallbackFn updateFn, int32_t usec )
+{
+	if( enableGyroscope() ) {
+		mGyroscopeSensor->mRequested = true;
+		mGyroscopeSensor->mCallbackFn = updateFn;
+
+		usec = std::max( (int32_t)ASensor_getMinDelay( mGyroscopeSensor->mSensor ), usec );
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mGyroscopeSensor->mSensor, usec );		
+	}
+}
+
+bool EventManagerAndroid::enableAccelerometer()
+{
+	bool result = false;
+	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() ) {
+		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mAccelerometerSensor->mSensor ) >= 0 );
+	}
+	return result;
+}
+
+bool EventManagerAndroid::enableMagneticField()
+{
+	bool result = false;
+	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() ) {
+		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mMagneticFieldSensor->mSensor ) >= 0 );
+	}
+	return result;
+}
+
+bool EventManagerAndroid::enableGyroscope()
+{
+	bool result = false;
+	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() ) {
+		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mGyroscopeSensor->mSensor ) >= 0 );
+	}
+	return result;
+}
+
+void EventManagerAndroid::disableAccelerometer()
+{
+	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() ) {
+		ASensorEventQueue_disableSensor( mSensorEventQueue, mAccelerometerSensor->mSensor );
+	}
+}
+
+void EventManagerAndroid::disableMagneticField()
+{
+	if( ( nullptr != mSensorEventQueue ) && isMagneticFieldAvailable() ) {
+		ASensorEventQueue_disableSensor( mSensorEventQueue, mMagneticFieldSensor->mSensor );
+	}
+}
+
+void EventManagerAndroid::disableGyroscope()
+{
+	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() ) {
+		ASensorEventQueue_disableSensor( mSensorEventQueue, mGyroscopeSensor->mSensor );
+	}
+}
+
+/*
+void EventManagerAndroid::setAccelerometerUpdateCallbackFn( EventManagerAndroid::SensorCallbackFn fn )
+{
+	if( mAccelerometerSensor ) {
+		mAccelerometerSensor->mCallbackFn = fn;
+	}
+}
+
+void EventManagerAndroid::setGyroscopeUpdateCallbackFn( EventManagerAndroid::SensorCallbackFn fn )
+{
+	mGyroscopeUpdateCallbackFn = fn;
+}
+*/
+
 void EventManagerAndroid::appLostFocus()
 {
 	mFocused = false;
+
+	// Disable sensors
+	disableAccelerometer();
+	disableMagneticField();
+	disableGyroscope();
 }
 
 void EventManagerAndroid::appGainedFocus()
 {
 	mFocused = true;
+
+	// Renable sensors if they were requested
+	{
+		if( mAccelerometerSensor && mAccelerometerSensor->mRequested ) {
+			enableAccelerometer();
+		}
+
+		if( mMagneticFieldSensor && mMagneticFieldSensor->mRequested ) {
+			enableMagneticField();
+		}
+
+		if( mGyroscopeSensor && mGyroscopeSensor->mRequested ) {
+			enableGyroscope();
+		}
+	}
 }
 
 void EventManagerAndroid::appPause()
@@ -306,7 +439,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * input focus.
 		 */
 		case APP_CMD_GAINED_FOCUS: {
-			//LOGI( "APP_CMD_GAINED_FOCUS" );
+			LOGI( "APP_CMD_GAINED_FOCUS" );
 
 			eventMan->appGainedFocus();
 		}
@@ -317,7 +450,7 @@ void EventManagerAndroid::NativeHandleCmd( android_app *ndkApp, int32_t cmd )
 		 * input focus.
 		 */
 		case APP_CMD_LOST_FOCUS: {
-			//LOGI( "APP_CMD_LOST_FOCUS" );
+			LOGI( "APP_CMD_LOST_FOCUS" );
 
 			eventMan->appLostFocus();
 		}
@@ -410,13 +543,13 @@ void EventManagerAndroid::execute()
 	mNativeApp->onInputEvent = EventManagerAndroid::NativeHandleInput;
 	mNativeApp->onAppCmd     = EventManagerAndroid::NativeHandleCmd;
 
-	mSensorManager       = ASensorManager_getInstance();
-	mAccelerometerSensor = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ACCELEROMETER );
-	mMagneticFieldSensor = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_MAGNETIC_FIELD );
-	mGyroscopeSensor     = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GYROSCOPE );
-	mLightSensor         = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
-	mProximitySensor     = ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
-	mSensorEventQueue    = ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
+	mSensorManager 					= ASensorManager_getInstance();
+	mAccelerometerSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ACCELEROMETER );
+	mMagneticFieldSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_MAGNETIC_FIELD );
+	mGyroscopeSensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GYROSCOPE );
+	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
+	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
+	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER_SENSORS, nullptr, nullptr );	
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
@@ -429,6 +562,7 @@ dbg_app_log( "Starting Event Loop" );
 			mAppImplInst->sleepUntilNextFrame();
 		}
 
+		
 		// Process events
 		{
 			// Read all pending events.
@@ -439,7 +573,7 @@ dbg_app_log( "Starting Event Loop" );
 			// If not running, we will block forever waiting for events.
 			// If animating, we loop until all events are read, then continue
 			// to draw the next frame of animation.
-			while( ( ident = ALooper_pollAll( mFocused ? 0 : -1, NULL, &events, (void**)&source ) ) >= 0 ) {
+			while( ( ident = ALooper_pollAll( 0, nullptr, &events, (void**)&source ) ) >= 0 ) {
 				// Process this event
 				if( nullptr != source ) {
 					source->process( mNativeApp, source );
@@ -447,9 +581,28 @@ dbg_app_log( "Starting Event Loop" );
 
 				// Sensor data
 				if( LOOPER_ID_USER == ident ) {
-					if( nullptr != mAccelerometerSensor ) {
-						ASensorEvent sensorEvent;
-						while( ASensorEventQueue_getEvents( mSensorEventQueue, &sensorEvent, 1 ) > 0 ) {
+					console() << "LOOPER_ID_USER" << std::endl;
+
+					ASensorEvent sensorEvent;
+					while( ASensorEventQueue_getEvents( mSensorEventQueue, &sensorEvent, 1 ) > 0 ) {
+						console() << "SensorEvent" << std::endl;	
+
+						switch( sensorEvent.type ) {
+							case ASENSOR_TYPE_ACCELEROMETER: {
+								if( mAccelerometerSensor && ( mAccelerometerSensor->mCallbackFn ) ) {
+									ci::vec3 accel = ci::vec3( sensorEvent.acceleration.x, sensorEvent.acceleration.y, sensorEvent.acceleration.z );
+									mAccelerometerSensor->mCallbackFn( accel );
+								}
+							}
+							break;
+
+							case ASENSOR_TYPE_GYROSCOPE: {
+								if( mGyroscopeSensor && ( mGyroscopeSensor->mCallbackFn ) ) {
+									ci::vec3 gyro = ci::vec3( sensorEvent.vector.x, sensorEvent.vector.y, sensorEvent.vector.z );
+									mGyroscopeSensor->mCallbackFn( gyro );
+								}
+							}
+							break;
 						}
 					}
 				}
@@ -472,6 +625,8 @@ dbg_app_log( "Starting Event Loop" );
 dbg_app_log( "Ended Event Loop" );
 
 	ci::android::app::CinderNativeActivity::unregisterComponents();
+
+	ASensorManager_destroyEventQueue( mSensorManager, mSensorEventQueue );
 
 	// Call AppBase::cleanupLaunch
 	if( mDeferredMainHasBeenCalled ) {
