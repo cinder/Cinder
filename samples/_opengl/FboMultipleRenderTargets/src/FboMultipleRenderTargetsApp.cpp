@@ -13,7 +13,7 @@ using namespace ci::app;
 // is rendered as green, while the second attachment receives blue.
 // This is controlled by the shader, which is integral for using multiple attachments
 // see multipleOut_frag.glsl for the relevant bit
-class FBOMultipleTargetsApp : public App {
+class FboMultipleRenderTargetsApp : public App {
   public:
 	virtual void	setup();
 	virtual void	update();
@@ -27,7 +27,7 @@ class FBOMultipleTargetsApp : public App {
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
 };
 
-void FBOMultipleTargetsApp::setup()
+void FboMultipleRenderTargetsApp::setup()
 {
 	gl::Fbo::Format format;
 	format.setSamples( 4 ); // uncomment this to enable 4x antialiasing
@@ -43,7 +43,7 @@ void FBOMultipleTargetsApp::setup()
 }
 
 // Render the torus into the FBO
-void FBOMultipleTargetsApp::renderSceneToFbo()
+void FboMultipleRenderTargetsApp::renderSceneToFbo()
 {
 	// bind the framebuffer - now everything we draw will go there
 	mFbo.bindFramebuffer();
@@ -72,7 +72,7 @@ void FBOMultipleTargetsApp::renderSceneToFbo()
 	mFbo.unbindFramebuffer();
 }
 
-void FBOMultipleTargetsApp::update()
+void FboMultipleRenderTargetsApp::update()
 {
 	// Rotate the torus by .06 radians around an arbitrary axis
 	mTorusRotation.rotate( vec3( 0.16666f, 0.333333f, 0.666666f ).normalized(), 0.06f );
@@ -81,7 +81,7 @@ void FBOMultipleTargetsApp::update()
 	renderSceneToFbo();
 }
 
-void FBOMultipleTargetsApp::draw()
+void FboMultipleRenderTargetsApp::draw()
 {
 	// clear the window to gray
 	gl::clear( Color( 0.35f, 0.35f, 0.35f ) );
@@ -95,4 +95,4 @@ void FBOMultipleTargetsApp::draw()
 	gl::draw( mFbo.getTexture(1), mFbo.getTexture(1).getBounds() + vec2(mFbo.getTexture(0).getWidth(),0) );
 }
 
-CINDER_APP( FBOMultipleTargetsApp, RendererGl )
+CINDER_APP( FboMultipleRenderTargetsApp, RendererGl )

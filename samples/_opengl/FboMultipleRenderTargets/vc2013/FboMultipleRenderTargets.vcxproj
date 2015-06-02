@@ -19,7 +19,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{DBBA5587-B115-42ED-8490-44EAA0EA0A53}</ProjectGuid>
-    <RootNamespace>FBOMultipleTargetsApp</RootNamespace>
+    <RootNamespace>FboMultipleRenderTargetsApp</RootNamespace>
     <Keyword>Win32Proj</Keyword>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props"/>
@@ -192,7 +192,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\FBOMultipleTargetsApp.cpp"/>
+    <ClCompile Include="..\src\FboMultipleRenderTargetsApp.cpp"/>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\include\Resources.h"/>

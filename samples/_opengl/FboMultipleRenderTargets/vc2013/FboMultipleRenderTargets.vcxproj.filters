@@ -18,7 +18,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\FBOMultipleTargetsApp.cpp">
+    <ClCompile Include="..\src\FboMultipleRenderTargetsApp.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
