@@ -107,6 +107,13 @@ public class CameraV1 extends org.libcinder.hardware.Camera {
                 resolutions[2 * j + 0] = size.width;
                 resolutions[2 * j + 1] = size.height;
             }
+            //
+            Log.i(TAG, "Camera " + i);
+            List<Integer> previewFormats = params.getSupportedPreviewFormats();
+            for( Integer value : previewFormats ) {
+                Log.i(TAG, "   format: " + org.libcinder.hardware.Camera.imageFormatString(value.intValue()) + ", value: " + value.intValue());
+            }
+            //
             cam.release();
 
             devices.add(new DeviceInfo(id, frontFacing, resolutions));
