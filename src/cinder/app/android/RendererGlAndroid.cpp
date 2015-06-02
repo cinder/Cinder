@@ -194,7 +194,8 @@ void RendererGlAndroid::swapBuffers() const
 	auto status = ::eglMakeCurrent( mDisplay, mSurface, mSurface, mContext );
 	assert( status );
 	EGLBoolean result = ::eglSwapBuffers( mDisplay, mSurface );
-	assert( result );
+	// @TODO: Is this really necessary?
+	//assert( result );
 }
 
 void RendererGlAndroid::makeCurrentContext()
