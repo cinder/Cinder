@@ -511,6 +511,10 @@ Texture2dRef Fbo::getDepthTexture()
 
 TextureBaseRef Fbo::getTexture( GLenum attachment )
 {
+	if( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) {
+		CI_LOG_W( "Illegal contant for texture attachment: " << attachment );
+	}
+	
 	auto attachedTextureIt = mAttachmentsTexture.find( attachment );
 	if( attachedTextureIt != mAttachmentsTexture.end() ) {
 		resolveTextures();
