@@ -3270,8 +3270,16 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 	positions->reserve( getNumVertices() );
 
 	float bodyIncr = 1.0f / (float) ( mSubdivisionsHeight );
-	for( size_t r = 0; r <= mSubdivisionsHeight; r++ )
-		calculateRing( mNumSegments, 1.0f, 0.0f, r * bodyIncr - 0.5f, positions );
+	for( size_t r = 1; r < mSubdivisionsHeight; ++r ) {
+		float t = r * bodyIncr - 0.5f;
+		float h = ( mLength + 2 * mRadius ) * t;
+		float radius = mRadius;
+		if( math<float>::abs( h ) > 0.5f * mLength ) {
+			float y = math<float>::abs( h ) - 0.5f * mLength;
+			radius = y / math<float>::tan( math<float>::asin( y / mRadius ) );
+		}
+		calculateRing( radius, t, positions );
+	}
 
 	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
 
@@ -3303,29 +3311,30 @@ void WireCapsule::calculate( vector<vec3> *positions ) const
 	}
 }
 
-void WireCapsule::calculateRing( size_t segments, float radius, float y, float dy, vector<vec3> *positions ) const
+void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions ) const
 {
 	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
 
-	float segIncr = 1.0f / (float) ( segments );
-	positions->emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * radius, mRadius * y + mLength * dy, 0 ) ) );
-	for( size_t s = 1; s < segments; s++ ) {
+	float length = mLength + 2 * mRadius;
+	float segIncr = 1.0f / (float) ( mNumSegments );
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
+	for( size_t s = 1; s < mNumSegments; s++ ) {
 		float a = float( M_PI * 2 ) * s * segIncr;
 		float x = math<float>::cos( a ) * radius;
 		float z = math<float>::sin( a ) * radius;
 
-		vec3 p = mCenter + ( quaternion * glm::vec3( mRadius * x, mRadius * y + mLength * dy, mRadius * z ) );
+		vec3 p = mCenter + ( quaternion * glm::vec3( x, d * length, z ) );
 		positions->emplace_back( p );
 		positions->emplace_back( p );
 	}
-	positions->emplace_back( mCenter + ( quaternion * glm::vec3( mRadius * radius, mRadius * y + mLength * dy, 0 ) ) );
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
 }
 
 size_t WireCapsule::getNumVertices() const
 {
 	int numSegments = mNumSegments / 2;
 	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
-	return ( mNumSegments * ( mSubdivisionsHeight + 1 ) + subdivisionsAxis * ( 1 + 2 * numSegments ) ) * 2;
+	return ( mNumSegments * ( mSubdivisionsHeight - 1 ) + subdivisionsAxis * ( 1 + 2 * numSegments ) ) * 2;
 }
 
 void WireCapsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const

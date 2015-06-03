@@ -801,7 +801,7 @@ public:
 
 private:
 	void	calculate( std::vector<vec3> *positions ) const;
-	void	calculateRing( size_t segments, float radius, float y, float dy, std::vector<vec3> *positions ) const;
+	void	calculateRing( float radius, float d, std::vector<vec3> *positions ) const;
 
 	vec3		mDirection, mCenter;
 	float		mLength, mRadius;
