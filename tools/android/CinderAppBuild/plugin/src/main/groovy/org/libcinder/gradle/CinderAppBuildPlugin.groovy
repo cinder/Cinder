@@ -75,17 +75,23 @@ class CompileNdkTask extends DefaultTask {
 
     @InputFiles
     List<File> getInputFiles() {
+        if( null == plugin ) {
+            throw new GradleException("plugin is null - was it not set in cinderCompileDebugNdk or cinderCompileReleaseNdk?" );
+        }
+
         ArrayList<File> result = new ArrayList<File>();
-        if( null != plugin ) {
-            plugin.mSourceFilesFullPath.each {
-                result.add( new File( it ) ); 
-            }
+        plugin.mSourceFilesFullPath.each {
+            result.add( new File( it ) ); 
         }
         return result;
     }
 
     @OutputFile
     File getGeneratedAndroidMk() {
+        if( null == plugin ) {
+            throw new GradleException("plugin is null - was it not set in cinderCompileDebugNdk or cinderCompileReleaseNdk?" );
+        }
+
         File result = new File( "${plugin.mNdkBuildDir}/Android.mk" );
         return result;
     }
@@ -173,8 +179,11 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }  
 
         // TASK: cinderCompileReleaseNdk
-        project.task('cinderCompileReleaseNdk', type: CompileNdkTask, dependsOn: 'cinderGenerateReleaseNdkBuild') << {
-            this.cinderCompileNdk(project);
+        project.task('cinderCompileReleaseNdk', type: CompileNdkTask, dependsOn: 'cinderGenerateReleaseNdkBuild') {
+            plugin = this;
+            doLast {
+                this.cinderCompileNdk(project);
+            }
         }
     }
 
