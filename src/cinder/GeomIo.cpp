@@ -3249,6 +3249,103 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
 template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCapsule
+WireCapsule::WireCapsule()
+	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 ), mNumSegments( 72 ), mSubdivisionsHeight( 1 ), mRadius( 0.5f )
+{
+}
+
+WireCapsule& WireCapsule::set( const vec3 &from, const vec3 &to )
+{
+	const vec3 axis = to - from;
+	mLength = glm::length( axis );
+	mDirection = normalize( axis );
+	mCenter = from + 0.5f * axis;
+	return *this;
+}
+
+void WireCapsule::calculate( vector<vec3> *positions ) const
+{
+	positions->reserve( getNumVertices() );
+
+	float bodyIncr = 1.0f / (float) ( mSubdivisionsHeight );
+	for( size_t r = 1; r < mSubdivisionsHeight; ++r ) {
+		float t = r * bodyIncr - 0.5f;
+		float h = ( mLength + 2 * mRadius ) * t;
+		float radius = mRadius;
+		if( math<float>::abs( h ) > 0.5f * mLength ) {
+			float y = math<float>::abs( h ) - 0.5f * mLength;
+			radius = y / math<float>::tan( math<float>::asin( y / mRadius ) );
+		}
+		calculateRing( radius, t, positions );
+	}
+
+	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+
+	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
+	float axisIncr = 1.0f / (float) ( mSubdivisionsAxis );
+	int numSegments = mNumSegments / 2;
+	float segIncr = 1.0f / (float) ( numSegments );
+	for( size_t i = 0; i < subdivisionsAxis; ++i ) {
+		// Straight lines.
+		float a = float( M_PI * 2 ) * i * axisIncr;
+		float x = math<float>::cos( a );
+		float z = math<float>::sin( a );
+		positions->emplace_back( mCenter + quaternion * vec3( x * mRadius, -0.5f * mLength, z * mRadius ) );
+		positions->emplace_back( mCenter + quaternion * vec3( x * mRadius, +0.5f * mLength, z * mRadius ) );
+
+		// Caps.
+		for( size_t j = 0; j < numSegments; ++j ) {
+			float a1 = float( M_PI / 2 ) * j * segIncr;
+			float a2 = float( M_PI / 2 ) * ( j + 1 ) * segIncr;
+			float r1 = math<float>::cos( a1 ) * mRadius;
+			float r2 = math<float>::cos( a2 ) * mRadius;
+			float y1 = math<float>::sin( a1 ) * mRadius;
+			float y2 = math<float>::sin( a2 ) * mRadius;
+			positions->emplace_back( mCenter + quaternion * vec3( x * r1, -0.5f * mLength - y1, z * r1 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r2, -0.5f * mLength - y2, z * r2 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r1, +0.5f * mLength + y1, z * r1 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r2, +0.5f * mLength + y2, z * r2 ) );
+		}
+	}
+}
+
+void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions ) const
+{
+	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+
+	float length = mLength + 2 * mRadius;
+	float segIncr = 1.0f / (float) ( mNumSegments );
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
+	for( size_t s = 1; s < mNumSegments; s++ ) {
+		float a = float( M_PI * 2 ) * s * segIncr;
+		float x = math<float>::cos( a ) * radius;
+		float z = math<float>::sin( a ) * radius;
+
+		vec3 p = mCenter + ( quaternion * glm::vec3( x, d * length, z ) );
+		positions->emplace_back( p );
+		positions->emplace_back( p );
+	}
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
+}
+
+size_t WireCapsule::getNumVertices() const
+{
+	int numSegments = mNumSegments / 2;
+	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
+	return ( mNumSegments * ( mSubdivisionsHeight - 1 ) + subdivisionsAxis * ( 1 + 2 * numSegments ) ) * 2;
+}
+
+void WireCapsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec3> positions;
+
+	calculate( &positions );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCircle
@@ -3488,6 +3585,35 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	}
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+std::vector<vec3> WireIcosahedron::sPositions;
+
+size_t WireIcosahedron::getNumVertices() const
+{
+	return 120;
+}
+
+void WireIcosahedron::loadInto( Target * target, const AttribSet & requestedAttribs ) const
+{
+	calculate();
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) sPositions.data(), 120 );
+}
+
+void WireIcosahedron::calculate() const
+{
+	if( sPositions.empty() ) {
+		sPositions.reserve( 60 );
+
+		for( size_t i = 0; i < 20; ++i ) {
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 0] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 1] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 1] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 2] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 2] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 0] * 3] ) );
+		}
+	}
 }
 
 WireFrustum::WireFrustum( const CameraPersp &cam )
