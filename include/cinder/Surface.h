@@ -251,6 +251,9 @@ class SurfaceT {
 	//! Copies the Area \a srcArea of the Surface \a srcSurface to \a this Surface. The destination Area is \a srcArea offset by \a relativeOffset.
 	void	copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &relativeOffset = ivec2() );
 
+	//! Sets the value of every pixel to the specified \a color. Defaults to black.
+	void	clear( const ColorAT<T> &color = ColorAT<T>::black() );
+
 	//! Returns an averaged color for the Area defined by \a area
 	ColorT<T>	areaAverage( const Area &area ) const;
   private:

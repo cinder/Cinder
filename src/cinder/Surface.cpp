@@ -413,6 +413,19 @@ void SurfaceT<T>::copyFrom( const SurfaceT<T> &srcSurface, const Area &srcArea, 
 	else
 		copyRawRgb( srcSurface, srcDst.first, srcDst.second );
 }
+	
+template<typename T>
+void SurfaceT<T>::clear( const ColorAT<T> &color )
+{
+	SurfaceT<T>::Iter iter = getIter();
+    while( iter.line() )
+    {
+        while( iter.pixel() )
+        {
+			setPixel(Vec2f(iter.getPos()), color);
+        }
+    }
+}
 
 template<typename T>
 void SurfaceT<T>::copyRawSameChannelOrder( const SurfaceT<T> &srcSurface, const Area &srcArea, const ivec2 &absoluteOffset )
