@@ -93,8 +93,8 @@ void FboMultipleRenderTargetsApp::draw()
 	gl::setMatricesWindow( getWindowSize() );
 
 	// draw the two textures we've created side-by-side
-	auto tex0 = mFbo->getTexture( GL_COLOR_ATTACHMENT0 );
-	auto tex1 = mFbo->getTexture( GL_COLOR_ATTACHMENT1 );
+	auto tex0 = mFbo->getTexture2d( GL_COLOR_ATTACHMENT0 );
+	auto tex1 = mFbo->getTexture2d( GL_COLOR_ATTACHMENT1 );
 	gl::draw( tex0, tex0->getBounds() );
 	gl::draw( tex1, tex1->getBounds() + vec2( tex1->getWidth(), 0 ) );
 }

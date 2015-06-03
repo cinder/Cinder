@@ -126,7 +126,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	//! Returns a reference to the depth Texture2d of the FBO. Resolves multisampling and renders mipmaps if necessary. Returns an empty Ref if there is no Texture2d as a depth attachment.
 	Texture2dRef	getDepthTexture();
 	//! Returns a Texture2dRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture2d is not bound at \a attachment.
-	Texture2dRef	getTexture( GLenum attachment );
+	Texture2dRef	getTexture2d( GLenum attachment );
 	//! Returns a TextureBaseRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture is not bound at \a attachment.
 	TextureBaseRef	getTextureBase( GLenum attachment );
 	
