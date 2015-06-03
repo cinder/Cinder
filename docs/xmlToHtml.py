@@ -1488,7 +1488,7 @@ def writeHtml( html, savePath ):
 		outFile.write( html.prettify() )
 	
 
-def processFile( inPath, outPath ):
+def processFile( inPath, outPath = None ):
 	""" Generate documentation for a single file
 
 		Args:
@@ -1500,13 +1500,14 @@ def processFile( inPath, outPath ):
 	isHtmlFile = True if getFileExtension( file ).lower() == ".html" else False
 
 	if isHtmlFile:
-		filePath = "/".join( inPath.split('/')[1:] )
+		filePath = "/".join( inPath.split('htmlsrc/')[1:] )
 		savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + filePath
 	else:
 		savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + getFilePrefix( inPath ) + ".html"
 
 	if isHtmlFile:
 		processHtmlFile( inPath, savePath )
+		# print "IS HTML FILE"
 	else :
 		if filePrefix.startswith( "class" ) or filePrefix.startswith( "struct" ):
 			processClassXmlFile( sys.argv[1], os.path.join( DOXYGEN_HTML_PATH, savePath ), copy.deepcopy( classTemplateHtml ) )
@@ -1543,8 +1544,25 @@ def processDir(inPath, outPath):
 				# TODO: base template and just iterate do an html iteration
 
 def processHtmlDir(inPath, outPath):
-	# process all html files in dirs in the html source dir that do not start with "_"
-	processHtmlFile( inPath, outPath )
+
+	print "PROCESS HTML DIR"
+
+	for path, subdirs, files in os.walk(inPath):
+		dir = path.split("/")[-1]
+		if dir == "_templates" or dir == "assets":
+			continue
+		for name in files:
+			filePrefix = getFilePrefix( name )
+			fileExt = getFileExtension( name ).lower()
+			if fileExt == ".html":
+				
+				if path.endswith('/'):
+					srcPath = path[:-1]
+				else:
+					srcPath = path
+
+				srcPath = srcPath + "/" + name
+				processFile( srcPath )	
 	
 # def copyFiles( HTML_SOURCE_PATH, DOXYGEN_HTML_PATH ):
 def copyFiles():
@@ -1613,16 +1631,7 @@ if __name__ == "__main__":
 	classTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderClassTemplate.html", "footerTemplate.html"] )
 	namespaceTemplateHtml = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"] )
 
-	# copy files from assets/ to html/
-	# copy_tree("assets/", "html/")
-
-	# copy all files from "htmlsrc" into "html" except .html file
-	# allfiles = glob.iglob(os.path.join( HTML_SOURCE_PATH, "*.*") )
-	# print allfiles
-	# for file in allfiles:
-		# print file
-	#     if os.path.isfile(file):
-	#         shutil.copy2(file, dest_dir)
+	# copy files from htmlsrc/ to html/
 	copyFiles()
 
 	# generate namespace navigation
@@ -1636,8 +1645,8 @@ if __name__ == "__main__":
 	# process a directory
 	elif os.path.isdir( inPath ): 
 		if len( sys.argv ) == 3: 
-			processDir( inPath, sys.argv[2] )
 			processHtmlDir( HTML_SOURCE_PATH, sys.argv[2] )
+			processDir( inPath, sys.argv[2] )
 
 	else:
 		print "Unknown usage"
