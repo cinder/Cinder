@@ -37,10 +37,6 @@ using namespace ci::android;
 #define LOGW(...) ((void)__android_log_print(ANDROID_LOG_WARN, "cinder", __VA_ARGS__))
 #define LOGE(...) ((void)__android_log_print(ANDROID_LOG_ERROR,"cinder", __VA_ARGS__))
 
-enum {
-	LOOPER_ID_USER_SENSORS = LOOPER_ID_USER,
-};
-
 namespace cinder { namespace app { 
 
 EventManagerAndroid* EventManagerAndroid::sInstance = nullptr;
@@ -549,7 +545,7 @@ void EventManagerAndroid::execute()
 	mGyroscopeSensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GYROSCOPE );
 	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
 	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
-	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER_SENSORS, nullptr, nullptr );	
+	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
