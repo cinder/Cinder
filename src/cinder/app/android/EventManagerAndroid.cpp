@@ -581,11 +581,11 @@ dbg_app_log( "Starting Event Loop" );
 
 				// Sensor data
 				if( LOOPER_ID_USER == ident ) {
-					console() << "LOOPER_ID_USER" << std::endl;
+					//console() << "LOOPER_ID_USER" << std::endl;
 
 					ASensorEvent sensorEvent;
 					while( ASensorEventQueue_getEvents( mSensorEventQueue, &sensorEvent, 1 ) > 0 ) {
-						console() << "SensorEvent" << std::endl;	
+						//console() << "SensorEvent" << std::endl;	
 
 						switch( sensorEvent.type ) {
 							case ASENSOR_TYPE_ACCELEROMETER: {
