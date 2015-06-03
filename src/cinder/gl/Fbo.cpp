@@ -509,7 +509,12 @@ Texture2dRef Fbo::getDepthTexture()
 		return Texture2dRef();
 }
 
-TextureBaseRef Fbo::getTexture( GLenum attachment )
+Texture2dRef Fbo::getTexture( GLenum attachment )
+{
+	return dynamic_pointer_cast<Texture2d>( getTextureBase( attachment ) );
+}
+
+TextureBaseRef Fbo::getTextureBase( GLenum attachment )
 {
 	if( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) {
 		CI_LOG_W( "Illegal contant for texture attachment: " << attachment );
