@@ -82,6 +82,10 @@ class TextureBase {
 	virtual GLint	getHeight() const = 0;
 	//! Returns the depth of the texture in pixels, ignoring clean bounds.
 	virtual GLint	getDepth() const = 0;
+	//! Returns the 2D aspect ratio of the texture (width / height), ignoring clean bounds.
+	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
+	//! Returns the Area defining the Texture's bounds in pixels, ignoring clean bounds.
+	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 
 	//! Returns whether the Texture has an alpha channel based on its internal format
 	bool			hasAlpha() const;
@@ -424,10 +428,6 @@ class Texture1d : public TextureBase {
 	GLint			getHeight() const override { return 1; }
 	//! Returns the depth of the texture, which is always \c 1
 	GLint			getDepth() const override { return 1; }
-	//! the aspect ratio of the texture (width / height)
-	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
-	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 
   protected:
   	Texture1d( GLint width, Format format );
@@ -566,10 +566,6 @@ class Texture2d : public TextureBase {
 	GLint			getCleanHeight() const;
 	//! Returns size of the texture in pixels, igonring clean bounds
 	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }
-	//! Returns the aspect ratio of the texture (width / height), ignoring clean bounds.
-	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! Returns the Area defining the Texture's bounds in pixels, ignoring clean bounds.
-	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 	//! Returns the Area defining the Texture's bounds in pixels, accounting for clean bounds.
 	Area			getCleanBounds() const { return Area( 0, 0, getCleanWidth(), getCleanHeight() ); }
 	//! Returns the UV coordinates which correspond to the pixels contained in \a area (as expressed with an upper-left origin). Accounts for clean bounds, top-down storage and target (0-1 for \c GL_TEXTURE_2D and pixel for GL_TEXTURE_RECTANGLE)
@@ -660,10 +656,6 @@ class Texture3d : public TextureBase {
 	GLint			getHeight() const override { return mHeight; }
 	//! Returns the depth of the texture, which is the number of images in a texture array, or the depth of a 3D texture measured in pixels
 	GLint			getDepth() const override { return mDepth; }
-	//! the aspect ratio of the texture (width / height)
-	float			getAspectRatio() const { return getWidth() / (float)getHeight(); }
-	//! the Area defining the Texture's 2D bounds in pixels: [0,0]-[width,height]
-	Area			getBounds() const { return Area( 0, 0, getWidth(), getHeight() ); }
 
   protected:
   	Texture3d( GLint width, GLint height, GLint depth, Format format );

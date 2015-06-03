@@ -241,7 +241,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 	gl::setMatricesWindowPersp( mVelocityDilationBuffer->getSize() );
 
 	{ // downsample velocity into tilemax
-		gl::ScopedTextureBind tex( mGBuffer->getTexture( G_VELOCITY ), 0 );
+		gl::ScopedTextureBind tex( mGBuffer->getTexture2d( G_VELOCITY ), 0 );
 		gl::ScopedGlslProg prog( mTileProg );
 		gl::drawBuffer( DILATE_TILE_MAX );
 
@@ -251,7 +251,7 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 		gl::drawSolidRect( mVelocityDilationBuffer->getBounds() );
 	}
 	{ // build max neighbors from tilemax
-		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture( DILATE_TILE_MAX ), 0 );
+		gl::ScopedTextureBind tex( mVelocityDilationBuffer->getTexture2d( DILATE_TILE_MAX ), 0 );
 		gl::ScopedGlslProg prog( mNeighborProg );
 		gl::drawBuffer( DILATE_NEIGHBOR_MAX );
 
@@ -263,9 +263,9 @@ void MotionBlurVelocityBufferApp::dilateVelocity()
 
 void MotionBlurVelocityBufferApp::drawBlurredContent()
 {
-	gl::ScopedTextureBind colorTex( mGBuffer->getTexture( G_COLOR ), 0 );
-	gl::ScopedTextureBind velTex( mGBuffer->getTexture( G_VELOCITY ), 1 );
-	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( DILATE_NEIGHBOR_MAX ), 2 );
+	gl::ScopedTextureBind colorTex( mGBuffer->getTexture2d( G_COLOR ), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture2d( G_VELOCITY ), 1 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture2d( DILATE_NEIGHBOR_MAX ), 2 );
 	gl::ScopedGlslProg prog( mMotionBlurProg );
 	gl::ScopedBlendPremult blend;
 
@@ -324,15 +324,15 @@ void MotionBlurVelocityBufferApp::drawVelocityBuffers()
 	float height = width / Rectf( mVelocityDilationBuffer->getBounds() ).getAspectRatio();
 	Rectf rect( 0.0f, 0.0f, width, height );
 
-	gl::ScopedTextureBind velTex( mGBuffer->getTexture( G_VELOCITY ), 0 );
+	gl::ScopedTextureBind velTex( mGBuffer->getTexture2d( G_VELOCITY ), 0 );
 	gl::translate( getWindowWidth() - width - 10.0f, 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind tileTex( mVelocityDilationBuffer->getTexture( DILATE_TILE_MAX ), 0 );
+	gl::ScopedTextureBind tileTex( mVelocityDilationBuffer->getTexture2d( DILATE_TILE_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 
-	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture( DILATE_NEIGHBOR_MAX ), 0 );
+	gl::ScopedTextureBind neigborTex( mVelocityDilationBuffer->getTexture2d( DILATE_NEIGHBOR_MAX ), 0 );
 	gl::translate( 0.0f, height + 10.0f );
 	gl::drawSolidRect( rect );
 }
