@@ -21,7 +21,6 @@ class FboMultipleRenderTargetsApp : public App {
 	void			renderSceneToFbo();
 	
 	gl::FboRef			mFbo;
-	gl::Texture2dRef	mTexAttachment0, mTexAttachment1;
 	gl::GlslProgRef		mGlslMultipleOuts;
 	mat4				mRotation;
 	static const int	FBO_WIDTH = 256, FBO_HEIGHT = 256;
@@ -29,12 +28,10 @@ class FboMultipleRenderTargetsApp : public App {
 
 void FboMultipleRenderTargetsApp::setup()
 {
-	mTexAttachment0 = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT );
-	mTexAttachment1 = gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT );
 	auto format = gl::Fbo::Format()
-//			.samples( 4 ) // uncomment this to enable 4x antialiasing // FIXME: causes drawing to be all white
-			.attachment( GL_COLOR_ATTACHMENT0, mTexAttachment0 )
-			.attachment( GL_COLOR_ATTACHMENT1, mTexAttachment1 );
+//			.samples( 4 ) // uncomment this to enable 4x antialiasing
+			.attachment( GL_COLOR_ATTACHMENT0, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) )
+			.attachment( GL_COLOR_ATTACHMENT1, gl::Texture2d::create( FBO_WIDTH, FBO_HEIGHT ) );
 	mFbo = gl::Fbo::create( FBO_WIDTH, FBO_HEIGHT, format );
 
 	try {
@@ -76,7 +73,6 @@ void FboMultipleRenderTargetsApp::renderSceneToFbo()
 
 	// render the torus with our multiple-output shader
 	gl::ScopedGlslProg glslScope( mGlslMultipleOuts );
-	gl::setDefaultShaderVars();
 	gl::drawCube( vec3( 0 ), vec3( 2.2f ) );
 }
 
@@ -94,13 +90,13 @@ void FboMultipleRenderTargetsApp::draw()
 {
 	gl::clear( Color::gray( 0.35f ) );
 
-	// draw the two textures we've created side-by-side
 	gl::setMatricesWindow( getWindowSize() );
-//	gl::draw( mFbo->getTexture(0), mFbo->getTexture(0)->getBounds() );
-//	gl::draw( mFbo->getTexture(1), mFbo->getTexture(1)->getBounds() + vec2( mFbo->getTexture(0)->getWidth(), 0 ) );
 
-	gl::draw( mTexAttachment0, mTexAttachment0->getBounds() );
-	gl::draw( mTexAttachment1, mTexAttachment1->getBounds() + vec2( mTexAttachment0->getWidth(), 0 ) );
+	// draw the two textures we've created side-by-side
+	auto tex0 = mFbo->getTexture( GL_COLOR_ATTACHMENT0 );
+	auto tex1 = mFbo->getTexture( GL_COLOR_ATTACHMENT1 );
+	gl::draw( tex0, tex0->getBounds() );
+	gl::draw( tex1, tex1->getBounds() + vec2( tex1->getWidth(), 0 ) );
 }
 
 CINDER_APP( FboMultipleRenderTargetsApp, RendererGl )
