@@ -110,7 +110,7 @@ MotionManager* MotionManager::get()
 		sInst = new MotionManager;
 #if defined( CINDER_COCOA_TOUCH )		
         sInst->mImpl = std::make_shared<MotionImplCoreMotion>();
-#elif defined( CIDNER_ANDROID )
+#elif defined( CINDER_ANDROID )
         sInst->mImpl = std::make_shared<MotionImplAndroid>();
 #endif        
 	}
