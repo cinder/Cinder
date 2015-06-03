@@ -22,12 +22,13 @@
 
 #include "cinder/Color.h"
 #include "cinder/Vector.h"
+#include "cinder/ImageIo.h"
 #include <boost/algorithm/string/case_conv.hpp>
 
 namespace cinder {
 
-Colorf hsvToRGB( const Vec3f &hsv );
-Vec3f rgbToHSV( const Colorf &c );
+Colorf hsvToRgb( const vec3 &hsv );
+vec3 rgbToHsv( const Colorf &c );
 
 namespace {
 const int sTotalColors = 147;
@@ -88,13 +89,13 @@ const uint8_t sColorValues[sTotalColors][3] = {
 /////////////////////////////////////////////////////////////////////////////
 // ColorT
 template<typename T>
-ColorT<T>::ColorT( ColorModel cm, float x, float y, float z )
+ColorT<T>::ColorT( ColorModel cm, float c0, float c1, float c2 )
 {
-	set( cm, Vec3f( x, y, z ) );
+	set( cm, vec3( c0, c1, c2 ) );
 }
 
 template<typename T>
-ColorT<T>::ColorT( ColorModel cm, const Vec3f &v )
+ColorT<T>::ColorT( ColorModel cm, const vec3 &v )
 {
 	set( cm, v );
 }
@@ -109,11 +110,26 @@ ColorT<T>::ColorT( const char *svgColorName )
 }
 
 template<typename T>
-void ColorT<T>::set( ColorModel cm, const Vec3f &v )
+vec3 ColorT<T>::get( ColorModel cm ) const
+{
+	switch( cm ) {
+		case CM_HSV:
+			return rgbToHsv( Colorf( *this ) );
+		break;
+		case CM_RGB:
+			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
+		break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
+	}
+}
+
+template<typename T>
+void ColorT<T>::set( ColorModel cm, const vec3 &v )
 {
 	switch( cm ) {
 		case CM_HSV: {
-			Colorf rgb = hsvToRGB( v );
+			Colorf rgb = hsvToRgb( v );
 			r = CHANTRAIT<T>::convert( rgb.r );
 			g = CHANTRAIT<T>::convert( rgb.g );
 			b = CHANTRAIT<T>::convert( rgb.b );
@@ -129,91 +145,14 @@ void ColorT<T>::set( ColorModel cm, const Vec3f &v )
 	}
 }
 
-template<typename T>
-Vec3f ColorT<T>::get( ColorModel cm ) const
-{
-	switch( cm ) {
-		case CM_HSV: {
-			return rgbToHSV( Colorf( *this ) );
-		}
-		break;
-		case CM_RGB: {
-			return Vec3f( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
-		}
-		break;
-		default:
-			throw;
-	}
-}
-
-//////////////////////////////////////////////////////////////
-// uint8_t * operators
-template<>
-const ColorT<uint8_t>& ColorT<uint8_t>::operator*=( const ColorT<uint8_t> &rhs )
-{ 
-	r = r * rhs.r / 255; g = g * rhs.g / 255; b = b * rhs.b / 255; return *this;
-}
-
-template<>
-const ColorT<uint8_t>& ColorT<uint8_t>::operator*=( uint8_t rhs ) 
-{ 
-	r = r * rhs / 255; g = g * rhs / 255; b = b * rhs / 255; return *this;
-}
-
-template<>
-ColorT<uint8_t> ColorT<uint8_t>::operator*( const ColorT<uint8_t> &rhs ) const 
-{ 
-	return ColorT<uint8_t>( r * rhs.r / 255, g * rhs.g / 255, b * rhs.b / 255 );
-}
-
-template<>
-ColorT<uint8_t> ColorT<uint8_t>::operator*( uint8_t rhs ) const 
-{ 
-	return ColorT<uint8_t>( r * rhs / 255, g * rhs / 255, b * rhs / 255 );
-}
-
-//////////////////////////////////////////////////////////////
-// uint8_t / operators
-template<>
-const ColorT<uint8_t>& ColorT<uint8_t>::operator/=( const ColorT<uint8_t> &rhs )
-{ 
-	r = r * 255 / rhs.r; g = g * 255 / rhs.g; b = b / 255 * rhs.b; return *this;
-}
-
-template<>
-const ColorT<uint8_t>& ColorT<uint8_t>::operator/=( uint8_t rhs ) 
-{ 
-	r = r * 255 / rhs; g = g * 255 / rhs; b = b / 255 * rhs; return *this;
-}
-
-template<>
-ColorT<uint8_t> ColorT<uint8_t>::operator/( const ColorT<uint8_t> &rhs ) const 
-{ 
-	return ColorT<uint8_t>( r * 255 / rhs.r, g * 255 / rhs.g, b * 255 / rhs.b );
-}
-
-template<>
-ColorT<uint8_t> ColorT<uint8_t>::operator/( uint8_t rhs ) const 
-{ 
-	return ColorT<uint8_t>( r * 255 / rhs, g * 255 / rhs, b * 255 / rhs );
-}
-
-//////////////////////////////////////////////////////////////
-// uint8_t additional
-std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs ) 
-{
-	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b  << "]";
-	return lhs;
-}
-
-std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs ) 
-{
-	lhs << "[" << static_cast<int>( rhs.r ) << "," << static_cast<int>( rhs.g ) << "," << static_cast<int>( rhs.b )  << "]";
-	return lhs;
-}
-
 /////////////////////////////////////////////////////////////////////////////
 // ColorAT
+template<typename T>
+ColorAT<T>::ColorAT( ColorModel cm, float c0, float c1, float c2, float alpha )
+{
+	set( cm, vec4( c0, c1, c2, alpha ) );
+}
+
 template<typename T>
 ColorAT<T>::ColorAT( const char *svgColorName, T aA )
 	: a( aA )
@@ -225,91 +164,58 @@ ColorAT<T>::ColorAT( const char *svgColorName, T aA )
 }
 
 template<typename T>
-ColorAT<T>::ColorAT( ColorModel cm, float c1, float c2, float c3, float aA )
-	: a( CHANTRAIT<T>::convert( aA ) )
+vec3 ColorAT<T>::get( ColorModel cm ) const
 {
 	switch( cm ) {
+		case CM_HSV:
+			return rgbToHsv( Colorf( r, g, b ) );
+		break;
+		case CM_RGB:
+			return vec3( CHANTRAIT<float>::convert( r ), CHANTRAIT<float>::convert( g ), CHANTRAIT<float>::convert( b ) );
+		break;
+		default:
+			throw ImageIoExceptionIllegalColorModel();
+	}
+}
+
+template<typename T>
+void ColorAT<T>::set( ColorModel cm, const vec4 &v )
+{
+	a = v.w;
+
+	switch( cm ) {
 		case CM_HSV: {
-			Colorf rgb = hsvToRGB( Vec3f( c1, c2, c3 ) );
+			Colorf rgb = hsvToRgb( vec3( v ) );
 			r = CHANTRAIT<T>::convert( rgb.r );
 			g = CHANTRAIT<T>::convert( rgb.g );
 			b = CHANTRAIT<T>::convert( rgb.b );
 		}
 		break;
 		case CM_RGB:
-			r = CHANTRAIT<T>::convert( c1 );
-			g = CHANTRAIT<T>::convert( c2 );
-			b = CHANTRAIT<T>::convert( c3 );
+			r = CHANTRAIT<T>::convert( v.r );
+			g = CHANTRAIT<T>::convert( v.g );
+			b = CHANTRAIT<T>::convert( v.b );
 		break;
 		default:
-			throw;
+			throw ImageIoExceptionIllegalColorModel();
 	}
 }
-
-//////////////////////////////////////////////////////////////
-// uint8_t * operators
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( const ColorAT<uint8_t> &rhs )
-{ 
-	r = r * rhs.r / 255; g = g * rhs.g / 255; b = b * rhs.b / 255; a = a * rhs.r; return *this;
-}
-
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator*=( uint8_t rhs ) 
-{ 
-	r = r * rhs / 255; g = g * rhs / 255; b = b * rhs / 255; return *this;
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator*( const ColorAT<uint8_t> &rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * rhs.r / 255, g * rhs.g / 255, b * rhs.b / 255 );
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator*( uint8_t rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * rhs / 255, g * rhs / 255, b * rhs / 255 );
-}
-
-
-//////////////////////////////////////////////////////////////
-// uint8_t / operators
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( const ColorAT<uint8_t> &rhs )
-{ 
-	r = r * 255 / rhs.r; g = g * 255 / rhs.g; b = b / 255 * rhs.b; return *this;
-}
-
-template<>
-const ColorAT<uint8_t>& ColorAT<uint8_t>::operator/=( uint8_t rhs ) 
-{ 
-	r = r * 255 / rhs; g = g * 255 / rhs; b = b / 255 * rhs; return *this;
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator/( const ColorAT<uint8_t> &rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * 255 / rhs.r, g * 255 / rhs.g, b * 255 / rhs.b, a );
-}
-
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::operator/( uint8_t rhs ) const 
-{ 
-	return ColorAT<uint8_t>( r * 255 / rhs, g * 255 / rhs, b * 255 / rhs, a );
-}
-
-//////////////////////////////////////////////////////////////
-// uint8_t additional
-template<>
-ColorAT<uint8_t> ColorAT<uint8_t>::lerp( uint8_t fact, const ColorAT<uint8_t> &d ) const
+	
+std::ostream& operator<<( std::ostream &lhs, const ColorT<float> &rhs )
 {
-	return ColorAT<uint8_t>( r + ( d.r - r ) * fact / 255, g + ( d.g - g ) * fact / 255, b + ( d.b - b ) * fact / 255, a + ( d.a - a ) * fact / 255 );
+	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "]";
+	return lhs;
 }
-
+	
 std::ostream& operator<<( std::ostream &lhs, const ColorAT<float> &rhs ) 
 {
 	lhs << "[" << rhs.r << "," << rhs.g << "," << rhs.b << "," << rhs.a << "]";
+	return lhs;
+}
+
+std::ostream& operator<<( std::ostream &lhs, const ColorT<uint8_t> &rhs )
+{
+	lhs << "[" << static_cast<int>( rhs.r ) << "," << static_cast<int>( rhs.g ) << "," << static_cast<int>( rhs.b ) << "]";
 	return lhs;
 }
 
@@ -321,7 +227,7 @@ std::ostream& operator<<( std::ostream &lhs, const ColorAT<uint8_t> &rhs )
 
 /////////////////////////////////////////////////////////////////////////////
 // Utilities
-Colorf hsvToRGB( const Vec3f &hsv )
+Colorf hsvToRgb( const vec3 &hsv )
 {
     float hue = hsv.x;
     float sat = hsv.y;
@@ -351,7 +257,7 @@ Colorf hsvToRGB( const Vec3f &hsv )
     return Colorf( x, y, z );
 }
 
-Vec3f rgbToHSV( const Colorf &c )
+vec3 rgbToHsv( const Colorf &c )
 {
     const float &x = c.r;
     const float &y = c.g;
@@ -383,7 +289,7 @@ Vec3f rgbToHSV( const Colorf &c )
 			hue += 1.0f;
     }
     
-    return Vec3f( hue, sat, val );
+    return vec3( hue, sat, val );
 }
 
 ColorT<uint8_t> svgNameToRgb( const char *name, bool *found )

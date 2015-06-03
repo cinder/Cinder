@@ -1,22 +1,22 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/Json.h"
 
 #include "Resources.h"
 
-#include "jsoncpp/json/json.h"
-
-class JsonTestApp : public ci::app::AppBasic {
-  public:
-	void mouseDown( ci::app::MouseEvent event );
-	void setup();
-
-	void testComments();
-};
-
+#include "jsoncpp/json.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
+
+
+class JsonTestApp : public App {
+  public:
+	void mouseDown( MouseEvent event );
+	void setup();
+
+	void testComments();
+};
 
 void JsonTestApp::setup()
 {
@@ -180,4 +180,4 @@ void JsonTestApp::testComments()
 	}
 }
 
-CINDER_APP_BASIC( JsonTestApp, Renderer2d )
+CINDER_APP( JsonTestApp, Renderer2d )

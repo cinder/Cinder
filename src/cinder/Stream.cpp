@@ -149,7 +149,7 @@ void IStreamCinder::readData( void *t, size_t size )
 
 void OStream::write( const Buffer &buffer )
 {
-	IOWrite( buffer.getData(), buffer.getDataSize() );
+	IOWrite( buffer.getData(), buffer.getSize() );
 }
 
 void OStream::writeData( const void *src, size_t size )
@@ -167,7 +167,7 @@ IStreamFileRef IStreamFile::create( FILE *file, bool ownsFile, int32_t defaultBu
 IStreamFile::IStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IStreamCinder(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
@@ -178,7 +178,7 @@ IStreamFile::~IStreamFile()
 	if( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 size_t IStreamFile::readDataAvailable( void *dest, size_t maxSize )
@@ -218,7 +218,7 @@ size_t IStreamFile::readDataImpl( void *t, size_t size )
 void IStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
@@ -278,7 +278,7 @@ OStreamFile::~OStreamFile()
 	if ( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 off_t OStreamFile::tell() const
@@ -289,7 +289,7 @@ off_t OStreamFile::tell() const
 void OStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 }
@@ -316,7 +316,7 @@ IoStreamFileRef IoStreamFile::create( FILE *file, bool ownsFile, int32_t default
 IoStreamFile::IoStreamFile( FILE *aFile, bool aOwnsFile, int32_t aDefaultBufferSize )
 	: IoStream(), mFile( aFile ), mOwnsFile( aOwnsFile ), mDefaultBufferSize( aDefaultBufferSize ), mSizeCached( false )
 {
-	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], checked_array_deleter<uint8_t>() );
+	mBuffer = std::shared_ptr<uint8_t>( new uint8_t[mDefaultBufferSize], std::default_delete<uint8_t[]>() );
 	mBufferFileOffset = std::numeric_limits<off_t>::min();
 	mBufferOffset = 0;
 	mBufferSize = 0;
@@ -327,7 +327,7 @@ IoStreamFile::~IoStreamFile()
 	if( mOwnsFile )
 		fclose( mFile );
 	if( mDeleteOnDestroy && ( ! mFileName.empty() ) )
-		deleteFile( mFileName );
+		fs::remove( mFileName );
 }
 
 size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )
@@ -338,7 +338,7 @@ size_t IoStreamFile::readDataAvailable( void *dest, size_t maxSize )
 void IoStreamFile::seekAbsolute( off_t absoluteOffset )
 {
 	int dir = ( absoluteOffset >= 0 ) ? SEEK_SET : SEEK_END;
-	absoluteOffset = abs( absoluteOffset );
+	absoluteOffset = std::abs( absoluteOffset );
 	if( fseek( mFile, static_cast<long>( absoluteOffset ), dir ) )
 		throw StreamExc();
 	mBufferOffset = absoluteOffset;
@@ -403,7 +403,7 @@ size_t IoStreamFile::readDataImpl( void *t, size_t size )
 	else { // outside the current buffer, but not too big
 		fseek( mFile, static_cast<long>( mBufferOffset ), SEEK_SET );
 		mBufferFileOffset = mBufferOffset;
-		mBufferSize = fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
+		mBufferSize = (int32_t)fread( mBuffer.get(), 1, mDefaultBufferSize, mFile );
 		memcpy( t, mBuffer.get(), size );
 		mBufferOffset = mBufferFileOffset + size;
 		return size;
@@ -543,8 +543,8 @@ IStreamFileRef loadFileStream( const fs::path &path )
 
 std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createParents )
 {
-	if( createParents ) {
-		createDirectories( path.parent_path() );
+	if( createParents && path.has_parent_path() ) {
+		fs::create_directories( path.parent_path() );
 	}
 #if defined( CINDER_MSW )
 	FILE *f = _wfopen( expandPath( path ).wstring().c_str(), L"wb" );
@@ -579,7 +579,8 @@ IoStreamFileRef readWriteFileStream( const fs::path &path )
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
 {
 	// prevent crash if stream is not valid
-	if(!is) throw StreamExc();
+	if( ! is )
+		throw StreamExc();
 
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
@@ -593,31 +594,36 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 	is->readDataAvailable( resultData->get(), fileSize );
 }
 
-Buffer loadStreamBuffer( IStreamRef is )
+BufferRef loadStreamBuffer( IStreamRef is )
 {
 	// prevent crash if stream is not valid
-	if(!is) throw StreamExc();
+	if( ! is )
+		throw StreamExc();
 
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
 	
 	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is
-		Buffer result( fileSize );
-		is->readDataAvailable( result.getData(), fileSize );
+		auto result = std::make_shared<Buffer>( fileSize );
+		is->readDataAvailable( result->getData(), fileSize );
+
 		return result;
 	}
 	else {
 		const size_t bufferSize = 4096;
 		size_t offset = 0;
-		Buffer result( bufferSize );
+		auto result = std::make_shared<Buffer>( bufferSize );
+
 		while( ! is->isEof() ) {
-			if( offset + bufferSize > result.getAllocatedSize() )
-				result.resize( std::max( (size_t)(result.getAllocatedSize() * 1.5f), offset + bufferSize ) );
-			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result.getData() ) + offset, bufferSize );
+			if( offset + bufferSize > result->getAllocatedSize() )
+				result->resize( std::max( (size_t)( result->getAllocatedSize() * 1.5f ), offset + bufferSize ) );
+
+			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result->getData() ) + offset, bufferSize );
 			offset += bytesRead;
-			result.setDataSize( offset );
+			result->setSize( offset );
 		}
+
 		return result;
 	}
 }

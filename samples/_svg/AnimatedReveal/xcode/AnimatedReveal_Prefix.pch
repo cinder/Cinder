@@ -1,10 +1,7 @@
-#ifdef __OBJC__
-    #import <Cocoa/Cocoa.h>
-#endif
 
 #include "cinder/Cinder.h"
 
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 
 #include "cinder/gl/gl.h"
 

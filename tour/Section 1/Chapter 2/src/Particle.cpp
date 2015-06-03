@@ -1,7 +1,7 @@
 #include "Particle.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 
 using namespace ci;
 
@@ -9,10 +9,10 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec2f loc )
+Particle::Particle( vec2 loc )
 {
 	mLoc	= loc;
-	mDir	= Rand::randVec2f();
+	mDir	= Rand::randVec2();
 	mVel	= 0.0f;
 	mRadius	= 4.0f;
 }	

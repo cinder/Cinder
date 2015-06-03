@@ -26,6 +26,10 @@
 
 #include "cinder/app/Renderer.h"
 
+#if defined( CINDER_WINRT )
+	#include <agile.h>
+#endif
+
 namespace cinder { namespace app {
 
 typedef std::shared_ptr<class RendererDx>	RendererDxRef;
@@ -36,13 +40,12 @@ class RendererDx : public Renderer {
 	
 	static RendererDxRef	create( int antiAliasing = AA_MSAA_16  ) { return RendererDxRef( new RendererDx( antiAliasing ) ); }
 	virtual RendererRef		clone() const { return RendererDxRef( new RendererDx( *this ) ); }
-	virtual RendererType	getRendererType() const override { return RENDERER_DX; }
 
 #if defined ( CINDER_MSW )
-	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
+	virtual void setup( AppBase *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual HWND	getHwnd() { return mWnd; }
 #elif defined( CINDER_WINRT )
-	virtual void	setup( App *aApp, DX_WINDOW_TYPE wnd);
+	virtual void	setup( AppBase *aApp, Platform::Agile<Windows::UI::Core::CoreWindow> wnd);
 #endif
 
 	virtual void	kill();
@@ -63,7 +66,7 @@ class RendererDx : public Renderer {
 	MatrixStack &getModelView() { return mModelView; }
 	MatrixStack &getProjection() { return mProjection; }
 
-	class AppImplMswRendererDx	*mImpl;
+	class RendererImplDx	*mImpl;
 	
  protected:
 	RendererDx( const RendererDx &renderer );

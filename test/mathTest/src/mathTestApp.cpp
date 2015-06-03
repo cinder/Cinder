@@ -46,21 +46,21 @@ int main( int argc, char **argv )
 	std::cout << std::endl;
 
 	/*
-	Matrix44f a(
+	mat4 a(
 		 0,  1,  2,  3,
 		 4,  5,  6,  7,
 		 8,  9, 10, 11,
 		12, 13, 14, 15
 	);
 
-	Matrix44f b(
+	mat4 b(
 		 1,  2,  1,  3,
 		 4,  1,  5,  1,
 		 1,  6,  1,  7,
 		 8,  1,  9, -5
 	);
 
-	Matrix44f c = MatrixAlgo::SseMultiply( a, b );
+	mat4 c = MatrixAlgo::SseMultiply( a, b );
 
 	std::cout << a << "\n";
 	std::cout << b << "\n";

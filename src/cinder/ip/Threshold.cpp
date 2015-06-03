@@ -49,11 +49,11 @@ void thresholdImpl( SurfaceT<T> *surface, T value, const Area &area )
 }
 
 template<typename T>
-void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea, const Vec2i &dstLT, SurfaceT<T> *dstSurface )
+void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea, const ivec2 &dstLT, SurfaceT<T> *dstSurface )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, dstSurface->getBounds(), dstLT );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcSurface.getBounds(), srcArea, dstSurface->getBounds(), dstLT );
 	const Area &area( srcDst.first );
-	const Vec2i &dstOffset( srcDst.second );
+	const ivec2 &dstOffset( srcDst.second );
 
 	int32_t srcRowBytes = srcSurface.getRowBytes();
 	int8_t srcPixelInc = srcSurface.getPixelInc();
@@ -76,18 +76,18 @@ void thresholdImpl( const SurfaceT<T> &srcSurface, T value, const Area &srcArea,
 }
 
 template<typename T>
-void thresholdImpl( const ChannelT<T> &srcChannel, T value, const Area &srcArea, const Vec2i &dstLT, ChannelT<T> *dstChannel )
+void thresholdImpl( const ChannelT<T> &srcChannel, T value, const Area &srcArea, const ivec2 &dstLT, ChannelT<T> *dstChannel )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, dstChannel->getBounds(), dstLT );
 	const Area &area( srcDst.first );
-	const Vec2i &dstOffset( srcDst.second );
+	const ivec2 &dstOffset( srcDst.second );
 
 	int8_t srcInc = srcChannel.getIncrement();
 	int8_t dstInc = dstChannel->getIncrement();
 	const T maxValue = CHANTRAIT<T>::max();
 	for( int32_t y = 0; y < area.getHeight(); ++y ) {
-		T *dstPtr = dstChannel->getData( Vec2i( area.getX1(), y ) + dstOffset );
-		const T *srcPtr = srcChannel.getData( Vec2i( area.getX1(), y ) );
+		T *dstPtr = dstChannel->getData( ivec2( area.getX1(), y ) + dstOffset );
+		const T *srcPtr = srcChannel.getData( ivec2( area.getX1(), y ) );
 		for( int32_t x = area.getX1(); x < area.getX2(); ++x ) {
 			*dstPtr = ( *srcPtr > value ) ? maxValue : 0;
 			dstPtr += dstInc;
@@ -111,13 +111,13 @@ void threshold( SurfaceT<T> *surface, T value )
 template<typename T>
 void threshold( const SurfaceT<T> &surface, T value, SurfaceT<T> *dstSurface )
 {
-	thresholdImpl( surface, value, surface.getBounds(), Vec2i::zero(), dstSurface );
+	thresholdImpl( surface, value, surface.getBounds(), ivec2(), dstSurface );
 }
 
 template<typename T>
 void threshold( const ChannelT<T> &srcChannel, T value, ChannelT<T> *dstChannel )
 {
-	thresholdImpl( srcChannel, value, srcChannel.getBounds(), Vec2i::zero(), dstChannel );
+	thresholdImpl( srcChannel, value, srcChannel.getBounds(), ivec2(), dstChannel );
 }
 
 template<typename T>
@@ -326,35 +326,26 @@ void adaptiveThresholdZero( const ChannelT<T> &srcChannel, int32_t windowSize, C
 }
 
 template<typename T>
-AdaptiveThresholdT<T>::Obj::Obj( ChannelT<T> *channel ) : mChannel( channel ) {
+AdaptiveThresholdT<T>::AdaptiveThresholdT( const ChannelT<T> *channel )
+	: mChannel( channel )
+{
 	mImageWidth = mChannel->getWidth();
 	mImageHeight = mChannel->getHeight();
 	mIncrement = mChannel->getIncrement();
 
 	// create the integral image
-	mIntegralImage = (SUMT*)malloc( mImageWidth * mImageHeight * sizeof( typename CHANTRAIT<T>::Accum ) );
-	calculateIntegralImage( *channel, mIntegralImage );
+	mIntegralImage.resize( mImageWidth * mImageHeight );
+	calculateIntegralImage( *channel, mIntegralImage.data() );
 }
 
 template<typename T>
-AdaptiveThresholdT<T>::Obj::~Obj() {
-	free( mIntegralImage );
-}
-
-template<typename T>
-AdaptiveThresholdT<T>::AdaptiveThresholdT( ChannelT<T> *channel ) 
-	: mObj( new Obj( channel ) ) 
+void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel )
 {
-}
-
-template<typename T>
-void AdaptiveThresholdT<T>::calculate( int32_t windowSize, float percentageDelta, ChannelT<T> *dstChannel ) {
 	if( percentageDelta < 0.0001f ) {
-		calculateAdaptiveThresholdZero( mObj->mChannel, mObj->mIntegralImage, windowSize, dstChannel );
+		calculateAdaptiveThresholdZero( mChannel, mIntegralImage.data(), windowSize, dstChannel );
 	} else {
-		calculateAdaptiveThreshold( mObj->mChannel, mObj->mIntegralImage, windowSize, percentageDelta, dstChannel );
+		calculateAdaptiveThreshold( mChannel, mIntegralImage.data(), windowSize, percentageDelta, dstChannel );
 	}
-	
 }
 
 template class AdaptiveThresholdT<uint8_t>;

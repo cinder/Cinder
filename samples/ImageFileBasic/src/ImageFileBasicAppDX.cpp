@@ -1,4 +1,4 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 #include "cinder/ImageIo.h"
 #include "cinder/dx/DxTexture.h"
 #include "cinder/dx/dx.h"
@@ -10,7 +10,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class ImageFileBasicApp : public AppBasic {
+class ImageFileBasicApp : public App {
   public:
 	void setup();
 	void keyDown( KeyEvent event );
@@ -22,14 +22,13 @@ class ImageFileBasicApp : public AppBasic {
 void ImageFileBasicApp::setup()
 {
 	try {
-		console() << "unable to load the texture file!" << std::endl;
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
 			mTexture = dx::Texture( loadImage( path ) );
 		}
 	}
-	catch( ... ) {
-		console() << "unable to load the texture file!" << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "unable to load the texture file, what: " << exc.what() << endl;
 	}
 }
 
@@ -56,7 +55,7 @@ void ImageFileBasicApp::draw()
 	dx::enableAlphaBlending();
 	
 	if( mTexture )
-		dx::draw( mTexture, Vec2f( 0, 0 ) );
+		dx::draw( mTexture, vec2( 0, 0 ) );
 }
 
-CINDER_APP_BASIC( ImageFileBasicApp, RendererDx )
+CINDER_APP( ImageFileBasicApp, RendererDx )

@@ -16,6 +16,7 @@
 // Cinder
 #if ! defined( USE_DIRECTX )
 	#include "TwOpenGL.h"
+	#include "TwOpenGLCore.h"
 #endif
 
 // Cinder doesn't support OpenGLCore yet
@@ -25,10 +26,11 @@
 #   include "TwDirect3D10.h"
 #   include "TwDirect3D11.h"
 #   include "resource.h"
-#   ifdef _DEBUG
-#       include <crtdbg.h>
-#   endif // _DEBUG
+#	undef min
+#	undef max
 #endif // ANT_WINDOWS
+
+#include <algorithm>
 
 #if !defined(ANT_WINDOWS)
 #   define _snprintf snprintf
@@ -1237,7 +1239,7 @@ void CQuaternionExt::PermuteInv(double *outX, double *outY, double *outZ, double
 
 static inline float QuatD(int w, int h)
 {
-    return (float)min(abs(w), abs(h)) - 4;
+    return (float)std::min(abs(w), abs(h)) - 4;
 }
 
 static inline int QuatPX(float x, int w, int h)
@@ -1750,16 +1752,16 @@ static int TwCreateGraph(ETwGraphAPI _GraphAPI)
 
     switch( _GraphAPI )
     {
+#if 0	
     case TW_OPENGL:
-#if ! defined( USE_DIRECTX )
         g_TwMgr->m_Graph = new CTwGraphOpenGL;
 #endif
         break;
 // Cinder: we don't support D3D or OpenGL Core yet
-#if 0
     case TW_OPENGL_CORE:
         g_TwMgr->m_Graph = new CTwGraphOpenGLCore;
         break;
+#if 0
     case TW_DIRECT3D9:
         #ifdef ANT_WINDOWS
             if( g_TwMgr->m_Device!=NULL )
@@ -1909,10 +1911,6 @@ static int TwInitMgr()
 
 int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
 {
-#if defined(_DEBUG) && defined(ANT_WINDOWS)
-    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
-#endif
-
     if( g_TwMasterMgr!=NULL )
     {
         g_TwMasterMgr->SetLastError(g_ErrInit);
@@ -5494,8 +5492,8 @@ static int TwMouseEvent(ETwMouseAction _EventType, TwMouseButtonID _Button, int 
                 Handled = Bar->MouseButton(_Button, (_EventType==TW_MOUSE_PRESSED), _MouseX, _MouseY);
             else if( _EventType==TW_MOUSE_WHEEL )
             {
-                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
-                    Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
+//                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
+					Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
             }
             if( Handled )
                 break;

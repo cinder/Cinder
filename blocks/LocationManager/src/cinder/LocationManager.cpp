@@ -22,6 +22,7 @@
 */
 
 #include "LocationManager.h"
+#include "cinder/Log.h"
 
 #include <CoreLocation/CoreLocation.h>
 
@@ -64,7 +65,7 @@
 	if( newLocation.horizontalAccuracy < 0 )
 		return; // not enough accuracy
 
-	*mMostRecentLocationPtr = cinder::LocationEvent( cinder::Vec2f( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
+	*mMostRecentLocationPtr = cinder::LocationEvent( cinder::vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
 								   newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy );
 
 	mMgr->emitLocationChanged( *mMostRecentLocationPtr );
@@ -73,9 +74,9 @@
 #if defined( CINDER_COCOA_TOUCH )
 - (void)locationManager:(CLLocationManager*)manager didUpdateHeading:(CLHeading*)heading
 {
-    ci::Vec3f data( heading.x, heading.y, heading.z );
+    cinder::vec3 data( heading.x, heading.y, heading.z );
     std::string description( [heading.description UTF8String] );
-	mMgr->emitHeadingChanged( cinder::HeadingEvent( heading.magneticHeading, heading.trueHeading, heading.headingAccuracy, description, data ) );
+	mMgr->emitHeadingChanged( cinder::HeadingEvent( glm::radians( heading.magneticHeading ), glm::radians( heading.trueHeading ), heading.headingAccuracy, description, data ) );
 }
 #endif
 
@@ -119,6 +120,16 @@ void LocationManager::enableImpl( float accuracyInMeters, float distanceFilter, 
 		mClLocationManager = [[CLLocationManager alloc] init];
 		mDelegate = [[LocationManagerDelegate alloc] init:this mostRecentLocationPtr:&sMostRecentLocation];
 		mClLocationManager.delegate = mDelegate;
+#if defined( CINDER_COCOA_TOUCH )
+		auto authStatus = [CLLocationManager authorizationStatus];
+		if( (authStatus == kCLAuthorizationStatusDenied) || (authStatus == kCLAuthorizationStatusRestricted) ) {
+			CI_LOG_E( "Location Services restricted or denied." );
+		}
+		if( [mClLocationManager respondsToSelector:@selector(requestAlwaysAuthorization)] ) {
+			if( authStatus == kCLAuthorizationStatusNotDetermined )
+				[mClLocationManager requestAlwaysAuthorization];
+		}
+#endif
 	}
 
 #if defined( CINDER_COCOA_TOUCH )
@@ -126,7 +137,7 @@ void LocationManager::enableImpl( float accuracyInMeters, float distanceFilter, 
 #endif
 	[mClLocationManager startUpdatingLocation];
 	CLLocation *newLocation = mClLocationManager.location;	
-	sMostRecentLocation = cinder::LocationEvent( cinder::Vec2f( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
+	sMostRecentLocation = LocationEvent( vec2( newLocation.coordinate.latitude, newLocation.coordinate.longitude ), newLocation.speed,
 								   newLocation.altitude, newLocation.horizontalAccuracy, newLocation.verticalAccuracy );
 }
 

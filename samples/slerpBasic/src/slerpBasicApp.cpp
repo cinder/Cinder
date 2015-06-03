@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
@@ -7,19 +8,19 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class slerpBasicApp : public AppBasic {
+class slerpBasicApp : public App {
   public:
 	void setup();
 	void mouseDown( MouseEvent event );	
 	void update();
 	void draw();
-	void drawPathBetweenVectors( Vec3f a, Vec3f b );
+	void drawPathBetweenVectors( vec3 a, vec3 b );
 
 	void setupSlerp();
 	
 	CameraPersp		mCam;
-	Quatf			mSpinTheWholeWorld;
-	Vec3f			mVecA, mVecB;
+	quat			mSpinTheWholeWorld;
+	vec3			mVecA, mVecB;
 	float			mSlerpAmt;
 };
 
@@ -28,9 +29,9 @@ void slerpBasicApp::setup()
 	// setup a camera that looks back at the origin from (3,3,3);
 	mCam = CameraPersp( getWindowWidth(), getWindowHeight(), 45 );
 	mCam.setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 100.0f );
-	mCam.lookAt( Vec3f( 3, 3, 3 ), Vec3f::zero() );
+	mCam.lookAt( vec3( 3, 3, 3 ), vec3( 0 ) );
 	
-	mSpinTheWholeWorld = Quatf( Vec3f::yAxis(), 0 );
+	mSpinTheWholeWorld = quat( 0.0f, vec3( 0, 1, 0 ) );
 	
 	setupSlerp();
 }
@@ -47,23 +48,23 @@ void slerpBasicApp::update()
 		mSlerpAmt = 0;
 	
 	// spin the scene by a few degrees around the y Axis
-	mSpinTheWholeWorld *= Quatf( Vec3f::yAxis(), 0.01f );
+	mSpinTheWholeWorld = angleAxis( 0.01f, vec3( 0, 1, 0 ) ) * mSpinTheWholeWorld;
 }
 
 void slerpBasicApp::setupSlerp()
 {
-	mVecA = randVec3f();
-	mVecB = randVec3f();
+	mVecA = randVec3();
+	mVecB = randVec3();
 	mSlerpAmt = 0;
 }
 
-void slerpBasicApp::drawPathBetweenVectors( Vec3f a, Vec3f b )
+void slerpBasicApp::drawPathBetweenVectors( vec3 a, vec3 b )
 {
 	// draws a path composed of 100 line segments
-	glBegin( GL_LINE_STRIP );
+	gl::begin( GL_LINE_STRIP );
 	for( float t = 0; t <= 1.0f; t += 0.01f )
-		gl::vertex( a.slerp( t, b ) );
-	glEnd();
+		gl::vertex( slerp( a, b, t ) );
+	gl::end();
 }
 
 void slerpBasicApp::draw()
@@ -78,7 +79,7 @@ void slerpBasicApp::draw()
 	// draw the globe
 	gl::enableWireframe();
 	gl::color( ColorA( 1, 1, 0, 0.25f ) );
-	gl::drawSphere( Vec3f::zero(), 1, 20 );
+	gl::drawSphere( vec3( 0 ), 1, 20 );
 	gl::disableWireframe();
 	
 	// draw the path
@@ -97,8 +98,7 @@ void slerpBasicApp::draw()
 
 	// draw slerped vector
 	gl::color( ColorA( 0, 1, 1, 1 ) );
-	gl::drawSphere( mVecA.slerp( mSlerpAmt, mVecB ), smallSphereRadius, smallSphereSegments );
+	gl::drawSphere( slerp( mVecA, mVecB, mSlerpAmt ), smallSphereRadius, smallSphereSegments );
 }
 
-
-CINDER_APP_BASIC( slerpBasicApp, RendererGl )
+CINDER_APP( slerpBasicApp, RendererGl )

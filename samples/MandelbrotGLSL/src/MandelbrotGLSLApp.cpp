@@ -1,7 +1,8 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/Easing.h"
 #include "cinder/ImageIo.h"
 
 #include "Resources.h"
@@ -10,63 +11,60 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class MandelbrotGLSLApp : public AppBasic {
-  public:
-	void			prepareSettings( Settings *settings );
-	virtual void	setup();
-	virtual void	update();
-	virtual void	draw();
-	
-	gl::GlslProg	mBrotShader;
-	gl::Texture		mColorsTexture;
-	
-	Vec2f			mCenter;
-	float			mScale;
-	int				mIter;
+class MandelbrotGLSLApp : public App {
+public:
+	static void prepareSettings( Settings *settings );
+
+	void setup() override;
+	void draw() override;
+
+public:
+	gl::GlslProgRef		mBrotShader;
+	gl::Texture2dRef	mColorsTexture;
+
+	vec2				mCenter;
 };
 
 void MandelbrotGLSLApp::prepareSettings( Settings *settings )
 {
 	settings->setWindowSize( 1024, 768 );
-	settings->setFrameRate( 60.0f );
+	settings->disableFrameRate();
 	settings->setFullScreen( false );
 }
 
 void MandelbrotGLSLApp::setup()
 {
-	mBrotShader		= gl::GlslProg( loadResource( RES_VERT_GLSL ), loadResource( RES_FRAG_GLSL ) );
-	mColorsTexture	= gl::Texture( loadImage( loadResource( RES_COLORS_PNG ) ) );
-	mColorsTexture.enableAndBind();
+	//! Zoom in on this location in the MandelBrot set.
+	mCenter = vec2( -0.5430f, 0.53398f );
 	
-	mCenter			= Vec2f( 0.7f, 0.0f );
-	mScale			= 2.2f;
-	
-	// WARNING
-	// Setting mIter too high will cause your computer to lock up.
-	// For example, I tried 100000000 iterations. That was a stupid idea.
-	// After five minutes of blowing air into my laptop, I gave up and shut
-	// it down. Even 10000 will cause a noticeable pause.
-	mIter			= 1500;
-}
+	//! Find other cool locations on: http://www.eddaardvark.co.uk/mandelbrot/webgl.html
+	//mCenter = vec2( -0.74699f, 0.08762f );
+	//mCenter = vec2( -0.922332f, 0.309948f );
 
-void MandelbrotGLSLApp::update()
-{
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
+	//! Load shader and texture from the resources.
+	mBrotShader = gl::GlslProg::create( loadResource( RES_VERT_GLSL ), loadResource( RES_FRAG_GLSL ) );
+	mColorsTexture = gl::Texture::create( loadImage( loadResource( RES_COLORS_PNG ) ) );
 }
 
 void MandelbrotGLSLApp::draw()
 {
-	gl::clear( Color( 0.2f, 0.2f, 0.2f ) );	
+	//! Zoom in over time.
+	float t = math<float>::clamp( 0.01f * (float) getElapsedSeconds(), 0.0f, 1.0f );
+	float scale = math<float>::exp( 0.5f - t * 8.0f );
+
+	//! Clear the window.
+	gl::clear();
 	gl::setMatricesWindow( getWindowSize() );
-	
-	mBrotShader.bind();
-	mBrotShader.uniform( "tex", 0 );
-	mBrotShader.uniform( "center", mCenter );
-	mBrotShader.uniform( "scale", mScale );
-	mBrotShader.uniform( "iter", mIter );
+
+	//! Render the MandelBrot set by running the shader
+	//! for every pixel in the window.
+	gl::ScopedGlslProg glslScp( mBrotShader );
+	gl::ScopedTextureBind texScp( mColorsTexture );
+	mBrotShader->uniform( "uTex0", 0 );
+	mBrotShader->uniform( "uCenter", mCenter );
+	mBrotShader->uniform( "uScale", scale );
+	mBrotShader->uniform( "uAspectRatio", getWindowAspectRatio() );
 	gl::drawSolidRect( getWindowBounds() );
-	mBrotShader.unbind();
 }
 
-CINDER_APP_BASIC( MandelbrotGLSLApp, RendererGl )
+CINDER_APP( MandelbrotGLSLApp, RendererGl( RendererGl::Options().msaa( 16 ) ), &MandelbrotGLSLApp::prepareSettings )

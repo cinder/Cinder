@@ -28,35 +28,35 @@ namespace cinder {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //
-void Shape2d::moveTo( const Vec2f &p )
+void Shape2d::moveTo( const vec2 &p )
 {
 	mContours.push_back( Path2d() );
 	mContours.back().moveTo( p );
 }
 
-void Shape2d::lineTo( const Vec2f &p )
+void Shape2d::lineTo( const vec2 &p )
 {
 	mContours.back().lineTo( p );
 }
 
-void Shape2d::quadTo( const Vec2f &p1, const Vec2f &p2 )
+void Shape2d::quadTo( const vec2 &p1, const vec2 &p2 )
 {
 	mContours.back().quadTo( p1, p2 );
 }
 
-void Shape2d::curveTo( const Vec2f &p1, const Vec2f &p2, const Vec2f &p3 )
+void Shape2d::curveTo( const vec2 &p1, const vec2 &p2, const vec2 &p3 )
 {
 	mContours.back().curveTo( p1, p2, p3 );
 }
 
-void Shape2d::arc( const Vec2f &center, float radius, float startRadians, float endRadians, bool forward )
+void Shape2d::arc( const vec2 &center, float radius, float startRadians, float endRadians, bool forward )
 {
 	if( mContours.empty() )
 		mContours.push_back( Path2d() );
 	mContours.back().arc( center, radius, startRadians, endRadians, forward );
 }
 
-void Shape2d::arcTo( const Vec2f &p, const Vec2f &t, float radius )
+void Shape2d::arcTo( const vec2 &p, const vec2 &t, float radius )
 {
 	mContours.back().arcTo( p, t, radius );
 }
@@ -72,29 +72,29 @@ void Shape2d::append( const Shape2d &shape )
 		appendContour( *pathIt );
 }
 
-void Shape2d::scale( const Vec2f &amount, Vec2f scaleCenter )
+void Shape2d::scale( const vec2 &amount, vec2 scaleCenter )
 {
 	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
 		contIt->scale( amount, scaleCenter );
 }
 
-void Shape2d::transform( const MatrixAffine2f &matrix )
+void Shape2d::transform( const mat3 &matrix )
 {
 	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
 		contIt->transform( matrix );
 }
 
-Shape2d	Shape2d::transformCopy( const MatrixAffine2f &matrix ) const
+Shape2d	Shape2d::transformed( const mat3 &matrix ) const
 {
 	Shape2d result;
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
-		result.appendContour( contIt->transformCopy( matrix ) );
+		result.appendContour( contIt->transformed( matrix ) );
 	return result;
 }
 
 Rectf Shape2d::calcBoundingBox() const
 {
-	Rectf result( Vec2f::zero(), Vec2f::zero() );
+	auto result = Rectf( vec2(), vec2() );
 
 	// find the first point and initialize the result with that
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
@@ -114,7 +114,7 @@ Rectf Shape2d::calcBoundingBox() const
 
 Rectf Shape2d::calcPreciseBoundingBox() const
 {
-	Rectf result( Vec2f::zero(), Vec2f::zero() );
+	auto result = Rectf( vec2(), vec2() );
 
 	// find the first point and initialize the result with that
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {
@@ -132,7 +132,7 @@ Rectf Shape2d::calcPreciseBoundingBox() const
 	return result;
 }
 
-bool Shape2d::contains( const Vec2f &pt ) const
+bool Shape2d::contains( const vec2 &pt ) const
 {
 	int numPathsInside = 0;
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt ) {

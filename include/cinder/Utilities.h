@@ -26,6 +26,8 @@
 
 #include <string>
 #include <vector>
+#include <map>
+
 #include "cinder/Cinder.h"
 #include "cinder/Url.h"
 #include "cinder/DataSource.h"
@@ -34,38 +36,23 @@
 
 namespace cinder {
 
-//! Returns a canonical version of \a path by expanding a "~" and symlinks on the Mac "..", "." and "//"
+//! Returns a canonical version of \a path. Collapses '.', ".." and "//". Converts '~' on Cocoa. Expands environment variables on MSW.
 fs::path expandPath( const fs::path &path );
 //! Returns a path to the user's home directory.
 fs::path getHomeDirectory();
 //! Returns a path to the user's documents directory.
 fs::path getDocumentsDirectory();
-//! Returns a path to the user's temporary directory.
-fs::path getTemporaryDirectory();
-//! Returns a path that is gauranteed to be unique and is suitable for creating a temporary file. An optional \a prefix parameters allows specification of a file name prefix, some portion of which will be incorporated into the result. Note a race condition that can exist between the uniqueness of the path and the creation of the file.
-fs::path getTemporaryFilePath( const std::string &prefix = "" );
-//! Returns the directory portion of file path \a path, the last component of which must be a file name or a terminating path separator. 
-std::string getPathDirectory( const std::string &path );
-//! Returns the file name portion of file path \a path. For example \c "C:\Images\Beyonce.jpg" returns \c "Beyonce.jpg".
-std::string getPathFileName( const std::string &path );
-//! Returns the file extension of the file located at \a path
-std::string getPathExtension( const std::string &path );
-//! Creates a directory at \a path and optionally creates any missing parent directories when \a createParents is \c true. Returns \c true upon success.
-bool createDirectories( const fs::path &path, bool createParents = true );
 
 //! Launches a path in a web browser
 void launchWebBrowser( const Url &url );
 	
-//! Delete the file at \a path. Fails quietly if the path does not exist.
-void deleteFile( const fs::path &path );
-
 //! Returns a vector of substrings split by the separator \a separator. <tt>split( "one two three", ' ' ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
 std::vector<std::string> split( const std::string &str, char separator, bool compress = true );
 //! Returns a vector of substrings split by the characters in \a separators. <tt>split( "one, two, three", " ," ) -> [ "one", "two", "three" ]</tt> If \a compress is TRUE, it will consider consecutive separators as one.
 std::vector<std::string> split( const std::string &str, const std::string &separators, bool compress = true );
 
 //! Loads the contents of \a dataSource and returns it as a std::string
-std::string loadString( DataSourceRef dataSource );
+std::string loadString( const DataSourceRef &dataSource );
 
 //! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on Mac OS X.
 void sleep( float milliseconds );
@@ -76,6 +63,9 @@ inline char getPathSeparator() { return '\\'; }
 #else
 inline char getPathSeparator() { return '/'; }
 #endif
+
+//! Returns a std::map of the system's environment variables. Empty on WinRT.
+std::map<std::string, std::string> getEnvironmentVariables();
 
 template<typename T>
 inline std::string toString( const T &t ) { return boost::lexical_cast<std::string>( t ); }

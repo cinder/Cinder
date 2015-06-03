@@ -1,36 +1,47 @@
-#include "flint/app/AppBasic.h"
-#include "flint/params/Params.h"
-#include "flint/imp/Threshold.h"
-#include "flint/imp/Grayscale.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+#include "cinder/params/Params.h"
+#include "cinder/ip/Threshold.h"
+#include "cinder/ip/Grayscale.h"
 
-using namespace fli;
-using namespace fli::app;
+using namespace std;
+using namespace ci;
+using namespace ci::app;
 
-class ThresholdTestApp : public AppBasic {
+class ThresholdTestApp : public App {
  public:
-	void setup();
-	void loadFile( const std::string &path );
+	void setup() override;
+	void update() override;
+	void draw() override;
 
-	void keyDown( KeyEvent event );
+  private:
+	void loadFile( const fs::path &path );
 
-	void update();
-	void draw();
-	
-	bool					mUseAdaptiveThreshold;
+	bool					mUseAdaptiveThreshold = false;
+	bool					mUseAdaptivePercentage = false;
+	bool					mShowOriginalGrayScale = false;
+	bool					mUseClassVersion = true;
 	int						mThresholdValue, mAdaptiveThresholdKernel;
 	float					mAdaptiveThresholdPercentage;
-	params::InterfaceGL		*mParams;
-	gl::Texture				mTexture;
-	Surface8u				mSurface;
-	Channel8u				*mGraySurface, *mThresholded;
+	params::InterfaceGlRef	mParams;
+	gl::TextureRef			mTexture;
+	Surface8uRef			mSurface;
+	Channel8u				mGraySurface, mThresholded;
+
+	ip::AdaptiveThreshold		mThresholdClass;
 };
 
 void ThresholdTestApp::setup()
 {
-	mParams = new params::InterfaceGL( this, "Parameters", Offset( 200, 400 ) );
+	mParams = params::InterfaceGl::create( "Parameters", ivec2( 300, 240 ) );
 	mParams->addParam( "Threshold", &mThresholdValue, "min=0 max=255 keyIncr=v keyDecr=V" );
+	mParams->addButton( "open file", [this] { loadFile( getOpenFilePath() ); }, "key=o" );
 	mParams->addSeparator();
 	mParams->addParam( "Use Adapative", &mUseAdaptiveThreshold );
+	mParams->addParam( "Use Adapative class", &mUseClassVersion );
+	mParams->addParam( "Use Adapative percentage", &mUseAdaptivePercentage );
+	mParams->addParam( "Show Grayscale", &mShowOriginalGrayScale );
 	mParams->addParam( "Adaptive Kernel", &mAdaptiveThresholdKernel, "min=0 max=1000 keyIncr=k keyDecr=K" );
 	mParams->addParam( "Adaptive Percentage", &mAdaptiveThresholdPercentage, "min=0 max=1.0 step=0.01 keyIncr=p keyDecr=P" );
 	
@@ -41,52 +52,51 @@ void ThresholdTestApp::setup()
 	loadFile( getOpenFilePath() );
 }
 
-void ThresholdTestApp::loadFile( const std::string &path )
+void ThresholdTestApp::loadFile( const fs::path &path )
 {
 	if( ! path.empty() ) {
-		mSurface = loadImage( path );
-		mGraySurface = new Channel( mSurface.getWidth(), mSurface.getHeight() );
-		mThresholded = new Channel( mSurface.getWidth(), mSurface.getHeight() );
-		imp::grayscale( mSurface, mGraySurface );
+		mSurface = Surface8u::create( loadImage( path ) );
+		mGraySurface = Channel( mSurface->getWidth(), mSurface->getHeight() );
+		mThresholded = Channel( mSurface->getWidth(), mSurface->getHeight() );
+		ip::grayscale( *mSurface, &mGraySurface );
+
+		mThresholdClass = ip::AdaptiveThreshold( &mGraySurface );
 	}
 }
 
 void ThresholdTestApp::update()
 {
 	if( mSurface ) {
-		if( mUseAdaptiveThreshold ) {
-			//imp::adaptiveThreshold<uint8_t>( *mGraySurface, mAdaptiveThresholdKernel, mAdaptiveThresholdPercentage, mThresholded );
-			imp::adaptiveThresholdZero<uint8_t>( *mGraySurface, mAdaptiveThresholdKernel, mThresholded );
-			//imp::adaptiveThresholdZero<uint8_t>( mGraySurface, mAdaptiveThresholdKernel );
+		if( mUseClassVersion ) {
+			mThresholdClass.calculate( mAdaptiveThresholdKernel, mAdaptiveThresholdPercentage, &mThresholded );
+		}
+		else if( mUseAdaptiveThreshold ) {
+			if( mUseAdaptivePercentage )
+				ip::adaptiveThreshold<uint8_t>( mGraySurface, mAdaptiveThresholdKernel, mAdaptiveThresholdPercentage, &mThresholded );
+			else {
+				ip::adaptiveThresholdZero<uint8_t>( mGraySurface, mAdaptiveThresholdKernel, &mThresholded );
+//				ip::adaptiveThresholdZero<uint8_t>( &mGraySurface, mAdaptiveThresholdKernel );
+			}
 		}
 		else {
-			imp::threshold<uint8_t>( *mGraySurface, mThresholdValue, mThresholded );
+			ip::threshold<uint8_t>( mGraySurface, mThresholdValue, &mThresholded );
 		}
-		
-		mTexture = gl::Texture( *mThresholded );
-		//mTexture = gl::Texture( *mGraySurface );
-	}
-}
 
-void ThresholdTestApp::keyDown( KeyEvent event )
-{
-	switch( event.getChar() ) {
-		case 'o':
-			loadFile( getOpenFilePath() );
-		break;
+		if( mShowOriginalGrayScale )
+			mTexture = gl::Texture::create( mGraySurface );
+		else
+			mTexture = gl::Texture::create( mThresholded );
 	}
 }
 
 void ThresholdTestApp::draw()
 {
-	glClearColor( 0, 0, 0, 0 );
-	glClear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
+	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
 
 	if( mTexture )
-		mTexture.draw( 0, 0, mTexture.getWidth(), mTexture.getHeight() );
+		gl::draw( mTexture );
 	
 	mParams->draw();
 }
 
-// This line tells Flint to actually create the application
-FLI_APP_BASIC( ThresholdTestApp, RendererGL )
+CINDER_APP( ThresholdTestApp, RendererGl )

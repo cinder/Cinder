@@ -1,4 +1,5 @@
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Text.h"
@@ -59,7 +60,7 @@ void iosKeyboardApp::setup()
 
 	// You can further customize the way the iOS virtual keyboard looks by directly manipulating the managed UITextField:
 	// (note: requires that you build this source file as Obj-C++).
-	getkeyboardTextView().keyboardAppearance = UIKeyboardAppearanceAlert;
+	getKeyboardTextView().keyboardAppearance = UIKeyboardAppearanceAlert;
 }
 
 void iosKeyboardApp::touchesBegan( TouchEvent event )
@@ -68,7 +69,7 @@ void iosKeyboardApp::touchesBegan( TouchEvent event )
 	mNumericalTextView.mIsSelected = false;
 	mMultiLineTextView.mIsSelected = false;
 
-	Vec2f pos = event.getTouches().front().getPos();
+	vec2 pos = event.getTouches().front().getPos();
 	pos.y -= mViewYOffset;
 
 	if( mNumericalTextView.mBounds.contains( pos ) ) {
@@ -107,7 +108,7 @@ void iosKeyboardApp::processNumerical( const KeyEvent &event )
 		mNumericalTextView.mText.push_back( event.getChar() );
 		Rectf fitRect = mNumericalTextView.getTextBounds();
 		TextBox tbox = TextBox().font( mFont ).text( mNumericalTextView.mText ).size( TextBox::GROW, TextBox::GROW );
-		Vec2f size = tbox.measure();
+		vec2 size = tbox.measure();
 
 		if( size.x > fitRect.getWidth() ) {
 			console() << "OVERFLOW" << endl;
@@ -151,7 +152,7 @@ void iosKeyboardApp::drawTextView( const TextView &textView )
 	gl::drawStrokedRect( textView.mBounds );
 
 	Rectf fitRect = textView.getTextBounds();
-	Vec2f offset( 0.0f, mFont.getAscent() );
+	vec2 offset( 0.0f, mFont.getAscent() );
 
 	TextBox tbox = TextBox().font( mFont ).size( fitRect.getWidth(), fitRect.getHeight() ).premultiplied();
 
@@ -162,7 +163,9 @@ void iosKeyboardApp::drawTextView( const TextView &textView )
 		tbox.color( Color( "FireBrick" ) ).text( textView.mText );
 	}
 	gl::color( Color::white() );
-	gl::draw( tbox.render(), fitRect.getUpperLeft() );
+
+	auto tex = gl::Texture::create( tbox.render() );
+	gl::draw( tex, fitRect.getUpperLeft() );
 }
 
 void iosKeyboardApp::layoutTextViews()

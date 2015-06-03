@@ -7,306 +7,204 @@
  *
  */
 
-#include "Earth.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 
+#include "Earth.h"
+#include "Resources.h"
+
 using namespace ci;
-using std::list;
+using namespace ci::app;
 
 Earth::Earth()
+	: mLoc( 0 ), mRadius( 250 ), mMinMagToRender( 2 ), mNumQuakes( 0 )
 {
-}
+	mLightDir = glm::normalize( vec3( 0.025f, 0.25f, 1.0f ) );
 
-Earth::Earth( ci::gl::Texture aTexDiffuse, ci::gl::Texture aTexNormal, ci::gl::Texture aTexMask )
-{
-	mLoc			= Vec3f::zero();
-	mRadius			= 250.0f;
-	mTexDiffuse		= aTexDiffuse;
-	mTexNormal		= aTexNormal;
-	mTexMask		= aTexMask;
-	
-	mMinMagToRender = 5.0f;
-}
+	// Load the textures for the Earth.
+	auto fmt = gl::Texture2d::Format().wrap( GL_REPEAT ).mipmap().minFilter( GL_LINEAR_MIPMAP_LINEAR );
+	mTexDiffuse = gl::Texture2d::create( loadImage( loadResource( RES_EARTHDIFFUSE ) ), fmt );
+	mTexNormal = gl::Texture2d::create( loadImage( loadResource( RES_EARTHNORMAL ) ), fmt );
+	mTexMask = gl::Texture2d::create( loadImage( loadResource( RES_EARTHMASK ) ), fmt );
 
-void Earth::setQuakeLocTip()
-{
-	for( list<Quake>::iterator quake = mQuakes.begin(); quake != mQuakes.end(); ++quake ) {
-		quake->mLoc += Rand::randVec3f() * 0.001f;
-		quake->mLocTip = mLoc + quake->mLoc * ( mRadius + quake->mMag * quake->mMag );
-		quake->mLocTipAnchor = mLoc + quake->mLoc * mRadius;
-	}
+	// Create the Earth mesh with a custom shader.
+	auto earthShader = gl::GlslProg::create( loadResource( RES_PASSTHRU_VERT ), loadResource( RES_EARTH_FRAG ) );
+	earthShader->uniform( "texDiffuse", 0 );
+	earthShader->uniform( "texNormal", 1 );
+	earthShader->uniform( "texMask", 2 );
+	mEarth = gl::Batch::create( geom::Sphere().radius( mRadius ).subdivisions( 120 ), earthShader );
+
+	// Create a cone mesh with a custom shader, which we use to visualize earthquakes.
+	gl::VboMeshRef mesh = gl::VboMesh::create( geom::Cone().height( 1 ).ratio( 0.25f ).subdivisionsHeight( 6 ).subdivisionsAxis( 30 ) );
+
+	// Create an array of initial per-instance model matrices.
+	std::vector<mat4> transforms;
+	transforms.resize( MAX_NUMBER_OF_QUAKES );
+
+	// Create the VBO which will contain per-instance (rather than per-vertex) data.
+	mInstanceDataVbo = gl::Vbo::create( GL_ARRAY_BUFFER, transforms.size() * sizeof( mat4 ), transforms.data(), GL_STATIC_DRAW );
+
+	// We need a geom::BufferLayout to describe this data as mapping to the CUSTOM_0 semantic,
+	// and the 1 (rather than 0) as the last param indicates per-instance (rather than per-vertex).
+	geom::BufferLayout instanceDataLayout;
+	instanceDataLayout.append( geom::Attrib::CUSTOM_0, 16, sizeof( mat4 ), 0, 1 /* per instance */ );
+
+	// Now add it to the VboMesh we already made of the Cone.
+	mesh->appendVbo( instanceDataLayout, mInstanceDataVbo );
+
+	// And finally, build our batch, mapping our CUSTOM_0 attribute to the "iModelMatrix" GLSL vertex attribute.
+	auto quakeShader = gl::GlslProg::create( loadResource( RES_QUAKE_VERT ), loadResource( RES_QUAKE_FRAG ) );
+	mQuake = gl::Batch::create( mesh, quakeShader, { { geom::Attrib::CUSTOM_0, "iModelMatrix" } } );
 }
 
 void Earth::update()
 {
-	repelLocTips();
-}
+	repelLocTips(); // Seems to no longer work. Disabled for now.
 
+	mEarth->getGlslProg()->uniform( "lightDir", mLightDir );
+	mQuake->getGlslProg()->uniform( "lightDir", mLightDir );
 
-void Earth::repelLocTips()
-{
-	float E, F;
-	Vec3f dir;
-	float distSqrd;
-	float charge = -2.0f;
-	
-	for( list<Quake>::iterator quake1 = mQuakes.begin(); quake1 != mQuakes.end(); ++quake1 ) {
-		float thisQTimesInvM = quake1->mMag * charge;
-		
-		for( list<Quake>::iterator quake2 = quake1; quake2 != mQuakes.end(); ++quake2 ) {
-			if( quake1 != quake2 && quake1->mMag > mMinMagToRender && quake2->mMag > mMinMagToRender ){
-				dir = quake1->mLocTip - quake2->mLocTip;
-				distSqrd = dir.lengthSquared();
-				
-				if( distSqrd < 50.0f && distSqrd > 0.001f ) {
-					float per = 1.0f - abs( distSqrd )/50.0f;
-					E = charge / distSqrd;
-					F = E * thisQTimesInvM;
-					
-					if( F > 2.0f )
-						F = 2.0f;
-					
-					dir.normalize();
-					dir *= F * per;
-					
-					quake1->mLocTip += dir;
-					quake2->mLocTip -= dir;
-				}
+	// Update the instance data.
+	if( !mQuakes.empty() && mNumQuakes == 0 ) {
+		mat4 *data = (mat4*) mInstanceDataVbo->mapWriteOnly( true );
+		{
+			mNumQuakes = 0;
+			for( auto &quake : mQuakes ) {
+				// Skip if minor earthquake.
+				if( quake.mMag < mMinMagToRender )
+					continue;
+
+				mat4 transform = glm::translate( quake.mLocTipAnchor );
+				transform *= glm::toMat4( glm::rotation( vec3( 0, 1, 0 ), glm::normalize( quake.mLocTip - quake.mLocTipAnchor ) ) );
+				transform *= glm::scale( vec3( quake.mMag, glm::distance( quake.mLocTip, quake.mLocTipAnchor ), quake.mMag ) );
+
+				*data++ = transform;
+
+				mNumQuakes++;
+				if( mNumQuakes >= MAX_NUMBER_OF_QUAKES )
+					break;
 			}
 		}
-	}
-	
-	for( list<Quake>::iterator quake = mQuakes.begin(); quake != mQuakes.end(); ++quake ) {
-		dir = quake->mLocTip - quake->mLocTipAnchor;
-		float limit = ( 10.0f - quake->mMag ) * ( 10.0f - quake->mMag ) * 0.75f + 15.0f;
-		if( dir.length() > limit ){
-			dir.normalize();
-			quake->mLocTip = quake->mLocTipAnchor + dir * limit;
-		}
-		
-		quake->mLocTip.normalize();
-		quake->mLocTip *= mRadius + quake->mMag + 10.0f;
+		mInstanceDataVbo->unmap();
 	}
 }
-
 
 void Earth::draw()
 {
-	mTexDiffuse.bind( 0 );
-	mTexNormal.bind( 1 );
-	mTexMask.bind( 2 );
-	
-	gl::drawSphere( mLoc, mRadius, 64 );
-}
+	gl::ScopedFaceCulling cull( true, GL_BACK );
+	gl::ScopedTextureBind tex0( mTexDiffuse, 0 );
+	gl::ScopedTextureBind tex1( mTexNormal, 1 );
+	gl::ScopedTextureBind tex2( mTexMask, 2 );
 
+	mEarth->draw();
+}
 
 void Earth::drawQuakes()
 {
-	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
-		float mag = (it->mMag);
-		gl::drawSphere( it->mLocTip, mag * 0.25f, 16 );
-	}
+	mQuake->drawInstanced( mNumQuakes );
 }
 
-
-void Earth::drawQuakeLabelsOnBillboard( const Vec3f &sRight, const Vec3f &sUp )
+void Earth::drawQuakeLabelsOnSphere( const vec3 &eyeNormal, const float eyeDist )
 {
-	Vec3f right;
-	Vec3f up;
-	float perLeft, perRight;
-	
-	glBegin( GL_QUADS );
-	
-	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
-		it->mLabel.bind();
-		
-		float mag = (it->mMag);
-		
-		if( mag >= mMinMagToRender ){
-			
-			
-			float x = it->mLocTip.x;
-			float y = it->mLocTip.y;
-			float z = it->mLocTip.z;
-			
-			float w = it->mLabel.getWidth() * 0.5f;
-			float h = it->mLabel.getHeight() * 0.5f;
-			
-			// perLeft and Right is a partially implemented solution for getting the text
-			// to move based on the rotation of the Earth. Will get back to it shortly.
-			perLeft		= -1.0f;
-			perRight	= 1.0f;
-			right	= sRight * w;
-			up		= sUp * h;
-			
-			glTexCoord2f( 0, 1 );
-			glVertex3f( x + right.x * perLeft + up.x * perLeft,		y + right.y * perLeft + up.y * perLeft,		z + right.z * perLeft + up.z * perLeft );
-			glTexCoord2f( 1, 1 );
-			glVertex3f( x + right.x * perRight + up.x * perLeft,	y + right.y * perRight + up.y * perLeft,	z + right.z * perRight + up.z * perLeft );
-			glTexCoord2f( 1, 0 );
-			glVertex3f( x + right.x * perRight + up.x * perRight,	y + right.y * perRight + up.y * perRight,	z + right.z * perRight + up.z * perRight );
-			glTexCoord2f( 0, 0 );
-			glVertex3f( x + right.x * perLeft + up.x * perRight,	y + right.y * perLeft + up.y * perRight,	z + right.z * perLeft + up.z * perRight );
-			
-		}
-	}
-	
-	glEnd();
-}
+	gl::ScopedDepth depth( true, false );
+	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 
+	gl::ScopedColor color( 1, 1, 1 );
+	gl::ScopedBlendAlpha blend;
 
+	const float distMulti = eyeDist * 0.001f;
+	for( auto &quake : mQuakes ) {
+		// Skip if minor earthquake.
+		if( quake.mMag < mMinMagToRender )
+			continue;
 
-void Earth::drawQuakeLabelsOnSphere( const Vec3f eyeNormal, const float eyeDist )
-{
-	float distMulti = eyeDist * 0.001f;
-	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
-		it->mLabel.bind();
-		
-		float mag = (it->mMag);
-		
-		if( mag >= mMinMagToRender ){
-			float x = it->mLocTip.x;
-			float y = it->mLocTip.y;
-			float z = it->mLocTip.z;
-			float dp = it->mLoc.dot( eyeNormal ) - 0.85;
-			
-			if( dp <= 0.0f )
-				dp = 0.0f;
-				
-			float w = it->mLabel.getWidth() * dp * distMulti;
-			float h = it->mLabel.getHeight() * dp * distMulti;
-			
-			Vec3f dir = mLoc - it->mLoc;
-			dir.normalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
-			perp1		= perp2.cross( dir );
+		// Skip if invisible.
+		float dp = glm::dot( glm::normalize( quake.mLoc ), glm::normalize( eyeNormal ) ) - 0.85f;
+		if( dp <= 0.0f )
+			continue;
 
-			
-			glBegin( GL_QUADS );
-			glTexCoord2f( 0, 1 );
-			glVertex3f( x + perp1.x * w - perp2.x * h,		y + perp1.y * w - perp2.y * h,		z + perp1.z * w - perp2.z * h );
-			glTexCoord2f( 1, 1 );
-			glVertex3f( x - perp1.x * w - perp2.x * h,		y - perp1.y * w - perp2.y * h,		z - perp1.z * w - perp2.z * h );
-			glTexCoord2f( 1, 0 );
-			glVertex3f( x - perp1.x * w + perp2.x * h,		y - perp1.y * w + perp2.y * h,		z - perp1.z * w + perp2.z * h );
-			glTexCoord2f( 0, 0 );
-			glVertex3f( x + perp1.x * w + perp2.x * h,		y + perp1.y * w + perp2.y * h,		z + perp1.z * w + perp2.z * h );
-			glEnd();
-		}
+		// Calculate billboard vectors.
+		vec3 dir = glm::normalize( mLoc - quake.mLoc );
+		vec3 perp1 = glm::cross( dir, vec3( 0, 1, 0 ) );
+		vec3 perp2 = glm::cross( perp1, dir ); perp1 = glm::cross( perp2, dir );
+
+		float x = quake.mLocTip.x;
+		float y = quake.mLocTip.y;
+		float z = quake.mLocTip.z;
+
+		float w = quake.mLabel->getWidth() * dp * distMulti;
+		float h = quake.mLabel->getHeight() * dp * distMulti;
+
+		// Render billboard.
+		gl::ScopedTextureBind tex0( quake.mLabel, 0 );
+		gl::begin( GL_TRIANGLE_STRIP );
+		gl::texCoord( 0, 0 );
+		gl::vertex( x + perp1.x * w - perp2.x * h, y + perp1.y * w - perp2.y * h, z + perp1.z * w - perp2.z * h );
+		gl::texCoord( 1, 0 );
+		gl::vertex( x - perp1.x * w - perp2.x * h, y - perp1.y * w - perp2.y * h, z - perp1.z * w - perp2.z * h );
+		gl::texCoord( 0, 1 );
+		gl::vertex( x + perp1.x * w + perp2.x * h, y + perp1.y * w + perp2.y * h, z + perp1.z * w + perp2.z * h );
+		gl::texCoord( 1, 1 );
+		gl::vertex( x - perp1.x * w + perp2.x * h, y - perp1.y * w + perp2.y * h, z - perp1.z * w + perp2.z * h );
+		gl::end();
 	}
 }
 
-
-
-void Earth::drawQuakeVectors()
-{
-	float radialSubdivisions = 64.0f;
-	Vec3f loc;
-	Vec3f norm;
-	Vec3f normFinal;
-
-	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
-		float mag = (it->mMag );
-		
-		if( mag >= mMinMagToRender ){
-			Vec3f dir = mLoc - it->mLoc;
-			dir.safeNormalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
-			perp1		= perp2.cross( dir );
-			
-			float largeRadius = mag;
-			float smallRadius = 0.1f;
-			
-			glBegin( GL_TRIANGLE_STRIP );
-			for( int i=0; i<radialSubdivisions; i++ ){
-				float angle = ( (float)i/(radialSubdivisions-1.0f) - 0.5f ) * 6.283185f;
-				float cosa  = cos( angle );
-				float sina  = sin( angle );
-				Vec3f locOffset = ( perp1 * cosa + perp2 * sina );
-				
-				norm	= perp1 * -sina + perp2 * cosa;
-				normFinal = Vec3f( norm.y * dir.z - dir.y * norm.z, norm.z * dir.x - dir.z * norm.x, norm.x * dir.y - dir.x * norm.y );
-				
-				loc		= ( it->mLocTip ) + locOffset * smallRadius;
-			
-				glTexCoord2f( 0.0f, 1.0f );
-				glVertex3f( loc.x, loc.y, loc.z );
-				glNormal3f( it->mLoc.x, it->mLoc.y, it->mLoc.z );
-				
-				
-				loc		= ( it->mLoc * mRadius ) + locOffset * largeRadius;
-				
-				glTexCoord2f( 0.0f, 0.0f );
-				glVertex3f( loc.x, loc.y, loc.z );
-				glNormal3f( normFinal.x, normFinal.y, normFinal.z );
-				
-				
-			}
-			glEnd();
-		}
-	}
-}
-
-/*
-void Earth::drawQuakeVectors()
-{
-	float radialSubdivisions = 64.0f;
-	Vec3f loc;
-	Vec3f norm;
-	
-	for( list<Quake>::iterator it = mQuakes.begin(); it != mQuakes.end(); ++it ) {
-		float mag = (it->mMag );
-		
-		if( mag >= mMinMagToRender ){
-			Vec3f dir = mLoc - it->mLoc;
-			dir.normalize();
-			Vec3f perp1 = dir.cross( Vec3f::yAxis() );
-			Vec3f perp2 = perp1.cross( dir );
-			perp1		= perp2.cross( dir );
-			
-			float largeRadius = mag * mag * 0.35f + 5.0f;
-			float smallRadius = 0.1f;
-			
-			glBegin( GL_TRIANGLE_FAN );
-			
-			glVertex3f( it->mLocTip.x, it->mLocTip.y, it->mLocTip.z );
-			glNormal3f( it->mLoc.x, it->mLoc.y, it->mLoc.z );
-				
-			for( int i=0; i<radialSubdivisions; i++ ){
-				float angle = ( (float)i/(radialSubdivisions-1.0f) ) * 6.28f;
-				float cosa  = cos( angle );
-				float sina  = sin( angle );
-				Vec3f locOffset = ( perp1 * cosa + perp2 * sina );
-				
-				norm	= perp1 * -sina + perp2 * cosa;
-				loc		= ( it->mLoc * mRadius ) + locOffset * largeRadius;
-				
-				glVertex3f( loc.x, loc.y, loc.z );
-				glNormal3f( norm.y * dir.z - dir.y * norm.z, norm.z * dir.x - dir.z * norm.x, norm.z * dir.y - dir.x * norm.y );
-			}
-			glEnd();
-		}
-
-	}
-}
-*/
-
-
-void Earth::addQuake( float aLat, float aLong, float aMag, std::string aTitle )
+void Earth::addQuake( float aLat, float aLong, float aMag, const std::string &aTitle )
 {
 	mQuakes.push_back( Quake( aLat, aLong, aMag, aTitle ) );
+
+	// This will trigger an update of the instanced data:
+	mNumQuakes = 0;
 }
 
-
-void Earth::setMinMagToRender( float amt )
+void Earth::setQuakeLocTips()
 {
-	mMinMagToRender += amt;
-	if( mMinMagToRender < 2.0f ){
-		mMinMagToRender = 2.0f; 
-	} else if( mMinMagToRender > 8.0f ){
-		mMinMagToRender = 8.0f ;
+	for( auto &quake : mQuakes ) {
+		quake.mLocTip = mLoc + quake.mLoc * ( mRadius + quake.mMag * quake.mMag );
+		quake.mLocTipAnchor = mLoc + quake.mLoc * mRadius;
+	}
+}
+
+void Earth::repelLocTips()
+{
+	for( auto quake1 = mQuakes.begin(); quake1 != mQuakes.end(); ++quake1 ) {
+		// Skip if minor earthquake.
+		if( quake1->mMag < mMinMagToRender )
+			continue;
+
+		for( auto quake2 = quake1; quake2 != mQuakes.end(); ++quake2 ) {
+			// Skip if the same.
+			if( quake1 == quake2 )
+				continue;
+
+			// Skip if minor earthquake.
+			if( quake2->mMag < mMinMagToRender )
+				continue;
+
+			// Find the distance between the quakes.
+			vec3 direction = quake2->mLocTip - quake1->mLocTip;
+			float distance = glm::length( direction );
+
+			// If too close...
+			if( distance < 10.0f ) {
+				// ...move them slowly away from each other.
+				direction = 0.1f * ( 10.0f - distance ) * glm::normalize( direction );
+				quake1->mLocTip -= direction;
+				quake2->mLocTip += direction;
+
+				// Force instance data to be updated.
+				mNumQuakes = 0;
+			}
+		}
+	}
+
+	// If any of the quakes has been moved around, make sure they still have the correct length.
+	if( mNumQuakes == 0 ) {
+		for( auto &quake : mQuakes ) {
+			vec3 direction = glm::normalize( quake.mLocTip - quake.mLocTipAnchor );
+			quake.mLocTip = quake.mLocTipAnchor + direction * ( quake.mMag * quake.mMag );
+		}
 	}
 }

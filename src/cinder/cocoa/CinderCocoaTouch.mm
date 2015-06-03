@@ -40,19 +40,18 @@
 
 namespace cinder { namespace cocoa {
 
-Surface8u convertUiImage( UIImage *uiImage, bool assumeOwnership )
+Surface8uRef convertUiImage( UIImage *uiImage, bool assumeOwnership )
 {
 	CGImageRef imageRef = uiImage.CGImage;
 	if( ! imageRef )
-		return Surface8u();
+		return Surface8uRef();
 	
-	Surface8u result( createImageSource( imageRef ) );
 	if( assumeOwnership ) {
 		[uiImage retain];
-		result.setDeallocator( cocoa::safeCocoaRelease, uiImage );
+		return std::shared_ptr<Surface8u>( new Surface8u( createImageSource( imageRef ) ), [=]( Surface8u *s ) { delete s; [uiImage release]; } );
 	}
-	
-	return result;
+	else
+		return Surface8u::create( createImageSource( imageRef ) );
 }
 
 SafeUiImage::SafeUiImage( UIImage *uiImage, CGImageRef imageRef )

@@ -1,9 +1,11 @@
-#include "cinder/Cinder.h"
-#include "cinder/Utilities.h"
 #include "cinder/app/AppScreenSaver.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/Utilities.h"
 #include "cinder/Color.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
+#include "cinder/Log.h"
+#include "cinder/System.h"
 
 #include "Resources.h"
 #include "Configuration.h"
@@ -13,24 +15,30 @@
 	#include "WindowsConfig.h"
 #endif
 
+#define LOAD_LOGO_IN_CONSTRUCTOR 0
+
 using namespace ci;
 using namespace ci::app;
 
 class ScreenSaverTestApp : public AppScreenSaver {
   public:
-	virtual void prepareSettings( Settings *settings );
-	virtual void setup();
-	virtual void resize();
-	virtual void update();
-	virtual void draw();
-	virtual void shutdown();
+	ScreenSaverTestApp();
+
+	virtual void setup() override;
+	virtual void resize() override;
+	virtual void update() override;
+	virtual void draw() override;
+
+	void loadLogo();
 
 #if defined( CINDER_MAC )
-	virtual NSWindow* createMacConfigDialog() override {
+	virtual NSWindow* createMacConfigDialog() override
+	{
 		return getConfigDialogMac( this, &mConfig ); // defined in MacConfigDialog.cpp
 	}
 #elif defined( CINDER_MSW )
-	static BOOL doConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam ) {
+	static BOOL doConfigureDialog( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
+	{
 		return mswDoConfigureDialog( hDlg, message, wParam, lParam ); // defined in WindowsConfig.cpp
 	}
 #endif
@@ -39,23 +47,34 @@ class ScreenSaverTestApp : public AppScreenSaver {
 	Configuration	mConfig;
 	ci::Color		mColor, mBackgroundColor;
 	float			mRadius;
-	gl::Texture		mLogo;
+	gl::TextureRef	mLogo;
 };
 
 
-void ScreenSaverTestApp::prepareSettings( Settings *settings )
+void prepareSettings( AppScreenSaver::Settings *settings )
 {
-console() << "prepareSettings() called in " << getAppPath() << std::endl;
 //	settings->setFrameRate( 1 );
 #if defined( CINDER_MAC )
 	settings->setProvidesMacConfigDialog();
+#elif defined( CINDER_MSW )
+//	settings->enableDebug();
 #endif
 //	settings->enableSecondaryDisplayBlanking();
 }
 
+ScreenSaverTestApp::ScreenSaverTestApp()
+{
+#if LOAD_LOGO_IN_CONSTRUCTOR
+	log::manager()->enableSystemLogging();
+	loadLogo();
+#endif
+}
+
 void ScreenSaverTestApp::setup()
 {
-	console() << "setup" << std::endl;
+	log::manager()->enableSystemLogging();
+	CI_LOG_I( "called in " << getAppPath() );
+
 #if defined( CINDER_MAC )
 	loadConfigMac( this, &mConfig );
 #else
@@ -63,25 +82,30 @@ void ScreenSaverTestApp::setup()
 #endif
 	mColor = Color( 1.0f, 0.5f, 0.25f );
 	mBackgroundColor = Color( 0.7f, 0.0f, 0.8f );
-	
-	try {
-		mLogo = loadImage( loadResource( RES_CINDER_LOGO ) );
-	}
-	catch( std::exception &e ) {
-#if defined( CINDER_MAC )
-NSLog( @"setup exc: %s", e.what() );
+
+	getSignalCleanup().connect( [this] {
+		CI_LOG_I( "shutting down" );
+	} );
+
+#if ! LOAD_LOGO_IN_CONSTRUCTOR
+	loadLogo();
 #endif
-throw e;
+}
+
+void ScreenSaverTestApp::loadLogo()
+{
+	try {
+		mLogo = gl::Texture::create( loadImage( loadResource( RES_CINDER_LOGO ) ) );
+		CI_LOG_I( "loaded." );
+	}
+	catch( std::exception &exc ) {
+		CI_LOG_E( "exception caught, type: " << System::demangleTypeName( typeid( exc ).name() ) << ", what: " << exc.what() );
 	}
 }
 
 void windowClosedCallback()
 {
-#if defined( CINDER_MAC )
-	NSLog( @"Closing window." );
-#else
-	console() << "Closing window: " << app::getWindow() << std::endl;
-#endif
+	CI_LOG_I( "closing window: " << app::getWindow() );
 }
 
 void ScreenSaverTestApp::resize()
@@ -92,35 +116,29 @@ void ScreenSaverTestApp::resize()
 
 void ScreenSaverTestApp::update()
 {
-#if defined( CINDER_MAC )
-	NSLog( @"update " );
-#endif
 	mRadius = (float)abs( cos( getElapsedSeconds() ) * getWindowHeight() / 2 );
 }
 
 void ScreenSaverTestApp::draw()
 {
-//NSLog( @"draw: %dx%d (%d) [%d]", getWindowWidth(), getWindowHeight(), getNumWindows(), isPreview() );
+//	CI_LOG_I( "window size: " << getWindowSize() << ", num windows: " << getNumWindows() << ", preview: " << isPreview() );
+//	CI_LOG_I( "Drawing" << *getDisplay() );
+
 	gl::enableAlphaBlending();
 		
-//console() << "Drawing: " << *getDisplay() << std::endl;
 	if( isPreview() )
-		gl::clear( Color( 0, 0.5f, 1.0f ) );
+		gl::clear( Color( 0, 0.95f, 1.0f ) );
 	else
 		gl::clear( mBackgroundColor );
+
 	gl::color( mColor );
 	//gl::drawSolidCircle( getWindowCenter(), mRadius );
-	gl::drawSolidRect( Rectf( getWindowCenter() - Vec2f( mRadius, mRadius ), getWindowCenter() + Vec2f( mRadius, mRadius ) ) );
+	gl::drawSolidRect( Rectf( getWindowCenter() - vec2( mRadius, mRadius ), getWindowCenter() + vec2( mRadius, mRadius ) ) );
 	
 	if( mConfig.mDrawCinderLogo ) {
 		gl::color( Color::white() );
-		gl::draw( mLogo, getWindowCenter() - mLogo.getSize() / 2 );
+		gl::draw( mLogo, getWindowCenter() - vec2( mLogo->getSize() / 2 ) );
 	}
 }
 
-void ScreenSaverTestApp::shutdown()
-{
-	console() << "shutting down" << std::endl;
-}
-
-CINDER_APP_SCREENSAVER( ScreenSaverTestApp, RendererGl )
+CINDER_APP_SCREENSAVER( ScreenSaverTestApp, RendererGl, prepareSettings )

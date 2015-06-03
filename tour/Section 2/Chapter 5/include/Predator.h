@@ -6,26 +6,26 @@
 class Predator {
  public:
 	Predator();
-	Predator( ci::Vec3f pos, ci::Vec3f vel );
-	void pullToCenter( const ci::Vec3f &center );
+	Predator( ci::vec3 pos, ci::vec3 vel );
+	void pullToCenter( const ci::vec3 &center );
 	void update( bool flatten );
 	void limitSpeed();
 	void draw();
 	void drawTail();
-	void addNeighborPos( ci::Vec3f pos );
+	void addNeighborPos( ci::vec3 pos );
 	
 	
 	int			mLen;
 	float		mInvLen;
-	std::vector<ci::Vec3f> mPos;
+	std::vector<ci::vec3> mPos;
 	
-	ci::Vec3f	mVel;
-	ci::Vec3f	mVelNormal;
-	ci::Vec3f	mAcc;
+	ci::vec3	mVel;
+	ci::vec3	mVelNormal;
+	ci::vec3	mAcc;
 	
 	ci::Color	mColor;
 	
-	ci::Vec3f	mNeighborPos;
+	ci::vec3	mNeighborPos;
 	int			mNumNeighbors;
 	
 	float		mDecay;

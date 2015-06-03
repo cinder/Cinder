@@ -1,28 +1,27 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/Texture.h"
-#include "cinder/qtime/QuickTime.h"
-#include "cinder/Text.h"
-#include "cinder/Utilities.h"
-#include "cinder/ImageIo.h"
+#include "cinder/qtime/QuickTimeGl.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class QuickTimeSampleApp : public AppBasic {
- public:
-	void setup();
+class QuickTimeSampleApp : public App {
+  public:
+	void setup() override;
 
-	void keyDown( KeyEvent event );
-	void fileDrop( FileDropEvent event );
+	void keyDown( KeyEvent event ) override;
+	void fileDrop( FileDropEvent event ) override;
 
-	void update();
-	void draw();
+	void update() override;
+	void draw() override;
 
 	void loadMovieFile( const fs::path &path );
 
-	gl::Texture				mFrameTexture, mInfoTexture;
+	gl::TextureRef			mFrameTexture;
 	qtime::MovieGlRef		mMovie;
 };
 
@@ -35,18 +34,11 @@ void QuickTimeSampleApp::setup()
 
 void QuickTimeSampleApp::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 'f' ) {
-		setFullScreen( ! isFullScreen() );
-	}
-	else if( event.getChar() == 'o' ) {
+	if( event.getChar() == 'o' ) {
 		fs::path moviePath = getOpenFilePath();
 		if( ! moviePath.empty() )
 			loadMovieFile( moviePath );
 	}
-	else if( event.getChar() == '1' )
-		mMovie->setRate( 0.5f );
-	else if( event.getChar() == '2' )
-		mMovie->setRate( 2 );
 }
 
 void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
@@ -56,23 +48,10 @@ void QuickTimeSampleApp::loadMovieFile( const fs::path &moviePath )
 		mMovie = qtime::MovieGl::create( moviePath );
 		mMovie->setLoop();
 		mMovie->play();
-		
-		// create a texture for showing some info about the movie
-		TextLayout infoText;
-		infoText.clear( ColorA( 0.2f, 0.2f, 0.2f, 0.5f ) );
-		infoText.setColor( Color::white() );
-		infoText.addCenteredLine( moviePath.filename().string() );
-		infoText.addLine( toString( mMovie->getWidth() ) + " x " + toString( mMovie->getHeight() ) + " pixels" );
-		infoText.addLine( toString( mMovie->getDuration() ) + " seconds" );
-		infoText.addLine( toString( mMovie->getNumFrames() ) + " frames" );
-		infoText.addLine( toString( mMovie->getFramerate() ) + " fps" );
-		infoText.setBorder( 4, 2 );
-		mInfoTexture = gl::Texture( infoText.render( true ) );
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
-		mMovie->reset();
-		mInfoTexture.reset();
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
+		mMovie.reset();
 	}
 
 	mFrameTexture.reset();
@@ -92,17 +71,11 @@ void QuickTimeSampleApp::update()
 void QuickTimeSampleApp::draw()
 {
 	gl::clear( Color( 0, 0, 0 ) );
-	gl::enableAlphaBlending();
 
 	if( mFrameTexture ) {
-		Rectf centeredRect = Rectf( mFrameTexture.getBounds() ).getCenteredFit( getWindowBounds(), true );
-		gl::draw( mFrameTexture, centeredRect  );
-	}
-
-	if( mInfoTexture ) {
-		glDisable( GL_TEXTURE_RECTANGLE_ARB );
-		gl::draw( mInfoTexture, Vec2f( 20, getWindowHeight() - 20 - mInfoTexture.getHeight() ) );
+		Rectf centeredRect = Rectf( mFrameTexture->getBounds() ).getCenteredFit( getWindowBounds(), true );
+		gl::draw( mFrameTexture, centeredRect );
 	}
 }
 
-CINDER_APP_BASIC( QuickTimeSampleApp, RendererGl(0) );
+CINDER_APP( QuickTimeSampleApp, RendererGl );

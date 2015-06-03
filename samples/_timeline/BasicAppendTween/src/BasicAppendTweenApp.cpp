@@ -1,4 +1,6 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
 #include "cinder/Rand.h"
 
@@ -6,18 +8,18 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class BasicAppendTweenApp : public AppBasic {
+class BasicAppendTweenApp : public App {
   public:
-	void setup();
+	void setup() override;
 	void setDestinations();
 	void startTweening();
-	void mouseDown( MouseEvent event );	
-	void draw();
+	void mouseDown( MouseEvent event ) override;	
+	void draw() override;
 	
-	Anim<Vec2f>		mPos;
+	Anim<vec2>		mPos;
 	
 	int				mNumDestinations;
-	vector<Vec2f>	mDestinations;
+	vector<vec2>	mDestinations;
 };
 
 void BasicAppendTweenApp::setup()
@@ -42,16 +44,16 @@ void BasicAppendTweenApp::setDestinations()
 	mDestinations.push_back( mPos );
 	// add more destinations
 	for( int i=0; i<mNumDestinations-1; i++ ){
-		Vec2f v( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) );
+		vec2 v( Rand::randFloat( getWindowWidth() ), Rand::randFloat( getWindowHeight() ) );
 		mDestinations.push_back( v );
 	}
 }
 
 void BasicAppendTweenApp::startTweening()
 {
-	timeline().apply( &mPos, (Vec2f)mDestinations[0], 0.5f, EaseInOutQuad() );
+	timeline().apply( &mPos, (vec2)mDestinations[0], 0.5f, EaseInOutQuad() );
 	for( int i=1; i<mNumDestinations; i++ ){
-		timeline().appendTo( &mPos, (Vec2f)mDestinations[i], 0.5f, EaseInOutQuad() );
+		timeline().appendTo( &mPos, (vec2)mDestinations[i], 0.5f, EaseInOutQuad() );
 	}
 }
 
@@ -76,4 +78,4 @@ void BasicAppendTweenApp::draw()
 }
 
 
-CINDER_APP_BASIC( BasicAppendTweenApp, RendererGl )
+CINDER_APP( BasicAppendTweenApp, RendererGl )

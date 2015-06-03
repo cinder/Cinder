@@ -38,7 +38,7 @@ class Object : public ProfileBase {
   public:
 	Object() : ProfileBase() {}
 
-	Object( std::string source, int32_t sessionId, int32_t fiducialId, Vec2f pos, float angle, Vec2f speed, float rotationSpeed, float motionAccel, float rotationAccel )
+	Object( std::string source, int32_t sessionId, int32_t fiducialId, vec2 pos, float angle, vec2 speed, float rotationSpeed, float motionAccel, float rotationAccel )
 		: ProfileBase(source,sessionId), mPos( pos ), mSpeed( speed ), mPrevPos( pos ),
 		mFiducialId( fiducialId ), mAngle( angle ), mRotationSpeed( rotationSpeed ), mRotationAccel( rotationAccel )
 	{}
@@ -49,9 +49,9 @@ class Object : public ProfileBase {
 		std::string source = message.getRemoteIp();
 		int32_t sessionId = message.getArgAsInt32( 1 );
 		int32_t fiducialId = message.getArgAsInt32( 2 );
-		Vec2f pos = Vec2f( message.getArgAsFloat( 3 ), message.getArgAsFloat( 4 ) );
+		vec2 pos = vec2( message.getArgAsFloat( 3 ), message.getArgAsFloat( 4 ) );
 		float angle = message.getArgAsFloat( 5 );
-		Vec2f speed = Vec2f( message.getArgAsFloat( 6 ), message.getArgAsFloat( 7 ) );
+		vec2 speed = vec2( message.getArgAsFloat( 6 ), message.getArgAsFloat( 7 ) );
 		float rotationSpeed = message.getArgAsFloat( 8 );
 		float motionAccel = message.getArgAsFloat( 9 );
 		float rotationAccel = message.getArgAsFloat( 10 );
@@ -59,9 +59,9 @@ class Object : public ProfileBase {
 		return Object( source, sessionId, fiducialId, pos, angle, speed, rotationSpeed, motionAccel, rotationAccel );
 	}
 
-	Vec2f	getPos() const { return mPos; }
-	Vec2f	getPrevPos() const { return mPrevPos; }
-	Vec2f	getSpeed() const { return mSpeed; }
+	vec2	getPos() const { return mPos; }
+	vec2	getPrevPos() const { return mPrevPos; }
+	vec2	getSpeed() const { return mSpeed; }
 	float	getMotionAccel() const { return mMotionAccel; }
 
 	int32_t getFiducialId() const {  return mFiducialId; };
@@ -74,8 +74,8 @@ class Object : public ProfileBase {
 	int32_t		mFiducialId;
 	float		mAngle;
 	float		mRotationSpeed, mRotationAccel;
-	Vec2f		mPos, mPrevPos;
-	Vec2f		mSpeed;
+	vec2		mPos, mPrevPos;
+	vec2		mSpeed;
 	float		mMotionAccel;
 };
 

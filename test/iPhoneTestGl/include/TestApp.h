@@ -1,6 +1,6 @@
 #pragma once
 
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Camera.h"
 
@@ -13,7 +13,7 @@ class TestApp : public ci::app::AppCocoaTouch {
 	virtual void	draw();
 	
 	
-	ci::Matrix44f	mCubeRotation;
+	ci::mat4	mCubeRotation;
 	ci::gl::Texture mTex;
 	ci::CameraPersp	mCam;
 	ci::Font		mFont;

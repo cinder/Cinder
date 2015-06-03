@@ -36,7 +36,7 @@ class TouchEvent : public Event {
 	class Touch {
 	  public:
 		Touch() {}
-		Touch( const Vec2f &pos, const Vec2f &prevPos, uint32_t id, double time, void *native )
+		Touch( const vec2 &pos, const vec2 &prevPos, uint32_t id, double time, void *native )
 			: mPos( pos ), mPrevPos( prevPos ), mId( id ), mTime( time ), mNative( native )
 		{}
 	
@@ -45,13 +45,15 @@ class TouchEvent : public Event {
 		//! Returns the y position of the touch measured in points
 		float		getY() const { return mPos.y; }		
 		//! Returns the position of the touch measured in points
-		Vec2f		getPos() const { return mPos; }
+		vec2		getPos() const { return mPos; }
+		//! Sets the position of the touch measured in points
+		void		setPos( const ivec2 &pos )	{ mPos = pos; }
 		//! Returns the previous x position of the touch measured in points
 		float		getPrevX() const { return mPrevPos.x; }
 		//! Returns the previous y position of the touch measured in points
 		float		getPrevY() const { return mPrevPos.y; }		
 		//! Returns the previous position of the touch measured in points
-		Vec2f		getPrevPos() const { return mPrevPos; }
+		vec2		getPrevPos() const { return mPrevPos; }
 		//! Returns an ID unique for the lifetime of the touch
 		uint32_t	getId() const { return mId; }
 		//! Returns the timestamp associated with the touch, measured in seconds
@@ -60,7 +62,7 @@ class TouchEvent : public Event {
 		const void*	getNative() const { return mNative; }
 		
 	  private:
-		Vec2f		mPos, mPrevPos;
+		vec2		mPos, mPrevPos;
 		uint32_t	mId;
 		double		mTime;
 		void		*mNative;
@@ -69,7 +71,7 @@ class TouchEvent : public Event {
 	TouchEvent()
 		: Event()
 	{}
-	TouchEvent( WindowRef win, const std::vector<Touch> &touches )
+	TouchEvent( const WindowRef &win, const std::vector<Touch> &touches )
 		: Event( win ), mTouches( touches )
 	{}
 	
@@ -83,19 +85,19 @@ class TouchEvent : public Event {
 	bool					mHandled;
 };
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
+} } // namespace cinder::app
+
+inline std::ostream& operator<<( std::ostream &out, const cinder::app::TouchEvent::Touch &touch )
 {
 	out << touch.getId() << ": " << touch.getPos() << " @ " << touch.getTime() << "s";
 	return out;
 }
 
-inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
+inline std::ostream& operator<<( std::ostream &out, const cinder::app::TouchEvent &event )
 {
 	out << "{" << std::endl;
-	for( std::vector<TouchEvent::Touch>::const_iterator tIt = event.getTouches().begin(); tIt != event.getTouches().end(); ++tIt )
+	for( std::vector<cinder::app::TouchEvent::Touch>::const_iterator tIt = event.getTouches().begin(); tIt != event.getTouches().end(); ++tIt )
 		out << "  " << *tIt << std::endl;
 	out << "}";
 	return out;
 }
-
-} } // namespace cinder::app

@@ -23,7 +23,6 @@
 
 #include "cinder/audio/SamplePlayerNode.h"
 #include "cinder/audio/Context.h"
-#include "cinder/audio/Debug.h"
 #include "cinder/CinderMath.h"
 
 using namespace ci;

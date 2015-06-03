@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_stress )
 		while( currReads < kNumReads ) {
 			size_t avail = rb.getAvailableRead();
 			if( avail ) {
-				size_t count = min( avail, buf.size() );
+				size_t count = std::min( avail, buf.size() );
 				rb.read( buf.data(), count );
 				for( size_t i = 0; i < count; i++ )
 					BOOST_REQUIRE( buf[i] == currValue++ );
@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE( test_threaded_stress )
 		while( currReads < kNumReads ) {
 			size_t avail = rb.getAvailableWrite();
 			if( avail ) {
-				size_t count = min( avail, buf.size() );
+				size_t count = std::min( avail, buf.size() );
 				for( size_t i = 0; i < count; i++ )
 					buf[i] = currValue++;
 

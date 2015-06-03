@@ -1,0 +1,17 @@
+#include "../include/Resources.h"
+
+1	ICON	"..\\..\\..\\data\\cinder_app_icon.ico"
+
+MIN_FILTER_LIN_LIN
+MIN_FILTER_NEA_LIN
+MIN_FILTER_LIN_NEA
+MIN_FILTER_NEA_NEA
+
+ANISOTROPIC
+
+GL_GEN
+USER_GEN
+USER_RESIZE
+
+CHECKER_BOARD
+NON_POT_CHECKER

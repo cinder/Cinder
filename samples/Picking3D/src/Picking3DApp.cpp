@@ -1,5 +1,5 @@
 /*
- Copyright (C)2010 Paul Houx
+ Copyright (C)2010-2015 Paul Houx
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted.
@@ -14,345 +14,198 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/app/AppBasic.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/ImageIo.h"
-#include "cinder/MayaCamUI.h"
-#include "cinder/Rand.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
+#include "cinder/CameraUi.h"
 #include "cinder/TriMesh.h"
-#include "Resources.h"
-
-#include <vector>
-#include <utility>
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-// our bubbles
-typedef boost::shared_ptr<class Bubble> BubbleRef;
+class Picking3DApp : public App {
+public:
+	void setup() override;
+	void update() override;
+	void draw() override;
 
-class Bubble
-{
-  public:
-	Bubble(const Vec3f &origin) 
-		:	age(0.0), 
-			lifespan(3.0),
-			position(origin),
-			speed( Vec3f::zero() )
-		{};
+	void mouseMove( MouseEvent event ) override;
 
-	void update(double elapsed);
-	void draw();
+	bool performPicking( vec3 *pickedPoint, vec3 *pickedNormal );
+	void drawCube( const AxisAlignedBox &bounds, const Color &color );
 
-	bool isDead();
-  protected:
-	double age;
-	double lifespan;
+private:
+	TriMeshRef			mTriMesh;		//! The 3D mesh.
+	AxisAlignedBox	mObjectBounds; 	//! The object space bounding box of the mesh.
+	mat4				mTransform;		//! Transformations (translate, rotate, scale) of the mesh.
+										
+	//! By caching a 3D model and its shader on the GPU, we can draw it faster.
+	gl::BatchRef		mWireCube;		
+	gl::BatchRef		mWirePlane;
+	gl::BatchRef		mMesh;
 
-	Vec3f  speed;
-	Vec3f  position;
-};
+	CameraPersp			mCamera;
+	CameraUi			mCamUi;
 
-void Bubble::update(double elapsed)
-{
-	age += elapsed;
-	speed += 0.1f * Vec3f(Rand::randFloat() -0.5f, 1.0f, Rand::randFloat() -0.5f);
-	position += speed * (float) elapsed;
-}
-
-void Bubble::draw()
-{
-	gl::drawSphere(position, 0.05f, 8);
-}
-
-bool Bubble::isDead(void)
-{
-	return (age >= lifespan);
-}
-
-
-// our main application
-class Picking3DApp : public AppBasic 
-{
-  public:
-	void setup();
-	void update();
-	void draw();
-
-	void drawGrid(float size=100.0f, float step=10.0f);
-		
-	bool performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal );
-		
-	void mouseMove( MouseEvent event );
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void resize();
-
-  protected:
-	// shader and texture for our model
-	gl::GlslProg	mShader;
-	gl::Texture		mTexture;
-
-	// the model of a rubber ducky
-	TriMesh		mMesh;
-
-	// the object space bounding box of the mesh
-	AxisAlignedBox3f	mObjectBounds;
-
-	// transformations (translate, rotate, scale) of the model
-	Matrix44f	mTransform;
-
-	// our camera
-	MayaCamUI	mMayaCam;
-
-	// keep track of the mouse
-	Vec2i		mMousePos;
-
-	// keep track of time
-	double		mTime;
-
-	// particles
-	vector<BubbleRef>	mBubbles;
+	ivec2				mMousePos;		//! Keep track of the mouse.
 };
 
 void Picking3DApp::setup()
 {
-	// initialize stuff
-	mTime = getElapsedSeconds();
-	mTransform.setToIdentity();
+	// Create the mesh.
+	mTriMesh = TriMesh::create( geom::Teapot().subdivisions( 6 ) );
 
-	// load and compile the shader
-	//  (note: a shader is not required, but gives a much better visual appearance.
-	//	See for yourself by disabling the 'mShader.bind()' call in the draw method.)
-	mShader = gl::GlslProg( loadResource( RES_SHADER_VERT ), loadResource( RES_SHADER_FRAG ) );
+	// Get the object space bounding box of the model, for fast intersection testing.
+	mObjectBounds = mTriMesh->calcBoundingBox();
 
-	// load the texture
-	//  (note: enable mip-mapping by default)
-	gl::Texture::Format format;
-	format.enableMipmapping(true);			
-	ImageSourceRef img = loadImage( loadResource( RES_DUCKY_TEX ) );
-	if(img) mTexture = gl::Texture( img, format );
+	// Set up the camera.
+	mCamera.lookAt( vec3( 2.0f, 3.0f, 1.0f ), vec3( 0 ) );
+	mCamera.setPerspective( 40.0f, getWindowAspectRatio(), 0.01f, 100.0f );
+	mCamUi = CameraUi( &mCamera, getWindow() );
 
+	// Create batches that render fast.
+	auto lambertShader = gl::getStockShader( gl::ShaderDef().color().lambert() );
+	auto colorShader = gl::getStockShader( gl::ShaderDef().color() );
 
-	// load the mesh 
-	//  (note: the mesh was created from an OBJ file
-	//  using the ObjLoader class. The data was then saved using the
-	//  TriMesh::write() method. Reading binary files is much quicker.)
-	mMesh.read( loadResource( RES_DUCKY_MESH ) );	
-
-	// get the object space bounding box of the model, for fast intersection testing
-	mObjectBounds = mMesh.calcBoundingBox();
-
-	// set up the camera
-	CameraPersp cam;
-	cam.setEyePoint( Vec3f(5.0f, 10.0f, 10.0f) );
-	cam.setCenterOfInterestPoint( Vec3f(0.0f, 2.5f, 0.0f) );
-	cam.setPerspective( 60.0f, getWindowAspectRatio(), 1.0f, 1000.0f );
-	mMayaCam.setCurrentCam( cam );
+	mMesh = gl::Batch::create( *mTriMesh, lambertShader );
+	mWirePlane = gl::Batch::create( geom::WirePlane().size( vec2( 10 ) ).subdivisions( ivec2( 10 ) ), colorShader );
+	mWireCube = gl::Batch::create( geom::WireCube(), colorShader );
 }
 
-void Picking3DApp::update(void)
+void Picking3DApp::update()
 {
-	// calculate elapsed time
-	double elapsed = getElapsedSeconds() - mTime;
-	mTime = getElapsedSeconds();
-
-	// animate our little ducky
-	mTransform.setToIdentity();
-	mTransform.rotate( Vec3f::xAxis(), sinf( (float) getElapsedSeconds() * 3.0f ) * 0.08f );
-	mTransform.rotate( Vec3f::yAxis(), (float) getElapsedSeconds() * 0.1f );
-	mTransform.rotate( Vec3f::zAxis(), sinf( (float) getElapsedSeconds() * 4.3f ) * 0.09f );
-
-	// animate our bubbles
-	vector<BubbleRef>::iterator itr;
-	for(itr = mBubbles.begin();itr!=mBubbles.end();)
-	{
-		(*itr)->update(elapsed);
-
-		// remove dead bubbles
-		if( (*itr)->isDead() )
-			itr = mBubbles.erase(itr);
-		else
-			++itr;
-	}
+	// Animate our mesh.
+	mTransform = mat4( 1.0f );
+	mTransform *= rotate( sin( (float) getElapsedSeconds() * 3.0f ) * 0.08f, vec3( 1, 0, 0 ) );
+	mTransform *= rotate( (float) getElapsedSeconds() * 0.1f, vec3( 0, 1, 0 ) );
+	mTransform *= rotate( sin( (float) getElapsedSeconds() * 4.3f ) * 0.09f, vec3( 0, 0, 1 ) );
 }
 
 void Picking3DApp::draw()
 {
-	// gray background
-	gl::clear( Colorf(0.5f, 0.5f, 0.5f) );
+	// Gray background.
+	gl::clear( Color::gray( 0.5f ) );
 
-	// set up the camera 
-	gl::pushMatrices();
-	gl::setMatrices( mMayaCam.getCamera() );
+	// Set up the camera.
+	gl::ScopedMatrices push;
+	gl::setMatrices( mCamera );
 
-	// enable the depth buffer (after all, we are doing 3D)
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
+	// Enable depth buffer.
+	gl::ScopedDepth depth( true, true );
 
-	// draw the grid on the floor
-	drawGrid();
+	// Draw the grid on the floor.
+	{
+		gl::ScopedColor color( Color::gray( 0.2f ) );
+		mWirePlane->draw();
+	}
 
-	// bind the texture
-	mTexture.enableAndBind();
+	// Draw the mesh.
+	{
+		gl::ScopedColor color( Color::white() );
 
-	// bind the shader and tell it to use our texture
-	mShader.bind();
-	mShader.uniform("tex0", 0);
+		gl::ScopedModelMatrix model;
+		gl::multModelMatrix( mTransform );
 
-	// draw the mesh 
-	//  (note: reset current color to white so the actual texture colors show up)
-	gl::color( Color::white() );
-	//  (note: apply transformations to the model)
-	gl::pushModelView();
-		gl::multModelView( mTransform );
-		gl::draw( mMesh );
-	gl::popModelView();
+		mMesh->draw();
+	}
 
-	// unbind the shader and texture
-	mShader.unbind();
-	mTexture.unbind();
-
-	// perform 3D picking now, so we can draw the intersection as a sphere
-	Vec3f pickedPoint, pickedNormal;
+	// Perform 3D picking now, so we can draw the result as a vector.
+	vec3 pickedPoint, pickedNormal;
 	if( performPicking( &pickedPoint, &pickedNormal ) ) {
-		gl::color( Color(0, 1, 0) );
-		// draw an arrow to the picked point along its normal
+		gl::ScopedColor color( Color( 0, 1, 0 ) );
+
+		// Draw an arrow to the picked point along its normal.
+		gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color().lambert() ) );
 		gl::drawVector( pickedPoint + pickedNormal, pickedPoint );
-
-		// add one bubble at the point of intersection
-		mBubbles.push_back( BubbleRef( new Bubble( pickedPoint ) ) );
-	}
-
-	// draw bubbles 
-	gl::color( Colorf(0.1f, 0.2f, 0.25f) );
-	gl::enableAdditiveBlending();
-
-	vector<BubbleRef>::iterator itr;
-	for(itr = mBubbles.begin();itr!=mBubbles.end();++itr)
-		(*itr)->draw();
-
-	gl::disableAlphaBlending();
-
-	gl::popMatrices();
-}
-
-void Picking3DApp::drawGrid(float size, float step)
-{
-	gl::color( Colorf(0.2f, 0.2f, 0.2f) );
-	for(float i=-size;i<=size;i+=step) {
-		gl::drawLine( Vec3f(i, 0.0f, -size), Vec3f(i, 0.0f, size) );
-		gl::drawLine( Vec3f(-size, 0.0f, i), Vec3f(size, 0.0f, i) );
 	}
 }
 
-bool Picking3DApp::performPicking( Vec3f *pickedPoint, Vec3f *pickedNormal )
+void Picking3DApp::mouseMove( MouseEvent event )
 {
-	// get our camera 
-	CameraPersp cam = mMayaCam.getCamera();
+	// Keep track of the mouse.
+	mMousePos = event.getPos();
+}
 
-	// generate a ray from the camera into our world
+bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
+{
+	// Generate a ray from the camera into our world. Note that we have to
+	// flip the vertical coordinate.
 	float u = mMousePos.x / (float) getWindowWidth();
 	float v = mMousePos.y / (float) getWindowHeight();
-	// because OpenGL and Cinder use a coordinate system
-	// where (0, 0) is in the LOWERleft corner, we have to flip the v-coordinate
-	Ray ray = cam.generateRay(u , 1.0f - v, cam.getAspectRatio() );
+	Ray ray = mCamera.generateRay( u, 1.0f - v, mCamera.getAspectRatio() );
 
-	// draw the object space bounding box in yellow
-	gl::color( Color(1, 1, 0) );
-	gl::drawStrokedCube(mObjectBounds);
-
-	// the coordinates of the bounding box are in object space, not world space,
+	// The coordinates of the bounding box are in object space, not world space,
 	// so if the model was translated, rotated or scaled, the bounding box would not
-	// reflect that. 
-	//
-	// One solution would be to pass the transformation to the calcBoundingBox() function: 
-	AxisAlignedBox3f worldBoundsExact = mMesh.calcBoundingBox(mTransform);		// slow
+	// reflect that. One solution would be to pass the transformation to the calcBoundingBox() function:
+	AxisAlignedBox worldBoundsExact = mTriMesh->calcBoundingBox( mTransform ); // slow
 
-	// draw this transformed box in orange
-	gl::color( Color(1, 0.5, 0) );
-	gl::drawStrokedCube(worldBoundsExact);
-	
 	// But if you already have an object space bounding box, it's much faster to
 	// approximate the world space bounding box like this:
-	AxisAlignedBox3f worldBoundsApprox = mObjectBounds.transformed(mTransform);	// fast
+	AxisAlignedBox worldBoundsApprox = mObjectBounds.transformed( mTransform ); // fast
 
-	// draw this transformed box in cyan
-	gl::color( Color(0, 1, 1) );
-	gl::drawStrokedCube(worldBoundsApprox);
+	// Draw the object space bounding box in yellow. It will not animate,
+	// because animation is done in world space.
+	drawCube( mObjectBounds, Color( 1, 1, 0 ) );
 
-	// fast detection first - test against the bounding box itself
-	if( ! worldBoundsExact.intersects(ray) )
+	// Draw the exact bounding box in orange.
+	drawCube( worldBoundsExact, Color( 1, 0.5f, 0 ) );
+
+	// Draw the approximated bounding box in cyan.
+	drawCube( worldBoundsApprox, Color( 0, 1, 1 ) );
+
+	// Perform fast detection first - test against the bounding box itself.
+	if( !worldBoundsExact.intersects( ray ) )
 		return false;
 
-	// set initial distance to something far, far away
-	float result = 1.0e6f;
+	// Set initial distance to something far, far away.
+	float result = FLT_MAX;
 
-	// traverse triangle list and find the picked triangle
-	size_t polycount = mMesh.getNumTriangles();
+	// Traverse triangle list and find the closest intersecting triangle.
+	const size_t polycount = mTriMesh->getNumTriangles();
+
 	float distance = 0.0f;
-	for(size_t i=0;i<polycount;++i)
-	{
-		Vec3f v0, v1, v2;
-		// get a single triangle from the mesh
-		mMesh.getTriangleVertices(i, &v0, &v1, &v2);
+	for( size_t i = 0; i < polycount; ++i ) {
+		// Get a single triangle from the mesh.
+		vec3 v0, v1, v2;
+		mTriMesh->getTriangleVertices( i, &v0, &v1, &v2 );
 
-		// transform triangle to world space
-		v0 = mTransform.transformPointAffine(v0);
-		v1 = mTransform.transformPointAffine(v1);
-		v2 = mTransform.transformPointAffine(v2);
+		// Transform triangle to world space.
+		v0 = vec3( mTransform * vec4( v0, 1.0 ) );
+		v1 = vec3( mTransform * vec4( v1, 1.0 ) );
+		v2 = vec3( mTransform * vec4( v2, 1.0 ) );
 
-		// test to see if the ray intersects with this triangle
-		if( ray.calcTriangleIntersection(v0, v1, v2, &distance) ) {
-			// set our result to this if its closer than any intersection we've had so far
+		// Test to see if the ray intersects this triangle.
+		if( ray.calcTriangleIntersection( v0, v1, v2, &distance ) ) {
+			// Keep the result if it's closer than any intersection we've had so far.
 			if( distance < result ) {
 				result = distance;
-				// assuming this is the closest triangle, we'll set our normal
-				// while we've got all the points handy
-				*pickedNormal = ( v1 - v0 ).cross( v2 - v0 ).normalized();
+
+				// Assuming this is the closest triangle, we'll calculate our normal
+				// while we've got all the points handy.
+				*pickedNormal = normalize( cross( v1 - v0, v2 - v0 ) );
 			}
 		}
 	}
 
-	// did we have a hit?
+	// Did we have a hit?
 	if( distance > 0 ) {
+		// Calculate the exact position of the hit.
 		*pickedPoint = ray.calcPosition( result );
+
 		return true;
 	}
 	else
 		return false;
 }
 
-void Picking3DApp::mouseMove( MouseEvent event )
+void Picking3DApp::drawCube( const AxisAlignedBox &bounds, const Color & color )
 {
-	// keep track of the mouse
-	mMousePos = event.getPos();
+	gl::ScopedColor clr( color );
+	gl::ScopedModelMatrix model;
+
+	gl::multModelMatrix( glm::translate( bounds.getCenter() ) * glm::scale( bounds.getSize() ) );
+	mWireCube->draw();
 }
 
-void Picking3DApp::mouseDown( MouseEvent event )
-{	
-	// let the camera handle the interaction
-	mMayaCam.mouseDown( event.getPos() );
-}
-
-void Picking3DApp::mouseDrag( MouseEvent event )
-{
-	// keep track of the mouse
-	mMousePos = event.getPos();
-
-	// let the camera handle the interaction
-	mMayaCam.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-}
-
-void Picking3DApp::resize()
-{
-	// adjust aspect ratio
-	CameraPersp cam = mMayaCam.getCamera();
-	cam.setAspectRatio( getWindowAspectRatio() );
-	mMayaCam.setCurrentCam( cam );
-}
-
-
-CINDER_APP_BASIC( Picking3DApp, ci::app::RendererGl )
+CINDER_APP( Picking3DApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )

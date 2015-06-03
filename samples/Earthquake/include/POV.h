@@ -4,30 +4,30 @@
 #include "cinder/app/App.h"
 
 class POV {
- public:
+public:
 	POV() {}
-	POV( ci::app::App *aApp, ci::Vec3f aEye, ci::Vec3f aCenter );
-	
+	POV( ci::app::App *aApp, ci::vec3 aEye, ci::vec3 aCenter );
+
 	void update();
+
 	void adjustAngle( float aAngleDelta, float aPitch );
 	void adjustDist( float aDist );
-	void setEye( ci::Vec3f v );
-	void setCenter( ci::Vec3f v );
-	
-	ci::CameraPersp mCam;
-	ci::Vec3f mEye;
-	ci::Vec3f mCenter;
-	ci::Vec3f mEyeNormal;
-	float mAngle, mAngleDest;
-	float mDist, mDistDest;
+	void setEye( ci::vec3 v );
+	void setCenter( ci::vec3 v );
 
+public:
+	ci::CameraPersp  mCam;
+	ci::vec3         mEye;
+	ci::vec3         mCenter;
+	ci::vec3         mEyeNormal;
 
- private:
-	
-	ci::app::App *mApp;
-	
-	float mAspectRatio;
-	float mFOV;
-	
+	float            mAngle, mAngleDest;
+	float            mDist, mDistDest;
+
+private:
+	ci::app::App    *mApp;
+
+	float            mAspectRatio;
+	float            mFOV;
+
 };
-	

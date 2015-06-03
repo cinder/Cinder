@@ -8,15 +8,15 @@ using namespace ci;
 
 class Branch {
  public:
-	Branch( const Vec2f &aOrigin, float flowerHue, int launchDelay );
-	Branch( const Vec2f &aOrigin, int aLifespan, float aSpeed, int aLaunchDelay, float aAngle, float aAngleDelta, float aChangeProb, float aFlowerProb,
+	Branch( const vec2 &aOrigin, float flowerHue, int launchDelay );
+	Branch( const vec2 &aOrigin, int aLifespan, float aSpeed, int aLaunchDelay, float aAngle, float aAngleDelta, float aChangeProb, float aFlowerProb,
 		  float aStartEllipseRadius, float aEndEllipseRadius, ColorA aStartColor, ColorA aEndColor, ColorA aFlowerColor, float aScale );
 
 	void update();
 	void draw( cairo::Context ctx );
 	
 	bool isAlive();
-	void createBranch( const Vec2f &aOrigin, float baseHue, ColorA flowerColor, int launchDelay );
+	void createBranch( const vec2 &aOrigin, float baseHue, ColorA flowerColor, int launchDelay );
 	
 	
 	static void		setWindowSize( int aWindowWidth, int aWindowHeight ) { sWindowWidth = aWindowWidth; sWindowHeight = aWindowHeight; }
@@ -29,7 +29,7 @@ class Branch {
 
 	bool	mIsRoot;
 	int		mLifespan, mTotalLifespan;
-	Vec2f	mOrigin, mPos;
+	vec2	mOrigin, mPos;
 	float	mSpeed;
 	int		mLaunchDelay;
 	float	mAngle, mAngleDelta;

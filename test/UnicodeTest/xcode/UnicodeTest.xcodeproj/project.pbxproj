@@ -35,7 +35,7 @@
 		8D1107320486CEB800E47090 /* UnicodeTest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UnicodeTest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7A4DF0B443D14F6C8CA065C1 /* UnicodeTestApp.cpp */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.cpp; path = ../src/UnicodeTestApp.cpp; sourceTree = "<group>"; name = UnicodeTestApp.cpp; };
 		69430402C8F74577A46E9D9F /* Resources.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ../include/Resources.h; sourceTree = "<group>"; name = Resources.h; };
-		705B263520BD43B581C63DCD /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../resources/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
+		705B263520BD43B581C63DCD /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = "<group>"; name = CinderApp.icns; };
 		69EAF1D6DF66409D911CD9BA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; name = Info.plist; };
 		F8EC5407A8AA414A8CAA7C53 /* UnicodeTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = UnicodeTest_Prefix.pch; sourceTree = "<group>"; name = UnicodeTest_Prefix.pch; };
 /* End PBXFileReference section */
@@ -272,7 +272,7 @@
 				CINDER_PATH = "../../..";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
@@ -289,7 +289,7 @@
 				CINDER_PATH = "../../..";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.7;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";

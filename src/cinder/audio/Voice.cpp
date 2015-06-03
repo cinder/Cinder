@@ -25,7 +25,6 @@
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GainNode.h"
 #include "cinder/audio/PanNode.h"
-#include "cinder/audio/Debug.h"
 
 #include <map>
 
@@ -58,6 +57,8 @@ public:
 	void	removeVoice( size_t busId );
 
 	BufferRef loadBuffer( const SourceFileRef &sourceFile );
+	// clears the cache of all previously loaded audio file buffers stored in mBufferCache
+	void clearBufferCache();
 
 private:
 	MixerImpl();
@@ -125,6 +126,11 @@ BufferRef MixerImpl::loadBuffer( const SourceFileRef &sourceFile )
 		mBufferCache.insert( make_pair( sourceFile, result ) );
 		return result;
 	}
+}
+	
+void MixerImpl::clearBufferCache()
+{
+	mBufferCache.clear();
 }
 
 size_t MixerImpl::getFirstAvailableBusId() const
@@ -199,6 +205,11 @@ VoiceSamplePlayerNodeRef Voice::create( const SourceFileRef &sourceFile, const O
 Voice::~Voice()
 {
 	MixerImpl::get()->removeVoice( mBusId );
+}
+	
+void Voice::clearBufferCache()
+{
+	MixerImpl::get()->clearBufferCache();
 }
 
 float Voice::getVolume() const

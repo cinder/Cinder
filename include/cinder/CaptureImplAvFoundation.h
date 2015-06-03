@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -46,10 +47,10 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 
 } //namespace
 
-@interface CaptureImplAvFoundation : NSObject <AVCaptureVideoDataOutputSampleBufferDelegate> {
+@interface CaptureImplAvFoundation : NSObject<AVCaptureVideoDataOutputSampleBufferDelegate> {
 	AVCaptureSession				*mSession;
 	CVPixelBufferRef				mWorkingPixelBuffer;
-	cinder::Surface8u				mCurrentFrame;
+	cinder::Surface8uRef			mCurrentFrame;
 	NSString						*mDeviceUniqueId;
 	
 	cinder::Capture::DeviceRef		mDevice;
@@ -69,7 +70,7 @@ class CaptureImplAvFoundationDevice : public Capture::Device {
 - (void)startCapture;
 - (void)stopCapture;
 - (bool)isCapturing;
-- (cinder::Surface8u)getCurrentFrame;
+- (cinder::Surface8uRef)getCurrentFrame;
 - (bool)checkNewFrame;
 - (const cinder::Capture::DeviceRef)getDevice;
 - (int32_t)getWidth;

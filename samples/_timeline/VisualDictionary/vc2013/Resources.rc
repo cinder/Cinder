@@ -1,6 +1,6 @@
 #include "Resources.h"
 
-ID ICON "..\\resources\\cinder_app_icon.ico"
+ID ICON "..\\..\\..\\data\\cinder_app_icon.ico"
 
 RES_FONT
 RES_BACKGROUND_IMAGE

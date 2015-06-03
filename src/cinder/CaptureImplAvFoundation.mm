@@ -1,6 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
+ Copyright (c) 2012, The Cinder Project, All rights reserved.
+
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
@@ -55,9 +56,9 @@ bool CaptureImplAvFoundationDevice::isConnected() const
 
 void frameDeallocator( void *refcon )
 {
-	CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>( refcon );
-	CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
-	CVBufferRelease( pixelBuffer );
+	::CVPixelBufferRef pixelBuffer = reinterpret_cast<CVPixelBufferRef>( refcon );
+	::CVPixelBufferUnlockBaseAddress( pixelBuffer, 0 );
+	::CVBufferRelease( pixelBuffer );
 }
 
 
@@ -75,8 +76,7 @@ static BOOL sDevicesEnumerated = false;
 	sDevices.clear();
 	
 	NSArray *devices = [AVCaptureDevice devicesWithMediaType:AVMediaTypeVideo];
-	for( int i = 0; i < [devices count]; i++ ) {
-		AVCaptureDevice *device = [devices objectAtIndex:i];
+	for( AVCaptureDevice *device in devices ) {
 		sDevices.push_back( cinder::Capture::DeviceRef( new cinder::CaptureImplAvFoundationDevice( device ) ) );
 	}
 	sDevicesEnumerated = true;
@@ -121,19 +121,12 @@ static BOOL sDevicesEnumerated = false;
 
 - (bool)prepareStartCapture 
 {
-    NSError *error = nil;
+	NSError *error = nil;
 
-    mSession = [[AVCaptureSession alloc] init];
+	mSession = [[AVCaptureSession alloc] init];
 
-	if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 640, 480 ) )
-		mSession.sessionPreset = AVCaptureSessionPreset640x480;
-	else if( cinder::Vec2i( mWidth, mHeight ) == cinder::Vec2i( 1280, 720 ) )
-		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
-	else
-		mSession.sessionPreset = AVCaptureSessionPresetMedium;
-
-    // Find a suitable AVCaptureDevice
-    AVCaptureDevice *device = nil;
+	// Find a suitable AVCaptureDevice
+	AVCaptureDevice *device = nil;
 	if( ! mDeviceUniqueId ) {
 		device = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
 	}
@@ -145,23 +138,32 @@ static BOOL sDevicesEnumerated = false;
 		throw cinder::CaptureExcInitFail();
 	}
 
-    // Create a device input with the device and add it to the session.
-    AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
-    if( ! input ) {
-        throw cinder::CaptureExcInitFail();
-    }
-    [mSession addInput:input];
+	// Create a device input with the device and add it to the session.
+	AVCaptureDeviceInput *input = [AVCaptureDeviceInput deviceInputWithDevice:device error:&error];
+	if( ! input ) {
+		throw cinder::CaptureExcInitFail();
+	}
+	[mSession addInput:input];
 
-    // Create a VideoDataOutput and add it to the session
-    AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
+	// Create a VideoDataOutput and add it to the session
+	AVCaptureVideoDataOutput *output = [[[AVCaptureVideoDataOutput alloc] init] autorelease];
 
-    [mSession addOutput:output];
+	[mSession addOutput:output];
+
+	[mSession beginConfiguration];
+	if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 640, 480 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset640x480;
+	else if( cinder::ivec2( mWidth, mHeight ) == cinder::ivec2( 1280, 720 ) )
+		mSession.sessionPreset = AVCaptureSessionPreset1280x720;
+	else
+		mSession.sessionPreset = AVCaptureSessionPresetMedium;
+	[mSession commitConfiguration];
 	
 	//adjust connection settings
 	/*
 	//Testing indicates that at least the 3GS doesn't support video orientation changes
 	NSArray * connections = output.connections;
-	for( int i = 0; i < [connections count]; i++ ) {
+	for( AVCaptureConnection *connection in connections ) {
 		AVCaptureConnection * connection = [connections objectAtIndex:i];
 		
 		if( connection.supportsVideoOrientation ) {
@@ -169,17 +171,26 @@ static BOOL sDevicesEnumerated = false;
 		}
 	}*/
 
-    // Configure your output.
-    dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
-    [output setSampleBufferDelegate:self queue:queue];
-    dispatch_release(queue);
+	// Configure your output.
+	dispatch_queue_t queue = dispatch_queue_create("myQueue", NULL);
+	[output setSampleBufferDelegate:self queue:queue];
+	dispatch_release(queue);
 
-    // Specify the pixel format
-    output.videoSettings = [NSDictionary dictionaryWithObject:[NSNumber numberWithInt:kCVPixelFormatType_32BGRA] forKey:(id)kCVPixelBufferPixelFormatTypeKey];
+	// Specify the pixel format
+	NSDictionary *options = [NSDictionary dictionaryWithObjectsAndKeys:
+#if ! defined( CINDER_COCOA_TOUCH )
+								[NSNumber numberWithDouble:mWidth], (id)kCVPixelBufferWidthKey,
+								[NSNumber numberWithDouble:mHeight], (id)kCVPixelBufferHeightKey,
+#endif
+								[NSNumber numberWithUnsignedInt:kCVPixelFormatType_32BGRA], (id)kCVPixelBufferPixelFormatTypeKey,
+								nil];
+	output.videoSettings = options;
 
-    // If you wish to cap the frame rate to a known value, such as 15 fps, set 
-    // minFrameDuration.
-    // output.minFrameDuration = CMTimeMake(1, 15);
+	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(avCaptureInputPortFormatDescriptionDidChange:) name:AVCaptureInputPortFormatDescriptionDidChangeNotification object:nil];
+
+	// If you wish to cap the frame rate to a known value, such as 15 fps, set 
+	// minFrameDuration.
+	// output.minFrameDuration = CMTimeMake(1, 15);
 	return true;
 }
 
@@ -206,18 +217,19 @@ static BOOL sDevicesEnumerated = false;
 
 	@synchronized( self ) {
 		[mSession stopRunning];
+
+		if( mWorkingPixelBuffer ) {
+			::CVBufferRelease( mWorkingPixelBuffer );
+			mWorkingPixelBuffer = nullptr;
+		}
+		
 		[mSession release];
 		mSession = nil;
 
 		mIsCapturing = false;
 		mHasNewFrame = false;
 		
-		mCurrentFrame.reset();
-		
-		if( mWorkingPixelBuffer ) {
-			CVBufferRelease( mWorkingPixelBuffer );
-			mWorkingPixelBuffer = 0;
-		}		
+		mCurrentFrame.reset();		
 	}
 }
 
@@ -226,48 +238,62 @@ static BOOL sDevicesEnumerated = false;
 	return mIsCapturing;
 }
 
+// Called initially when the camera is instantiated and then again (hypothetically) if the resolution ever changes
+- (void)avCaptureInputPortFormatDescriptionDidChange:(NSNotification *)notification
+{
+	AVCaptureInput *input = [mSession.inputs objectAtIndex:0];
+	AVCaptureInputPort *port = [input.ports objectAtIndex:0];
+	CMFormatDescriptionRef formatDescription = port.formatDescription;
+	if( formatDescription ) {
+		CMVideoDimensions dimensions = ::CMVideoFormatDescriptionGetDimensions( formatDescription );
+		if( (dimensions.width != 0) && (dimensions.height != 0) ) {
+			mWidth = dimensions.width;
+			mHeight = dimensions.height;
+		}
+	}
+}
+
 // Delegate routine that is called when a sample buffer was written
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer fromConnection:(AVCaptureConnection *)connection
 { 
-    @synchronized( self ) {
+	@synchronized( self ) {
 		if( mIsCapturing ) {
 			// if the last pixel buffer went unclaimed, we'll need to release it
 			if( mWorkingPixelBuffer ) {
-				CVBufferRelease( mWorkingPixelBuffer );
-				mWorkingPixelBuffer = NULL;
+				::CVBufferRelease( mWorkingPixelBuffer );
+				mWorkingPixelBuffer = nullptr;
 			}
 			
-			CVImageBufferRef videoFrame = CMSampleBufferGetImageBuffer(sampleBuffer);
-			// Lock the base address of the pixel buffer
-			//CVPixelBufferLockBaseAddress( videoFrame, 0 );
-			
-			CVBufferRetain( videoFrame );
-		
-			mWorkingPixelBuffer = (CVPixelBufferRef)videoFrame;
+			mWorkingPixelBuffer = ::CMSampleBufferGetImageBuffer(sampleBuffer);
+			::CVBufferRetain( mWorkingPixelBuffer );
 			mHasNewFrame = true;			
 		}
 	}	
 }
 
-- (cinder::Surface8u)getCurrentFrame
+- (cinder::Surface8uRef)getCurrentFrame
 {
 	if( ( ! mIsCapturing ) || ( ! mWorkingPixelBuffer ) ) {
 		return mCurrentFrame;
 	}
 	
-	@synchronized (self) {
-		CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
+	@synchronized( self ) {
+		::CVPixelBufferLockBaseAddress( mWorkingPixelBuffer, 0 );
 		
-		uint8_t *data = (uint8_t *)CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
-		mExposedFrameBytesPerRow = (int32_t)CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
-		mExposedFrameWidth = (int32_t)CVPixelBufferGetWidth( mWorkingPixelBuffer );
-		mExposedFrameHeight = (int32_t)CVPixelBufferGetHeight( mWorkingPixelBuffer );
+		uint8_t *data = (uint8_t *)::CVPixelBufferGetBaseAddress( mWorkingPixelBuffer );
+		mExposedFrameBytesPerRow = (int32_t)::CVPixelBufferGetBytesPerRow( mWorkingPixelBuffer );
+		mExposedFrameWidth = (int32_t)::CVPixelBufferGetWidth( mWorkingPixelBuffer );
+		mExposedFrameHeight = (int32_t)::CVPixelBufferGetHeight( mWorkingPixelBuffer );
 
-		mCurrentFrame = cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA );
-		mCurrentFrame.setDeallocator( frameDeallocator, mWorkingPixelBuffer );
+		auto captureWorkingPixelBuffer = mWorkingPixelBuffer;
+		mCurrentFrame = std::shared_ptr<cinder::Surface8u>( new cinder::Surface8u( data, mExposedFrameWidth, mExposedFrameHeight, mExposedFrameBytesPerRow, cinder::SurfaceChannelOrder::BGRA ),
+				[captureWorkingPixelBuffer]( cinder::Surface8u* s ) {
+					delete s;
+					frameDeallocator( captureWorkingPixelBuffer );
+				} );
 		
 		// mark the working pixel buffer as empty since we have wrapped it in the current frame
-		mWorkingPixelBuffer = 0;
+		mWorkingPixelBuffer = nullptr;
 	}
 	
 	return mCurrentFrame;
@@ -276,7 +302,7 @@ static BOOL sDevicesEnumerated = false;
 - (bool)checkNewFrame
 {
 	bool result;
-	@synchronized (self) {
+	@synchronized( self ) {
 		result = mHasNewFrame;
 		mHasNewFrame = FALSE;
 	}

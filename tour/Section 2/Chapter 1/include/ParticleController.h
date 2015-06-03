@@ -5,7 +5,7 @@
 class ParticleController {
  public:
 	ParticleController();
-	void pullToCenter( const ci::Vec3f &center );
+	void pullToCenter( const ci::vec3 &center );
 	void update();
 	void draw();
 	void addParticles( int amt );

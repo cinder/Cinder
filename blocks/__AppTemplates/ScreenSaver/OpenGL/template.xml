@@ -9,12 +9,11 @@
 	<header replaceContents="true">include/Resources.h</header>
 	<platform os="macosx">
 		<outputExtension>saver</outputExtension>
-		<source cinder="true">src/cinder/app/AppImplCocoaRendererGl.mm</source>
-		<source cinder="true">src/cinder/app/CinderView.mm</source>
-		<source cinder="true">src/cinder/app/AppImplCocoaScreenSaver.mm</source>
+		<source cinder="true">src/cinder/app/RendererImplGlMac.mm</source>
+		<source cinder="true">src/cinder/app/CinderViewMac.mm</source>
+		<source cinder="true">src/cinder/app/AppImplMacScreenSaver.mm</source>
 		<source cinder="true" compileAs="mm">src/cinder/app/AppScreenSaver.cpp</source>
 		<source cinder="true">src/cinder/UrlImplCocoa.mm</source>
-		<source cinder="true">src/cinder/CaptureImplQtKit.mm</source>
 		<resource replaceContents="true" buildExclude="true">xcode/Info.plist</resource>
 		<resource>resources/thumbnail.png</resource>
 		<resource>resources/thumbnail@2x.png</resource>
@@ -23,7 +22,6 @@
 		<setting name="MACH_O_TYPE">mh_bundle</setting>
 		<setting name="ARCHS">x86_64</setting>
 		<setting name="VALID_ARCHS">x86_64</setting>
-		<setting name="GCC_ENABLE_OBJC_GC">supported</setting>
 	</platform>
 	<platform os="msw">
 		<outputExtension>sCr</outputExtension>

@@ -14,6 +14,28 @@
 #if !defined ANT_LOAD_OGL_CORE_INCLUDED
 #define ANT_LOAD_OGL_CORE_INCLUDED
 
+// Cinder: typedefs to avoid #including a gl.h here
+#include "TwPrecomp.h"
+typedef unsigned int GLenum;
+typedef unsigned char GLboolean;
+typedef unsigned int GLbitfield;
+typedef void GLvoid;
+typedef signed char GLbyte;
+typedef short GLshort;
+typedef int GLint;
+typedef unsigned char GLubyte;
+typedef unsigned short GLushort;
+typedef unsigned int GLuint;
+typedef int GLsizei;
+#if defined( ANT_OSX )
+	typedef long GLintptr;
+	typedef long GLsizeiptr;
+#endif
+typedef float GLfloat;
+typedef float GLclampf;
+typedef double GLdouble;
+typedef double GLclampd;
+typedef char GLchar;
 
 #define ANT_GL_CORE_DECL_NO_FORWARD(_Ret, _Fct, _Params) \
     extern "C" { typedef _Ret (APIENTRY* PFN##_Fct)_Params; } \

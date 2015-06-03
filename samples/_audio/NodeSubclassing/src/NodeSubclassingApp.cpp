@@ -1,12 +1,13 @@
 // Example app demonstrating the basics of creating custom Node subclasses.
 // See comments in CustomTremoloNode.h.
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/MonitorNode.h"
 #include "cinder/audio/GainNode.h"
-#include "cinder/gl/gl.h"
 
 #include "../../common/AudioDrawUtils.h"
 
@@ -16,11 +17,11 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class NodeSubclassingApp : public AppNative {
+class NodeSubclassingApp : public App {
   public:
-	void setup();
-	void mouseMove( MouseEvent event );
-	void draw();
+	void setup() override;
+	void mouseMove( MouseEvent event ) override;
+	void draw() override;
 
   private:
 	audio::GenNodeRef		mGenNode;
@@ -51,7 +52,7 @@ void NodeSubclassingApp::setup()
 
 void NodeSubclassingApp::mouseMove( MouseEvent event )
 {
-	Vec2f pos = event.getPos();
+	vec2 pos = event.getPos();
 
 	float rate = 20.0f * pos.x / (float)getWindowWidth();
 	float depth = 1.0f - pos.y / (float)getWindowHeight();
@@ -70,4 +71,4 @@ void NodeSubclassingApp::draw()
 	}
 }
 
-CINDER_APP_NATIVE( NodeSubclassingApp, RendererGl )
+CINDER_APP( NodeSubclassingApp, RendererGl )

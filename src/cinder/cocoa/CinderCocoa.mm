@@ -29,10 +29,12 @@
 	#import <Cocoa/Cocoa.h>
 	#import <CoreVideo/CVPixelBuffer.h>
 	#import <AppKit/AppKit.h>
+	#import <ApplicationServices/ApplicationServices.h>
 	#include <objc/objc-auto.h>
 #else
 	#import <UIKit/UIKit.h>
 	#import <CoreText/CoreText.h>
+	#import <CoreVideo/CVPixelBuffer.h>
 #endif
 #import <Foundation/NSData.h>
 
@@ -66,10 +68,10 @@ SafeNsString::operator std::string() const
 		return std::string( [mPtr.get() UTF8String] );
 }
 
-SafeNsData::SafeNsData( const Buffer &buffer )
+SafeNsData::SafeNsData( const BufferRef &buffer )
 	: mBuffer( buffer )
 {
-	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer.getData() ) length:buffer.getDataSize() freeWhenDone:NO], safeRelease );
+	mPtr = shared_ptr<NSData>( [NSData dataWithBytesNoCopy:const_cast<void*>( buffer->getData() ) length:buffer->getSize() freeWhenDone:NO], safeRelease );
 	if( mPtr.get() )
 		[mPtr.get() retain];
 }
@@ -147,15 +149,8 @@ CGContextRef getWindowContext()
 #endif
 }
 
-// This will get called when the Surface::Obj is destroyed
-static void NSBitmapImageRepSurfaceDeallocator( void *refcon )
-{
-	NSBitmapImageRep *rep = reinterpret_cast<NSBitmapImageRep*>( refcon );
-	[rep release];
-}
-
 #if defined( CINDER_MAC )
-Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
+Surface8uRef convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwnership )
 {
 	NSInteger bpp = [rep bitsPerPixel];
 	int32_t rowBytes = (int32_t)[rep bytesPerRow];
@@ -163,11 +158,12 @@ Surface8u convertNsBitmapDataRep( const NSBitmapImageRep *rep, bool assumeOwners
 	int32_t height = (int32_t)[rep pixelsHigh];
 	uint8_t *data = [rep bitmapData];
 	SurfaceChannelOrder co = ( bpp == 24 ) ? SurfaceChannelOrder::RGB : SurfaceChannelOrder::RGBA;
-	Surface8u result( data, width, height, rowBytes, co );
 	// If requested, point the result's deallocator to the appropriate function. This will get called when the Surface::Obj is destroyed
 	if( assumeOwnership )
-		result.setDeallocator( NSBitmapImageRepSurfaceDeallocator, const_cast<NSBitmapImageRep*>( rep ) );
-	return result;
+		return Surface8uRef( new Surface8u( data, width, height, rowBytes, co ),
+			[=] ( Surface8u *s ) { delete s; [rep release]; } );
+	else
+		return Surface8u::create( data, width, height, rowBytes, co );
 }
 #endif // defined( CINDER_MAC )
 
@@ -397,7 +393,7 @@ int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco 
 
 CFDataRef createCfDataRef( const Buffer &buffer )
 {
-	return ::CFDataCreateWithBytesNoCopy( kCFAllocatorDefault, reinterpret_cast<const UInt8*>( buffer.getData() ), buffer.getDataSize(), kCFAllocatorNull );
+	return ::CFDataCreateWithBytesNoCopy( kCFAllocatorDefault, reinterpret_cast<const UInt8*>( buffer.getData() ), buffer.getSize(), kCFAllocatorNull );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
@@ -413,7 +409,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 	::CGImageRetain( imageRef );
 	mImageRef = shared_ptr<CGImage>( imageRef, ::CGImageRelease );
 	
-	setSize( ::CGImageGetWidth( mImageRef.get() ), ::CGImageGetHeight( mImageRef.get() ) );
+	setSize( (int32_t)::CGImageGetWidth( mImageRef.get() ), (int32_t)::CGImageGetHeight( mImageRef.get() ) );
 	size_t bpc = ::CGImageGetBitsPerComponent( mImageRef.get() );
 	size_t bpp = ::CGImageGetBitsPerPixel( mImageRef.get() );
 
@@ -502,7 +498,7 @@ ImageSourceCgImage::ImageSourceCgImage( ::CGImageRef imageRef, ImageSource::Opti
 
 void ImageSourceCgImage::load( ImageTargetRef target )
 {
-	int32_t rowBytes = ::CGImageGetBytesPerRow( mImageRef.get() );
+	int32_t rowBytes = (int32_t)::CGImageGetBytesPerRow( mImageRef.get() );
 	const std::shared_ptr<__CFData> pixels( (__CFData*)::CGDataProviderCopyData( ::CGImageGetDataProvider( mImageRef.get() ) ), safeCfRelease );
 	
 	if( ! pixels )
@@ -511,9 +507,9 @@ void ImageSourceCgImage::load( ImageTargetRef target )
 	// get a pointer to the ImageSource function appropriate for handling our data configuration
 	ImageSource::RowFunc func = setupRowFunc( target );
 	
-	shared_ptr<Color8u> tempRowBuffer;
+	unique_ptr<Color8u[]> tempRowBuffer;
 	if( mIsIndexed || mIs16BitPacked )
-		tempRowBuffer = shared_ptr<Color8u>( new Color8u[mWidth], checked_array_deleter<Color8u>() );
+		tempRowBuffer = unique_ptr<Color8u[]>( new Color8u[mWidth] );
 	
 	const uint8_t *data = ::CFDataGetBytePtr( pixels.get() );
 	for( int32_t row = 0; row < mHeight; ++row ) {
@@ -556,7 +552,7 @@ ImageTargetCgImageRef ImageTargetCgImage::createRef( ImageSourceRef imageSource,
 ImageTargetCgImage::ImageTargetCgImage( ImageSourceRef imageSource, ImageTarget::Options options )
 	: ImageTarget(), mImageRef( 0 )
 {
-	setSize( (size_t)imageSource->getWidth(), (size_t)imageSource->getHeight() );
+	setSize( (int32_t)imageSource->getWidth(), (int32_t)imageSource->getHeight() );
 	mBitsPerComponent = 32;
 	bool writingAlpha = imageSource->hasAlpha();
 	bool isFloat = true;
@@ -633,6 +629,33 @@ void ImageTargetCgImage::finalize()
 	return result;
 }
 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef )
+{
+	::CVPixelBufferLockBaseAddress( pixelBufferRef, 0 );
+	uint8_t *ptr = reinterpret_cast<uint8_t*>( CVPixelBufferGetBaseAddress( pixelBufferRef ) );
+	int32_t rowBytes = (int32_t)::CVPixelBufferGetBytesPerRow( pixelBufferRef );
+	OSType type = CVPixelBufferGetPixelFormatType( pixelBufferRef );
+	size_t width = CVPixelBufferGetWidth( pixelBufferRef );
+	size_t height = CVPixelBufferGetHeight( pixelBufferRef );
+	SurfaceChannelOrder sco;
+	if( type == kCVPixelFormatType_24RGB )
+		sco = SurfaceChannelOrder::RGB;
+	else if( type == kCVPixelFormatType_32ARGB )
+		sco = SurfaceChannelOrder::ARGB;
+	else if( type == kCVPixelFormatType_24BGR )
+		sco = SurfaceChannelOrder::BGR;
+	else if( type == kCVPixelFormatType_32BGRA )
+		sco = SurfaceChannelOrder::BGRA;
+	Surface8u *newSurface = new Surface8u( ptr, (int32_t)width, (int32_t)height, rowBytes, sco );
+	return Surface8uRef( newSurface, [=] ( Surface8u *s )
+		{	::CVPixelBufferUnlockBaseAddress( pixelBufferRef, 0 );
+			::CVBufferRelease( pixelBufferRef );
+			delete s;
+		}
+		);
+}
 
 } } // namespace cinder::cocoa
 

@@ -1,17 +1,19 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
 
 using namespace std;
 using namespace ci;
 using namespace ci::app;
 
-class BasicTweenApp : public AppBasic {
+class BasicTweenApp : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void draw() override;
   
-	Anim<Vec2f>		mBlackPos, mWhitePos;
+	Anim<vec2>		mBlackPos, mWhitePos;
 };
 
 void BasicTweenApp::setup()
@@ -22,9 +24,9 @@ void BasicTweenApp::setup()
 void BasicTweenApp::mouseDown( MouseEvent event )
 {
 	// the call to apply() replaces any existing tweens on mBlackPos with this new one
-	timeline().apply( &mBlackPos, (Vec2f)event.getPos(), 2.0f, EaseInCubic() );
+	timeline().apply( &mBlackPos, (vec2)event.getPos(), 1.5f, EaseInCubic() );
 	// the call to appendTo causes the white circle to start when the black one finishes
-	timeline().apply( &mWhitePos, (Vec2f)event.getPos(), 0.35f, EaseOutQuint() ).appendTo( &mBlackPos );
+	timeline().apply( &mWhitePos, (vec2)event.getPos(), 0.35f, EaseOutQuint() ).appendTo( &mBlackPos );
 }
 
 void BasicTweenApp::draw()
@@ -39,4 +41,4 @@ void BasicTweenApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( BasicTweenApp, RendererGl )
+CINDER_APP( BasicTweenApp, RendererGl( RendererGl::Options().msaa( 4 ) ) )

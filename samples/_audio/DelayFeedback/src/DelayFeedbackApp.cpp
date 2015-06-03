@@ -5,20 +5,20 @@
  * author: Richard Eakin (2014)
  */
 
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/gl.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
 #include "cinder/Perlin.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/Timeline.h"
+#include "cinder/Log.h"
+#include "cinder/TriMesh.h"
+#include "cinder/gl/Batch.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"
 #include "cinder/audio/NodeEffects.h"
 #include "cinder/audio/Utilities.h"
-#include "cinder/audio/Debug.h"
-
-#include "cinder/gl/Vbo.h"
 
 #include "Resources.h"
 
@@ -33,26 +33,24 @@ using namespace ci::app;
 using namespace std;
 
 struct Splash {
-	Vec2f		mCenter;
-	Vec3f		mColorHsv;
+	vec2		mCenter;
+	vec3		mColorHsv;
 	Anim<float>	mRadius, mAlpha;
 };
 
-class DelayFeedback : public AppNative {
+class DelayFeedback : public App {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
+	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void keyDown( KeyEvent event )	override;
-	void update();
-	void draw();
+	void update() override;
+	void draw() override;
 
 	void	setVariableDelayMod();
-	void	addSplash( const Vec2f &pos );
-	float	quantizePitch( const Vec2f &pos );
-	void	loadMesh();
-	void	loadGlsl();
+	void	addSplash( const vec2 &pos );
+	float	quantizePitch( const vec2 &pos );
+	void	loadBatch();
 
 	audio::GenOscNodeRef	mOsc;
 	audio::DelayNodeRef		mDelay;
@@ -61,20 +59,12 @@ public:
 	std::list<Splash>		mSplashes;
 	Perlin					mPerlin;
 
-	gl::GlslProgRef			mGlsl;
-	gl::VboMeshRef			mMesh;
+	gl::BatchRef			mBatch;
 };
-
-void DelayFeedback::prepareSettings( Settings *settings )
-{
-	settings->setWindowPos( 200, 200 );
-	settings->setWindowSize( 1000, 800 );
-}
 
 void DelayFeedback::setup()
 {
-	loadGlsl();
-	loadMesh();
+	loadBatch();
 	gl::enableAlphaBlending();
 
 	// The basic audio::Node's used here are an oscillator with a triangle waveform, a gain, and a delay.
@@ -123,7 +113,7 @@ void DelayFeedback::setVariableDelayMod()
 	mDelay->getParamDelaySeconds()->setProcessor( add );
 }
 
-void DelayFeedback::addSplash( const Vec2f &pos )
+void DelayFeedback::addSplash( const vec2 &pos )
 {
 	mSplashes.push_back( Splash() );
 
@@ -138,12 +128,12 @@ void DelayFeedback::addSplash( const Vec2f &pos )
 	timeline().apply( &splash.mRadius, endRadius, 7, EaseOutExpo() );
 	timeline().apply( &splash.mAlpha, 0.0f, 7 );
 
-	float h = math<float>::min( 1,  mPerlin.fBm( pos.normalized() ) * 7.0f );
-	splash.mColorHsv = Vec3f( fabsf( h ), 1, 1 );
+	float h = math<float>::min( 1,  mPerlin.fBm( normalize( pos ) ) * 7 );
+	splash.mColorHsv = vec3( fabsf( h ), 1, 1 );
 }
 
 // returns a quantized pitch (in hertz) within the lydian dominant scale
-float DelayFeedback::quantizePitch( const Vec2f &pos )
+float DelayFeedback::quantizePitch( const vec2 &pos )
 {
 	const size_t scaleLength = 7;
 	float scale[scaleLength] = { 0, 2, 4, 6, 7, 9, 10 };
@@ -186,8 +176,6 @@ void DelayFeedback::mouseUp( MouseEvent event )
 
 void DelayFeedback::keyDown( KeyEvent event )
 {
-	if( event.getChar() == 's' )
-		loadGlsl();
 	if( event.getChar() == 'f' )
 		setFullScreen( ! isFullScreen() );
 }
@@ -206,61 +194,59 @@ void DelayFeedback::draw()
 {
 	gl::clear();
 
-	if( ! mGlsl || ! mMesh )
+	if( ! mBatch )
 		return;
 
-	mGlsl->bind();
+	gl::ScopedGlslProg glslScope( mBatch->getGlslProg() );
 
 	for( const auto &splash : mSplashes ) {
 		float radiusNormalized = splash.mRadius / MAX_RADIUS;
-		mGlsl->uniform( "uRadius", radiusNormalized );
+		mBatch->getGlslProg()->uniform( "uRadius", radiusNormalized );
+
+		gl::ScopedModelMatrix matrixScope;
+		gl::translate( splash.mCenter );
 
 		Color splashColor( CM_HSV, splash.mColorHsv );
 		gl::color( splashColor.r, splashColor.g, splashColor.b, splash.mAlpha() );
 
-		gl::pushModelView();
-			gl::translate( splash.mCenter );
-			gl::draw( mMesh );
-		gl::popModelView();
+		mBatch->draw();
 	}
-
-	mGlsl->unbind();
 }
 
-void DelayFeedback::loadMesh()
+void DelayFeedback::loadBatch()
 {
+	gl::GlslProgRef glsl;
+	try {
+		glsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
+	}
+	catch( ci::Exception &exc ) {
+		CI_LOG_E( "failed to load shader, what: " << exc.what() );
+		return;
+	}
+
 	Rectf boundingBox( - MAX_RADIUS, - MAX_RADIUS, MAX_RADIUS, MAX_RADIUS );
 
-	TriMesh2d mesh;
+	TriMesh mesh( TriMesh::Format().positions( 2 ).texCoords( 2 ) );
 
-	mesh.appendVertex( boundingBox.getUpperLeft() );
-	mesh.appendTexCoord( Vec2f( -1, -1 ) );
+	mesh.appendPosition( boundingBox.getUpperLeft() );
+	mesh.appendTexCoord( vec2( -1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerLeft() );
-	mesh.appendTexCoord( Vec2f( -1, 1 ) );
+	mesh.appendPosition( boundingBox.getLowerLeft() );
+	mesh.appendTexCoord( vec2( -1, 1 ) );
 
-	mesh.appendVertex( boundingBox.getUpperRight() );
-	mesh.appendTexCoord( Vec2f( 1, -1 ) );
+	mesh.appendPosition( boundingBox.getUpperRight() );
+	mesh.appendTexCoord( vec2( 1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerRight() );
-	mesh.appendTexCoord( Vec2f( 1, 1 ) );
+	mesh.appendPosition( boundingBox.getLowerRight() );
+	mesh.appendTexCoord( vec2( 1, 1 ) );
 
 	mesh.appendTriangle( 0, 1, 2 );
 	mesh.appendTriangle( 2, 1, 3 );
 
-	mMesh = gl::VboMesh::create( mesh );
+	mBatch = gl::Batch::create( mesh, glsl );
 }
 
-void DelayFeedback::loadGlsl()
-{
-	try {		
-		mGlsl = gl::GlslProg::create( loadResource( SMOOTH_CIRCLE_GLSL_VERT ), loadResource( SMOOTH_CIRCLE_GLSL_FRAG ) );
-
-		CI_LOG_V( "loaded glsl" );
-	}
-	catch( std::exception &exc ) {
-		CI_LOG_E( "failed to load shader, what: " << exc.what() );
-	}
-}
-
-CINDER_APP_NATIVE( DelayFeedback, RendererGl )
+CINDER_APP( DelayFeedback, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowPos( 200, 200 );
+	settings->setWindowSize( 1000, 800 );
+} )

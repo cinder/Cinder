@@ -1,4 +1,4 @@
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
@@ -7,7 +7,7 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class assetTestApp : public AppNative {
+class assetTestApp : public App {
   public:
 	void setup();
 	void draw();
@@ -31,4 +31,4 @@ void assetTestApp::draw()
 }
 
 
-CINDER_APP_NATIVE( assetTestApp, RendererGl )
+CINDER_APP( assetTestApp, RendererGl )

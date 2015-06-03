@@ -30,74 +30,114 @@
 
 namespace cinder {
 
-Buffer::Obj::Obj( void * aData, size_t aSize, bool aOwnsData ) 
-	: mData( aData ), mAllocatedSize( aSize ), mDataSize( aSize ), mOwnsData( aOwnsData ) 
+Buffer::Buffer()
+	: mData( nullptr ), mAllocatedSize( 0 ), mDataSize( 0 ), mOwnsData( false )
 {
 }
 
-Buffer::Obj::~Obj()
+Buffer::Buffer( void *data, size_t size )
+	: mData( data ), mAllocatedSize( size ), mDataSize( size ), mOwnsData( false )
 {
-	if( mOwnsData ) {
+}
+
+Buffer::Buffer( size_t size )
+	: mData( malloc( size ) ), mAllocatedSize( size ), mDataSize( size ), mOwnsData( true )
+{
+}
+
+Buffer::Buffer( const Buffer &rhs )
+	: mData( malloc( rhs.mAllocatedSize ) ), mAllocatedSize( rhs.mAllocatedSize ), mDataSize( rhs.mDataSize ), mOwnsData( true )
+{
+	memcpy( mData, rhs.mData, rhs.mDataSize );
+}
+
+Buffer::Buffer( Buffer &&rhs )
+	: mData( rhs.mData ), mAllocatedSize( rhs.mAllocatedSize ), mDataSize( rhs.mDataSize ), mOwnsData( rhs.mOwnsData )
+{
+	rhs.mOwnsData = false;
+}
+
+Buffer&	Buffer::operator=( const Buffer &rhs )
+{
+	mDataSize = rhs.mDataSize;
+	
+	mData = malloc( mDataSize );
+	memcpy( mData, rhs.mData, mDataSize );
+
+	mAllocatedSize = mDataSize;
+	mOwnsData = true;
+
+	return *this;
+}
+
+Buffer&	Buffer::operator=( Buffer &&rhs )
+{
+	mData = rhs.mData;
+	mAllocatedSize = rhs.mAllocatedSize;
+	mDataSize = rhs.mDataSize;
+	mOwnsData = rhs.mOwnsData;
+	rhs.mOwnsData = false;
+
+	return *this;
+}
+
+Buffer::Buffer( const DataSourceRef &dataSource )
+	: mOwnsData( true )
+{
+	BufferRef otherBuffer = dataSource->getBuffer();
+	const size_t size = otherBuffer->getSize();
+
+	mData = malloc( size );
+	memcpy( mData, otherBuffer->getData(), size );
+
+	mAllocatedSize = size;
+	mDataSize = size;
+}
+
+Buffer::~Buffer()
+{
+	if( mOwnsData )
 		free( mData );
-	}
-}
-
-Buffer::Buffer( std::shared_ptr<DataSource> dataSource )
-{
-	Buffer &otherBuffer = dataSource->getBuffer();
-	char *data = reinterpret_cast<char*>( malloc( otherBuffer.getDataSize() ) );
-	memcpy( data, otherBuffer.getData(), otherBuffer.getDataSize() );
-	mObj = std::shared_ptr<Obj>( new Obj( data, otherBuffer.getDataSize(), true ) );
-}
-
-Buffer::Buffer( void * aData, size_t aSize ) 
-	: mObj( new Obj( aData, aSize, false ) )
-{	
-}
-
-Buffer::Buffer( size_t aSize ) 
-	: mObj( new Obj( malloc( aSize ), aSize, true ) )
-{
 }
 
 void Buffer::resize( size_t newSize )
 {
-	if( ! mObj->mOwnsData ) return;
-	
-	mObj->mData = realloc( mObj->mData, newSize );
-	mObj->mDataSize = newSize;
-	mObj->mAllocatedSize = newSize;
+	if( mOwnsData )
+		mData = realloc( mData, newSize );
+	else {
+		void *newData = malloc( newSize );
+		memcpy( newData, mData, mDataSize );
+		mData = newData;
+		mOwnsData = true;
+	}
+
+	mDataSize = newSize;
+	mAllocatedSize = newSize;
 }
 
-void Buffer::copyFrom( const void * aData, size_t length )
+void Buffer::copyFrom( const void *data, size_t length )
 {
-	memcpy( mObj->mData, aData, length );
+	memcpy( mData, data, length );
 }
 
-void Buffer::write( std::shared_ptr<class DataTarget> dataTarget )
+void Buffer::write( const DataTargetRef &dataTarget )
 {
 	OStreamRef os = dataTarget->getStream();
 	os->write( *this );
 }
 
-std::shared_ptr<uint8_t>	Buffer::convertToSharedPtr()
-{
-	mObj->mOwnsData = false;
-	return std::shared_ptr<uint8_t>( reinterpret_cast<uint8_t*>( mObj->mData ), free );
-}
-
-Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resizeResult )
+Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel, bool resizeResult )
 {
 	/*Initial output buffer size needs to be 0.1% larger than source buffer + 12 bytes*/
-	size_t outSize = (size_t)(( aBuffer.getDataSize() * 1.001f ) + 12);
+	size_t outSize = (size_t)(( buffer.getSize() * 1.001f ) + 12);
 	Buffer outBuffer = Buffer( outSize );
 	
-	int err = compress2( (Bytef *)outBuffer.getData(), (uLongf*)&outSize, (Bytef *)aBuffer.getData(), (uLongf)aBuffer.getDataSize(), compressionLevel );
+	int err = compress2( (Bytef *)outBuffer.getData(), (uLongf*)&outSize, (Bytef *)buffer.getData(), (uLongf)buffer.getSize(), compressionLevel );
 	if( err != Z_OK ) {
 		//TODO: throw
 	}
 	
-	outBuffer.setDataSize( outSize );
+	outBuffer.setSize( outSize );
 	if( resizeResult ) {
 		outBuffer.resize( outSize );
 	}
@@ -105,7 +145,7 @@ Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel, bool resi
 	return outBuffer;
 }
 
-Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip )
+Buffer decompressBuffer( const Buffer &buffer, bool resizeResult, bool useGZip )
 {
 	int err;
 	z_stream strm;
@@ -123,9 +163,9 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip 
 	}
 	
 	size_t inOffset = 0;
-	size_t chunkSize = 16384;
-	size_t inBufferSize = aBuffer.getDataSize();
-	uint8_t * inPtr = (uint8_t *)aBuffer.getData();
+	const uint32_t chunkSize = 16384;
+	size_t inBufferSize = buffer.getSize();
+	uint8_t * inPtr = (uint8_t *)buffer.getData();
 	
 	size_t outBufferSize = chunkSize;
 	size_t outOffset = 0;
@@ -135,7 +175,7 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip 
 	do {
 		strm.avail_in = chunkSize;
 		if( inOffset + chunkSize > inBufferSize ) {
-			strm.avail_in = inBufferSize - inOffset;
+			strm.avail_in = (uInt)(inBufferSize - inOffset);
 		}
 		
 		if( strm.avail_in == 0 ) break;
@@ -171,7 +211,7 @@ Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult, bool useGZip 
 	
 	(void)inflateEnd(&strm);
 	
-	outBuffer.setDataSize( outOffset );
+	outBuffer.setSize( outOffset );
 	if( resizeResult ) {
 		outBuffer.resize( outOffset );
 	}

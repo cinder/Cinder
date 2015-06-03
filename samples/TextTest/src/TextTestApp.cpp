@@ -1,5 +1,6 @@
-#include "cinder/app/AppNative.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Text.h"
 #include "cinder/Utilities.h"
 #include "cinder/ImageIo.h"
@@ -15,12 +16,12 @@ using std::list;
 
 static const bool PREMULT = false;
 
-class TextTestApp : public AppNative {
+class TextTestApp : public App {
  public:
 	void setup();
 	void draw();
 
-	gl::Texture	mTexture, mSimpleTexture;
+	gl::Texture2dRef	mTexture, mSimpleTexture;
 };
 
 void printFontNames()
@@ -70,7 +71,7 @@ void TextTestApp::setup()
 	layout.setColor( ColorA( 0.25f, 0.5f, 1, 0.5f ) );
 	layout.addLine( " • Back to regular leading but translucent" );
 	Surface8u rendered = layout.render( true, PREMULT );
-	mTexture = gl::Texture( rendered );
+	mTexture = gl::Texture2d::create( rendered );
 	
 	// Create a custom font by loading it from a resource
 	Font customFont( Font( loadResource( RES_CUSTOM_FONT ), 72 ) );
@@ -81,7 +82,7 @@ void TextTestApp::setup()
 	simple.setColor( Color( 1, 0, 0.1f ) );
 	simple.addLine( "Cinder" );
 	simple.addLine( "Font From Resource" );
-	mSimpleTexture = gl::Texture( simple.render( true, PREMULT ) );
+	mSimpleTexture = gl::Texture2d::create( simple.render( true, PREMULT ) );
 }
 
 void TextTestApp::draw()
@@ -94,9 +95,9 @@ void TextTestApp::draw()
 	gl::enableAlphaBlending( PREMULT );
 
 	gl::color( Color::white() );
-	gl::draw( mTexture, Vec2f( 10, 10 ) );
-	gl::draw( mSimpleTexture, Vec2f( 10, getWindowHeight() - mSimpleTexture.getHeight() - 5 ) );
+	gl::draw( mTexture, vec2( 10, 10 ) );
+	gl::draw( mSimpleTexture, vec2( 10, getWindowHeight() - mSimpleTexture->getHeight() - 5 ) );
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_NATIVE( TextTestApp, RendererGl )
+CINDER_APP( TextTestApp, RendererGl )

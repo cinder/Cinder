@@ -37,7 +37,7 @@ class ImageTargetChannel : public ImageTarget {
 
 	virtual bool hasAlpha() const { return false; }
 	
-	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( mChannel->getData( Vec2i( 0, row ) ) ); }
+	virtual void*	getRowPointer( int32_t row ) { return reinterpret_cast<void*>( mChannel->getData( ivec2( 0, row ) ) ); }
 	
   protected:
 	ImageTargetChannel( ChannelT<T> *channel )
@@ -73,19 +73,17 @@ class ImageSourceChannel : public ImageSource {
 			setCustomPixelInc( channel.getIncrement() );
 		if( boost::is_same<T,uint8_t>::value ) {
 			setDataType( ImageIo::UINT8 );
-			mChannel8u = *reinterpret_cast<const Channel8u*>( &channel ); // register reference to 'channel'
 		}
 		else if( boost::is_same<T,uint16_t>::value ) {
 			setDataType( ImageIo::UINT16 );
-			mChannel16u = *reinterpret_cast<const Channel16u*>( &channel ); // register reference to 'channel'
 		}
 		else if( boost::is_same<T,float>::value ) {
 			setDataType( ImageIo::FLOAT32 );
-			mChannel32f = *reinterpret_cast<const Channel32f*>( &channel ); // register reference to 'channel'
 		}
 		else
 			throw; // this channel seems to be a type we've never met
 		mRowBytes = channel.getRowBytes();
+		mDataStore = channel.getDataStore();
 		mData = reinterpret_cast<const uint8_t*>( channel.getData() );
 	}
 
@@ -100,82 +98,109 @@ class ImageSourceChannel : public ImageSource {
 		}
 	}
 
-	// not ideal, but these are used to register a reference to the channel we were constructed with
-	Channel8u			mChannel8u;
-	Channel16u			mChannel16u;
-	Channel32f			mChannel32f;	
+	// this is used to register a reference to the channel we were constructed with
+	shared_ptr<void>	mDataStore;
 	const uint8_t		*mData;
 	int32_t				mRowBytes;
 };
 
 template<typename T>
-ChannelT<T>::Obj::Obj( int32_t aWidth, int32_t aHeight )
-	: mWidth( aWidth ), mHeight( aHeight )
+ChannelT<T>::ChannelT()
+	: mWidth( 0 ), mHeight( 0 ), mRowBytes( 0 ), mIncrement( 1 ), mData( nullptr )
 {
-	mRowBytes = mWidth * sizeof(T);
-	mIncrement = 1;
-	
-	mOwnsData = true;
-	mData = new T[mWidth * mHeight];
-	mDeallocatorFunc = 0;
-}
-
-template<typename T>
-ChannelT<T>::Obj::Obj( int32_t aWidth, int32_t aHeight, int32_t aRowBytes, uint8_t aIncrement, bool aOwnsData, T *aData )
-	: mWidth( aWidth ), mHeight( aHeight ), mRowBytes( aRowBytes ), mIncrement( aIncrement ), mOwnsData( aOwnsData ), mData( aData )
-{
-	mDeallocatorFunc = 0;
-}
-
-template<typename T>
-ChannelT<T>::Obj::~Obj()
-{
-	if( mDeallocatorFunc )
-		(*mDeallocatorFunc)( mDeallocatorRefcon );
-	if( mOwnsData )
-		delete [] mData;
 }
 
 template<typename T>
 ChannelT<T>::ChannelT( int32_t width, int32_t height )
-	: mObj( new Obj( width, height ) )
+	: mWidth( width ), mHeight( height )
 {
+	mRowBytes = mWidth * sizeof(T);
+	mIncrement = 1;
+	
+	mDataStore = shared_ptr<T>( new T[mWidth * mHeight], std::default_delete<T[]>() );
+	mData = mDataStore.get();
 }
 
 template<typename T>
 ChannelT<T>::ChannelT( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data )
-	: mObj( new Obj( width, height, rowBytes, increment, false, data ) )
+	: mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mIncrement( increment ), mData( data )
+{
+	mDataStore = nullptr;
+}
+
+template<typename T>
+ChannelT<T>::ChannelT( int32_t width, int32_t height, int32_t rowBytes, uint8_t increment, T *data, const std::shared_ptr<T> &dataStore )
+	: mWidth( width ), mHeight( height ), mRowBytes( rowBytes ), mIncrement( increment ), mData( data ), mDataStore( dataStore )
 {
 }
 
 template<typename T>
-ChannelT<T>::ChannelT( ImageSourceRef imageSource )
+ChannelT<T>::ChannelT( const ChannelT &rhs )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mRowBytes( mWidth * sizeof(T) ), mIncrement( 1 )
 {
-	int32_t width = imageSource->getWidth();
-	int32_t height = imageSource->getHeight();
-	int32_t rowBytes = width * sizeof(T);
+	mDataStore = shared_ptr<T>( new T[mWidth * mHeight], std::default_delete<T[]>() );
+	mData = mDataStore.get();
 
-	T *data = new T[height * (rowBytes/sizeof(T))];
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
+}
 
-	mObj = shared_ptr<Obj>( new Obj( width, height, rowBytes, 1, true, data ) );
-	mObj->mOwnsData = true;
+template<typename T>
+ChannelT<T>::ChannelT( ChannelT &&rhs )
+	: mWidth( rhs.mWidth ), mHeight( rhs.mHeight ), mRowBytes( rhs.mRowBytes ), mIncrement( rhs.mIncrement ), mDataStore( rhs.mDataStore ), mData( rhs.mData )
+{
+	rhs.mDataStore.reset();
+	rhs.mData = nullptr;
+}
+
+template<typename T>
+ChannelT<T>::ChannelT( const ImageSourceRef &imageSource )
+{
+	mWidth = imageSource->getWidth();
+	mHeight = imageSource->getHeight();
+	mRowBytes = mWidth * sizeof(T);
+	mIncrement = 1;
+
+	mDataStore = shared_ptr<T>( new T[mHeight * (mRowBytes/sizeof(T))], std::default_delete<T[]>() );
+	mData = mDataStore.get();
 	
-	shared_ptr<ImageTargetChannel<T> > target = ImageTargetChannel<T>::createRef( this );
-	imageSource->load( target );	
+	shared_ptr<ImageTargetChannel<T>> target = ImageTargetChannel<T>::createRef( this );
+	imageSource->load( target );
+}
+
+template<typename T>
+ChannelT<T>& ChannelT<T>::operator=( const ChannelT &rhs )
+{
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mRowBytes = mWidth * sizeof(T);
+	mIncrement = 1;
+	mDataStore = shared_ptr<T>( new T[mHeight * mWidth], std::default_delete<T[]>() );
+	mData = mDataStore.get();
+	copyFrom( rhs, Area( 0, 0, mWidth, mHeight ) );
+	
+	return *this;
+}
+
+template<typename T>
+ChannelT<T>& ChannelT<T>::operator=( ChannelT &&rhs )
+{
+	mWidth = rhs.mWidth;
+	mHeight = rhs.mHeight;
+	mRowBytes = rhs.mRowBytes;
+	mIncrement = rhs.mIncrement;
+	mDataStore = rhs.mDataStore;
+	mData = rhs.mData;
+
+	rhs.mDataStore.reset();
+	rhs.mData = nullptr;
+
+	return *this;
 }
 
 template<typename T>
 ChannelT<T>::operator ImageSourceRef() const
 {
 	return shared_ptr<ImageSource>( new ImageSourceChannel( *this ) );	
-}
-
-
-template<typename T>
-void ChannelT<T>::setDeallocator( void(*aDeallocatorFunc)( void * ), void *aDeallocatorRefcon )
-{
-	mObj->mDeallocatorFunc = aDeallocatorFunc;
-	mObj->mDeallocatorRefcon = aDeallocatorRefcon;
 }
 
 template<typename T>
@@ -200,19 +225,19 @@ ChannelT<T> ChannelT<T>::clone( const Area &area, bool copyPixels ) const
 
 
 template<typename T>
-void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const Vec2i &relativeOffset )
+void ChannelT<T>::copyFrom( const ChannelT<T> &srcChannel, const Area &srcArea, const ivec2 &relativeOffset )
 {
-	std::pair<Area,Vec2i> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
+	std::pair<Area,ivec2> srcDst = clippedSrcDst( srcChannel.getBounds(), srcArea, getBounds(), srcArea.getUL() + relativeOffset );
 	
 	int32_t srcRowBytes = srcChannel.getRowBytes();
 	uint8_t srcIncrement = srcChannel.getIncrement();
-	uint8_t increment = mObj->mIncrement;
+	uint8_t increment = mIncrement;
 	
 	int32_t width = srcDst.first.getWidth();
 	
 	for( int32_t y = 0; y < srcArea.getHeight(); ++y ) {
-		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcChannel.mObj->mData + srcArea.x1 * srcIncrement ) + ( srcArea.y1 + y ) * srcRowBytes );
-		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( mObj->mData + srcDst.second.x * mObj->mIncrement ) + ( y + srcDst.second.y ) * mObj->mRowBytes );
+		const T *src = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( srcChannel.mData + srcArea.x1 * srcIncrement ) + ( srcArea.y1 + y ) * srcRowBytes );
+		T *dst = reinterpret_cast<T*>( reinterpret_cast<uint8_t*>( mData + srcDst.second.x * mIncrement ) + ( y + srcDst.second.y ) * mRowBytes );
 		for( int32_t x = 0; x < width; ++x ) {
 			*dst = *src;
 			src += srcIncrement;
@@ -230,10 +255,10 @@ T ChannelT<T>::areaAverage( const Area &area ) const
 	if( ( clipped.getWidth() <= 0 ) || ( clipped.getHeight() <= 0 ) )
 		return 0;
 
-	uint8_t increment = mObj->mIncrement;
-	int32_t rowBytes = mObj->mRowBytes;
+	uint8_t increment = mIncrement;
+	int32_t rowBytes = mRowBytes;
 	
-	const T *line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( mObj->mData + clipped.x1 * mObj->mIncrement ) + clipped.y1 * mObj->mRowBytes );
+	const T *line = reinterpret_cast<const T*>( reinterpret_cast<const uint8_t*>( mData + clipped.x1 * mIncrement ) + clipped.y1 * mRowBytes );
 	for( int32_t y = clipped.y1; y < clipped.y2; ++y ) {
 		const T *d = line;
 		for( int32_t x = clipped.x1; x < clipped.x2; ++x ) {

@@ -25,54 +25,38 @@
 #pragma once
 
 #include "cinder/Cinder.h"
-#include "cinder/MatrixStack.h"
+#include "cinder/Exception.h"
 
-#if defined( CINDER_MSW )
-	struct HWND__;
-	typedef HWND__* DX_WINDOW_TYPE;
-#elif defined( CINDER_WINRT )
+#if defined( CINDER_WINRT )
 	#include <agile.h>
-	typedef Platform::Agile<Windows::UI::Core::CoreWindow>	DX_WINDOW_TYPE;
 	#undef min
 	#undef max
 #endif
 
-#if !defined( CINDER_WINRT )
-	#include "cinder/gl/gl.h"  // necessary to give GLee the jump on Cocoa.h
-#endif
 #include "cinder/Surface.h"
 #include "cinder/Display.h"
 
-
 #if defined( CINDER_MAC )
-	#include <ApplicationServices/ApplicationServices.h>
-	#include <CoreFoundation/CoreFoundation.h>
+	#include <CoreGraphics/CGGeometry.h>
 	#if defined __OBJC__
-		@class AppImplCocoaRendererQuartz;
-		@class AppImplCocoaRendererGl;
-		@class NSOpenGLContext;
+		@class RendererImpl2dMacQuartz;
 		@class NSView;
 	#else
-		class AppImplCocoaRendererQuartz;
-		class AppImplCocoaRendererGl;
-		class NSOpenGLContext;
+		class RendererImpl2dMacQuartz;
 		class NSView;
 	#endif
 	typedef struct _CGLContextObject       *CGLContextObj;
 	typedef struct _CGLPixelFormatObject   *CGLPixelFormatObj;
+	typedef struct CGContext				*CGContextRef;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined __OBJC__
 		typedef struct CGContext * CGContextRef;
-		@class AppImplCocoaTouchRendererGl;
-		@class AppImplCocoaTouchRendererQuartz;
+		@class RendererImpl2dCocoaTouchQuartz;
 		@class UIView;
-		@class EAGLContext;
 	#else
 		typedef struct CGContext * CGContextRef;
-		class AppImplCocoaTouchRendererGl;
-		class AppImplCocoaTouchRendererQuartz;
+		class RendererImpl2dCocoaTouchQuartz;
 		class UIView;
-		class EAGLContext;
 	#endif
 #endif
 
@@ -82,37 +66,30 @@ namespace cinder { namespace app {
 class Window;
 typedef std::shared_ptr<Window>		WindowRef;
 
-class App;
+class AppBase;
 
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
-	enum RendererType
-	{
-		RENDERER_GL,
-		RENDERER_DX
-	};
-	virtual ~Renderer() {};
+	virtual ~Renderer() {}
 	
 	virtual RendererRef	clone() const = 0;
-	virtual RendererType getRendererType() const { return RENDERER_GL; }
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void	setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
+		virtual void	setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
 		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
 	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void	setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) = 0;
-		virtual bool	isEaglLayer() const { return false; }
+		virtual void		setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) = 0;
+		virtual bool		isEaglLayer() const { return false; }
 	#endif
-
 
 	virtual void	setFrameSize( int width, int height ) {}		
 
 #elif defined( CINDER_MSW )
-	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
+	virtual void setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
 
 	virtual void prepareToggleFullScreen() {}
 	virtual void finishToggleFullScreen() {}
@@ -120,86 +97,21 @@ class Renderer {
 
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
-#elif defined( CINDER_WINRT)
-	virtual void setup( App *aApp, DX_WINDOW_TYPE wnd) = 0;
-
-	virtual void prepareToggleFullScreen() {}
-	virtual void finishToggleFullScreen() {}
-	virtual void kill() {}
+#elif defined( CINDER_WINRT )
+	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #endif
 
-	virtual Surface	copyWindowSurface( const Area &area ) = 0;
+	virtual Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) = 0;
 
 	virtual void startDraw() {}
-	virtual void finishDraw() {}		
-	virtual void makeCurrentContext() {}
+	virtual void finishDraw() {}
+	virtual void makeCurrentContext( bool force = false ) {}
+	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
  protected:
- 	Renderer() : mApp( 0 ) {}
+ 	Renderer() {}
 	Renderer( const Renderer &renderer );
-
-	App			*mApp;
-};
-
-#if !defined( CINDER_WINRT )
-typedef std::shared_ptr<class RendererGl>	RendererGlRef;
-class RendererGl : public Renderer {
-  public:
-#if defined( CINDER_COCOA_TOUCH )
-	RendererGl( int aAntiAliasing = AA_MSAA_4 );
-#else
-	RendererGl( int aAntiAliasing = AA_MSAA_16 );
-#endif
-	~RendererGl();
-
-	static RendererGlRef	create( int antiAliasing = AA_MSAA_16 ) { return RendererGlRef( new RendererGl( antiAliasing ) ); }
-	virtual RendererRef		clone() const { return RendererGlRef( new RendererGl( *this ) ); }
- 
-#if defined( CINDER_COCOA )
-	#if defined( CINDER_MAC )
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
-		virtual CGLContextObj			getCglContext();
-		virtual CGLPixelFormatObj		getCglPixelFormat();
-		virtual NSOpenGLContext*		getNsOpenGlContext();		
-	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void 	setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
-		virtual bool 	isEaglLayer() const { return true; }
-		EAGLContext*	getEaglContext() const;
-	#endif
-	virtual void	setFrameSize( int width, int height );
-#elif defined( CINDER_MSW )
-	virtual void	setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
-	virtual void	kill();
-	virtual HWND	getHwnd() { return mWnd; }
-	virtual void	prepareToggleFullScreen();
-	virtual void	finishToggleFullScreen();
-#endif
-
-	enum	{ AA_NONE = 0, AA_MSAA_2, AA_MSAA_4, AA_MSAA_6, AA_MSAA_8, AA_MSAA_16, AA_MSAA_32 };
-	static const int	sAntiAliasingSamples[];
-	void				setAntiAliasing( int aAntiAliasing );
-	int					getAntiAliasing() const { return mAntiAliasing; }
-
-	virtual void	startDraw();
-	virtual void	finishDraw();
-	virtual void	defaultResize();
-	virtual void	makeCurrentContext();
-	virtual Surface	copyWindowSurface( const Area &area );
-	
- protected:
-	RendererGl( const RendererGl &renderer );
-
-	int			mAntiAliasing;
-#if defined( CINDER_MAC )
-	AppImplCocoaRendererGl		*mImpl;
-#elif defined( CINDER_COCOA_TOUCH )
-	AppImplCocoaTouchRendererGl	*mImpl;
-#elif defined( CINDER_MSW )
-	class AppImplMswRendererGl	*mImpl;
-	HWND						mWnd;
-	friend class				AppImplMswRendererGl;
-#endif
 };
 
 typedef std::shared_ptr<class Renderer2d>	Renderer2dRef;
@@ -212,28 +124,28 @@ class Renderer2d : public Renderer {
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 
 	#if defined( CINDER_COCOA_TOUCH )
-		virtual void setup( App *aApp, const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
+		virtual void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
 	#else
 		~Renderer2d();
-		virtual void setup( App *aApp, CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
+		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
 	#endif
 
 	virtual CGContextRef			getCgContext();
 
-	virtual void startDraw();
-	virtual void finishDraw();
-	virtual void defaultResize();
-	virtual void makeCurrentContext();	
-	virtual void setFrameSize( int width, int height );
-	virtual Surface	copyWindowSurface( const Area &area );
+	void			startDraw() override;
+	void			finishDraw() override;
+	void			defaultResize() override;
+	void			makeCurrentContext( bool force = false ) override;
+	void			setFrameSize( int width, int height ) override;
+	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 	
   protected:
 	Renderer2d( const Renderer2d &renderer );
 
 #if defined( CINDER_MAC )
-	AppImplCocoaRendererQuartz		*mImpl;
+	RendererImpl2dMacQuartz		*mImpl;
 #else
-	AppImplCocoaTouchRendererQuartz	*mImpl;
+	RendererImpl2dCocoaTouchQuartz	*mImpl;
 #endif
 	CGContextRef					mCGContext;
 };
@@ -242,37 +154,51 @@ class Renderer2d : public Renderer {
 
 class Renderer2d : public Renderer {
  public:
-	Renderer2d( bool doubleBuffer = true ); 
+	 Renderer2d( bool doubleBuffer = true, bool paintEvents = true );
  
-	static Renderer2dRef	create( bool doubleBuffer = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer ) ); }
+	static Renderer2dRef	create( bool doubleBuffer = true, bool paintEvents = true ) { return Renderer2dRef( new Renderer2d( doubleBuffer, paintEvents ) ); }
 	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
 	
-	virtual void setup( App *aApp, HWND wnd, HDC dc, RendererRef sharedRenderer );
-	virtual void kill();
+	void setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
+	void kill();
 	
-	virtual HWND	getHwnd() { return mWnd; }
-	virtual HDC		getDc();
+	HWND	getHwnd() { return mWnd; }
+	HDC		getDc();
 
-	virtual void	prepareToggleFullScreen();
-	virtual void	finishToggleFullScreen();
+	void			prepareToggleFullScreen();
+	void			finishToggleFullScreen();
 
-	virtual void startDraw() override;
-	virtual void finishDraw() override;
-	virtual void defaultResize() override;
-	virtual Surface	copyWindowSurface( const Area &area );
+	void			startDraw() override;
+	void			finishDraw() override;
+	void			defaultResize() override;
+	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 	
  protected:
 	Renderer2d( const Renderer2d &renderer );
  
-	class AppImplMswRendererGdi	*mImpl;
+	class RendererImpl2dGdi	*mImpl;
 
-	bool			mDoubleBuffer;
+	bool			mDoubleBuffer, mPaintEvents;
 	HWND			mWnd;
 	HDC				mDC;
 };
 
 #endif
-#endif // !defined( CINDER_WINRT )
 
+class ExcRenderer : public Exception {
+  public:
+	ExcRenderer() {}
+	ExcRenderer( const std::string &description )
+		: Exception( description )
+	{}
+};
+
+class ExcRendererAllocation : public ExcRenderer {
+  public:
+	ExcRendererAllocation() {}
+	ExcRendererAllocation( const std::string &description )
+		: ExcRenderer( description )
+	{}
+};
 
 } } // namespace cinder::app

@@ -8,7 +8,23 @@
 //  ---------------------------------------------------------------------------
 
 
+// this forces the right GL headers
 #include "TwPrecomp.h"
+
+#if ! defined( CINDER_ANT_TW_BAR_IGNORE )
+
+#include "LoadOGL.h"
+#include "TwOpenGL.h"
+#include "TwMgr.h"
+#if !defined(ANT_OGL_HEADER_INCLUDED)
+#   if defined(ANT_OSX)
+#   	include <OpenGL/gl.h>
+#   else
+#	    include <GL/gl.h>  // must be included after windows.h
+#   endif
+#   define  ANT_OGL_HEADER_INCLUDED
+#endif
+
 #include "LoadOGL.h"
 #include "TwOpenGL.h"
 #include "TwMgr.h"
@@ -904,3 +920,5 @@ void CTwGraphOpenGL::DrawTriangles(int _NumTriangles, int *_Vertices, color32 *_
 }
 
 //  ---------------------------------------------------------------------------
+
+#endif // ! defined( CINDER_ANT_TW_BAR_IGNORE )

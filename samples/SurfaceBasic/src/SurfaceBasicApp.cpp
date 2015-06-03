@@ -1,19 +1,19 @@
-#include "cinder/app/AppBasic.h"
-#include "cinder/ImageIo.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/ImageIo.h"
 #include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class SurfaceBasicApp : public AppBasic {
+class SurfaceBasicApp : public App {
   public:
 	void	setup();
 	void	draw();	
 	
-	gl::Texture		mProcessedImageTex;
+	gl::Texture2dRef		mProcessedImageTex;
 };
 
 // We can invert the image by subtracting each R,G,B value from 255
@@ -100,7 +100,7 @@ Surface processImage( const Surface input )
 void SurfaceBasicApp::setup()
 {
 	Surface processedImage( processImage( loadImage( loadResource( RES_IMAGE ) ) ) );
-	mProcessedImageTex = gl::Texture( processedImage );
+	mProcessedImageTex = gl::Texture2d::create( processedImage );
 }
 
 void SurfaceBasicApp::draw()
@@ -109,4 +109,4 @@ void SurfaceBasicApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP_BASIC( SurfaceBasicApp, RendererGl )
+CINDER_APP( SurfaceBasicApp, RendererGl )

@@ -1,147 +1,71 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Arcball.h"
-#include "cinder/Rand.h"
+#include "cinder/Sphere.h"
+
+#include "Resources.h"
 
 using namespace ci;
 using namespace ci::app;
 
-class ArcballDemoApp : public AppBasic {
- public:	
-	void setup();
-	void resize();
-	void mouseDown( MouseEvent event );
-	void mouseDrag( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void draw();
-	void drawVerbose();	
+class ArcballDemoApp : public App {
+  public:	
+	void setup() override;
+	void resize() override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void draw() override;
 	
-	Arcball		mArcball;
-	Vec2i		mInitialMouseDown, mCurrentMouseDown;
-	bool		mDrawVerbose;
-	bool		mUseConstraintAxis;
-	Vec3f		mConstraintAxis;
+	Arcball			mArcball;
+	CameraPersp		mCamera;
+	
+	Sphere			mEarthSphere;
+	gl::BatchRef	mEarth;
+	gl::TextureRef	mEarthTex;
 };
 
 void ArcballDemoApp::setup()
 {
-	gl::enableAlphaBlending();
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
-	glEnable( GL_CULL_FACE );
-	glFrontFace( GL_CW ); // the default camera inverts to a clockwise front-facing direction
 
-	mDrawVerbose = true;
-	mUseConstraintAxis = false;
-	mCurrentMouseDown = mInitialMouseDown = Vec2i( 200, 200 );
+	mCamera.setPerspective( 45.0f, getWindowAspectRatio(), 0.1f, 1000.0f );
+	mCamera.lookAt( vec3( 0, 0, 3 ), vec3( 0 ) );
+
+	mEarthSphere = Sphere( vec3( 0 ), 1 );
+	mEarth = gl::Batch::create( geom::Sphere( mEarthSphere ).subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mEarthTex = gl::Texture::create( loadImage( loadResource( EARTH_TEX_RES ) ) );
+
+	mArcball = Arcball( &mCamera, mEarthSphere );
 }
 
 void ArcballDemoApp::resize()
 {
-	mArcball.setWindowSize( getWindowSize() );
-	mArcball.setCenter( getWindowCenter() );
-	mArcball.setRadius( 150 );
+	mCamera.setAspectRatio( getWindowAspectRatio() );
 }
 
 void ArcballDemoApp::mouseDown( MouseEvent event )
 {
-	mArcball.mouseDown( event.getPos() );
-	mCurrentMouseDown = mInitialMouseDown = event.getPos();
+	mArcball.mouseDown( event );
 }
 
 void ArcballDemoApp::mouseDrag( MouseEvent event )
 {
-	mArcball.mouseDrag( event.getPos() );
-	mCurrentMouseDown = event.getPos();
-}
-
-void ArcballDemoApp::keyDown( KeyEvent event )
-{
-	if( event.getChar() == 'v' )
-		mDrawVerbose = ! mDrawVerbose;
-	else if( event.getChar() == 'c' ) {
-		mUseConstraintAxis = ! mUseConstraintAxis;
-		if( mUseConstraintAxis ) {
-			// make a random constraint axis
-			mConstraintAxis = Rand::randVec3f();
-			mArcball.setConstraintAxis( mConstraintAxis );
-		}
-		else
-			mArcball.setNoConstraintAxis();
-	}
-}
-
-// this draws with the sphere and axes to help undertand how arcball works
-void ArcballDemoApp::drawVerbose()
-{
-	// draw the cube
-	gl::pushModelView();
-		gl::translate( getWindowCenter() );
-		gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
-		gl::rotate( mArcball.getQuat() );
-		gl::drawColorCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
-	gl::popModelView();
-
-	// draw the back faces of the sphere
-	gl::pushModelView();
-		glColor4f( 0.0, 0.0, 0.0, 0.3f );
-		gl::disableDepthWrite();
-		gl::translate( getWindowCenter() );
-		glCullFace( GL_FRONT );
-		gl::drawSphere( Vec3f::zero(), mArcball.getRadius(), 50 );
-	gl::popModelView();
-
-	gl::enableDepthWrite();
-	glCullFace( GL_BACK );
-
-	// draw the axes
-	gl::pushModelView();
-		gl::translate( getWindowCenter() );
-		
-		// start
-		glColor4f( 1.0, 1.0, 0.0f, 1.0f );
-		gl::drawVector( Vec3f::zero(), mArcball.mouseOnSphere( mInitialMouseDown ) * mArcball.getRadius(), 10, 5 );
-		
-		// end
-		glColor4f( 0.0, 1.0, 0.0f, 1.0f );
-		gl::drawVector( Vec3f::zero(), mArcball.mouseOnSphere( mCurrentMouseDown ) * mArcball.getRadius(), 10, 5 );
-		
-		// constraint
-		if( mUseConstraintAxis ) {
-			glColor4f( 0.0, 0.7f, 1.0f, 1.0f );
-			gl::drawVector( mConstraintAxis * -mArcball.getRadius() * 1.5, mConstraintAxis * mArcball.getRadius() * 1.5, 10, 5 );		
-		}
-	gl::popModelView();
-
-	// draw the front faces of the sphere
-	gl::pushModelView();
-		glColor4f( 0.0, 0.0, 0.0, 0.3f );
-		gl::translate( getWindowCenter() );
-		gl::drawSphere( Vec3f::zero(), mArcball.getRadius(), 50 );
-	gl::popModelView();	
+	mArcball.mouseDrag( event );
 }
 
 void ArcballDemoApp::draw()
 {
-	gl::clear( Color( 0, 0.1f, 0.2f ) );
+	gl::clear( Color( 0, 0.0f, 0.15f ) );
+	gl::setMatrices( mCamera );
 
-	if( mDrawVerbose )
-		drawVerbose();
-	else {
-		// the order of operations is important here - we don't want the rotation applied to the scale
-		// and likewise, we don't want the translation applied to the scale 
-		// So the code below:
-		// 1) rotates the cube by the quaternion that arcball has provided
-		// 2) scales the cube to be 200 pixels big
-		// 3) moves the cube to the center of the window
-		gl::pushModelView();
-			glCullFace( GL_BACK );
-			gl::translate( getWindowSize() / 2.0f );
-			gl::scale( Vec3f( 200.0f, 200.0f, 200.0f ) );	
-			gl::rotate( mArcball.getQuat() );
-			gl::drawColorCube( Vec3f::zero(), Vec3f( 1, 1, 1 ) );
-		gl::popModelView();		
-	}
+	gl::rotate( mArcball.getQuat() );
+	mEarthTex->bind();
+	mEarth->draw();
 }
 
-
-CINDER_APP_BASIC( ArcballDemoApp, RendererGl )
+CINDER_APP( ArcballDemoApp, RendererGl, [] ( App::Settings *settings ) {
+	settings->setMultiTouchEnabled( false );
+}
+ )

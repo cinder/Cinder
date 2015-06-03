@@ -22,8 +22,9 @@
 
 #pragma once
 
-#include "Vector.h"
-#include "Ray.h"
+#include "cinder/Matrix.h"
+#include "cinder/Vector.h"
+#include "cinder/Ray.h"
 
 #include <vector>
 
@@ -32,21 +33,37 @@ namespace cinder {
 class Sphere {
  public:
 	Sphere() {}
-	Sphere( const Vec3f &aCenter, float aRadius ) : mCenter( aCenter ), mRadius( aRadius ) {}
+	Sphere( const vec3 &center, float radius )
+		: mCenter( center ), mRadius( radius )
+	{}
 
 	float	getRadius() const { return mRadius; }
 	void	setRadius( float radius ) { mRadius = radius; }
 	
-	const Vec3f&	getCenter() const { return mCenter; }
-	const void		setCenter( const Vec3f &center ) { mCenter = center; }
+	vec3	getCenter() const { return mCenter; }
+	void	setCenter( const vec3 &center ) { mCenter = center; }
 
-	bool intersects( const Ray &ray );
-	int intersect( const Ray &ray, float *intersection );
+	bool	intersects( const Ray &ray ) const;
+	int		intersect( const Ray &ray, float *intersection ) const;
 
-	static Sphere	calculateBoundingSphere( const std::vector<Vec3f> &points );
+	//! Returns the closest point on \a ray to the Sphere. If \a ray intersects then returns the point of nearest intersection.
+	vec3	closestPoint( const Ray &ray ) const;
+
+	static Sphere	calculateBoundingSphere( const std::vector<vec3> &points );
+	static Sphere	calculateBoundingSphere( const vec3 *points, size_t numPoints );
+
+	//! Converts sphere to another coordinate system. Note that it will not return correct results if there are non-uniform scaling, shears, or other unusual transforms in \a transform.
+	Sphere	transformed( const mat4 &transform );
+
+	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Returns \c false if calculation failed, rendering only \a outCenter correct. Algorithm due to Iñigo Quilez.
+	void	calcProjection( float focalLength, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
+	//! Calculates the projection of the Sphere (an oriented ellipse) given \a focalLength. Algorithm due to Iñigo Quilez.
+	void	calcProjection( float focalLength, vec2 screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const;
+	//! Calculates the projected area of the Sphere given \a focalLength and screen size in pixels. Algorithm due to Iñigo Quilez.
+	float	calcProjectedArea( float focalLength, vec2 screenSizePixels ) const;
 
  protected:
- 	Vec3f	mCenter;
+ 	vec3	mCenter;
 	float	mRadius;
 };
 

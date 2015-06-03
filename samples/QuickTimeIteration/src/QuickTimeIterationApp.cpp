@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/Surface.h"
 #include "cinder/gl/gl.h"
 #include "cinder/gl/Texture.h"
@@ -12,7 +13,7 @@ using namespace ci;
 using namespace ci::app;
 using std::string;
 
-class QTimeIterApp : public AppBasic {
+class QTimeIterApp : public App {
  public:
 	void prepareSettings( Settings *settings );
 	void setup();
@@ -25,8 +26,8 @@ class QTimeIterApp : public AppBasic {
 
 	void loadMovieFile( const fs::path &path );
 
-	qtime::MovieSurface	mMovie;
-	Surface				mSurface;
+	qtime::MovieSurfaceRef	mMovie;
+	SurfaceRef				mSurface;
 };
 
 
@@ -58,28 +59,28 @@ void QTimeIterApp::keyDown( KeyEvent event )
 	// these keys only make sense if there is an active movie
 	if( mMovie ) {
 		if( event.getCode() == KeyEvent::KEY_LEFT ) {
-			mMovie.stepBackward();
+			mMovie->stepBackward();
 		}
 		if( event.getCode() == KeyEvent::KEY_RIGHT ) {
-			mMovie.stepForward();
+			mMovie->stepForward();
 		}
 		else if( event.getChar() == 's' ) {
 			if( mSurface ) {
 				fs::path savePath = getSaveFilePath();
 				if( ! savePath.empty() ) {
-					writeImage( savePath, mSurface );
+					writeImage( savePath, *mSurface );
 				}
 			}
 		}
 		else if( event.getChar() == 'm' ) {
 			// jump to the middle frame
-			mMovie.seekToTime( mMovie.getDuration() / 2 );
+			mMovie->seekToTime( mMovie->getDuration() / 2 );
 		}
 		else if( event.getChar() == ' ' ) {
-			if( mMovie.isPlaying() )
-				mMovie.stop();
+			if( mMovie->isPlaying() )
+				mMovie->stop();
 			else
-				mMovie.play();
+				mMovie->play();
 		}
 	}
 }
@@ -87,20 +88,19 @@ void QTimeIterApp::keyDown( KeyEvent event )
 void QTimeIterApp::loadMovieFile( const fs::path &moviePath )
 {
 	try {
-		mMovie = qtime::MovieSurface( moviePath );
+		mMovie = qtime::MovieSurface::create( moviePath );
 
-		console() << "Dimensions:" << mMovie.getWidth() << " x " << mMovie.getHeight() << std::endl;
-		console() << "Duration:  " << mMovie.getDuration() << " seconds" << std::endl;
-		console() << "Frames:    " << mMovie.getNumFrames() << std::endl;
-		console() << "Framerate: " << mMovie.getFramerate() << std::endl;
-		console() << "Alpha channel: " << mMovie.hasAlpha() << std::endl;		
-		console() << "Has audio: " << mMovie.hasAudio() << " Has visuals: " << mMovie.hasVisuals() << std::endl;
-		mMovie.setLoop( true, true );
-		mMovie.seekToStart();
-		mMovie.play();
+		console() << "Dimensions:" << mMovie->getWidth() << " x " << mMovie->getHeight() << std::endl;
+		console() << "Duration:  " << mMovie->getDuration() << " seconds" << std::endl;
+		console() << "Frames:    " << mMovie->getNumFrames() << std::endl;
+		console() << "Framerate: " << mMovie->getFramerate() << std::endl;
+		console() << "Has audio: " << mMovie->hasAudio() << " Has visuals: " << mMovie->hasVisuals() << std::endl;
+		mMovie->setLoop( true, true );
+		mMovie->seekToStart();
+		mMovie->play();
 	}
-	catch( ... ) {
-		console() << "Unable to load the movie." << std::endl;
+	catch( ci::Exception &exc ) {
+		console() << "Exception caught trying to load the movie from path: " << moviePath << ", what: " << exc.what() << std::endl;
 	}	
 }
 
@@ -112,7 +112,7 @@ void QTimeIterApp::fileDrop( FileDropEvent event )
 void QTimeIterApp::update()
 {
 	if( mMovie )
-		mSurface = mMovie.getSurface();
+		mSurface = mMovie->getSurface();
 }
 
 void QTimeIterApp::draw()
@@ -124,8 +124,7 @@ void QTimeIterApp::draw()
 		return;
 		
 	// We are using OpenGL to draw the frames here, so we'll make a texture out of the surface
-	gl::draw( gl::Texture( mSurface ) );
+	gl::draw( gl::Texture::create( *mSurface ) );
 }
 
-
-CINDER_APP_BASIC( QTimeIterApp, RendererGl )
+CINDER_APP( QTimeIterApp, RendererGl )

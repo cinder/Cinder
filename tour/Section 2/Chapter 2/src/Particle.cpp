@@ -1,7 +1,7 @@
 #include "Particle.h"
 #include "cinder/Rand.h"
 #include "cinder/gl/gl.h"
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
 
 using namespace ci;
 
@@ -9,13 +9,13 @@ Particle::Particle()
 {
 }
 
-Particle::Particle( Vec3f pos, Vec3f vel )
+Particle::Particle( vec3 pos, vec3 vel )
 {
 	mPos			= pos;
 	mTailPos		= pos;
 	mVel			= vel;
-	mVelNormal		= Vec3f::yAxis();
-	mAcc			= Vec3f::zero();
+	mVelNormal		= vec3::yAxis();
+	mAcc			= vec3::zero();
 	
 	mMaxSpeed		= Rand::randFloat( 2.0f, 3.0f );
 	mMaxSpeedSqrd	= mMaxSpeed * mMaxSpeed;
@@ -27,9 +27,9 @@ Particle::Particle( Vec3f pos, Vec3f vel )
 	mLength			= 10.0f;
 }
 
-void Particle::pullToCenter( const Vec3f &center )
+void Particle::pullToCenter( const vec3 &center )
 {
-	Vec3f dirToCenter = mPos - center;
+	vec3 dirToCenter = mPos - center;
 	float distToCenter = dirToCenter.length();
 	float maxDistance = 300.0f;
 	
@@ -53,7 +53,7 @@ void Particle::update( bool flatten )
 	if( flatten ) mPos.z = 0.0f;
 		
 	mVel *= mDecay;
-	mAcc = Vec3f::zero();
+	mAcc = vec3::zero();
 }
 
 void Particle::limitSpeed()

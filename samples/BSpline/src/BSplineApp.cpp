@@ -1,4 +1,5 @@
-#include "cinder/app/AppBasic.h"
+#include "cinder/app/App.h"
+#include "cinder/app/RendererGl.h"
 #include "cinder/BSpline.h"
 #include "cinder/cairo/Cairo.h"
 #include "cinder/ImageIo.h"
@@ -10,35 +11,35 @@ using namespace ci;
 using namespace ci::app;
 using std::vector;
 
-class bsplineApp : public AppBasic {
+class BSplineApp : public App {
  public:
-	bsplineApp() : mTrackedPoint( -1 ), mDegree( 3 ), mOpen( true ), mLoop( false ) {}
+	BSplineApp() : mTrackedPoint( -1 ), mDegree( 3 ), mOpen( true ), mLoop( false ) {}
 	
-	int		findNearestPt( const Vec2f &aPt );
+	int		findNearestPt( const vec2 &aPt );
 	void	calcLength();
 	
-	void	mouseDown( MouseEvent event );
-	void	mouseUp( MouseEvent event );
-	void	mouseDrag( MouseEvent event );
-	void	keyDown( KeyEvent event );
+	void	mouseDown( MouseEvent event ) override;
+	void	mouseUp( MouseEvent event ) override;
+	void	mouseDrag( MouseEvent event ) override;
+	void	keyDown( KeyEvent event ) override;
 
 	void	drawBSpline( cairo::Context &ctx );
-	void	draw();
+	void	draw() override;
 
-	vector<Vec2f>		mPoints;
+	vector<vec2>		mPoints;
 	int					mTrackedPoint;
 	int					mDegree;
 	bool				mOpen, mLoop;
 };
 
-void bsplineApp::mouseDown( MouseEvent event )
+void BSplineApp::mouseDown( MouseEvent event )
 {
 	const float MIN_CLICK_DISTANCE = 6.0f;
 	if( event.isLeft() ) { // line
-		Vec2f clickPt = Vec2f( event.getPos() );
+		vec2 clickPt = vec2( event.getPos() );
 		int nearestIdx = findNearestPt( clickPt );
-		if( ( nearestIdx < 0 ) || ( mPoints[nearestIdx].distance( clickPt ) > MIN_CLICK_DISTANCE ) ) {
-			mPoints.push_back( Vec2f( event.getPos() ) );
+		if( ( nearestIdx < 0 ) || ( distance( mPoints[nearestIdx], clickPt ) > MIN_CLICK_DISTANCE ) ) {
+			mPoints.push_back( vec2( event.getPos() ) );
 			mTrackedPoint = -1;
 		}
 		else
@@ -47,20 +48,20 @@ void bsplineApp::mouseDown( MouseEvent event )
 	}
 }
 
-void bsplineApp::mouseDrag( MouseEvent event )
+void BSplineApp::mouseDrag( MouseEvent event )
 {
 	if( mTrackedPoint >= 0 ) {
-		mPoints[mTrackedPoint] = Vec2f( event.getPos() );
+		mPoints[mTrackedPoint] = vec2( event.getPos() );
 		calcLength();
 	}
 }
 
-void bsplineApp::mouseUp( MouseEvent event )
+void BSplineApp::mouseUp( MouseEvent event )
 {
 	mTrackedPoint = -1;
 }
 
-void bsplineApp::keyDown( KeyEvent event ) {
+void BSplineApp::keyDown( KeyEvent event ) {
 	if( event.getCode() == KeyEvent::KEY_ESCAPE ) {
 		setFullScreen( false );
 	}
@@ -90,37 +91,26 @@ void bsplineApp::keyDown( KeyEvent event ) {
 		cairo::Context ctx( cairo::SurfaceSvg( getHomeDirectory() / "output.svg", getWindowWidth(), getWindowHeight() ) );
 		drawBSpline( ctx );
 	}
-	else if( event.getChar() == 'e' ) { // export to eps
-		cairo::Context ctx( cairo::SurfaceEps( getHomeDirectory() / "output.eps", getWindowWidth(), getWindowHeight() ) );
-		drawBSpline( ctx );
-	}
-	else if( event.getChar() == 'f' ) { // export to pdf
-		cairo::Context ctx( cairo::SurfacePdf( getHomeDirectory() / "output.pdf", getWindowWidth(), getWindowHeight() ) );
-		drawBSpline( ctx );
-	}
-	else if( event.getChar() == 'p' ) { // export to postscript
-		cairo::Context ctx( cairo::SurfacePs( getHomeDirectory() / "output.ps", getWindowWidth(), getWindowHeight() ) );
-		drawBSpline( ctx );
-	}
 }
 
-int bsplineApp::findNearestPt( const Vec2f &aPt )
+int BSplineApp::findNearestPt( const vec2 &aPt )
 {
-	if( mPoints.empty() ) return -1;
+	if( mPoints.empty() )
+		return -1;
 	
 	int result = 0;
-	float nearestDist = mPoints[0].distance( aPt );
+	float nearestDist = distance( mPoints[0], aPt );
 	for( size_t i = 1; i < mPoints.size(); ++i ) {
-		if( mPoints[i].distance( aPt ) < nearestDist ) {
+		if( distance( mPoints[i], aPt ) < nearestDist ) {
 			result = i;
-			nearestDist = mPoints[i].distance( aPt );
+			nearestDist = distance( mPoints[i], aPt );
 		}
 	}
 	
 	return result;
 }
 
-void bsplineApp::calcLength()
+void BSplineApp::calcLength()
 {
 	if( mPoints.size() > (size_t)mDegree ) {
 		BSpline2f spline( mPoints, mDegree, mLoop, mOpen );
@@ -128,7 +118,7 @@ void bsplineApp::calcLength()
 	}
 }
 
-void bsplineApp::drawBSpline( cairo::Context &ctx )
+void BSplineApp::drawBSpline( cairo::Context &ctx )
 {
 	if( mPoints.size() > (size_t)mDegree ) {
 		ctx.setLineWidth( 2.5f );
@@ -139,7 +129,7 @@ void bsplineApp::drawBSpline( cairo::Context &ctx )
 	}
 }
 
-void bsplineApp::draw()
+void BSplineApp::draw()
 {
 	// clear to the background color
 	cairo::Context ctx( cairo::createWindowSurface() );
@@ -155,14 +145,13 @@ void bsplineApp::draw()
 	ctx.stroke();
 
 	if( mPoints.size() > (size_t)mDegree ) {
-		// draw the curve by approximating via linear subdivision
+		// draw the curve by approximating via linear subdivision as an alternative to the technique used in drawBSpline()
 		BSpline2f spline( mPoints, mDegree, mLoop, mOpen );
 		ctx.setLineWidth( 8.0f );
 		ctx.setSourceRgb( 0.25f, 1.0f, 0.5f );
 		ctx.moveTo( spline.getPosition( 0 ) );
-		for( float t = 0; t < 1.0f; t += 0.001f ) {
+		for( float t = 0; t < 1.0f; t += 0.001f )
 			ctx.lineTo( spline.getPosition( t ) );
-		}
 		
 		ctx.stroke();
 		
@@ -181,4 +170,4 @@ void bsplineApp::draw()
 	drawBSpline( ctx );	
 }
 
-CINDER_APP_BASIC( bsplineApp, Renderer2d )
+CINDER_APP( BSplineApp, Renderer2d )
