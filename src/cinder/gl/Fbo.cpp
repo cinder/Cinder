@@ -380,15 +380,17 @@ void Fbo::attachAttachments()
 }
 
 // call glDrawBuffers against all color attachments
-void Fbo::setAllDrawBuffers()
+void Fbo::setDrawBuffers( GLuint fbId, const map<GLenum,RenderbufferRef> &attachmentsBuffer, const map<GLenum,TextureBaseRef> &attachmentsTexture )
 {
 #if ! defined( CINDER_GL_ES_2 )
+	ScopedFramebuffer fbScp( GL_FRAMEBUFFER, fbId );
+
 	vector<GLenum> drawBuffers;
-	for( const auto &bufferAttachment : mAttachmentsBuffer )
+	for( const auto &bufferAttachment : attachmentsBuffer )
 		if( bufferAttachment.first >= GL_COLOR_ATTACHMENT0 && bufferAttachment.first <= MAX_COLOR_ATTACHMENT )
 			drawBuffers.push_back( bufferAttachment.first );
 
-	for( const auto &textureAttachment : mAttachmentsTexture )
+	for( const auto &textureAttachment : attachmentsTexture )
 		if( textureAttachment.first >= GL_COLOR_ATTACHMENT0 && textureAttachment.first <= MAX_COLOR_ATTACHMENT )
 			drawBuffers.push_back( textureAttachment.first );
 
@@ -419,8 +421,10 @@ void Fbo::init()
 	if( useCsaa || useMsaa )
 		initMultisample( mFormat );
 	
-	setAllDrawBuffers();
-			
+	setDrawBuffers( mId, mAttachmentsBuffer, mAttachmentsTexture );
+	if( mMultisampleFramebufferId ) // using multisampling and setup succeeded
+		setDrawBuffers( mMultisampleFramebufferId, mAttachmentsMultisampleBuffer, map<GLenum,TextureBaseRef>() );
+		
 	FboExceptionInvalidSpecification exc;
 	if( ! checkStatus( &exc ) ) // failed creation; throw
 		throw exc;

@@ -277,7 +277,7 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	void		resolveTextures() const;
 	void		updateMipmaps( GLenum attachment ) const;
 	bool		checkStatus( class FboExceptionInvalidSpecification *resultExc );
-	void		setAllDrawBuffers();
+	void		setDrawBuffers( GLuint fbId, const std::map<GLenum,RenderbufferRef> &attachmentsBuffer, const std::map<GLenum,TextureBaseRef> &attachmentsTexture );
 
 	int					mWidth, mHeight;
 	Format				mFormat;
