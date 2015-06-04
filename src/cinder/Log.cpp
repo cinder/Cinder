@@ -279,12 +279,7 @@ void LogManager::enableSystemLogging()
 	if( mSystemLoggingEnabled )
 		return;
 
-#if defined( CINDER_COCOA )
-	addLogger( new LoggerSysLog );
-#elif defined( CINDER_MSW )
-	addLogger(new LoggerEventLog );
-#endif
-
+	addLogger( new LoggerSystem );
 	setSystemLoggingLevel( mSystemLoggingLevel );
 	mSystemLoggingEnabled = true;
 }
@@ -292,14 +287,9 @@ void LogManager::enableSystemLogging()
 void LogManager::setSystemLoggingLevel( Level level )
 {
 	mSystemLoggingLevel = level;
-
-#if defined( CINDER_COCOA )
-	int sysLevel = cinderLogLevelToSysLogLevel( level );
-	setlogmask( LOG_UPTO( sysLevel ) );
-#elif defined( CINDER_MSW )
-	auto logger = mLoggerMulti->findType<LoggerEventLog>();
-	logger->setMinLoggingLevel( level );
-#endif
+	
+	auto logger = mLoggerMulti->findType<LoggerSystem>();
+	logger->setLoggingLevel( level );
 }
 
 void LogManager::disableConsoleLogging()
@@ -329,11 +319,9 @@ void LogManager::disableSystemLogging()
 	if( ! mSystemLoggingEnabled || ! mLoggerMulti )
 		return;
 
-#if defined( CINDER_COCOA )
-	auto logger = mLoggerMulti->findType<LoggerSysLog>();
+	auto logger = mLoggerMulti->findType<LoggerSystem>();
 	mLoggerMulti->remove( logger );
 	mSystemLoggingEnabled = false;
-#endif
 }
 
 void LogManager::enableBreakOnLevel( Level triggerLevel )
@@ -492,6 +480,23 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 		CI_BREAKPOINT();
 	}
 }
+	
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerSystem
+// ----------------------------------------------------------------------------------------------------
+LoggerSystem::LoggerSystem()
+{
+#if defined( CINDER_COCOA )
+	mImpl = new LoggerSysLog();
+#elif defined( CINDER_MSW )
+	mImpl = new LoggerEventLog();
+#endif
+}
+
+LoggerSystem::~LoggerSystem()
+{
+	delete mImpl;
+}
 
 #if defined( CINDER_COCOA )
 
@@ -499,7 +504,7 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 // MARK: - LoggerSysLog
 // ----------------------------------------------------------------------------------------------------
 
-LoggerSysLog::LoggerSysLog()
+LoggerSystem::LoggerSysLog::LoggerSysLog()
 {
 	// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
 	NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
@@ -510,57 +515,65 @@ LoggerSysLog::LoggerSysLog()
 	openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
 }
 
-LoggerSysLog::~LoggerSysLog()
+LoggerSystem::LoggerSysLog::~LoggerSysLog()
 {
 	closelog();
 }
 
-void LoggerSysLog::write( const Metadata &meta, const string &text )
+void LoggerSystem::LoggerSysLog::write( const Metadata &meta, const string &text )
 {
 	int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
 	syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
 }
 
+void LoggerSystem::LoggerSysLog::setLoggingLevel( Level minLevel )
+{
+	int sysLevel = cinderLogLevelToSysLogLevel( minLevel );
+	setlogmask( LOG_UPTO( sysLevel ) );
+}
+	
 #elif defined( CINDER_MSW )
 
 // ----------------------------------------------------------------------------------------------------
 // MARK: - LoggerEventLog
 // ----------------------------------------------------------------------------------------------------
 
-LoggerEventLog::LoggerEventLog()
+LoggerSystem::LoggerEventLog::LoggerEventLog()
 {
 	char filename[MAX_PATH];
 	wchar_t wFilename[MAX_PATH];
 	string stem;
 
-	DWORD size = GetModuleFileNameA( NULL, filename, MAX_PATH );
+	DWORD size = ::GetModuleFileNameA( NULL, filename, MAX_PATH );
 	if( size ) { 
-		boost::filesystem::path exePath(filename);
+		fs::path exePath( filename );
 		stem = exePath.stem().string();
 	} else {
-		app::Platform::get()->console() << "Could not determine application name, defaulting to 'CinderApp'" << endl;
+		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+			<< "] could not determine application name, defaulting to 'CinderApp'" << endl;
 		stem = "CinderApp";
 	}
 
-	mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
-	mHLog = RegisterEventSourceW( 0, wFilename );
+	::mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
+	mHLog = ::RegisterEventSourceW( 0, wFilename );
 
 	if( ! mHLog ) {
-		app::Platform::get()->console() << "RegisterEventSourceW() failed with " << GetLastError() << endl;
+		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+			<< "] RegisterEventSourceW() failed with " << GetLastError() << endl;
 	}
 }
 
-LoggerEventLog::~LoggerEventLog()
+LoggerSystem::LoggerEventLog::~LoggerEventLog()
 {
 	if( mHLog ) {
-		CloseEventLog(mHLog);
+		::CloseEventLog( mHLog );
 	}
 }
 
-void LoggerEventLog::write( const Metadata &meta, const string &text )
+void LoggerSystem::LoggerEventLog::write( const Metadata &meta, const string &text )
 {
 	// Check in case we failed to initialize the eventlog and make sure we have min required level
-	if( ! mHLog || meta.mLevel < mMinLoggingLevel ) {
+	if( ! mHLog || meta.mLevel < mLoggingLevel ) {
 		return;
 	}
 
@@ -573,10 +586,7 @@ void LoggerEventLog::write( const Metadata &meta, const string &text )
 	wStrings[0] = wMeta.c_str();
 	wStrings[1] = wText.c_str();
 
-	BOOL res = ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
-	if( ! res ) {
-		app::Platform::get()->console() << "ReportEventW() failed with " << GetLastError() << endl;
-	}
+	::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
 }
 
 #endif

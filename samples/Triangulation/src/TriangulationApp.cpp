@@ -3,7 +3,7 @@
 #include "cinder/Font.h"
 #include "cinder/TriMesh.h"
 #include "cinder/Triangulate.h"
-#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/gl.h"
 #include "cinder/params/Params.h"
 
 using namespace ci;

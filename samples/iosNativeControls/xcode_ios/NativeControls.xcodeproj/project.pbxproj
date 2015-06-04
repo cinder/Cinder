@@ -118,6 +118,7 @@
 			children = (
 				3DEECBAAB2B9422093AE1451 /* NativeControlsApp.mm */,
 				11C60607163E4F1700B0B269 /* NativeViewController.mm */,
+				11C60606163E4F1700B0B269 /* NativeViewController.h */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -135,7 +136,6 @@
 		99692BD914FF149000D0A05F /* Headers */ = {
 			isa = PBXGroup;
 			children = (
-				11C60606163E4F1700B0B269 /* NativeViewController.h */,
 				F49CC2183C7945329ACF4355 /* NativeControls_Prefix.pch */,
 			);
 			name = Headers;

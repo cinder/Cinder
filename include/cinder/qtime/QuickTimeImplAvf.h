@@ -225,9 +225,6 @@ class MovieSurface : public MovieBase {
 	static MovieSurfaceRef create( const fs::path& path ) { return MovieSurfaceRef( new MovieSurface( path ) ); }
 	static MovieSurfaceRef create( const MovieLoaderRef &loader ) { return MovieSurfaceRef( new MovieSurface( *loader ) ); }
 
-	//! \inherit
-	virtual bool hasAlpha() const;
-	
 	//! Returns the Surface8u representing the Movie's current frame
 	Surface8uRef		getSurface();
 

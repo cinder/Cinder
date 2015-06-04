@@ -68,4 +68,4 @@ void CustomLerpApp::draw()
 }
 
 
-CINDER_APP( CustomLerpApp, RendererGl )
+CINDER_APP( CustomLerpApp, RendererGl( RendererGl::Options().msaa( 4 ) ) )

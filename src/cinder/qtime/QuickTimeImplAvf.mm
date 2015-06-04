@@ -820,30 +820,6 @@ NSDictionary* MovieSurface::avPlayerItemOutputDictionary() const
 				nil];
 }
 
-bool MovieSurface::hasAlpha() const
-{
-	if( mPlayerVideoOutput && mPlayer && [mPlayerVideoOutput hasNewPixelBufferForItemTime:[mPlayer currentTime]] ) {
-		CVImageBufferRef pixel_buffer = nil;
-		pixel_buffer = [mPlayerVideoOutput copyPixelBufferForItemTime:[mPlayerItem currentTime] itemTimeForDisplay:nil];
-		if( pixel_buffer != nil ) {
-			CVPixelBufferLockBaseAddress( pixel_buffer, 0 );
-			OSType type = CVPixelBufferGetPixelFormatType(pixel_buffer);
-			CVPixelBufferUnlockBaseAddress( pixel_buffer, 0 );
-#if defined ( CINDER_COCOA_TOUCH)
-			return (type == kCVPixelFormatType_32ARGB ||
-					type == kCVPixelFormatType_32BGRA ||
-					type == kCVPixelFormatType_32ABGR ||
-					type == kCVPixelFormatType_32RGBA ||
-					type == kCVPixelFormatType_64ARGB);
-#elif defined ( CINDER_COCOA )
-			return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
-#endif
-		}
-	}
-	
-	return mSurface->hasAlpha();
-}
-
 Surface8uRef MovieSurface::getSurface()
 {
 	updateFrame();

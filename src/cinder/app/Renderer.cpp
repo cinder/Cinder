@@ -97,12 +97,12 @@ CGContextRef Renderer2d::getCgContext()
 
 void Renderer2d::startDraw()
 {
-	[mImpl makeCurrentContext];
+	[mImpl startDraw];
 }
 
 void Renderer2d::finishDraw()
 {
-	[mImpl flushBuffer];
+	[mImpl finishDraw];
 }
 
 void Renderer2d::setFrameSize( int width, int height )
@@ -119,7 +119,6 @@ void Renderer2d::defaultResize()
 
 void Renderer2d::makeCurrentContext( bool /*force*/ )
 {
-	[mImpl makeCurrentContext];
 }
 
 Surface Renderer2d::copyWindowSurface( const Area &area, int32_t windowHeightPixels )

@@ -59,6 +59,7 @@
 	NSInteger 							mAnimationFrameInterval;
 	bool								mProximityStateIsClose;
 	bool								mIsUnplugged;
+	bool								mStatusBarShouldHide;
 	float								mBatteryLevel;
 
 	std::string							mKeyboardString;		// copy is kept so changes are visible from textShouldChange callback

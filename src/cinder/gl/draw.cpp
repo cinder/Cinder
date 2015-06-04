@@ -502,7 +502,6 @@ class DefaultVboTarget : public geom::Target {
 		return find( mReceivedAttribs.begin(), mReceivedAttribs.end(), attr ) != mReceivedAttribs.end();
 	}
 
-	// TODO: what about stride?
 	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *sourceData, size_t count ) override
 	{
 		// sometimes a geom::Source will give us an attribute we didn't actually want. In particular, COLOR

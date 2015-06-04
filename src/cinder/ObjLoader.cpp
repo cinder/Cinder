@@ -748,13 +748,16 @@ void objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includ
 	OStreamRef stream = dataTarget->getStream();
 	
 	unique_ptr<ObjWriteTarget> target( new ObjWriteTarget( stream, includeNormals, includeTexCoords ) );
+
 	geom::AttribSet requestedAttribs;
+	requestedAttribs.insert( geom::POSITION );
 	if( includeNormals )
 		requestedAttribs.insert( geom::NORMAL );
 	if( includeTexCoords )
 		requestedAttribs.insert( geom::TEX_COORD_0 );
+
 	source.loadInto( target.get(), requestedAttribs );
-	
+
 	if( source.getNumIndices() == 0 )
 		target->generateIndices( geom::Primitive::TRIANGLES, source.getNumVertices() );
 }

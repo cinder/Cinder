@@ -140,29 +140,46 @@ class LoggerBreakpoint : public Logger {
 	Level	mTriggerLevel;
 };
 
-#if defined( CINDER_COCOA )
-class LoggerSysLog : public Logger {
+class LoggerSystem : public Logger {
 public:
-	LoggerSysLog();
-	virtual ~LoggerSysLog();
-
-	void write( const Metadata &meta, const std::string &text ) override;
-};
-#elif defined( CINDER_MSW )
-class LoggerEventLog : public Logger {
-public:
-	LoggerEventLog();
-	virtual ~LoggerEventLog();
-
-	void write( const Metadata& meta, const std::string& text ) override;
-	void setMinLoggingLevel( Level minLevel ) { mMinLoggingLevel = minLevel; }
+	LoggerSystem();
+	virtual ~LoggerSystem();
+	
+	void write( const Metadata &meta, const std::string &text ) override { mImpl->write( meta, text ); }
+	// SysLog and EventLog logging levels inherently work differently (see specific comments).  Currently
+	// this doesn't matter since logging implimentation only allows once instance of a logger type.
+	void setLoggingLevel( Level minLevel ) { mImpl->setLoggingLevel( minLevel ); }
+	
 protected:
-	HANDLE			mHLog;
-	Level			mMinLoggingLevel;
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
-};
+#if defined( CINDER_COCOA )
+	class LoggerSysLog : public Logger {
+	public:
+		LoggerSysLog();
+		virtual ~LoggerSysLog();
+		
+		void write( const Metadata &meta, const std::string &text ) override;
+		// SysLog logging level is global (all syslog loggers)
+		void setLoggingLevel( Level minLevel );
+	};
+	LoggerSysLog	*mImpl;
+#elif defined( CINDER_MSW )
+	class LoggerEventLog : public Logger {
+	public:
+		LoggerEventLog();
+		virtual ~LoggerEventLog();
+		
+		void write( const Metadata& meta, const std::string& text ) override;
+		// EventLog logging level is local, only applied to this logger
+		void setLoggingLevel( Level minLevel ) { mLoggingLevel = minLevel; }
+	protected:
+		HANDLE			mHLog;
+		Level			mLoggingLevel;
+		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
+	};
+	LoggerEventLog	*mImpl;
 #endif
-
+};
+	
 class LoggerImplMulti;
 
 class LogManager {

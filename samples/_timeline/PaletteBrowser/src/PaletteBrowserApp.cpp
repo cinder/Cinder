@@ -224,6 +224,6 @@ void PaletteBrowserApp::draw()
 }
 
 
-CINDER_APP( PaletteBrowserApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( PaletteBrowserApp, RendererGl( RendererGl::Options().msaa( 4 ) ), []( App::Settings *settings ) {
 	settings->setWindowSize( APP_WIDTH, APP_HEIGHT );
 } )
