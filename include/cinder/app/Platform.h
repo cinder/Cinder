@@ -77,8 +77,10 @@ class Platform {
 	//! Returns the absolute file path to a resource located at \a rsrcRelativePath inside the bundle's resources folder. Throws ResourceLoadExc on failure. \sa CinderResources
 	virtual fs::path	getResourcePath( const fs::path &rsrcRelativePath ) const = 0;
 
+	//! Returns the path to the associated executable
+	fs::path			getExecutablePath() const;
+	//! Sets the path to the associated executable, overriding the default
 	void				setExecutablePath( const fs::path &execPath )	{ mExecutablePath = execPath; }
-	fs::path			getExecutablePath() const						{ return mExecutablePath; }
 
 #if defined( CINDER_WINRT )
 	//! Presents the user with an open-file dialog and returns the selected file path. \a callback is called with the file selected asynchronously.
@@ -114,6 +116,8 @@ class Platform {
 	virtual fs::path	getHomeDirectory() = 0;
 	//! Returns the path to the user's documents directory.
 	virtual fs::path	getDocumentsDirectory()	= 0;
+	//! Returns the path used for the default executable location. Users may override this with setExecutablePath() for application specific purposes.
+	virtual fs::path	getDefaultExecutablePath() const = 0;
 
 	//! Suspends the execution of the current thread until \a milliseconds have passed. Supports sub-millisecond precision only on OS X.
 	virtual void sleep( float milliseconds ) = 0;
@@ -140,7 +144,7 @@ class Platform {
 
 	std::vector<fs::path>		mAssetDirectories;
 	bool						mAssetDirsInitialized;
-	fs::path					mExecutablePath;
+	mutable fs::path			mExecutablePath; // lazily defaulted if none exists
 };
 
 

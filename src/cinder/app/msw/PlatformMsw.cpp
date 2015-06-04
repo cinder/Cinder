@@ -156,6 +156,28 @@ fs::path PlatformMsw::getHomeDirectory()
 	return fs::path( result );
 }
 
+fs::path PlatformMsw::getDefaultExecutablePath() const
+{
+	wchar_t appPath[MAX_PATH] = L"";
+
+	// fetch the path of the executable
+	::GetModuleFileName( 0, appPath, sizeof( appPath ) - 1 );
+
+	// get a pointer to the last occurrence of the windows path separator
+	wchar_t *appDir = wcsrchr( appPath, L'\\' );
+	if( appDir ) {
+		++appDir;
+
+		// this shouldn't be null but one never knows
+		if( appDir ) {
+			// null terminate the string
+			*appDir = 0;
+		}
+	}
+
+	return fs::path( appPath );
+}
+
 void PlatformMsw::launchWebBrowser( const Url &url )
 {
 	std::u16string urlStr = toUtf16( url.str() );

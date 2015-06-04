@@ -48,6 +48,7 @@ class PlatformMsw : public Platform {
 	fs::path	expandPath( const fs::path &path ) override;
 	fs::path	getHomeDirectory() override;
 	fs::path	getDocumentsDirectory()	override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;

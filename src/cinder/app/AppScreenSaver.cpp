@@ -55,7 +55,6 @@ AppScreenSaver::AppScreenSaver()
 	CI_ASSERT_MSG( platform, "expected global Platform object to be of type PlatformCocoa" );
 
 	platform->setBundle( getBundle() );
-	platform->setExecutablePath( getAppPath() );
 	
 	ImageSourceFileQuartz::registerSelf();
 	ImageTargetFileQuartz::registerSelf();	
@@ -106,15 +105,6 @@ bool AppScreenSaver::isPreview() const
 	return [mImpl isPreview];
 #elif defined( CINDER_MSW )
 	return mImpl->isPreview();
-#endif
-}
-
-fs::path AppScreenSaver::getAppPath() const
-{
-#if defined( CINDER_MAC )
-	return [mImpl getAppPath];
-#elif defined( CINDER_MSW )
-	return mImpl->getAppPath();
 #endif
 }
 

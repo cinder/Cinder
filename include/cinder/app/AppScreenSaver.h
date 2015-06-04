@@ -127,8 +127,6 @@ class AppScreenSaver : public AppBase {
 	}
 #endif
 
-	fs::path		getAppPath() const override;
-
 #if defined( CINDER_COCOA )
 	NSBundle*		getBundle() const;
 #endif

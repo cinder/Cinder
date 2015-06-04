@@ -356,7 +356,7 @@ class AppBase {
 	void					addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
 	
 	//! Returns the path to the application on disk
-	virtual fs::path		getAppPath() const = 0;
+	fs::path			getAppPath() const											{ return Platform::get()->getExecutablePath(); }
 
 	//! \brief Presents the user with an open-file dialog and returns the selected file path.
 	//!
