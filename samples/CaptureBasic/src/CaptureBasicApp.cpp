@@ -8,6 +8,8 @@ using namespace ci::app;
 
 #include "cinder/android/app/CinderNativeActivity.h"
 
+//#define USE_HW_TEXTURE
+
 class CaptureBasicApp : public App {
   public:
 	void setup();
@@ -55,11 +57,12 @@ void CaptureBasicApp::keyDown( KeyEvent event )
 
 void CaptureBasicApp::update()
 {
+
+#if defined( USE_HW_TEXTURE )
 	if( mCapture && mCapture->checkNewFrame() ) {
 	    mTexture = mCapture->getTexture();
 	}
-
-/*
+#else
 	if( mCapture && mCapture->checkNewFrame() ) {
 		if( ! mTexture ) {
 			// Capture images come back as top-down, and it's more efficient to keep them that way
@@ -69,7 +72,7 @@ void CaptureBasicApp::update()
 			mTexture->update( *mCapture->getSurface() );
 		}
 	}
-*/
+#endif
 }
 
 void CaptureBasicApp::draw()
