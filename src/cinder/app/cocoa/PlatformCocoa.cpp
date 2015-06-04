@@ -32,6 +32,7 @@
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
+	#import <IOKit/graphics/IOGraphicsLib.h>
 #else
 	#import <Foundation/Foundation.h>
 	#import <UIKit/UIKit.h>
@@ -433,7 +434,15 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			newDisplay->mContentScale = 1.0f;
 #endif
 			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
-			
+
+			NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( newDisplay->mDirectDisplayId ), kIODisplayOnlyPreferredName );
+			NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+			if( [localizedNames count] > 0 ) {
+				NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+				newDisplay->mName = ci::cocoa::convertNsString( displayName );
+			}
+			[deviceInfo release];
+
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else
@@ -502,6 +511,14 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			newDisplay->mDirectDisplayId = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 			newDisplay->mContentScale = [screen backingScaleFactor];
+
+			NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( newDisplay->mDirectDisplayId ), kIODisplayOnlyPreferredName );
+			NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+			if( [localizedNames count] > 0 ) {
+				NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+				newDisplay->mName = ci::cocoa::convertNsString( displayName );
+			}
+			[deviceInfo release];
 
 			mDisplays.push_back( DisplayRef( newDisplay ) );
 		}
