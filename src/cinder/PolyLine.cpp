@@ -107,6 +107,44 @@ bool PolyLineT<T>::contains( const vec2 &pt ) const
 	return (crossings & 1) == 1;
 }
 
+template<typename T>
+double PolyLineT<T>::calcArea() const
+{
+	double sum = 0;
+	const size_t numPoints = mPoints.size();
+	if( numPoints > 2 ) {
+		for( size_t i = 0; i < numPoints - 1; ++i )
+			sum += mPoints[i].x * mPoints[i+1].y - mPoints[i+1].x * mPoints[i].y;
+		sum += mPoints[numPoints-1].x * mPoints[0].y - mPoints[0].x * mPoints[numPoints-1].y;
+	}
+
+	return glm::abs(sum * 0.5);
+}
+
+template<typename T>
+T PolyLineT<T>::calcCentroid() const
+{
+	dvec2 result( 0 );
+
+	const size_t numPoints = mPoints.size();
+	double area = 0;
+	if( numPoints > 2 ) {
+		for( size_t i = 0; i < numPoints - 1; ++i ) {
+			double subExpr = mPoints[i].x * mPoints[i+1].y - mPoints[i+1].x * mPoints[i].y;
+			result.x += ( mPoints[i].x + mPoints[i+1].x ) * subExpr;
+			result.y += ( mPoints[i].y + mPoints[i+1].y ) * subExpr;
+			area += subExpr;
+		}
+		double subExpr = mPoints[numPoints-1].x * mPoints[0].y - mPoints[0].x * mPoints[numPoints-1].y;
+		result.x += ( mPoints[numPoints-1].x + mPoints[0].x ) * subExpr;
+		result.y += ( mPoints[numPoints-1].y + mPoints[0].y ) * subExpr;
+		area += subExpr;
+
+		result *= 1 / ( area * 3 );
+	}
+
+	return result;
+}
 
 namespace {
 typedef boost::geometry::model::polygon<boost::geometry::model::d2::point_xy<double> > polygon;
