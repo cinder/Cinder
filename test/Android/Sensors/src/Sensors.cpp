@@ -24,7 +24,7 @@ class Sensors : public App {
 
 void Sensors::setup()
 {
-	MotionManager::enable();
+	MotionManager::enable( 60.0f, MotionManager::Accelerometer );
 }
 
 void Sensors::mouseDrag( MouseEvent event )

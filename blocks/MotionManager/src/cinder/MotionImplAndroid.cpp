@@ -86,12 +86,21 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 void MotionImplAndroid::stopMotionUpdates()
 {
 	auto eventManager = EventManagerAndroid::instance();
-	eventManager->disableAccelerometer();
-	eventManager->disableGyroscope();
+
+	if( MotionManager::Accelerometer == mSensorMode ) {
+		eventManager->disableAccelerometer();
+	}
+	else if( MotionManager::Gyroscope == mSensorMode ) {
+		eventManager->disableGyroscope();
+	}
 }
 
 void MotionImplAndroid::setSensorMode( MotionManager::SensorMode mode )
 {
+	if( mode == mSensorMode ) {
+		return;
+	}
+
 	mSensorMode = mode;
 }
 

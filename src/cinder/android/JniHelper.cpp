@@ -160,10 +160,11 @@ static JNIEnv* JvmHelper_Attach()
 	void* value = pthread_getspecific( sThreadExitKey );
 	if( nullptr == value ) {
 		JniThreadVars* threadVars = new JniThreadVars();
-		if( pthread_setspecific( sThreadExitKey, (void*)threadVars ) ) {
-			dbg_app_log("JvmHelper_Attach -> allocated JNI threadVars (via pthread_setspecific)");			
+		if( 0 == pthread_setspecific( sThreadExitKey, (void*)threadVars ) ) {
+			dbg_app_log( "JvmHelper_Attach -> allocated JNI threadVars (via pthread_setspecific)" );			
 		}
 		else {
+			dbg_app_error( "vmHelper_Attach -> pthread_setspecific failed allocating JNI threadVars!" );
 			delete threadVars;
 		}
 	}

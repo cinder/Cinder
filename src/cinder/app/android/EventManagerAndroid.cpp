@@ -182,20 +182,6 @@ void EventManagerAndroid::disableGyroscope()
 	}
 }
 
-/*
-void EventManagerAndroid::setAccelerometerUpdateCallbackFn( EventManagerAndroid::SensorCallbackFn fn )
-{
-	if( mAccelerometerSensor ) {
-		mAccelerometerSensor->mCallbackFn = fn;
-	}
-}
-
-void EventManagerAndroid::setGyroscopeUpdateCallbackFn( EventManagerAndroid::SensorCallbackFn fn )
-{
-	mGyroscopeUpdateCallbackFn = fn;
-}
-*/
-
 void EventManagerAndroid::appLostFocus()
 {
 	mFocused = false;
