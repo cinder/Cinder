@@ -174,6 +174,11 @@ fs::path PlatformCocoa::getHomeDirectory()
 	return fs::path( result );	
 }
 
+fs::path PlatformCocoa::getDefaultExecutablePath() const
+{
+	return fs::path( [[[::NSBundle mainBundle] bundlePath] UTF8String] ).parent_path();
+}
+
 void PlatformCocoa::launchWebBrowser( const Url &url )
 {
 	NSString *nsString = [NSString stringWithCString:url.c_str() encoding:NSUTF8StringEncoding];
