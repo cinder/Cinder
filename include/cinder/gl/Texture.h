@@ -515,8 +515,8 @@ class Texture2d : public TextureBase {
 	static Texture2dRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
 #endif
 
-	//! Allows specification of some size other than the Texture's true size for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to whichever origin is appropriate to the Texture's "top-downness".
-	void			setCleanSize( GLint cleanWidth, GLint cleanHeight );
+	//! Allows specification of some Area other than the Texture's full area for cases where not all pixels in the Texture are usable / "clean"; common in video decoding pipelines in particular. Specified in pixels, and relative to upper-left origin coordinate system regardless of whether Textre is top-down or not.
+	void			setCleanBounds( const Area &cleanBounds );
 
 	//! Updates the pixels of a Texture with the data pointed to by \a data, of format \a dataFormat (Ex: GL_RGB), and type \a dataType (Ex: GL_UNSIGNED_BYTE) of size (\a width, \a height). \a destLowerLeftOffset specifies a texel offset to copy to within the Texture.
 	void			update( const void *data, GLenum dataFormat, GLenum dataType, int mipLevel, int width, int height, const ivec2 &destLowerLeftOffset = ivec2( 0, 0 ) );
@@ -554,21 +554,19 @@ class Texture2d : public TextureBase {
 	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData. Use update() instead if the bounds of \a this match those of \a textureData
 	void			replace( const TextureData &textureData );
 
-	//! Returns the width of the texture in pixels, ignoring clean bounds.
-	GLint			getWidth() const { return mWidth; }
-	//! Returns the height of the texture in pixels, ignoring clean bounds.
-	GLint			getHeight() const { return mHeight; }
-	//! Returns the depth of the texture in pixels, ignoring clean bounds.
+	//! Returns the width of the texture in pixels.
+	GLint			getWidth() const { return mCleanBounds.getWidth(); }
+	//! Returns the height of the texture in pixels.
+	GLint			getHeight() const { return mCleanBounds.getHeight(); }
+	//! Returns the depth of the texture in pixels.
 	GLint			getDepth() const { return 1; }
-	//! Returns the width of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
-	GLint			getCleanWidth() const;
-	//! Returns the height of the texture in pixels accounting for its clean bounds - \sa getCleanBounds()
-	GLint			getCleanHeight() const;
+	//! Returns the true width of the texture in pixels, which may be larger than it's "clean" area
+	GLint			getActualWidth() const { return mActualSize.x; }
+	//! Returns the true height of the texture in pixels, which may be larger than it's "clean" area
+	GLint			getActualHeight() const { return mActualSize.y; }
 	//! Returns size of the texture in pixels, igonring clean bounds
 	ivec2			getSize() const { return ivec2( getWidth(), getHeight() ); }
-	//! Returns the Area defining the Texture's bounds in pixels, accounting for clean bounds.
-	Area			getCleanBounds() const { return Area( 0, 0, getCleanWidth(), getCleanHeight() ); }
-	//! Returns the UV coordinates which correspond to the pixels contained in \a area (as expressed with an upper-left origin). Accounts for clean bounds, top-down storage and target (0-1 for \c GL_TEXTURE_2D and pixel for GL_TEXTURE_RECTANGLE)
+	//! Returns the UV coordinates which correspond to the pixels contained in \a area (as expressed with an upper-left origin, relative to clean bounds). Accounts for top-down storage and target (0-1 for \c GL_TEXTURE_2D and pixels for \c GL_TEXTURE_RECTANGLE)
 	Rectf			getAreaTexCoords( const Area &area ) const;
 	//! Returns whether the scanlines of the image are stored top-down in memory relative to the base address. Default is \c false.
 	bool			isTopDown() const { return mTopDown; }
@@ -606,7 +604,8 @@ class Texture2d : public TextureBase {
 #endif
 	void	initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray );
 
-	mutable GLint	mWidth, mHeight, mCleanWidth, mCleanHeight;
+	mutable ivec2	mActualSize; // true texture size in pixels, as oppose to clean bounds
+	mutable Area	mCleanBounds; // relative to upper-left origin
 	bool			mTopDown;
 	
 	friend class Texture2dCache;
