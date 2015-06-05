@@ -1356,6 +1356,10 @@ def processHtmlFile( inPath, outPath ):
 		if link.has_attr("href"):
 			link["href"] = updateLink( link["href"], outPath )
 
+	for a in bs4.find_all("a"):
+		if a.has_attr("href"):
+			a["href"] = updateLink( a["href"], outPath )
+
 	for script in bs4.find_all("script"):
 		if script.has_attr("src"):
 			script["src"] = updateLink( script["src"], outPath )
@@ -1365,20 +1369,25 @@ def processHtmlFile( inPath, outPath ):
 			img["src"] = updateLink( img["src"], outPath )
 
 
-	# copy all js and css paths that may be in the original html and paste into new file
-
 	# plug original html content into template
 	bs4.body.find(id="template-content").append(origHtml.body)
+
+	# copy all js and css paths that may be in the original html and paste into new file
+	for link in origHtml.find_all("link"):
+		bs4.head.append( link )
+
+	for script in origHtml.find_all("script"):
+		bs4.body.append( script )	
 	
 	writeHtml( bs4, outPath )
 
 def updateLink( link, path ):
-	if link.startswith("http"):
+	if link.startswith("http") or link.startswith("javascript:"):
 		return link
 	depth = len( path.split("html/")[1].split("/") ) - 1
 	pathPrepend = ""
 	for i in range( depth ):
-		pathPrepend = "../"
+		pathPrepend += "../"
 	return pathPrepend + link
 
 def constructTemplate( templates ) :
