@@ -46,7 +46,7 @@ class ImageSourceFileQuartz : public cocoa::ImageSourceCgImage {
 	static void		registerSelf();
 
   protected:
-	ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps );
+	ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps, int32_t numFrames );
 	
 	std::shared_ptr<const struct __CFDictionary>		mImageProperties, mImageIndexProperties;
 };
