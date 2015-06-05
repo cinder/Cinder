@@ -49,7 +49,7 @@ struct ScopedBuffer : public Noncopyable {
 	ScopedBuffer( const BufferObjRef &bufferObj );
 	ScopedBuffer( GLenum target, GLuint id );
 	~ScopedBuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -84,7 +84,7 @@ struct ScopedBlend : private Noncopyable {
 	//! Parallels glBlendFuncSeparate(), and implicitly enables blending
 	ScopedBlend( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
 	~ScopedBlend();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
@@ -127,7 +127,7 @@ struct ScopedFramebuffer : private Noncopyable {
 	//! Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
 	ScopedFramebuffer( GLenum target, GLuint framebufferId );
 	~ScopedFramebuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -137,7 +137,7 @@ struct ScopedActiveTexture : private Noncopyable {
 	//! Sets the currently active texture through glActiveTexture. Expects values relative to \c 0, \em not GL_TEXTURE0
 	ScopedActiveTexture( uint8_t textureUnit );
 	~ScopedActiveTexture();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -159,17 +159,17 @@ struct ScopedTextureBind : private Noncopyable {
 	//! \endcond
 
 	~ScopedTextureBind();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
 	uint8_t		mTextureUnit;
 };
-	
+
 struct ScopedScissor : private Noncopyable {
 	//! Implicitly enables scissor test
 	ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
-	//! Implicitly enables scissor test	
+	//! Implicitly enables scissor test
 	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
 	~ScopedScissor();
 
@@ -215,7 +215,7 @@ struct ScopedFaceCulling : private Noncopyable {
 	//! Enables or disables polygon culling based on \a cull and specifies a mode, either \c GL_BACK or GL_FRONT
 	ScopedFaceCulling( bool cull, GLenum cullFace );
 	~ScopedFaceCulling();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
@@ -230,7 +230,7 @@ struct ScopedLogicOp : private Noncopyable {
 	//! Enables or disables logical operation based on \a enable and specifies a mode, \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
 	ScopedLogicOp( bool enable, GLenum mode );
 	~ScopedLogicOp();
-	
+
 private:
 	Context		*mCtx;
 	bool		mSaveMode;
@@ -247,7 +247,7 @@ struct ScopedDepth : private Noncopyable {
 	//! Enables or disables depth comparisons, writing to the depth buffer and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
 	ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc );
 	~ScopedDepth();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveMask;
@@ -259,7 +259,7 @@ struct ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &renderBuffer );
 	ScopedRenderbuffer( GLenum target, GLuint id );
 	~ScopedRenderbuffer();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -268,7 +268,7 @@ struct ScopedRenderbuffer : private Noncopyable {
 struct ScopedLineWidth : private Noncopyable {
 	ScopedLineWidth( float width );
 	~ScopedLineWidth();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -280,7 +280,7 @@ struct ScopedPolygonMode : private Noncopyable {
 	//! Values for \a mode may be \c GL_POINT, \c GL_LINE or \c GL_FILL.
 	ScopedPolygonMode( GLenum mode );
 	~ScopedPolygonMode();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -292,7 +292,7 @@ struct ScopedFrontFace : private Noncopyable {
 	//! Values for \a mode may be \c GL_CW or \c GL_CCW
 	ScopedFrontFace( GLenum mode );
 	~ScopedFrontFace();
-	
+
   private:
 	Context		*mCtx;
 };
