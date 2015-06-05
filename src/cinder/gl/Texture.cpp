@@ -690,19 +690,28 @@ void TextureBase::Format::setBorderColor( const ColorA &color )
 #if ! defined( CINDER_GL_ES )
 /////////////////////////////////////////////////////////////////////////////////
 // Texture1d
-Texture1dRef Texture1d::create( GLint width, Format format )
+Texture1dRef Texture1d::create( GLint width, const Format &format )
 {
-	return Texture1dRef( new Texture1d( width, format ) );
+	if( format.mDeleter )
+		return Texture1dRef( new Texture1d( width, format ), format.mDeleter );
+	else
+		return Texture1dRef( new Texture1d( width, format ) );
 }
 
-Texture1dRef Texture1d::create( const Surface8u &surface, Format format )
+Texture1dRef Texture1d::create( const Surface8u &surface, const Format &format )
 {
-	return Texture1dRef( new Texture1d( surface, format ) );
+	if( format.mDeleter )
+		return Texture1dRef( new Texture1d( surface, format ), format.mDeleter );
+	else
+		return Texture1dRef( new Texture1d( surface, format ) );
 }
 
-Texture1dRef Texture1d::create( const void *data, GLenum dataFormat, int width, Format format )
+Texture1dRef Texture1d::create( const void *data, GLenum dataFormat, int width, const Format &format )
 {
-	return Texture1dRef( new Texture1d( data, dataFormat, width, format ) );
+	if( format.mDeleter )
+		return Texture1dRef( new Texture1d( data, dataFormat, width, format ), format.mDeleter );
+	else
+		return Texture1dRef( new Texture1d( data, dataFormat, width, format ) );
 }
 
 Texture1d::Texture1d( GLint width, Format format )
@@ -774,59 +783,92 @@ void Texture1d::printDims( std::ostream &os ) const
 
 /////////////////////////////////////////////////////////////////////////////////
 // Texture2d
-Texture2dRef Texture2d::create( int width, int height, Format format )
+Texture2dRef Texture2d::create( int width, int height, const Format &format )
 {
-	return TextureRef( new Texture( width, height, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( width, height, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( width, height, format ) );
 }
 
-Texture2dRef Texture2d::create( const void *data, GLenum dataFormat, int width, int height, Format format )
+Texture2dRef Texture2d::create( const void *data, GLenum dataFormat, int width, int height, const Format &format )
 {
-	return TextureRef( new Texture( data, dataFormat, width, height, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( data, dataFormat, width, height, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( data, dataFormat, width, height, format ) );
 }
 
-Texture2dRef Texture2d::create( const Surface8u &surface, Format format )
+Texture2dRef Texture2d::create( const Surface8u &surface, const Format &format )
 {
-	return TextureRef( new Texture( surface, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( surface, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( surface, format ) );
 }
 
-Texture2dRef Texture2d::create( const Surface16u &surface, Format format )
+Texture2dRef Texture2d::create( const Surface16u &surface, const Format &format )
 {
-	return TextureRef( new Texture( surface, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( surface, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( surface, format ) );
 }
 
-Texture2dRef Texture2d::create( const Surface32f &surface, Format format )
+Texture2dRef Texture2d::create( const Surface32f &surface, const Format &format )
 {
-	return TextureRef( new Texture( surface, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( surface, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( surface, format ) );
 }
 
-Texture2dRef Texture2d::create( const Channel8u &channel, Format format )
+Texture2dRef Texture2d::create( const Channel8u &channel, const Format &format )
 {
-	return TextureRef( new Texture( channel, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( channel, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( channel, format ) );
 }
 
-Texture2dRef Texture2d::create( const Channel16u &channel, Format format )
+Texture2dRef Texture2d::create( const Channel16u &channel, const Format &format )
 {
-	return TextureRef( new Texture( channel, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( channel, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( channel, format ) );
 }
 	
-Texture2dRef Texture2d::create( const Channel32f &channel, Format format )
+Texture2dRef Texture2d::create( const Channel32f &channel, const Format &format )
 {
-	return TextureRef( new Texture( channel, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( channel, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( channel, format ) );
 }
 	
-Texture2dRef Texture2d::create( ImageSourceRef imageSource, Format format )
+Texture2dRef Texture2d::create( ImageSourceRef imageSource, const Format &format )
 {
-	return TextureRef( new Texture( imageSource, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( imageSource, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( imageSource, format ) );
 }
 	
-Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose )
+Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose, const std::function<void(Texture2d*)> &deleter )
 {
-	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ) );
+	if( deleter )
+		return TextureRef( new Texture( target, textureID, width, height, doNotDispose ), deleter );
+	else
+		return TextureRef( new Texture( target, textureID, width, height, doNotDispose ) );
 }
 
 Texture2dRef Texture2d::create( const TextureData &data, const Format &format )
 {
-	return TextureRef( new Texture( data, format ) );
+	if( format.mDeleter )
+		return TextureRef( new Texture( data, format ), format.mDeleter );
+	else
+		return TextureRef( new Texture( data, format ) );
 }
 
 void Texture2d::initMaxMipmapLevel()
@@ -1519,14 +1561,20 @@ ImageSourceRef Texture2d::createSource()
 #if ! defined( CINDER_GL_ES_2 )
 /////////////////////////////////////////////////////////////////////////////////
 // Texture3d
-Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, Format format )
+Texture3dRef Texture3d::create( GLint width, GLint height, GLint depth, const Format &format )
 {
-	return Texture3dRef( new Texture3d( width, height, depth, format ) );
+	if( format.mDeleter )
+		return Texture3dRef( new Texture3d( width, height, depth, format ), format.mDeleter );
+	else
+		return Texture3dRef( new Texture3d( width, height, depth, format ) );
 }
 
-Texture3dRef Texture3d::create( const void *data, GLenum dataFormat, int width, int height, int depth, Format format )
+Texture3dRef Texture3d::create( const void *data, GLenum dataFormat, int width, int height, int depth, const Format &format )
 {
-	return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ) );
+	if( format.mDeleter )
+		return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ), format.mDeleter );
+	else
+		return Texture3dRef( new Texture3d( data, dataFormat, width, height, depth, format ) );
 }
 
 Texture3d::Texture3d( GLint width, GLint height, GLint depth, Format format )
@@ -1696,7 +1744,10 @@ TextureCubeMap::Format::Format()
 
 TextureCubeMapRef TextureCubeMap::create( int32_t width, int32_t height, const Format &format )
 {
-	return TextureCubeMapRef( new TextureCubeMap( width, height, format ) );
+	if( format.mDeleter )
+		return TextureCubeMapRef( new TextureCubeMap( width, height, format ), format.mDeleter );
+	else
+		return TextureCubeMapRef( new TextureCubeMap( width, height, format ) );
 }
 
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, const Format &format )
@@ -1735,7 +1786,10 @@ TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef
 		images[f].copyFrom( masterSurface, faceRegions[f].first, faceRegions[f].second );
 	}
 	
-	return TextureCubeMapRef( new TextureCubeMap( images, format ) );
+	if( format.mDeleter )
+		return TextureCubeMapRef( new TextureCubeMap( images, format ), format.mDeleter );
+	else
+		return TextureCubeMapRef( new TextureCubeMap( images, format ) );
 }
 
 TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const Format &format )
@@ -1745,14 +1799,20 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const 
 		for( size_t i = 0; i < 6; ++i )
 			surfaces[i] = Surface8u( images[i] );
 		
-		return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
+		if( format.mDeleter )
+			return TextureCubeMapRef( new TextureCubeMap( surfaces, format ), format.mDeleter );
+		else
+			return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
 	}
 	else {
 		Surface32f surfaces[6];
 		for( size_t i = 0; i < 6; ++i )
 			surfaces[i] = Surface32f( images[i] );
 		
-		return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
+		if( format.mDeleter )
+			return TextureCubeMapRef( new TextureCubeMap( surfaces, format ), format.mDeleter );
+		else
+			return TextureCubeMapRef( new TextureCubeMap( surfaces, format ) );
 	}
 }
 

@@ -408,14 +408,20 @@ class Texture1d : public TextureBase {
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		
+		//! Sets a custom deleter for destruction of the shared_ptr<Texture1d>
+		Format&	deleter( const std::function<void(Texture1d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+
+	  protected:
+		std::function<void(Texture1d*)>		mDeleter;
+		
 		friend Texture1d;
 	};
 
-	static Texture1dRef create( GLint width, Format format = Format() );
+	static Texture1dRef create( GLint width, const Format &format = Format() );
 	//! Constructs a Texture1d using the top row of \a surface
-	static Texture1dRef create( const Surface8u &surface, Format format = Format() );
+	static Texture1dRef create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture1d using the data pointed to by \a data, in format \a dataFormat. For a dataType other than \c GL_UNSIGNED_CHAR use \a format.setDataType()
-	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, Format format = Format() );
+	static Texture1dRef	create( const void *data, GLenum dataFormat, int width, const Format &format = Format() );
 	
 	//! Updates the Texture1d using the top row of \a surface.
 	void	update( const Surface8u &surface, int mipLevel = 0 );
@@ -477,35 +483,36 @@ class Texture2d : public TextureBase {
 #endif		
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
+		//! Sets a custom deleter for destruction of the shared_ptr<Texture2d>
+		Format&	deleter( const std::function<void(Texture2d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
 
 	  protected:
-		bool	mLoadTopDown;
-		friend	Texture;
+		bool								mLoadTopDown;
+		std::function<void(Texture2d*)>		mDeleter;
+		
+		friend		Texture2d;
 	};
 	
 	//! Constructs a texture of size(\a width, \a height) and allocates storage.
-	static Texture2dRef	create( int width, int height, Format format = Format() );
+	static Texture2dRef	create( int width, int height, const Format &format = Format() );
 	//! Constructs a texture of size(\a width, \a height). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR. Ignores \a format.loadTopDown().
-	static Texture2dRef	create( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
+	static Texture2dRef	create( const void *data, GLenum dataFormat, int width, int height, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
-	static Texture2dRef	create( const Surface8u &surface, Format format = Format() );
+	static Texture2dRef	create( const Surface8u &surface, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
-	static Texture2dRef	create( const Channel8u &channel, Format format = Format() );
+	static Texture2dRef	create( const Channel8u &channel, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
-	static Texture2dRef	create( const Surface16u &surface, Format format = Format() );
+	static Texture2dRef	create( const Surface16u &surface, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a channel. Sets swizzle mask to {R,R,R,1} where supported unless otherwise specified in \a format.
-	static Texture2dRef	create( const Channel16u &channel, Format format = Format() );
+	static Texture2dRef	create( const Channel16u &channel, const Format &format = Format() );
 	//! Constructs a Texture based on the contents of \a surface.
-	static Texture2dRef	create( const Surface32f &surface, Format format = Format() );
+	static Texture2dRef	create( const Surface32f &surface, const Format &format = Format() );
 	/** \brief Constructs a texture based on the contents of \a channel. A default value of -1 for \a internalFormat chooses an appropriate internal format automatically. **/
-	static Texture2dRef	create( const Channel32f &channel, Format format = Format() );
+	static Texture2dRef	create( const Channel32f &channel, const Format &format = Format() );
 	//! Constructs a Texture based on \a imageSource. A default value of -1 for \a internalFormat chooses an appropriate internal format based on the contents of \a imageSource. Uses a Format's intermediate PBO when available, which is resized as necessary.
-	static Texture2dRef	create( ImageSourceRef imageSource, Format format = Format() );
-	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource.
-	static Texture2dRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose );
+	static Texture2dRef	create( ImageSourceRef imageSource, const Format &format = Format() );
 	//! Constructs a Texture based on an externally initialized OpenGL texture. \a doNotDispose specifies whether the Texture is responsible for disposing of the associated OpenGL resource. Supports a custom deleter.
-	template<typename D>
-	static Texture2dRef	create( GLenum target, GLuint aTextureID, int width, int height, bool doNotDispose, D deleter );
+	static Texture2dRef	create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose, const std::function<void(Texture2d*)> &deleter = std::function<void(Texture2d*)>() );
 	//! Constructs a Texture based on an instance of TextureData
 	static Texture2dRef	create( const TextureData &data, const Format &format );
 	//! Constructs a Texture from an optionally compressed KTX file. Enables mipmapping if KTX file contains mipmaps and Format has not specified \c false for mipmapping. Uses Format's intermediate PBO if supplied; requires it to be large enough to hold all MIP levels and throws if it is not. (http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/)
@@ -604,9 +611,9 @@ class Texture2d : public TextureBase {
 #endif
 	void	initDataImageSourceImpl( const ImageSourceRef &imageSource, const Format &format, GLint dataFormat, ImageIo::ChannelOrder channelOrder, bool isGray );
 
-	mutable ivec2	mActualSize; // true texture size in pixels, as oppose to clean bounds
-	mutable Area	mCleanBounds; // relative to upper-left origin
-	bool			mTopDown;
+	ivec2		mActualSize; // true texture size in pixels, as opposed to clean bounds
+	Area		mCleanBounds; // relative to upper-left origin regardless of top-down
+	bool		mTopDown;
 	
 	friend class Texture2dCache;
 };
@@ -638,12 +645,19 @@ class Texture3d : public TextureBase {
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
 		
+		//! Sets a custom deleter for destruction of the shared_ptr<Texture3d>
+		Format&	deleter( const std::function<void(Texture3d*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+		
+	  protected:
+		std::function<void(Texture3d*)>		mDeleter;
+		
 		friend Texture3d;
 	};
 
-	static Texture3dRef create( GLint width, GLint height, GLint depth, Format format = Format() );
+	//! Constructs a texture of size(\a width, \a height, \a depth).
+	static Texture3dRef create( GLint width, GLint height, GLint depth, const Format &format = Format() );
 	//! Constructs a texture of size(\a width, \a height, \a depth). Pixel data is provided by \a data in format \a dataFormat (Ex: \c GL_RGB, \c GL_RGBA). Use \a format.setDataType() to specify a dataType other than \c GL_UNSIGNED_CHAR.
-	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, Format format = Format() );
+	static Texture3dRef create( const void *data, GLenum dataFormat, int width, int height, int depth, const Format &format = Format() );
   
 	void	update( const Surface &surface, int depth, int mipLevel = 0 );
 
@@ -691,6 +705,12 @@ class TextureCubeMap : public TextureBase
 		Format& immutableStorage( bool immutable = true ) { setImmutableStorage( immutable ); return *this; }
 		//! Sets the debugging label associated with the Texture. Calls glObjectLabel() when available.
 		Format&	label( const std::string &label ) { setLabel( label ); return *this; }
+		
+		//! Sets a custom deleter for destruction of the shared_ptr<TextureCubeMap>
+		Format&	deleter( const std::function<void(TextureCubeMap*)> &sharedPtrDeleter ) { mDeleter = sharedPtrDeleter; return *this; }
+		
+	  protected:
+		std::function<void(TextureCubeMap*)>	mDeleter;
 		
 		friend TextureCubeMap;
 	};
@@ -744,12 +764,6 @@ class Texture2dCache : public std::enable_shared_from_this<Texture2dCache>
 	int										mNextId;
 	std::vector<std::pair<int,TextureRef>>	mTextures;
 };
-
-template<typename D>
-Texture2dRef Texture2d::create( GLenum target, GLuint textureID, int width, int height, bool doNotDispose, D deleter )
-{
-	return TextureRef( new Texture( target, textureID, width, height, doNotDispose ), deleter );
-}
 
 class SurfaceConstraintsGLTexture : public SurfaceConstraints {
   public:
