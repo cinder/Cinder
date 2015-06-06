@@ -77,22 +77,27 @@ void MotionManager::setShowsCalibrationView( bool shouldShow )
 	MotionManager::get()->mImpl->setShowsCalibrationView( shouldShow );
 }
 
-vec3 MotionManager::getGravityDirection( app::InterfaceOrientation orientation )
+vec3 MotionManager::getGravityDirection( InterfaceOrientation orientation )
 {
 	return MotionManager::get()->mImpl->getGravityDirection( orientation );
 }
 
-quat MotionManager::getRotation( app::InterfaceOrientation orientation )
+quat MotionManager::getRotation( InterfaceOrientation orientation )
 {
     return MotionManager::get()->mImpl->getRotation( orientation );
 }
 
-vec3 MotionManager::getRotationRate( app::InterfaceOrientation orientation )
+ci::mat4 MotionManager::getRotationMatrix( InterfaceOrientation orientation )
+{
+    return MotionManager::get()->mImpl->getRotationMatrix( orientation );	
+}
+
+vec3 MotionManager::getRotationRate( InterfaceOrientation orientation )
 {
     return MotionManager::get()->mImpl->getRotationRate( orientation );
 }
 
-vec3 MotionManager::getAcceleration( app::InterfaceOrientation orientation)
+vec3 MotionManager::getAcceleration( InterfaceOrientation orientation)
 {
     return MotionManager::get()->mImpl->getAcceleration( orientation );
 }
@@ -101,6 +106,23 @@ bool MotionManager::isShaking( float minShakeDeltaThreshold )
 {
     return MotionManager::get()->isShakingImpl( minShakeDeltaThreshold );
 }
+
+#if defined( CINDER_ANDROID )
+ci::vec3 MotionManager::getAccelerometer()
+{
+	return MotionManager::get()->mImpl->getAccelerometer();
+}
+
+ci::vec3 MotionManager::getMagneticField()
+{
+	return MotionManager::get()->mImpl->getMagneticField();
+}
+
+ci::vec3 MotionManager::getGyroscope()
+{
+	return MotionManager::get()->mImpl->getGyroscope();
+}
+#endif	
 
 MotionManager* MotionManager::get()
 {

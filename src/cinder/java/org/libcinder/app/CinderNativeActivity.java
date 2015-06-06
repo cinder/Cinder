@@ -130,6 +130,11 @@ public class CinderNativeActivity extends NativeActivity {
         return result;
     }
 
+    public int getDisplayRotation() {
+        int result = getDefaultDisplay().getRotation();
+        return result;
+    }
+
     // =============================================================================================
     // Camera
     // =============================================================================================

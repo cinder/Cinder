@@ -39,6 +39,10 @@
 #include "cinder/Signals.h"
 #include "cinder/Thread.h"
 
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+  #include "cinder/InterfaceOrientation.h"
+#endif
+
 #include <vector>
 #include <algorithm>
 
@@ -51,6 +55,11 @@ class io_service;
 } // namespace asio
 
 namespace cinder { namespace app {
+
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
+typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
+#endif
 
 typedef	signals::Signal<bool (), signals::CollectorBooleanAnd>						EventSignalShouldQuit;
 
@@ -246,6 +255,10 @@ class AppBase {
 	signals::Signal<void(const DisplayRef &display)>&	getSignalDisplayChanged() { return mSignalDisplayChanged; }
 	//! Emits a signal when the resolution or some other property of a Display has changed
 	void												emitDisplayChanged( const DisplayRef &display );
+
+#if defined( CINDER_ANDROID )
+	InterfaceOrientation	getInterfaceOrientation() const;
+#endif	
 
 	const std::vector<TouchEvent::Touch>& 	getActiveTouches() const { return getWindow()->getActiveTouches(); }
 
@@ -591,21 +604,5 @@ typename std::result_of<T()>::type AppBase::dispatchSync( T fn )
 		return fute.get();
 	}
 }
-
-#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
-enum InterfaceOrientation {
-	Unknown					= 0,
-	Portrait				= 1 << 0,
-	PortraitUpsideDown		= 1 << 1,
-	LandscapeLeft			= 1 << 2,
-	LandscapeRight			= 1 << 3,
-	PortraitAll				= (Portrait | PortraitUpsideDown),
-	LandscapeAll			= (LandscapeLeft | LandscapeRight),
-	All						= (PortraitAll | LandscapeAll)
-};
-
-//! Signal used for retrieving the supported orientations. \t BitwiseAndEventCombiner is used so that any connection can forbid a certain orientation.
-typedef	signals::Signal<uint32_t (), signals::CollectorBitwiseAnd<uint32_t>>		EventSignalSupportedOrientations;	
-#endif
 
 } } // namespace cinder::app

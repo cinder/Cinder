@@ -72,6 +72,16 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 
 	int32_t usec = (int32_t)( 1.0f / mUpdateFrequency * 1.0e6f );
 
+	auto updateAccelerometerFn = std::bind( &MotionImplAndroid::updateAccelerometer, this, std::placeholders::_1 );
+	eventManager->enableAccelerometer( updateAccelerometerFn, usec );
+
+	auto updateMagneticFieldFn = std::bind( &MotionImplAndroid::updateMagneticField, this, std::placeholders::_1 );
+	eventManager->enableMagneticField( updateMagneticFieldFn, usec );
+
+	auto updateGyroscopeFn = std::bind( &MotionImplAndroid::updateGyroscope, this, std::placeholders::_1 );
+	eventManager->enableGyroscope( updateGyroscopeFn, usec );
+
+	/*
 	if( MotionManager::Accelerometer == mSensorMode ) {
 		auto updateAccelerometerFn = std::bind( &MotionImplAndroid::updateAccelerometer, this, std::placeholders::_1 );
 		eventManager->enableAccelerometer( updateAccelerometerFn, usec );
@@ -80,19 +90,26 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 		auto updateGyroscopeFn = std::bind( &MotionImplAndroid::updateGyroscope, this, std::placeholders::_1 );
 		eventManager->enableGyroscope( updateGyroscopeFn, usec );
 	}
-
+	*/
 }
 
 void MotionImplAndroid::stopMotionUpdates()
 {
 	auto eventManager = EventManagerAndroid::instance();
 
+	eventManager->disableAccelerometer();
+	eventManager->disableMagneticField();
+	eventManager->disableGyroscope();
+
+
+	/*
 	if( MotionManager::Accelerometer == mSensorMode ) {
 		eventManager->disableAccelerometer();
 	}
 	else if( MotionManager::Gyroscope == mSensorMode ) {
 		eventManager->disableGyroscope();
 	}
+	*/
 }
 
 void MotionImplAndroid::setSensorMode( MotionManager::SensorMode mode )
@@ -114,38 +131,44 @@ void MotionImplAndroid::setShowsCalibrationView( bool shouldShow )
 
 }
 
-ci::vec3 MotionImplAndroid::getGravityDirection( app::InterfaceOrientation orientation ) const
+ci::vec3 MotionImplAndroid::getGravityDirection( InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }
 
-ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation ) const
+ci::quat MotionImplAndroid::getRotation( InterfaceOrientation orientation ) const
 {
 	return ci::quat();
 }
 
-ci::vec3 MotionImplAndroid::getRotationRate( app::InterfaceOrientation orientation ) const
+ci::mat4 MotionImplAndroid::getRotationMatrix( InterfaceOrientation orientation )
+{
+	return ci::mat4();
+}
+
+ci::vec3 MotionImplAndroid::getRotationRate( InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }
 
-ci::vec3 MotionImplAndroid::getAcceleration( app::InterfaceOrientation orientation ) const
+ci::vec3 MotionImplAndroid::getAcceleration( InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }
 
-void MotionImplAndroid::updateAccelerometer( const ci::vec3& accel )
+void MotionImplAndroid::updateAccelerometer( const ci::vec3& data )
 {
-
-console() << "MotionImplAndroid::updateAccelerometer: accel=" << accel << std::endl;
-
+	mAccelerometer = data;
 }
 
-void MotionImplAndroid::updateGyroscope( const ci::vec3& gyro )
+void MotionImplAndroid::updateMagneticField( const ci::vec3& data )
 {
+	mMagneticField = data;
+}
 
-console() << "MotionImplAndroid::updateGyroscope: gyro=" << gyro << std::endl;
-
+void MotionImplAndroid::updateGyroscope( const ci::vec3& data )
+{
+	mGyroscope = data;
 }
 
 } // namespace cinder

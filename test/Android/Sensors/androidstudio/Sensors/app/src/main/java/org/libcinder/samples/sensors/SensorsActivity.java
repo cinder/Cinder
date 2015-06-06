@@ -1,7 +1,7 @@
 package org.libcinder.samples.sensors;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class SensorsActivity extends NativeActivity {
+public class SensorsActivity extends CinderNativeActivity {
     static final String TAG = "SensorsActivity";
 }

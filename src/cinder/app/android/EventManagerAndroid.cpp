@@ -578,6 +578,14 @@ dbg_app_log( "Starting Event Loop" );
 							}
 							break;
 
+							case ASENSOR_TYPE_MAGNETIC_FIELD: {
+								if( mAccelerometerSensor && ( mMagneticFieldSensor->mCallbackFn ) ) {
+									ci::vec3 accel = ci::vec3( sensorEvent.magnetic.x, sensorEvent.magnetic.y, sensorEvent.magnetic.z );
+									mMagneticFieldSensor->mCallbackFn( accel );
+								}
+							}
+							break;
+
 							case ASENSOR_TYPE_GYROSCOPE: {
 								if( mGyroscopeSensor && ( mGyroscopeSensor->mCallbackFn ) ) {
 									ci::vec3 gyro = ci::vec3( sensorEvent.vector.x, sensorEvent.vector.y, sensorEvent.vector.z );
@@ -607,6 +615,7 @@ dbg_app_log( "Starting Event Loop" );
 dbg_app_log( "Ended Event Loop" );
 
 	ci::android::app::CinderNativeActivity::unregisterComponents();
+	ci::android::JniHelper::Destroy();
 
 	ASensorManager_destroyEventQueue( mSensorManager, mSensorEventQueue );
 

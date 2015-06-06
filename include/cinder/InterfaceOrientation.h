@@ -1,14 +1,13 @@
 /*
- Copyright (c) 2015, The Cinder Project
-
- This code is intended to be used with the Cinder C++ library, http://libcinder.org
+ Copyright (c) 2010, The Barbarian Group
+ All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
  the following conditions are met:
 
- * Redistributions of source code must retain the above copyright notice, this list of conditions and
+    * Redistributions of source code must retain the above copyright notice, this list of conditions and
 	the following disclaimer.
- * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+    * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
 	the following disclaimer in the documentation and/or other materials provided with the distribution.
 
  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
@@ -23,22 +22,17 @@
 
 #pragma once
 
-#include "cinder/Filesystem.h"
+namespace cinder {
 
-namespace cinder { namespace android {
-
-enum DisplayRotation {
-	 ROTATION_0 	= 0x00000000,
-	 ROTATION_90 	= 0x00000001,
-	 ROTATION_180 	= 0x00000002,
-	 ROTATION_270 	= 0x00000003,
+enum InterfaceOrientation {
+	Unknown					= 0,
+	Portrait				= 1 << 0,
+	PortraitUpsideDown		= 1 << 1,
+	LandscapeLeft			= 1 << 2,
+	LandscapeRight			= 1 << 3,
+	PortraitAll				= (Portrait | PortraitUpsideDown),
+	LandscapeAll			= (LandscapeLeft | LandscapeRight),
+	All						= (PortraitAll | LandscapeAll)
 };
 
-namespace fs {
-
-//! Returns true if path exists on asset fs or regular fs
-bool exists( const ci::fs::path& path );
-
-} // namespace fs
-
-}} // namespace cinder::android
+} // namespace cinder

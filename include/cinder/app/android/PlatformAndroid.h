@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/app/Platform.h"
+#include "cinder/android/CinderAndroid.h"
 
 namespace cinder { namespace app {
 
@@ -59,6 +60,8 @@ class PlatformAndroid : public Platform {
 	virtual std::vector<std::string>		stackTrace();
 
 	virtual const std::vector<DisplayRef>&	getDisplays();
+
+	virtual InterfaceOrientation	getInterfaceOrientation() const override;	
 
 	static bool 					isAssetPath( const fs::path &path );
 

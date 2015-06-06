@@ -280,18 +280,23 @@ JniHelper::~JniHelper()
 
 void JniHelper::Initialize( ANativeActivity* nativeActivity )
 {
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
 	if( JniHelper::sInstance ) {
 		return;
 	}
 
 	JvmHelper_InitOnce( nativeActivity->vm );
 	JniHelper::sInstance = std::unique_ptr<JniHelper>( new JniHelper( nativeActivity ) );
-
-
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void JniHelper::Destroy()
 {
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );	
+	if( JniHelper::sInstance ) {
+		JniHelper::sInstance.reset();
+	}
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );	
 }
 
 JniHelper* JniHelper::Get()

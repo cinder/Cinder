@@ -45,6 +45,8 @@ public:
 	static jclass 					getJavaClass();
 	static jobject 					getJavaObject();
 
+	static int 						getDisplayRotation();
+
 private:
 	static void 			cacheJni();
 	static void 			destroyJni();
@@ -52,6 +54,7 @@ private:
 	struct Java {
 		static jclassID		ClassName;
 		static jclass 		ClassObject;
+		static jmethodID 	getDisplayRotation;
 	};
 
 	static std::unique_ptr<CinderNativeActivity> sInstance;

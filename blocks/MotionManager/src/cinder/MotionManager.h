@@ -67,15 +67,15 @@ class MotionManager {
 	static void		setShowsCalibrationView( bool shouldShow = true );
 
 	//! Direction of gravity expressed as acceleration in the x, y and z axes. The output is correct for \a orientation if other than Portrait.
-	static ci::vec3		getGravityDirection( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+	static ci::vec3		getGravityDirection( InterfaceOrientation orientation = InterfaceOrientation::Portrait );
 	//! Rotation represents the orientation of the device as the amount rotated from with the North Pole, which we define to be -Z when the device is upright. The output is correct for \a orientation if other than Portrait.
-    static ci::quat		getRotation( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+    static ci::quat		getRotation( InterfaceOrientation orientation = InterfaceOrientation::Portrait );
 	//! Convenience method for returning the rotation repesented as a matrix. The output is correct for \a orientation if other than Portrait.
-    static ci::mat4		getRotationMatrix( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait ) { return glm::toMat4( getRotation( orientation ) ); }
+    static ci::mat4		getRotationMatrix( InterfaceOrientation orientation = InterfaceOrientation::Portrait );
 		//! Rotation rate along the x, y, and z axes, measured in radians per second. The output is correct for \a orientation if other than Portrait.
-	static ci::vec3		getRotationRate( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+	static ci::vec3		getRotationRate( InterfaceOrientation orientation = InterfaceOrientation::Portrait );
 	//! Acceleration in G's along the x, y, and z axes.  Earth's gravity is filtered out. The output is correct for \a orientation if other than Portrait.
-	static ci::vec3		getAcceleration( app::InterfaceOrientation orientation = app::InterfaceOrientation::Portrait );
+	static ci::vec3		getAcceleration( InterfaceOrientation orientation = InterfaceOrientation::Portrait );
 
     //! Detect if the device is currently shaking using the current and previous acceleration, as defined by an acceleration of magnitude >= \a minShakeDeltaThreshold.  \note This method is meant to be polled at a regular rate.
     static bool     isShaking( float minShakeDeltaThreshold = 2.2f );
@@ -87,6 +87,12 @@ class MotionManager {
 	static float	getAccelerometerFilter() { return get()->getAccelerometerFilterImpl(); }	
 	//! Only applies in accelerometer-only mode. Returns the amount the accelerometer data is filtered, in the range [0-1). \c 0 means unfiltered, \c 0.99 is very smoothed (but less responsive). Default is \c 0.3.
 	static void		setAccelerometerFilter( float filtering ) { get()->setAccelerometerFilterImpl( filtering ); }
+
+#if defined( CINDER_ANDROID )
+	static ci::vec3		getAccelerometer();
+	static ci::vec3 	getMagneticField();
+	static ci::vec3 	getGyroscope();
+#endif	
 
   protected:
 	MotionManager() : mShakeDelta( 0.0f ) {}

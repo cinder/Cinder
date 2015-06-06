@@ -30,8 +30,9 @@ using namespace cinder::android;
 
 namespace cinder { namespace android { namespace app {
 
-jclassID	CinderNativeActivity::Java::ClassName		= "org/libcinder/app/CinderNativeActivity";
-jclass  	CinderNativeActivity::Java::ClassObject 	= nullptr;
+jclassID	CinderNativeActivity::Java::ClassName			= "org/libcinder/app/CinderNativeActivity";
+jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
+jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
 
 std::unique_ptr<CinderNativeActivity> CinderNativeActivity::sInstance;
 
@@ -43,7 +44,7 @@ CinderNativeActivity::CinderNativeActivity( jobject obj )
 
 CinderNativeActivity::~CinderNativeActivity()
 {
-	
+
 }
 
 void CinderNativeActivity::cacheJni()
@@ -62,7 +63,8 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 			CinderNativeActivity::sInstance = std::unique_ptr<CinderNativeActivity>( new CinderNativeActivity( activityObject ) );				
 
 			if( nullptr != Java::ClassObject ) {
-				// HOLD
+				Java::getDisplayRotation = JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
+				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
 			}
 
 		}
@@ -76,7 +78,13 @@ dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 
 void CinderNativeActivity::destroyJni()
 {
-
+dbg_app_fn_enter( __PRETTY_FUNCTION__ );
+	if( JniHelper::Get()->AttachCurrentThread() ) {	
+		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
+		Java::ClassObject			= nullptr;
+		Java::getDisplayRotation	= nullptr;
+	}
+dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
 
 void CinderNativeActivity::registerComponents()
@@ -116,6 +124,12 @@ jclass CinderNativeActivity::getJavaClass()
 jobject CinderNativeActivity::getJavaObject()
 {
 	return CinderNativeActivity::getInstance()->mJavaObject;
+}
+
+int CinderNativeActivity::getDisplayRotation()
+{
+	jint result = JniHelper::Get()->CallIntMethod( getInstance()->getJavaObject(), Java::getDisplayRotation );
+	return (int)result;
 }
 
 }}} // namespace cinder::android::app

@@ -44,13 +44,19 @@ public:
 	void 		setUpdateFrequency( float updateFrequency );
 	void 		setShowsCalibrationView( bool shouldShow );
 
-	ci::vec3	getGravityDirection( app::InterfaceOrientation orientation ) const;
-    ci::quat	getRotation( app::InterfaceOrientation orientation ) const;
-	ci::vec3	getRotationRate( app::InterfaceOrientation orientation ) const;
-	ci::vec3	getAcceleration( app::InterfaceOrientation orientation ) const;
+	ci::vec3	getGravityDirection( InterfaceOrientation orientation ) const;
+    ci::quat	getRotation( InterfaceOrientation orientation ) const;
+    ci::mat4	getRotationMatrix( InterfaceOrientation orientation );
+	ci::vec3	getRotationRate( InterfaceOrientation orientation ) const;
+	ci::vec3	getAcceleration( InterfaceOrientation orientation ) const;
 
 	float		getAccelFilter() const { return mAccelFilter; }
 	void		setAccelFilter( float filtering ) { mAccelFilter = filtering; }	
+
+	// For debug
+	ci::vec3	getAccelerometer() const { return mAccelerometer; }
+	ci::vec3 	getMagneticField() const { return mMagneticField; }
+	ci::vec3 	getGyroscope() { return mGyroscope; }
 
 private:
 	float 						mUpdateFrequency = 60.0f;
@@ -58,8 +64,14 @@ private:
 	
 	float						mAccelFilter;
 
-	void 		updateAccelerometer( const ci::vec3& accel );
-	void 		updateGyroscope( const ci::vec3& gyro );
+	ci::vec3 	mAccelerometer;
+	ci::vec3 	mMagneticField;
+	ci::vec3 	mGyroscope;
+
+	void 		updateAccelerometer( const ci::vec3& data );
+	void 		updateMagneticField( const ci::vec3& data );
+	void 		updateGyroscope( const ci::vec3& data );
+
 };
 
 } // namespace cinder

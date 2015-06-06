@@ -27,6 +27,10 @@
 #include "cinder/Exception.h"
 #include "cinder/Filesystem.h"
 
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
+  #include "cinder/InterfaceOrientation.h"
+#endif
+
 // forward declarations
 namespace cinder {
 	class Display;
@@ -109,6 +113,10 @@ class Platform {
 
 	//! Returns a std::vector of Displays connected to the system.
 	virtual const std::vector<DisplayRef>&	getDisplays() = 0;
+
+#if defined( CINDER_ANDROID )
+	virtual InterfaceOrientation	getInterfaceOrientation() const = 0;
+#endif	
 
   protected:
 	Platform() : mAssetPathsInitialized( false )	{}

@@ -28,6 +28,8 @@
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
 
+#include "cinder/android/app/CinderNativeActivity.h"
+
 #include "cinder/android/AndroidDevLog.h"
 using namespace cinder::android;
 
@@ -152,6 +154,35 @@ const std::vector<DisplayRef>& PlatformAndroid::getDisplays()
 	}
 
 	return mDisplays;
+}
+
+InterfaceOrientation PlatformAndroid::getInterfaceOrientation() const
+{
+	InterfaceOrientation result = InterfaceOrientation::Unknown;
+
+	int displayRotation = cinder::android::app::CinderNativeActivity::getDisplayRotation();
+	switch( displayRotation ) {
+		case cinder::android::ROTATION_0: {
+			result = InterfaceOrientation::Portrait;
+		}
+		break;
+
+		case cinder::android::ROTATION_90: {
+			result = InterfaceOrientation::LandscapeLeft;
+		}
+		break;
+
+		case cinder::android::ROTATION_180: {
+			result = InterfaceOrientation::Portrait;
+		}
+
+		case cinder::android::ROTATION_270: {
+			result = InterfaceOrientation::LandscapeRight;
+		}
+		break;
+	}
+
+	return result;
 }
 
 bool PlatformAndroid::isAssetPath( const fs::path &path )

@@ -167,7 +167,12 @@ quat MotionImplCoreMotion::getRotation( app::InterfaceOrientation orientation )
 	return q;
 }
 
-vec3 MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orientation )
+ci::mat4 MotionImplCoreMotion::getRotationMatrix( InterfaceOrientation orientation ) 
+{ 
+	return glm::toMat4( getRotation( orientation ) ); 
+}
+
+vec3 MotionImplCoreMotion::getRotationRate( InterfaceOrientation orientation )
 {
 	if( ! isMotionDataAvailable() )
 		return vec3( 0 );
@@ -176,7 +181,7 @@ vec3 MotionImplCoreMotion::getRotationRate( app::InterfaceOrientation orientatio
 	return vecOrientationCorrected( vec3( rot.x, rot.y, rot.z ), orientation );
 }
 
-vec3 MotionImplCoreMotion::getAcceleration( app::InterfaceOrientation orientation )
+vec3 MotionImplCoreMotion::getAcceleration( InterfaceOrientation orientation )
 {
 	if( mSensorMode == MotionManager::SensorMode::Gyroscope ) {
 		if( ! isMotionDataAvailable() )
