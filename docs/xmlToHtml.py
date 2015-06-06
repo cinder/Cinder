@@ -83,15 +83,11 @@ class SymbolMap (object):
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
+		
 		# replace leading ci:: with cinder:: instead
-		
-		print "NAME: " + name
-		
 		searchName = str( name )
 		if searchName.find( "ci::" ) == 0:
 			searchName = searchName.replace( "ci::", "cinder::" )
-
-		print searchName
 
 		# same key as name
 		if searchName in self.classes:
@@ -109,10 +105,10 @@ class SymbolMap (object):
 					if testName == searchName :
 						return self.classes[className]
 
-			# check tagfile for typedef of given class name
-			# for typedef in self.typedefs:
-				
-				# if self.classes[]
+			# check to see if the name is a typedef that is a shared_ptr to another class
+			typedef = self.findTypedef( searchName )
+			if typedef is not None and typedef.sharedFrom is not None:
+				return typedef.sharedFrom
 
 			return None
 
@@ -133,7 +129,34 @@ class SymbolMap (object):
 		return namespaces
 
 	def findTypedef( self, name ):
-		return self.typedefs.get( name )
+
+		print "FIND TYPEDEF: " + name
+		
+		searchName = str( name )
+		if searchName.find( "ci::" ) == 0:
+			searchName = searchName.replace( "ci::", "cinder::" )
+
+		print searchName
+
+		# same key as name
+		if searchName in self.typedefs:
+			return self.typedefs[searchName]
+
+		# key with "cinder::" prepended
+		elif ("cinder::" + searchName) in self.typedefs:
+			return self.typedefs["cinder::"+searchName]
+
+		else:
+			# iterate through all of the classes with namespace "cinder::" and test against just class name
+			for typedef in self.typedefs:
+				if typedef.find( "cinder" ) == 0 and len( typedef.split("::") ) > 1:
+					testName = typedef.split("cinder::")[1].rsplit("::", 1)[-1]
+					if testName == searchName :
+						print "FOUND TYPEDEF " + testName 
+						return self.typedefs[typedef]
+
+
+		# return self.typedefs.get( name )
 
 	def findFunction( self, name ):
 		return self.functions.get( name )
