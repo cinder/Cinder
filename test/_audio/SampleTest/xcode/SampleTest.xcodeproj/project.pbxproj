@@ -25,6 +25,7 @@
 		111A6234192DBBE90024BE66 /* tone440_loop.wav in Resources */ = {isa = PBXBuildFile; fileRef = 111A6233192DBBE90024BE66 /* tone440_loop.wav */; };
 		1120DAAA19B63DCA00522276 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAA819B63DCA00522276 /* AVFoundation.framework */; };
 		1120DAAB19B63DCA00522276 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DAA919B63DCA00522276 /* CoreMedia.framework */; };
+		119C4EE71B23A36C006563C5 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119C4EE61B23A36C006563C5 /* IOKit.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */; };
@@ -81,6 +82,7 @@
 		111A6233192DBBE90024BE66 /* tone440_loop.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = tone440_loop.wav; path = ../../data/tone440_loop.wav; sourceTree = "<group>"; };
 		1120DAA819B63DCA00522276 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1120DAA919B63DCA00522276 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		119C4EE61B23A36C006563C5 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
 		459C1BCAC77D495892F10286 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				119C4EE71B23A36C006563C5 /* IOKit.framework in Frameworks */,
 				111A6232192DB6ED0024BE66 /* libcinder_d.a in Frameworks */,
 				1120DAAA19B63DCA00522276 /* AVFoundation.framework in Frameworks */,
 				1120DAAB19B63DCA00522276 /* CoreMedia.framework in Frameworks */,
@@ -207,6 +210,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				119C4EE61B23A36C006563C5 /* IOKit.framework */,
 				1120DAA819B63DCA00522276 /* AVFoundation.framework */,
 				1120DAA919B63DCA00522276 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
