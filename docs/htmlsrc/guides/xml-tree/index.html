@@ -1,0 +1,152 @@
+
+<div class="textblock"><h3>Introduction</h3>
+<p>Cinder provides the <a class="el" href="classcinder_1_1_xml_tree.html">XmlTree</a> class for processing XML. This class is recursive, meaning an XmlTree can contain other XmlTrees as its children. This design is similar to XML itself, which is a hierarchical format where an element can contain children elements. <br />
+<br />
+ For some of the example code in this document, we'll refer to this very basic XML document: </p><div class="fragment"><div class="line">&lt;?xml version=<span class="stringliteral">&quot;1.0&quot;</span>?&gt;</div>
+<div class="line">&lt;library&gt;</div>
+<div class="line">  &lt;owner&gt;</div>
+<div class="line">    &lt;name&gt;Andrew Bell&lt;/name&gt;</div>
+<div class="line">    &lt;city&gt;New York&lt;/city&gt;</div>
+<div class="line">  &lt;/owner&gt;</div>
+<div class="line">  &lt;album musician=<span class="stringliteral">&quot;John Coltrane&quot;</span> year=<span class="stringliteral">&quot;1989&quot;</span>&gt;</div>
+<div class="line">    &lt;title&gt;Ole Coltrane&lt;/title&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;0&quot;</span>&gt;Ole&lt;/track&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;1&quot;</span>&gt;Dahomey Dance&lt;/track&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;2&quot;</span>&gt;Aisha&lt;/track&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;3&quot;</span>&gt;To Her Ladyship&lt;/track&gt;</div>
+<div class="line">  &lt;/album&gt;</div>
+<div class="line">  &lt;album musician=<span class="stringliteral">&quot;Burial + Four Tet&quot;</span> year=<span class="stringliteral">&quot;2009&quot;</span>&gt;</div>
+<div class="line">    &lt;title&gt;Moth/Wolf Club&lt;/title&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;0&quot;</span>&gt;Moth&lt;/track&gt;</div>
+<div class="line">    &lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;1&quot;</span>&gt;Wolf&lt;/track&gt;</div>
+<div class="line">  &lt;/album&gt;</div>
+<div class="line">&lt;/library&gt;</div>
+</div><!-- fragment --><p> <br />
+ </p><h3>Parsing</h3>
+<p>To parse a block of XML, construct an XmlTree using a <a class="el" href="classcinder_1_1_data_source.html">DataSource</a>. For example, to parse an XML file on your disk, use <a class="el" href="namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">loadFile()</a>: </p><div class="fragment"><div class="line">XmlTree doc( <a class="code" href="namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">loadFile</a>( <span class="stringliteral">&quot;/Users/andrewfb/music.xml&quot;</span> ) );</div>
+</div><!-- fragment --><p> <br />
+ To parse XML on an http server, use <a class="el" href="namespacecinder.html#ac585fce4c1e96b04a400b5858b607909">loadUrl()</a>: </p><div class="fragment"><div class="line">XmlTree doc( <a class="code" href="namespacecinder.html#ac585fce4c1e96b04a400b5858b607909">loadUrl</a>( <span class="stringliteral">&quot;http://rss.news.yahoo.com/rss/tech&quot;</span> ) );</div>
+</div><!-- fragment --><p> <br />
+ To parse XML contained in a resource (discussed in <a class="el" href="_cinder_resources.html">more depth here</a>), use <a class="el" href="namespacecinder_1_1app.html#a93522b1858f745f7d9438d6d124ae11b" title="Returns a DataSource to an application resource. On Mac OS X, macPath is a path relative to the bundl...">loadResource()</a>: </p><div class="fragment"><div class="line">XmlTree doc( <a class="code" href="namespacecinder_1_1app.html#a93522b1858f745f7d9438d6d124ae11b">loadResource</a>( RES_MUSIC_LIBRARY ) );</div>
+</div><!-- fragment --><p> <br />
+ To parse XML contained in a string: </p><div class="fragment"><div class="line">std::string myXmlStr( <span class="stringliteral">&quot;&lt;?xml version=\&quot;1.0\&quot;?&gt;\n&lt;library&gt;\n&lt;owne...&quot;</span> );</div>
+<div class="line">XmlTree doc( myXmlStr );</div>
+</div><!-- fragment --><p> <br />
+ </p><h3>Iterating XmlTrees</h3>
+<p>To grab a particular child of a node by name, use the <a class="el" href="classcinder_1_1_xml_tree.html#a0330c31f8c01d342779c0d2f6da26ab5">XmlTree::getChild()</a> method: </p><div class="fragment"><div class="line">XmlTree doc( <a class="code" href="namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">loadFile</a>( <span class="stringliteral">&quot;/Users/andrewfb/music.xml&quot;</span> ) );</div>
+<div class="line">XmlTree musicLibrary = doc.getChild( <span class="stringliteral">&quot;library&quot;</span> );</div>
+</div><!-- fragment --><p> <br />
+ If the child does not exist, a <a class="el" href="classcinder_1_1_xml_tree_1_1_exc_child_not_found.html">XmlTree::ExcChildNotFound</a> exception is thrown. To test for the existence of a child use <a class="el" href="classcinder_1_1_xml_tree.html#a0330c31f8c01d342779c0d2f6da26ab5">XmlTree::hasChild()</a>: </p><div class="fragment"><div class="line"><span class="keywordflow">if</span>( musicLibrary.hasChild( <span class="stringliteral">&quot;owner&quot;</span> ) )</div>
+<div class="line"> ...</div>
+</div><!-- fragment --><p> <br />
+ XmlTree also supports finding children by path, where each component of the path is separated by the <code>/</code> character. For example: </p><div class="fragment"><div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; musicLibrary.getChild( <span class="stringliteral">&quot;owner/city&quot;</span> ) &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">&lt;city&gt;New York&lt;/city&gt;</div>
+</div><!-- fragment --><p> <br />
+ The example above shows a convenient way to examine an XML node, which is to pass it to a std::ostream like <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a>. Another convenient function is <a class="el" href="classcinder_1_1_xml_tree.html#a30b692af881ada011cf94668774ec7a9">XmlTree::getPath()</a>, which returns the path up to and including a given node: </p><div class="fragment"><div class="line">XmlTree ownerCity = doc.getChild( <span class="stringliteral">&quot;library/owner/city&quot;</span> );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;Path: &quot;</span> &lt;&lt; ownerCity.getPath() &lt;&lt; <span class="stringliteral">&quot;  Value: &quot;</span> &lt;&lt; ownerCity.getValue() &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">Path: library/owner/city  Value: New York</div>
+</div><!-- fragment --><p> <br />
+ To iterate the children of an XML node, use the <a class="el" href="classcinder_1_1_xml_tree_1_1_iter.html">XmlTree::Iter</a> class. </p><div class="fragment"><div class="line">XmlTree firstAlbum = doc.getChild( <span class="stringliteral">&quot;library/album&quot;</span> );</div>
+<div class="line"><span class="keywordflow">for</span>( XmlTree::Iter child = firstAlbum.begin(); child != firstAlbum.end(); ++child )</div>
+<div class="line">  <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;Tag: &quot;</span> &lt;&lt; child-&gt;getTag() &lt;&lt; <span class="stringliteral">&quot;  Value: &quot;</span> &lt;&lt; child-&gt;getValue() &lt;&lt; endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">Tag: title  Value: Ole Coltrane</div>
+<div class="line">Tag: track  Value: Ole</div>
+<div class="line">Tag: track  Value: Dahomey Dance</div>
+<div class="line">Tag: track  Value: Aisha</div>
+<div class="line">Tag: track  Value: To Her Ladyship</div>
+</div><!-- fragment --><p> <br />
+ You can also iterate the children of a node with the path syntax. For example, to iterate all the tracks of the music library, we can do something like the code below. Notice that the XmlTree::Iter is smart about finding all the nodes which match the path - there are tracks from both albums, not just the first. </p><div class="fragment"><div class="line"><span class="keywordflow">for</span>( XmlTree::Iter track = doc.begin(<span class="stringliteral">&quot;library/album/track&quot;</span>); track != doc.end(); ++track )</div>
+<div class="line">  <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; track-&gt;getValue() &lt;&lt; endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">Ole</div>
+<div class="line">Dahomey Dance</div>
+<div class="line">Aisha</div>
+<div class="line">To Her Ladyship</div>
+<div class="line">Moth</div>
+<div class="line">Wolf</div>
+</div><!-- fragment --><p> <br />
+ By default paths for the XmlTree are case insensitive. An optional boolean following the path allows you to force case sensitivity. Also for the uncommon case in which your node tags contain the '/' character, you can supply an alternate separator - we use the '.' below: </p><div class="fragment"><div class="line">std::string ownerCity = xmlNode.getChild( <span class="stringliteral">&quot;library.owner.city&quot;</span>, <span class="keyword">true</span>, <span class="charliteral">&#39;.&#39;</span> );</div>
+</div><!-- fragment --><p> <br />
+ </p><h3>Values &amp; Attributes</h3>
+<p>As we've already seen, you can get the tag (or name) of a node by calling <a class="el" href="classcinder_1_1_xml_tree.html#a045c5762e7c1d007b99994435975f11a">getTag()</a>. To get the value of a node as a string use <a class="el" href="classcinder_1_1_xml_tree.html#acc7f1501311af5db881eaada1512bb17">getValue()</a>. As an additional convenience, you can have XmlTree parse a string for you for any type which supports the istream&gt;&gt; operator. For example, if you know the nodes' values are floats, you might do this: </p><div class="fragment"><div class="line">vector&lt;float&gt; myFloats;</div>
+<div class="line"><span class="keywordflow">for</span>( XmlTree::Iter item = xml.begin(); item != xml.end(); ++item )</div>
+<div class="line">    myFloats.push_back( item-&gt;getValue&lt;<span class="keywordtype">float</span>&gt;() );</div>
+</div><!-- fragment --><p> <br />
+ The XmlTree also offers facility for walking a node's attributes. To get the value of an attribute as a string, you can call <a class="el" href="classcinder_1_1_xml_tree.html#a2a35e96659494390cc83dda18a280da7">getAttributeValue()</a>: </p><div class="fragment"><div class="line">XmlTree firstAlbum = doc.getChild( <span class="stringliteral">&quot;library/album&quot;</span> );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; <span class="stringliteral">&quot;the musician is: &quot;</span> &lt;&lt; firstAlbum.getAttributeValue( <span class="stringliteral">&quot;musician&quot;</span> ) &lt;&lt; endl;</div>
+</div><!-- fragment --><p> <br />
+ There is also a variant which supports automatic type conversion: </p><div class="fragment"><div class="line">XmlTree firstTrack = doc.getChild( <span class="stringliteral">&quot;library/album/track&quot;</span> );</div>
+<div class="line"><span class="keywordtype">int</span> firstTrackId = myNode.getAttributeValue&lt;<span class="keywordtype">int</span>&gt;( <span class="stringliteral">&quot;id&quot;</span> );</div>
+</div><!-- fragment --><p> <br />
+ As an additional convenience, you can supply a default value in the case that a node does not have a particular attribute. If we wanted our default size to be 1 for nodes which do not posses a size attribute, we would do this: </p><div class="fragment"><div class="line"><span class="keywordtype">float</span> mySize = myNode.getAttributeValue&lt;<span class="keywordtype">float</span>&gt;( <span class="stringliteral">&quot;size&quot;</span>, 1.0f );</div>
+</div><!-- fragment --><p> <br />
+</p>
+<h3>Writing XML</h3>
+<p>The XmlTree class can be used to build and write XML documents as well. The example below creates a music library with one album and prints it to the <a class="el" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe" title="Returns a reference to an output console, which is an alias to std::cout on the mac, and a wrapper around OutputDebugString on MSW. ">console()</a>: </p><div class="fragment"><div class="line">XmlTree library( <span class="stringliteral">&quot;library&quot;</span>, <span class="stringliteral">&quot;&quot;</span> );</div>
+<div class="line">XmlTree album( <span class="stringliteral">&quot;album&quot;</span>, <span class="stringliteral">&quot;&quot;</span> );</div>
+<div class="line">album.setAttribute( <span class="stringliteral">&quot;musician&quot;</span>, <span class="stringliteral">&quot;Sufjan Stevens&quot;</span> );</div>
+<div class="line">album.setAttribute( <span class="stringliteral">&quot;year&quot;</span>, <span class="stringliteral">&quot;2004&quot;</span> );</div>
+<div class="line">album.push_back( XmlTree( <span class="stringliteral">&quot;title&quot;</span>, <span class="stringliteral">&quot;Seven Swans&quot;</span> ) );</div>
+<div class="line">album.push_back( XmlTree( <span class="stringliteral">&quot;track&quot;</span>, <span class="stringliteral">&quot;All the Trees of the Field Will Clap Their Hands&quot;</span> ) );</div>
+<div class="line">album.push_back( XmlTree( <span class="stringliteral">&quot;track&quot;</span>, <span class="stringliteral">&quot;The Dress Looks Nice on You&quot;</span> ) );</div>
+<div class="line">album.push_back( XmlTree( <span class="stringliteral">&quot;track&quot;</span>, <span class="stringliteral">&quot;In the Devil&#39;s Territory&quot;</span> ) );</div>
+<div class="line">album.push_back( XmlTree( <span class="stringliteral">&quot;track&quot;</span>, <span class="stringliteral">&quot;To Be Alone With You&quot;</span> ) );</div>
+<div class="line">library.push_back( album );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; library &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">&lt;library&gt;</div>
+<div class="line">  &lt;album musician=<span class="stringliteral">&quot;Sufjan Stevens&quot;</span> year=<span class="stringliteral">&quot;2004&quot;</span>&gt;</div>
+<div class="line">    &lt;title&gt;Seven Swans&lt;/title&gt;</div>
+<div class="line">    &lt;track&gt;<a class="code" href="namespacecinder_1_1app.html#a1e19beaf18c41d11111186e34c5c9588a17d75410cc1dc2880e52758e3dc9aa8c">All</a> the Trees of the Field Will Clap Their Hands&lt;/track&gt;</div>
+<div class="line">    &lt;track&gt;The Dress Looks Nice on You&lt;/track&gt;</div>
+<div class="line">    &lt;track&gt;In the Devil&amp;apos;s Territory&lt;/track&gt;</div>
+<div class="line">    &lt;track&gt;To Be Alone With You&lt;/track&gt;</div>
+<div class="line">  &lt;/album&gt;</div>
+<div class="line">&lt;/library&gt;</div>
+</div><!-- fragment --><p> <br />
+ Notice that the node echoed to the console was not treated as an XML document - it lacks the <code>&lt;?xml&gt;</code> declaration of a true XML document. There are a couple of ways of achieving this. The simplest is to use <a class="el" href="classcinder_1_1_xml_tree.html#a33392d8f768b5bfc9fa23890ca4deea0">XmlTree::write()</a>, which by default assumes you want a full XML document: </p><div class="fragment"><div class="line">library.write( <a class="code" href="namespacecinder.html#a1262c33ede2938ea16f22143758f96bb">writeFile</a>( <span class="stringliteral">&quot;~/musicOutput.xml&quot;</span> ) );</div>
+</div><!-- fragment --><p> <br />
+ This routine has an optional second boolean parameter which will create the <code>&lt;?xml&gt;</code> declaration when true, its default value. Another option would be to create a document node ourselves and append the <code>&lt;library&gt;</code> to that: </p><div class="fragment"><div class="line">XmlTree doc = XmlTree::createDoc();</div>
+<div class="line">XmlTree library( <span class="stringliteral">&quot;library&quot;</span>, <span class="stringliteral">&quot;&quot;</span> );</div>
+<div class="line">...</div>
+<div class="line">doc.push_back( library );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; doc &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <br />
+</p>
+<h3>Const-Correctness and References</h3>
+<p>The XmlTree is designed to be const-correct, and supports a <a class="el" href="classcinder_1_1_xml_tree_1_1_const_iter.html">ConstIter</a> which mimicks the <code>const_iterator</code> of STL containers: </p><div class="fragment"><div class="line"><span class="comment">// Finds the track named \a searchTrack in the music library \a library.</span></div>
+<div class="line"><span class="comment">// Throws XmlTree::ExcChildNotFound() if none is found.</span></div>
+<div class="line"><span class="keyword">const</span> XmlTree&amp; findTrackNamed( <span class="keyword">const</span> XmlTree &amp;library, <span class="keyword">const</span> std::string &amp;searchTrack )</div>
+<div class="line">{</div>
+<div class="line">  <span class="keywordflow">for</span>( XmlTree::ConstIter trackIt = library.begin(<span class="stringliteral">&quot;album/track&quot;</span>); trackIt != library.end(); ++trackIt ) {</div>
+<div class="line">    <span class="keywordflow">if</span>( trackIt-&gt;getValue() == searchTrack )</div>
+<div class="line">      <span class="keywordflow">return</span> *trackIt;</div>
+<div class="line">  }</div>
+<div class="line">  </div>
+<div class="line">  <span class="comment">// failed to find a track named &#39;searchTrack&#39;</span></div>
+<div class="line">  <span class="keywordflow">throw</span> XmlTree::ExcChildNotFound( library, searchTrack );</div>
+<div class="line">}</div>
+<div class="line"></div>
+<div class="line">...</div>
+<div class="line">XmlTree doc( <a class="code" href="namespacecinder.html#a5914d1dcf8a37d479ed1186326a8eae7">loadFile</a>( <span class="stringliteral">&quot;/Users/andrewfb/library.xml&quot;</span> ) );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; findTrackNamed( doc.getChild( <span class="stringliteral">&quot;library&quot;</span> ), <span class="stringliteral">&quot;Wolf&quot;</span> ) &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">&lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;1&quot;</span>&gt;Wolf&lt;/track&gt;</div>
+</div><!-- fragment --><p> <br />
+ It's also worth noting the value of passing XmlTrees by reference whenever possible. XmlTrees create a full copy of the XML data tree whenever they are copied, so passing by reference can improve performance significantly. Furthermore, assigning by copy will prevent us from modifying the "original" node of an XmlTree should we so desire. For example: </p><div class="fragment"><div class="line"><span class="comment">// Whoops - assignment by value doesn&#39;t modifying the original XmlTree</span></div>
+<div class="line">XmlTree firstTrackCopy = doc.getChild( <span class="stringliteral">&quot;/library/album/track&quot;</span> );</div>
+<div class="line">firstTrackCopy.setValue( <span class="stringliteral">&quot;Replacement name&quot;</span> );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; doc.getChild( <span class="stringliteral">&quot;/library/album/track&quot;</span> ) &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">&lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;0&quot;</span>&gt;Ole&lt;/track&gt;</div>
+</div><!-- fragment --><p> <br />
+ Instead, use a reference in order to modify the XmlTree: </p><div class="fragment"><div class="line">XmlTree &amp;firstTrackRef = doc.getChild( <span class="stringliteral">&quot;/library/album/track&quot;</span> ); <span class="comment">// notice the reference</span></div>
+<div class="line">firstTrackRef.setValue( <span class="stringliteral">&quot;Replacement name&quot;</span> );</div>
+<div class="line"><a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">console</a>() &lt;&lt; doc.getChild( <span class="stringliteral">&quot;/library/album/track&quot;</span> ) &lt;&lt; std::endl;</div>
+</div><!-- fragment --><p> <em>Output:</em> </p><div class="fragment"><div class="line">&lt;track <span class="keywordtype">id</span>=<span class="stringliteral">&quot;0&quot;</span>&gt;Replacement name&lt;/track&gt;</div>
+</div><!-- fragment --><p> <br />
+</p>
+<h3>Implementation Notes</h3>
+<p>The XmlTree::Iter and XmlTree::ConstIter are designed to be STL-compatible iterators. For example, if you are using a lambdas-aware C++ compiler (currently only VC2010 at the time of this writing) the following code prints the names of the albums in the music library: </p><div class="fragment"><div class="line">std::for_each( doc.begin( <span class="stringliteral">&quot;library/album&quot;</span> ), doc.end(), []( <span class="keyword">const</span> XmlTree &amp;child ) {</div>
+<div class="line">  <a class="code" href="namespacecinder_1_1app.html#a72f7349e12a6766075862ed953868abe">app::console</a>() &lt;&lt; child.getChild( <span class="stringliteral">&quot;title&quot;</span> ).getValue() &lt;&lt; std::endl;</div>
+<div class="line">} );</div>
+</div><!-- fragment --><p> <br />
+ XmlTree is implemented using the <a href="http://rapidxml.sourceforge.net/">RapidXML</a> library. For unusually performance-conscious use cases, it is worth considering using RapidXML directly, as the XmlTree is designed to be convenient more than it is fast. The necessary header files are in <em>cinder/include/rapidxml</em> and can be <code>#include</code>d like so: </p><div class="fragment"><div class="line"><span class="preprocessor">#include &quot;rapidxml/rapidxml.hpp&quot;</span></div>
+<div class="line"><span class="preprocessor">#include &quot;rapidxml/rapidxml_print.hpp&quot;</span></div>
+</div><!-- fragment --> </div>
