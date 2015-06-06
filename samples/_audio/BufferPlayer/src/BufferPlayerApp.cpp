@@ -13,6 +13,7 @@ using namespace std;
 class BufferPlayerNodeApp : public App {
 public:
 	void setup() override;
+	void resize() override;
 	void fileDrop( FileDropEvent event ) override;
 	void keyDown( KeyEvent event ) override;
 	void mouseDown( MouseEvent event ) override;
@@ -42,9 +43,13 @@ void BufferPlayerNodeApp::setup()
 	// connect and enable the Context
 	mBufferPlayerNode >> mGain >> ctx->getOutput();
 	ctx->enable();
+}
 
-	// also load the buffer into our waveform visual util.
-	mWaveformPlot.load( buffer, getWindowBounds() );
+void BufferPlayerNodeApp::resize()
+{
+	// visualize the audio buffer
+	if( mBufferPlayerNode )
+		mWaveformPlot.load( mBufferPlayerNode->getBuffer(), getWindowBounds() );
 }
 
 void BufferPlayerNodeApp::fileDrop( FileDropEvent event )
