@@ -67,6 +67,7 @@ class SymbolMap (object):
 			self.name = name
 			self.type = type
 			self.path = path
+			self.sharedFrom = None
 
 	class Function (object):
 		def __init__( self, name, base, path ):
@@ -82,15 +83,33 @@ class SymbolMap (object):
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
+		
 		# replace leading ci:: with cinder:: instead
-		if name.find( "ci::" ) == 0:
-			name.replace( "ci::", "cinder::" )
+		searchName = str( name )
+		if searchName.find( "ci::" ) == 0:
+			searchName = searchName.replace( "ci::", "cinder::" )
 
-		if name in self.classes:
-			return self.classes[name]
-		elif ("cinder::" + name) in self.classes:
-			return self.classes["cinder::"+name]
+		# same key as name
+		if searchName in self.classes:
+			return self.classes[searchName]
+		# key with "cinder::" prepended
+		elif ("cinder::" + searchName) in self.classes:
+			return self.classes["cinder::"+searchName]
+
 		else:
+			# iterate through all of the classes with namespace "cinder::" and test against just class name
+			for className in self.classes:
+				# if className has "cinder::" and namespace depth > 1, test against name
+				if className.find( "cinder" ) == 0 and len( className.split("::") ) > 1:
+					testName = className.split("cinder::")[1].rsplit("::", 1)[-1]
+					if testName == searchName :
+						return self.classes[className]
+
+			# check to see if the name is a typedef that is a shared_ptr to another class
+			typedef = self.findTypedef( searchName )
+			if typedef is not None and typedef.sharedFrom is not None:
+				return typedef.sharedFrom
+
 			return None
 
 	def findNamespace( self, name ):
@@ -110,7 +129,34 @@ class SymbolMap (object):
 		return namespaces
 
 	def findTypedef( self, name ):
-		return self.typedefs.get( name )
+
+		print "FIND TYPEDEF: " + name
+		
+		searchName = str( name )
+		if searchName.find( "ci::" ) == 0:
+			searchName = searchName.replace( "ci::", "cinder::" )
+
+		print searchName
+
+		# same key as name
+		if searchName in self.typedefs:
+			return self.typedefs[searchName]
+
+		# key with "cinder::" prepended
+		elif ("cinder::" + searchName) in self.typedefs:
+			return self.typedefs["cinder::"+searchName]
+
+		else:
+			# iterate through all of the classes with namespace "cinder::" and test against just class name
+			for typedef in self.typedefs:
+				if typedef.find( "cinder" ) == 0 and len( typedef.split("::") ) > 1:
+					testName = typedef.split("cinder::")[1].rsplit("::", 1)[-1]
+					if testName == searchName :
+						print "FOUND TYPEDEF " + testName 
+						return self.typedefs[typedef]
+
+
+		# return self.typedefs.get( name )
 
 	def findFunction( self, name ):
 		return self.functions.get( name )
@@ -1367,8 +1413,7 @@ def processHtmlFile( inPath, outPath ):
 	for img in bs4.find_all("img"):
 		if img.has_attr("src"):
 			img["src"] = updateLink( img["src"], outPath )
-
-
+	
 	# plug original html content into template
 	bs4.body.find(id="template-content").append(origHtml.body)
 
@@ -1378,6 +1423,35 @@ def processHtmlFile( inPath, outPath ):
 
 	for script in origHtml.find_all("script"):
 		bs4.body.append( script )	
+	
+	# link up all d tags
+	for link in bs4.find_all('d'):
+
+		# get string to search against
+		searchString = ''
+		if link.get( 'dox' ) != None:
+			searchString = link.get( 'dox' )
+		else:
+			searchString = link.contents[0]
+
+		print " ====== "
+		print "FIND LINK FOR"
+		existingClass = g_symbolMap.findClass( searchString )
+		
+		if not existingClass:
+			print "   ** Warning: Could not find Doxygen tag for " + searchString
+		else:
+			new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + existingClass.fileName )
+			print "   SUCCESS! "
+			link.replace_with(new_link)
+
+		# look for function
+		# existingFn = symbolMap.findFunction( searchString )
+		# if not existingClass and existingFn != None:
+			# link.name = 'a'
+			# link['href'] = doxyHtmlPath + existingFn.path
+			# print "Found a function, here's the path: " + link['href']
+
 	
 	writeHtml( bs4, outPath )
 
@@ -1410,6 +1484,23 @@ def getSymbolToFileMap( tagDom ):
 	print "generating symbol map from tag file"
 	symbolMap = SymbolMap()
 
+	# find classes
+	classTags = tagXml.findall( r'compound/[@kind="class"]')
+	for c in classTags :
+		name = c.find('name').text
+		filePath = c.find('filename').text
+		baseClass = c.find('base').text if c.find('base') is not None else ""
+		symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
+
+		# find functions and add to symbol map
+		members = c.findall(r"member[@kind='function']")
+		for member in members:
+			
+			fnName = member.find("name").text
+			anchor = member.find("anchor").text
+			filePath = member.find("anchorfile").text + "#" + anchor
+			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+
 	# find namespaces
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
 		
@@ -1427,26 +1518,27 @@ def getSymbolToFileMap( tagDom ):
 			name = member.find("name").text
 			type = member.find("type").text
 			name = namespaceName+"::"+name
-			type = namespaceName+"::"+type
-			filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
-			symbolMap.typedefs[name] = SymbolMap.Typedef( name, type, filePath )
-		
-	# find classes
-	classTags = tagXml.findall( r'compound/[@kind="class"]')
-	for c in classTags :
-		name = c.find('name').text
-		filePath = c.find('filename').text
-		baseClass = c.find('base').text if c.find('base') is not None else ""
-		symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
+			shared_from_class = None
 
-		# find functions and add to symbol map
-		members = c.findall(r"member[@kind='function']")
-		for member in members:
+			print "TYPEDEF: name = " + name + " \t type = " + type
+			# std::shared_ptr< (?:class)* *([\w]*) >
+			# shared_ptr = 
+			if type.find("shared") > 0:
+				shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type)
+				if len(shareds) > 0:
+					base = namespaceName + "::" + shareds[0]
+					shared_from_class = symbolMap.findClass( base );
+					if shared_from_class is not None:
+						print "\t FOUND SHARED" + " \t" + base + "\n"
+						print shared_from_class
+						print shared_from_class.name
 			
-			fnName = member.find("name").text
-			anchor = member.find("anchor").text
-			filePath = member.find("anchorfile").text + "#" + anchor
-			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+			filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
+			
+			typeDefObj = SymbolMap.Typedef( name, type, filePath )
+			if shared_from_class is not None :
+				typeDefObj.sharedFrom = shared_from_class;
+			symbolMap.typedefs[name] = typeDefObj
 
 	# find files
 	fileTags = tagXml.findall( r'compound/[@kind="file"]')
