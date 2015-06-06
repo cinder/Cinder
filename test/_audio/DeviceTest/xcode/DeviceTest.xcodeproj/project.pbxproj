@@ -15,6 +15,7 @@
 		111A6243192DCA300024BE66 /* libcinder_d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A623C192DCA220024BE66 /* libcinder_d.a */; };
 		1120DA8819B63D1500522276 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DA8619B63D1500522276 /* AVFoundation.framework */; };
 		1120DA8919B63D1500522276 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1120DA8719B63D1500522276 /* CoreMedia.framework */; };
+		119C4ED31B23A338006563C5 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119C4ED21B23A338006563C5 /* IOKit.framework */; };
 		143AD78017E023880076DB6A /* DeviceTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 143AD77F17E023880076DB6A /* DeviceTestApp.cpp */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
@@ -62,6 +63,7 @@
 		111A6235192DCA220024BE66 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
 		1120DA8619B63D1500522276 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1120DA8719B63D1500522276 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		119C4ED21B23A338006563C5 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		143AD77F17E023880076DB6A /* DeviceTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DeviceTestApp.cpp; path = ../src/DeviceTestApp.cpp; sourceTree = "<group>"; };
 		28B898AF66D64C9296C04BB7 /* DeviceTest_Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = "\"\""; path = DeviceTest_Prefix.pch; sourceTree = "<group>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
@@ -78,6 +80,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				119C4ED31B23A338006563C5 /* IOKit.framework in Frameworks */,
 				111A6243192DCA300024BE66 /* libcinder_d.a in Frameworks */,
 				1120DA8819B63D1500522276 /* AVFoundation.framework in Frameworks */,
 				1120DA8919B63D1500522276 /* CoreMedia.framework in Frameworks */,
@@ -178,6 +181,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				119C4ED21B23A338006563C5 /* IOKit.framework */,
 				1120DA8619B63D1500522276 /* AVFoundation.framework */,
 				1120DA8719B63D1500522276 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,

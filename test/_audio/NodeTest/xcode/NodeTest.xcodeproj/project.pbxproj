@@ -14,6 +14,7 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		111A6270192DCAA50024BE66 /* libcinder_d.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 111A6269192DCA960024BE66 /* libcinder_d.a */; };
 		1189C939185982520051AB13 /* AudioDrawUtils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1189C937185982520051AB13 /* AudioDrawUtils.cpp */; };
+		119C4EDF1B23A35B006563C5 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 119C4EDE1B23A35B006563C5 /* IOKit.framework */; };
 		11B4167119B621F3008F98C6 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B4166F19B621F3008F98C6 /* AVFoundation.framework */; };
 		11B4167219B621F3008F98C6 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B4167019B621F3008F98C6 /* CoreMedia.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
@@ -63,6 +64,7 @@
 		111A6262192DCA960024BE66 /* cinder.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cinder.xcodeproj; path = ../../../../xcode/cinder.xcodeproj; sourceTree = "<group>"; };
 		1189C937185982520051AB13 /* AudioDrawUtils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = AudioDrawUtils.cpp; path = ../../../../samples/_audio/common/AudioDrawUtils.cpp; sourceTree = "<group>"; };
 		1189C938185982520051AB13 /* AudioDrawUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AudioDrawUtils.h; path = ../../../../samples/_audio/common/AudioDrawUtils.h; sourceTree = "<group>"; };
+		119C4EDE1B23A35B006563C5 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
 		119CCEEA184A716B00853BEE /* AudioTestGui.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = AudioTestGui.h; path = ../../common/AudioTestGui.h; sourceTree = "<group>"; };
 		11AC0A2418E8E730008AF4BC /* InterleavedPassThruNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = InterleavedPassThruNode.h; path = ../src/InterleavedPassThruNode.h; sourceTree = "<group>"; };
 		11B4166F19B621F3008F98C6 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -82,6 +84,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				119C4EDF1B23A35B006563C5 /* IOKit.framework in Frameworks */,
 				111A6270192DCAA50024BE66 /* libcinder_d.a in Frameworks */,
 				11B4167119B621F3008F98C6 /* AVFoundation.framework in Frameworks */,
 				11B4167219B621F3008F98C6 /* CoreMedia.framework in Frameworks */,
@@ -185,6 +188,7 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				119C4EDE1B23A35B006563C5 /* IOKit.framework */,
 				11B4166F19B621F3008F98C6 /* AVFoundation.framework */,
 				11B4167019B621F3008F98C6 /* CoreMedia.framework */,
 				1058C7A0FEA54F0111CA2CBB /* Linked Frameworks */,
