@@ -19,26 +19,26 @@ private:
 	bool 	mPrint = false;
 };
 
-std::string getInterfaceOrientationString(int io)
+std::string getOrientationString(int io)
 {
 	std::string result = "Unknown";
 	switch( io ) {
-		case InterfaceOrientation::Portrait: {
+		case ci::app::InterfaceOrientation::Portrait: {
 			result = "Portrait";
 		}
 		break;
 
-		case InterfaceOrientation::PortraitUpsideDown: {
+		case ci::app::InterfaceOrientation::PortraitUpsideDown: {
 			result = "PortraitUpsideDown";
 		}
 		break;
 
-		case InterfaceOrientation::LandscapeLeft: {
+		case ci::app::InterfaceOrientation::LandscapeLeft: {
 			result = "LandscapeLeft";
 		}
 		break;
 
-		case InterfaceOrientation::LandscapeRight: {
+		case ci::app::InterfaceOrientation::LandscapeRight: {
 			result = "LandscapeRight";
 		}
 		break;
@@ -50,8 +50,8 @@ void Sensors::setup()
 {
 	//MotionManager::enable( 60.0f, MotionManager::Accelerometer );
 
-	int io = getInterfaceOrientation();
-	console() << "InterfaceOrientation: " << getInterfaceOrientationString( io ) << " : " << io << std::endl;
+	int io = getOrientation();
+	console() << "InterfaceOrientation: " << getOrientationString( io ) << " : " << io << std::endl;
 }
 
 void Sensors::touchesBegan( TouchEvent event )

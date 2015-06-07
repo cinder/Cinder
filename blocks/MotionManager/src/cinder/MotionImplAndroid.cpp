@@ -131,27 +131,27 @@ void MotionImplAndroid::setShowsCalibrationView( bool shouldShow )
 
 }
 
-ci::vec3 MotionImplAndroid::getGravityDirection( InterfaceOrientation orientation ) const
+ci::vec3 MotionImplAndroid::getGravityDirection( app::InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }
 
-ci::quat MotionImplAndroid::getRotation( InterfaceOrientation orientation ) const
+ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation ) const
 {
 	return ci::quat();
 }
 
-ci::mat4 MotionImplAndroid::getRotationMatrix( InterfaceOrientation orientation )
+ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation )
 {
 	return ci::mat4();
 }
 
-ci::vec3 MotionImplAndroid::getRotationRate( InterfaceOrientation orientation ) const
+ci::vec3 MotionImplAndroid::getRotationRate( app::InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }
 
-ci::vec3 MotionImplAndroid::getAcceleration( InterfaceOrientation orientation ) const
+ci::vec3 MotionImplAndroid::getAcceleration( app::InterfaceOrientation orientation ) const
 {
 	return ci::vec3();
 }

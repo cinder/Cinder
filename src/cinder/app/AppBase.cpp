@@ -230,13 +230,6 @@ void AppBase::emitDisplayChanged( const DisplayRef &display )
 	mSignalDisplayChanged.emit( display );
 }
 
-#if defined( CINDER_ANDROID )
-InterfaceOrientation AppBase::getInterfaceOrientation() const
-{
-	return Platform::get()->getInterfaceOrientation();
-}
-#endif	
-
 fs::path AppBase::getOpenFilePath( const fs::path &initialPath, const vector<string> &extensions )
 {
 	return Platform::get()->getOpenFilePath( initialPath, extensions );

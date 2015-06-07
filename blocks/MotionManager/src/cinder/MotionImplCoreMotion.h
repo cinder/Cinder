@@ -57,11 +57,11 @@ class MotionImplCoreMotion {
 	void setUpdateFrequency( float updateFrequency );
 	void setShowsCalibrationView( bool shouldShow );
 
-	ci::vec3	getGravityDirection( InterfaceOrientation orientation );
-    ci::quat	getRotation( InterfaceOrientation orientation );
-    ci::mat4	getRotationMatrix( InterfaceOrientation orientation );
-	ci::vec3	getRotationRate( InterfaceOrientation orientation );
-	ci::vec3	getAcceleration( InterfaceOrientation orientation );
+	ci::vec3	getGravityDirection( app::InterfaceOrientation orientation );
+    ci::quat	getRotation( app::InterfaceOrientation orientation );
+    ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation );
+	ci::vec3	getRotationRate( app::InterfaceOrientation orientation );
+	ci::vec3	getAcceleration( app::InterfaceOrientation orientation );
 
 	float		getAccelFilter() const { return mAccelFilter; }
 	void		setAccelFilter( float filtering ) { mAccelFilter = filtering; }

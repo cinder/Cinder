@@ -60,6 +60,11 @@ class AppAndroid : public AppBase {
 
 	WindowRef	getForegroundWindow() const override;
 
+	//! Returns the  \t InterfaceOrientation for the device \t Window.
+	InterfaceOrientation	getOrientation() const;
+	//! Returns the current \t InterfaceOrientation for the active \t Window.
+	//InterfaceOrientation	getWindowOrientation() const;	
+
 	void		hideCursor() override;
 	void		showCursor() override;
 	ivec2		getMousePos() const override;

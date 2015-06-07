@@ -24,6 +24,7 @@
 #include "cinder/app/android/AppAndroid.h"
 #include "cinder/app/android/AppImplAndroid.h"
 
+#include "cinder/android/app/CinderNativeActivity.h"
 #include "cinder/android/AndroidDevLog.h"
 using namespace ci::android;
 
@@ -115,6 +116,35 @@ size_t AppAndroid::getNumWindows() const
 WindowRef AppAndroid::getForegroundWindow() const
 {
 	return mImpl->getForegroundWindow();
+}
+
+InterfaceOrientation AppAndroid::getOrientation() const
+{
+	InterfaceOrientation result = InterfaceOrientation::Unknown;
+
+	int displayRotation = cinder::android::app::CinderNativeActivity::getDisplayRotation();
+	switch( displayRotation ) {
+		case cinder::android::ROTATION_0: {
+			result = InterfaceOrientation::Portrait;
+		}
+		break;
+
+		case cinder::android::ROTATION_90: {
+			result = InterfaceOrientation::LandscapeLeft;
+		}
+		break;
+
+		case cinder::android::ROTATION_180: {
+			result = InterfaceOrientation::Portrait;
+		}
+
+		case cinder::android::ROTATION_270: {
+			result = InterfaceOrientation::LandscapeRight;
+		}
+		break;
+	}
+
+	return result;
 }
 
 void AppAndroid::hideCursor()

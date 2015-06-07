@@ -77,27 +77,27 @@ void MotionManager::setShowsCalibrationView( bool shouldShow )
 	MotionManager::get()->mImpl->setShowsCalibrationView( shouldShow );
 }
 
-vec3 MotionManager::getGravityDirection( InterfaceOrientation orientation )
+vec3 MotionManager::getGravityDirection( app::InterfaceOrientation orientation )
 {
 	return MotionManager::get()->mImpl->getGravityDirection( orientation );
 }
 
-quat MotionManager::getRotation( InterfaceOrientation orientation )
+quat MotionManager::getRotation( app::InterfaceOrientation orientation )
 {
     return MotionManager::get()->mImpl->getRotation( orientation );
 }
 
-ci::mat4 MotionManager::getRotationMatrix( InterfaceOrientation orientation )
+ci::mat4 MotionManager::getRotationMatrix( app::InterfaceOrientation orientation )
 {
     return MotionManager::get()->mImpl->getRotationMatrix( orientation );	
 }
 
-vec3 MotionManager::getRotationRate( InterfaceOrientation orientation )
+vec3 MotionManager::getRotationRate( app::InterfaceOrientation orientation )
 {
     return MotionManager::get()->mImpl->getRotationRate( orientation );
 }
 
-vec3 MotionManager::getAcceleration( InterfaceOrientation orientation)
+vec3 MotionManager::getAcceleration( app::InterfaceOrientation orientation)
 {
     return MotionManager::get()->mImpl->getAcceleration( orientation );
 }

@@ -61,8 +61,6 @@ class PlatformAndroid : public Platform {
 
 	virtual const std::vector<DisplayRef>&	getDisplays();
 
-	virtual InterfaceOrientation	getInterfaceOrientation() const override;	
-
 	static bool 					isAssetPath( const fs::path &path );
 
  protected:
