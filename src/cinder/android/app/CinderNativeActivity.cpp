@@ -33,6 +33,7 @@ namespace cinder { namespace android { namespace app {
 jclassID	CinderNativeActivity::Java::ClassName			= "org/libcinder/app/CinderNativeActivity";
 jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
+jmethodID 	CinderNativeActivity::Java::setFullScreen		= nullptr;
 
 std::unique_ptr<CinderNativeActivity> CinderNativeActivity::sInstance;
 
@@ -63,8 +64,10 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 			CinderNativeActivity::sInstance = std::unique_ptr<CinderNativeActivity>( new CinderNativeActivity( activityObject ) );				
 
 			if( nullptr != Java::ClassObject ) {
-				Java::getDisplayRotation = JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
+				Java::getDisplayRotation 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
+				Java::setFullScreen			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setFullScreen", "(Z)V" ); 
 				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
+				jni_obtained_check( CinderNativeActivity::Java::setFullScreen );				
 			}
 
 		}
@@ -83,6 +86,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 		Java::ClassObject			= nullptr;
 		Java::getDisplayRotation	= nullptr;
+		Java::setFullScreen			= nullptr;
 	}
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
@@ -130,6 +134,11 @@ int CinderNativeActivity::getDisplayRotation()
 {
 	jint result = JniHelper::Get()->CallIntMethod( getInstance()->getJavaObject(), Java::getDisplayRotation );
 	return (int)result;
+}
+
+void CinderNativeActivity::setFullScreen( bool fullScreen )
+{
+	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::setFullScreen, (jboolean)fullScreen );
 }
 
 }}} // namespace cinder::android::app

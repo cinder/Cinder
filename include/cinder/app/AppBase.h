@@ -102,7 +102,7 @@ class AppBase {
 		bool	isQuitOnLastWindowCloseEnabled() const					{ return mQuitOnLastWindowClose; }
 
 		//! Returns whether the default window is fullscreen
-		bool	isFullScreen() { return mDefaultWindowFormat.isFullScreen(); }
+		bool	isFullScreen() const { return mDefaultWindowFormat.isFullScreen(); }
 		//! Sets whether the default window is fullscreen at startup with FullScreenOptions \a options. Kiosk Mode is enabled by default.
 		void	setFullScreen( bool fullScreen = true, const FullScreenOptions &options = FullScreenOptions() ) { mDefaultWindowFormat.setFullScreen( fullScreen, options ); }
 

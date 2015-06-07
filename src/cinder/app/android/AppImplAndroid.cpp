@@ -26,6 +26,7 @@
 #include "cinder/app/android/WindowImplAndroid.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/app/TouchEvent.h"
+#include "cinder/android/app/CinderNativeActivity.h"
 #include <sys/types.h>
 #include <unistd.h>
 #include <fstream>
@@ -56,6 +57,8 @@ AppImplAndroid::AppImplAndroid( AppAndroid *aApp, const AppAndroid::Settings &se
 	mFrameRate = settings.getFrameRate();
 	mFrameRateEnabled = settings.isFrameRateEnabled();
 	mQuitOnLastWindowClosed = settings.isQuitOnLastWindowCloseEnabled();
+
+	cinder::android::app::CinderNativeActivity::setFullScreen( settings.isFullScreen() );
 
 	auto formats = settings.getWindowFormats();
 	if( formats.empty() ) {

@@ -46,6 +46,11 @@ std::string getOrientationString(int io)
 	return result;
 }
 
+void prepareSettings( Sensors::Settings* settings )
+{
+	settings->setFullScreen( true );
+}
+
 void Sensors::setup()
 {
 	MotionManager::enable( 60.0f, MotionManager::Accelerometer );
@@ -77,7 +82,7 @@ void Sensors::draw()
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
 
-	gl::setMatricesWindowPersp( getWindowSize() );
+	gl::setMatricesWindowPersp( getWindowSize(), 60.0f, 1.0f, 100000.0f );
 	gl::pushModelMatrix();
 		glCullFace( GL_BACK );
 		gl::translate( getWindowSize() / 2 );
@@ -90,4 +95,4 @@ void Sensors::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP( Sensors, RendererGl )
+CINDER_APP( Sensors, RendererGl, prepareSettings )

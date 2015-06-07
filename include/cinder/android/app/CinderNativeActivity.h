@@ -46,6 +46,7 @@ public:
 	static jobject 					getJavaObject();
 
 	static int 						getDisplayRotation();
+	static void 					setFullScreen( bool fullScreen );
 
 private:
 	static void 			cacheJni();
@@ -55,6 +56,7 @@ private:
 		static jclassID		ClassName;
 		static jclass 		ClassObject;
 		static jmethodID 	getDisplayRotation;
+		static jmethodID 	setFullScreen;
 	};
 
 	static std::unique_ptr<CinderNativeActivity> sInstance;

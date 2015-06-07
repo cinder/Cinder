@@ -1,23 +1,18 @@
 package org.libcinder.app;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.app.NativeActivity;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
-import android.os.Build;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
 import android.view.Display;
-import android.view.Surface;
+import android.view.View;
 import android.view.WindowManager;
 
 import org.libcinder.hardware.Camera;
@@ -30,6 +25,8 @@ public class CinderNativeActivity extends NativeActivity {
 
     private Handler mHandler = null;
 
+    private boolean mFullScreen = false;
+
     public static CinderNativeActivity getInstance() {
         return sInstance;
     }
@@ -40,21 +37,50 @@ public class CinderNativeActivity extends NativeActivity {
         sInstance = this;
 
         mHandler = new Handler(Looper.getMainLooper());
+
+        Log.i(TAG, "onCreate | -------------- ");
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
+
+        Log.i(TAG, "onRestart | -------------- ");
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+
+        Log.i(TAG, "onStart | -------------- ");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
+
+        Log.i(TAG, "onResume | -------------- ");
+    }
+
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+
+        Log.i(TAG, "onWindowFocusChanged | -------------- ");
+
+        if( mFullScreen && hasFocus ) {
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(
+                View.SYSTEM_UI_FLAG_LAYOUT_STABLE
+                | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                | View.SYSTEM_UI_FLAG_FULLSCREEN
+                | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY
+            );
+
+            Log.i(TAG, "GOING IMMERSIVE | -------------- ");
+        }
     }
 
     @Override
@@ -133,6 +159,12 @@ public class CinderNativeActivity extends NativeActivity {
     public int getDisplayRotation() {
         int result = getDefaultDisplay().getRotation();
         return result;
+    }
+
+    public void setFullScreen( boolean fullScreen ) {
+        mFullScreen = fullScreen;
+
+        Log.i(TAG, "setFullscreen : fullScreen=" + fullScreen + " | -------------- ");
     }
 
     // =============================================================================================
