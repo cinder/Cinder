@@ -238,6 +238,15 @@ fs::path PlatformWinRt::getDocumentsDirectory() const
 	return PlatformStringToString(folder->Path);
 }
 
+fs::path PlatformWinRt::getDefaultExecutablePath() const
+{
+	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
+	::Platform::String^ output = installedLocation->Path;
+	std::wstring t = std::wstring( output->Data() );
+	return fs::path( winrt::PlatformStringToString( output ) );
+}
+
 void PlatformWinRt::launchWebBrowser( const Url &url )
 {
 	std::u16string urlStr = toUtf16( url.str() );

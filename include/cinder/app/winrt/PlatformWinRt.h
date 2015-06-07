@@ -59,6 +59,7 @@ class PlatformWinRt : public Platform {
 	fs::path	expandPath( const fs::path &path ) override;
 	fs::path	getHomeDirectory() const override;
 	fs::path	getDocumentsDirectory() const override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	void launchWebBrowser( const Url &url ) override;
 

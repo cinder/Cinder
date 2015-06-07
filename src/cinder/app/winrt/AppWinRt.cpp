@@ -137,15 +137,6 @@ bool AppWinRt::isFrameRateEnabled() const
 	return false;
 }
 
-fs::path AppWinRt::getAppPath() const
-{
-	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
-	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
-	::Platform::String^ output = installedLocation->Path;
-	std::wstring t = std::wstring( output->Data() );
-	return fs::path( winrt::PlatformStringToString( output ) );
-}
-
 WindowRef AppWinRt::getWindow() const
 {
 	return mActiveWindow;
