@@ -160,7 +160,7 @@ class AppScreenSaver : public AppBase {
 	}
 
 #elif defined( CINDER_MSW )
-	void							launch( const char *title, int argc, char * const argv[] );
+	void							launch() override;
 	virtual bool					getsWindowsPaintEvents() { return false; }
 	LRESULT							eventHandler( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam );
 
@@ -178,7 +178,7 @@ class AppScreenSaver : public AppBase {
 		AppScreenSaver::sMainHwnd = mainHwnd;
 		AppScreenSaver *app = new AppT;
 
-		AppBase::executeLaunch( title, 0, nullptr );
+		app->executeLaunch();
 
 		return app;
 	}

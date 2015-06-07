@@ -69,7 +69,7 @@ AppScreenSaver::AppScreenSaver()
 	mImpl = new AppImplMswScreenSaver( this, sMainHwnd, *settings );
 }
 
-void AppScreenSaver::launch( const char *title, int argc, char * const argv[] )
+void AppScreenSaver::launch()
 {
 	mImpl->run();
 // NOTHING AFTER THIS LINE RUNS
