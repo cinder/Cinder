@@ -46,7 +46,7 @@ public:
 
 	ci::vec3	getGravityDirection( app::InterfaceOrientation orientation ) const;
     ci::quat	getRotation( app::InterfaceOrientation orientation ) const;
-    ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation );
+    ci::mat4	getRotationMatrix( app::InterfaceOrientation orientation ) const;
 	ci::vec3	getRotationRate( app::InterfaceOrientation orientation ) const;
 	ci::vec3	getAcceleration( app::InterfaceOrientation orientation ) const;
 
@@ -62,8 +62,11 @@ private:
 	float 						mUpdateFrequency = 60.0f;
 	MotionManager::SensorMode	mSensorMode;
 	
-	float						mAccelFilter;
+	float						mAccelFilter = 0.1f;
 
+	bool 		mHasAccelerometer = false;
+	bool 		mHasMagneticField = false;
+	bool 		mHasGyroscope = false;
 	ci::vec3 	mAccelerometer;
 	ci::vec3 	mMagneticField;
 	ci::vec3 	mGyroscope;

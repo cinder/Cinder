@@ -48,10 +48,12 @@ std::string getOrientationString(int io)
 
 void Sensors::setup()
 {
-	//MotionManager::enable( 60.0f, MotionManager::Accelerometer );
+	MotionManager::enable( 60.0f, MotionManager::Accelerometer );
 
 	int io = getOrientation();
 	console() << "InterfaceOrientation: " << getOrientationString( io ) << " : " << io << std::endl;
+
+	console() << "Window Size: " << getWindowSize() << std::endl;
 }
 
 void Sensors::touchesBegan( TouchEvent event )
@@ -67,10 +69,24 @@ void Sensors::touchesEnded( TouchEvent event )
 void Sensors::draw()
 {
 	if( mPrint ) {
-		console() << "accel: " << MotionManager::getAccelerometer() << std::endl;
+		//console() << "accel: " << MotionManager::getAccelerometer() << std::endl;
+		console() << "rotation: " << MotionManager::getRotation( getOrientation() ) << std::endl;
 	}
 
-	gl::clear( Color( 0.1f, 0.1f, 0.15f ) );
+	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
+	gl::enableDepthRead();
+	gl::enableDepthWrite();
+
+	gl::setMatricesWindowPersp( getWindowSize() );
+	gl::pushModelMatrix();
+		glCullFace( GL_BACK );
+		gl::translate( getWindowSize() / 2 );
+		gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );
+		gl::color( 1.0f, 1.0f, 1.0f );
+		//gl::drawSphere( vec3(0.0f), 1.0f, 8 );
+		gl::rotate( MotionManager::getRotation( getOrientation() ) );
+		gl::drawColorCube( vec3(0.0f), vec3(1.0f) );
+	gl::popModelMatrix();
 }
 
 // This line tells Cinder to actually create the application

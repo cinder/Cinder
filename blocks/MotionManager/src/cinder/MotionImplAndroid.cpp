@@ -26,6 +26,8 @@
 #include "cinder/app/App.h"
 using namespace ci::app;
 
+#include "glm/gtx/matrix_interpolation.hpp"
+
 namespace cinder {
 
 MotionImplAndroid::MotionImplAndroid()
@@ -80,6 +82,10 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 
 	auto updateGyroscopeFn = std::bind( &MotionImplAndroid::updateGyroscope, this, std::placeholders::_1 );
 	eventManager->enableGyroscope( updateGyroscopeFn, usec );
+
+	mHasAccelerometer = false;
+	mHasMagneticField = false;
+	mHasGyroscope = false;
 
 	/*
 	if( MotionManager::Accelerometer == mSensorMode ) {
@@ -138,12 +144,74 @@ ci::vec3 MotionImplAndroid::getGravityDirection( app::InterfaceOrientation orien
 
 ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation ) const
 {
-	return ci::quat();
+	return toQuat( getRotationMatrix( orientation ) );
 }
 
-ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation )
+ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation ) const
 {
-	return ci::mat4();
+	ci::mat4 result;
+
+	if( mHasAccelerometer && mHasMagneticField ) {
+		const float* gravity = reinterpret_cast<const float*>( &mAccelerometer );
+		const float* geomagnetic = reinterpret_cast<const float*>( &mMagneticField );
+
+        float Ax = gravity[0];
+        float Ay = gravity[1];
+        float Az = gravity[2];
+        float Ex = geomagnetic[0];
+        float Ey = geomagnetic[1];
+        float Ez = geomagnetic[2];
+        float Hx = Ey*Az - Ez*Ay;
+        float Hy = Ez*Ax - Ex*Az;
+        float Hz = Ex*Ay - Ey*Ax;
+        float normH = sqrtf( Hx*Hx + Hy*Hy + Hz*Hz );
+
+        // Don't calculate if device is close to free fall (or in space?), or close to
+        // magnetic north pole. Typical values are  > 100.
+        if (normH >= 0.1f) {
+	        float invH = 1.0f / normH;
+	        Hx *= invH;
+	        Hy *= invH;
+	        Hz *= invH;
+	        float invA = 1.0f / sqrtf(Ax*Ax + Ay*Ay + Az*Az);
+	        Ax *= invA;
+	        Ay *= invA;
+	        Az *= invA;
+	       	float Mx = Ay*Hz - Az*Hy;
+	        float My = Az*Hx - Ax*Hz;
+	       	float Mz = Ax*Hy - Ay*Hx;
+
+	       	float* R = reinterpret_cast<float*>( &result );
+	        R[ 0] = Hx;   R[ 1] = Hy;   R[ 2] = Hz;   R[3]  = 0.0f;
+	        R[ 4] = Mx;   R[ 5] = My;   R[ 6] = Mz;   R[7]  = 0.0f;
+	        R[ 8] = Ax;   R[ 9] = Ay;   R[10] = Az;   R[11] = 0.0f;
+	        R[12] = 0.0f; R[13] = 0.0f; R[14] = 0.0f; R[15] = 1.0f;
+	    }
+    }
+
+	static const float kPiOverTwo = M_PI / 2.0f;
+
+	ci::mat4 correctionMatrix;
+
+	switch( orientation ) {
+		case app::PortraitUpsideDown: {
+			correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, 1 ), (float)M_PI );
+		}		
+		break;
+
+		case app::LandscapeLeft: {
+			correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, 1 ), (float)kPiOverTwo );
+		}
+		break;
+
+		case app::LandscapeRight: {
+			correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, -1 ), (float)kPiOverTwo );
+		}
+	}
+
+	result = correctionMatrix*result;
+
+	return result;
 }
 
 ci::vec3 MotionImplAndroid::getRotationRate( app::InterfaceOrientation orientation ) const
@@ -158,17 +226,39 @@ ci::vec3 MotionImplAndroid::getAcceleration( app::InterfaceOrientation orientati
 
 void MotionImplAndroid::updateAccelerometer( const ci::vec3& data )
 {
-	mAccelerometer = data;
+//console() << "MotionImplAndroid::updateAccelerometer" << std::endl;
+
+	if( mHasAccelerometer ) {
+		mAccelerometer += mAccelFilter*(data - mAccelerometer);
+	}
+	else {
+		mAccelerometer = data;
+		mHasAccelerometer = true;
+	}
 }
 
 void MotionImplAndroid::updateMagneticField( const ci::vec3& data )
 {
-	mMagneticField = data;
+//console() << "MotionImplAndroid::updateMagneticField" << std::endl;
+
+	if( mHasMagneticField ) {
+		mMagneticField += mAccelFilter*(data - mMagneticField);
+	}
+	else {
+		mMagneticField = data;
+		mHasMagneticField = true;
+	}
 }
 
 void MotionImplAndroid::updateGyroscope( const ci::vec3& data )
 {
-	mGyroscope = data;
+	if( mHasGyroscope ) {
+		mGyroscope += mAccelFilter*(data - mGyroscope);
+	}
+	else {
+		mGyroscope = data;
+		mHasGyroscope = true;
+	}
 }
 
 } // namespace cinder
