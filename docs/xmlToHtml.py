@@ -56,6 +56,7 @@ class SymbolMap (object):
 			self.name = name
 			self.base = base
 			self.fileName = fileName
+			self.functionList = []
 
 	class Namespace( object ):
 		def __init__( self, name, fileName ):
@@ -83,7 +84,7 @@ class SymbolMap (object):
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
-		
+
 		# replace leading ci:: with cinder:: instead
 		searchName = str( name )
 		if searchName.find( "ci::" ) == 0:
@@ -130,13 +131,9 @@ class SymbolMap (object):
 
 	def findTypedef( self, name ):
 
-		print "FIND TYPEDEF: " + name
-		
 		searchName = str( name )
 		if searchName.find( "ci::" ) == 0:
 			searchName = searchName.replace( "ci::", "cinder::" )
-
-		print searchName
 
 		# same key as name
 		if searchName in self.typedefs:
@@ -152,14 +149,17 @@ class SymbolMap (object):
 				if typedef.find( "cinder" ) == 0 and len( typedef.split("::") ) > 1:
 					testName = typedef.split("cinder::")[1].rsplit("::", 1)[-1]
 					if testName == searchName :
-						print "FOUND TYPEDEF " + testName 
 						return self.typedefs[typedef]
+		return None
 
-
-		# return self.typedefs.get( name )
-
-	def findFunction( self, name ):
-		return self.functions.get( name )
+	def findFunction( self, name, classObj = None ):
+		if classObj is not None:
+			# iterate through class functions
+			for fn in classObj.functionList:
+				if fn.name == name:
+					return fn
+		else:
+			return self.functions.get( name )
 
 	def findFile( self, name ):
 		return self.files.get( name )
@@ -364,7 +364,6 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
 		functionDiv.append( returnDiv )
 
-
 	# right side (function name and description)
 	definitionCol = genTag( bs4, "div", ["definitionCol columns"] )
 
@@ -379,7 +378,8 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	# function name
 	definitionDiv = genTag( bs4, "div", ["definition"] )
 	
-	emTag = genTag( bs4, "em", [], fnXml.find( "name" ).text )    
+	name = fnXml.find( "name" ).text
+	emTag = genTag( bs4, "em", [], name )    
 	definitionDiv.append( emTag )
 	
 	argstring = fnXml.find( "argsstring" )
@@ -394,72 +394,12 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 	descriptionDiv = markupDescription( bs4, fnXml );
 	if descriptionDiv is not None :
 		definitionCol.append( descriptionDiv )
-		addClassToTag( li, "expandable" )
-		
+		addClassToTag( li, "expandable" )		
 	# else :
 		# print "NO DESCRIPTION"
-	""" Mark up a function using the function definition
-	
-	create new line
-	left side = return type
-	right side = function name
-	under right side = definition
-	
-	---------------------------------------------------
-	| returnType	| function( param1, param2, etc ) |
-	---------------------------------------------------
-	| 				| description 					  |
-	---------------------------------------------------
-	"""
-	
-	li = genTag( bs4, "li", ["row"] )
 
-	# wrapper
-	functionDiv = genTag( bs4, "div", ["functionDef"] )
-	li.append( functionDiv )
-
-	# left side / return type
-	if not isConstructor:
-		returnDiv = genTag( bs4, "div", ["returnCol columns large-3"] )
-		iterateMarkup( bs4, fnXml.find( r"type" ), returnDiv  )
-		functionDiv.append( returnDiv )
-
-
-	# right side (function name and description)
-	definitionCol = genTag( bs4, "div", ["definitionCol columns"] )
-
-	# width is dependent on if it has the return column
-	if isConstructor:
-		addClassToTag(definitionCol, "large-12")
-	else:
-		addClassToTag(definitionCol, "large-9")
-
-	functionDiv.append( definitionCol )
-
-	# function name
-	definitionDiv = genTag( bs4, "div", ["definition"] )
-	
-	emTag = genTag( bs4, "em", [], fnXml.find( "name" ).text )    
-	definitionDiv.append( emTag )
-	
-	argstring = fnXml.find( "argsstring" )
-	if argstring is None :
-		argstring = fnXml.find( "arglist" )
-	argstringText = argstring.text if argstring.text is not None else ""
-	
-	definitionDiv.append( argstringText )
-	definitionCol.append( definitionDiv );
-
-	# detailed description
-	descriptionDiv = markupDescription( bs4, fnXml );
-	if descriptionDiv is not None :
-		definitionCol.append( descriptionDiv )
-		addClassToTag( li, "expandable" )
-		
-	# else :
-		# print "NO DESCRIPTION"
-	
-	parent.append( li )
+	id = fnXml.attrib[ "id" ].split("_1")[-1]
+	parent.append( genAnchorTag( bs4, id ) );
 	parent.append( li )
 
 def markupEnum( bs4, fnXml, parent ):
@@ -1391,7 +1331,7 @@ def processHtmlFile( inPath, outPath ):
 	- Copy original css and js links into new hmtl
 	- Save html in destination dir
 	"""
-
+	print "processHtmlFile"
 	# construct template
 	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "htmlContentTemplate.html", "footerTemplate.html"] )
 	# parse original html file
@@ -1425,35 +1365,47 @@ def processHtmlFile( inPath, outPath ):
 		bs4.body.append( script )	
 	
 	# link up all d tags
-	for link in bs4.find_all('d'):
+	for tag in bs4.find_all('d'):
+		new_link = replaceDTag( bs4, tag );
+		if new_link is not None:
+			link.replace_with( new_link )
 
-		# get string to search against
-		searchString = ''
-		if link.get( 'dox' ) != None:
-			searchString = link.get( 'dox' )
-		else:
-			searchString = link.contents[0]
-
-		print " ====== "
-		print "FIND LINK FOR"
-		existingClass = g_symbolMap.findClass( searchString )
-		
-		if not existingClass:
-			print "   ** Warning: Could not find Doxygen tag for " + searchString
-		else:
-			new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + existingClass.fileName )
-			print "   SUCCESS! "
-			link.replace_with(new_link)
-
-		# look for function
-		# existingFn = symbolMap.findFunction( searchString )
-		# if not existingClass and existingFn != None:
-			# link.name = 'a'
-			# link['href'] = doxyHtmlPath + existingFn.path
-			# print "Found a function, here's the path: " + link['href']
-
-	
 	writeHtml( bs4, outPath )
+
+def replaceDTag( bs4, link ):
+	# get string to search against
+	searchString = ''
+	if link.get( 'dox' ) != None:
+		searchString = link.get( 'dox' )
+	else:
+		searchString = link.contents[0]
+
+	new_link = None
+
+	# find function link
+	if link.get( 'kind' ) == 'function' :
+		args = searchString.split( "|" ) 
+
+		#find parent function first
+		existingClass = g_symbolMap.findClass( args[0] )
+		if existingClass is not None:
+
+			# find the function in the given class
+			fnObj = g_symbolMap.findFunction( args[1], existingClass,  );
+			if fnObj is not None:
+				new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + fnObj.path )
+
+	# find class link
+	else:
+		existingClass = g_symbolMap.findClass( searchString )
+	
+		if existingClass is not None:
+			new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + existingClass.fileName )
+			
+	if new_link is not None:
+		link.replace_with(new_link)
+	else:
+		print "   ** Warning: Could not find Doxygen tag for " + searchString
 
 def updateLink( link, path ):
 	if link.startswith("http") or link.startswith("javascript:"):
@@ -1490,7 +1442,8 @@ def getSymbolToFileMap( tagDom ):
 		name = c.find('name').text
 		filePath = c.find('filename').text
 		baseClass = c.find('base').text if c.find('base') is not None else ""
-		symbolMap.classes[name] = SymbolMap.Class( name, baseClass, filePath )
+		classObj = SymbolMap.Class( name, baseClass, filePath )
+		symbolMap.classes[name] = classObj
 
 		# find functions and add to symbol map
 		members = c.findall(r"member[@kind='function']")
@@ -1499,7 +1452,10 @@ def getSymbolToFileMap( tagDom ):
 			fnName = member.find("name").text
 			anchor = member.find("anchor").text
 			filePath = member.find("anchorfile").text + "#" + anchor
-			symbolMap.functions[name+"::"+fnName] = SymbolMap.Function( fnName, baseClass, filePath )
+			# print "FUNCTION " + name+"::"+fnName 
+			functionObj = SymbolMap.Function( fnName, baseClass, filePath )
+			symbolMap.functions[name+"::"+fnName] = functionObj
+			classObj.functionList.append( functionObj )
 
 	# find namespaces
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
@@ -1520,7 +1476,6 @@ def getSymbolToFileMap( tagDom ):
 			name = namespaceName+"::"+name
 			shared_from_class = None
 
-			print "TYPEDEF: name = " + name + " \t type = " + type
 			# std::shared_ptr< (?:class)* *([\w]*) >
 			# shared_ptr = 
 			if type.find("shared") > 0:
@@ -1528,11 +1483,7 @@ def getSymbolToFileMap( tagDom ):
 				if len(shareds) > 0:
 					base = namespaceName + "::" + shareds[0]
 					shared_from_class = symbolMap.findClass( base );
-					if shared_from_class is not None:
-						print "\t FOUND SHARED" + " \t" + base + "\n"
-						print shared_from_class
-						print shared_from_class.name
-			
+					
 			filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
 			
 			typeDefObj = SymbolMap.Typedef( name, type, filePath )
