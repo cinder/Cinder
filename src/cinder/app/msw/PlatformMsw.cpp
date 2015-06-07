@@ -141,14 +141,14 @@ fs::path PlatformMsw::expandPath( const fs::path &path )
 	return fs::path( buffer ); 
 }
 
-fs::path PlatformMsw::getDocumentsDirectory()
+fs::path PlatformMsw::getDocumentsDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
 	return fs::path( wstring(buffer) + L"\\" );
 }
 
-fs::path PlatformMsw::getHomeDirectory()
+fs::path PlatformMsw::getHomeDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );

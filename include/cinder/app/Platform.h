@@ -113,9 +113,9 @@ class Platform {
 	//! Returns a canonical version of \a path. Collapses '.', ".." and "//". Converts '~' on Cocoa. Expands environment variables on MSW.
 	virtual fs::path	expandPath( const fs::path &path ) = 0;
 	//! Returns the path to the user's home directory.
-	virtual fs::path	getHomeDirectory() = 0;
+	virtual fs::path	getHomeDirectory() const = 0;
 	//! Returns the path to the user's documents directory.
-	virtual fs::path	getDocumentsDirectory()	= 0;
+	virtual fs::path	getDocumentsDirectory() const = 0;
 	//! Returns the path used for the default executable location. Users may override this with setExecutablePath() for application specific purposes.
 	virtual fs::path	getDefaultExecutablePath() const = 0;
 
