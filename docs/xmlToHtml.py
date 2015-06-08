@@ -399,7 +399,7 @@ def markupFunction( bs4, fnXml, parent, isConstructor ):
 		# print "NO DESCRIPTION"
 
 	id = fnXml.attrib[ "id" ].split("_1")[-1]
-	parent.append( genAnchorTag( bs4, id ) );
+	li.append( genAnchorTag( bs4, id ) );
 	parent.append( li )
 
 def markupEnum( bs4, fnXml, parent ):
@@ -576,6 +576,7 @@ def genClassHierarchy( bs4, classDef ):
 	if len( hierarchy ) == 1 :
 		return
 	
+
 	# create html from template
 	side = getTemplate( bs4, "side-expandable" )
 
@@ -601,6 +602,15 @@ def genClassHierarchy( bs4, classDef ):
 		else :
 			li.append( base.name )
 		ul.append( li )
+
+	if len( hierarchy ) > 2:
+		print "GEN CLASS HIERARCHY " + classDef.name
+		# print side
+		# for h in hierarchy:
+			# print h.name
+
+	# append to the current file's side element
+	g_currentFile.appendToSideEl( side )
 
 def genClassList( bs4, tree ):
 	classes = tree.findall( r"compounddef/innerclass" )
