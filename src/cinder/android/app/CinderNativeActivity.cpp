@@ -37,6 +37,7 @@ namespace cinder { namespace android { namespace app {
 jclassID	CinderNativeActivity::Java::ClassName			= "org/libcinder/app/CinderNativeActivity";
 jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getCacheDirectory	= nullptr;
+jmethodID 	CinderNativeActivity::Java::setWallpaper		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
 jmethodID 	CinderNativeActivity::Java::setFullScreen		= nullptr;
 jmethodID 	CinderNativeActivity::Java::launchWebBrowser	= nullptr;
@@ -72,11 +73,13 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 
 			if( nullptr != Java::ClassObject ) {
 				Java::getCacheDirectory 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getCacheDirectory", "()Ljava/lang/String;" ); 
+				Java::setWallpaper			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setWallpaper", "(Ljava/lang/String;)V" ); 
 				Java::getDisplayRotation 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
 				Java::setFullScreen			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setFullScreen", "(Z)V" ); 
 				Java::launchWebBrowser		= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchWebBrowser", "(Ljava/lang/String;)V" ); 
 				Java::launchTwitter			= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchTwitter", "(Ljava/lang/String;Ljava/lang/String;)V" ); 
 				jni_obtained_check( CinderNativeActivity::Java::getCacheDirectory );				
+				jni_obtained_check( CinderNativeActivity::Java::setWallpaper );				
 				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
 				jni_obtained_check( CinderNativeActivity::Java::setFullScreen );				
 				jni_obtained_check( CinderNativeActivity::Java::launchWebBrowser );				
@@ -99,6 +102,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 		Java::ClassObject			= nullptr;
 		Java::getCacheDirectory		= nullptr;
+		Java::setWallpaper			= nullptr;
 		Java::getDisplayRotation	= nullptr;
 		Java::setFullScreen			= nullptr;
 		Java::launchWebBrowser		= nullptr;
@@ -159,6 +163,27 @@ cinder::fs::path CinderNativeActivity::getCacheDirectory()
 	}
 
 	return result;
+}
+
+void CinderNativeActivity::setWallpaper( const Surface8u& surf )
+{
+	std::string pathStr = "";
+	
+	try {
+		cinder::fs::path path = getCacheDirectory() / "setWallpaper_tmp_image.png";
+		pathStr = path.string();
+		cinder::writeImage( path, surf );
+	}
+	catch( const std::exception& e ) {
+		pathStr = "";
+		dbg_app_error( std::string( "setWallpaper temp image write failed: " ) + e.what() );
+	}
+
+	if( ! pathStr.empty() ) {
+		jstring jstrPath = JniHelper::Get()->NewStringUTF( pathStr );
+		JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::setWallpaper, jstrPath );
+		JniHelper::Get()->DeleteLocalRef( jstrPath );	
+	}
 }
 
 int CinderNativeActivity::getDisplayRotation()

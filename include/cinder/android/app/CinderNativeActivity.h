@@ -48,6 +48,7 @@ public:
 	static jobject 					getJavaObject();
 
 	static cinder::fs::path 		getCacheDirectory();
+	static void 					setWallpaper( const Surface8u& surf );
 	static int 						getDisplayRotation();
 	static void 					setFullScreen( bool fullScreen );
 	static void 					launchWebBrowser( const Url &url );
@@ -61,6 +62,7 @@ private:
 		static jclassID		ClassName;
 		static jclass 		ClassObject;
 		static jmethodID 	getCacheDirectory;
+		static jmethodID 	setWallpaper;
 		static jmethodID 	getDisplayRotation;
 		static jmethodID 	setFullScreen;
 		static jmethodID 	launchWebBrowser;

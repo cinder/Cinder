@@ -2,10 +2,13 @@ package org.libcinder.app;
 
 import android.Manifest;
 import android.app.NativeActivity;
+import android.app.WallpaperManager;
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
 import android.net.Uri;
@@ -22,6 +25,7 @@ import org.libcinder.Cinder;
 import org.libcinder.hardware.Camera;
 
 import java.io.File;
+import java.io.InputStream;
 import java.net.URLDecoder;
 import java.security.spec.ECField;
 
@@ -147,12 +151,26 @@ public class CinderNativeActivity extends NativeActivity {
     }
 
     // =============================================================================================
-    // Directories/Paths
+    // Misc
     // =============================================================================================
 
     public String getCacheDirectory() {
         String result = this.getExternalCacheDir().toString();
         return result;
+    }
+
+    public void setWallpaper(String path) {
+        File file = new File(path);
+        if(file.exists()) {
+            try {
+                Bitmap bitmap = BitmapFactory.decodeFile(path);
+                WallpaperManager wm = WallpaperManager.getInstance(getApplicationContext());
+                wm.setBitmap(bitmap);
+            }
+            catch(Exception e) {
+                Log.e(TAG, "setWallpaper failed: " + e.getMessage());
+            }
+        }
     }
 
     // =============================================================================================

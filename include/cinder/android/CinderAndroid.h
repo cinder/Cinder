@@ -43,6 +43,7 @@ bool exists( const ci::fs::path& path );
 } // namespace fs
 
 cinder::fs::path getCacheDirectory();
+void setWallpaper( const ci::Surface8u& surf );
 void launchTwitter( const std::string& text = "", const ci::Surface8u* surf = nullptr );
 
 }} // namespace cinder::android

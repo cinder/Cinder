@@ -41,6 +41,11 @@ cinder::fs::path getCacheDirectory()
 	return cinder::android::app::CinderNativeActivity::getCacheDirectory();
 }
 
+void setWallpaper( const ci::Surface8u& surf )
+{
+	cinder::android::app::CinderNativeActivity::setWallpaper( surf );
+}
+
 void launchTwitter( const std::string& text, const ci::Surface8u* surf )
 {
 	cinder::android::app::CinderNativeActivity::launchTwitter( text, surf );
