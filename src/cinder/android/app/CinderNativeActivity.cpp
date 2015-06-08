@@ -147,8 +147,6 @@ void CinderNativeActivity::setFullScreen( bool fullScreen )
 
 void CinderNativeActivity::launchWebBrowser( const Url &url )
 {
-	dbg_app_log( "launchWebBrowser: " + url.str() );
-
 	if( url.str().empty() ) {
 		return;
 	}
