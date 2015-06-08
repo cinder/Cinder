@@ -23,6 +23,7 @@
 
 #include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
+#include "cinder/Surface.h" 
 #include "cinder/Url.h" 
 
 namespace cinder { namespace app { 
@@ -46,9 +47,11 @@ public:
 	static jclass 					getJavaClass();
 	static jobject 					getJavaObject();
 
+	static cinder::fs::path 		getCacheDirectory();
 	static int 						getDisplayRotation();
 	static void 					setFullScreen( bool fullScreen );
 	static void 					launchWebBrowser( const Url &url );
+	static void 					launchTwitter( const std::string& text = "", const Surface8u* surf = nullptr );
 
 private:
 	static void 			cacheJni();
@@ -57,9 +60,11 @@ private:
 	struct Java {
 		static jclassID		ClassName;
 		static jclass 		ClassObject;
+		static jmethodID 	getCacheDirectory;
 		static jmethodID 	getDisplayRotation;
 		static jmethodID 	setFullScreen;
 		static jmethodID 	launchWebBrowser;
+		static jmethodID 	launchTwitter;
 	};
 
 	static std::unique_ptr<CinderNativeActivity> sInstance;

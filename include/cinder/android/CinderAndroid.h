@@ -24,6 +24,7 @@
 #pragma once
 
 #include "cinder/Filesystem.h"
+#include "cinder/Surface.h" 
 
 namespace cinder { namespace android {
 
@@ -40,5 +41,8 @@ namespace fs {
 bool exists( const ci::fs::path& path );
 
 } // namespace fs
+
+cinder::fs::path getCacheDirectory();
+void launchTwitter( const std::string& text = "", const ci::Surface8u* surf = nullptr );
 
 }} // namespace cinder::android

@@ -27,6 +27,7 @@
 #include "cinder/android/LogCatStream.h"
 #include "cinder/ImageSourceFileRadiance.h"
 #include "cinder/ImageSourceFileStbImage.h"
+#include "cinder/ImageTargetFileStbImage.h"
 
 #include "cinder/android/app/CinderNativeActivity.h"
 
@@ -40,6 +41,7 @@ PlatformAndroid::PlatformAndroid()
 {
 	ImageSourceFileRadiance::registerSelf();
 	ImageSourceFileStbImage::registerSelf();
+	ImageTargetFileStbImage::registerSelf();
 
 	dbg_app_log( "PlatformAndroid::PlatformAndroid" );
 }

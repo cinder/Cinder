@@ -22,6 +22,7 @@
  */
 
 #include "cinder/android/CinderAndroid.h"
+#include "cinder/android/app/CinderNativeActivity.h" 
 #include "cinder/app/android/AssetFileSystem.h"
 
 namespace cinder { namespace android {
@@ -34,5 +35,15 @@ bool exists( const ci::fs::path& path )
 }
 
 } // namespace fs
+
+cinder::fs::path getCacheDirectory()
+{
+	return cinder::android::app::CinderNativeActivity::getCacheDirectory();
+}
+
+void launchTwitter( const std::string& text, const ci::Surface8u* surf )
+{
+	cinder::android::app::CinderNativeActivity::launchTwitter( text, surf );
+}
 
 } } // namespace cinder::android

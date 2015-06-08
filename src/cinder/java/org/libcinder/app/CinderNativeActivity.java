@@ -2,6 +2,7 @@ package org.libcinder.app;
 
 import android.Manifest;
 import android.app.NativeActivity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -20,6 +21,7 @@ import android.view.WindowManager;
 import org.libcinder.Cinder;
 import org.libcinder.hardware.Camera;
 
+import java.io.File;
 import java.net.URLDecoder;
 import java.security.spec.ECField;
 
@@ -145,6 +147,15 @@ public class CinderNativeActivity extends NativeActivity {
     }
 
     // =============================================================================================
+    // Directories/Paths
+    // =============================================================================================
+
+    public String getCacheDirectory() {
+        String result = this.getExternalCacheDir().toString();
+        return result;
+    }
+
+    // =============================================================================================
     // Display
     // =============================================================================================
 
@@ -178,11 +189,6 @@ public class CinderNativeActivity extends NativeActivity {
     // =============================================================================================
 
     public void launchWebBrowser(String url) {
-        if( ! CinderNativeActivity.permissions().INTERNET() ) {
-            Log.w(TAG, "launchWebBrowser: " + CinderNativeActivity.permissions().missing().INTERNET() );
-            return;
-        }
-
         try {
             String decodedUrl = URLDecoder.decode(url, "UTF-8");
             Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(decodedUrl));
@@ -190,6 +196,40 @@ public class CinderNativeActivity extends NativeActivity {
         }
         catch(Exception e) {
             Log.e(TAG, "launchWebBrowser failed: " + e.getMessage());
+        }
+    }
+
+    // NOTE: tempImagePath should be a png
+    public void launchTwitter(String text, String tempImagePath) {
+        Log.i(TAG, "launchTwitter: text=" + text + ", tempImagePath=" + tempImagePath);
+
+        try {
+            File tempImageFile = null;
+            try {
+                if(!tempImagePath.isEmpty()) {
+                    tempImageFile = new File(tempImagePath);
+                }
+            }
+            catch(Exception e) {
+                tempImageFile = null;
+                Log.w(TAG, "launchTwitter: couldn't load requested image");
+            }
+
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.setType("/*");
+            intent.setClassName("com.twitter.android", "com.twitter.android.composer.ComposerActivity");
+            intent.putExtra(Intent.EXTRA_TEXT, text);
+            if(null != tempImageFile) {
+                intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(tempImageFile));
+                intent.setType("image/png");
+            }
+            startActivity(intent);
+        }
+        catch(final ActivityNotFoundException e) {
+            Log.e(TAG, "Couldn't launch Twitter app (Twitter may have changed ComposerActivity...): " + e.getMessage());
+        }
+        catch(Exception e) {
+            Log.e(TAG, "shareOnTwitterMsg failed: " + e.getMessage());
         }
     }
 

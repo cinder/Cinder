@@ -25,16 +25,22 @@
 #include "cinder/android/hardware/Camera.h"
 #include "cinder/android/net/UrlLoader.h"
 #include "cinder/android/video/VideoPlayer.h"
-#include "cinder/android/AndroidDevLog.h"
+#include "cinder/android/AndroidDevLog.h" 
 using namespace cinder::android;
+
+#include "cinder/ImageIo.h"
+
+#include <fstream>
 
 namespace cinder { namespace android { namespace app {
 
 jclassID	CinderNativeActivity::Java::ClassName			= "org/libcinder/app/CinderNativeActivity";
 jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
+jmethodID 	CinderNativeActivity::Java::getCacheDirectory	= nullptr;
 jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
 jmethodID 	CinderNativeActivity::Java::setFullScreen		= nullptr;
 jmethodID 	CinderNativeActivity::Java::launchWebBrowser	= nullptr;
+jmethodID 	CinderNativeActivity::Java::launchTwitter		= nullptr;
 
 std::unique_ptr<CinderNativeActivity> CinderNativeActivity::sInstance;
 
@@ -65,12 +71,16 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 			CinderNativeActivity::sInstance = std::unique_ptr<CinderNativeActivity>( new CinderNativeActivity( activityObject ) );				
 
 			if( nullptr != Java::ClassObject ) {
+				Java::getCacheDirectory 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getCacheDirectory", "()Ljava/lang/String;" ); 
 				Java::getDisplayRotation 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
 				Java::setFullScreen			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setFullScreen", "(Z)V" ); 
 				Java::launchWebBrowser		= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchWebBrowser", "(Ljava/lang/String;)V" ); 
+				Java::launchTwitter			= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchTwitter", "(Ljava/lang/String;Ljava/lang/String;)V" ); 
+				jni_obtained_check( CinderNativeActivity::Java::getCacheDirectory );				
 				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
 				jni_obtained_check( CinderNativeActivity::Java::setFullScreen );				
 				jni_obtained_check( CinderNativeActivity::Java::launchWebBrowser );				
+				jni_obtained_check( CinderNativeActivity::Java::launchTwitter );				
 			}
 
 		}
@@ -88,9 +98,11 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 	if( JniHelper::Get()->AttachCurrentThread() ) {	
 		JniHelper::Get()->DeleteGlobalRef( Java::ClassObject  );
 		Java::ClassObject			= nullptr;
+		Java::getCacheDirectory		= nullptr;
 		Java::getDisplayRotation	= nullptr;
 		Java::setFullScreen			= nullptr;
 		Java::launchWebBrowser		= nullptr;
+		Java::launchTwitter			= nullptr;
 	}
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
@@ -134,6 +146,21 @@ jobject CinderNativeActivity::getJavaObject()
 	return CinderNativeActivity::getInstance()->mJavaObject;
 }
 
+cinder::fs::path CinderNativeActivity::getCacheDirectory()
+{
+	cinder::fs::path result;
+
+	auto jniEnv = JniHelper::Get()->AttachCurrentThread();
+	if( jniEnv ) {
+		jstring jstr = (jstring)jniEnv->CallObjectMethod( getInstance()->getJavaObject(), Java::getCacheDirectory );
+		const char *c_str = jniEnv->GetStringUTFChars( jstr, nullptr );
+		result = std::string( c_str );
+		jniEnv->ReleaseStringUTFChars( jstr, c_str );
+	}
+
+	return result;
+}
+
 int CinderNativeActivity::getDisplayRotation()
 {
 	jint result = JniHelper::Get()->CallIntMethod( getInstance()->getJavaObject(), Java::getDisplayRotation );
@@ -155,5 +182,27 @@ void CinderNativeActivity::launchWebBrowser( const Url &url )
 	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::launchWebBrowser, jstrUrl );
 	JniHelper::Get()->DeleteLocalRef( jstrUrl );
 }
+
+void CinderNativeActivity::launchTwitter( const std::string& text, const Surface8u* surf )
+{
+	std::string pathStr = "";
+	if( nullptr != surf ) {
+		try {
+			cinder::fs::path path = getCacheDirectory() / "launchTwitter_tmp_image.png";
+			pathStr = path.string();
+			cinder::writeImage( path, *surf );
+		}
+		catch( const std::exception& e ) {
+			dbg_app_error( std::string( "launchTwitter temp image write failed: " ) + e.what() );
+		}
+	}
+
+	jstring jstrText = JniHelper::Get()->NewStringUTF( text );
+	jstring jstrPath = JniHelper::Get()->NewStringUTF( pathStr );
+	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::launchTwitter, jstrText, jstrPath );
+	JniHelper::Get()->DeleteLocalRef( jstrText );
+	JniHelper::Get()->DeleteLocalRef( jstrPath );	
+}
+
 
 }}} // namespace cinder::android::app

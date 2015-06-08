@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="org.libcinder.samples.launchwebbrowser" >
+    package="org.libcinder.samples.launchtwitter" >
 
     <application
         android:allowBackup="true"
@@ -8,11 +8,11 @@
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".LaunchWebBrowserActivity"
+            android:name=".LaunchTwitterActivity"
             android:label="@string/app_name" >
             <!-- Tell NativeActivity the name of or .so -->
             <meta-data android:name="android.app.lib_name"
-                android:value="LaunchWebBrowser" />
+                android:value="LaunchTwitter" />
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
