@@ -21,7 +21,7 @@ void prepareSettings( App::Settings* settings );
 
 class GeometryApp : public App {
 public:
-	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE };
+	enum Primitive { CAPSULE, CONE, CUBE, CYLINDER, HELIX, ICOSAHEDRON, ICOSPHERE, SPHERE, TEAPOT, TORUS, PLANE, RECT, ROUNDEDRECT, CIRCLE, RING };
 	enum Quality { LOW, DEFAULT, HIGH };
 	enum ViewMode { SHADED, WIREFRAME };
 	enum TexturingMode { NONE, PROCEDURAL, SAMPLER, TRANSPARENT };
@@ -225,8 +225,11 @@ void GeometryApp::draw()
 
 				mPrimitive->draw();
 			}
-			else
+			else {
+				gl::ScopedFaceCulling cullScope( mEnableFaceFulling, GL_BACK );
+
 				mPrimitive->draw();
+			}
 		}
 	}
 
@@ -320,7 +323,7 @@ void GeometryApp::keyDown( KeyEvent event )
 void GeometryApp::createParams()
 {
 #if ! defined( CINDER_GL_ES )
-	vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane" };
+	vector<string> primitives = { "Capsule", "Cone", "Cube", "Cylinder", "Helix", "Icosahedron", "Icosphere", "Sphere", "Teapot", "Torus", "Plane", "Rectangle", "Rounded Rectangle", "Circle", "Ring" };
 	vector<string> qualities = { "Low", "Default", "High" };
 	vector<string> viewModes = { "Shaded", "Wireframe" };
 	vector<string> texturingModes = { "None", "Procedural", "Sampler", "Transparent" };
@@ -382,9 +385,9 @@ void GeometryApp::createGeometry()
 		mPrimitiveSelected = CAPSULE;
 	case CAPSULE:
 		switch( mQualityCurrent ) {
-		case DEFAULT:	loadGeomSource( geom::Capsule(), geom::WireCube() ); break;
-		case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCube() ); break;
-		case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCube() ); break;
+		case DEFAULT:	loadGeomSource( geom::Capsule(), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
+		case LOW:		loadGeomSource( geom::Capsule().subdivisionsAxis( 6 ).subdivisionsHeight( 1 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
+		case HIGH:		loadGeomSource( geom::Capsule().subdivisionsAxis( 60 ).subdivisionsHeight( 20 ), geom::WireCapsule().subdivisionsHeight( mSubdivA ).subdivisionsAxis( mSubdivB ).subdivisionsCircle( mSubdivC ) ); break;
 		}
 		break;
 	case CONE:
@@ -416,7 +419,7 @@ void GeometryApp::createGeometry()
 		}
 		break;
 	case ICOSAHEDRON:
-		loadGeomSource( geom::Icosahedron(), geom::WireCube() );
+		loadGeomSource( geom::Icosahedron(), geom::WireIcosahedron() );
 		break;
 	case ICOSPHERE:
 		switch( mQualityCurrent ) {
@@ -451,6 +454,31 @@ void GeometryApp::createGeometry()
 		case DEFAULT:	loadGeomSource( geom::Plane().subdivisions( ivec2( 10, 10 ) ), geom::WirePlane().subdivisions( ivec2( 10, 10 ) ) ); break;
 		case LOW:		loadGeomSource( geom::Plane().subdivisions( ivec2( 2, 2 ) ), geom::WirePlane().subdivisions( ivec2( 2, 2 ) ) ); break;
 		case HIGH:		loadGeomSource( geom::Plane().subdivisions( ivec2( 100, 100 ) ), geom::WirePlane().subdivisions( ivec2( 100, 100 ) ) ); break;
+		}
+		break;
+
+	case RECT:
+			loadGeomSource( geom::Rect(), geom::WirePlane() ); break;
+		break;
+	case ROUNDEDRECT:
+		switch( mQualityCurrent ) {
+			case DEFAULT:	loadGeomSource( geom::RoundedRect().cornerSubdivisions( 3 ), geom::WireRoundedRect().cornerSubdivisions( 3 ) ); break;
+			case LOW:		loadGeomSource( geom::RoundedRect().cornerSubdivisions( 1 ), geom::WireRoundedRect().cornerSubdivisions( 1 ) ); break;
+			case HIGH:		loadGeomSource( geom::RoundedRect().cornerSubdivisions( 9 ), geom::WireRoundedRect().cornerSubdivisions( 9 ) ); break;
+		}
+		break;
+	case CIRCLE:
+		switch( mQualityCurrent ) {
+			case DEFAULT:	loadGeomSource( geom::Circle().subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ) ); break;
+			case LOW:		loadGeomSource( geom::Circle().subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ) ); break;
+			case HIGH:		loadGeomSource( geom::Circle().subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ) ); break;
+		}
+		break;
+	case RING:
+		switch( mQualityCurrent ) {
+			case DEFAULT:	loadGeomSource( geom::Ring().subdivisions( 24 ), geom::WireCircle().subdivisions( 24 ).radius( 1.25f ) ); break;
+			case LOW:		loadGeomSource( geom::Ring().subdivisions( 8 ), geom::WireCircle().subdivisions( 8 ).radius( 1.25f ) ); break;
+			case HIGH:		loadGeomSource( geom::Ring().subdivisions( 120 ), geom::WireCircle().subdivisions( 120 ).radius( 1.25f ) ); break;
 		}
 		break;
 	}
@@ -532,4 +560,4 @@ void GeometryApp::createWireframeShader()
 #endif // ! defined( CINDER_GL_ES )
 }
 
-CINDER_APP( GeometryApp, RendererGl, prepareSettings )
+CINDER_APP( GeometryApp, RendererGl( RendererGl::Options().msaa( 16 ) ), prepareSettings )

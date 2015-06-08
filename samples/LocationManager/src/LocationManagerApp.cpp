@@ -1,9 +1,11 @@
+// Demonstrates location and heading from LocationManager
+// NOTE:
+//  On iOS 8: you need an NSLocationAlwaysUsageDescription in your application's Info.plist
+
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Camera.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Batch.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Shape2d.h"
 #include "cinder/Utilities.h"
@@ -14,11 +16,12 @@
 
 using namespace ci;
 using namespace ci::app;
+using namespace std;
 
 class LocationApp : public App {
   public:
- 	virtual void	setup(); 
-	virtual void	draw();
+ 	void	setup() override;
+	void	draw() override;
 
 #if defined( CINDER_COCOA_TOUCH )
 	void	headingChanged( HeadingEvent event );
@@ -26,13 +29,13 @@ class LocationApp : public App {
 	void	locationChanged( LocationEvent event );
 	
   private:
-	Anim<float>		mRotationAngle;
-	Shape2d			mArrow;
-	float			mHeading;
 	vec3			mLocation;
-	
-	Anim<float>			mDotRadius;
-	
+	float			mHeading;
+	Shape2d			mArrow;
+	Anim<float>		mRotationAngle;
+	Anim<float>		mDotRadius;
+	CameraPersp		mCamera;
+
 	gl::BatchRef		mEarthBatch;
 	gl::Texture2dRef	mTexture;
 };
@@ -40,16 +43,14 @@ class LocationApp : public App {
 void LocationApp::setup()
 {
 	// Define properties
-	mHeading = 0.0f;
+	mHeading = 0;
 	timeline().apply( &mRotationAngle, 0.0f, (float)(2 * M_PI), 8.0f ).loop();
 	timeline().apply( &mDotRadius, 0.0f, 0.1f, 0.5f ).loop();
 	
 	LocationManager::enable();
-	LocationManager::getSignalLocationChanged().connect(
-		std::bind( &LocationApp::locationChanged, this, std::placeholders::_1 ) );
+	LocationManager::getSignalLocationChanged().connect( signals::slot( this, &LocationApp::locationChanged ) );
 #if defined( CINDER_COCOA_TOUCH )
-	LocationManager::getSignalHeadingChanged().connect(
-		std::bind( &LocationApp::headingChanged, this, std::placeholders::_1 ) );
+	LocationManager::getSignalHeadingChanged().connect( signals::slot( this, &LocationApp::headingChanged ) );
 #endif
 
 	// Load globe texture
@@ -57,6 +58,9 @@ void LocationApp::setup()
 
 	// Set up view
 	gl::enableAlphaBlending();
+
+	mCamera.setPerspective( 60.0f, getWindowAspectRatio(), 0.01f, 10.0f );
+	mCamera.lookAt( vec3( 0.0f, 0.0f, 3.0f ), vec3( 0 ) );
 
 	// Build the heading arrow
 	float size = 80.0f;
@@ -66,38 +70,36 @@ void LocationApp::setup()
 	mArrow.lineTo( vec2( -size * 0.5f,  size * 0.5f  ) );
 	mArrow.close();
 	
-	mEarthBatch = gl::Batch::create( geom::Sphere(), gl::getStockShader( gl::ShaderDef().texture() ) );
+	mEarthBatch = gl::Batch::create( geom::Sphere().subdivisions( 50 ), gl::getStockShader( gl::ShaderDef().texture().lambert() ) );
 }
 
 void LocationApp::draw()
 {
 	// Clear the screen
-	gl::enableDepthRead();
-	gl::enableDepthWrite();
-	gl::clear( Color::gray( 0.843f ) );
-	
-	CameraPersp camera;
-	camera.setPerspective( 60.0f, getWindowAspectRatio(), 0.01f, 10.0f );
-	camera.lookAt( vec3( 0.0f, 0.0f, 3.0f ), vec3( 0 ) );
-	gl::setMatrices( camera );
+	gl::clear( Color::gray( 0.3f ) );
+	gl::enableDepthRead( true );
+	gl::enableDepthWrite( true );
+
+	gl::setMatrices( mCamera );
 
 	// Rotate the globe
-	gl::rotate( angleAxis( mRotationAngle(), vec3(0, 1, 0) ) );
+	gl::rotate( angleAxis( mRotationAngle(), vec3( 0, 1, 0 ) ) );
 	
 	// Draw the globe with shading. Rotate it 90 degrees on 
 	// its Y axis to line up the texture with the location
 	gl::color( ColorAf::white() );
-	mTexture->bind( 0 );
-	gl::pushMatrices();
-		gl::rotate( angleAxis( (float)(M_PI), vec3(0,1,0) ) );
+	{
+		gl::ScopedTextureBind texScope( mTexture, 0 );
+		gl::ScopedModelMatrix modelScope;
+
+		gl::rotate( angleAxis( (float)M_PI, vec3( 0, 1, 0) ) );
 		mEarthBatch->draw();
-	gl::popMatrices();
-	mTexture->unbind();
-	
+	}
+
 	// Draw location
 	gl::color( ColorAf( 1.0f, 0.2f, 0.18f, 0.667f ) );
 	gl::drawSphere( mLocation, mDotRadius, 32 );
-	
+
 	////////////////////////////////////////////////////
 #if defined( CINDER_COCOA_TOUCH )
 	gl::setMatricesWindow( getWindowSize() );
@@ -125,7 +127,7 @@ void LocationApp::draw()
 void LocationApp::headingChanged( HeadingEvent event )
 {
 	mHeading = event.getTrueHeading();
-	console() << "Heading: " << mHeading << std::endl;
+	console() << "Heading: " << mHeading << endl;
 }
 #endif
 
@@ -133,7 +135,7 @@ void LocationApp::locationChanged( LocationEvent event )
 {
 	// Get the location coordinate
 	vec2 coord = event.getCoordinate();
-	console() << "Location: " << coord << std::endl;
+	console() << "Location: " << coord << endl;
 	
 	// Convert the location to radians
 	coord.x = toRadians( 180.0f - ( 90.0f + coord.x ) );
@@ -146,4 +148,4 @@ void LocationApp::locationChanged( LocationEvent event )
 	mLocation = vec3( x, y, z );
 }
 
-CINDER_APP( LocationApp, RendererGl )
+CINDER_APP( LocationApp, RendererGl( RendererGl::Options().msaa( 4 ) ) )

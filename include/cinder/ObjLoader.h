@@ -51,17 +51,17 @@ class ObjLoader : public geom::Source {
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true );
+	ObjLoader( std::shared_ptr<IStreamCinder> stream, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true );
+	ObjLoader( DataSourceRef dataSource, bool includeNormals = true, bool includeTexCoords = true, bool optimize = true );
 	/**Constructs and does the parsing of the file
 	 * \param includeNormals if false texture coordinates will be skipped, which can provide a faster load time
 	 * \param includeTexCoords if false normasls will be skipped, which can provide a faster load time
 	**/
-	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true );
+	ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals = true, bool includeTexCoords = true,  bool optimize = true );
 
 	/**Loads a specific group index from the file**/
 	ObjLoader&	groupIndex( size_t groupIndex );
@@ -141,6 +141,7 @@ class ObjLoader : public geom::Source {
 	std::vector<vec2>			    mInternalTexCoords;
 	std::vector<Colorf>				mInternalColors;
 
+    mutable bool					mOptimizeVertices;
 	mutable bool					mOutputCached;
 	mutable std::vector<vec3>		mOutputVertices, mOutputNormals;
 	mutable std::vector<vec2>		mOutputTexCoords;
@@ -154,11 +155,12 @@ class ObjLoader : public geom::Source {
 
 };
 
-//! Writes a new OBJ file to \a dataTarget.
-void		objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
-inline void	objWrite( DataTargetRef dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
+//! Writes \a source to a new OBJ file to \a dataTarget.
+void		writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals = true, bool includeTexCoords = true );
+//! Writes \a source to a new OBJ file to \a dataTarget.
+inline void	writeObj( const DataTargetRef &dataTarget, const geom::SourceRef &source, bool includeNormals = true, bool includeTexCoords = true )
 {
-	objWrite( dataTarget, *source, includeNormals, includeTexCoords );
+	writeObj( dataTarget, *source, includeNormals, includeTexCoords );
 }
 
 } // namespace cinder

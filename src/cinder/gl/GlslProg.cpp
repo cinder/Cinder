@@ -987,12 +987,23 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 	
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
-	size_t nameLeftSquareBracket = name.find( '[' );
 	const Uniform* ret = nullptr;
 	for( const auto & uniform : mUniforms ) {
-		if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
+		if( uniform.mName == name ) {
 			ret = &uniform;
 			break;
+		}
+	}
+
+	// support array brackets
+	size_t nameLeftSquareBracket = string::npos;
+	if( ret == nullptr ) { 
+		nameLeftSquareBracket = name.find( '[' );
+		for( const auto & uniform : mUniforms ) {
+			if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
+				ret = &uniform;
+				break;
+			}
 		}
 	}
 

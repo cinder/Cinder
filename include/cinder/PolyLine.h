@@ -60,6 +60,11 @@ class PolyLineT {
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
 	bool	contains( const vec2 &pt ) const;
 
+	//! Returns the unsigned area of the polygon. Assumes closed and no self-intersections.
+	double	calcArea() const;
+	//! Returns the centroid or "center of mass" of the polygon. Assumes closed and no self-intersections.
+	T		calcCentroid() const;
+
 	//! Calculates the boolean union of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.
 	static std::vector<PolyLineT> 	calcUnion( const std::vector<PolyLineT> &a, std::vector<PolyLineT> &b );
 	//! Calculates the boolean intersection of \a a and \a b. Assumes the first PolyLine in the vector is the outermost and the (optional) others are holes.

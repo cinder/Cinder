@@ -4,6 +4,8 @@
 <dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
+	<key>UILaunchStoryboardName</key>
+	<string>LaunchScreen.xib</string>
 	<key>CFBundleDisplayName</key>
 	<string>${PRODUCT_NAME}</string>
 	<key>CFBundleExecutable</key>
@@ -22,7 +24,7 @@
 			<key>UIPrerenderedIcon</key>
 			<true/>
 		</dict>
-	</dict>	
+	</dict>
 	<key>CFBundleIdentifier</key>
 	<string>org.libcinder.${PRODUCT_NAME:rfc1034identifier}</string>
 	<key>CFBundleInfoDictionaryVersion</key>

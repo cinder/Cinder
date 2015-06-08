@@ -141,27 +141,6 @@ MovieGl::~MovieGl()
 {
 	deallocateVisualContext();
 }
-	
-bool MovieGl::hasAlpha() const
-{
-/*	if( ! mVideoTextureRef )
-		return false;
-	
-	::CVPixelBufferLockBaseAddress( mVideoTextureRef, 0 );
-	OSType type = ::CVPixelBufferGetPixelFormatType(mVideoTextureRef);
-	::CVPixelBufferUnlockBaseAddress( mVideoTextureRef, 0 );
-#if defined ( CINDER_COCOA_TOUCH)
-	return (type == kCVPixelFormatType_32ARGB ||
-			type == kCVPixelFormatType_32BGRA ||
-			type == kCVPixelFormatType_32ABGR ||
-			type == kCVPixelFormatType_32RGBA ||
-			type == kCVPixelFormatType_64ARGB);
-#elif defined ( CINDER_COCOA )
-	return (type == k32ARGBPixelFormat || type == k32BGRAPixelFormat);
-#endif
-	*/
-return false;
-}
 
 gl::TextureRef MovieGl::getTexture()
 {
@@ -255,13 +234,22 @@ void MovieGl::newFrame( CVImageBufferRef cvImage )
 	
 	mTexture = gl::Texture2d::create( target, name, mWidth, mHeight, true, deleter );
 	
-//	vec2 t0, lowerRight, t2, upperLeft;
-//	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &t0.x, &lowerRight.x, &t2.x, &upperLeft.x );
+	// query and set clean bounds
+	vec2 lowerLeft, lowerRight, upperRight, upperLeft;
+	::CVOpenGLESTextureGetCleanTexCoords( videoTextureRef, &lowerLeft.x, &lowerRight.x, &upperRight.x, &upperLeft.x );
+	if( target == GL_TEXTURE_2D )
+		mTexture->setCleanBounds( Area( (int32_t)(upperLeft.x * mWidth), (int32_t)(upperLeft.y * mHeight),
+			(int32_t)(lowerRight.x * mWidth ), (int32_t)(lowerRight.y * mHeight ) ) );
+	else
+		mTexture->setCleanBounds( Area( (int32_t)upperLeft.x, (int32_t)upperLeft.y, (int32_t)lowerRight.x, (int32_t)lowerRight.y ) );
+	
 	mTexture->setWrap( GL_CLAMP_TO_EDGE, GL_CLAMP_TO_EDGE );
-	mTexture->setCleanSize( mWidth, mHeight );
 	mTexture->setTopDown( topDown );
+	
 #elif defined( CINDER_MAC )
+
 	mTexture = mTextureCache->add( cvImage );
+
 #endif
 }
 

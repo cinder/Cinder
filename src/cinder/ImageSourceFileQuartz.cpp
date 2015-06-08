@@ -125,13 +125,15 @@ ImageSourceFileQuartzRef ImageSourceFileQuartz::createFileQuartzRef( DataSourceR
 
 	const std::shared_ptr<__CFDictionary> imageProperties( (__CFDictionary*)::CGImageSourceCopyProperties( sourceRef.get(), NULL ), ::CFRelease );
 	const std::shared_ptr<__CFDictionary> imageIndexProperties( (__CFDictionary*)::CGImageSourceCopyPropertiesAtIndex( sourceRef.get(), options.getIndex(), NULL ), ::CFRelease );
+	const int32_t numFrames = (int32_t)::CGImageSourceGetCount( sourceRef.get() );
 
-	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get(), options, imageProperties, imageIndexProperties ) );
+	return ImageSourceFileQuartzRef( new ImageSourceFileQuartz( imageRef.get(), options, imageProperties, imageIndexProperties, numFrames ) );
 }
 
-ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps )
+ImageSourceFileQuartz::ImageSourceFileQuartz( CGImageRef imageRef, ImageSource::Options options, std::shared_ptr<const struct __CFDictionary> imageProperties, std::shared_ptr<const struct __CFDictionary> imageIndexProps, int32_t numFrames )
 	: ImageSourceCgImage( imageRef, options ), mImageProperties( imageProperties ), mImageIndexProperties( imageIndexProps )
 {
+	setFrameCount( numFrames );
 }
 
 CFDictionaryRef	ImageSourceFileQuartz::getQuartzProperties() const

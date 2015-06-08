@@ -64,6 +64,9 @@
 	mColorInternalFormat = GL_RGBA8;
 	
 	[self allocateGraphics:sharedRenderer];
+	// make sure that mContext was set properly; if not we failed to allocate
+	if( ! mContext )
+		throw cinder::app::ExcRendererAllocation( "Failed to allocate GL context" );
 	
 	return self;
 }

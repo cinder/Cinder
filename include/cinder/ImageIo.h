@@ -85,7 +85,7 @@ class ImageIo {
 
 class ImageSource : public ImageIo {
   public:
-	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ) {}
+	ImageSource() : ImageIo(), mIsPremultiplied( false ), mPixelAspectRatio( 1 ), mCustomPixelInc( 0 ), mFrameCount( 1 ) {}
 	virtual ~ImageSource() {}  
 
 	//! Optional parameters passed when creating an Image. \see loadImage()
@@ -93,7 +93,7 @@ class ImageSource : public ImageIo {
 	  public:
 		Options() : mIndex( 0 ), mThrowOnFirstException( false ) {}
 
-		//! Specifies an image index for multi-part images, like animated GIFs
+		//! Specifies an image index for multi-part images, like animated GIFs. 0-based index.
 		Options& index( int32_t index )						{ mIndex = index; return *this; }
 		//! If an exception occurs, enabling this will prevent any attempts at using other handlers to load the image. Default = false, all handlers are tried and if none succeed, the last exception is rethrown. \see ImageIoException
 		Options& throwOnFirstException( bool b = true )		{ mThrowOnFirstException = b; return *this; }
@@ -114,6 +114,8 @@ class ImageSource : public ImageIo {
 	bool		isPremultiplied() const;
 	//! Returns the number of bytes necessary to represent a row of the ImageSource
 	size_t		getRowBytes() const;	
+	//! Returns the number of images. Generally \c 1 but may not be in the case of animated GIFs. \see Options::index()
+	int32_t		getCount() const { return mFrameCount; }
 
 	virtual void	load( ImageTargetRef target ) = 0;
 
@@ -124,6 +126,7 @@ class ImageSource : public ImageIo {
 	void		setPremultiplied( bool premult = true ) { mIsPremultiplied = premult; }
 	//! Allows declaration of a pixel increment different from what its ColorModel would imply. For example a non-planar Channel.
 	void		setCustomPixelInc( int8_t customPixelInc ) { mCustomPixelInc = customPixelInc; }
+	void		setFrameCount( int32_t frameCount ) { mFrameCount = frameCount; }
 
 	RowFunc		setupRowFunc( ImageTargetRef target );
 	void		setupRowFuncRgbSource( ImageTargetRef target );
@@ -143,6 +146,7 @@ class ImageSource : public ImageIo {
 	float						mPixelAspectRatio;
 	bool						mIsPremultiplied;
 	int8_t						mCustomPixelInc;
+	int32_t						mFrameCount;
 	
 	int8_t						mRowFuncSourceRed, mRowFuncSourceGreen, mRowFuncSourceBlue, mRowFuncSourceAlpha;
 	int8_t						mRowFuncTargetRed, mRowFuncTargetGreen, mRowFuncTargetBlue, mRowFuncTargetAlpha;

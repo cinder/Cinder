@@ -110,7 +110,6 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				ip::unpremultiply( &surface );
 
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 			GLint dataFormat;
 #if defined( CINDER_GL_ES )
@@ -135,6 +134,7 @@ TextureFont::TextureFont( const Font &font, const string &supportedChars, const 
 				}
 			}
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), dataFormat, mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.back()->setTopDown( true );
 
 			ip::fill( &surface, ColorA8u( 0, 0, 0, 0 ) );			
 			curOffset = vec2();
@@ -242,6 +242,10 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 	BYTE *pBuff = new BYTE[bufferSize];
 	for( set<Font::Glyph>::const_iterator glyphIt = glyphs.begin(); glyphIt != glyphs.end(); ) {
 		DWORD dwBuffSize = ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix );
+		if( dwBuffSize == GDI_ERROR ) {
+			++glyphIt;
+			continue;
+		}
 		if( dwBuffSize > bufferSize ) {
 			delete[] pBuff;
 			pBuff = new BYTE[dwBuffSize];
@@ -253,10 +257,12 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 		}
 
 		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_METRICS | GGO_GLYPH_INDEX, &gm, 0, NULL, &identityMatrix ) == GDI_ERROR ) {
+			++glyphIt;
 			continue;
 		}
 
 		if( ::GetGlyphOutline( Font::getGlobalDc(), *glyphIt, GGO_GRAY8_BITMAP | GGO_GLYPH_INDEX, &gm, dwBuffSize, pBuff, &identityMatrix ) == GDI_ERROR ) {
+			++glyphIt;
 			continue;
 		}
 
@@ -283,7 +289,6 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
@@ -304,6 +309,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			textureFormat.setSwizzleMask( swizzleMask );
 #endif
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.back()->setTopDown( true );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = ivec2( 0, 0 );
 			curGlyphIndex = 0;

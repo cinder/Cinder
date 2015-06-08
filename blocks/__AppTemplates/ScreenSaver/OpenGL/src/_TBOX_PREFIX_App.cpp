@@ -1,6 +1,6 @@
 #include "cinder/app/AppScreenSaver.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/Color.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;

@@ -26,7 +26,6 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
-#include "cinder/MatrixStack.h"
 
 #if defined( CINDER_WINRT )
 	#include <agile.h>

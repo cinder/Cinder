@@ -476,11 +476,11 @@ const float Rect::sTangents[4*3] = {0.7071067f, 0.7071067f, 0,	0.7071067f, 0.707
 Rect::Rect()
 	: mHasColors( false )
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mPositions[0] = vec2(  0.5f, -0.5f );
-	mPositions[1] = vec2( -0.5f, -0.5f );
-	mPositions[2] = vec2(  0.5f,  0.5f );
-	mPositions[3] = vec2( -0.5f,  0.5f );
+	// upper-left, upper-right, lower-left, lower-right
+	mPositions[0] = vec2( -0.5f, -0.5f );
+	mPositions[1] = vec2( 0.5f, -0.5f );
+	mPositions[2] = vec2( -0.5f, 0.5f );
+	mPositions[3] = vec2( 0.5f, 0.5f );
 	setDefaultColors();
 	setDefaultTexCoords();
 }
@@ -494,30 +494,30 @@ Rect::Rect( const Rectf &r )
 }
 
 Rect& Rect::rect( const Rectf &r )
-{ 
-	mPositions[0] = r.getUpperRight();
-	mPositions[1] = r.getUpperLeft();
-	mPositions[2] = r.getLowerRight();
-	mPositions[3] = r.getLowerLeft();
+{
+	mPositions[0] = r.getUpperLeft();
+	mPositions[1] = r.getUpperRight();
+	mPositions[2] = r.getLowerLeft();
+	mPositions[3] = r.getLowerRight();
 	return *this;
 }
 
 Rect& Rect::colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft )
 {
 	mHasColors = true;
-	mColors[0] = upperRight;
-	mColors[1] = upperLeft;
-	mColors[2] = lowerRight;
-	mColors[3] = lowerLeft;
+	mColors[0] = upperLeft;
+	mColors[1] = upperRight;
+	mColors[2] = lowerLeft;
+	mColors[3] = lowerRight;
 	return *this;
 }
 
 Rect& Rect::texCoords( const vec2 &upperLeft, const vec2 &upperRight, const vec2 &lowerRight, const vec2 &lowerLeft )
 {
-	mTexCoords[0] = upperRight;
-	mTexCoords[1] = upperLeft;
-	mTexCoords[2] = lowerRight;
-	mTexCoords[3] = lowerLeft;
+	mTexCoords[0] = upperLeft;
+	mTexCoords[1] = upperRight;
+	mTexCoords[2] = lowerLeft;
+	mTexCoords[3] = lowerRight;
 	return *this;
 }
 
@@ -555,20 +555,20 @@ AttribSet Rect::getAvailableAttribs() const
 
 void Rect::setDefaultColors()
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mColors[0] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f );
-	mColors[1] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f );	
-	mColors[2] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f );
-	mColors[3] = ColorAf( 1.0f, 1.0f, 0.0f, 1.0f );
+	// upper-left, upper-right, lower-left, lower-right
+	mColors[0] = ColorAf( 1.0f, 0.0f, 0.0f, 1.0f );
+	mColors[1] = ColorAf( 0.0f, 1.0f, 0.0f, 1.0f );
+	mColors[2] = ColorAf( 1.0f, 1.0f, 0.0f, 1.0f );
+	mColors[3] = ColorAf( 0.0f, 0.0f, 1.0f, 1.0f );
 }
 
 void Rect::setDefaultTexCoords()
 {
-	// upper-right, upper-left, lower-right, lower-left
-	mTexCoords[0] = vec2( 1.0f, 1.0f );
-	mTexCoords[1] = vec2( 0.0f, 1.0f );
-	mTexCoords[2] = vec2( 1.0f, 0.0f );
-	mTexCoords[3] = vec2( 0.0f, 0.0f );
+	// upper-left, upper-right, lower-left, lower-right
+	mTexCoords[0] = vec2( 0.0f, 1.0f );
+	mTexCoords[1] = vec2( 1.0f, 1.0f );
+	mTexCoords[2] = vec2( 0.0f, 0.0f );
+	mTexCoords[3] = vec2( 1.0f, 0.0f );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -1610,6 +1610,98 @@ void Circle::loadInto( Target *target, const AttribSet &requestedAttribs ) const
 	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*)positions.data(), mNumVertices );
 	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*)normals.data(), mNumVertices );
 	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*)texCoords.data(), mNumVertices );
+}
+
+///////////////////////////////////////////////////////////////////////////////////////
+// Ring
+Ring::Ring()
+	: mRequestedSubdivisions( -1 ), mCenter( 0, 0 ), mRadius( 1.0f ), mWidth( 0.5f )
+{
+	updateVertexCounts();
+}
+
+Ring&	Ring::subdivisions( int subdivs )
+{
+	mRequestedSubdivisions = subdivs;
+	updateVertexCounts();
+	return *this;
+}
+
+Ring&	Ring::radius( float radius )
+{
+	mRadius = radius;
+	updateVertexCounts();
+	return *this;
+}
+
+Ring&	Ring::width( float width )
+{
+	mWidth = width;
+	return *this;
+}
+
+// If numSegments<0, calculate based on radius
+void Ring::updateVertexCounts()
+{
+	if( mRequestedSubdivisions <= 0 )
+		mNumSubdivisions = (int) math<double>::floor( mRadius * float( M_PI * 2 ) );
+	else
+		mNumSubdivisions = mRequestedSubdivisions;
+
+	if( mNumSubdivisions < 3 ) mNumSubdivisions = 3;
+	mNumVertices = ( mNumSubdivisions + 1 ) * 2;
+}
+
+size_t Ring::getNumVertices() const
+{
+	return mNumVertices;
+}
+
+uint8_t	Ring::getAttribDims( Attrib attr ) const
+{
+	switch( attr ) {
+		case Attrib::POSITION: return 2;
+		case Attrib::NORMAL: return 3;
+		case Attrib::TEX_COORD_0: return 2;
+		default:
+			return 0;
+	}
+}
+
+AttribSet Ring::getAvailableAttribs() const
+{
+	return{ Attrib::POSITION, Attrib::NORMAL, Attrib::TEX_COORD_0 };
+}
+
+void Ring::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec2> positions, texCoords;
+	std::vector<vec3> normals;
+
+	positions.reserve( mNumVertices );
+	texCoords.reserve( mNumVertices );
+	normals.reserve( mNumVertices );
+
+	float innerRadius = mRadius - 0.5f * mWidth;
+	float outerRadius = mRadius + 0.5f * mWidth;
+
+	// iterate the segments
+	const float tDelta = 1 / (float) mNumSubdivisions * 2.0f * 3.14159f;
+	float t = 0;
+	for( int s = 0; s <= mNumSubdivisions; s++ ) {
+		vec2 unit( math<float>::cos( t ), math<float>::sin( t ) );
+		positions.emplace_back( mCenter + unit * innerRadius );
+		positions.emplace_back( mCenter + unit * outerRadius );
+		texCoords.emplace_back( vec2( 1, s / (float) mNumSubdivisions ) );
+		texCoords.emplace_back( vec2( 0, s / (float) mNumSubdivisions ) );
+		normals.emplace_back( 0, 0, 1 );
+		normals.emplace_back( 0, 0, 1 );
+		t += tDelta;
+	}
+
+	target->copyAttrib( Attrib::POSITION, 2, 0, (const float*) positions.data(), mNumVertices );
+	target->copyAttrib( Attrib::NORMAL, 3, 0, (const float*) normals.data(), mNumVertices );
+	target->copyAttrib( Attrib::TEX_COORD_0, 2, 0, (const float*) texCoords.data(), mNumVertices );
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////
@@ -3157,9 +3249,111 @@ void BSpline::loadInto( Target *target, const AttribSet &requestedAttribs ) cons
 template BSpline::BSpline( const ci::BSpline<2,float>&, int );
 template BSpline::BSpline( const ci::BSpline<3, float>&, int );
 
+///////////////////////////////////////////////////////////////////////////////////////
+// WireCapsule
+WireCapsule::WireCapsule()
+	: mDirection( 0, 1, 0 ), mLength( 1.0f ), mSubdivisionsAxis( 6 ), mNumSegments( 72 ), mSubdivisionsHeight( 1 ), mRadius( 0.5f )
+{
+}
+
+WireCapsule& WireCapsule::set( const vec3 &from, const vec3 &to )
+{
+	const vec3 axis = to - from;
+	mLength = glm::length( axis );
+	mDirection = normalize( axis );
+	mCenter = from + 0.5f * axis;
+	return *this;
+}
+
+void WireCapsule::calculate( vector<vec3> *positions ) const
+{
+	positions->reserve( getNumVertices() );
+
+	float bodyIncr = 1.0f / (float) ( mSubdivisionsHeight );
+	for( size_t r = 1; r < mSubdivisionsHeight; ++r ) {
+		float t = r * bodyIncr - 0.5f;
+		float h = ( mLength + 2 * mRadius ) * t;
+		float radius = mRadius;
+		if( math<float>::abs( h ) > 0.5f * mLength ) {
+			float y = math<float>::abs( h ) - 0.5f * mLength;
+			radius = y / math<float>::tan( math<float>::asin( y / mRadius ) );
+		}
+		calculateRing( radius, t, positions );
+	}
+
+	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+
+	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
+	float axisIncr = 1.0f / (float) ( mSubdivisionsAxis );
+	int numSegments = mNumSegments / 2;
+	float segIncr = 1.0f / (float) ( numSegments );
+	for( size_t i = 0; i < subdivisionsAxis; ++i ) {
+		// Straight lines.
+		float a = float( M_PI * 2 ) * i * axisIncr;
+		float x = math<float>::cos( a );
+		float z = math<float>::sin( a );
+		positions->emplace_back( mCenter + quaternion * vec3( x * mRadius, -0.5f * mLength, z * mRadius ) );
+		positions->emplace_back( mCenter + quaternion * vec3( x * mRadius, +0.5f * mLength, z * mRadius ) );
+
+		// Caps.
+		for( size_t j = 0; j < numSegments; ++j ) {
+			float a1 = float( M_PI / 2 ) * j * segIncr;
+			float a2 = float( M_PI / 2 ) * ( j + 1 ) * segIncr;
+			float r1 = math<float>::cos( a1 ) * mRadius;
+			float r2 = math<float>::cos( a2 ) * mRadius;
+			float y1 = math<float>::sin( a1 ) * mRadius;
+			float y2 = math<float>::sin( a2 ) * mRadius;
+			positions->emplace_back( mCenter + quaternion * vec3( x * r1, -0.5f * mLength - y1, z * r1 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r2, -0.5f * mLength - y2, z * r2 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r1, +0.5f * mLength + y1, z * r1 ) );
+			positions->emplace_back( mCenter + quaternion * vec3( x * r2, +0.5f * mLength + y2, z * r2 ) );
+		}
+	}
+}
+
+void WireCapsule::calculateRing( float radius, float d, vector<vec3> *positions ) const
+{
+	const quat quaternion( vec3( 0, 1, 0 ), mDirection );
+
+	float length = mLength + 2 * mRadius;
+	float segIncr = 1.0f / (float) ( mNumSegments );
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
+	for( size_t s = 1; s < mNumSegments; s++ ) {
+		float a = float( M_PI * 2 ) * s * segIncr;
+		float x = math<float>::cos( a ) * radius;
+		float z = math<float>::sin( a ) * radius;
+
+		vec3 p = mCenter + ( quaternion * glm::vec3( x, d * length, z ) );
+		positions->emplace_back( p );
+		positions->emplace_back( p );
+	}
+	positions->emplace_back( mCenter + ( quaternion * glm::vec3( radius, d * length, 0 ) ) );
+}
+
+size_t WireCapsule::getNumVertices() const
+{
+	int numSegments = mNumSegments / 2;
+	int subdivisionsAxis = mSubdivisionsAxis > 1 ? mSubdivisionsAxis : 0;
+	return ( mNumSegments * ( mSubdivisionsHeight - 1 ) + subdivisionsAxis * ( 1 + 2 * numSegments ) ) * 2;
+}
+
+void WireCapsule::loadInto( Target *target, const AttribSet &requestedAttribs ) const
+{
+	std::vector<vec3> positions;
+
+	calculate( &positions );
+
+	target->copyAttrib( Attrib::POSITION, 3, 0, value_ptr( *positions.data() ), positions.size() );
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireCircle
+WireCircle::WireCircle()
+	: mRadius( 1 ), mNumSegments( 12 )
+{
+}
+
 size_t WireCircle::getNumVertices() const
 {
 	return 2 * mNumSegments;
@@ -3176,13 +3370,13 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 
 	float angle = float( 2.0 * M_PI / mNumSegments );
 
-	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
 	for( int i = 1; i < mNumSegments; ++i ) {
 		vec3 v = mCenter + mRadius * vec3( glm::cos( i * angle ), glm::sin( i * angle ), 0 );
 		*ptr++ = v;
 		*ptr++ = v;
 	}
-	*ptr = mCenter + mRadius * vec3( 1, 0, 0 );
+	*ptr++ = mCenter + mRadius * vec3( 1, 0, 0 );
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
 }
@@ -3391,6 +3585,35 @@ void WireCylinder::loadInto( Target *target, const AttribSet &requestedAttribs )
 	}
 
 	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) positions.data(), numVertices );
+}
+
+std::vector<vec3> WireIcosahedron::sPositions;
+
+size_t WireIcosahedron::getNumVertices() const
+{
+	return 120;
+}
+
+void WireIcosahedron::loadInto( Target * target, const AttribSet & requestedAttribs ) const
+{
+	calculate();
+	target->copyAttrib( Attrib::POSITION, 3, 0, (const float*) sPositions.data(), 120 );
+}
+
+void WireIcosahedron::calculate() const
+{
+	if( sPositions.empty() ) {
+		sPositions.reserve( 60 );
+
+		for( size_t i = 0; i < 20; ++i ) {
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 0] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 1] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 1] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 2] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 2] * 3] ) );
+			sPositions.emplace_back( *reinterpret_cast<const vec3*>( &Icosahedron::sPositions[Icosahedron::sIndices[i * 3 + 0] * 3] ) );
+		}
+	}
 }
 
 WireFrustum::WireFrustum( const CameraPersp &cam )
