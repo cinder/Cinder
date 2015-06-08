@@ -31,6 +31,8 @@
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#import <Foundation/Foundation.h>
 	#include <syslog.h>
+#elif defined( CINDER_MSW )
+	#include <Windows.h>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )
@@ -98,35 +100,6 @@ const std::string getDailyLogString( const std::string& format )
 
 	return result;
 }
-
-#if defined( CINDER_COCOA )
-int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
-{
-	switch( cinderLogLevel ) {
-		case LEVEL_FATAL:	return LOG_CRIT;
-		case LEVEL_ERROR:	return LOG_ERR;
-		case LEVEL_WARNING:	return LOG_WARNING;
-		// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
-		// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
-		case LEVEL_INFO:	return LOG_NOTICE;
-		case LEVEL_VERBOSE:	return LOG_NOTICE;
-		default: CI_ASSERT_NOT_REACHABLE();
-	}
-}
-#elif defined( CINDER_MSW )
-int cinderLogLevelToEventLogLevel( Level cinderLogLevel )
-{
-	switch( cinderLogLevel ) {
-		// MSDN Event Types don't seem particularly granular, hence the repeats
-		case LEVEL_FATAL:	return EVENTLOG_ERROR_TYPE;
-		case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
-		case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
-		case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
-		case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
-		default: CI_ASSERT_NOT_REACHABLE();
-	}
-}
-#endif
 
 } // anonymous namespace
 
@@ -480,117 +453,161 @@ void LoggerBreakpoint::write( const Metadata &meta, const string &text )
 		CI_BREAKPOINT();
 	}
 }
-	
-// ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerSystem
-// ----------------------------------------------------------------------------------------------------
-LoggerSystem::LoggerSystem()
-{
-#if defined( CINDER_COCOA )
-	mImpl = new LoggerSysLog();
-#elif defined( CINDER_MSW )
-	mImpl = new LoggerEventLog();
-#endif
-}
-
-LoggerSystem::~LoggerSystem()
-{
-	delete mImpl;
-}
 
 #if defined( CINDER_COCOA )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerSysLog
+// MARK: - ImplSysLog
 // ----------------------------------------------------------------------------------------------------
 
-LoggerSystem::LoggerSysLog::LoggerSysLog()
-{
-	// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
-	NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
-	NSString *bundlePath = [bundle bundlePath];
-	NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
-
-	const char *cAppName = [appName UTF8String];
-	openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
-}
-
-LoggerSystem::LoggerSysLog::~LoggerSysLog()
-{
-	closelog();
-}
-
-void LoggerSystem::LoggerSysLog::write( const Metadata &meta, const string &text )
-{
-	int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
-	syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
-}
-
-void LoggerSystem::LoggerSysLog::setLoggingLevel( Level minLevel )
-{
-	int sysLevel = cinderLogLevelToSysLogLevel( minLevel );
-	setlogmask( LOG_UPTO( sysLevel ) );
-}
+class LoggerSystem::ImplSysLog : public Logger {
+public:
+	ImplSysLog()
+	{
+		// determine app name from it's NSBundle. https://developer.apple.com/library/mac/qa/qa1544/_index.html
+		NSBundle *bundle = app::PlatformCocoa::get()->getBundle();
+		NSString *bundlePath = [bundle bundlePath];
+		NSString *appName = [[NSFileManager defaultManager] displayNameAtPath: bundlePath];
+		
+		const char *cAppName = [appName UTF8String];
+		openlog( cAppName, ( LOG_CONS | LOG_PID ), LOG_USER );
+	}
+	
+	virtual ~ImplSysLog()
+	{
+		closelog();
+	}
+	
+	void write( const Metadata &meta, const std::string &text ) override
+	{
+		int sysLevel = cinderLogLevelToSysLogLevel( meta.mLevel );
+		syslog( sysLevel , "%s %s", meta.toString().c_str(), text.c_str() );
+	};
+	
+protected:
+	int cinderLogLevelToSysLogLevel( Level cinderLogLevel )
+	{
+		switch( cinderLogLevel ) {
+			case LEVEL_FATAL:	return LOG_CRIT;
+			case LEVEL_ERROR:	return LOG_ERR;
+			case LEVEL_WARNING:	return LOG_WARNING;
+				// We never return lower than LOG_NOTICE for OS X SysLog to ensure the message arrives
+				// http://apple.stackexchange.com/questions/13484/messages-issued-by-syslog-not-showing-up-in-system-logs
+			case LEVEL_INFO:	return LOG_NOTICE;
+			case LEVEL_VERBOSE:	return LOG_NOTICE;
+			default: CI_ASSERT_NOT_REACHABLE();
+		}
+	}
+};
 	
 #elif defined( CINDER_MSW )
 
 // ----------------------------------------------------------------------------------------------------
-// MARK: - LoggerEventLog
+// MARK: - ImplEventLog
 // ----------------------------------------------------------------------------------------------------
 
-LoggerSystem::LoggerEventLog::LoggerEventLog()
-{
-	char filename[MAX_PATH];
-	wchar_t wFilename[MAX_PATH];
-	string stem;
-
-	DWORD size = ::GetModuleFileNameA( NULL, filename, MAX_PATH );
-	if( size ) { 
-		fs::path exePath( filename );
-		stem = exePath.stem().string();
-	} else {
-		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+class LoggerSystem::ImplEventLog : public Logger {
+public:
+	ImplEventLog()
+	{
+		char filename[MAX_PATH];
+		wchar_t wFilename[MAX_PATH];
+		string stem;
+		
+		DWORD size = ::GetModuleFileNameA( NULL, filename, MAX_PATH );
+		if( size ) {
+			fs::path exePath( filename );
+			stem = exePath.stem().string();
+		} else {
+			app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__
 			<< "] could not determine application name, defaulting to 'CinderApp'" << endl;
-		stem = "CinderApp";
-	}
-
-	::mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
-	mHLog = ::RegisterEventSourceW( 0, wFilename );
-
-	if( ! mHLog ) {
-		app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__ 
+			stem = "CinderApp";
+		}
+		
+		::mbstowcs( wFilename, stem.c_str(), stem.size() + 1 );
+		mHLog = ::RegisterEventSourceW( 0, wFilename );
+		
+		if( ! mHLog ) {
+			app::Platform::get()->console() << CINDER_CURRENT_FUNCTION << "[" << __LINE__
 			<< "] RegisterEventSourceW() failed with " << GetLastError() << endl;
+		}
 	}
-}
+	
+	virtual ~ImplEventLog()
+	{
+		if( mHLog ) {
+			::CloseEventLog( mHLog );
+		}
+	}
+	
+	void write( const Metadata& meta, const std::string& text ) override
+	{
+		
+	}
+
+protected:
+	
+	int cinderLogLevelToEventLogLevel( Level cinderLogLevel )
+	{
+		switch( cinderLogLevel ) {
+				// MSDN Event Types don't seem particularly granular, hence the repeats
+			case LEVEL_FATAL:	return EVENTLOG_ERROR_TYPE;
+			case LEVEL_ERROR:	return EVENTLOG_ERROR_TYPE;
+			case LEVEL_WARNING:	return EVENTLOG_WARNING_TYPE;
+			case LEVEL_INFO:	return EVENTLOG_INFORMATION_TYPE;
+			case LEVEL_VERBOSE:	return EVENTLOG_INFORMATION_TYPE;
+			default: CI_ASSERT_NOT_REACHABLE();
+		}
+	}
+	
+	HANDLE			mHLog;
+	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
+};
+	
 
 LoggerSystem::LoggerEventLog::~LoggerEventLog()
 {
-	if( mHLog ) {
-		::CloseEventLog( mHLog );
-	}
+
 }
 
 void LoggerSystem::LoggerEventLog::write( const Metadata &meta, const string &text )
 {
-	// Check in case we failed to initialize the eventlog and make sure we have min required level
-	if( ! mHLog || meta.mLevel < mLoggingLevel ) {
-		return;
-	}
-
 	int eventLevel = cinderLogLevelToEventLogLevel( meta.mLevel );
 	
 	std::wstring wMeta = mConverter.from_bytes( meta.toString() );
 	std::wstring wText = mConverter.from_bytes( text );
-
+	
 	LPCTSTR wStrings[2];
 	wStrings[0] = wMeta.c_str();
 	wStrings[1] = wText.c_str();
-
+	
 	::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
 }
 
 #endif
 
+	
+// ----------------------------------------------------------------------------------------------------
+// MARK: - LoggerSystem
+// ----------------------------------------------------------------------------------------------------
+
+LoggerSystem::LoggerSystem()
+{
+	mMinLevel = LEVEL_VERBOSE;
+#if defined( CINDER_COCOA )
+	LoggerSystem::mImpl = std::unique_ptr<ImplSysLog>( new ImplSysLog() );
+#elif defined( CINDER_MSW )
+	LoggerSystem::mImpl = std::unique_ptr<ImplEventLog>( new ImplEventLog() );
+#endif
+}
+
+void LoggerSystem::write( const Metadata &meta, const std::string &text )
+{
+	if( meta.mLevel >= mMinLevel ) {
+		mImpl->write( meta, text );
+	}
+}
+	
 // ----------------------------------------------------------------------------------------------------
 // MARK: - Helper Classes
 // ----------------------------------------------------------------------------------------------------

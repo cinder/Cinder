@@ -36,7 +36,6 @@
 #include <mutex>
 
 #if defined( CINDER_MSW )
-#include <Windows.h>
 #include <codecvt>
 #endif
 
@@ -143,40 +142,19 @@ class LoggerBreakpoint : public Logger {
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
-	virtual ~LoggerSystem();
+	virtual ~LoggerSystem() = default;
 	
-	void write( const Metadata &meta, const std::string &text ) override { mImpl->write( meta, text ); }
-	// SysLog and EventLog logging levels inherently work differently (see specific comments).  Currently
-	// this doesn't matter since logging implimentation only allows once instance of a logger type.
-	void setLoggingLevel( Level minLevel ) { mImpl->setLoggingLevel( minLevel ); }
+	void write( const Metadata &meta, const std::string &text ) override;
+	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
 	
 protected:
+	Level mMinLevel;
 #if defined( CINDER_COCOA )
-	class LoggerSysLog : public Logger {
-	public:
-		LoggerSysLog();
-		virtual ~LoggerSysLog();
-		
-		void write( const Metadata &meta, const std::string &text ) override;
-		// SysLog logging level is global (all syslog loggers)
-		void setLoggingLevel( Level minLevel );
-	};
-	LoggerSysLog	*mImpl;
+	class ImplSysLog;
+	std::unique_ptr<ImplSysLog> mImpl;
 #elif defined( CINDER_MSW )
-	class LoggerEventLog : public Logger {
-	public:
-		LoggerEventLog();
-		virtual ~LoggerEventLog();
-		
-		void write( const Metadata& meta, const std::string& text ) override;
-		// EventLog logging level is local, only applied to this logger
-		void setLoggingLevel( Level minLevel ) { mLoggingLevel = minLevel; }
-	protected:
-		HANDLE			mHLog;
-		Level			mLoggingLevel;
-		std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
-	};
-	LoggerEventLog	*mImpl;
+	class ImplEventLog;
+	std::unique_ptr<ImplEventLog> mImpl;
 #endif
 };
 	
