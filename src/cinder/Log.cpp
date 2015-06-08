@@ -542,11 +542,19 @@ public:
 	
 	void write( const Metadata& meta, const std::string& text ) override
 	{
-		
+		int eventLevel = cinderLogLevelToEventLogLevel( meta.mLevel );
+	
+		std::wstring wMeta = mConverter.from_bytes( meta.toString() );
+		std::wstring wText = mConverter.from_bytes( text );
+	
+		LPCTSTR wStrings[2];
+		wStrings[0] = wMeta.c_str();
+		wStrings[1] = wText.c_str();
+	
+		::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
 	}
 
 protected:
-	
 	int cinderLogLevelToEventLogLevel( Level cinderLogLevel )
 	{
 		switch( cinderLogLevel ) {
@@ -563,26 +571,6 @@ protected:
 	HANDLE			mHLog;
 	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> mConverter;
 };
-	
-
-LoggerSystem::LoggerEventLog::~LoggerEventLog()
-{
-
-}
-
-void LoggerSystem::LoggerEventLog::write( const Metadata &meta, const string &text )
-{
-	int eventLevel = cinderLogLevelToEventLogLevel( meta.mLevel );
-	
-	std::wstring wMeta = mConverter.from_bytes( meta.toString() );
-	std::wstring wText = mConverter.from_bytes( text );
-	
-	LPCTSTR wStrings[2];
-	wStrings[0] = wMeta.c_str();
-	wStrings[1] = wText.c_str();
-	
-	::ReportEventW( mHLog, eventLevel, 0, 0, 0, 2, 0, wStrings, 0 );
-}
 
 #endif
 
