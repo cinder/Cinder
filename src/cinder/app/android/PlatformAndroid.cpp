@@ -140,7 +140,7 @@ void PlatformAndroid::sleep( float milliseconds )
 
 void PlatformAndroid::launchWebBrowser( const Url &url )
 {
-	/// @TODO: IMPLEMENT!!!
+	cinder::android::app::CinderNativeActivity::launchWebBrowser( url );
 }
 
 std::vector<std::string> PlatformAndroid::stackTrace()

@@ -23,6 +23,7 @@
 
 #include "cinder/android/CinderAndroid.h"
 #include "cinder/android/JniHelper.h"
+#include "cinder/Url.h" 
 
 namespace cinder { namespace app { 
 
@@ -47,6 +48,7 @@ public:
 
 	static int 						getDisplayRotation();
 	static void 					setFullScreen( bool fullScreen );
+	static void 					launchWebBrowser( const Url &url );
 
 private:
 	static void 			cacheJni();
@@ -57,6 +59,7 @@ private:
 		static jclass 		ClassObject;
 		static jmethodID 	getDisplayRotation;
 		static jmethodID 	setFullScreen;
+		static jmethodID 	launchWebBrowser;
 	};
 
 	static std::unique_ptr<CinderNativeActivity> sInstance;

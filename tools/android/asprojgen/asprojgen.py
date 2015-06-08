@@ -110,9 +110,9 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     outFile = open(dstFile, "w+")
     outFile.write("package %s;\n" % appPackage)
     outFile.write("\n")
-    outFile.write("import android.app.NativeActivity;\n")
+    outFile.write("import org.libcinder.app.CinderNativeActivity;\n")
     outFile.write("\n")
-    outFile.write("public class %sActivity extends NativeActivity {\n" % appName)
+    outFile.write("public class %sActivity extends CinderNativeActivity {\n" % appName)
     outFile.write("    static final String TAG = \"%sActivity\";\n" % appName)
     outFile.write("}\n")
     

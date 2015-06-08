@@ -3,9 +3,11 @@ package org.libcinder.app;
 import android.Manifest;
 import android.app.NativeActivity;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Point;
 import android.graphics.SurfaceTexture;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.ConditionVariable;
 import android.os.Handler;
@@ -15,7 +17,11 @@ import android.view.Display;
 import android.view.View;
 import android.view.WindowManager;
 
+import org.libcinder.Cinder;
 import org.libcinder.hardware.Camera;
+
+import java.net.URLDecoder;
+import java.security.spec.ECField;
 
 public class CinderNativeActivity extends NativeActivity {
 
@@ -165,6 +171,26 @@ public class CinderNativeActivity extends NativeActivity {
         mFullScreen = fullScreen;
 
         Log.i(TAG, "setFullscreen : fullScreen=" + fullScreen + " | -------------- ");
+    }
+
+    // =============================================================================================
+    // Actions
+    // =============================================================================================
+
+    public void launchWebBrowser(String url) {
+        if( ! CinderNativeActivity.permissions().INTERNET() ) {
+            Log.w(TAG, "launchWebBrowser: " + CinderNativeActivity.permissions().missing().INTERNET() );
+            return;
+        }
+
+        try {
+            String decodedUrl = URLDecoder.decode(url, "UTF-8");
+            Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(decodedUrl));
+            startActivity(intent);
+        }
+        catch(Exception e) {
+            Log.e(TAG, "launchWebBrowser failed: " + e.getMessage());
+        }
     }
 
     // =============================================================================================

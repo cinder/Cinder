@@ -34,6 +34,7 @@ jclassID	CinderNativeActivity::Java::ClassName			= "org/libcinder/app/CinderNati
 jclass  	CinderNativeActivity::Java::ClassObject 		= nullptr;
 jmethodID 	CinderNativeActivity::Java::getDisplayRotation	= nullptr;
 jmethodID 	CinderNativeActivity::Java::setFullScreen		= nullptr;
+jmethodID 	CinderNativeActivity::Java::launchWebBrowser	= nullptr;
 
 std::unique_ptr<CinderNativeActivity> CinderNativeActivity::sInstance;
 
@@ -66,8 +67,10 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 			if( nullptr != Java::ClassObject ) {
 				Java::getDisplayRotation 	= JniHelper::Get()->GetMethodId( Java::ClassObject, "getDisplayRotation", "()I" ); 
 				Java::setFullScreen			= JniHelper::Get()->GetMethodId( Java::ClassObject, "setFullScreen", "(Z)V" ); 
+				Java::launchWebBrowser		= JniHelper::Get()->GetMethodId( Java::ClassObject, "launchWebBrowser", "(Ljava/lang/String;)V" ); 
 				jni_obtained_check( CinderNativeActivity::Java::getDisplayRotation );				
 				jni_obtained_check( CinderNativeActivity::Java::setFullScreen );				
+				jni_obtained_check( CinderNativeActivity::Java::launchWebBrowser );				
 			}
 
 		}
@@ -87,6 +90,7 @@ dbg_app_fn_enter( __PRETTY_FUNCTION__ );
 		Java::ClassObject			= nullptr;
 		Java::getDisplayRotation	= nullptr;
 		Java::setFullScreen			= nullptr;
+		Java::launchWebBrowser		= nullptr;
 	}
 dbg_app_fn_exit( __PRETTY_FUNCTION__ );
 }
@@ -139,6 +143,19 @@ int CinderNativeActivity::getDisplayRotation()
 void CinderNativeActivity::setFullScreen( bool fullScreen )
 {
 	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::setFullScreen, (jboolean)fullScreen );
+}
+
+void CinderNativeActivity::launchWebBrowser( const Url &url )
+{
+	dbg_app_log( "launchWebBrowser: " + url.str() );
+
+	if( url.str().empty() ) {
+		return;
+	}
+
+	jstring jstrUrl = JniHelper::Get()->NewStringUTF( url.str() );
+	JniHelper::Get()->CallVoidMethod( getInstance()->getJavaObject(), Java::launchWebBrowser, jstrUrl );
+	JniHelper::Get()->DeleteLocalRef( jstrUrl );
 }
 
 }}} // namespace cinder::android::app
