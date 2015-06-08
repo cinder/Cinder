@@ -30,6 +30,8 @@
 		112CBD821A958BC20049BE2C /* RendererImplGlMac.mm in Sources */ = {isa = PBXBuildFile; fileRef = 112CBD7E1A958BC20049BE2C /* RendererImplGlMac.mm */; };
 		1181F7C01A7E4898001BBFA2 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1181F7BF1A7E4898001BBFA2 /* AVFoundation.framework */; };
 		1181F7C21A7E48BC001BBFA2 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1181F7C11A7E48BC001BBFA2 /* CoreMedia.framework */; };
+		11B571B81B255A0400BF76CE /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B571B71B255A0400BF76CE /* IOKit.framework */; };
+		11B571BA1B255A1200BF76CE /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B571B91B255A1200BF76CE /* IOSurface.framework */; };
 		8D255AC70486D3F9007BF209 /* ScreenSaverTest_Prefix.pch in Headers */ = {isa = PBXBuildFile; fileRef = 32DBCFA80370C50100C91783 /* ScreenSaverTest_Prefix.pch */; };
 		8D255ACA0486D3F9007BF209 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 089C167DFE841241C02AAC07 /* InfoPlist.strings */; };
 		8D255ACE0486D3F9007BF209 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1058C7ADFEA557BF11CA2CBB /* Cocoa.framework */; };
@@ -73,6 +75,8 @@
 		112CBD871A958C070049BE2C /* RendererImplGlMac.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = RendererImplGlMac.h; path = ../../../include/cinder/app/cocoa/RendererImplGlMac.h; sourceTree = "<group>"; };
 		1181F7BF1A7E4898001BBFA2 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
 		1181F7C11A7E48BC001BBFA2 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		11B571B71B255A0400BF76CE /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		11B571B91B255A1200BF76CE /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		32DBCFA80370C50100C91783 /* ScreenSaverTest_Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ScreenSaverTest_Prefix.pch; sourceTree = "<group>"; };
 		8D255AD20486D3F9007BF209 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		8D255AD30486D3F9007BF209 /* ScreenSaverTest.saver */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ScreenSaverTest.saver; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -83,6 +87,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11B571BA1B255A1200BF76CE /* IOSurface.framework in Frameworks */,
+				11B571B81B255A0400BF76CE /* IOKit.framework in Frameworks */,
 				1181F7C21A7E48BC001BBFA2 /* CoreMedia.framework in Frameworks */,
 				1181F7C01A7E4898001BBFA2 /* AVFoundation.framework in Frameworks */,
 				8D255ACE0486D3F9007BF209 /* Cocoa.framework in Frameworks */,
@@ -192,6 +198,8 @@
 		1058C7ACFEA557BF11CA2CBB /* Linked Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11B571B91B255A1200BF76CE /* IOSurface.framework */,
+				11B571B71B255A0400BF76CE /* IOKit.framework */,
 				00880A5411630D7900F731D1 /* Accelerate.framework */,
 				00880A5911630D7900F731D1 /* ApplicationServices.framework */,
 				00880A5511630D7900F731D1 /* AudioToolbox.framework */,
