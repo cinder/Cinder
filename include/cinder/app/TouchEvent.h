@@ -85,19 +85,20 @@ class TouchEvent : public Event {
 	bool					mHandled;
 };
 
-} } // namespace cinder::app
-
-inline std::ostream& operator<<( std::ostream &out, const cinder::app::TouchEvent::Touch &touch )
+inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &touch )
 {
 	out << touch.getId() << ": " << touch.getPos() << " @ " << touch.getTime() << "s";
 	return out;
 }
 
-inline std::ostream& operator<<( std::ostream &out, const cinder::app::TouchEvent &event )
+inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
 {
 	out << "{" << std::endl;
-	for( std::vector<cinder::app::TouchEvent::Touch>::const_iterator tIt = event.getTouches().begin(); tIt != event.getTouches().end(); ++tIt )
-		out << "  " << *tIt << std::endl;
+	for( const auto &touch : event.getTouches() ) {
+		out << "  " << touch << std::endl;
+	}
 	out << "}";
 	return out;
 }
+
+} } // namespace cinder::app
