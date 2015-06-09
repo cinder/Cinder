@@ -247,6 +247,9 @@ class FileData (object):
 	def appendToSideEl( self, el ):
 		self.sideEl.append( el )
 
+	def setCategory( self ):
+		print "SET CATEGORY"
+
 def findCompoundName( tree ):
 	for compoundDef in tree.iter( "compounddef" ):
 		for compoundName in tree.iter( "compoundname" ):
@@ -254,6 +257,7 @@ def findCompoundName( tree ):
 
 def findFileKind( tree ) :
 	kind = tree.find( r"compounddef").attrib['kind']
+	print "FIND FILE KIND: " + kind
 	return kind
 
 def findCompoundNameStripped( tree ) :
@@ -1342,10 +1346,20 @@ def processHtmlFile( inPath, outPath ):
 	- Save html in destination dir
 	"""
 	print "processHtmlFile"
+
+	print "FIND REFERENCE"
+	print inPath.find("reference/")
+	htmlTemplate = "htmlContentTemplate.html"
+	if inPath.find( "reference/" ) > -1:
+		htmlTemplate = "referenceContentTemplate.html"
+	elif inPath.find( "guides/" ) > -1:
+		htmlTemplate = "guidesContentTemplate.html"
+
+	print htmlTemplate
 	# construct template
-	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", "htmlContentTemplate.html", "footerTemplate.html"] )
+	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", htmlTemplate, "footerTemplate.html"] )
 	# parse original html file
-	origHtml = generateBs4( inPath )	
+	origHtml = generateBs4( inPath )
 	
 	# replace all of the bs4 css and js links and make them relative to the outpath
 	for link in bs4.find_all("link"):
@@ -1380,6 +1394,9 @@ def processHtmlFile( inPath, outPath ):
 		if new_link is not None:
 			link.replace_with( new_link )
 
+	# set page data
+	# setSection( bs4, "" )
+	 
 	writeHtml( bs4, outPath )
 
 def replaceDTag( bs4, link ):
