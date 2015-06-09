@@ -75,7 +75,7 @@ void MultiTouchApp::setup()
 
 void MultiTouchApp::touchesBegan( TouchEvent event )
 {
-	console() << "began: " << event << std::endl;
+	CI_LOG_I( event );
 
 	for( const auto &touch : event.getTouches() ) {
 		Color newColor( CM_HSV, Rand::randFloat(), 1, 1 );
@@ -85,7 +85,7 @@ void MultiTouchApp::touchesBegan( TouchEvent event )
 
 void MultiTouchApp::touchesMoved( TouchEvent event )
 {
-	//console() << "Moved: " << event << std::endl;
+	CI_LOG_I( event );
 	for( const auto &touch : event.getTouches() ) {
 		mActivePoints[touch.getId()].addPoint( touch.getPos() );
 	}
@@ -93,7 +93,7 @@ void MultiTouchApp::touchesMoved( TouchEvent event )
 
 void MultiTouchApp::touchesEnded( TouchEvent event )
 {
-	console() << "ended: " << event << std::endl;
+	CI_LOG_I( event );
 	for( const auto &touch : event.getTouches() ) {
 		mActivePoints[touch.getId()].startDying();
 		mDyingPoints.push_back( mActivePoints[touch.getId()] );
@@ -103,12 +103,12 @@ void MultiTouchApp::touchesEnded( TouchEvent event )
 
 void MultiTouchApp::mouseDown( MouseEvent event )
 {
-	console() << "Mouse down: " << event.isRight() << " & " << event.isControlDown() << std::endl;
+	CI_LOG_I( "right: " << boolalpha << event.isRight() << " , control down " << event.isControlDown() << dec );
 }
 
 void MultiTouchApp::mouseDrag( MouseEvent event )
 {
-	console() << "Mouse drag pos: " << event.getPos() << std::endl;
+	CI_LOG_I( "pos: " << event.getPos() );
 }
 
 void MultiTouchApp::draw()
