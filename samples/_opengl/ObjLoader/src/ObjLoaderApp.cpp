@@ -24,6 +24,7 @@ class ObjLoaderApp : public App {
 	void	keyDown( KeyEvent event ) override;
 
 	void	loadObj( const DataSourceRef &dataSource );
+	void	writeObj();
 	void	frameCurrentObject();
 	void	draw() override;
 	
@@ -87,6 +88,15 @@ void ObjLoaderApp::loadObj( const DataSourceRef &dataSource )
 	mArcball.setSphere( mBoundingSphere );
 }
 
+void ObjLoaderApp::writeObj()
+{
+	fs::path filePath = getSaveFilePath();
+	if( ! filePath.empty() ) {
+		console() << "writing mesh to file path: " << filePath << std::endl;
+		ci::writeObj( writeFile( filePath ), mMesh );
+	}
+}
+
 void ObjLoaderApp::frameCurrentObject()
 {
 	mCam = mCam.calcFraming( mBoundingSphere );
@@ -102,6 +112,9 @@ void ObjLoaderApp::keyDown( KeyEvent event )
 	}
 	else if( event.getChar() == 'f' ) {
 		frameCurrentObject();
+	}
+	else if( event.getChar() == 'w' ) {
+		writeObj();
 	}
 }
 

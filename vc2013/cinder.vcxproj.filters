@@ -417,9 +417,6 @@
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\MatrixStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
@@ -1147,9 +1144,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
       <Filter>Header Files\dx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\MatrixStack.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
       <Filter>Source Files\AntTweakBar</Filter>

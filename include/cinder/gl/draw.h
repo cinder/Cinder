@@ -106,6 +106,8 @@ void drawStrokedRect( const Rectf &rect, float lineWidth );
 void drawStrokedRoundedRect( const Rectf &rect, float cornerRadius, int numSegmentsPerCorner = 0 );
 //! Draws a stroked circle centered around \a center with a radius of \a radius
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments = -1 );
+//! Draws a stroked circle centered around \a center with a radius of \a radius and a line width of \a lineWidth.
+void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments = -1 );
 //! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
 void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 

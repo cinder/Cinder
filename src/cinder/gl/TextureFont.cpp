@@ -289,7 +289,6 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 				ip::unpremultiply( &tempSurface );
 			
 			gl::Texture::Format textureFormat = gl::Texture::Format();
-			textureFormat.loadTopDown();
 			textureFormat.enableMipmapping( mFormat.hasMipmapping() );
 
 			Surface8u::ConstIter iter( tempSurface, tempSurface.getBounds() );
@@ -310,6 +309,7 @@ TextureFont::TextureFont( const Font &font, const string &utf8Chars, const Forma
 			textureFormat.setSwizzleMask( swizzleMask );
 #endif
 			mTextures.push_back( gl::Texture::create( lumAlphaData.get(), textureFormat.getInternalFormat(), mFormat.getTextureWidth(), mFormat.getTextureHeight(), textureFormat ) );
+			mTextures.back()->setTopDown( true );
 			ip::fill<uint8_t>( &channel, 0 );			
 			curOffset = ivec2( 0, 0 );
 			curGlyphIndex = 0;

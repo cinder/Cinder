@@ -531,7 +531,6 @@
     <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Log.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
-    <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\Path2D.cpp" />
     <ClCompile Include="..\src\cinder\Perlin.cpp" />
@@ -764,7 +763,6 @@
     <ClInclude Include="..\include\cinder\Matrix22.h" />
     <ClInclude Include="..\include\cinder\Matrix33.h" />
     <ClInclude Include="..\include\cinder\Matrix44.h" />
-    <ClInclude Include="..\include\cinder\MatrixStack.h" />
     <ClInclude Include="..\include\cinder\Plane.h" />
     <ClInclude Include="..\include\cinder\Function.h" />
     <ClInclude Include="..\include\cinder\qtime\MovieWriter.h" />

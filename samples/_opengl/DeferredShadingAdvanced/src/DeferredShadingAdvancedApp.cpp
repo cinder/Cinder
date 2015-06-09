@@ -172,7 +172,7 @@ DeferredShadingAdvancedApp::DeferredShadingAdvancedApp()
 	mEnabledShadow		= true;
 	mFrameRate			= 0.0f;
 	mFullScreen			= isFullScreen();
-	mHighQuality		= true;
+	mHighQuality		= false;
 	mHighQualityPrev	= mHighQuality;
 	mMipmapLevels		= 5;
 	mNumBouncingLights	= 11;

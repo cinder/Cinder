@@ -1,19 +1,19 @@
-/* 
+/*
  * Deferred Shading sample application by:
  * Stephen Schieberl - Wieden+Kennedy
  * Michael Latzoni - Wieden+Kennedy
  *
  * License: BSD Simplified
- * 
+ *
  * Deferred shading is a technique where a 3D scene's geometry data
  * is rendered into screen space and shading is deferred until
  * a second pass when lights are drawn.
  *
  * This sample demonstrates how to create a basic deferred shading
- * pipeline. The scene is rendered into a frame buffer with multiple 
- * attachments (G-buffer). Shadow casters are rendered into a shadow 
- * map FBO. The data from each is read while drawing light volumes 
- * into the light buffer (L-buffer). Finally, the L-buffer is drawn 
+ * pipeline. The scene is rendered into a frame buffer with multiple
+ * attachments (G-buffer). Shadow casters are rendered into a shadow
+ * map FBO. The data from each is read while drawing light volumes
+ * into the light buffer (L-buffer). Finally, the L-buffer is drawn
  * to the screen.
  */
 
@@ -30,7 +30,7 @@ class DeferredShadingApp : public ci::app::App
 {
 public:
 	DeferredShadingApp();
-
+	
 	void						draw() override;
 	void						resize() override;
 	void						update() override;
@@ -44,14 +44,14 @@ private:
 	void						loadShaders();
 	ci::gl::BatchRef			mBatchDebugRect;
 	ci::gl::BatchRef			mBatchFxaaRect;
-	ci::gl::BatchRef			mBatchGBufferRect;
+	ci::gl::BatchRef			mBatchGBufferPlane;
 	ci::gl::BatchRef			mBatchGBufferSphere;
 	ci::gl::BatchRef			mBatchLBufferCube;
 	ci::gl::BatchRef			mBatchShadowSphere;
 	ci::gl::BatchRef			mBatchStockColorRect;
 	ci::gl::BatchRef			mBatchStockColorSphere;
 	ci::gl::BatchRef			mBatchStockTextureRect;
-
+	
 	ci::gl::FboRef				mFboGBuffer;
 	ci::gl::FboRef				mFboLBuffer;
 	ci::gl::FboRef				mFboShadowMap;
@@ -85,18 +85,18 @@ DeferredShadingApp::DeferredShadingApp()
 	gl::enableVerticalSync();
 	gl::color( ColorAf::white() );
 	gl::disableAlphaBlending();
-
+	
 #if defined( CINDER_COCOA_TOUCH ) && !defined( CINDER_GL_ES_3 )
 	CI_LOG_V( "CINDER_GL_ES_3 must be defined in Cinder and this application when targeting iOS." );
 	quit();
 	return;
 #endif
 	
-	// Define properties
+	// Set draw flags
 	mDebugMode		= false;
 	mEnabledFxaa	= true;
 	mEnabledShadow	= true;
-
+	
 	// Set up lights
 	mLights.push_back( Light().colorDiffuse( ColorAf( 0.95f, 1.0f, 0.92f, 1.0f ) )
 					  .intensity( 0.8f ).position( vec3( 0.0f, 0.0f, 0.0f ) )
@@ -106,13 +106,13 @@ DeferredShadingApp::DeferredShadingApp()
 		mLights.push_back( Light().colorDiffuse( ColorAf( 0.75f + t * 0.5f, 0.92f - t, 0.7f + t * t, 1.0f ) )
 						  .intensity( 0.6f ).radius( 0.05f ).volume( 5.0f ) );
 	}
-
+	
 	// Set up camera
 	const vec2 windowSize = toPixels( getWindowSize() );
 	mCamera = CameraPersp( windowSize.x, windowSize.y, 45.0f, 0.01f, 100.0f );
 	mCamera.lookAt( vec3( -2.221f, 2.0f, 15.859f ), vec3( 0.0f, 2.0f, 0.0f ) );
 	mCamUi = CameraUi( &mCamera, getWindow(), -1 );
-
+	
 	// Create shadow map buffer
 	{
 		const GLsizei sz = 2048;
@@ -124,13 +124,13 @@ DeferredShadingApp::DeferredShadingApp()
 	}
 	
 	// Set up shadow camera
-	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(), 
-								  mCamera.getNearClip(), mCamera.getFarClip() );
+	mShadowCamera.setPerspective( 120.0f, mFboShadowMap->getAspectRatio(),
+								 mCamera.getNearClip(), mCamera.getFarClip() );
 	mShadowCamera.lookAt( vec3( 0.0f, 7.0f, 0.0f ), vec3( 0.0f ) );
-
+	
 	// Load shaders and create batches
 	loadShaders();
-
+	
 	// Call resize to create FBOs
 	resize();
 	
@@ -169,7 +169,7 @@ void DeferredShadingApp::draw()
 		const float z	= glm::sin( t );
 		vec3 p			= vec3( x, 0.0f, z ) * r;
 		p.y				= 0.5f;
-
+		
 		mat4 m( 1.0f );
 		m = glm::translate( m, p );
 		m = glm::rotate( m, e, vec3( 1.0f ) );
@@ -177,7 +177,7 @@ void DeferredShadingApp::draw()
 		
 		spheres.push_back( m );
 	}
-
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// G-BUFFER
 	
@@ -200,15 +200,9 @@ void DeferredShadingApp::draw()
 		gl::setMatrices( mCamera );
 		
 		// Draw floor
-		mBatchGBufferRect->getGlslProg()->uniform( "uEmissive", 0.0f );
-		{
-			const gl::ScopedFaceCulling scopedFaceCulling( true, GL_FRONT );
-			const gl::ScopedModelMatrix scopedModelMatrix;
-			gl::rotate( quat( vec3( 4.71f, 0.0f, 0.0f ) ) );
-			gl::scale( vec3( 20.0f ) );
-			mBatchGBufferRect->draw();
-		}
-
+		mBatchGBufferPlane->getGlslProg()->uniform( "uEmissive", 0.0f );
+		mBatchGBufferPlane->draw();
+		
 		// Draw shadow casters
 		const gl::ScopedFaceCulling scopedFaceCulling( true, GL_BACK );
 		mBatchGBufferSphere->getGlslProg()->uniform( "uEmissive", 0.0f );
@@ -217,7 +211,7 @@ void DeferredShadingApp::draw()
 			gl::multModelMatrix( m );
 			mBatchGBufferSphere->draw();
 		}
-			
+		
 		// Draw light sources
 		mBatchGBufferSphere->getGlslProg()->uniform( "uEmissive", 1.0f );
 		for ( const Light& light : mLights ) {
@@ -247,10 +241,10 @@ void DeferredShadingApp::draw()
 			mBatchShadowSphere->draw();
 		}
 	}
-
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// L-BUFFER
-
+	
 	{
 		const gl::ScopedFramebuffer scopedFrameBuffer( mFboLBuffer );
 		const gl::ScopedViewport scopedViewport( ivec2( 0 ), mFboLBuffer->getSize() );
@@ -261,7 +255,7 @@ void DeferredShadingApp::draw()
 		gl::setMatrices( mCamera );
 		gl::enableDepthRead();
 		gl::disableDepthWrite();
-	
+		
 		// Bind G-buffer textures and shadow map
 		const gl::ScopedTextureBind scopedTextureBind0( mTextureFboGBuffer[ 0 ],			0 );
 		const gl::ScopedTextureBind scopedTextureBind1( mTextureFboGBuffer[ 1 ],			1 );
@@ -278,31 +272,31 @@ void DeferredShadingApp::draw()
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorAmbient",	light.getColorAmbient() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorDiffuse",	light.getColorDiffuse() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightColorSpecular",	light.getColorSpecular() );
-			mBatchLBufferCube->getGlslProg()->uniform( "uLightPosition", 
-										vec3( ( mCamera.getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
+			mBatchLBufferCube->getGlslProg()->uniform( "uLightPosition",
+													  vec3( ( mCamera.getViewMatrix() * vec4( light.getPosition(), 1.0 ) ) ) );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightIntensity",		light.getIntensity() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uLightRadius",			light.getVolume() );
 			mBatchLBufferCube->getGlslProg()->uniform( "uWindowSize",			vec2( getWindowSize() ) );
-
+			
 			gl::ScopedModelMatrix scopedModelMatrix;
 			gl::translate( light.getPosition() );
 			gl::scale( vec3( light.getVolume() ) );
 			mBatchLBufferCube->draw();
 		}
 	}
-
+	
 	//////////////////////////////////////////////////////////////////////////////////////////////
 	// FINAL RENDER
-
+	
 	// Set up window for screen render
 	const gl::ScopedViewport scopedViewport( ivec2( 0 ), toPixels( getWindowSize() ) );
 	const gl::ScopedMatrices scopedMatrices;
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
 	gl::clear();
-
+	
 	if ( mDebugMode ) {
-
+		
 		// Draw G-buffer
 		gl::clear( Colorf::gray( 0.4f ) );
 		gl::setMatricesWindow( getWindowSize() );
@@ -325,20 +319,20 @@ void DeferredShadingApp::draw()
 	} else {
 		gl::translate( getWindowCenter() );
 		gl::scale( getWindowSize() );
-
+		
 		const gl::ScopedTextureBind scopedTextureBind( mFboLBuffer->getColorTexture(), 0 );
 		if ( mEnabledFxaa ) {
-
+			
 			// Perform FXAA
 			mBatchFxaaRect->getGlslProg()->uniform( "uPixel", vec2( 1.0f ) / vec2( toPixels( getWindowSize() ) ) );
 			mBatchFxaaRect->draw();
 		} else {
-
+			
 			// Draw without anti-aliasing
 			mBatchStockTextureRect->draw();
 		}
 	}
-
+	
 #if !defined( CINDER_COCOA_TOUCH )
 	mParams->draw();
 #endif
@@ -359,10 +353,10 @@ void DeferredShadingApp::loadShaders()
 		}
 		return glslProg;
 	};
-
+	
 	// Load shader files from disk
-	const DataSourceRef fragDebug	= loadAsset( "debug.frag" );
-	const DataSourceRef fragFxaa	= loadAsset( "fxaa.frag" );
+	const DataSourceRef fragDebug		= loadAsset( "debug.frag" );
+	const DataSourceRef fragFxaa		= loadAsset( "fxaa.frag" );
 	const DataSourceRef fragGBuffer		= loadAsset( "gbuffer.frag" );
 	const DataSourceRef fragLBuffer		= loadAsset( "lbuffer.frag" );
 	const DataSourceRef fragShadowMap	= loadAsset( "shadow_map.frag" );
@@ -388,23 +382,27 @@ void DeferredShadingApp::loadShaders()
 													   .vertex( vertShadowMap ).fragment( fragShadowMap ) );
 	const gl::GlslProgRef stockColor	= gl::context()->getStockShader( gl::ShaderDef().color() );
 	const gl::GlslProgRef stockTexture	= gl::context()->getStockShader( gl::ShaderDef().texture( GL_TEXTURE_2D ) );
-
+	
 	// Create geometry
 	const gl::VboMeshRef cube	= gl::VboMesh::create( geom::Cube().size( vec3( 2.0f ) ) );
+	const gl::VboMeshRef plane	= gl::VboMesh::create( geom::Plane()
+													  .axes( vec3( 0.0f, 1.0f, 0.0f ), vec3( 0.0f, 0.0f, 1.0f ) )
+													  .normal( vec3( 0.0f, 1.0f, 0.0f ) )
+													  .size( vec2( 20.0f ) ) );
 	const gl::VboMeshRef rect	= gl::VboMesh::create( geom::Rect() );
 	const gl::VboMeshRef sphere = gl::VboMesh::create( geom::Sphere().subdivisions( 64 ) );
-
+	
 	// Create batches
 	mBatchDebugRect			= gl::Batch::create( rect,		debug );
 	mBatchFxaaRect			= gl::Batch::create( rect,		fxaa );
-	mBatchGBufferRect		= gl::Batch::create( rect,		gBuffer );
+	mBatchGBufferPlane		= gl::Batch::create( plane,		gBuffer );
 	mBatchGBufferSphere		= gl::Batch::create( sphere,	gBuffer );
 	mBatchLBufferCube		= gl::Batch::create( cube,		lBuffer );
 	mBatchShadowSphere		= gl::Batch::create( sphere,	shadowMap );
 	mBatchStockColorRect	= gl::Batch::create( rect,		stockColor );
 	mBatchStockColorSphere	= gl::Batch::create( rect,		stockColor );
 	mBatchStockTextureRect	= gl::Batch::create( rect,		stockTexture );
-
+	
 	// Set batch uniforms
 	mBatchDebugRect->getGlslProg()->uniform(	"uSamplerAlbedo",			0 );
 	mBatchDebugRect->getGlslProg()->uniform(	"uSamplerNormalEmissive",	1 );
@@ -419,21 +417,21 @@ void DeferredShadingApp::loadShaders()
 void DeferredShadingApp::resize()
 {
 	mCamera.setAspectRatio( getWindowAspectRatio() );
-
+	
 	// Color texture format
 	const gl::Texture2d::Format colorTextureFormat = gl::Texture2d::Format()
-		.internalFormat( GL_RGBA8 )
-		.magFilter( GL_NEAREST )
-		.minFilter( GL_NEAREST )
-		.wrap( GL_CLAMP_TO_EDGE );
+	.internalFormat( GL_RGBA8 )
+	.magFilter( GL_NEAREST )
+	.minFilter( GL_NEAREST )
+	.wrap( GL_CLAMP_TO_EDGE );
 	
 	// Data texture format
 	const gl::Texture2d::Format dataTextureFormat = gl::Texture2d::Format()
-		.internalFormat( GL_RGBA16F )
-		.magFilter( GL_NEAREST )
-		.minFilter( GL_NEAREST )
-		.wrap( GL_CLAMP_TO_EDGE );
-
+	.internalFormat( GL_RGBA16F )
+	.magFilter( GL_NEAREST )
+	.minFilter( GL_NEAREST )
+	.wrap( GL_CLAMP_TO_EDGE );
+	
 	// Create FBO for the the geometry buffer (G-buffer). This G-buffer uses
 	// three color attachments to store position, normal, emissive (light), and
 	// color (albedo) data.
@@ -486,7 +484,7 @@ void DeferredShadingApp::update()
 		setFullScreen( mFullScreen );
 	}
 #endif
-
+	
 	// Update light positions
 	if ( !mLights.empty() ) {
 		const float e			= (float)getElapsedSeconds();
@@ -502,7 +500,7 @@ void DeferredShadingApp::update()
 			p.y					= ground + 1.5f;
 			mLights.at( i + 1 ).setPosition( p );
 		}
-
+		
 		t					= e * 0.333f;
 		mLights.front().setPosition( vec3( glm::sin( t ), 7.0f, glm::cos( t ) ) );
 		mShadowCamera.setEyePoint( mLights.front().getPosition() );
@@ -521,4 +519,3 @@ CINDER_APP( DeferredShadingApp, RendererGl, []( App::Settings* settings )
 	settings->setWindowSize( 1280, 720 );
 } )
 #endif
- 

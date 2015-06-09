@@ -58,7 +58,7 @@ DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID
 
 	wchar_t unicodeType[1024];
 	wsprintfW( unicodeType, L"%S", mswType.c_str() );
-	resInfoHandle = ::FindResourceEx( NULL, unicodeType, MAKEINTRESOURCE( mswID ), ::GetUserDefaultLangID() );
+	resInfoHandle = ::FindResourceEx( NULL, unicodeType, MAKEINTRESOURCE( mswID ), MAKELANGID( LANG_NEUTRAL, SUBLANG_NEUTRAL ) );
 	if( resInfoHandle == NULL ) {
 		throw ResourceLoadExcMsw( mswID, mswType );
 	}

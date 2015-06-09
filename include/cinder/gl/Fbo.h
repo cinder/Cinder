@@ -125,8 +125,10 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	Texture2dRef	getColorTexture();	
 	//! Returns a reference to the depth Texture2d of the FBO. Resolves multisampling and renders mipmaps if necessary. Returns an empty Ref if there is no Texture2d as a depth attachment.
 	Texture2dRef	getDepthTexture();
-	//! Returns a Ref to the TextureBase attached at \a attachment. Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture is not bound at \a attachment.
-	TextureBaseRef	getTexture( GLenum attachment );
+	//! Returns a Texture2dRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture2d is not bound at \a attachment.
+	Texture2dRef	getTexture2d( GLenum attachment );
+	//! Returns a TextureBaseRef attached at \a attachment (such as \c GL_COLOR_ATTACHMENT0). Resolves multisampling and renders mipmaps if necessary. Returns NULL if a Texture is not bound at \a attachment.
+	TextureBaseRef	getTextureBase( GLenum attachment );
 	
 	//! Binds the color texture associated with an Fbo to its target. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. Optionally binds to a multitexturing unit when \a textureUnit is non-zero. \a attachment specifies which color buffer in the case of multiple attachments.
 	void 			bindTexture( int textureUnit = 0, GLenum attachment = GL_COLOR_ATTACHMENT0 );
@@ -136,6 +138,8 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	void 			bindFramebuffer( GLenum target = GL_FRAMEBUFFER );
 	//! Unbinds the Fbo as the currently active framebuffer, restoring the primary context as the target for all subsequent rendering
 	static void 	unbindFramebuffer();
+	//! Resolves internal Multisample FBO to attached Textures. Only necessary when not using getColorTexture() or getTexture(), which resolve automatically.
+	void			resolveTextures() const;
 
 	//! Returns the ID of the framebuffer. For antialiased FBOs this is the ID of the output multisampled FBO
 	GLuint		getId() const { if( mMultisampleFramebufferId ) return mMultisampleFramebufferId; else return mId; }
@@ -274,10 +278,9 @@ class Fbo : public std::enable_shared_from_this<Fbo> {
 	void		prepareAttachments( const Format &format, bool multisampling );
 	void		attachAttachments();
 	void		initMultisample( const Format &format );
-	void		resolveTextures() const;
 	void		updateMipmaps( GLenum attachment ) const;
 	bool		checkStatus( class FboExceptionInvalidSpecification *resultExc );
-	void		setAllDrawBuffers();
+	void		setDrawBuffers( GLuint fbId, const std::map<GLenum,RenderbufferRef> &attachmentsBuffer, const std::map<GLenum,TextureBaseRef> &attachmentsTexture );
 
 	int					mWidth, mHeight;
 	Format				mFormat;

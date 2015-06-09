@@ -319,6 +319,7 @@ class Icosahedron : public Source {
 	static uint32_t	sIndices[60];
 	
 	friend class Icosphere;
+	friend class WireIcosahedron;
 };
 
 class Icosphere : public Source {
@@ -404,6 +405,32 @@ class Circle : public Source {
 
 	vec2		mCenter;
 	float		mRadius;
+	int			mRequestedSubdivisions, mNumSubdivisions;
+	size_t		mNumVertices;
+};
+
+class Ring : public Source {
+public:
+	Ring();
+
+	Ring&		center( const vec2 &center ) { mCenter = center; return *this; }
+	Ring&		radius( float radius );
+	Ring&		width( float width );
+	Ring&		subdivisions( int subdivs );
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	void	updateVertexCounts();
+
+	vec2		mCenter;
+	float		mRadius;
+	float		mWidth;
 	int			mRequestedSubdivisions, mNumSubdivisions;
 	size_t		mNumVertices;
 };
@@ -751,6 +778,36 @@ class WireSource : public Source {
 };
 
 
+
+class WireCapsule : public WireSource {
+public:
+	WireCapsule();
+
+	WireCapsule&		center( const vec3 &center ) { mCenter = center; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
+	WireCapsule&		subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
+	WireCapsule&		subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCapsule&		subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	WireCapsule&		radius( float radius ) { mRadius = math<float>::max( 0.f, radius ); return *this; }
+	WireCapsule&		length( float length ) { mLength = math<float>::max( 0.f, length ); return *this; }
+	WireCapsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
+	//! Conveniently sets center, length and direction
+	WireCapsule&		set( const vec3 &from, const vec3 &to );
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	void	calculate( std::vector<vec3> *positions ) const;
+	void	calculateRing( float radius, float d, std::vector<vec3> *positions ) const;
+
+	vec3		mDirection, mCenter;
+	float		mLength, mRadius;
+	int			mSubdivisionsHeight, mSubdivisionsAxis, mNumSegments;
+};
+
 class WireCircle : public WireSource {
   public:
 	WireCircle();
@@ -886,6 +943,19 @@ class WireCone : public WireCylinder {
 	WireCone&	direction( const vec3 &direction ) { WireCylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
+};
+
+class WireIcosahedron : public WireSource {
+public:
+	WireIcosahedron() {}
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	void		calculate() const;
+
+	static std::vector<vec3>	sPositions;
 };
 
 class WireFrustum : public WireSource {

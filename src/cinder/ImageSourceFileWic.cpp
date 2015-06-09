@@ -131,6 +131,14 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 	}
 	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
 
+	// Parse # of frames
+	UINT frameCount = 1;
+	hr = decoder->GetFrameCount( &frameCount );
+	if( ! SUCCEEDED(hr) )
+		throw ImageIoExceptionFailedLoad( "Could not retrieve frame count from WIC Decoder." );
+	else
+		setFrameCount( frameCount );
+
     // Retrieve the 'index' frame of the image from the decoder
 	IWICBitmapFrameDecode *frameP = NULL;
 	hr = decoder->GetFrame( options.getIndex(), &frameP );

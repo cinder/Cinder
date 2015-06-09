@@ -767,7 +767,6 @@
     <ClCompile Include="..\src\cinder\Json.cpp" />
     <ClCompile Include="..\src\cinder\Log.cpp" />
     <ClCompile Include="..\src\cinder\Matrix.cpp" />
-    <ClCompile Include="..\src\cinder\MatrixStack.cpp" />
     <ClCompile Include="..\src\cinder\msw\CinderMsw.cpp" />
     <ClCompile Include="..\src\cinder\ObjLoader.cpp" />
     <ClCompile Include="..\src\cinder\params\Params.cpp" />
