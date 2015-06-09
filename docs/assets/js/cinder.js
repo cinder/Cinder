@@ -1,5 +1,13 @@
+var section;
 $(document).ready(function() {
 
+	var cinderJs = this;
+
+	// set the current section in the nav
+	// console.log( document.location.href.split("html/")[1] );
+	// if()
+
+	
 	// look for all dom items with class
 
  	// find all expandable sections
@@ -26,11 +34,28 @@ $(document).ready(function() {
  			$this.addClass("hidden");
  		}
  	});
- 	
+
+ 	var setSection = function( sectionName ){
+ 		// find the nav item that correlates to the section name
+ 		console.log( "CUR SECTION", sectionName );
+ 		console.log( $("#main-nav").find("li#nav_"+sectionName) );
+ 		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
+ 	};
+
+ 	setSection( section );
+ 	return cinderJs;
 
  } );
 
 // Calling foundation runs through any calls
 // related to foundation 5.
 // One such thing is making sure the column sizes stay in sync
- $(document).foundation();
+try{
+	$(document).foundation();	
+} catch( e ){
+
+}
+
+window.setSection = function( sectionName ){	
+	section = sectionName;
+}
