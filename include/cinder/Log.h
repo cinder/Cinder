@@ -142,7 +142,7 @@ class LoggerBreakpoint : public Logger {
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
-	virtual ~LoggerSystem() = default;
+	virtual ~LoggerSystem();
 	
 	void write( const Metadata &meta, const std::string &text ) override;
 	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }

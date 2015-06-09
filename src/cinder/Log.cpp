@@ -589,6 +589,10 @@ LoggerSystem::LoggerSystem()
 #endif
 }
 
+LoggerSystem::~LoggerSystem()
+{
+}
+
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
 	if( meta.mLevel >= mMinLevel ) {
