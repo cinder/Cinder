@@ -39,6 +39,7 @@ typedef std::shared_ptr<class Renderbuffer>		RenderbufferRef;
 struct ScopedVao : private Noncopyable {
 	ScopedVao( Vao *vao );
 	ScopedVao( VaoRef &vao );
+	ScopedVao( ScopedVao&& ) = default;
 	~ScopedVao();
 
   private:
@@ -48,8 +49,9 @@ struct ScopedVao : private Noncopyable {
 struct ScopedBuffer : public Noncopyable {
 	ScopedBuffer( const BufferObjRef &bufferObj );
 	ScopedBuffer( GLenum target, GLuint id );
+	ScopedBuffer( ScopedBuffer&& ) = default;
 	~ScopedBuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -57,6 +59,7 @@ struct ScopedBuffer : public Noncopyable {
 
 struct ScopedState : private Noncopyable {
 	ScopedState( GLenum cap, GLboolean value );
+	ScopedState( ScopedState&& ) = default;
 	~ScopedState();
 
   private:
@@ -68,6 +71,7 @@ struct ScopedColor : private Noncopyable {
 	ScopedColor();
 	ScopedColor( const ColorAf &color );
 	ScopedColor( float red, float green, float blue, float alpha = 1 );
+	ScopedColor( ScopedColor&& ) = default;
 	~ScopedColor();
 
   private:
@@ -83,8 +87,9 @@ struct ScopedBlend : private Noncopyable {
 	ScopedBlend( GLenum sfactor, GLenum dfactor );
 	//! Parallels glBlendFuncSeparate(), and implicitly enables blending
 	ScopedBlend( GLenum srcRGB, GLenum dstRGB, GLenum srcAlpha, GLenum dstAlpha );
+	ScopedBlend( ScopedBlend&& ) = default;
 	~ScopedBlend();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFactors; // whether we should also set the blend factors rather than just the blend state
@@ -116,6 +121,7 @@ struct ScopedGlslProg : private Noncopyable {
 	ScopedGlslProg( GlslProgRef &prog );
 	ScopedGlslProg( const std::shared_ptr<const GlslProg> &prog );
 	ScopedGlslProg( const GlslProg *prog );
+	ScopedGlslProg( ScopedGlslProg&& ) = default;
 	~ScopedGlslProg();
 
   private:
@@ -126,8 +132,9 @@ struct ScopedFramebuffer : private Noncopyable {
 	ScopedFramebuffer( const FboRef &fbo, GLenum target = GL_FRAMEBUFFER );
 	//! Prefer the FboRef variant when possible. This does not allow gl::Fbo to mark itself as needing multisample resolution.
 	ScopedFramebuffer( GLenum target, GLuint framebufferId );
+	ScopedFramebuffer( ScopedFramebuffer&& ) = default;
 	~ScopedFramebuffer();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
@@ -136,8 +143,9 @@ struct ScopedFramebuffer : private Noncopyable {
 struct ScopedActiveTexture : private Noncopyable {
 	//! Sets the currently active texture through glActiveTexture. Expects values relative to \c 0, \em not GL_TEXTURE0
 	ScopedActiveTexture( uint8_t textureUnit );
+	ScopedActiveTexture( ScopedActiveTexture&& ) = default;
 	~ScopedActiveTexture();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -147,6 +155,7 @@ struct ScopedTextureBind : private Noncopyable {
 	ScopedTextureBind( GLenum target, GLuint textureId, uint8_t textureUnit );
 	ScopedTextureBind( const TextureBaseRef &texture );
 	ScopedTextureBind( const TextureBaseRef &texture, uint8_t textureUnit );
+	ScopedTextureBind( ScopedTextureBind&& ) = default;
 
 	//! \cond
 	// These overloads are to alleviate a VS2013 bug where it cannot deduce
@@ -159,18 +168,19 @@ struct ScopedTextureBind : private Noncopyable {
 	//! \endcond
 
 	~ScopedTextureBind();
-	
+
   private:
 	Context		*mCtx;
 	GLenum		mTarget;
 	uint8_t		mTextureUnit;
 };
-	
+
 struct ScopedScissor : private Noncopyable {
 	//! Implicitly enables scissor test
 	ScopedScissor( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
-	//! Implicitly enables scissor test	
+	//! Implicitly enables scissor test
 	ScopedScissor( int lowerLeftX, int lowerLeftY, int width, int height );
+	ScopedScissor( ScopedScissor&& ) = default;
 	~ScopedScissor();
 
   private:
@@ -181,6 +191,7 @@ struct ScopedViewport : private Noncopyable {
 	ScopedViewport( const ivec2 &lowerLeftPosition, const ivec2 &dimension );
 	ScopedViewport( const ivec2 &size );
 	ScopedViewport( int lowerLeftX, int lowerLeftY, int width, int height );
+	ScopedViewport( ScopedViewport&& ) = default;
 	~ScopedViewport();
 
   private:
@@ -188,22 +199,26 @@ struct ScopedViewport : private Noncopyable {
 };
 
 struct ScopedModelMatrix : private Noncopyable {
+	ScopedModelMatrix( ScopedModelMatrix&& ) = default;
 	ScopedModelMatrix()		{ gl::pushModelMatrix(); }
 	~ScopedModelMatrix()	{ gl::popModelMatrix(); }
 };
 
 struct ScopedViewMatrix : private Noncopyable {
+	ScopedViewMatrix( ScopedViewMatrix&& ) = default;
 	ScopedViewMatrix()	{ gl::pushViewMatrix(); }
 	~ScopedViewMatrix()	{ gl::popViewMatrix(); }
 };
 
 struct ScopedProjectionMatrix : private Noncopyable {
+	ScopedProjectionMatrix( ScopedProjectionMatrix&& ) = default;
 	ScopedProjectionMatrix()	{ gl::pushProjectionMatrix(); }
 	~ScopedProjectionMatrix()	{ gl::popProjectionMatrix(); }
 };
 
 //! Preserves all matrices
 struct ScopedMatrices : private Noncopyable {
+	ScopedMatrices( ScopedMatrices&& ) = default;
 	ScopedMatrices()	{ gl::pushMatrices(); }
 	~ScopedMatrices()	{ gl::popMatrices(); }
 };
@@ -214,8 +229,9 @@ struct ScopedFaceCulling : private Noncopyable {
 	ScopedFaceCulling( bool cull );
 	//! Enables or disables polygon culling based on \a cull and specifies a mode, either \c GL_BACK or GL_FRONT
 	ScopedFaceCulling( bool cull, GLenum cullFace );
+	ScopedFaceCulling( ScopedFaceCulling&& ) = default;
 	~ScopedFaceCulling();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveFace;
@@ -229,8 +245,9 @@ struct ScopedLogicOp : private Noncopyable {
 	ScopedLogicOp( bool enable );
 	//! Enables or disables logical operation based on \a enable and specifies a mode, \c GL_CLEAR, \c GL_SET, \c GL_COPY, \c GL_COPY_INVERTED, \c GL_NOOP, \c GL_INVERT, \c GL_AND, \c GL_NAND, \c GL_OR, \c GL_NOR, \c GL_XOR, \c GL_EQUIV, \c GL_AND_REVERSE, \c GL_AND_INVERTED, \c GL_OR_REVERSE, or \c GL_OR_INVERTED.
 	ScopedLogicOp( bool enable, GLenum mode );
+	ScopedLogicOp( ScopedLogicOp&& ) = default;
 	~ScopedLogicOp();
-	
+
 private:
 	Context		*mCtx;
 	bool		mSaveMode;
@@ -246,8 +263,9 @@ struct ScopedDepth : private Noncopyable {
 	ScopedDepth( bool enableRead, bool enableWrite );
 	//! Enables or disables depth comparisons, writing to the depth buffer and specifies a depth comparison function, either \c GL_NEVER, \c GL_LESS, \c GL_EQUAL, \c GL_LEQUAL, \c GL_GREATER, \c GL_NOTEQUAL, \c GL_GEQUAL and \c GL_ALWAYS.
 	ScopedDepth( bool enableRead, bool enableWrite, GLenum depthFunc );
+	ScopedDepth( ScopedDepth&& ) = default;
 	~ScopedDepth();
-	
+
   private:
 	Context		*mCtx;
 	bool		mSaveMask;
@@ -258,8 +276,9 @@ struct ScopedDepth : private Noncopyable {
 struct ScopedRenderbuffer : private Noncopyable {
 	ScopedRenderbuffer( const RenderbufferRef &renderBuffer );
 	ScopedRenderbuffer( GLenum target, GLuint id );
+	ScopedRenderbuffer( ScopedRenderbuffer&& ) = default;
 	~ScopedRenderbuffer();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -267,8 +286,9 @@ struct ScopedRenderbuffer : private Noncopyable {
 //! Scopes state of line width
 struct ScopedLineWidth : private Noncopyable {
 	ScopedLineWidth( float width );
+	ScopedLineWidth( ScopedLineWidth&& ) = default;
 	~ScopedLineWidth();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -279,8 +299,9 @@ struct ScopedLineWidth : private Noncopyable {
 struct ScopedPolygonMode : private Noncopyable {
 	//! Values for \a mode may be \c GL_POINT, \c GL_LINE or \c GL_FILL.
 	ScopedPolygonMode( GLenum mode );
+	ScopedPolygonMode( ScopedPolygonMode&& ) = default;
 	~ScopedPolygonMode();
-	
+
   private:
 	Context		*mCtx;
 };
@@ -291,8 +312,9 @@ struct ScopedPolygonMode : private Noncopyable {
 struct ScopedFrontFace : private Noncopyable {
 	//! Values for \a mode may be \c GL_CW or \c GL_CCW
 	ScopedFrontFace( GLenum mode );
+	ScopedFrontFace( ScopedFrontFace&& ) = default;
 	~ScopedFrontFace();
-	
+
   private:
 	Context		*mCtx;
 };

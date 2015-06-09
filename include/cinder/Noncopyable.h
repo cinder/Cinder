@@ -28,6 +28,7 @@ namespace cinder {
 struct Noncopyable {
   protected:
 	Noncopyable() = default;
+	Noncopyable( Noncopyable&& ) = default;
 	~Noncopyable() = default;
 
 	Noncopyable( const Noncopyable& ) = delete;
