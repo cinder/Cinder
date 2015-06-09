@@ -33,6 +33,7 @@
 	#include <syslog.h>
 #elif defined( CINDER_MSW )
 	#include <Windows.h>
+	#include <codecvt>
 #endif
 
 #if defined( CINDER_COCOA ) && ( ! defined( __OBJC__ ) )

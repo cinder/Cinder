@@ -35,10 +35,6 @@
 #include <memory>
 #include <mutex>
 
-#if defined( CINDER_MSW )
-#include <codecvt>
-#endif
-
 namespace cinder { namespace log {
 
 typedef enum {
