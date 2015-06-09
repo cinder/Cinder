@@ -466,11 +466,7 @@ void DeferredShadingApp::resize()
 #if !defined( CINDER_COCOA_TOUCH )
 void DeferredShadingApp::screenShot()
 {
-#if defined( CINDER_MSW )
 	const fs::path path = getAppPath();
-#else
-	const fs::path path = getAppPath().parent_path();
-#endif
 	writeImage( path / fs::path( "frame" + toString( getElapsedFrames() ) + ".png" ), copyWindowSurface() );
 }
 #endif
