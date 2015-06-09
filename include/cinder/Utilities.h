@@ -83,6 +83,13 @@ inline double fromString( const std::string &s ) { return atof( s.c_str() ); }
 //! Returns a stack trace (aka backtrace) where \c stackTrace()[0] == caller, \c stackTrace()[1] == caller's parent, etc
 std::vector<std::string> stackTrace();
 
+//! Mallocs `count * sizeof( T )` bytes and returns it in a std::unique_ptr so that `free` will be called when it goes out of scope.
+template <typename T>
+std::unique_ptr<T, decltype( &free )> mallocScoped( size_t count )
+{
+	return unique_ptr<T, decltype( &free )>( (T*)malloc( count * sizeof( T ) ), free );
+}
+
 // ENDIANNESS
 inline int8_t	swapEndian( int8_t val ) { return val; }
 inline uint8_t	swapEndian( uint8_t val ) { return val; }
