@@ -1,0 +1,48 @@
+body.section_home {
+  background: #fff;
+}
+body.section_home h1 {
+  font-size: 3em;
+  font-weight: 700;
+}
+body.section_home #top-primary {
+  color: #949494;
+}
+body.section_home #top-primary #sub-nav {
+  display: none;
+}
+body.section_home #intro {
+  padding: 50px 0 75px 0;
+}
+body.section_home #intro .content {
+  padding: 0 200px 0 0;
+}
+body.section_home #intro .content p {
+  font-size: 1.1em;
+}
+body.section_home #intro #downloads {
+  padding: 20px 0 0 0;
+}
+body.section_home #intro #downloads li {
+  padding: 0 2em 0 0;
+}
+body.section_home #intro #downloads li a {
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+  display: block;
+  padding: 0.2em 0.9375em 0.2em 0.9375em;
+  color: #949494;
+  font-weight: 400;
+  font-size: 0.8em;
+  width: 100%;
+}
+body.section_home #intro #downloads li a:hover {
+  background: #c64b24;
+  color: #fff;
+}
+body.section_home footer {
+  background: background-gray;
+}

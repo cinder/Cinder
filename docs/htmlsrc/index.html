@@ -1,76 +1,201 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head></head>
-<body>
+<head>
+	<meta http-equiv="Content-Type" content="text/xhtml;charset=UTF-8"/>
+	<link href="_assets/css/foundation.css" rel="stylesheet" >
+	<link href="_assets/css/cinder_docs.css" rel="stylesheet" type="text/css"/>
+	<link href="_assets/css/prism.css" rel="stylesheet" type="text/css"/>
+	<link href="_assets/css/treeview.css" rel="stylesheet" type="text/css"/>
+	<link href="search/search.css" rel="stylesheet" type="text/css"/>
+	<link rel="stylesheet" type="text/css" href="_assets/css/index.css">
+	<link rel="stylesheet" type="text/css" href="_assets/css/cinder_icons.css">
 
-<!-- top section -->
-<div>
-	<!-- cinder download links -->
-	<div>
-	</div>
+	<script type="text/javascript" src="_assets/js/dynsections.js"></script>
+	<script type="text/javascript" src="_assets/js/jquery.js"></script>
+	<script type="text/javascript" src="search/searchdata.js"></script>
+	<script type="text/javascript" src="search/search.js"></script>
 
-	<!-- intro -->
-	<div>
-		<h1>Cinder Documentation</h1>
-		<p>If you are just getting started, we recommend you begin with the \ref helloCinder "Hello, Cinder" guide. If you'd like to just get a sense of what's in Cinder, take a look at the <a href="namespaces.html">Namespace list</a>. And don't forget, the samples are still the best way to learn Cinder for now as we work to fill out the documentation.
-		</p>
-	</div>
-</div>
+	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700' rel='stylesheet' type='text/css'>
 
-<!-- guides and features section -->
-<div>
-	<!-- guide links -->
-	<div>
-		<ul>
-			<li><a href="guides/mac-setup/index.html">Setup Cinder on Mac OS X</a></li`>
-			<li><a href="guides/windows-setup/index.html">Setup Cinder on Windows</a></li>
-			<li><a href="guides/git/index.html">Cinder + Git</a></li>
-			<li><a href="guides/TinderBox/index.html">TinderBox: Cinder's Project Creation Tool</a></li>
-			<li><a href="guides/cinder-blocks/index.html">CinderBlocks: Prepackaged Libraries for Cinder</a></li>
-			<li><a href="guides/windows-notes/index.html">Windows Notes</a></li>
+	<script type="text/javascript" src="_assets/js/foundation.min.js"></script>
+	<script type="text/javascript" src="_assets/js/prism.js"></script>
+	<script type="text/javascript" src="_assets/js/cinder.js"></script>
 
-			<li><a href="guides/tour/hello_cinder.html">Hello, Cinder</a></li>
-			<li><a href="guides/resources/index.html">Assets &amp; Resources in Cinder</a></li>
-			<li><a href="guides/screensavers/index.html">Screensavers</a></li>
-			<li><a href="guides/cinder-images/index.html">Images in Cinder</a></li>
-			<li><a href="guides/audio/index.html">Audio in Cinder</a></li>
-			<li><a href="guides/xml-tree/index.html">XML in Cinder</a></li>
-			<li><a href="guides/boost/index.html">Cinder + Boost</a></li>
-			<li><a href="guides/anatomy/index.html">The Anatomy of a Cinder App</a></li>
-		</ul>
-	</div>
+</head>
 
-	<!-- library features -->
-	<div></div>
-</div>
 
-<!-- main content -->
-<div>
-	<!-- category nav -->
-	<div>
-		<ul>
-			<li>App Structure</li>
-			<li>3D Graphics</li>
-			<li>Geometry</li>
-			<li>2D Graphics</li>
-			<li>Image Processing</li>
-			<li>Shaders</li>
-			<li>Audio</li>
-			<li>Keyboard, Mouse, &ampd; Touch Events</li>
-		</ul>
-	</div>
+<body class="section_home">
+	<div id="top-primary">
 
-	<!-- cateogory content -->
-	<div>
-		<section id="app_structure">
-			<h1>App Structure</h1>
-			<hr/>
-			<ul>
-				<li>BSpline</li>
+		<div id="main-nav" class="content row">
+
+			<div class="branding columns large-3">
+				<div class="navbar-header">
+					<a class="navbar-brand" href="index.html"></a><div class="cinder-version">0.8.6</div>
+				</div>
+			</div>
+
+			<div class="columns large-9">
+				<ul class="tablist nav">
+					<li id="nav_reference"><a href="reference/index.html">Reference</a></li>
+					<li id="nav_guides"><a href="guides/index.html">Guides</a></li>
+					<li id="nav_namespaces"><a href="namespaces.html">Namespaces</a></li>
+					<li id="nav_classes"><a href="annotated.html">Classes</a></li>
+
+					<div id="MSearchBox" class="MSearchBoxInactive">
+						<span class="left">
+							<img id="MSearchSelect" src="search/mag_sel.png"
+							onmouseover="return searchBox.OnSearchSelectShow()"
+							onmouseout="return searchBox.OnSearchSelectHide()"
+							alt=""/>
+							<input type="text" id="MSearchField" value="Search" accesskey="S"
+							onfocus="searchBox.OnSearchFieldFocus(true)" 
+							onblur="searchBox.OnSearchFieldFocus(false)" 
+							onkeyup="searchBox.OnSearchFieldChange(event)"/>
+						</span><span class="right">
+						<a id="MSearchClose" href="javascript:searchBox.CloseResultsWindow()"><img id="MSearchCloseImg" border="0" src="search/close.png" alt=""/></a>
+					</span>
+				</div>
 			</ul>
-		</section>
+		</div>
+
+	</div> <!-- end #main-nav -->
+
+		<div id="intro" class="row">
+		<!-- cinder download links -->
+		<div id="downloads" class="columns large-3">
+			<ul>
+				<li><a href="http://libcinder.org/download/">Latest Release (0.9.0)</a></li>
+				<li><a href="https://github.com/cinder/Cinder">Edge Cinder</a></li>
+				<li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.6">Version (0.8.6)</a></li>
+				<li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.5">Version (0.8.5)</a></li>
+				<li><a href="https://github.com/cinder/Cinder/releases/tag/v0.8.4">Version (0.8.4)</a></li>
+			</ul>
+		</div>
+
+		<!-- intro -->
+		<div class="content content-column columns large-9">
+			<h1>Cinder Documentation</h1>
+			<p>If you are just getting started, we recommend you begin with the <a href="guides/tour/hello_cinder.html">Hello, Cinder</a> guide. If you'd like to just get a sense of what's in Cinder, take a look at the <a href="namespaces.html">Namespace list</a>. And don't forget, the samples are still the best way to learn Cinder for now as we work to fill out the documentation.
+			</p>
+		</div>
+		</div>
 	</div>
+
+
+
+<!-- Search stuff -->
+<script type="text/javascript">
+	var searchBox = new SearchBox("searchBox", "search",false,'Search');
+</script>
+
+<!-- window showing the filter options -->
+<div id="MSearchSelectWindow"
+onmouseover="return searchBox.OnSearchSelectShow()"
+onmouseout="return searchBox.OnSearchSelectHide()"
+onkeydown="return searchBox.OnSearchSelectKey(event)">
 </div>
 
-</body>
+<!-- iframe showing the search results (closed by default) -->
+<div id="MSearchResultsWindow">
+	<iframe src="javascript:void(0)" frameborder="0" 
+		name="MSearchResults" id="MSearchResults">
+	</iframe>
+</div>
+<!-- End search stuff -->
+
+
+
+<div id="container" class="row content-row">	
+
+	<div id="template-content" class="columns large-12">
+
+		<!-- guides and features section -->
+		<div class="row">
+
+			<!-- guide links -->
+			<div class="columns large-3">
+				<h3>Cinder Guides</h3>
+				<ul>
+					<li><a href="guides/mac-setup/index.html">Setup Cinder on Mac OS X</a></li`>
+						<li><a href="guides/windows-setup/index.html">Setup Cinder on Windows</a></li>
+						<li><a href="guides/git/index.html">Cinder + Git</a></li>
+						<li><a href="guides/TinderBox/index.html">TinderBox</a></li>
+						<li><a href="guides/cinder-blocks/index.html">Cinder Blocks</a></li>
+						<li><a href="guides/tour/hello_cinder.html">Hello, Cinder</a></li>
+						<li><a href="guides/guides/index.html">All Guides</a></li>
+					</ul>
+				</div>
+
+				<!-- library features -->
+				<div class="columns content-column large-9">
+					<h3>Library Features</h3>
+					<ul class="library-features clearing-thumbs small-block-grid-2 medium-block-grid-3 large-block-grid-4">
+						<li>
+							<a href="reference/geometry.html">
+								<img src="_assets/images/icon_buttons/geometry_gray.png">
+								<img src="_assets/images/icon_buttons/geometry_orange.png" class="over">
+							<span class="title">Geometry</span></a></li>
+						<li>
+							<a href="reference/math.html">
+								<img src="_assets/images/icon_buttons/math_gray.png"> 
+								<img src="_assets/images/icon_buttons/math_orange.png" class="over">
+							<span class="title">Math</span></a></li>
+						<li>
+							<a href="reference/system.html">
+								<img src="_assets/images/icon_buttons/system_gray.png" > 
+								<img src="_assets/images/icon_buttons/system_orange.png" class="over">
+							<span class="title">System</span></a></li>
+						<li>
+							<a href="reference/platform.html">
+								<img src="_assets/images/icon_buttons/platform_gray.png"> 
+								<img src="_assets/images/icon_buttons/platform_orange.png" class="over">
+							<span class="title">Platform</span></a></li>
+						<li>
+							<a href="reference/opengl.html">
+								<img src="_assets/images/icon_buttons/opengl_gray.png">
+								<img src="_assets/images/icon_buttons/opengl_orange.png" class="over">
+							<span class="title">Open GL</span></a></li>
+						<li>
+							<a href="reference/2dgraphics.html">
+								<img src="_assets/images/icon_buttons/2d_gray.png">
+								<img src="_assets/images/icon_buttons/2d_orange.png" class="over">
+							<span class="title">2D Graphics</span></a></li>
+						<li>
+							<a href="reference/audio.html">
+								<img src="_assets/images/icon_buttons/audio_gray.png">
+								<img src="_assets/images/icon_buttons/audio_orange.png" class="over">
+							<span class="title">Audio</span></a></li>
+						<li>
+							<a href="reference/video.html">
+								<img src="_assets/images/icon_buttons/video_gray.png">
+								<img src="_assets/images/icon_buttons/video_orange.png" class="over">
+							<span class="title">video</span></a></li>
+						<li>
+							<a href="reference/images.html">
+								<img src="_assets/images/icon_buttons/images_gray.png" > 
+								<img src="_assets/images/icon_buttons/images_orange.png" class="over">
+							<span class="title">Images</span></a></li>
+						<li>
+							<a href="reference/application.html">
+								<img src="_assets/images/icon_buttons/app_gray.png" >
+								<img src="_assets/images/icon_buttons/app_orange.png" class="over">
+							<span class="title">Application</span></a></li>
+					</ul>
+				</div>
+
+			</div>
+		</div> <!-- row -->
+	</div>
+
+	<!-- start footer part -->
+	<footer>
+		<div class="row">
+			&copy;Copyright 2015 <a href="http://www.libcinder.org">Cinder</a>		
+		</div>
+	  
+	</footer>
+
+
+	</body>
 </html>

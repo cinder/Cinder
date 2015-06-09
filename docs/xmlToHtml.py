@@ -474,17 +474,14 @@ def markupEnum( bs4, fnXml, parent ):
 
 
 def defineTag( bs4, tagName, tree ):
-
 	newTag = bs4.new_tag( tagName )
 	if tagName == "a":
 		defineLinkTag( newTag, tree.attrib )
 	# elif tagName == "code":
 		# addClassToTag( newTag, "language-cpp" );
-	
 	return newTag
 
 def genIncludes( fileDef ):
-
 	bs4 = g_currentFile.bs4
 
 	# create html from template
@@ -1360,51 +1357,62 @@ def processHtmlFile( inPath, outPath ):
 	print "processHtmlFile"
 
 	htmlTemplate = "htmlContentTemplate.html"
+	isIndex = False
 	if inPath.find( "reference/" ) > -1:
 		htmlTemplate = "referenceContentTemplate.html"
 	elif inPath.find( "guides/" ) > -1:
 		htmlTemplate = "guidesContentTemplate.html"
 
 	# construct template
-	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", htmlTemplate, "footerTemplate.html"] )
-	# parse original html file
-	origHtml = generateBs4( inPath )
 	
-	# replace all of the bs4 css and js links and make them relative to the outpath
-	for link in bs4.find_all("link"):
-		if link.has_attr("href"):
-			link["href"] = updateLink( link["href"], outPath )
+	if inPath == "htmlsrc/index.html":
+		print "FOUND OUR INDEX"
+		isIndex = True;
 
-	for a in bs4.find_all("a"):
-		if a.has_attr("href"):
-			a["href"] = updateLink( a["href"], outPath )
+	if isIndex is True:
+		bs4 = generateBs4( inPath )
+	else:
 
-	for script in bs4.find_all("script"):
-		if script.has_attr("src"):
-			script["src"] = updateLink( script["src"], outPath )
+		bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", htmlTemplate, "footerTemplate.html"] )
 
-	for img in bs4.find_all("img"):
-		if img.has_attr("src"):
-			img["src"] = updateLink( img["src"], outPath )
-	
-	# plug original html content into template
-	bs4.body.find(id="template-content").append(origHtml.body)
+		# parse original html file
+		origHtml = generateBs4( inPath )
+		
+		# replace all of the bs4 css and js links and make them relative to the outpath
+		for link in bs4.find_all("link"):
+			if link.has_attr("href"):
+				link["href"] = updateLink( link["href"], outPath )
 
-	# copy all js and css paths that may be in the original html and paste into new file
-	for link in origHtml.find_all("link"):
-		bs4.head.append( link )
+		for a in bs4.find_all("a"):
+			if a.has_attr("href"):
+				a["href"] = updateLink( a["href"], outPath )
 
-	for script in origHtml.find_all("script"):
-		bs4.body.append( script )	
-	
-	# link up all d tags
-	for tag in bs4.find_all('d'):
-		new_link = replaceDTag( bs4, tag );
-		if new_link is not None:
-			link.replace_with( new_link )
+		for script in bs4.find_all("script"):
+			if script.has_attr("src"):
+				script["src"] = updateLink( script["src"], outPath )
 
-	# set page data
-	# setSection( bs4, "" )
+		for img in bs4.find_all("img"):
+			if img.has_attr("src"):
+				img["src"] = updateLink( img["src"], outPath )
+		
+		# plug original html content into template
+		bs4.body.find(id="template-content").append(origHtml.body)
+
+		# copy all js and css paths that may be in the original html and paste into new file
+		for link in origHtml.find_all("link"):
+			bs4.head.append( link )
+
+		for script in origHtml.find_all("script"):
+			bs4.body.append( script )	
+		
+		# link up all d tags
+		for tag in bs4.find_all('d'):
+			new_link = replaceDTag( bs4, tag );
+			if new_link is not None:
+				link.replace_with( new_link )
+
+		# set page data
+		# setSection( bs4, "" )
 	 
 	writeHtml( bs4, outPath )
 

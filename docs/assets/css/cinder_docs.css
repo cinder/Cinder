@@ -121,6 +121,10 @@ em {
   background: #252726;
   padding: 0 0 0 0;
   margin: 0;
+  color: #fff;
+}
+#top-primary h1 {
+  color: #fff;
 }
 #top-primary #main-nav {
   height: 105px;
@@ -232,7 +236,7 @@ em {
 }
 .content-row > .columns {
   padding-top: 40px;
-  min-height: 600px;
+  min-height: 400px;
 }
 #container {
   background: #fff;
@@ -290,6 +294,9 @@ em {
 }
 .returnCol {
   text-align: right;
+}
+.content-column {
+  padding: 0;
 }
 .expandable {
   position: relative;
@@ -452,6 +459,52 @@ button.expand {
 }
 #side-nav .css-treeview input + label + ul {
   margin: 0;
+}
+ul.library-features li {
+  display: block;
+}
+ul.library-features li a {
+  position: relative;
+  display: block;
+  border: solid 1px #949494;
+  background: #252726;
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+}
+ul.library-features li a img.over {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 10;
+  opacity: 0;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+  filter: alpha(opacity=0);
+  -webkit-transition: all 250ms;
+  -moz-transition: all 250ms;
+  -o-transition: all 250ms;
+  -ms-transition: all 250ms;
+  transition: all 250ms;
+}
+ul.library-features li a .title {
+  position: absolute;
+  color: #fff;
+  width: 100%;
+  text-align: center;
+  display: inline-block;
+  bottom: 10px;
+  text-transform: uppercase;
+  font-weight: 400;
+}
+ul.library-features li a:hover {
+  background: #c64b24;
+}
+ul.library-features li a:hover img.over {
+  opacity: 1;
+  -ms-filter: none;
+  filter: none;
 }
 footer {
   font-size: 0.8em;
