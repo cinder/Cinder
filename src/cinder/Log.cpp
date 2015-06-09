@@ -43,9 +43,6 @@
 #include <mutex>
 #include <time.h>
 
-// TODO: consider storing Logger's as shared_ptr instead
-//	- they really aren't shared, but makes swapping them in and out and LogManager's handles easier
-
 using namespace std;
 
 namespace cinder { namespace log {
