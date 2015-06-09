@@ -94,8 +94,9 @@ inline std::ostream& operator<<( std::ostream &out, const TouchEvent::Touch &tou
 inline std::ostream& operator<<( std::ostream &out, const TouchEvent &event )
 {
 	out << "{" << std::endl;
-	for( std::vector<TouchEvent::Touch>::const_iterator tIt = event.getTouches().begin(); tIt != event.getTouches().end(); ++tIt )
-		out << "  " << *tIt << std::endl;
+	for( const auto &touch : event.getTouches() ) {
+		out << "  " << touch << std::endl;
+	}
 	out << "}";
 	return out;
 }
