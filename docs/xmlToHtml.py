@@ -14,6 +14,8 @@ XML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'xml'
 DOXYGEN_HTML_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'html' + os.sep
 HTML_SOURCE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep
 TEMPLATE_PATH = os.path.dirname( os.path.realpath(__file__) ) + os.sep + 'htmlsrc' + os.sep + "_templates" + os.sep
+PARENT_DIR = os.path.dirname( os.path.realpath(__file__) ).split('/docs')[0]
+GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
 # convert docygen markup to html markup
 tagDictionary = {
@@ -81,6 +83,13 @@ class SymbolMap (object):
 			self.name = name
 			self.path = path
 			self.typedefs = typedefs
+			self.githubPath = None
+
+			relPathArr = self.path.split( PARENT_DIR )
+			if len( relPathArr ) > 1:
+				self.githubPath = GITHUB_PATH + self.path.split( PARENT_DIR )[1]
+				# print "GITHUB PATH: " + self.githubPath
+			
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
@@ -474,7 +483,7 @@ def defineTag( bs4, tagName, tree ):
 	
 	return newTag
 
-def genIncludes( includeDef ):
+def genIncludes( fileDef ):
 
 	bs4 = g_currentFile.bs4
 
@@ -486,8 +495,11 @@ def genIncludes( includeDef ):
 	side.find('h4').append("#include")
 
 	# add include link
-	includeLink = genTag( bs4, "a", None, includeDef )
-	defineLinkTag( includeLink, {'linkid':includeDef} )
+	includeLink = genTag( bs4, "a", None, fileDef.name )
+	path = fileDef.githubPath
+	if path is None:
+		fileDef.path
+	defineLinkTag( includeLink, {'href':path} )
 	contentDiv.append( includeLink )
 
 	g_currentFile.appendToSideEl( side )
@@ -1037,7 +1049,7 @@ def processClassXmlFile( inPath, outPath, html ):
 	# +---------------+
 	# includes
 	if includeDef != None :
-		genIncludes( includeDef )
+		genIncludes( fileDef )
 
 	# typedefs
 	if fileDef != None:
@@ -1347,15 +1359,12 @@ def processHtmlFile( inPath, outPath ):
 	"""
 	print "processHtmlFile"
 
-	print "FIND REFERENCE"
-	print inPath.find("reference/")
 	htmlTemplate = "htmlContentTemplate.html"
 	if inPath.find( "reference/" ) > -1:
 		htmlTemplate = "referenceContentTemplate.html"
 	elif inPath.find( "guides/" ) > -1:
 		htmlTemplate = "guidesContentTemplate.html"
 
-	print htmlTemplate
 	# construct template
 	bs4 = constructTemplate( ["headerTemplate.html", "mainNavTemplate.html", htmlTemplate, "footerTemplate.html"] )
 	# parse original html file
@@ -1522,7 +1531,8 @@ def getSymbolToFileMap( tagDom ):
 	fileTags = tagXml.findall( r'compound/[@kind="file"]')
 	for f in fileTags:
 		name = f.find('name').text
-		filePath = f.find('filename').text
+		# filePath = f.find('path').text + f.find('filename').text
+		filePath = f.find('path').text + name
 		typedefs = []
 
 		# find typedefs for each file
@@ -1532,6 +1542,8 @@ def getSymbolToFileMap( tagDom ):
 			filePath = t.find('anchorfile').text + "#" + t.find("anchor").text
 			typedef = SymbolMap.Typedef( tdName, type, filePath )
 			typedefs.append( typedef )
+
+		# print "FILE PATH: " + name + " | " + filePath
 		symbolMap.files[name] = SymbolMap.File( name, filePath, typedefs )
 
 	return symbolMap
