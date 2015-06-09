@@ -23,7 +23,7 @@ void main()
 	float area = abs( v1.x * v2.y - v1.y * v2.x );
 
 	vDistance = vec3( area / length( v0 ), 0,0 );
-	gl_Position = gl_in[1].gl_Position;
+	gl_Position = gl_in[0].gl_Position;
 	EmitVertex();
 
 	vDistance = vec3( 0, area / length( v1 ), 0 );
