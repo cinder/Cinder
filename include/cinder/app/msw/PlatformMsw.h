@@ -46,8 +46,9 @@ class PlatformMsw : public Platform {
 	std::map<std::string,std::string>	getEnvironmentVariables() override;
 
 	fs::path	expandPath( const fs::path &path ) override;
-	fs::path	getHomeDirectory() override;
-	fs::path	getDocumentsDirectory()	override;
+	fs::path	getHomeDirectory() const override;
+	fs::path	getDocumentsDirectory() const override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;

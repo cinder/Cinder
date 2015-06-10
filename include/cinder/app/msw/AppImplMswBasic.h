@@ -53,7 +53,6 @@ class AppImplMswBasic : public AppImplMsw {
 	size_t		getNumWindows() const;
 	WindowRef	getWindowIndex( size_t index );
 	WindowRef	getForegroundWindow() const;
-	fs::path	getAppPath() const;
 	
 	void		setupBlankingWindows( DisplayRef fullScreenDisplay );
 	void		destroyBlankingWindows();

@@ -202,9 +202,6 @@ class AppCocoaTouch : public AppBase {
 	//! Overidden to disable, mobile is always full screen.
 	void	setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) override;
 
-	//! Returns the path to the application on disk
-	fs::path	getAppPath() const override;
-
 	//! Returns an invalid position since the device doesn't have a mouse.
 	ivec2 getMousePos() const override	{ return ivec2( -1 ); }
 

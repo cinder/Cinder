@@ -159,19 +159,24 @@ fs::path PlatformCocoa::expandPath( const fs::path &path )
 	return fs::path( result );
 }
 
-fs::path PlatformCocoa::getDocumentsDirectory()
+fs::path PlatformCocoa::getDocumentsDirectory() const
 {
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths firstObject];
 	return fs::path( cocoa::convertNsString( docDir ) + "/" );
 }
 
-fs::path PlatformCocoa::getHomeDirectory()
+fs::path PlatformCocoa::getHomeDirectory() const
 {
 	NSString *home = ::NSHomeDirectory();
 	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
 	return fs::path( result );	
+}
+
+fs::path PlatformCocoa::getDefaultExecutablePath() const
+{
+	return fs::path( [[[::NSBundle mainBundle] bundlePath] UTF8String] ).parent_path();
 }
 
 void PlatformCocoa::launchWebBrowser( const Url &url )
