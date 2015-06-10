@@ -295,6 +295,9 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderSave runModal];
 	setInsideModalLoop( false );
+	auto ciAppWindow = app::getWindow();
+	if( ciAppWindow && ciAppWindow->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );

@@ -303,6 +303,8 @@ using namespace cinder::app;
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+	if( getWindow() && getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 	mApp->emitDidBecomeActive();
 }
 
@@ -847,7 +849,7 @@ using namespace cinder::app;
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-	
+
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
 
