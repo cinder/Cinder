@@ -148,8 +148,8 @@ using namespace cinder::app;
 
 		cinder::DisplayMac *displayMac = dynamic_cast<cinder::DisplayMac*>( options->getDisplay().get() );
         NSScreen *screen = ( displayMac ? displayMac->getNsScreen() : [[self window] screen] );
+		[[self window] setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle | NSWindowCollectionBehaviorTransient];		
         [self enterFullScreenMode:screen withOptions:dict];
-		[[self window] setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle];
     }
     else {
 		// Exit kiosk
