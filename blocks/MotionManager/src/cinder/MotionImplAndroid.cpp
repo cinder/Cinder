@@ -189,9 +189,10 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 	    }
     }
 
+    
 	static const float kPiOverTwo = M_PI / 2.0f;
-
-	ci::mat4 correctionMatrix;
+	ci::mat4 correctionMatrix = correctionMatrix = glm::axisAngleMatrix( vec3( 1, 0, 0 ), (float)kPiOverTwo );;
+	result = result*correctionMatrix;
 
 	switch( orientation ) {
 		case app::PortraitUpsideDown: {
@@ -228,7 +229,7 @@ void MotionImplAndroid::updateAccelerometer( const ci::vec3& data )
 {
 //console() << "MotionImplAndroid::updateAccelerometer" << std::endl;
 
-	if( mHasAccelerometer ) {
+	if( mHasAccelerometer ) {		
 		mAccelerometer += mAccelFilter*(data - mAccelerometer);
 	}
 	else {

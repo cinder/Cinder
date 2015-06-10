@@ -86,10 +86,16 @@ void Sensors::draw()
 	gl::pushModelMatrix();
 		glCullFace( GL_BACK );
 		gl::translate( getWindowSize() / 2 );
+#if defined( CINDER_ANDROID )
+		gl::scale( vec3( 500.0f, 500.0f, 500.0f ) );
+#else
 		gl::scale( vec3( 200.0f, 200.0f, 200.0f ) );
+#endif
 		gl::color( 1.0f, 1.0f, 1.0f );
 		//gl::drawSphere( vec3(0.0f), 1.0f, 8 );
 		gl::rotate( MotionManager::getRotation( getOrientation() ) );
+
+		//gl::rotate( 1.75, 0, 1, 0 );
 		gl::drawColorCube( vec3(0.0f), vec3(1.0f) );
 	gl::popModelMatrix();
 }

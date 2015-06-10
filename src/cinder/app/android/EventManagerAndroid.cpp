@@ -572,7 +572,11 @@ dbg_app_log( "Starting Event Loop" );
 						switch( sensorEvent.type ) {
 							case ASENSOR_TYPE_ACCELEROMETER: {
 								if( mAccelerometerSensor && ( mAccelerometerSensor->mCallbackFn ) ) {
-									ci::vec3 accel = ci::vec3( sensorEvent.acceleration.x, sensorEvent.acceleration.y, sensorEvent.acceleration.z );
+									ci::vec3 accel = ci::vec3( 
+										sensorEvent.acceleration.x, // / ASENSOR_STANDARD_GRAVITY, 
+										sensorEvent.acceleration.y, // / ASENSOR_STANDARD_GRAVITY, 
+										sensorEvent.acceleration.z  // / ASENSOR_STANDARD_GRAVITY 
+									);
 									mAccelerometerSensor->mCallbackFn( accel );
 								}
 							}

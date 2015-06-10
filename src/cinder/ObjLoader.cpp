@@ -28,6 +28,15 @@
 #include <sstream>
 using namespace std;
 
+#if defined( CINDER_ANDROID )
+#include <cstdlib>
+int stoi( const std::string& str ) 
+{
+	return strtol( str.c_str(), nullptr, 10 );
+}
+#endif 
+
+
 namespace cinder {
 
 geom::SourceRef	loadGeom( const fs::path &path )

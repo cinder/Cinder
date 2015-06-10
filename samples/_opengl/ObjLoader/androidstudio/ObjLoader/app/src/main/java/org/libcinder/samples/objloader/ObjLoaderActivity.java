@@ -1,7 +1,7 @@
 package org.libcinder.samples.objloader;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class ObjLoaderActivity extends NativeActivity {
+public class ObjLoaderActivity extends CinderNativeActivity {
     static final String TAG = "ObjLoaderActivity";
 }

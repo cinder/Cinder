@@ -624,6 +624,7 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
     ${CINDER_SRC_DIR}/cinder/MatrixStack.cpp
+    ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
     ${CINDER_SRC_DIR}/cinder/Path2d.cpp
     ${CINDER_SRC_DIR}/cinder/Perlin.cpp
     ${CINDER_SRC_DIR}/cinder/Plane.cpp

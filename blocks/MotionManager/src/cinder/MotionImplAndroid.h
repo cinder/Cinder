@@ -62,7 +62,7 @@ private:
 	float 						mUpdateFrequency = 60.0f;
 	MotionManager::SensorMode	mSensorMode;
 	
-	float						mAccelFilter = 0.1f;
+	float						mAccelFilter = 0.08f;
 
 	bool 		mHasAccelerometer = false;
 	bool 		mHasMagneticField = false;
