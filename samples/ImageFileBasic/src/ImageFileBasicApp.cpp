@@ -5,6 +5,8 @@
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
+#include "cinder/ImageFileTinyExr.h"
+
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -21,6 +23,9 @@ class ImageFileBasicApp : public App {
 
 void ImageFileBasicApp::setup()
 {
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
+
 	try {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
@@ -63,8 +68,10 @@ void ImageFileBasicApp::draw()
 	gl::clear( Color( 0.5f, 0.5f, 0.5f ) );
 	gl::enableAlphaBlending();
 	
-	if( mTexture )
-		gl::draw( mTexture, vec2( 0, 0 ) );
+	if( mTexture ) {
+		Rectf destRect = Rectf( mTexture->getBounds() ).getCenteredFit( getWindowBounds(), true ).scaledCentered( 0.85f );
+		gl::draw( mTexture, destRect );
+	}
 }
 
 CINDER_APP( ImageFileBasicApp, RendererGl )
