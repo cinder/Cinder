@@ -118,6 +118,7 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 			setColorModel( ImageIo::CM_RGB );
 			setChannelOrder( ImageIo::ChannelOrder::RGBA );
 		break;
+		default:
 			throw ImageIoException();
 	}
 }
