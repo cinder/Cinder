@@ -69,10 +69,12 @@ private:
 	bool 		mHasMagneticField = false;
 	bool 		mHasGyroscope = false;
 	bool 		mHasGravity = false;
+	bool 		mHasRotationVector = false;
 	ci::vec3 	mAccelerometer;
 	ci::vec3 	mMagneticField;
 	ci::vec3 	mGyroscope;
 	ci::vec3 	mGravity;
+	ci::vec3 	mRotationVector;
 
 	mutable ci::mat4	mRotationMatrix;
 
@@ -80,6 +82,7 @@ private:
 	void 		updateMagneticField( const ci::vec3& data );
 	void 		updateGyroscope( const ci::vec3& data );
 	void 		updateGravity( const ci::vec3& data );
+	void 		updateRotationVector( const ci::vec3& data );
 
 };
 

@@ -39,7 +39,8 @@ using namespace ci::android;
 
 // Extension
 enum {
-	ASENSOR_TYPE_GRAVITY = 9
+	ASENSOR_TYPE_GRAVITY 			= 9,
+	ASENSOR_TYPE_ROTATION_VECTOR	= 11, 
 };
 
 namespace cinder { namespace app { 
@@ -65,7 +66,8 @@ EventManagerAndroid::EventManagerAndroid( android_app *nativeApp, std::function<
 	mGyroscopeSensor		= std::make_shared<Sensor>();
 	mLightSensor			= std::make_shared<Sensor>();
 	mProximitySensor		= std::make_shared<Sensor>();	
-	mGravitySensor			= std::make_shared<Sensor>();	
+	mGravitySensor			= std::make_shared<Sensor>();
+	mRotationVectorSensor 	= std::make_shared<Sensor>();
 }
 
 EventManagerAndroid::~EventManagerAndroid()
@@ -112,6 +114,11 @@ bool EventManagerAndroid::isGravityAvailable() const
 	return mGravitySensor && (nullptr != mGravitySensor->mSensor);
 }
 
+bool EventManagerAndroid::isRotationVectorAvailable() const
+{
+	return mRotationVectorSensor && (nullptr != mRotationVectorSensor->mSensor);
+}
+
 void EventManagerAndroid::enableAccelerometer( SensorCallbackFn updateFn, int32_t usec )
 {
 	if( enableAccelerometer() ) {
@@ -156,6 +163,17 @@ void EventManagerAndroid::enableGravity( SensorCallbackFn updateFn, int32_t usec
 	}
 }
 
+void EventManagerAndroid::enableRotationVector( SensorCallbackFn updateFn, int32_t usec )
+{
+	if( enableRotationVector() ) {
+		mRotationVectorSensor->mRequested = true;
+		mRotationVectorSensor->mCallbackFn = updateFn;
+
+		usec = std::max( (int32_t)ASensor_getMinDelay( mRotationVectorSensor->mSensor ), usec );
+		ASensorEventQueue_setEventRate( mSensorEventQueue, mRotationVectorSensor->mSensor, usec );		
+	}
+}
+
 bool EventManagerAndroid::enableAccelerometer()
 {
 	bool result = false;
@@ -192,6 +210,15 @@ bool EventManagerAndroid::enableGravity()
 	return result;
 }
 
+bool EventManagerAndroid::enableRotationVector()
+{
+	bool result = false;
+	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() ) {
+		result = ( ASensorEventQueue_enableSensor( mSensorEventQueue, mRotationVectorSensor->mSensor ) >= 0 );
+	}
+	return result;
+}
+
 void EventManagerAndroid::disableAccelerometer()
 {
 	if( ( nullptr != mSensorEventQueue ) && isAccelerometerAvailable() ) {
@@ -215,8 +242,15 @@ void EventManagerAndroid::disableGyroscope()
 
 void EventManagerAndroid::disableGravity()
 {
-	if( ( nullptr != mSensorEventQueue ) && isGyroscopeAvailable() ) {
+	if( ( nullptr != mSensorEventQueue ) && isGravityAvailable() ) {
 		ASensorEventQueue_disableSensor( mSensorEventQueue, mGravitySensor->mSensor );
+	}
+}
+
+void EventManagerAndroid::disableRotationVector()
+{
+	if( ( nullptr != mSensorEventQueue ) && isRotationVectorAvailable() ) {
+		ASensorEventQueue_disableSensor( mSensorEventQueue, mRotationVectorSensor->mSensor );
 	}
 }
 
@@ -577,14 +611,16 @@ void EventManagerAndroid::execute()
 	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
 	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mGravitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GRAVITY );
+	mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
 	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
-	dbg_log_sensor( "mAccelerometerSensor", mAccelerometerSensor );
-	dbg_log_sensor( "mMagneticFieldSensor", mMagneticFieldSensor );
-	dbg_log_sensor( "mGyroscopeSensor    ", mGyroscopeSensor );
-	dbg_log_sensor( "mLightSensor        ", mLightSensor );
-	dbg_log_sensor( "mProximitySensor    ", mProximitySensor );
-	dbg_log_sensor( "mGravitySensor      ", mGravitySensor );
+	dbg_log_sensor( "mAccelerometerSensor ", mAccelerometerSensor );
+	dbg_log_sensor( "mMagneticFieldSensor ", mMagneticFieldSensor );
+	dbg_log_sensor( "mGyroscopeSensor     ", mGyroscopeSensor );
+	dbg_log_sensor( "mLightSensor         ", mLightSensor );
+	dbg_log_sensor( "mProximitySensor     ", mProximitySensor );
+	dbg_log_sensor( "mGravitySensor       ", mGravitySensor );
+	dbg_log_sensor( "mRotationVectorSensor", mRotationVectorSensor );
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
@@ -653,15 +689,27 @@ dbg_app_log( "Starting Event Loop" );
 
 							case ASENSOR_TYPE_GRAVITY: {
 								if( mGravitySensor && ( mGravitySensor->mCallbackFn ) ) {
-									ci::vec3 accel = ci::vec3( 
+									ci::vec3 grav = ci::vec3( 
 										 sensorEvent.vector.x,
 										 sensorEvent.vector.y,
 										-sensorEvent.vector.z
 									);
-									mGravitySensor->mCallbackFn( accel );
+									mGravitySensor->mCallbackFn( grav );
 								}
 							}
-							break;							
+							break;
+
+							case ASENSOR_TYPE_ROTATION_VECTOR: {
+								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
+									ci::vec3 rot = ci::vec3( 
+										 sensorEvent.vector.x,
+										 sensorEvent.vector.y,
+										-sensorEvent.vector.z
+									);
+									mRotationVectorSensor->mCallbackFn( rot );
+								}
+							}
+							break;										
 						}
 					}
 				}

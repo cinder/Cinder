@@ -50,23 +50,27 @@ public:
 	bool  						isMagneticFieldAvailable() const;
 	bool 						isGyroscopeAvailable() const;
 	bool 						isGravityAvailable() const;
+	bool 						isRotationVectorAvailable() const;
 
 	void 						enableAccelerometer( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableMagneticField( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableGyroscope( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableGravity( SensorCallbackFn updateFn, int32_t usec = -1 );
+	void 						enableRotationVector( SensorCallbackFn updateFn, int32_t usec = -1 );
 
 private:
 	bool 						enableAccelerometer();
 	bool 						enableMagneticField();
 	bool 						enableGyroscope();
 	bool 						enableGravity();
+	bool 						enableRotationVector();
 
 public:
 	void 						disableAccelerometer();
 	void 						disableMagneticField();
 	void 						disableGyroscope();
 	void 						disableGravity();
+	void 						disableRotationVector();
 
 	void 						execute();
 
@@ -108,6 +112,7 @@ public:
 	std::shared_ptr<Sensor> 	mLightSensor;
 	std::shared_ptr<Sensor> 	mProximitySensor;
 	std::shared_ptr<Sensor> 	mGravitySensor;
+	std::shared_ptr<Sensor> 	mRotationVectorSensor;
  	ASensorEventQueue 			*mSensorEventQueue = nullptr;
 
 	bool 						mDeferredMainHasBeenCalled;

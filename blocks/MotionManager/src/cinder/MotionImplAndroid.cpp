@@ -86,10 +86,14 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 	auto updateGravityFn = std::bind( &MotionImplAndroid::updateGravity, this, std::placeholders::_1 );
 	eventManager->enableGravity( updateGravityFn, usec );	
 
+	auto updateRotationVectorFn = std::bind( &MotionImplAndroid::updateRotationVector, this, std::placeholders::_1 );
+	eventManager->enableRotationVector( updateRotationVectorFn, usec );	
+
 	mHasAccelerometer = false;
 	mHasMagneticField = false;
 	mHasGyroscope = false;
 	mHasGravity = false;
+	mHasRotationVector = true;
 
 	/*
 	if( MotionManager::Accelerometer == mSensorMode ) {
@@ -111,6 +115,7 @@ void MotionImplAndroid::stopMotionUpdates()
 	eventManager->disableMagneticField();
 	eventManager->disableGyroscope();
 	eventManager->disableGravity();
+	eventManager->disableRotationVector();
 
 
 	/*
@@ -149,7 +154,36 @@ ci::vec3 MotionImplAndroid::getGravityDirection( app::InterfaceOrientation orien
 
 ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation ) const
 {
-	return toQuat( getRotationMatrix( orientation ) );
+/*
+	public static void getQuaternionFromVector(float[] Q, float[] rv) {
+        if (rv.length == 4) {
+            Q[0] = rv[3];
+        } else {
+            Q[0] = 1 - rv[0]*rv[0] - rv[1]*rv[1] - rv[2]*rv[2];
+            Q[0] = (Q[0] > 0) ? (float)Math.sqrt(Q[0]) : 0;
+        }
+        Q[1] = rv[0];
+        Q[2] = rv[1];
+        Q[3] = rv[2];
+    }
+*/
+
+  	const float* rv = reinterpret_cast<const float*>( &mRotationVector );
+	float w =  1.0f - rv[0]*rv[0] - rv[1]*rv[1] - rv[2]*rv[2];
+   	w = (w > 0.0f) ? sqrtf( w ) : 0.0f;
+
+   	float x = rv[0];
+   	float y = rv[1];
+   	float z = rv[2];
+
+   	ci::quat result = ci::quat( w, x, y, z );
+
+   	static const float kPiOverTwo = M_PI / 2.0f;
+   	result = result*glm::angleAxis( kPiOverTwo, vec3( 1, 0, 0 ) )*glm::angleAxis( (float)M_PI, vec3( 0, 0, 1 ) );
+
+   	return result;
+
+	//return toQuat( getRotationMatrix( orientation ) );
 }
 
 ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation ) const
@@ -307,6 +341,17 @@ void MotionImplAndroid::updateGravity( const ci::vec3& data )
 	else {
 		mGravity = data;
 		mHasGravity = true;
+	}
+}
+
+void MotionImplAndroid::updateRotationVector( const ci::vec3& data )
+{
+	if( mHasRotationVector ) {
+		mRotationVector += mAccelFilter*(data - mRotationVector);
+	}
+	else {
+		mRotationVector = data;
+		mHasRotationVector = true;
 	}
 }
 
