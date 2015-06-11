@@ -562,11 +562,11 @@ class Texture2d : public TextureBase {
 	void			replace( const TextureData &textureData );
 
 	//! Returns the width of the texture in pixels.
-	GLint			getWidth() const { return mCleanBounds.getWidth(); }
+	GLint			getWidth() const override { return mCleanBounds.getWidth(); }
 	//! Returns the height of the texture in pixels.
-	GLint			getHeight() const { return mCleanBounds.getHeight(); }
+	GLint			getHeight() const override { return mCleanBounds.getHeight(); }
 	//! Returns the depth of the texture in pixels.
-	GLint			getDepth() const { return 1; }
+	GLint			getDepth() const override { return 1; }
 	//! Returns the true width of the texture in pixels, which may be larger than it's "clean" area
 	GLint			getActualWidth() const { return mActualSize.x; }
 	//! Returns the true height of the texture in pixels, which may be larger than it's "clean" area
