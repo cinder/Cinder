@@ -155,7 +155,7 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 		case ImageIo::ColorModel::CM_RGB:
 			mNumComponents = ( imageSource->hasAlpha() ) ? 4 : 3;
 			setColorModel( ImageIo::ColorModel::CM_RGB );
-			setChannelOrder( ( mNumComponents == 4 ) ? ImageIo::ChannelOrder::BGR : ImageIo::ChannelOrder::ABGR );
+			setChannelOrder( ( mNumComponents == 3 ) ? ImageIo::ChannelOrder::BGR : ImageIo::ChannelOrder::ABGR );
 		break;
 		case ImageIo::ColorModel::CM_GRAY:
 			mNumComponents = ( imageSource->hasAlpha() ) ? 2 : 1;
@@ -200,7 +200,7 @@ void ImageTargetFileTinyExr::finalize()
 	// construct a surface (doesn't own data) that allows us to easily pull out the planar channels
 	Surface32f surface;
 	if( mNumComponents == 3 ) {
-		surface = Surface32f( mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::BGR );
+		surface = Surface32f( (float*)mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::BGR );
 		mImagePlanar[0] = surface.getChannelBlue();
 		mImagePlanar[1] = surface.getChannelGreen();
 		mImagePlanar[2] = surface.getChannelRed();
@@ -208,7 +208,7 @@ void ImageTargetFileTinyExr::finalize()
 		mChannelNames = { "G", "B", "R" };
 	}
 	else if( mNumComponents == 4 ) {
-		surface = Surface32f( mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::ABGR );
+		surface = Surface32f( (float*)mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::ABGR );
 		mImagePlanar[0] = surface.getChannelAlpha();
 		mImagePlanar[1] = surface.getChannelBlue();
 		mImagePlanar[2] = surface.getChannelGreen();
@@ -253,7 +253,7 @@ void ImageTargetFileTinyExr::finalize()
 		channelNames[i] = mChannelNames[i].c_str();
 
 #if USE_PLANAR_CHANNELS
-		image_ptr[i] = mImagePlanar[i].getData();
+		imagePtr[i] = mImagePlanar[i].getData();
 #else
 		imagePtr[i] = mImagePlanar[i].data();
 #endif

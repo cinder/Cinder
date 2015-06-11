@@ -25,7 +25,7 @@
 
 #include "cinder/ImageIo.h"
 
-#define USE_PLANAR_CHANNELS 0
+#define USE_PLANAR_CHANNELS 1
 
 typedef struct _EXRImage EXRImage;
 
@@ -65,7 +65,7 @@ class ImageTargetFileTinyExr : public ImageTarget {
 	uint8_t					mNumComponents;
 	size_t					mRowBytes;
 	fs::path				mFilePath;
-	std::vector<float>		mData;
+	std::vector<uint8_t>	mData;
 
 	std::vector<std::string>		mChannelNames;
 #if USE_PLANAR_CHANNELS
