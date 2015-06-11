@@ -135,18 +135,26 @@ class LoggerBreakpoint : public Logger {
 	Level	mTriggerLevel;
 };
 
-#if defined( CINDER_COCOA )
-
-class LoggerSysLog : public Logger {
+//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windoes Event Logging
+class LoggerSystem : public Logger {
 public:
-	LoggerSysLog();
-	virtual ~LoggerSysLog();
-
+	LoggerSystem();
+	virtual ~LoggerSystem();
+	
 	void write( const Metadata &meta, const std::string &text ) override;
-};
-
+	void setLoggingLevel( Level minLevel ) { mMinLevel = minLevel; }
+	
+protected:
+	Level mMinLevel;
+#if defined( CINDER_COCOA )
+	class ImplSysLog;
+	std::unique_ptr<ImplSysLog> mImpl;
+#elif defined( CINDER_MSW )
+	class ImplEventLog;
+	std::unique_ptr<ImplEventLog> mImpl;
 #endif
-
+};
+	
 class LoggerImplMulti;
 
 class LogManager {

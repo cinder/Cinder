@@ -57,7 +57,6 @@ class AppCocoaView : public AppBase {
 	//! Returns whether frameRate limiting is enabled.
 	bool				isFrameRateEnabled() const;
 
-	fs::path	getAppPath() const override;
 	size_t		getNumWindows() const override;
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;

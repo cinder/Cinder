@@ -141,19 +141,41 @@ fs::path PlatformMsw::expandPath( const fs::path &path )
 	return fs::path( buffer ); 
 }
 
-fs::path PlatformMsw::getDocumentsDirectory()
+fs::path PlatformMsw::getDocumentsDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
 	return fs::path( wstring(buffer) + L"\\" );
 }
 
-fs::path PlatformMsw::getHomeDirectory()
+fs::path PlatformMsw::getHomeDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
 	wstring result = wstring(buffer) + L"\\";
 	return fs::path( result );
+}
+
+fs::path PlatformMsw::getDefaultExecutablePath() const
+{
+	wchar_t appPath[MAX_PATH] = L"";
+
+	// fetch the path of the executable
+	::GetModuleFileName( 0, appPath, sizeof( appPath ) - 1 );
+
+	// get a pointer to the last occurrence of the windows path separator
+	wchar_t *appDir = wcsrchr( appPath, L'\\' );
+	if( appDir ) {
+		++appDir;
+
+		// this shouldn't be null but one never knows
+		if( appDir ) {
+			// null terminate the string
+			*appDir = 0;
+		}
+	}
+
+	return fs::path( appPath );
 }
 
 void PlatformMsw::launchWebBrowser( const Url &url )

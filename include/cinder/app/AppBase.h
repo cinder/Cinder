@@ -349,14 +349,14 @@ class AppBase {
 #endif
 
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourceRef			loadAsset( const fs::path &relativePath )					{ return Platform::get()->loadAsset( relativePath ); }
+	DataSourceRef		loadAsset( const fs::path &relativePath )					{ return Platform::get()->loadAsset( relativePath ); }
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
-	fs::path				getAssetPath( const fs::path &relativePath ) const			{ return Platform::get()->getAssetPath( relativePath ); }
+	fs::path			getAssetPath( const fs::path &relativePath ) const			{ return Platform::get()->getAssetPath( relativePath ); }
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
-	void					addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
-	
+	void				addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
+
 	//! Returns the path to the application on disk
-	virtual fs::path		getAppPath() const = 0;
+	fs::path			getAppPath() const											{ return Platform::get()->getExecutablePath(); }
 
 	//! \brief Presents the user with an open-file dialog and returns the selected file path.
 	//!

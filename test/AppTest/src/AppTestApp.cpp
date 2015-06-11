@@ -52,6 +52,10 @@ void prepareSettings( App::Settings *settings )
 #if defined( CINDER_MSW )
 	settings->setConsoleWindowEnabled();
 #endif
+
+	// test loading an asset before application has been instanciated:
+	auto asset = loadAsset( "mustache-green.png" );
+	CI_ASSERT( asset );
 }
 
 struct SomeMemberObj {

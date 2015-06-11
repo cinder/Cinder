@@ -427,7 +427,7 @@ void iosAppTestApp::draw()
 		}
 		if( messageTex ) {
 			gl::color( Color::white() );
-			gl::draw( messageTex, ivec2( ( getWindowWidth() - messageTex->getCleanWidth() ) / 2, getWindowCenter().y ) );
+			gl::draw( messageTex, ivec2( ( getWindowWidth() - messageTex->getWidth() ) / 2, getWindowCenter().y ) );
 		}
 	}
 

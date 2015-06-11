@@ -515,8 +515,6 @@ namespace cinder { namespace app {
 AppCocoaView::AppCocoaView()
 	: AppBase()
 {
-	Platform::get()->setExecutablePath( getAppPath() );
-
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
@@ -575,14 +573,6 @@ void AppCocoaView::disableFrameRate()
 bool AppCocoaView::isFrameRateEnabled() const
 {
 	return [mImpl isFrameRateEnabled];
-}
-
-fs::path AppCocoaView::getAppPath() const
-{
-	NSString *resultPath = [[NSBundle mainBundle] bundlePath];
-	std::string result;
-	result = [resultPath cStringUsingEncoding:NSUTF8StringEncoding];
-	return result;
 }
 
 size_t AppCocoaView::getNumWindows() const
