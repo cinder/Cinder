@@ -122,6 +122,11 @@ ci::vec3 MotionManager::getGyroscope()
 {
 	return MotionManager::get()->mImpl->getGyroscope();
 }
+
+ci::vec3 MotionManager::getGravity()
+{
+	return MotionManager::get()->mImpl->getGravity();
+}
 #endif	
 
 MotionManager* MotionManager::get()

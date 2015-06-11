@@ -83,9 +83,13 @@ console() << "MotionImplAndroid::startMotionUpdates" << std::endl;
 	auto updateGyroscopeFn = std::bind( &MotionImplAndroid::updateGyroscope, this, std::placeholders::_1 );
 	eventManager->enableGyroscope( updateGyroscopeFn, usec );
 
+	auto updateGravityFn = std::bind( &MotionImplAndroid::updateGravity, this, std::placeholders::_1 );
+	eventManager->enableGravity( updateGravityFn, usec );	
+
 	mHasAccelerometer = false;
 	mHasMagneticField = false;
 	mHasGyroscope = false;
+	mHasGravity = false;
 
 	/*
 	if( MotionManager::Accelerometer == mSensorMode ) {
@@ -106,6 +110,7 @@ void MotionImplAndroid::stopMotionUpdates()
 	eventManager->disableAccelerometer();
 	eventManager->disableMagneticField();
 	eventManager->disableGyroscope();
+	eventManager->disableGravity();
 
 
 	/*
@@ -149,10 +154,11 @@ ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation )
 
 ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation ) const
 {
-	ci::mat4 result;
+	//ci::mat4 result;
 
 	if( mHasAccelerometer && mHasMagneticField ) {
-		const float* gravity = reinterpret_cast<const float*>( &mAccelerometer );
+		//const float* gravity = reinterpret_cast<const float*>( &mAccelerometer );
+		const float* gravity = reinterpret_cast<const float*>( &mGravity );
 		const float* geomagnetic = reinterpret_cast<const float*>( &mMagneticField );
 
         float Ax = gravity[0];
@@ -168,7 +174,8 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 
         // Don't calculate if device is close to free fall (or in space?), or close to
         // magnetic north pole. Typical values are  > 100.
-        if (normH >= 0.1f) {
+        //if (normH >= 0.00001f) 
+        {
 	        float invH = 1.0f / normH;
 	        Hx *= invH;
 	        Hy *= invH;
@@ -181,15 +188,44 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 	        float My = Az*Hx - Ax*Hz;
 	       	float Mz = Ax*Hy - Ay*Hx;
 
-	       	float* R = reinterpret_cast<float*>( &result );
+	       	float* R = reinterpret_cast<float*>( &mRotationMatrix );
 	        R[ 0] = Hx;   R[ 1] = Hy;   R[ 2] = Hz;   R[3]  = 0.0f;
 	        R[ 4] = Mx;   R[ 5] = My;   R[ 6] = Mz;   R[7]  = 0.0f;
 	        R[ 8] = Ax;   R[ 9] = Ay;   R[10] = Az;   R[11] = 0.0f;
 	        R[12] = 0.0f; R[13] = 0.0f; R[14] = 0.0f; R[15] = 1.0f;
+
+			static const float kPiOverTwo = M_PI / 2.0f;
+			ci::mat4 correctionMatrix = glm::axisAngleMatrix( vec3( 1, 0, 0 ), (float)kPiOverTwo );
+			mRotationMatrix = mRotationMatrix*correctionMatrix;
+
+			// Account for device orientation
+			switch( orientation ) {
+				case app::PortraitUpsideDown: {
+					correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, 1 ), (float)M_PI );
+				}		
+				break;
+
+				case app::LandscapeLeft: {
+					correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, 1 ), (float)kPiOverTwo );
+				}
+				break;
+
+				case app::LandscapeRight: {
+					correctionMatrix = glm::axisAngleMatrix( vec3( 0, 0, -1 ), (float)kPiOverTwo );
+				}
+			}			
+			mRotationMatrix = correctionMatrix*mRotationMatrix;
 	    }
     }
 
-    
+    /*
+	static const float kPiOverTwo = M_PI / 2.0f;
+	ci::mat4 correctionMatrix = glm::axisAngleMatrix( vec3( 1, 0, 0 ), (float)kPiOverTwo );
+	result = result*correctionMatrix;
+	//result = correctionMatrix*result;
+	*/
+
+    /*
 	static const float kPiOverTwo = M_PI / 2.0f;
 	ci::mat4 correctionMatrix = correctionMatrix = glm::axisAngleMatrix( vec3( 1, 0, 0 ), (float)kPiOverTwo );;
 	result = result*correctionMatrix;
@@ -211,8 +247,9 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 	}
 
 	result = correctionMatrix*result;
+	*/
 
-	return result;
+	return mRotationMatrix;
 }
 
 ci::vec3 MotionImplAndroid::getRotationRate( app::InterfaceOrientation orientation ) const
@@ -259,6 +296,17 @@ void MotionImplAndroid::updateGyroscope( const ci::vec3& data )
 	else {
 		mGyroscope = data;
 		mHasGyroscope = true;
+	}
+}
+
+void MotionImplAndroid::updateGravity( const ci::vec3& data )
+{
+	if( mHasGravity ) {
+		mGravity += mAccelFilter*(data - mGravity);
+	}
+	else {
+		mGravity = data;
+		mHasGravity = true;
 	}
 }
 

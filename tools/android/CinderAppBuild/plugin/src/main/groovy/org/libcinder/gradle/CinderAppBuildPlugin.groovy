@@ -83,6 +83,12 @@ class CompileNdkTask extends DefaultTask {
         plugin.mSourceFilesFullPath.each {
             result.add( new File( it ) ); 
         }
+
+        ArrayList<File> result = new ArrayList<File>();
+        plugin.mSourceFilesFullPath.each {
+            result.add( new File( it ) ); 
+        }
+
         return result;
     }
 

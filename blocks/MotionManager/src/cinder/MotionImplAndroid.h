@@ -57,6 +57,7 @@ public:
 	ci::vec3	getAccelerometer() const { return mAccelerometer; }
 	ci::vec3 	getMagneticField() const { return mMagneticField; }
 	ci::vec3 	getGyroscope() { return mGyroscope; }
+	ci::vec3 	getGravity() { return mGravity; }
 
 private:
 	float 						mUpdateFrequency = 60.0f;
@@ -67,13 +68,18 @@ private:
 	bool 		mHasAccelerometer = false;
 	bool 		mHasMagneticField = false;
 	bool 		mHasGyroscope = false;
+	bool 		mHasGravity = false;
 	ci::vec3 	mAccelerometer;
 	ci::vec3 	mMagneticField;
 	ci::vec3 	mGyroscope;
+	ci::vec3 	mGravity;
+
+	mutable ci::mat4	mRotationMatrix;
 
 	void 		updateAccelerometer( const ci::vec3& data );
 	void 		updateMagneticField( const ci::vec3& data );
 	void 		updateGyroscope( const ci::vec3& data );
+	void 		updateGravity( const ci::vec3& data );
 
 };
 

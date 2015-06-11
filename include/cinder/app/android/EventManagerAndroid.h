@@ -49,20 +49,24 @@ public:
 	bool 						isAccelerometerAvailable() const;
 	bool  						isMagneticFieldAvailable() const;
 	bool 						isGyroscopeAvailable() const;
+	bool 						isGravityAvailable() const;
 
 	void 						enableAccelerometer( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableMagneticField( SensorCallbackFn updateFn, int32_t usec = -1 );
 	void 						enableGyroscope( SensorCallbackFn updateFn, int32_t usec = -1 );
+	void 						enableGravity( SensorCallbackFn updateFn, int32_t usec = -1 );
 
 private:
 	bool 						enableAccelerometer();
 	bool 						enableMagneticField();
 	bool 						enableGyroscope();
+	bool 						enableGravity();
 
 public:
 	void 						disableAccelerometer();
 	void 						disableMagneticField();
 	void 						disableGyroscope();
+	void 						disableGravity();
 
 	void 						execute();
 
@@ -103,6 +107,7 @@ public:
 	std::shared_ptr<Sensor> 	mGyroscopeSensor;
 	std::shared_ptr<Sensor> 	mLightSensor;
 	std::shared_ptr<Sensor> 	mProximitySensor;
+	std::shared_ptr<Sensor> 	mGravitySensor;
  	ASensorEventQueue 			*mSensorEventQueue = nullptr;
 
 	bool 						mDeferredMainHasBeenCalled;
@@ -116,6 +121,8 @@ public:
 	void 						setAppImplInst( AppImplAndroid* appInst );
 
 	friend class AppImplAndroid;
+
+	friend void dbg_log_sensor( const std::string& name, const std::shared_ptr<EventManagerAndroid::Sensor>& sensor );
 };
 
 } } // namespace cinder::app

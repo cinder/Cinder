@@ -92,6 +92,7 @@ class MotionManager {
 	static ci::vec3		getAccelerometer();
 	static ci::vec3 	getMagneticField();
 	static ci::vec3 	getGyroscope();
+	static ci::vec3 	getGravity();
 #endif	
 
   protected:
@@ -107,10 +108,10 @@ class MotionManager {
 	std::shared_ptr<MotionImplCoreMotion>	mImpl;
 #elif defined( CINDER_ANDROID )
 	std::shared_ptr<MotionImplAndroid>		mImpl;
-#endif	
+#endif
 
-	float mShakeDelta;
-	vec3 mPrevAcceleration;
+	float 		mShakeDelta;
+	vec3 		mPrevAcceleration;
 
 	static std::mutex sMutex;
 };
