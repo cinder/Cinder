@@ -262,6 +262,8 @@ void EventManagerAndroid::appLostFocus()
 	disableAccelerometer();
 	disableMagneticField();
 	disableGyroscope();
+	disableGravity();
+	disableRotationVector();
 }
 
 void EventManagerAndroid::appGainedFocus()
@@ -280,6 +282,14 @@ void EventManagerAndroid::appGainedFocus()
 
 		if( mGyroscopeSensor && mGyroscopeSensor->mRequested ) {
 			enableGyroscope();
+		}
+
+		if( mGravitySensor && mGravitySensor->mRequested ) {
+			enableGravity();
+		}
+
+		if( mRotationVectorSensor && mRotationVectorSensor->mRequested ) {
+			enableRotationVector();
 		}
 	}
 }
