@@ -52,6 +52,7 @@ class SymbolMap (object):
 		self.typedefs = {}
 		self.functions = {}
 		self.files = {}
+		self.enums = {}
 
 	class Class (object):
 		def __init__( self, name, base, fileName ):
@@ -88,8 +89,11 @@ class SymbolMap (object):
 			relPathArr = self.path.split( PARENT_DIR )
 			if len( relPathArr ) > 1:
 				self.githubPath = GITHUB_PATH + self.path.split( PARENT_DIR )[1]
-				# print "GITHUB PATH: " + self.githubPath
 			
+	class Enum( object ):
+		def __init__( self, name, path ):
+			self.name = name
+			self.path = path
 	
 	# searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
 	def findClass( self, name ):
@@ -175,6 +179,20 @@ class SymbolMap (object):
 
 	def findFileTypedefs( self, name ):
 		return self.findFile( name ).typedefs
+
+	def findEnum( self, name ):
+		searchName = str( name )
+		if searchName.find( "ci::" ) == 0:
+			searchName = searchName.replace( "ci::", "cinder::" )
+
+		# same key as name
+		if searchName in self.enums:
+			return self.enums[searchName]
+
+		# key with "cinder::" prepended
+		elif ("cinder::" + searchName) in self.enums:
+			return self.enums["cinder::"+searchName]
+		
 
 	def getClassAncestors( self, name ):
 		result = []
@@ -469,7 +487,9 @@ def markupEnum( bs4, fnXml, parent ):
 	if descriptionDiv is not None :
 		rightDiv.append( descriptionDiv )
 		addClassToTag( li, "expandable" )
-		
+	
+	id = fnXml.attrib[ "id" ].split("_1")[-1]
+	li.append( genAnchorTag( bs4, id ) );
 	parent.append( li )
 
 
@@ -1426,9 +1446,10 @@ def replaceDTag( bs4, link ):
 
 	new_link = None
 
+	args = searchString.split( "|" )
+
 	# find function link
 	if link.get( 'kind' ) == 'function' :
-		args = searchString.split( "|" ) 
 
 		#find parent function first
 		existingClass = g_symbolMap.findClass( args[0] )
@@ -1438,6 +1459,11 @@ def replaceDTag( bs4, link ):
 			fnObj = g_symbolMap.findFunction( args[1], existingClass,  );
 			if fnObj is not None:
 				new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + fnObj.path )
+
+	elif link.get( 'kind' ) == 'enum' :
+		enumObj = g_symbolMap.findEnum( searchString )
+		if enumObj is not None:
+			new_link = genLinkTag( bs4, link.contents[0], DOXYGEN_HTML_PATH + enumObj.path )
 
 	# find class link
 	else:
@@ -1501,6 +1527,26 @@ def getSymbolToFileMap( tagDom ):
 			symbolMap.functions[name+"::"+fnName] = functionObj
 			classObj.functionList.append( functionObj )
 
+	# find structs
+	structTags = tagXml.findall( r'compound/[@kind="struct"]')
+	for s in structTags :
+		name = s.find('name').text
+		filePath = s.find('filename').text
+		baseClass = s.find('base').text if s.find('base') is not None else ""
+		structObj = SymbolMap.Class( name, baseClass, filePath )
+		symbolMap.classes[name] = structObj
+
+		# find functions and add to symbol map
+		members = s.findall(r"member[@kind='function']")
+		for member in members:
+			
+			fnName = member.find("name").text
+			anchor = member.find("anchor").text
+			filePath = member.find("anchorfile").text + "#" + anchor
+			functionObj = SymbolMap.Function( fnName, baseClass, filePath )
+			symbolMap.functions[name+"::"+fnName] = functionObj
+			structObj.functionList.append( functionObj )
+
 	# find namespaces
 	nsTags = tagXml.findall( r'compound/[@kind="namespace"]')
 		
@@ -1517,7 +1563,7 @@ def getSymbolToFileMap( tagDom ):
 		for member in ns.findall(r"member/[@kind='typedef']"):
 			name = member.find("name").text
 			type = member.find("type").text
-			name = namespaceName+"::"+name
+			name = namespaceName + "::" + name
 			shared_from_class = None
 
 			# std::shared_ptr< (?:class)* *([\w]*) >
@@ -1534,6 +1580,16 @@ def getSymbolToFileMap( tagDom ):
 			if shared_from_class is not None :
 				typeDefObj.sharedFrom = shared_from_class;
 			symbolMap.typedefs[name] = typeDefObj
+
+		# find enums
+		for member in ns.findall( r"member/[@kind='enumeration']" ):
+			name = namespaceName + "::" + member.find("name").text
+			print "ENUM: " + name
+			anchor = member.find("anchor").text
+			path = member.find( "anchorfile" ).text + "#" + anchor
+			enumObj = SymbolMap.Enum( name, path )
+			symbolMap.enums[name] = enumObj
+
 
 	# find files
 	fileTags = tagXml.findall( r'compound/[@kind="file"]')

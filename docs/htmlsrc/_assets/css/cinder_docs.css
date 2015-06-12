@@ -298,6 +298,76 @@ em {
 .content-column {
   padding: 0;
 }
+#container .reference-content .header {
+  margin: 0 0 20px 0;
+}
+#container .reference-content .header h1 {
+  color: #c64b24;
+  text-align: center;
+  font-weight: 700;
+  text-transform: uppercase;
+  margin: 8px 0 0 0;
+}
+#container .reference-content .header hr {
+  margin: 10px 0;
+}
+#container .reference-content .header-icon {
+  margin: 0 auto;
+  width: 200px;
+  height: 80px;
+  text-align: center;
+  display: block;
+}
+#container .reference-content .header-icon {
+  overflow: hidden;
+  background-repeat: no-repeat;
+  background-image: url("../images/header_icons.png");
+}
+#container .reference-content .header_2dgraphics {
+  width: 200px;
+  height: 80px;
+  background-position: -2px -2px;
+}
+#container .reference-content .header_application {
+  width: 200px;
+  height: 80px;
+  background-position: -204px -2px;
+}
+#container .reference-content .header_audio {
+  width: 200px;
+  height: 80px;
+  background-position: -406px -2px;
+}
+#container .reference-content .header_geometry {
+  width: 200px;
+  height: 80px;
+  background-position: -608px -2px;
+}
+#container .reference-content .header_images {
+  width: 200px;
+  height: 80px;
+  background-position: -810px -2px;
+}
+#container .reference-content .header_math {
+  width: 200px;
+  height: 80px;
+  background-position: -1012px -2px;
+}
+#container .reference-content .header_platform {
+  width: 200px;
+  height: 80px;
+  background-position: -1214px -2px;
+}
+#container .reference-content .header_system {
+  width: 200px;
+  height: 80px;
+  background-position: -1416px -2px;
+}
+#container .reference-content .header_video {
+  width: 200px;
+  height: 80px;
+  background-position: -1618px -2px;
+}
 .expandable {
   position: relative;
   overflow: hidden;
