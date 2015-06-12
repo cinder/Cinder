@@ -148,6 +148,12 @@
     <Filter Include="Header Files\jsoncpp">
       <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\husl">
+      <UniqueIdentifier>{70057201-161e-40d2-aa71-6ef634c8b025}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\husl">
+      <UniqueIdentifier>{e55f6bcb-3cc0-4173-b344-778f98586571}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
@@ -785,6 +791,9 @@
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp">
       <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\husl\husl.c">
+      <Filter>Source Files\husl</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -1648,6 +1657,9 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
       <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\husl\husl.h">
+      <Filter>Header Files\husl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
