@@ -1010,20 +1010,19 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 	}
 
 	// if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
-	if( resultLocation ) {
-		if( nameLeftSquareBracket != string::npos ) {
-			try {
-				string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
-				*resultLocation = ret->mLoc + stoi( indexStr );
-			}
-			catch( std::exception &exc ) {
-				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
-				return nullptr;
-			}
+	if( nameLeftSquareBracket != string::npos ) {
+		try {
+			string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
+			*resultLocation = ret->mLoc + stoi( indexStr );
 		}
-		else
-			*resultLocation = ret->mLoc;
+		catch( std::exception &exc ) {
+			CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
+			return nullptr;
+		}
 	}
+	else
+		*resultLocation = ret->mLoc;
+
 	return ret;
 }
 
@@ -1189,7 +1188,7 @@ bool GlslProg::checkUniformValueCache( const Uniform &uniform, int location, con
 template<typename LookUp, typename T>
 inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1202,7 +1201,7 @@ inline void GlslProg::uniformImpl( const LookUp &lookUp, const T &data ) const
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool transpose ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1215,7 +1214,7 @@ inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T &data, bool 
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int count ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
@@ -1228,7 +1227,7 @@ inline void	GlslProg::uniformImpl( const LookUp &lookUp, const T *data, int coun
 template<typename LookUp, typename T>
 inline void	GlslProg::uniformMatImpl( const LookUp &lookUp, const T *data, int count, bool transpose ) const
 {
-	int uniformLocation;
+	int uniformLocation = -1;
 	auto found = findUniform( lookUp, &uniformLocation );
 	if( ! found ) {
 		logMissingUniform( lookUp );
