@@ -700,9 +700,9 @@ dbg_app_log( "Starting Event Loop" );
 							case ASENSOR_TYPE_GRAVITY: {
 								if( mGravitySensor && ( mGravitySensor->mCallbackFn ) ) {
 									ci::vec3 grav = ci::vec3( 
-										 sensorEvent.vector.x,
+										-sensorEvent.vector.x,
 										 sensorEvent.vector.y,
-										-sensorEvent.vector.z
+										 sensorEvent.vector.z
 									);
 									mGravitySensor->mCallbackFn( grav );
 								}

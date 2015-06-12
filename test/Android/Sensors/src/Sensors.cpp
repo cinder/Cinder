@@ -74,7 +74,9 @@ void Sensors::touchesEnded( TouchEvent event )
 void Sensors::draw()
 {
 	if( mPrint ) {
-		console() << ":accel: " << MotionManager::getGravity() << " : " << MotionManager::getMagneticField() << std::endl;
+		vec3 g = MotionManager::getGravity();
+		float theta = atan2( g.y, g.x )/3.141592f*180.0f;
+		console() << "g=" << g << " : " << "theta=" << theta << std::endl;
 		//console() << "rotation: " << MotionManager::getRotation( getOrientation() ) << std::endl;
 	}
 
@@ -115,6 +117,25 @@ void Sensors::draw()
 		gl::drawLine( vec3( 0, 0, 0 ), vec3( 0, 0, 1 ) );
 		*/
 	gl::popModelMatrix();
+
+	/*
+	gl::pushModelMatrix();
+	{
+		vec3 dv = normalize( MotionManager::getGravity() );
+
+		vec3 g = MotionManager::getGravity();
+		float theta = atan2( g.y, g.x )/3.141592f*180.0f;
+
+		gl::translate( getWindowSize() / 2 );
+		gl::scale( vec3( 500.0f, 500.0f, 500.0f ) );
+
+		gl::lineWidth( 20.0f );
+
+		gl::color( 1.0f, 0.0f, 0.0f );
+		gl::drawLine( vec3( 0, 0, 0 ), dv );
+	}
+	gl::popModelMatrix();
+	*/
 }
 
 // This line tells Cinder to actually create the application

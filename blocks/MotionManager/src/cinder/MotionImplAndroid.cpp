@@ -346,13 +346,11 @@ void MotionImplAndroid::updateGravity( const ci::vec3& data )
 
 void MotionImplAndroid::updateRotationVector( const ci::vec3& data )
 {
-	if( mHasRotationVector ) {
-		mRotationVector += mAccelFilter*(data - mRotationVector);
-	}
-	else {
-		mRotationVector = data;
-		mHasRotationVector = true;
-	}
+	// NOTE: Do not filter the vector value. This will get converted 
+	//       to a quaternion. Filtering the vector value will cause
+	//       the rotation to pop.
+	//
+	mRotationVector = data;
 }
 
 } // namespace cinder
