@@ -997,12 +997,14 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 
 	// search for array brackets, they need to be handled as a special case
 	size_t requestedNameLeftSquareBracket = name.find( '[' );
+	size_t requestedNameRightSquareBracket = ( requestedNameLeftSquareBracket != string::npos ? name.find( ']' ) : string::npos );
 
 	// if we didn't find an exact match, look for the array version in the active uniforms list
 	bool needsLocationOffset = false;
 	if( ! ret ) {
 		for( const auto &uniform : mUniforms ) {
 			size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
+			// skip match detection if this active uniform isn't an array
 			if( activeUniformLeftSquareBracket == string::npos )
 				continue;
 
@@ -1015,12 +1017,23 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 				}
 			}
 			else {
-				// try to find a match between the active uniform base names and the requested uniform's base name
+				// try to find a match between the active uniform base name and the requested uniform's base name
 				if( uniformBaseName == name.substr( 0, requestedNameLeftSquareBracket ) ) {
-					ret = &uniform;
-					needsLocationOffset = true;
-					break;
-
+					// If the requested name is an array of structs and a struct member is part of it, make sure it matches the active uniform too
+					if( name.size() - 1 > requestedNameRightSquareBracket ) {
+						// try to match the struct member portion of each name
+						if( name.substr( requestedNameRightSquareBracket, name.size() ) == uniform.mName.substr( uniform.mName.find( ']' ), name.size() ) ) {
+							ret = &uniform;
+							needsLocationOffset = true;
+							break;
+						}
+					}
+					else {
+						// the bases of the requested and active uniform match
+						ret = &uniform;
+						needsLocationOffset = true;
+						break;
+					}
 				}
 			}
 		}
@@ -1028,10 +1041,10 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 
 	if( ret ) {
 		if( needsLocationOffset ) {
-			CI_ASSERT( requestedNameLeftSquareBracket != string::npos );
+			CI_ASSERT( requestedNameLeftSquareBracket != string::npos && requestedNameRightSquareBracket != string::npos );
 
 			try {
-				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, name.find( ']' ) - requestedNameLeftSquareBracket - 1 );
+				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, requestedNameRightSquareBracket - requestedNameLeftSquareBracket - 1 );
 				*resultLocation = ret->mLoc + stoi( indexStr );
 			}
 			catch( std::exception &exc ) {
