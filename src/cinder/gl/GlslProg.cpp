@@ -1043,12 +1043,13 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 		if( needsLocationOffset ) {
 			CI_ASSERT( requestedNameLeftSquareBracket != string::npos && requestedNameRightSquareBracket != string::npos );
 
+			// pull out the index and use it as an offset location for the resulting uniform
+			// the try / catch handles cases where the index is a non-number, in which case we don't have a match
 			try {
 				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, requestedNameRightSquareBracket - requestedNameLeftSquareBracket - 1 );
 				*resultLocation = resultUniform->mLoc + stoi( indexStr );
 			}
 			catch( std::exception &exc ) {
-				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
 				return nullptr;
 			}
 		}
