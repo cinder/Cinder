@@ -101,6 +101,14 @@ void GlslProgAttribTestApp::setupBuffers()
 	
 	// this should issue an error
 	mUniformGlsl->uniform( "uColors[a]", vec4() );
+
+	// test setting uniforms in struct array
+	mUniformGlsl->uniform( "uTestStruct[0].value", 1.0f );
+	mUniformGlsl->uniform( "uTestStruct[1].value", 1.0f );
+	mUniformGlsl->uniform( "uTestStruct[2].value", 1.0f );
+	mUniformGlsl->uniform( "uTestStruct[2].blah", 1.0f ); // should log an error
+	mUniformGlsl->uniform( "uTestStruct[b].value", 1.0f ); // should log an error
+	mUniformGlsl->uniform( "uTestStruct[blah].value", 1.0f ); // should log an error
 }
 
 void GlslProgAttribTestApp::keyDown( KeyEvent event )
