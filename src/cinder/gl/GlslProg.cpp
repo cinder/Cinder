@@ -984,7 +984,7 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 	}
 	return ret;
 }
-	
+
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
 	const Uniform* ret = nullptr;
@@ -995,15 +995,17 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 		}
 	}
 
+	// if no unforms matched, return null early indicating lookup failed
+	if( ! ret )
+		return ret;
+
 	// support array brackets
 	size_t nameLeftSquareBracket = string::npos;
-	if( ret == nullptr ) { 
-		nameLeftSquareBracket = name.find( '[' );
-		for( const auto & uniform : mUniforms ) {
-			if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
-				ret = &uniform;
-				break;
-			}
+	nameLeftSquareBracket = name.find( '[' );
+	for( const auto & uniform : mUniforms ) {
+		if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
+			ret = &uniform;
+			break;
 		}
 	}
 
@@ -1019,7 +1021,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 				return nullptr;
 			}
 		}
-		else if( ret )
+		else
 			*resultLocation = ret->mLoc;
 	}
 	return ret;
