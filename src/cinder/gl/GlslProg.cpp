@@ -987,10 +987,10 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
-	const Uniform* ret = nullptr;
+	const Uniform* resultUniform = nullptr;
 	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
-			ret = &uniform;
+			resultUniform = &uniform;
 			break;
 		}
 	}
@@ -1001,7 +1001,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 
 	// if we didn't find an exact match, look for the array version in the active uniforms list
 	bool needsLocationOffset = false;
-	if( ! ret ) {
+	if( ! resultUniform ) {
 		for( const auto &uniform : mUniforms ) {
 			size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
 			// skip match detection if this active uniform isn't an array
@@ -1012,7 +1012,7 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 			if( requestedNameLeftSquareBracket == string::npos ) {
 				// name is non-indexed, try to match the uniform base name with the entire requested uniform name
 				if( uniformBaseName == name ) {
-					ret = &uniform;
+					resultUniform = &uniform;
 					break;
 				}
 			}
@@ -1023,14 +1023,14 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 					if( name.size() - 1 > requestedNameRightSquareBracket ) {
 						// try to match the struct member portion of each name
 						if( name.substr( requestedNameRightSquareBracket, name.size() ) == uniform.mName.substr( uniform.mName.find( ']' ), name.size() ) ) {
-							ret = &uniform;
+							resultUniform = &uniform;
 							needsLocationOffset = true;
 							break;
 						}
 					}
 					else {
 						// the bases of the requested and active uniform match
-						ret = &uniform;
+						resultUniform = &uniform;
 						needsLocationOffset = true;
 						break;
 					}
@@ -1039,13 +1039,13 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 		}
 	}
 
-	if( ret ) {
+	if( resultUniform ) {
 		if( needsLocationOffset ) {
 			CI_ASSERT( requestedNameLeftSquareBracket != string::npos && requestedNameRightSquareBracket != string::npos );
 
 			try {
 				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, requestedNameRightSquareBracket - requestedNameLeftSquareBracket - 1 );
-				*resultLocation = ret->mLoc + stoi( indexStr );
+				*resultLocation = resultUniform->mLoc + stoi( indexStr );
 			}
 			catch( std::exception &exc ) {
 				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
@@ -1053,10 +1053,10 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 			}
 		}
 		else
-			*resultLocation = ret->mLoc;
+			*resultLocation = resultUniform->mLoc;
 	}
 	
-	return ret;
+	return resultUniform;
 }
 
 const GlslProg::Uniform* GlslProg::findUniform( int location, int *resultLocation ) const
