@@ -988,6 +988,7 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
 	const Uniform* resultUniform = nullptr;
+	// first check if there is an exact name match with mUniforms
 	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
 			resultUniform = &uniform;
