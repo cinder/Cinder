@@ -995,34 +995,54 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 		}
 	}
 
-	// if no unforms matched, return null early indicating lookup failed
-	if( ! ret )
-		return ret;
+	// search for array brackets, they need to be handled as a special case
+	size_t requestedNameLeftSquareBracket = name.find( '[' );
 
-	// support array brackets
-	size_t nameLeftSquareBracket = string::npos;
-	nameLeftSquareBracket = name.find( '[' );
-	for( const auto & uniform : mUniforms ) {
-		if( uniform.mName.substr( 0, uniform.mName.find( '[' ) ) == name.substr( 0, nameLeftSquareBracket ) ) {
-			ret = &uniform;
-			break;
+	// if we didn't find an exact match, look for the array version in the active uniforms list
+	bool needsLocationOffset = false;
+	if( ! ret ) {
+		for( const auto &uniform : mUniforms ) {
+			size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
+			if( activeUniformLeftSquareBracket == string::npos )
+				continue;
+
+			string uniformBaseName = uniform.mName.substr( 0, activeUniformLeftSquareBracket );
+			if( requestedNameLeftSquareBracket == string::npos ) {
+				// name is non-indexed, try to match the uniform base name with the entire requested uniform name
+				if( uniformBaseName == name ) {
+					ret = &uniform;
+					break;
+				}
+			}
+			else {
+				// try to find a match between the active uniform base names and the requested uniform's base name
+				if( uniformBaseName == name.substr( 0, requestedNameLeftSquareBracket ) ) {
+					ret = &uniform;
+					needsLocationOffset = true;
+					break;
+
+				}
+			}
 		}
 	}
 
-	// if this is indexed uniform (example[2]) we need to parse out the '2' and add it to ret->mLoc
-	if( nameLeftSquareBracket != string::npos ) {
-		try {
-			string indexStr = name.substr( nameLeftSquareBracket + 1, name.find( ']' ) - nameLeftSquareBracket - 1 );
-			*resultLocation = ret->mLoc + stoi( indexStr );
-		}
-		catch( std::exception &exc ) {
-			CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
-			return nullptr;
-		}
-	}
-	else
-		*resultLocation = ret->mLoc;
+	if( ret ) {
+		if( needsLocationOffset ) {
+			CI_ASSERT( requestedNameLeftSquareBracket != string::npos );
 
+			try {
+				string indexStr = name.substr( requestedNameLeftSquareBracket + 1, name.find( ']' ) - requestedNameLeftSquareBracket - 1 );
+				*resultLocation = ret->mLoc + stoi( indexStr );
+			}
+			catch( std::exception &exc ) {
+				CI_LOG_EXCEPTION( "Failed to parse index for uniform named: " << name, exc );
+				return nullptr;
+			}
+		}
+		else
+			*resultLocation = ret->mLoc;
+	}
+	
 	return ret;
 }
 
