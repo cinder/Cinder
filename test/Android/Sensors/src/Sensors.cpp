@@ -74,7 +74,7 @@ void Sensors::touchesEnded( TouchEvent event )
 void Sensors::draw()
 {
 	if( mPrint ) {
-		console() << "accel: " << MotionManager::getGravity() << " : " << MotionManager::getMagneticField() << std::endl;
+		console() << ":accel: " << MotionManager::getGravity() << " : " << MotionManager::getMagneticField() << std::endl;
 		//console() << "rotation: " << MotionManager::getRotation( getOrientation() ) << std::endl;
 	}
 

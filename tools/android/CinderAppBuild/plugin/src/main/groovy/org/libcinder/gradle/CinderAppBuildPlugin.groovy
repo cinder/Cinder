@@ -1,19 +1,21 @@
-package org.libcinder.gradle
+package org.libcinder.gradle;
 
-import org.gradle.api.GradleException
-import org.gradle.api.InvalidUserDataException
-import org.gradle.api.Project
-import org.gradle.api.Plugin
-import org.gradle.api.DefaultTask
-import org.gradle.api.tasks.*
-import org.gradle.internal.reflect.Instantiator
+import org.gradle.api.GradleException;
+import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.Project;
+import org.gradle.api.Plugin;
+import org.gradle.api.DefaultTask;
+import org.gradle.api.tasks.*;
+import org.gradle.internal.reflect.Instantiator;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /*
 import org.gradle.api.file.FileTree;
-import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
 */
+
+import org.gradle.api.tasks.incremental.IncrementalTaskInputs;
+
 
 /** @class CFlags
  *
@@ -105,7 +107,11 @@ class CompileNdkTask extends DefaultTask {
     }
 
     @TaskAction
-    void generate() {
+    void generate(IncrementalTaskInputs inputs) {
+
+        inputs.outOfDate { change ->
+            println "DEP CHANGED: ${change.file}";
+        }
     }
 }
 
@@ -401,6 +407,31 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
     }
 
+    void parseArchs(Project project) {
+        this.mArchs = []
+       
+        boolean hasAll = false;
+ 
+        project.cinder.archs.each {
+            String tok = it;
+            tok = tok.trim();
+            if( CinderAppBuildPlugin.kValidArchs.contains( tok ) ) {
+                this.mArchs.push( tok );
+            }
+            
+            if( "all" == tok.toLowerCase() ) {
+                hasAll = true;
+            }
+        }
+
+        if( hasAll ) {
+            this.mArchs = [];
+            CinderAppBuildPlugin.kValidArchs.each {
+                this.mArchs.push( it )
+            }
+        }
+    }
+
     void parseSourceFiles(Project project, cppBuildDir) {
         this.mSourceFiles = [];
         this.mSourceFilesFullPath = [];
@@ -590,31 +621,6 @@ class CinderAppBuildPlugin implements Plugin<Project> {
                 this.mStaticBlocks.add("LOCAL_SRC_FILES := " + path)
                 this.mStaticBlocks.add("include \$(PREBUILT_STATIC_LIBRARY)")
                 this.mStaticBlocks.add("")
-            }
-        }
-    }
-
-    void parseArchs(Project project) {
-        this.mArchs = []
-       
-        boolean hasAll = false;
- 
-        project.cinder.archs.each {
-            String tok = it;
-            tok = tok.trim();
-            if( CinderAppBuildPlugin.kValidArchs.contains( tok ) ) {
-                this.mArchs.push( tok );
-            }
-            
-            if( "all" == tok.toLowerCase() ) {
-                hasAll = true;
-            }
-        }
-
-        if( hasAll ) {
-            this.mArchs = [];
-            CinderAppBuildPlugin.kValidArchs.each {
-                this.mArchs.push( it )
             }
         }
     }
