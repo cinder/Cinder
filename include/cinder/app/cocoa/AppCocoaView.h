@@ -53,9 +53,9 @@ class AppCocoaView : public AppBase {
 	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second
 	virtual void		setFrameRate( float frameRate ) override;
 	//! Disables frameRate limiting.
-	void				disableFrameRate();
+	void				disableFrameRate() override;
 	//! Returns whether frameRate limiting is enabled.
-	bool				isFrameRateEnabled() const;
+	bool				isFrameRateEnabled() const override;
 
 	size_t		getNumWindows() const override;
 	WindowRef	getWindow() const override;
