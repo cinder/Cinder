@@ -80,15 +80,17 @@ class CompileNdkTask extends DefaultTask {
         }
 
         ArrayList<File> result = new ArrayList<File>();
+
+        // Source files
         plugin.mSourceFilesFullPath.each {
             result.add( new File( it ) ); 
         }
 
-        ArrayList<File> result = new ArrayList<File>();
-        plugin.mSourceFilesFullPath.each {
+       // Static libs
+        plugin.mStaticLibsFullPaths.each {
             result.add( new File( it ) ); 
         }
-
+       
         return result;
     }
 
@@ -128,6 +130,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
 
     def mArchFlagsBlocks = [];
     def mSourceFilesFullPath = []; // Used to for depenedency check
+    def mStaticLibsFullPaths = []; // Used to for depenedency check
     
     void apply(Project project) {
         project.extensions.create("cinder", CinderAppBuildPluginExtension)
@@ -359,8 +362,8 @@ class CinderAppBuildPlugin implements Plugin<Project> {
             println "NDK_ROOT: ${ndkDir}";
         }
        
-        def ndkBuildCmd  = "${ndkDir}/ndk-build"
-        def ndkBuildArgs = []
+        def ndkBuildCmd  = "${ndkDir}/ndk-build";
+        def ndkBuildArgs = [];
         
         def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
 
@@ -370,7 +373,7 @@ class CinderAppBuildPlugin implements Plugin<Project> {
         }
 
         if( project.cinder.verbose ) {
-            ndkBuildArgs.add(this.makeNdkArg("V", "1"))
+            ndkBuildArgs.add(this.makeNdkArg("V", "1"));
         }       
 
         ndkBuildArgs.add(this.makeNdkArg("NDK_PROJECT_PATH",      "null"));
@@ -557,8 +560,20 @@ class CinderAppBuildPlugin implements Plugin<Project> {
                 finalLibs.add( 0, libCinder );
             }               
             //
+            mStaticLibsFullPaths = []
+            def minSdkVersion = project.android.defaultConfig.minSdkVersion.apiLevel;
+            //
             finalLibs.each {
-                String path = (new File(it)).canonicalPath.toString()
+                String path = (new File(it)).canonicalPath.toString();
+                
+                for(int i = 0; i < this.mArchs.size(); ++i) {
+                    def itArch = this.mArchs[i];
+                    String expandedPath = path.replace( "\$(TARGET_ARCH_ABI)", itArch );
+                    expandedPath = expandedPath.replace( "\$(TARGET_PLATFORM)", "android-${minSdkVersion}" );
+                    mStaticLibsFullPaths.push( expandedPath );
+                }
+                //println ".a lib path: ${path}";
+
 
                 // short name
                 String shortName = path
