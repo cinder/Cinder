@@ -38,14 +38,16 @@
 //#UNIFORMS
 #define WORK_GROUP_SIZE 128
 
-uniform vec4	attractor;
-//uniform uint	numParticles;
-uniform float	numParticles;
-uniform float	spriteSize;
-uniform float	damping;
-uniform float	noiseFreq;
-uniform float	noiseStrength;
-uniform float	invNoiseSize;
+layout( std140, binding = 0 ) uniform ParticleParams
+{
+    uniform vec4	attractor;
+    uniform float	numParticles;
+    uniform float	damping;
+    uniform float	noiseFreq;
+    uniform float	noiseStrength;
+    uniform float	invNoiseSize;
+};
+
 uniform sampler3D	noiseTex3D;
 
 layout( std140, binding = 1 ) buffer Pos {
@@ -65,7 +67,7 @@ vec3 noise3f( vec3 p )
 	return texture( noiseTex3D, p * invNoiseSize ).xyz;
 }
 
-// Fractal sum
+// Fractal sum (Fractal Brownian Motion)
 vec3 fBm3f( vec3 p, int octaves, float lacunarity, float gain )
 {
 	float freq = 1.0;
