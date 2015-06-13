@@ -64,7 +64,7 @@ class ParticleSphereCSApp : public App {
 	ivec3 getMaxComputeWorkGroupSize();
 
 	enum { WORK_GROUP_SIZE = 128, };
-	typedef  SsboT<Particle> ParticleSsbo;
+	typedef  gl::SsboT<Particle> ParticleSsbo;
 	typedef ParticleSsbo::Ref ParticleSsboRef;
 	gl::GlslProgRef mRenderProg;
 	gl::GlslProgRef mUpdateProg;
