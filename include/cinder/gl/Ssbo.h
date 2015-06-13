@@ -1,13 +1,15 @@
 #pragma once
 
+#if defined( CINDER_MSW ) || defined( CINDER_LINUX )
+
 #include "cinder/gl/BufferObj.h"
 
-#if defined( CINDER_MSW ) || defined( CINDER_LINUX )
+namespace cinder { namespace gl {
 
 class Ssbo;
 typedef std::shared_ptr<Ssbo>	SsboRef;
 
-class Ssbo : public ci::gl::BufferObj {
+class Ssbo : public BufferObj {
 public:
 	//! Creates a shader storage buffer object with storage for \a allocationSize bytes, and filled with data \a data if it is not NULL.
 	static inline SsboRef	create( GLsizeiptr allocationSize, const void *data = nullptr, GLenum usage = GL_STATIC_DRAW )
@@ -52,11 +54,11 @@ public:
 	//! Map buffer range to type
 	inline T *mapBufferRangeT( GLintptr offset, GLsizeiptr length, GLbitfield access ) { return reinterpret_cast<T *>( mapBufferRange( offset, length, access ) ); }
 	//! Analogous to bufferStorage.
-	inline void bufferStorageT( const std::vector<T> &data, GLbitfield flags ) const { glBufferStorage( mTarget, data.size(), &( data[0] ), flags ); }
+	inline void bufferStorageT( const std::vector<T> &data, GLbitfield flags ) const { glBufferStorage( mTarget, data.size(), data.data(), flags ); }
 
 protected:
 	SsboT( const std::vector<T> &data, GLenum usage = GL_STATIC_DRAW )
-		: Ssbo( sizeof( T ) * data.size(), &( data[0] ), usage )
+		: Ssbo( sizeof( T ) * data.size(), data.data(), usage )
 	{
 	}
 	SsboT( GLsizeiptr size, GLenum usage = GL_STATIC_DRAW )
@@ -64,5 +66,7 @@ protected:
 	{
 	}
 };
+
+} }
 
 #endif // #if defined( CINDER_MSW ) || defined( CINDER_LINUX )
