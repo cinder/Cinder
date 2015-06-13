@@ -1649,5 +1649,8 @@
     <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
