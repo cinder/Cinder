@@ -734,6 +734,9 @@ void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &b
 				glBindBufferBase( target, index, buffer->getId() );
 		break;
 		case GL_UNIFORM_BUFFER:
+#if defined( GL_SHADER_STORAGE_BUFFER )
+		case GL_SHADER_STORAGE_BUFFER:
+#endif
 			glBindBufferBase( target, index, buffer->getId() );
 		break;
 		default:
