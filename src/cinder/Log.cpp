@@ -60,7 +60,7 @@ public:
 
 	const vector<unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
 
-	virtual void write( const Metadata &meta, const std::string &text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 
 private:
 	vector<unique_ptr<Logger> >	mLoggers; // TODO: make set? don't want duplicates

@@ -440,7 +440,7 @@ class Texture1d : public TextureBase {
 	Texture1d( const Surface8u &surface, Format format );
 	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth;
 };
@@ -584,7 +584,7 @@ class Texture2d : public TextureBase {
 	ImageSourceRef	createSource();
 	
   protected:
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 
 	Texture2d( int width, int height, Format format = Format() );
 	Texture2d( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
@@ -674,7 +674,7 @@ class Texture3d : public TextureBase {
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
 	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth, mHeight, mDepth;
 };
@@ -736,7 +736,7 @@ class TextureCubeMap : public TextureBase
 	template<typename T>
 	static TextureCubeMapRef createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 	
 	GLint		mWidth, mHeight;
 };

@@ -222,7 +222,7 @@ class AppCocoaTouch : public AppBase {
 	//! \endcond
 
   protected:
-	virtual void	launch() override;
+	void	launch() override;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
