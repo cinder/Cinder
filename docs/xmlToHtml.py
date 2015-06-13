@@ -687,7 +687,7 @@ def gen_class_list(bs4, tree):
     side.find('h4').append("Classes:")
 
     # create all of the markup
-    classesUl = gen_tag(bs4, "ul")
+    classesUl = gen_tag(bs4, "ul", None)
     contentDiv = side.find('div', 'content')
     for classDef in classes:
         li = gen_tag(bs4, "li")
@@ -1255,7 +1255,7 @@ def list_namespaces(bs4, container):
 def list_classes(bs4, container):
     classes = g_symbolMap.get_ordered_class_list()
 
-    ul = gen_tag(bs4, "ul")
+    ul = gen_tag(bs4, "ul", ["master-class-list"])
     for c in classes:
         a = gen_link_tag(bs4, c.name, c.fileName)
         li = gen_tag(bs4, "li", None, a)

@@ -298,6 +298,14 @@ em {
 .content-column {
   padding: 0;
 }
+ul.master-class-list {
+  -webkit-column-count: 4;
+  -moz-column-count: 4;
+  column-count: 4;
+  -webkit-column-gap: 50px;
+  -moz-column-gap: 50px;
+  column-gap: 50px;
+}
 #container .reference-content .header {
   margin: 0 0 20px 0;
 }
