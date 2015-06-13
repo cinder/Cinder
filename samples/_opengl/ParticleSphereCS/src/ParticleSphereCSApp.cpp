@@ -8,22 +8,12 @@
 //	License: BSD Simplified
 //
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-
 #include "cinder/Rand.h"
-
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/BufferObj.h"
 #include "cinder/Utilities.h"
-#include "cinder/CinderAssert.h"
-#include "Ssbo.h"
-#include "ScopedBufferBase.h"
+#include "cinder/gl/Ssbo.h"
 
 
 using namespace ci;
@@ -35,6 +25,7 @@ using namespace std;
 // Used to buffer initial simulation values.
 // Using std140 in ssbo requires we have members on 4 byte alignment. 
 #pragma pack( push, 1 )
+//__declspec( align( 4 ) )
 struct Particle
 {
 	vec3	pos;
@@ -58,10 +49,12 @@ const int NUM_PARTICLES = static_cast<int>( 600e3 );
 	Simulation is run using transform feedback on the GPU.
 	particleUpdate.vs defines the simulation update step.
 	Designed to have the same behavior as ParticleSphereCPU.
+
+	This sample is the same as ParticleSphereGPU.  The only difference is
+	that it uses a compute shader instead of transform feedback.
  */
-class ParticleSphereCSApp : public AppNative {
+class ParticleSphereCSApp : public App {
   public:
-	void prepareSettings( Settings *settings ) override;
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -87,11 +80,6 @@ class ParticleSphereCSApp : public AppNative {
 	vec3			mMousePos = vec3( 0 );
 };
 
-void ParticleSphereCSApp::prepareSettings( Settings *settings )
-{
-	settings->setWindowSize( 1280, 720 );
-}
-
 void ParticleSphereCSApp::setup()
 {
 	// Create initial particle layout.
@@ -110,7 +98,7 @@ void ParticleSphereCSApp::setup()
 		auto &p = particles.at( i );
 		p.pos = center + vec3( x, y, z );
 		p.home = p.pos;
-		p.ppos = p.home + Rand::randVec3f() * 10.0f; // random initial velocity
+		p.ppos = p.home + Rand::randVec3() * 10.0f; // random initial velocity
 		p.damping = Rand::randFloat( 0.965f, 0.985f );
 		Color c( CM_HSV, lmap<float>( static_cast<float>(i), 0.0f, static_cast<float>( particles.size() ), 0.0f, 0.66f ), 1.0f, 1.0f );
 		p.color = vec4( c.r, c.g, c.b, 1.0f );
@@ -123,7 +111,7 @@ void ParticleSphereCSApp::setup()
 	// Mark as static since we only write from the CPU once.
 	mParticleBuffer = ParticleSsbo::create( particles, GL_STATIC_DRAW );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
-	mParticleBuffer->bindBase( 2 );
+	mParticleBuffer->bindBase( 0 );
 	
 	// Create a default color shader.
 	try {
@@ -133,7 +121,7 @@ void ParticleSphereCSApp::setup()
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;
-		shutdown();
+		quit();
 	}
 
 	std::vector<GLuint> ids( NUM_PARTICLES );
@@ -150,11 +138,11 @@ void ParticleSphereCSApp::setup()
 	try {
 		//// Load our update program.
 		mUpdateProg = gl::GlslProg::
-			create( gl::GlslProg::Format().shaderStage( loadAsset( "particleUpdate.cs.glsl" ), GL_COMPUTE_SHADER ) );
+			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate.cs.glsl" ) ) );
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;
-		shutdown();
+		quit();
 	}
 
 	// Listen to mouse events so we can send data as uniforms.
@@ -230,4 +218,7 @@ ivec3 ParticleSphereCSApp::getMaxComputeWorkGroupSize()
 	return size;
 }
 
-CINDER_APP_NATIVE( ParticleSphereCSApp, RendererGl )
+CINDER_APP( ParticleSphereCSApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1280, 720 );
+	settings->setMultiTouchEnabled( false );
+} )

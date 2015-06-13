@@ -13,7 +13,7 @@ struct Particle
 	float	damping;
 };
 
-layout( std140, binding = 2 ) buffer Part
+layout( std140, binding = 0 ) buffer Part
 {
     Particle particles[];
 };
