@@ -226,6 +226,17 @@ class SymbolMap(object):
     #     # strip down to the name of the class (without namespace)
     #     return ""
 
+    def get_ordered_class_list(self):
+        """ create an array of classes that include all of the classes and return
+            the array in alphabetical order """
+        classes = []
+        for class_key in self.classes:
+            class_obj = self.classes[class_key]
+            classes.append(class_obj)
+
+        # sort by lowercased name
+        return sorted(classes, key=lambda s: s.name.lower())
+
 
 class FileData(object):
     def __init__(self, tree, bs4):
@@ -1221,31 +1232,46 @@ def add_row_li(bs4, container, leftContent, rightContent, colBreakdown=None, dro
         add_class_to_tag(li, "expandable")
 
 
-def drop_anchor(anchorList, anchorName, linkName):
+def drop_anchor(anchor_list, anchor_name, link_name):
     bs4 = g_currentFile.bs4
-    anchor = gen_anchor_tag(bs4, anchorName)
-    anchorList.append({"name": linkName, "link": anchor})
+    anchor = gen_anchor_tag(bs4, anchor_name)
+    anchor_list.append({"name": link_name, "link": anchor})
     g_currentFile.contentsEl.append(anchor)
 
 
 def list_namespaces(bs4, container):
-    # print g_symbolMap.namespaces
     namespaces = g_symbolMap.get_ordered_namespaces()
 
-    for key in namespaces:
-        print "NS: " + key.name
+    ul = gen_tag(bs4, "ul")
+    for ns in namespaces:
+        a = gen_link_tag(bs4, ns.name, ns.fileName)
+        li = gen_tag(bs4, "li", None, a)
+        ul.append(li)
 
-    # for c in g_symbolMap.classes:
-    # print c
+    if len(ul) > 0:
+        container.append(ul)
 
 
-def process_namespace_xml_file(inPath, outPath, html):
+def list_classes(bs4, container):
+    classes = g_symbolMap.get_ordered_class_list()
+
+    ul = gen_tag(bs4, "ul")
+    for c in classes:
+        a = gen_link_tag(bs4, c.name, c.fileName)
+        li = gen_tag(bs4, "li", None, a)
+        ul.append(li)
+
+    if len(ul) > 0:
+        container.append(ul)
+
+
+def process_namespace_xml_file(in_path, out_path, html):
     global g_currentFile
-    print "Processing namespace file: " + inPath + " > " + outPath
+    print "Processing namespace file: " + in_path + " > " + out_path
 
     # define the tree that contains all the data we need to populate this page
-    tree = parse_html(html, inPath, outPath)
-    if tree == None:
+    tree = parse_html(html, in_path, out_path)
+    if tree is None:
         return
 
     # get common data for the file
@@ -1394,7 +1420,7 @@ def process_namespace_xml_file(inPath, outPath, html):
     gen_sub_nav(subnavAnchors)
 
     # write the file
-    write_html(html, outPath)
+    write_html(html, out_path)
 
 
 def process_html_file(inPath, outPath):
@@ -1427,16 +1453,6 @@ def process_html_file(inPath, outPath):
         # parse original html file
         origHtml = generate_bs4(inPath)
 
-        # fill namespace list
-        if inPath == "htmlsrc/namespaces.html":
-            print "POPULATE NAMESPACE LIST"
-            # throw in a list of namespaces into the page surrounded by d tags to convert later
-            list_namespaces(bs4, bs4.body)
-
-        # fill class list
-        elif inPath == "htmlsrc/classes.html":
-            print "POPULATE CLASS LIST"
-
         # replace all of the bs4 css and js links and make them relative to the outpath
         for link in bs4.find_all("link"):
             if link.has_attr("href"):
@@ -1455,7 +1471,18 @@ def process_html_file(inPath, outPath):
                 img["src"] = update_link(img["src"], outPath)
 
         # plug original html content into template
-        bs4.body.find(id="template-content").append(origHtml.body)
+        template_content_el = bs4.body.find(id="template-content")
+        template_content_el.append(origHtml.body)
+
+        # fill namespace list
+        if inPath == "htmlsrc/namespaces.html":
+            # throw in a list of namespaces into the page
+            list_namespaces(bs4, template_content_el)
+
+        # fill class list
+        elif inPath == "htmlsrc/classes.html":
+            print "POPULATE CLASS LIST"
+            list_classes(bs4, template_content_el)
 
         # copy all js and css paths that may be in the original html and paste into new file
         for link in origHtml.find_all("link"):
