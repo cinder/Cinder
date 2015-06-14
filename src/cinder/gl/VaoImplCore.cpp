@@ -46,10 +46,10 @@ class VaoImplCore : public Vao {
 	void	vertexAttribPointerImpl( GLuint index, GLint size, GLenum type, GLboolean normalized, GLsizei stride, const GLvoid *pointer ) override;
 	void	vertexAttribIPointerImpl( GLuint index, GLint size, GLenum type, GLsizei stride, const GLvoid *pointer ) override;
 	void	vertexAttribDivisorImpl( GLuint index, GLuint divisor ) override;
-	void	reflectBindBufferImpl( GLenum target, GLuint buffer ) override;	
-
+	void	reflectBindBufferImpl( GLenum target, GLuint buffer ) override;
 	void	reassignContext( Context *newContext ) override;
-	void			reassignImpl( Context *newContext );
+
+	void	reassignImpl( Context *newContext );
 
 	friend class Context;
 };

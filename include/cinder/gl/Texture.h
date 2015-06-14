@@ -584,7 +584,6 @@ class Texture2d : public TextureBase {
 	ImageSourceRef	createSource();
 	
   protected:
-	void	printDims( std::ostream &os ) const override;
 
 	Texture2d( int width, int height, Format format = Format() );
 	Texture2d( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
@@ -598,6 +597,7 @@ class Texture2d : public TextureBase {
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
 	Texture2d( const TextureData &data, Format format );
 	
+	void	printDims( std::ostream &os ) const override;
 	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 	void	initMaxMipmapLevel();
 	template<typename T>

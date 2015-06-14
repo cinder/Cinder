@@ -83,8 +83,8 @@ class VboMeshGeomTarget : public geom::Target {
 	
 	virtual geom::Primitive	getPrimitive() const;
 	uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	//! Must be called in order to upload temporary 'mBufferData' to VBOs
 	void	copyBuffers();
