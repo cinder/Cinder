@@ -156,20 +156,20 @@ class RendererGl : public Renderer {
 	~RendererGl();
 
 	static RendererGlRef	create( const Options &options = Options() ) { return RendererGlRef( new RendererGl( options ) ); }
-	virtual RendererRef		clone() const override { return RendererGlRef( new RendererGl( *this ) ); }
+	RendererRef		clone() const override { return RendererGlRef( new RendererGl( *this ) ); }
  
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
-		virtual CGLContextObj			getCglContext() override;
-		virtual CGLPixelFormatObj		getCglPixelFormat() override;
+		void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
+		CGLContextObj			getCglContext() override;
+		CGLPixelFormatObj		getCglPixelFormat() override;
 		virtual NSOpenGLContext*		getNsOpenGlContext();		
 	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void 	setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
-		virtual bool 	isEaglLayer() const override { return true; }
+		void 	setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
+		bool 	isEaglLayer() const override { return true; }
 		EAGLContext*	getEaglContext() const;
 	#endif
-	virtual void	setFrameSize( int width, int height ) override;
+	void	setFrameSize( int width, int height ) override;
 #elif defined( CINDER_MSW )
 	void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer ) override;
 	void	kill() override;

@@ -109,7 +109,7 @@ class BufferPlayerNode : public SamplePlayerNode {
 
 	virtual ~BufferPlayerNode() {}
 
-	virtual void seek( size_t readPositionFrames ) override;
+	void seek( size_t readPositionFrames ) override;
 
 	//! Loads and stores a reference to a Buffer created from the entire contents of \a sourceFile.
 	void loadBuffer( const SourceFileRef &sourceFile );
@@ -119,8 +119,8 @@ class BufferPlayerNode : public SamplePlayerNode {
 	const BufferRef& getBuffer() const	{ return mBuffer; }
 
   protected:
-	virtual void enableProcessing()			override;
-	virtual void process( Buffer *buffer )	override;
+	void enableProcessing()			override;
+	void process( Buffer *buffer )	override;
 
 	BufferRef mBuffer;
 };
@@ -134,8 +134,8 @@ class FilePlayerNode : public SamplePlayerNode {
 	FilePlayerNode( const SourceFileRef &sourceFile, bool isReadAsync = true, const Format &format = Node::Format() );
 	virtual ~FilePlayerNode();
 
-	virtual void stop() override;
-	virtual void seek( size_t readPositionFrames ) override;
+	void stop() override;
+	void seek( size_t readPositionFrames ) override;
 
 	//! Returns whether reading occurs asynchronously (default is false). If true, file reading is done from an internal thread, if false it is done directly on the audio thread.
 	bool isReadAsync() const	{ return mIsReadAsync; }

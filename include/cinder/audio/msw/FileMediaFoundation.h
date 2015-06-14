@@ -83,7 +83,7 @@ class TargetFileMediaFoundation : public TargetFile {
 	TargetFileMediaFoundation( const DataTargetRef &dataTarget, size_t sampleRate, size_t numChannels, SampleType sampleType, const std::string &extension );
 	virtual ~TargetFileMediaFoundation();
 
-	virtual void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
+	void performWrite( const Buffer *buffer, size_t numFrames, size_t frameOffset ) override;
 
   private:
 	  std::unique_ptr<::IMFSinkWriter, ci::msw::ComDeleter>		mSinkWriter;

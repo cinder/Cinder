@@ -46,12 +46,12 @@ class AppCocoaView : public AppBase {
 	virtual void	setupCinderView( CinderViewMac *cinderView );
 	void			launch() override;
 
-	virtual void	quit() override;
+	void	quit() override;
 
 	//! Returns the maximum frame-rate the App will attempt to maintain measured in frames-per-second
-	virtual float		getFrameRate() const override;
+	float		getFrameRate() const override;
 	//! Sets the maximum frame-rate the App will attempt to maintain \ a frameRate frames-per-second
-	virtual void		setFrameRate( float frameRate ) override;
+	void		setFrameRate( float frameRate ) override;
 	//! Disables frameRate limiting.
 	void				disableFrameRate() override;
 	//! Returns whether frameRate limiting is enabled.

@@ -121,16 +121,16 @@ class Renderer2d : public Renderer {
   	Renderer2d();
 	
 	static Renderer2dRef	create() { return Renderer2dRef( new Renderer2d() ); }
-	virtual RendererRef		clone() const override { return Renderer2dRef( new Renderer2d( *this ) ); }
+	RendererRef		clone() const override { return Renderer2dRef( new Renderer2d( *this ) ); }
 
 	#if defined( CINDER_COCOA_TOUCH )
-		virtual void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
+		void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
 	#else
 		~Renderer2d();
-		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
+		void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
 	#endif
 
-	virtual CGContextRef			getCgContext() override;
+	CGContextRef			getCgContext() override;
 
 	void			startDraw() override;
 	void			finishDraw() override;
