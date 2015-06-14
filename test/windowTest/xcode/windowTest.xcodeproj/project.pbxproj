@@ -16,6 +16,8 @@
 		00B784B60FF439BC000DE1D7 /* CoreAudio.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 00B784B20FF439BC000DE1D7 /* CoreAudio.framework */; };
 		00BAE65A0E7ED9C10018A608 /* windowTestApp.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 00BAE6590E7ED9C10018A608 /* windowTestApp.cpp */; };
 		00CCAF15116A9FEE008396D5 /* CinderApp.icns in Resources */ = {isa = PBXBuildFile; fileRef = 00CCAF14116A9FEE008396D5 /* CinderApp.icns */; };
+		11F7A0691B2DFE8F00D930D0 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11F7A0681B2DFE8F00D930D0 /* IOKit.framework */; };
+		11F7A06B1B2DFEA300D930D0 /* IOSurface.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11F7A06A1B2DFEA300D930D0 /* IOSurface.framework */; };
 		5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B10EAFCA74003A9687 /* CoreVideo.framework */; };
 		5323E6B60EAFCA7E003A9687 /* QTKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5323E6B50EAFCA7E003A9687 /* QTKit.framework */; };
 		53E3CDFC0E86099300238D2B /* Carbon.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 53E3CDFB0E86099300238D2B /* Carbon.framework */; };
@@ -35,6 +37,8 @@
 		00BAE6590E7ED9C10018A608 /* windowTestApp.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = windowTestApp.cpp; path = ../src/windowTestApp.cpp; sourceTree = SOURCE_ROOT; };
 		00CCAF14116A9FEE008396D5 /* CinderApp.icns */ = {isa = PBXFileReference; lastKnownFileType = image.icns; name = CinderApp.icns; path = ../../../samples/data/CinderApp.icns; sourceTree = SOURCE_ROOT; };
 		1058C7A1FEA54F0111CA2CBB /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = /System/Library/Frameworks/Cocoa.framework; sourceTree = "<absolute>"; };
+		11F7A0681B2DFE8F00D930D0 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		11F7A06A1B2DFEA300D930D0 /* IOSurface.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOSurface.framework; path = System/Library/Frameworks/IOSurface.framework; sourceTree = SDKROOT; };
 		13E42FB307B3F0F600E4EEF1 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = /System/Library/Frameworks/CoreData.framework; sourceTree = "<absolute>"; };
 		29B97324FDCFA39411CA2CEA /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = /System/Library/Frameworks/AppKit.framework; sourceTree = "<absolute>"; };
 		29B97325FDCFA39411CA2CEA /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = /System/Library/Frameworks/Foundation.framework; sourceTree = "<absolute>"; };
@@ -51,6 +55,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				11F7A06B1B2DFEA300D930D0 /* IOSurface.framework in Frameworks */,
+				11F7A0691B2DFE8F00D930D0 /* IOKit.framework in Frameworks */,
 				004D524A19B00397003ADC36 /* AVFoundation.framework in Frameworks */,
 				004D524819B0038B003ADC36 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
@@ -143,6 +149,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				11F7A06A1B2DFEA300D930D0 /* IOSurface.framework */,
+				11F7A0681B2DFE8F00D930D0 /* IOKit.framework */,
 				004D524919B00396003ADC36 /* AVFoundation.framework */,
 				004D524519B0038B003ADC36 /* AVKit.framework */,
 				004D524619B0038B003ADC36 /* CoreMedia.framework */,

@@ -68,8 +68,8 @@ void WindowTestApp::prepareSettings( Settings *settings )
 
 void WindowTestApp::setup()
 {
-	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt )
-		CI_LOG_V( "Resolution: " << (*displayIt)->getBounds() );
+	for( auto display : Display::getDisplays() )
+		CI_LOG_V( "display bounds: " << display->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
