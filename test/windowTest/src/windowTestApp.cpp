@@ -69,7 +69,7 @@ void WindowTestApp::prepareSettings( Settings *settings )
 void WindowTestApp::setup()
 {
 	for( auto display : Display::getDisplays() )
-		CI_LOG_V( "display bounds: " << display->getBounds() );
+		CI_LOG_V( "display name: '" << display->getName() << "', bounds: " << display->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
