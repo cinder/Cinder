@@ -98,9 +98,6 @@ void GlslProgAttribTestApp::setupBuffers()
 	mSpheres = gl::Batch::create( spheres, mUniformGlsl );
 	// without fbf9c8f2c813e562a23c561c147babc72e064c5e this line would crash
 	mSpheres2 = gl::Batch::create( spheres >> geom::Translate( 0, 1, 0 ), mUniformGlsl2 );
-	
-	// this should issue an error
-	mUniformGlsl->uniform( "uColors[a]", vec4() );
 }
 
 void GlslProgAttribTestApp::keyDown( KeyEvent event )
@@ -131,9 +128,7 @@ void GlslProgAttribTestApp::update()
 		i++;
 	}
 	
-	mModelMatricesVbo->bufferSubData( 0,
-									 mModelMatricesCpu.size() * sizeof(mat4),
-									 mModelMatricesCpu.data() );
+	mModelMatricesVbo->bufferSubData( 0, mModelMatricesCpu.size() * sizeof( mat4 ), mModelMatricesCpu.data() );
 }
 
 void GlslProgAttribTestApp::draw()
@@ -152,6 +147,17 @@ void GlslProgAttribTestApp::draw()
 		mSpheres2->getGlslProg()->uniform( "uColors[0]", mColorsCmy[0] );
 		mSpheres2->getGlslProg()->uniform( "uColors[1]", (vec4*)&mColorsCmy[1], 2 );
 	}
+
+	mUniformGlsl->uniform( "uColors[a]", vec4() ); // should log an 'Unknown uniform' warning
+
+	// test setting uniforms in struct array
+	mUniformGlsl->uniform( "uTestStruct[0].value", 1.0f );
+	mUniformGlsl->uniform( "uTestStruct[1].value", 1.0f );
+	mUniformGlsl->uniform( "uTestStruct[2].value", 1.0f );
+
+	mUniformGlsl->uniform( "uTestStruct[2].blah", 1.0f ); // should log an 'Unknown uniform' warning
+	mUniformGlsl->uniform( "uTestStruct[b].value", 1.0f ); // should log an 'Unknown uniform' warning
+	mUniformGlsl->uniform( "uTestStruct[blah].value", 1.0f ); // should log an 'Unknown uniform' warning
 
 	gl::translate( 0, 0, 5 * sin( getElapsedSeconds() ) );	
 	mSpheres->draw();
