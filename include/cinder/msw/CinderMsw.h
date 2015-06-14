@@ -56,16 +56,22 @@ void ComDelete( void *p );
 //! Functor version that calls Release() on a com-managed object
 struct ComDeleter {
 	template <typename T>
-	void operator()( T* ptr )	{ if( ptr ) ptr->Release(); }
+	void operator()( T *p )	{ if( p ) p->Release(); }
 };
+
+template<typename T>
+using ManagedComRef = std::shared_ptr<T>;
 
 //! Creates a shared_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-inline std::shared_ptr<T> makeComShared( T *p )		{ return std::shared_ptr<T>( p, &ComDelete ); }
+ManagedComRef<T> makeComShared( T *p )		{ return ManagedComRef<T>( p, &ComDelete ); }
+
+template<typename T>
+using ManagedComPtr = std::unique_ptr<T, ComDeleter>;
 
 //! Creates a unique_ptr whose deleter will properly decrement the reference count of a COM object
 template<typename T>
-inline std::unique_ptr<T, ComDeleter> makeComUnique( T *p )	{ return std::unique_ptr<T, ComDeleter>( p ); }
+ManagedComPtr<T> makeComUnique( T *p )		{ return ManagedComPtr<T>( p ); }
 
 //! Wraps a cinder::OStream with a COM ::IStream
 class ComOStream : public ::IStream
