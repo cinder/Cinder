@@ -39,8 +39,9 @@ using namespace ci::android;
 
 // Extension
 enum {
-	ASENSOR_TYPE_GRAVITY 			= 9,
-	ASENSOR_TYPE_ROTATION_VECTOR	= 11, 
+	ASENSOR_TYPE_GRAVITY 				= 9,
+	ASENSOR_TYPE_ROTATION_VECTOR		= 11,
+	ASENSOR_TYPE_GAME_ROTATION_VECTOR	= 15 
 };
 
 namespace cinder { namespace app { 
@@ -621,16 +622,16 @@ void EventManagerAndroid::execute()
 	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
 	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mGravitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GRAVITY );
-	mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
+	mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GAME_ROTATION_VECTOR );
 	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
-	dbg_log_sensor( "mAccelerometerSensor ", mAccelerometerSensor );
-	dbg_log_sensor( "mMagneticFieldSensor ", mMagneticFieldSensor );
-	dbg_log_sensor( "mGyroscopeSensor     ", mGyroscopeSensor );
-	dbg_log_sensor( "mLightSensor         ", mLightSensor );
-	dbg_log_sensor( "mProximitySensor     ", mProximitySensor );
-	dbg_log_sensor( "mGravitySensor       ", mGravitySensor );
-	dbg_log_sensor( "mRotationVectorSensor", mRotationVectorSensor );
+	dbg_log_sensor( "mAccelerometerSensor    ", mAccelerometerSensor );
+	dbg_log_sensor( "mMagneticFieldSensor    ", mMagneticFieldSensor );
+	dbg_log_sensor( "mGyroscopeSensor        ", mGyroscopeSensor );
+	dbg_log_sensor( "mLightSensor            ", mLightSensor );
+	dbg_log_sensor( "mProximitySensor        ", mProximitySensor );
+	dbg_log_sensor( "mGravitySensor          ", mGravitySensor );
+	dbg_log_sensor( "mRotationVectorSensor(G)", mRotationVectorSensor );
 
 	ci::android::JniHelper::Initialize( mNativeApp->activity );
 	ci::android::app::CinderNativeActivity::registerComponents();
@@ -709,7 +710,7 @@ dbg_app_log( "Starting Event Loop" );
 							}
 							break;
 
-							case ASENSOR_TYPE_ROTATION_VECTOR: {
+							case ASENSOR_TYPE_GAME_ROTATION_VECTOR: {
 								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
 									ci::vec3 rot = ci::vec3( 
 										-sensorEvent.vector.x,
