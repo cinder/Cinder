@@ -377,6 +377,11 @@ void Fbo::initFormatAttachments()
 // call glDrawBuffers against all color attachments
 void Fbo::setAllDrawBuffers()
 {
+#if defined( CINDER_ANDROID ) 
+	//CI_LOG_I( "mAttachmentsBuffer.size=" << mAttachmentsBuffer.size() );
+	//CI_LOG_I( "mAttachmentsTexture.size=" << mAttachmentsTexture.size() );
+#endif	
+
 #if ! defined( CINDER_GL_ES_2 )
 	vector<GLenum> drawBuffers;
 	for( const auto &bufferAttachment : mAttachmentsBuffer )
