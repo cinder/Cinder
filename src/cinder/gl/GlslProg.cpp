@@ -987,12 +987,11 @@ const GlslProg::Attribute* GlslProg::findAttrib( geom::Attrib semantic ) const
 
 const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *resultLocation ) const
 {
-	const Uniform* resultUniform = nullptr;
-	// first check if there is an exact name match with mUniforms
+	// first check if there is an exact name match with mUniforms and simply return it if we find one
 	for( const auto & uniform : mUniforms ) {
 		if( uniform.mName == name ) {
-			resultUniform = &uniform;
-			break;
+			*resultLocation = uniform.mLoc;
+			return &uniform;
 		}
 	}
 
@@ -1002,39 +1001,38 @@ const GlslProg::Uniform* GlslProg::findUniform( const std::string &name, int *re
 
 	// if we didn't find an exact match, look for the array version in the active uniforms list
 	bool needsLocationOffset = false;
-	if( ! resultUniform ) {
-		for( const auto &uniform : mUniforms ) {
-			size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
-			// skip match detection if this active uniform isn't an array
-			if( activeUniformLeftSquareBracket == string::npos )
-				continue;
+	const Uniform* resultUniform = nullptr;	
+	for( const auto &uniform : mUniforms ) {
+		size_t activeUniformLeftSquareBracket = uniform.mName.find( '[' );
+		// skip match detection if this active uniform isn't an array
+		if( activeUniformLeftSquareBracket == string::npos )
+			continue;
 
-			string uniformBaseName = uniform.mName.substr( 0, activeUniformLeftSquareBracket );
-			if( requestedNameLeftSquareBracket == string::npos ) {
-				// name is non-indexed, try to match the uniform base name with the entire requested uniform name
-				if( uniformBaseName == name ) {
-					resultUniform = &uniform;
-					break;
-				}
+		string uniformBaseName = uniform.mName.substr( 0, activeUniformLeftSquareBracket );
+		if( requestedNameLeftSquareBracket == string::npos ) {
+			// name is non-indexed, try to match the uniform base name with the entire requested uniform name
+			if( uniformBaseName == name ) {
+				resultUniform = &uniform;
+				break;
 			}
-			else {
-				// try to find a match between the active uniform base name and the requested uniform's base name
-				if( uniformBaseName == name.substr( 0, requestedNameLeftSquareBracket ) ) {
-					// If the requested name is an array of structs and a struct member is part of it, make sure it matches the active uniform too
-					if( name.size() - 1 > requestedNameRightSquareBracket ) {
-						// try to match the struct member portion of each name
-						if( name.substr( requestedNameRightSquareBracket, name.size() ) == uniform.mName.substr( uniform.mName.find( ']' ), name.size() ) ) {
-							resultUniform = &uniform;
-							needsLocationOffset = true;
-							break;
-						}
-					}
-					else {
-						// the bases of the requested and active uniform match
+		}
+		else {
+			// try to find a match between the active uniform base name and the requested uniform's base name
+			if( uniformBaseName == name.substr( 0, requestedNameLeftSquareBracket ) ) {
+				// If the requested name is an array of structs and a struct member is part of it, make sure it matches the active uniform too
+				if( name.size() - 1 > requestedNameRightSquareBracket ) {
+					// try to match the struct member portion of each name
+					if( name.substr( requestedNameRightSquareBracket, name.size() ) == uniform.mName.substr( uniform.mName.find( ']' ), name.size() ) ) {
 						resultUniform = &uniform;
 						needsLocationOffset = true;
 						break;
 					}
+				}
+				else {
+					// the bases of the requested and active uniform match
+					resultUniform = &uniform;
+					needsLocationOffset = true;
+					break;
 				}
 			}
 		}
