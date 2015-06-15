@@ -176,10 +176,10 @@ ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation )
    	float y = rv[1];
    	float z = rv[2];
 
-   	ci::quat result = ci::quat( w, x, y, z );
+   	ci::quat result = glm::normalize( ci::quat( w, x, y, z ) );
 
    	static const float kPiOverTwo = M_PI / 2.0f;
-   	result = result*glm::angleAxis( kPiOverTwo, vec3( 1, 0, 0 ) )*glm::angleAxis( (float)M_PI, vec3( 0, 0, 1 ) );
+   	result = result*glm::angleAxis( kPiOverTwo, vec3( 1, 0, 0 ) );
 
    	return result;
 
@@ -188,6 +188,9 @@ ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation )
 
 ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation ) const
 {
+	return glm::toMat4( getRotation( orientation ) );  
+
+	/*
 	//ci::mat4 result;
 
 	if( mHasAccelerometer && mHasMagneticField ) {
@@ -251,6 +254,7 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 			mRotationMatrix = correctionMatrix*mRotationMatrix;
 	    }
     }
+    */
 
     /*
 	static const float kPiOverTwo = M_PI / 2.0f;
@@ -283,7 +287,9 @@ ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orienta
 	result = correctionMatrix*result;
 	*/
 
+	/*
 	return mRotationMatrix;
+	*/
 }
 
 ci::vec3 MotionImplAndroid::getRotationRate( app::InterfaceOrientation orientation ) const

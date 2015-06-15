@@ -712,9 +712,9 @@ dbg_app_log( "Starting Event Loop" );
 							case ASENSOR_TYPE_ROTATION_VECTOR: {
 								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
 									ci::vec3 rot = ci::vec3( 
-										 sensorEvent.vector.x,
+										-sensorEvent.vector.x,
 										 sensorEvent.vector.y,
-										-sensorEvent.vector.z
+										 sensorEvent.vector.z
 									);
 									mRotationVectorSensor->mCallbackFn( rot );
 								}

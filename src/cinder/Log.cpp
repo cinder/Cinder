@@ -37,6 +37,12 @@
 #include <mutex>
 #include <time.h>
 
+#if defined( CINDER_ANDROID )
+	#include <android/log.h>
+	#include <sstream> 
+ 	#define TAG "cinder"
+#endif 
+
 #define DEFAULT_FILE_LOG_PATH "cinder.log"
 
 // TODO: consider storing Logger's as shared_ptr instead
@@ -231,12 +237,45 @@ void LogManager::disableSystemLogging()
 
 void Logger::writeDefault( std::ostream &stream, const Metadata &meta, const std::string &text )
 {
+#if defined( CINDER_ANDROID )
+	if( OUTPUT_CONSOLE == getOutput() ) {
+		std::stringstream ss;
+
+		ss << meta.mLevel << " ";
+
+		if( isTimestampEnabled() )
+			ss << getCurrentDateTimeString() << " ";
+
+		ss << meta.mLocation << " " << text;
+
+		android_LogPriority prio = ANDROID_LOG_DEFAULT;
+		switch( meta.mLevel ) {
+			case LEVEL_VERBOSE:	prio = ANDROID_LOG_VERBOSE; break;
+			case LEVEL_INFO:	prio = ANDROID_LOG_INFO; 	break;
+			case LEVEL_DEBUG:	prio = ANDROID_LOG_DEBUG; 	break;
+			case LEVEL_WARNING:	prio = ANDROID_LOG_WARN; 	break;
+			case LEVEL_ERROR:	prio = ANDROID_LOG_ERROR; 	break;
+			case LEVEL_FATAL:	prio = ANDROID_LOG_FATAL; 	break;
+		}
+
+		__android_log_print( prio, TAG, ss.str().c_str() );
+	}
+	else {
+		stream << meta.mLevel << " ";
+
+		if( isTimestampEnabled() )
+			stream << getCurrentDateTimeString() << " ";
+
+		stream << meta.mLocation << " " << text << endl;		
+	}
+#else	
 	stream << meta.mLevel << " ";
 
 	if( isTimestampEnabled() )
 		stream << getCurrentDateTimeString() << " ";
 
 	stream << meta.mLocation << " " << text << endl;
+#endif	
 }
 
 // ----------------------------------------------------------------------------------------------------
@@ -283,7 +322,8 @@ void LoggerImplMulti::write( const Metadata &meta, const string &text )
 // ----------------------------------------------------------------------------------------------------
 
 LoggerFile::LoggerFile( const fs::path &filePath )
-	: mFilePath( filePath )
+	: Logger( OUTPUT_FILE ),
+	  mFilePath( filePath )
 {
 	if( mFilePath.empty() )
 		mFilePath = DEFAULT_FILE_LOG_PATH;
@@ -342,6 +382,9 @@ ostream& operator<<( ostream &lhs, const Level &rhs )
 	switch( rhs ) {
 		case LEVEL_VERBOSE:		lhs << "|verbose|";	break;
 		case LEVEL_INFO:		lhs << "|info   |";	break;
+#if defined( CINDER_ANDROID )
+		case LEVEL_DEBUG:		lhs << "|debug  |";	break;
+#endif		
 		case LEVEL_WARNING:		lhs << "|warning|";	break;
 		case LEVEL_ERROR:		lhs << "|error  |";	break;
 		case LEVEL_FATAL:		lhs << "|fatal  |";	break;

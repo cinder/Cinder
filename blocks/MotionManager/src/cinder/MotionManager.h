@@ -93,6 +93,7 @@ class MotionManager {
 	static ci::vec3 	getMagneticField();
 	static ci::vec3 	getGyroscope();
 	static ci::vec3 	getGravity();
+	static ci::vec3 	getRotationVector();
 #endif	
 
   protected:

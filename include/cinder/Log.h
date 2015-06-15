@@ -64,6 +64,15 @@
 	#define CI_LOG_I( stream )	((void)0)
 #endif
 
+// Use the same level as INFO for now
+#if defined( CINDER_ANDROID )
+	#if( CI_MAX_LOG_LEVEL >= 4 )
+		#define CI_LOG_D( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_DEBUG, stream )
+	#else
+		#define CI_LOG_D( stream )	((void)0)
+	#endif
+#endif
+
 #if( CI_MAX_LOG_LEVEL >= 3 )
 	#define CI_LOG_W( stream )	CINDER_LOG_STREAM( ::cinder::log::LEVEL_WARNING, stream )
 #else
@@ -87,10 +96,19 @@ namespace cinder { namespace log {
 typedef enum {
 	LEVEL_VERBOSE,
 	LEVEL_INFO,
+#if defined( CINDER_ANDROID )
+	LEVEL_DEBUG,
+#endif	
 	LEVEL_WARNING,
 	LEVEL_ERROR,
 	LEVEL_FATAL
 } Level;
+
+typedef enum {
+	OUTPUT_DEFAULT,
+	OUTPUT_CONSOLE,
+	OUTPUT_FILE
+} Output;
 
 struct Location {
 	Location() {}
@@ -125,23 +143,28 @@ class Logger {
 
 	virtual void write( const Metadata &meta, const std::string &text ) = 0;
 
-	void setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
-	bool isTimestampEnabled() const					{ return mTimeStampEnabled; }
+	void 	setTimestampEnabled( bool enable = true )	{ mTimeStampEnabled = enable; }
+	bool 	isTimestampEnabled() const					{ return mTimeStampEnabled; }
+	Output 	getOutput() const 							{ return mOutput; }
 
   protected:
-	Logger() : mTimeStampEnabled( false ) {}
+	Logger( Output output = OUTPUT_DEFAULT ) : mTimeStampEnabled( false ), mOutput( output ) {}
 
 	void writeDefault( std::ostream &stream, const Metadata &meta, const std::string &text );
 
   private:
-	bool mTimeStampEnabled;
+	bool 	mTimeStampEnabled;
+	Output 	mOutput;
 };
 
 class LoggerConsole : public Logger {
   public:
+	LoggerConsole() : Logger( OUTPUT_CONSOLE ) {}	
 	virtual ~LoggerConsole()	{}
 
 	virtual void write( const Metadata &meta, const std::string &text ) override;
+
+  protected:
 };
 
 class LoggerFile : public Logger {

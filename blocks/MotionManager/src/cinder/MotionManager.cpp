@@ -127,6 +127,11 @@ ci::vec3 MotionManager::getGravity()
 {
 	return MotionManager::get()->mImpl->getGravity();
 }
+
+ci::vec3 MotionManager::getRotationVector()
+{
+	return MotionManager::get()->mImpl->getRotationVector();
+}
 #endif	
 
 MotionManager* MotionManager::get()

@@ -58,6 +58,7 @@ public:
 	ci::vec3 	getMagneticField() const { return mMagneticField; }
 	ci::vec3 	getGyroscope() { return mGyroscope; }
 	ci::vec3 	getGravity() { return mGravity; }
+	ci::vec3 	getRotationVector() { return mRotationVector; }
 
 private:
 	float 						mUpdateFrequency = 60.0f;
