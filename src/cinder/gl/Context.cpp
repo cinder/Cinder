@@ -622,14 +622,15 @@ void Context::bufferDeleted( const BufferObj *buffer )
 	// if 'id' was bound to 'target', mark 'target's binding as 0
 	auto existingIt = mBufferBindingStack.find( target );
 	if( existingIt != mBufferBindingStack.end() ) {
-		if( mBufferBindingStack[target].back() == buffer->getId() )
+		if( mBufferBindingStack[target].back() == buffer->getId() ) {
 			mBufferBindingStack[target].back() = 0;
 			// alert the currently bound VAO
 			if( target == GL_ARRAY_BUFFER || target == GL_ELEMENT_ARRAY_BUFFER ) {
 				Vao* vao = getVao();
 				if( vao )
 					vao->reflectBindBufferImpl( target, 0 );
-	}
+			}
+		}
 	}
 	else
 		mBufferBindingStack[target].push_back( 0 );
@@ -1635,7 +1636,8 @@ void Context::sanityCheck()
 	Vao* boundVao = getVao();
 	if( boundVao ) {
 		CI_ASSERT( trueVaoBinding == boundVao->mId );
-		CI_ASSERT( getBufferBinding( GL_ARRAY_BUFFER ) == boundVao->getLayout().mCachedArrayBufferBinding );
+		auto trueArrayBuffer = getBufferBinding( GL_ARRAY_BUFFER );
+		CI_ASSERT( trueArrayBuffer == boundVao->getLayout().mCachedArrayBufferBinding );
 		CI_ASSERT( getBufferBinding( GL_ELEMENT_ARRAY_BUFFER ) == boundVao->getLayout().mElementArrayBufferBinding );		
 	}
 	else

@@ -162,7 +162,9 @@ void WindowTestApp::keyDown( KeyEvent event )
 	}
 	if( event.getChar() == 'f' ) {
 		CI_LOG_V( "Toggling from fullscreen: " << getWindow()->isFullScreen() );
-		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		// This line forces fullscreen on the secondary display
+		//getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
 		CI_LOG_V( "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() );
