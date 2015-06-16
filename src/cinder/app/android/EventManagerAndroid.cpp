@@ -622,6 +622,7 @@ void EventManagerAndroid::execute()
 	mLightSensor->mSensor         	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_LIGHT );
 	mProximitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_PROXIMITY );
 	mGravitySensor->mSensor     	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GRAVITY );
+	//mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_ROTATION_VECTOR );
 	mRotationVectorSensor->mSensor 	= ASensorManager_getDefaultSensor( mSensorManager, ASENSOR_TYPE_GAME_ROTATION_VECTOR );
 	mSensorEventQueue    		  	= ASensorManager_createEventQueue( mSensorManager, mNativeApp->looper, LOOPER_ID_USER, nullptr, nullptr );	
 
@@ -672,52 +673,47 @@ dbg_app_log( "Starting Event Loop" );
 						switch( sensorEvent.type ) {
 							case ASENSOR_TYPE_ACCELEROMETER: {
 								if( mAccelerometerSensor && ( mAccelerometerSensor->mCallbackFn ) ) {
-									ci::vec3 accel = ci::vec3( 
-										sensorEvent.acceleration.x, // / ASENSOR_STANDARD_GRAVITY, 
-										sensorEvent.acceleration.y, // / ASENSOR_STANDARD_GRAVITY, 
-										sensorEvent.acceleration.z  // / ASENSOR_STANDARD_GRAVITY 
-									);
-									mAccelerometerSensor->mCallbackFn( accel );
+									const size_t n = 3;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.acceleration) );
+									mAccelerometerSensor->mCallbackFn( n, data );
 								}
 							}
 							break;
 
 							case ASENSOR_TYPE_MAGNETIC_FIELD: {
 								if( mMagneticFieldSensor && ( mMagneticFieldSensor->mCallbackFn ) ) {
-									ci::vec3 mag = ci::vec3( sensorEvent.magnetic.x, sensorEvent.magnetic.y, sensorEvent.magnetic.z );
-									mMagneticFieldSensor->mCallbackFn( mag );
+									const size_t n = 3;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.magnetic) );
+									mMagneticFieldSensor->mCallbackFn( n, data );
 								}
 							}
 							break;
 
 							case ASENSOR_TYPE_GYROSCOPE: {
 								if( mGyroscopeSensor && ( mGyroscopeSensor->mCallbackFn ) ) {
-									ci::vec3 gyro = ci::vec3( sensorEvent.vector.x, sensorEvent.vector.y, sensorEvent.vector.z );
-									mGyroscopeSensor->mCallbackFn( gyro );
+									const size_t n = 3;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.vector) );
+									mGyroscopeSensor->mCallbackFn( n, data );
 								}
 							}
 							break;
 
 							case ASENSOR_TYPE_GRAVITY: {
 								if( mGravitySensor && ( mGravitySensor->mCallbackFn ) ) {
-									ci::vec3 grav = ci::vec3( 
-										-sensorEvent.vector.x,
-										 sensorEvent.vector.y,
-										 sensorEvent.vector.z
-									);
-									mGravitySensor->mCallbackFn( grav );
+									const size_t n = 3;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.vector) );
+									mGravitySensor->mCallbackFn( n, data );
 								}
 							}
 							break;
 
+							//case ASENSOR_TYPE_ROTATION_VECTOR: {
 							case ASENSOR_TYPE_GAME_ROTATION_VECTOR: {
 								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
-									ci::vec3 rot = ci::vec3( 
-										-sensorEvent.vector.x,
-										 sensorEvent.vector.y,
-										 sensorEvent.vector.z
-									);
-									mRotationVectorSensor->mCallbackFn( rot );
+									//const size_t n = 4;
+									const size_t n = 3;
+									const float* data = reinterpret_cast<const float*>( &(sensorEvent.data) );
+									mRotationVectorSensor->mCallbackFn( n, data );
 								}
 							}
 							break;										

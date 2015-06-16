@@ -56,9 +56,9 @@ public:
 	// For debug
 	ci::vec3	getAccelerometer() const { return mAccelerometer; }
 	ci::vec3 	getMagneticField() const { return mMagneticField; }
-	ci::vec3 	getGyroscope() { return mGyroscope; }
-	ci::vec3 	getGravity() { return mGravity; }
-	ci::vec3 	getRotationVector() { return mRotationVector; }
+	ci::vec3 	getGyroscope() const { return mGyroscope; }
+	ci::vec3 	getGravity() const { return mGravity; }
+	ci::quat 	getRotationVector() const { return mRotationVector; }
 
 private:
 	float 						mUpdateFrequency = 60.0f;
@@ -75,15 +75,15 @@ private:
 	ci::vec3 	mMagneticField;
 	ci::vec3 	mGyroscope;
 	ci::vec3 	mGravity;
-	ci::vec3 	mRotationVector;
+	ci::quat	mRotationVector;
 
 	mutable ci::mat4	mRotationMatrix;
 
-	void 		updateAccelerometer( const ci::vec3& data );
-	void 		updateMagneticField( const ci::vec3& data );
-	void 		updateGyroscope( const ci::vec3& data );
-	void 		updateGravity( const ci::vec3& data );
-	void 		updateRotationVector( const ci::vec3& data );
+	void 		updateAccelerometer( const size_t n, const float* data );
+	void 		updateMagneticField( const size_t n, const float* data );
+	void 		updateGyroscope( const size_t n, const float* data );
+	void 		updateGravity( const size_t n, const float* data );
+	void 		updateRotationVector( const size_t n, const float* data );
 
 };
 

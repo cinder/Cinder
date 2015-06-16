@@ -36,7 +36,7 @@ class AppImplAndroid;
 class EventManagerAndroid {
 public:
 
-	typedef std::function<void(ci::vec3)> SensorCallbackFn;
+	typedef std::function<void(const size_t, const float*)> SensorCallbackFn;
 
 	EventManagerAndroid( android_app *nativeApp, std::function<void()> deferredMainFn, std::function<void()> cleanupLaunchFn );
 	virtual ~EventManagerAndroid();

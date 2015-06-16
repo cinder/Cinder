@@ -109,15 +109,17 @@ void Sensors::draw()
 	float theta =  thetaRad/3.141592f*180.0f;
 
 	if( mPrint ) {
-		vec3 ng = normalize( g );
+		//vec3 ng = normalize( g );
 
-		theta = dot( vec3( 0, ng.y, ng.z ), vec3( 0, 1, 0 ) );
-		theta = (acos(theta) - M_PI/2.0)/3.141592f*180.0f;
+		//theta = dot( vec3( 0, ng.y, ng.z ), vec3( 0, 1, 0 ) );
+		//theta = (acos(theta) - M_PI/2.0)/3.141592f*180.0f;
 		//console() << "ng=" << ng << ", theta=" << theta << std::endl;
 
 		auto q = MotionManager::getRotation( getOrientation() );
 		//console() << "-\n" << "quat:\n" << q << "\nmat4:" << toMat4( q ) << std::endl;
-		console() << "AngleAxis: " << AngleAxis( q ) << std::endl;
+		//console() << "AngleAxis: " << AngleAxis( q ) << std::endl;
+
+		console() << "Euler=" << glm::eulerAngles( q ) << std::endl;
 
 		//console() << "g=" << g << " : " << "theta=" << theta << std::endl;
 		//console() << "rv=" << MotionManager::getRotationVector() << std::endl;
@@ -156,11 +158,12 @@ void Sensors::draw()
 		gl::drawLine( vec3( 0, 0, 0 ), vec3( 0, 1.5f, 0 ) );
 
 		gl::color( 0.0f, 0.0f, 1.0f );
-		gl::drawLine( vec3( 0, 0, 0 ), vec3( 0, 0, 1.5f ) );
+		gl::drawLine( vec3( 0, 0, 0 ), vec3( 0, 0, -1.5f ) );
 
 	}
 	gl::popModelMatrix();
 
+	/*
 	gl::pushModelMatrix();
 	{
 		auto q = MotionManager::getRotation( getOrientation() );
@@ -175,6 +178,7 @@ void Sensors::draw()
 		gl::drawLine( -dv, dv );
 	}
 	gl::popModelMatrix();
+	*/
 
 	/*
 	gl::pushModelMatrix();
