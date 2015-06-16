@@ -1,7 +1,7 @@
 package org.libcinder.tests.opengltest;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class OpenGLTestActivity extends NativeActivity {
+public class OpenGLTestActivity extends CinderNativeActivity {
     static final String TAG = "OpenGLTestActivity";
 }

@@ -1,5 +1,8 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/gl/Texture.h"
+#include "cinder/Log.h"
 #include <list>
 
 using namespace ci;
@@ -19,12 +22,47 @@ class OpenGLTest : public App {
 
 	// This will maintain a list of points which we will draw line segments between
 	list<vec2>		mPoints;
+
+  private:
+	ci::gl::FboRef				mFbo;
+	ci::gl::Texture2dRef		mFboColorAtt;
+	ci::gl::Texture2dRef		mFboDepthAtt;
 };
 
 void OpenGLTest::setup()
 {
-    console() << "GL_OES_EGL_image_external: " << gl::isExtensionAvailable("GL_OES_EGL_image_external")  << std::endl;
-    console() << "GL_TEXTURE_EXTERNAL_OES: " << GL_TEXTURE_EXTERNAL_OES << std::endl;
+	GLint maxBuffers = 0;
+	glGetIntegerv( GL_MAX_DRAW_BUFFERS, &maxBuffers );
+	console() << "maxBuffers=" << maxBuffers << std::endl;
+
+	// create the textures we're using for offscreen rendering
+	vec2 resolution = toPixels( getWindowSize() );
+
+	console() << "resolution=" << resolution << std::endl;
+
+	mFboColorAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGBA16F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
+	//mFboDepthAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGBA16F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
+	//mFboDepthAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RG32F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
+
+	// and attach them to a newly created fbo
+	try {
+		auto fboFormat = gl::Fbo::Format();
+		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mFboColorAtt );
+		//fboFormat.attachment( GL_COLOR_ATTACHMENT1, mFboDepthAtt );
+		//fboFormat.depthBuffer();
+		fboFormat.disableDepth();
+		mFbo = gl::Fbo::create( resolution.x, resolution.y, fboFormat );
+	}
+	catch( const std::exception& e ) {
+		CI_LOG_E( std::string("Fbo create failed: ") + e.what() );
+	}
+
+   	console() << "GL_EXT_color_buffer_float: " << gl::isExtensionAvailable("GL_EXT_color_buffer_float")  << std::endl;
+   	console() << "GL_EXT_color_buffer_half_float: " << gl::isExtensionAvailable("GL_EXT_color_buffer_half_float")  << std::endl;
+
+
+    //console() << "GL_OES_EGL_image_external: " << gl::isExtensionAvailable("GL_OES_EGL_image_external")  << std::endl;
+    //console() << "GL_TEXTURE_EXTERNAL_OES: " << GL_TEXTURE_EXTERNAL_OES << std::endl;
 }
 
 void OpenGLTest::mouseDrag( MouseEvent event )
