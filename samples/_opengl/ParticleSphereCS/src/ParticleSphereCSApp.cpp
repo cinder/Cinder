@@ -60,9 +60,6 @@ class ParticleSphereCSApp : public App {
 	void draw() override;
 
   private:
-	ivec3 getMaxComputeWorkGroupCount();
-	ivec3 getMaxComputeWorkGroupSize();
-
 	enum { WORK_GROUP_SIZE = 128, };
 	typedef  gl::SsboT<Particle> ParticleSsbo;
 	typedef ParticleSsbo::Ref ParticleSsboRef;
@@ -104,7 +101,7 @@ void ParticleSphereCSApp::setup()
 		p.color = vec4( c.r, c.g, c.b, 1.0f );
 	}
 
-	ivec3 count = getMaxComputeWorkGroupCount();
+	ivec3 count = gl::getMaxComputeWorkGroupCount();
 	CI_ASSERT( count.x >= ( NUM_PARTICLES / WORK_GROUP_SIZE ) );
 
 	// Create particle buffers on GPU and copy data into the first buffer.
@@ -172,8 +169,8 @@ void ParticleSphereCSApp::update()
 	mUpdateProg->uniform( "uMousePos", mMousePos );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
 
-	glDispatchCompute( NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1 );
-	glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+	gl::dispatchCompute( NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1 );
+	gl::memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 
 	// Update mouse force.
 	if( mMouseDown ) {
@@ -198,24 +195,6 @@ void ParticleSphereCSApp::draw()
 	
 	gl::setMatricesWindow( app::getWindowSize() );
 	gl::drawString( toString( static_cast<int>( getAverageFps() ) ) + " fps", vec2( 32.0f, 52.0f ) );
-}
-
-ivec3 ParticleSphereCSApp::getMaxComputeWorkGroupCount()
-{
-	ivec3 count;
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &count.x );
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &count.y );
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &count.z );
-	return count;
-}
-
-ivec3 ParticleSphereCSApp::getMaxComputeWorkGroupSize()
-{
-	ivec3 size;
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &size.x );
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &size.y );
-	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &size.z );
-	return size;
 }
 
 CINDER_APP( ParticleSphereCSApp, RendererGl, []( App::Settings *settings ) {
