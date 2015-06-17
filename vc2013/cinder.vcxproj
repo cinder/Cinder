@@ -743,6 +743,7 @@
     <ClInclude Include="..\include\cinder\gl\scoped.h" />
     <ClInclude Include="..\include\cinder\gl\Shader.h" />
     <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h" />
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h" />
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
     <ClInclude Include="..\include\cinder\gl\Sync.h" />
     <ClInclude Include="..\include\cinder\gl\Texture.h" />

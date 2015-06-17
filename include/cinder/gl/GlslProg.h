@@ -188,6 +188,12 @@ class GlslProg {
 		//! Supplies the GLSL source for the tessellation control shader
 		Format&		tessellationEval( const std::string &tessellationEvalShader );
 #endif
+#if defined( GL_COMPUTE_SHADER )
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const DataSourceRef &dataSource );
+		//! Supplies the GLSL source for the compute shader
+		Format&		compute( const std::string &computeShader );
+#endif
 #if ! defined( CINDER_GL_ES_2 )		
 		//! Sets the TransformFeedback varyings
 		Format&		feedbackVaryings( const std::vector<std::string>& varyings ) { mTransformVaryings = varyings; return *this; }
@@ -219,6 +225,9 @@ class GlslProg {
 		const std::string&	getTessellationCtrl() const { return mTessellationCtrlShader; }
 		const std::string&	getTessellationEval() const { return mTessellationEvalShader; }
 #endif
+#if defined( GL_COMPUTE_SHADER )
+		const std::string&	getCompute() const { return mComputeShader; }
+#endif
 #if ! defined( CINDER_GL_ES_2 )
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransFormFeedback format
@@ -226,7 +235,7 @@ class GlslProg {
 		//! Returns the map between output variable names and their bound color numbers
 		const std::map<std::string,GLuint>&	getFragDataLocations() const { return mFragDataLocations; }
 #endif
-		
+				
 		//! Returns whether preprocessing is enabled or not, e.g. `#include` statements. \default true.
 		bool		isPreprocessingEnabled() const				{ return mPreprocessingEnabled; }
 		//! Sets whether preprocessing is enabled or not, e.g. `#include` statements.
@@ -267,6 +276,10 @@ class GlslProg {
 		//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
 		const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
 #endif
+#if defined( GL_COMPUTE_SHADER )
+		//! Returns the fs::path for the compute shader. Returns an empty fs::path if it isn't present.
+		const fs::path&	getComputePath() const { return mComputeShaderPath; }
+#endif
 		const std::vector<Uniform>&		getUniforms() const { return mUniforms; }
 		const std::vector<Attribute>&	getAttributes() const { return mAttributes; }
 		std::vector<Uniform>&			getUniforms() { return mUniforms; }
@@ -290,6 +303,11 @@ class GlslProg {
 		fs::path		mTessellationCtrlShaderPath;
 		fs::path		mTessellationEvalShaderPath;
 #endif
+#if defined( GL_COMPUTE_SHADER )
+		std::string		mComputeShader;
+		fs::path		mComputeShaderPath;
+#endif
+
 #if ! defined( CINDER_GL_ES_2 )
 		GLenum									mTransformFormat;
 		std::vector<std::string>				mTransformVaryings;
