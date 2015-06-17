@@ -2284,7 +2284,6 @@
 			isa = PBXGroup;
 			children = (
 				00BAE6CC0E7EDD8C0018A608 /* cinder */,
-				11316E581B28AC1300BD8783 /* tinyexr */,
 			);
 			name = Source;
 			sourceTree = "<group>";
@@ -2646,6 +2645,7 @@
 		32C88DFF0371C24200C91783 /* Other Sources */ = {
 			isa = PBXGroup;
 			children = (
+				11316E581B28AC1300BD8783 /* tinyexr */,
 				0003F4861992EA4C00647C8B /* glload */,
 				003ADB661038970C00ACF6F2 /* AntTweakBar */,
 				005B02F4152CD13C00F2C237 /* jsoncpp */,

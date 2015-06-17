@@ -46,27 +46,41 @@ void ImageSourceFileTinyExr::registerSelf()
 }
 
 ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageSource::Options options )
-	: mRowBytes( 0 )
 {
 	mExrImage.reset( new EXRImage );
 	const char *error;
 
 	if( dataSource->isFilePath() ) {
 		int status = LoadMultiChannelEXRFromFile( mExrImage.get(), dataSource->getFilePath().string().c_str(), &error );
-		if( status != 0 ) {
+		if( status != 0 )
 			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", error message: " + error );
-		}
-
-		mRowBytes = mExrImage->width * mExrImage->num_channels * sizeof( float );
 	}
 	else {
 		throw ImageIoExceptionFailedLoadTinyExr( "unimplemented" );
 		// TODO: use LoadMultiChannelEXRFromMemory
 	}
 
-	setDataType( ImageIo::FLOAT32 );
-	setSize( mExrImage->width, mExrImage->height );
+	// verify that the channels are all the same size; currently we don't support variably sized channels
+	int pixelType = mExrImage->pixel_types[0];
+	for( int c = 0; c < mExrImage->num_channels; ++c ) {
+		if( pixelType != mExrImage->pixel_types[c] )
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", heterogneous channel data types not supported" );
+	}
 
+pixelType = TINYEXR_PIXELTYPE_FLOAT;
+	switch( pixelType ) {
+		case TINYEXR_PIXELTYPE_HALF:
+			setDataType( ImageIo::FLOAT16 );
+		break;
+		case TINYEXR_PIXELTYPE_FLOAT:
+			setDataType( ImageIo::FLOAT32 );
+		break;
+		default:
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", unknown data type" );
+		break;
+	}
+
+	setSize( mExrImage->width, mExrImage->height );
 
 	CI_LOG_I( "width: " << mExrImage->width << ", height: " << mExrImage->height << ", num_channels: " << mExrImage->num_channels );
 	for( int i = 0; i < mExrImage->num_channels; i++ ) {
@@ -76,16 +90,15 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	switch( mExrImage->num_channels ) {
 		case 3:
 			setColorModel( ImageIo::CM_RGB );
-			setChannelOrder( ImageIo::ChannelOrder::BGR );
+			setChannelOrder( ImageIo::ChannelOrder::RGB );
 		break;
 		case 4:
 			setColorModel( ImageIo::CM_RGB );
-			setChannelOrder( ImageIo::ChannelOrder::BGRA );
+			setChannelOrder( ImageIo::ChannelOrder::RGBA );
 		break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( "unexpected number of channels (" + to_string( mExrImage->num_channels ) + ")" );
+			throw ImageIoExceptionFailedLoadTinyExr( "unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
 	}
-
 }
 
 void ImageSourceFileTinyExr::load( ImageTargetRef target )
@@ -96,24 +109,52 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 
 	// TODO: need a more robust way to map these channels, I'm looking at the name in the debug output
 	// - though, so far they all appear to be in this order
-	auto alpha = (const float *)mExrImage->images[0];
-	auto blue = (const float *)mExrImage->images[1];
-	auto green = (const float *)mExrImage->images[2];
-	auto red = (const float *)mExrImage->images[3];
+	const void *red = nullptr, *green = nullptr, *blue = nullptr, *alpha = nullptr;
+	
+	for( size_t c = 0; c < numChannels; ++c ) {
+		if( strcmp( mExrImage->channel_names[c], "R" ) == 0 )
+			red = mExrImage->images[c];
+		else if( strcmp( mExrImage->channel_names[c], "G" ) == 0 )
+			green = mExrImage->images[c];
+		else if( strcmp( mExrImage->channel_names[c], "B" ) == 0 )
+			blue = mExrImage->images[c];
+		else if( strcmp( mExrImage->channel_names[c], "A" ) == 0 )
+			alpha = mExrImage->images[c];
+	}
 
-	// load one interleaved row at atime
-	vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
+	if( ( ! red ) || ( ! green ) || ( ! blue ) )
+		throw ImageIoExceptionFailedLoadTinyExr( "Unable to locate channels for RGB" );
+	
+	// load one interleaved row at a time
+	if( true/*getDataType() == ImageIo::FLOAT32*/ ) {
+		vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
+		for( int32_t row = 0; row < mHeight; row++ ) {
+			for( int32_t col = 0; col < mWidth; col++ ) {
+				rowData.at( col * numChannels + 0 ) = ((float*)red)[row * mWidth + col];
+				rowData.at( col * numChannels + 1 ) = ((float*)green)[row * mWidth + col];
+				rowData.at( col * numChannels + 2 ) = ((float*)blue)[row * mWidth + col];
+				if( alpha )
+					rowData.at( col * numChannels + 3 ) = ((float*)alpha)[row * mWidth + col];
+			}
 
-	for( int32_t row = 0; row < mHeight; row++ ) {
-		for( int32_t col = 0; col < mWidth; col++ ) {
-			rowData.at( col * numChannels + 0 ) = blue[row * mWidth + col];
-			rowData.at( col * numChannels + 1 ) = green[row * mWidth + col];
-			rowData.at( col * numChannels + 2 ) = red[row * mWidth + col];
-			if( alpha )
-				rowData.at( col * numChannels + 3 ) = alpha[row * mWidth + col];
+std:cout << vec3( rowData[0], rowData[1], rowData[2] ) << std::endl;
+
+			((*this).*rowFunc)( target, row, rowData.data() );
 		}
+	}
+	else { // float16
+		vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
+		for( int32_t row = 0; row < mHeight; row++ ) {
+			for( int32_t col = 0; col < mWidth; col++ ) {
+				rowData.at( col * numChannels + 0 ) = ((uint16_t*)red)[row * mWidth + col];
+				rowData.at( col * numChannels + 1 ) = ((uint16_t*)green)[row * mWidth + col];
+				rowData.at( col * numChannels + 2 ) = ((uint16_t*)blue)[row * mWidth + col];
+				if( alpha )
+					rowData.at( col * numChannels + 3 ) = ((uint16_t*)alpha)[row * mWidth + col];
+			}
 
-		((*this).*rowFunc)( target, row, rowData.data() );
+			((*this).*rowFunc)( target, row, rowData.data() );
+		}
 	}
 }
 

@@ -47,7 +47,6 @@ protected:
 	ImageSourceFileTinyExr( DataSourceRef dataSourceRef, ImageSource::Options options );
 
 	std::unique_ptr<EXRImage>	mExrImage;
-	size_t		mRowBytes;
 };
 
 class ImageTargetFileTinyExr : public ImageTarget {
