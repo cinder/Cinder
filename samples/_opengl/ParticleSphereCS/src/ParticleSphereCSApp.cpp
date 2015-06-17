@@ -115,8 +115,8 @@ void ParticleSphereCSApp::setup()
 	
 	// Create a default color shader.
 	try {
-		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleRender.vs.glsl" ) )
-			.fragment( loadAsset( "particleRender.fs.glsl" ) )
+		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "particleRender.vert" ) )
+			.fragment( loadAsset( "particleRender.frag" ) )
 			.attribLocation( "particleId", 0 ) );
 	}
 	catch( gl::GlslProgCompileExc e ) {
@@ -138,7 +138,7 @@ void ParticleSphereCSApp::setup()
 	try {
 		//// Load our update program.
 		mUpdateProg = gl::GlslProg::
-			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate.cs.glsl" ) ) );
+			create( gl::GlslProg::Format().compute( loadAsset( "particleUpdate.comp" ) ) );
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;

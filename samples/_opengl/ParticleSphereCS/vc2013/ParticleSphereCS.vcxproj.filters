@@ -39,13 +39,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\particleUpdate.cs.glsl">
+    <None Include="..\assets\particleRender.frag">
       <Filter>Asset Files</Filter>
     </None>
-    <None Include="..\assets\particleRender.fs.glsl">
+    <None Include="..\assets\particleRender.vert">
       <Filter>Asset Files</Filter>
     </None>
-    <None Include="..\assets\particleRender.vs.glsl">
+    <None Include="..\assets\particleUpdate.comp">
       <Filter>Asset Files</Filter>
     </None>
   </ItemGroup>

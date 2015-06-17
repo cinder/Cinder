@@ -115,9 +115,9 @@
     <ClInclude Include="..\include\ScopedBufferBase.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\particleRender.vs.glsl" />
-    <None Include="..\assets\particleRender.fs.glsl" />
-    <None Include="..\assets\particleUpdate.cs.glsl" />
+    <None Include="..\assets\particleRender.vert" />
+    <None Include="..\assets\particleRender.frag" />
+    <None Include="..\assets\particleUpdate.comp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
