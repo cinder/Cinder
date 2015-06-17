@@ -55,6 +55,7 @@ union float32_t
 	};
 };
 
+// Algorithm due to Fabian "ryg" Giesen.
 static half_float float_to_half( float32_t f )
 {
     float32_t f32infty = { 255 << 23 };
@@ -93,6 +94,7 @@ half_float float_to_half( float f )
 	return float_to_half( float32_t( { .f = f } ) );
 }
 
+// Algorithm due to Fabian "ryg" Giesen.
 float half_to_float( half_float h )
 {
 	static const float32_t magic = { 113 << 23 };

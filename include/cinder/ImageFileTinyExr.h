@@ -67,11 +67,7 @@ class ImageTargetFileTinyExr : public ImageTarget {
 	std::vector<uint8_t>	mData;
 
 	std::vector<std::string>		mChannelNames;
-#if USE_PLANAR_CHANNELS
 	std::vector<Channel32f>			mImagePlanar;
-#else
-	std::vector<std::vector<float> >	mImagePlanar;
-#endif
 };
 
 class ImageIoExceptionFailedLoadTinyExr : public ImageIoExceptionFailedLoad {

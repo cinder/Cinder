@@ -143,7 +143,6 @@ std:cout << vec3( rowData[0], rowData[1], rowData[2] ) << std::endl;
 		}
 	}
 	else { // float16
-		vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
 		for( int32_t row = 0; row < mHeight; row++ ) {
 			for( int32_t col = 0; col < mWidth; col++ ) {
 				rowData.at( col * numChannels + 0 ) = ((uint16_t*)red)[row * mWidth + col];
@@ -213,19 +212,10 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 
 	mData.resize( mHeight * mRowBytes );
 
-#if USE_PLANAR_CHANNELS
 	mImagePlanar.reserve( mNumComponents );
 	for( size_t i = 0; i < mNumComponents; i++ ) {
 		mImagePlanar.emplace_back( mWidth, mHeight );
 	}
-
-#else
-	mImagePlanar.resize( mNumComponents );
-	for( auto &component : mImagePlanar ) {
-		component.resize( mWidth * mHeight );
-	}
-
-#endif
 
 	CI_LOG_I( "num channels: " << (int)mNumComponents );
 }
@@ -237,7 +227,6 @@ void* ImageTargetFileTinyExr::getRowPointer( int32_t row )
 
 void ImageTargetFileTinyExr::finalize()
 {
-#if USE_PLANAR_CHANNELS
 	// construct a surface (doesn't own data) that allows us to easily pull out the planar channels
 	Surface32f surface;
 	if( mNumComponents == 3 ) {
@@ -260,25 +249,6 @@ void ImageTargetFileTinyExr::finalize()
 	else {
 		throw ImageIoExceptionFailedWriteTinyExr( "TODO: finish implementing, not supported for channel count: " + to_string( mNumComponents ) );
 	}
-#else
-	// de-interleave to planar channels
-	for( size_t i = 0; i < mNumComponents; i++ ) {
-		auto &component = mImagePlanar[i];
-		for( size_t x = 0; x < mWidth * mHeight; x++ ) {
-			component[x] = mData.at( x * mNumComponents + i );
-		}
-	}
-
-	if( mNumComponents == 3 ) {
-		mChannelNames = { "G", "B", "R" };
-	}
-	else if( mNumComponents == 4 ) {
-		mChannelNames = { "A", "G", "B", "R" };
-	}
-	else {
-		throw ImageIoExceptionFailedWriteTinyExr( "TODO: finish implementing, not supported for channel count: " + to_string( mNumComponents ) );
-	}
-#endif
 
 	EXRImage exrImage = {}; // FIXME: why do I need to default initialize this?
 	exrImage.num_channels = mNumComponents;
@@ -293,11 +263,7 @@ void ImageTargetFileTinyExr::finalize()
 //		pixelTypes[i] = TINYEXR_PIXELTYPE_HALF;
 		channelNames[i] = mChannelNames[i].c_str();
 
-#if USE_PLANAR_CHANNELS
 		imagePtr[i] = mImagePlanar[i].getData();
-#else
-		imagePtr[i] = mImagePlanar[i].data();
-#endif
 	}
 
 	exrImage.channel_names = channelNames;
