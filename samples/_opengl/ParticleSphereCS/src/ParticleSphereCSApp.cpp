@@ -1,13 +1,3 @@
-//
-//	Copyright (c) 2014 David Wicks, sansumbrella.com
-//	All rights reserved.
-//
-//	Particle Sphere sample application, GPU integration.
-//
-//	Author: David Wicks
-//	License: BSD Simplified
-//
-
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/Rand.h"
@@ -61,13 +51,11 @@ class ParticleSphereCSApp : public App {
 
   private:
 	enum { WORK_GROUP_SIZE = 128, };
-	typedef  gl::SsboT<Particle> ParticleSsbo;
-	typedef ParticleSsbo::Ref ParticleSsboRef;
 	gl::GlslProgRef mRenderProg;
 	gl::GlslProgRef mUpdateProg;
 
 	// Buffers holding raw particle data on GPU.
-	ParticleSsboRef mParticleBuffer;
+	gl::SsboRef mParticleBuffer;
 	gl::VboRef mIdsVbo;
 	gl::VaoRef mAttributes;
 
@@ -106,7 +94,7 @@ void ParticleSphereCSApp::setup()
 
 	// Create particle buffers on GPU and copy data into the first buffer.
 	// Mark as static since we only write from the CPU once.
-	mParticleBuffer = ParticleSsbo::create( particles, GL_STATIC_DRAW );
+	mParticleBuffer = gl::Ssbo::create( particles.size() * sizeof(Particle), particles.data(), GL_STATIC_DRAW );
 	gl::ScopedBuffer scopedParticleSsbo( mParticleBuffer );
 	mParticleBuffer->bindBase( 0 );
 	
