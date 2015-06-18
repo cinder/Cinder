@@ -36,13 +36,13 @@
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\assets\particles.cs.glsl">
+    <None Include="..\assets\particles.comp">
       <Filter>Asset Files</Filter>
     </None>
-    <None Include="..\assets\render.fs.glsl">
+    <None Include="..\assets\render.frag">
       <Filter>Asset Files</Filter>
     </None>
-    <None Include="..\assets\render.vs.glsl">
+    <None Include="..\assets\render.vert">
       <Filter>Asset Files</Filter>
     </None>
   </ItemGroup>

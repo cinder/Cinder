@@ -74,19 +74,11 @@ struct ParticleParams
 
 //! This sample was ported from https://github.com/NVIDIAGameWorks/OpenGLSamples/tree/master/samples/es3aep-kepler/ComputeParticles
 class NVidiaComputeParticlesApp : public App {
-public:
+  public:
 	NVidiaComputeParticlesApp();
-	virtual ~NVidiaComputeParticlesApp();
-	NVidiaComputeParticlesApp( const NVidiaComputeParticlesApp &other ) = delete;
-	NVidiaComputeParticlesApp &operator= ( const NVidiaComputeParticlesApp &rhs ) = delete;
-	NVidiaComputeParticlesApp( const NVidiaComputeParticlesApp &&other ) = delete;
-	NVidiaComputeParticlesApp &operator= ( const NVidiaComputeParticlesApp &&rhs ) = delete;
 
-	virtual void resize() override;
-	virtual void update() override;
-	virtual void draw() override;
-	virtual void mouseDrag( MouseEvent event ) override;
-	virtual void mouseDown( MouseEvent event ) override;
+	void update() override;
+	void draw() override;
 	
 	void renderScene( gl::GlslProgRef effect );
 	void setupShaders();
@@ -103,8 +95,8 @@ public:
 	gl::VboMeshRef teapot;
 	gl::GlslProgRef mRenderProg;
 	gl::GlslProgRef mUpdateProg;
-	gl::SsboT<vec4>::Ref mPos;
-	gl::SsboT<vec4>::Ref mVel;
+	gl::SsboRef mPos;
+	gl::SsboRef mVel;
 	gl::VboRef mIndicesVbo;
 	gl::UboRef mParticleUpdateUbo;
 
@@ -124,7 +116,6 @@ public:
 
 NVidiaComputeParticlesApp::NVidiaComputeParticlesApp()
 	: mCam( getWindowWidth(), getWindowHeight(), 45.0f, 0.1f, 10.0f ),
-	  mCamUi( &mCam ),
 	  mNoiseSize( 16 ),
 	  mParticleParams( mNoiseSize ),
 	  mSpriteSize( 0.015f ),
@@ -160,18 +151,15 @@ NVidiaComputeParticlesApp::NVidiaComputeParticlesApp()
 	mParams->addParam( "Noise frequency", &( mParticleParams.noiseFreq ) ).min( 0.0f ).max( 20.0f ).step( 1.0f );
 	mParams->addSeparator();
 	mParams->addParam( "Reset", &mReset );
-}
 
-NVidiaComputeParticlesApp::~NVidiaComputeParticlesApp()
-{
-
+	mCamUi = CameraUi( &mCam, getWindow() );
 }
 
 void NVidiaComputeParticlesApp::setupShaders()
 {
 	try {
-		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vs.glsl" ) )
-			.fragment( loadAsset( "render.fs.glsl" ) ) );
+		mRenderProg = gl::GlslProg::create( gl::GlslProg::Format().vertex( loadAsset( "render.vert" ) )
+			.fragment( loadAsset( "render.frag" ) ) );
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;
@@ -179,7 +167,7 @@ void NVidiaComputeParticlesApp::setupShaders()
 	}
 
 	try {
-		mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().compute( loadAsset( "particles.cs.glsl" ) ) );
+		mUpdateProg = gl::GlslProg::create( gl::GlslProg::Format().compute( loadAsset( "particles.comp" ) ) );
 	}
 	catch( gl::GlslProgCompileExc e ) {
 		ci::app::console() << e.what() << std::endl;
@@ -196,8 +184,8 @@ void NVidiaComputeParticlesApp::setupShaders()
 
 void NVidiaComputeParticlesApp::setupBuffers()
 {
-	mPos = gl::SsboT<vec4>::create( NUM_PARTICLES, GL_STATIC_DRAW );
-	mVel = gl::SsboT<vec4>::create( NUM_PARTICLES, GL_STATIC_DRAW );
+	mPos = gl::Ssbo::create( sizeof(vec4) * NUM_PARTICLES, nullptr, GL_STATIC_DRAW );
+	mVel = gl::Ssbo::create( sizeof(vec4) * NUM_PARTICLES, nullptr, GL_STATIC_DRAW );
 
 	std::vector<uint32_t> indices( NUM_PARTICLES * 6 );
 	// the index buffer is a classic "two-tri quad" array.
@@ -217,26 +205,18 @@ void NVidiaComputeParticlesApp::setupBuffers()
 	}
 
 	mIndicesVbo = gl::Vbo::create<uint32_t>( GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW );
-
-}
-
-void NVidiaComputeParticlesApp::resize()
-{
-	mCam.setPerspective( mCam.getFov(), getWindowAspectRatio(), mCam.getNearClip(), mCam.getFarClip() );
 }
 
 void NVidiaComputeParticlesApp::update()
 {
-	if( mAnimate ) {
+	if( mAnimate )
 		updateParticleSystem();
-	}
 }
 
 void NVidiaComputeParticlesApp::draw()
 {
-	CI_CHECK_GL();
+	// CI_CHECK_GL();
 	gl::clear( ColorA( 0.25f, 0.25f, 0.25f, 1.0f ) );
-	gl::clear( GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT );
 
 	if( mReset ) {
 		mReset = false;
@@ -268,25 +248,15 @@ void NVidiaComputeParticlesApp::draw()
 	mParams->draw();
 }
 
-void NVidiaComputeParticlesApp::mouseDown( MouseEvent event )
-{
-	mCamUi.mouseDown( event.getPos() );
-}
-
-void NVidiaComputeParticlesApp::mouseDrag( MouseEvent event )
-{
-	mCamUi.mouseDrag( event.getPos(), event.isLeftDown(), event.isMiddleDown(), event.isRightDown() );
-}
-
 void NVidiaComputeParticlesApp::resetParticleSystem( float size )
 {
-	vec4 *pos = mPos->mapT( GL_WRITE_ONLY );
+	vec4 *pos = reinterpret_cast<vec4*>( mPos->map( GL_WRITE_ONLY ) );
 	for( size_t i = 0; i < NUM_PARTICLES; ++i ) {
 		pos[i] = vec4( sfrand() * size, sfrand() * size, sfrand() * size, 1.0f );
 	}
 	mPos->unmap();
 
-	vec4 *vel = mVel->mapT( GL_WRITE_ONLY );
+	vec4 *vel = reinterpret_cast<vec4*>( mVel->map( GL_WRITE_ONLY ) );
 	for( size_t i = 0; i < NUM_PARTICLES; ++i ) {
 		vel[i] = vec4( 0.0f, 0.0f, 0.0f, 1.0f );
 	}
@@ -322,10 +292,10 @@ void NVidiaComputeParticlesApp::updateParticleSystem()
 	gl::bindBufferBase( mPos->getTarget(), 1, mPos );
 	gl::bindBufferBase( mPos->getTarget(), 2, mVel );
 
-	glDispatchCompute( NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1 );
+	gl::dispatchCompute( NUM_PARTICLES / WORK_GROUP_SIZE, 1, 1 );
 	// We need to block here on compute completion to ensure that the
 	// computation is done before we render
-	glMemoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
+	gl::memoryBarrier( GL_SHADER_STORAGE_BARRIER_BIT );
 }
 
 void NVidiaComputeParticlesApp::setupNoiseTexture3D()
@@ -345,12 +315,9 @@ void NVidiaComputeParticlesApp::setupNoiseTexture3D()
 
 	std::vector<float> data( width * height * depth * 4 );
 	int i = 0;
-	for( int z = 0; z < depth; ++z )
-	{
-		for( int y = 0; y < height; ++y )
-		{
-			for( int x = 0; x < width; ++x )
-			{
+	for( int z = 0; z < depth; ++z ) {
+		for( int y = 0; y < height; ++y ) {
+			for( int x = 0; x < width; ++x ) {
 				data[i++] = sfrand();
 				data[i++] = sfrand();
 				data[i++] = sfrand();
