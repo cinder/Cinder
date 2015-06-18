@@ -280,9 +280,11 @@ std::string getMonitorName( HMONITOR hMonitor )
 	MONITORINFOEX mix;
 	memset( &mix, 0, sizeof( MONITORINFOEX ) );
 	mix.cbSize = sizeof( MONITORINFOEX );
-	GetMonitorInfo( hMonitor, &mix );
-	return msw::toUtf8String( std::wstring( mix.szDevice ) );
-}
+	::GetMonitorInfo( hMonitor, &mix );
+	DISPLAY_DEVICEW dispDev;
+	dispDev.cb = sizeof( DISPLAY_DEVICEW );
+	::EnumDisplayDevicesW( mix.szDevice, 0, &dispDev, 0);
+	return msw::toUtf8String( std::wstring(  dispDev.DeviceString ) );}
 } // anonymous namespace
 
 BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
