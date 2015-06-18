@@ -239,7 +239,7 @@ GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellation
 
 #endif // ! defined( CINDER_GL_ES )
 
-#if defined( GL_COMPUTE_SHADER )
+#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
 
 GlslProg::Format& GlslProg::Format::compute( const DataSourceRef &dataSource )
 {
@@ -253,7 +253,7 @@ GlslProg::Format& GlslProg::Format::compute( const string &computeShader )
 	return *this;
 }
 
-#endif // defined( GL_COMPUTE_SHADER )
+#endif // defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
 void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
 	if( dataSource ) {
@@ -478,7 +478,7 @@ GlslProg::GlslProg( const Format &format )
 	if( ! format.getTessellationEval().empty() )
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
-#if defined( GL_COMPUTE_SHADER )
+#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
 	if( !format.getCompute().empty() )
 		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER );
 #endif    
