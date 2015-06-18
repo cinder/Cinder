@@ -32,6 +32,7 @@
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
+	#import <IOKit/graphics/IOGraphicsLib.h>
 #else
 	#import <Foundation/Foundation.h>
 	#import <UIKit/UIKit.h>
@@ -395,6 +396,20 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 	
 	return nil;
 }
+std::string getDisplayName( CGDirectDisplayID displayId )
+{
+	string name = "";
+
+	NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( displayId ), kIODisplayOnlyPreferredName );
+	NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+	if( [localizedNames count] > 0 ) {
+		NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+		name = ci::cocoa::convertNsString( displayName );
+	}
+	[deviceInfo release];
+
+	return name;
+}
 } // anonymous namespace
 
 NSScreen* DisplayMac::getNsScreen() const
@@ -412,6 +427,15 @@ DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID disp
 
 	// couldn't find it, so return nullptr
 	return nullptr;
+}
+
+std::string DisplayMac::getName() const
+{
+	if( mNameDirty ) {
+		mName = getDisplayName( mDirectDisplayId );
+		mNameDirty = false;
+	}
+	return mName;
 }
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
@@ -445,7 +469,8 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			newDisplay->mContentScale = 1.0f;
 #endif
 			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
-			
+			newDisplay->mNameDirty = true;
+
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else

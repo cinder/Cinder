@@ -149,6 +149,8 @@ class DisplayMac : public Display {
 	NSScreen*			getNsScreen() const;
 	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayId; }
 
+	std::string			getName() const override;
+
   protected:	
 	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
 

@@ -275,6 +275,14 @@ int getMonitorBitsPerPixel( HMONITOR hMonitor )
 
 	return result;
 }
+std::string getMonitorName( HMONITOR hMonitor )
+{
+	MONITORINFOEX mix;
+	memset( &mix, 0, sizeof( MONITORINFOEX ) );
+	mix.cbSize = sizeof( MONITORINFOEX );
+	GetMonitorInfo( hMonitor, &mix );
+	return msw::toUtf8String( std::wstring( mix.szDevice ) );
+}
 } // anonymous namespace
 
 BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
@@ -286,7 +294,8 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT re
 	newDisplay->mMonitor = hMonitor;
 	newDisplay->mContentScale = 1.0f;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
-		
+	newDisplay->mName = getMonitorName( hMonitor );
+
 	displaysVector->push_back( DisplayRef( newDisplay ) );
 	return TRUE;
 }
