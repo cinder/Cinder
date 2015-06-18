@@ -39,7 +39,7 @@ typedef std::shared_ptr<class Display> 	DisplayRef;
 
 class Display {
   public:
-	Display() : mArea( Area::zero() ), mBitsPerPixel( 0 ), mContentScale( 1.0f ), mName( "" ) {}
+	Display() : mArea( Area::zero() ), mBitsPerPixel( 0 ), mContentScale( 1.0f ), mName( "" ), mNameDirty ( true ) {}
 	virtual ~Display() {}
 
 	//! Returns the width of the screen measured in points
@@ -65,7 +65,7 @@ class Display {
 	bool	contains( const ivec2 &pt ) const { return mArea.contains( pt ); }
 
 	//! Returns the display's name or an empty string if unavailable.
-	std::string		getName() const { return mName; }
+	virtual std::string		getName() const { return mName; }
 
 	//! Returns the system's primary display
 	static DisplayRef						getMainDisplay();
@@ -82,10 +82,11 @@ class Display {
 	}	
 
   protected:
-	Area			mArea;
-	int				mBitsPerPixel;
-	float			mContentScale;
-	std::string		mName;
+	Area				mArea;
+	int					mBitsPerPixel;
+	float				mContentScale;
+	mutable std::string	mName;
+	mutable bool		mNameDirty;
 };
 
 } // namespace cinder

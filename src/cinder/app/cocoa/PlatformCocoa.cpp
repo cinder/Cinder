@@ -384,6 +384,20 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 	
 	return nil;
 }
+std::string getDisplayName( CGDirectDisplayID displayId )
+{
+	string name = "";
+
+	NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( displayId ), kIODisplayOnlyPreferredName );
+	NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+	if( [localizedNames count] > 0 ) {
+		NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+		name = ci::cocoa::convertNsString( displayName );
+	}
+	[deviceInfo release];
+
+	return name;
+}
 } // anonymous namespace
 
 NSScreen* DisplayMac::getNsScreen() const
@@ -401,6 +415,15 @@ DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID disp
 
 	// couldn't find it, so return nullptr
 	return nullptr;
+}
+
+std::string DisplayMac::getName() const
+{
+    if( mNameDirty ) {
+		mName = getDisplayName( mDirectDisplayId );
+		mNameDirty = false;
+    }
+    return mName;
 }
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
@@ -434,14 +457,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			newDisplay->mContentScale = 1.0f;
 #endif
 			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
-
-			NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( newDisplay->mDirectDisplayId ), kIODisplayOnlyPreferredName );
-			NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
-			if( [localizedNames count] > 0 ) {
-				NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
-				newDisplay->mName = ci::cocoa::convertNsString( displayName );
-			}
-			[deviceInfo release];
+			newDisplay->mNameDirty = true;
 
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
@@ -511,14 +527,6 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			newDisplay->mDirectDisplayId = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 			newDisplay->mContentScale = [screen backingScaleFactor];
-
-			NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( newDisplay->mDirectDisplayId ), kIODisplayOnlyPreferredName );
-			NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
-			if( [localizedNames count] > 0 ) {
-				NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
-				newDisplay->mName = ci::cocoa::convertNsString( displayName );
-			}
-			[deviceInfo release];
 
 			mDisplays.push_back( DisplayRef( newDisplay ) );
 		}
