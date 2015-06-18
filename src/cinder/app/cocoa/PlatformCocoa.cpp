@@ -419,11 +419,11 @@ DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID disp
 
 std::string DisplayMac::getName() const
 {
-    if( mNameDirty ) {
+	if( mNameDirty ) {
 		mName = getDisplayName( mDirectDisplayId );
 		mNameDirty = false;
-    }
-    return mName;
+	}
+	return mName;
 }
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
