@@ -1,10 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.30723.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.31101.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NVidiaComputeParticles", "NVidiaComputeParticles.vcxproj", "{3EF291ED-F013-4FD8-B876-2DCC57869034}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "cinder", "..\..\..\..\vc2013\cinder.vcxproj", "{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "NvidiaComputeParticles", "NVidiaComputeParticles.vcxproj", "{3EF291ED-F013-4FD8-B876-2DCC57869034}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,22 +28,6 @@ Global
 		{3EF291ED-F013-4FD8-B876-2DCC57869034}.Release|Win32.ActiveCfg = Release|Win32
 		{3EF291ED-F013-4FD8-B876-2DCC57869034}.Release|Win32.Build.0 = Release|Win32
 		{3EF291ED-F013-4FD8-B876-2DCC57869034}.Release|x64.ActiveCfg = Release|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug_ANGLE|Win32.ActiveCfg = Debug|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug_ANGLE|Win32.Build.0 = Debug|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug_ANGLE|x64.ActiveCfg = Debug|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug_ANGLE|x64.Build.0 = Debug|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug|Win32.ActiveCfg = Debug|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug|Win32.Build.0 = Debug|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug|x64.ActiveCfg = Debug|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Debug|x64.Build.0 = Debug|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release_ANGLE|Win32.ActiveCfg = Release|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release_ANGLE|Win32.Build.0 = Release|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release_ANGLE|x64.ActiveCfg = Release|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release_ANGLE|x64.Build.0 = Release|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|Win32.ActiveCfg = Release|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|Win32.Build.0 = Release|Win32
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x64.ActiveCfg = Release|x64
-		{92B5BE70-DCAA-40E4-92D8-CC2B95AA28BE}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
