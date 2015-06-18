@@ -85,6 +85,9 @@ class ResourceLoadExcMsw : public ResourceLoadExc {
 namespace cinder {
 
 class DisplayMsw : public Display {
+  public:
+	std::string		getName() const override;
+
   protected:
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 

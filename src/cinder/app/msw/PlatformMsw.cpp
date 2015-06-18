@@ -287,6 +287,15 @@ std::string getMonitorName( HMONITOR hMonitor )
 	return msw::toUtf8String( std::wstring(  dispDev.DeviceString ) );}
 } // anonymous namespace
 
+std::string DisplayMsw::getName() const
+{
+	if( mNameDirty ) {
+		mName = getMonitorName( mMonitor );
+		mNameDirty = false;
+	}
+	return mName;
+}
+
 BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
 {
 	vector<DisplayRef> *displaysVector = reinterpret_cast<vector<DisplayRef>*>( lParam );
@@ -296,7 +305,6 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT re
 	newDisplay->mMonitor = hMonitor;
 	newDisplay->mContentScale = 1.0f;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
-	newDisplay->mName = getMonitorName( hMonitor );
 
 	displaysVector->push_back( DisplayRef( newDisplay ) );
 	return TRUE;

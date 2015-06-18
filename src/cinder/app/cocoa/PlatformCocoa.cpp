@@ -469,7 +469,6 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			newDisplay->mContentScale = 1.0f;
 #endif
 			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
-			newDisplay->mNameDirty = true;
 
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
