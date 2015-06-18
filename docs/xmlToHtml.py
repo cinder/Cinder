@@ -45,7 +45,7 @@ headerDictionary = {
     "struct": "Struct Reference"
 }
 
-tagXml = None
+g_tag_xml = None
 g_symbolMap = None
 g_currentFile = None
 
@@ -252,7 +252,7 @@ class FileData(object):
     def __init__(self, tree, bs4):
 
         self.tree = tree  # xml file that describes the page
-        self.bs4 = bs4    # html file of the actual page
+        self.bs4 = bs4  # html file of the actual page
 
         self.contentsEl = None
         self.sideNavEl = None
@@ -303,8 +303,8 @@ class FileData(object):
     def append_to_side_el(self, el):
         self.sideEl.append(el)
 
-    # def set_category(self):
-    #     print "SET CATEGORY"
+        # def set_category(self):
+        #     print "SET CATEGORY"
 
 
 def find_compound_name(tree):
@@ -332,17 +332,17 @@ def strip_compound_name(full_string):
     return name
 
 
-def add_class_to_tag(tag, className):
-    tag["class"] = tag.get("class", []) + [className]
+def add_class_to_tag(tag, class_name):
+    tag["class"] = tag.get("class", []) + [class_name]
 
 
-def gen_anchor_tag(bs4, anchorName):
+def gen_anchor_tag(bs4, anchor_name):
     anchor = gen_tag(bs4, "a")
-    anchor["name"] = anchorName
+    anchor["name"] = anchor_name
     return anchor
 
 
-def gen_tag(bs4, tagType, classes=None, contents=None):
+def gen_tag(bs4, tag_type, classes=None, contents=None):
     """ Generates a new html element and optionally adds classes and content
 
     Args:
@@ -352,39 +352,38 @@ def gen_tag(bs4, tagType, classes=None, contents=None):
         contents:   any content that you want to populate your tag with, if known
     """
 
-    newTag = bs4.new_tag(tagType)
+    new_tag = bs4.new_tag(tag_type)
 
     if classes:
         for c in classes:
-            add_class_to_tag(newTag, c)
+            add_class_to_tag(new_tag, c)
 
     if contents:
-        newTag.append(contents)
+        new_tag.append(contents)
 
-    return newTag
+    return new_tag
 
 
 def gen_link_tag(bs4, text, link):
-    linkTag = gen_tag(bs4, "a", [], text)
-    define_link_tag(linkTag, {"href": link})
-    return linkTag
+    link_tag = gen_tag(bs4, "a", [], text)
+    define_link_tag(link_tag, {"href": link})
+    return link_tag
 
 
 def define_link_tag(tag, attrib):
-    refId = None
-    kind = None
+    ref_id = None
     href = None
 
-    if ("refid" in attrib):
-        refId = attrib["refid"]
-        href = refId + ".html"
+    if "refid" in attrib:
+        ref_id = attrib["refid"]
+        href = ref_id + ".html"
 
-    if ("kindref" in attrib):
+    if "kindref" in attrib:
         kind = attrib["kindref"]
 
         if kind == "member":
-            strList = refId.rsplit("_1", 1)
-            href = strList[0] + ".html#" + strList[1]
+            str_list = ref_id.rsplit("_1", 1)
+            href = str_list[0] + ".html#" + str_list[1]
 
     if "linkid" in attrib:
         href = "../../include/cinder/" + attrib["linkid"]
@@ -394,9 +393,9 @@ def define_link_tag(tag, attrib):
 
     if "typedef" in attrib:
         data = attrib["typedef"]
-        fileName = data.find("anchorfile").text
+        file_name = data.find("anchorfile").text
         anchor = data.find("anchor").text
-        href = fileName + "#" + anchor
+        href = file_name + "#" + anchor
 
     if href is None:
         print "ERROR DEFINING LINK TAG"
@@ -404,7 +403,7 @@ def define_link_tag(tag, attrib):
         tag["href"] = href
 
 
-def markup_function(bs4, fnXml, parent, isConstructor):
+def markup_function(bs4, fn_xml, parent, is_constructor):
     """ Mark up a function using the function definition
 
     create new line
@@ -422,55 +421,53 @@ def markup_function(bs4, fnXml, parent, isConstructor):
     li = gen_tag(bs4, "li", ["row"])
 
     # wrapper
-    functionDiv = gen_tag(bs4, "div", ["functionDef"])
-    li.append(functionDiv)
+    function_div = gen_tag(bs4, "div", ["functionDef"])
+    li.append(function_div)
 
     # left side / return type
-    if not isConstructor:
-        returnDiv = gen_tag(bs4, "div", ["returnCol columns large-3"])
-        iterate_markup(bs4, fnXml.find(r"type"), returnDiv)
-        functionDiv.append(returnDiv)
+    if not is_constructor:
+        return_div = gen_tag(bs4, "div", ["returnCol columns large-3"])
+        iterate_markup(bs4, fn_xml.find(r"type"), return_div)
+        function_div.append(return_div)
 
     # right side (function name and description)
-    definitionCol = gen_tag(bs4, "div", ["definitionCol columns"])
+    definition_col = gen_tag(bs4, "div", ["definitionCol columns"])
 
     # width is dependent on if it has the return column
-    if isConstructor:
-        add_class_to_tag(definitionCol, "large-12")
+    if is_constructor:
+        add_class_to_tag(definition_col, "large-12")
     else:
-        add_class_to_tag(definitionCol, "large-9")
+        add_class_to_tag(definition_col, "large-9")
 
-    functionDiv.append(definitionCol)
+    function_div.append(definition_col)
 
     # function name
-    definitionDiv = gen_tag(bs4, "div", ["definition"])
+    definition_div = gen_tag(bs4, "div", ["definition"])
 
-    name = fnXml.find("name").text
-    emTag = gen_tag(bs4, "em", [], name)
-    definitionDiv.append(emTag)
+    name = fn_xml.find("name").text
+    em_tag = gen_tag(bs4, "em", [], name)
+    definition_div.append(em_tag)
 
-    argstring = fnXml.find("argsstring")
+    argstring = fn_xml.find("argsstring")
     if argstring is None:
-        argstring = fnXml.find("arglist")
-    argstringText = argstring.text if argstring.text is not None else ""
+        argstring = fn_xml.find("arglist")
+    argstring_text = argstring.text if argstring.text is not None else ""
 
-    definitionDiv.append(argstringText)
-    definitionCol.append(definitionDiv)
+    definition_div.append(argstring_text)
+    definition_col.append(definition_div)
 
     # detailed description
-    descriptionDiv = markup_description(bs4, fnXml)
-    if descriptionDiv is not None:
-        definitionCol.append(descriptionDiv)
+    description_div = markup_description(bs4, fn_xml)
+    if description_div is not None:
+        definition_col.append(description_div)
         add_class_to_tag(li, "expandable")
-    # else :
-    # print "NO DESCRIPTION"
 
-    id = fnXml.attrib["id"].split("_1")[-1]
-    li.append(gen_anchor_tag(bs4, id))
+    fn_id = fn_xml.attrib["id"].split("_1")[-1]
+    li.append(gen_anchor_tag(bs4, fn_id))
     parent.append(li)
 
 
-def markup_enum(bs4, fnXml, parent):
+def markup_enum(bs4, fn_xml, parent):
     """ Mark up an enum using the function definition
 
     create new line
@@ -488,79 +485,79 @@ def markup_enum(bs4, fnXml, parent):
     li = gen_tag(bs4, "li", ["row"])
 
     # wrapper
-    enumDiv = gen_tag(bs4, "div", ["enumDef"])
-    li.append(enumDiv)
+    enum_div = gen_tag(bs4, "div", ["enumDef"])
+    li.append(enum_div)
 
     # left side / return type
-    leftDiv = gen_tag(bs4, "div", ["returnCol columns large-2"])
-    leftDiv.append("enum")
+    left_div = gen_tag(bs4, "div", ["returnCol columns large-2"])
+    left_div.append("enum")
 
     # right side (function name and description)
-    rightDiv = gen_tag(bs4, "div", ["definitionCol columns"])
-    add_class_to_tag(rightDiv, "large-12")
+    right_div = gen_tag(bs4, "div", ["definitionCol columns"])
+    add_class_to_tag(right_div, "large-12")
 
-    enumDiv.append(rightDiv)
+    enum_div.append(right_div)
 
     # function name
-    definitionDiv = gen_tag(bs4, "div", ["definition"])
+    definition_div = gen_tag(bs4, "div", ["definition"])
 
-    emTag = gen_tag(bs4, "em", [], fnXml.find("name").text)
-    definitionDiv.append(emTag)
-    rightDiv.append(definitionDiv)
+    em_tag = gen_tag(bs4, "em", [], fn_xml.find("name").text)
+    definition_div.append(em_tag)
+    right_div.append(definition_div)
 
     # detailed description
-    descriptionDiv = markup_description(bs4, fnXml)
+    description_div = markup_description(bs4, fn_xml)
 
     # iterate all of the enumvalues
-    enumUl = gen_tag(bs4, "ul")
-    for enum in fnXml.findall("enumvalue"):
-        enumLi = gen_tag(bs4, "li", [], enum.find("name").text)
-        enumUl.append(enumLi)
+    enum_ul = gen_tag(bs4, "ul")
+    for enum in fn_xml.findall("enumvalue"):
+        enum_li = gen_tag(bs4, "li", [], enum.find("name").text)
+        enum_ul.append(enum_li)
 
-    if descriptionDiv is None and len(list(enumUl.children)) > 0:
-        descriptionDiv = gen_tag(bs4, "div", ["description", "content"])
-        descriptionDiv.append(enumUl)
+    if description_div is None and len(list(enum_ul.children)) > 0:
+        description_div = gen_tag(bs4, "div", ["description", "content"])
+        description_div.append(enum_ul)
 
-    if descriptionDiv is not None:
-        rightDiv.append(descriptionDiv)
+    if description_div is not None:
+        right_div.append(description_div)
         add_class_to_tag(li, "expandable")
 
-    id = fnXml.attrib["id"].split("_1")[-1]
-    li.append(gen_anchor_tag(bs4, id))
+    fn_id = fn_xml.attrib["id"].split("_1")[-1]
+    li.append(gen_anchor_tag(bs4, fn_id))
     parent.append(li)
 
 
-def define_tag(bs4, tagName, tree):
-    newTag = bs4.new_tag(tagName)
-    if tagName == "a":
-        define_link_tag(newTag, tree.attrib)
+def define_tag(bs4, tag_name, tree):
+    new_tag = bs4.new_tag(tag_name)
+    if tag_name == "a":
+        define_link_tag(new_tag, tree.attrib)
     # elif tagName == "code":
     # addClassToTag( newTag, "language-cpp" )
-    return newTag
+    return new_tag
 
 
-def gen_includes(fileDef):
+def gen_includes(file_def):
     bs4 = g_currentFile.bs4
 
     # create html from template
     side = get_template(bs4, "side-static")
-    contentDiv = side.find("div", "content")
+    content_div = side.find("div", "content")
 
     # fill heading
     side.find('h4').append("#include")
 
     # add include link
-    includeLink = gen_tag(bs4, "a", None, fileDef.name)
-    path = fileDef.githubPath
+    include_link = gen_tag(bs4, "a", None, file_def.name)
+    path = file_def.githubPath
     # if path is None:
     #     fileDef.path
-    define_link_tag(includeLink, {'href': path})
-    contentDiv.append(includeLink)
+    define_link_tag(include_link, {'href': path})
+    content_div.append(include_link)
 
     g_currentFile.append_to_side_el(side)
 
 
-def gen_typedefs(bs4, typeDefs):
+def gen_typedefs(bs4, type_defs):
     """ Generates the typedefs side bar, with each linking out
         to its full definition.
 
@@ -573,34 +570,34 @@ def gen_typedefs(bs4, typeDefs):
     """
 
     # return if empty array
-    if len(typeDefs) == 0:
+    if len(type_defs) == 0:
         return
 
     # create html from template
     side = get_template(bs4, "side-expandable")
-    contentDiv = side.find("div", "content")
+    content_div = side.find("div", "content")
 
     # fill heading
     side.find('h4').append("Typedefs:")
 
     # fill list of typedefs
-    typeDefUl = gen_tag(bs4, "ul")
-    for typeDef in typeDefs:
-        typeDefLi = gen_tag(bs4, "li")
-        aTag = gen_tag(bs4, "a", [], typeDef.name)
-        define_link_tag(aTag, {"href": typeDef.path})
-        typeDefLi.append(aTag)
-        typeDefUl.append(typeDefLi)
+    type_def_ul = gen_tag(bs4, "ul")
+    for typeDef in type_defs:
+        type_def_li = gen_tag(bs4, "li")
+        a_tag = gen_tag(bs4, "a", [], typeDef.name)
+        define_link_tag(a_tag, {"href": typeDef.path})
+        type_def_li.append(a_tag)
+        type_def_ul.append(type_def_li)
 
     # plug into html
-    if typeDefUl is not None:
-        contentDiv.append(typeDefUl)
+    if type_def_ul is not None:
+        content_div.append(type_def_ul)
 
     # append to the current file's side element
     g_currentFile.append_to_side_el(side)
 
 
-def iter_class_base(classDef, hierarchy):
+def iter_class_base(class_def, hierarchy):
     """ Iterates the class to find all of their base classes
         and iterate through them
 
@@ -609,21 +606,21 @@ def iter_class_base(classDef, hierarchy):
         hierachy: The current hierachy of classes to append to if we find another base
     """
 
-    if classDef is None or hasattr(classDef, 'name') == False:
+    if class_def is None or hasattr(class_def, 'name') is False:
         return False
 
-    base = classDef.base
+    base = class_def.base
 
     if base is None:
         return False
     else:
-        newTree = g_symbolMap.find_class(base)
+        new_tree = g_symbolMap.find_class(base)
         # add to hierarchy if it continues
-        if (iter_class_base(newTree, hierarchy) is not False):
-            hierarchy.append(newTree)
+        if iter_class_base(new_tree, hierarchy) is not False:
+            hierarchy.append(new_tree)
 
 
-def gen_class_hierarchy(bs4, classDef):
+def gen_class_hierarchy(bs4, class_def):
     """ Generates the class heirarchy side bar, with each class linking
         out to its class file.
 
@@ -636,14 +633,14 @@ def gen_class_hierarchy(bs4, classDef):
         Empty if there is no base class
     """
 
-    if classDef is None:
+    if class_def is None:
         return
 
     # first item in the list will be the original class
-    hierarchy = [classDef]
+    hierarchy = [class_def]
 
     # get the class' hierarchy
-    iter_class_base(classDef, hierarchy)
+    iter_class_base(class_def, hierarchy)
 
     if len(hierarchy) == 1:
         return
@@ -655,10 +652,10 @@ def gen_class_hierarchy(bs4, classDef):
     side.find('h4').append("Class Heirarchy:")
 
     # create all of the markup
-    contentDiv = side.find('div', 'content')
+    content_div = side.find('div', 'content')
     ul = gen_tag(bs4, "ul")
     add_class_to_tag(ul, "inheritence")
-    contentDiv.append(ul)
+    content_div.append(ul)
 
     # go through the hierarchy and add a list item for each member
     for index, base in enumerate(reversed(hierarchy)):
@@ -675,7 +672,7 @@ def gen_class_hierarchy(bs4, classDef):
         ul.append(li)
 
     if len(hierarchy) > 2:
-        print "GEN CLASS HIERARCHY " + classDef.name
+        print "GEN CLASS HIERARCHY " + class_def.name
     # print side
     # for h in hierarchy:
     # print h.name
@@ -697,17 +694,17 @@ def gen_class_list(bs4, tree):
     side.find('h4').append("Classes:")
 
     # create all of the markup
-    classesUl = gen_tag(bs4, "ul", None)
-    contentDiv = side.find('div', 'content')
+    classes_ul = gen_tag(bs4, "ul", None)
+    content_div = side.find('div', 'content')
     for classDef in classes:
         li = gen_tag(bs4, "li")
-        classesUl.append(li)
+        classes_ul.append(li)
 
         a = gen_tag(bs4, "a", [], strip_compound_name(classDef.text))
         define_link_tag(a, classDef.attrib)
         li.append(a)
 
-    contentDiv.append(classesUl)
+    content_div.append(classes_ul)
 
     g_currentFile.append_to_side_el(side)
 
@@ -750,25 +747,25 @@ def gen_related_links(bs4, class_def):
     g_currentFile.append_to_side_el(side)
 
 
-def replace_tag(bs4, tree, parentTag, content):
+def replace_tag(bs4, tree, parent_tag, content):
     tag = tree.tag
     attrib = tree.attrib
-    hasParent = False
-    contentTag = None
+    has_parent = False
+    tag_name = None
 
-    if parentTag and parentTag.parent:
-        hasParent = True
+    if parent_tag and parent_tag.parent:
+        has_parent = True
 
     # change parentTag if necessary
     if tag == "codeline":
-        parentTag = parentTag.code
+        parent_tag = parent_tag.code
 
     # find html tag based on tag
     if tag == "para":
-        if hasParent and parentTag.parent.dl:
-            tagName = "dd"
+        if has_parent and parent_tag.parent.dl:
+            tag_name = "dd"
         else:
-            tagName = tagDictionary[tag]
+            tag_name = tagDictionary[tag]
     elif tag == "sp":
         if content is None:
             content = " "
@@ -777,86 +774,86 @@ def replace_tag(bs4, tree, parentTag, content):
 
     # get tag equivalent
     if tag in tagDictionary:
-        tagName = tagDictionary[tag]
-        newTag = define_tag(bs4, tagName, tree)
+        tag_name = tagDictionary[tag]
+        new_tag = define_tag(bs4, tag_name, tree)
     else:
         # TODO: replace with nothing - no new tag
-        tagName = "div"
-        newTag = define_tag(bs4, tagName, tree)
-        add_class_to_tag(newTag, tag)
+        tag_name = "div"
+        new_tag = define_tag(bs4, tag_name, tree)
+        add_class_to_tag(new_tag, tag)
 
-    contentTag = newTag
+    content_tag = new_tag
 
     # if simplesect, construct with some content
-    if (tag == "simplesect"):
-        seeTag = bs4.new_tag("dt")
-        add_class_to_tag(seeTag, "section")
+    if tag == "simplesect":
+        see_tag = bs4.new_tag("dt")
+        add_class_to_tag(see_tag, "section")
 
         # "see also" reference
-        if (attrib["kind"] == "see"):
-            add_class_to_tag(seeTag, "see")
-            seeTag.string = "See Also"
-        newTag.append(seeTag)
+        if attrib["kind"] == "see":
+            add_class_to_tag(see_tag, "see")
+            see_tag.string = "See Also"
+        new_tag.append(see_tag)
 
     if tag == "programlisting":
-        codeTag = bs4.new_tag("code")
-        add_class_to_tag(codeTag, "language-cpp")
-        newTag.append(codeTag)
-        contentTag = codeTag
+        code_tag = bs4.new_tag("code")
+        add_class_to_tag(code_tag, "language-cpp")
+        new_tag.append(code_tag)
+        content_tag = code_tag
 
     if content is not None:
-        contentTag.append(content)
+        content_tag.append(content)
 
-    parentTag.append(newTag)
-    return newTag
+    parent_tag.append(new_tag)
+    return new_tag
 
 
 def iterate_markup(bs4, tree, parent):
-    if tree == None:
+    if tree is None:
         return
 
-    origTag = tree.tag
-    currentTag = parent
+    # origTag = tree.tag
+    current_tag = parent
     content = None
 
     # add content to tag
-    if tree.text != None:
+    if tree.text is not None:
         # currentTag.append( tree.text.strip() )
         content = tree.text.strip()
 
     # append any new tags
-    if tree.tag != None:
-        htmlTag = replace_tag(bs4, tree, currentTag, content)
+    if tree.tag is not None:
+        html_tag = replace_tag(bs4, tree, current_tag, content)
 
         # if tree parent == <p> && newTag == <pre>
         # add a new pre tag in and make that the current parent again
-        currentTag = htmlTag
+        current_tag = html_tag
 
     # iterate through children tags
     for child in list(tree):
-        output = iterate_markup(bs4, child, currentTag)
+        iterate_markup(bs4, child, current_tag)
 
     # tail is any extra text that isn't wrapped in another tag
     # that exists before the next tag
-    if tree.tail != None:
+    if tree.tail is not None:
         parent.append(tree.tail.strip())
 
         if tree.tail.endswith(";"):
             parent.append(gen_tag(bs4, "br"))
 
-    return currentTag
+    return current_tag
 
 
 def markup_description(bs4, tree):
     description_el = gen_tag(bs4, "div", ["description", "content"])
-    briefDesc = tree.find(r'briefdescription/')
-    if briefDesc is None:
+    brief_desc = tree.find(r'briefdescription/')
+    if brief_desc is None:
         return
     else:
         iterate_markup(bs4, tree.find(r'briefdescription/'), description_el)
 
-    detailedDesc = tree.find(r'detaileddescription/')
-    if detailedDesc is not None:
+    detailed_desc = tree.find(r'detaileddescription/')
+    if detailed_desc is not None:
         iterate_markup(bs4, tree.find(r'detaileddescription/'), description_el)
 
     return description_el
@@ -867,26 +864,26 @@ def replace_code_chunks(bs4):
         in a paragraph and splits them up so that we can use pre tags.
     """
     # find all p tags
-    pTags = bs4.find_all("p")
-    for p in pTags:
+    p_tags = bs4.find_all("p")
+    for p in p_tags:
 
         # if the paragraph as a "div.computeroutput"
         # codeChunks = p.find_all( "div", "computeroutput" )
-        codeChunks = p.find_all("div", "programlisting")
+        code_chunks = p.find_all("div", "programlisting")
 
-        if (len(codeChunks) > 0):
+        if len(code_chunks) > 0:
 
-            newTags = []
-            curP = None
+            new_tags = []
+            cur_p = None
 
             for c in p.contents:
 
                 # create a new paragraph to wrap content in
-                if curP is None:
-                    curP = gen_tag(bs4, "p")
-                    newTags.append(curP)
+                if cur_p is None:
+                    cur_p = gen_tag(bs4, "p")
+                    new_tags.append(cur_p)
 
-                addToP = True
+                add_to_p = True
 
                 if type(c) == Tag:
                     if c.has_attr("class"):
@@ -895,15 +892,15 @@ def replace_code_chunks(bs4):
                         if "programlisting" in c["class"]:
 
                             # add a new pre
-                            preTag = gen_tag(bs4, "pre")
+                            pre_tag = gen_tag(bs4, "pre")
 
                             for code in c.contents:
 
                                 # clone code
-                                cClone = clone(code)
+                                c_clone = clone(code)
 
                                 # code string
-                                codeString = ""
+                                code_string = ""
                                 if type(code) == Tag:
 
                                     # clear the original tag
@@ -911,37 +908,37 @@ def replace_code_chunks(bs4):
 
                                     # add clone to holder so that we can iterate through
                                     holder = gen_tag(bs4, "div")
-                                    holder.append(cClone)
+                                    holder.append(c_clone)
 
                                     # append line breaks for each line of code
                                     for content in holder.code.contents:
-                                        codeString += content.getText() + "\n"
+                                        code_string += content.getText() + "\n"
 
-                                if len(cClone) > 0:
-                                    code.append(codeString)
-                                    preTag.append(code)
+                                if len(c_clone) > 0:
+                                    code.append(code_string)
+                                    pre_tag.append(code)
 
-                            newTags.append(preTag)
+                            new_tags.append(pre_tag)
 
                             # create a new p tag for any following content to add itself to
-                            curP = gen_tag(bs4, "p")
-                            newTags.append(curP)
-                            addToP = False
+                            cur_p = gen_tag(bs4, "p")
+                            new_tags.append(cur_p)
+                            add_to_p = False
 
-                if addToP:
-                    cClone = clone(c)
-                    curP.append(cClone)
+                if add_to_p:
+                    c_clone = clone(c)
+                    cur_p.append(c_clone)
 
             # replace p tag with an empty span
-            replacementTag = gen_tag(bs4, "span")
-            p.replace_with(replacementTag)
+            replacement_tag = gen_tag(bs4, "span")
+            p.replace_with(replacement_tag)
 
             # add the newly organized tags to the new span
-            for t in newTags:
-                replacementTag.append(t)
+            for t in new_tags:
+                replacement_tag.append(t)
 
             # unwrap / remove the span since that was only there to place this new content into
-            replacementTag.unwrap()
+            replacement_tag.unwrap()
 
 
 # clone an element
@@ -950,26 +947,26 @@ def clone(el):
     if isinstance(el, NavigableString):
         return type(el)(el)
 
-    copy = Tag(None, el.builder, el.name, el.namespace, el.nsprefix)
+    tag_copy = Tag(None, el.builder, el.name, el.namespace, el.nsprefix)
     # work around bug where there is no builder set
     # https://bugs.launchpad.net/beautifulsoup/+bug/1307471
-    copy.attrs = dict(el.attrs)
-    copy.index = el.index
+    tag_copy.attrs = dict(el.attrs)
+    tag_copy.index = el.index
     for attr in ('can_be_empty_element', 'hidden'):
-        setattr(copy, attr, getattr(el, attr))
+        setattr(tag_copy, attr, getattr(el, attr))
     for child in el.contents:
-        copy.append(clone(child))
-    return copy
+        tag_copy.append(clone(child))
+    return tag_copy
 
 
 # pull a templated chunk of html out of the selected bs4 file
-def get_template(bs4, elementId):
+def get_template(bs4, element_id):
     templates = bs4.find_all('template')
     template = None
 
     for t in templates:
         # [0] is a string before the enclosed div, so used [1] instead
-        if t['id'] == elementId:
+        if t['id'] == element_id:
             template = clone(list(t.contents)[1])
         else:
             continue
@@ -980,100 +977,98 @@ def get_template(bs4, elementId):
 def iterate_namespace(bs4, namespaces, tree, index, label):
     # Get namespace of previous child, unless first
     if index == 0:
-        parentNs = ""
+        parent_ns = ""
     else:
-        parentNs = namespaces[index - 1].name
-
-    thisNamespace = namespaces[index].name
+        parent_ns = namespaces[index - 1].name
 
     count = index
-    childCount = 0
+    child_count = 0
 
     # iterate to find all children of parentNs
     for ns in namespaces[index:]:
         namespace = ns.name  # full namespace
-        nsParts = namespace.split("::")
-        prefix = "::".join(nsParts[:-1])  # parent namespace up to last ::
-        name = "".join(nsParts[-1])
-        nodeLabel = label + str(childCount)
+        ns_parts = namespace.split("::")
+        prefix = "::".join(ns_parts[:-1])  # parent namespace up to last ::
+        name = "".join(ns_parts[-1])
+        node_label = label + str(child_count)
 
         # check if derived from any parent
-        parentIsDerived = has_ancestor(namespaces, namespace)
+        parent_is_derived = has_ancestor(namespaces, namespace)
 
         # create a list item for the namespace
-        nsLi = gen_tag(bs4, "li")
+        ns_li = gen_tag(bs4, "li")
 
         # create link for each item
-        aTag = gen_tag(bs4, "a")
-        define_link_tag(aTag, {"href": ns.path})
-        aTag.append(name)
+        a_tag = gen_tag(bs4, "a")
+        define_link_tag(a_tag, {"href": ns.path})
+        a_tag.append(name)
 
         # is decendent of parent namespace
-        if prefix == parentNs:
+        if prefix == parent_ns:
 
-            childCount += 1
+            child_count += 1
 
             # append to parent
-            tree.append(nsLi)
+            tree.append(ns_li)
 
             # generate new nested ul in case there are children
-            nsUl = gen_tag(bs4, "ul")
+            ns_ul = gen_tag(bs4, "ul")
             if count + 1 < len(namespaces):
 
                 # if there are children, add to the parent ul
-                if iterate_namespace(bs4, namespaces, nsUl, count + 1, nodeLabel) > 0:
+                if iterate_namespace(bs4, namespaces, ns_ul, count + 1, node_label) > 0:
                     # addClassToTag( nsLi, "item" )
                     # add input
-                    inputEl = gen_tag(bs4, "input")
-                    inputEl["type"] = "checkbox"
-                    inputEl["id"] = "item-" + "-".join(list(nodeLabel))
-                    labelTag = gen_tag(bs4, "label")
-                    labelTag["for"] = "item-" + "-".join(list(nodeLabel))
-                    labelTag.append(aTag)
+                    input_el = gen_tag(bs4, "input")
+                    input_el["type"] = "checkbox"
+                    input_el["id"] = "item-" + "-".join(list(node_label))
+                    label_tag = gen_tag(bs4, "label")
+                    label_tag["for"] = "item-" + "-".join(list(node_label))
+                    label_tag.append(a_tag)
 
-                    nsLi.insert(0, inputEl)
-                    nsLi.append(labelTag)
-                    nsLi.append(nsUl)
+                    ns_li.insert(0, input_el)
+                    ns_li.append(label_tag)
+                    ns_li.append(ns_ul)
                 else:
-                    nsLi.append(aTag)
+                    ns_li.append(a_tag)
 
         else:
             # has no direct descendent on the parent, so add it independently
-            if parentIsDerived == False and index == 0:
-                childCount += 1
-                indieLi = gen_tag(bs4, "li")
+            if parent_is_derived is False and index is 0:
+                child_count += 1
+                indie_li = gen_tag(bs4, "li")
                 # indieLi.append( prefix )
 
                 # TODO: refactor and simplify some of this stuff
-                inputEl = gen_tag(bs4, "input")
-                inputEl["type"] = "checkbox"
-                inputEl["id"] = "item-" + "-".join(list(nodeLabel))
-                indieLi.insert(0, inputEl)
+                input_el = gen_tag(bs4, "input")
+                input_el["type"] = "checkbox"
+                input_el["id"] = "item-" + "-".join(list(node_label))
+                indie_li.insert(0, input_el)
 
-                labelTag = gen_tag(bs4, "label")
-                labelTag["for"] = "item-" + "-".join(list(nodeLabel))
-                labelTag.append(prefix)
-                indieLi.append(labelTag)
+                label_tag = gen_tag(bs4, "label")
+                label_tag["for"] = "item-" + "-".join(list(node_label))
+                label_tag.append(prefix)
+                indie_li.append(label_tag)
 
-                indieUl = gen_tag(bs4, "ul")
-                indieLi.append(indieUl)
-                indieUl.append(nsLi)
-                nsLi.append(aTag)
+                indie_ul = gen_tag(bs4, "ul")
+                indie_li.append(indie_ul)
+                indie_ul.append(ns_li)
+                ns_li.append(a_tag)
 
-                tree.append(indieLi)
+                tree.append(indie_li)
 
         count += 1
 
-    return childCount
+    return child_count
 
 
-def has_ancestor(namespaces, compareNamespace):
-    comparePrefix = "::".join(compareNamespace.split("::")[0])
-    hasAncestor = False
+def has_ancestor(namespaces, compare_namespace):
+    compare_prefix = "::".join(compare_namespace.split("::")[0])
+    # hasAncestor = False
     for ns in namespaces:
         namespace = ns.name
         prefix = "::".join(namespace.split("::")[0])
-        if prefix == comparePrefix and compareNamespace != namespace:
+        if prefix == compare_prefix and compare_namespace != namespace:
             return True
 
     return False
@@ -1094,192 +1089,192 @@ def generate_namespace_nav(bs4):
     return tree
 
 
-def process_class_xml_file(inPath, outPath, html):
+def process_class_xml_file(in_path, out_path, html):
     global g_currentFile
-    print "Processing file: " + inPath + " > " + outPath
+    print "Processing file: " + in_path + " > " + out_path
 
     # define the tree that contains all the data we need to populate this page
-    tree = parse_html(html, inPath, outPath)
-    if tree == None:
+    tree = parse_html(html, in_path, out_path)
+    if tree is None:
         return
 
     # get common data for the file
     g_currentFile = FileData(tree, html)
-    compoundName = g_currentFile.compoundName
-    className = g_currentFile.name
-    kind = g_currentFile.kind
+    # compoundName = g_currentFile.compoundName
+    class_name = g_currentFile.name
+    # kind = g_currentFile.kind
 
     # dictionary for subnav anchors
-    subnavAnchors = []
+    subnav_anchors = []
 
     # find include name (header file)
-    includeTrees = tree.findall(r"compounddef/includes")
-    includeDef = None
-    if len(includeTrees) > 0:
-        includeDef = tree.findall(r"compounddef/includes")[0].text
+    include_trees = tree.findall(r"compounddef/includes")
+    include_def = None
+    if len(include_trees) > 0:
+        include_def = tree.findall(r"compounddef/includes")[0].text
 
     # find file definition for the include file
-    fileDef = None
-    if includeDef != None:
-        fileDef = g_symbolMap.find_file(includeDef)
+    file_def = None
+    if include_def is not None:
+        file_def = g_symbolMap.find_file(include_def)
 
     # find class definition
-    classDef = g_symbolMap.find_class(className)
+    class_def = g_symbolMap.find_class(class_name)
 
     # +-----------------------------------------+
     #  find parts in template that already exist
     # +-----------------------------------------+
-    contentsEl = g_currentFile.contentsEl
-    sideNavEl = g_currentFile.sideNavEl
+    contents_el = g_currentFile.contentsEl
+    side_nav_el = g_currentFile.sideNavEl
 
     # +-------------+
     #  Namespace Nav
     # +-------------+
-    sideNavEl.append(g_namespaceNav)
+    side_nav_el.append(g_namespaceNav)
 
     # +---------------+
     #  Side Area Nodes
     # +---------------+
     # includes
-    if includeDef != None:
-        gen_includes(fileDef)
+    if include_def is not None:
+        gen_includes(file_def)
 
     # typedefs
-    if fileDef != None:
-        gen_typedefs(html, fileDef.typedefs)
+    if file_def is not None:
+        gen_typedefs(html, file_def.typedefs)
     # class hierarchy
-    gen_class_hierarchy(html, classDef)
+    gen_class_hierarchy(html, class_def)
     # class list
     gen_class_list(html, tree)
     # related links (generated by guides and references)
-    gen_related_links(html, classDef)
+    gen_related_links(html, class_def)
     # print classDef.seeMoreLinks
 
     # +-----------+
     #  Description
     # +-----------+
     # description prose
-    descTag = markup_description(html, tree.find(r'compounddef'))
-    if descTag is not None:
-        g_currentFile.descriptionProseEl.append(descTag)
+    desc_tag = markup_description(html, tree.find(r'compounddef'))
+    if desc_tag is not None:
+        g_currentFile.descriptionProseEl.append(desc_tag)
 
     # +----------------+
     #  Member Functions
     # +----------------+
     # create regular and static member function ul wrappers
-    ulTag = html.new_tag("ul")
-    staticUlTag = html.new_tag("ul")
-    add_class_to_tag(staticUlTag, "static")
+    ul_tag = html.new_tag("ul")
+    static_ul = html.new_tag("ul")
+    add_class_to_tag(static_ul, "static")
 
-    funcCount = 0
-    staticFuncCount = 0
+    func_count = 0
+    static_func_count = 0
 
     # public member functions
     for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]'):
         # split between static or not
-        isStatic = memberFn.attrib["static"]
-        memberName = memberFn.find(r"name")
-        isConstructor = False
+        is_static = memberFn.attrib["static"]
+        member_name = memberFn.find(r"name")
+        is_constructor = False
 
         # determine if it is a constructor
-        if memberName is not None and memberName.text == className:
-            isConstructor = True
+        if member_name is not None and member_name.text == class_name:
+            is_constructor = True
 
         # determine if static
-        if isStatic == 'yes':
-            staticFuncCount += 1
-            markup_function(html, memberFn, staticUlTag, isConstructor)
+        if is_static == 'yes':
+            static_func_count += 1
+            markup_function(html, memberFn, static_ul, is_constructor)
         else:
-            funcCount += 1
-            markup_function(html, memberFn, ulTag, isConstructor)
+            func_count += 1
+            markup_function(html, memberFn, ul_tag, is_constructor)
 
     # if function count > 0 add it
-    if funcCount > 0:
+    if func_count > 0:
         # add anchor tag to page
         anchor = gen_anchor_tag(html, "public-member-functions")
-        subnavAnchors.append({"name": "Public Member Functions", "link": anchor})
-        contentsEl.append(anchor)
+        subnav_anchors.append({"name": "Public Member Functions", "link": anchor})
+        contents_el.append(anchor)
 
         # public member functions
         header = html.new_tag("h1")
         header.string = "Public Member Functions"
-        sectionTag = gen_tag(html, "section")
-        sectionTag.append(header)
-        sectionTag.append(ulTag)
-        contentsEl.append(sectionTag)
-        sectionTag.append(gen_tag(html, "hr"))
+        section_tag = gen_tag(html, "section")
+        section_tag.append(header)
+        section_tag.append(ul_tag)
+        contents_el.append(section_tag)
+        section_tag.append(gen_tag(html, "hr"))
 
     # if static function count > 0 add it
-    if staticFuncCount > 0:
+    if static_func_count > 0:
         anchor = gen_anchor_tag(html, "static-public-member-functions")
-        subnavAnchors.append({"name": "Static Public Member Functions", "link": anchor})
-        contentsEl.append(anchor)
+        subnav_anchors.append({"name": "Static Public Member Functions", "link": anchor})
+        contents_el.append(anchor)
 
         # static public member functions
         header = html.new_tag("h1")
         header.string = "Static Public Member Functions"
-        sectionTag = gen_tag(html, "section")
-        sectionTag.append(header)
-        sectionTag.append(staticUlTag)
-        contentsEl.append(sectionTag)
+        section_tag = gen_tag(html, "section")
+        section_tag.append(header)
+        section_tag.append(static_ul)
+        contents_el.append(section_tag)
 
     # replace any code chunks with <pre> tags, which is not possible on initial creation
     replace_code_chunks(html)
 
     # generate subnav
-    gen_sub_nav(subnavAnchors)
+    gen_sub_nav(subnav_anchors)
 
     # write the file
-    write_html(html, outPath)
+    write_html(html, out_path)
 
 
-def gen_sub_nav(subnavAnchors):
+def gen_sub_nav(subnav_anchors):
     # +-------------------------------------------------+
     #  SubNav
     #  Fill subnav based on what is actually in the page
     # +-------------------------------------------------+
     bs4 = g_currentFile.bs4
-    subnavEl = bs4.find(id="sub-nav")
-    subnavUl = gen_tag(bs4, "ul")
+    subnav_el = bs4.find(id="sub-nav")
+    subnav_ul = gen_tag(bs4, "ul")
 
     # for all of the subnav anchors, add a link into the subnav list
-    for anchor in subnavAnchors:
+    for anchor in subnav_anchors:
         li = gen_tag(bs4, "li")
         link = gen_tag(bs4, "a", [], anchor["name"])
         define_link_tag(link, {"href": "#" + anchor["link"]["name"]})
         li.append(link)
-        subnavUl.append(li)
-    subnavEl.append(subnavUl)
+        subnav_ul.append(li)
+    subnav_el.append(subnav_ul)
 
 
-def add_row_li(bs4, container, leftContent, rightContent, colBreakdown=None, dropdownContent=None):
-    leftCol = "3"
-    rightCol = "9"
-    if colBreakdown is not None:
-        cols = colBreakdown.split("-")
-        leftCol = cols[0]
-        rightCol = cols[1]
+def add_row_li(bs4, container, left_content, right_content, col_breakdown=None, dropdown_content=None):
+    left_col = "3"
+    right_col = "9"
+    if col_breakdown is not None:
+        cols = col_breakdown.split("-")
+        left_col = cols[0]
+        right_col = cols[1]
 
     li = gen_tag(bs4, "li", ["row"])
 
     # left side
-    leftDiv = gen_tag(bs4, "div", ["returnCol columns"])
-    add_class_to_tag(leftDiv, "large-" + leftCol)
-    if leftContent is not None:
-        leftDiv.append(leftContent)
-        li.append(leftDiv)
+    left_div = gen_tag(bs4, "div", ["returnCol columns"])
+    add_class_to_tag(left_div, "large-" + left_col)
+    if left_content is not None:
+        left_div.append(left_content)
+        li.append(left_div)
 
     # right side
-    rightDiv = gen_tag(bs4, "div", ["definitionCol columns"])
-    add_class_to_tag(rightDiv, "large-" + rightCol)
-    li.append(rightDiv)
-    rightDiv.append(rightContent)
+    right_div = gen_tag(bs4, "div", ["definitionCol columns"])
+    add_class_to_tag(right_div, "large-" + right_col)
+    li.append(right_div)
+    right_div.append(right_content)
 
     container.append(li)
 
     # if there is dropdown content, the right side will have an additional row below it
-    if dropdownContent is not None:
-        rightDiv.append(dropdownContent)
+    if dropdown_content is not None:
+        right_div.append(dropdown_content)
         add_class_to_tag(li, "expandable")
 
 
@@ -1327,31 +1322,31 @@ def process_namespace_xml_file(in_path, out_path, html):
 
     # get common data for the file
     g_currentFile = FileData(tree, html)
-    compoundName = g_currentFile.compoundName
-    className = g_currentFile.name
-    kind = g_currentFile.kind
+    compound_name = g_currentFile.compoundName
+    # className = g_currentFile.name
+    # kind = g_currentFile.kind
 
     # dictionary for subnav anchors
-    subnavAnchors = []
+    subnav_anchors = []
 
     # +-----------------------------------------+
     #  find parts in template that already exist
     # +-----------------------------------------+
     # contentsTag = html.find( "div", "contents" )
-    contentsEl = g_currentFile.contentsEl
+    contents_el = g_currentFile.contentsEl
 
     # +-------------+
     #  Namespace Nav
     # +-------------+
     # side area
-    sideNavTag = html.find(id="side-nav")
-    sideNavTag.append(g_namespaceNav)
+    side_nav_tag = html.find(id="side-nav")
+    side_nav_tag.append(g_namespaceNav)
 
     # +-----------+
     #  Description
     # +-----------+
-    namespaceTag = g_symbolMap.find_namespace(compoundName)
-    if namespaceTag is None:
+    namespace_tag = g_symbolMap.find_namespace(compound_name)
+    if namespace_tag is None:
         return
 
     # +----------+
@@ -1359,122 +1354,122 @@ def process_namespace_xml_file(in_path, out_path, html):
     # +----------+
     namespaces = tree.findall(r"compounddef/innernamespace")
     if len(namespaces) > 0:
-        drop_anchor(subnavAnchors, "namespaces", "Namespaces")
-        namespacesSection = gen_tag(html, "section")
-        contentsEl.append(namespacesSection)
+        drop_anchor(subnav_anchors, "namespaces", "Namespaces")
+        namespaces_section = gen_tag(html, "section")
+        contents_el.append(namespaces_section)
 
-        namespacesUl = gen_tag(html, "ul")
+        namespaces_ul = gen_tag(html, "ul")
         for c in namespaces:
-            namespaceLinkTag = gen_link_tag(html, c.text, c.attrib["refid"] + ".html")
-            add_row_li(html, namespacesUl, None, namespaceLinkTag)
+            namespace_link_tag = gen_link_tag(html, c.text, c.attrib["refid"] + ".html")
+            add_row_li(html, namespaces_ul, None, namespace_link_tag)
 
-        namespacesSection.append(gen_tag(html, "h2", [], "Namespaces"))
-        namespacesSection.append(namespacesUl)
+        namespaces_section.append(gen_tag(html, "h2", [], "Namespaces"))
+        namespaces_section.append(namespaces_ul)
 
-        contentsEl.append(gen_tag(html, "br"))
+        contents_el.append(gen_tag(html, "br"))
 
     # +-------+
     #  Classes
     # +-------+
     classes = tree.findall(r"compounddef/innerclass")
     if len(classes) > 0:
-        drop_anchor(subnavAnchors, "classes", "Classes")
-        classesSection = gen_tag(html, "section")
-        contentsEl.append(classesSection)
+        drop_anchor(subnav_anchors, "classes", "Classes")
+        classes_section = gen_tag(html, "section")
+        contents_el.append(classes_section)
 
-        classesSection.append(gen_tag(html, "h2", [], "Classes"))
-        classUl = gen_tag(html, "ul")
+        classes_section.append(gen_tag(html, "h2", [], "Classes"))
+        class_ul = gen_tag(html, "ul")
         for c in classes:
             link = c.attrib["refid"] + ".html"
             kind = "struct" if link.startswith("struct") else "class"
-            linkTag = gen_link_tag(html, strip_compound_name(c.text), link)
-            add_row_li(html, classUl, kind, linkTag, "1-11")
-        classesSection.append(classUl)
+            link_tag = gen_link_tag(html, strip_compound_name(c.text), link)
+            add_row_li(html, class_ul, kind, link_tag, "1-11")
+        classes_section.append(class_ul)
 
-        contentsEl.append(gen_tag(html, "br"))
+        contents_el.append(gen_tag(html, "br"))
 
     # +--------+
     #  TypeDefs
     # +--------+
     typedefs = tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']")
     if len(typedefs) > 0:
-        drop_anchor(subnavAnchors, "typedefs", "Typedefs")
-        typedefSection = gen_tag(html, "section")
-        contentsEl.append(typedefSection)
+        drop_anchor(subnav_anchors, "typedefs", "Typedefs")
+        typedef_section = gen_tag(html, "section")
+        contents_el.append(typedef_section)
 
-        typedefSection.append(gen_tag(html, "h2", [], "Typedefs"))
-        typedefUl = gen_tag(html, "ul")
+        typedef_section.append(gen_tag(html, "h2", [], "Typedefs"))
+        typedef_ul = gen_tag(html, "ul")
         for c in typedefs:
-            markup_function(html, c, typedefUl, False)
-        typedefSection.append(typedefUl)
+            markup_function(html, c, typedef_ul, False)
+        typedef_section.append(typedef_ul)
 
-        contentsEl.append(gen_tag(html, "br"))
+        contents_el.append(gen_tag(html, "br"))
 
     # +------------+
     #  Enumerations
     # +------------+
     enumerations = tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']")
     if len(enumerations) > 0:
-        drop_anchor(subnavAnchors, "enumerations", "Enumerations")
-        enumSection = gen_tag(html, "section")
-        contentsEl.append(enumSection)
+        drop_anchor(subnav_anchors, "enumerations", "Enumerations")
+        enum_section = gen_tag(html, "section")
+        contents_el.append(enum_section)
 
-        enumSection.append(gen_tag(html, "h2", [], "Enumerations"))
-        enumUl = gen_tag(html, "ul")
+        enum_section.append(gen_tag(html, "h2", [], "Enumerations"))
+        enum_ul = gen_tag(html, "ul")
         for c in enumerations:
-            markup_enum(html, c, enumUl)
-        enumSection.append(enumUl)
+            markup_enum(html, c, enum_ul)
+        enum_section.append(enum_ul)
 
-        contentsEl.append(gen_tag(html, "br"))
+        contents_el.append(gen_tag(html, "br"))
 
     # +---------+
     #  Functions
     # +---------+
     functions = tree.findall(r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']")
     if len(functions) > 0:
-        drop_anchor(subnavAnchors, "functions", "Functions")
-        functionSection = gen_tag(html, "section")
-        contentsEl.append(functionSection)
+        drop_anchor(subnav_anchors, "functions", "Functions")
+        function_section = gen_tag(html, "section")
+        contents_el.append(function_section)
 
-        functionSection.append(gen_tag(html, "h2", [], "Functions"))
-        functionUl = gen_tag(html, "ul")
+        function_section.append(gen_tag(html, "h2", [], "Functions"))
+        function_ul = gen_tag(html, "ul")
         for c in functions:
-            markup_function(html, c, functionUl, False)
-        functionSection.append(functionUl)
+            markup_function(html, c, function_ul, False)
+        function_section.append(function_ul)
 
-        contentsEl.append(gen_tag(html, "br"))
+        contents_el.append(gen_tag(html, "br"))
 
     # +---------+
     #  Variables
     # +---------+
-    vars = tree.findall(r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']")
-    if len(vars) > 0:
-        drop_anchor(subnavAnchors, "variables", "Variables")
-        varsSection = gen_tag(html, "section")
-        contentsEl.append(varsSection)
+    variables = tree.findall(r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']")
+    if len(variables) > 0:
+        drop_anchor(subnav_anchors, "variables", "Variables")
+        vars_section = gen_tag(html, "section")
+        contents_el.append(vars_section)
 
-        varsSection.append(gen_tag(html, "h2", [], "Variables"))
-        varsUl = gen_tag(html, "ul")
-        for c in vars:
-            typeStr = c.find('type').text
+        vars_section.append(gen_tag(html, "h2", [], "Variables"))
+        vars_ul = gen_tag(html, "ul")
+        for c in variables:
+            type_str = c.find('type').text
             name = gen_tag(html, "div")
             name.append(gen_tag(html, "b", [], c.find('name').text))
             initializer = c.find('initializer').text if c.find('initializer') is not None else None
             description = markup_description(html, c)
-            if typeStr == None:
-                typeStr = ""
+            if type_str is None:
+                type_str = ""
             if initializer is not None:
                 name.append(" " + initializer)
-            add_row_li(html, varsUl, typeStr, name, None, description)
-        varsSection.append(varsUl)
+            add_row_li(html, vars_ul, type_str, name, None, description)
+        vars_section.append(vars_ul)
 
-    gen_sub_nav(subnavAnchors)
+    gen_sub_nav(subnav_anchors)
 
     # write the file
     write_html(html, out_path)
 
 
-def process_html_file(inPath, outPath):
+def process_html_file(in_path, out_path):
     """ Parses an html file.
     - Adds template around the html
     - Copy original css and js links into new hmtl
@@ -1482,96 +1477,95 @@ def process_html_file(inPath, outPath):
     """
     print "processHtmlFile"
 
-    htmlTemplate = "htmlContentTemplate.html"
-    isIndex = False
-    if inPath.find("reference/") > -1:
-        htmlTemplate = "referenceContentTemplate.html"
-    elif inPath.find("guides/") > -1:
-        htmlTemplate = "guidesContentTemplate.html"
+    html_template = "htmlContentTemplate.html"
+    is_index = False
+    if in_path.find("reference/") > -1:
+        html_template = "referenceContentTemplate.html"
+    elif in_path.find("guides/") > -1:
+        html_template = "guidesContentTemplate.html"
 
     # construct template
 
-    if inPath == "htmlsrc/index.html":
-        isIndex = True
+    if in_path == "htmlsrc/index.html":
+        is_index = True
 
-    if isIndex is True:
-        bs4 = generate_bs4(inPath)
+    if is_index is True:
+        bs4 = generate_bs4(in_path)
     else:
 
-        bs4 = construct_template(["headerTemplate.html", "mainNavTemplate.html", htmlTemplate, "footerTemplate.html"])
+        bs4 = construct_template(["headerTemplate.html", "mainNavTemplate.html", html_template, "footerTemplate.html"])
 
         # parse original html file
-        origHtml = generate_bs4(inPath)
+        orig_html = generate_bs4(in_path)
 
         # replace all of the bs4 css and js links and make them relative to the outpath
         for link in bs4.find_all("link"):
             if link.has_attr("href"):
-                link["href"] = update_link(link["href"], outPath)
+                link["href"] = update_link(link["href"], out_path)
 
         for a in bs4.find_all("a"):
             if a.has_attr("href"):
-                a["href"] = update_link(a["href"], outPath)
+                a["href"] = update_link(a["href"], out_path)
 
         for script in bs4.find_all("script"):
             if script.has_attr("src"):
-                script["src"] = update_link(script["src"], outPath)
+                script["src"] = update_link(script["src"], out_path)
 
         for img in bs4.find_all("img"):
             if img.has_attr("src"):
-                img["src"] = update_link(img["src"], outPath)
+                img["src"] = update_link(img["src"], out_path)
 
         # plug original html content into template
         template_content_el = bs4.body.find(id="template-content")
-        template_content_el.append(origHtml.body)
+        template_content_el.append(orig_html.body)
 
         # fill namespace list
-        if inPath == "htmlsrc/namespaces.html":
+        if in_path == "htmlsrc/namespaces.html":
             # throw in a list of namespaces into the page
             list_namespaces(bs4, template_content_el)
 
         # fill class list
-        elif inPath == "htmlsrc/classes.html":
+        elif in_path == "htmlsrc/classes.html":
             list_classes(bs4, template_content_el)
 
         # copy all js and css paths that may be in the original html and paste into new file
-        for link in origHtml.find_all("link"):
+        for link in orig_html.find_all("link"):
             bs4.head.append(link)
 
-        for script in origHtml.find_all("script"):
+        for script in orig_html.find_all("script"):
             bs4.body.append(script)
 
-        if origHtml.head:
-            for d in origHtml.head.find_all("d"):
+        if orig_html.head:
+            for d in orig_html.head.find_all("d"):
                 bs4.head.append(d)
 
         # link up all d tags
         for tag in bs4.find_all('d'):
-            process_d_tag(bs4, tag, outPath)
+            process_d_tag(bs4, tag, out_path)
 
-        # for tag in origHtml.find_all('d'):
-        #     print tag
-        #     if tag.has_attr("seealso"):
-        #
-        #         print "FOUND ONE"
-        #         process_d_ref_tag(bs4, tag)
-        #         # set page data
-        #         # setSection( bs4, "" )
+            # for tag in origHtml.find_all('d'):
+            #     print tag
+            #     if tag.has_attr("seealso"):
+            #
+            #         print "FOUND ONE"
+            #         process_d_ref_tag(bs4, tag)
+            #         # set page data
+            #         # setSection( bs4, "" )
 
-    write_html(bs4, outPath)
+    write_html(bs4, out_path)
 
 
-def process_d_tag( bs4, tag, outPath ):
-
+def process_d_tag(bs4, tag, out_path):
     # find type
     if tag.has_attr("seealso"):
-        process_d_seealso_tag(bs4, tag, outPath)
+        process_d_seealso_tag(bs4, tag, out_path)
     elif tag.has_attr("prefix"):
         print "TODO: PARSE PREFIX D TAGS"
     else:
         replace_d_tag(bs4, tag)
 
-def replace_d_tag(bs4, link):
 
+def replace_d_tag(bs4, link):
     ref_obj = find_d_tag_ref(link)
 
     if ref_obj:
@@ -1622,167 +1616,168 @@ def find_d_tag_ref(link):
     if link.get('kind') == 'function':
 
         # find parent function first
-        existingClass = g_symbolMap.find_class(args[0])
-        if existingClass is not None:
+        existing_class = g_symbolMap.find_class(args[0])
+        if existing_class is not None:
 
             # find the function in the given class
-            fnObj = g_symbolMap.find_function(args[1], existingClass, )
-            if fnObj is not None:
-                ref_obj = fnObj
+            fn_obj = g_symbolMap.find_function(args[1], existing_class, )
+            if fn_obj is not None:
+                ref_obj = fn_obj
 
     elif link.get('kind') == 'enum':
-        enumObj = g_symbolMap.find_enum(searchstring)
-        if enumObj is not None:
-            ref_obj = enumObj
+        enum_obj = g_symbolMap.find_enum(searchstring)
+        if enum_obj is not None:
+            ref_obj = enum_obj
 
     # find class link
     else:
-        existingClass = g_symbolMap.find_class(searchstring)
-        if existingClass is not None:
-            ref_obj = existingClass
+        existing_class = g_symbolMap.find_class(searchstring)
+        if existing_class is not None:
+            ref_obj = existing_class
 
     return ref_obj
+
 
 def update_link(link, path):
     if link.startswith("http") or link.startswith("javascript:"):
         return link
     depth = len(path.split("html/")[1].split("/")) - 1
-    pathPrepend = ""
+    path_prepend = ""
     for i in range(depth):
-        pathPrepend += "../"
-    return pathPrepend + link
+        path_prepend += "../"
+    return path_prepend + link
 
 
 def construct_template(templates):
     """ Constructs a beautiful soup instance by mashing a bunch of html files together
     """
-    masterTemplate = ""
+    master_template = ""
     for templatePath in templates:
-        masterTemplate += open(os.path.join(HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath)).read()
-    masterTemplate.decode("UTF-8")
-    return BeautifulSoup(masterTemplate)
+        master_template += open(os.path.join(HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath)).read()
+    master_template.decode("UTF-8")
+    return BeautifulSoup(master_template)
 
 
-def generate_bs4(filePath):
-    ouputFile = open(os.path.join(filePath)).read()
-    ouputFile.decode("UTF-8")
-    return BeautifulSoup(ouputFile)
+def generate_bs4(file_path):
+    ouput_file = open(os.path.join(file_path)).read()
+    ouput_file.decode("UTF-8")
+    return BeautifulSoup(ouput_file)
 
 
-def get_symbol_to_file_map(tagDom):
+def get_symbol_to_file_map():
     """ Returns a dictionary from Cinder class name to file path
     """
     print "generating symbol map from tag file"
-    symbolMap = SymbolMap()
+    symbol_map = SymbolMap()
 
     # find classes
-    classTags = tagXml.findall(r'compound/[@kind="class"]')
-    for c in classTags:
+    class_tags = g_tag_xml.findall(r'compound/[@kind="class"]')
+    for c in class_tags:
         name = c.find('name').text
-        filePath = c.find('filename').text
-        baseClass = c.find('base').text if c.find('base') is not None else ""
-        classObj = SymbolMap.Class(name, baseClass, filePath)
-        symbolMap.classes[name] = classObj
+        file_path = c.find('filename').text
+        base_class = c.find('base').text if c.find('base') is not None else ""
+        class_obj = SymbolMap.Class(name, base_class, file_path)
+        symbol_map.classes[name] = class_obj
         # print name
 
         # find functions and add to symbol map
         members = c.findall(r"member[@kind='function']")
         for member in members:
-            fnName = member.find("name").text
+            fn_name = member.find("name").text
             anchor = member.find("anchor").text
-            filePath = member.find("anchorfile").text + "#" + anchor
+            file_path = member.find("anchorfile").text + "#" + anchor
             # print "FUNCTION " + name+"::"+fnName
-            functionObj = SymbolMap.Function(fnName, baseClass, filePath)
-            symbolMap.functions[name + "::" + fnName] = functionObj
-            classObj.functionList.append(functionObj)
+            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
+            symbol_map.functions[name + "::" + fn_name] = function_obj
+            class_obj.functionList.append(function_obj)
 
     # find structs
-    structTags = tagXml.findall(r'compound/[@kind="struct"]')
-    for s in structTags:
+    struct_tags = g_tag_xml.findall(r'compound/[@kind="struct"]')
+    for s in struct_tags:
         name = s.find('name').text
-        filePath = s.find('filename').text
-        baseClass = s.find('base').text if s.find('base') is not None else ""
-        structObj = SymbolMap.Class(name, baseClass, filePath)
-        symbolMap.classes[name] = structObj
+        file_path = s.find('filename').text
+        base_class = s.find('base').text if s.find('base') is not None else ""
+        struct_obj = SymbolMap.Class(name, base_class, file_path)
+        symbol_map.classes[name] = struct_obj
 
         # find functions and add to symbol map
         members = s.findall(r"member[@kind='function']")
         for member in members:
-            fnName = member.find("name").text
+            fn_name = member.find("name").text
             anchor = member.find("anchor").text
-            filePath = member.find("anchorfile").text + "#" + anchor
-            functionObj = SymbolMap.Function(fnName, baseClass, filePath)
-            symbolMap.functions[name + "::" + fnName] = functionObj
-            structObj.functionList.append(functionObj)
+            file_path = member.find("anchorfile").text + "#" + anchor
+            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
+            symbol_map.functions[name + "::" + fn_name] = function_obj
+            struct_obj.functionList.append(function_obj)
 
     # find namespaces
-    nsTags = tagXml.findall(r'compound/[@kind="namespace"]')
+    ns_tags = g_tag_xml.findall(r'compound/[@kind="namespace"]')
 
-    for ns in nsTags:
-        namespaceName = ns.find('name').text
-        fileName = ns.find('filename').text
+    for ns in ns_tags:
+        namespace_name = ns.find('name').text
+        file_name = ns.find('filename').text
 
         # skip namespaces with '@' in them
-        if namespaceName.find('@') > -1:
+        if namespace_name.find('@') > -1:
             continue
 
-        symbolMap.namespaces[namespaceName] = SymbolMap.Namespace(namespaceName, fileName)
+        symbol_map.namespaces[namespace_name] = SymbolMap.Namespace(namespace_name, file_name)
 
         for member in ns.findall(r"member/[@kind='typedef']"):
             name = member.find("name").text
-            type = member.find("type").text
-            name = namespaceName + "::" + name
+            type_name = member.find("type").text
+            name = namespace_name + "::" + name
             shared_from_class = None
 
-            if type.find("shared") > 0:
-                shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type)
+            if type_name.find("shared") > 0:
+                shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
                 if len(shareds) > 0:
-                    base = namespaceName + "::" + shareds[0]
-                    shared_from_class = symbolMap.find_class(base)
+                    base = namespace_name + "::" + shareds[0]
+                    shared_from_class = symbol_map.find_class(base)
 
             if not shared_from_class:
                 # find based on the string in type that's not explicitly a shared_ptr
                 # such as <type>SurfaceT&lt; uint8_t &gt;</type>
-                shareds = re.findall(r"([A-Za-z]*)", type)
-                shared_from_class = symbolMap.find_class(shareds[0])
+                shareds = re.findall(r"([A-Za-z]*)", type_name)
+                shared_from_class = symbol_map.find_class(shareds[0])
 
-            filePath = member.find('anchorfile').text + "#" + member.find("anchor").text
-            typeDefObj = SymbolMap.Typedef(name, type, filePath)
+            file_path = member.find('anchorfile').text + "#" + member.find("anchor").text
+            type_def_obj = SymbolMap.Typedef(name, type_name, file_path)
 
             if shared_from_class is not None:
-                typeDefObj.sharedFrom = shared_from_class
+                type_def_obj.sharedFrom = shared_from_class
 
-            symbolMap.typedefs[name] = typeDefObj
+            symbol_map.typedefs[name] = type_def_obj
 
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
-            name = namespaceName + "::" + member.find("name").text
+            name = namespace_name + "::" + member.find("name").text
             # print "ENUM: " + name
             anchor = member.find("anchor").text
             path = member.find("anchorfile").text + "#" + anchor
-            enumObj = SymbolMap.Enum(name, path)
-            symbolMap.enums[name] = enumObj
+            enum_obj = SymbolMap.Enum(name, path)
+            symbol_map.enums[name] = enum_obj
 
     # find files
-    fileTags = tagXml.findall(r'compound/[@kind="file"]')
-    for f in fileTags:
+    file_tags = g_tag_xml.findall(r'compound/[@kind="file"]')
+    for f in file_tags:
         name = f.find('name').text
         # filePath = f.find('path').text + f.find('filename').text
-        filePath = f.find('path').text + name
+        file_path = f.find('path').text + name
         typedefs = []
 
         # find typedefs for each file
         for t in f.findall(r'member[@kind="typedef"]'):
-            tdName = t.find("name").text
-            type = t.find("type").text
-            filePath = t.find('anchorfile').text + "#" + t.find("anchor").text
-            typedef = SymbolMap.Typedef(tdName, type, filePath)
+            td_name = t.find("name").text
+            type_name = t.find("type").text
+            file_path = t.find('anchorfile').text + "#" + t.find("anchor").text
+            typedef = SymbolMap.Typedef(td_name, type_name, file_path)
             typedefs.append(typedef)
 
         # print "FILE PATH: " + name + " | " + filePath
-        symbolMap.files[name] = SymbolMap.File(name, filePath, typedefs)
+        symbol_map.files[name] = SymbolMap.File(name, file_path, typedefs)
 
-    return symbolMap
+    return symbol_map
 
 
 def get_file_prefix(file_path):
@@ -1797,67 +1792,67 @@ def get_file_name(file_path):
     return os.path.basename(file_path)
 
 
-def parse_html(bs4, inPath, outPath):
+def parse_html(bs4, in_path, out_path):
     tree = None
     try:
-        xml_file = codecs.open(inPath, "r", "UTF-8")
+        xml_file = codecs.open(in_path, "r", "UTF-8")
         tree = Et.parse(xml_file)
 
     except:
         exc = sys.exc_info()[0]
         print "\n--- PARSE ERROR ---"
-        print "COULD NOT PARSE FILE: " + inPath
+        print "COULD NOT PARSE FILE: " + in_path
         print exc
         # write the file with error
-        bs4.append('COULD NOT PARSE FILE: ' + inPath)
-        write_html(bs4, outPath)
+        bs4.append('COULD NOT PARSE FILE: ' + in_path)
+        write_html(bs4, out_path)
         print "-------------------\n"
 
     return tree
 
 
-def write_html(html, savePath):
-    if not os.path.exists(os.path.dirname(savePath)):
-        os.makedirs(os.path.dirname(savePath))
-    with codecs.open(savePath, "w", "UTF-8") as outFile:
+def write_html(html, save_path):
+    if not os.path.exists(os.path.dirname(save_path)):
+        os.makedirs(os.path.dirname(save_path))
+    with codecs.open(save_path, "w", "UTF-8") as outFile:
         outFile.write(html.prettify())
 
 
-def process_file(inPath, outPath=None):
+def process_file(in_path, out_path=None):
     """ Generate documentation for a single file
 
         Args:
             inPath: The file to process
             outPath: The file to save the generated html file to
     """
-    file = inPath
-    filePrefix = get_file_prefix(file)
-    isHtmlFile = True if get_file_extension(file).lower() == ".html" else False
+    file_path = in_path
+    file_prefix = get_file_prefix(file_path)
+    is_html_file = True if get_file_extension(file_path).lower() == ".html" else False
 
-    if isHtmlFile:
-        filePath = "/".join(inPath.split('htmlsrc/')[1:])
-        savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + filePath
+    if is_html_file:
+        file_path = "/".join(in_path.split('htmlsrc/')[1:])
+        save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + file_path
     else:
-        savePath = outPath if outPath is not None else DOXYGEN_HTML_PATH + get_file_prefix(inPath) + ".html"
+        save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + get_file_prefix(in_path) + ".html"
 
-    if isHtmlFile:
-        process_html_file(inPath, savePath)
+    if is_html_file:
+        process_html_file(in_path, save_path)
 
     else:
         # process html directory always, since they may generate content for class or namespace reference pages
         if not PROCESSED_HTML_DIR:
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
-        
-        if filePrefix.startswith("class") or filePrefix.startswith("struct"):
-            process_class_xml_file(sys.argv[1], os.path.join(DOXYGEN_HTML_PATH, savePath),
-                                copy.deepcopy(classTemplateHtml))
 
-        elif filePrefix.startswith("namespace"):
-            process_namespace_xml_file(inPath, os.path.join(DOXYGEN_HTML_PATH, savePath),
-                                    copy.deepcopy(namespaceTemplateHtml))
+        if file_prefix.startswith("class") or file_prefix.startswith("struct"):
+            process_class_xml_file(sys.argv[1], os.path.join(DOXYGEN_HTML_PATH, save_path),
+                                   copy.deepcopy(classTemplateHtml))
+
+        elif file_prefix.startswith("namespace"):
+            process_namespace_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path),
+                                       copy.deepcopy(namespaceTemplateHtml))
 
 
-def process_dir(inPath, outPath):
+def process_dir(in_path, out_path):
     """ Iterates a directory and generates documentation for each xml file
         in the directory as long as it is a class, struct or namespace
 
@@ -1866,45 +1861,45 @@ def process_dir(inPath, outPath):
             outPath: The directory to save the generated html file to
     """
 
-    for file in os.listdir(inPath):
-        if file.endswith(".xml"):
+    for file_path in os.listdir(in_path):
+        if file_path.endswith(".xml"):
             # name minus file extension
-            filePrefix = get_file_prefix(file)
+            file_prefix = get_file_prefix(file_path)
 
             # process class and struct files
-            if file.startswith("class") or file.startswith("struct"):
-                process_class_xml_file(os.path.join(inPath, file), os.path.join(outPath, filePrefix + ".html"),
-                                    copy.deepcopy(classTemplateHtml))
+            if file_path.startswith("class") or file_path.startswith("struct"):
+                process_class_xml_file(os.path.join(in_path, file_path), os.path.join(out_path, file_prefix + ".html"),
+                                       copy.deepcopy(classTemplateHtml))
 
             # process namespace files
-            elif file.startswith("namespace"):
-                process_namespace_xml_file(os.path.join(inPath, file), os.path.join(outPath, filePrefix + ".html"),
-                                        copy.deepcopy(namespaceTemplateHtml))
+            elif file_path.startswith("namespace"):
+                process_namespace_xml_file(os.path.join(in_path, file_path), os.path.join(out_path, file_prefix + ".html"),
+                                           copy.deepcopy(namespaceTemplateHtml))
 
             else:
-                print "SKIPPING: " + file
-            # TODO: base template and just iterate do an html iteration
+                print "SKIPPING: " + file_path
+                # TODO: base template and just iterate do an html iteration
 
 
-def process_html_dir(inPath, outPath):
+def process_html_dir(in_path, out_path):
     print "PROCESS HTML DIR"
 
-    for path, subdirs, files in os.walk(inPath):
-        dir = path.split("/")[-1]
-        if dir == "_templates" or dir == "assets":
+    for path, subdirs, files in os.walk(in_path):
+        path_dir = path.split("/")[-1]
+        if path_dir == "_templates" or path_dir == "assets":
             continue
         for name in files:
-            filePrefix = get_file_prefix(name)
-            fileExt = get_file_extension(name).lower()
-            if fileExt == ".html":
+            # file_prefix = get_file_prefix(name)
+            file_ext = get_file_extension(name).lower()
+            if file_ext == ".html":
 
                 if path.endswith('/'):
-                    srcPath = path[:-1]
+                    src_path = path[:-1]
                 else:
-                    srcPath = path
+                    src_path = path
 
-                srcPath = srcPath + "/" + name
-                process_file(srcPath)
+                src_path = src_path + "/" + name
+                process_file(src_path)
 
 
 # def copyFiles( HTML_SOURCE_PATH, DOXYGEN_HTML_PATH ):
@@ -1968,9 +1963,9 @@ if __name__ == "__main__":
 
     # Load tag file
     print "parsing tag file"
-    tagXml = Et.ElementTree(Et.parse("doxygen/cinder.tag").getroot())
+    g_tag_xml = Et.ElementTree(Et.parse("doxygen/cinder.tag").getroot())
     # generate symbol map from tag file
-    g_symbolMap = get_symbol_to_file_map(tagXml)
+    g_symbolMap = get_symbol_to_file_map()
 
     # construct full template out of multiple html templates
     classTemplateHtml = construct_template(
