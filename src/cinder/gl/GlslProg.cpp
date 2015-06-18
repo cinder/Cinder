@@ -239,6 +239,21 @@ GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellation
 
 #endif // ! defined( CINDER_GL_ES )
 
+#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
+
+GlslProg::Format& GlslProg::Format::compute( const DataSourceRef &dataSource )
+{
+	setShaderSource( dataSource, &mComputeShader, &mComputeShaderPath );
+	return *this;
+}
+
+GlslProg::Format& GlslProg::Format::compute( const string &computeShader )
+{
+	setShaderSource( computeShader, &mComputeShader, &mComputeShaderPath );
+	return *this;
+}
+
+#endif // defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
 void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
 	if( dataSource ) {
@@ -463,7 +478,10 @@ GlslProg::GlslProg( const Format &format )
 	if( ! format.getTessellationEval().empty() )
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
-    
+#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
+	if( !format.getCompute().empty() )
+		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER );
+#endif    
     auto & userDefinedAttribs = format.getAttributes();
 	
 	bool foundPositionSemantic = false;

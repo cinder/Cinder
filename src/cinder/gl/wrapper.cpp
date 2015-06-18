@@ -940,6 +940,28 @@ void readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
 	glReadPixels( x, y, width, height, format, type, data );
 }
 
+// Compute
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+ivec3 getMaxComputeWorkGroupCount()
+{
+	ivec3 count;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 0, &count.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 1, &count.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_COUNT, 2, &count.z );
+	return count;
+}
+
+ivec3 getMaxComputeWorkGroupSize()
+{
+	ivec3 size;
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 0, &size.x );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 1, &size.y );
+	glGetIntegeri_v( GL_MAX_COMPUTE_WORK_GROUP_SIZE, 2, &size.z );
+	return size;
+}
+#endif // defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 // toGL conversion functions
 GLenum toGl( geom::Primitive prim )

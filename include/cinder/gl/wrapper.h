@@ -320,6 +320,19 @@ void	drawBuffer( GLenum dst );
 //! Reads a block of pixels from the framebuffer. Analogous to glReadPixels().
 void	readPixels( GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type, GLvoid *data );
 
+// Compute
+#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+//! Launches one or more compute work groups. Analogous to glDispatchCompute(). 
+inline void	dispatchCompute( GLuint numGroupsX, GLuint numGroupsY, GLuint numGroupsZ ) { glDispatchCompute( numGroupsX, numGroupsY, numGroupsZ ); }
+//! Defines a barrier ordering memory transactions. Analogous to glMemoryBarrier().
+inline void	memoryBarrier( GLbitfield barriers ) { glMemoryBarrier( barriers ); }
+
+//! Returns ivec3( GL_MAX_COMPUTE_WORK_GROUP_COUNT )
+ivec3	getMaxComputeWorkGroupCount();
+//! Returns ivec3( GL_MAX_COMPUTE_WORK_GROUP_SIZE )
+ivec3	getMaxComputeWorkGroupSize();
+#endif
+
 class Exception : public cinder::Exception {
   public:
 	Exception()	{}
