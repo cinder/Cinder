@@ -37,7 +37,7 @@ public:
 
 private:
 	TriMeshRef			mTriMesh;		//! The 3D mesh.
-	AxisAlignedBox	mObjectBounds; 	//! The object space bounding box of the mesh.
+	AxisAlignedBox		mObjectBounds; 	//! The object space bounding box of the mesh.
 	mat4				mTransform;		//! Transformations (translate, rotate, scale) of the mesh.
 										
 	//! By caching a 3D model and its shader on the GPU, we can draw it faster.
@@ -155,7 +155,7 @@ bool Picking3DApp::performPicking( vec3 *pickedPoint, vec3 *pickedNormal )
 	drawCube( worldBoundsApprox, Color( 0, 1, 1 ) );
 
 	// Perform fast detection first - test against the bounding box itself.
-	if( !worldBoundsExact.intersects( ray ) )
+	if( ! worldBoundsExact.intersects( ray ) )
 		return false;
 
 	// Set initial distance to something far, far away.
