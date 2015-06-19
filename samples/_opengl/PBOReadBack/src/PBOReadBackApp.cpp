@@ -72,7 +72,7 @@ void PBOReadBackApp::setup()
 	
 	mSurf = Surface8u( WIDTH, HEIGHT, true );
 	mTex = gl::Texture::create( mSurf );
-	mTex->setTopDown( false );
+	mTex->setTopDown( true );
 	
 	mCam.setPerspective( 60.0, WIDTH / float( HEIGHT ), 0.01, 100.0 );
 	mCam.lookAt( vec3( 0.0, 20.0, 50.0 ), vec3( 0.0 ) );
@@ -142,7 +142,6 @@ void PBOReadBackApp::draw()
 		gl::drawColorCube( vec3( 0 ) , vec3( 15 ) );
 	}
 	
-
 	// Render to screen
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
@@ -153,9 +152,11 @@ void PBOReadBackApp::draw()
 	gl::draw( mFbo[mIndexNew]->getColorTexture(), Area( 0, 0, 256, 256 ) );
 	
 	// Show the change to the data
+	mTex->setTopDown( true );
 	mTex->update( mSurf );
-	gl::draw( mTex, Area( 256, 0, 512, 256 ) );
-	
+	mTex->setTopDown( false );
+	gl::draw( mTex, Rectf( 256, 0, 512, 256 ) );
+
 	{
 		gl::ScopedBlendAlpha sAb;
 		
