@@ -1,8 +1,8 @@
 /*
-	Based loosly on http://www.songho.ca/opengl/gl_pbo.html#pack
+	Based loosely on http://www.songho.ca/opengl/gl_pbo.html#pack
 */
 
-#include "cinder/app/AppNative.h"
+#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/Utilities.h"
@@ -14,10 +14,8 @@
 #include "cinder/gl/Fbo.h"
 #include "cinder/gl/Pbo.h"
 
-#include "cinder/ip/Grayscale.h"
-
-const uint32_t WIDTH = 256;
-const uint32_t HEIGHT = 256;
+const uint32_t WIDTH = 1024;
+const uint32_t HEIGHT = 1024;
 const uint8_t CHANNELS = 4;
 const uint32_t DATA_SIZE = WIDTH * HEIGHT * CHANNELS;
 const GLenum PIXEL_FORMAT = GL_RGBA;
@@ -26,9 +24,9 @@ using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-class PBOReadBackApp : public AppNative {
-public:
-	void prepareSettings( Settings *settings ) override;
+class PBOReadBackApp : public App {
+  public:
+	static void prepareSettings( Settings *settings );
 	void setup() override;
 	void keyDown( KeyEvent event ) override;
 	void update() override;
@@ -44,6 +42,7 @@ public:
 	gl::PboRef mPbo[2];
 	
 	Surface8u mSurf;
+	gl::TextureRef mTex;
 	
 	CameraPersp mCam;
 
@@ -72,6 +71,8 @@ void PBOReadBackApp::setup()
 	mPbo[1] = gl::Pbo::create( GL_PIXEL_PACK_BUFFER, DATA_SIZE, 0, GL_STREAM_READ );
 	
 	mSurf = Surface8u( WIDTH, HEIGHT, true );
+	mTex = gl::Texture::create( mSurf );
+	mTex->setTopDown( false );
 	
 	mCam.setPerspective( 60.0, WIDTH / float( HEIGHT ), 0.01, 100.0 );
 	mCam.lookAt( vec3( 0.0, 20.0, 50.0 ), vec3( 0.0 ) );
@@ -84,10 +85,8 @@ void PBOReadBackApp::keyDown( KeyEvent event )
 {
 	switch ( event.getCode() ) {
 		case KeyEvent::KEY_SPACE:
-			mUsePbo = !mUsePbo;
-			break;
-		default:
-			break;
+			mUsePbo = ! mUsePbo;
+		break;
 	}
 }
 
@@ -101,7 +100,7 @@ void PBOReadBackApp::draw()
 	mTimer.start();
 	
 	// Read from old Fbo
-	if ( mUsePbo ) {
+	if( mUsePbo ) {
 		
 		// Read to new Pbo (non-blocking)
 		{
@@ -126,11 +125,6 @@ void PBOReadBackApp::draw()
 
 	mTimer.stop();
 	
-	
-	// Do something with the data
-	ip::grayscale( mSurf, &mSurf );
-	
-
 	// Render to new Fbo
 	gl::enableDepthRead();
 	gl::enableDepthWrite();
@@ -153,15 +147,17 @@ void PBOReadBackApp::draw()
 	gl::disableDepthRead();
 	gl::disableDepthWrite();
 	
-	gl::clear( Color::black() );
+	gl::setMatricesWindow( getWindowSize() );
+	gl::clear();
 	
 	gl::draw( mFbo[mIndexNew]->getColorTexture(), Area( 0, 0, 256, 256 ) );
 	
 	// Show the change to the data
-	gl::draw( gl::Texture::create( mSurf.getData(), PIXEL_FORMAT, WIDTH, HEIGHT ), Area( 256, 0, 512, 256 ) );
+	mTex->update( mSurf );
+	gl::draw( mTex, Area( 256, 0, 512, 256 ) );
 	
 	{
-		gl::ScopedAlphaBlend sAb( false );
+		gl::ScopedBlendAlpha sAb;
 		
 		ostringstream oss( ostringstream::ate );
 		oss << fixed << setprecision(3);
@@ -177,10 +173,9 @@ void PBOReadBackApp::draw()
 		oss.str( "Read time: " );
 		oss << mTimer.getSeconds() * 1000.0 << "ms";
 		gl::drawString( oss.str(), ivec2( 10, 240 ) );
-		
 	}
 	
 	swap( mIndexNew, mIndexOld );
 }
 
-CINDER_APP_NATIVE( PBOReadBackApp, RendererGl )
+CINDER_APP( PBOReadBackApp, RendererGl, PBOReadBackApp::prepareSettings )
