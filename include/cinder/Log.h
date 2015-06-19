@@ -135,7 +135,7 @@ class LoggerBreakpoint : public Logger {
 	Level	mTriggerLevel;
 };
 
-//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windoes Event Logging
+//! Provides 'system' logging support. Uses syslog on platforms that have it, on MSW uses Windows Event Logging. \note Does nothing on WinRT.
 class LoggerSystem : public Logger {
 public:
 	LoggerSystem();
