@@ -308,6 +308,8 @@ inline void	vertexAttrib( GLuint index, float v0, float v1, float v2, float v3 )
 
 // Buffers
 void	bindBuffer( const BufferObjRef &buffer );
+//! Binds a named buffer object \a buffer to \a target. Analogous to glBindBuffer().
+void	bindBuffer( GLenum target, GLuint buffer );
 #if ! defined( CINDER_GL_ES_2 )
 //! Specifies a color buffer as the source for subsequent glReadPixels(), glCopyTexImage2D(), glCopyTexSubImage2D(), and glCopyTexSubImage3D() commands. Analogous to glReadBuffer().
 void	readBuffer( GLenum src );

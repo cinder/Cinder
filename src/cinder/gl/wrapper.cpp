@@ -913,6 +913,11 @@ void bindBuffer( const BufferObjRef &buffer )
 	context()->bindBuffer( buffer->getTarget(), buffer->getId() );
 }
 
+void bindBuffer( GLenum target, GLuint buffer )
+{
+	context()->bindBuffer( target, buffer );
+}
+
 #if ! defined( CINDER_GL_ES_2 )
 void readBuffer( GLenum src )
 {
