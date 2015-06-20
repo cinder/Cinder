@@ -154,7 +154,7 @@ ci::vec3 MotionImplAndroid::getGravityDirection( app::InterfaceOrientation orien
 
 ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation ) const
 {
-/*	
+	
 	ci::quat q = glm::normalize( mRotationVector );
 
 	static const float kPi = M_PI;
@@ -170,25 +170,68 @@ ci::quat MotionImplAndroid::getRotation( app::InterfaceOrientation orientation )
 	ci::quat zq = glm::angleAxis( euler.z, vec3( 0, 0, 1 ) );
 
 	ci::quat result = xq*yq*zq;
+
+	switch( orientation ) {
+			case app::PortraitUpsideDown: {
+				result = result*glm::angleAxis( kPi, vec3( 0, 0, -1 ) );
+			}
+			break;
+
+			case app::LandscapeLeft: {
+				result = result*glm::angleAxis( kPiOverTwo, vec3( 0, 0, -1 ) );
+			}
+			break;
+
+			case app::LandscapeRight: {
+				result = result*glm::angleAxis( kPiOverTwo, vec3( 0, 0, 1 ) );
+			}
+			break;
+	}
+
 	return result;   	
-*/	
 
+
+/*
 	ci::quat q = glm::normalize( mRotationVector );
 
 	static const float kPi = M_PI;
    	static const float kPiOverTwo = kPi / 2.0f;
    	
-   	q = q*glm::angleAxis( kPiOverTwo, vec3( 1, 0, 0 ) );
+	switch( orientation ) {
+		case app::PortraitUpsideDown: {
+			//q = q*glm::angleAxis( kPi, vec3( 0, 0, 1 ) );
+		}		
+		break;
 
-   	ci::vec3 euler = glm::eulerAngles( q );
-   	euler.x = -euler.x;
+		case app::LandscapeLeft: {
+			//q = q*glm::angleAxis( kPiOverTwo, vec3( 0, 0, 1 ) );
+		}
+		break;
 
-   	ci::quat xq = glm::angleAxis( euler.x, vec3( 1, 0, 0 ) );
-	ci::quat yq = glm::angleAxis( euler.y, vec3( 0, 1, 0 ) );
-	ci::quat zq = glm::angleAxis( euler.z, vec3( 0, 0, 1 ) );
+		case app::LandscapeRight: {
+			//q = q*glm::angleAxis( kPiOverTwo, vec3( 0, 0, -1 ) );
+		}
+		break;
 
-	ci::quat result = xq*yq*zq;
+		default: {
+			// Rotate 90 on X			
+			q = q*glm::angleAxis( kPiOverTwo, vec3( 1, 0, 0 ) );
+			// Convert to Euler and reverse rotation on pitch
+		   	ci::vec3 euler = glm::eulerAngles( q );
+		   	euler.x = -euler.x;
+		   	// Convert back to quaternion
+		   	ci::quat xq = glm::angleAxis( euler.x, vec3( 1, 0, 0 ) );
+			ci::quat yq = glm::angleAxis( euler.y, vec3( 0, 1, 0 ) );
+			ci::quat zq = glm::angleAxis( euler.z, vec3( 0, 0, 1 ) );
+			q = xq*yq*zq;
+		}
+		break;
+
+	}
+
+	ci::quat result = q;
 	return result;
+*/	
 }
 
 ci::mat4 MotionImplAndroid::getRotationMatrix( app::InterfaceOrientation orientation ) const

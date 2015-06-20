@@ -710,8 +710,7 @@ dbg_app_log( "Starting Event Loop" );
 							//case ASENSOR_TYPE_ROTATION_VECTOR: {
 							case ASENSOR_TYPE_GAME_ROTATION_VECTOR: {
 								if( mRotationVectorSensor && ( mRotationVectorSensor->mCallbackFn ) ) {
-									//const size_t n = 4;
-									const size_t n = 3;
+									const size_t n = 4;
 									const float* data = reinterpret_cast<const float*>( &(sensorEvent.data) );
 									mRotationVectorSensor->mCallbackFn( n, data );
 								}
