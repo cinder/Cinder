@@ -200,7 +200,7 @@ void CameraUi::mouseDrag( const ivec2 &mousePos, bool leftDown, bool middleDown,
 		float deltaX = ( mousePos.x - mInitialMousePos.x ) / -100.0f;
 		float deltaY = ( mousePos.y - mInitialMousePos.y ) / 100.0f;
 		vec3 mW = normalize( mInitialCam.getViewDirection() );
-		bool invertMotion = glm::length(mInitialCam.getOrientation() * mInitialCam.getWorldUp()) < 0.0f;
+		bool invertMotion = (mInitialCam.getOrientation() * mInitialCam.getWorldUp()).y < 0.0f;
 		
 		vec3 mU = normalize(cross(mInitialCam.getWorldUp(), mW));
 
