@@ -115,6 +115,7 @@ class SymbolMap(object):
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
     def find_class(self, name):
 
+        # print "FIND CLASS " + name
         # replace leading ci:: with cinder:: instead
         searchname = str(name)
         if searchname.find("ci::") == 0:
@@ -188,24 +189,21 @@ class SymbolMap(object):
     def find_function(self, name, class_obj=None):
 
         fn_obj = None
-
+        fn_name = strip_compound_name(name)
         if class_obj is None:
-            fn_name = strip_compound_name(name)
-            ns_parts = name.split("::")
-            class_name = "::".join(ns_parts[:-1])
-
-            # try functions again
             # find parent class first
+            class_parts = name.split("::")
+            class_name = "::".join(class_parts[:-1])
+
             class_obj = g_symbolMap.find_class(class_name)
 
         # iterate through class functions
-        # print "FIND FUNCTION"
         for fn in class_obj.functionList:
-            if fn.name == name:
+            if fn.name == fn_name:
                 fn_obj = fn
 
         if not fn_obj:
-            fn_obj = self.functions.get(name)
+            fn_obj = self.functions.get(fn_name)
 
         return fn_obj
 
@@ -219,6 +217,13 @@ class SymbolMap(object):
         searchname = str(name)
         if searchname.find("ci::") == 0:
             searchname = searchname.replace("ci::", "cinder::")
+
+        # enum_obj = None
+        # if ns_obj is None:
+        #     # find parent class first
+        #     ns_parts = name.split("::")
+        #     class_name = "::".join(ns_parts[:-1])
+        #     class_obj = g_symbolMap.find_class(class_name)
 
         # same key as name
         if searchname in self.enums.keys():
@@ -1539,7 +1544,6 @@ def process_html_file(in_path, out_path):
 
     if in_path.find("htmlsrc/index.html") > -1:
         is_index = True
-    print "IS INDEX: " + str(is_index)
 
     if is_index is True:
         bs4 = generate_bs4(in_path)
@@ -1650,17 +1654,18 @@ def find_d_tag_ref(link):
 
     ref_obj = None
 
-    args = searchstring.split("|")
+    # args = searchstring.split("|")
+    ns_str = "::".join(searchstring.split("::")[:-1])
+    stripped_searchstring = strip_compound_name(searchstring)
 
     # find function link
     if link.get('kind') == 'function':
 
         # find parent class first
-        existing_class = g_symbolMap.find_class(args[0])
+        existing_class = g_symbolMap.find_class(ns_str)
         if existing_class is not None:
-
             # find the function in the given class
-            fn_obj = g_symbolMap.find_function(args[1], existing_class)
+            fn_obj = g_symbolMap.find_function(stripped_searchstring, existing_class)
             if fn_obj is not None:
                 ref_obj = fn_obj
 
@@ -1675,7 +1680,15 @@ def find_d_tag_ref(link):
         if existing_class is not None:
             ref_obj = existing_class
         else:
-            ref_obj = g_symbolMap.find_function(searchstring)
+
+            count = 0
+            # try a bunch of other things before giving up
+            while (ref_obj is None) and count < 2:
+                if count == 0:
+                    ref_obj = g_symbolMap.find_function(searchstring)
+                elif count == 1:
+                    ref_obj = g_symbolMap.find_enum(searchstring)
+                count += 1
 
     return ref_obj
 
@@ -1857,7 +1870,7 @@ def get_symbol_to_file_map():
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
             name = namespace_name + "::" + member.find("name").text
-            print "ENUM: " + name
+            # print "ENUM: " + name
             anchor = member.find("anchor").text
             path = member.find("anchorfile").text + "#" + anchor
             enum_obj = SymbolMap.Enum(name, path)
