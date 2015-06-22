@@ -1211,6 +1211,22 @@ def process_class_xml_file(in_path, out_path, html):
         orig_html = generate_bs4(class_def.prefixPath)
         inject_html(orig_html, g_currentFile.descriptionProseEl, class_def.prefixPath, out_path)
 
+    # +------------+
+    #  Enumerations
+    # +------------+
+    enumerations = tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']")
+    if len(enumerations) > 0:
+        drop_anchor(subnav_anchors, "enumerations", "Enumerations")
+        enum_section = gen_tag(html, "section")
+        contents_el.append(enum_section)
+
+        enum_section.append(gen_tag(html, "h1", [], "Public Types"))
+        enum_ul = gen_tag(html, "ul")
+        for c in enumerations:
+            markup_enum(html, c, enum_ul)
+        enum_section.append(enum_ul)
+        contents_el.append(gen_tag(html, "br"))
+
     # +----------------+
     #  Member Functions
     # +----------------+
