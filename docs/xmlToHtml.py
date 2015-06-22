@@ -988,7 +988,7 @@ def inject_html(src_content, dest_el, src_path, dest_path ):
     :return:
     """
 
-    update_links(src_content, src_path, dest_path)
+    update_links(src_content, src_path)
 
     # append body content to dest_el
     dest_el.append(src_content.body)
@@ -1117,7 +1117,7 @@ def process_class_xml_file(in_path, out_path, html):
     tree = parse_html(html, in_path, out_path)
 
     # update links in the template
-    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
+    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html")
 
     if tree is None:
         return
@@ -1353,6 +1353,9 @@ def process_namespace_xml_file(in_path, out_path, html):
     if tree is None:
         return
 
+    # update links in the template
+    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html")
+
     # get common data for the file
     g_currentFile = FileData(tree, html)
     compound_name = g_currentFile.compoundName
@@ -1533,7 +1536,7 @@ def process_html_file(in_path, out_path):
         template_content_el = bs4.body.find(id="template-content")
 
         # update links in the template
-        update_links(bs4, TEMPLATE_PATH + html_template, out_path)
+        update_links(bs4, TEMPLATE_PATH + html_template)
 
         # inject html into a template content div
         inject_html(orig_html, template_content_el, in_path, out_path)
@@ -1661,7 +1664,7 @@ def find_d_tag_ref(link):
 
 # ----------------------------------------------- END D TAG FUNCTIONS --------------------------------------------------
 
-def update_links(html, src_path, dest_path):
+def update_links(html, src_path):
     """
     Replace all of the relative a links, js links and image links and make them relative to the outpath
     :param html:
@@ -1673,96 +1676,37 @@ def update_links(html, src_path, dest_path):
     # css links
     for link in html.find_all("link"):
         if link.has_attr("href"):
-            link["href"] = update_link(link["href"], src_path, dest_path)
+            link["href"] = update_link(link["href"], src_path)
 
     # a links
     for a in html.find_all("a"):
         if a.has_attr("href"):
-            a["href"] = update_link(a["href"], src_path, dest_path)
+            a["href"] = update_link(a["href"], src_path)
 
     # script links
     for script in html.find_all("script"):
         if script.has_attr("src"):
-            script["src"] = update_link(script["src"], src_path, dest_path)
+            script["src"] = update_link(script["src"], src_path)
 
     # images
     for img in html.find_all("img"):
         if img.has_attr("src"):
-            img["src"] = update_link(img["src"], src_path, dest_path)
+            img["src"] = update_link(img["src"], src_path)
 
 
-def update_link(link, in_path, out_path):
+def update_link(link, in_path):
     """
     Update the given link to point to something relative to the new path
     :param link: The link to change
     :param in_path: the original path to the file that the link lives in
-    :param out_path: the destination path to the file that the link lives in
     :return:
     """
+
     if link.startswith("http") or link.startswith("javascript:"):
         return link
 
-    path_parts = in_path.split("htmlsrc")[1].split("/")
-    in_depth = len(in_path.split("htmlsrc")[1].split("/")) - 2
-    out_depth = len(out_path.split("html")[1].split("/")) - 2
-    link_depth = link.count("../")
-    depth_diff = out_depth - in_depth
-    depth = in_depth + depth_diff
     abs_link_path = urlparse.urljoin(in_path, link)
-
-    # print "\n\t**UPDATE LINK**"
-    # # find link in relation to in path
-    # print "IN PATH: " + in_path
-    # print "OUT PATH: " + out_path
-    # print "LINK: " + link
-    # print link.count("../")
-    #
-    # # print urlparse.urljoin(out_path.split("html")[0] + "html/", link)
-    #
-    # print abs_link_path
-    # print abs_link_path .replace("htmlsrc", "html")
-    # # print urlparse.urljoin(out_path, link)
-    # print "-----------------"
     return abs_link_path .replace("htmlsrc", "html")
-    # return urlparse.urljoin(out_path.split("html")[0] + "html/", link)
-
-    if depth_diff > 0:
-        path_prepend = ""
-        # for i in range(depth_diff):
-        #     if path_parts[i] is not "":
-        #         path_prepend += path_parts[i] + "/"
-        # for i in range(depth_diff):
-        for i in range(out_depth - 1): # works for guide
-            path_prepend += "../"
-    else:
-        path_prepend = ""
-        for i in range(abs(out_depth)):
-            if path_parts[i] is not "":
-                path_prepend += path_parts[i] + "/"
-
-
-    # print "UPDATE LINK"
-    # print link
-    # print depth
-    #
-    # if direction == 1:
-    #     path_prepend = ""
-    #     for i in range(depth):
-    #         path_prepend += "../"
-    #     path_prepend += base + "/"
-    # elif direction == -1:
-    #     path_prepend = ""
-    #     print "DEPTH"
-    #     print depth
-    #     for i in range(depth):
-    #         if path_parts[i] is not "":
-    #             path_prepend += path_parts[i] + "/"
-    #
-    # return path_prepend + link
-
-    # print "FINAL: " + path_prepend + link
-    # print "-----------------"
-    # return path_prepend + link
 
 
 def construct_template(templates):
