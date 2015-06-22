@@ -424,7 +424,7 @@ def define_link_tag(tag, attrib):
         href = file_name + "#" + anchor
 
     if href is None:
-        print "ERROR DEFINING LINK TAG"
+        print "\t *** ERROR DEFINING LINK TAG: " + str(tag)
     else:
         tag["href"] = href
 
@@ -697,8 +697,8 @@ def gen_class_hierarchy(bs4, class_def):
             li.append(base.name)
         ul.append(li)
 
-    if len(hierarchy) > 2:
-        print "GEN CLASS HIERARCHY " + class_def.name
+    # if len(hierarchy) > 2:
+    #     print "GEN CLASS HIERARCHY " + class_def.name
     # print side
     # for h in hierarchy:
     # print h.name
@@ -1010,8 +1010,11 @@ def inject_html(src_content, dest_el, src_path, dest_path ):
 
     update_links(src_content, src_path)
 
-    # append body content to dest_el
-    dest_el.append(src_content.body)
+    try:
+        # append body content to dest_el
+        dest_el.append(src_content.body)
+    except AttributeError as e:
+        print "\t *** Error appending html content to element ***"
 
 
 def iterate_namespace(bs4, namespaces, tree, index, label):
@@ -1782,9 +1785,16 @@ def construct_template(templates):
 
 
 def generate_bs4(file_path):
-    ouput_file = open(os.path.join(file_path)).read()
-    ouput_file.decode("UTF-8")
-    return BeautifulSoup(ouput_file)
+    output_file = open(os.path.join(file_path)).read()
+    output_file.decode("UTF-8")
+
+    # wrap in body tag if none exists
+    if output_file.find("<body") < 0:
+        output_file = "<body>" + output_file + "</body>"
+        print "\t ** WARNING: No body tag found in file: " + file_path
+
+    bs4 = BeautifulSoup(output_file)
+    return bs4
 
 
 def get_symbol_to_file_map():
