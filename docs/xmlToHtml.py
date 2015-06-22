@@ -13,11 +13,12 @@ import urlparse
 from bs4 import BeautifulSoup, Tag, NavigableString
 # from distutils.dir_util import copy_tree
 
-XML_SOURCE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep + 'xml' + os.sep
-DOXYGEN_HTML_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep + 'html' + os.sep
-HTML_SOURCE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep + 'htmlsrc' + os.sep
-TEMPLATE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep + 'htmlsrc' + os.sep + "_templates" + os.sep
-PARENT_DIR = os.path.dirname(os.path.realpath(__file__)).split('/docs')[0]
+BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
+XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
+DOXYGEN_HTML_PATH = BASE_PATH + 'html' + os.sep
+HTML_SOURCE_PATH = BASE_PATH + 'htmlsrc' + os.sep
+TEMPLATE_PATH = BASE_PATH + 'htmlsrc' + os.sep + "_templates" + os.sep
+PARENT_DIR = BASE_PATH.split('/docs')[0]
 GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
 # state vars
@@ -185,13 +186,28 @@ class SymbolMap(object):
         return None
 
     def find_function(self, name, class_obj=None):
-        if class_obj is not None:
-            # iterate through class functions
-            for fn in class_obj.functionList:
-                if fn.name == name:
-                    return fn
-        else:
-            return self.functions.get(name)
+
+        fn_obj = None
+
+        if class_obj is None:
+            fn_name = strip_compound_name(name)
+            ns_parts = name.split("::")
+            class_name = "::".join(ns_parts[:-1])
+
+            # try functions again
+            # find parent class first
+            class_obj = g_symbolMap.find_class(class_name)
+
+        # iterate through class functions
+        # print "FIND FUNCTION"
+        for fn in class_obj.functionList:
+            if fn.name == name:
+                fn_obj = fn
+
+        if not fn_obj:
+            fn_obj = self.functions.get(name)
+
+        return fn_obj
 
     def find_file(self, name):
         return self.files.get(name)
@@ -321,7 +337,7 @@ def find_compound_name(tree):
 
 def find_file_kind(tree):
     kind = tree.find(r"compounddef").attrib['kind']
-    print "FIND FILE KIND: " + kind
+    # print "FIND FILE KIND: " + kind
     return kind
 
 
@@ -336,7 +352,6 @@ def strip_compound_name(full_string):
     # prefix = "::".join(ns_parts[:-1])  # parent namespace up to last ::
     name = "".join(ns_parts[-1])
     return name
-
 
 def add_class_to_tag(tag, class_name):
     tag["class"] = tag.get("class", []) + [class_name]
@@ -1640,12 +1655,12 @@ def find_d_tag_ref(link):
     # find function link
     if link.get('kind') == 'function':
 
-        # find parent function first
+        # find parent class first
         existing_class = g_symbolMap.find_class(args[0])
         if existing_class is not None:
 
             # find the function in the given class
-            fn_obj = g_symbolMap.find_function(args[1], existing_class, )
+            fn_obj = g_symbolMap.find_function(args[1], existing_class)
             if fn_obj is not None:
                 ref_obj = fn_obj
 
@@ -1659,6 +1674,8 @@ def find_d_tag_ref(link):
         existing_class = g_symbolMap.find_class(searchstring)
         if existing_class is not None:
             ref_obj = existing_class
+        else:
+            ref_obj = g_symbolMap.find_function(searchstring)
 
     return ref_obj
 
@@ -1705,8 +1722,23 @@ def update_link(link, in_path):
     if link.startswith("http") or link.startswith("javascript:"):
         return link
 
+    # if a relative path, make it absolute
+    if in_path.find(BASE_PATH) < 0:
+        in_path = BASE_PATH + in_path
+
     abs_link_path = urlparse.urljoin(in_path, link)
-    return abs_link_path .replace("htmlsrc", "html")
+    final_path = abs_link_path .replace("htmlsrc", "html")
+
+    # print "\n *UPDATE LINK*"
+    # print str(BASE_PATH)
+    # print in_path.find(str(BASE_PATH))
+    # print in_path
+    # print link
+    # print abs_link_path
+    # print final_path
+    # print "---"
+
+    return final_path
 
 
 def construct_template(templates):
@@ -1748,7 +1780,7 @@ def get_symbol_to_file_map():
             fn_name = member.find("name").text
             anchor = member.find("anchor").text
             file_path = member.find("anchorfile").text + "#" + anchor
-            # print "FUNCTION " + name+"::"+fnName
+            # print "FUNCTION " + name + "::" + fn_name
             function_obj = SymbolMap.Function(fn_name, base_class, file_path)
             symbol_map.functions[name + "::" + fn_name] = function_obj
             class_obj.functionList.append(function_obj)
