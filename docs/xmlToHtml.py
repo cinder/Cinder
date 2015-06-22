@@ -1216,7 +1216,7 @@ def process_class_xml_file(in_path, out_path, html):
     # +------------+
     enumerations = tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']")
     if len(enumerations) > 0:
-        drop_anchor(subnav_anchors, "enumerations", "Enumerations")
+        drop_anchor(subnav_anchors, "enumerations", "Public Types")
         enum_section = gen_tag(html, "section")
         contents_el.append(enum_section)
 
