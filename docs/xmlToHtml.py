@@ -9,6 +9,7 @@ import xml.etree.ElementTree as Et
 import os
 import shutil
 import stat
+import urlparse
 from bs4 import BeautifulSoup, Tag, NavigableString
 # from distutils.dir_util import copy_tree
 
@@ -67,9 +68,14 @@ class SymbolMap(object):
             self.path = file_name
             self.functionList = []
             self.relatedLinks = []
+            # Path the the description prefix
+            self.prefixPath = None
 
         def add_related_link(self, a_link):
             self.relatedLinks.append(a_link)
+
+        def define_prefix(self, path):
+            self.prefixPath = path
 
     class Namespace(object):
         def __init__(self, name, file_name):
@@ -199,12 +205,12 @@ class SymbolMap(object):
             searchname = searchname.replace("ci::", "cinder::")
 
         # same key as name
-        if searchname in self.enums:
-            return self.enums[searchname]
+        if searchname in self.enums.keys():
+            return self.enums.get(searchname)
 
         # key with "cinder::" prepended
         elif ("cinder::" + searchname) in self.enums:
-            return self.enums["cinder::" + searchname]
+            return self.enums.get("cinder::" + searchname)
 
     def get_class_ancestors(self, name):
         result = []
@@ -280,7 +286,7 @@ class FileData(object):
         self.contentsEl = self.bs4.find("div", "contents")
         if self.kind == "class" or self.kind == "struct":
             self.descriptionEl = self.bs4.find(id="description")
-            self.descriptionProseEl = self.descriptionEl.find("div", "prose")
+            self.descriptionProseEl = self.descriptionEl.find(id="description-prose")
             self.sideEl = self.descriptionEl.find("div", "side")
         self.sideNavEl = self.bs4.find(id="side-nav")
 
@@ -973,6 +979,20 @@ def get_template(bs4, element_id):
 
     return template
 
+def inject_html(src_content, dest_el, src_path, dest_path ):
+    """
+    Append a chunk of html into a specific div
+    :param src_content: The src html to be injected
+    :param dest_el: The div to inject the src html into
+    :param src_path: The path of the src file so that we can gix teh relative links
+    :return:
+    """
+
+    update_links(src_content, src_path, dest_path)
+
+    # append body content to dest_el
+    dest_el.append(src_content.body)
+
 
 def iterate_namespace(bs4, namespaces, tree, index, label):
     # Get namespace of previous child, unless first
@@ -1095,6 +1115,10 @@ def process_class_xml_file(in_path, out_path, html):
 
     # define the tree that contains all the data we need to populate this page
     tree = parse_html(html, in_path, out_path)
+
+    # update links in the template
+    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
+
     if tree is None:
         return
 
@@ -1157,6 +1181,15 @@ def process_class_xml_file(in_path, out_path, html):
     desc_tag = markup_description(html, tree.find(r'compounddef'))
     if desc_tag is not None:
         g_currentFile.descriptionProseEl.append(desc_tag)
+
+    # +------+
+    #  Prefix
+    # +------+
+    # if the class has a prefix, add it here
+    if hasattr(class_def, 'prefixPath') is True and class_def.prefixPath is not None:
+        # inject html from prefixPath into description div
+        orig_html = generate_bs4(class_def.prefixPath)
+        inject_html(orig_html, g_currentFile.descriptionProseEl, class_def.prefixPath, out_path)
 
     # +----------------+
     #  Member Functions
@@ -1475,7 +1508,7 @@ def process_html_file(in_path, out_path):
     - Copy original css and js links into new hmtl
     - Save html in destination dir
     """
-    print "processHtmlFile"
+    print "processHtmlFile: " + in_path
 
     html_template = "htmlContentTemplate.html"
     is_index = False
@@ -1486,46 +1519,32 @@ def process_html_file(in_path, out_path):
 
     # construct template
 
-    if in_path == "htmlsrc/index.html":
+    if in_path.find("htmlsrc/index.html") > -1:
         is_index = True
+    print "IS INDEX: " + str(is_index)
 
     if is_index is True:
         bs4 = generate_bs4(in_path)
-    else:
 
+    else:
         bs4 = construct_template(["headerTemplate.html", "mainNavTemplate.html", html_template, "footerTemplate.html"])
 
-        # parse original html file
         orig_html = generate_bs4(in_path)
-
-        # replace all of the bs4 css and js links and make them relative to the outpath
-        for link in bs4.find_all("link"):
-            if link.has_attr("href"):
-                link["href"] = update_link(link["href"], out_path)
-
-        for a in bs4.find_all("a"):
-            if a.has_attr("href"):
-                a["href"] = update_link(a["href"], out_path)
-
-        for script in bs4.find_all("script"):
-            if script.has_attr("src"):
-                script["src"] = update_link(script["src"], out_path)
-
-        for img in bs4.find_all("img"):
-            if img.has_attr("src"):
-                img["src"] = update_link(img["src"], out_path)
-
-        # plug original html content into template
         template_content_el = bs4.body.find(id="template-content")
-        template_content_el.append(orig_html.body)
+
+        # update links in the template
+        update_links(bs4, TEMPLATE_PATH + html_template, out_path)
+
+        # inject html into a template content div
+        inject_html(orig_html, template_content_el, in_path, out_path)
 
         # fill namespace list
-        if in_path == "htmlsrc/namespaces.html":
+        if in_path.find("htmlsrc/namespaces.html") > -1:
             # throw in a list of namespaces into the page
             list_namespaces(bs4, template_content_el)
 
         # fill class list
-        elif in_path == "htmlsrc/classes.html":
+        elif in_path.find("htmlsrc/classes.html") > -1:
             list_classes(bs4, template_content_el)
 
         # copy all js and css paths that may be in the original html and paste into new file
@@ -1541,26 +1560,20 @@ def process_html_file(in_path, out_path):
 
         # link up all d tags
         for tag in bs4.find_all('d'):
-            process_d_tag(bs4, tag, out_path)
+            process_d_tag(bs4, tag, in_path, out_path)
 
-            # for tag in origHtml.find_all('d'):
-            #     print tag
-            #     if tag.has_attr("seealso"):
-            #
-            #         print "FOUND ONE"
-            #         process_d_ref_tag(bs4, tag)
-            #         # set page data
-            #         # setSection( bs4, "" )
-
-    write_html(bs4, out_path)
+    if in_path.find("_docs/") < 0:
+        write_html(bs4, out_path)
 
 
-def process_d_tag(bs4, tag, out_path):
+# -------------------------------------------------- D TAG FUNCTIONS ---------------------------------------------------
+
+def process_d_tag(bs4, tag, in_path, out_path):
     # find type
     if tag.has_attr("seealso"):
         process_d_seealso_tag(bs4, tag, out_path)
     elif tag.has_attr("prefix"):
-        print "TODO: PARSE PREFIX D TAGS"
+        process_d_prefix_tag(bs4, tag, in_path)
     else:
         replace_d_tag(bs4, tag)
 
@@ -1597,6 +1610,15 @@ def process_d_seealso_tag(bs4, tag, out_path):
         ref_obj.add_related_link(link_tag)
     else:
         print "  ** WARNING: Could not find seealso reference for " + str(tag)
+
+
+def process_d_prefix_tag(bs4, tag, in_path):
+    # find the referenced html file
+    # find the referenced class
+    # add prefix param to class
+    obj_ref = find_d_tag_ref(tag)
+    if obj_ref and type(obj_ref) is SymbolMap.Class:
+        obj_ref.define_prefix(in_path)
 
 
 def find_d_tag_ref(link):
@@ -1637,15 +1659,110 @@ def find_d_tag_ref(link):
 
     return ref_obj
 
+# ----------------------------------------------- END D TAG FUNCTIONS --------------------------------------------------
 
-def update_link(link, path):
+def update_links(html, src_path, dest_path):
+    """
+    Replace all of the relative a links, js links and image links and make them relative to the outpath
+    :param html:
+    :param src_path:
+    :param dest_path:
+    :return:
+    """
+
+    # css links
+    for link in html.find_all("link"):
+        if link.has_attr("href"):
+            link["href"] = update_link(link["href"], src_path, dest_path)
+
+    # a links
+    for a in html.find_all("a"):
+        if a.has_attr("href"):
+            a["href"] = update_link(a["href"], src_path, dest_path)
+
+    # script links
+    for script in html.find_all("script"):
+        if script.has_attr("src"):
+            script["src"] = update_link(script["src"], src_path, dest_path)
+
+    # images
+    for img in html.find_all("img"):
+        if img.has_attr("src"):
+            img["src"] = update_link(img["src"], src_path, dest_path)
+
+
+def update_link(link, in_path, out_path):
+    """
+    Update the given link to point to something relative to the new path
+    :param link: The link to change
+    :param in_path: the original path to the file that the link lives in
+    :param out_path: the destination path to the file that the link lives in
+    :return:
+    """
     if link.startswith("http") or link.startswith("javascript:"):
         return link
-    depth = len(path.split("html/")[1].split("/")) - 1
-    path_prepend = ""
-    for i in range(depth):
-        path_prepend += "../"
-    return path_prepend + link
+
+    path_parts = in_path.split("htmlsrc")[1].split("/")
+    in_depth = len(in_path.split("htmlsrc")[1].split("/")) - 2
+    out_depth = len(out_path.split("html")[1].split("/")) - 2
+    link_depth = link.count("../")
+    depth_diff = out_depth - in_depth
+    depth = in_depth + depth_diff
+    abs_link_path = urlparse.urljoin(in_path, link)
+
+    # print "\n\t**UPDATE LINK**"
+    # # find link in relation to in path
+    # print "IN PATH: " + in_path
+    # print "OUT PATH: " + out_path
+    # print "LINK: " + link
+    # print link.count("../")
+    #
+    # # print urlparse.urljoin(out_path.split("html")[0] + "html/", link)
+    #
+    # print abs_link_path
+    # print abs_link_path .replace("htmlsrc", "html")
+    # # print urlparse.urljoin(out_path, link)
+    # print "-----------------"
+    return abs_link_path .replace("htmlsrc", "html")
+    # return urlparse.urljoin(out_path.split("html")[0] + "html/", link)
+
+    if depth_diff > 0:
+        path_prepend = ""
+        # for i in range(depth_diff):
+        #     if path_parts[i] is not "":
+        #         path_prepend += path_parts[i] + "/"
+        # for i in range(depth_diff):
+        for i in range(out_depth - 1): # works for guide
+            path_prepend += "../"
+    else:
+        path_prepend = ""
+        for i in range(abs(out_depth)):
+            if path_parts[i] is not "":
+                path_prepend += path_parts[i] + "/"
+
+
+    # print "UPDATE LINK"
+    # print link
+    # print depth
+    #
+    # if direction == 1:
+    #     path_prepend = ""
+    #     for i in range(depth):
+    #         path_prepend += "../"
+    #     path_prepend += base + "/"
+    # elif direction == -1:
+    #     path_prepend = ""
+    #     print "DEPTH"
+    #     print depth
+    #     for i in range(depth):
+    #         if path_parts[i] is not "":
+    #             path_prepend += path_parts[i] + "/"
+    #
+    # return path_prepend + link
+
+    # print "FINAL: " + path_prepend + link
+    # print "-----------------"
+    # return path_prepend + link
 
 
 def construct_template(templates):
@@ -1655,7 +1772,8 @@ def construct_template(templates):
     for templatePath in templates:
         master_template += open(os.path.join(HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath)).read()
     master_template.decode("UTF-8")
-    return BeautifulSoup(master_template)
+    bs4 = BeautifulSoup(master_template)
+    return bs4
 
 
 def generate_bs4(file_path):
@@ -1665,7 +1783,8 @@ def generate_bs4(file_path):
 
 
 def get_symbol_to_file_map():
-    """ Returns a dictionary from Cinder class name to file path
+    """
+    Returns a dictionary from Cinder class name to file path
     """
     print "generating symbol map from tag file"
     symbol_map = SymbolMap()
@@ -1678,7 +1797,6 @@ def get_symbol_to_file_map():
         base_class = c.find('base').text if c.find('base') is not None else ""
         class_obj = SymbolMap.Class(name, base_class, file_path)
         symbol_map.classes[name] = class_obj
-        # print name
 
         # find functions and add to symbol map
         members = c.findall(r"member[@kind='function']")
@@ -1690,6 +1808,17 @@ def get_symbol_to_file_map():
             function_obj = SymbolMap.Function(fn_name, base_class, file_path)
             symbol_map.functions[name + "::" + fn_name] = function_obj
             class_obj.functionList.append(function_obj)
+
+        # print "CLASS: " + name
+        # find enums
+        for member in c.findall(r"member/[@kind='enumeration']"):
+            pre = name + "::" if name is not None else ""
+            enum_name = pre + member.find("name").text
+            # print "ENUM: " + enum_name
+            anchor = member.find("anchor").text
+            path = member.find("anchorfile").text + "#" + anchor
+            enum_obj = SymbolMap.Enum(enum_name, path)
+            symbol_map.enums[enum_name] = enum_obj
 
     # find structs
     struct_tags = g_tag_xml.findall(r'compound/[@kind="struct"]')
@@ -1752,7 +1881,7 @@ def get_symbol_to_file_map():
         # find enums
         for member in ns.findall(r"member/[@kind='enumeration']"):
             name = namespace_name + "::" + member.find("name").text
-            # print "ENUM: " + name
+            print "ENUM: " + name
             anchor = member.find("anchor").text
             path = member.find("anchorfile").text + "#" + anchor
             enum_obj = SymbolMap.Enum(name, path)
@@ -1970,6 +2099,7 @@ if __name__ == "__main__":
     # construct full template out of multiple html templates
     classTemplateHtml = construct_template(
         ["headerTemplate.html", "mainNavTemplate.html", "cinderClassTemplate.html", "footerTemplate.html"])
+
     namespaceTemplateHtml = construct_template(
         ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"])
 
