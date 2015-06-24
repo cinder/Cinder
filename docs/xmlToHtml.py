@@ -47,6 +47,16 @@ headerDictionary = {
     "struct": "Struct Reference"
 }
 
+public_function_header = {
+    "class": "Public Member Functions",
+    "interface": "Instance Methods"
+}
+
+public_static_function_header = {
+    "class": "Static Public Member Functions",
+    "interface": "Class Methods"
+}
+
 g_tag_xml = None
 g_symbolMap = None
 g_currentFile = None
@@ -314,7 +324,6 @@ class FileData(object):
         # kind of file that we are parsing (class, namespace, etc)
         self.kind = find_file_kind(tree)
         self.kind_explicit = find_file_kind_explicit(tree)
-        print self.kind_explicit
 
         # find any common html elements and populate common elements
         self.parse_template()
@@ -1182,8 +1191,7 @@ def process_class_xml_file(in_path, out_path, html):
     g_currentFile = FileData(tree, html)
     # compoundName = g_currentFile.compoundName
     class_name = g_currentFile.name
-    kind = g_currentFile.kind
-    print "KIND: " + kind
+    kind = g_currentFile.kind_explicit
 
     # dictionary for subnav anchors
     subnav_anchors = []
@@ -1298,12 +1306,13 @@ def process_class_xml_file(in_path, out_path, html):
     if func_count > 0:
         # add anchor tag to page
         anchor = gen_anchor_tag(html, "public-member-functions")
-        subnav_anchors.append({"name": "Public Member Functions", "link": anchor})
+        header_str = public_function_header.get(kind) if kind in public_function_header else public_function_header.get("class")
+        subnav_anchors.append({"name": header_str, "link": anchor})
         contents_el.append(anchor)
 
         # public member functions
         header = html.new_tag("h1")
-        header.string = "Public Member Functions"
+        header.string = header_str
         section_tag = gen_tag(html, "section")
         section_tag.append(header)
         section_tag.append(ul_tag)
@@ -1313,16 +1322,54 @@ def process_class_xml_file(in_path, out_path, html):
     # if static function count > 0 add it
     if static_func_count > 0:
         anchor = gen_anchor_tag(html, "static-public-member-functions")
-        subnav_anchors.append({"name": "Static Public Member Functions", "link": anchor})
+        header_str = public_static_function_header.get(kind) if kind in public_static_function_header else public_static_function_header.get("class")
+        subnav_anchors.append({"name": header_str, "link": anchor})
         contents_el.append(anchor)
 
         # static public member functions
         header = html.new_tag("h1")
-        header.string = "Static Public Member Functions"
+        header.string = header_str
         section_tag = gen_tag(html, "section")
         section_tag.append(header)
         section_tag.append(static_ul)
         contents_el.append(section_tag)
+        section_tag.append(gen_tag(html, "hr"))
+
+    # protected attributes
+    # for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]'):
+    #     # split between static or not
+    #     member_name = memberFn.find(r"name")
+    #
+    #     # determine if static
+    #     if is_static == 'yes':
+    #         static_func_count += 1
+    #         markup_function(html, memberFn, static_ul, is_constructor)
+    #     else:
+    #         func_count += 1
+    #         markup_function(html, memberFn, ul_tag, is_constructor)
+
+    variables = tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]')
+    if len(variables) > 0:
+        drop_anchor(subnav_anchors, "variables", "Protected Attributes")
+        vars_section = gen_tag(html, "section")
+        contents_el.append(vars_section)
+
+        vars_section.append(gen_tag(html, "h1", [], "Protected Attributes"))
+        vars_ul = gen_tag(html, "ul")
+        for c in variables:
+            type_str = c.find('type').text
+            name = gen_tag(html, "div")
+            name.append(gen_tag(html, "b", [], c.find('name').text))
+            initializer = c.find('initializer').text if c.find('initializer') is not None else None
+            description = markup_description(html, c)
+            if type_str is None:
+                type_str = ""
+            if initializer is not None:
+                name.append(" " + initializer)
+            add_row_li(html, vars_ul, type_str, name, None, description)
+        vars_section.append(vars_ul)
+        vars_section.append(gen_tag(html, "hr"))
+
 
     # replace any code chunks with <pre> tags, which is not possible on initial creation
     replace_code_chunks(html)
