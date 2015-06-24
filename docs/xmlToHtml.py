@@ -171,8 +171,6 @@ class SymbolMap(object):
                 if typedef and typedef.sharedFrom:
                     return self.find_class("::".join([typedef.sharedFrom.name, searchname_parts[-1]]))
 
-            # print "FIND CLASS " + name + "  -> " + "cinder::" + searchname
-
             return None
 
     def find_namespace(self, name):
@@ -1395,9 +1393,9 @@ def process_class_xml_file(in_path, out_path, html):
     # generate subnav
     gen_sub_nav(subnav_anchors)
 
-    # link up all d tags
-    for tag in html.find_all('d'):
-        process_d_tag(html, tag, in_path, out_path)
+    # link up all ci tags
+    for tag in html.find_all('ci'):
+        process_ci_tag(html, tag, in_path, out_path)
 
     # write the file
     write_html(html, out_path)
@@ -1699,49 +1697,49 @@ def process_html_file(in_path, out_path):
             bs4.body.append(script)
 
         if orig_html.head:
-            for d in orig_html.head.find_all("d"):
+            for d in orig_html.head.find_all("ci"):
                 bs4.head.append(d)
 
-        # link up all d tags
-        for tag in bs4.find_all('d'):
-            process_d_tag(bs4, tag, in_path, out_path)
+        # link up all ci tags
+        for tag in bs4.find_all('ci'):
+            process_ci_tag(bs4, tag, in_path, out_path)
 
     if in_path.find("_docs/") < 0:
         write_html(bs4, out_path)
 
 
-# -------------------------------------------------- D TAG FUNCTIONS ---------------------------------------------------
+# -------------------------------------------------- CI TAG FUNCTIONS --------------------------------------------------
 
-def process_d_tag(bs4, tag, in_path, out_path):
+def process_ci_tag(bs4, tag, in_path, out_path):
     # find type
     if tag.has_attr("seealso"):
-        process_d_seealso_tag(bs4, tag, out_path)
+        process_ci_seealso_tag(bs4, tag, out_path)
     elif tag.has_attr("prefix"):
-        process_d_prefix_tag(bs4, tag, in_path)
+        process_ci_prefix_tag(bs4, tag, in_path)
     else:
-        replace_d_tag(bs4, tag)
+        replace_ci_tag(bs4, tag)
 
 
-def replace_d_tag(bs4, link):
-    ref_obj = find_d_tag_ref(link)
+def replace_ci_tag(bs4, link):
+    ref_obj = find_ci_tag_ref(link)
 
     if ref_obj:
         ref_location = DOXYGEN_HTML_PATH + ref_obj.path
         new_link = gen_link_tag(bs4, link.contents[0], ref_location)
         link.replace_with(new_link)
     else:
-        print "   ** Warning: Could not find Doxygen tag for " + str(link)
+        print "   ** Warning: Could not find replacement tag for ci tag: " + str(link)
 
 
-def process_d_seealso_tag(bs4, tag, out_path):
+def process_ci_seealso_tag(bs4, tag, out_path):
     """
-    Processes d tag that is of 'seealso' type
+    Processes ci tag that is of 'seealso' type
     :param bs4: The active beautiful soup instance
-    :param tag: the d tag to find a reference for
+    :param tag: the ci tag to find a reference for
     :param out_path: the file path
     :return: None
     """
-    ref_obj = find_d_tag_ref(tag)
+    ref_obj = find_ci_tag_ref(tag)
     if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
         # get label attribute value if there is one
         if tag.has_attr("label"):
@@ -1756,16 +1754,16 @@ def process_d_seealso_tag(bs4, tag, out_path):
         print "  ** WARNING: Could not find seealso reference for " + str(tag)
 
 
-def process_d_prefix_tag(bs4, tag, in_path):
+def process_ci_prefix_tag(bs4, tag, in_path):
     # find the referenced html file
     # find the referenced class
     # add prefix param to class
-    obj_ref = find_d_tag_ref(tag)
+    obj_ref = find_ci_tag_ref(tag)
     if obj_ref and type(obj_ref) is SymbolMap.Class:
         obj_ref.define_prefix(in_path)
 
 
-def find_d_tag_ref(link):
+def find_ci_tag_ref(link):
     # get string to search against
     searchstring = ""
     if len(link.contents):
@@ -1816,7 +1814,7 @@ def find_d_tag_ref(link):
 
     return ref_obj
 
-# ----------------------------------------------- END D TAG FUNCTIONS --------------------------------------------------
+# ----------------------------------------------- END CI TAG FUNCTIONS -------------------------------------------------
 
 def update_links(html, src_path):
     """
