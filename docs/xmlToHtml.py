@@ -313,6 +313,8 @@ class FileData(object):
 
         # kind of file that we are parsing (class, namespace, etc)
         self.kind = find_file_kind(tree)
+        self.kind_explicit = find_file_kind_explicit(tree)
+        print self.kind_explicit
 
         # find any common html elements and populate common elements
         self.parse_template()
@@ -358,6 +360,23 @@ def find_file_kind(tree):
     kind = tree.find(r"compounddef").attrib['kind']
     # print "FIND FILE KIND: " + kind
     return kind
+
+
+def find_file_kind_explicit(tree):
+    """
+    Find a more specific file kind based on the name of the file.
+    So instead of just class as the tag file specifies its kind as,
+    it might also be a struct or interface.
+    :param tree:
+    :return: string of kind
+    """
+    class_id = tree.find(r"compounddef").attrib['id']
+    if class_id.startswith("struct"):
+        return "struct"
+    elif class_id.startswith("interface"):
+        return "interface"
+    else:
+        return "class"
 
 
 def find_compound_name_stripped(tree):
@@ -1163,7 +1182,8 @@ def process_class_xml_file(in_path, out_path, html):
     g_currentFile = FileData(tree, html)
     # compoundName = g_currentFile.compoundName
     class_name = g_currentFile.name
-    # kind = g_currentFile.kind
+    kind = g_currentFile.kind
+    print "KIND: " + kind
 
     # dictionary for subnav anchors
     subnav_anchors = []
@@ -1840,6 +1860,7 @@ def generate_bs4(file_path):
         print "\t ** WARNING: No body tag found in file: " + file_path
 
     bs4 = BeautifulSoup(output_file)
+
     return bs4
 
 
@@ -2040,7 +2061,7 @@ def process_file(in_path, out_path=None):
         if not PROCESSED_HTML_DIR:
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
 
-        if file_prefix.startswith("class") or file_prefix.startswith("struct"):
+        if file_prefix.startswith("class") or file_prefix.startswith("struct") or file_prefix.startswith("interface"):
             process_class_xml_file(sys.argv[1], os.path.join(DOXYGEN_HTML_PATH, save_path),
                                    copy.deepcopy(classTemplateHtml))
 
@@ -2157,6 +2178,12 @@ if __name__ == "__main__":
         -   Can alternatively pass in a directory to process by providing the xml directory
             Ex: python xmlToHtml.py xml/ html/
     """
+
+    # Make sure we're compiling using pythong 2.7.9+
+    version_info = sys.version_info
+    if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 9:
+        sys.exit("ERROR: Sorry buddy, you must use python 2.7.9+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
+    # if sys.version
 
     # Load tag file
     print "parsing tag file"
