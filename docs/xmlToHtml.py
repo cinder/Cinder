@@ -11,7 +11,11 @@ import shutil
 import stat
 import urlparse
 from bs4 import BeautifulSoup, Tag, NavigableString
-# from distutils.dir_util import copy_tree
+# import html5check
+# import html_linter
+# import html5lib
+# from distutils.dir
+# _util import copy_tree
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
@@ -115,7 +119,9 @@ class SymbolMap(object):
 
             rel_path_arr = self.path.split(PARENT_DIR)
             if len(rel_path_arr) > 1:
-                self.githubPath = GITHUB_PATH + self.path.split(PARENT_DIR)[1]
+                self.githubPath = GITHUB_PATH + self.path.split(PARENT_DIR)[-1]
+            else:
+                print "NO PATH FOR " + name
 
     class Enum(object):
         def __init__(self, name, path):
@@ -467,6 +473,7 @@ def define_link_tag(tag, attrib):
 
     if href is None:
         print "\t *** WARNING DEFINING LINK TAG: " + str(tag)
+        # raise
     else:
         tag["href"] = href
 
@@ -617,8 +624,7 @@ def gen_includes(file_def):
     # add include link
     include_link = gen_tag(bs4, "a", None, file_def.name)
     path = file_def.githubPath
-    # if path is None:
-    #     fileDef.path
+
     define_link_tag(include_link, {'href': path})
     content_div.append(include_link)
 
@@ -1382,7 +1388,6 @@ def process_class_xml_file(in_path, out_path, html):
         process_d_tag(html, tag, in_path, out_path)
 
     # write the file
-    print "WRITE: " + out_path
     write_html(html, out_path)
 
 
@@ -2028,8 +2033,8 @@ def get_symbol_to_file_map():
         for t in f.findall(r'member[@kind="typedef"]'):
             td_name = t.find("name").text
             type_name = t.find("type").text
-            file_path = t.find('anchorfile').text + "#" + t.find("anchor").text
-            typedef = SymbolMap.Typedef(td_name, type_name, file_path)
+            type_path = t.find('anchorfile').text + "#" + t.find("anchor").text
+            typedef = SymbolMap.Typedef(td_name, type_name, type_path)
             typedefs.append(typedef)
 
         # print "FILE PATH: " + name + " | " + filePath
@@ -2077,10 +2082,25 @@ def parse_html(bs4, in_path, out_path):
 
 
 def write_html(html, save_path):
+
+    document = html.prettify(formatter="html")
+
+    # document, errors = tidy_document(html.prettify())
+    # print "\n------"
+    # print document
+    # print errors
+
+    # print html5check.lint(document)
+    # document = html.prettify()
+    # parser = html5lib.HTMLParser()
+    # document = parser.parse(html.prettify(formatter="html"))
+    # print document
+    # print "WRITE: " + save_path
+
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path))
     with codecs.open(save_path, "w", "UTF-8") as outFile:
-        outFile.write(html.prettify())
+        outFile.write(document)
 
 
 def process_file(in_path, out_path=None):
@@ -2226,10 +2246,10 @@ if __name__ == "__main__":
             Ex: python xmlToHtml.py xml/ html/
     """
 
-    # Make sure we're compiling using pythong 2.7.9+
+    # Make sure we're compiling using pythong 2.7.6+
     version_info = sys.version_info
-    if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 9:
-        sys.exit("ERROR: Sorry buddy, you must use python 2.7.9+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
+    if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
+        sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
 
     # Load tag file
