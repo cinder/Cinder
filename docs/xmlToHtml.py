@@ -131,7 +131,6 @@ class SymbolMap(object):
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
     def find_class(self, name):
 
-        # print "FIND CLASS " + name
         # replace leading ci:: with cinder:: instead
         searchname = str(name)
         if searchname.find("ci::") == 0:
@@ -160,6 +159,19 @@ class SymbolMap(object):
                     return typedef.sharedFrom
                 else:
                     return typedef
+
+            # check to see if parent is a typedef
+            searchname_parts = searchname.split("::")
+            if len(searchname_parts) > 1:
+
+                parent_name = searchname_parts[-2]
+                typedef = self.find_typedef(parent_name)
+
+                # if parent is typedef and has a sharedFrom property, find_class against that name
+                if typedef and typedef.sharedFrom:
+                    return self.find_class("::".join([typedef.sharedFrom.name, searchname_parts[-1]]))
+
+            # print "FIND CLASS " + name + "  -> " + "cinder::" + searchname
 
             return None
 
@@ -1944,6 +1956,9 @@ def get_symbol_to_file_map():
             class_obj.functionList.append(function_obj)
 
         # print "CLASS: " + name
+        # if name == "Iter":
+        #     raise
+
         # find enums
         for member in c.findall(r"member/[@kind='enumeration']"):
             pre = name + "::" if name is not None else ""
