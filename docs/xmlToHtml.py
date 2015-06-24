@@ -198,9 +198,10 @@ class SymbolMap(object):
             class_obj = g_symbolMap.find_class(class_name)
 
         # iterate through class functions
-        for fn in class_obj.functionList:
-            if fn.name == fn_name:
-                fn_obj = fn
+        if class_obj:
+            for fn in class_obj.functionList:
+                if fn.name == fn_name:
+                    fn_obj = fn
 
         if not fn_obj:
             fn_obj = self.functions.get(fn_name)
@@ -424,7 +425,7 @@ def define_link_tag(tag, attrib):
         href = file_name + "#" + anchor
 
     if href is None:
-        print "\t *** ERROR DEFINING LINK TAG: " + str(tag)
+        print "\t *** WARNING DEFINING LINK TAG: " + str(tag)
     else:
         tag["href"] = href
 
@@ -1296,7 +1297,12 @@ def process_class_xml_file(in_path, out_path, html):
     # generate subnav
     gen_sub_nav(subnav_anchors)
 
+    # link up all d tags
+    for tag in html.find_all('d'):
+        process_d_tag(html, tag, in_path, out_path)
+
     # write the file
+    print "WRITE: " + out_path
     write_html(html, out_path)
 
 
@@ -1742,6 +1748,31 @@ def update_links(html, src_path):
         if img.has_attr("src"):
             img["src"] = update_link(img["src"], src_path)
 
+    # iframes
+    iframe_links = []
+    for iframe in html.find_all("iframe"):
+        if iframe.has_attr("src"):
+            link_src = iframe["src"]
+            if link_src.startswith('javascript') or link_src.startswith('http'):
+                return
+
+            src_file = urlparse.urljoin(src_path, link_src)
+            dest_file = update_link(iframe["src"], src_path)
+
+
+            # iframe_link = update_link(iframe["src"], src_path)
+            iframe["src"] = dest_file
+
+            # iframe_links.append(iframe_link)
+
+            # iframe_src =
+            print "IFRAME LINK: " + src_file
+            print "           : " + dest_file
+            shutil.copy2(src_file, dest_file)
+
+    # coy over any iframe html files, if any
+
+
 
 def update_link(link, in_path):
     """
@@ -1920,6 +1951,13 @@ def get_symbol_to_file_map():
 
         # print "FILE PATH: " + name + " | " + filePath
         symbol_map.files[name] = SymbolMap.File(name, file_path, typedefs)
+
+        # find typedefs for each file
+        for f in f.findall(r'member[@kind="function"]'):
+            fn_name = f.find("name").text
+            file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
+            fn = SymbolMap.Function(fn_name, "", file_path)
+            symbol_map.functions[fn_name] = fn
 
     return symbol_map
 

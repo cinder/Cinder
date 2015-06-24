@@ -1,134 +1,131 @@
-body {
-  font-size: 16px;
-  font-family: 'Merriweather', serif;
-}
-p,
-ul,
-a {
-  font-size: 0.9em;
-  line-height: 1.8em;
-}
-a {
-  color: #c64b24;
-}
-a#copy-button {
-  color: #ccc;
-  text-decoration: none;
-  font-size: 0.8em;
-}
-a#copy-button.hover {
-  text-decoration: underline;
-}
-.content {
+/*
+body
+	font-size: 16px
+	font-family: 'Merriweather', serif;
+
+p, ul, a
+	font-size: .9em
+	line-height: 1.8em
+
+a
+	color: cinder-orange
+
+	&#copy-button
+		color: #cccccc
+		text-decoration: none
+		font-size: 0.8em
+		
+		&.hover
+			text-decoration: underline
+
+*/
+.guide-content {
   max-width: 680px;
   margin: 0 auto;
 }
-ul#sketchLinks {
+.guide-content ul#sketchLinks {
   list-style: none;
   padding: 0;
   background: #232323;
   height: 100%;
   margin: 0;
 }
-ul#sketchLinks li {
+.guide-content ul#sketchLinks li {
   display: inline-block;
   padding: 0 12px;
 }
-ul#sketchLinks a {
+.guide-content ul#sketchLinks a {
   color: #e7e7e7;
   font-family: 'Open Sans', sans-serif;
   text-decoration: none;
   padding: 10px 0;
 }
-ul#sketchLinks a:hover {
+.guide-content ul#sketchLinks a:hover {
   color: #fff;
 }
-ul#sketchLinks a.active {
+.guide-content ul#sketchLinks a.active {
   border-bottom: 0.4em solid #c64b24;
 }
-.canvases {
+.guide-content .canvases {
   position: relative;
 }
-.canvases .left {
+.guide-content .canvases .left {
   position: absolute;
   left: 10px;
   bottom: 10px;
 }
-.canvases .right {
+.guide-content .canvases .right {
   position: absolute;
   right: 10px;
   bottom: 10px;
 }
-pre[class*="language-"] {
+.guide-content pre[class*="language-"] {
   margin: 0;
 }
-canvas {
+.guide-content canvas {
   width: 100%;
   height: 340px;
   outline: #f5f2f0 solid 1px;
 }
-.active {
+.guide-content .active {
   display: block;
 }
-.invisible,
-.inactive {
+.guide-content .invisible,
+.guide-content .inactive {
   display: none;
 }
-button {
+.guide-content button {
   padding: 1em;
 }
-h1 {
-  font-family: 'Open Sans', sans-serif;
-  color: #333;
-  font-size: 2.25em;
-}
-#tutorial {
+.guide-content #tutorial {
   margin-top: 3em;
 }
-#tutorial button {
+.guide-content #tutorial button {
   background: none;
   border: 1px solid #c64b24;
   color: #c64b24;
   text-transform: uppercase;
   font-family: 'Open Sans', sans-serif;
+  font-size: 0.75em;
   padding: 0.75em 1.5em;
+  margin: 0;
 }
-#tutorial button:hover {
+.guide-content #tutorial button:hover {
   background: #c64b24;
   color: #fff;
 }
-#tutorial button:focus {
+.guide-content #tutorial button:focus {
   outline: none;
 }
-#tutorial .dg.main {
+.guide-content #tutorial .dg.main {
   position: absolute;
   top: 0;
   right: 10px;
 }
-.codeModule {
+.guide-content .codeModule {
   position: relative;
   font-size: 0.75em;
   line-height: 1.5em;
 }
-.codeModule a#copy-button {
+.guide-content .codeModule a#copy-button {
   position: absolute;
   top: 5px;
   right: 10px;
 }
-pre.language-cpp {
+.guide-content pre.language-cpp {
   background: #f4f4f2;
 }
-pre.language-cpp .function {
+.guide-content pre.language-cpp .function {
   color: #c64b24;
 }
-pre.language-cpp .number {
+.guide-content pre.language-cpp .number {
   color: #c62469;
 }
-#bottomNav {
+.guide-content #bottomNav {
   margin: 20px 0;
   text-align: center;
 }
-.sketch {
+.guide-content .sketch {
   line-height: 0;
 }
 

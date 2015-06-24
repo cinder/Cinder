@@ -42,7 +42,12 @@ $(document).ready(function() {
  		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
  	};
 
+ 	// var setRoot = function(){
+ 	// 	window.root = location.protocol + '//' + location.host;
+ 	// }
+
  	setSection( section );
+ 	// setRoot();
  	return cinderJs;
 
  } );
