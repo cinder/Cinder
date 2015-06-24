@@ -148,7 +148,20 @@ class SymbolMap(object):
             return None
 
     def find_namespace(self, name):
-        return self.namespaces.get(name)
+
+        searchname = str(name)
+        if searchname.find("ci::") == 0:
+            searchname = searchname.replace("ci::", "cinder::")
+
+        # same key as name
+        if searchname in self.namespaces.keys():
+            return self.namespaces.get(searchname)
+
+        # key with "cinder::" prepended
+        elif ("cinder::" + searchname) in self.namespaces.keys():
+            return self.namespaces["cinder::" + searchname]
+
+        return None
 
     def get_ordered_namespaces(self):
         # create an array of strings that include all of the namespaces and return
@@ -1708,10 +1721,12 @@ def find_d_tag_ref(link):
 
             count = 0
             # try a bunch of other things before giving up
-            while (ref_obj is None) and count < 2:
+            while (ref_obj is None) and count < 3:
                 if count == 0:
-                    ref_obj = g_symbolMap.find_function(searchstring)
+                    ref_obj = g_symbolMap.find_namespace(searchstring)
                 elif count == 1:
+                    ref_obj = g_symbolMap.find_function(searchstring)
+                elif count == 2:
                     ref_obj = g_symbolMap.find_enum(searchstring)
                 count += 1
 
