@@ -2065,8 +2065,8 @@ def get_file_name(file_path):
 def parse_html(bs4, in_path, out_path):
     tree = None
     try:
-        xml_file = codecs.open(in_path, "r", "UTF-8")
-        tree = Et.parse(xml_file)
+        with open(in_path, 'r') as xml_file:
+            tree = Et.parse(xml_file)
 
     except:
         exc = sys.exc_info()[0]
@@ -2248,8 +2248,8 @@ if __name__ == "__main__":
 
     # Make sure we're compiling using pythong 2.7.6+
     version_info = sys.version_info
-    if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
-        sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
+    #if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
+    #    sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
 
     # Load tag file
