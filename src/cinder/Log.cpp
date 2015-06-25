@@ -593,9 +593,11 @@ LoggerSystem::~LoggerSystem()
 
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
+#if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
 	if( meta.mLevel >= mMinLevel ) {
 		mImpl->write( meta, text );
 	}
+#endif
 }
 	
 // ----------------------------------------------------------------------------------------------------
