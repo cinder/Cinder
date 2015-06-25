@@ -228,7 +228,9 @@ class SymbolMap(object):
     def find_function(self, name, class_obj=None):
 
         fn_obj = None
-        fn_name = strip_compound_name(name)
+        # find function name without namespace and parenthesis
+        fn_name = strip_compound_name(name.split('(')[0])
+
         if class_obj is None:
             # find parent class first
             class_parts = name.split("::")
@@ -1915,6 +1917,7 @@ def construct_template(templates):
 def generate_bs4(file_path):
     output_file = open(os.path.join(file_path)).read()
     output_file.decode("UTF-8")
+    # print output_file
 
     # wrap in body tag if none exists
     if output_file.find("<body") < 0:
