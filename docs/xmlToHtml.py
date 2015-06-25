@@ -2099,19 +2099,13 @@ def parse_html(bs4, in_path, out_path):
 
 def write_html(html, save_path):
 
+    # convert entities in code blocks
+    for c in html.find_all("code"):
+        for child in c.children:
+            # replaces with escaped code
+            child.replace_with(str(child))
+
     document = html.prettify(formatter="html")
-
-    # document, errors = tidy_document(html.prettify())
-    # print "\n------"
-    # print document
-    # print errors
-
-    # print html5check.lint(document)
-    # document = html.prettify()
-    # parser = html5lib.HTMLParser()
-    # document = parser.parse(html.prettify(formatter="html"))
-    # print document
-    # print "WRITE: " + save_path
 
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path))
