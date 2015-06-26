@@ -66,8 +66,8 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 	if( header.numberOfArrayElements != 0 )
 		throw KtxParseExc( "Array textures not currently supported" );
 
-	if( header.numberOfFaces != 1 )
-		throw KtxParseExc( "Cube maps not currently supported" );
+	if( ( header.numberOfFaces != 1 ) && ( header.numberOfFaces != 6 ) )
+		throw KtxParseExc( "Unsupported number of faces" );
 
 	if( header.pixelDepth != 0 )
 		throw KtxParseExc( "3D textures not currently supported" );
@@ -75,6 +75,7 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->setWidth( header.pixelWidth );
 	resultData->setHeight( header.pixelHeight );
 	resultData->setDepth( header.pixelDepth );
+	resultData->setNumFaces( header.numberOfFaces );
 	resultData->setInternalFormat( header.glInternalFormat );
 	resultData->setDataFormat( header.glFormat );
 	resultData->setDataType( header.glType );
@@ -85,36 +86,43 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 	// clear output containers
 	resultData->clear();
 	size_t byteOffset = 0;
-	for( int level = 0; level < std::max<int>( 1, header.numberOfMipmapLevels ); ++level ) {
+	for( int levelIdx = 0; levelIdx < std::max<int>( 1, header.numberOfMipmapLevels ); ++levelIdx ) {
+		
+		resultData->push_back( TextureData::Level() );
+		TextureData::Level &level = resultData->back();
+		level.width = std::max<int>( 1, header.pixelWidth >> levelIdx );
+		level.height = std::max<int>( 1, header.pixelHeight >> levelIdx );
+		level.depth = 0;
 		
 		uint32_t imageSize;
-		ktxStream->readData( &imageSize, sizeof(imageSize) );
-		if( level == 0 ) { // if this is our first level, we need to allocate storage. If mipmapping is on we need double the memory required for the first level
+		ktxStream->readData( &imageSize, sizeof(imageSize) ); // the size of a single face
+
+		if( levelIdx == 0 ) { // if this is our first level, we need to allocate storage. If mipmapping is on we need double the memory required for the first level
 			if( header.numberOfMipmapLevels > 1 )
-				resultData->allocateDataStore( imageSize * 2 );
+				resultData->allocateDataStore( imageSize * 2 * header.numberOfFaces );
 			else
-				resultData->allocateDataStore( imageSize );
+				resultData->allocateDataStore( imageSize * header.numberOfFaces );
 			resultData->mapDataStore();
 		}
-		// currently always 0 -> 1
-		for( int arrayElement = 0; arrayElement < std::max<int>( 1, header.numberOfArrayElements ); ++arrayElement ) {
-			for( int face = 0; face < header.numberOfFaces; ++face ) { // currently always 1
-				for( int zSlice = 0; zSlice < header.pixelDepth + 1; ++zSlice ) { // curently always 0 -> 1
-					resultData->push_back( TextureData::Level() );
-					resultData->back().dataSize = imageSize;
-					resultData->back().offset = byteOffset;
+		
+		for( int arrayElement = 0; arrayElement < std::max<int>( 1, header.numberOfArrayElements ); ++arrayElement ) { // currently always 0->1
+			for( int faceIdx = 0; faceIdx < header.numberOfFaces; ++faceIdx ) { // currently always 0->1 or 0->6
+				level.push_back( TextureData::Face() );
+				TextureData::Face &face = level.back();
+				for( int zSlice = 0; zSlice < header.pixelDepth + 1; ++zSlice ) { // curently always 0->1
+					face.dataSize = imageSize;
+					face.offset = byteOffset;
 					if( byteOffset + imageSize > resultData->getDataStoreSize() )
 						throw TextureDataStoreTooSmallExc();
 					ktxStream->readData( resultData->getDataStorePtr( byteOffset ), imageSize );
-					resultData->back().width = std::max<int>( 1, header.pixelWidth >> level );
-					resultData->back().height = std::max<int>( 1, header.pixelHeight >> level );
-					resultData->back().depth = zSlice;
+					
+//					newFace.back().depth = zSlice;
 					byteOffset += imageSize;
 				}
-				ktxStream->seekRelative( 3 - (ktxStream->tell() + 3) % 4 );
+				ktxStream->seekRelative( 3 - (imageSize + 3) % 4 ); // cube padding
 			}
 		}
-		ktxStream->seekRelative( 3 - (imageSize + 3) % 4 );
+		ktxStream->seekRelative( 3 - (ktxStream->tell() + 3) % 4 ); // mip padding
 	}
 
 	resultData->unmapDataStore();
@@ -253,6 +261,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	resultData->setWidth( ddsd.dwWidth );
 	resultData->setHeight( ddsd.dwHeight );
 	resultData->setDepth( 1 );
+	resultData->setNumFaces( 1 );
 
 	int numMipMaps = ddsd.dwMipMapCount;
 	int dataFormat;
@@ -316,7 +325,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 
 	// Create the texture
 	resultData->setUnpackAlignment( 4 );
-	resultData->setDataFormat( dataFormat );
+	resultData->setDataFormat( 0 );
 	resultData->setInternalFormat( dataFormat );
 	resultData->setDataType( 0 ); // implies compressed
 
@@ -338,19 +347,22 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 
 	resultData->mapDataStore();
 	size_t byteOffset = 0;
-	for( int level = 0; level <= numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++level ) { 
-		int levelWidth = std::max<int>( 1, (ddsd.dwWidth>>level) );
-		int levelHeight = std::max<int>( 1, (ddsd.dwHeight>>level) );
-		const uint32_t imageSize = calcImageLevelSize( level );
+	for( int levelIdx = 0; levelIdx <= numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
+		int levelWidth = std::max<int>( 1, (ddsd.dwWidth>>levelIdx) );
+		int levelHeight = std::max<int>( 1, (ddsd.dwHeight>>levelIdx) );
+		const uint32_t imageSize = calcImageLevelSize( levelIdx );
 
 		resultData->push_back( TextureData::Level() );
-		resultData->back().dataSize = imageSize;
-		resultData->back().offset = byteOffset;
+		TextureData::Level &level = resultData->back();
+
+		level.push_back( TextureData::Face() );
+		level.back().dataSize = imageSize;
+		level.back().offset = byteOffset;
 		if( byteOffset + imageSize > resultData->getDataStoreSize() )
 			throw TextureDataStoreTooSmallExc();
-		resultData->back().width = levelWidth;
-		resultData->back().height = levelHeight;
-		resultData->back().depth = 0;
+		level.width = levelWidth;
+		level.height = levelHeight;
+		level.depth = 0;
 
 		ddsStream->readDataAvailable( resultData->getDataStorePtr( byteOffset ), imageSize );
 		byteOffset += imageSize;
