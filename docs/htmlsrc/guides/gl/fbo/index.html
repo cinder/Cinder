@@ -13,97 +13,91 @@
             <br />
             <h2>Setting up an FBO</h2>
             <p>To setup an FBO, the first step is to specify the size of the FBO in pixels.</p>
-            <div class="fragment">
-               <div class="line">
-                  <span class="preprocessor">#include &quot;<a class="code" href="_fbo_8h.html">cinder/gl/Fbo.h</a>&quot;</span>
-               </div>
-               <div class="line">
-                  <span class="keyword">using namespace </span><a class="code" href="namespacecinder.html">ci</a>;
-               </div>
-               <div class="line">gl::Fbo myFbo( 640, 480 );</div>
-            </div>
+            <pre><code class="language-cpp">
+#include "cinder/gl/Fbo.h"
+using namespace ci;
+gl::Fbo myFbo( 640, 480 );
+            </code></pre>
             <!-- fragment -->
+
             <p>Because we have not specified any formatting parameters, the FBO defaults to a format that emulates the normal screen-based framebuffer, storing RGB as well as alpha and depth information. To make use of the FBO, the first step is to bind it as the current framebuffer. </p>
-            <div class="fragment">
-               <div class="line">myFbo.bindFramebuffer();</div>
-               <div class="line">&lt;...drawing commands...&gt;</div>
-            </div>
+            <pre><code class="language-cpp">
+myFbo.bindFramebuffer();
+&lt;...drawing commands...&gt;</code></pre>
             <!-- fragment -->
             <p> <br />
                Now any rendering commands we issue will render to our FBO instead of the screen. Once we are finished rendering off-screen, we will want to restore the screen as the primary framebuffer, which we'll do like this: 
             </p>
-            <div class="fragment">
-               <div class="line">myFbo.unbindFramebuffer();</div>
-            </div>
+            <pre><code class="language-cpp">myFbo.unbindFramebuffer();</code></pre>
             <!-- fragment -->
             <p> <br />
-               At this point, our FBO contains the result of our rendering commands stored as a <a class="el" href="namespacecinder_1_1gl.html#a4d7358261901ab45091a6b046ef507d5">gl::Texture</a>. We can do any number of things with these pixels. Assuming we have a shader which blurs, we might do something like this: 
+               At this point, our FBO contains the result of our rendering commands stored as a <ci>gl::Texture</ci>. We can do any number of things with these pixels. Assuming we have a shader which blurs, we might do something like this: 
             </p>
-            <div class="fragment">
-               <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_glsl_prog_8h.html">cinder/gl/GlslProg.h</a>&quot;</span></div>
-               <div class="line">gl::GlslProg blurShader;</div>
-               <div class="line">blurShader.uniform( <span class="stringliteral">&quot;blurRadius&quot;</span>, 5.0f );</div>
-               <div class="line">blurShader.bind();</div>
-               <div class="line"><a class="code" href="_app_cocoa_touch_8mm.html#a56c5cf8a568cff737ff95520cbe6b405">gl::draw</a>( myFbo.getTexture() ); <span class="comment">// draw the contents of the Fbo by using it as a texture</span></div>
-               <div class="line">blurShader.unbind();</div>
-            </div>
+            <pre><code class="language-cpp">
+#include "cinder/gl/GlslProg.h"
+gl::GlslProg blurShader;
+blurShader.uniform( "blurRadius", 5.0f );
+blurShader.bind();
+gl::draw( myFbo.getTexture() ); // draw the contents of the Fbo by using it as a texture
+blurShader.unbind();</code></pre>
             <!-- fragment -->
+
             <h2><br />
                Advanced Formats
             </h2>
-            <p>The Cinder FBO class also support customizing what data is stored in the FBO using the <a class="el" href="structcinder_1_1gl_1_1_fbo_1_1_format.html">Fbo::Format</a> object. For example to enable mip-mapping, you would write something about like this: </p>
-            <div class="fragment">
-               <div class="line">gl::Fbo::Format format;</div>
-               <div class="line">format.enableMipmapping();</div>
-               <div class="line">gl::Fbo myFbo( 640, 480, format );</div>
-            </div>
+            <p>The Cinder FBO class also support customizing what data is stored in the FBO using the <ci dox="ci::gl::Fbo::Format">Fbo::Format</ci> object. For example to enable mip-mapping, you would write something about like this: </p>
+            <pre><code class="language-cpp">
+gl::Fbo::Format format;
+format.enableMipmapping();
+gl::Fbo myFbo( 640, 480, format );</code></pre>
             <!-- fragment -->
+
             <p> <br />
-               The <a class="el" href="structcinder_1_1gl_1_1_fbo_1_1_format.html">Fbo::Format</a> object can also be used to modify the way the data of the framebuffer is stored. For example, on implementations that support it, we can enable a high dynamic range floating point framebuffer by passing the constant <code>GL_RGBA32F</code> as the format for storing the color data, meaning 32-bit floating point data for red, green, blue and alpha.
+               The <ci dox="ci::gl::Fbo::Format">Fbo::Format</ci> object can also be used to modify the way the data of the framebuffer is stored. For example, on implementations that support it, we can enable a high dynamic range floating point framebuffer by passing the constant <code>GL_RGBA32F</code> as the format for storing the color data, meaning 32-bit floating point data for red, green, blue and alpha.
             </p>
-            <div class="fragment">
-               <div class="line">gl::Fbo::Format hdrFormat;</div>
-               <div class="line">hdrFormat.setColorInternalFormat( GL_RGBA32F );</div>
-               <div class="line">gl::Fbo myHdrFbo( 640, 480, hdrFormat );</div>
-            </div>
+            <pre><code class="language-cpp">
+gl::Fbo::Format hdrFormat;
+hdrFormat.setColorInternalFormat( GL_RGBA32F );
+gl::Fbo myHdrFbo( 640, 480, hdrFormat );</code></pre>
             <!-- fragment -->
+
             <h2><br />
                Antialiasing with FBOs
             </h2>
-            <p>The Cinder ci::gl::Fbo also supports the option to antialias FBOs on implementations that support it. The typical technique is known as <em>multisample antialiasing</em> (MSAA), and works simply by taking several samples per pixel and averaging them together. This averaging step must be performed after all the rendering has taken place, and the Cinder FBO class automatically takes care of it when you call <a class="el" href="classcinder_1_1gl_1_1_fbo.html#a49e3d0667e257216da947c601acdc552">Fbo::getTexture()</a> or <a class="el" href="classcinder_1_1gl_1_1_fbo.html#a9fcb9f25b15e32345b09b0ec37ed54c7">Fbo::bindTexture()</a>. <br />
+            <p>The Cinder ci::gl::Fbo also supports the option to antialias FBOs on implementations that support it. The typical technique is known as <em>multisample antialiasing</em> (MSAA), and works simply by taking several samples per pixel and averaging them together. This averaging step must be performed after all the rendering has taken place, and the Cinder FBO class automatically takes care of it when you call <ci dox="ci::gl::Fbo::getColorTexture">Fbo::getColorTexture()</ci> or <ci dox="ci::gl::Fbo::bindTexture">Fbo::bindTexture()</ci>. <br />
                <br />
                In order to enable MSAA, set your format to use a value greater than 1 for its samples. 
             </p>
-            <div class="fragment">
-               <div class="line">gl::Fbo::Format msaaFormat;</div>
-               <div class="line">msaaFormat.setSamples( 4 ); <span class="comment">// enable 4x MSAA</span></div>
-               <div class="line">gl::Fbo myMsaaFbo( 640, 480, msaaFormat );</div>
-            </div>
+            <pre><code class="language-cpp">
+gl::Fbo::Format msaaFormat;
+msaaFormat.setSamples( 4 ); // enable 4x MSAA
+gl::Fbo myMsaaFbo( 640, 480, msaaFormat );</code></pre>
             <!-- fragment -->
+
             <p> <br />
-               Additionally, though currently limited to Nvidia cards on Windows, the Cinder FBO supports an antialiasing scheme known as <em>coverage sample antialiasing</em> (CSAA). This technique works by determining pixel coverage information (effectively alpha) in a less expensive manner than MSAA. Per Nvidia's documentation, "...CSAA produces antialiased images that rival the quality of 8x or 16x MSAA, while introducing only a minimal performance hit over standard (typically 4x) MSAA." To understand more about how CSAA works, <a href="http://developer.nvidia.com/object/coverage-sampled-aa.html">please refer to this documentation from Nvidia</a>. This feature can be enabled in Cinder's <a class="el" href="classcinder_1_1gl_1_1_fbo.html">gl::Fbo</a> class like so: 
+               Additionally, though currently limited to Nvidia cards on Windows, the Cinder FBO supports an antialiasing scheme known as <em>coverage sample antialiasing</em> (CSAA). This technique works by determining pixel coverage information (effectively alpha) in a less expensive manner than MSAA. Per Nvidia's documentation, "...CSAA produces antialiased images that rival the quality of 8x or 16x MSAA, while introducing only a minimal performance hit over standard (typically 4x) MSAA." To understand more about how CSAA works, <a href="http://developer.nvidia.com/object/coverage-sampled-aa.html">please refer to this documentation from Nvidia</a>. This feature can be enabled in Cinder's <ci>gl::Fbo</ci> class like so: 
             </p>
-            <div class="fragment">
-               <div class="line">gl::Fbo::Format csaaFormat;</div>
-               <div class="line">csaaFormat.setSamples( 4 );</div>
-               <div class="line">csaaFormat.setCoverageSamples( 8 ); <span class="comment">// a combination which creates the &quot;CSAA 8x&quot; mode</span></div>
-               <div class="line">gl::Fbo myCsaaFbo( 640, 480, csaaFormat );</div>
-            </div>
+            <pre><code class="language-cpp">
+gl::Fbo::Format csaaFormat;
+csaaFormat.setSamples( 4 );
+csaaFormat.setCoverageSamples( 8 ); // a combination which creates the "CSAA 8x" mode
+gl::Fbo myCsaaFbo( 640, 480, csaaFormat );
+            </code></pre>
             <!-- fragment -->
+
             <p> <br />
             </p>
             <dl class="section note">
                <dt>Note</dt>
                <dd>
-                  Currenty by enabling FBO multisampling, you automatically disable the depth buffer's availablility as a texture, though your FBO may still contain a depth buffer. Consequently <a class="el" href="classcinder_1_1gl_1_1_fbo.html#a7d7ce2ebe2cb849de6b8b64f01b20ce2">getDepthTexture()</a> and bindDepthTexture() will fail. <br />
+                  Currenty by enabling FBO multisampling, you automatically disable the depth buffer's availablility as a texture, though your FBO may still contain a depth buffer. Consequently <ci dox="ci::gl::Fbo::getDepthTexture">getDepthTexture()</ci> and bindDepthTexture() will fail. <br />
                   <h2>Saving FBO Contents</h2>
                </dd>
             </dl>
             <p>Saving the pixels from an FBO is quite straightforward. </p>
-            <div class="fragment">
-               <div class="line"><span class="preprocessor">#include &quot;<a class="code" href="_image_io_8h.html">cinder/ImageIo.h</a>&quot;</span></div>
-               <div class="line"><a class="code" href="namespacecinder.html#ae77edb896e2f8e90bba70000725f3b6e">writeImage</a>( <a class="code" href="namespacecinder.html#a2b598230b99b65cfa51a92eace60abc0">getHomeDirectory</a>() + <span class="stringliteral">&quot;myPixels.png&quot;</span>, myFbo.getTexture() );</div>
-            </div>
+            <pre><code class="language-cpp">
+#include "cinder/ImageIo.h"
+writeImage( getHomeDirectory() + "myPixels.png", myFbo.getTexture() );</code></pre>
             <!-- fragment --> 
          </div>
       </div>

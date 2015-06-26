@@ -96,6 +96,7 @@ class SymbolMap(object):
         def __init__(self, name, file_name):
             self.name = name
             self.path = file_name
+            self.functionList = []
 
     class Typedef(object):
         def __init__(self, name, type_def, path):
@@ -1760,8 +1761,7 @@ def process_ci_seealso_tag(bs4, tag, out_path):
     :return: None
     """
     ref_obj = find_ci_tag_ref(tag)
-    print "SEE ALSO TYPE"
-    print type(ref_obj)
+    print ref_obj.name
 
     # get label attribute value if there is one
     if tag.has_attr("label"):
@@ -1769,15 +1769,14 @@ def process_ci_seealso_tag(bs4, tag, out_path):
     # otherwise use the name of the file as the label
     else:
         label = get_file_name(out_path)
+
     link_tag = gen_link_tag(bs4, label, out_path)
 
     if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
         ref_obj.add_related_link(link_tag)
+
     elif type(ref_obj) is SymbolMap.Namespace:
         # find all classes with that namespace and add guide to every one
-        print "IS NAMESPACE"
-        print g_symbolMap.find_classes_in_namespace(ref_obj.name)
-        print "\n\n"
         for class_obj in g_symbolMap.find_classes_in_namespace(ref_obj.name):
             class_obj.add_related_link(link_tag)
     else:
@@ -2028,7 +2027,8 @@ def get_symbol_to_file_map():
         if namespace_name.find('@') > -1:
             continue
 
-        symbol_map.namespaces[namespace_name] = SymbolMap.Namespace(namespace_name, file_name)
+        ns_obj = SymbolMap.Namespace(namespace_name, file_name)
+        symbol_map.namespaces[namespace_name] = ns_obj
 
         for member in ns.findall(r"member/[@kind='typedef']"):
             name = member.find("name").text
@@ -2036,7 +2036,10 @@ def get_symbol_to_file_map():
             name = namespace_name + "::" + name
             shared_from_class = None
 
-            if type_name.find("shared") > 0:
+            if type_name.startswith("class") > 0:
+                shared_from_class = symbol_map.find_class(type_name.split("class ")[1])
+
+            elif type_name.find("shared") > 0:
                 shareds = re.findall(r"std::shared_ptr< (?:class)* *([\w]*) >", type_name)
                 if len(shareds) > 0:
                     base = namespace_name + "::" + shareds[0]
@@ -2064,6 +2067,15 @@ def get_symbol_to_file_map():
             path = member.find("anchorfile").text + "#" + anchor
             enum_obj = SymbolMap.Enum(name, path)
             symbol_map.enums[name] = enum_obj
+
+        # find functions and add to symbol map
+        members = ns.findall(r"member[@kind='function']")
+        for member in members:
+            fn_name = member.find("name").text
+            anchor = member.find("anchor").text
+            file_path = member.find("anchorfile").text + "#" + anchor
+            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
+            ns_obj.functionList.append(function_obj)
 
     # find files
     file_tags = g_tag_xml.findall(r'compound/[@kind="file"]')
