@@ -2081,8 +2081,8 @@ def get_file_name(file_path):
 def parse_html(bs4, in_path, out_path):
     tree = None
     try:
-        xml_file = codecs.open(in_path, "r", "UTF-8")
-        tree = Et.parse(xml_file)
+        with open(in_path, 'r') as xml_file:
+            tree = Et.parse(xml_file)
 
     except:
         exc = sys.exc_info()[0]
@@ -2248,6 +2248,7 @@ if __name__ == "__main__":
     """ Main Function for generating html documentation from doxygen generated xml files
 
     Args:
+        -   No arguments generates all Cinder docs. Expects Doxygen to have been run previously.
         -   Can pass in a single xml file to process by passing in path to xml file
             and optionally, the resulting html file.
             if no out path is supplied, outputs to DOXYGEN_HTML_PATH
@@ -2258,8 +2259,8 @@ if __name__ == "__main__":
 
     # Make sure we're compiling using pythong 2.7.6+
     version_info = sys.version_info
-    if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
-        sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
+    #if version_info.major >= 2 and version_info.minor >= 7 and version_info.micro < 6:
+    #    sys.exit("ERROR: Sorry buddy, you must use python 2.7.6+ to generate documentation. Visit https://www.python.org/downloads/ to download the latest.")
     # if sys.version
 
     # Load tag file
@@ -2281,16 +2282,13 @@ if __name__ == "__main__":
     # generate namespace navigation
     g_namespaceNav = generate_namespace_nav(classTemplateHtml)
 
-    inPath = sys.argv[1]
-    # process a specific file
-    if os.path.isfile(inPath):
-        process_file(inPath, sys.argv[2] if len(sys.argv) > 2 else None)
-
-    # process a directory
-    elif os.path.isdir(inPath):
-        if len(sys.argv) == 3:
-            process_html_dir(HTML_SOURCE_PATH, sys.argv[2])
-            process_dir(inPath, sys.argv[2])
-
+    if len(sys.argv) == 1: # no args; run all docs
+        process_html_dir(HTML_SOURCE_PATH, "html/")
+        process_dir("xml/", "html/")
+    elif len(sys.argv) == 2:
+        inPath = sys.argv[1]
+        # process a specific file
+        if os.path.isfile(inPath):
+            process_file(inPath, sys.argv[2] if len(sys.argv) > 2 else None)
     else:
         print "Unknown usage"
