@@ -178,6 +178,22 @@ ScopedFramebuffer::ScopedFramebuffer( GLenum target, GLuint framebufferId )
 	mCtx->pushFramebuffer( target, framebufferId );
 }
 
+// TEMPORARY FIX: This is defined at Context.cpp but will be replaced when #994 is complete
+#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
+	#define SUPPORTS_FBO_MULTISAMPLING
+	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
+	#endif
+#endif
+
 ScopedFramebuffer::~ScopedFramebuffer()
 {	
 #if ! defined( SUPPORTS_FBO_MULTISAMPLING )
