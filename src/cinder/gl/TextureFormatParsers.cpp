@@ -169,8 +169,8 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 			uint32_t  dwZBitMask;
 			uint32_t  dwBumpDvBitMask;
 			struct {
-				int32_t wFlipMSTypes;
-				int32_t wBltMSTypes;
+				uint16_t wFlipMSTypes;
+				uint16_t wBltMSTypes;
 			} MultiSampleCaps;
 		};
 		union {
@@ -246,6 +246,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	DdSurface ddsd;
 	DdsHeader10 ddsHeader10;
 	char filecode[4];
+	int numFaces = 1;
 	ddsStream->readData( filecode, 4 );
 	if( strncmp( filecode, "DDS ", 4 ) != 0 ) { 
 		throw DdsParseExc( "File identifier mismatch" );
@@ -256,59 +257,77 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	// has header 10
 	if( ( ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC ) && ( ddsd.ddpfPixelFormat.dwFourCC == FOURCC_DX10 ) ) {
 		ddsStream->readData( &ddsHeader10, sizeof(DdsHeader10) );
+		if( ddsHeader10.miscFlag == 0x4/*DDS_RESOURCE_MISC_TEXTURECUBE*/ )
+			numFaces = 6;
+	}
+	else { // classic header
+		if( ( ddsd.ddsCaps.dwCaps1 & 0x8 /*DDSCAPS_COMPLEX*/) && ( ddsd.ddsCaps.dwCaps2 & 0x200 /*DDSCAPS2_CUBEMAP*/ ) )
+			numFaces = 6;
 	}
 
 	resultData->setWidth( ddsd.dwWidth );
 	resultData->setHeight( ddsd.dwHeight );
 	resultData->setDepth( 1 );
-	resultData->setNumFaces( 1 );
+	resultData->setNumFaces( numFaces );
 
 	int numMipMaps = ddsd.dwMipMapCount;
-	int dataFormat;
+	int internalFormat, dataFormat = 0, dataType = 0;
 	int32_t blockSizeBytes = 16;
 	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
+		case 20 /*D3DFMT_R8G8B8*/:
+			internalFormat = GL_RGB8;
+			dataFormat = GL_BGR;
+			dataType = GL_UNSIGNED_BYTE;
+			blockSizeBytes = sizeof(uint8_t) * 3;
+		break;
 		case FOURCC_DXT1: 
-			dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			blockSizeBytes = 8;
 		break; 
 		case FOURCC_DXT3: 
-			dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 		break; 
 		case FOURCC_DXT5: 
-			dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
+			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT; 
 		break;
 #if ! defined( CINDER_GL_ANGLE )
 		case FOURCC_ATI1: // aka DX10 BC4
-			dataFormat = GL_COMPRESSED_RED_RGTC1;
+			internalFormat = GL_COMPRESSED_RED_RGTC1;
 			blockSizeBytes = 8;
 		break;
 		case FOURCC_ATI2: // aka DX10 BC5
-			dataFormat = GL_COMPRESSED_RG_RGTC2;
+			internalFormat = GL_COMPRESSED_RG_RGTC2;
 		break;
 #endif
 		case FOURCC_DX10:
 			switch( ddsHeader10.dxgiFormat ) {
+				case 10/*DXGI_FORMAT_R16G16B16A16_FLOAT*/:
+					internalFormat = GL_RGBA16F;
+					dataType = GL_HALF_FLOAT;
+					dataFormat = GL_RGBA;
+					blockSizeBytes = sizeof(uint16_t) * 4;
+				break;
 				case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
 				case 71/*DXGI_FORMAT_BC1_UNORM*/:
 				case 72/*DXGI_FORMAT_BC1_UNORM_SRGB*/:
-					dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
+					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 					blockSizeBytes = 8;
 				break;
 				case 73/*DXGI_FORMAT_BC2_TYPELESS*/:
 				case 74/*DXGI_FORMAT_BC2_UNORM*/:
 				case 75/*DXGI_FORMAT_BC2_UNORM_SRGB*/:
-					dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
+					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT3_EXT;
 				break;
 				case 76/*DXGI_FORMAT_BC3_TYPELESS*/:
 				case 77/*DXGI_FORMAT_BC3_UNORM*/:
 				case 78/*DXGI_FORMAT_BC3_UNORM_SRGB*/:
-					dataFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
+					internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT5_EXT;
 				break;
 #if ! defined( CINDER_GL_ANGLE )
 				case 97/*DXGI_FORMAT_BC7_TYPELESS*/:
 				case 98/*DXGI_FORMAT_BC7_UNORM*/:
 				case 99/*DXGI_FORMAT_BC7_UNORM_SRGB*/:
-					dataFormat = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
+					internalFormat = GL_COMPRESSED_RGBA_BPTC_UNORM_ARB;
 				break;
 #endif
 				default:
@@ -320,52 +339,65 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 		break;
 	} 
 
-	if( ! (ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC) )
+	if( (dataType == 0) && ( ! (ddsd.ddpfPixelFormat.dwFlags & DDPF_FOURCC) ) )
 		blockSizeBytes = ( ddsd.ddpfPixelFormat.dwRGBBitCount + 7 ) / 8;
 
 	// Create the texture
 	resultData->setUnpackAlignment( 4 );
-	resultData->setDataFormat( 0 );
-	resultData->setInternalFormat( dataFormat );
-	resultData->setDataType( 0 ); // implies compressed
+	resultData->setDataFormat( dataFormat );
+	resultData->setInternalFormat( internalFormat );
+	resultData->setDataType( dataType ); // 0 implies compressed
 
 	// fn which calculates memory requirements for a given MIP level 'level'
-	auto calcImageLevelSize = [ddsd,blockSizeBytes]( int level ) {
+	auto calcImageLevelSize = [ddsd,blockSizeBytes,dataType]( int level ) {
 		int levelWidth = std::max<int>( 1, (ddsd.dwWidth>>level) );
 		int levelHeight = std::max<int>( 1, (ddsd.dwHeight>>level) );
-		int blockWidth = std::max<int>( 1, (levelWidth+3) / 4 );
-		int blockHeight = std::max<int>( 1, (levelHeight+3) / 4 );
-		int rowBytes = blockWidth * blockSizeBytes;
-		return blockHeight * rowBytes;
+		if( dataType != 0 ) { // uncompressed
+			int pitch = ( levelWidth * blockSizeBytes * 8 + 7 ) / 8;
+			return levelHeight * pitch;
+		}
+		else {
+			int blockWidth = std::max<int>( 1, (levelWidth+3) / 4 );
+			int blockHeight = std::max<int>( 1, (levelHeight+3) / 4 );
+			int rowBytes = blockWidth * blockSizeBytes;
+			return blockHeight * rowBytes;
+		}
 	};
 
 	// calculate the space we need
 	uint32_t spaceRequired = 0;
-	for( int level = 0; level <= numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++level )
+	for( int level = 0; level < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++level )
 		spaceRequired += calcImageLevelSize( level );
+	spaceRequired *= numFaces;
 	resultData->allocateDataStore( spaceRequired );
+
+	// allocate all levels and faces
+	for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
+		resultData->push_back( TextureData::Level() );
+		TextureData::Level &level = resultData->back();		
+		level.width = std::max<int>( 1, (ddsd.dwWidth>>levelIdx) );
+		level.height = std::max<int>( 1, (ddsd.dwHeight>>levelIdx) );
+		level.depth = 0;
+		for( int faceIdx = 0; faceIdx < numFaces; ++faceIdx )
+			level.push_back( TextureData::Face() );
+	}
 
 	resultData->mapDataStore();
 	size_t byteOffset = 0;
-	for( int levelIdx = 0; levelIdx <= numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
-		int levelWidth = std::max<int>( 1, (ddsd.dwWidth>>levelIdx) );
-		int levelHeight = std::max<int>( 1, (ddsd.dwHeight>>levelIdx) );
-		const uint32_t imageSize = calcImageLevelSize( levelIdx );
+	for( int faceIdx = 0; faceIdx < numFaces; ++faceIdx ) {
+		for( int levelIdx = 0; levelIdx < numMipMaps && (ddsd.dwWidth || ddsd.dwHeight); ++levelIdx ) { 
+			const uint32_t imageSize = calcImageLevelSize( levelIdx );
 
-		resultData->push_back( TextureData::Level() );
-		TextureData::Level &level = resultData->back();
+			TextureData::Level &level = resultData->getLevels()[levelIdx];
+			TextureData::Face &face = level.getFaces()[faceIdx];
+			face.dataSize = imageSize;
+			face.offset = byteOffset;
+			if( byteOffset + imageSize > resultData->getDataStoreSize() )
+				throw TextureDataStoreTooSmallExc();
 
-		level.push_back( TextureData::Face() );
-		level.back().dataSize = imageSize;
-		level.back().offset = byteOffset;
-		if( byteOffset + imageSize > resultData->getDataStoreSize() )
-			throw TextureDataStoreTooSmallExc();
-		level.width = levelWidth;
-		level.height = levelHeight;
-		level.depth = 0;
-
-		ddsStream->readDataAvailable( resultData->getDataStorePtr( byteOffset ), imageSize );
-		byteOffset += imageSize;
+			ddsStream->readDataAvailable( resultData->getDataStorePtr( byteOffset ), imageSize );
+			byteOffset += imageSize;
+		}
 	}
 
 	resultData->unmapDataStore();

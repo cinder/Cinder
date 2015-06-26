@@ -1838,6 +1838,18 @@ TextureCubeMapRef TextureCubeMap::createFromKtx( const DataSourceRef &dataSource
 	return TextureCubeMap::create( textureData, format );
 }
 
+TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource, const Format &format )
+{
+#if ! defined( CINDER_GL_ES )
+	TextureData textureData( format.getIntermediatePbo() );
+#else
+	TextureData textureData;
+#endif
+
+	parseDds( dataSource, &textureData );
+	return TextureCubeMap::create( textureData, format );
+}
+
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 	: mWidth( width ), mHeight( height )
 {
@@ -1909,8 +1921,9 @@ void TextureCubeMap::replace( const TextureData &textureData )
 		throw TextureDataExc( "TextureCubeMap requires 6 faces" );
 	}
 
-	int curFaceIdx = 0, curLevel = 0;
-	for( const auto &textureDataLevel : textureData.getLevels() ) {	
+	int curLevel = 0, curFaceIdx;
+	for( const auto &textureDataLevel : textureData.getLevels() ) {
+		curFaceIdx = 0;
 		for( const auto &textureDataFace : textureDataLevel.getFaces() ) {
 			if( ! textureData.isCompressed() )
 				glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + curFaceIdx, curLevel, mInternalFormat, textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
@@ -1922,6 +1935,11 @@ void TextureCubeMap::replace( const TextureData &textureData )
 	}
 	if( textureData.getUnpackAlignment() != 0 )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
+
+#if ! defined( CINDER_GL_ES_2 )
+	mMaxMipmapLevel = 0;//(int32_t)textureData.getLevels().size();
+	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );		
+#endif
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const

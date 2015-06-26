@@ -332,6 +332,7 @@ class TextureData {
 		size_t						getNumFaces() const { return mFaces.size(); }
 		const Face&					getFace( size_t index ) const { return mFaces.at( index ); }
 		const std::vector<Face>&	getFaces() const { return mFaces; }
+		std::vector<Face>&			getFaces() { return mFaces; }
 		Face&						back() { return mFaces.back(); }
 		void						push_back( const Face &face ) { mFaces.push_back( face ); }
 		
@@ -370,6 +371,7 @@ class TextureData {
 
 	size_t						getNumLevels() const { return mLevels.size(); }
 	const std::vector<Level>&	getLevels() const { return mLevels; }
+	std::vector<Level>&			getLevels() { return mLevels; }
 	Level&						back() { return mLevels.back(); }
 	void						push_back( const Level &level ) { mLevels.push_back( level ); }
 	void						clear() { mLevels.clear(); }
@@ -738,6 +740,10 @@ class TextureCubeMap : public TextureBase
 	static TextureCubeMapRef	create( const TextureData &data, const Format &format );
 	//! Constructs a TextureCubeMap from a KTX file. Enables mipmapping if KTX file contains mipmaps and Format has not specified \c false for mipmapping. Uses Format's intermediate PBO if supplied; requires it to be large enough to hold all MIP levels and throws if it is not. (http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/)
 	static TextureCubeMapRef	createFromKtx( const DataSourceRef &dataSource, const Format &format = Format() );
+#if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
+	//! Constructs a TextureCubeMap from a DDS file. Supports DXT1, DTX3, and DTX5. Supports BC7 in the presence of \c GL_ARB_texture_compression_bptc. Enables mipmapping if DDS contains mipmaps and Format has not specified \c false for mipmapping. ANGLE version requires textures to be a multiple of 4 due to DX limitation.
+	static TextureCubeMapRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
+#endif
 
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
