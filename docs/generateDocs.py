@@ -316,6 +316,20 @@ class SymbolMap(object):
         # sort by lowercased name
         return sorted(classes, key=lambda s: s.name.lower())
 
+    def find_classes_in_namespace(self, namespace, recursive=True):
+        ns_classes = []
+        for class_key in self.classes:
+            if recursive:
+                if class_key.startswith(namespace) > 0:
+                    class_obj = self.find_class(class_key)
+                    ns_classes.append(class_obj)
+            else:
+                class_pre = get_namespace(class_key)
+                if namespace == class_pre:
+                    class_obj = self.find_class(class_key)
+                    ns_classes.append(class_obj)
+        return ns_classes
+
 
 class FileData(object):
     def __init__(self, tree, bs4):
@@ -414,9 +428,13 @@ def find_compound_name_stripped(tree):
 
 def strip_compound_name(full_string):
     ns_parts = full_string.split("::")
-    # prefix = "::".join(ns_parts[:-1])  # parent namespace up to last ::
     name = "".join(ns_parts[-1])
     return name
+
+def get_namespace(full_string):
+    ns_parts = full_string.split("::")
+    prefix = "::".join(ns_parts[:-1])  # parent namespace up to last ::
+    return prefix
 
 def add_class_to_tag(tag, class_name):
     tag["class"] = tag.get("class", []) + [class_name]
@@ -1742,16 +1760,26 @@ def process_ci_seealso_tag(bs4, tag, out_path):
     :return: None
     """
     ref_obj = find_ci_tag_ref(tag)
-    if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
-        # get label attribute value if there is one
-        if tag.has_attr("label"):
-            label = tag["label"]
-        # otherwise use the name of the file as the label
-        else:
-            label = get_file_name(out_path)
+    print "SEE ALSO TYPE"
+    print type(ref_obj)
 
-        link_tag = gen_link_tag(bs4, label, out_path)
+    # get label attribute value if there is one
+    if tag.has_attr("label"):
+        label = tag["label"]
+    # otherwise use the name of the file as the label
+    else:
+        label = get_file_name(out_path)
+    link_tag = gen_link_tag(bs4, label, out_path)
+
+    if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
         ref_obj.add_related_link(link_tag)
+    elif type(ref_obj) is SymbolMap.Namespace:
+        # find all classes with that namespace and add guide to every one
+        print "IS NAMESPACE"
+        print g_symbolMap.find_classes_in_namespace(ref_obj.name)
+        print "\n\n"
+        for class_obj in g_symbolMap.find_classes_in_namespace(ref_obj.name):
+            class_obj.add_related_link(link_tag)
     else:
         print "  ** WARNING: Could not find seealso reference for " + str(tag)
 
@@ -2103,7 +2131,13 @@ def write_html(html, save_path):
     for c in html.find_all("code"):
         for child in c.children:
             # replaces with escaped code
-            child.replace_with(str(child))
+            try:
+                child.replace_with(str(child))
+            except UnicodeEncodeError as e:
+                print "\t** UNICODE ENCODE ERROR: " + e.reason
+            except ValueError as e:
+                print child
+                print "\t** VALUE ENCODE ERROR: " + e.message
 
     document = html.prettify(formatter="html")
 
