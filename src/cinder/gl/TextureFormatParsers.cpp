@@ -280,6 +280,12 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 			dataType = GL_UNSIGNED_BYTE;
 			blockSizeBytes = sizeof(uint8_t) * 3;
 		break;
+		case 32 /*D3DFMT_A8B8G8R8*/:
+			internalFormat = GL_RGBA8;
+			dataFormat = GL_BGRA;
+			dataType = GL_UNSIGNED_BYTE;
+			blockSizeBytes = sizeof(uint8_t) * 4;
+		break;
 		case FOURCC_DXT1: 
 			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			blockSizeBytes = 8;
@@ -306,6 +312,18 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 					dataType = GL_HALF_FLOAT;
 					dataFormat = GL_RGBA;
 					blockSizeBytes = sizeof(uint16_t) * 4;
+				break;
+				case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
+					internalFormat = GL_RGBA16;
+					dataType = GL_UNSIGNED_SHORT;
+					dataFormat = GL_RGBA;
+					blockSizeBytes = sizeof(uint16_t) * 4;
+				break;
+				case 2/*DXGI_FORMAT_R32G32B32A32_FLOAT*/:
+					internalFormat = GL_RGBA32F;
+					dataType = GL_FLOAT;
+					dataFormat = GL_RGBA;
+					blockSizeBytes = sizeof(float) * 4;
 				break;
 				case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
 				case 71/*DXGI_FORMAT_BC1_UNORM*/:
