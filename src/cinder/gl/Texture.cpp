@@ -1838,6 +1838,7 @@ TextureCubeMapRef TextureCubeMap::createFromKtx( const DataSourceRef &dataSource
 	return TextureCubeMap::create( textureData, format );
 }
 
+#if ! defined( CINDER_GL_ES )
 TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource, const Format &format )
 {
 #if ! defined( CINDER_GL_ES )
@@ -1849,6 +1850,7 @@ TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource
 	parseDds( dataSource, &textureData );
 	return TextureCubeMap::create( textureData, format );
 }
+#endif
 
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 	: mWidth( width ), mHeight( height )
