@@ -47,8 +47,10 @@ titleDictionary = {
 
 headerDictionary = {
     "namespace": "Namespace Reference",
-    "class": "<T> Class Template Reference",
-    "struct": "Struct Reference"
+    "class": "Class Reference",
+    "class_template": "<T> Class Template Reference",
+    "struct": "Struct Reference",
+    "struct_template": "<T> Struct Template Reference"
 }
 
 public_function_header = {
@@ -77,10 +79,13 @@ class SymbolMap(object):
         self.enums = {}
 
     class Class(object):
-        def __init__(self, name, base, file_name):
-            self.name = name
-            self.base = base
-            self.path = file_name
+        def __init__(self, class_tree):
+
+            self.name = class_tree.find('name').text
+            self.path = class_tree.find('filename').text
+            self.base = class_tree.find('base').text if class_tree.find('base') is not None else ""
+            self.is_template = True if class_tree.find('templarg') else False
+
             self.functionList = []
             self.relatedLinks = []
             # Path the the description prefix
@@ -374,6 +379,7 @@ class FileData(object):
         # kind of file that we are parsing (class, namespace, etc)
         self.kind = find_file_kind(tree)
         self.kind_explicit = find_file_kind_explicit(tree)
+        print "KIND: " + self.kind
 
         # find any common html elements and populate common elements
         self.parse_template()
@@ -400,7 +406,7 @@ class FileData(object):
 
     def populate_header(self):
         header_tag = self.bs4.find(id="page-title")
-        header_tag.string = self.compoundName + " " + headerDictionary[self.kind]
+        header_tag.string = self.compoundName + " " + headerDictionary[self.kind_explicit]
 
     def append_to_side_el(self, el):
         self.sideEl.append(el)
@@ -429,13 +435,24 @@ def find_file_kind_explicit(tree):
     :param tree:
     :return: string of kind
     """
-    class_id = tree.find(r"compounddef").attrib['id']
-    if class_id.startswith("struct"):
-        return "struct"
-    elif class_id.startswith("interface"):
+    obj_id = tree.find(r"compounddef").attrib['id']
+    if obj_id.startswith("struct"):
+        if obj_id.endswith("_t"):
+            return "struct_template"
+        else:
+            return "struct"
+
+    elif obj_id.startswith("interface"):
         return "interface"
+
+    elif obj_id.startswith("namespace"):
+        return "namespace"
+
     else:
-        return "class"
+        if obj_id.endswith("_t"):
+            return "class_template"
+        else:
+            return "class"
 
 
 def find_compound_name_stripped(tree):
@@ -1986,10 +2003,12 @@ def get_symbol_to_file_map():
     # find classes
     class_tags = g_tag_xml.findall(r'compound/[@kind="class"]')
     for c in class_tags:
-        name = c.find('name').text
-        file_path = c.find('filename').text
-        base_class = c.find('base').text if c.find('base') is not None else ""
-        class_obj = SymbolMap.Class(name, base_class, file_path)
+        class_obj = SymbolMap.Class(c)
+        name = class_obj.name
+        base_class = class_obj.base
+        # file_path = c.find('filename').text
+        # base_class = c.find('base').text if c.find('base') is not None else ""
+        # class_obj = SymbolMap.Class(name, base_class, file_path)
         symbol_map.classes[name] = class_obj
 
         # find functions and add to symbol map
@@ -2020,10 +2039,10 @@ def get_symbol_to_file_map():
     # find structs
     struct_tags = g_tag_xml.findall(r'compound/[@kind="struct"]')
     for s in struct_tags:
-        name = s.find('name').text
-        file_path = s.find('filename').text
-        base_class = s.find('base').text if s.find('base') is not None else ""
-        struct_obj = SymbolMap.Class(name, base_class, file_path)
+        struct_obj = SymbolMap.Class(s)
+        name = struct_obj.name
+        base_class = struct_obj.base
+
         symbol_map.classes[name] = struct_obj
 
         # find functions and add to symbol map
