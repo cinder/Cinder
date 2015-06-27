@@ -37,17 +37,32 @@ $(document).ready(function() {
 
  	var setSection = function( sectionName ){
  		// find the nav item that correlates to the section name
- 		console.log( "CUR SECTION", sectionName );
- 		console.log( $("#main-nav").find("li#nav_"+sectionName) );
+ 		// console.log( "CUR SECTION", sectionName );
+ 		// console.log( $("#main-nav").find("li#nav_"+sectionName) );
  		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
  	};
 
- 	// var setRoot = function(){
- 	// 	window.root = location.protocol + '//' + location.host;
- 	// }
+ 	var showAll = function(){
+ 		$( '.contents .expandable' ).each( function(){
+ 			var $this = $(this);
+ 			$this.removeClass("hidden");
+ 		});
+ 	};
+
+ 	var hideAll = function(){
+ 		$( '.contents .expandable' ).each( function(){
+ 			var $this = $(this);
+ 			$this.addClass("hidden");
+ 		});
+ 	};
+
+ 	// attach show/hide all functionality
+ 	$( '#show-hide a.show-all' ).on( 'click', showAll );
+ 	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
+ 	console.log($( '#show-hide a.show-all' ));
+ 	
 
  	setSection( section );
- 	// setRoot();
  	return cinderJs;
 
  } );
