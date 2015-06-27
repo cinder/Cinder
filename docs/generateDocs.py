@@ -191,8 +191,10 @@ class SymbolMap(object):
         return None
 
     def get_ordered_namespaces(self):
-        # create an array of strings that include all of the namespaces and return
-        # the array in alphabetical order
+        """
+        create an array of strings that include all of the namespaces and return
+        :return: A list of namespace objects in alphabetical order
+        """
         namespaces = []
         for nsKey in self.namespaces:
             ns = self.namespaces[nsKey]
@@ -201,6 +203,21 @@ class SymbolMap(object):
         # sort by lowercased name
         namespaces = sorted(namespaces, key=lambda s: s.name.lower())
 
+        return namespaces
+
+    def get_whitelisted_namespaces(self):
+        """
+        create a list of namespace objects that consist of only whitelisted namespaces
+        :return: An alphabetized list of namespace objects
+        """
+        namespaces = []
+        for nsKey in self.namespaces:
+            ns = self.namespaces[nsKey]
+            if ns.name.startswith("ci") or ns.name.startswith("glm"):
+                namespaces.append(ns)
+
+        # sort by lowercased name
+        namespaces = sorted(namespaces, key=lambda s: s.name.lower())
         return namespaces
 
     def find_typedef(self, name):
@@ -1111,6 +1128,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         namespace = ns.name  # full namespace
         ns_parts = namespace.split("::")
         prefix = "::".join(ns_parts[:-1])  # parent namespace up to last ::
+
         name = "".join(ns_parts[-1])
         node_label = label + str(child_count)
 
@@ -1135,7 +1153,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
 
             # generate new nested ul in case there are children
             ns_ul = gen_tag(bs4, "ul")
-            if count + 1 < len(namespaces):
+            if count < len(namespaces):
 
                 # if there are children, add to the parent ul
                 if iterate_namespace(bs4, namespaces, ns_ul, count + 1, node_label) > 0:
@@ -1197,15 +1215,17 @@ def has_ancestor(namespaces, compare_namespace):
 
 
 def generate_namespace_nav(bs4):
-    namespaces = g_symbolMap.get_ordered_namespaces()
+    """
+    Creates a div filled with a list of namespace links
+    :param bs4: The Beautiful soup instance used for dom manipulation
+    :return: a new div that contains the navigation tree
+    """
+    namespaces = g_symbolMap.get_whitelisted_namespaces()
 
     tree = gen_tag(bs4, "div")
     ul = gen_tag(bs4, "ul")
     tree.append(ul)
     add_class_to_tag(tree, "css-treeview")
-
-    # for ns in namespaces :
-    # namespace = ns.find('name').text
 
     iterate_namespace(bs4, namespaces, ul, 0, "")
     return tree
