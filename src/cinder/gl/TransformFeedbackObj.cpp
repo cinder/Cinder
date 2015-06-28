@@ -21,14 +21,15 @@
 */
 
 #include "cinder/gl/TransformFeedbackObj.h"
+
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 
 namespace cinder { namespace gl {
 
-#if ! defined( CINDER_GL_ES_2 )
-	
 extern TransformFeedbackObjRef createTransformFeedbackObjImplHardware();
 extern TransformFeedbackObjRef createTransformFeedbackObjImplSoftware();
 
@@ -78,6 +79,6 @@ void TransformFeedbackObj::setLabel( const std::string &label )
 	env()->objectLabel( GL_TRANSFORM_FEEDBACK, mId, (GLsizei)label.size(), label.c_str() );
 }
 
-#endif
-	
-} } // gl // cinder
+} } // cinder::gl
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )

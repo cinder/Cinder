@@ -26,7 +26,7 @@
 
 namespace cinder { namespace gl {
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	
 class TransformFeedbackObjImplHardware : public TransformFeedbackObj {
   public:
@@ -75,6 +75,6 @@ void TransformFeedbackObjImplHardware::setIndex( int index, BufferObjRef buffer 
 	}
 }
 	
-#endif
-	
-}} // gl // cinder
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
+} } // cinder::gl
