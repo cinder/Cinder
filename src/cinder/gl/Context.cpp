@@ -2035,8 +2035,9 @@ VboRef Context::getDefaultElementVbo( size_t requiredSize )
 	
 	return mDefaultElementVbo;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 namespace {
 // because the constants aren't in sequential (or ascending) order, we need to convert it
 int debugSeverityToOrd( GLenum severity )
@@ -2080,6 +2081,6 @@ void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint
 		__debugbreak();	
 	}
 }
-#endif // defined( CINDER_MSW )
+#endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 
 } } // namespace cinder::gl

@@ -440,7 +440,7 @@ class Context {
 	//! Returns a reference to the immediate mode emulation structure. Generally use gl::begin() and friends instead.
 	VertBatch&		immediate() { return *mImmediateMode; }
 
-#if defined( CINDER_MSW )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	static void	 __stdcall debugMessageCallback( GLenum source, GLenum type, GLuint id, GLenum severity, GLsizei length, const GLchar *message, void *userParam );
 #endif
 

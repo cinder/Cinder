@@ -77,6 +77,9 @@
 
 #if defined( CINDER_MSW )
 	#define CINDER_GL_HAS_COMPUTE_SHADER
+	#if ! defined( CINDER_GL_ANGLE )
+		#define CINDER_GL_HAS_DEBUG_OUTPUT
+	#endif
 #endif // defined( CINDER_COCOA )
 
 #if defined( CINDER_COCOA_TOUCH )
