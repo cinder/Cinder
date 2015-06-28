@@ -232,7 +232,8 @@ class Context {
 	void bindBufferBase( GLenum target, GLuint index, GLuint id );
 	//! Analogous to glBindBufferRange()
 	void bindBufferRange( GLenum target, GLuint index, const BufferObjRef &buffer, GLintptr offset, GLsizeiptr size );
-
+#endif // ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	//! Binds \a feedbackObj as the current Transform Feedback Object. Also, unbinds currently bound Transform Feedback Obj if one exists.
 	void bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj );
 	//! Calls the currently bound Transform Feedback Object's begin method. Alternatively, if mCachedTransformFeedbackObj is null, this method calls glBeginTransformFeedback.
@@ -245,7 +246,7 @@ class Context {
 	void endTransformFeedback();
 	//! Returns mCachedTransformFeedbackObj.
 	TransformFeedbackObjRef transformFeedbackObjGet();
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 	//! Analogous to glBindTexture( \a target, \a textureId ) for the active texture unit
 	void		bindTexture( GLenum target, GLuint textureId );
@@ -467,9 +468,9 @@ class Context {
 	std::vector<const GlslProg*>		mGlslProgStack;
 	std::vector<Vao*>					mVaoStack;
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	TransformFeedbackObjRef				mCachedTransformFeedbackObj;
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	
 	// Blend state stacks
 	std::vector<GLint>					mBlendSrcRgbStack, mBlendDstRgbStack;
