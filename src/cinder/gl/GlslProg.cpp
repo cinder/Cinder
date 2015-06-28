@@ -170,7 +170,7 @@ void GlslProg::Attribute::getShaderAttribLayout( GLenum type, uint32_t *numDimsP
 // GlslProg::Format
 GlslProg::Format::Format()
 	: mPreprocessingEnabled( true ), mVersion( 0 )
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	, mTransformFormat( -1 )
 #endif
 {
@@ -200,7 +200,8 @@ GlslProg::Format& GlslProg::Format::fragment( const string &fragmentShader )
 	return *this;
 }
 
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
+
 GlslProg::Format& GlslProg::Format::geometry( const DataSourceRef &dataSource )
 {
 	setShaderSource( dataSource, &mGeometryShader, &mGeometryShaderPath );
@@ -213,6 +214,9 @@ GlslProg::Format& GlslProg::Format::geometry( const string &geometryShader )
 	return *this;
 }
 
+#endif // defined( CINDER_GL_HAS_GEOM_SHADER )
+
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 GlslProg::Format& GlslProg::Format::tessellationCtrl( const DataSourceRef &dataSource )
 {
 	setShaderSource( dataSource, &mTessellationCtrlShader, &mTessellationCtrlShaderPath );
@@ -237,9 +241,9 @@ GlslProg::Format& GlslProg::Format::tessellationEval( const string &tessellation
 	return *this;
 }
 
-#endif // ! defined( CINDER_GL_ES )
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
 
-#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
 
 GlslProg::Format& GlslProg::Format::compute( const DataSourceRef &dataSource )
 {
@@ -253,7 +257,8 @@ GlslProg::Format& GlslProg::Format::compute( const string &computeShader )
 	return *this;
 }
 
-#endif // defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
+#endif // defined( CINDER_GL_HAS_COMPUTE_SHADER )
+
 void GlslProg::Format::setShaderSource( const DataSourceRef &dataSource, string *shaderSourceDest, fs::path *shaderPathDest )
 {
 	if( dataSource ) {
@@ -445,7 +450,7 @@ GlslProg::~GlslProg()
 
 GlslProg::GlslProg( const Format &format )
 	: mUniformValueCache( nullptr )
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		, mTransformFeedbackFormat( -1 )
 #endif
 {
@@ -470,16 +475,18 @@ GlslProg::GlslProg( const Format &format )
 		loadShader( format.getVertex(), format.mVertexShaderPath, GL_VERTEX_SHADER );
 	if( ! format.getFragment().empty() )
 		loadShader( format.getFragment(), format.mFragmentShaderPath, GL_FRAGMENT_SHADER );
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 	if( ! format.getGeometry().empty() )
 		loadShader( format.getGeometry(), format.mGeometryShaderPath, GL_GEOMETRY_SHADER );
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 	if( ! format.getTessellationCtrl().empty() )
 		loadShader( format.getTessellationCtrl(), format.mTessellationCtrlShaderPath, GL_TESS_CONTROL_SHADER );
 	if( ! format.getTessellationEval().empty() )
 		loadShader( format.getTessellationEval(), format.mTessellationEvalShaderPath, GL_TESS_EVALUATION_SHADER );
 #endif
-#if defined( CINDER_MSW ) && ( ! defined( CINDER_GL_ANGLE ) )
-	if( !format.getCompute().empty() )
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+	if( ! format.getCompute().empty() )
 		loadShader( format.getCompute(), format.mComputeShaderPath, GL_COMPUTE_SHADER );
 #endif    
     auto & userDefinedAttribs = format.getAttributes();
@@ -518,7 +525,7 @@ GlslProg::GlslProg( const Format &format )
 	if( ! foundPositionSemantic )
 		glBindAttribLocation( mHandle, 0, "ciPosition" );
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	if( ! format.getVaryings().empty() && format.getTransformFormat() > 0 ) {
 		auto & userVaryings = format.getVaryings();
 		mTransformFeedbackVaryings.resize( format.getVaryings().size() );
@@ -544,14 +551,16 @@ GlslProg::GlslProg( const Format &format )
 	link();
 	
 	cacheActiveAttribs();
-#if ! defined( CINDER_GL_ES_2 )
+	cacheActiveUniforms();
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	if( ! format.getVaryings().empty() ) {
 		cacheActiveTransformFeedbackVaryings();
 	}
+#endif
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	cacheActiveUniformBlocks();
 #endif
-	cacheActiveUniforms();
-	
+
 	auto & userDefinedUniforms = format.getUniforms();
 	// check if the user thinks there's a uniform that isn't active
 	for( auto &userUniform : userDefinedUniforms ) {
@@ -775,7 +784,7 @@ void GlslProg::cacheActiveUniforms()
 #endif
 }
 
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 void GlslProg::cacheActiveUniformBlocks()
 {
 	GLint numActiveUniformBlocks = 0;
@@ -862,6 +871,9 @@ void GlslProg::cacheActiveUniformBlocks()
 	}
 }
 
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 void GlslProg::cacheActiveTransformFeedbackVaryings()
 {
 	GLint numActiveTransformFeedbackVaryings;
@@ -887,7 +899,7 @@ void GlslProg::cacheActiveTransformFeedbackVaryings()
 		}
 	}
 }
-#endif // ! defined( CINDER_GL_ES_2 )
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 void GlslProg::bind() const
 {
@@ -1125,7 +1137,7 @@ GLint GlslProg::getAttribLocation( const std::string &name ) const
         return -1;
 }
     
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 
 GlslProg::UniformBlock* GlslProg::findUniformBlock( const std::string &name )
 {
@@ -1204,7 +1216,10 @@ GLint GlslProg::getUniformBlockSize( GLint blockBinding ) const
 	else
 		return -1;
 }
-	
+
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 const GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( const std::string &name ) const
 {
 	const TransformFeedbackVaryings *ret = nullptr;
@@ -1226,8 +1241,9 @@ GlslProg::TransformFeedbackVaryings* GlslProg::findTransformFeedbackVaryings( co
 	}
 	return ret;
 }
-#endif // ! defined( CINDER_GL_ES_2 )
-	
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 bool GlslProg::checkUniformValueCache( const Uniform &uniform, int location, const void *val, int count ) const
 {
 	if( mUniformValueCache )
@@ -1897,7 +1913,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 	}
 	
-#if ! defined( CINDER_GL_ES_2 )
+#if defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
 	os << "\tUniform Blocks: " << std::endl;
 	auto & uniformBlocks = rhs.getActiveUniformBlocks();
 	for( auto & uniformBlock : uniformBlocks ) {
@@ -1913,7 +1929,8 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 			os << "\t\t\t Semantic: <" << gl::uniformSemanticToString( uniform.getUniformSemantic() ) << ">" << std::endl;
 		}
 	}
-	
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	os << "\tTransform Feedback Varyings: " << std::endl;
 	auto & feedbackVaryings = rhs.getActiveTransformFeedbackVaryings();
 	for( auto & varying : feedbackVaryings ) {
@@ -1921,7 +1938,7 @@ std::ostream& operator<<( std::ostream &os, const GlslProg &rhs )
 		os << "\t\t Type: " << gl::constantToString( varying.getType() ) << std::endl;
 		os << "\t\t Count: " << varying.getCount() << std::endl;
 	}
-#endif
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	return os;
 }
 
@@ -1934,8 +1951,10 @@ GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType
 	switch( shaderType ) {
 		case GL_VERTEX_SHADER:			typeString = "VERTEX: "; break;
 		case GL_FRAGMENT_SHADER:		typeString = "FRAGMENT: "; break;
-#if ! defined( CINDER_GL_ES )
+#if defined( CINDER_GL_HAS_GEOM_SHADER )
 		case GL_GEOMETRY_SHADER:		typeString = "GEOMETRY: "; break;
+#endif
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 		case GL_TESS_CONTROL_SHADER:	typeString = "TESSELLATION CONTROL: "; break;
 		case GL_TESS_EVALUATION_SHADER:	typeString = "TESSELLATION EVALUATION: "; break;
 #endif

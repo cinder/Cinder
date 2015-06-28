@@ -61,3 +61,19 @@
 		#include <OpenGLES/ES3/glext.h>
 	#endif
 #endif
+
+// ----------------------------------------------
+// define features available
+
+#if ! defined( CINDER_GL_ES_2 )
+	#define CINDER_GL_HAS_UNIFORM_BLOCKS
+	#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
+	#if ! defined( CINDER_GL_ES_3 )
+		#define CINDER_GL_HAS_GEOM_SHADER
+		#define CINDER_GL_HAS_TESS_SHADER
+	#endif // ! defined( CINDER_GL_ES_3 )
+#endif // ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_MSW )
+	#define CINDER_GL_HAS_COMPUTE_SHADER
+#endif // defined( CINDER_COCOA )
