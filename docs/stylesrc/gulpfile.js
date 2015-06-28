@@ -22,13 +22,24 @@ gulp.task( 'styles', function() {
         .pipe( gulp.dest( './../htmlsrc/_assets/css' ) );
 });
 
-gulp.task( 'watch', [ 'styles' ], function() {
+gulp.task( 'scripts', function() {
+    
+    return gulp.src( [ 
+        './../htmlsrc/_assets/js/*.js'
+        ] )
 
-    gulp.watch( 'stylus/*.styl', [ 'styles' ] );
+        .pipe(gulp.dest('./../html/_assets/js'));
 });
+
+gulp.task( 'watch', [ 'styles' ], function() {
+    gulp.watch( 'stylus/*.styl', [ 'styles' ] );
+    gulp.watch( './../htmlsrc/_assets/js/*.js', [ 'scripts' ] );
+});
+
 
 gulp.task( 'default', [ 'watch' ] );
 
 gulp.task( 'build', [
-	'styles'
+	'styles',
+    'scripts'
 	] );

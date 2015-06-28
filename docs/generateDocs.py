@@ -558,7 +558,9 @@ def markup_function(bs4, fn_xml, parent, is_constructor):
     ---------------------------------------------------
     """
 
+    fn_id = fn_xml.attrib["id"].split("_1")[-1]
     li = gen_tag(bs4, "li", ["row"])
+    li.append(gen_anchor_tag(bs4, fn_id))
 
     # wrapper
     function_div = gen_tag(bs4, "div", ["functionDef"])
@@ -602,8 +604,6 @@ def markup_function(bs4, fn_xml, parent, is_constructor):
         definition_col.append(description_div)
         add_class_to_tag(li, "expandable")
 
-    fn_id = fn_xml.attrib["id"].split("_1")[-1]
-    li.append(gen_anchor_tag(bs4, fn_id))
     parent.append(li)
 
 
@@ -1444,7 +1444,6 @@ def process_class_xml_file(in_path, out_path, html):
         vars_section.append(vars_ul)
         vars_section.append(gen_tag(html, "hr"))
 
-
     # replace any code chunks with <pre> tags, which is not possible on initial creation
     replace_code_chunks(html)
 
@@ -1769,11 +1768,23 @@ def process_html_file(in_path, out_path):
 # -------------------------------------------------- CI TAG FUNCTIONS --------------------------------------------------
 
 def process_ci_tag(bs4, tag, in_path, out_path):
-    # find type
+    """
+    Depending on the attributes of the ci tag, do something different
+    :param bs4: The current beautiful soup instance
+    :param tag: The ci tag to process
+    :param in_path: The path to the current processed html file
+    :param out_path: The save path to the prcessing html file
+    :return:
+    """
     if tag.has_attr("seealso"):
         process_ci_seealso_tag(bs4, tag, out_path)
+
     elif tag.has_attr("prefix"):
-        process_ci_prefix_tag(bs4, tag, in_path)
+        process_ci_prefix_tag(tag, in_path)
+
+    # elif tag.has_attr("source"):
+    #     process_ci_source_tag(bs4, tag)
+
     else:
         replace_ci_tag(bs4, tag)
 
@@ -1820,14 +1831,27 @@ def process_ci_seealso_tag(bs4, tag, out_path):
         print "  ** WARNING: Could not find seealso reference for " + str(tag)
 
 
-def process_ci_prefix_tag(bs4, tag, in_path):
-    # find the referenced html file
-    # find the referenced class
-    # add prefix param to class
+def process_ci_prefix_tag(tag, in_path):
+    """
+    Finds the referenced tag's object if existent and adds the path to the prefix file to the class to be parsed later
+    :param tag: The ci tag with a defined prefix attribute
+    :param in_path: The path to the refix content
+    :return:
+    """
     obj_ref = find_ci_tag_ref(tag)
     if obj_ref and type(obj_ref) is SymbolMap.Class:
         obj_ref.define_prefix(in_path)
 
+# TODO: add ability to replace ci tag with link to github source file
+# def process_ci_source_tag(bs4, tag):
+#     """
+#     Replace the ci tag with a link to a source file on github
+#     :param tag: the tag to find a link for
+#     :return:
+#     """
+#     link_title = "LINK TITLE"
+#     # link_url =
+#     link_tag = gen_link_tag(bs4, link_title)
 
 def find_ci_tag_ref(link):
     # get string to search against
@@ -2030,7 +2054,6 @@ def get_symbol_to_file_map():
         for member in c.findall(r"member/[@kind='enumeration']"):
             pre = name + "::" if name is not None else ""
             enum_name = pre + member.find("name").text
-            # print "ENUM: " + enum_name
             anchor = member.find("anchor").text
             path = member.find("anchorfile").text + "#" + anchor
             enum_obj = SymbolMap.Enum(enum_name, path)

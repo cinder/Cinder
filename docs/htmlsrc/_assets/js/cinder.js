@@ -42,6 +42,7 @@ $(document).ready(function() {
  		$("#main-nav").find("li#nav_"+sectionName).addClass( "current" );
  	};
 
+ 	// --- Open all and Close all ---
  	var showAll = function(){
  		$( '.contents .expandable' ).each( function(){
  			var $this = $(this);
@@ -59,10 +60,26 @@ $(document).ready(function() {
  	// attach show/hide all functionality
  	$( '#show-hide a.show-all' ).on( 'click', showAll );
  	$( '#show-hide a.hide-all' ).on( 'click', hideAll );
- 	console.log($( '#show-hide a.show-all' ));
  	
 
+ 	/**
+ 	 * Unhides a piece of content if it contains a anchor tag with a specific hash
+ 	 * @param {[type]} hash Hash name of the link
+ 	 */
+ 	var showContent = function(hash){
+ 		// find section with this hash
+ 		var linkTag = $('a[name='+hash+']')[0];
+ 		// find parent
+ 		var linkParent = $(linkTag.parentNode);
+ 		// toggle show for this section
+ 		linkParent.removeClass("hidden");
+ 	};
+ 	
+ 	// get anchor tag if there is one
+ 	var hash = window.location.hash.substring(1);
+ 	
  	setSection( section );
+ 	showContent( hash );
  	return cinderJs;
 
  } );

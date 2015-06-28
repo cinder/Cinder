@@ -196,7 +196,7 @@ ctx->enable();</code></pre>
          <li>supports multiple outputs, which don't necessarily have to be connected to the Context's output( they will be added to the 'auto pull list').</li>
          <li>Feedback is supported by connecting <code>Node</code>s in a cycle, although for this to make sense there must be a Node that overrides <code>supportsCycles()</code> and returns true. The build in <code>Delay</code> is the primary user of this feature.</li>
          <li>If possible (ex. one input, same # channels), a Node will process audio in-place</li>
-         <li><ci dox="ci::audio::Node::ChannellMode" kind="enum">Node::ChannelMode</ci> allows the channels to be decided based on either a <code>Node</code>s input, it's output, or specified by user.</li>
+         <li><ci dox="cinder::audio::AddNode::ChannelMode">Node::ChannelMode</ci> allows the channels to be decided based on either a <code>Node</code>s input, it's output, or specified by user.</li>
       </ul>
       <p>Related Samples:</p>
       <ul>
