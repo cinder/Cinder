@@ -30,16 +30,90 @@
 
 namespace cinder { namespace gl {
 
-extern TransformFeedbackObjRef createTransformFeedbackObjImplHardware();
-extern TransformFeedbackObjRef createTransformFeedbackObjImplSoftware();
+namespace {
+
+class TransformFeedbackObjImplHardware : public TransformFeedbackObj {
+  public:
+	TransformFeedbackObjImplHardware()
+	{
+		glGenTransformFeedbacks( 1, &mId );
+	}
+	~TransformFeedbackObjImplHardware()
+	{
+		glDeleteTransformFeedbacks( 1, &mId );
+	}
+	
+	void bindImpl( Context *context )
+	{
+		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mId );
+	}
+
+	void unbindImpl( Context *context )
+	{
+		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+	}
+	void setIndex( int index, BufferObjRef buffer )
+	{
+		auto exists = mBufferBases.find( index );
+		if( exists == mBufferBases.end() ) {
+			mBufferBases.insert( std::pair<int, BufferObjRef>( index, buffer ) );
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer->getId() );
+		}
+	}
+};
+
+class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
+  public:
+	TransformFeedbackObjImplSoftware()
+	{
+		mId = 0;
+	}
+	~TransformFeedbackObjImplSoftware()
+	{
+	}
+	
+	void bindImpl( class Context *context )
+	{
+		for( auto bufferIt = mBufferBases.begin(); bufferIt != mBufferBases.end(); bufferIt++ ) {
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, bufferIt->first, bufferIt->second->getId() );
+		}
+	}
+	
+	void unbindImpl( class Context *context )
+	{
+	}
+
+	void setIndex( int index, BufferObjRef buffer )
+	{
+		bool changed = false;
+		
+		auto exists = mBufferBases.find( index );
+		if( exists == mBufferBases.end() ) {
+			mBufferBases.insert( std::pair<int, BufferObjRef>( index, buffer ) );
+			changed = true;
+		}
+		else {
+			if( exists->second != buffer ) {
+				exists->second = buffer;
+				changed = true;
+			}
+		}
+		
+		if( changed ) {
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer->getId() );
+		}
+	}
+};
+
+} // anonymous namespace
 
 TransformFeedbackObjRef TransformFeedbackObj::create()
 {
 	if( ! glGenTransformFeedbacks ) {
-		return createTransformFeedbackObjImplSoftware();
+		return TransformFeedbackObjRef( new TransformFeedbackObjImplSoftware() );
 	}
 	else {
-		return createTransformFeedbackObjImplHardware();
+		return TransformFeedbackObjRef( new TransformFeedbackObjImplHardware() );
 	}
 }
 
