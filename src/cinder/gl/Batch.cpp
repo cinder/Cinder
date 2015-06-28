@@ -108,7 +108,8 @@ void Batch::draw( GLint first, GLsizei count )
 	mVboMesh->drawImpl( first, count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
 void Batch::drawInstanced( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -118,7 +119,8 @@ void Batch::drawInstanced( GLsizei instanceCount )
 	ctx->setDefaultShaderVars();
 	mVboMesh->drawInstancedImpl( instanceCount );
 }
-#endif
+
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 void Batch::bind()
 {
