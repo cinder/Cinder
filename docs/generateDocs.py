@@ -2213,7 +2213,7 @@ def write_html(html, save_path):
                 print child
                 print "\t** VALUE ENCODE ERROR: " + e.message
 
-    document = html.prettify(formatter="html")
+    document = html.encode( 'utf-8', formatter="html" )
 
     if not os.path.exists(os.path.dirname(save_path)):
         os.makedirs(os.path.dirname(save_path))
