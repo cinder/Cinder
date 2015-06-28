@@ -1958,6 +1958,9 @@ GlslProgCompileExc::GlslProgCompileExc( const std::string &log, GLint shaderType
 		case GL_TESS_CONTROL_SHADER:	typeString = "TESSELLATION CONTROL: "; break;
 		case GL_TESS_EVALUATION_SHADER:	typeString = "TESSELLATION EVALUATION: "; break;
 #endif
+#if defined( CINDER_GL_HAS_COMPUTE_SHADER )
+		case GL_COMPUTE_SHADER:			typeString = "COMPUTE: "; break;
+#endif
 		default:						typeString = "UNKNOWN: ";
 	}
 
