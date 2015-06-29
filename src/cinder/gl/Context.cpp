@@ -72,9 +72,6 @@ namespace cinder { namespace gl {
 Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	: mPlatformData( platformData ),
 	mColor( ColorAf::white() ),
-#if ! defined( CINDER_GL_ES )
-	mCachedTransformFeedbackObj( nullptr ),
-#endif
 	mObjectTrackingEnabled( platformData->mObjectTracking )
 {
 	// set thread's active Context to 'this' in case anything calls gl::context() (like the GlslProg constructor)
@@ -149,8 +146,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
 	
-	// debug context
-#if ! defined( CINDER_GL_ES ) && defined( CINDER_MSW )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	if( mPlatformData->mDebug ) {
 		mDebugLogSeverity = mPlatformData->mDebugLogSeverity;
 		mDebugBreakSeverity = mPlatformData->mDebugBreakSeverity;
@@ -160,7 +156,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 			glDebugMessageCallback( (GLDEBUGPROC)debugMessageCallback, this );
 		}
 	}
-#endif
+#endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 
 	// restore current context thread-local to what it was previously
 	Context::reflectCurrent( prevCtx );
@@ -756,6 +752,9 @@ void Context::bindBufferRange( GLenum target, GLuint index, const BufferObjRef &
 	glBindBufferRange( target, index, buffer->getId(), offset, size );
 }
 
+#endif // ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 //////////////////////////////////////////////////////////////////
 // TransformFeedbackObj
 void Context::bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj )
@@ -814,7 +813,8 @@ void Context::endTransformFeedback()
 		glEndTransformFeedback();
 	}
 }
-#endif
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 //////////////////////////////////////////////////////////////////
 // Shader
@@ -1802,7 +1802,8 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
 #if defined( CINDER_GL_ANGLE )
@@ -1824,7 +1825,8 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
 #endif
 }
-#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
@@ -2033,8 +2035,9 @@ VboRef Context::getDefaultElementVbo( size_t requiredSize )
 	
 	return mDefaultElementVbo;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 namespace {
 // because the constants aren't in sequential (or ascending) order, we need to convert it
 int debugSeverityToOrd( GLenum severity )
@@ -2078,6 +2081,6 @@ void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint
 		__debugbreak();	
 	}
 }
-#endif // defined( CINDER_MSW )
+#endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 
 } } // namespace cinder::gl

@@ -24,6 +24,8 @@
 
 #include "cinder/gl/platform.h"
 
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 #include <map>
 #include <string>
 
@@ -31,8 +33,6 @@ namespace cinder { namespace gl {
 
 typedef std::shared_ptr<class BufferObj>	BufferObjRef;
 
-#if ! defined( CINDER_GL_ES_2 )
-	
 typedef std::shared_ptr<class TransformFeedbackObj> TransformFeedbackObjRef;
 
 class TransformFeedbackObj : public std::enable_shared_from_this<TransformFeedbackObj> {
@@ -78,7 +78,7 @@ class TransformFeedbackObj : public std::enable_shared_from_this<TransformFeedba
 	
 	friend class Context;
 };
-	
-#endif
-	
-} } // cinder // gl
+
+} } // cinder::gl
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
