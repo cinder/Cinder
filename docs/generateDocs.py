@@ -760,7 +760,7 @@ def iter_class_base(class_def, hierarchy):
 
 
 def gen_class_hierarchy(bs4, class_def):
-    """ Generates the class heirarchy side bar, with each class linking
+    """ Generates the class hierarchy side bar, with each class linking
         out to its class file.
 
     Args:
@@ -788,7 +788,7 @@ def gen_class_hierarchy(bs4, class_def):
     side = get_template(bs4, "side-expandable")
 
     # fill heading
-    side.find('h4').append("Class Heirarchy:")
+    side.find('h4').append("Class Hierarchy:")
 
     # create all of the markup
     content_div = side.find('div', 'content')
