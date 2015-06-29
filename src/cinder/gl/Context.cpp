@@ -42,22 +42,6 @@
 
 using namespace std;
 
-// ES 2 Multisampling is available on iOS and ANGLE via an extension
-#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
-	#define SUPPORTS_FBO_MULTISAMPLING
-	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
-		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
-	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
-		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
-		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
-	#endif
-#endif
-
 namespace cinder { namespace gl {
 
 #if defined( CINDER_COCOA )
@@ -79,7 +63,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if defined( SUPPORTS_FBO_MULTISAMPLING )
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao.get() );
 	mDefaultVao->setContext( this );
@@ -1059,7 +1043,7 @@ uint8_t Context::getActiveTexture()
 // Framebuffers
 void Context::bindFramebuffer( GLenum target, GLuint framebuffer )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( target == GL_FRAMEBUFFER ) {
 		if( setStackState<GLint>( mFramebufferStack, framebuffer ) )
 			glBindFramebuffer( target, framebuffer );
@@ -1107,7 +1091,7 @@ void Context::pushFramebuffer( const FboRef &fbo, GLenum target )
 
 void Context::pushFramebuffer( GLenum target, GLuint framebuffer )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( pushStackState<GLint>( mFramebufferStack, framebuffer ) )
 		glBindFramebuffer( target, framebuffer );
 #else
@@ -1124,7 +1108,7 @@ void Context::pushFramebuffer( GLenum target, GLuint framebuffer )
 
 void Context::pushFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	pushStackState<GLint>( mFramebufferStack, getFramebuffer( target ) );
 #else
 	if( target == GL_FRAMEBUFFER || target == GL_READ_FRAMEBUFFER ) {
@@ -1138,7 +1122,7 @@ void Context::pushFramebuffer( GLenum target )
 
 void Context::popFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( popStackState<GLint>( mFramebufferStack ) )
 		if( ! mFramebufferStack.empty() )
 			glBindFramebuffer( target, mFramebufferStack.back() );
@@ -1158,7 +1142,7 @@ void Context::popFramebuffer( GLenum target )
 
 GLuint Context::getFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( mFramebufferStack.empty() ) {
 		GLint queriedInt;
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &queriedInt );

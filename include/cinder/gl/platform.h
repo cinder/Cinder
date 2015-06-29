@@ -64,11 +64,11 @@
 
 // ----------------------------------------------
 // define features available
-
 #if ! defined( CINDER_GL_ES_2 )
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
 	#define CINDER_GL_HAS_DRAW_INSTANCED
+	#define CINDER_GL_HAS_FBO_MULTISAMPLING
 	#if ! defined( CINDER_GL_ES_3 )
 		#define CINDER_GL_HAS_GEOM_SHADER
 		#define CINDER_GL_HAS_TESS_SHADER
@@ -76,12 +76,32 @@
 #endif // ! defined( CINDER_GL_ES_2 )
 
 #if defined( CINDER_MSW )
-	#define CINDER_GL_HAS_COMPUTE_SHADER
 	#if ! defined( CINDER_GL_ANGLE )
+		#define CINDER_GL_HAS_COMPUTE_SHADER
 		#define CINDER_GL_HAS_DEBUG_OUTPUT
+	#endif
+	// both ANGLE and desktop have FBO Multisampling
+	#define CINDER_GL_HAS_FBO_MULTISAMPLING
+	// platform-specific synonyms
+	#if defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
+		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleANGLE
 	#endif
 #endif // defined( CINDER_COCOA )
 
 #if defined( CINDER_COCOA_TOUCH )
 	#define CINDER_GL_HAS_DRAW_INSTANCED
+	#define CINDER_GL_HAS_FBO_MULTISAMPLING
+	// platform-specific synonyms
+	#if ! defined( CINDER_GL_ES_3 )
+		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
+		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
+		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
+		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
+		#define glRenderbufferStorageMultisample	glRenderbufferStorageMultisampleAPPLE
+		#define glResolveMultisampleFramebuffer		glResolveMultisampleFramebufferAPPLE
+	#endif
 #endif // defined( CINDER_COCOA )
