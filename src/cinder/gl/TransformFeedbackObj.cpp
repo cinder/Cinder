@@ -21,24 +21,99 @@
 */
 
 #include "cinder/gl/TransformFeedbackObj.h"
+
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
 
 namespace cinder { namespace gl {
 
-#if ! defined( CINDER_GL_ES_2 )
+namespace {
+
+class TransformFeedbackObjImplHardware : public TransformFeedbackObj {
+  public:
+	TransformFeedbackObjImplHardware()
+	{
+		glGenTransformFeedbacks( 1, &mId );
+	}
+	~TransformFeedbackObjImplHardware()
+	{
+		glDeleteTransformFeedbacks( 1, &mId );
+	}
 	
-extern TransformFeedbackObjRef createTransformFeedbackObjImplHardware();
-extern TransformFeedbackObjRef createTransformFeedbackObjImplSoftware();
+	void bindImpl( Context *context )
+	{
+		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, mId );
+	}
+
+	void unbindImpl( Context *context )
+	{
+		glBindTransformFeedback( GL_TRANSFORM_FEEDBACK, 0 );
+	}
+	void setIndex( int index, BufferObjRef buffer )
+	{
+		auto exists = mBufferBases.find( index );
+		if( exists == mBufferBases.end() ) {
+			mBufferBases.insert( std::pair<int, BufferObjRef>( index, buffer ) );
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer->getId() );
+		}
+	}
+};
+
+class TransformFeedbackObjImplSoftware : public TransformFeedbackObj {
+  public:
+	TransformFeedbackObjImplSoftware()
+	{
+		mId = 0;
+	}
+	~TransformFeedbackObjImplSoftware()
+	{
+	}
+	
+	void bindImpl( class Context *context )
+	{
+		for( auto bufferIt = mBufferBases.begin(); bufferIt != mBufferBases.end(); bufferIt++ ) {
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, bufferIt->first, bufferIt->second->getId() );
+		}
+	}
+	
+	void unbindImpl( class Context *context )
+	{
+	}
+
+	void setIndex( int index, BufferObjRef buffer )
+	{
+		bool changed = false;
+		
+		auto exists = mBufferBases.find( index );
+		if( exists == mBufferBases.end() ) {
+			mBufferBases.insert( std::pair<int, BufferObjRef>( index, buffer ) );
+			changed = true;
+		}
+		else {
+			if( exists->second != buffer ) {
+				exists->second = buffer;
+				changed = true;
+			}
+		}
+		
+		if( changed ) {
+			glBindBufferBase( GL_TRANSFORM_FEEDBACK_BUFFER, index, buffer->getId() );
+		}
+	}
+};
+
+} // anonymous namespace
 
 TransformFeedbackObjRef TransformFeedbackObj::create()
 {
 	if( ! glGenTransformFeedbacks ) {
-		return createTransformFeedbackObjImplSoftware();
+		return TransformFeedbackObjRef( new TransformFeedbackObjImplSoftware() );
 	}
 	else {
-		return createTransformFeedbackObjImplHardware();
+		return TransformFeedbackObjRef( new TransformFeedbackObjImplHardware() );
 	}
 }
 
@@ -78,6 +153,6 @@ void TransformFeedbackObj::setLabel( const std::string &label )
 	env()->objectLabel( GL_TRANSFORM_FEEDBACK, mId, (GLsizei)label.size(), label.c_str() );
 }
 
-#endif
-	
-} } // gl // cinder
+} } // cinder::gl
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
