@@ -75,7 +75,7 @@
 	NSRect rect = NSMakeRect( area.x1, area.y1, area.getWidth(), area.getHeight() );
 	NSBitmapImageRep *rep = [[NSBitmapImageRep alloc] initWithFocusedViewRect:rect];
 	[view unlockFocus];
-	return rep;
+	return [rep autorelease];
 }
 
 - (void)startDraw
