@@ -73,6 +73,7 @@ using namespace cinder::app;
 
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	[NSApp setMainMenu:mainMenu];
+	[mainMenu release];
 	
 	self.windows = [NSMutableArray array];
 	
