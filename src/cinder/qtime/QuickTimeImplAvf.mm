@@ -697,9 +697,12 @@ void MovieBase::createPlayerItemOutput( const AVPlayerItem* playerItem )
 {
 	NSDictionary *pixBuffAttributes = avPlayerItemOutputDictionary();
 	mPlayerVideoOutput = [[AVPlayerItemVideoOutput alloc] initWithPixelBufferAttributes:pixBuffAttributes];
-	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL)];
+	dispatch_queue_t outputQueue = dispatch_queue_create("movieVideoOutputQueue", DISPATCH_QUEUE_SERIAL);
+	[mPlayerVideoOutput setDelegate:mPlayerDelegate queue:outputQueue];
+	dispatch_release(outputQueue);
 	mPlayerVideoOutput.suppressesPlayerRendering = YES;
 	[playerItem addOutput:mPlayerVideoOutput];
+	[mPlayerVideoOutput release];
 }
 
 void MovieBase::addObservers()
