@@ -2,11 +2,6 @@ var section;
 $(document).ready(function() {
 
 	var cinderJs = this;
-
-	// set the current section in the nav
-	// console.log( document.location.href.split("html/")[1] );
-	// if()
-
 	
 	// look for all dom items with class
 
@@ -67,6 +62,8 @@ $(document).ready(function() {
  	 * @param {[type]} hash Hash name of the link
  	 */
  	var showContent = function(hash){
+ 		if( !hash )
+ 			return;
  		// find section with this hash
  		var linkTag = $('a[name='+hash+']')[0];
  		// find parent
@@ -78,8 +75,63 @@ $(document).ready(function() {
  	// get anchor tag if there is one
  	var hash = window.location.hash.substring(1);
  	
+
+ 	// --- Search stuff --- // 
+ 	window.search = function (term) {
+	       
+	    var results = search_index.search(term); 
+		var resultsDiv = $('#search-results');
+		var resultsUl = $( "<ul>" );
+
+		resultsDiv.empty();
+		resultsDiv.append( resultsUl );
+
+		// resultsDiv.append( resultsUl );
+		for( var i in results ){
+			
+			var li = $("<li>");
+			var result = results[i];
+			var data = search_index_data.data[result.ref];
+			var a = $("<a href=" + data.link + "> " +  data.title +"</a>");
+			li.append(a);
+			li.append(" score: " +  result.score + "</b> ->" );
+			
+			li.append(data.link);
+			resultsUl.append( li );
+		}
+	};
+
+	var input = document.querySelector('#search-input');
+	input.addEventListener('input', function()
+	{
+	    search(input.value);
+	});
+    
+	var search_index = lunr(function () {
+		this.field('title', {boost: 10});
+		this.field('tags', {boost: 1});
+		this.field('body');
+		this.ref('id');
+	});
+
+	function initSearch(){
+		
+		for(var item in search_index_data.data){
+			var searchItem = search_index_data.data[item];
+			// console.log(searchItem.tags);
+			search_index.add({
+			    id: searchItem.id,
+			    title: searchItem.title,
+			    body: searchItem.body,
+			    tags: searchItem.tags
+			 });
+		}
+	}
+	
+
  	setSection( section );
  	showContent( hash );
+ 	initSearch();
  	return cinderJs;
 
  } );
@@ -95,4 +147,4 @@ try{
 
 window.setSection = function( sectionName ){	
 	section = sectionName;
-}
+};

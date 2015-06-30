@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-   <title></title>
+   <title>Audio Api Guide</title>
+   <meta name="keywords" content="guide, audio, music, voice, device, channel, gain, sound">
    <!-- Adds this guide to everything with the "cinder::audio" namespace -->
    <ci seealso dox="cinder::audio" label="Audio in Cinder"></ci>
 </head>
@@ -69,7 +70,7 @@
       </h1>
       <p>For those who need only to play back a sound file or want a simple processing function, you may not need to look further than what is provided in the <ci dox="ci::audio::Voice">Voice</ci> API. <code>Voice</code>s are high level objects that sit above the modular system, managing a small chain of <ci>audio::Node</ci>s that perform the necessary processing. They are meant to require little work on the user's part, so you don't need to worry about things like what the playback samplerate is or to what hardware device audio is sent, at the cost of less flexibility.</p>
       <p>The following is an example of how to play a sound file with an <code>audio::Voice</code> (Details about how to load sound files will be explained in the section on <a class="el" href="#read_audio">SourceFile and SamplePlayerNode</a>):</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 // declare somewhere in your class interface:
 audio::VoiceRef mVoice;
 
@@ -80,14 +81,15 @@ void MyApp::setup()
 
     // Start playing audio from the voice:
     mVoice->start();
-}</code></pre>
+}
+</code></pre>
       </div>
 
       <!-- fragment -->
       <p>Later, you can call <code>mVoice-&gt;stop()</code> when you want to quit playing audio.</p>
       <p>The <ci>audio::Voice::create()</ci> method returns a shared_ptr to a Voice sub-class (ex, in the case of playing an audio file, returns <code>VoiceSamplePlayerRef</code>, but the user will generally only need to maintain this by storing it in a VoiceRef instance variable. It is necessary to store the returned VoiceRef because once it goes out of scope, it will be disconnected from the audio graph and destroyed. This is fairly cheap, however (much cheaper than creating the <code>SourceFile</code> via <ci title="Convenience method for loading a SourceFile from dataSource. ">audio::load()</ci>, for example), so if you need to later play a different file, you can safely call <code>Voice::create()</code> again and assign it to your <code>mVoice</code> instance variable.</p>
       <p>You can also use a <code>Voice</code> for basic audio processing by providing a <code>std::function</code> callback to the <code>create()</code> method. This can be useful for educational purposes or quick experiments.</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 mPhase = 0.0f; // float stored in class
 
 mVoice = audio::Voice::create( [this] ( audio::Buffer *buffer, size_t sampleRate ) {
@@ -99,17 +101,19 @@ mVoice = audio::Voice::create( [this] ( audio::Buffer *buffer, size_t sampleRate
        mPhase = fmodf( mPhase + phaseIncr, 2 * M_PI );
        channel0[i] = std::sin( mPhase );
    }
-} );</code></pre>
+} );
+</code></pre>
 
       <!-- fragment -->
       <p>Users should be aware that the callback is processing on the background audio thread, so any data that interacts with the main thread needs to be synchronized.</p>
       <p>Each Voice has controls for volume and 2d panning. Here is an example of how you'd control these with the mouse:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 void MyApp::mouseDown( app::MouseEvent event )
 {
     mVoice->setVolume( 1.0f - (float)event.getPos().y / (float)getWindowHeight() );
     mVoice->setPan( (float)event.getPos().x / (float)getWindowWidth() );
-}</code></pre>
+}
+</code></pre>
 
       <!-- fragment -->
       <p>Related Samples:</p>
@@ -142,9 +146,10 @@ void MyApp::mouseDown( app::MouseEvent event )
          Context
       </h2>
       <p>The <ci>audio::Context</ci> class manages platform specific audio processing and thread synchronization between the 'audio' (real-time) and 'user' (typically UI/main, but not limited to) threads. There is one 'master', which is the only hardware-facing Context. All <code>Node</code>s are created using the Context, which is necessary for thread synchronization. A new Node is created like the following:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto ctx = audio::Context::master();
-mNode = ctx->makeNode( new NodeType );</code></pre>
+mNode = ctx->makeNode( new NodeType );
+</code></pre>
 
       <!-- fragment -->
       <p>There are a couple important parameters governed by the current Context, which <code>Node</code>s use to configure their internal buffer layout:</p>
@@ -165,24 +170,25 @@ mNode = ctx->makeNode( new NodeType );</code></pre>
       </ul>
 
       <p><code>Node</code>s are connected together to from an audio graph. For audio to reach the speakers, the last Node in the graph is connected to the Context's OutputNode:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto ctx = audio::Context::master();
 mSine = ctx->makeNode( new audio::GenSineNode );
 mGain = ctx->makeNode( new audio::GainNode );
 
 mSine->connect( mGain );
-mGain->connect( ctx->getOutput() );</code></pre>
+mGain->connect( ctx->getOutput() );
+</code></pre>
       <!-- fragment -->
 
       <p><code>Node</code>s are connected from source to destination. A convenient shorthand syntax that is meant to represent this is as follows:</p>
-      <pre><code class="language-cpp">
-mSine >> mGain >> ctx->getOutput();</code></pre>
+<pre><code class="language-cpp">mSine >> mGain >> ctx->getOutput();</code></pre>
       <!-- fragment -->
 
       <p>To process audio, each <code>Node</code> subclass implements a virtual method <ci>Node::process( Buffer *buffer )</ci>. Processing can be enabled or disabled on a per-Node basis. While <code>NodeEffect</code>s are enabled by default, <code>NodeInput</code>s must be turned on before they produce any audio. <code>OutputNode</code>s are managed by their owning <code>Context</code>, so you enable it by enabling the entire <code>Content</code>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 mSine->enable();
-ctx->enable();</code></pre>
+ctx->enable();
+</code></pre>
       <!-- fragment -->
 
       <p>It is important to note that enabling or disabling the Context controls the processing of the entire audio graph - no audio will be processed at all if it is off and 'audio time' will not progress, whether or not an individual <code>Node</code> is enabled. Not only can you use this to save on cpu / power when you need to, it is also a useful catch-all way to shut off the audio processing thread. On the flip side, <ci code dox="ci::audio::dx::disable" kind="namespace" title="Disables the OpenGL State state. Equivalent to calling to glDisable( state );. ">disable()</a>ing an individual <code>Node</code> has no effect on any other <code>Node</code> - it effectly becomes a 'pass through' (though channel management, such as upmixing or downmixing, still must occur).</p>
@@ -208,34 +214,36 @@ ctx->enable();</code></pre>
       </h2>
       <p>The endpoint in an audio graph is currently always <ci dox="ci::audio::OutputDeviceNode">OutputDeviceNode</ci>, the Node that represents and sends audio to the hardware device on your computer. The default <code>Context</code> initializes this to a sane default when it is first accessed, with stereo channels (or mono if that is all that is available).</p>
       <p>In order to support non device Context's in the future, <code>Context::getOutput()</code> returns an <code>OutputNode</code>, the parent class of <code>OutputDeviceNode</code>. However, you can safely typecast it, which will allow you to get at the <code>audio::DeviceRef</code> and more information related to your hardware device:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 #include "cinder/audio/OutputNode.h"
 
 auto ctx = ci::audio::master();
 audio::DeviceRef dev = dynamic_pointer_cast&lt;audio::OutputDeviceNode&gt;( ctx->getOutput() )->getDevice();
 
 ci::app::console() &lt;&lt; "device name: " &lt;&lt; dev->getName() &lt;&lt; endl;
-ci::app::console() &lt;&lt; "num output channels: " &lt;&lt; dev->getNumOutputChannels() &lt;&lt; endl;</code></pre>
+ci::app::console() &lt;&lt; "num output channels: " &lt;&lt; dev->getNumOutputChannels() &lt;&lt; endl;
+</code></pre>
       <!-- fragment -->
 
       <p>There is also an easier way to get the default device, with the static <code>audio::Device::getDefaultOutput()</code> method.</p>
       <h3>Specifying a non-default Device</h3>
       <p>If you need the Context to address a device other than the system default, you must create a LineOut with the appropriate <code>ci::audio::DeviceRef</code>, using the platform-specific virtual <code>Context::createOutputDeviceNode()</code> method. You then assign that as the master <code>Context</code>'s <code>OutputNode</code>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto ctx = ci::audio::master();
 auto device = ci::audio::Device::findDeviceByName( "Internal Speakers" );
 ci::audio::OutputDeviceNodeRef output = ctx->createOutputDeviceNode( device );
-ctx->setOutput( output );</code></pre>
+ctx->setOutput( output );
+</code></pre>
       <!-- fragment -->
 
       <p>The device name can be found in your system settings or by iterating the <code>DeviceRef</code>'s returned by <code>Device::getDevices()</code> and looking at its <code>getName()</code> property. As an alternative to specifying the device by name, you can use <code>findDeviceByKey()</code>, which is a platform-agnostic, unique identifier that is internally generated.</p>
       <h3>Specifying a Channel Count Other than Stereo (the default)</h3>
       <p>If you intend to handle a channel count other than the default stereo pair, you need to create a LineOut and pass in the desired channel count in its optional <code>Node::Format</code> argument.</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto format = ci::audio::Node::Format().channels( 10 );
 ci::audio::OutputDeviceNodeRef output = ctx->createOutputDeviceNode( device, format );
 ctx->setOutput( output );
-      </code></pre>
+</code></pre>
 
       <!-- fragment -->
       <p><b>note</b>: Replacing the master <code>Context</code>'s output will cause a context-wide <code>Node::uninitialize()</code> and <code>Node::initialize()</code>. This is because the Context controls variables that the <code>Node</code>s rely on, such as samplerate and frames-per-block. While in some cases it may be unnoticeable, it's usually a good idea to call <ci code dox="ci::audio::dx::Context::disable()" title="Disables the OpenGL State state. Equivalent to calling to glDisable( state );. ">Context::disable()</ci> (or do a more robust halt of your graph) beforehand to prevent unexpected audio clicks.</p>
@@ -243,18 +251,20 @@ ctx->setOutput( output );
          InputDeviceNode
       </h2>
       <p><ci dox="ci::audio::InputDeviceNode">InputDeviceNode</ci> is used to get microphone or other incoming hardware audio into the audio graph. Its interface is very similar to <code>OutputDeviceNode</code>, most importantly being the <code>getDevice()</code> method, which returns the owned <code>audio::DeviceRef</code>. As with <code>OutputDeviceNode</code>, you must create the InputDeviceNode using the platform-specific virtual method <code>Context::createInputDeviceNode()</code>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode();
 
 input >> ctx->getOutput();
-input->enable();</code></pre>
+input->enable();
+</code></pre>
       <!-- fragment -->
 
       <p>The above creates an <code>InputDeviceNode</code> with the default <code>Device</code> and default <code>audio::Node::Format</code>, giving you either stereo channel input or mono if that isn't available, and then connects it directly to the Context's output. As is the case for all <code>InputNode</code>s (<code>InputDeviceNode</code>'s parent class'), you must then call its <ci code dox="ci::dx::enable" title="Enables the OpenGL State state. Equivalent to calling to glEnable( state );. ">enable()</ci> method before it will process audio.</p>
       <p>If you want to force mono input, you can specify that with the optional format argument:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto format = ci::audio::Node::Format().channels( 1 );
-ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode( Device::getDefaultInput(), format );</code></pre>
+ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode( Device::getDefaultInput(), format );
+</code></pre>
       <!-- fragment -->
 
       <p>Of course, you can also use a non-default <code>Device</code>, as explained in the section on OutputDeviceNode.</p>
@@ -264,26 +274,29 @@ ci::audio::InputDeviceNodeRef input = ctx->createInputDeviceNode( Device::getDef
       </h2>
       <p>There are a couple <code>Node</code>s that are specifically designed for using audio data for visual or other analytical purposes on the main (UI) thread. Because of the multi-threaded nature of real-time audio processing, care must be taken to do this safely and in a manner that doesn't prohibit the audio thread from doing its necessary processing to deliver a continuous audio stream. This is where <ci dox="ci::audio::MonitorNode">MonitorNode</ci> comes in, which can be inserted anywhere within an audio graph and allows you to grab a buffer of audio samples from the main thread.</p>
       <p>To create and connect the <code>MonitorNode</code>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 mMonitor = ctx->makeNode( new audio::MonitorNode );
-mSomeGen >> mMonitor;</code></pre>
+mSomeGen >> mMonitor;
+</code></pre>
       <!-- fragment -->
 
       <p>And later to get its <ci>audio::Buffer</ci> for drawing:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 const audio::Buffer &amp;buffer = mMonitor->getBuffer();
 for( size_t ch = 0; ch &lt; buffer.getNumChannels(); ch++ ) {
     for( size_t i = 0; i &lt; buffer.getNumFrames(); i++ ) {
         draw sample..
     }
-}</code></pre>
+}
+</code></pre>
       <!-- fragment -->
 
       <p>Note that in the above example, <code>mMonitor</code> was not connected to the <code>Context::getOutput()</code> - it doesn't have to because it is a special subclass of <code>Node</code>s called <ci dox="ci::audio::NodeAutoPullable">NodeAutoPullable</ci>. Those who subclass this gain the ability to be 'pulled' directly by the owning <code>Context</code>, making it possible to enable processing on the <code>Node</code> without hearing the results. This is often all that is needed, such as in audio visualizer applications, but you are still able to connect <code>NodeAutoPullable</code>s to other outputs if this makes sense in your application. A typical use case for this would be audiovisual applications, where the audio samples at some point in the graph trigger fuel the elements, but you still want audio sent to the speakers.</p>
       <p>One refers to the slice of samples copied from the audio thread the <em>window</em>. The <em>window size</em> is the number of frames the buffer will have that is returned from <code>getBuffer()</code>, which is always a power of two and defaults the number of frames per block in the current <code>Context</code>. If you would like this to be larger, you can specify the size with the <ci dox="ci::audio::MonitorNode::Format">MonitorNode::Format</ci> during construction:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto format = audio::MonitorSpectralNode::Format().windowSize( 4096 );
-mMonitor = ctx->makeNode( new audio::MonitorNode( format ) );</code></pre>
+mMonitor = ctx->makeNode( new audio::MonitorNode( format ) );
+</code></pre>
       <!-- fragment -->
 
       <h3>RMS Volume</h3>
@@ -298,31 +311,33 @@ mMonitor = ctx->makeNode( new audio::MonitorNode( format ) );</code></pre>
          </div>
       </div>
       <p> To create and connect up the Nodes for this:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 void MyApp::setup()
 {
     mInputDeviceNode = ctx->createInputDeviceNode();
     mMonitorSpectralNode = ctx->makeNode( new audio::MonitorSpectralNode() );
 
     mInputDeviceNode >> mMonitorSpectralNode;    
-}</code></pre>
+}
+</code></pre>
       <!-- fragment -->
 
       <p>And later when you want to draw the magnitude spectrum, you get the magnitude spectrum data with:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 void MyApp::draw()
 {
     const vector<float> &amp;magSpectrum = mMonitorSpectralNode->getMagSpectrum();
 
     // draw the vector here...    
-}</code></pre>
+}
+</code></pre>
       <!-- fragment -->
 
       <p>The <code>MonitorSpectralNode::getMagSpectrum()</code> method first makes a copy of the audio samples, then it computes a forward FFT transform and finally converts to polar coordinates. What you get returned to you is the magnitudes only, the phase part is commonly ignored for visualizing the spectrum. While a full explanation of the DFT is out of scope here (<a href="https://ccrma.stanford.edu/~jos/st/">Julius O. Smith's book</a> is a great reference), you interpret the result as an array of <em>bins</em>, where each bin is a frequency range of the decomposed (analyzed) signal and the maximum frequency is the so-called <em>nyquist</em> (half the samplerate).</p>
       <p>Note that whereas in the time domain you receive an <code>audio::Buffer</code>, <code>getMagSpectrum()</code> returns a vector of floats regardless of the number of channels it is processing. If the <code>MonitorSpectralNode</code> has two or more channels, the samples in each channel will first be averaged before the magnitude spectrum is computed. Computing the exact frequency range is simple and well defined:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 float binFrequency = binIndex * (float)ctx->getSampleRate() / (float)mMonitorSpectralNode->getFftSize();
-      </code></pre>
+</code></pre>
       <!-- fragment -->
       <p>You can also the method <ci dox="MonitorSpectralNode::getFreqForBin">MonitorSpectralNode::getFreqForBin( size_t bin )</ci> as a convenience.</p>
       <h3>Draw Utilities</h3>
@@ -337,21 +352,20 @@ float binFrequency = binIndex * (float)ctx->getSampleRate() / (float)mMonitorSpe
       </h2>
       <p>This section explains how to read audio files and play them back within an audio graph, either as a buffer in memory or directly from file.</p>
       <p>Audio files are represented by the <ci>audio::SourceFile</ci> class, which acts as a handle on the audio file that you can use to decode samples from a wide range of formats. Loading a SourceFile from your assets directory is straightforward:</p>
-      <pre><code class="language-cpp">
-  audio::SourceFileRef sourceFile = audio::load( loadAsset( "audiofile.wav" ) );</code></pre>
+<pre><code class="language-cpp">audio::SourceFileRef sourceFile = audio::load( loadAsset( "audiofile.wav" ) );</code></pre>
       <!-- fragment -->
 
       <p>If the file could not be opened for decoding, an <code>AudioFileExc</code> is thrown along with an error description describing the reason of failure.</p>
       <p>To play the SourceFile within an audio graph, you use one of two flavors of <ci dox="ci::audio::SamplePlayerNode">SamplePlayerNode</ci>, which is the base interface for Node-based sample playback, including common procedures like starting, stopping, seeking, and looping an audio file. There are two concrete flavors of <code>SamplePlayerNode</code>, the first of which being <ci dox="ci::audio::BufferPlayerNode">BufferPlayerNode</ci>. This class plays the entire sound file from an in-memory <code>audio::Buffer</code> and can be setup like the following:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto ctx = audio::Context::master();
 mBufferPlayer = ctx->makeNode( new audio::BufferPlayerNode() );
-mBufferPlayer->loadBuffer( sourceFile );</code></pre>
+mBufferPlayer->loadBuffer( sourceFile );
+</code></pre>
       <!-- fragment -->
 
       <p>In contrast, the streaming variant <ci dox="ci::audio::FilePlayerNode">FilePlayerNode</ci>s only keeps a relatively small buffer in memory, constantly loading samples from disk during playback.</p>
-      <pre><code class="language-cpp">
-mFilePlayer = ctx->makeNode( new audio::FilePlayerNode( sourceFile ) );</code></pre>
+<pre><code class="language-cpp">mFilePlayer = ctx->makeNode( new audio::FilePlayerNode( sourceFile ) );</code></pre>
 
       <!-- fragment -->
       <p>Which one you use depends on your application. Usually you want to keep small audio source's, such as sound effects, in memory so that they can quickly be accessed without file i/o. The latency is also much less when playing back directly from memory. Longer audio files, such as a soundtrack, are good candidates for reading from disk at playback time, where the latency doesn't matter as much.</p>
@@ -376,25 +390,26 @@ mFilePlayer = ctx->makeNode( new audio::FilePlayerNode( sourceFile ) );</code></
          BufferRecorderNode
       </h2>
       <p>There is currently basic support for recording audio with the <ci dox="ci::audio::BufferRecorderNode">BufferRecorderNode</ci>. This allows you to write the audio stream from any point in the audio graph into an <code>audio::Buffer</code>, which can then be retrieved to write to disk to use in other creative ways. The following creates and connects a <code>BufferRecorderNode</code> to record from an <code>InputDeviceNode</code>, along with an <ci dox="ci::audio::GainNode">GainNode</ci> to control the volume of the input:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 mInput = ctx->createInputDeviceNode();
 mGain = ctx->makeNode( new ci::audio::GainNode( 0.7f ) );
 mRecorder = ctx->makeNode( new ci::audio::BufferRecorderNode );
 
-mInputDeviceNode >> mGain >> mMonitorSpectralNode >> mRecorder;</code></pre>
+mInputDeviceNode >> mGain >> mMonitorSpectralNode >> mRecorder;
+</code></pre>
       <!-- fragment -->
 
       <p>First thing to note is that again, <code>mRecorder</code> is not connected to <code>Context::getOutput()</code>, which isn't necessary because <code>BufferRecorderNode</code> inherits from <ci dox="ci::audio::NodeAutoPullable">NodeAutoPullable</ci>. You can of course connect <code>mRecorder</code>, or any other <code>Node</code> in your graph, up to the output, the choice is up to your application. The following would also work, and the audio is also sent to the speakers:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 mInputDeviceNode >> mGain >> mMonitorSpectralNode;
 mGain >> mRecorder;
-mGain >> ctx->getOutput();</code></pre>
+mGain >> ctx->getOutput();
+</code></pre>
       <!-- fragment -->
 
       <p>For optimal performance, you should set the length of the recording buffer before recording (the default is 1 second at a samplerate of 44.1k hertz). This can be done with the constructor or at runtime with <ci dox="ci::audio::BufferRecorderNode::setNumFrames()">BufferRecorderNode::setNumFrames()</ci>, though be warned that doing this while audio is being recorded has a good chance to cause audio drops because of a likely realloc and array shuffle.</p>
       <p>You start recording samples with the <ci dox="ci::audio::BufferRecorderNode::start">BufferRecorderNode::start()</ci> method. Once you have recorded enough samples, you can write the results to an audio file with the following:</p>
-      <pre><code class="language-cpp">
-mRecorder->writeToFile( "recorded.wav" );</code></pre>
+<pre><code class="language-cpp">mRecorder->writeToFile( "recorded.wav" );</code></pre>
       <!-- fragment -->
 
       <p>Currently the only codec supported for encoding is the popular .wav format. Sample types supported are 16-bit int, 24-bit int, and 32-bit float, which is specified by providing a <ci>audio::SampleType</ci> as the second argument to <ci dox="ci::audio::SampleType">BufferRecorderNode::writeToFile()</ci>.</p>
@@ -403,16 +418,16 @@ mRecorder->writeToFile( "recorded.wav" );</code></pre>
       </h2>
       <p>ChannelRouterNode is used to map the channels between two connected Nodes. This can be useful in multichannel situations, or to split a stereo Node into two mono Nodes. See above for information on how to setup a multichannel OutputDeviceNode.</p>
       <p>The following routes a <code>SamplePlayer</code> to channel 5 of the Context's output (it has already been configured to as a multi-channel output):</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto format = ci::audio::Node::Format().channels( 10 );
 auto channelRouter = ctx->makeNode( new audio::ChannelRouterNode( format ) );
-mSamplePlayer >> mChannelRouter->route( 0, 5 );</code></pre>
+mSamplePlayer >> mChannelRouter->route( 0, 5 );
+</code></pre>
       <!-- fragment -->
 
       <p>The first argument to <code>ChannelRouterNode::route()</code> is the input channel index, the second is the output channel index.</p>
       <p>If <code>mSamplePlayer</code> happens to be stereo, both channels will be mapped, provided that there are enough channels (starting at the ChannelRouterNode's channel index 5 ) to accomodate. If instead you need to specifically only route a single channel, the route() method can take a third argument to specify the channel count:</p>
-      <pre><code class="language-cpp">
-mSamplePlayer >> mChannelRouter->route( 0, 5, 1 );</code></pre>
+<pre><code class="language-cpp">mSamplePlayer >> mChannelRouter->route( 0, 5, 1 );</code></pre>
       <!-- fragment -->
 
       <p>Related Samples:</p>
@@ -435,7 +450,7 @@ mSamplePlayer >> mChannelRouter->route( 0, 5, 1 );</code></pre>
       </h1>
       <p>Many of the <code>Node</code>s contain parameters that are controllable over time, or in other words they are animatable. In some situations this is necessary to avoid pops in the audio signal, while it always allows for much creative freedom. This is achieved with the <ci>audio::Param</ci> class, allowing you to apply or append 'Event's (the audio equivilant to a <code>ci::Tween</code>) that are then interpreted at a sample-accurate rate.</p>
       <p>For example, the following connects up a simple audio graph containing a <code>GenSineNode</code> and <code>GainNode</code>, and then ramps the parameters on each:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto ctx = audio::master();
 auto sine = ctx->makeNode( new audio::GenSineNode( 220 ) );
 auto gain = ctx->makeNode( new audio::GainNode( 0 ) );
@@ -443,13 +458,15 @@ auto gain = ctx->makeNode( new audio::GainNode( 0 ) );
 sine >> gain >> ctx->getOutput();
 
 sine->getParamFreq()->applyRamp( 440, 0.5f );
-gain->getParam()->applyRamp( 0.9f, 0.5f );</code></pre>
+gain->getParam()->applyRamp( 0.9f, 0.5f );
+</code></pre>
       <!-- fragment -->
 
       <p>The above applies linear ramps on the <code>Param</code>s, though in some cases this will sound unnatural. Instead, you can use a curve function similar to the <code>ci::Timeline</code> API. The following uses <code>audio::rampOutQuad</code> to provide a more natural decay for the <code>GainNode</code>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto options = audio::Param::Options().rampFn( &amp;audio::rampOutQuad );
-mGain->getParam()->applyRamp( 0, 1.5f, options );</code></pre>
+mGain->getParam()->applyRamp( 0, 1.5f, options );
+</code></pre>
       <!-- fragment -->
 
       <h1><a class="anchor" id="nodes_voices"></a>
@@ -460,10 +477,11 @@ mGain->getParam()->applyRamp( 0, 1.5f, options );</code></pre>
          How a Voice manages its Nodes
       </h2>
       <p>The Voice API sits above and ties into the modular API, which is explained later in this document. Each Voice has a virtual <code>Voice::getInputNode()</code> member function that returns the <code>Node</code> object that is responsible for generating samples (held in a shared_ptr, <code>NodeRef</code>). This is actually a subclass of <code>Node</code> that varies depending on what the concrete type of voice is. For instance, <code>VoiceSamplePlayer</code> will return a <code>SamplePlayerNode</code>. To avoid typecasting, the method <ci dox="ci::audio::VoiceSamplePlayerNode::getSamplePlayerNode()">VoiceSamplePlayerNode::getSamplePlayerNode()</ci> is provide. You could use this for more detailed functionality related to sample playback, the following example simply prints the length of the file being played:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto sourceFile = audio::load( loadResource( "soundfile.wav" ) );
 auto voice = cinder::audio::Voice::create( sourceFile );
-app::console() << "length of Voice's file: " << voice->getSamplePlayerNode()->getNumSeconds() << endl;</code></pre>
+app::console() &lt;&lt; "length of Voice's file: " &lt;&lt; voice->getSamplePlayerNode()->getNumSeconds() &lt;&lt; endl;
+</code></pre>
       <!-- fragment -->
 
       <p>Because the Voice internally manages a chain of <code>Node</code>s, the actual <code>Node</code> that is connected to the master output can be retrieved with the virtual <ci dox="ci::audio::Voice::getOutputNode">Voice::getOutputNode()</ci> member function. This is currently always the <ci dox="ci::audio::Pan2dNode">Pan2dNode</ci>, however a generic <code>NodeRef</code> is returned because the actual type should be opaque to the user.</p>
@@ -471,12 +489,13 @@ app::console() << "length of Voice's file: " << voice->getSamplePlayerNode()->ge
          Manually directing the Voice output
       </h2>
       <p>By default, a <code>Voice</code> is automatically connected up to <ci code dox="ci::audio::Context::master()" title="Returns the master Context that manages hardware I/O and real-time processing, which is platform spec...">Context::master()</ci>, which represents the active output hardware device (ex. speakers). If you plan to direct the <code>Voice</code>'s output to something else, you need to specify this at creation time by passing <code>false</code> to <ci dox="ci::audio::Voice::Options::connectToMaster()">Voice::Options::connectToMaster()</ci>. For example, the following manually connects the <code>Voice</code> up to a <ci dox="ci::audio::MonitorNode">MonitorNode</ci> (visualize the audio signal elsewhere) and then to <ci node dox="ci::audio::Context::master" title="Returns the master Context that manages hardware I/O and real-time processing, which is platform spec...">Context::master()</ci>:</p>
-      <pre><code class="language-cpp">
+<pre><code class="language-cpp">
 auto options = audio::Voice::Options().connectToMaster( false );
 mVoice = audio::Voice::create( sourceFile, options );
 mMonitor = audio::master()->makeNode( new audio::MonitorNode );
 
-mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();</code></pre>
+mVoice->getOutputNode() >> mMonitor >> audio::master()->getOutput();
+</code></pre>
       <!-- fragment -->
 
       <h1><a class="anchor" id="platform_specific"></a>

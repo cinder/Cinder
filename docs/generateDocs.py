@@ -1,21 +1,15 @@
 #! /usr/bin/python
 import sys
-# import os
 import codecs
-# import shutil
 import copy
 import re
 import xml.etree.ElementTree as Et
+import json
 import os
 import shutil
 import stat
 import urlparse
 from bs4 import BeautifulSoup, Tag, NavigableString
-# import html5check
-# import html_linter
-# import html5lib
-# from distutils.dir
-# _util import copy_tree
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
@@ -66,6 +60,7 @@ public_static_function_header = {
 g_tag_xml = None
 g_symbolMap = None
 g_currentFile = None
+g_search_index = None
 
 
 # mapping for the tag file with helper functions
@@ -88,14 +83,25 @@ class SymbolMap(object):
 
             self.functionList = []
             self.relatedLinks = []
+            self.type_defs = []
+
             # Path the the description prefix
             self.prefixPath = None
+
+            # list of tags to be added to the search index
+            self.tags = []
+            self.tags.append(strip_compound_name(self.name))
 
         def add_related_link(self, a_link):
             self.relatedLinks.append(a_link)
 
         def define_prefix(self, path):
             self.prefixPath = path
+
+        def add_type_def(self, type_def_obj):
+            self.type_defs.append(type_def_obj)
+            # add typedef string to search tags
+            self.tags.append(strip_compound_name(type_def_obj.name))
 
     class Namespace(object):
         def __init__(self, name, file_name):
@@ -379,7 +385,6 @@ class FileData(object):
         # kind of file that we are parsing (class, namespace, etc)
         self.kind = find_file_kind(tree)
         self.kind_explicit = find_file_kind_explicit(tree)
-        print "KIND: " + self.kind
 
         # find any common html elements and populate common elements
         self.parse_template()
@@ -1121,7 +1126,7 @@ def inject_html(src_content, dest_el, src_path, dest_path ):
     :return:
     """
 
-    update_links(src_content, src_path)
+    update_links(src_content, src_path, dest_path)
 
     try:
         # append body content to dest_el
@@ -1256,7 +1261,7 @@ def process_class_xml_file(in_path, out_path, html):
     tree = parse_html(html, in_path, out_path)
 
     # update links in the template
-    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html")
+    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
     if tree is None:
         return
@@ -1454,6 +1459,13 @@ def process_class_xml_file(in_path, out_path, html):
     for tag in html.find_all('ci'):
         process_ci_tag(html, tag, in_path, out_path)
 
+    # add file to search index
+    search_tags = []
+    if class_def:
+        search_tags = class_def.tags
+    # print search_tags
+    add_to_search_index(html, out_path, search_tags)
+
     # write the file
     write_html(html, out_path)
 
@@ -1551,7 +1563,7 @@ def process_namespace_xml_file(in_path, out_path, html):
         return
 
     # update links in the template
-    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html")
+    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
     # get common data for the file
     g_currentFile = FileData(tree, html)
@@ -1698,6 +1710,9 @@ def process_namespace_xml_file(in_path, out_path, html):
 
     gen_sub_nav(subnav_anchors)
 
+    # add file to search index
+    add_to_search_index(html, out_path, ["namespace"])
+
     # write the file
     write_html(html, out_path)
 
@@ -1717,6 +1732,9 @@ def process_html_file(in_path, out_path):
     elif in_path.find("guides/") > -1:
         html_template = "guidesContentTemplate.html"
 
+    is_searchable = False
+    search_tags = []
+
     # construct template
 
     if in_path.find("htmlsrc/index.html") > -1:
@@ -1732,7 +1750,7 @@ def process_html_file(in_path, out_path):
         template_content_el = bs4.body.find(id="template-content")
 
         # update links in the template
-        update_links(bs4, TEMPLATE_PATH + html_template)
+        update_links(bs4, TEMPLATE_PATH + html_template, out_path)
 
         # inject html into a template content div
         inject_html(orig_html, template_content_el, in_path, out_path)
@@ -1746,6 +1764,10 @@ def process_html_file(in_path, out_path):
         elif in_path.find("htmlsrc/classes.html") > -1:
             list_classes(bs4, template_content_el)
 
+        else:
+            # add file to search index
+            is_searchable = True
+
         # copy all js and css paths that may be in the original html and paste into new file
         for link in orig_html.find_all("link"):
             bs4.head.append(link)
@@ -1757,11 +1779,25 @@ def process_html_file(in_path, out_path):
             for d in orig_html.head.find_all("ci"):
                 bs4.head.append(d)
 
+        # copy title over
+        if orig_html.head.title:
+            if not bs4.head.title:
+                bs4.head.append(gen_tag(bs4, "title"))
+            bs4.head.title.append(orig_html.head.title.text)
+
         # link up all ci tags
         for tag in bs4.find_all('ci'):
             process_ci_tag(bs4, tag, in_path, out_path)
 
+        # add tags from the meta keywords tag
+        for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
+            for keyword in meta_tag['content'].split(','):
+                search_tags.append(keyword.encode('utf-8').strip())
+
     if in_path.find("_docs/") < 0:
+        if is_searchable:
+            add_to_search_index(bs4, out_path, search_tags)
+
         write_html(bs4, out_path)
 
 
@@ -1906,7 +1942,7 @@ def find_ci_tag_ref(link):
 
 # ----------------------------------------------- END CI TAG FUNCTIONS -------------------------------------------------
 
-def update_links(html, src_path):
+def update_links(html, src_path, dest_path):
     """
     Replace all of the relative a links, js links and image links and make them relative to the outpath
     :param html:
@@ -1918,22 +1954,22 @@ def update_links(html, src_path):
     # css links
     for link in html.find_all("link"):
         if link.has_attr("href"):
-            link["href"] = update_link(link["href"], src_path)
+            link["href"] = update_link(link["href"], src_path, dest_path)
 
     # a links
     for a in html.find_all("a"):
         if a.has_attr("href"):
-            a["href"] = update_link(a["href"], src_path)
+            a["href"] = update_link(a["href"], src_path, dest_path)
 
     # script links
     for script in html.find_all("script"):
         if script.has_attr("src"):
-            script["src"] = update_link(script["src"], src_path)
+            script["src"] = update_link(script["src"], src_path, dest_path)
 
     # images
     for img in html.find_all("img"):
         if img.has_attr("src"):
-            img["src"] = update_link(img["src"], src_path)
+            img["src"] = update_link(img["src"], src_path, dest_path)
 
     # iframes
     iframe_links = []
@@ -1944,8 +1980,8 @@ def update_links(html, src_path):
                 return
 
             src_file = urlparse.urljoin(src_path, link_src)
-            dest_file = update_link(iframe["src"], src_path)
-
+            dest_file = src_file.replace("htmlsrc", "html")
+            update_link(iframe["src"], src_path, dest_path)
 
             # iframe_link = update_link(iframe["src"], src_path)
             iframe["src"] = dest_file
@@ -1961,7 +1997,7 @@ def update_links(html, src_path):
 
 
 
-def update_link(link, in_path):
+def update_link(link, in_path, out_path):
     """
     Update the given link to point to something relative to the new path
     :param link: The link to change
@@ -1976,19 +2012,13 @@ def update_link(link, in_path):
     if in_path.find(BASE_PATH) < 0:
         in_path = BASE_PATH + in_path
 
+    # get absolute in path
     abs_link_path = urlparse.urljoin(in_path, link)
-    final_path = abs_link_path .replace("htmlsrc", "html")
 
-    # print "\n *UPDATE LINK*"
-    # print str(BASE_PATH)
-    # print in_path.find(str(BASE_PATH))
-    # print in_path
-    # print link
-    # print abs_link_path
-    # print final_path
-    # print "---"
+    # convert to relative link in relation to the out path
+    rel_link_path = os.path.relpath(abs_link_path.replace("htmlsrc", "html"), os.path.dirname(out_path))
 
-    return final_path
+    return rel_link_path
 
 
 def construct_template(templates):
@@ -2118,6 +2148,8 @@ def get_symbol_to_file_map():
 
             if shared_from_class is not None:
                 type_def_obj.sharedFrom = shared_from_class
+                # let the class know that it has some typedefs associated with it
+                shared_from_class.add_type_def(type_def_obj)
 
             symbol_map.typedefs[name] = type_def_obj
 
@@ -2220,6 +2252,45 @@ def write_html(html, save_path):
     with codecs.open(save_path, "w", "UTF-8") as outFile:
         outFile.write(document)
 
+def write_search_index():
+
+    # with open(DOXYGEN_HTML_PATH + 'search_index.json', 'w') as outfile:
+    #     json.dump(g_search_index, outfile)
+
+    # save search index to js file
+    document = "var search_index_data = " + json.dumps(g_search_index).encode( 'utf-8' )
+    # print document
+    if not os.path.exists(os.path.dirname(DOXYGEN_HTML_PATH + 'search_index.js')):
+        os.makedirs(os.path.dirname(DOXYGEN_HTML_PATH + 'search_index.js'))
+    with codecs.open(DOXYGEN_HTML_PATH + 'search_index.js', "w", "UTF-8") as outFile:
+        outFile.write(document)
+
+def add_to_search_index(html, save_path, tags=[]):
+    global g_search_index
+
+    if not g_search_index:
+        g_search_index = {"data": []}
+
+    search_obj = {"id": None, "title": None, "tags": []}
+    search_obj["id"] = len(g_search_index["data"])
+    search_obj["title"] = html.head.find("title").text if html.head.find("title") else ""
+    search_obj["link"] = save_path
+    # content in container tag
+    body = None
+    if html.body.find(id="container"):
+        content = ""
+        try:
+            content = html.body.find(id="container").get_text(" ", strip=True)
+            content.replace("\t", "")
+            content.replace("\n", "")
+        except:
+            print "can't add body content to search index"
+        body = content.encode('utf-8')
+
+    # search_obj["body"] = body
+    search_obj["tags"] = tags
+    g_search_index["data"].append(search_obj)
+
 
 def process_file(in_path, out_path=None):
     """ Generate documentation for a single file
@@ -2282,6 +2353,10 @@ def process_dir(in_path, out_path):
             else:
                 print "SKIPPING: " + file_path
                 # TODO: base template and just iterate do an html iteration
+
+    # save search index to json file
+    # print g_search_index
+    write_search_index()
 
 
 def process_html_dir(in_path, out_path):
