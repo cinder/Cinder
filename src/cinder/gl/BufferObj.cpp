@@ -218,10 +218,8 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_COCOA_TOUCH )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-  #endif
 #else
 	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
 #endif
