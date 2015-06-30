@@ -42,22 +42,6 @@
 
 using namespace std;
 
-// ES 2 Multisampling is available on iOS and ANGLE via an extension
-#if (! defined( CINDER_GL_ES_2 )) || ( defined( CINDER_COCOA_TOUCH ) ) || defined( CINDER_GL_ANGLE )
-	#define SUPPORTS_FBO_MULTISAMPLING
-	#if defined( CINDER_COCOA_TOUCH ) && ! defined( CINDER_GL_ES_3 )
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_APPLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_APPLE
-		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_APPLE
-		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_APPLE
-	#elif defined( CINDER_GL_ANGLE ) && ! defined( CINDER_GL_ES_3 )
-		#define GL_READ_FRAMEBUFFER					GL_READ_FRAMEBUFFER_ANGLE
-		#define GL_DRAW_FRAMEBUFFER					GL_DRAW_FRAMEBUFFER_ANGLE
-		#define GL_READ_FRAMEBUFFER_BINDING			GL_READ_FRAMEBUFFER_BINDING_ANGLE
-		#define GL_DRAW_FRAMEBUFFER_BINDING			GL_DRAW_FRAMEBUFFER_BINDING_ANGLE
-	#endif
-#endif
-
 namespace cinder { namespace gl {
 
 #if defined( CINDER_COCOA )
@@ -72,9 +56,6 @@ namespace cinder { namespace gl {
 Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	: mPlatformData( platformData ),
 	mColor( ColorAf::white() ),
-#if ! defined( CINDER_GL_ES )
-	mCachedTransformFeedbackObj( nullptr ),
-#endif
 	mObjectTrackingEnabled( platformData->mObjectTracking )
 {
 	// set thread's active Context to 'this' in case anything calls gl::context() (like the GlslProg constructor)
@@ -82,7 +63,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	Context::reflectCurrent( this );
 
 	// setup default VAO
-#if defined( SUPPORTS_FBO_MULTISAMPLING )
+#if defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	mDefaultVao = Vao::create();
 	mVaoStack.push_back( mDefaultVao.get() );
 	mDefaultVao->setContext( this );
@@ -149,8 +130,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 	// set default shader
 	pushGlslProg( getStockShader( ShaderDef().color() ) );
 	
-	// debug context
-#if ! defined( CINDER_GL_ES ) && defined( CINDER_MSW )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 	if( mPlatformData->mDebug ) {
 		mDebugLogSeverity = mPlatformData->mDebugLogSeverity;
 		mDebugBreakSeverity = mPlatformData->mDebugBreakSeverity;
@@ -160,7 +140,7 @@ Context::Context( const std::shared_ptr<PlatformData> &platformData )
 			glDebugMessageCallback( (GLDEBUGPROC)debugMessageCallback, this );
 		}
 	}
-#endif
+#endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 
 	// restore current context thread-local to what it was previously
 	Context::reflectCurrent( prevCtx );
@@ -728,12 +708,14 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer )
 {
 	switch( target ) {
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		case GL_TRANSFORM_FEEDBACK_BUFFER:
 			if( mCachedTransformFeedbackObj )
 				mCachedTransformFeedbackObj->setIndex( index, buffer );
 			else
 				glBindBufferBase( target, index, buffer->getId() );
 		break;
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		case GL_UNIFORM_BUFFER:
 #if defined( GL_SHADER_STORAGE_BUFFER )
 		case GL_SHADER_STORAGE_BUFFER:
@@ -756,6 +738,9 @@ void Context::bindBufferRange( GLenum target, GLuint index, const BufferObjRef &
 	glBindBufferRange( target, index, buffer->getId(), offset, size );
 }
 
+#endif // ! defined( CINDER_GL_ES_2 )
+
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 //////////////////////////////////////////////////////////////////
 // TransformFeedbackObj
 void Context::bindTransformFeedbackObj( const TransformFeedbackObjRef &feedbackObj )
@@ -814,7 +799,8 @@ void Context::endTransformFeedback()
 		glEndTransformFeedback();
 	}
 }
-#endif
+
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 
 //////////////////////////////////////////////////////////////////
 // Shader
@@ -1059,7 +1045,7 @@ uint8_t Context::getActiveTexture()
 // Framebuffers
 void Context::bindFramebuffer( GLenum target, GLuint framebuffer )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( target == GL_FRAMEBUFFER ) {
 		if( setStackState<GLint>( mFramebufferStack, framebuffer ) )
 			glBindFramebuffer( target, framebuffer );
@@ -1107,7 +1093,7 @@ void Context::pushFramebuffer( const FboRef &fbo, GLenum target )
 
 void Context::pushFramebuffer( GLenum target, GLuint framebuffer )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( pushStackState<GLint>( mFramebufferStack, framebuffer ) )
 		glBindFramebuffer( target, framebuffer );
 #else
@@ -1124,7 +1110,7 @@ void Context::pushFramebuffer( GLenum target, GLuint framebuffer )
 
 void Context::pushFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	pushStackState<GLint>( mFramebufferStack, getFramebuffer( target ) );
 #else
 	if( target == GL_FRAMEBUFFER || target == GL_READ_FRAMEBUFFER ) {
@@ -1138,7 +1124,7 @@ void Context::pushFramebuffer( GLenum target )
 
 void Context::popFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( popStackState<GLint>( mFramebufferStack ) )
 		if( ! mFramebufferStack.empty() )
 			glBindFramebuffer( target, mFramebufferStack.back() );
@@ -1158,7 +1144,7 @@ void Context::popFramebuffer( GLenum target )
 
 GLuint Context::getFramebuffer( GLenum target )
 {
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	if( mFramebufferStack.empty() ) {
 		GLint queriedInt;
 		glGetIntegerv( GL_FRAMEBUFFER_BINDING, &queriedInt );
@@ -1802,7 +1788,8 @@ void Context::drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoi
 	glDrawElements( mode, count, type, indices );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
 void Context::drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei primcount )
 {
 #if defined( CINDER_GL_ANGLE )
@@ -1824,7 +1811,8 @@ void Context::drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, co
 	glDrawElementsInstanced( mode, count, type, indices, primcount );
 #endif
 }
-#endif // (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 ///////////////////////////////////////////////////////////////////////////////////////////
 // Shaders
@@ -2033,8 +2021,9 @@ VboRef Context::getDefaultElementVbo( size_t requiredSize )
 	
 	return mDefaultElementVbo;
 }
+
 ///////////////////////////////////////////////////////////////////////////////////////////
-#if defined( CINDER_MSW ) && ! defined( CINDER_GL_ANGLE )
+#if defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 namespace {
 // because the constants aren't in sequential (or ascending) order, we need to convert it
 int debugSeverityToOrd( GLenum severity )
@@ -2078,6 +2067,6 @@ void __stdcall Context::debugMessageCallback( GLenum source, GLenum type, GLuint
 		__debugbreak();	
 	}
 }
-#endif // defined( CINDER_MSW )
+#endif // defined( CINDER_GL_HAS_DEBUG_OUTPUT )
 
 } } // namespace cinder::gl

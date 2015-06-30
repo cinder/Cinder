@@ -241,7 +241,7 @@ class VboMesh {
 
 	//! Issues a glDraw* call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawImpl( GLint first = 0, GLsizei count = -1 );
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 	//! Issues a glDraw*Instanced call, but without binding a VAO or sending shader vars. Consider gl::draw( VboMeshRef ) instead. Knows whether to call glDrawArrays or glDrawElements
 	void		drawInstancedImpl( GLsizei instanceCount );
 #endif

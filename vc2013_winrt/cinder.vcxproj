@@ -738,8 +738,6 @@
     <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\gl\TextureFormatParsers.cpp" />
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp" />
     <ClCompile Include="..\src\cinder\gl\Ubo.cpp" />
     <ClCompile Include="..\src\cinder\gl\Vao.cpp" />
     <ClCompile Include="..\src\cinder\gl\VaoImplCore.cpp" />

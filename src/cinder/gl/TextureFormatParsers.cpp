@@ -106,10 +106,10 @@ void parseKtx( const DataSourceRef &dataSource, TextureData *resultData )
 		}
 		
 		for( int arrayElement = 0; arrayElement < std::max<int>( 1, header.numberOfArrayElements ); ++arrayElement ) { // currently always 0->1
-			for( int faceIdx = 0; faceIdx < header.numberOfFaces; ++faceIdx ) { // currently always 0->1 or 0->6
+			for( uint32_t faceIdx = 0; faceIdx < header.numberOfFaces; ++faceIdx ) { // currently always 0->1 or 0->6
 				level.push_back( TextureData::Face() );
 				TextureData::Face &face = level.back();
-				for( int zSlice = 0; zSlice < header.pixelDepth + 1; ++zSlice ) { // curently always 0->1
+				for( uint32_t zSlice = 0; zSlice < header.pixelDepth + 1; ++zSlice ) { // curently always 0->1
 					face.dataSize = imageSize;
 					face.offset = byteOffset;
 					if( byteOffset + imageSize > resultData->getDataStoreSize() )
@@ -274,6 +274,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 	int internalFormat, dataFormat = 0, dataType = 0;
 	int32_t blockSizeBytes = 16;
 	switch( ddsd.ddpfPixelFormat.dwFourCC ) { 
+#if ! defined( CINDER_GL_ANGLE )
 		case 20 /*D3DFMT_R8G8B8*/:
 			internalFormat = GL_RGB8;
 			dataFormat = GL_BGR;
@@ -286,6 +287,7 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 			dataType = GL_UNSIGNED_BYTE;
 			blockSizeBytes = sizeof(uint8_t) * 4;
 		break;
+#endif
 		case FOURCC_DXT1: 
 			internalFormat = GL_COMPRESSED_RGBA_S3TC_DXT1_EXT;
 			blockSizeBytes = 8;
@@ -307,15 +309,10 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 #endif
 		case FOURCC_DX10:
 			switch( ddsHeader10.dxgiFormat ) {
+#if ! defined( CINDER_GL_ES_2 )
 				case 10/*DXGI_FORMAT_R16G16B16A16_FLOAT*/:
 					internalFormat = GL_RGBA16F;
 					dataType = GL_HALF_FLOAT;
-					dataFormat = GL_RGBA;
-					blockSizeBytes = sizeof(uint16_t) * 4;
-				break;
-				case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
-					internalFormat = GL_RGBA16;
-					dataType = GL_UNSIGNED_SHORT;
 					dataFormat = GL_RGBA;
 					blockSizeBytes = sizeof(uint16_t) * 4;
 				break;
@@ -325,6 +322,15 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 					dataFormat = GL_RGBA;
 					blockSizeBytes = sizeof(float) * 4;
 				break;
+#endif
+#if ! defined( CINDER_GL_ANGLE )
+				case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
+					internalFormat = GL_RGBA16;
+					dataType = GL_UNSIGNED_SHORT;
+					dataFormat = GL_RGBA;
+					blockSizeBytes = sizeof(uint16_t) * 4;
+				break;
+#endif
 				case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
 				case 71/*DXGI_FORMAT_BC1_UNORM*/:
 				case 72/*DXGI_FORMAT_BC1_UNORM_SRGB*/:

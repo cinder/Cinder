@@ -61,7 +61,8 @@ void drawElements( GLenum mode, GLsizei count, GLenum type, const GLvoid *indice
 {
 	context()->drawElements( mode, count, type, indices );
 }
-	
+
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void drawArraysInstanced( GLenum mode, GLint first, GLsizei count, GLsizei instanceCount )
 {
 	context()->drawArraysInstanced( mode, first, count, instanceCount );
@@ -71,6 +72,7 @@ void drawElementsInstanced( GLenum mode, GLsizei count, GLenum type, const GLvoi
 {
 	context()->drawElementsInstanced( mode, count, type, indices, instanceCount );
 }
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 namespace {
 

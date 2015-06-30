@@ -1209,12 +1209,6 @@
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Ubo.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
