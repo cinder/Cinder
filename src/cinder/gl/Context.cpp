@@ -708,12 +708,14 @@ void Context::renderbufferDeleted( const Renderbuffer *buffer )
 void Context::bindBufferBase( GLenum target, GLuint index, const BufferObjRef &buffer )
 {
 	switch( target ) {
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		case GL_TRANSFORM_FEEDBACK_BUFFER:
 			if( mCachedTransformFeedbackObj )
 				mCachedTransformFeedbackObj->setIndex( index, buffer );
 			else
 				glBindBufferBase( target, index, buffer->getId() );
 		break;
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 		case GL_UNIFORM_BUFFER:
 #if defined( GL_SHADER_STORAGE_BUFFER )
 		case GL_SHADER_STORAGE_BUFFER:

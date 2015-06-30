@@ -452,12 +452,13 @@ class GlslProg {
 	const UniformBlock* findUniformBlock( const std::string &name ) const;
 	//! Returns a const reference to the UniformBlock cache.
 	const std::vector<UniformBlock>& getActiveUniformBlocks() const { return mUniformBlocks; }
+#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
+#if defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
 	//! Returns a const pointer to the TransformFeedbackVarying that matches \a name. Returns nullptr if the transform feedback varying doesn't exist.
 	const TransformFeedbackVaryings* findTransformFeedbackVaryings( const std::string &name ) const;
 	//! Returns a const reference to the TransformFeedbackVaryings cache.
 	const std::vector<TransformFeedbackVaryings>& getActiveTransformFeedbackVaryings() const { return mTransformFeedbackVaryings; }
-#endif // defined( CINDER_GL_HAS_UNIFORM_BLOCKS )
-	
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )	
 	std::string		getShaderLog( GLuint handle ) const;
 
 	//! Returns a list of included files (via the `#include` directive) detected and parsed by the ShaderPreprocessor.
