@@ -309,12 +309,20 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 #endif
 		case FOURCC_DX10:
 			switch( ddsHeader10.dxgiFormat ) {
+#if ! defined( CINDER_GL_ES_2 )
 				case 10/*DXGI_FORMAT_R16G16B16A16_FLOAT*/:
 					internalFormat = GL_RGBA16F;
 					dataType = GL_HALF_FLOAT;
 					dataFormat = GL_RGBA;
 					blockSizeBytes = sizeof(uint16_t) * 4;
 				break;
+				case 2/*DXGI_FORMAT_R32G32B32A32_FLOAT*/:
+					internalFormat = GL_RGBA32F;
+					dataType = GL_FLOAT;
+					dataFormat = GL_RGBA;
+					blockSizeBytes = sizeof(float) * 4;
+				break;
+#endif
 #if ! defined( CINDER_GL_ANGLE )
 				case 12/*DXGI_FORMAT_R16G16B16A16_UINT*/:
 					internalFormat = GL_RGBA16;
@@ -323,12 +331,6 @@ void parseDds( const DataSourceRef &dataSource, TextureData *resultData )
 					blockSizeBytes = sizeof(uint16_t) * 4;
 				break;
 #endif
-				case 2/*DXGI_FORMAT_R32G32B32A32_FLOAT*/:
-					internalFormat = GL_RGBA32F;
-					dataType = GL_FLOAT;
-					dataFormat = GL_RGBA;
-					blockSizeBytes = sizeof(float) * 4;
-				break;
 				case 70/*DXGI_FORMAT_BC1_TYPELESS*/:
 				case 71/*DXGI_FORMAT_BC1_UNORM*/:
 				case 72/*DXGI_FORMAT_BC1_UNORM_SRGB*/:

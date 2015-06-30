@@ -491,7 +491,7 @@ void VboMesh::drawImpl( GLint first, GLsizei count )
 		glDrawArrays( mGlPrimitive, first, ( count < 0 ) ? ( mNumVertices - first ) : count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -500,7 +500,7 @@ void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 	else
 		ctx->drawArraysInstanced( mGlPrimitive, 0, mNumVertices, instanceCount );
 }
-#endif
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {
