@@ -68,10 +68,10 @@
 	#define CINDER_GL_HAS_UNIFORM_BLOCKS
 	#define CINDER_GL_HAS_DRAW_INSTANCED
 	#define CINDER_GL_HAS_FBO_MULTISAMPLING
+	#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
 	#if ! defined( CINDER_GL_ES_3 ) // Desktop Only
 		#define CINDER_GL_HAS_GEOM_SHADER
 		#define CINDER_GL_HAS_TESS_SHADER
-		#define CINDER_GL_HAS_TRANSFORM_FEEDBACK
 	#endif // ! defined( CINDER_GL_ES_3 )
 #endif // ! defined( CINDER_GL_ES_2 )
 

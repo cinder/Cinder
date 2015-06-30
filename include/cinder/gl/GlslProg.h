@@ -227,11 +227,13 @@ class GlslProg {
 		const std::vector<std::string>&  getVaryings() const { return mTransformVaryings; }
 		//! Returns the TransForm Feedback format
 		GLenum		getTransformFormat() const { return mTransformFormat; }
+#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+#if defined( CINDER_GL_HAS_TESS_SHADER )
 		//! Returns the fs::path for the tessellation control shader. Returns an empty fs::path if it isn't present.
 		const fs::path&	getTessellationCtrlPath() const { return mTessellationCtrlShaderPath; }
 		//! Returns the fs::path for the tessellation eval shader. Returns an empty fs::path if it isn't present.
 		const fs::path&	getTessellationEvalPath() const { return mTessellationEvalShaderPath; }
-#endif // defined( CINDER_GL_HAS_TRANSFORM_FEEDBACK )
+#endif // defined( CINDER_GL_HAS_TESS_SHADER )
 #if ! defined( CINDER_GL_ES )
 		//! Specifies a binding for a user-defined varying out variable to a fragment shader color number. Analogous to glBindFragDataLocation.
 		Format&		fragDataLocation( GLuint colorNumber, const std::string &name );
