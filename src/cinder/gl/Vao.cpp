@@ -156,7 +156,7 @@ void Vao::setLabel( const std::string &label )
 	mLabel = label;
 #if defined( CINDER_COCOA_TOUCH )
 	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-#else
+#elif ! defined( CINDER_GL_ANGLE )
 	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }
