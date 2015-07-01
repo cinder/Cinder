@@ -1,4 +1,4 @@
-### Cinder 0.8.6: [libcinder.org](http://libcinder.org)
+### Cinder 0.9.0dev: [libcinder.org](http://libcinder.org)
 
 <p align="center">
   <img src="http://libcinder.org/images/logo.png" alt="Cinder Logo"/>
@@ -11,8 +11,7 @@ This branch has had the development branch ***glNext*** merged recently. Please 
 Additionally, to update you'll need to add a new submodule:<br />
 ```
 git pull
-git submodule init
-git submodule update
+git submodule update --init
 ```
 
 
