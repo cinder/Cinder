@@ -56,6 +56,9 @@ class PolyLineT {
 
 	void		scale( const T &scaleFactor, T scaleCenter = T() );
 	void		offset( const T &offsetBy );
+	void		reverse();
+	
+	PolyLineT<T>	reversed() const;
 
 	//! Returns whether the point \a pt is contained within the boundaries of the PolyLine
 	bool	contains( const vec2 &pt ) const;
