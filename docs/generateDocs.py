@@ -10,6 +10,9 @@ import shutil
 import stat
 import urlparse
 from bs4 import BeautifulSoup, Tag, NavigableString
+from pystache.loader import Loader
+from pystache.renderer import Renderer
+from collections import namedtuple
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
@@ -21,6 +24,11 @@ GITHUB_PATH = "http://github.com/cinder/Cinder/tree/master"
 
 # state vars
 PROCESSED_HTML_DIR = False
+
+class Config(object):
+    def __init__(self):
+        self.SKIP_HTML_PARSING = False
+        self.class_template = os.path.join(TEMPLATE_PATH, "class_template.mustache")
 
 # convert docygen markup to html markup
 tagDictionary = {
@@ -61,7 +69,11 @@ g_tag_xml = None
 g_symbolMap = None
 g_currentFile = None
 g_search_index = None
+config = Config()
 
+
+
+# ================================================== START SYMBOL MAP ==================================================
 
 # mapping for the tag file with helper functions
 class SymbolMap(object):
@@ -92,8 +104,8 @@ class SymbolMap(object):
             self.tags = []
             self.tags.append(strip_compound_name(self.name))
 
-        def add_related_link(self, a_link):
-            self.relatedLinks.append(a_link)
+        def add_related_link(self, link_data):
+            self.relatedLinks.append(link_data)
 
         def define_prefix(self, path):
             self.prefixPath = path
@@ -359,12 +371,52 @@ class SymbolMap(object):
                     ns_classes.append(class_obj)
         return ns_classes
 
+# --------------------------------------------------- END SYMBOL MAP ---------------------------------------------------
+
+class LinkData(object):
+
+    def __init__(self, link=None, label=None):
+        self.link = link
+        self.label = label
+
+
+def convert_rel_path(link, src_dir, dest_dir):
+    """
+    Converts a relative path from one directory to another
+    :param link: Link to convert
+    :param src_dir: current relative directory
+    :param dest_dir: destination relative directory
+    :return: link with new relative path
+    """
+
+    if link.startswith("http") or link.startswith("javascript:"):
+        return link
+
+    print "LINK: " + link
+
+    # if a relative path, make it absolute
+    if src_dir.find(BASE_PATH) < 0:
+        src_dir = BASE_PATH + src_dir
+
+    # get absolute in path, converted from htmlsrc to html
+    abs_src_path = urlparse.urljoin(src_dir, link).replace("htmlsrc", "html")
+    # destination absolute path
+    abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
+
+    new_link = os.path.relpath(abs_dest_path, os.path.dirname(abs_src_path))
+    return new_link
+
 
 class FileData(object):
+
     def __init__(self, tree, bs4):
 
         self.tree = tree  # xml file that describes the page
         self.bs4 = bs4  # html file of the actual page
+
+        self.description = ""
+        self.title = ""
+        self.page_header = ""
 
         self.contentsEl = None
         self.sideNavEl = None
@@ -418,6 +470,71 @@ class FileData(object):
 
         # def set_category(self):
         #     print "SET CATEGORY"
+
+    def get_content(self):
+        content = {
+            "description": self.description,
+            "title": self.title,
+            "page_header": self.page_header
+        }
+        return content
+
+
+class ClassFileData(FileData):
+
+    def __init__(self, tree, bs4):
+        FileData.__init__(self, tree, bs4)
+        self.includes = None
+        self.typedefs = []
+        self.classes = []
+        self.related = []
+        self.namespace_nav = None
+        self.prefix = None
+        self.enumerations = []
+        self.public_functions = []
+        self.public_static_functions = []
+        self.anchors = []
+
+    def get_content(self):
+        orig_content = super(ClassFileData, self).get_content()
+        content = orig_content.copy()
+        class_content = {
+            "side_nav_content": {
+                "include": self.includes.__dict__,
+                "typedefs": {
+                    "list": self.typedefs,
+                    "length": len(self.typedefs)
+                },
+                "classes": {
+                    "list": self.classes,
+                    "length": len(self.classes)
+                },
+                "related": {
+                    "list": self.related,
+                    "length": len(self.related)
+                }
+            },
+            "namespace_nav": self.namespace_nav,
+            "prefix": self.prefix,
+            "enumerations": {
+                "anchor": "enumerations",
+                "list": self.enumerations,
+                "length": len(self.public_functions)
+            },
+            "public_functions": {
+                "anchor": "public-member-functions",
+                "list": self.public_functions,
+                "length": len(self.public_functions)
+            },
+            "public_static_functions": {
+                "anchor": "public-static-functions",
+                "list": self.public_static_functions,
+                "length": len(self.public_static_functions)
+            }
+        }
+        content.update(class_content)
+        return content
+
 
 
 def find_compound_name(tree):
@@ -1260,164 +1377,260 @@ def process_class_xml_file(in_path, out_path, html):
     # define the tree that contains all the data we need to populate this page
     tree = parse_html(html, in_path, out_path)
 
-    # update links in the template
-    update_links(html, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
     if tree is None:
         return
 
     # get common data for the file
-    g_currentFile = FileData(tree, html)
-    # compoundName = g_currentFile.compoundName
+
+    file_data = ClassFileData(tree, html)
+    g_currentFile = file_data
+    include_file = tree.find(r"compounddef/includes").text
     class_name = g_currentFile.name
+    file_def = g_symbolMap.find_file(include_file)
+    class_def = g_symbolMap.find_class(class_name)
     kind = g_currentFile.kind_explicit
 
-    # dictionary for subnav anchors
-    subnav_anchors = []
 
-    # find include name (header file)
-    include_trees = tree.findall(r"compounddef/includes")
-    include_def = None
-    if len(include_trees) > 0:
-        include_def = tree.findall(r"compounddef/includes")[0].text
+    # add title
+    file_data.title = file_data.name
 
-    # find file definition for the include file
-    file_def = None
-    if include_def is not None:
-        file_def = g_symbolMap.find_file(include_def)
+    # add namespace nav
+    file_data.namespace_nav = str(g_namespaceNav)
 
-    # find class definition
-    class_def = g_symbolMap.find_class(class_name)
+    # add header
+    file_data.page_header = file_data.compoundName
 
-    # +-----------------------------------------+
-    #  find parts in template that already exist
-    # +-----------------------------------------+
-    contents_el = g_currentFile.contentsEl
-    side_nav_el = g_currentFile.sideNavEl
+    # add description
+    file_data.description = str(markup_description(html, tree.find(r'compounddef')))
 
-    # +-------------+
-    #  Namespace Nav
-    # +-------------+
-    side_nav_el.append(g_namespaceNav)
-
-    # +---------------+
-    #  Side Area Nodes
-    # +---------------+
     # includes
-    if include_def is not None:
-        gen_includes(file_def)
+    include_link = LinkData(g_symbolMap.find_file(include_file).githubPath, include_file)
+    file_data.includes = include_link
 
     # typedefs
+    typedefs = []
     if file_def is not None:
-        gen_typedefs(html, file_def.typedefs)
+        for t in file_def.typedefs:
+            link_data = LinkData()
+            link_data.label = t.name
+            link_data.link = convert_rel_path(t.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+            typedefs.append(link_data)
+    file_data.typedefs = typedefs
+
     # class hierarchy
-    gen_class_hierarchy(html, class_def)
+    # gen_class_hierarchy(html, class_def)
+
     # class list
-    gen_class_list(html, tree)
+    classes = []
+    for classDef in tree.findall(r"compounddef/innerclass"):
+        link_data = LinkData()
+        link_data.label = strip_compound_name(classDef.text)
+        link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        classes.append(link_data)
+    file_data.classes = classes
+
     # related links (generated by guides and references)
-    gen_related_links(html, class_def)
-    # print classDef.seeMoreLinks
+    related = []
+    for link_data in class_def.relatedLinks:
+        related.append(link_data)
+    file_data.related = related
 
-    # +-----------+
-    #  Description
-    # +-----------+
-    # description prose
-    desc_tag = markup_description(html, tree.find(r'compounddef'))
-    if desc_tag is not None:
-        g_currentFile.descriptionProseEl.append(desc_tag)
-
-    # +------+
-    #  Prefix
-    # +------+
+    # ci prefix
     # if the class has a prefix, add it here
     if hasattr(class_def, 'prefixPath') is True and class_def.prefixPath is not None:
-        # inject html from prefixPath into description div
-        orig_html = generate_bs4(class_def.prefixPath)
-        inject_html(orig_html, g_currentFile.descriptionProseEl, class_def.prefixPath, out_path)
+        prefix_html = generate_bs4(class_def.prefixPath).body
+        prefix_content = ""
+        for c in prefix_html.contents:
+            prefix_content += str(c)
+        file_data.prefix = prefix_content
 
-    # +------------+
-    #  Enumerations
-    # +------------+
-    enumerations = tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']")
-    if len(enumerations) > 0:
-        drop_anchor(subnav_anchors, "enumerations", "Public Types")
-        enum_section = gen_tag(html, "section")
-        contents_el.append(enum_section)
+    # enumerations
+    enumerations = []
+    for e in tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']"):
+        values = []
+        for val in e.findall("enumvalue"):
+            print val.find("name").text
+            enum_name = val.find("name").text
+            values.append({"name": enum_name})
 
-        enum_section.append(gen_tag(html, "h1", [], "Public Types"))
-        enum_ul = gen_tag(html, "ul")
-        for c in enumerations:
-            markup_enum(html, c, enum_ul)
-        enum_section.append(enum_ul)
-        contents_el.append(gen_tag(html, "br"))
+        enum = {
+            "name": e.find("name").text,
+            "values": values
+        }
+        enumerations.append(enum)
+    file_data.enumerations = enumerations
 
-    # +----------------+
-    #  Member Functions
-    # +----------------+
-    # create regular and static member function ul wrappers
-    ul_tag = html.new_tag("ul")
-    static_ul = html.new_tag("ul")
-    add_class_to_tag(static_ul, "static")
-
-    func_count = 0
-    static_func_count = 0
-
-    # public member functions
+    # public member Functions
+    public_fns = []
+    public_static_fns = []
     for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]'):
-        # split between static or not
-        is_static = memberFn.attrib["static"]
+        function_obj = {}
         member_name = memberFn.find(r"name")
+        member_name = member_name.text if member_name is not None else None
+
+        is_static = memberFn.attrib["static"]
+
+        function_obj["name"] = member_name
         is_constructor = False
 
         # determine if it is a constructor
-        if member_name is not None and member_name.text == class_name:
+        if member_name is not None and member_name == class_name:
             is_constructor = True
 
-        # determine if static
+        function_obj["is_constructor"] = is_constructor
+
+        fn_id = memberFn.attrib["id"].split("_1")[-1]
+        function_obj["anchor"] = fn_id
+
+        # left side / return type
+        if not is_constructor:
+            return_div = gen_tag(html, "span")
+            function_obj["return"] = str(iterate_markup(html, memberFn.find(r"type"), return_div))
+
+        # get args
+        argstring = memberFn.find("argsstring")
+        if argstring is None:
+            argstring = memberFn.find("arglist")
+        argstring_text = argstring.text if argstring.text is not None else ""
+
+        function_obj["definition"] = {
+            "name": memberFn.find("name").text,
+            "args": argstring_text
+        }
+
+        description_div = markup_description(html, memberFn)
+        function_obj["description"] = str(description_div) if description_div is not None else None
+
         if is_static == 'yes':
-            static_func_count += 1
-            markup_function(html, memberFn, static_ul, is_constructor)
+            public_static_fns.append(function_obj)
         else:
-            func_count += 1
-            markup_function(html, memberFn, ul_tag, is_constructor)
+            public_fns.append(function_obj)
 
-    # if function count > 0 add it
-    if func_count > 0:
-        # add anchor tag to page
-        anchor = gen_anchor_tag(html, "public-member-functions")
-        header_str = public_function_header.get(kind) if kind in public_function_header else public_function_header.get("class")
-        subnav_anchors.append({"name": header_str, "link": anchor})
-        contents_el.append(anchor)
+    file_data.public_functions = public_fns
+    file_data.public_static_functions = public_static_fns
 
-        # public member functions
-        header = html.new_tag("h1")
-        header.string = header_str
-        section_tag = gen_tag(html, "section")
-        section_tag.append(header)
-        section_tag.append(ul_tag)
-        contents_el.append(section_tag)
-        section_tag.append(gen_tag(html, "hr"))
+    # loader = Loader()
+    path = config.class_template
+    renderer = Renderer()
+    renderer.search_dirs.append(TEMPLATE_PATH)
 
-    # if static function count > 0 add it
-    if static_func_count > 0:
-        anchor = gen_anchor_tag(html, "static-public-member-functions")
-        header_str = public_static_function_header.get(kind) if kind in public_static_function_header else public_static_function_header.get("class")
-        subnav_anchors.append({"name": header_str, "link": anchor})
-        contents_el.append(anchor)
+    output = renderer.render_path(path, file_data.get_content())
+    # print output
+    bs4 = generate_bs4_from_string(output)
 
-        # static public member functions
-        header = html.new_tag("h1")
-        header.string = header_str
-        section_tag = gen_tag(html, "section")
-        section_tag.append(header)
-        section_tag.append(static_ul)
-        contents_el.append(section_tag)
-        section_tag.append(gen_tag(html, "hr"))
+    # print output
+    # print bs4
+    # update links in the template
+    update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
-    # protected attributes
-    # for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]'):
+
+
+    #
+    # # compoundName = g_currentFile.compoundName
+    # class_name = g_currentFile.name
+    # kind = g_currentFile.kind_explicit
+    #
+    # # dictionary for subnav anchors
+    # subnav_anchors = []
+    #
+    # # find include name (header file)
+    # include_trees = tree.findall(r"compounddef/includes")
+    # include_def = None
+    # if len(include_trees) > 0:
+    #     include_def = tree.findall(r"compounddef/includes")[0].text
+    #
+    # # find file definition for the include file
+    # file_def = None
+    # if include_def is not None:
+    #     file_def = g_symbolMap.find_file(include_def)
+    #
+    # # find class definition
+    # class_def = g_symbolMap.find_class(class_name)
+    #
+    # # +-----------------------------------------+
+    # #  find parts in template that already exist
+    # # +-----------------------------------------+
+    # contents_el = g_currentFile.contentsEl
+    # side_nav_el = g_currentFile.sideNavEl
+    #
+    # # +-------------+
+    # #  Namespace Nav
+    # # +-------------+
+    # side_nav_el.append(g_namespaceNav)
+    #
+    # # +---------------+
+    # #  Side Area Nodes
+    # # +---------------+
+    # # includes
+    # if include_def is not None:
+    #     gen_includes(file_def)
+    #
+    # # typedefs
+    # if file_def is not None:
+    #     gen_typedefs(html, file_def.typedefs)
+    # # class hierarchy
+    # gen_class_hierarchy(html, class_def)
+    # # class list
+    # gen_class_list(html, tree)
+    # # related links (generated by guides and references)
+    # gen_related_links(html, class_def)
+    # # print classDef.seeMoreLinks
+    #
+    # # +-----------+
+    # #  Description
+    # # +-----------+
+    # # description prose
+    # desc_tag = markup_description(html, tree.find(r'compounddef'))
+    # if desc_tag is not None:
+    #     g_currentFile.descriptionProseEl.append(desc_tag)
+    #
+    # # +------+
+    # #  Prefix
+    # # +------+
+    # # if the class has a prefix, add it here
+    # if hasattr(class_def, 'prefixPath') is True and class_def.prefixPath is not None:
+    #     # inject html from prefixPath into description div
+    #     orig_html = generate_bs4(class_def.prefixPath)
+    #     inject_html(orig_html, g_currentFile.descriptionProseEl, class_def.prefixPath, out_path)
+    #
+    # # +------------+
+    # #  Enumerations
+    # # +------------+
+    # enumerations = tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']")
+    # if len(enumerations) > 0:
+    #     drop_anchor(subnav_anchors, "enumerations", "Public Types")
+    #     enum_section = gen_tag(html, "section")
+    #     contents_el.append(enum_section)
+    #
+    #     enum_section.append(gen_tag(html, "h1", [], "Public Types"))
+    #     enum_ul = gen_tag(html, "ul")
+    #     for c in enumerations:
+    #         markup_enum(html, c, enum_ul)
+    #     enum_section.append(enum_ul)
+    #     contents_el.append(gen_tag(html, "br"))
+    #
+    # # +----------------+
+    # #  Member Functions
+    # # +----------------+
+    # # create regular and static member function ul wrappers
+    # ul_tag = html.new_tag("ul")
+    # static_ul = html.new_tag("ul")
+    # add_class_to_tag(static_ul, "static")
+    #
+    # func_count = 0
+    # static_func_count = 0
+    #
+    # # public member functions
+    # for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="function"][@prot="public"]'):
     #     # split between static or not
+    #     is_static = memberFn.attrib["static"]
     #     member_name = memberFn.find(r"name")
+    #     is_constructor = False
+    #
+    #     # determine if it is a constructor
+    #     if member_name is not None and member_name.text == class_name:
+    #         is_constructor = True
     #
     #     # determine if static
     #     if is_static == 'yes':
@@ -1426,48 +1639,95 @@ def process_class_xml_file(in_path, out_path, html):
     #     else:
     #         func_count += 1
     #         markup_function(html, memberFn, ul_tag, is_constructor)
-
-    variables = tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]')
-    if len(variables) > 0:
-        drop_anchor(subnav_anchors, "variables", "Protected Attributes")
-        vars_section = gen_tag(html, "section")
-        contents_el.append(vars_section)
-
-        vars_section.append(gen_tag(html, "h1", [], "Protected Attributes"))
-        vars_ul = gen_tag(html, "ul")
-        for c in variables:
-            type_str = c.find('type').text
-            name = gen_tag(html, "div")
-            name.append(gen_tag(html, "b", [], c.find('name').text))
-            initializer = c.find('initializer').text if c.find('initializer') is not None else None
-            description = markup_description(html, c)
-            if type_str is None:
-                type_str = ""
-            if initializer is not None:
-                name.append(" " + initializer)
-            add_row_li(html, vars_ul, type_str, name, None, description)
-        vars_section.append(vars_ul)
-        vars_section.append(gen_tag(html, "hr"))
-
-    # replace any code chunks with <pre> tags, which is not possible on initial creation
-    replace_code_chunks(html)
-
-    # generate subnav
-    gen_sub_nav(subnav_anchors)
-
-    # link up all ci tags
-    for tag in html.find_all('ci'):
+    #
+    # # if function count > 0 add it
+    # if func_count > 0:
+    #     # add anchor tag to page
+    #     anchor = gen_anchor_tag(html, "public-member-functions")
+    #     header_str = public_function_header.get(kind) if kind in public_function_header else public_function_header.get("class")
+    #     subnav_anchors.append({"name": header_str, "link": anchor})
+    #     contents_el.append(anchor)
+    #
+    #     # public member functions
+    #     header = html.new_tag("h1")
+    #     header.string = header_str
+    #     section_tag = gen_tag(html, "section")
+    #     section_tag.append(header)
+    #     section_tag.append(ul_tag)
+    #     contents_el.append(section_tag)
+    #     section_tag.append(gen_tag(html, "hr"))
+    #
+    # # if static function count > 0 add it
+    # if static_func_count > 0:
+    #     anchor = gen_anchor_tag(html, "static-public-member-functions")
+    #     header_str = public_static_function_header.get(kind) if kind in public_static_function_header else public_static_function_header.get("class")
+    #     subnav_anchors.append({"name": header_str, "link": anchor})
+    #     contents_el.append(anchor)
+    #
+    #     # static public member functions
+    #     header = html.new_tag("h1")
+    #     header.string = header_str
+    #     section_tag = gen_tag(html, "section")
+    #     section_tag.append(header)
+    #     section_tag.append(static_ul)
+    #     contents_el.append(section_tag)
+    #     section_tag.append(gen_tag(html, "hr"))
+    #
+    # # protected attributes
+    # # for memberFn in tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]'):
+    # #     # split between static or not
+    # #     member_name = memberFn.find(r"name")
+    # #
+    # #     # determine if static
+    # #     if is_static == 'yes':
+    # #         static_func_count += 1
+    # #         markup_function(html, memberFn, static_ul, is_constructor)
+    # #     else:
+    # #         func_count += 1
+    # #         markup_function(html, memberFn, ul_tag, is_constructor)
+    #
+    # variables = tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]')
+    # if len(variables) > 0:
+    #     drop_anchor(subnav_anchors, "variables", "Protected Attributes")
+    #     vars_section = gen_tag(html, "section")
+    #     contents_el.append(vars_section)
+    #
+    #     vars_section.append(gen_tag(html, "h1", [], "Protected Attributes"))
+    #     vars_ul = gen_tag(html, "ul")
+    #     for c in variables:
+    #         type_str = c.find('type').text
+    #         name = gen_tag(html, "div")
+    #         name.append(gen_tag(html, "b", [], c.find('name').text))
+    #         initializer = c.find('initializer').text if c.find('initializer') is not None else None
+    #         description = markup_description(html, c)
+    #         if type_str is None:
+    #             type_str = ""
+    #         if initializer is not None:
+    #             name.append(" " + initializer)
+    #         add_row_li(html, vars_ul, type_str, name, None, description)
+    #     vars_section.append(vars_ul)
+    #     vars_section.append(gen_tag(html, "hr"))
+    #
+    # # replace any code chunks with <pre> tags, which is not possible on initial creation
+    # replace_code_chunks(html)
+    #
+    # # generate subnav
+    # gen_sub_nav(subnav_anchors)
+    #
+    # # link up all ci tags
+    for tag in bs4.find_all('ci'):
         process_ci_tag(html, tag, in_path, out_path)
-
-    # add file to search index
-    search_tags = []
-    if class_def:
-        search_tags = class_def.tags
-    # print search_tags
-    add_to_search_index(html, out_path, search_tags)
-
-    # write the file
-    write_html(html, out_path)
+    #
+    # # add file to search index
+    # search_tags = []
+    # if class_def:
+    #     search_tags = class_def.tags
+    # # print search_tags
+    # add_to_search_index(html, out_path, search_tags)
+    #
+    # # write the file
+    # write_html(html, out_path)
+    write_html(bs4, out_path)
 
 
 def gen_sub_nav(subnav_anchors):
@@ -1854,15 +2114,16 @@ def process_ci_seealso_tag(bs4, tag, out_path):
     else:
         label = get_file_name(out_path)
 
-    link_tag = gen_link_tag(bs4, label, out_path)
+    # link_tag = gen_link_tag(bs4, label, out_path)
+    link_data = LinkData(out_path, label)
 
     if type(ref_obj) is SymbolMap.Class or type(ref_obj) is SymbolMap.Typedef:
-        ref_obj.add_related_link(link_tag)
+        ref_obj.add_related_link(link_data)
 
     elif type(ref_obj) is SymbolMap.Namespace:
         # find all classes with that namespace and add guide to every one
         for class_obj in g_symbolMap.find_classes_in_namespace(ref_obj.name):
-            class_obj.add_related_link(link_tag)
+            class_obj.add_related_link(link_data)
     else:
         print "  ** WARNING: Could not find seealso reference for " + str(tag)
 
@@ -2005,7 +2266,7 @@ def update_link(link, in_path, out_path):
     :return:
     """
 
-    if link.startswith("http") or link.startswith("javascript:"):
+    if link.startswith("http") or link.startswith("javascript:") or link.startswith("#"):
         return link
 
     # if a relative path, make it absolute
@@ -2044,6 +2305,18 @@ def generate_bs4(file_path):
 
     bs4 = BeautifulSoup(output_file)
 
+    return bs4
+
+def generate_bs4_from_string(string):
+    string.decode("UTF-8")
+    # print output_file
+
+    # wrap in body tag if none exists
+    if string.find("<body") < 0:
+        output_file = "<body>" + string + "</body>"
+        print "\t ** WARNING: No body tag found "
+
+    bs4 = BeautifulSoup(string)
     return bs4
 
 
@@ -2314,7 +2587,7 @@ def process_file(in_path, out_path=None):
 
     else:
         # process html directory always, since they may generate content for class or namespace reference pages
-        if not PROCESSED_HTML_DIR:
+        if not PROCESSED_HTML_DIR and not config.SKIP_HTML_PARSING:
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
 
         if file_prefix.startswith("class") or file_prefix.startswith("struct") or file_prefix.startswith("interface"):
