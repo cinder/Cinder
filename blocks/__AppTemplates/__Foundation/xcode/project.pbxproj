@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 44;
+	objectVersion = 46;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -43,7 +43,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				006D720419952D00008149E2 /* AVFoundation.framework in Frameworks */,
-				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,			
+				006D720519952D00008149E2 /* CoreMedia.framework in Frameworks */,
 				8D11072F0486CEB800E47090 /* Cocoa.framework in Frameworks */,
 				0091D8F90E81B9330029341E /* OpenGL.framework in Frameworks */,
 				5323E6B20EAFCA74003A9687 /* CoreVideo.framework in Frameworks */,
@@ -70,7 +70,7 @@
 			isa = PBXGroup;
 			children = (
 				006D720219952D00008149E2 /* AVFoundation.framework */,
-				006D720319952D00008149E2 /* CoreMedia.framework */,			
+				006D720319952D00008149E2 /* CoreMedia.framework */,
 				00B784AF0FF439BC000DE1D7 /* Accelerate.framework */,
 				00B784B00FF439BC000DE1D7 /* AudioToolbox.framework */,
 				00B784B10FF439BC000DE1D7 /* AudioUnit.framework */,
@@ -222,16 +222,17 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
-				);				
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = _TBOX_PREFIX__Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder_d.a\"";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = _TBOX_PREFIX_;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
@@ -248,32 +249,34 @@
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"NDEBUG=1",
 					"$(inherited)",
-				);				
+				);
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
 				GCC_PREFIX_HEADER = _TBOX_PREFIX__Prefix.pch;
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				INFOPLIST_FILE = Info.plist;
 				INSTALL_PATH = "$(HOME)/Applications";
 				OTHER_LDFLAGS = "\"$(CINDER_PATH)/lib/libcinder.a\"";
+				PRODUCT_BUNDLE_IDENTIFIER = "org.libcinder.${PRODUCT_NAME:rfc1034identifier}";
 				PRODUCT_NAME = _TBOX_PREFIX_;
 				STRIP_INSTALLED_PRODUCT = YES;
-				WRAPPER_EXTENSION = app;
 				SYMROOT = ./build;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
 		C01FCF4F08A954540054247B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_CXX_LIBRARY = "libc++";				
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
 				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_TESTABILITY = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.8;
+				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
 			};
@@ -282,11 +285,10 @@
 		C01FCF5008A954540054247B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
-				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
-				CLANG_CXX_LIBRARY = "libc++";				
 				ALWAYS_SEARCH_USER_PATHS = NO;
-				ARCHS = x86_64;
 				CINDER_PATH = "_TBOX_CINDER_PATH_";
+				CLANG_CXX_LANGUAGE_STANDARD = "c++14";
+				CLANG_CXX_LIBRARY = "libc++";
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
