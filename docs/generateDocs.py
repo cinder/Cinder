@@ -1652,7 +1652,7 @@ def process_html_file(in_path, out_path):
                 body_content += str(content)
 
         # copy title over
-        if orig_html.head.title:
+        if orig_html.head and orig_html.head.title:
             file_data.title = orig_html.head.title.text
 
         bs4 = render_template(template, file_data.get_content())
