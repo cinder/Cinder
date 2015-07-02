@@ -8,17 +8,8 @@ android {
     println "PROJECT DIR: ${projectDir}"
     println "BUILD DIR  : ${buildDir}"
 
-    signingConfigs {
-        config {
-            keyAlias 'Sign For Testing'
-            keyPassword 'sign-for-testing'
-            storeFile file('/Users/hai/DevTools/android/signing/sign-for-testing.jks')
-            storePassword 'sign-for-testing'
-        }
-    }
-
     defaultConfig {
-        applicationId "org.libcinder.tests.opengltest"
+        applicationId "org.libcinder.samples.soundrawapi"
         minSdkVersion 19
         targetSdkVersion 21
         versionCode 1
@@ -29,7 +20,6 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            signingConfig signingConfigs.config
         }
     }
 
@@ -78,7 +68,7 @@ android {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false 
-        moduleName = "OpenGLTest"
+        moduleName = "SoundRawAPI"
         srcDirs = ["../../../src"]
         cFlags {
             "all_archs" {

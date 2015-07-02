@@ -40,22 +40,21 @@ void OpenGLTest::setup()
 
 	console() << "resolution=" << resolution << std::endl;
 
-	mFboColorAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGBA16F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
-	//mFboDepthAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGBA16F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
-	//mFboDepthAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RG32F ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
+	mFboColorAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGB ).minFilter( GL_LINEAR ).magFilter( GL_LINEAR ) );
+	mFboDepthAtt = gl::Texture2d::create( resolution.x, resolution.y, gl::Texture2d::Format().internalFormat( GL_RGBA ).minFilter( GL_NEAREST ).magFilter( GL_NEAREST ) );
 
 	// and attach them to a newly created fbo
-	try {
+	//try
+	{
 		auto fboFormat = gl::Fbo::Format();
 		fboFormat.attachment( GL_COLOR_ATTACHMENT0, mFboColorAtt );
-		//fboFormat.attachment( GL_COLOR_ATTACHMENT1, mFboDepthAtt );
-		//fboFormat.depthBuffer();
-		fboFormat.disableDepth();
+		fboFormat.attachment( GL_COLOR_ATTACHMENT1, mFboDepthAtt );
+		fboFormat.depthBuffer();
 		mFbo = gl::Fbo::create( resolution.x, resolution.y, fboFormat );
 	}
-	catch( const std::exception& e ) {
-		CI_LOG_E( std::string("Fbo create failed: ") + e.what() );
-	}
+//	catch( const std::exception& e ) {
+//		CI_LOG_E( std::string("Fbo create failed: ") + e.what() );
+//	}
 
    	console() << "GL_EXT_color_buffer_float: " << gl::isExtensionAvailable("GL_EXT_color_buffer_float")  << std::endl;
    	console() << "GL_EXT_color_buffer_half_float: " << gl::isExtensionAvailable("GL_EXT_color_buffer_half_float")  << std::endl;
