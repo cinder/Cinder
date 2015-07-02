@@ -847,6 +847,7 @@ def iter_class_base(class_def, hierarchy):
         # add to hierarchy if it continues
         if iter_class_base(new_tree, hierarchy) is not False:
             hierarchy.append(new_tree)
+            # hierarchy.insert(0, new_tree)
 
 
 def gen_class_hierarchy(bs4, class_def):
@@ -867,10 +868,11 @@ def gen_class_hierarchy(bs4, class_def):
         return
 
     # first item in the list will be the original class
-    hierarchy = [class_def]
+    hierarchy = []
 
     # get the class' hierarchy
     iter_class_base(class_def, hierarchy)
+    hierarchy.append(class_def)
 
     if len(hierarchy) == 1:
         return
@@ -880,7 +882,8 @@ def gen_class_hierarchy(bs4, class_def):
     add_class_to_tag(ul, "inheritence")
 
     # go through the hierarchy and add a list item for each member
-    for index, base in enumerate(reversed(hierarchy)):
+    # for index, base in enumerate(reversed(hierarchy)):
+    for index, base in enumerate(hierarchy):
         li = gen_tag(bs4, "li")
         add_class_to_tag(li, "depth" + str(index + 1))
 
