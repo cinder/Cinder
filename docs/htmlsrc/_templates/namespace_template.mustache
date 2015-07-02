@@ -5,8 +5,13 @@
     {{> styles }}
 </head>
 <body>
-    <!-- main nav -->
-    {{> main-nav }}
+    <div id="top-primary">
+        <!-- main nav -->
+        {{> main-nav }}
+
+        <!-- subnav -->
+        {{> namespace-subnav }}
+    </div>
 
     
     <div class="row content-row" data-equalizer="content">
@@ -164,55 +169,6 @@
                 <hr/>
                 {{/variables}}
                 {{/variables.length}}
-               
-
-                <!-- protected member functions -->
-                <!-- {{#protected_functions}}
-                {{#length}}
-                <a name="{{anchor}}"></a>
-                <section>
-                    <h1>Protected Member Functions</h1>
-                    <ul>
-                        {{#list}}
-                            {{> function-markup }}
-                        {{/list}}
-                    </ul>
-                </section>
-                <hr/>
-                {{/length}}
-                {{/protected_functions}} -->
-
-                <!-- protected attributes -->
-                <!-- {{#protected_attrs}}
-                {{#length}}
-                <a name="{{anchor}}"></a>
-                <section>
-                    <h1>Protected Attributes</h1>
-                    <ul>
-                        {{#list}}
-                            {{> function-markup }}
-                        {{/list}}
-                    </ul>
-                </section>
-                <hr/>
-                {{/length}}
-                {{/protected_attrs}} -->
-
-                <!-- friends -->
-                <!-- {{#friends}}
-                {{#length}}
-                <a name="{{anchor}}"></a>
-                <section>
-                    <h1>Friends</h1>
-                    <ul>
-                        {{#list}}
-                            {{> function-markup }}
-                        {{/list}}
-                    </ul>
-                </section>
-                <hr/>
-                {{/length}}
-                {{/friends}} -->
 
             </div>
 

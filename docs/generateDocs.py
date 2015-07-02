@@ -27,9 +27,9 @@ PROCESSED_HTML_DIR = False
 class Config(object):
     def __init__(self):
         # skip html directory parsing - speeds up debugging
-        self.SKIP_HTML_PARSING = True
+        self.SKIP_HTML_PARSING = False
         # break on errors that would prevent the file from being generated
-        self.BREAK_ON_STOP_ERRORS = True
+        self.BREAK_ON_STOP_ERRORS = False
         # directory for the class template mustache file
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
         # directory for the namespace template mustache file
@@ -584,23 +584,13 @@ class NamespaceFileData(FileData):
         self.enumerations = []
         self.functions = []
         self.variables = []
-
-        # self.related = []
-        # self.namespace_nav = None
-        # self.prefix = ""
-        # self.enumerations = []
-        # self.public_types = []
-        # self.public_static_functions = []
-        # self.anchors = []
-        # self.protected_functions = []
-        # self.protected_attrs = []
-        # self.class_hierarchy = None
-        # self.friends = []
+        self.namespace_nav = None
 
     def get_content(self):
         orig_content = super(NamespaceFileData, self).get_content()
         content = orig_content.copy()
         ns_content = {
+            "namespace_nav": self.namespace_nav,
             "namespaces": {
                 "anchor": "namespaces",
                 "list": self.namespaces,
@@ -631,62 +621,6 @@ class NamespaceFileData(FileData):
                 "list": self.variables,
                 "length": len(self.variables)
             }
-
-            # "is_template": self.is_template,
-            # "template_def_name": self.template_def_name,
-            # "side_nav_content": {
-            #     "include": self.includes,
-            #     "typedefs": {
-            #         "list": self.typedefs,
-            #         "length": len(self.typedefs)
-            #     },
-            #     "class_hierarchy": self.class_hierarchy,
-            #     "classes": {
-            #         "list": self.classes,
-            #         "length": len(self.classes)
-            #     },
-            #     "related": {
-            #         "list": self.related,
-            #         "length": len(self.related)
-            #     }
-            # },
-            # "namespace_nav": self.namespace_nav,
-            # "prefix": self.prefix,
-            # "enumerations": {
-            #     "anchor": "enumerations",
-            #     "list": self.enumerations,
-            #     "length": len(self.enumerations)
-            # },
-            # "public_functions": {
-            #     "anchor": "public-member-functions",
-            #     "list": self.public_functions,
-            #     "length": len(self.public_functions)
-            # },
-            # "public_static_functions": {
-            #     "anchor": "public-static-functions",
-            #     "list": self.public_static_functions,
-            #     "length": len(self.public_static_functions)
-            # },
-            # "protected_functions": {
-            #     "anchor": "protected-functions",
-            #     "list": self.protected_functions,
-            #     "length": len(self.protected_functions)
-            # },
-            # "protected_attrs": {
-            #     "anchor": "protected-attrs",
-            #     "list": self.protected_attrs,
-            #     "length": len(self.protected_attrs)
-            # },
-            # "public_types": {
-            #     "anchor": "public-types",
-            #     "list": self.public_types,
-            #     "length": len(self.public_types)
-            # },
-            # "friends": {
-            #     "anchor": "friends",
-            #     "list": self.friends,
-            #     "length": len(self.friends)
-            # }
         }
         content.update(ns_content)
         return content
@@ -2204,43 +2138,47 @@ def find_ci_tag_ref(link):
 
     ref_obj = None
 
-    # args = searchstring.split("|")
-    ns_str = "::".join(searchstring.split("::")[:-1])
-    stripped_searchstring = strip_compound_name(searchstring)
+    try:
+        ns_str = "::".join(searchstring.split("::")[:-1])
+        stripped_searchstring = strip_compound_name(searchstring)
 
-    # find function link
-    if link.get('kind') == 'function':
+        # find function link
+        if link.get('kind') == 'function':
 
-        # find parent class first
-        existing_class = g_symbolMap.find_class(ns_str)
-        if existing_class is not None:
-            # find the function in the given class
-            fn_obj = g_symbolMap.find_function(stripped_searchstring, existing_class)
-            if fn_obj is not None:
-                ref_obj = fn_obj
+            # find parent class first
+            existing_class = g_symbolMap.find_class(ns_str)
+            if existing_class is not None:
+                # find the function in the given class
+                fn_obj = g_symbolMap.find_function(stripped_searchstring, existing_class)
+                if fn_obj is not None:
+                    ref_obj = fn_obj
 
-    elif link.get('kind') == 'enum':
-        enum_obj = g_symbolMap.find_enum(searchstring)
-        if enum_obj is not None:
-            ref_obj = enum_obj
+        elif link.get('kind') == 'enum':
+            enum_obj = g_symbolMap.find_enum(searchstring)
+            if enum_obj is not None:
+                ref_obj = enum_obj
 
-    # find class link
-    else:
-        existing_class = g_symbolMap.find_class(searchstring)
-        if existing_class is not None:
-            ref_obj = existing_class
+        # find class link
         else:
+            existing_class = g_symbolMap.find_class(searchstring)
+            if existing_class is not None:
+                ref_obj = existing_class
+            else:
 
-            count = 0
-            # try a bunch of other things before giving up
-            while (ref_obj is None) and count < 3:
-                if count == 0:
-                    ref_obj = g_symbolMap.find_namespace(searchstring)
-                elif count == 1:
-                    ref_obj = g_symbolMap.find_function(searchstring)
-                elif count == 2:
-                    ref_obj = g_symbolMap.find_enum(searchstring)
-                count += 1
+                count = 0
+                # try a bunch of other things before giving up
+                while (ref_obj is None) and count < 3:
+                    if count == 0:
+                        ref_obj = g_symbolMap.find_namespace(searchstring)
+                    elif count == 1:
+                        ref_obj = g_symbolMap.find_function(searchstring)
+                    elif count == 2:
+                        ref_obj = g_symbolMap.find_enum(searchstring)
+                    count += 1
+
+    except:
+        print "\t** WARNING: problem finding ci tag"
+        return None
 
     return ref_obj
 
