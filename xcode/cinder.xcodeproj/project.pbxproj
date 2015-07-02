@@ -150,6 +150,7 @@
 		000529200FFBF4C200F19492 /* Text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0005291F0FFBF4C200F19492 /* Text.cpp */; };
 		000F468F114FE1CE00421982 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
 		000F4690114FE1CF00421982 /* Renderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0049C1B61010E5B10015B4B9 /* Renderer.cpp */; };
+		000F61E71B338662009D2067 /* tinyexr.h in Headers */ = {isa = PBXBuildFile; fileRef = 000F61E61B338662009D2067 /* tinyexr.h */; };
 		0012529312344FAA00080A0D /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0012529212344FAA00080A0D /* Ray.cpp */; };
 		0012529412344FAA00080A0D /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0012529212344FAA00080A0D /* Ray.cpp */; };
 		0012529512344FAA00080A0D /* Ray.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0012529212344FAA00080A0D /* Ray.cpp */; };
@@ -1147,6 +1148,7 @@
 		0003F49C1995DEF000647C8B /* LoadOGL.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LoadOGL.h; path = ../src/AntTweakBar/LoadOGL.h; sourceTree = "<group>"; };
 		000529000FFBE14900F19492 /* Text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Text.h; sourceTree = "<group>"; };
 		0005291F0FFBF4C200F19492 /* Text.cpp */ = {isa = PBXFileReference; fileEncoding = 30; lastKnownFileType = sourcecode.cpp.cpp; path = Text.cpp; sourceTree = "<group>"; };
+		000F61E61B338662009D2067 /* tinyexr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = tinyexr.h; path = ../../include/tinyexr/tinyexr.h; sourceTree = "<group>"; };
 		0012529212344FAA00080A0D /* Ray.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Ray.cpp; sourceTree = "<group>"; };
 		0014407E14CDB8D900D99000 /* Plane.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Plane.h; sourceTree = "<group>"; };
 		001E355E115D5EFA000C228C /* Xml.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Xml.cpp; sourceTree = "<group>"; };
@@ -2559,6 +2561,7 @@
 		11316E581B28AC1300BD8783 /* tinyexr */ = {
 			isa = PBXGroup;
 			children = (
+				000F61E61B338662009D2067 /* tinyexr.h */,
 				11316E591B28AC1300BD8783 /* tinyexr.cc */,
 			);
 			name = tinyexr;
@@ -3101,6 +3104,7 @@
 				003ADB811038973700ACF6F2 /* TwGraph.h in Headers */,
 				003ADB821038973700ACF6F2 /* TwFonts.h in Headers */,
 				111A5ED0191F703D005C3166 /* setup_22.h in Headers */,
+				000F61E71B338662009D2067 /* tinyexr.h in Headers */,
 				111A5ECB191F703D005C3166 /* residue_44p51.h in Headers */,
 				003ADB851038973700ACF6F2 /* TwColors.h in Headers */,
 				0003F46C1992D67300647C8B /* Vbo.h in Headers */,

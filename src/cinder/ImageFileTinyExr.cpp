@@ -50,24 +50,35 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	mExrImage.reset( new EXRImage );
 	const char *error;
 
+	InitEXRImage( mExrImage.get() );
+
+	int status = 0;
 	if( dataSource->isFilePath() ) {
-		int status = LoadMultiChannelEXRFromFile( mExrImage.get(), dataSource->getFilePath().string().c_str(), &error );
+		status = ParseMultiChannelEXRHeaderFromFile( mExrImage.get(), dataSource->getFilePath().string().c_str(), &error );
 		if( status != 0 )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", error message: " + error );
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
+		status = LoadMultiChannelEXRFromFile( mExrImage.get(), dataSource->getFilePath().string().c_str(), &error );
+		if( status != 0 )
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
 	}
 	else {
-		throw ImageIoExceptionFailedLoadTinyExr( "unimplemented" );
-		// TODO: use LoadMultiChannelEXRFromMemory
+		BufferRef buffer = dataSource->getBuffer();
+		
+		status = ParseMultiChannelEXRHeaderFromMemory( mExrImage.get(), (const unsigned char*)buffer->getData(), &error );
+		if( status != 0 )
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR header; Error message: " ) + error );
+		status = LoadMultiChannelEXRFromMemory( mExrImage.get(), (const unsigned char*)buffer->getData(), &error );
+		if( status != 0 )
+			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to parse OpenEXR file; Error message: " ) + error );
 	}
 
 	// verify that the channels are all the same size; currently we don't support variably sized channels
 	int pixelType = mExrImage->pixel_types[0];
-	for( int c = 0; c < mExrImage->num_channels; ++c ) {
+	for( int c = 1; c < mExrImage->num_channels; ++c ) {
 		if( pixelType != mExrImage->pixel_types[c] )
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", heterogneous channel data types not supported" );
+			throw ImageIoExceptionFailedLoadTinyExr( "Failed to parse OpenEXR file; heterogneous channel data types not supported" );
 	}
 
-pixelType = TINYEXR_PIXELTYPE_FLOAT;
 	switch( pixelType ) {
 		case TINYEXR_PIXELTYPE_HALF:
 			setDataType( ImageIo::FLOAT16 );
@@ -76,16 +87,11 @@ pixelType = TINYEXR_PIXELTYPE_FLOAT;
 			setDataType( ImageIo::FLOAT32 );
 		break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( string( "Failed to read .exr file at path: " ) + dataSource->getFilePath().string() + ", unknown data type" );
+			throw ImageIoExceptionFailedLoadTinyExr( "Failed to parse OpenEXR file; unknown data type" );
 		break;
 	}
 
 	setSize( mExrImage->width, mExrImage->height );
-
-	CI_LOG_I( "width: " << mExrImage->width << ", height: " << mExrImage->height << ", num_channels: " << mExrImage->num_channels );
-	for( int i = 0; i < mExrImage->num_channels; i++ ) {
-		CI_LOG_I( "channel: " << i << ", pixel type: " << mExrImage->pixel_types[i] << ", name: " << mExrImage->channel_names[i] );
-	}
 
 	switch( mExrImage->num_channels ) {
 		case 3:
@@ -106,9 +112,6 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 	ImageSource::RowFunc rowFunc = setupRowFunc( target );
 
 	const size_t numChannels = mExrImage->num_channels;
-
-	// TODO: need a more robust way to map these channels, I'm looking at the name in the debug output
-	// - though, so far they all appear to be in this order
 	const void *red = nullptr, *green = nullptr, *blue = nullptr, *alpha = nullptr;
 	
 	for( size_t c = 0; c < numChannels; ++c ) {
@@ -126,7 +129,7 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 		throw ImageIoExceptionFailedLoadTinyExr( "Unable to locate channels for RGB" );
 	
 	// load one interleaved row at a time
-	if( true/*getDataType() == ImageIo::FLOAT32*/ ) {
+	if( getDataType() == ImageIo::FLOAT32 ) {
 		vector<float> rowData( mWidth * mExrImage->num_channels, 0 );
 		for( int32_t row = 0; row < mHeight; row++ ) {
 			for( int32_t col = 0; col < mWidth; col++ ) {
@@ -137,12 +140,11 @@ void ImageSourceFileTinyExr::load( ImageTargetRef target )
 					rowData.at( col * numChannels + 3 ) = ((float*)alpha)[row * mWidth + col];
 			}
 
-std:cout << vec3( rowData[0], rowData[1], rowData[2] ) << std::endl;
-
 			((*this).*rowFunc)( target, row, rowData.data() );
 		}
 	}
 	else { // float16
+		vector<uint16_t> rowData( mWidth * mExrImage->num_channels, 0 );
 		for( int32_t row = 0; row < mHeight; row++ ) {
 			for( int32_t col = 0; col < mWidth; col++ ) {
 				rowData.at( col * numChannels + 0 ) = ((uint16_t*)red)[row * mWidth + col];
@@ -155,6 +157,8 @@ std:cout << vec3( rowData[0], rowData[1], rowData[2] ) << std::endl;
 			((*this).*rowFunc)( target, row, rowData.data() );
 		}
 	}
+	
+	FreeEXRImage( mExrImage.get() );
 }
 
 // ----------------------------------------------------------------------------------------------------

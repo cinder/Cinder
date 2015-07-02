@@ -27,6 +27,8 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #ifndef __TINYEXR_H__
 #define __TINYEXR_H__
 
+#include <stddef.h> // for size_t
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -39,8 +41,16 @@ extern "C" {
 typedef struct _EXRImage {
   int num_channels;
   const char **channel_names;
+
   unsigned char **images; // image[channels][pixels]
-  int *pixel_types;       // pixel type(TINYEXR_PIXELTYPE_*) for each channel
+  int *pixel_types; // Loaded pixel type(TINYEXR_PIXELTYPE_*) of `images` for
+                    // each channel
+
+  int *requested_pixel_types; // Filled initially by
+                              // ParseEXRHeaderFrom(Meomory|File), then users
+                              // can edit it(only valid for HALF pixel type
+                              // channel)
+
   int width;
   int height;
 } EXRImage;
@@ -63,32 +73,40 @@ typedef struct _DeepImage {
 extern int LoadEXR(float **out_rgba, int *width, int *height,
                    const char *filename, const char **err);
 
-// For emscripten.
-// Parse single-frame OpenEXR header from memory.
-// Return 0 if success
-// Returns error string in `err` when there's an error
-extern int ParseEXRHeaderFromMemory(int *width, int *height, const unsigned char *memory);
+// Parse single-frame OpenEXR header from a file and initialize `EXRImage`
+// struct.
+// Users then call LoadMultiChannelEXRFromFile to actually load image data into
+// `EXRImage`
+extern int ParseMultiChannelEXRHeaderFromFile(EXRImage *image,
+                                              const char *filename,
+                                              const char **err);
 
-// For emscripten.
-// Loads single-frame OpenEXR image from memory. Assume EXR image contains RGB(A) channels.
-// `out_rgba` must have enough memory(at least sizeof(float) x 4(RGBA) x width x hight)
-// Return 0 if success
-// Returns error string in `err` when there's an error
-extern int LoadEXRFromMemory(float *out_rgba, const unsigned char *memory, const char **err);
+// Parse single-frame OpenEXR header from a memory and initialize `EXRImage`
+// struct.
+// Users then call LoadMultiChannelEXRFromMemory to actually load image data
+// into `EXRImage`
+extern int ParseMultiChannelEXRHeaderFromMemory(EXRImage *image,
+                                                const unsigned char *memory,
+                                                const char **err);
 
 // Loads multi-channel, single-frame OpenEXR image from a file.
-// Application must free EXRImage
+// Application must setup `ParseMultiChannelEXRHeaderFromFile` before calling
+// `LoadMultiChannelEXRFromFile`.
+// Application can free EXRImage using `FreeExrImage`
 // Return 0 if success
 // Returns error string in `err` when there's an error
 extern int LoadMultiChannelEXRFromFile(EXRImage *image, const char *filename,
-                               const char **err);
+                                       const char **err);
 
 // Loads multi-channel, single-frame OpenEXR image from a memory.
-// Application must free EXRImage
+// Application must setup `EXRImage` with `ParseMultiChannelEXRHeaderFromMemory`
+// before calling `LoadMultiChannelEXRFromMemory`.
+// Application can free EXRImage using `FreeExrImage`
 // Return 0 if success
 // Returns error string in `err` when there's an error
-extern int LoadMultiChannelEXRFromMemory(EXRImage *image, const unsigned char *memory,
-                               const char **err);
+extern int LoadMultiChannelEXRFromMemory(EXRImage *image,
+                                         const unsigned char *memory,
+                                         const char **err);
 
 // Saves floating point RGBA image as OpenEXR.
 // Image is compressed with ZIP.
@@ -99,7 +117,7 @@ extern int LoadMultiChannelEXRFromMemory(EXRImage *image, const unsigned char *m
 
 // Saves multi-channel, single-frame OpenEXR image to a file.
 // Application must free EXRImage
-// Return 0 if success
+// Returns 0 if success
 // Returns error string in `err` when there's an error
 extern int SaveMultiChannelEXRToFile(const EXRImage *image,
                                      const char *filename, const char **err);
@@ -107,7 +125,7 @@ extern int SaveMultiChannelEXRToFile(const EXRImage *image,
 // Saves multi-channel, single-frame OpenEXR image to a memory.
 // Application must free EXRImage
 // Return the number of bytes if succes.
-// Retrun zero or negative  number when failed.
+// Retruns 0 if success, negative number when failed.
 // Returns error string in `err` when there's an error
 extern size_t SaveMultiChannelEXRToMemory(const EXRImage *image,
                                           unsigned char **memory,
@@ -115,7 +133,7 @@ extern size_t SaveMultiChannelEXRToMemory(const EXRImage *image,
 
 // Loads single-frame OpenEXR deep image.
 // Application must free memory of variables in DeepImage(image, offset_table)
-// Return 0 if success
+// Returns 0 if success
 // Returns error string in `err` when there's an error
 extern int LoadDeepEXR(DeepImage *out_image, const char *filename,
                        const char **err);
@@ -133,6 +151,29 @@ extern int LoadDeepEXR(DeepImage *out_image, const char *filename,
 // extern int LoadMultiPartDeepEXR(DeepImage **out_image, int num_parts, const
 // char *filename,
 //                       const char **err);
+
+// Initialize of EXRImage struct
+extern void InitEXRImage(EXRImage *exrImage);
+
+// Free's internal data of EXRImage struct
+// Returns 0 if success.
+extern int FreeEXRImage(EXRImage *exrImage);
+
+// For emscripten.
+// Parse single-frame OpenEXR header from memory.
+// Return 0 if success
+extern int ParseEXRHeaderFromMemory(int *width, int *height,
+                                    const unsigned char *memory);
+
+// For emscripten.
+// Loads single-frame OpenEXR image from memory. Assume EXR image contains
+// RGB(A) channels.
+// `out_rgba` must have enough memory(at least sizeof(float) x 4(RGBA) x width x
+// hight)
+// Return 0 if success
+// Returns error string in `err` when there's an error
+extern int LoadEXRFromMemory(float *out_rgba, const unsigned char *memory,
+                             const char **err);
 
 #ifdef __cplusplus
 }

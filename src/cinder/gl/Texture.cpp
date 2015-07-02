@@ -1033,14 +1033,41 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 #if defined( CINDER_GL_ES_2 )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
 #else
-			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA8 : GL_RGB8;
+			switch( imageSource->getDataType() ) {
+				case ImageIo::UINT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16 : GL_RGB16;
+				break;
+				case ImageIo::FLOAT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16F : GL_RGB16F;
+				break;
+				case ImageIo::FLOAT32:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA32F : GL_RGB32F;
+				break;
+				default:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA8 : GL_RGB8;
+				break;
+			}
 #endif
 		break;
 		case ImageIo::CM_GRAY: {
 #if defined( CINDER_GL_ES )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_LUMINANCE_ALPHA : GL_LUMINANCE;
 #else
-			defaultInternalFormat = ( imageSource->hasAlpha() ) ?  GL_RG : GL_RED;
+			switch( imageSource->getDataType() ) {
+				case ImageIo::UINT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG16 : GL_R16;
+				break;
+				case ImageIo::FLOAT16:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG16F : GL_R16F;
+				break;
+				case ImageIo::FLOAT32:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG32F : GL_R32F;
+				break;
+				default:
+					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RG8 : GL_R8;
+				break;
+			}
+
 			if( ! format.mSwizzleSpecified ) {
 				std::array<int,4> swizzleMask = { GL_RED, GL_RED, GL_RED, GL_GREEN };
 				if( defaultInternalFormat == GL_RED )
@@ -1193,7 +1220,12 @@ void Texture2d::initDataImageSourceWithPboImpl( const ImageSourceRef &imageSourc
 		imageSource->load( target );
 		pbo->unmap();
 		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, nullptr );
-		
+	}
+	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
+		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
+		imageSource->load( target );
+		pbo->unmap();
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, nullptr );
 	}
 	else {
 		auto target = ImageTargetGlTexture<float>::create( this, channelOrder, isGray, imageSource->hasAlpha(), pboData );
@@ -1218,6 +1250,12 @@ void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, cons
 		auto target = ImageTargetGlTexture<uint16_t>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
 		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_UNSIGNED_SHORT, target->getData() );
+		
+	}
+	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
+		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
+		imageSource->load( target );
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, target->getData() );
 		
 	}
 	else {
@@ -1906,6 +1944,9 @@ ImageTargetGlTexture<T>::ImageTargetGlTexture( const Texture *texture, ImageIo::
 	}
 	else if( std::is_same<T,uint16_t>::value ) {
 		setDataType( ImageIo::UINT16 );
+	}
+	else if( std::is_same<T,half_float>::value ) {
+		setDataType( ImageIo::FLOAT16 );
 	}
 	else if( std::is_same<T,float>::value ) {
 		setDataType( ImageIo::FLOAT32 );
