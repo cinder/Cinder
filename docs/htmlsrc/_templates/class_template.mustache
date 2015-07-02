@@ -28,7 +28,17 @@
           <div class="content">
 
             <!-- content -->
-            <h1 id="page-title">{{class_name}} Class Reference</h1>
+            <h1 id="page-title">
+                {{#is_template}}
+                <em>{{name}} &lt;{{template_def_name}}&gt; </em> 
+                Class Template Reference
+                {{/is_template}}
+
+                {{^is_template}}
+                <em>{{name}}</em> 
+                Class Reference
+                {{/is_template}}
+            </h1>
                         
             <!-- description and side bar -->
             <div id="description" class="row">
@@ -53,6 +63,22 @@
             
             <!-- contents -->
             <div class="contents">
+
+                <!-- public types -->
+                {{#public_types.length}}
+                {{#public_types}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Public Types</h1>
+                    <ul>
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/public_types}}
+                {{/public_types.length}}
 
                 <!-- enumerations -->
                 {{#enumerations.length}}
@@ -102,7 +128,7 @@
                 {{#public_static_functions.length}}
                 <a name="{{public_static_functions.anchor}}"></a>
                 <section>
-                    <h1>Public Static Member Functions</h1>
+                    <h1>Static Public Member Functions</h1>
                     <ul>
                         {{#public_static_functions.list}}
                             {{> function-markup }}
@@ -111,6 +137,55 @@
                 </section>
                 <hr/>
                 {{/public_static_functions.length}}
+
+                <!-- protected member functions -->
+                {{#protected_functions}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Protected Member Functions</h1>
+                    <ul>
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_functions}}
+
+                <!-- protected attributes -->
+                {{#protected_attrs}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Protected Attributes</h1>
+                    <ul>
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/protected_attrs}}
+
+                <!-- friends -->
+                {{#friends}}
+                {{#length}}
+                <a name="{{anchor}}"></a>
+                <section>
+                    <h1>Friends</h1>
+                    <ul>
+                        {{#list}}
+                            {{> function-markup }}
+                        {{/list}}
+                    </ul>
+                </section>
+                <hr/>
+                {{/length}}
+                {{/friends}}
+
             </div>
 
             <!-- end content -->
