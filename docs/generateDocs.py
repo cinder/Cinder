@@ -42,7 +42,6 @@ class Config(object):
         self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
 
 
-
 # convert docygen markup to html markup
 tagDictionary = {
     "linebreak": "br",
@@ -1167,9 +1166,10 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         ns_li = gen_tag(bs4, "li")
 
         # create link for each item
-        a_tag = gen_tag(bs4, "a")
-        define_link_tag(a_tag, {"href": ns.path})
-        a_tag.append(name)
+        a_tag = gen_rel_link_tag(bs4, name, ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        # a_tag = gen_tag(bs4, "a")
+        # define_link_tag(a_tag, {"href": ns.path})
+        # a_tag.append(name)
 
         # is decendent of parent namespace
         if prefix == parent_ns:
