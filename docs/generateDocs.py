@@ -36,8 +36,9 @@ class Config(object):
         self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "namespace_template.mustache")
         # default html template mustache file
         self.HTML_TEMPLATE = os.path.join(TEMPLATE_PATH, "default_template.mustache")
-
+        # guide html template mustache file
         self.GUIDE_TEMPLATE = os.path.join(TEMPLATE_PATH, "guide_template.mustache")
+        # reference html template mustache file
         self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
 
 
@@ -428,48 +429,6 @@ class FileData(object):
         self.title = ""
         self.page_header = ""
 
-        # self.contentsEl = None
-        # self.sideNavEl = None
-        # self.descriptionEl = None
-        # self.descriptionProseEl = None
-        # self.sideEl = None
-
-
-
-        # find any common html elements and populate common elements
-        # self.parse_template()
-        # self.populate_title()
-
-    # def parse_template(self):
-    #     self.contentsEl = self.bs4.find("div", "contents")
-    #     if self.kind == "class" or self.kind == "struct":
-    #         self.descriptionEl = self.bs4.find(id="description")
-    #         self.descriptionProseEl = self.descriptionEl.find(id="description-prose")
-    #         self.sideEl = self.descriptionEl.find("div", "side")
-    #     self.sideNavEl = self.bs4.find(id="side-nav")
-    #
-    #     self.populate_title()
-    #     self.populate_header()
-
-    # def populate_title(self):
-        # find tags
-        # head_tag = self.bs4.head
-        # title_tag = self.bs4.new_tag("title")
-
-        # populate tags
-        # title_tag.append(titleDictionary[self.kind] + " | " + self.name)
-        # head_tag.insert(0, title_tag)
-
-    # def populate_header(self):
-    #     header_tag = self.bs4.find(id="page-title")
-    #     header_tag.string = self.compoundName + " " + headerDictionary[self.kind_explicit]
-
-    # def append_to_side_el(self, el):
-    #     self.sideEl.append(el)
-
-        # def set_category(self):
-        #     print "SET CATEGORY"
-
     def get_content(self):
         content = {
             "name": self.name,
@@ -804,70 +763,6 @@ def define_link_tag(tag, attrib):
         tag["href"] = href
 
 
-def markup_function(bs4, fn_xml, parent, is_constructor):
-    """ Mark up a function using the function definition
-
-    create new line
-    left side = return type
-    right side = function name
-    under right side = definition
-
-    ---------------------------------------------------
-    | returnType    | function( param1, param2, etc ) |
-    ---------------------------------------------------
-    |               | description                     |
-    ---------------------------------------------------
-    """
-
-    fn_id = fn_xml.attrib["id"].split("_1")[-1]
-    li = gen_tag(bs4, "li", ["row"])
-    li.append(gen_anchor_tag(bs4, fn_id))
-
-    # wrapper
-    function_div = gen_tag(bs4, "div", ["functionDef"])
-    li.append(function_div)
-
-    # left side / return type
-    if not is_constructor:
-        return_div = gen_tag(bs4, "div", ["returnCol columns large-3"])
-        iterate_markup(bs4, fn_xml.find(r"type"), return_div)
-        function_div.append(return_div)
-
-    # right side (function name and description)
-    definition_col = gen_tag(bs4, "div", ["definitionCol columns"])
-
-    # width is dependent on if it has the return column
-    if is_constructor:
-        add_class_to_tag(definition_col, "large-12")
-    else:
-        add_class_to_tag(definition_col, "large-9")
-
-    function_div.append(definition_col)
-
-    # function name
-    definition_div = gen_tag(bs4, "div", ["definition"])
-
-    name = fn_xml.find("name").text
-    em_tag = gen_tag(bs4, "em", [], name)
-    definition_div.append(em_tag)
-
-    argstring = fn_xml.find("argsstring")
-    if argstring is None:
-        argstring = fn_xml.find("arglist")
-    argstring_text = argstring.text if argstring.text is not None else ""
-
-    definition_div.append(argstring_text)
-    definition_col.append(definition_div)
-
-    # detailed description
-    description_div = markup_description(bs4, fn_xml)
-    if description_div is not None:
-        definition_col.append(description_div)
-        add_class_to_tag(li, "expandable")
-
-    parent.append(li)
-
-
 def parse_function(bs4, member, class_name=None):
     """
     Parses a function tree and generates an object out of it
@@ -919,66 +814,6 @@ def parse_function(bs4, member, class_name=None):
     return function_obj
 
 
-def markup_enum(bs4, fn_xml, parent):
-    """ Mark up an enum using the function definition
-
-    create new line
-    left side = return type
-    right side = function name
-    under right side = definition
-
-    ---------------------------------------------------
-    | returnType    | function( param1, param2, etc ) |
-    ---------------------------------------------------
-    |               | description                     |
-    ---------------------------------------------------
-    """
-
-    li = gen_tag(bs4, "li", ["row"])
-
-    # wrapper
-    enum_div = gen_tag(bs4, "div", ["enumDef"])
-    li.append(enum_div)
-
-    # left side / return type
-    left_div = gen_tag(bs4, "div", ["returnCol columns large-2"])
-    left_div.append("enum")
-
-    # right side (function name and description)
-    right_div = gen_tag(bs4, "div", ["definitionCol columns"])
-    add_class_to_tag(right_div, "large-12")
-
-    enum_div.append(right_div)
-
-    # function name
-    definition_div = gen_tag(bs4, "div", ["definition"])
-
-    em_tag = gen_tag(bs4, "em", [], fn_xml.find("name").text)
-    definition_div.append(em_tag)
-    right_div.append(definition_div)
-
-    # detailed description
-    description_div = markup_description(bs4, fn_xml)
-
-    # iterate all of the enumvalues
-    enum_ul = gen_tag(bs4, "ul")
-    for enum in fn_xml.findall("enumvalue"):
-        enum_li = gen_tag(bs4, "li", [], enum.find("name").text)
-        enum_ul.append(enum_li)
-
-    if description_div is None and len(list(enum_ul.children)) > 0:
-        description_div = gen_tag(bs4, "div", ["description", "content"])
-        description_div.append(enum_ul)
-
-    if description_div is not None:
-        right_div.append(description_div)
-        add_class_to_tag(li, "expandable")
-
-    fn_id = fn_xml.attrib["id"].split("_1")[-1]
-    li.append(gen_anchor_tag(bs4, fn_id))
-    parent.append(li)
-
-
 def define_tag(bs4, tag_name, tree):
 
     if tag_name == "a":
@@ -990,66 +825,6 @@ def define_tag(bs4, tag_name, tree):
     else:
         new_tag = bs4.new_tag(tag_name)
     return new_tag
-
-
-# def gen_includes(file_def):
-#     bs4 = g_currentFile.bs4
-#
-#     # create html from template
-#     side = get_template(bs4, "side-static")
-#     content_div = side.find("div", "content")
-#
-#     # fill heading
-#     side.find('h4').append("#include")
-#
-#     # add include link
-#     include_link = gen_tag(bs4, "a", None, file_def.name)
-#     path = file_def.githubPath
-#
-#     define_link_tag(include_link, {'href': path})
-#     content_div.append(include_link)
-#
-#     g_currentFile.append_to_side_el(side)
-
-
-# def gen_typedefs(bs4, type_defs):
-#     """ Generates the typedefs side bar, with each linking out
-#         to its full definition.
-#
-#     Args:
-#         bs4: The current beautifulSoup html instance
-#         typeDefs: An array of SymbolMap::TypeDef Objects
-#
-#     Returns:
-#         Empty if the typeDefs list is empty
-#     """
-#
-#     # return if empty array
-#     if len(type_defs) == 0:
-#         return
-#
-#     # create html from template
-#     side = get_template(bs4, "side-expandable")
-#     content_div = side.find("div", "content")
-#
-#     # fill heading
-#     side.find('h4').append("Typedefs:")
-#
-#     # fill list of typedefs
-#     type_def_ul = gen_tag(bs4, "ul")
-#     for typeDef in type_defs:
-#         type_def_li = gen_tag(bs4, "li")
-#         a_tag = gen_tag(bs4, "a", [], typeDef.name)
-#         define_link_tag(a_tag, {"href": typeDef.path})
-#         type_def_li.append(a_tag)
-#         type_def_ul.append(type_def_li)
-#
-#     # plug into html
-#     if type_def_ul is not None:
-#         content_div.append(type_def_ul)
-#
-#     # append to the current file's side element
-#     g_currentFile.append_to_side_el(side)
 
 
 def iter_class_base(class_def, hierarchy):
@@ -1121,72 +896,6 @@ def gen_class_hierarchy(bs4, class_def):
         ul.append(li)
 
     return ul
-
-
-# def gen_class_list(bs4, tree):
-#     classes = tree.findall(r"compounddef/innerclass")
-#
-#     if len(classes) < 1:
-#         return
-#
-#     # create html from template
-#     side = get_template(bs4, "side-expandable")
-#
-#     # fill heading
-#     side.find('h4').append("Classes:")
-#
-#     # create all of the markup
-#     classes_ul = gen_tag(bs4, "ul", None)
-#     content_div = side.find('div', 'content')
-#     for classDef in classes:
-#         li = gen_tag(bs4, "li")
-#         classes_ul.append(li)
-#
-#         a = gen_tag(bs4, "a", [], strip_compound_name(classDef.text))
-#         define_link_tag(a, classDef.attrib)
-#         li.append(a)
-#
-#     content_div.append(classes_ul)
-#
-#     g_currentFile.append_to_side_el(side)
-
-
-# def gen_related_links(bs4, class_def):
-#     """ Generates a new side navigation module that lists any
-#         related links for this class as generated via parsing
-#         html files
-#
-#     :param bs4: The beautifulsoup instance
-#     :param class_def: the ClassObject that we are adding content to
-#     :return: None
-#     """
-#
-#     if not class_def:
-#         return
-#
-#     links = class_def.relatedLinks
-#
-#     if len(links) == 0:
-#         return
-#
-#     # create html from template
-#     side = get_template(bs4, "side-expandable")
-#
-#     # fill heading
-#     side.find('h4').append("Related Links:")
-#
-#     # create all of the markup
-#     ul = gen_tag(bs4, "ul", None)
-#     content_div = side.find('div', 'content')
-#
-#     # append the links that have already been created
-#     for link in links:
-#         li = gen_tag(bs4, "li", None, link)
-#         ul.append(li)
-#
-#     # append markup
-#     content_div.append(ul)
-#     g_currentFile.append_to_side_el(side)
 
 
 def replace_tag(bs4, tree, parent_tag, content):
@@ -1901,12 +1610,9 @@ def process_html_file(in_path, out_path):
     """
     print "processHtmlFile: " + in_path
 
-    bs4 = BeautifulSoup()
-
     # get common data for the file
     file_data = HtmlFileData()
     g_currentFile = file_data
-    is_index = False
     is_searchable = False
     search_tags = []
 
@@ -1927,7 +1633,6 @@ def process_html_file(in_path, out_path):
         orig_html = generate_bs4(in_path)
         # update_links(orig_html, in_path, out_path)
 
-        body_content = gen_tag(bs4, "div")
         # fill namespace list
         if in_path.find("htmlsrc/namespaces.html") > -1:
             # throw in a list of namespaces into the page
@@ -1945,15 +1650,11 @@ def process_html_file(in_path, out_path):
             body_content = ""
             for content in orig_html.body.contents:
                 body_content += str(content)
-            # update_links(orig_html, out_path, TEMPLATE_PATH)
-
 
         # copy title over
         if orig_html.head.title:
             file_data.title = orig_html.head.title.text
 
-        # print body_content
-        # file_data.html_content = body_content
         bs4 = render_template(template, file_data.get_content())
         update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
@@ -1988,8 +1689,6 @@ def process_html_file(in_path, out_path):
         # link up all ci tags
         for tag in bs4.find_all('ci'):
             process_ci_tag(bs4, tag, in_path, out_path)
-
-
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
@@ -2673,12 +2372,6 @@ if __name__ == "__main__":
     # generate symbol map from tag file
     g_symbolMap = get_symbol_to_file_map()
 
-    # construct full template out of multiple html templates
-    # classTemplateHtml = construct_template(
-    #     ["headerTemplate.html", "mainNavTemplate.html", "cinderClassTemplate.html", "footerTemplate.html"])
-
-    # namespaceTemplateHtml = construct_template(
-    #     ["headerTemplate.html", "mainNavTemplate.html", "cinderNamespaceTemplate.html", "footerTemplate.html"])
 
     # copy files from htmlsrc/ to html/
     copy_files()
