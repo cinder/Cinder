@@ -34,6 +34,12 @@ class Config(object):
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
         # directory for the namespace template mustache file
         self.NAMESPACE_TEMPLATE = os.path.join(TEMPLATE_PATH, "namespace_template.mustache")
+        # default html template mustache file
+        self.HTML_TEMPLATE = os.path.join(TEMPLATE_PATH, "default_template.mustache")
+
+        self.GUIDE_TEMPLATE = os.path.join(TEMPLATE_PATH, "guide_template.mustache")
+        self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
+
 
 
 # convert docygen markup to html markup
@@ -418,7 +424,7 @@ class FileData(object):
         self.tree = tree  # xml file that describes the page
         self.bs4 = None  # html file of the actual page
 
-        self.description = ""
+        self.name = ""
         self.title = ""
         self.page_header = ""
 
@@ -428,20 +434,7 @@ class FileData(object):
         # self.descriptionProseEl = None
         # self.sideEl = None
 
-        # fill compound name (with namespace if present)
-        self.compoundName = str(find_compound_name(tree))
-        self.stripped_name = strip_compound_name(self.compoundName)
 
-        # stripped name (w/o namespace)
-        name_parts = self.compoundName.rsplit("cinder::", 1)
-        if len(name_parts) > 1:
-            self.name = name_parts[1]  # without "cinder::"
-        else:
-            self.name = name_parts[0]
-
-        # kind of file that we are parsing (class, namespace, etc)
-        self.kind = find_file_kind(tree)
-        self.kind_explicit = find_file_kind_explicit(tree)
 
         # find any common html elements and populate common elements
         # self.parse_template()
@@ -479,8 +472,7 @@ class FileData(object):
 
     def get_content(self):
         content = {
-            "name": self.stripped_name,
-            "description": self.description,
+            "name": self.name,
             "title": self.title,
             "page_header": self.page_header
         }
@@ -491,6 +483,7 @@ class ClassFileData(FileData):
 
     def __init__(self, tree):
         FileData.__init__(self, tree)
+        self.description = ""
         self.is_template = False
         self.template_def_name = ""
         self.includes = None
@@ -509,10 +502,27 @@ class ClassFileData(FileData):
         self.class_hierarchy = None
         self.friends = []
 
+        # fill compound name (with namespace if present)
+        self.compoundName = str(find_compound_name(tree))
+        self.stripped_name = strip_compound_name(self.compoundName)
+
+        # stripped name (w/o namespace)
+        name_parts = self.compoundName.rsplit("cinder::", 1)
+        if len(name_parts) > 1:
+            self.name = name_parts[1]  # without "cinder::"
+        else:
+            self.name = name_parts[0]
+
+        # kind of file that we are parsing (class, namespace, etc)
+        self.kind = find_file_kind(tree)
+        self.kind_explicit = find_file_kind_explicit(tree)
+
     def get_content(self):
         orig_content = super(ClassFileData, self).get_content()
         content = orig_content.copy()
         class_content = {
+            "name": self.stripped_name,
+            "description": self.description,
             "is_template": self.is_template,
             "template_def_name": self.template_def_name,
             "side_nav_content": {
@@ -585,6 +595,7 @@ class NamespaceFileData(FileData):
         self.functions = []
         self.variables = []
         self.namespace_nav = None
+        self.kind = find_file_kind(tree)
 
     def get_content(self):
         orig_content = super(NamespaceFileData, self).get_content()
@@ -623,6 +634,23 @@ class NamespaceFileData(FileData):
             }
         }
         content.update(ns_content)
+        return content
+
+
+class HtmlFileData(FileData):
+
+    def __init__(self):
+        FileData.__init__(self, None)
+
+        self.html_content = ""
+
+    def get_content(self):
+        orig_content = super(HtmlFileData, self).get_content()
+        content = orig_content.copy()
+        template_content = {
+            "html_content": self.html_content
+        }
+        content.update(template_content)
         return content
 
 
@@ -1708,32 +1736,16 @@ def process_class_xml_file(in_path, out_path):
     file_data.friends = friends
 
     # Generate the html file from the template and inject content
-    path = config.CLASS_TEMPLATE
-    renderer = Renderer()
-    renderer.search_dirs.append(TEMPLATE_PATH)
-
-    try:
-        output = renderer.render_path(path, file_data.get_content())
-    except:
-        exc = sys.exc_info()[0]
-        print "\t**-------------------------------"
-        print "\t** Warning: cannot render content"
-        print "\t**-------------------------------"
-        print  exc
-        # raise
-        if config.BREAK_ON_STOP_ERRORS:
-            raise
-        else:
-            return
-
-    # print output
-    bs4 = generate_bs4_from_string(output)
+    bs4 = render_template(config.CLASS_TEMPLATE, file_data.get_content())
+    if not bs4:
+        print "\t** ERROR: Skipping class due to something nasty. Bother Greg and try again some other time. Error rendering: " + in_path
+        return
 
     # print output
     # update links in the template
     update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
-    # # replace any code chunks with <pre> tags, which is not possible on initial creation
+    # replace any code chunks with <pre> tags, which is not possible on initial creation
     replace_code_chunks(bs4)
 
     # link up all ci tags
@@ -1751,56 +1763,6 @@ def process_class_xml_file(in_path, out_path):
     write_html(bs4, out_path)
 
 
-# def gen_sub_nav(subnav_anchors):
-#     # +-------------------------------------------------+
-#     #  SubNav
-#     #  Fill subnav based on what is actually in the page
-#     # +-------------------------------------------------+
-#     bs4 = g_currentFile.bs4
-#     subnav_el = bs4.find(id="sub-nav")
-#     subnav_ul = gen_tag(bs4, "ul")
-#
-#     # for all of the subnav anchors, add a link into the subnav list
-#     for anchor in subnav_anchors:
-#         li = gen_tag(bs4, "li")
-#         link = gen_tag(bs4, "a", [], anchor["name"])
-#         define_link_tag(link, {"href": "#" + anchor["link"]["name"]})
-#         li.append(link)
-#         subnav_ul.append(li)
-#     subnav_el.append(subnav_ul)
-
-
-# def add_row_li(bs4, container, left_content, right_content, col_breakdown=None, dropdown_content=None):
-#     left_col = "3"
-#     right_col = "9"
-#     if col_breakdown is not None:
-#         cols = col_breakdown.split("-")
-#         left_col = cols[0]
-#         right_col = cols[1]
-#
-#     li = gen_tag(bs4, "li", ["row"])
-#
-#     # left side
-#     left_div = gen_tag(bs4, "div", ["returnCol columns"])
-#     add_class_to_tag(left_div, "large-" + left_col)
-#     if left_content is not None:
-#         left_div.append(left_content)
-#         li.append(left_div)
-#
-#     # right side
-#     right_div = gen_tag(bs4, "div", ["definitionCol columns"])
-#     add_class_to_tag(right_div, "large-" + right_col)
-#     li.append(right_div)
-#     right_div.append(right_content)
-#
-#     container.append(li)
-#
-#     # if there is dropdown content, the right side will have an additional row below it
-#     if dropdown_content is not None:
-#         right_div.append(dropdown_content)
-#         add_class_to_tag(li, "expandable")
-
-
 def drop_anchor(anchor_list, anchor_name, link_name):
     bs4 = g_currentFile.bs4
     anchor = gen_anchor_tag(bs4, anchor_name)
@@ -1808,7 +1770,7 @@ def drop_anchor(anchor_list, anchor_name, link_name):
     g_currentFile.contentsEl.append(anchor)
 
 
-def list_namespaces(bs4, container):
+def list_namespaces(bs4):
     namespaces = g_symbolMap.get_ordered_namespaces()
 
     ul = gen_tag(bs4, "ul")
@@ -1817,11 +1779,10 @@ def list_namespaces(bs4, container):
         li = gen_tag(bs4, "li", None, a)
         ul.append(li)
 
-    if len(ul) > 0:
-        container.append(ul)
+    return ul
 
 
-def list_classes(bs4, container):
+def list_classes(bs4):
     classes = g_symbolMap.get_ordered_class_list()
 
     ul = gen_tag(bs4, "ul", ["master-class-list"])
@@ -1830,8 +1791,7 @@ def list_classes(bs4, container):
         li = gen_tag(bs4, "li", None, a)
         ul.append(li)
 
-    if len(ul) > 0:
-        container.append(ul)
+    return ul
 
 
 def process_namespace_xml_file(in_path, out_path):
@@ -1848,9 +1808,7 @@ def process_namespace_xml_file(in_path, out_path):
     # get common data for the file
     file_data = NamespaceFileData(tree)
     g_currentFile = file_data
-    compound_name = g_currentFile.compoundName
-    # file_def = g_symbolMap.find_file(include_file)
-    ns_def = g_symbolMap.find_namespace(compound_name)
+    # ns_def = g_symbolMap.find_namespace(compound_name)
 
     # page title ---------------------------------------- #
     file_data.title = file_data.name
@@ -1923,26 +1881,7 @@ def process_namespace_xml_file(in_path, out_path):
         variables.append(var_obj)
     file_data.variables = variables
 
-    # Generate the html file from the template and inject content
-    path = config.NAMESPACE_TEMPLATE
-    renderer = Renderer()
-    renderer.search_dirs.append(TEMPLATE_PATH)
-
-    try:
-        output = renderer.render_path(path, file_data.get_content())
-    except:
-        exc = sys.exc_info()[0]
-        print "\t**--------------------------------"
-        print "\t** Warning: cannot render template"
-        print "\t**--------------------------------"
-        print exc
-        if config.BREAK_ON_STOP_ERRORS:
-            raise
-        else:
-            return
-
-    # print output
-    bs4 = generate_bs4_from_string(output)
+    bs4 = render_template(config.NAMESPACE_TEMPLATE, file_data.get_content())
 
     # update links in the template
     update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
@@ -1962,74 +1901,95 @@ def process_html_file(in_path, out_path):
     """
     print "processHtmlFile: " + in_path
 
-    html_template = "htmlContentTemplate.html"
-    is_index = False
-    if in_path.find("reference/") > -1:
-        html_template = "referenceContentTemplate.html"
-    elif in_path.find("guides/") > -1:
-        html_template = "guidesContentTemplate.html"
+    bs4 = BeautifulSoup()
 
+    # get common data for the file
+    file_data = HtmlFileData()
+    g_currentFile = file_data
+    is_index = False
     is_searchable = False
     search_tags = []
 
-    # construct template
+    # get correct template
+    template = config.HTML_TEMPLATE
+    if in_path.find("reference/") > -1:
+        template = config.REFERENCE_TEMPLATE
+    elif in_path.find("guides/") > -1:
+        template = config.GUIDE_TEMPLATE
 
-    if in_path.find("htmlsrc/index.html") > -1:
-        is_index = True
+    # FILL CONTENT
 
-    if is_index is True:
+    # if index
+    if in_path.find("htmlsrc/index.html") > -1 :
         bs4 = generate_bs4(in_path)
-
     else:
-        bs4 = construct_template(["headerTemplate.html", "mainNavTemplate.html", html_template, "footerTemplate.html"])
 
         orig_html = generate_bs4(in_path)
-        template_content_el = bs4.body.find(id="template-content")
+        # update_links(orig_html, in_path, out_path)
 
-        # update links in the template
-        update_links(bs4, TEMPLATE_PATH + html_template, out_path)
-
-        # inject html into a template content div
-        inject_html(orig_html, template_content_el, in_path, out_path)
-
+        body_content = gen_tag(bs4, "div")
         # fill namespace list
         if in_path.find("htmlsrc/namespaces.html") > -1:
             # throw in a list of namespaces into the page
-            list_namespaces(bs4, template_content_el)
+            ns_list = list_namespaces(orig_html)
+            orig_html.body.append(ns_list)
 
         # fill class list
         elif in_path.find("htmlsrc/classes.html") > -1:
-            list_classes(bs4, template_content_el)
+            class_list = list_classes(orig_html)
+            orig_html.body.append(class_list)
 
         else:
             # add file to search index
             is_searchable = True
+            body_content = ""
+            for content in orig_html.body.contents:
+                body_content += str(content)
+            # update_links(orig_html, out_path, TEMPLATE_PATH)
 
-        # copy all js and css paths that may be in the original html and paste into new file
-        for link in orig_html.find_all("link"):
-            bs4.head.append(link)
-
-        for script in orig_html.find_all("script"):
-            bs4.body.append(script)
-
-        if orig_html.head:
-            for d in orig_html.head.find_all("ci"):
-                bs4.head.append(d)
 
         # copy title over
         if orig_html.head.title:
-            if not bs4.head.title:
-                bs4.head.append(gen_tag(bs4, "title"))
-            bs4.head.title.append(orig_html.head.title.text)
+            file_data.title = orig_html.head.title.text
+
+        # print body_content
+        # file_data.html_content = body_content
+        bs4 = render_template(template, file_data.get_content())
+        update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
+
+        template_content_el = bs4.body.find(id="template-content")
+
+        # inject html into a template content div
+        inject_html(orig_html, template_content_el, in_path, out_path)
+
+        if bs4 is None:
+            print "\t** ERROR: Error generating file, so skipping: " + in_path
+            return
+
+        # copy all js and css paths that may be in the original html and paste into new file
+        for link in orig_html.find_all("link"):
+            if bs4.head:
+                bs4.head.append(link)
+
+        for script in orig_html.find_all("script"):
+            if bs4.body:
+                bs4.body.append(script)
+
+        if orig_html.head and bs4.head:
+
+            for d in orig_html.head.find_all("ci"):
+                bs4.head.append(d)
+
+            # add tags from the meta keywords tag
+            for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
+                for keyword in meta_tag['content'].split(','):
+                    search_tags.append(keyword.encode('utf-8').strip())
 
         # link up all ci tags
         for tag in bs4.find_all('ci'):
             process_ci_tag(bs4, tag, in_path, out_path)
 
-        # add tags from the meta keywords tag
-        for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
-            for keyword in meta_tag['content'].split(','):
-                search_tags.append(keyword.encode('utf-8').strip())
+
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
@@ -2230,7 +2190,11 @@ def update_links(html, src_path, dest_path):
             try:
                 shutil.copy2(src_file, dest_file)
             except IOError as e:
-                print "\t ERROR: Cannot copy src_file because it doesn't exist"
+                print "\t ** ERROR: Cannot copy src_file because it doesn't exist"
+                print e.strerror
+                return
+            except Exception as e:
+                print "\t ** ERROR: Cannot copy iframe over because of some other error"
                 print e.strerror
                 return
 
@@ -2527,6 +2491,31 @@ def add_to_search_index(html, save_path, tags=[]):
     g_search_index["data"].append(search_obj)
 
 
+def render_template(path, content):
+
+     # Generate the html file from the template and inject content
+    renderer = Renderer()
+    renderer.search_dirs.append(TEMPLATE_PATH)
+
+    try:
+        output = renderer.render_path(path, content)
+    except:
+        exc = sys.exc_info()[0]
+        print "\t**--------------------------------"
+        print "\t** Warning: cannot render template"
+        print "\t**--------------------------------"
+        print exc
+        if config.BREAK_ON_STOP_ERRORS:
+            raise
+        else:
+            return
+
+    # print output
+    # print "OUTPUT: " + output
+    bs4 = generate_bs4_from_string(output)
+    return bs4
+
+
 def process_file(in_path, out_path=None):
     """ Generate documentation for a single file
 
@@ -2545,7 +2534,8 @@ def process_file(in_path, out_path=None):
         save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + get_file_prefix(in_path) + ".html"
 
     if is_html_file:
-        process_html_file(in_path, save_path)
+        # print "process: " + HTML_SOURCE_PATH + file_path
+        process_html_file(HTML_SOURCE_PATH + file_path, save_path)
 
     else:
         # process html directory always, since they may generate content for class or namespace reference pages

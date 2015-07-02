@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{title}}</title>
+    {{> styles }}
+</head>
+<body>
+    <div id="top-primary">
+        <!-- main nav -->
+        {{> main-nav }}
+    </div>
+
+    
+    <div class="row content-row" data-equalizer="content">
+
+      <!-- main content area -->
+      <div class="columns large-10" data-equalizer-watch="content">
+
+        <div id="container">
+
+          <div id="template-content"></div>
+        
+        </div>
+
+      </div>
+    </div> <!-- row -->
+
+    {{> footer }}
+
+    {{> scripts }}
+</body>
+</html>
