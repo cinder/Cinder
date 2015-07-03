@@ -41,6 +41,8 @@ class Config(object):
         # reference html template mustache file
         self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
 
+        self.HOME_TEMPLATE = os.path.join(TEMPLATE_PATH, "home-template.mustache")
+
 
 # convert docygen markup to html markup
 tagDictionary = {
@@ -1620,7 +1622,9 @@ def process_html_file(in_path, out_path):
 
     # get correct template
     template = config.HTML_TEMPLATE
-    if in_path.find("reference/") > -1:
+    if in_path.find("htmlsrc/index.html") > -1:
+        template = config.HOME_TEMPLATE
+    elif in_path.find("reference/") > -1:
         template = config.REFERENCE_TEMPLATE
     elif in_path.find("guides/") > -1:
         template = config.GUIDE_TEMPLATE
@@ -1628,69 +1632,69 @@ def process_html_file(in_path, out_path):
     # FILL CONTENT
 
     # if index
-    if in_path.find("htmlsrc/index.html") > -1 :
-        bs4 = generate_bs4(in_path)
+    # if in_path.find("htmlsrc/index.html") > -1:
+    #     bs4 = generate_bs4(in_path)
+    # else:
+
+    orig_html = generate_bs4(in_path)
+    # update_links(orig_html, in_path, out_path)
+
+    # fill namespace list
+    if in_path.find("htmlsrc/namespaces.html") > -1:
+        # throw in a list of namespaces into the page
+        ns_list = list_namespaces(orig_html)
+        orig_html.body.append(ns_list)
+
+    # fill class list
+    elif in_path.find("htmlsrc/classes.html") > -1:
+        class_list = list_classes(orig_html)
+        orig_html.body.append(class_list)
+
     else:
+        # add file to search index
+        is_searchable = True
+        body_content = ""
+        for content in orig_html.body.contents:
+            body_content += str(content)
 
-        orig_html = generate_bs4(in_path)
-        # update_links(orig_html, in_path, out_path)
+    # copy title over
+    if orig_html.head and orig_html.head.title:
+        file_data.title = orig_html.head.title.text
 
-        # fill namespace list
-        if in_path.find("htmlsrc/namespaces.html") > -1:
-            # throw in a list of namespaces into the page
-            ns_list = list_namespaces(orig_html)
-            orig_html.body.append(ns_list)
+    bs4 = render_template(template, file_data.get_content())
+    update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
-        # fill class list
-        elif in_path.find("htmlsrc/classes.html") > -1:
-            class_list = list_classes(orig_html)
-            orig_html.body.append(class_list)
+    template_content_el = bs4.body.find(id="template-content")
 
-        else:
-            # add file to search index
-            is_searchable = True
-            body_content = ""
-            for content in orig_html.body.contents:
-                body_content += str(content)
+    # inject html into a template content div
+    inject_html(orig_html, template_content_el, in_path, out_path)
 
-        # copy title over
-        if orig_html.head and orig_html.head.title:
-            file_data.title = orig_html.head.title.text
+    if bs4 is None:
+        print "\t** ERROR: Error generating file, so skipping: " + in_path
+        return
 
-        bs4 = render_template(template, file_data.get_content())
-        update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
+    # copy all js and css paths that may be in the original html and paste into new file
+    for link in orig_html.find_all("link"):
+        if bs4.head:
+            bs4.head.append(link)
 
-        template_content_el = bs4.body.find(id="template-content")
+    for script in orig_html.find_all("script"):
+        if bs4.body:
+            bs4.body.append(script)
 
-        # inject html into a template content div
-        inject_html(orig_html, template_content_el, in_path, out_path)
+    if orig_html.head and bs4.head:
 
-        if bs4 is None:
-            print "\t** ERROR: Error generating file, so skipping: " + in_path
-            return
+        for d in orig_html.head.find_all("ci"):
+            bs4.head.append(d)
 
-        # copy all js and css paths that may be in the original html and paste into new file
-        for link in orig_html.find_all("link"):
-            if bs4.head:
-                bs4.head.append(link)
+        # add tags from the meta keywords tag
+        for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
+            for keyword in meta_tag['content'].split(','):
+                search_tags.append(keyword.encode('utf-8').strip())
 
-        for script in orig_html.find_all("script"):
-            if bs4.body:
-                bs4.body.append(script)
-
-        if orig_html.head and bs4.head:
-
-            for d in orig_html.head.find_all("ci"):
-                bs4.head.append(d)
-
-            # add tags from the meta keywords tag
-            for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
-                for keyword in meta_tag['content'].split(','):
-                    search_tags.append(keyword.encode('utf-8').strip())
-
-        # link up all ci tags
-        for tag in bs4.find_all('ci'):
-            process_ci_tag(bs4, tag, in_path, out_path)
+    # link up all ci tags
+    for tag in bs4.find_all('ci'):
+        process_ci_tag(bs4, tag, in_path, out_path)
 
     if in_path.find("_docs/") < 0:
         if is_searchable:
