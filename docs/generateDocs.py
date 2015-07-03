@@ -847,7 +847,6 @@ def iter_class_base(class_def, hierarchy):
         # add to hierarchy if it continues
         if iter_class_base(new_tree, hierarchy) is not False:
             hierarchy.append(new_tree)
-            # hierarchy.insert(0, new_tree)
 
 
 def gen_class_hierarchy(bs4, class_def):
@@ -2150,6 +2149,13 @@ def parse_xml(in_path):
 
 
 def write_html(html, save_path):
+
+    # prettify descriptions
+    for markup in html.find_all("div", "description"):
+        if type(markup) is Tag:
+            pretty = BeautifulSoup(markup.prettify())
+            if pretty is not None and markup is not None:
+                markup.replaceWith(pretty)
 
     # convert entities in code blocks
     for c in html.find_all("code"):
