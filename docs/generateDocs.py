@@ -1721,15 +1721,16 @@ def process_ci_tag(bs4, tag, in_path, out_path):
     #     process_ci_source_tag(bs4, tag)
 
     else:
-        replace_ci_tag(bs4, tag)
+        replace_ci_tag(bs4, tag, in_path, out_path)
 
 
-def replace_ci_tag(bs4, link):
+def replace_ci_tag(bs4, link, in_path, out_path):
     ref_obj = find_ci_tag_ref(link)
 
     if ref_obj:
         ref_location = DOXYGEN_HTML_PATH + ref_obj.path
-        new_link = gen_link_tag(bs4, link.contents[0], ref_location)
+        # new_link = gen_link_tag(bs4, link.contents[0], ref_location)
+        new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
         link.replace_with(new_link)
     else:
         print "   ** Warning: Could not find replacement tag for ci tag: " + str(link)

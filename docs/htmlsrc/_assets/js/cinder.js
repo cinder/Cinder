@@ -102,10 +102,13 @@ $(document).ready(function() {
 	};
 
 	var input = document.querySelector('#search-input');
-	input.addEventListener('input', function()
-	{
-	    search(input.value);
-	});
+	if( input ){
+		input.addEventListener('input', function()
+		{
+		    search(input.value);
+		});	
+	}
+	
     
 	var search_index = lunr(function () {
 		this.field('title', {boost: 10});
@@ -131,7 +134,8 @@ $(document).ready(function() {
 
  	setSection( section );
  	showContent( hash );
- 	initSearch();
+ 	if( search_index_data )
+	 	initSearch();
  	return cinderJs;
 
  } );
