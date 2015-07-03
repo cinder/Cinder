@@ -76,7 +76,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 	int pixelType = mExrImage->pixel_types[0];
 	for( int c = 1; c < mExrImage->num_channels; ++c ) {
 		if( pixelType != mExrImage->pixel_types[c] )
-			throw ImageIoExceptionFailedLoadTinyExr( "Failed to parse OpenEXR file; heterogneous channel data types not supported" );
+			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: heterogneous channel data types not supported" );
 	}
 
 	switch( pixelType ) {
@@ -87,7 +87,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 			setDataType( ImageIo::FLOAT32 );
 		break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( "Failed to parse OpenEXR file; unknown data type" );
+			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unknown data type" );
 		break;
 	}
 
@@ -103,7 +103,7 @@ ImageSourceFileTinyExr::ImageSourceFileTinyExr( DataSourceRef dataSource, ImageS
 			setChannelOrder( ImageIo::ChannelOrder::RGBA );
 		break;
 		default:
-			throw ImageIoExceptionFailedLoadTinyExr( "unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
+			throw ImageIoExceptionFailedLoadTinyExr( "TinyExr: Unsupported number of channels (" + to_string( mExrImage->num_channels ) + ")" );
 	}
 }
 
@@ -200,11 +200,19 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 			mNumComponents = ( imageSource->hasAlpha() ) ? 4 : 3;
 			setColorModel( ImageIo::ColorModel::CM_RGB );
 			setChannelOrder( ( mNumComponents == 3 ) ? ImageIo::ChannelOrder::BGR : ImageIo::ChannelOrder::ABGR );
+			if( mNumComponents == 3 )
+				mChannelNames = { "G", "B", "R" };
+			else
+				mChannelNames = { "A", "G", "B", "R" };
 		break;
 		case ImageIo::ColorModel::CM_GRAY:
 			mNumComponents = ( imageSource->hasAlpha() ) ? 2 : 1;
 			setColorModel( ImageIo::ColorModel::CM_GRAY );
 			setChannelOrder( ( mNumComponents == 2 ) ? ImageIo::ChannelOrder::YA : ImageIo::ChannelOrder::Y );
+			if( mNumComponents == 2 )
+				mChannelNames = { "Y", "A" };
+			else
+				mChannelNames = { "Y" };
 		break;
 		default:
 			throw ImageIoExceptionIllegalColorModel();
@@ -212,70 +220,51 @@ ImageTargetFileTinyExr::ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageS
 
 	// TODO: consider supporting half float and uint types as well
 	setDataType( ImageIo::DataType::FLOAT32 );
-	mRowBytes = mNumComponents * imageSource->getWidth() * sizeof( float );
-
-	mData.resize( mHeight * mRowBytes );
-
-	mImagePlanar.reserve( mNumComponents );
-	for( size_t i = 0; i < mNumComponents; i++ ) {
-		mImagePlanar.emplace_back( mWidth, mHeight );
-	}
-
-	CI_LOG_I( "num channels: " << (int)mNumComponents );
+	mData.resize( mHeight * imageSource->getWidth() * mNumComponents );
 }
 
 void* ImageTargetFileTinyExr::getRowPointer( int32_t row )
 {
-	return &mData[row * mRowBytes];
+	return &mData[row * getWidth() * mNumComponents];
 }
 
 void ImageTargetFileTinyExr::finalize()
 {
-	// construct a surface (doesn't own data) that allows us to easily pull out the planar channels
-	Surface32f surface;
-	if( mNumComponents == 3 ) {
-		surface = Surface32f( (float*)mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::BGR );
-		mImagePlanar[0] = surface.getChannelBlue();
-		mImagePlanar[1] = surface.getChannelGreen();
-		mImagePlanar[2] = surface.getChannelRed();
-
-		mChannelNames = { "G", "B", "R" };
-	}
-	else if( mNumComponents == 4 ) {
-		surface = Surface32f( (float*)mData.data(), mWidth, mHeight, (int32_t)mRowBytes, SurfaceChannelOrder::ABGR );
-		mImagePlanar[0] = surface.getChannelAlpha();
-		mImagePlanar[1] = surface.getChannelBlue();
-		mImagePlanar[2] = surface.getChannelGreen();
-		mImagePlanar[3] = surface.getChannelRed();
-
-		mChannelNames = { "A", "G", "B", "R" };
-	}
-	else {
-		throw ImageIoExceptionFailedWriteTinyExr( "TODO: finish implementing, not supported for channel count: " + to_string( mNumComponents ) );
-	}
-
-	EXRImage exrImage = {}; // FIXME: why do I need to default initialize this?
-	exrImage.num_channels = mNumComponents;
-	exrImage.width = mWidth;
-	exrImage.height = mHeight;
+	unique_ptr<EXRImage> exrImage( new EXRImage );
+	InitEXRImage( exrImage.get() ); // we intentionally do not call FreeEXRImage on this
 
 	const char *channelNames[4];
-	float* imagePtr[4];
-	int pixelTypes[4];
-	for( int i = 0; i < exrImage.num_channels; i++ ) {
-		pixelTypes[i] = TINYEXR_PIXELTYPE_FLOAT; // TODO: try changing this to TINYEXR_PIXELTYPE_HALF, I think tinyexr will do the conversion
-//		pixelTypes[i] = TINYEXR_PIXELTYPE_HALF;
-		channelNames[i] = mChannelNames[i].c_str();
-
-		imagePtr[i] = mImagePlanar[i].getData();
+	
+	// turn interleaved data into a series of planar channels
+	std::vector<Channel32f> channels;
+	float *srcData = mData.data();
+	for( int c = 0; c < mNumComponents; ++c ) {
+		channels.emplace_back( getWidth(), getHeight() );
+		Channel32f srcChannel( getWidth(), getHeight(), mNumComponents * getWidth() * sizeof(float), mNumComponents, srcData + c );
+		channels.back().copyFrom( srcChannel, srcChannel.getBounds() );
 	}
 
-	exrImage.channel_names = channelNames;
-	exrImage.images = (unsigned char **)imagePtr;
-	exrImage.pixel_types = pixelTypes;
+	exrImage->num_channels = mNumComponents;
+	exrImage->width = mWidth;
+	exrImage->height = mHeight;
+
+	float* imagePtr[4];
+	int pixelTypes[4], requested_pixel_types[4];
+	for( int i = 0; i < exrImage->num_channels; i++ ) {
+		pixelTypes[i] = TINYEXR_PIXELTYPE_FLOAT;
+		requested_pixel_types[i] = pixelTypes[i];
+		channelNames[i] = mChannelNames[i].c_str();
+
+		imagePtr[i] = channels[i].getData();
+	}
+
+	exrImage->channel_names = channelNames;
+	exrImage->images = (unsigned char **)imagePtr;
+	exrImage->pixel_types = pixelTypes;
+	exrImage->requested_pixel_types = requested_pixel_types;
 
 	const char *error;
-	int status = SaveMultiChannelEXRToFile( &exrImage, mFilePath.string().c_str(), &error );
+	int status = SaveMultiChannelEXRToFile( exrImage.get(), mFilePath.string().c_str(), &error );
 	if( status != 0 ) {
 		throw ImageIoExceptionFailedWriteTinyExr( string( "Failed to write .exr file to path: " ) + mFilePath.string() + ", error message: " + error );
 	}

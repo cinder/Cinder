@@ -61,13 +61,10 @@ class ImageTargetFileTinyExr : public ImageTarget {
   protected:
 	ImageTargetFileTinyExr( DataTargetRef dataTarget, ImageSourceRef imageSource, ImageTarget::Options options, const std::string &extensionData );
 	
-	uint8_t					mNumComponents;
-	size_t					mRowBytes;
-	fs::path				mFilePath;
-	std::vector<uint8_t>	mData;
-
-	std::vector<std::string>		mChannelNames;
-	std::vector<Channel32f>			mImagePlanar;
+	uint8_t						mNumComponents;
+	fs::path					mFilePath;
+	std::vector<float>			mData;
+	std::vector<std::string>	mChannelNames;
 };
 
 class ImageIoExceptionFailedLoadTinyExr : public ImageIoExceptionFailedLoad {

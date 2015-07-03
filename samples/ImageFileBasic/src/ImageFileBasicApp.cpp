@@ -56,7 +56,10 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		mTexture = gl::Texture::create( loadImage( event.getFile( 0 ) ) );
+		BufferRef fileData(new Buffer( loadFile( event.getFile( 0 ) ) ) );
+		DataSourceRef ds = DataSourceBuffer::create( fileData );
+//		Channel16u bonk( loadImage( ds, ImageSource::Options(), "exr" ) );
+		mTexture = gl::Texture::create( loadImage( loadFile( event.getFile( 0 ) ) ) );
 	}
 	catch( Exception &exc ) {
 		CI_LOG_EXCEPTION( "failed to load image: " << event.getFile( 0 ), exc );
