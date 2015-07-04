@@ -969,10 +969,9 @@ def iterate_markup(bs4, tree, parent):
     current_tag = parent
     content = None
 
-    # add content to tag
+    # add content to tag as is ( no stripping of whitespace )
     if tree.text is not None:
-        # currentTag.append( tree.text.strip() )
-        content = tree.text.strip()
+        content = tree.text
 
     # append any new tags
     if tree.tag is not None:
@@ -989,7 +988,6 @@ def iterate_markup(bs4, tree, parent):
     # that exists before the next tag
     if tree.tail is not None:
         parent.append(tree.tail.strip())
-
         if tree.tail.endswith(";"):
             parent.append(gen_tag(bs4, "br"))
 
