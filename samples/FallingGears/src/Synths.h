@@ -34,7 +34,7 @@ class AltoSynth : public Synth {
 
 	void recycle() override;
 
-	virtual void trigger( float freqMidi, float decaySeconds ) override;
+	void trigger( float freqMidi, float decaySeconds ) override;
 
 	ci::audio::GenOscNodeRef		mGen;
 };
@@ -45,7 +45,7 @@ class BassSynth : public Synth {
 
 	void recycle() override;
 
-	virtual void trigger( float freqMidi, float decaySeconds ) override;
+	void trigger( float freqMidi, float decaySeconds ) override;
 
 	void setPan( float pan );
 

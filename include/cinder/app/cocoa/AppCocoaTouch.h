@@ -91,7 +91,7 @@ class AppCocoaTouch : public AppBase {
 	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
 	WindowRef		getWindow() const override;
-	WindowRef		getForegroundWindow() const	{ return getWindow(); }
+	WindowRef		getForegroundWindow() const override { return getWindow(); }
 	size_t			getNumWindows() const override;
 	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
@@ -188,9 +188,6 @@ class AppCocoaTouch : public AppBase {
 	//! Overidden to disable, mobile is always full screen.
 	void	setFullScreen( bool fullScreen, const FullScreenOptions &options = FullScreenOptions() ) override;
 
-	//! Returns the path to the application on disk
-	fs::path	getAppPath() const override;
-
 	//! Returns an invalid position since the device doesn't have a mouse.
 	ivec2 getMousePos() const override	{ return ivec2( -1 ); }
 
@@ -203,14 +200,15 @@ class AppCocoaTouch : public AppBase {
 	// DO NOT CALL - should be private but aren't for esoteric reasons
 	//! \cond
 	// Internal handlers - these are called into by AppImpl's. If you are calling one of these, you have likely strayed far off the path.
-	virtual void	launch( const char *title, int argc, char * const argv[] ) override;
-
 	AppImplCocoaTouch* privateGetImpl()	{ return mImpl; }
 
 	// Called during application instanciation via CINDER_APP_COCOA_TOUCH macro
 	template<typename AppT>
 	static void main( const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[], const SettingsFn &settingsFn = SettingsFn() );
 	//! \endcond
+
+  protected:
+	void	launch() override;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );
@@ -246,10 +244,9 @@ void AppCocoaTouch::main( const RendererRef &defaultRenderer, const char *title,
 	if( settings.getShouldQuit() )
 		return;
 
-	AppCocoaTouch *app = new AppT;
-	#pragma unused( app )
+	AppCocoaTouch *app = static_cast<AppCocoaTouch *>( new AppT );
+	app->executeLaunch();
 
-	AppBase::executeLaunch( title, argc, argv );
 	AppBase::cleanupLaunch();
 }
 

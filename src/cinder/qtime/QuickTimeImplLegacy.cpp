@@ -169,8 +169,8 @@ void MovieBase::initFromDataSource( DataSourceRef dataSourceRef, const std::stri
 		// no need to retain the data source
 	}
 	else { // we'll need to load from memory; and we'll rer to the data source to make sure it doesn't go away before the movie does
-		Buffer buffer( dataSourceRef->getBuffer() );
-		getObj()->mMovie = openMovieFromMemory( buffer.getData(), buffer.getDataSize(), dataSourceRef->getFilePathHint().string(), mimeTypeHint );	
+		BufferRef buffer( dataSourceRef->getBuffer() );
+		getObj()->mMovie = openMovieFromMemory( buffer->getData(), buffer->getSize(), dataSourceRef->getFilePathHint().string(), mimeTypeHint );
 		getObj()->mDataSource = dataSourceRef; // retain a reference to the dataSource so that it doesn't go away before we do
 	}
 	init();

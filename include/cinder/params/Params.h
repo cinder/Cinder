@@ -159,8 +159,10 @@ class InterfaceGl {
 	Options<T>	addParam( const std::string &name, const std::function<void ( T )> &setterFn, const std::function<T ()> &getterFn );
 
 	//! Adds enumerated parameter. The value corresponds to the indices of \a enumNames.
-	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr = "", bool readOnly = false );
-	
+	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, bool readOnly = false );
+	//! Adds an enumerated param to the interface with no target, but is instead accessed with \a setterFn and \a getterFn. The input parameter of \a setterFn and the return value of \a getterFn correspond to the indices of \a enumNames. \return Options<T> for chaining options to the param.
+	Options<int> addParam( const std::string &name, const std::vector<std::string> &enumNames, const std::function<void ( int )> &setterFn, const std::function<int ()> &getterFn );
+
 	//! Adds a separator to the interface.
 	void	addSeparator( const std::string &name = "", const std::string &optionsStr = "" );
 	//! Adds text to the interface.
@@ -197,7 +199,7 @@ class InterfaceGl {
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, quat *quatParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
-	void	addParam( const std::string &name, quat *quatParam, const char *optionsStr, bool readOnly = false )		{ addParam( name, quatParam, std::string( optionsStr ), readOnly ); }
+	void	addParam( const std::string &name, quat *quatParam, const char *optionsStr, bool readOnly = false )			{ addParam( name, quatParam, std::string( optionsStr ), readOnly ); }
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, Color *colorParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
@@ -210,6 +212,10 @@ class InterfaceGl {
 	void	addParam( const std::string &name, std::string *strParam, const std::string &optionsStr, bool readOnly = false );
 	//! \deprecated use addParam<T>() instead.
 	void	addParam( const std::string &name, std::string *strParam, const char *optionsStr, bool readOnly = false )	{ addParam( name, strParam, std::string( optionsStr ), readOnly ); }
+	//! \deprecated use addParam() variant that returns Options<int> instead.
+	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const std::string &optionsStr, bool readOnly = false );
+	//! \deprecated use addParam() variant that returns Options<int> instead.
+	void	addParam( const std::string &name, const std::vector<std::string> &enumNames, int *param, const char *optionsStr, bool readOnly = false )	{ addParam( name, enumNames, param, std::string( optionsStr ), readOnly ); }
 
   protected:
 	void	init( app::WindowRef window, const std::string &title, const ivec2 &size, const ColorA color );

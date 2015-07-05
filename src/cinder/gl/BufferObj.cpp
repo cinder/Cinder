@@ -21,10 +21,10 @@
 */
 
 #include "cinder/gl/BufferObj.h"
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Context.h"
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/gl/Environment.h"
+#include "cinder/gl/scoped.h"
 
 namespace cinder { namespace gl {
 
@@ -220,10 +220,8 @@ GLuint BufferObj::getBindingConstantForTarget( GLenum target )
 void BufferObj::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_ANDROID )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 	env()->objectLabel( GL_BUFFER_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-  #endif
 #else
 	env()->objectLabel( GL_BUFFER, mId, (GLsizei)label.size(), label.c_str() );	
 #endif

@@ -1,9 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 
 // This sample is based off a sample from the website http://open.gl/depthstencils .
@@ -105,7 +102,7 @@ void StencilReflectionApp::drawScene()
 			// draw into that stenciled area
 			{
 				gl::ScopedModelMatrix	scopeModel;
-				gl::ScopedAlphaBlend	scopeAlphaBlend( false );
+				gl::ScopedBlendAlpha	scopeAlphaBlend;
 				gl::ScopedState			scopeCull( GL_CULL_FACE, true );
 				gl::multModelMatrix( translate( vec3( 0, 0, 1 ) ) );
 				gl::color( ColorA( 1.0f, 1.0f, 1.0f, .09f ) );
@@ -125,6 +122,6 @@ void StencilReflectionApp::drawScene()
 }
 
 // Enabling stencil on the system framebuffer
-auto options = RendererGl::Options().stencil();
+auto options = RendererGl::Options().msaa( 16 ).stencil();
 
 CINDER_APP( StencilReflectionApp, RendererGl( options ) )

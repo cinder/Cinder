@@ -78,16 +78,16 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 		}
 	}
 	else { // we'll use a dataref from the buffer
-		Buffer buffer = dataSourceRef->getBuffer();
-		if( stbi_is_hdr_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize() ) ) {
-			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize(), &width, &height, &components, 0 /*any # of components*/ );
+		BufferRef buffer = dataSourceRef->getBuffer();
+		if( stbi_is_hdr_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize() ) ) {
+			mData32f = stbi_loadf_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData32f )
 				throw ImageIoException();
 			
 			mRowBytes = width * components * sizeof(float);
 		}
 		else {
-			mData8u = stbi_load_from_memory( (unsigned char*)buffer.getData(), (int)buffer.getDataSize(), &width, &height, &components, 0 /*any # of components*/ );
+			mData8u = stbi_load_from_memory( (unsigned char*)buffer->getData(), (int)buffer->getSize(), &width, &height, &components, 0 /*any # of components*/ );
 			if( ! mData8u )
 				throw ImageIoException();
 				
@@ -118,6 +118,7 @@ ImageSourceFileStbImage::ImageSourceFileStbImage( DataSourceRef dataSourceRef, I
 			setColorModel( ImageIo::CM_RGB );
 			setChannelOrder( ImageIo::ChannelOrder::RGBA );
 		break;
+		default:
 			throw ImageIoException();
 	}
 }

@@ -36,19 +36,19 @@ class PlatformMsw : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType ) override;
 
-	fs::path getResourcePath() const override										{ return fs::path(); }
+	fs::path getResourceDirectory() const override									{ return fs::path(); }
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override		{ return fs::path(); }
 
 	fs::path getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 	fs::path getFolderPath( const fs::path &initialPath ) override;
 	fs::path getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
 
-	// currently nothing to do here, Platform::findAndAddAssetBasePath() will search for an assets folder 5 levels deep from executable
-	void prepareAssetLoading() override {}
+	std::map<std::string,std::string>	getEnvironmentVariables() override;
 
 	fs::path	expandPath( const fs::path &path ) override;
-	fs::path	getHomeDirectory() override;
-	fs::path	getDocumentsDirectory()	override;
+	fs::path	getHomeDirectory() const override;
+	fs::path	getDocumentsDirectory() const override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
@@ -85,6 +85,9 @@ class ResourceLoadExcMsw : public ResourceLoadExc {
 namespace cinder {
 
 class DisplayMsw : public Display {
+  public:
+	std::string		getName() const override;
+
   protected:
 	static BOOL CALLBACK enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam );
 

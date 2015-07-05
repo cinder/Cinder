@@ -42,7 +42,7 @@ class RendererImpl2dGdi : public RendererImplMsw {
 	virtual void	kill() {}
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;
-	virtual void	makeCurrentContext();
+	virtual void	makeCurrentContext( bool force = false );
 	
 	virtual HDC		getDc() const { return ( mDoubleBuffer ) ? mDoubleBufferDc : mPaintDc; }
 	Surface8u		copyWindowContents( const Area &area );

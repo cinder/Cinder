@@ -27,13 +27,13 @@
 // EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 
 
-#include "cinder/app/msw/AppImplWinRTBasic.h"
+#include "cinder/app/winrt/AppImplWinRTBasic.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/app/msw/RendererImplMsw.h"
 #include "cinder/app/Renderer.h"
 #include "cinder/Utilities.h"
-#include "cinder/app/WinRTApp.h"
-#include "cinder/WinRTUtils.h"
+#include "cinder/app/winrt/WinRTApp.h"
+#include "cinder/winrt/WinRTUtils.h"
 
 using std::vector;
 using std::string;
@@ -51,39 +51,37 @@ using namespace cinder::winrt;
 
 namespace cinder { namespace app {
 
-AppImplWinRTBasic::AppImplWinRTBasic( AppBase *app )
-	: AppImplWinRT( app ), mApp( app )
+AppImplWinRTBasic::AppImplWinRTBasic( AppBase *app, WinRTApp *winrtApp )
+	: AppImplWinRT( winrtApp ), mApp( app )
 {
 	mShouldQuit = false;
 }
 
-void AppImplWinRTBasic::run()
+void AppImplWinRTBasic::launch( const char *, int, char *const [] )
 {
 	auto direct3DApplicationSource = ref new Direct3DApplicationSource(); 
-	CoreApplication::Run(direct3DApplicationSource); 
+	CoreApplication::Run( direct3DApplicationSource ); 
 
 	// Note: runReady() will be called once the WinRT app has created its window and is running
 }
 
-void AppImplWinRTBasic::runReady(Windows::UI::Core::CoreWindow^ window) {
+void AppImplWinRTBasic::runReady( Windows::UI::Core::CoreWindow^ window ) {
 
 	float width, height;
 	GetPlatformWindowDimensions(window, &width, &height);
 	mWnd = window;
-	mFrameRate = mApp->getSettings().getFrameRate();
-	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
-
-
-
+//	mFrameRate = mApp->getSettings().getFrameRate();
+//	mFrameRateEnabled = mApp->getSettings().isFrameRateEnabled();
+	
 	mIsVisible = TRUE;
 
 	Window::Format f;
-	f.setAlwaysOnTop(TRUE);
-	f.setBorderless(TRUE);
-	f.setFullScreen(TRUE);
-	f.setResizable(FALSE);
-	f.setSize(static_cast<int32_t>(width),static_cast<int32_t>(height));
-	f.setPos(0,0);
+	f.setAlwaysOnTop( true );
+	f.setBorderless( true );
+	f.setFullScreen( true );
+	f.setResizable( false );
+	f.setSize( static_cast<int32_t>(width), static_cast<int32_t>(height) );
+	f.setPos( 0, 0 );
 
 	if( ! f.getRenderer() )
 		f.setRenderer( mApp->getDefaultRenderer()->clone() );
@@ -95,23 +93,22 @@ void AppImplWinRTBasic::runReady(Windows::UI::Core::CoreWindow^ window) {
 
 	mWindow->getWindow()->emitResize();
 
-	if(mApp->getSettings().isMultiTouchEnabled()) {
-		mWindow->enableMultiTouch();
-	}
+//	if( mApp->getSettings().isMultiTouchEnabled() )
+//		mWindow->enableMultiTouch();
 
 	// initialize our next frame time
 	mNextFrameTime = getElapsedSeconds();
 
 	// inner loop
 	while( ! mShouldQuit ) {
-
-		if(mIsVisible) {
+		if( mIsVisible ) {
 		// update and draw
 			mApp->privateUpdate__();
-			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents( CoreProcessEventsOption::ProcessAllIfPresent );
 			mWindow->draw();
-		} else {
-			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents(CoreProcessEventsOption::ProcessOneAndAllPending);
+		}
+		else {
+			CoreWindow::GetForCurrentThread()->Dispatcher->ProcessEvents( CoreProcessEventsOption::ProcessOneAndAllPending );
 		}
 
 #if 0
@@ -141,7 +138,7 @@ void AppImplWinRTBasic::runReady(Windows::UI::Core::CoreWindow^ window) {
 
 #endif // 0
 	}
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 	delete mApp;
 }
 
@@ -178,8 +175,6 @@ void AppImplWinRTBasic::sleep( double seconds )
 #endif
 }
 
-
-
 void AppImplWinRTBasic::closeWindow( WindowImplWinRT *windowImpl )
 {
 	mWindow->getWindow()->emitClose();
@@ -193,7 +188,7 @@ size_t AppImplWinRTBasic::getNumWindows() const
 	return 1;
 }
 
-WindowRef AppImplWinRTBasic::getWindowIndex( size_t index )
+WindowRef AppImplWinRTBasic::getWindowIndex( size_t index ) const
 {
 	return getWindow();
 }
@@ -225,8 +220,6 @@ bool AppImplWinRTBasic::isFrameRateEnabled() const
 	return mFrameRateEnabled;
 }
 
-
-
 void AppImplWinRTBasic::handlePointerDown(PointerEventArgs^ args) 
 {
 	mWindow->handlePointerDown(args);
@@ -249,11 +242,5 @@ void AppImplWinRTBasic::UpdateForWindowSizeChange(CoreWindow^ window)
 	mWindow->getWindow()->setSize((int)width, (int)height);
 	mWindow->getWindow()->emitResize();
 }
-
-
-
-
-
-
 
 } } // namespace cinder::app

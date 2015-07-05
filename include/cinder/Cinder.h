@@ -32,16 +32,12 @@
 #include "glm/fwd.hpp"
 
 #include <cstdint>
-#include <boost/version.hpp>
-#if BOOST_VERSION < 105500
-	#error "Cinder requires Boost version 1.55 or later"
-#endif
 
 //  CINDER_VERSION % 100 is the patch level
 //  CINDER_VERSION / 100 % 1000 is the minor version
 //  CINDER_VERSION / 100000 is the major version
 #define CINDER_VERSION		900
-#define CINDER_VERSION_STR	"9.0.0.dev"
+#define CINDER_VERSION_STR	"0.9.0.dev"
 
 #define ASIO_STANDALONE 1
 
@@ -63,9 +59,7 @@ using std::uint64_t;
 			#define CINDER_MSW
 		#else
 			#define CINDER_WINRT
-			#if BOOST_VERSION != 105500
-				#error "Incorrect Boost version See include/winrt/boost/README.txt for more info."
-			#endif
+			#define ASIO_WINDOWS_RUNTIME 1
 		#endif
 	#else
 		#define CINDER_MSW
@@ -99,25 +93,11 @@ using std::uint64_t;
 
 } // namespace cinder
 
-#if defined( CINDER_WINRT )
-	#include <functional>
-	#include <chrono>
-	#include <memory>
-	#include <vector>
-	#ifndef FALSE
-		#define FALSE 0
-	#endif
-#elif defined( _MSC_VER ) && ( _MSC_VER >= 1600 )
-	#include <memory>
-#elif defined( CINDER_COCOA ) && defined( _LIBCPP_VERSION ) // libc++
-	#include <memory>
-#elif defined( CINDER_COCOA ) // libstdc++
+#if defined( CINDER_COCOA ) && ! defined( _LIBCPP_VERSION ) // libstdc++
 	#error "Cinder requires libc++ on Mac OS X and iOS"
-#elif defined( CINDER_ANDROID )
-    #include <memory> 
-#else
-	#error "Unknown platform configuration"
 #endif
+
+#include <memory>
 
 // Create a namepace alias as shorthand for cinder::
 #if ! defined( CINDER_NO_NS_ALIAS )

@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Timeline.h"
 
 using namespace std;
@@ -8,9 +9,9 @@ using namespace ci::app;
 
 class BasicTweenApp : public App {
   public:
-	void setup();
-	void mouseDown( MouseEvent event );
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void draw() override;
   
 	Anim<vec2>		mBlackPos, mWhitePos;
 };
@@ -40,4 +41,4 @@ void BasicTweenApp::draw()
 }
 
 // This line tells Cinder to actually create the application
-CINDER_APP( BasicTweenApp, RendererGl )
+CINDER_APP( BasicTweenApp, RendererGl( RendererGl::Options().msaa( 4 ) ) )

@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #import "cinder/app/cocoa/RendererImplGlMac.h"
 #import "cinder/app/cocoa/CinderViewMac.h"
 
@@ -126,9 +126,9 @@
 	return [mView pixelFormat];
 }
 
-- (void)makeCurrentContext
+- (void)makeCurrentContext:(bool)force
 {
-	mContext->makeCurrent();
+	mContext->makeCurrent( force );
 }
 
 - (void)flushBuffer

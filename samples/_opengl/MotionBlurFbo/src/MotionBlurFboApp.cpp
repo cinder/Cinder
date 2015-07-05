@@ -8,12 +8,7 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/VboMesh.h"
-#include "cinder/gl/Fbo.h"
-#include "cinder/gl/Shader.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;

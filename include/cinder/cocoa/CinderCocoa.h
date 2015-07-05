@@ -50,6 +50,11 @@ typedef const struct CGPath *CGPathRef;
 typedef const struct __CFURL * CFURLRef;
 typedef const struct __CFAttributedString *CFAttributedStringRef;
 typedef const struct __CFData * CFDataRef;
+
+typedef struct __CVBuffer *CVBufferRef;
+typedef CVBufferRef CVImageBufferRef;
+typedef CVImageBufferRef CVPixelBufferRef;
+
 #if __MAC_OS_X_VERSION_MAX_ALLOWED >= 101000
 	typedef struct CF_BRIDGED_MUTABLE_TYPE(NSMutableData) __CFData * CFMutableDataRef;
 #else
@@ -83,7 +88,7 @@ class SafeNsData {
   public:
 	SafeNsData() {}
 	//! Creates a SafeNsData using an existing cinder::Buffer. The SafeNsData retains a copy of the buffer in order to prevent its deletion
-	SafeNsData( const Buffer &buffer );
+	SafeNsData( const BufferRef &buffer );
 	
 	operator NSData* const() { if( mPtr ) return mPtr.get(); else return 0; }
 	
@@ -91,7 +96,7 @@ class SafeNsData {
 	static void safeRelease( const NSData *ptr );
 	
 	std::shared_ptr<NSData>	mPtr;
-	const Buffer			mBuffer;
+	const BufferRef			mBuffer;
 };
 
 //! Represents an exception-safe NSAutoreleasePool. Replaces the global NSAutoreleasePool for its lifetime
@@ -164,7 +169,7 @@ void convertCgPath( CGPathRef cgPath, Shape2d *resultShape, bool flipVertical = 
 int getCvPixelFormatTypeFromSurfaceChannelOrder( const SurfaceChannelOrder &sco );
 #endif
 
-//! Creates a CFDataRef from a cinder::Buffer \a buffer. The result does not assume ownership of the data and should be freed using CFRelease().
+//! Creates a CFDataRef from a cinder::Buffer \a buffer. The result does not copy or assume ownership of the data and should be freed using CFRelease().
 CFDataRef createCfDataRef( const cinder::Buffer &buffer );
 
 
@@ -217,6 +222,8 @@ class ImageTargetCgImage : public ImageTarget {
 //! Loads an ImageSource into a new CGImageRef. Release the result with ::CGImageRelease.
 ::CGImageRef createCgImage( ImageSourceRef imageSource, ImageTarget::Options = ImageTarget::Options() );
 
+//! Returns a Surface8u that represents \a pixelBufferRef. Decrements the retain count on \a pixelBufferRef on destruction.
+Surface8uRef convertCVPixelBufferToSurface( CVPixelBufferRef pixelBufferRef );
 
 } } // namespace cinder::cocoa
 

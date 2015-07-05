@@ -18,7 +18,7 @@ Here's how to compile Boost yourself.
 \n
 \n
 <b>Mac OS X & iOS</b>:\n
-You'll need to replace <em>tools/build/v2/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):
+You'll need to create <em>~/user-config.jam</em> with the following (and possibly correct the paths to the iOS SDKs):
 
 \code
 using clang : osx
@@ -26,11 +26,11 @@ using clang : osx
 ;
 
 using clang : ios
-: xcrun clang -arch armv7 -arch arm64 -stdlib=libc++ -std=c++11 -miphoneos-version-min=5.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS6.0.sdk/
+: xcrun clang -arch armv7 -arch arm64 -stdlib=libc++ -std=c++11 -miphoneos-version-min=6.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS8.1.sdk/
 ;
 
 using clang : ios_sim
-: xcrun clang -arch i386 -stdlib=libc++ -std=c++11 -miphoneos-version-min=5.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator6.0.sdk/
+: xcrun clang -arch i386 -stdlib=libc++ -std=c++11 -miphoneos-version-min=6.0 -fvisibility-inlines-hidden -isysroot /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator8.1.sdk/
 ;
 \endcode
 
@@ -38,7 +38,7 @@ using clang : ios_sim
 <tt>
 cd cinder/boost\n
 ./bootstrap.sh --with-libraries=filesystem,system
-./b2 -a -j4 toolset=clang-osx link=static stage
+./b2 -a -j4 toolset=clang-osx cxxflags="-arch i386 -arch x86_64" link=static stage
 cp stage/lib/*.a ../lib/macosx\n
 </tt>
 <b>iOS</b>\n
@@ -48,27 +48,11 @@ rm -rf stage
 cp stage/lib/*.a ../lib/ios\n
 </tt>
 <b>iOS Simulator</b>\n
+This requires executing with two separate <tt>-arch</tt> arguments and then manually lipo'ing together to create a fat binary.\n
 <tt>
 rm -rf stage
 ./b2 -a -j4 toolset=clang-ios_sim link=static stage\n
 cp stage/lib/*.a ../lib/ios-sim\n
-</tt>
-\n
-<b>Visual C++ 2012</b>:\n
-From the Visual Studio 2012 Command Prompt:\n
-<tt>
-cd cinder\\boost\n
-bootstrap\n
-b2 runtime-link=static debug-symbols=off optimization=space --with-filesystem  --with-system\n
-copy stage\\lib\\*.lib ..\\lib\\msw\\x86\n
-</tt>
-\n
-<b>Visual C++ 2012 x64</b>:\n
-From the Visual Studio 2012 Command Prompt:\n
-<tt>
-cd cinder\\boost\n
-bootstrap\n
-b2 runtime-link=static address-model=64 debug-symbols=off optimization=space --with-filesystem --with-system\n
 </tt>
 \n
 <b>Visual C++ 2013</b>:\n

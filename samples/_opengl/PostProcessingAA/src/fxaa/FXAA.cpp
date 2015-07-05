@@ -20,6 +20,7 @@
  POSSIBILITY OF SUCH DAMAGE.
  */
 
+#include "cinder/app/App.h"
 #include "cinder/Log.h"
 
 #include "FXAA.h"
@@ -27,18 +28,18 @@
 using namespace ci;
 using namespace std;
 
-void FXAA::setup()
+FXAA::FXAA()
 {
 	try {
-		mFXAA = make_shared<Shader>( "fxaa" );
-		mFXAA->uniform( "uTexture", 0 );
+		mGlslProg = gl::GlslProg::create( app::loadAsset( "fxaa.vert" ), app::loadAsset( "fxaa.frag" ) );
+		mGlslProg->uniform( "uTexture", 0 );
 	}
-	catch( const std::exception& e ) {
-		CI_LOG_E( e.what() );
+	catch( const std::exception &e ) {
+		CI_LOG_EXCEPTION( "exception caught loading fxaa.vert / frag", e );
 	}
 }
 
-void FXAA::apply( gl::FboRef destination, gl::FboRef source )
+void FXAA::apply( const gl::FboRef &destination, const gl::FboRef &source )
 {
 	gl::ScopedFramebuffer fbo( destination );
 	gl::ScopedViewport viewport( 0, 0, destination->getWidth(), destination->getHeight() );
@@ -60,16 +61,16 @@ void FXAA::apply( gl::FboRef destination, gl::FboRef source )
 	source->getColorTexture()->setMagFilter( magFilter );
 }
 
-void FXAA::draw( gl::TextureRef source, const Area& bounds )
+void FXAA::draw( const gl::TextureRef &source, const Area &bounds )
 {
-	if( !mFXAA )
+	if( ! mGlslProg )
 		return;
 
 	const int w = bounds.getWidth();
 	const int h = bounds.getHeight();
 
-	gl::ScopedGlslProg shader( mFXAA->program() );
-	mFXAA->uniform( "uExtends", vec4( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
+	gl::ScopedGlslProg glslScope( mGlslProg );
+	mGlslProg->uniform( "uExtends", vec4( 1.0f / w, 1.0f / h, (float) w, (float) h ) );
 
 	gl::ScopedTextureBind tex0( source );
 

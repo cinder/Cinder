@@ -27,6 +27,10 @@
 #include "cinder/Unicode.h"
 #include "cinder/app/Platform.h"
 
+#if defined( CINDER_COCOA )
+	#include "cinder/cocoa/CinderCocoa.h"
+#endif
+
 #include <vector>
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp>
@@ -57,6 +61,11 @@ void launchWebBrowser( const Url &url )
 	app::Platform::get()->launchWebBrowser( url );
 }
 
+std::map<std::string, std::string> getEnvironmentVariables()
+{
+	return app::Platform::get()->getEnvironmentVariables();
+}
+
 std::vector<std::string> split( const std::string &str, char separator, bool compress )
 {
 	return split( str, string( 1, separator ), compress );
@@ -72,14 +81,12 @@ std::vector<std::string> split( const std::string &str, const std::string &separ
 	return result;
 }
 
-string loadString( DataSourceRef dataSource )
+string loadString( const DataSourceRef &dataSource )
 {
-	Buffer loadedBuffer( dataSource );
-	size_t dataSize = loadedBuffer.getDataSize();
-	Buffer padded( dataSize + 1 );
-	memcpy( padded.getData(), loadedBuffer.getData(), dataSize );
-	(static_cast<uint8_t*>( padded.getData() ))[dataSize] = 0;
-	return string( static_cast<const char*>( padded.getData() ) );
+	Buffer buffer( dataSource );
+	const char *data = static_cast<const char *>( buffer.getData() );
+
+	return string( data, data + buffer.getSize() );
 }
 
 void sleep( float milliseconds )

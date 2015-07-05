@@ -22,14 +22,14 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/BufferObj.h"
+
 #include <memory>
 #include <vector>
 #include <map>
 #include <unordered_map>
-
-#include <ostream>
+#include <iosfwd>
 
 namespace cinder { namespace gl {
 

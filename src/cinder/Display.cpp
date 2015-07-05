@@ -31,16 +31,11 @@ using namespace std;
 #if defined( CINDER_COCOA_TOUCH )
 	#include "cinder/app/cocoa/PlatformCocoa.h"
 	#include <UIKit/UIKit.h>
-#elif defined( CINDER_WINRT)
-	#include "cinder/WinRTUtils.h"
-	using namespace cinder::winrt;
-	using namespace Windows::UI::Core;
-	using namespace Windows::Graphics::Display;
 #endif
 
 namespace cinder {
 
-const vector<DisplayRef>&	Display::getDisplays()
+const vector<DisplayRef>& Display::getDisplays()
 {
 	return app::Platform::get()->getDisplays();
 }
@@ -76,28 +71,6 @@ Area Display::getBounds() const
 	return mArea;
 #endif
 }
-
-#if defined( CINDER_WINRT )
-void Display::enumerateDisplays()
-{
-	CoreWindow^ window = CoreWindow::GetForCurrentThread();
-	DisplayRef newDisplay = DisplayRef( new Display );
-	if(window != nullptr)
-	{
-		float width, height;
-
-		GetPlatformWindowDimensions(window, &width,&height);
-
-		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
-		newDisplay->mBitsPerPixel = 24;
-		newDisplay->mContentScale = getScaleFactor();
-	}
-
-	sDisplays.push_back( newDisplay );
-}
-#elif defined( CINDER_MSW )
-
-#endif // defined( CINDER_MSW )
 
 ivec2 Display::getSystemCoordinate( const ivec2 &displayRelativeCoordinate ) const
 {

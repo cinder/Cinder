@@ -24,16 +24,16 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/gl/Context.h"
 
 #if defined( CINDER_MAC )
 	typedef struct _CGLContextObject       *CGLContextObj;
 #elif defined( CINDER_COCOA_TOUCH )
 	#if defined( __OBJC__ )
-		@class EAGLContext;
+		@class	EAGLContext;
 	#else
-		typedef void*	EAGLContext;
+		class	EAGLContext;
 	#endif
 #elif defined( CINDER_GL_ANGLE )
 	typedef void*		EGLContext;
@@ -41,6 +41,7 @@
 	typedef void*		EGLSurface;
 	typedef void*		EGLConfig;
 #elif defined( CINDER_MSW )
+	#include "cinder/msw/CinderWindowsFwd.h"
 	struct HGLRC__;
 	typedef HGLRC__* HGLRC;
 #elif defined( CINDER_ANDROID )
@@ -69,6 +70,7 @@ class Environment {
 	virtual bool			isExtensionAvailable( const std::string &extName ) = 0;
 	virtual bool			supportsHardwareVao() = 0;
 
+	virtual void			allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) = 0;
 	virtual void			allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) = 0;
 	virtual void			allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) = 0;
 	virtual void			allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) = 0;	
@@ -80,8 +82,6 @@ class Environment {
 	virtual GlslProgRef		buildShader( const ShaderDef &shader ) = 0;
 
 #if ! defined( CINDER_GL_ES )	
-	virtual bool			isCoreProfile() const = 0;
-
 	static void				setCore();
 #else
 	static void				setEs();
@@ -107,7 +107,7 @@ struct PlatformDataMac : public Context::PlatformData {
 	CGLContextObj		mCglContext;
 };
 
-#elif defined( CINDER_MSW ) && defined( CINDER_GL_ANGLE )
+#elif defined( CINDER_GL_ANGLE )
 struct PlatformDataAngle : public Context::PlatformData {
 	PlatformDataAngle( EGLContext context, EGLDisplay display, EGLSurface surface, EGLConfig eglConfig )
 		: mContext( context ), mDisplay( display ), mSurface( surface ), mConfig( eglConfig )

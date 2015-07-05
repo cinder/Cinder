@@ -83,6 +83,8 @@ class Voice {
 	static VoiceSamplePlayerNodeRef create( const SourceFileRef &sourceFile, const Options &options = Options() );
 	//! Creates a Voice that continuously calls \a callbackFn to process a Buffer of samples.
 	static VoiceRef create( const CallbackProcessorFn &callbackFn, const Options &options = Options() );
+	//! Clears all audio file buffers that that are cached in the Mixer
+	static void clearBufferCache();
 
 	//! Starts the Voice. Does nothing if currently playing. \note In the case of a VoiceSamplePlayerNode and the sample has reached EOF, start() will start from the beginning.
 	virtual void start();
@@ -123,8 +125,8 @@ class VoiceSamplePlayerNode : public Voice {
 	//! Returns a shared_ptr of the owned SamplePlayerNode.
 	SamplePlayerNodeRef getSamplePlayerNode() const			{ return mNode; }
 
-	virtual void start() override;
-	virtual void stop() override;
+	void start() override;
+	void stop() override;
 
   protected:
 	VoiceSamplePlayerNode( const SourceFileRef &sourceFile, const Options &options );

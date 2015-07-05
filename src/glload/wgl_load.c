@@ -113,9 +113,14 @@ int wglext_ARB_pbuffer = 0;
 int wglext_ARB_pixel_format = 0;
 int wglext_ARB_pixel_format_float = 0;
 int wglext_ARB_render_texture = 0;
+int wglext_ARB_robustness_application_isolation = 0;
+int wglext_ARB_robustness_share_group_isolation = 0;
 int wglext_ATI_pixel_format_float = 0;
 int wglext_EXT_create_context_es2_profile = 0;
+int wglext_EXT_create_context_es_profile = 0;
 int wglext_EXT_depth_float = 0;
+int wglext_EXT_display_color_table = 0;
+int wglext_EXT_extensions_string = 0;
 int wglext_EXT_framebuffer_sRGB = 0;
 int wglext_EXT_make_current_read = 0;
 int wglext_EXT_multisample = 0;
@@ -129,6 +134,7 @@ int wglext_I3D_gamma = 0;
 int wglext_I3D_genlock = 0;
 int wglext_I3D_image_buffer = 0;
 int wglext_I3D_swap_frame_lock = 0;
+int wglext_I3D_swap_frame_usage = 0;
 int wglext_NV_DX_interop = 0;
 int wglext_NV_DX_interop2 = 0;
 int wglext_NV_copy_image = 0;
@@ -139,8 +145,10 @@ int wglext_NV_present_video = 0;
 int wglext_NV_render_depth_texture = 0;
 int wglext_NV_render_texture_rectangle = 0;
 int wglext_NV_swap_group = 0;
+int wglext_NV_vertex_array_range = 0;
 int wglext_NV_video_capture = 0;
 int wglext_NV_video_output = 0;
+int wglext_OML_sync_control = 0;
 
 PFNWGLSETSTEREOEMITTERSTATE3DLPROC _funcptr_wglSetStereoEmitterState3DL = NULL;
 
@@ -152,44 +160,44 @@ static int LoadExt_3DL_stereo_control()
 	return numFailed;
 }
 
-PFNWGLGETGPUIDSAMDPROC _funcptr_wglGetGPUIDsAMD = NULL;
-PFNWGLGETGPUINFOAMDPROC _funcptr_wglGetGPUInfoAMD = NULL;
-PFNWGLGETCONTEXTGPUIDAMDPROC _funcptr_wglGetContextGPUIDAMD = NULL;
+PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC _funcptr_wglBlitContextFramebufferAMD = NULL;
 PFNWGLCREATEASSOCIATEDCONTEXTAMDPROC _funcptr_wglCreateAssociatedContextAMD = NULL;
 PFNWGLCREATEASSOCIATEDCONTEXTATTRIBSAMDPROC _funcptr_wglCreateAssociatedContextAttribsAMD = NULL;
 PFNWGLDELETEASSOCIATEDCONTEXTAMDPROC _funcptr_wglDeleteAssociatedContextAMD = NULL;
-PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC _funcptr_wglMakeAssociatedContextCurrentAMD = NULL;
+PFNWGLGETCONTEXTGPUIDAMDPROC _funcptr_wglGetContextGPUIDAMD = NULL;
 PFNWGLGETCURRENTASSOCIATEDCONTEXTAMDPROC _funcptr_wglGetCurrentAssociatedContextAMD = NULL;
-PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC _funcptr_wglBlitContextFramebufferAMD = NULL;
+PFNWGLGETGPUIDSAMDPROC _funcptr_wglGetGPUIDsAMD = NULL;
+PFNWGLGETGPUINFOAMDPROC _funcptr_wglGetGPUInfoAMD = NULL;
+PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC _funcptr_wglMakeAssociatedContextCurrentAMD = NULL;
 
 static int LoadExt_AMD_gpu_association()
 {
 	int numFailed = 0;
-	_funcptr_wglGetGPUIDsAMD = (PFNWGLGETGPUIDSAMDPROC)IntGetProcAddress("wglGetGPUIDsAMD");
-	if(!_funcptr_wglGetGPUIDsAMD) ++numFailed;
-	_funcptr_wglGetGPUInfoAMD = (PFNWGLGETGPUINFOAMDPROC)IntGetProcAddress("wglGetGPUInfoAMD");
-	if(!_funcptr_wglGetGPUInfoAMD) ++numFailed;
-	_funcptr_wglGetContextGPUIDAMD = (PFNWGLGETCONTEXTGPUIDAMDPROC)IntGetProcAddress("wglGetContextGPUIDAMD");
-	if(!_funcptr_wglGetContextGPUIDAMD) ++numFailed;
+	_funcptr_wglBlitContextFramebufferAMD = (PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC)IntGetProcAddress("wglBlitContextFramebufferAMD");
+	if(!_funcptr_wglBlitContextFramebufferAMD) ++numFailed;
 	_funcptr_wglCreateAssociatedContextAMD = (PFNWGLCREATEASSOCIATEDCONTEXTAMDPROC)IntGetProcAddress("wglCreateAssociatedContextAMD");
 	if(!_funcptr_wglCreateAssociatedContextAMD) ++numFailed;
 	_funcptr_wglCreateAssociatedContextAttribsAMD = (PFNWGLCREATEASSOCIATEDCONTEXTATTRIBSAMDPROC)IntGetProcAddress("wglCreateAssociatedContextAttribsAMD");
 	if(!_funcptr_wglCreateAssociatedContextAttribsAMD) ++numFailed;
 	_funcptr_wglDeleteAssociatedContextAMD = (PFNWGLDELETEASSOCIATEDCONTEXTAMDPROC)IntGetProcAddress("wglDeleteAssociatedContextAMD");
 	if(!_funcptr_wglDeleteAssociatedContextAMD) ++numFailed;
-	_funcptr_wglMakeAssociatedContextCurrentAMD = (PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC)IntGetProcAddress("wglMakeAssociatedContextCurrentAMD");
-	if(!_funcptr_wglMakeAssociatedContextCurrentAMD) ++numFailed;
+	_funcptr_wglGetContextGPUIDAMD = (PFNWGLGETCONTEXTGPUIDAMDPROC)IntGetProcAddress("wglGetContextGPUIDAMD");
+	if(!_funcptr_wglGetContextGPUIDAMD) ++numFailed;
 	_funcptr_wglGetCurrentAssociatedContextAMD = (PFNWGLGETCURRENTASSOCIATEDCONTEXTAMDPROC)IntGetProcAddress("wglGetCurrentAssociatedContextAMD");
 	if(!_funcptr_wglGetCurrentAssociatedContextAMD) ++numFailed;
-	_funcptr_wglBlitContextFramebufferAMD = (PFNWGLBLITCONTEXTFRAMEBUFFERAMDPROC)IntGetProcAddress("wglBlitContextFramebufferAMD");
-	if(!_funcptr_wglBlitContextFramebufferAMD) ++numFailed;
+	_funcptr_wglGetGPUIDsAMD = (PFNWGLGETGPUIDSAMDPROC)IntGetProcAddress("wglGetGPUIDsAMD");
+	if(!_funcptr_wglGetGPUIDsAMD) ++numFailed;
+	_funcptr_wglGetGPUInfoAMD = (PFNWGLGETGPUINFOAMDPROC)IntGetProcAddress("wglGetGPUInfoAMD");
+	if(!_funcptr_wglGetGPUInfoAMD) ++numFailed;
+	_funcptr_wglMakeAssociatedContextCurrentAMD = (PFNWGLMAKEASSOCIATEDCONTEXTCURRENTAMDPROC)IntGetProcAddress("wglMakeAssociatedContextCurrentAMD");
+	if(!_funcptr_wglMakeAssociatedContextCurrentAMD) ++numFailed;
 	return numFailed;
 }
 
 PFNWGLCREATEBUFFERREGIONARBPROC _funcptr_wglCreateBufferRegionARB = NULL;
 PFNWGLDELETEBUFFERREGIONARBPROC _funcptr_wglDeleteBufferRegionARB = NULL;
-PFNWGLSAVEBUFFERREGIONARBPROC _funcptr_wglSaveBufferRegionARB = NULL;
 PFNWGLRESTOREBUFFERREGIONARBPROC _funcptr_wglRestoreBufferRegionARB = NULL;
+PFNWGLSAVEBUFFERREGIONARBPROC _funcptr_wglSaveBufferRegionARB = NULL;
 
 static int LoadExt_ARB_buffer_region()
 {
@@ -198,10 +206,10 @@ static int LoadExt_ARB_buffer_region()
 	if(!_funcptr_wglCreateBufferRegionARB) ++numFailed;
 	_funcptr_wglDeleteBufferRegionARB = (PFNWGLDELETEBUFFERREGIONARBPROC)IntGetProcAddress("wglDeleteBufferRegionARB");
 	if(!_funcptr_wglDeleteBufferRegionARB) ++numFailed;
-	_funcptr_wglSaveBufferRegionARB = (PFNWGLSAVEBUFFERREGIONARBPROC)IntGetProcAddress("wglSaveBufferRegionARB");
-	if(!_funcptr_wglSaveBufferRegionARB) ++numFailed;
 	_funcptr_wglRestoreBufferRegionARB = (PFNWGLRESTOREBUFFERREGIONARBPROC)IntGetProcAddress("wglRestoreBufferRegionARB");
 	if(!_funcptr_wglRestoreBufferRegionARB) ++numFailed;
+	_funcptr_wglSaveBufferRegionARB = (PFNWGLSAVEBUFFERREGIONARBPROC)IntGetProcAddress("wglSaveBufferRegionARB");
+	if(!_funcptr_wglSaveBufferRegionARB) ++numFailed;
 	return numFailed;
 }
 
@@ -225,54 +233,54 @@ static int LoadExt_ARB_extensions_string()
 	return numFailed;
 }
 
-PFNWGLMAKECONTEXTCURRENTARBPROC _funcptr_wglMakeContextCurrentARB = NULL;
 PFNWGLGETCURRENTREADDCARBPROC _funcptr_wglGetCurrentReadDCARB = NULL;
+PFNWGLMAKECONTEXTCURRENTARBPROC _funcptr_wglMakeContextCurrentARB = NULL;
 
 static int LoadExt_ARB_make_current_read()
 {
 	int numFailed = 0;
-	_funcptr_wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC)IntGetProcAddress("wglMakeContextCurrentARB");
-	if(!_funcptr_wglMakeContextCurrentARB) ++numFailed;
 	_funcptr_wglGetCurrentReadDCARB = (PFNWGLGETCURRENTREADDCARBPROC)IntGetProcAddress("wglGetCurrentReadDCARB");
 	if(!_funcptr_wglGetCurrentReadDCARB) ++numFailed;
+	_funcptr_wglMakeContextCurrentARB = (PFNWGLMAKECONTEXTCURRENTARBPROC)IntGetProcAddress("wglMakeContextCurrentARB");
+	if(!_funcptr_wglMakeContextCurrentARB) ++numFailed;
 	return numFailed;
 }
 
 PFNWGLCREATEPBUFFERARBPROC _funcptr_wglCreatePbufferARB = NULL;
-PFNWGLGETPBUFFERDCARBPROC _funcptr_wglGetPbufferDCARB = NULL;
-PFNWGLRELEASEPBUFFERDCARBPROC _funcptr_wglReleasePbufferDCARB = NULL;
 PFNWGLDESTROYPBUFFERARBPROC _funcptr_wglDestroyPbufferARB = NULL;
+PFNWGLGETPBUFFERDCARBPROC _funcptr_wglGetPbufferDCARB = NULL;
 PFNWGLQUERYPBUFFERARBPROC _funcptr_wglQueryPbufferARB = NULL;
+PFNWGLRELEASEPBUFFERDCARBPROC _funcptr_wglReleasePbufferDCARB = NULL;
 
 static int LoadExt_ARB_pbuffer()
 {
 	int numFailed = 0;
 	_funcptr_wglCreatePbufferARB = (PFNWGLCREATEPBUFFERARBPROC)IntGetProcAddress("wglCreatePbufferARB");
 	if(!_funcptr_wglCreatePbufferARB) ++numFailed;
-	_funcptr_wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)IntGetProcAddress("wglGetPbufferDCARB");
-	if(!_funcptr_wglGetPbufferDCARB) ++numFailed;
-	_funcptr_wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)IntGetProcAddress("wglReleasePbufferDCARB");
-	if(!_funcptr_wglReleasePbufferDCARB) ++numFailed;
 	_funcptr_wglDestroyPbufferARB = (PFNWGLDESTROYPBUFFERARBPROC)IntGetProcAddress("wglDestroyPbufferARB");
 	if(!_funcptr_wglDestroyPbufferARB) ++numFailed;
+	_funcptr_wglGetPbufferDCARB = (PFNWGLGETPBUFFERDCARBPROC)IntGetProcAddress("wglGetPbufferDCARB");
+	if(!_funcptr_wglGetPbufferDCARB) ++numFailed;
 	_funcptr_wglQueryPbufferARB = (PFNWGLQUERYPBUFFERARBPROC)IntGetProcAddress("wglQueryPbufferARB");
 	if(!_funcptr_wglQueryPbufferARB) ++numFailed;
+	_funcptr_wglReleasePbufferDCARB = (PFNWGLRELEASEPBUFFERDCARBPROC)IntGetProcAddress("wglReleasePbufferDCARB");
+	if(!_funcptr_wglReleasePbufferDCARB) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLGETPIXELFORMATATTRIBIVARBPROC _funcptr_wglGetPixelFormatAttribivARB = NULL;
-PFNWGLGETPIXELFORMATATTRIBFVARBPROC _funcptr_wglGetPixelFormatAttribfvARB = NULL;
 PFNWGLCHOOSEPIXELFORMATARBPROC _funcptr_wglChoosePixelFormatARB = NULL;
+PFNWGLGETPIXELFORMATATTRIBFVARBPROC _funcptr_wglGetPixelFormatAttribfvARB = NULL;
+PFNWGLGETPIXELFORMATATTRIBIVARBPROC _funcptr_wglGetPixelFormatAttribivARB = NULL;
 
 static int LoadExt_ARB_pixel_format()
 {
 	int numFailed = 0;
-	_funcptr_wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)IntGetProcAddress("wglGetPixelFormatAttribivARB");
-	if(!_funcptr_wglGetPixelFormatAttribivARB) ++numFailed;
-	_funcptr_wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)IntGetProcAddress("wglGetPixelFormatAttribfvARB");
-	if(!_funcptr_wglGetPixelFormatAttribfvARB) ++numFailed;
 	_funcptr_wglChoosePixelFormatARB = (PFNWGLCHOOSEPIXELFORMATARBPROC)IntGetProcAddress("wglChoosePixelFormatARB");
 	if(!_funcptr_wglChoosePixelFormatARB) ++numFailed;
+	_funcptr_wglGetPixelFormatAttribfvARB = (PFNWGLGETPIXELFORMATATTRIBFVARBPROC)IntGetProcAddress("wglGetPixelFormatAttribfvARB");
+	if(!_funcptr_wglGetPixelFormatAttribfvARB) ++numFailed;
+	_funcptr_wglGetPixelFormatAttribivARB = (PFNWGLGETPIXELFORMATATTRIBIVARBPROC)IntGetProcAddress("wglGetPixelFormatAttribivARB");
+	if(!_funcptr_wglGetPixelFormatAttribivARB) ++numFailed;
 	return numFailed;
 }
 
@@ -292,67 +300,96 @@ static int LoadExt_ARB_render_texture()
 	return numFailed;
 }
 
-PFNWGLMAKECONTEXTCURRENTEXTPROC _funcptr_wglMakeContextCurrentEXT = NULL;
+PFNWGLBINDDISPLAYCOLORTABLEEXTPROC _funcptr_wglBindDisplayColorTableEXT = NULL;
+PFNWGLCREATEDISPLAYCOLORTABLEEXTPROC _funcptr_wglCreateDisplayColorTableEXT = NULL;
+PFNWGLDESTROYDISPLAYCOLORTABLEEXTPROC _funcptr_wglDestroyDisplayColorTableEXT = NULL;
+PFNWGLLOADDISPLAYCOLORTABLEEXTPROC _funcptr_wglLoadDisplayColorTableEXT = NULL;
+
+static int LoadExt_EXT_display_color_table()
+{
+	int numFailed = 0;
+	_funcptr_wglBindDisplayColorTableEXT = (PFNWGLBINDDISPLAYCOLORTABLEEXTPROC)IntGetProcAddress("wglBindDisplayColorTableEXT");
+	if(!_funcptr_wglBindDisplayColorTableEXT) ++numFailed;
+	_funcptr_wglCreateDisplayColorTableEXT = (PFNWGLCREATEDISPLAYCOLORTABLEEXTPROC)IntGetProcAddress("wglCreateDisplayColorTableEXT");
+	if(!_funcptr_wglCreateDisplayColorTableEXT) ++numFailed;
+	_funcptr_wglDestroyDisplayColorTableEXT = (PFNWGLDESTROYDISPLAYCOLORTABLEEXTPROC)IntGetProcAddress("wglDestroyDisplayColorTableEXT");
+	if(!_funcptr_wglDestroyDisplayColorTableEXT) ++numFailed;
+	_funcptr_wglLoadDisplayColorTableEXT = (PFNWGLLOADDISPLAYCOLORTABLEEXTPROC)IntGetProcAddress("wglLoadDisplayColorTableEXT");
+	if(!_funcptr_wglLoadDisplayColorTableEXT) ++numFailed;
+	return numFailed;
+}
+
+PFNWGLGETEXTENSIONSSTRINGEXTPROC _funcptr_wglGetExtensionsStringEXT = NULL;
+
+static int LoadExt_EXT_extensions_string()
+{
+	int numFailed = 0;
+	_funcptr_wglGetExtensionsStringEXT = (PFNWGLGETEXTENSIONSSTRINGEXTPROC)IntGetProcAddress("wglGetExtensionsStringEXT");
+	if(!_funcptr_wglGetExtensionsStringEXT) ++numFailed;
+	return numFailed;
+}
+
 PFNWGLGETCURRENTREADDCEXTPROC _funcptr_wglGetCurrentReadDCEXT = NULL;
+PFNWGLMAKECONTEXTCURRENTEXTPROC _funcptr_wglMakeContextCurrentEXT = NULL;
 
 static int LoadExt_EXT_make_current_read()
 {
 	int numFailed = 0;
-	_funcptr_wglMakeContextCurrentEXT = (PFNWGLMAKECONTEXTCURRENTEXTPROC)IntGetProcAddress("wglMakeContextCurrentEXT");
-	if(!_funcptr_wglMakeContextCurrentEXT) ++numFailed;
 	_funcptr_wglGetCurrentReadDCEXT = (PFNWGLGETCURRENTREADDCEXTPROC)IntGetProcAddress("wglGetCurrentReadDCEXT");
 	if(!_funcptr_wglGetCurrentReadDCEXT) ++numFailed;
+	_funcptr_wglMakeContextCurrentEXT = (PFNWGLMAKECONTEXTCURRENTEXTPROC)IntGetProcAddress("wglMakeContextCurrentEXT");
+	if(!_funcptr_wglMakeContextCurrentEXT) ++numFailed;
 	return numFailed;
 }
 
 PFNWGLCREATEPBUFFEREXTPROC _funcptr_wglCreatePbufferEXT = NULL;
-PFNWGLGETPBUFFERDCEXTPROC _funcptr_wglGetPbufferDCEXT = NULL;
-PFNWGLRELEASEPBUFFERDCEXTPROC _funcptr_wglReleasePbufferDCEXT = NULL;
 PFNWGLDESTROYPBUFFEREXTPROC _funcptr_wglDestroyPbufferEXT = NULL;
+PFNWGLGETPBUFFERDCEXTPROC _funcptr_wglGetPbufferDCEXT = NULL;
 PFNWGLQUERYPBUFFEREXTPROC _funcptr_wglQueryPbufferEXT = NULL;
+PFNWGLRELEASEPBUFFERDCEXTPROC _funcptr_wglReleasePbufferDCEXT = NULL;
 
 static int LoadExt_EXT_pbuffer()
 {
 	int numFailed = 0;
 	_funcptr_wglCreatePbufferEXT = (PFNWGLCREATEPBUFFEREXTPROC)IntGetProcAddress("wglCreatePbufferEXT");
 	if(!_funcptr_wglCreatePbufferEXT) ++numFailed;
-	_funcptr_wglGetPbufferDCEXT = (PFNWGLGETPBUFFERDCEXTPROC)IntGetProcAddress("wglGetPbufferDCEXT");
-	if(!_funcptr_wglGetPbufferDCEXT) ++numFailed;
-	_funcptr_wglReleasePbufferDCEXT = (PFNWGLRELEASEPBUFFERDCEXTPROC)IntGetProcAddress("wglReleasePbufferDCEXT");
-	if(!_funcptr_wglReleasePbufferDCEXT) ++numFailed;
 	_funcptr_wglDestroyPbufferEXT = (PFNWGLDESTROYPBUFFEREXTPROC)IntGetProcAddress("wglDestroyPbufferEXT");
 	if(!_funcptr_wglDestroyPbufferEXT) ++numFailed;
+	_funcptr_wglGetPbufferDCEXT = (PFNWGLGETPBUFFERDCEXTPROC)IntGetProcAddress("wglGetPbufferDCEXT");
+	if(!_funcptr_wglGetPbufferDCEXT) ++numFailed;
 	_funcptr_wglQueryPbufferEXT = (PFNWGLQUERYPBUFFEREXTPROC)IntGetProcAddress("wglQueryPbufferEXT");
 	if(!_funcptr_wglQueryPbufferEXT) ++numFailed;
+	_funcptr_wglReleasePbufferDCEXT = (PFNWGLRELEASEPBUFFERDCEXTPROC)IntGetProcAddress("wglReleasePbufferDCEXT");
+	if(!_funcptr_wglReleasePbufferDCEXT) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLGETPIXELFORMATATTRIBIVEXTPROC _funcptr_wglGetPixelFormatAttribivEXT = NULL;
-PFNWGLGETPIXELFORMATATTRIBFVEXTPROC _funcptr_wglGetPixelFormatAttribfvEXT = NULL;
 PFNWGLCHOOSEPIXELFORMATEXTPROC _funcptr_wglChoosePixelFormatEXT = NULL;
+PFNWGLGETPIXELFORMATATTRIBFVEXTPROC _funcptr_wglGetPixelFormatAttribfvEXT = NULL;
+PFNWGLGETPIXELFORMATATTRIBIVEXTPROC _funcptr_wglGetPixelFormatAttribivEXT = NULL;
 
 static int LoadExt_EXT_pixel_format()
 {
 	int numFailed = 0;
-	_funcptr_wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)IntGetProcAddress("wglGetPixelFormatAttribivEXT");
-	if(!_funcptr_wglGetPixelFormatAttribivEXT) ++numFailed;
-	_funcptr_wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)IntGetProcAddress("wglGetPixelFormatAttribfvEXT");
-	if(!_funcptr_wglGetPixelFormatAttribfvEXT) ++numFailed;
 	_funcptr_wglChoosePixelFormatEXT = (PFNWGLCHOOSEPIXELFORMATEXTPROC)IntGetProcAddress("wglChoosePixelFormatEXT");
 	if(!_funcptr_wglChoosePixelFormatEXT) ++numFailed;
+	_funcptr_wglGetPixelFormatAttribfvEXT = (PFNWGLGETPIXELFORMATATTRIBFVEXTPROC)IntGetProcAddress("wglGetPixelFormatAttribfvEXT");
+	if(!_funcptr_wglGetPixelFormatAttribfvEXT) ++numFailed;
+	_funcptr_wglGetPixelFormatAttribivEXT = (PFNWGLGETPIXELFORMATATTRIBIVEXTPROC)IntGetProcAddress("wglGetPixelFormatAttribivEXT");
+	if(!_funcptr_wglGetPixelFormatAttribivEXT) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLSWAPINTERVALEXTPROC _funcptr_wglSwapIntervalEXT = NULL;
 PFNWGLGETSWAPINTERVALEXTPROC _funcptr_wglGetSwapIntervalEXT = NULL;
+PFNWGLSWAPINTERVALEXTPROC _funcptr_wglSwapIntervalEXT = NULL;
 
 static int LoadExt_EXT_swap_control()
 {
 	int numFailed = 0;
-	_funcptr_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)IntGetProcAddress("wglSwapIntervalEXT");
-	if(!_funcptr_wglSwapIntervalEXT) ++numFailed;
 	_funcptr_wglGetSwapIntervalEXT = (PFNWGLGETSWAPINTERVALEXTPROC)IntGetProcAddress("wglGetSwapIntervalEXT");
 	if(!_funcptr_wglGetSwapIntervalEXT) ++numFailed;
+	_funcptr_wglSwapIntervalEXT = (PFNWGLSWAPINTERVALEXTPROC)IntGetProcAddress("wglSwapIntervalEXT");
+	if(!_funcptr_wglSwapIntervalEXT) ++numFailed;
 	return numFailed;
 }
 
@@ -369,99 +406,99 @@ static int LoadExt_I3D_digital_video_control()
 	return numFailed;
 }
 
-PFNWGLGETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglGetGammaTableParametersI3D = NULL;
-PFNWGLSETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglSetGammaTableParametersI3D = NULL;
 PFNWGLGETGAMMATABLEI3DPROC _funcptr_wglGetGammaTableI3D = NULL;
+PFNWGLGETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglGetGammaTableParametersI3D = NULL;
 PFNWGLSETGAMMATABLEI3DPROC _funcptr_wglSetGammaTableI3D = NULL;
+PFNWGLSETGAMMATABLEPARAMETERSI3DPROC _funcptr_wglSetGammaTableParametersI3D = NULL;
 
 static int LoadExt_I3D_gamma()
 {
 	int numFailed = 0;
-	_funcptr_wglGetGammaTableParametersI3D = (PFNWGLGETGAMMATABLEPARAMETERSI3DPROC)IntGetProcAddress("wglGetGammaTableParametersI3D");
-	if(!_funcptr_wglGetGammaTableParametersI3D) ++numFailed;
-	_funcptr_wglSetGammaTableParametersI3D = (PFNWGLSETGAMMATABLEPARAMETERSI3DPROC)IntGetProcAddress("wglSetGammaTableParametersI3D");
-	if(!_funcptr_wglSetGammaTableParametersI3D) ++numFailed;
 	_funcptr_wglGetGammaTableI3D = (PFNWGLGETGAMMATABLEI3DPROC)IntGetProcAddress("wglGetGammaTableI3D");
 	if(!_funcptr_wglGetGammaTableI3D) ++numFailed;
+	_funcptr_wglGetGammaTableParametersI3D = (PFNWGLGETGAMMATABLEPARAMETERSI3DPROC)IntGetProcAddress("wglGetGammaTableParametersI3D");
+	if(!_funcptr_wglGetGammaTableParametersI3D) ++numFailed;
 	_funcptr_wglSetGammaTableI3D = (PFNWGLSETGAMMATABLEI3DPROC)IntGetProcAddress("wglSetGammaTableI3D");
 	if(!_funcptr_wglSetGammaTableI3D) ++numFailed;
+	_funcptr_wglSetGammaTableParametersI3D = (PFNWGLSETGAMMATABLEPARAMETERSI3DPROC)IntGetProcAddress("wglSetGammaTableParametersI3D");
+	if(!_funcptr_wglSetGammaTableParametersI3D) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLENABLEGENLOCKI3DPROC _funcptr_wglEnableGenlockI3D = NULL;
 PFNWGLDISABLEGENLOCKI3DPROC _funcptr_wglDisableGenlockI3D = NULL;
-PFNWGLISENABLEDGENLOCKI3DPROC _funcptr_wglIsEnabledGenlockI3D = NULL;
-PFNWGLGENLOCKSOURCEI3DPROC _funcptr_wglGenlockSourceI3D = NULL;
-PFNWGLGETGENLOCKSOURCEI3DPROC _funcptr_wglGetGenlockSourceI3D = NULL;
-PFNWGLGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGenlockSourceEdgeI3D = NULL;
-PFNWGLGETGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGetGenlockSourceEdgeI3D = NULL;
+PFNWGLENABLEGENLOCKI3DPROC _funcptr_wglEnableGenlockI3D = NULL;
 PFNWGLGENLOCKSAMPLERATEI3DPROC _funcptr_wglGenlockSampleRateI3D = NULL;
-PFNWGLGETGENLOCKSAMPLERATEI3DPROC _funcptr_wglGetGenlockSampleRateI3D = NULL;
 PFNWGLGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGenlockSourceDelayI3D = NULL;
+PFNWGLGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGenlockSourceEdgeI3D = NULL;
+PFNWGLGENLOCKSOURCEI3DPROC _funcptr_wglGenlockSourceI3D = NULL;
+PFNWGLGETGENLOCKSAMPLERATEI3DPROC _funcptr_wglGetGenlockSampleRateI3D = NULL;
 PFNWGLGETGENLOCKSOURCEDELAYI3DPROC _funcptr_wglGetGenlockSourceDelayI3D = NULL;
+PFNWGLGETGENLOCKSOURCEEDGEI3DPROC _funcptr_wglGetGenlockSourceEdgeI3D = NULL;
+PFNWGLGETGENLOCKSOURCEI3DPROC _funcptr_wglGetGenlockSourceI3D = NULL;
+PFNWGLISENABLEDGENLOCKI3DPROC _funcptr_wglIsEnabledGenlockI3D = NULL;
 PFNWGLQUERYGENLOCKMAXSOURCEDELAYI3DPROC _funcptr_wglQueryGenlockMaxSourceDelayI3D = NULL;
 
 static int LoadExt_I3D_genlock()
 {
 	int numFailed = 0;
-	_funcptr_wglEnableGenlockI3D = (PFNWGLENABLEGENLOCKI3DPROC)IntGetProcAddress("wglEnableGenlockI3D");
-	if(!_funcptr_wglEnableGenlockI3D) ++numFailed;
 	_funcptr_wglDisableGenlockI3D = (PFNWGLDISABLEGENLOCKI3DPROC)IntGetProcAddress("wglDisableGenlockI3D");
 	if(!_funcptr_wglDisableGenlockI3D) ++numFailed;
-	_funcptr_wglIsEnabledGenlockI3D = (PFNWGLISENABLEDGENLOCKI3DPROC)IntGetProcAddress("wglIsEnabledGenlockI3D");
-	if(!_funcptr_wglIsEnabledGenlockI3D) ++numFailed;
-	_funcptr_wglGenlockSourceI3D = (PFNWGLGENLOCKSOURCEI3DPROC)IntGetProcAddress("wglGenlockSourceI3D");
-	if(!_funcptr_wglGenlockSourceI3D) ++numFailed;
-	_funcptr_wglGetGenlockSourceI3D = (PFNWGLGETGENLOCKSOURCEI3DPROC)IntGetProcAddress("wglGetGenlockSourceI3D");
-	if(!_funcptr_wglGetGenlockSourceI3D) ++numFailed;
-	_funcptr_wglGenlockSourceEdgeI3D = (PFNWGLGENLOCKSOURCEEDGEI3DPROC)IntGetProcAddress("wglGenlockSourceEdgeI3D");
-	if(!_funcptr_wglGenlockSourceEdgeI3D) ++numFailed;
-	_funcptr_wglGetGenlockSourceEdgeI3D = (PFNWGLGETGENLOCKSOURCEEDGEI3DPROC)IntGetProcAddress("wglGetGenlockSourceEdgeI3D");
-	if(!_funcptr_wglGetGenlockSourceEdgeI3D) ++numFailed;
+	_funcptr_wglEnableGenlockI3D = (PFNWGLENABLEGENLOCKI3DPROC)IntGetProcAddress("wglEnableGenlockI3D");
+	if(!_funcptr_wglEnableGenlockI3D) ++numFailed;
 	_funcptr_wglGenlockSampleRateI3D = (PFNWGLGENLOCKSAMPLERATEI3DPROC)IntGetProcAddress("wglGenlockSampleRateI3D");
 	if(!_funcptr_wglGenlockSampleRateI3D) ++numFailed;
-	_funcptr_wglGetGenlockSampleRateI3D = (PFNWGLGETGENLOCKSAMPLERATEI3DPROC)IntGetProcAddress("wglGetGenlockSampleRateI3D");
-	if(!_funcptr_wglGetGenlockSampleRateI3D) ++numFailed;
 	_funcptr_wglGenlockSourceDelayI3D = (PFNWGLGENLOCKSOURCEDELAYI3DPROC)IntGetProcAddress("wglGenlockSourceDelayI3D");
 	if(!_funcptr_wglGenlockSourceDelayI3D) ++numFailed;
+	_funcptr_wglGenlockSourceEdgeI3D = (PFNWGLGENLOCKSOURCEEDGEI3DPROC)IntGetProcAddress("wglGenlockSourceEdgeI3D");
+	if(!_funcptr_wglGenlockSourceEdgeI3D) ++numFailed;
+	_funcptr_wglGenlockSourceI3D = (PFNWGLGENLOCKSOURCEI3DPROC)IntGetProcAddress("wglGenlockSourceI3D");
+	if(!_funcptr_wglGenlockSourceI3D) ++numFailed;
+	_funcptr_wglGetGenlockSampleRateI3D = (PFNWGLGETGENLOCKSAMPLERATEI3DPROC)IntGetProcAddress("wglGetGenlockSampleRateI3D");
+	if(!_funcptr_wglGetGenlockSampleRateI3D) ++numFailed;
 	_funcptr_wglGetGenlockSourceDelayI3D = (PFNWGLGETGENLOCKSOURCEDELAYI3DPROC)IntGetProcAddress("wglGetGenlockSourceDelayI3D");
 	if(!_funcptr_wglGetGenlockSourceDelayI3D) ++numFailed;
+	_funcptr_wglGetGenlockSourceEdgeI3D = (PFNWGLGETGENLOCKSOURCEEDGEI3DPROC)IntGetProcAddress("wglGetGenlockSourceEdgeI3D");
+	if(!_funcptr_wglGetGenlockSourceEdgeI3D) ++numFailed;
+	_funcptr_wglGetGenlockSourceI3D = (PFNWGLGETGENLOCKSOURCEI3DPROC)IntGetProcAddress("wglGetGenlockSourceI3D");
+	if(!_funcptr_wglGetGenlockSourceI3D) ++numFailed;
+	_funcptr_wglIsEnabledGenlockI3D = (PFNWGLISENABLEDGENLOCKI3DPROC)IntGetProcAddress("wglIsEnabledGenlockI3D");
+	if(!_funcptr_wglIsEnabledGenlockI3D) ++numFailed;
 	_funcptr_wglQueryGenlockMaxSourceDelayI3D = (PFNWGLQUERYGENLOCKMAXSOURCEDELAYI3DPROC)IntGetProcAddress("wglQueryGenlockMaxSourceDelayI3D");
 	if(!_funcptr_wglQueryGenlockMaxSourceDelayI3D) ++numFailed;
 	return numFailed;
 }
 
+PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglAssociateImageBufferEventsI3D = NULL;
 PFNWGLCREATEIMAGEBUFFERI3DPROC _funcptr_wglCreateImageBufferI3D = NULL;
 PFNWGLDESTROYIMAGEBUFFERI3DPROC _funcptr_wglDestroyImageBufferI3D = NULL;
-PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglAssociateImageBufferEventsI3D = NULL;
 PFNWGLRELEASEIMAGEBUFFEREVENTSI3DPROC _funcptr_wglReleaseImageBufferEventsI3D = NULL;
 
 static int LoadExt_I3D_image_buffer()
 {
 	int numFailed = 0;
+	_funcptr_wglAssociateImageBufferEventsI3D = (PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC)IntGetProcAddress("wglAssociateImageBufferEventsI3D");
+	if(!_funcptr_wglAssociateImageBufferEventsI3D) ++numFailed;
 	_funcptr_wglCreateImageBufferI3D = (PFNWGLCREATEIMAGEBUFFERI3DPROC)IntGetProcAddress("wglCreateImageBufferI3D");
 	if(!_funcptr_wglCreateImageBufferI3D) ++numFailed;
 	_funcptr_wglDestroyImageBufferI3D = (PFNWGLDESTROYIMAGEBUFFERI3DPROC)IntGetProcAddress("wglDestroyImageBufferI3D");
 	if(!_funcptr_wglDestroyImageBufferI3D) ++numFailed;
-	_funcptr_wglAssociateImageBufferEventsI3D = (PFNWGLASSOCIATEIMAGEBUFFEREVENTSI3DPROC)IntGetProcAddress("wglAssociateImageBufferEventsI3D");
-	if(!_funcptr_wglAssociateImageBufferEventsI3D) ++numFailed;
 	_funcptr_wglReleaseImageBufferEventsI3D = (PFNWGLRELEASEIMAGEBUFFEREVENTSI3DPROC)IntGetProcAddress("wglReleaseImageBufferEventsI3D");
 	if(!_funcptr_wglReleaseImageBufferEventsI3D) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLENABLEFRAMELOCKI3DPROC _funcptr_wglEnableFrameLockI3D = NULL;
 PFNWGLDISABLEFRAMELOCKI3DPROC _funcptr_wglDisableFrameLockI3D = NULL;
+PFNWGLENABLEFRAMELOCKI3DPROC _funcptr_wglEnableFrameLockI3D = NULL;
 PFNWGLISENABLEDFRAMELOCKI3DPROC _funcptr_wglIsEnabledFrameLockI3D = NULL;
 PFNWGLQUERYFRAMELOCKMASTERI3DPROC _funcptr_wglQueryFrameLockMasterI3D = NULL;
 
 static int LoadExt_I3D_swap_frame_lock()
 {
 	int numFailed = 0;
-	_funcptr_wglEnableFrameLockI3D = (PFNWGLENABLEFRAMELOCKI3DPROC)IntGetProcAddress("wglEnableFrameLockI3D");
-	if(!_funcptr_wglEnableFrameLockI3D) ++numFailed;
 	_funcptr_wglDisableFrameLockI3D = (PFNWGLDISABLEFRAMELOCKI3DPROC)IntGetProcAddress("wglDisableFrameLockI3D");
 	if(!_funcptr_wglDisableFrameLockI3D) ++numFailed;
+	_funcptr_wglEnableFrameLockI3D = (PFNWGLENABLEFRAMELOCKI3DPROC)IntGetProcAddress("wglEnableFrameLockI3D");
+	if(!_funcptr_wglEnableFrameLockI3D) ++numFailed;
 	_funcptr_wglIsEnabledFrameLockI3D = (PFNWGLISENABLEDFRAMELOCKI3DPROC)IntGetProcAddress("wglIsEnabledFrameLockI3D");
 	if(!_funcptr_wglIsEnabledFrameLockI3D) ++numFailed;
 	_funcptr_wglQueryFrameLockMasterI3D = (PFNWGLQUERYFRAMELOCKMASTERI3DPROC)IntGetProcAddress("wglQueryFrameLockMasterI3D");
@@ -469,34 +506,53 @@ static int LoadExt_I3D_swap_frame_lock()
 	return numFailed;
 }
 
-PFNWGLDXSETRESOURCESHAREHANDLENVPROC _funcptr_wglDXSetResourceShareHandleNV = NULL;
-PFNWGLDXOPENDEVICENVPROC _funcptr_wglDXOpenDeviceNV = NULL;
+PFNWGLBEGINFRAMETRACKINGI3DPROC _funcptr_wglBeginFrameTrackingI3D = NULL;
+PFNWGLENDFRAMETRACKINGI3DPROC _funcptr_wglEndFrameTrackingI3D = NULL;
+PFNWGLGETFRAMEUSAGEI3DPROC _funcptr_wglGetFrameUsageI3D = NULL;
+PFNWGLQUERYFRAMETRACKINGI3DPROC _funcptr_wglQueryFrameTrackingI3D = NULL;
+
+static int LoadExt_I3D_swap_frame_usage()
+{
+	int numFailed = 0;
+	_funcptr_wglBeginFrameTrackingI3D = (PFNWGLBEGINFRAMETRACKINGI3DPROC)IntGetProcAddress("wglBeginFrameTrackingI3D");
+	if(!_funcptr_wglBeginFrameTrackingI3D) ++numFailed;
+	_funcptr_wglEndFrameTrackingI3D = (PFNWGLENDFRAMETRACKINGI3DPROC)IntGetProcAddress("wglEndFrameTrackingI3D");
+	if(!_funcptr_wglEndFrameTrackingI3D) ++numFailed;
+	_funcptr_wglGetFrameUsageI3D = (PFNWGLGETFRAMEUSAGEI3DPROC)IntGetProcAddress("wglGetFrameUsageI3D");
+	if(!_funcptr_wglGetFrameUsageI3D) ++numFailed;
+	_funcptr_wglQueryFrameTrackingI3D = (PFNWGLQUERYFRAMETRACKINGI3DPROC)IntGetProcAddress("wglQueryFrameTrackingI3D");
+	if(!_funcptr_wglQueryFrameTrackingI3D) ++numFailed;
+	return numFailed;
+}
+
 PFNWGLDXCLOSEDEVICENVPROC _funcptr_wglDXCloseDeviceNV = NULL;
-PFNWGLDXREGISTEROBJECTNVPROC _funcptr_wglDXRegisterObjectNV = NULL;
-PFNWGLDXUNREGISTEROBJECTNVPROC _funcptr_wglDXUnregisterObjectNV = NULL;
-PFNWGLDXOBJECTACCESSNVPROC _funcptr_wglDXObjectAccessNV = NULL;
 PFNWGLDXLOCKOBJECTSNVPROC _funcptr_wglDXLockObjectsNV = NULL;
+PFNWGLDXOBJECTACCESSNVPROC _funcptr_wglDXObjectAccessNV = NULL;
+PFNWGLDXOPENDEVICENVPROC _funcptr_wglDXOpenDeviceNV = NULL;
+PFNWGLDXREGISTEROBJECTNVPROC _funcptr_wglDXRegisterObjectNV = NULL;
+PFNWGLDXSETRESOURCESHAREHANDLENVPROC _funcptr_wglDXSetResourceShareHandleNV = NULL;
 PFNWGLDXUNLOCKOBJECTSNVPROC _funcptr_wglDXUnlockObjectsNV = NULL;
+PFNWGLDXUNREGISTEROBJECTNVPROC _funcptr_wglDXUnregisterObjectNV = NULL;
 
 static int LoadExt_NV_DX_interop()
 {
 	int numFailed = 0;
-	_funcptr_wglDXSetResourceShareHandleNV = (PFNWGLDXSETRESOURCESHAREHANDLENVPROC)IntGetProcAddress("wglDXSetResourceShareHandleNV");
-	if(!_funcptr_wglDXSetResourceShareHandleNV) ++numFailed;
-	_funcptr_wglDXOpenDeviceNV = (PFNWGLDXOPENDEVICENVPROC)IntGetProcAddress("wglDXOpenDeviceNV");
-	if(!_funcptr_wglDXOpenDeviceNV) ++numFailed;
 	_funcptr_wglDXCloseDeviceNV = (PFNWGLDXCLOSEDEVICENVPROC)IntGetProcAddress("wglDXCloseDeviceNV");
 	if(!_funcptr_wglDXCloseDeviceNV) ++numFailed;
-	_funcptr_wglDXRegisterObjectNV = (PFNWGLDXREGISTEROBJECTNVPROC)IntGetProcAddress("wglDXRegisterObjectNV");
-	if(!_funcptr_wglDXRegisterObjectNV) ++numFailed;
-	_funcptr_wglDXUnregisterObjectNV = (PFNWGLDXUNREGISTEROBJECTNVPROC)IntGetProcAddress("wglDXUnregisterObjectNV");
-	if(!_funcptr_wglDXUnregisterObjectNV) ++numFailed;
-	_funcptr_wglDXObjectAccessNV = (PFNWGLDXOBJECTACCESSNVPROC)IntGetProcAddress("wglDXObjectAccessNV");
-	if(!_funcptr_wglDXObjectAccessNV) ++numFailed;
 	_funcptr_wglDXLockObjectsNV = (PFNWGLDXLOCKOBJECTSNVPROC)IntGetProcAddress("wglDXLockObjectsNV");
 	if(!_funcptr_wglDXLockObjectsNV) ++numFailed;
+	_funcptr_wglDXObjectAccessNV = (PFNWGLDXOBJECTACCESSNVPROC)IntGetProcAddress("wglDXObjectAccessNV");
+	if(!_funcptr_wglDXObjectAccessNV) ++numFailed;
+	_funcptr_wglDXOpenDeviceNV = (PFNWGLDXOPENDEVICENVPROC)IntGetProcAddress("wglDXOpenDeviceNV");
+	if(!_funcptr_wglDXOpenDeviceNV) ++numFailed;
+	_funcptr_wglDXRegisterObjectNV = (PFNWGLDXREGISTEROBJECTNVPROC)IntGetProcAddress("wglDXRegisterObjectNV");
+	if(!_funcptr_wglDXRegisterObjectNV) ++numFailed;
+	_funcptr_wglDXSetResourceShareHandleNV = (PFNWGLDXSETRESOURCESHAREHANDLENVPROC)IntGetProcAddress("wglDXSetResourceShareHandleNV");
+	if(!_funcptr_wglDXSetResourceShareHandleNV) ++numFailed;
 	_funcptr_wglDXUnlockObjectsNV = (PFNWGLDXUNLOCKOBJECTSNVPROC)IntGetProcAddress("wglDXUnlockObjectsNV");
 	if(!_funcptr_wglDXUnlockObjectsNV) ++numFailed;
+	_funcptr_wglDXUnregisterObjectNV = (PFNWGLDXUNREGISTEROBJECTNVPROC)IntGetProcAddress("wglDXUnregisterObjectNV");
+	if(!_funcptr_wglDXUnregisterObjectNV) ++numFailed;
 	return numFailed;
 }
 
@@ -510,66 +566,79 @@ static int LoadExt_NV_copy_image()
 	return numFailed;
 }
 
-PFNWGLENUMGPUSNVPROC _funcptr_wglEnumGpusNV = NULL;
-PFNWGLENUMGPUDEVICESNVPROC _funcptr_wglEnumGpuDevicesNV = NULL;
 PFNWGLCREATEAFFINITYDCNVPROC _funcptr_wglCreateAffinityDCNV = NULL;
-PFNWGLENUMGPUSFROMAFFINITYDCNVPROC _funcptr_wglEnumGpusFromAffinityDCNV = NULL;
 PFNWGLDELETEDCNVPROC _funcptr_wglDeleteDCNV = NULL;
+PFNWGLENUMGPUDEVICESNVPROC _funcptr_wglEnumGpuDevicesNV = NULL;
+PFNWGLENUMGPUSFROMAFFINITYDCNVPROC _funcptr_wglEnumGpusFromAffinityDCNV = NULL;
+PFNWGLENUMGPUSNVPROC _funcptr_wglEnumGpusNV = NULL;
 
 static int LoadExt_NV_gpu_affinity()
 {
 	int numFailed = 0;
-	_funcptr_wglEnumGpusNV = (PFNWGLENUMGPUSNVPROC)IntGetProcAddress("wglEnumGpusNV");
-	if(!_funcptr_wglEnumGpusNV) ++numFailed;
-	_funcptr_wglEnumGpuDevicesNV = (PFNWGLENUMGPUDEVICESNVPROC)IntGetProcAddress("wglEnumGpuDevicesNV");
-	if(!_funcptr_wglEnumGpuDevicesNV) ++numFailed;
 	_funcptr_wglCreateAffinityDCNV = (PFNWGLCREATEAFFINITYDCNVPROC)IntGetProcAddress("wglCreateAffinityDCNV");
 	if(!_funcptr_wglCreateAffinityDCNV) ++numFailed;
-	_funcptr_wglEnumGpusFromAffinityDCNV = (PFNWGLENUMGPUSFROMAFFINITYDCNVPROC)IntGetProcAddress("wglEnumGpusFromAffinityDCNV");
-	if(!_funcptr_wglEnumGpusFromAffinityDCNV) ++numFailed;
 	_funcptr_wglDeleteDCNV = (PFNWGLDELETEDCNVPROC)IntGetProcAddress("wglDeleteDCNV");
 	if(!_funcptr_wglDeleteDCNV) ++numFailed;
+	_funcptr_wglEnumGpuDevicesNV = (PFNWGLENUMGPUDEVICESNVPROC)IntGetProcAddress("wglEnumGpuDevicesNV");
+	if(!_funcptr_wglEnumGpuDevicesNV) ++numFailed;
+	_funcptr_wglEnumGpusFromAffinityDCNV = (PFNWGLENUMGPUSFROMAFFINITYDCNVPROC)IntGetProcAddress("wglEnumGpusFromAffinityDCNV");
+	if(!_funcptr_wglEnumGpusFromAffinityDCNV) ++numFailed;
+	_funcptr_wglEnumGpusNV = (PFNWGLENUMGPUSNVPROC)IntGetProcAddress("wglEnumGpusNV");
+	if(!_funcptr_wglEnumGpusNV) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLENUMERATEVIDEODEVICESNVPROC _funcptr_wglEnumerateVideoDevicesNV = NULL;
 PFNWGLBINDVIDEODEVICENVPROC _funcptr_wglBindVideoDeviceNV = NULL;
+PFNWGLENUMERATEVIDEODEVICESNVPROC _funcptr_wglEnumerateVideoDevicesNV = NULL;
 PFNWGLQUERYCURRENTCONTEXTNVPROC _funcptr_wglQueryCurrentContextNV = NULL;
 
 static int LoadExt_NV_present_video()
 {
 	int numFailed = 0;
-	_funcptr_wglEnumerateVideoDevicesNV = (PFNWGLENUMERATEVIDEODEVICESNVPROC)IntGetProcAddress("wglEnumerateVideoDevicesNV");
-	if(!_funcptr_wglEnumerateVideoDevicesNV) ++numFailed;
 	_funcptr_wglBindVideoDeviceNV = (PFNWGLBINDVIDEODEVICENVPROC)IntGetProcAddress("wglBindVideoDeviceNV");
 	if(!_funcptr_wglBindVideoDeviceNV) ++numFailed;
+	_funcptr_wglEnumerateVideoDevicesNV = (PFNWGLENUMERATEVIDEODEVICESNVPROC)IntGetProcAddress("wglEnumerateVideoDevicesNV");
+	if(!_funcptr_wglEnumerateVideoDevicesNV) ++numFailed;
 	_funcptr_wglQueryCurrentContextNV = (PFNWGLQUERYCURRENTCONTEXTNVPROC)IntGetProcAddress("wglQueryCurrentContextNV");
 	if(!_funcptr_wglQueryCurrentContextNV) ++numFailed;
 	return numFailed;
 }
 
-PFNWGLJOINSWAPGROUPNVPROC _funcptr_wglJoinSwapGroupNV = NULL;
 PFNWGLBINDSWAPBARRIERNVPROC _funcptr_wglBindSwapBarrierNV = NULL;
-PFNWGLQUERYSWAPGROUPNVPROC _funcptr_wglQuerySwapGroupNV = NULL;
-PFNWGLQUERYMAXSWAPGROUPSNVPROC _funcptr_wglQueryMaxSwapGroupsNV = NULL;
+PFNWGLJOINSWAPGROUPNVPROC _funcptr_wglJoinSwapGroupNV = NULL;
 PFNWGLQUERYFRAMECOUNTNVPROC _funcptr_wglQueryFrameCountNV = NULL;
+PFNWGLQUERYMAXSWAPGROUPSNVPROC _funcptr_wglQueryMaxSwapGroupsNV = NULL;
+PFNWGLQUERYSWAPGROUPNVPROC _funcptr_wglQuerySwapGroupNV = NULL;
 PFNWGLRESETFRAMECOUNTNVPROC _funcptr_wglResetFrameCountNV = NULL;
 
 static int LoadExt_NV_swap_group()
 {
 	int numFailed = 0;
-	_funcptr_wglJoinSwapGroupNV = (PFNWGLJOINSWAPGROUPNVPROC)IntGetProcAddress("wglJoinSwapGroupNV");
-	if(!_funcptr_wglJoinSwapGroupNV) ++numFailed;
 	_funcptr_wglBindSwapBarrierNV = (PFNWGLBINDSWAPBARRIERNVPROC)IntGetProcAddress("wglBindSwapBarrierNV");
 	if(!_funcptr_wglBindSwapBarrierNV) ++numFailed;
-	_funcptr_wglQuerySwapGroupNV = (PFNWGLQUERYSWAPGROUPNVPROC)IntGetProcAddress("wglQuerySwapGroupNV");
-	if(!_funcptr_wglQuerySwapGroupNV) ++numFailed;
-	_funcptr_wglQueryMaxSwapGroupsNV = (PFNWGLQUERYMAXSWAPGROUPSNVPROC)IntGetProcAddress("wglQueryMaxSwapGroupsNV");
-	if(!_funcptr_wglQueryMaxSwapGroupsNV) ++numFailed;
+	_funcptr_wglJoinSwapGroupNV = (PFNWGLJOINSWAPGROUPNVPROC)IntGetProcAddress("wglJoinSwapGroupNV");
+	if(!_funcptr_wglJoinSwapGroupNV) ++numFailed;
 	_funcptr_wglQueryFrameCountNV = (PFNWGLQUERYFRAMECOUNTNVPROC)IntGetProcAddress("wglQueryFrameCountNV");
 	if(!_funcptr_wglQueryFrameCountNV) ++numFailed;
+	_funcptr_wglQueryMaxSwapGroupsNV = (PFNWGLQUERYMAXSWAPGROUPSNVPROC)IntGetProcAddress("wglQueryMaxSwapGroupsNV");
+	if(!_funcptr_wglQueryMaxSwapGroupsNV) ++numFailed;
+	_funcptr_wglQuerySwapGroupNV = (PFNWGLQUERYSWAPGROUPNVPROC)IntGetProcAddress("wglQuerySwapGroupNV");
+	if(!_funcptr_wglQuerySwapGroupNV) ++numFailed;
 	_funcptr_wglResetFrameCountNV = (PFNWGLRESETFRAMECOUNTNVPROC)IntGetProcAddress("wglResetFrameCountNV");
 	if(!_funcptr_wglResetFrameCountNV) ++numFailed;
+	return numFailed;
+}
+
+PFNWGLALLOCATEMEMORYNVPROC _funcptr_wglAllocateMemoryNV = NULL;
+PFNWGLFREEMEMORYNVPROC _funcptr_wglFreeMemoryNV = NULL;
+
+static int LoadExt_NV_vertex_array_range()
+{
+	int numFailed = 0;
+	_funcptr_wglAllocateMemoryNV = (PFNWGLALLOCATEMEMORYNVPROC)IntGetProcAddress("wglAllocateMemoryNV");
+	if(!_funcptr_wglAllocateMemoryNV) ++numFailed;
+	_funcptr_wglFreeMemoryNV = (PFNWGLFREEMEMORYNVPROC)IntGetProcAddress("wglFreeMemoryNV");
+	if(!_funcptr_wglFreeMemoryNV) ++numFailed;
 	return numFailed;
 }
 
@@ -595,28 +664,53 @@ static int LoadExt_NV_video_capture()
 	return numFailed;
 }
 
-PFNWGLGETVIDEODEVICENVPROC _funcptr_wglGetVideoDeviceNV = NULL;
-PFNWGLRELEASEVIDEODEVICENVPROC _funcptr_wglReleaseVideoDeviceNV = NULL;
 PFNWGLBINDVIDEOIMAGENVPROC _funcptr_wglBindVideoImageNV = NULL;
+PFNWGLGETVIDEODEVICENVPROC _funcptr_wglGetVideoDeviceNV = NULL;
+PFNWGLGETVIDEOINFONVPROC _funcptr_wglGetVideoInfoNV = NULL;
+PFNWGLRELEASEVIDEODEVICENVPROC _funcptr_wglReleaseVideoDeviceNV = NULL;
 PFNWGLRELEASEVIDEOIMAGENVPROC _funcptr_wglReleaseVideoImageNV = NULL;
 PFNWGLSENDPBUFFERTOVIDEONVPROC _funcptr_wglSendPbufferToVideoNV = NULL;
-PFNWGLGETVIDEOINFONVPROC _funcptr_wglGetVideoInfoNV = NULL;
 
 static int LoadExt_NV_video_output()
 {
 	int numFailed = 0;
-	_funcptr_wglGetVideoDeviceNV = (PFNWGLGETVIDEODEVICENVPROC)IntGetProcAddress("wglGetVideoDeviceNV");
-	if(!_funcptr_wglGetVideoDeviceNV) ++numFailed;
-	_funcptr_wglReleaseVideoDeviceNV = (PFNWGLRELEASEVIDEODEVICENVPROC)IntGetProcAddress("wglReleaseVideoDeviceNV");
-	if(!_funcptr_wglReleaseVideoDeviceNV) ++numFailed;
 	_funcptr_wglBindVideoImageNV = (PFNWGLBINDVIDEOIMAGENVPROC)IntGetProcAddress("wglBindVideoImageNV");
 	if(!_funcptr_wglBindVideoImageNV) ++numFailed;
+	_funcptr_wglGetVideoDeviceNV = (PFNWGLGETVIDEODEVICENVPROC)IntGetProcAddress("wglGetVideoDeviceNV");
+	if(!_funcptr_wglGetVideoDeviceNV) ++numFailed;
+	_funcptr_wglGetVideoInfoNV = (PFNWGLGETVIDEOINFONVPROC)IntGetProcAddress("wglGetVideoInfoNV");
+	if(!_funcptr_wglGetVideoInfoNV) ++numFailed;
+	_funcptr_wglReleaseVideoDeviceNV = (PFNWGLRELEASEVIDEODEVICENVPROC)IntGetProcAddress("wglReleaseVideoDeviceNV");
+	if(!_funcptr_wglReleaseVideoDeviceNV) ++numFailed;
 	_funcptr_wglReleaseVideoImageNV = (PFNWGLRELEASEVIDEOIMAGENVPROC)IntGetProcAddress("wglReleaseVideoImageNV");
 	if(!_funcptr_wglReleaseVideoImageNV) ++numFailed;
 	_funcptr_wglSendPbufferToVideoNV = (PFNWGLSENDPBUFFERTOVIDEONVPROC)IntGetProcAddress("wglSendPbufferToVideoNV");
 	if(!_funcptr_wglSendPbufferToVideoNV) ++numFailed;
-	_funcptr_wglGetVideoInfoNV = (PFNWGLGETVIDEOINFONVPROC)IntGetProcAddress("wglGetVideoInfoNV");
-	if(!_funcptr_wglGetVideoInfoNV) ++numFailed;
+	return numFailed;
+}
+
+PFNWGLGETMSCRATEOMLPROC _funcptr_wglGetMscRateOML = NULL;
+PFNWGLGETSYNCVALUESOMLPROC _funcptr_wglGetSyncValuesOML = NULL;
+PFNWGLSWAPBUFFERSMSCOMLPROC _funcptr_wglSwapBuffersMscOML = NULL;
+PFNWGLSWAPLAYERBUFFERSMSCOMLPROC _funcptr_wglSwapLayerBuffersMscOML = NULL;
+PFNWGLWAITFORMSCOMLPROC _funcptr_wglWaitForMscOML = NULL;
+PFNWGLWAITFORSBCOMLPROC _funcptr_wglWaitForSbcOML = NULL;
+
+static int LoadExt_OML_sync_control()
+{
+	int numFailed = 0;
+	_funcptr_wglGetMscRateOML = (PFNWGLGETMSCRATEOMLPROC)IntGetProcAddress("wglGetMscRateOML");
+	if(!_funcptr_wglGetMscRateOML) ++numFailed;
+	_funcptr_wglGetSyncValuesOML = (PFNWGLGETSYNCVALUESOMLPROC)IntGetProcAddress("wglGetSyncValuesOML");
+	if(!_funcptr_wglGetSyncValuesOML) ++numFailed;
+	_funcptr_wglSwapBuffersMscOML = (PFNWGLSWAPBUFFERSMSCOMLPROC)IntGetProcAddress("wglSwapBuffersMscOML");
+	if(!_funcptr_wglSwapBuffersMscOML) ++numFailed;
+	_funcptr_wglSwapLayerBuffersMscOML = (PFNWGLSWAPLAYERBUFFERSMSCOMLPROC)IntGetProcAddress("wglSwapLayerBuffersMscOML");
+	if(!_funcptr_wglSwapLayerBuffersMscOML) ++numFailed;
+	_funcptr_wglWaitForMscOML = (PFNWGLWAITFORMSCOMLPROC)IntGetProcAddress("wglWaitForMscOML");
+	if(!_funcptr_wglWaitForMscOML) ++numFailed;
+	_funcptr_wglWaitForSbcOML = (PFNWGLWAITFORSBCOMLPROC)IntGetProcAddress("wglWaitForSbcOML");
+	if(!_funcptr_wglWaitForSbcOML) ++numFailed;
 	return numFailed;
 }
 
@@ -629,7 +723,7 @@ typedef struct wgl_StrToExtMap_s
 	PFN_LOADFUNCPOINTERS LoadExtension;
 } wgl_StrToExtMap;
 
-static wgl_StrToExtMap ExtensionTable[43] = {
+static wgl_StrToExtMap ExtensionTable[51] = {
 	{"WGL_3DFX_multisample", &wglext_3DFX_multisample, NULL},
 	{"WGL_3DL_stereo_control", &wglext_3DL_stereo_control, LoadExt_3DL_stereo_control},
 	{"WGL_AMD_gpu_association", &wglext_AMD_gpu_association, LoadExt_AMD_gpu_association},
@@ -645,9 +739,14 @@ static wgl_StrToExtMap ExtensionTable[43] = {
 	{"WGL_ARB_pixel_format", &wglext_ARB_pixel_format, LoadExt_ARB_pixel_format},
 	{"WGL_ARB_pixel_format_float", &wglext_ARB_pixel_format_float, NULL},
 	{"WGL_ARB_render_texture", &wglext_ARB_render_texture, LoadExt_ARB_render_texture},
+	{"WGL_ARB_robustness_application_isolation", &wglext_ARB_robustness_application_isolation, NULL},
+	{"WGL_ARB_robustness_share_group_isolation", &wglext_ARB_robustness_share_group_isolation, NULL},
 	{"WGL_ATI_pixel_format_float", &wglext_ATI_pixel_format_float, NULL},
 	{"WGL_EXT_create_context_es2_profile", &wglext_EXT_create_context_es2_profile, NULL},
+	{"WGL_EXT_create_context_es_profile", &wglext_EXT_create_context_es_profile, NULL},
 	{"WGL_EXT_depth_float", &wglext_EXT_depth_float, NULL},
+	{"WGL_EXT_display_color_table", &wglext_EXT_display_color_table, LoadExt_EXT_display_color_table},
+	{"WGL_EXT_extensions_string", &wglext_EXT_extensions_string, LoadExt_EXT_extensions_string},
 	{"WGL_EXT_framebuffer_sRGB", &wglext_EXT_framebuffer_sRGB, NULL},
 	{"WGL_EXT_make_current_read", &wglext_EXT_make_current_read, LoadExt_EXT_make_current_read},
 	{"WGL_EXT_multisample", &wglext_EXT_multisample, NULL},
@@ -661,6 +760,7 @@ static wgl_StrToExtMap ExtensionTable[43] = {
 	{"WGL_I3D_genlock", &wglext_I3D_genlock, LoadExt_I3D_genlock},
 	{"WGL_I3D_image_buffer", &wglext_I3D_image_buffer, LoadExt_I3D_image_buffer},
 	{"WGL_I3D_swap_frame_lock", &wglext_I3D_swap_frame_lock, LoadExt_I3D_swap_frame_lock},
+	{"WGL_I3D_swap_frame_usage", &wglext_I3D_swap_frame_usage, LoadExt_I3D_swap_frame_usage},
 	{"WGL_NV_DX_interop", &wglext_NV_DX_interop, LoadExt_NV_DX_interop},
 	{"WGL_NV_DX_interop2", &wglext_NV_DX_interop2, NULL},
 	{"WGL_NV_copy_image", &wglext_NV_copy_image, LoadExt_NV_copy_image},
@@ -671,11 +771,13 @@ static wgl_StrToExtMap ExtensionTable[43] = {
 	{"WGL_NV_render_depth_texture", &wglext_NV_render_depth_texture, NULL},
 	{"WGL_NV_render_texture_rectangle", &wglext_NV_render_texture_rectangle, NULL},
 	{"WGL_NV_swap_group", &wglext_NV_swap_group, LoadExt_NV_swap_group},
+	{"WGL_NV_vertex_array_range", &wglext_NV_vertex_array_range, LoadExt_NV_vertex_array_range},
 	{"WGL_NV_video_capture", &wglext_NV_video_capture, LoadExt_NV_video_capture},
 	{"WGL_NV_video_output", &wglext_NV_video_output, LoadExt_NV_video_output},
+	{"WGL_OML_sync_control", &wglext_OML_sync_control, LoadExt_OML_sync_control},
 };
 
-static int g_extensionMapSize = 43;
+static int g_extensionMapSize = 51;
 
 static wgl_StrToExtMap *FindExtEntry(const char *extensionName)
 {
@@ -707,9 +809,14 @@ static void ClearExtensionVars()
 	wglext_ARB_pixel_format = 0;
 	wglext_ARB_pixel_format_float = 0;
 	wglext_ARB_render_texture = 0;
+	wglext_ARB_robustness_application_isolation = 0;
+	wglext_ARB_robustness_share_group_isolation = 0;
 	wglext_ATI_pixel_format_float = 0;
 	wglext_EXT_create_context_es2_profile = 0;
+	wglext_EXT_create_context_es_profile = 0;
 	wglext_EXT_depth_float = 0;
+	wglext_EXT_display_color_table = 0;
+	wglext_EXT_extensions_string = 0;
 	wglext_EXT_framebuffer_sRGB = 0;
 	wglext_EXT_make_current_read = 0;
 	wglext_EXT_multisample = 0;
@@ -723,6 +830,7 @@ static void ClearExtensionVars()
 	wglext_I3D_genlock = 0;
 	wglext_I3D_image_buffer = 0;
 	wglext_I3D_swap_frame_lock = 0;
+	wglext_I3D_swap_frame_usage = 0;
 	wglext_NV_DX_interop = 0;
 	wglext_NV_DX_interop2 = 0;
 	wglext_NV_copy_image = 0;
@@ -733,8 +841,10 @@ static void ClearExtensionVars()
 	wglext_NV_render_depth_texture = 0;
 	wglext_NV_render_texture_rectangle = 0;
 	wglext_NV_swap_group = 0;
+	wglext_NV_vertex_array_range = 0;
 	wglext_NV_video_capture = 0;
 	wglext_NV_video_output = 0;
+	wglext_OML_sync_control = 0;
 }
 
 
@@ -819,4 +929,4 @@ int wgl_LoadFunctions(HDC hdc)
 	return numFailed;
 }
 
-#endif // defined( CINDER_GL_ANGLE )
+#endif // ! defined( CINDER_GL_ANGLE )

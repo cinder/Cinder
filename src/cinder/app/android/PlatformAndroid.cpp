@@ -81,7 +81,7 @@ DataSourceRef PlatformAndroid::loadResource( const fs::path &resourcePath )
 		return DataSourcePath::create( fullPath );
 }
 
-fs::path PlatformAndroid::getResourcePath() const 
+fs::path PlatformAndroid::getResourceDirectory() const 
 { 
 	return fs::path(); 
 }
@@ -116,19 +116,31 @@ std::ostream& PlatformAndroid::console()
 	return *mOutputStream;
 }
 
+std::map<std::string,std::string> PlatformAndroid::getEnvironmentVariables()
+{
+	/// @TODO: IMPLEMENT!!!
+	return std::map<std::string,std::string>();
+}
+
 fs::path PlatformAndroid::expandPath( const fs::path &path )
 {
 	/// @TODO: IMPLEMENT!!!
 	return fs::path();
 }
 
-fs::path PlatformAndroid::getHomeDirectory()
+fs::path PlatformAndroid::getHomeDirectory() const
 {
 	/// @TODO: IMPLEMENT!!!
 	return fs::path();
 }
 
-fs::path PlatformAndroid::getDocumentsDirectory()
+fs::path PlatformAndroid::getDocumentsDirectory() const
+{
+	/// @TODO: IMPLEMENT!!!
+	return fs::path();
+}
+
+fs::path PlatformAndroid::getDefaultExecutablePath() const
 {
 	/// @TODO: IMPLEMENT!!!
 	return fs::path();
@@ -174,14 +186,14 @@ void PlatformAndroid::prepareAssetLoading()
 
 fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )
 {
-	if( ! mAssetPathsInitialized ) {
+	if( ! mAssetDirsInitialized ) {
 		prepareAssetLoading();
 		findAndAddAssetBasePath();
-		mAssetPathsInitialized = true;
+		mAssetDirsInitialized = true;
 	}
 
-	for( const auto &assetPath : mAssetPaths ) {
-		auto fullPath = assetPath / relativePath;
+	for( const auto &assetDir : mAssetDirectories ) {
+		auto fullPath = assetDir / relativePath;
 		if( android::AssetFileSystem_exists( fullPath ) ) {
 			return fullPath;
 		}

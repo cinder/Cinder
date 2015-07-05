@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Rand.h"
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
@@ -58,16 +59,17 @@ void WindowTestApp::prepareSettings( Settings *settings )
 {
 	settings->setPowerManagementEnabled( false );
 	settings->setQuitOnLastWindowCloseEnabled( false );
-//	settings->setFullScreen( false );
+//	settings->setFullScreen( true );
 	settings->setWindowSize( 800, 500 );
+	settings->setTitle( "title set from App::Settings" );
 //	settings->prepareWindow( Window::Format().resizable( false ).renderer( RendererGl::create() ).fullScreen( true ) );
 //	settings->prepareWindow( Window::Format().fullScreen().fullScreenButton() );
 }
 
 void WindowTestApp::setup()
 {
-	for( auto displayIt = Display::getDisplays().begin(); displayIt != Display::getDisplays().end(); ++displayIt )
-		CI_LOG_V( "Resolution: " << (*displayIt)->getBounds() );
+	for( auto display : Display::getDisplays() )
+		CI_LOG_V( "display name: '" << display->getName() << "', bounds: " << display->getBounds() );
 
 	getWindow()->setUserData( new WindowData );
 
@@ -160,7 +162,9 @@ void WindowTestApp::keyDown( KeyEvent event )
 	}
 	if( event.getChar() == 'f' ) {
 		CI_LOG_V( "Toggling from fullscreen: " << getWindow()->isFullScreen() );
-		getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		// This line forces fullscreen on the secondary display
+		//getWindow()->setFullScreen( ! getWindow()->isFullScreen(), FullScreenOptions().display( Display::getDisplays()[1] ) );
+		getWindow()->setFullScreen( ! getWindow()->isFullScreen() );
 	}
 	else if( event.getChar() == 'o' ) {
 		CI_LOG_V( "(kiosk) Toggling from fullscreen: " << getWindow()->isFullScreen() );
@@ -224,7 +228,7 @@ void WindowTestApp::fileDrop( FileDropEvent event )
 
 void WindowTestApp::resize()
 {
-	CI_LOG_V( "Resized: " << getWindowSize() );
+	CI_LOG_V( "window pos: " << getWindowPos() << ", size: " << getWindowSize() );
 }
 
 void WindowTestApp::windowDraw()
@@ -259,5 +263,4 @@ void WindowTestApp::windowDraw()
 	gl::popMatrices();
 }
 
-// This line tells Flint to actually create the application
 CINDER_APP( WindowTestApp, RendererGl, WindowTestApp::prepareSettings )

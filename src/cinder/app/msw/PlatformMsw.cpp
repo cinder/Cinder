@@ -25,6 +25,7 @@
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
 #include "cinder/msw/StackWalker.h"
+#include "cinder/msw/CinderMsw.h"
 #include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
 #include "cinder/app/AppBase.h"
 #include "cinder/ImageSourceFileWic.h"
@@ -57,7 +58,7 @@ DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID
 
 	wchar_t unicodeType[1024];
 	wsprintfW( unicodeType, L"%S", mswType.c_str() );
-	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE( mswID ), unicodeType );
+	resInfoHandle = ::FindResourceEx( NULL, unicodeType, MAKEINTRESOURCE( mswID ), MAKELANGID( LANG_NEUTRAL, SUBLANG_NEUTRAL ) );
 	if( resInfoHandle == NULL ) {
 		throw ResourceLoadExcMsw( mswID, mswType );
 	}
@@ -73,7 +74,7 @@ DataSourceRef PlatformMsw::loadResource( const fs::path &resourcePath, int mswID
 		throw ResourceLoadExcMsw( mswID, mswType );
 	}
 	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ), resourcePath );
+	return DataSourceBuffer::create( make_shared<Buffer>( dataPtr, dataSize ), resourcePath );
 }
 
 fs::path PlatformMsw::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
@@ -102,6 +103,37 @@ std::ostream& PlatformMsw::console()
 	return *mOutputStream;
 }
 
+map<string,string> PlatformMsw::getEnvironmentVariables()
+{
+	map<string,string> result;
+	
+	WCHAR* env = ::GetEnvironmentStrings();
+	if( ! env )
+		return result;
+
+	size_t prevIdx = 0, idx = 0;
+	std::string keyString;
+	while( true ) {
+		if( ( env[idx] == TCHAR('=') ) && keyString.empty() ) {
+			keyString = msw::toUtf8String( std::wstring(env + prevIdx, env + idx) );
+			prevIdx = idx + 1;
+		}
+		else if( env[idx] == TCHAR('\0') ) {
+			result[keyString] = msw::toUtf8String( std::wstring(env + prevIdx, env + idx) );
+			prevIdx = idx + 1;
+			if( env[idx + 1] == TCHAR('\0'))
+				break;
+			keyString.clear();
+		}
+
+		++idx;
+	}
+
+	::FreeEnvironmentStrings( env );
+
+	return result;
+}
+
 fs::path PlatformMsw::expandPath( const fs::path &path )
 {
 	wchar_t buffer[MAX_PATH];
@@ -109,19 +141,41 @@ fs::path PlatformMsw::expandPath( const fs::path &path )
 	return fs::path( buffer ); 
 }
 
-fs::path PlatformMsw::getDocumentsDirectory()
+fs::path PlatformMsw::getDocumentsDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_MYDOCUMENTS, NULL, SHGFP_TYPE_CURRENT, buffer );
 	return fs::path( wstring(buffer) + L"\\" );
 }
 
-fs::path PlatformMsw::getHomeDirectory()
+fs::path PlatformMsw::getHomeDirectory() const
 {
 	wchar_t buffer[MAX_PATH];
 	::SHGetFolderPath( 0, CSIDL_PROFILE, NULL, SHGFP_TYPE_CURRENT, buffer );
 	wstring result = wstring(buffer) + L"\\";
 	return fs::path( result );
+}
+
+fs::path PlatformMsw::getDefaultExecutablePath() const
+{
+	wchar_t appPath[MAX_PATH] = L"";
+
+	// fetch the path of the executable
+	::GetModuleFileName( 0, appPath, sizeof( appPath ) - 1 );
+
+	// get a pointer to the last occurrence of the windows path separator
+	wchar_t *appDir = wcsrchr( appPath, L'\\' );
+	if( appDir ) {
+		++appDir;
+
+		// this shouldn't be null but one never knows
+		if( appDir ) {
+			// null terminate the string
+			*appDir = 0;
+		}
+	}
+
+	return fs::path( appPath );
 }
 
 void PlatformMsw::launchWebBrowser( const Url &url )
@@ -221,7 +275,26 @@ int getMonitorBitsPerPixel( HMONITOR hMonitor )
 
 	return result;
 }
+std::string getMonitorName( HMONITOR hMonitor )
+{
+	MONITORINFOEX mix;
+	memset( &mix, 0, sizeof( MONITORINFOEX ) );
+	mix.cbSize = sizeof( MONITORINFOEX );
+	::GetMonitorInfo( hMonitor, &mix );
+	DISPLAY_DEVICEW dispDev;
+	dispDev.cb = sizeof( DISPLAY_DEVICEW );
+	::EnumDisplayDevicesW( mix.szDevice, 0, &dispDev, 0);
+	return msw::toUtf8String( std::wstring(  dispDev.DeviceString ) );}
 } // anonymous namespace
+
+std::string DisplayMsw::getName() const
+{
+	if( mNameDirty ) {
+		mName = getMonitorName( mMonitor );
+		mNameDirty = false;
+	}
+	return mName;
+}
 
 BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT rect, LPARAM lParam )
 {
@@ -232,7 +305,7 @@ BOOL CALLBACK DisplayMsw::enumMonitorProc( HMONITOR hMonitor, HDC hdc, LPRECT re
 	newDisplay->mMonitor = hMonitor;
 	newDisplay->mContentScale = 1.0f;
 	newDisplay->mBitsPerPixel = getMonitorBitsPerPixel( hMonitor );
-		
+
 	displaysVector->push_back( DisplayRef( newDisplay ) );
 	return TRUE;
 }

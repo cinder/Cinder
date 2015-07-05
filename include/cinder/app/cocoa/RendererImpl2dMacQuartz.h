@@ -39,8 +39,8 @@
 
 - (NSBitmapImageRep*)getContents:(cinder::Area)area;
 
-- (void)makeCurrentContext;
-- (void)flushBuffer;
+- (void)startDraw;
+- (void)finishDraw;
 - (void)setFrameSize:(CGSize)newSize;
 - (void)defaultResize;
 

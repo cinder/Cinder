@@ -40,9 +40,9 @@ size_t IStreamUrlImplJni::readDataAvailable( void *dest, size_t maxSize )
 {
 	size_t numBytesRead = 0;
 	if( mData ) {
-		size_t readSize = std::min( mData.getDataSize(), maxSize );
+		size_t readSize = std::min( mData->getSize(), maxSize );
 		if( readSize > 0 ) {
-			memcpy( dest, (const void *)mData.getData(), readSize );
+			memcpy( dest, (const void *)mData->getData(), readSize );
 			numBytesRead = readSize;
 		}
 	}
@@ -67,7 +67,7 @@ off_t IStreamUrlImplJni::tell() const
 
 off_t IStreamUrlImplJni::size() const
 {
-	off_t result = mData ? mData.getDataSize() : 0;
+	off_t result = mData ? mData->getSize() : 0;
 	return result;
 }
 
@@ -83,12 +83,12 @@ void IStreamUrlImplJni::IORead( void *t, size_t size )
 		return;
 	}
 
-	int64_t dataSize = mData.getDataSize();
+	int64_t dataSize = mData->getSize();
 	int64_t remaining = dataSize - (int64_t)size;
 	remaining = std::max( (int64_t)0, remaining );
 
 	size_t readSize = std::min( size, (size_t)remaining );
-	memcpy( t, (const void *)mData.getData(), readSize );
+	memcpy( t, (const void *)mData->getData(), readSize );
 }
 
 } // namespace cinder

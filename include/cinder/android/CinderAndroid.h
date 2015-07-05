@@ -26,6 +26,45 @@
 #include "cinder/Filesystem.h"
 #include "cinder/Surface.h" 
 
+#include <cstdlib>
+#include <sstream> 
+
+inline int stoi( const std::string& str ) 
+{
+	return strtol( str.c_str(), nullptr, 10 );
+}
+
+namespace std {
+
+inline std::string to_string( int value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( long value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( long long value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( unsigned value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( unsigned long value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( unsigned long long value )
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( float value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( double value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+inline std::string to_string( long double value ) 
+{ std::stringstream ss; ss << value; return ss.str(); }
+
+} // namespace std
+
 namespace cinder { namespace android {
 
 enum DisplayRotation {

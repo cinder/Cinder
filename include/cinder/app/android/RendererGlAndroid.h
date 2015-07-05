@@ -47,7 +47,7 @@ class RendererGlAndroid {
 	virtual void	kill();
 	virtual void	defaultResize() const;
 	virtual void	swapBuffers() const;
-	virtual void	makeCurrentContext();
+	virtual void	makeCurrentContext( bool force = false );
 
  protected:
 	class RendererGl	*mRenderer;

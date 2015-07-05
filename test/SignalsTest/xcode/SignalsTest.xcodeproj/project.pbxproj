@@ -7,8 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		115FF5A41A8E6F08002DF368 /* System.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 115FF5A31A8E6F08002DF368 /* System.cpp */; };
 		115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 115FF5A51A8E6F1E002DF368 /* Exception.cpp */; };
+		1180099B1B005D0F000DED1F /* libboost_system.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1180099A1B005D0F000DED1F /* libboost_system.a */; };
 		11B112581A8FF31D0067567A /* CoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 11B112571A8FF31D0067567A /* CoreServices.framework */; };
 		11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
 		11FD37E91A8EDD10002B6EA9 /* Signals.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11FD37E71A8EDD10002B6EA9 /* Signals.cpp */; };
@@ -39,7 +39,6 @@
 
 /* Begin PBXFileReference section */
 		1118C09619AD3AC500F0D18B /* SignalsTest */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = SignalsTest; sourceTree = BUILT_PRODUCTS_DIR; };
-		115FF5A31A8E6F08002DF368 /* System.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = System.cpp; path = ../../../src/cinder/System.cpp; sourceTree = "<group>"; };
 		115FF5A51A8E6F1E002DF368 /* Exception.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Exception.cpp; path = ../../../src/cinder/Exception.cpp; sourceTree = "<group>"; };
 		1168DB451A8D937800660ED3 /* AudioToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioToolbox.framework; path = System/Library/Frameworks/AudioToolbox.framework; sourceTree = SDKROOT; };
 		1168DB461A8D937800660ED3 /* AudioUnit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AudioUnit.framework; path = System/Library/Frameworks/AudioUnit.framework; sourceTree = SDKROOT; };
@@ -52,6 +51,7 @@
 		1168DB551A8D93AB00660ED3 /* QTKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = QTKit.framework; path = System/Library/Frameworks/QTKit.framework; sourceTree = SDKROOT; };
 		1168DB571A8D93B400660ED3 /* CoreAudio.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreAudio.framework; path = System/Library/Frameworks/CoreAudio.framework; sourceTree = SDKROOT; };
 		1168DB591A8D93C100660ED3 /* Accelerate.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accelerate.framework; path = System/Library/Frameworks/Accelerate.framework; sourceTree = SDKROOT; };
+		1180099A1B005D0F000DED1F /* libboost_system.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libboost_system.a; path = ../../../lib/macosx/libboost_system.a; sourceTree = "<group>"; };
 		11B112571A8FF31D0067567A /* CoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreServices.framework; path = System/Library/Frameworks/CoreServices.framework; sourceTree = SDKROOT; };
 		11FD37E71A8EDD10002B6EA9 /* Signals.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Signals.cpp; path = ../../../src/cinder/Signals.cpp; sourceTree = "<group>"; };
 		11FD61241A89A2B0006F42CC /* SignalsTest.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = SignalsTest.cpp; path = ../src/SignalsTest.cpp; sourceTree = "<group>"; };
@@ -64,6 +64,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1180099B1B005D0F000DED1F /* libboost_system.a in Frameworks */,
 				11B112581A8FF31D0067567A /* CoreServices.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -85,7 +86,10 @@
 				1168DB5B1A8D9B5200660ED3 /* Frameworks */,
 				1118C09719AD3AC500F0D18B /* Products */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
+			tabWidth = 4;
+			usesTabs = 1;
 		};
 		1118C09719AD3AC500F0D18B /* Products */ = {
 			isa = PBXGroup;
@@ -111,7 +115,6 @@
 			children = (
 				115FF5A51A8E6F1E002DF368 /* Exception.cpp */,
 				11FD37E71A8EDD10002B6EA9 /* Signals.cpp */,
-				115FF5A31A8E6F08002DF368 /* System.cpp */,
 			);
 			name = cinder;
 			sourceTree = "<group>";
@@ -119,6 +122,7 @@
 		1168DB5B1A8D9B5200660ED3 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1180099A1B005D0F000DED1F /* libboost_system.a */,
 				11B112571A8FF31D0067567A /* CoreServices.framework */,
 				1168DB591A8D93C100660ED3 /* Accelerate.framework */,
 				1168DB571A8D93B400660ED3 /* CoreAudio.framework */,
@@ -204,7 +208,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				115FF5A41A8E6F08002DF368 /* System.cpp in Sources */,
 				11FD37E81A8EDD10002B6EA9 /* Signals.cpp in Sources */,
 				115FF5A61A8E6F1E002DF368 /* Exception.cpp in Sources */,
 				11FD61251A89A2B0006F42CC /* SignalsTest.cpp in Sources */,
@@ -256,7 +259,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
@@ -293,7 +296,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/boost\"";
+				HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\"";
 				MACOSX_DEPLOYMENT_TARGET = 10.9;
 				SDKROOT = macosx;
 				USER_HEADER_SEARCH_PATHS = "\"$(CINDER_PATH)/include\" ../include";
@@ -303,6 +306,10 @@
 		1118C0A019AD3AC500F0D18B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/r/code/rte/mason/lib/cinder/lib/macosx,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -310,6 +317,10 @@
 		1118C0A119AD3AC500F0D18B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/Users/r/code/rte/mason/lib/cinder/lib/macosx,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;

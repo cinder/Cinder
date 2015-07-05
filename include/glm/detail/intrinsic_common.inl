@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -301,13 +301,13 @@ GLM_FUNC_QUALIFIER __m128 sse_ssp_ps(__m128 edge0, __m128 edge1, __m128 x)
 // By Elan Ruskin, http://assemblyrequired.crashworks.org/
 GLM_FUNC_QUALIFIER __m128 sse_sqrt_wip_ss(__m128 const & x)
 {
-	__m128 recip = _mm_rsqrt_ss(x);  // "estimate" opcode
-	const static __m128 three = {3, 3, 3, 3}; // aligned consts for fast load
-	const static __m128 half = {0.5,0.5,0.5,0.5};
-	__m128 halfrecip = _mm_mul_ss(half, recip);
-	__m128 threeminus_xrr = _mm_sub_ss(three, _mm_mul_ss(x, _mm_mul_ss (recip, recip)));
-	return _mm_mul_ss( halfrecip, threeminus_xrr);
+	__m128 const recip = _mm_rsqrt_ss(x);  // "estimate" opcode
+	__m128 const half = _mm_set_ps1(0.5f);
+	__m128 const halfrecip = _mm_mul_ss(half, recip);
+	__m128 const threeminus_xrr = _mm_sub_ss(three, _mm_mul_ss(x, _mm_mul_ss (recip, recip)));
+	return _mm_mul_ss(halfrecip, threeminus_xrr);
 }
 
 }//namespace detail
 }//namespace glms
+

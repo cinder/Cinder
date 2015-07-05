@@ -24,90 +24,206 @@
 #include "cinder/app/winrt/PlatformWinRt.h"
 #include "cinder/msw/OutputDebugStringStream.h"
 #include "cinder/Unicode.h"
-#include "cinder/app/msw/AppImplMsw.h" // this is needed for file dialog methods, but it doesn't necessarily require an App instance
-#include "cinder/WinRTUtils.h"
+#include "cinder/Log.h"
+#include "cinder/msw/CinderMsw.h"
+#include "cinder/winrt/WinRTUtils.h"
 #include "cinder/ImageSourceFileWic.h"
 #include "cinder/ImageTargetFileWic.h"
 #include "cinder/ImageSourceFileRadiance.h"
 
 #include <wrl/client.h>
 #include <agile.h>
+#include <collection.h>
 
 using namespace Windows::Storage;
+using namespace Windows::Storage::Pickers;
+using namespace Windows::ApplicationModel;
+using namespace Windows::ApplicationModel::Core;
+using namespace Windows::ApplicationModel::Activation;
+using namespace Windows::UI::Core;
+using namespace Windows::UI::Popups;
+using namespace Windows::UI::Input;
 using namespace Windows::System;
+using namespace Windows::Foundation;
+using namespace concurrency;
+using namespace Platform;
+using namespace Platform::Collections;
 using namespace cinder::winrt;
 using namespace std;
 
 namespace cinder { namespace app {
 
 PlatformWinRt::PlatformWinRt()
-	: mDirectConsoleToCout( false )
 {
 	ImageSourceFileWic::registerSelf();
 	ImageTargetFileWic::registerSelf();
 	ImageSourceFileRadiance::registerSelf();
 }
 
-DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath, int mswID, const std::string &mswType )
+DataSourceRef PlatformWinRt::loadResource( const fs::path &resourcePath  )
 {
-	HRSRC resInfoHandle;
-	HGLOBAL resHandle;
-	void *dataPtr;
-	size_t dataSize;
-
-	wchar_t unicodeType[1024];
-	wsprintfW( unicodeType, L"%S", mswType.c_str() );
-	resInfoHandle = ::FindResource( NULL, MAKEINTRESOURCE( mswID ), unicodeType );
-	if( resInfoHandle == NULL ) {
-		throw ResourceLoadExcMsw( mswID, mswType );
-	}
-	resHandle = ::LoadResource( NULL, resInfoHandle );
-	if( resHandle == NULL ) {
-		throw ResourceLoadExcMsw( mswID, mswType );
-	}
-
-	// it's not necessary to unlock resources because the system automatically deletes them when the process
-	// that created them terminates.
-	dataPtr = ::LockResource( resHandle );
-	if( dataPtr == 0 ) {
-		throw ResourceLoadExcMsw( mswID, mswType );
-	}
-	dataSize = ::SizeofResource( NULL, resInfoHandle );
-	return DataSourceBuffer::create( Buffer( dataPtr, dataSize ), resourcePath );
+	if( ! resourcePath.empty() )
+		return DataSourcePath::create( resourcePath.string() );
+	else
+		throw AssetLoadExc( resourcePath );
 }
 
 fs::path PlatformWinRt::getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
-	return AppImplMsw::getOpenFilePath( initialPath, extensions );
+	throw Exception( "Unimplemented on WinRT" );
 }
 
 fs::path PlatformWinRt::getFolderPath( const fs::path &initialPath )
 {
-	return AppImplMsw::getFolderPath( initialPath );
+	throw Exception( "Unimplemented on WinRT" );
 }
 
 fs::path PlatformWinRt::getSaveFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions )
 {
-	return AppImplMsw::getSaveFilePath( initialPath, extensions );
+	throw Exception( "Unimplemented on WinRT" );
+}
+
+// Add the application path
+void PlatformWinRt::prepareAssetLoading()
+{
+	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
+	::Platform::String^ output = installedLocation->Path;
+	std::wstring t = std::wstring( output->Data() );
+	Platform::get()->addAssetDirectory( fs::path( winrt::PlatformStringToString( output ) ) );
+}
+
+void PlatformWinRt::getOpenFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	if( extensions.empty() )
+		throw Exception( "Must specify at least one file extension in extensions argument" );
+
+	// FilePicker APIs will not work if the application is in a snapped state.
+    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+	if( ! ensureUnsnapped() ) {
+		CI_LOG_E( "Application must be unsnapped" );
+		return;
+	}
+
+    FileOpenPicker^ picker = ref new FileOpenPicker();
+    picker->SuggestedStartLocation = PickerLocationId::Desktop;
+ 
+	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
+		std::wstring temp(iter->begin(), iter->end());
+		picker->FileTypeFilter->Append( ref new ::Platform::String(temp.c_str()));
+	}
+
+    create_task( picker->PickSingleFileAsync()).then([callback]( StorageFile^ file )
+    {
+        if( file )
+			callback( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
+        else
+			callback( fs::path() );
+    });
+}
+
+void PlatformWinRt::getFolderPathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath )
+{
+	/*if( extensions.empty() ) {
+		throw Exception( "Must specify at least one file extension in extensions argument" );
+	}
+
+	// FilePicker APIs will not work if the application is in a snapped state.
+    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+	if( ! ensureUnsnapped() ) {
+		CI_LOG_E( "Application must be unsnapped" );
+		return;
+	}
+    FolderPicker^ folderPicker = ref new FolderPicker();
+    folderPicker->SuggestedStartLocation = PickerLocationId::Desktop;
+ 
+	for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
+		std::wstring temp(iter->begin(), iter->end());
+		folderPicker->FileTypeFilter->Append( ref new Platform::String(temp.c_str()));
+	}
+
+    create_task(folderPicker->PickSingleFolderAsync()).then([f](StorageFolder^ folder)
+    {
+        if( folder ) {
+			callback( fs::path( msw::toUtf8String( folder->Path->Data() ) ) );
+        }
+        else {
+			callback( fs::path() );
+        }
+    });*/
+}
+
+void PlatformWinRt::getSaveFilePathAsync( const std::function<void(const fs::path&)> &callback, const fs::path &initialPath, const std::vector<std::string> &extensions )
+{
+	if( initialPath.empty() )
+		throw Exception( "Must specify initialPath" );
+	if( extensions.empty() )
+		throw Exception( "Must specify at least one file extension" );
+
+    // FilePicker APIs will not work if the application is in a snapped state.
+    // If an app wants to show a FilePicker while snapped, it must attempt to unsnap first
+	if( ! ensureUnsnapped() ) {
+		CI_LOG_E( "Application must be unsnapped" );
+		return;
+	}
+
+    FileSavePicker^ savePicker = ref new FileSavePicker();
+	savePicker->SuggestedStartLocation = PickerLocationId::PicturesLibrary;
+
+    auto plainTextExtensions = ref new ::Platform::Collections::Vector<String^>();
+	
+	if( ! extensions.empty() ) {
+		for( auto iter = extensions.begin(); iter != extensions.end(); ++iter ) {
+			std::wstring temp(iter->begin(), iter->end());
+			plainTextExtensions->Append( ref new ::Platform::String(temp.c_str()));
+		}
+	}
+	else if( ! initialPath.empty() ) {
+		plainTextExtensions->Append( ref new ::Platform::String( msw::toWideString( initialPath.extension() ).c_str() ) );
+	} 
+
+    savePicker->FileTypeChoices->Insert( "", plainTextExtensions );
+
+	if( ! initialPath.empty() ) {
+		savePicker->SuggestedFileName = ref new ::Platform::String( msw::toWideString( initialPath.filename() ).c_str() );
+	}
+	else {
+		savePicker->SuggestedFileName = "New Document";
+	}
+
+    create_task(savePicker->PickSaveFileAsync()).then([callback]( StorageFile^ file )
+    {
+        if( file )
+			callback( fs::path( msw::toUtf8String( file->Path->Data() ) ) );
+        else
+			callback( fs::path() );
+    });
 }
 
 std::ostream& PlatformWinRt::console()
 {
-	if( mDirectConsoleToCout )
-		return std::cout;
-
 	if( ! mOutputStream )
 		mOutputStream.reset( new cinder::msw::dostream );
 	
 	return *mOutputStream;
 }
 
-fs::path PlatformWinRt::expandPath( const fs::path &path )
+map<string,string> PlatformWinRt::getEnvironmentVariables()
 {
-	return fs::canonical( path );
+	return map<string,string>();
 }
 
-fs::path PlatformWinRt::getHomeDirectory()
+fs::path PlatformWinRt::expandPath( const fs::path &path )
+{
+#if _MSC_VER <= 1800
+	CI_LOG_W( "Not implemented" );
+	return path;
+#else
+	return fs::canonical( path );
+#endif
+}
+
+fs::path PlatformWinRt::getHomeDirectory() const
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
@@ -115,17 +231,26 @@ fs::path PlatformWinRt::getHomeDirectory()
 	return fs::path( result );
 }
 
-fs::path PlatformWinRt::getDocumentsDirectory()
+fs::path PlatformWinRt::getDocumentsDirectory() const
 {
 	// WinRT will throw an exception if access to DocumentsLibrary has not been requested in the App Manifest
 	auto folder = Windows::Storage::KnownFolders::DocumentsLibrary;
 	return PlatformStringToString(folder->Path);
 }
 
+fs::path PlatformWinRt::getDefaultExecutablePath() const
+{
+	Windows::ApplicationModel::Package^ package = Windows::ApplicationModel::Package::Current;
+	Windows::Storage::StorageFolder^ installedLocation = package->InstalledLocation;
+	::Platform::String^ output = installedLocation->Path;
+	std::wstring t = std::wstring( output->Data() );
+	return fs::path( winrt::PlatformStringToString( output ) );
+}
+
 void PlatformWinRt::launchWebBrowser( const Url &url )
 {
 	std::u16string urlStr = toUtf16( url.str() );
-	auto uri = ref new Windows::Foundation::Uri( ref new Platform::String( (wchar_t *)urlStr.c_str() ) );
+	auto uri = ref new Windows::Foundation::Uri( ref new ::Platform::String( (wchar_t *)urlStr.c_str() ) );
 	Windows::System::Launcher::LaunchUriAsync( uri );
 }
 
@@ -138,6 +263,27 @@ vector<string> PlatformWinRt::stackTrace()
 {
 	CI_LOG_E( "stackTrace() not implemented on WinRT" );
 	return vector<string>();
+}
+
+const vector<DisplayRef>& PlatformWinRt::getDisplays()
+{
+	bool sInitialized = false;
+	if( ! sInitialized ) {
+		CoreWindow^ window = CoreWindow::GetForCurrentThread();
+		auto newDisplay = new DisplayWinRt();
+		float width, height;
+
+		::GetPlatformWindowDimensions( window, &width, &height );
+
+		newDisplay->mArea = Area( 0, 0, (int)width, (int)height );
+		newDisplay->mBitsPerPixel = 24;
+		newDisplay->mContentScale = getScaleFactor();
+
+		mDisplays.push_back( DisplayRef( newDisplay ) );
+		sInitialized = true;
+	}
+
+	return mDisplays;
 }
 
 ResourceLoadExcMsw::ResourceLoadExcMsw( int mswID, const string &mswType )

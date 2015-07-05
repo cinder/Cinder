@@ -126,8 +126,8 @@ class ContextAudioUnit : public Context {
   public:
 	virtual ~ContextAudioUnit();
 
-	virtual OutputDeviceNodeRef		createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
-	virtual InputDeviceNodeRef		createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
+	OutputDeviceNodeRef		createOutputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
+	InputDeviceNodeRef		createInputDeviceNode( const DeviceRef &device, const Node::Format &format = Node::Format() ) override;
 
 	//! set by the OutputNode
 	void setCurrentTimeStamp( const ::AudioTimeStamp *timeStamp ) { mCurrentTimeStamp = timeStamp; }

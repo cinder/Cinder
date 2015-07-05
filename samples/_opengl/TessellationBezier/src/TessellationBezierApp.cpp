@@ -1,8 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/gl.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -88,4 +86,4 @@ void TessellationBezierApp::draw()
 	}
 }
 
-CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().version( 4, 0 ) ) )
+CINDER_APP( TessellationBezierApp, RendererGl( RendererGl::Options().msaa( 16 ).version( 4, 0 ) ) )

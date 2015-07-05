@@ -22,7 +22,6 @@
 */
 
 #include "cinder/app/msw/RendererImpl2dGdi.h"
-#include "cinder/gl/gl.h"
 #include "cinder/app/AppBase.h"
 #include "cinder/msw/CinderMsw.h"
 #include "cinder/msw/CinderMswGdiPlus.h"
@@ -55,7 +54,7 @@ void RendererImpl2dGdi::swapBuffers() const
 		::ReleaseDC( mWnd, mPaintDc );
 }
 
-void RendererImpl2dGdi::makeCurrentContext()
+void RendererImpl2dGdi::makeCurrentContext( bool force )
 {
 	if( mPaintEvents )
 		mPaintDc = ::BeginPaint( mWnd, &mPaintStruct );

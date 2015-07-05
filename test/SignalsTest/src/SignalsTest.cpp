@@ -1,6 +1,5 @@
 #include "cinder/Cinder.h"
 #include "cinder/Signals.h"
-#include "cinder/System.h"
 #include "cinder/app/Event.h"
 
 #include <iostream>
@@ -16,6 +15,19 @@ std::string toString( float value, int precision )
 	std::ostringstream out;
 	out << std::fixed << std::setprecision( precision ) << value;
 	return out.str();
+}
+
+inline string demangleTypeName( const char *mangledName )
+{
+#if defined( CINDER_COCOA )
+	int status = 0;
+
+	std::unique_ptr<char, void(*)(void *)> result { abi::__cxa_demangle( mangledName, NULL, NULL, &status ), std::free };
+
+	return ( status == 0 ) ? result.get() : mangledName;
+#else
+	return mangledName;
+#endif
 }
 
 struct BasicSignalTests {
@@ -476,6 +488,12 @@ struct TestCollectorAppEvent {
 
 	static void	run()
 	{
+		testStandard();
+		testWithPriorties();
+	}
+
+	static void testStandard()
+	{
 		Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
 
 		bool check1 = false;
@@ -494,12 +512,53 @@ struct TestCollectorAppEvent {
 		assert( check2 );
 		assert( ! check3 );
 	}
+
+	static void testWithPriorties()
+	{
+		Signal<void( TestEvent & ), app::CollectorEvent<TestEvent>> sig;
+
+		bool check1 = false;
+		bool check2 = false;
+
+		sig.connect( [&]( TestEvent &event ) { check1 = true; event.setHandled(); } );
+		sig.connect( -1, [&]( TestEvent &event ) { check2 = true; } );
+
+		TestEvent event;
+		app::CollectorEvent<TestEvent> collector( &event );
+		sig.emit( collector, event );
+
+		assert( check1 );
+		assert( ! check2 );
+	}
+
+};
+
+struct TestConnectionToggling {
+	static void run()
+	{
+		Signal<void (int)> signal;
+		int sum = 0;
+
+		auto connection = signal.connect( [&]( int amount ){ sum += amount; } );
+		signal.emit( 5 );
+		assert( sum == 5 );
+
+		connection.disable();
+		signal.emit( 5 );
+		assert( ! connection.isEnabled() );
+		assert( sum == 5 );
+
+		connection.enable();
+		signal.emit( 5 );
+		assert( connection.isEnabled() );
+		assert( sum == 10 );
+	}
 };
 
 template <typename TestT>
 void runTest()
 {
-	cout << System::demangleTypeName( typeid( TestT ).name() ) << ": ";
+	cout << demangleTypeName( typeid( TestT ).name() ) << ": ";
 	TestT::run();
 	cout << "OK" << endl;
 }
@@ -518,5 +577,6 @@ int main()
 	runTest<TestCollectorBooleanAnd>();
 	runTest<TestCollectorBitwiseAnd>();
 	runTest<TestCollectorAppEvent>();
+	runTest<TestConnectionToggling>();
 	return 0;
 }

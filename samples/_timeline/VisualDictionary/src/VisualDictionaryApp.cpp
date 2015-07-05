@@ -253,6 +253,7 @@ void VisualDictionaryApp::draw()
 	gl::color( Color::white() );
 	gl::draw( mBgTex, getWindowBounds() );
 	
+	gl::ScopedGlslProg shader( gl::getStockShader( gl::ShaderDef().color().texture() ) );
 	{ 	// draw the center circles
 		gl::ScopedTextureBind tex0( mCircleTex, 0 );
 		mCenterState.draw();

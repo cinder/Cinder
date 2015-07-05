@@ -2,7 +2,7 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/Utilities.h"
 #include "cinder/Color.h"
-#include "cinder/gl/Texture.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Log.h"
 #include "cinder/System.h"
@@ -24,15 +24,15 @@ class ScreenSaverTestApp : public AppScreenSaver {
   public:
 	ScreenSaverTestApp();
 
-	virtual void setup() override;
-	virtual void resize() override;
-	virtual void update() override;
-	virtual void draw() override;
+	void setup() override;
+	void resize() override;
+	void update() override;
+	void draw() override;
 
 	void loadLogo();
 
 #if defined( CINDER_MAC )
-	virtual NSWindow* createMacConfigDialog() override
+	NSWindow* createMacConfigDialog() override
 	{
 		return getConfigDialogMac( this, &mConfig ); // defined in MacConfigDialog.cpp
 	}
@@ -83,7 +83,7 @@ void ScreenSaverTestApp::setup()
 	mColor = Color( 1.0f, 0.5f, 0.25f );
 	mBackgroundColor = Color( 0.7f, 0.0f, 0.8f );
 
-	getSignalShutdown().connect( [this] {
+	getSignalCleanup().connect( [this] {
 		CI_LOG_I( "shutting down" );
 	} );
 

@@ -25,11 +25,11 @@ class CustomTremoloNode : public ci::audio::Node {
 	// Called when it is time to use the Node, typically after a connection. This is a good place to initialize large buffers or other resources.
 	// Note that initialize() may be called more than once within the lifetime of a Node, examples include if it is connected later to inputs or outputs
 	// with a different number of channels, or if the Context's samplerate or frames per block changes.
-	virtual void initialize()							override;
+	void initialize()							override;
 
 	// Override process() to perform signal processing. The Buffer object passed in will contain processed samples from any
 	// connected inputs on the way in, and then the processed buffer is handed to any connected outputs on the way out.
-	virtual void process( ci::audio::Buffer *buffer )	override;
+	void process( ci::audio::Buffer *buffer )	override;
 
   private:
 	// in this sample, variables that are modifiable from the UI thread are atomic for thread safety.

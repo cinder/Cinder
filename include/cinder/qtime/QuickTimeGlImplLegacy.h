@@ -23,7 +23,7 @@
 // This file is only meant to be included by QuickTimeGl.h
 #pragma once
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "cinder/qtime/QuickTime.h"
 #include "cinder/gl/Texture.h"
 

@@ -22,6 +22,30 @@
 
 #pragma once
 
+#include "cinder/gl/platform.h"
+#include "cinder/gl/wrapper.h"
+#include "cinder/gl/draw.h"
+#include "cinder/gl/scoped.h"
+
+#include "cinder/gl/Batch.h"
+#include "cinder/gl/Context.h"
+#include "cinder/gl/Environment.h"
+#include "cinder/gl/Fbo.h"
+#include "cinder/gl/GlslProg.h"
+#include "cinder/gl/Pbo.h"
+#include "cinder/gl/Query.h"
+#include "cinder/gl/Shader.h"
+#include "cinder/gl/ShaderPreprocessor.h"
+#include "cinder/gl/Sync.h"
+#include "cinder/gl/Texture.h"
+#include "cinder/gl/TextureFont.h"
+#include "cinder/gl/TransformFeedbackObj.h"
+#include "cinder/gl/Ubo.h"
+#include "cinder/gl/Vao.h"
+#include "cinder/gl/Vbo.h"
+#include "cinder/gl/VboMesh.h"
+
+/*
 #include "cinder/Cinder.h"
 
 #if defined( CINDER_GL_ANGLE )
@@ -119,7 +143,7 @@
 #endif
 
 #if defined( CINDER_ANDROID ) && defined( CINDER_GL_ES_3 ) && ( __ANDROID_API__ < 21 ) 
-  /* GL_OES_EGL_image_external */
+  // GL_OES_EGL_image_external
   #ifndef GL_OES_EGL_image_external
   #define GL_TEXTURE_EXTERNAL_OES                                 0x8D65
   #define GL_SAMPLER_EXTERNAL_OES                                 0x8D66
@@ -713,3 +737,5 @@ class ExceptionUnknownTarget : public Exception {
 };
 
 } }
+
+*/

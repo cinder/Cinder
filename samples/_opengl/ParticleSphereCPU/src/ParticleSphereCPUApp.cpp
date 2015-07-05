@@ -10,13 +10,8 @@
 
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-
 #include "cinder/Rand.h"
-
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/VboMesh.h"
-#include "cinder/gl/Shader.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -78,7 +73,7 @@ void ParticleSphereCPUApp::setup()
 		auto &p = mParticles.at( i );
 		p.pos = center + vec3( x, y, z );
 		p.home = p.pos;
-		p.ppos = p.home + Rand::randVec3f() * 10.0f; // random initial velocity
+		p.ppos = p.home + Rand::randVec3() * 10.0f; // random initial velocity
 		p.damping = Rand::randFloat( 0.965f, 0.985f );
 		p.color = Color( CM_HSV, lmap<float>( i, 0.0f, mParticles.size(), 0.0f, 0.66f ), 1.0f, 1.0f );
 	}
@@ -95,7 +90,13 @@ void ParticleSphereCPUApp::setup()
 	// Create mesh by pairing our particle layout with our particle Vbo.
 	// A VboMesh is an array of layout + vbo pairs
 	auto mesh = gl::VboMesh::create( mParticles.size(), GL_POINTS, { { particleLayout, mParticleVbo } } );
+#if ! defined( CINDER_GL_ES )
 	mParticleBatch = gl::Batch::create( mesh, gl::getStockShader( gl::ShaderDef().color() ) );
+	gl::pointSize( 1.0f );
+#else
+	mParticleBatch = gl::Batch::create( mesh, gl::GlslProg::create( loadAsset( "draw_es3.vert" ), 
+																		loadAsset( "draw_es3.frag" ) ) );
+#endif
 
 	// Disturb particles a lot on mouse down.
 	getWindow()->getSignalMouseDown().connect( [this]( MouseEvent event ) {

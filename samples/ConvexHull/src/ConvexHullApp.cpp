@@ -42,8 +42,8 @@ void ConvexHullApp::makeNewLetter()
 {
 	Font arial( "Times", 512 );
 	mShape = arial.getGlyphShape( arial.getGlyphChar( '!' + randInt( 92 ) ) );
-	MatrixAffine2f transform = MatrixAffine2f::makeTranslate( vec2( 100, getWindowHeight() - 100 ) );
-	mShape.transform( transform );
+//	mat2 transform = MatrixAffine2f::makeTranslate( vec2( 100, getWindowHeight() - 100 ) );
+	mShape.transform( translate( mat3(), vec2( 100, getWindowHeight() - 100 ) ) );
 }
 
 void ConvexHullApp::update()

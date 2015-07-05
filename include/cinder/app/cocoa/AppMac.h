@@ -40,6 +40,9 @@ class AppMac : public AppBase {
 	AppMac();
 	virtual ~AppMac();
 
+	void		enablePowerManagement( bool powerManagement = true ) override;
+	bool		isPowerManagementEnabled() const override;
+
 	WindowRef	createWindow( const Window::Format &format = Window::Format() ) override;
 	void		quit() override;
 
@@ -47,7 +50,6 @@ class AppMac : public AppBase {
 	void		setFrameRate( float frameRate ) override;
 	void		disableFrameRate() override;
 	bool		isFrameRateEnabled() const override;
-	fs::path	getAppPath() const override;
 
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;
@@ -66,7 +68,7 @@ class AppMac : public AppBase {
 	//! \endcond
 
   protected:
-	void	launch( const char *title, int argc, char * const argv[] ) override;
+	void	launch() override;
 
   private:
 	AppImplMac*	mImpl;
@@ -86,15 +88,15 @@ void AppMac::main( const RendererRef &defaultRenderer, const char *title, int ar
 	if( settings.getShouldQuit() )
 		return;
 
-	AppBase *app = new AppT;
-	#pragma unused( app )
+	AppMac *app = static_cast<AppMac *>( new AppT );
+	app->executeLaunch();
+	delete app;
 
-	AppBase::executeLaunch( title, argc, argv );
 	AppBase::cleanupLaunch();
 }
 
 #define CINDER_APP_MAC( APP, RENDERER, ... )										\
-int main( int argc, char * const argv[] )											\
+int main( int argc, char* argv[] )											\
 {																					\
 	cinder::app::RendererRef renderer( new RENDERER );								\
 	cinder::app::AppMac::main<APP>( renderer, #APP, argc, argv, ##__VA_ARGS__ );	\

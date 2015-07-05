@@ -93,7 +93,7 @@
 #if defined( USE_DIRECTX )
 #include "cinder/dx/dx.h"
 #else
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #endif*/
 
 // this removes AntTweakBar from the project at compile time

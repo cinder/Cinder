@@ -75,7 +75,6 @@ void AppImplMswBasic::run()
 		if( mNeedsToRefreshDisplays ) {
 			mNeedsToRefreshDisplays = false;
 			PlatformMsw::get()->refreshDisplays();
-			OutputDebugString( L"Refreshing displays" );
 		}
 
 		// update and draw
@@ -112,7 +111,7 @@ void AppImplMswBasic::run()
 	}
 
 //	killWindow( mFullScreen );
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 	delete mApp;
 }
 
@@ -237,9 +236,8 @@ void AppImplMswBasic::destroyBlankingWindows()
 
 void AppImplMswBasic::quit()
 {
-	// Close all windows, forcing the application to quit.
-	while( ! mWindows.empty() )
-		mWindows.back()->close();
+	if( ! mApp->privateEmitShouldQuit() )
+		return;
 
 	// Always quit, even if ! isQuitOnLastWindowCloseEnabled()
 	mShouldQuit = true;

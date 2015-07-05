@@ -67,9 +67,6 @@
     <Filter Include="Source Files\jsoncpp">
       <UniqueIdentifier>{13c0913f-8fdb-4945-a68a-6b210c4e8d91}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\json">
-      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\svg">
       <UniqueIdentifier>{74f66efa-5b4e-49f4-8ea2-21b75f65a52e}</UniqueIdentifier>
     </Filter>
@@ -148,12 +145,12 @@
     <Filter Include="Source Files\app\winrt">
       <UniqueIdentifier>{dc3ddcfa-3bbd-4478-8d5d-5a750bd6f7d6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\jsoncpp">
+      <UniqueIdentifier>{1f0d2d7b-fc30-443d-a52d-dd3867811355}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\cinder\Area.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\AxisAlignedBox.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\BandedMatrix.cpp">
@@ -420,9 +417,6 @@
     <ClCompile Include="..\src\cinder\app\AppScreenSaver.cpp">
       <Filter>Source Files\app</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\MatrixStack.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\AntTweakBar\TwDirect3D11.cpp">
       <Filter>Source Files\AntTweakBar</Filter>
     </ClCompile>
@@ -609,9 +603,6 @@
     <ClCompile Include="..\src\cinder\gl\BufferTexture.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\ConstantStrings.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Context.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -622,9 +613,6 @@
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Fbo.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\gl.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\GlslProg.cpp">
@@ -649,12 +637,6 @@
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Vao.cpp">
@@ -774,6 +756,30 @@
     <ClCompile Include="..\src\cinder\app\winrt\WinRTApp.cpp">
       <Filter>Source Files\app\winrt</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ShaderPreprocessor.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\draw.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\scoped.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\wrapper.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Checkerboard.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\CameraUi.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\ip\Blur.cpp">
+      <Filter>Source Files\ip</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\cinder\gl\ConstantConversions.cpp">
+      <Filter>Source Files\gl</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\AntTweakBar\AntPerfTimer.h">
@@ -891,9 +897,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Matrix.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\MayaCamUI.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\ObjLoader.h">
@@ -1135,9 +1138,6 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\dx\PlatformHelpers.h">
       <Filter>Header Files\dx</Filter>
-    </ClInclude>
-    <ClInclude Include="..\include\cinder\MatrixStack.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\AntTweakBar\TwDirect3D11.h">
       <Filter>Source Files\AntTweakBar</Filter>
@@ -1433,9 +1433,6 @@
     <ClInclude Include="..\include\cinder\gl\BufferTexture.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
-    <ClInclude Include="..\include\cinder\gl\ConstantStrings.h">
-      <Filter>Header Files\gl</Filter>
-    </ClInclude>
     <ClInclude Include="..\include\cinder\gl\Context.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
@@ -1524,10 +1521,10 @@
       <Filter>Header Files\gl</Filter>
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json.h">
-      <Filter>Header Files\json</Filter>
+      <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\jsoncpp\json\json-forwards.h">
-      <Filter>Header Files\json</Filter>
+      <Filter>Header Files\jsoncpp</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\Signals.h">
       <Filter>Header Files</Filter>
@@ -1612,6 +1609,42 @@
     </ClInclude>
     <ClInclude Include="..\include\cinder\app\winrt\PlatformWinRt.h">
       <Filter>Header Files\app\winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\draw.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\platform.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\scoped.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\wrapper.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\Breakpoint.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\audio\audio.h">
+      <Filter>Header Files\audio</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Checkerboard.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\CameraUi.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\ip\Blur.h">
+      <Filter>Header Files\ip</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h">
+      <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

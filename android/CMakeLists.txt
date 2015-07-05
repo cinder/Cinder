@@ -555,11 +555,13 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/app/RendererGl.cpp
     ${CINDER_SRC_DIR}/cinder/app/Window.cpp
 
-    ${CINDER_SRC_DIR}/cinder/gl/gl.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/draw.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/scoped.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/wrapper.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Batch.cpp
     ${CINDER_SRC_DIR}/cinder/gl/BufferObj.cpp
     ${CINDER_SRC_DIR}/cinder/gl/BufferTexture.cpp
-    ${CINDER_SRC_DIR}/cinder/gl/ConstantStrings.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/ConstantConversions.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Context.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Environment.cpp
     ${CINDER_SRC_DIR}/cinder/gl/EnvironmentCore.cpp
@@ -572,10 +574,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
     #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
-    ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
-    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
-    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObjImplHardware.cpp
-    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObjImplSoftware.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
@@ -598,7 +596,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/svg/Svg.cpp
 
     ${CINDER_SRC_DIR}/cinder/Area.cpp
-    ${CINDER_SRC_DIR}/cinder/AxisAlignedBox.cpp
     ${CINDER_SRC_DIR}/cinder/BSpline.cpp
     ${CINDER_SRC_DIR}/cinder/BSplineFit.cpp
     ${CINDER_SRC_DIR}/cinder/Buffer.cpp
@@ -623,7 +620,6 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Json.cpp
     ${CINDER_SRC_DIR}/cinder/Log.cpp
     ${CINDER_SRC_DIR}/cinder/Matrix.cpp
-    ${CINDER_SRC_DIR}/cinder/MatrixStack.cpp
     ${CINDER_SRC_DIR}/cinder/ObjLoader.cpp
     ${CINDER_SRC_DIR}/cinder/Path2d.cpp
     ${CINDER_SRC_DIR}/cinder/Perlin.cpp

@@ -31,9 +31,9 @@ namespace cinder { namespace gl {
 
 ShaderDef::ShaderDef()
 #if defined( CINDER_ANDROID ) 
-	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mTextureMappingExternalOes( false ), mColor( false ), mUniformBasedPosAndTexCoord( false )
+	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mTextureMappingExternalOes( false ), mColor( false ), mLambert(false), mUniformBasedPosAndTexCoord( false )
 #else
-	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mColor( false ), mUniformBasedPosAndTexCoord( false )
+	: mTextureMapping( false ), mTextureMappingRectangleArb( false ), mColor( false ), mLambert( false ), mUniformBasedPosAndTexCoord( false )
 #endif	
 {
 	mTextureSwizzleMask[0] = GL_RED;
@@ -82,6 +82,12 @@ ShaderDef& ShaderDef::uniformBasedPosAndTexCoord()
 ShaderDef& ShaderDef::color()
 {
 	mColor = true;
+	return *this;
+}
+
+ShaderDef& ShaderDef::lambert()
+{
+	mLambert = true;
 	return *this;
 }
 
@@ -135,6 +141,8 @@ bool ShaderDef::operator<( const ShaderDef &rhs ) const
 		return mTextureSwizzleMask[2] < rhs.mTextureSwizzleMask[2];	
 	else if( rhs.mTextureSwizzleMask[3] != mTextureSwizzleMask[3] )
 		return mTextureSwizzleMask[3] < rhs.mTextureSwizzleMask[3];	
+	if( rhs.mLambert != mLambert )
+		return rhs.mLambert;
 	
 	return false;
 }

@@ -26,9 +26,8 @@
 #   include "TwDirect3D10.h"
 #   include "TwDirect3D11.h"
 #   include "resource.h"
-#   ifdef _DEBUG
-#       include <crtdbg.h>
-#   endif // _DEBUG
+#	undef min
+#	undef max
 #endif // ANT_WINDOWS
 
 #include <algorithm>
@@ -1912,10 +1911,6 @@ static int TwInitMgr()
 
 int ANT_CALL TwInit(ETwGraphAPI _GraphAPI, void *_Device)
 {
-#if defined(_DEBUG) && defined(ANT_WINDOWS)
-    _CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF|_CrtSetDbgFlag(_CRTDBG_LEAK_CHECK_DF));
-#endif
-
     if( g_TwMasterMgr!=NULL )
     {
         g_TwMasterMgr->SetLastError(g_ErrInit);
@@ -5497,8 +5492,8 @@ static int TwMouseEvent(ETwMouseAction _EventType, TwMouseButtonID _Button, int 
                 Handled = Bar->MouseButton(_Button, (_EventType==TW_MOUSE_PRESSED), _MouseX, _MouseY);
             else if( _EventType==TW_MOUSE_WHEEL )
             {
-                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
-                    Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
+//                if( abs(_WheelPos-g_TwMgr->m_LastMouseWheelPos)<4 ) // avoid crazy wheel positions
+					Handled = Bar->MouseWheel(_WheelPos, g_TwMgr->m_LastMouseWheelPos, _MouseX, _MouseY);
             }
             if( Handled )
                 break;

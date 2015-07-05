@@ -6,8 +6,8 @@ uniform vec3  uMousePos;
 in highp vec3   iPosition;
 in highp vec3   iPPostion;
 in highp vec3   iHome;
-in highp float  iDamping;
 in highp vec4   iColor;
+in highp float  iDamping;
 
 out highp vec3  position;
 out highp vec3  pposition;

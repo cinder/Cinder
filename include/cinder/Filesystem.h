@@ -36,11 +36,28 @@
 #endif
 
 namespace cinder {
-
 #if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) )
 	namespace fs = std::tr2::sys;
+} // namespace cinder
 #else
 	namespace fs = boost::filesystem;
+} // namespace cinder
+
+namespace boost {
+	namespace filesystem {
+		// C++17 filesystem library defines file_time_type, whereas boost::filesystem uses time_t
+		typedef std::time_t			file_time_type;
+	}
+}
 #endif
 
-} // namespace cinder
+#if defined( CINDER_WINRT ) || ( defined( _MSC_VER ) && ( _MSC_VER >= 1900 ) && ( _MSC_VER < 2000 ) )
+//! kludge to work around VC120's lack of fs::canonical
+namespace std { namespace tr2 { namespace sys {
+template <typename PathT>
+PathT canonical( const PathT &p )
+{
+	return p;
+}
+} } } // namespace std::tr2::sys
+#endif

@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
 
@@ -52,8 +53,8 @@ void slerpBasicApp::update()
 
 void slerpBasicApp::setupSlerp()
 {
-	mVecA = randVec3f();
-	mVecB = randVec3f();
+	mVecA = randVec3();
+	mVecB = randVec3();
 	mSlerpAmt = 0;
 }
 

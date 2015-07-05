@@ -244,7 +244,8 @@ void RendererImplDx::finishToggleFullScreen()
 	}
 }
 
-void RendererImplDx::getPlatformWindowDimensions(DX_WINDOW_TYPE wnd, float* width, float* height) const {
+void RendererImplDx::getPlatformWindowDimensions( Platform::Agile<Windows::UI::Core::CoreWindow> wnd, float* width, float* height) const
+{
 
 #if defined( CINDER_MSW ) 
 	RECT rect;

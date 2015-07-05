@@ -66,7 +66,7 @@ class PlatformCocoa : public Platform {
 
 	DataSourceRef	loadResource( const fs::path &resourcePath ) override;
 
-	fs::path getResourcePath() const override;
+	fs::path getResourceDirectory() const override;
 	fs::path getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
 	//! Implemented on desktop, no-op on iOS (returns empty path ).
@@ -83,9 +83,12 @@ class PlatformCocoa : public Platform {
 
 	void prepareAssetLoading() override;
 
+	std::map<std::string,std::string>	getEnvironmentVariables() override;
+
 	fs::path	expandPath( const fs::path &path ) override;
-	fs::path	getHomeDirectory() override;
-	fs::path	getDocumentsDirectory()	override;
+	fs::path	getHomeDirectory() const override;
+	fs::path	getDocumentsDirectory() const override;
+	fs::path	getDefaultExecutablePath() const override;
 
 	void sleep( float milliseconds ) override;
 
@@ -110,6 +113,13 @@ class PlatformCocoa : public Platform {
 	//! Removes record of \a display from mDisplays and signals appropriately. Generally only useful for Cinder internals.
 	void		removeDisplay( const DisplayRef &display );
 
+#if defined( CINDER_MAC )
+	//! Returns whether the application is currently inside the event loop of modal dialog
+	bool		isInsideModalLoop() const { return mInsideModalLoop; }
+	//! Flags whether the application is currently inside the event loop of modal dialog
+	void		setInsideModalLoop( bool inside = true ) { mInsideModalLoop = inside; }
+#endif
+
   private:
 	NSAutoreleasePool*		mAutoReleasePool;
 	mutable NSBundle*		mBundle;
@@ -122,6 +132,10 @@ class PlatformCocoa : public Platform {
 #else
 	friend DisplayCocoaTouch;
 #endif
+
+#if defined( CINDER_MAC )
+	bool	mInsideModalLoop;
+#endif
 };
 
 } } // namespace cinder::app
@@ -132,16 +146,15 @@ namespace cinder {
 //! Represents a monitor/display on OS X
 class DisplayMac : public Display {
   public:
-	~DisplayMac();
+	NSScreen*			getNsScreen() const;
+	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayId; }
 
-	NSScreen*			getNsScreen() const { return mScreen; }
-	CGDirectDisplayID	getCgDirectDisplayId() const { return mDirectDisplayID; }
+	std::string			getName() const override;
 
   protected:	
 	static void	displayReconfiguredCallback( CGDirectDisplayID displayId, CGDisplayChangeSummaryFlags flags, void *userInfo );
 
-	NSScreen			*mScreen;
-	CGDirectDisplayID	mDirectDisplayID;
+	CGDirectDisplayID	mDirectDisplayId;
 	
 	friend app::PlatformCocoa;
 };

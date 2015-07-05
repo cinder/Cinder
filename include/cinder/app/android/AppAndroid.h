@@ -52,7 +52,6 @@ class AppAndroid : public AppBase {
 	void		setFrameRate( float frameRate ) override;
 	void		disableFrameRate() override;
 	bool		isFrameRateEnabled() const override;
-	fs::path	getAppPath() const override;
 
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;
@@ -81,7 +80,7 @@ class AppAndroid : public AppBase {
 	//! \endcond
 
  protected:
-	void		launch( const char *title, int argc, char * const argv[] ) override;
+	void		launch() override;
 
  private:
 	std::unique_ptr<AppImplAndroid>		mImpl;
@@ -102,11 +101,9 @@ void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *t
 		return;
 
 ci::android::dbg_app_log( "Allocating AppAndroid" );
-	AppBase *app = new AppT;
-	#pragma unused( app )
-
 ci::android::dbg_app_log( "Calling AppBase::executeLaunch" );
-	AppBase::executeLaunch( title, 0, nullptr );
+	AppBase *app = new AppT;
+	app->executeLaunch();
 	//
 	// NOTE: AppBase::cleanupLaunch is called in EventManagerAndroid::execute.
 	//

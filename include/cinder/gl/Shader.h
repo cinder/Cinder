@@ -40,6 +40,7 @@ class ShaderDef {
 	ShaderDef&		color();	
 	ShaderDef&		texture( const TextureRef &tex = TextureRef() );
 	ShaderDef&		texture( GLenum target );
+	ShaderDef&		lambert();
 	// Used by draw(TextureRef&) stock shader; scales ciPosition and ciTexCoord according to
 	// uniform "uPositionScale", "uPositionOffset", "uTexCoord0Scale", "uTexCoord0Offset"
 	ShaderDef&		uniformBasedPosAndTexCoord();
@@ -58,7 +59,8 @@ class ShaderDef {
 	std::array<GLint,4>		mTextureSwizzleMask;
 	bool					mUniformBasedPosAndTexCoord;
 
-	bool			mColor;
+	bool					mColor;
+	bool					mLambert;
 	
 	friend class EnvironmentCore;
 	friend class EnvironmentEs;

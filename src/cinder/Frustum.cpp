@@ -38,6 +38,12 @@ Frustum<T>::Frustum( const Camera &cam )
 	// set planes using camera
 	set( cam );
 }
+	
+template<typename T>
+Frustum<T>::Frustum( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
+{
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
+}
 
 template<typename T>
 void Frustum<T>::set( const Camera &cam )
@@ -47,13 +53,8 @@ void Frustum<T>::set( const Camera &cam )
 
 	vec3 ftl, ftr, fbl, fbr;
 	cam.getFarClipCoordinates( &ftl, &ftr, &fbl, &fbr );
-
-	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
-	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
-	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
-	mFrustumPlanes[RIGHT].set( nbr, ntr, fbr );
-	mFrustumPlanes[NEAR].set( ntl, ntr, nbr );
-	mFrustumPlanes[FAR].set( ftr, ftl, fbl );
+	
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
 }
 
 template<typename T>
@@ -66,7 +67,13 @@ void Frustum<T>::set( const Camera &cam, const Vec3T &ntl, const Vec3T &ntr, con
 	Vec3T ftr = normalize( ntr - eye ) * farClip;
 	Vec3T fbl = normalize( nbl - eye ) * farClip;
 	Vec3T fbr = normalize( nbr - eye ) * farClip;
-
+	
+	set( ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr );
+}
+	
+template<typename T>
+void Frustum<T>::set( const Vec3T &ntl, const Vec3T &ntr, const Vec3T &nbl, const Vec3T &nbr, const Vec3T &ftl, const Vec3T &ftr, const Vec3T &fbl, const Vec3T &fbr )
+{
 	mFrustumPlanes[TOP].set( ntr, ntl, ftl );
 	mFrustumPlanes[BOTTOM].set( nbl, nbr, fbr );
 	mFrustumPlanes[LEFT].set( ntl, nbl, fbl );
@@ -91,10 +98,8 @@ bool Frustum<T>::contains( const Vec3T &center, T radius ) const
 {
 	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
-		distance = mFrustumPlanes[i].distance(center);
-		if( distance < -radius )
-			return false;
-		else if( distance < radius )
+		distance = mFrustumPlanes[i].distance( center );
+		if( distance < radius )
 			return false;
 	}
 
@@ -105,7 +110,7 @@ template<typename T>
 bool Frustum<T>::contains( const Vec3T &center, const Vec3T &size ) const
 {
 	vec3 halfSize = vec3( size ) * 0.5f;
-	AxisAlignedBox3f box( vec3( center ) - halfSize, vec3( center ) + halfSize );
+	AxisAlignedBox box( vec3( center ) - halfSize, vec3( center ) + halfSize );
 	return contains( box );
 }
 
@@ -116,7 +121,7 @@ bool Frustum<T>::contains( const Sphere &sphere ) const
 }
 
 template<typename T>
-bool Frustum<T>::contains( const AxisAlignedBox3f &box ) const
+bool Frustum<T>::contains( const AxisAlignedBox &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance( Vec3T( box.getPositive( vec3( mFrustumPlanes[i].getNormal() ) ) ) ) < 0 )
@@ -131,7 +136,7 @@ bool Frustum<T>::contains( const AxisAlignedBox3f &box ) const
 template<typename T>
 bool Frustum<T>::intersects( const Vec3T &loc ) const
 {
-	return contains(loc);
+	return contains( loc );
 }
 
 template<typename T>
@@ -139,7 +144,7 @@ bool Frustum<T>::intersects( const Vec3T &center, T radius ) const
 {
 	T distance;
 	for( size_t i = 0; i < 6; ++i ) {
-		distance = mFrustumPlanes[i].distance(center);
+		distance = mFrustumPlanes[i].distance( center );
 		if( distance < -radius )
 			return false;
 	}
@@ -151,18 +156,18 @@ template<typename T>
 bool Frustum<T>::intersects( const Vec3T &center, const Vec3T &size ) const
 {
 	vec3 halfSize = vec3( size ) * 0.5f;
-	AxisAlignedBox3f box( vec3( center ) - halfSize, vec3( center ) + halfSize );
+	AxisAlignedBox box( vec3( center ) - halfSize, vec3( center ) + halfSize );
 	return intersects( box );
 };
 
 template<typename T>
 bool Frustum<T>::intersects( const Sphere &sphere ) const
 {
-	return intersects( Vec3T( sphere.getCenter() ), Vec3T( sphere.getRadius() ) );
+	return intersects( Vec3T( sphere.getCenter() ), (T)sphere.getRadius() );
 }
 
 template<typename T>
-bool Frustum<T>::intersects( const AxisAlignedBox3f &box ) const
+bool Frustum<T>::intersects( const AxisAlignedBox &box ) const
 {
 	for( size_t i = 0; i < 6; ++i ) {
 		if( mFrustumPlanes[i].distance( Vec3T( box.getPositive( vec3( mFrustumPlanes[i].getNormal() ) ) ) ) < 0 )

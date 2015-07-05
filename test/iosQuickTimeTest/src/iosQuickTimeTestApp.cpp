@@ -11,7 +11,7 @@ using namespace std;
 
 class iosQuickTimeTestApp : public App {
   public:
-	void prepareSettings( Settings *settings ) { settings->enableMultiTouch( false ); }
+	void prepareSettings( Settings *settings ) { settings->setMultiTouchEnabled( false ); }
 	void setup() override;
 	void mouseDown( MouseEvent event ) override;
 	void mouseDrag( MouseEvent event ) override;

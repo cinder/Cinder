@@ -32,6 +32,7 @@
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
+	#import <IOKit/graphics/IOGraphicsLib.h>
 #else
 	#import <Foundation/Foundation.h>
 	#import <UIKit/UIKit.h>
@@ -45,6 +46,9 @@ namespace cinder { namespace app {
 
 PlatformCocoa::PlatformCocoa()
 	: mBundle( nil ), mDisplaysInitialized( false )
+#if defined( CINDER_MAC )
+	, mInsideModalLoop( false )
+#endif
 {
 	mAutoReleasePool = [[NSAutoreleasePool alloc] init];
 	
@@ -100,7 +104,7 @@ fs::path PlatformCocoa::getResourcePath( const fs::path &rsrcRelativePath ) cons
 	return fs::path( [resultPath cStringUsingEncoding:NSUTF8StringEncoding] );
 }
 
-fs::path PlatformCocoa::getResourcePath() const
+fs::path PlatformCocoa::getResourceDirectory() const
 {
 	NSString *resultPath = [getBundle() resourcePath];
 
@@ -119,7 +123,7 @@ DataSourceRef PlatformCocoa::loadResource( const fs::path &resourcePath )
 void PlatformCocoa::prepareAssetLoading()
 {
 	// search for the assets folder inside the bundle's resources, and then the bundle's root
-	fs::path bundleAssetsPath = getResourcePath() / "assets";
+	fs::path bundleAssetsPath = getResourceDirectory() / "assets";
 	if( fs::exists( bundleAssetsPath ) && fs::is_directory( bundleAssetsPath ) ) {
 		addAssetDirectory( bundleAssetsPath );
 	}
@@ -131,6 +135,23 @@ void PlatformCocoa::prepareAssetLoading()
 	}
 }
 
+map<string,string> PlatformCocoa::getEnvironmentVariables()
+{
+	__block std::map<std::string, std::string> result;
+	NSDictionary *environment = [[NSProcessInfo processInfo] environment];
+	[environment enumerateKeysAndObjectsUsingBlock:^(id key, id obj, BOOL *stop) {
+		if( (! [key isKindOfClass:[NSString class]]) || (! [obj isKindOfClass:[NSString class]]) ) {
+			return;
+		}
+
+		std::string k = ci::cocoa::convertNsString( key );
+		std::string v = ci::cocoa::convertNsString( obj );
+		result[k] = v;
+	}];
+
+	return result;
+}
+
 fs::path PlatformCocoa::expandPath( const fs::path &path )
 {
 	NSString *pathNS = [NSString stringWithCString:path.c_str() encoding:NSUTF8StringEncoding];
@@ -139,19 +160,24 @@ fs::path PlatformCocoa::expandPath( const fs::path &path )
 	return fs::path( result );
 }
 
-fs::path PlatformCocoa::getDocumentsDirectory()
+fs::path PlatformCocoa::getDocumentsDirectory() const
 {
 	NSArray *arrayPaths = ::NSSearchPathForDirectoriesInDomains( NSDocumentDirectory, NSUserDomainMask, YES );
 	NSString *docDir = [arrayPaths firstObject];
 	return fs::path( cocoa::convertNsString( docDir ) + "/" );
 }
 
-fs::path PlatformCocoa::getHomeDirectory()
+fs::path PlatformCocoa::getHomeDirectory() const
 {
 	NSString *home = ::NSHomeDirectory();
 	string result = string( [home cStringUsingEncoding:NSUTF8StringEncoding] );
 	result += "/";
 	return fs::path( result );	
+}
+
+fs::path PlatformCocoa::getDefaultExecutablePath() const
+{
+	return fs::path( [[[::NSBundle mainBundle] bundlePath] UTF8String] ).parent_path();
 }
 
 void PlatformCocoa::launchWebBrowser( const Url &url )
@@ -191,7 +217,13 @@ fs::path PlatformCocoa::getOpenFilePath( const fs::path &initialPath, const vect
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -218,7 +250,13 @@ fs::path PlatformCocoa::getFolderPath( const fs::path &initialPath )
 	if( ! initialPath.empty() )
 		[cinderOpen setDirectoryURL:[NSURL fileURLWithPath:[[NSString stringWithUTF8String:initialPath.c_str()] stringByExpandingTildeInPath]]];
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderOpen runModal];
+	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
 
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		NSString *result = [[[cinderOpen URLs] firstObject] path];
@@ -268,8 +306,14 @@ fs::path PlatformCocoa::getSaveFilePath( const fs::path &initialPath, const vect
 			[cinderSave setNameFieldStringValue:file];
 	}
 
+	setInsideModalLoop( true );
 	NSInteger resultCode = [cinderSave runModal];
-
+	setInsideModalLoop( false );
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
+	
 	if( resultCode == NSFileHandlingPanelOKButton ) {
 		return fs::path( [[[cinderSave URL] path] UTF8String] );
 	}
@@ -338,23 +382,6 @@ void PlatformCocoa::removeDisplay( const DisplayRef &display )
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // DisplayMac
 #if defined( CINDER_MAC )
-DisplayMac::~DisplayMac()
-{
-	[mScreen release];
-}
-
-DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )
-{
-	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
-		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
-		if( macDisplay.getCgDirectDisplayId() == displayId )
-			return *dispIt;
-	}
-
-	// couldn't find it, so return nullptr
-	return nullptr;
-}
-
 namespace {
 NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 {
@@ -369,7 +396,47 @@ NSScreen* findNsScreenForCgDirectDisplayId( CGDirectDisplayID displayId )
 	
 	return nil;
 }
+std::string getDisplayName( CGDirectDisplayID displayId )
+{
+	string name = "";
+
+	NSDictionary *deviceInfo = (NSDictionary*)IODisplayCreateInfoDictionary( CGDisplayIOServicePort( displayId ), kIODisplayOnlyPreferredName );
+	NSDictionary *localizedNames = [deviceInfo objectForKey:@kDisplayProductName];
+	if( [localizedNames count] > 0 ) {
+		NSString *displayName = [localizedNames objectForKey:[localizedNames allKeys].firstObject];
+		name = ci::cocoa::convertNsString( displayName );
+	}
+	[deviceInfo release];
+
+	return name;
+}
 } // anonymous namespace
+
+NSScreen* DisplayMac::getNsScreen() const
+{
+	return findNsScreenForCgDirectDisplayId( mDirectDisplayId );
+}
+
+DisplayRef app::PlatformCocoa::findFromCgDirectDisplayId( CGDirectDisplayID displayId )
+{
+	for( vector<DisplayRef>::iterator dispIt = mDisplays.begin(); dispIt != mDisplays.end(); ++dispIt ) {
+		const DisplayMac& macDisplay( dynamic_cast<const DisplayMac&>( **dispIt ) );
+		if( macDisplay.getCgDirectDisplayId() == displayId )
+			return *dispIt;
+	}
+
+	// couldn't find it, so return nullptr
+	return nullptr;
+}
+
+std::string DisplayMac::getName() const
+{
+	if( mNameDirty ) {
+		mName = getDisplayName( mDirectDisplayId );
+		mNameDirty = false;
+	}
+	return mName;
+}
 
 DisplayRef app::PlatformCocoa::findFromNsScreen( NSScreen *nsScreen )
 {
@@ -391,19 +458,18 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 			CGRect frame = ::CGDisplayBounds( displayId );
 			
 			DisplayMac *newDisplay = new DisplayMac();
-			newDisplay->mDirectDisplayID = displayId;
+			newDisplay->mDirectDisplayId = displayId;
 			newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
-			newDisplay->mScreen = findNsScreenForCgDirectDisplayId( displayId );			
-			if( newDisplay->mScreen ) {
-				newDisplay->mContentScale = [newDisplay->mScreen backingScaleFactor];
-				newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [newDisplay->mScreen depth] );
-			}
-			else {
-				newDisplay->mContentScale = 1.0f;
-				newDisplay->mBitsPerPixel = 24;
-				CI_LOG_E( "Unable to locate corresponding NSScreen for CGDirectDisplayID" );
-			}
-			
+#if ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 )
+			CGDisplayModeRef mode = ::CGDisplayCopyDisplayMode( displayId );
+			newDisplay->mContentScale = ::CGDisplayModeGetPixelWidth( mode ) / (float)::CGDisplayModeGetWidth( mode );
+			::CGDisplayModeRelease( mode );
+#else
+			CI_LOG_W( "Unable to determine content scale on OS X <=10.7" );
+			newDisplay->mContentScale = 1.0f;
+#endif
+			newDisplay->mBitsPerPixel = 24; // hard-coded absent any examples of anything else
+
 			app::PlatformCocoa::get()->addDisplay( DisplayRef( newDisplay ) ); // this will signal
 		}
 		else
@@ -422,8 +488,8 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 					mDisplays.erase( std::remove( mDisplays.begin(), mDisplays.end(), display ), mDisplays.end() );
 					mDisplays.insert( mDisplays.begin(), display );
 				}
-			}		
-		
+			}
+
 			// CG appears to not do the coordinate y-flip that NSScreen does
 			CGRect frame = ::CGDisplayBounds( displayId );
 			Area displayArea( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
@@ -432,7 +498,7 @@ void DisplayMac::displayReconfiguredCallback( CGDirectDisplayID displayId, CGDis
 				reinterpret_cast<DisplayMac*>( display.get() )->mArea = displayArea;
 				newArea = true;
 			}
-			
+
 			if( newMainDisplay || newArea ) {
 				if( app::AppBase::get() )
 					app::AppBase::get()->emitDisplayChanged( display );
@@ -469,8 +535,7 @@ const std::vector<DisplayRef>& app::PlatformCocoa::getDisplays()
 			else
 				newDisplay->mArea = Area( frame.origin.x, frame.origin.y, frame.origin.x + frame.size.width, frame.origin.y + frame.size.height );
 
-			newDisplay->mDirectDisplayID = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
-			newDisplay->mScreen = screen;
+			newDisplay->mDirectDisplayId = (CGDirectDisplayID)[[[screen deviceDescription] objectForKey:@"NSScreenNumber"] intValue];
 			newDisplay->mBitsPerPixel = (int)NSBitsPerPixelFromDepth( [screen depth] );
 			newDisplay->mContentScale = [screen backingScaleFactor];
 

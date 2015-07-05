@@ -38,8 +38,6 @@ AppAndroid::AppAndroid()
 
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
-	Platform::get()->setExecutablePath( getAppPath() );
-
 	mImpl.reset( new AppImplAndroid( this, *settings ) );	
 }
 
@@ -54,13 +52,13 @@ void AppAndroid::initialize( Settings *settings, const RendererRef &defaultRende
 	AppBase::initialize( settings, defaultRenderer, title, 0, nullptr );
 }
 
-void AppAndroid::launch( const char *title, int argc, char * const argv[] )
+void AppAndroid::launch()
 {
-	mImpl->setup();
-
 	//
 	// NOTE: Don't call AppImplAndroid's event loop functions from here.
 	//
+
+	mImpl->setup();
 }
 
 WindowRef AppAndroid::createWindow( const Window::Format &format )
@@ -91,11 +89,6 @@ void AppAndroid::disableFrameRate()
 bool AppAndroid::isFrameRateEnabled() const
 {
 	return mImpl->isFrameRateEnabled();
-}
-
-fs::path AppAndroid::getAppPath() const
-{
-	return AppImplAndroid::getAppPath();
 }
 
 WindowRef AppAndroid::getWindow() const

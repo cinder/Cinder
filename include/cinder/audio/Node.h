@@ -258,11 +258,11 @@ class NodeAutoPullable : public Node {
   public:
 	virtual ~NodeAutoPullable();
 
-	virtual void connect( const NodeRef &output )					override;
-	virtual void connectInput( const NodeRef &input )				override;
-	virtual void disconnectInput( const NodeRef &input )			override;
+	void connect( const NodeRef &output )					override;
+	void connectInput( const NodeRef &input )				override;
+	void disconnectInput( const NodeRef &input )			override;
 	//! Overridden to also remove from  Context's auto-pulled list
-	virtual void disconnectAllOutputs()								override;
+	void disconnectAllOutputs()								override;
 
   protected:
 	NodeAutoPullable( const Format &format );

@@ -25,11 +25,13 @@
 #include "cinder/CinderAssert.h"
 
 #if defined( CINDER_COCOA )
-#include "cinder/app/cocoa/PlatformCocoa.h"
+	#include "cinder/app/cocoa/PlatformCocoa.h"
 #elif defined( CINDER_MSW )
-#include "cinder/app/msw/PlatformMsw.h"
+	#include "cinder/app/msw/PlatformMsw.h"
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/winrt/PlatformWinRt.h"
 #elif defined( CINDER_ANDROID )
-#include "cinder/app/android/PlatformAndroid.h"
+	#include "cinder/app/android/PlatformAndroid.h"
 #endif
 
 using namespace std;
@@ -52,7 +54,8 @@ Platform* Platform::get()
 		sInstance = new PlatformCocoa;
 #elif defined( CINDER_MSW )
 		sInstance = new PlatformMsw;
-
+#elif defined( CINDER_WINRT )
+		sInstance = new PlatformWinRt;
 #elif defined( CINDER_ANDROID )
 		sInstance = new PlatformAndroid;
 #endif
@@ -70,6 +73,14 @@ void Platform::set( Platform *platform )
 	sInstance = platform;
 }
 
+fs::path Platform::getExecutablePath() const
+{
+	if( mExecutablePath.empty() )
+		mExecutablePath = getDefaultExecutablePath();
+
+	return mExecutablePath;
+}
+
 DataSourceRef Platform::loadAsset( const fs::path &relativePath )
 {
 	fs::path assetPath = findAssetPath( relativePath );
@@ -84,28 +95,42 @@ fs::path Platform::getAssetPath( const fs::path &relativePath )
 	return findAssetPath( relativePath );
 }
 
-void Platform::addAssetDirectory( const fs::path &dirPath )
+void Platform::addAssetDirectory( const fs::path &directory )
 {
-	auto it = find( mAssetPaths.begin(), mAssetPaths.end(), dirPath );
-	if( it == mAssetPaths.end() )
-		mAssetPaths.push_back( dirPath );
+	CI_ASSERT( fs::is_directory( directory ) );
+	ensureAssetDirsPrepared();
+
+	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
+	if( it == mAssetDirectories.end() )
+		mAssetDirectories.push_back( directory );
+}
+
+const vector<fs::path>& Platform::getAssetDirectories()
+{
+	ensureAssetDirsPrepared();
+	return mAssetDirectories;
 }
 
 fs::path Platform::findAssetPath( const fs::path &relativePath )
 {
-	if( ! mAssetPathsInitialized ) {
-		prepareAssetLoading();
-		findAndAddAssetBasePath();
-		mAssetPathsInitialized = true;
-	}
+	ensureAssetDirsPrepared();
 
-	for( const auto &assetPath : mAssetPaths ) {
-		auto fullPath = assetPath / relativePath;
+	for( const auto &directory : mAssetDirectories ) {
+		auto fullPath = directory / relativePath;
 		if( fs::exists( fullPath ) )
 			return fullPath;
 	}
 
 	return fs::path(); // empty implies failure
+}
+
+void Platform::ensureAssetDirsPrepared()
+{
+	if( ! mAssetDirsInitialized ) {
+		mAssetDirsInitialized = true;
+		prepareAssetLoading();
+		findAndAddAssetBasePath();
+	}
 }
 
 void Platform::findAndAddAssetBasePath()
@@ -118,7 +143,7 @@ void Platform::findAndAddAssetBasePath()
 		if( parentCt >= ASSET_SEARCH_DEPTH )
 			break;
 
-		const fs::path curAssetDir = curPath / "assets";
+		const fs::path curAssetDir = curPath / fs::path( "assets" );
 		if( fs::exists( curAssetDir ) && fs::is_directory( curAssetDir ) ) {
 			addAssetDirectory( curAssetDir );
 			break;

@@ -16,9 +16,9 @@ using namespace audio::cocoa;
 
 class EffectsAudioUnitTestApp : public App {
   public:
-	void setup();
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
 
 	void setupOne();
 	void setupTwo();

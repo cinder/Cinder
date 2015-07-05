@@ -42,7 +42,7 @@ class IStreamUrlImplJni : public IStreamUrlImpl {
 	virtual void		IORead( void *t, size_t size );
 
 private:
-	ci::Buffer 			mData;
+	ci::BufferRef 		mData;
 	off_t 				mOffset;	
 };
 

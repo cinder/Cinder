@@ -40,6 +40,8 @@
 	#else
 		#include "cinder/app/msw/RendererImplGlMsw.h"
 	#endif
+#elif defined( CINDER_WINRT )
+	#include "cinder/app/msw/RendererImplGlAngle.h"
 #elif defined( CINDER_ANDROID )
 	#include "cinder/app/android/RendererGlAndroid.h"
 #endif
@@ -47,17 +49,13 @@
 namespace cinder { namespace app {
 
 RendererGl::RendererGl( const RendererGl::Options &options )
-	: Renderer(), mImpl( 0 ), mOptions( options )
-{
-}
+	: Renderer(), mImpl( nullptr ), mOptions( options )
+{}
 
 RendererGl::RendererGl( const RendererGl &renderer )
-	: Renderer( renderer ), mOptions( renderer.mOptions )
+	: Renderer( renderer ), mImpl( nullptr ), mOptions( renderer.mOptions )
 {
-#if defined( CINDER_COCOA )
-	mImpl = 0;
-#elif defined( CINDER_MSW )
-	mImpl = 0;
+#if defined( CINDER_MSW )
 	mWnd = renderer.mWnd;
 #elif defined( CINDER_ANDROID )
 	mImpl = 0;	
@@ -84,7 +82,7 @@ void RendererGl::startDraw()
 	if( mStartDrawFn )
 		mStartDrawFn( this );
 	else
-		[mImpl makeCurrentContext];
+		[mImpl makeCurrentContext:false];
 }
 
 void RendererGl::finishDraw()
@@ -133,9 +131,9 @@ NSOpenGLContext* RendererGl::getNsOpenGlContext()
 	return [mImpl getNsOpenGlContext];
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:force];
 }
 
 void RendererGl::swapBuffers()
@@ -161,7 +159,7 @@ EAGLContext* RendererGl::getEaglContext() const
 
 void RendererGl::startDraw()
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:false];
 }
 
 void RendererGl::finishDraw()
@@ -179,9 +177,9 @@ void RendererGl::defaultResize()
 	[mImpl defaultResize];
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force)
 {
-	[mImpl makeCurrentContext];
+	[mImpl makeCurrentContext:force];
 }
 
 void RendererGl::swapBuffers()
@@ -245,9 +243,9 @@ void RendererGl::startDraw()
 		mImpl->makeCurrentContext();
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	mImpl->makeCurrentContext();
+	mImpl->makeCurrentContext( force );
 }
 
 void RendererGl::swapBuffers()
@@ -285,22 +283,29 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	ip::flipVertical( &s );
 	return s;
 }
-
-#elif defined( CINDER_ANDROID )
+#elif defined( CINDER_WINRT )
 RendererGl::~RendererGl()
 {
 	delete mImpl;
 }
 
-void RendererGl::setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
+void RendererGl::setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer )
 {
-	if( ! mImpl ) {
-		mImpl = new RendererGlAndroid( this );
-    }
+	mWnd = wnd;
+	if( ! mImpl )
+		mImpl = new RendererImplGlAngle( this );
+	if( ! mImpl->initialize( wnd, sharedRenderer ) )
+		throw ExcRendererAllocation( "RendererImplGlMsw initialization failed." );
+}
 
-	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
-		throw ExcRendererAllocation( "AppImplAnroidRendererGl initialization failed." );
-    }
+void RendererGl::prepareToggleFullScreen()
+{
+	mImpl->prepareToggleFullScreen();
+}
+
+void RendererGl::finishToggleFullScreen()
+{
+	mImpl->finishToggleFullScreen();
 }
 
 void RendererGl::startDraw()
@@ -308,12 +313,12 @@ void RendererGl::startDraw()
 	if( mStartDrawFn )
 		mStartDrawFn( this );
 	else
-		mImpl->makeCurrentContext();
+		mImpl->makeCurrentContext( false );
 }
 
-void RendererGl::makeCurrentContext()
+void RendererGl::makeCurrentContext( bool force )
 {
-	mImpl->makeCurrentContext();
+	mImpl->makeCurrentContext( force );
 }
 
 void RendererGl::swapBuffers()
@@ -347,6 +352,66 @@ Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPix
 	return s;
 }
 
+#elif defined( CINDER_ANDROID )
+RendererGl::~RendererGl()
+{
+	delete mImpl;
+}
+
+void RendererGl::setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer )
+{
+	if( ! mImpl ) {
+		mImpl = new RendererGlAndroid( this );
+    }
+
+	if( ! mImpl->initialize( nativeWindow, sharedRenderer ) ) {
+		throw ExcRendererAllocation( "AppImplAnroidRendererGl initialization failed." );
+    }
+}
+
+void RendererGl::startDraw()
+{
+	if( mStartDrawFn )
+		mStartDrawFn( this );
+	else
+		mImpl->makeCurrentContext( false );
+}
+
+void RendererGl::makeCurrentContext( bool force )
+{
+	mImpl->makeCurrentContext( force );
+}
+
+void RendererGl::swapBuffers()
+{
+	mImpl->swapBuffers();
+}
+
+void RendererGl::finishDraw()
+{
+	if( mFinishDrawFn )
+		mFinishDrawFn( this );
+	else
+		mImpl->swapBuffers();
+}
+
+void RendererGl::defaultResize()
+{
+	mImpl->defaultResize();
+}
+
+Surface	RendererGl::copyWindowSurface( const Area &area, int32_t windowHeightPixels )
+{
+	Surface s( area.getWidth(), area.getHeight(), false );
+	glFlush(); // there is some disagreement about whether this is necessary, but ideally performance-conscious users will use FBOs anyway
+	GLint oldPackAlignment;
+	glGetIntegerv( GL_PACK_ALIGNMENT, &oldPackAlignment ); 
+	glPixelStorei( GL_PACK_ALIGNMENT, 1 );
+	glReadPixels( area.x1, windowHeightPixels - area.y2, area.getWidth(), area.getHeight(), GL_RGB, GL_UNSIGNED_BYTE, s.getData() );
+	glPixelStorei( GL_PACK_ALIGNMENT, oldPackAlignment );	
+	ip::flipVertical( &s );
+	return s;
+}
 #endif
 
 } } // namespace cinder::app

@@ -62,7 +62,6 @@ class AppMsw : public AppBase {
 	void		setFrameRate( float frameRate ) override;
 	void		disableFrameRate() override;
 	bool		isFrameRateEnabled() const override;
-	fs::path	getAppPath() const override;
 
 	WindowRef	getWindow() const override;
 	WindowRef	getWindowIndex( size_t index ) const override;
@@ -83,7 +82,7 @@ class AppMsw : public AppBase {
 	//! \endcond
 
   protected:
-	void	launch( const char *title, int argc, char * const argv[] ) override;
+	void	launch() override;
 
   private:
 	std::unique_ptr<AppImplMswBasic>	mImpl;
@@ -104,9 +103,9 @@ void AppMsw::main( const RendererRef &defaultRenderer, const char *title, const 
 	if( settings.getShouldQuit() )
 		return;
 
-	AppMsw *app = new AppT;
+	AppMsw *app = static_cast<AppMsw *>( new AppT );
+	app->executeLaunch();
 
-	AppBase::executeLaunch( title, 0, nullptr );
 	AppBase::cleanupLaunch();
 }
 

@@ -149,7 +149,7 @@ void IStreamCinder::readData( void *t, size_t size )
 
 void OStream::write( const Buffer &buffer )
 {
-	IOWrite( buffer.getData(), buffer.getDataSize() );
+	IOWrite( buffer.getData(), buffer.getSize() );
 }
 
 void OStream::writeData( const void *src, size_t size )
@@ -668,7 +668,7 @@ IStreamFileRef loadFileStream( const fs::path &path )
 
 std::shared_ptr<OStreamFile> writeFileStream( const fs::path &path, bool createParents )
 {
-	if( createParents ) {
+	if( createParents && path.has_parent_path() ) {
 		fs::create_directories( path.parent_path() );
 	}
 #if defined( CINDER_MSW )
@@ -704,7 +704,8 @@ IoStreamFileRef readWriteFileStream( const fs::path &path )
 void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size_t *resultDataSize )
 {
 	// prevent crash if stream is not valid
-	if(!is) throw StreamExc();
+	if( ! is )
+		throw StreamExc();
 
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
@@ -718,31 +719,36 @@ void loadStreamMemory( IStreamRef is, std::shared_ptr<uint8_t> *resultData, size
 	is->readDataAvailable( resultData->get(), fileSize );
 }
 
-Buffer loadStreamBuffer( IStreamRef is )
+BufferRef loadStreamBuffer( IStreamRef is )
 {
 	// prevent crash if stream is not valid
-	if(!is) throw StreamExc();
+	if( ! is )
+		throw StreamExc();
 
 	off_t fileSize = is->size();
 	if( fileSize > std::numeric_limits<off_t>::max() )
 		throw StreamExcOutOfMemory();
 	
 	if( fileSize ) { // sometimes fileSize will be zero for a stream that doesn't know how big it is
-		Buffer result( fileSize );
-		is->readDataAvailable( result.getData(), fileSize );
+		auto result = std::make_shared<Buffer>( fileSize );
+		is->readDataAvailable( result->getData(), fileSize );
+
 		return result;
 	}
 	else {
 		const size_t bufferSize = 4096;
 		size_t offset = 0;
-		Buffer result( bufferSize );
+		auto result = std::make_shared<Buffer>( bufferSize );
+
 		while( ! is->isEof() ) {
-			if( offset + bufferSize > result.getAllocatedSize() )
-				result.resize( std::max( (size_t)(result.getAllocatedSize() * 1.5f), offset + bufferSize ) );
-			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result.getData() ) + offset, bufferSize );
+			if( offset + bufferSize > result->getAllocatedSize() )
+				result->resize( std::max( (size_t)( result->getAllocatedSize() * 1.5f ), offset + bufferSize ) );
+
+			size_t bytesRead = is->readDataAvailable( reinterpret_cast<uint8_t*>( result->getData() ) + offset, bufferSize );
 			offset += bytesRead;
-			result.setDataSize( offset );
+			result->setSize( offset );
 		}
+
 		return result;
 	}
 }

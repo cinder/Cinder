@@ -141,7 +141,7 @@ class AppBase {
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
 		const	std::string&	getTitle() const { return mTitle; }
 		//! the title of the app reflected in ways particular to the app type and platform (such as its Window or menu)
-		void					setTitle( const std::string &title ) { mTitle = title; }
+		void					setTitle( const std::string &title ) { mTitle = title; mDefaultWindowFormat.setTitle( title ); }
 
 		//! Sets whether Windows created on a high-density (Retina) display will have their resolution doubled. Default is \c true on iOS and \c false on other platforms
 		void	setHighDensityDisplayEnabled( bool enable = true )	{ mHighDensityDisplayEnabled = enable; }
@@ -233,7 +233,9 @@ class AppBase {
 	//! Override to receive file-drop events.	
 	virtual void	fileDrop( FileDropEvent event ) {}
 	
-	//! Quits the application gracefully
+	//! Override to cleanup any resources before app destruction
+	virtual void	cleanup() {}
+	//! Requests that the application exit gracefully. Use std::terminate() instead to end application immediately.
 	virtual void	quit() = 0;
 
 	//! Emitted at the start of each application update cycle
@@ -242,8 +244,8 @@ class AppBase {
 	//! Signal that emits before the app quit process begins. If any slots return false then the app quitting is canceled.
 	EventSignalShouldQuit&		getSignalShouldQuit() { return mSignalShouldQuit; }
 	//! Emitted prior to the application shutting down
-	signals::Signal<void()>&	getSignalShutdown() { return mSignalShutdown; }
-	void 						emitShutdown();
+	signals::Signal<void()>&	getSignalCleanup() { return mSignalCleanup; }
+	void 						emitCleanup();
 
 	signals::Signal<void()>&	getSignalWillResignActive() { return mSignalWillResignActive; }
     void 						emitWillResignActive();
@@ -363,14 +365,14 @@ class AppBase {
 #endif
 
 	//! Returns a DataSourceRef to an application asset. Throws a AssetLoadExc on failure.
-	DataSourceRef			loadAsset( const fs::path &relativePath )					{ return Platform::get()->loadAsset( relativePath ); }
+	DataSourceRef		loadAsset( const fs::path &relativePath )					{ return Platform::get()->loadAsset( relativePath ); }
 	//! Returns a fs::path to an application asset. Returns an empty path on failure.
-	fs::path				getAssetPath( const fs::path &relativePath ) const			{ return Platform::get()->getAssetPath( relativePath ); }
+	fs::path			getAssetPath( const fs::path &relativePath ) const			{ return Platform::get()->getAssetPath( relativePath ); }
 	//! Adds an absolute path 'dirPath' to the list of directories which are searched for assets.
-	void					addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
-	
+	void				addAssetDirectory( const fs::path &dirPath )				{ return Platform::get()->addAssetDirectory( dirPath ); }
+
 	//! Returns the path to the application on disk
-	virtual fs::path		getAppPath() const = 0;
+	fs::path			getAppPath() const											{ return Platform::get()->getExecutablePath(); }
 
 	//! \brief Presents the user with an open-file dialog and returns the selected file path.
 	//!
@@ -435,10 +437,11 @@ class AppBase {
 	// These are called by the main application instantation functions and are only used in the launch process
 	static void		prepareLaunch();
 	static void		initialize( Settings *settings, const RendererRef &defaultRenderer, const char *title, int argc, char * const argv[] );
-	static void		executeLaunch( const char *title, int argc, char * const argv[] );
+	void			executeLaunch();
 	static void		cleanupLaunch();
-	
-	virtual void	launch( const char *title, int argc, char * const argv[] ) = 0;
+
+	//! This is called from executeLaunch(), subclasses implement to launch the application in a platform-specific manner
+	virtual void	launch() = 0;
 	//! \endcond
 
   private:
@@ -455,7 +458,7 @@ class AppBase {
 	std::vector<std::string>	mCommandLineArgs;
 	std::shared_ptr<Timeline>	mTimeline;
 
-	signals::Signal<void()>		mSignalUpdate, mSignalShutdown, mSignalWillResignActive, mSignalDidBecomeActive;
+	signals::Signal<void()>		mSignalUpdate, mSignalCleanup, mSignalWillResignActive, mSignalDidBecomeActive;
 	EventSignalShouldQuit		mSignalShouldQuit;
 	
 	signals::Signal<void(const DisplayRef &display)>	mSignalDisplayConnected, mSignalDisplayDisconnected, mSignalDisplayChanged;
@@ -555,6 +558,8 @@ inline DataSourceRef		loadAsset( const fs::path &relativePath )		{ return Platfo
 inline fs::path				getAssetPath( const fs::path &relativePath )	{ return Platform::get()->getAssetPath( relativePath ); }
 //! Adds an absolute path \a dirPath to the active App's list of directories which are searched for assets.
 inline void					addAssetDirectory( const fs::path &dirPath )	{ return Platform::get()->addAssetDirectory( dirPath ); }
+//! Returns a vector of directories that are searched when looking up an asset path.
+inline const std::vector<fs::path>&	getAssetDirectories()					{ return Platform::get()->getAssetDirectories(); }
 
 //! Returns the path to the active App on disk
 inline fs::path		getAppPath() { return AppBase::get()->getAppPath(); }

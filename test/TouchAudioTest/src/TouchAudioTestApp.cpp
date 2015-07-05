@@ -1,4 +1,4 @@
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/App.h"
 #include "cinder/audio/Input.h"
 
 #include "Resources.h"

@@ -198,9 +198,9 @@ void RendererGlAndroid::swapBuffers() const
 	//assert( result );
 }
 
-void RendererGlAndroid::makeCurrentContext()
+void RendererGlAndroid::makeCurrentContext( bool force )
 {
-	mCinderContext->makeCurrent();
+	mCinderContext->makeCurrent( force );
 }
 
 void RendererGlAndroid::reinitializeWindowSurface( ANativeWindow *nativeWindow )

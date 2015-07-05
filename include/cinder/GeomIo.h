@@ -25,6 +25,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
+#include "cinder/Frustum.h"
 #include "cinder/Vector.h"
 #include "cinder/Matrix.h"
 #include "cinder/Shape2d.h"
@@ -42,6 +43,7 @@ namespace cinder {
 	class TriMesh;
 	template<int D, typename T>
 	class BSpline;
+	class Sphere;
 }
 
 namespace cinder { namespace geom {
@@ -55,7 +57,7 @@ typedef std::shared_ptr<class Source>	SourceRef;
 enum Attrib { POSITION, COLOR, TEX_COORD_0, TEX_COORD_1, TEX_COORD_2, TEX_COORD_3,
 	NORMAL, TANGENT, BITANGENT, BONE_INDEX, BONE_WEIGHT, 
 	CUSTOM_0, CUSTOM_1, CUSTOM_2, CUSTOM_3, CUSTOM_4, CUSTOM_5, CUSTOM_6, CUSTOM_7, CUSTOM_8, CUSTOM_9,
-	NUM_ATTRIBS };
+	NUM_ATTRIBS, USER_DEFINED = NUM_ATTRIBS };
 typedef	std::set<Attrib>	AttribSet;
 extern std::string			sAttribNames[(int)Attrib::NUM_ATTRIBS];
 
@@ -69,6 +71,8 @@ std::string attribToString( Attrib attrib );
 std::string primitiveToString( Primitive primitive );
 //! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. \a dstStrideBytes of \c 0 implies tightly packed data.
 void copyData( uint8_t srcDimensions, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
+//! Utility function for copying attribute data. Does the right thing to convert \a srcDimensions to \a dstDimensions. Stride of \c 0 implies tightly packed data.
+void copyData( uint8_t srcDimensions, size_t srcStrideBytes, const float *srcData, size_t numElements, uint8_t dstDimensions, size_t dstStrideBytes, float *dstData );
 //! Utility function for calculating tangents and bitangents from indexed geometry. \a resultBitangents may be NULL if not needed.
 void calculateTangents( size_t numIndices, const uint32_t *indices, size_t numVertices, const vec3 *positions, const vec3 *normals, const vec2 *texCoords, std::vector<vec3> *resultTangents, std::vector<vec3> *resultBitangents );
 //! Utility function for calculating tangents and bitangents from indexed geometry and 3D texture coordinates. \a resultBitangents may be NULL if not needed.
@@ -208,6 +212,8 @@ class Rect : public Source {
 	Rect( const Rectf &r );
 
 	Rect&		rect( const Rectf &r );
+	//! Enables default colors. Disabled by default.
+	Rect&		colors( bool enable = true ) { mHasColors = enable; return *this; }
 	//! Enables COLOR attrib and specifies corner values in clockwise order starting with the upper-left
 	Rect&		colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
 	//! Enables TEX_COORD_0 attrib and specifies corner values in clockwise order starting with the upper-left
@@ -221,10 +227,43 @@ class Rect : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
+	void					setDefaultColors();
+	void					setDefaultTexCoords();
 	std::array<vec2,4>		mPositions, mTexCoords;
 	std::array<ColorAf,4>	mColors;
-
-	static const float	sNormals[4*3], sTangents[4*3];
+	bool					mHasColors;
+	static const float		sNormals[4*3], sTangents[4*3];
+};
+	
+class RoundedRect : public Source {
+  public:
+	RoundedRect();
+	RoundedRect( const Rectf &r, float cornerRadius = 1.0f );
+	
+	RoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
+	RoundedRect&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+	RoundedRect&	cornerSubdivisions( int cornerSubdivisions );
+	RoundedRect&	cornerRadius( float cornerRadius );
+	RoundedRect&	texCoords( const vec2 &upperLeft, const vec2 &lowerRight );
+	RoundedRect&	colors( const ColorAf &upperLeft, const ColorAf &upperRight, const ColorAf &lowerRight, const ColorAf &lowerLeft );
+	
+	size_t		getNumVertices() const override { return mNumVertices; }
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_FAN; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updateVertexCount();
+	void setDefaultColors();
+	void setDefaultTexCoords();
+	
+	Rectf						mRectPositions, mRectTexCoords;
+	std::array<vec4, 4>			mColors;
+	bool						mHasColors;
+	int							mSubdivisions, mNumVertices;
+	float						mCornerRadius;
 };
 
 class Cube : public Source {
@@ -232,11 +271,9 @@ class Cube : public Source {
 	Cube();
 
 	//! Enables default colors. Disabled by default.
-	Cube&			colors();
+	Cube&			colors( bool enable = true ) { mHasColors = enable; return *this; }
 	//! Enables per-face colors ordered { +X, -X, +Y, -Y, +Z, -Z }. Colors are disabled by default.
 	Cube&			colors( const ColorAf &posX, const ColorAf &negX, const ColorAf &posY, const ColorAf &negY, const ColorAf &posZ, const ColorAf &negZ );
-	//! Disables colors. Disabled by default.
-	Cube&			disableColors();
 
 	Cube&			subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
 	Cube&			subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
@@ -253,10 +290,10 @@ class Cube : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	ivec3		mSubdivisions;
-	vec3		mSize;
-	bool		mHasColors;
-	ColorAf		mColors[6];
+	ivec3					mSubdivisions;
+	vec3					mSize;
+	bool					mHasColors;
+	std::array<ColorAf, 6>	mColors;
 };
 
 class Icosahedron : public Source {
@@ -274,18 +311,23 @@ class Icosahedron : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<uint32_t> *indices ) const;
+	void		calculate( std::vector<vec3> *positions, std::vector<vec3> *normals, std::vector<vec3> *colors, std::vector<vec2> *texcoords, std::vector<uint32_t> *indices ) const;
 
 	bool			mHasColors;
 	static float	sPositions[12*3];
+	static float	sTexCoords[60*2];
 	static uint32_t	sIndices[60];
 	
 	friend class Icosphere;
+	friend class WireIcosahedron;
 };
 
 class Icosphere : public Source {
   public:
 	Icosphere();
+
+	// Enables colors. Disabled by default.
+	Icosphere&	colors( bool enable = true ) { mHasColors = enable; return *this; }
 
 	Icosphere&	subdivisions( int sub ) { mSubdivision = (sub > 0) ? (sub + 1) : 1; mCalculationsCached = false; return *this; }
 
@@ -367,11 +409,38 @@ class Circle : public Source {
 	size_t		mNumVertices;
 };
 
+class Ring : public Source {
+public:
+	Ring();
+
+	Ring&		center( const vec2 &center ) { mCenter = center; return *this; }
+	Ring&		radius( float radius );
+	Ring&		width( float width );
+	Ring&		subdivisions( int subdivs );
+
+	size_t		getNumVertices() const override;
+	size_t		getNumIndices() const override { return 0; }
+	Primitive	getPrimitive() const override { return Primitive::TRIANGLE_STRIP; }
+	uint8_t		getAttribDims( Attrib attr ) const override;
+	AttribSet	getAvailableAttribs() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	void	updateVertexCounts();
+
+	vec2		mCenter;
+	float		mRadius;
+	float		mWidth;
+	int			mRequestedSubdivisions, mNumSubdivisions;
+	size_t		mNumVertices;
+};
+
 class Sphere : public Source {
   public:
 	Sphere();
+	Sphere( const ci::Sphere &sphere );
 
-	Sphere&		colors() { mHasColors = true; return *this; }
+	Sphere&		colors( bool enable = true ) { mHasColors = enable; return *this; }
 	Sphere&		center( const vec3 &center ) { mCenter = center; return *this; }
 	Sphere&		radius( float radius ) { mRadius = radius; return *this; }
 	//! Specifies the number of segments, which determines the roundness of the sphere.
@@ -385,7 +454,7 @@ class Sphere : public Source {
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 
   protected:
-	void			numRingsAndSegments( int *numRings, int *numSegments ) const;
+	void		numRingsAndSegments( int *numRings, int *numSegments ) const;
 
 	vec3		mCenter;
 	float		mRadius;
@@ -398,7 +467,7 @@ class Capsule : public Source {
 	Capsule();
 
 	//! Enables colors. Disabled by default.
-	Capsule&		colors() { mHasColors = true; return *this; }
+	Capsule&		colors( bool enable = true ) { mHasColors = enable; return *this; }
 	Capsule&		center( const vec3 &center ) { mCenter = center; return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
 	Capsule&		subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; updateCounts(); return *this; }
@@ -496,6 +565,9 @@ class Cylinder : public Source {
   public:
 	Cylinder();
 
+	//! Enables colors. Disabled by default.
+	Cylinder&	colors( bool enable = true ) { mHasColors = enable; return *this; }
+
 	//! Specifices the base of the Cylinder.
 	Cylinder&	origin( const vec3 &origin ) { mOrigin = origin; updateCounts(); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
@@ -510,8 +582,6 @@ class Cylinder : public Source {
 	Cylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
 	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
 	Cylinder&	set( const vec3 &from, const vec3 &to );
-	//! Enables colors. Disabled by default.
-	Cylinder&	colors() { mHasColors = true; return *this; }
 
 	size_t		getNumVertices() const override;
 	size_t		getNumIndices() const override;
@@ -539,7 +609,11 @@ class Cylinder : public Source {
 
 class Cone : public Cylinder {
   public:
-	Cone() { radius( 1.0f, 0.0f ); }
+	Cone()
+	{ radius( 1.0f, 0.0f ); }
+
+	//! Enables colors. Disabled by default.
+	Cone&	colors( bool enable = true ) { mHasColors = enable; return *this; }
 
 	Cone&	origin( const vec3 &origin ) { Cylinder::origin( origin ); return *this; }
 	//! Specifies the number of radial subdivisions, which determines the roundness of the Cone. Defaults to \c 18.
@@ -553,15 +627,13 @@ class Cone : public Cylinder {
 	Cone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
 	//! Specifies the apex radius.
 	Cone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
-	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
-	Cone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
+	//! Specifies the base radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
+	Cone&	ratio( float ratio ) { mRadiusBase = math<float>::max( mRadiusApex + ratio * mHeight, 0.f ); return *this; }
 	//! Specifies the base and apex radius separately.
 	Cone&	radius( float base, float apex ) { mRadiusBase = math<float>::max(0.f, base); mRadiusApex = math<float>::max(0.f, apex); return *this; }
 	Cone&	direction( const vec3 &direction ) { Cylinder::direction( direction ); return *this; }
 	//! Conveniently sets origin, height and direction.
 	Cone&	set( const vec3 &from, const vec3 &to ) { Cylinder::set( from, to ); return *this; }
-	//! Enables colors. Disabled by default.
-	Cone&	colors() { mHasColors = true; return *this; }
 };
 
 //! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
@@ -692,8 +764,298 @@ class BSpline : public Source {
 };
 
 //////////////////////////////////////////////////////////////////////////////////////
+// Wireframe primitives
+class WireSource : public Source {
+  public:
+	size_t			getNumIndices() const override { return 0; }
+	Primitive		getPrimitive() const override { return geom::LINES; }
+	uint8_t			getAttribDims( Attrib attr ) const override	{ return ( attr == Attrib::POSITION ) ? 3 : 0; }
+	AttribSet		getAvailableAttribs() const override { return{ Attrib::POSITION }; }
+
+  protected:
+	WireSource() {}
+	virtual ~WireSource() {}  
+};
+
+
+
+class WireCapsule : public WireSource {
+public:
+	WireCapsule();
+
+	WireCapsule&		center( const vec3 &center ) { mCenter = center; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the capsule. Defaults to \c 6.
+	WireCapsule&		subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of slices along the capsule's length. Defaults to \c 6. Add more subdivisions to improve texture mapping and lighting, or if you intend to bend the capsule.
+	WireCapsule&		subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv > 1 ? subdiv : 1; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCapsule&		subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	WireCapsule&		radius( float radius ) { mRadius = math<float>::max( 0.f, radius ); return *this; }
+	WireCapsule&		length( float length ) { mLength = math<float>::max( 0.f, length ); return *this; }
+	WireCapsule&		direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
+	//! Conveniently sets center, length and direction
+	WireCapsule&		set( const vec3 &from, const vec3 &to );
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+private:
+	void	calculate( std::vector<vec3> *positions ) const;
+	void	calculateRing( float radius, float d, std::vector<vec3> *positions ) const;
+
+	vec3		mDirection, mCenter;
+	float		mLength, mRadius;
+	int			mSubdivisionsHeight, mSubdivisionsAxis, mNumSegments;
+};
+
+class WireCircle : public WireSource {
+  public:
+	WireCircle();
+
+	//!
+	WireCircle&	center( const vec2 &center ) { mCenter = vec3( center, 0 ); return *this; }
+	//!
+	WireCircle&	center( const vec3 &center ) { mCenter = center; return *this; }
+	//!
+	WireCircle&	radius( float radius ) { mRadius = radius; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCircle&	subdivisions( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  private:
+	vec3		mCenter;
+	float		mRadius;
+	int			mNumSegments;
+	size_t		mNumVertices;
+};
+	
+class WireRoundedRect : public WireSource {
+  public:
+	WireRoundedRect();
+	WireRoundedRect( const Rectf &r, float cornerRadius = 1.0f );
+	
+	WireRoundedRect&	rect( const Rectf &r ) { mRectPositions = r; return *this; }
+	WireRoundedRect&	cornerSubdivisions( int cornerSubdivisions );
+	WireRoundedRect&	cornerRadius( float cornerRadius );
+	
+	size_t		getNumVertices() const override { return mNumVertices; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+	
+  protected:
+	void updateVertexCount();
+	
+	Rectf						mRectPositions;
+	int							mCornerSubdivisions, mNumVertices;
+	float						mCornerRadius;
+};
+
+class WireCube : public WireSource {
+  public:
+	WireCube() : WireCube( vec3( 1 ) ) {}
+	WireCube( const vec3 &size, const ivec3 &subdivisions = ivec3( 1 ) )
+		: mSize( size )
+	{
+		mSubdivisions = glm::max( ivec3( 1 ), subdivisions );
+	}
+	
+	WireCube&	subdivisions( int sub ) { mSubdivisions = ivec3( std::max<int>( 1, sub ) ); return *this; }
+	WireCube&	subdivisionsX( int sub ) { mSubdivisions.x = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsY( int sub ) { mSubdivisions.y = std::max<int>( 1, sub ); return *this; }
+	WireCube&	subdivisionsZ( int sub ) { mSubdivisions.z = std::max<int>( 1, sub ); return *this; }
+	WireCube&	size( const vec3 &sz ) { mSize = sz; return *this; }
+	WireCube&	size( float x, float y, float z ) { mSize = vec3( x, y, z ); return *this; }
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x - 1 ) * 8 + ( mSubdivisions.y - 1 ) * 8 + ( mSubdivisions.z - 1 ) * 8 + 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	ivec3					mSubdivisions;
+	vec3					mSize;
+};
+
+
+class WireCylinder : public WireSource {
+  public:
+	WireCylinder()
+		: mOrigin( 0, 0, 0 ), mHeight( 2.0f ), mDirection( 0, 1, 0 ), mRadiusBase( 1.0f ), mRadiusApex( 1.0f ),
+		mSubdivisionsAxis( 6 ), mSubdivisionsHeight( 1 ), mNumSegments( 72 )
+	{
+	}
+
+	//! Specifices the base of the Cylinder.
+	WireCylinder&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the Cylinder. Defaults to \c 18.
+	WireCylinder&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of slices along the Cylinder's height. Defaults to \c 1.
+	WireCylinder&	subdivisionsHeight( int slices ) { mSubdivisionsHeight = slices; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCylinder&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//! Specifies the height of the cylinder.
+	WireCylinder&	height( float height ) { mHeight = height; return *this; }
+	//! Specifies the base and apex radius.
+	WireCylinder&	radius( float radius ) { mRadiusBase = mRadiusApex = math<float>::max( 0.f, radius ); return *this; }
+	//! Specifies the axis of the cylinder.
+	WireCylinder&	direction( const vec3 &direction ) { mDirection = normalize( direction ); return *this; }
+	//! Conveniently sets origin, height and direction so that the center of the base is \a from and the center of the apex is \a to.
+	WireCylinder&	set( const vec3 &from, const vec3 &to );
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	vec3		mOrigin;
+	float		mHeight;
+	vec3		mDirection;
+	float		mRadiusBase;
+	float		mRadiusApex;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	int			mNumSegments, mNumSlices;
+};
+
+
+class WireCone : public WireCylinder {
+  public:
+	WireCone()
+	{ radius( 1.0f, 0.0f ); }
+
+	WireCone&	origin( const vec3 &origin ) { WireCylinder::origin( origin ); return *this; }
+	//! Specifies the number of radial subdivisions, which determines the roundness of the WireCone. Defaults to \c 18.
+	WireCone&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	//! Specifies the number of subdivisions along the WireCone's height. Defaults to \c 1.
+	WireCone&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireCone&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//!
+	WireCone&	height( float height ) { WireCylinder::height( height ); return *this; }
+	//! Specifies the base and apex radius.
+	WireCone&	radius( float radius ) { WireCylinder::radius( radius ); return *this; }
+	//! Specifies the base radius.
+	WireCone&	base( float base ) { mRadiusBase = math<float>::max( base, 0.f ); return *this; }
+	//! Specifies the apex radius.
+	WireCone&	apex( float apex ) { mRadiusApex = math<float>::max( apex, 0.f ); return *this; }
+	//! Specifies the apex radius as a \a ratio of the height. A value of 1.0f yields a cone angle of 45 degrees.
+	WireCone&	ratio( float ratio ) { mRadiusApex = math<float>::max( mRadiusBase + ratio * mHeight, 0.f ); return *this; }
+	//! Specifies the base and apex radius separately.
+	WireCone&	radius( float base, float apex ) { mRadiusBase = math<float>::max( 0.f, base ); mRadiusApex = math<float>::max( 0.f, apex ); return *this; }
+	WireCone&	direction( const vec3 &direction ) { WireCylinder::direction( direction ); return *this; }
+	//! Conveniently sets origin, height and direction.
+	WireCone&	set( const vec3 &from, const vec3 &to ) { WireCylinder::set( from, to ); return *this; }
+};
+
+class WireIcosahedron : public WireSource {
+public:
+	WireIcosahedron() {}
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+protected:
+	void		calculate() const;
+
+	static std::vector<vec3>	sPositions;
+};
+
+class WireFrustum : public WireSource {
+  public:
+	WireFrustum( const CameraPersp &cam );
+
+	//template<typename T>
+	//WireFrustum( const Frustum<T> &frustum );
+
+	size_t		getNumVertices() const override { return 24; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  private:
+	vec3 ntl, ntr, nbl, nbr, ftl, ftr, fbl, fbr;
+};
+
+//! Defaults to a plane on the z axis, origin = [0, 0, 0], normal = [0, 1, 0]
+class WirePlane : public WireSource {
+  public:
+	WirePlane()
+		: mSubdivisions( 1, 1 ), mSize( 2, 2 ), mOrigin( 0 ), mAxisU( 1, 0, 0 ), mAxisV( 0, 0, 1 ) {}
+
+	// Specifies the number of times each side is subdivided, ex [2,2] means 4 quads in total. Defaults to [1, 1].
+	WirePlane&	subdivisions( const ivec2 &subdivisions );
+	//! Specifies the size in each axis. Defaults to [2, 2], or 1 in each direction
+	WirePlane&	size( const vec2 &size ) { mSize = size; return *this; }
+	//!
+	WirePlane&	axes( const vec3 &uAxis, const vec3 &vAxis );
+	//!
+	WirePlane&	origin( const vec3 &origin ) { mOrigin = origin; return *this; }
+	//!
+	WirePlane&	normal( const vec3 &normal );
+
+	size_t		getNumVertices() const override { return ( mSubdivisions.x + 1 ) * 2 + ( mSubdivisions.y + 1 ) * 2; }
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	ivec2		mSubdivisions;
+	vec2		mSize;
+	vec3		mOrigin, mAxisU, mAxisV;
+};
+
+
+class WireSphere : public WireSource {
+  public:
+	WireSphere()
+		: mCenter(0), mRadius(1.0f), mSubdivisionsAxis(6), mSubdivisionsHeight(4), mNumSegments(72) {}
+
+	WireSphere&	center( const vec3 &center ) { mCenter = center; return *this; }
+	WireSphere&	radius( float radius ) { mRadius = radius; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireSphere&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	WireSphere&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = glm::max( 1, subdiv ); return *this; }
+	WireSphere&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = glm::max( 1, subdiv ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	vec3		mCenter;
+	float		mRadius;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	int			mNumSegments;
+};
+
+
+class WireTorus : public WireSource {
+  public:
+	WireTorus()
+		: mCenter( 0 ), mRadiusMajor( 1.0f ), mRadiusMinor( 0.75f ), mSubdivisionsAxis( 18 ), mSubdivisionsHeight( 18 ), mNumSegments( 72 ) {}
+
+	WireTorus&	center( const vec3 &center ) { mCenter = center; return *this; }
+	WireTorus&	subdivisionsAxis( int subdiv ) { mSubdivisionsAxis = subdiv; return *this; }
+	WireTorus&	subdivisionsHeight( int subdiv ) { mSubdivisionsHeight = subdiv; return *this; }
+	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	WireTorus&	subdivisionsCircle( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
+	//! Specifies the major and minor radius as a ratio (minor : major). Resulting torus will fit unit cube.
+	WireTorus&	ratio( float ratio ) { ratio = math<float>::clamp( ratio ); mRadiusMajor = 1; mRadiusMinor = 1 - ratio; return *this; }
+	//! Specifies the major and minor radius separately.
+	WireTorus&	radius( float major, float minor ) { mRadiusMajor = math<float>::max( 0, major ); mRadiusMinor = math<float>::max( 0, minor ); return *this; }
+
+	size_t		getNumVertices() const override;
+	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
+
+  protected:
+	vec3		mCenter;
+	float		mRadiusMajor;
+	float		mRadiusMinor;
+	int			mSubdivisionsAxis;
+	int			mSubdivisionsHeight;
+	float		mHeight;
+	float		mCoils;
+	int			mNumRings, mNumAxis, mNumSegments;
+};
+
+
+//////////////////////////////////////////////////////////////////////////////////////
 // Modifiers
-//! "Bakes" a mat4 transformation into the positions and normals of a geom::Source
+//! "Bakes" a mat4 transformation into the positions, normals and tangents of a geom::Source
 class Transform : public Modifier {
   public:
 	//! Does not currently support a projection matrix (i.e. doesn't divide by 'w' )
@@ -710,6 +1072,29 @@ class Transform : public Modifier {
 	void				process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
 	mat4		mTransform;
+};
+
+//! "Bakes" a translation into the positions, normals and tangents of a geom::Source
+class Translate : public Transform {
+  public:
+	Translate( const vec3 &v ) : Transform( glm::translate( v ) ) {}
+	Translate( float x, float y, float z ) : Transform( glm::translate( vec3( x, y, z ) ) ) {}
+	Translate( const vec2 &v ) : Transform( glm::translate( vec3( v, 0 ) ) ) {}
+	Translate( float x, float y ) : Transform( glm::translate( vec3( x, y, 0 ) ) ) {}
+};
+
+//! "Bakes" a scale into the positions, normals and tangents of a geom::Source
+class Scale : public Transform {
+  public:
+	Scale( const vec3 &v ) : Transform( glm::scale( v ) ) {}
+	Scale( float x, float y, float z ) : Transform( glm::scale( vec3( x, y, z ) ) ) {}
+	Scale( float s ) : Transform( glm::scale( vec3( s ) ) ) {}
+};
+
+//! "Bakes" a rotation into the positions, normals and tangents of a geom::Source
+class Rotate : public Transform {
+  public:
+	Rotate( const glm::quat &q ) : Transform( glm::toMat4( q ) ) {}
 };
 
 //! Twists a geom::Source around a given axis
@@ -887,7 +1272,7 @@ class Combine : public Modifier {
 //! Calculates the 3D bounding box of the geometry.
 class Bounds : public Modifier {
   public:
-	Bounds( AxisAlignedBox3f *result, Attrib attrib = POSITION )
+	Bounds( AxisAlignedBox *result, Attrib attrib = POSITION )
 		: mResult( result ), mAttrib( attrib )
 	{}
 	
@@ -896,7 +1281,7 @@ class Bounds : public Modifier {
 	void		process( SourceModsContext *ctx, const AttribSet &requestedAttribs ) const override;
 	
   protected:
-	AxisAlignedBox3f	*mResult;
+	AxisAlignedBox	*mResult;
 	Attrib				mAttrib;
 };
 
@@ -936,7 +1321,7 @@ class SourceModsContext : public Target {
 	void			appendAttrib( Attrib attr, uint8_t dims, const float *srcData, size_t count );
 	void			clearAttrib( Attrib attr );
 	//! Appends index data to existing index data. \a primitive must match existing data.
-	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices );
+	void			appendIndices( Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytes );
 	void			clearIndices();
 
 	size_t			getNumVertices() const;
@@ -953,6 +1338,8 @@ class SourceModsContext : public Target {
 	const Source					*mSource;
 	std::vector<Modifier*>			mModiferStack;
 	
+	const AttribSet					*mAttribMask;
+	
 	size_t										mNumVertices;
 	std::map<Attrib,AttribInfo>					mAttribInfo;
 	std::map<Attrib,std::unique_ptr<float[]>>	mAttribData;
@@ -960,13 +1347,14 @@ class SourceModsContext : public Target {
 	
 	std::unique_ptr<uint32_t[]>				mIndices;
 	size_t									mNumIndices;
+	uint8_t									mIndicesRequiredBytes;
 	geom::Primitive							mPrimitive;
 };
 
 class SourceModsBase : public Source {
   public:
-	SourceModsBase( const Source *sourceBase )
-		: mSourceBase( sourceBase ), mVariablesCached( false )
+	SourceModsBase()
+		: mVariablesCached( false )
 	{}
 
 	// geom::Source methods
@@ -977,9 +1365,10 @@ class SourceModsBase : public Source {
 	AttribSet	getAvailableAttribs() const override;
 	void		loadInto( Target *target, const AttribSet &requestedAttribs ) const override;
 	
-	void	addModifier( const Modifier &modifier );
+	void											addModifier( const Modifier &modifier );
+	const std::vector<std::unique_ptr<Modifier>>&	getModifiers() const { return mModifiers; }
 	
-	const Source*		getSource() const { return mSourceBase; }
+	virtual const Source*		getSource() const = 0;
 
   protected:
 	void		cacheVariables() const;
@@ -987,11 +1376,14 @@ class SourceModsBase : public Source {
 	const Source* 							mSourceBase;
 	std::vector<std::unique_ptr<Modifier>>	mModifiers;
 	
-	mutable bool				mVariablesCached;
+	mutable bool							mVariablesCached;
 	mutable std::vector<Modifier::Params>	mParamsStack;
 	
 	friend class SourceModsContext;
 };
+
+template<typename T>
+class SourceMods;
 
 //! In general you should not return this as the result of a function or even instantiate it directly
 //! Similar to SourceMods<> but stores a pointer to the SOURCE rather than a copy of it
@@ -999,18 +1391,25 @@ template<typename SOURCE>
 class SourceModsPtr : public SourceModsBase {
   public:
 	SourceModsPtr( const SOURCE *srcPtr )
-		: SourceModsBase( srcPtr ), mSrcPtr( srcPtr )
+		: SourceModsBase(), mSrcPtr( srcPtr )
 	{}
 
 	SourceModsPtr( const SourceModsPtr<SOURCE> &rhs )
-		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
+		: SourceModsBase(), mSrcPtr( rhs.mSrcPtr )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
 	}
 
+	SourceModsPtr( const SOURCE* srcPtr, const std::vector<std::unique_ptr<Modifier>>& srcModifiers )
+		: SourceModsBase(), mSrcPtr( srcPtr )
+	{
+		for( const auto &rhsMod : srcModifiers )
+			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
+	}
+	
 	SourceModsPtr( SourceModsPtr<SOURCE> &&rhs )
-		: SourceModsBase( rhs.mSrcPtr ), mSrcPtr( rhs.mSrcPtr )
+		: SourceModsBase(), mSrcPtr( rhs.mSrcPtr )
 	{
 		for( auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::move( rhsMod ) );
@@ -1038,6 +1437,8 @@ class SourceModsPtr : public SourceModsBase {
 		return *this;
 	}
 	
+	const Source*		getSource() const override { return mSrcPtr; }
+	
 	const SOURCE		*mSrcPtr;
 };
 
@@ -1045,29 +1446,29 @@ template<typename SOURCE>
 class SourceMods : public SourceModsBase {
   public:
 	SourceMods( const SOURCE &src )
-		: SourceModsBase( &mSrc ), mSrc( src )
+		: SourceModsBase(), mSrc( src )
 	{}
 	
 	SourceMods( SOURCE &&src )
-		: SourceModsBase( &mSrc ), mSrc( std::move( src ) )
+		: SourceModsBase(), mSrc( std::move( src ) )
 	{}
 
 	SourceMods( const SourceMods<SOURCE> &rhs )
-		: SourceModsBase( &mSrc ), mSrc( rhs.mSrc )
+		: SourceModsBase(), mSrc( rhs.mSrc )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
 	}
 
 	SourceMods( SourceMods<SOURCE> &&rhs )
-		: SourceModsBase( &mSrc ), mSrc( std::move( rhs.mSrc ) )
+		: SourceModsBase(), mSrc( std::move( rhs.mSrc ) )
 	{
 		for( auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::move( rhsMod ) );
 	}
 
 	SourceMods( const SourceModsPtr<SOURCE> &rhs )
-		: SourceModsBase( &mSrc ), mSrc( *rhs.mSrcPtr )
+		: SourceModsBase(), mSrc( *rhs.mSrcPtr )
 	{
 		for( const auto &rhsMod : rhs.mModifiers )
 			mModifiers.push_back( std::unique_ptr<Modifier>( rhsMod->clone() ) );
@@ -1095,6 +1496,8 @@ class SourceMods : public SourceModsBase {
 		return *this;
 	}
 	
+	const Source*		getSource() const override { return &mSrc; }
+	
 	SOURCE		mSrc;
 };
 
@@ -1103,7 +1506,7 @@ class SourceMods : public SourceModsBase {
 template<typename SOURCE>
 SourceModsPtr<SOURCE> operator>>( SourceMods<SOURCE> &sourceMod, const Modifier &modifier )
 {
-	SourceModsPtr<SOURCE> result( &sourceMod.mSrc );
+	SourceModsPtr<SOURCE> result( &sourceMod.mSrc, sourceMod.getModifiers() );
 	result.addModifier( modifier );
 	return result;
 }
@@ -1131,9 +1534,9 @@ SourceModsPtr<SOURCE>&& operator>>( SourceModsPtr<SOURCE> &&sourceMod, const Mod
 }
 
 template<typename SOURCE>
-SourceModsPtr<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
+SourceMods<SOURCE> operator>>( const SOURCE &source, const Modifier &modifier )
 {
-	SourceModsPtr<SOURCE> result( &source );
+	SourceMods<SOURCE> result( source );
 	result.addModifier( modifier );
 	return result;
 }

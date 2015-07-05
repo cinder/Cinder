@@ -41,7 +41,7 @@ public:
 	UrlLoader();
 	virtual ~UrlLoader();
 
-	ci::Buffer			loadUrl( const std::string& url );
+	ci::BufferRef		loadUrl( const std::string& url );
 
 	int 				getResponseCode() const;
 	std::string 		getResponseMsg() const;

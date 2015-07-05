@@ -26,7 +26,7 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/qtime/QuickTimeImplAvf.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 // Forward declarations of CoreVideo types
 typedef struct __CVBuffer *CVBufferRef;
@@ -54,29 +54,26 @@ class MovieGl : public MovieBase {
 	static MovieGlRef create( const fs::path& path ) { return MovieGlRef( new MovieGl( path ) ); }
 	static MovieGlRef create( const MovieLoaderRef &loader ) { return MovieGlRef( new MovieGl( *loader ) ); }
 	
-	//! \inherit
-	virtual bool hasAlpha() const;
-	
 	//! Returns the gl::Texture representing the Movie's current frame, bound to the \c GL_TEXTURE_RECTANGLE_ARB target
 	gl::TextureRef	getTexture();
 	
   protected:
-	MovieGl() : MovieBase(), mVideoTextureRef( nullptr ), mVideoTextureCacheRef( nullptr ) {}
 	MovieGl( const Url& url );
 	MovieGl( const fs::path& path );
 	MovieGl( const MovieLoader& loader );
 	
-	virtual void		allocateVisualContext() override;
-	virtual void		deallocateVisualContext() override;
-	virtual void		newFrame( CVImageBufferRef cvImage ) override;
-	virtual void		releaseFrame() override;
+	NSDictionary*	avPlayerItemOutputDictionary() const override;
+	void			allocateVisualContext() override;
+	void			deallocateVisualContext() override;
+	void			newFrame( CVImageBufferRef cvImage ) override;
+	void			releaseFrame() override;
 	
 #if defined( CINDER_COCOA_TOUCH )
-	CVOpenGLESTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLESTextureRef mVideoTextureRef;
+	CVOpenGLESTextureCacheRef	mVideoTextureCacheRef;
+	CVOpenGLESTextureRef		mVideoTextureRef;
 #else
-	CVOpenGLTextureCacheRef mVideoTextureCacheRef;
-	CVOpenGLTextureRef mVideoTextureRef;
+	class TextureCache;
+	std::shared_ptr<TextureCache>		mTextureCache;
 #endif
 	
 	gl::TextureRef		mTexture;

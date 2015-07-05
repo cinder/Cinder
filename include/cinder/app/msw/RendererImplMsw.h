@@ -23,9 +23,11 @@
 
 #pragma once
 
-#include <windows.h>
-#undef min
-#undef max
+#if defined( CINDER_MSW )
+	#include <windows.h>
+	#undef min
+	#undef max
+#endif
 
 #include "cinder/app/Renderer.h"
 
@@ -38,18 +40,22 @@ class RendererImplMsw {
  public:
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer ) = 0;
-#elif defined( CINDERT_WINRT)
-	virtual bool	initialize( DX_WINDOW_TYPE wnd ) = 0;
+#elif defined( CINDER_WINRT)
+	virtual bool	initialize( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #endif
 	virtual void	prepareToggleFullScreen() {}
 	virtual void	finishToggleFullScreen() {}
 	virtual void	kill() = 0;
 	virtual void	defaultResize() const = 0;
 	virtual void	swapBuffers() const = 0;
-	virtual void	makeCurrentContext() = 0;
+	virtual void	makeCurrentContext( bool force = false ) = 0;
 
  protected:
-	DX_WINDOW_TYPE		mWnd;
+  #if defined( CINDER_MSW )
+	HWND				mWnd;
+  #else
+	::Platform::Agile<Windows::UI::Core::CoreWindow>		mWnd;
+  #endif
 };
 
 } } // namespace cinder::app

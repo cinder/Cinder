@@ -50,7 +50,7 @@ void QueryTestApp::draw()
 
 	// Expensive CPU operation
 	for( size_t i = 0; i < 75000; ++i ) {
-		Rand::randVec3f();
+		Rand::randVec3();
 	}
 
 	// Expensive GPU pass

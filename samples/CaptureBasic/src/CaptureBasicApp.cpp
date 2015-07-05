@@ -3,8 +3,14 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/Texture.h"
 #include "cinder/Capture.h"
+<<<<<<< HEAD
+=======
+#include "cinder/Log.h"
+
+>>>>>>> upstream/master
 using namespace ci;
 using namespace ci::app;
+using namespace std;
 
 #include "cinder/android/app/CinderNativeActivity.h"
 
@@ -12,11 +18,12 @@ using namespace ci::app;
 
 class CaptureBasicApp : public App {
   public:
-	void setup();
-	void keyDown( KeyEvent event );
-	
-	void update();
-	void draw();
+	void setup() override;
+	void update() override;
+	void draw() override;
+
+  private:
+	void printDevices();
 
 	CaptureRef			mCapture;
 	gl::TextureRef		mTexture;
@@ -24,6 +31,7 @@ class CaptureBasicApp : public App {
 
 void CaptureBasicApp::setup()
 {
+<<<<<<< HEAD
 	// print the devices
 	for( auto device = Capture::getDevices().begin(); device != Capture::getDevices().end(); ++device ) {
 		console() << "Device: " << (*device)->getName() << " "
@@ -32,6 +40,9 @@ void CaptureBasicApp::setup()
 #endif
 					<< std::endl;
 	}
+=======
+	printDevices();
+>>>>>>> upstream/master
 
 
 	try {
@@ -39,20 +50,10 @@ void CaptureBasicApp::setup()
 		mCapture->start();
 	}
 	catch( ci::Exception &exc ) {
-		console() << "Failed to initialize capture, what: " << exc.what() << std::endl;
+		CI_LOG_EXCEPTION( "Failed to init capture ", exc );
 	}
 
     //ci::android::app::CinderNativeActivity::getInstance()->startCapture();
-}
-
-void CaptureBasicApp::keyDown( KeyEvent event )
-{
-#if defined( CINDER_MAC )
-	if( event.getChar() == 'f' )
-		setFullScreen( ! isFullScreen() );
-	else if( event.getChar() == ' ' )
-		( mCapture && mCapture->isCapturing() ) ? mCapture->stop() : mCapture->start();
-#endif
 }
 
 void CaptureBasicApp::update()
@@ -77,6 +78,7 @@ void CaptureBasicApp::update()
 
 void CaptureBasicApp::draw()
 {
+<<<<<<< HEAD
 	gl::clear( Color( 0.0f, 0.0f, 0.0f ) );
 	gl::setMatricesWindow( getWindowWidth(), getWindowHeight() );
 
@@ -84,15 +86,34 @@ void CaptureBasicApp::draw()
     gl::pushModelMatrix();
 #if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 		//change iPhone/Android to landscape orientation
-		gl::rotate( M_PI / 2 );
-		gl::translate( 0.0f, -getWindowWidth() );
+=======
+	gl::clear();
 
-		Rectf flippedBounds( 0.0f, 0.0f, getWindowHeight(), getWindowWidth() );
+	if( mTexture ) {
+		gl::ScopedModelMatrix modelScope;
+
+#if defined( CINDER_COCOA_TOUCH )
+		// change iphone to landscape orientation
+>>>>>>> upstream/master
+		gl::rotate( M_PI / 2 );
+		gl::translate( 0, - getWindowWidth() );
+
+		Rectf flippedBounds( 0, 0, getWindowHeight(), getWindowWidth() );
 		gl::draw( mTexture, flippedBounds );
 #else
 		gl::draw( mTexture );
 #endif
-    gl::popModelMatrix();
+	}
+}
+
+void CaptureBasicApp::printDevices()
+{
+	for( const auto &device : Capture::getDevices() ) {
+		console() << "Device: " << device->getName() << " "
+#if defined( CINDER_COCOA_TOUCH )
+		<< ( device->isFrontFacing() ? "Front" : "Rear" ) << "-facing"
+#endif
+		<< endl;
 	}
 }
 

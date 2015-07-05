@@ -42,7 +42,7 @@
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Context.h"
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/ConstantStrings.h"
+#include "cinder/gl/ConstantConversions.h"
 
 #include <set>
 
@@ -97,7 +97,7 @@ void Vao::setContext( Context *context )
 void Vao::bind()
 {
 	// this will "come back" by calling bindImpl if it's necessary
-	mCtx->bindVao( shared_from_this() );
+	mCtx->bindVao( this );
 }
 
 void Vao::unbind() const
@@ -154,11 +154,9 @@ void Vao::replacementBindEnd()
 void Vao::setLabel( const std::string &label )
 {
 	mLabel = label;
-#if defined( CINDER_GL_ES )
-  #if ! defined( CINDER_GL_ANGLE ) && ! defined( CINDER_ANDROID )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_ANDROID )
 	env()->objectLabel( GL_VERTEX_ARRAY_OBJECT_EXT, mId, (GLsizei)label.size(), label.c_str() );
-  #endif
-#else
+#elif ! defined( CINDER_GL_ANGLE )
 	env()->objectLabel( GL_VERTEX_ARRAY, mId, (GLsizei)label.size(), label.c_str() );
 #endif
 }

@@ -1,5 +1,0 @@
-#include "../include/Resources.h"
-
-RES_PASS_THRU_VERT
-RES_GSRD_FRAG
-RES_STARTER_IMAGE

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2015, The Barbarian Group
  All rights reserved.
  
  Portions of this code (C) Paul Houx
@@ -71,14 +71,14 @@ class TriMesh : public geom::Source {
 	static TriMeshRef	create( const geom::Source &source ) { return TriMeshRef( new TriMesh( source ) ); }
 	static TriMeshRef	create( const geom::Source &source, const Format &format ) { return TriMeshRef( new TriMesh( source, format ) ); }
 
-	TriMesh( const Format &format );
+	TriMesh( const Format &format = Format().positions().normals().texCoords() );
 	TriMesh( const geom::Source &source );
 	TriMesh( const geom::Source &source, const Format &format );
 	
 	//! Creates a suitable TriMesh::Format for representing a geom::Source \a source
 	static Format		formatFromSource( const geom::Source &source );
 	
-	virtual void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void		loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 	
 	void		clear();
 	
@@ -99,34 +99,34 @@ class TriMesh : public geom::Source {
 	//! Returns whether the TriMesh has texture coordinates for unit 3
 	bool		hasTexCoords3() const { return ! mTexCoords3.empty(); }
 
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec2 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec3 &v ) { appendVertices( &v, 1 ); }
-	//! Appends a vertex which can be referred to with appendTriangle() or appendIndices()
-	void		appendVertex( const vec4 &v ) { appendVertices( &v, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec2 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec3 &position ) { appendPositions( &position, 1 ); }
+	//! Appends a position which can be referred to with appendTriangle() or appendIndices()
+	void		appendPosition( const vec4 &position ) { appendPositions( &position, 1 ); }
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec2 *verts, size_t num );
+	void		appendPositions( const vec2 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec3 *verts, size_t num );
+	void		appendPositions( const vec3 *positions, size_t num );
 	//! Appends multiple vertices to the TriMesh which can be referred to with appendTriangle() or appendIndices() 
-	void		appendVertices( const vec4 *verts, size_t num );
+	void		appendPositions( const vec4 *positions, size_t num );
 	//! Appends a single normal  
-	void		appendNormal( const vec3 &v ) { mNormals.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple normals at once.
+	void		appendNormal( const vec3 &normal ) { mNormals.push_back( normal ); }
+	//! Functions similarly to appendPositions(), appending multiple normals at once.
 	void		appendNormals( const vec3 *normals, size_t num );
 	//! Appends a single tangent  
-	void		appendTangent( const vec3 &v ) { mTangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple tangents at once.
+	void		appendTangent( const vec3 &tangent ) { mTangents.push_back( tangent ); }
+	//! Functions similarly to appendPositions(), appending multiple tangents at once.
 	void		appendTangents( const vec3 *tangents, size_t num );
 	//! Appends a single bitangent
-	void		appendBitangent( const vec3 &v ) { mBitangents.push_back( v ); }
-	//! Functions similarly to appendVertices(), appending multiple bitangents at once.
+	void		appendBitangent( const vec3 &bitangent ) { mBitangents.push_back( bitangent ); }
+	//! Functions similarly to appendPositions(), appending multiple bitangents at once.
 	void		appendBitangents( const vec3 *bitangents, size_t num );
 	//! Appends a single RGB color
-	void		appendColorRgb( const Color &rgb ) { appendColors( &rgb, 1 ); }
+	void		appendColorRgb( const Color &color ) { appendColors( &color, 1 ); }
 	//! Appends a single RGBA color
-	void		appendColorRgba( const ColorA &rgba ) { appendColors( &rgba, 1 ); }
+	void		appendColorRgba( const ColorA &color ) { appendColors( &color, 1 ); }
 
 	//! Synonym for appendTexCoord0; appends a texture coordinate for unit 0
 	void		appendTexCoord( const vec2 &v ) { appendTexCoords0( &v, 1 ); }
@@ -200,7 +200,7 @@ class TriMesh : public geom::Source {
 	//! Returns the total number of triangles contained by the TriMesh.
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
 	//! Returns the total number of indices contained by the TriMesh.
-	virtual size_t	getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
+	size_t		getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
 
 	//! Copies the 3 vertices of triangle number \a idx into \a a, \a b and \a c. Assumes vertices are 3D
 	void		getTriangleVertices( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const;
@@ -234,10 +234,10 @@ class TriMesh : public geom::Source {
 	const std::vector<vec3>&		getBitangents() const { return mBitangents; }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	typename VECDIM<DIM,float>::TYPE*		getColors() { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	typename COLORDIM<DIM,float>::TYPE*			getColors() { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the colors of the TriMesh vec<DIM>*. For example, to get RGB colors, call getColors<3>().
 	template<uint8_t DIM>
-	const typename VECDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mColors.data(); }
+	const typename COLORDIM<DIM,float>::TYPE*	getColors() const { assert(mColorsDims==DIM); return (typename COLORDIM<DIM,float>::TYPE*)mColors.data(); }
 	//! Returns a pointer to the TexCoord0 values of the TriMesh vec<DIM>*. For example, if the TriMesh has 2D TexCoord0 values, use getTexCoords0<2>().
 	template<uint8_t DIM>
 	typename VECDIM<DIM,float>::TYPE*		getTexCoords0() { assert(mTexCoords0Dims==DIM); return (typename VECDIM<DIM,float>::TYPE*)mTexCoords0.data(); }
@@ -293,14 +293,18 @@ class TriMesh : public geom::Source {
 	std::vector<float>& getBufferTexCoords3() { return mTexCoords3; }
 
 	//! Calculates the bounding box of all vertices. Fails if the positions are not 3D.
-	AxisAlignedBox3f	calcBoundingBox() const;
+	AxisAlignedBox	calcBoundingBox() const;
 	//! Calculates the bounding box of all vertices as transformed by \a transform. Fails if the positions are not 3D.
-	AxisAlignedBox3f	calcBoundingBox( const mat4 &transform ) const;
+	AxisAlignedBox	calcBoundingBox( const mat4 &transform ) const;
 
-	//! This allows you read a TriMesh in from a data file, for instance an .obj file. At present .obj and .dat files are supported
-	void		read( DataSourceRef in );
-	//! This allows to you write a mesh out to a data file. At present .obj and .dat files are supported.
-	void		write( DataTargetRef out ) const;
+	//! Fills this TriMesh with the data from a binary file, which was created with TriMesh::write().
+	void		read( const DataSourceRef &dataSource );
+	//! Writes this TriMesh out to a binary data file.
+	void		write( const DataTargetRef &dataTarget ) const { write( dataTarget, ~0 ); }
+	//! Writes this TriMesh out to a binary data file. If \a writeNormals or \a writeTangents is \c true, normals and/or tangents are written to the file.
+	void		write( const DataTargetRef &dataTarget, bool writeNormals, bool writeTangents ) const;
+	//! Writes this TriMesh out to a binary data file. You can specify which attributes to write by supplying a list of \a attribs.
+	void		write( const DataTargetRef &dataTarget, const std::set<geom::Attrib> &attribs ) const;
 
 	/*! Adds or replaces normals by calculating them from the vertices and faces. If \a smooth is TRUE,
 		similar vertices are grouped together to calculate their average. This will not change the mesh,
@@ -315,7 +319,6 @@ class TriMesh : public geom::Source {
 	/*! Subdivide each triangle of the TriMesh into \a division times division triangles. Division less than 2 leaves the mesh unaltered.
 		Optionally, vertices are normalized if \a normalize is TRUE. */
 	void		subdivide( int division = 2, bool normalize = false );
-
 
 	//! Create TriMesh from vectors of vertex data.
 /*	static TriMesh		create( std::vector<uint32_t> &indices, const std::vector<ColorAf> &colors,
@@ -336,6 +339,19 @@ class TriMesh : public geom::Source {
 
 	//! Returns whether or not the vertex, color etc. at both indices is the same.
 	bool		verticesEqual( uint32_t indexA, uint32_t indexB ) const;
+
+	void		readImplV2( const IStreamRef &in );
+	void		readImplV1( const IStreamRef &in );
+
+	/*! Writes this TriMesh out to a binary data file. The \a writeMask parameter can be used to specify
+	 * what data should be included (e.g. toMask(POSITION) | toMask(COLOR) )
+	 * or what should be excluded (e.g. ~toMask( NORMAL ) & ~toMask( TEX_COORD_0) ). */
+	void		write( const DataTargetRef &dataTarget, uint32_t writeMask ) const;
+
+	//! Converts a geom::Attrib to an attribute bitmask.
+	static uint32_t	toMask( geom::Attrib attrib );
+	//! Converts an attribute bitmask to a geom::Attrib.
+	static geom::Attrib	fromMask( uint32_t attrib );
 
 	uint8_t		mPositionsDims, mNormalsDims, mTangentsDims, mBitangentsDims, mColorsDims;
 	uint8_t		mTexCoords0Dims, mTexCoords1Dims, mTexCoords2Dims, mTexCoords3Dims;

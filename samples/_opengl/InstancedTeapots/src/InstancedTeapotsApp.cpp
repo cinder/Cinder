@@ -1,9 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
-#include "cinder/gl/Shader.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/VboMesh.h"
+#include "cinder/gl/gl.h"
 #include "cinder/ObjLoader.h"
 #include "cinder/ImageIo.h"
 #include "cinder/Utilities.h"
@@ -38,6 +35,8 @@ void InstancedTeapotsApp::setup()
 	mTexture = gl::Texture::create( loadImage( loadAsset( "texture.jpg" ) ), gl::Texture::Format().mipmap() );
 #if ! defined( CINDER_GL_ES )
 	mGlsl = gl::GlslProg::create( loadAsset( "shader.vert" ), loadAsset( "shader.frag" ) );
+#elif defined( CINDER_GL_ES_3 )
+	mGlsl = gl::GlslProg::create(loadAsset("shader_es3.vert"), loadAsset("shader_es3.frag"));
 #else
 	mGlsl = gl::GlslProg::create( loadAsset( "shader_es2.vert" ), loadAsset( "shader_es2.frag" ) );
 #endif

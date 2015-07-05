@@ -1,5 +1,6 @@
 ﻿#include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Clipboard.h"
 #include "cinder/Utilities.h"
 #include "cinder/gl/Texture.h"
@@ -12,8 +13,8 @@ using namespace std;
 
 class ClipboardBasicApp : public App {
   public:
-	void keyDown( KeyEvent event );	
-	void draw();
+	void keyDown( KeyEvent event ) override;
+	void draw() override;
 };
 
 void ClipboardBasicApp::keyDown( KeyEvent event )
@@ -33,8 +34,13 @@ void ClipboardBasicApp::draw()
 	gl::setMatricesWindow( getWindowSize() );
 	gl::enableAlphaBlending();
 	
-	if( Clipboard::hasImage() )
-		gl::draw( gl::Texture::create( Clipboard::getImage() ) );
+	if( Clipboard::hasImage() ) {
+		auto img = Clipboard::getImage();
+		// be aware of a race condition here; the clipboard might have changed between hasImage() and getImage()
+		// so we test for null 'img'
+		if( img )
+			gl::draw( gl::Texture::create( img ) );
+	}
 	else if( Clipboard::hasString() )
 		gl::drawString( Clipboard::getString(), vec2( 0, getWindowCenter().y ) );
 	else

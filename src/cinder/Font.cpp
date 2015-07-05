@@ -44,7 +44,7 @@
 	#pragma comment(lib, "gdiplus")
 #elif defined( CINDER_WINRT )
 	#include <dwrite.h>
-	#include "cinder/dx/FontEnumerator.h"
+	#include "cinder/winrt/FontEnumerator.h"
 #endif
 #include "cinder/Utilities.h"
 #include "cinder/Unicode.h"
@@ -347,9 +347,9 @@ CTFontRef Font::getCtFontRef() const
 
 #elif defined( CINDER_MSW )
 
-const ::LOGFONT& Font::getLogfont() const
+const void* Font::getLogfont() const
 {
-	return mObj->mLogFont;
+	return (const void*)&mObj->mLogFont;
 }
 
 ::HFONT Font::getHfont() const
@@ -778,8 +778,8 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 		mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
 	}
 	else {
-		Buffer *buffer = new Buffer( dataSource->getBuffer() );
-		std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( buffer, buffer->getData(), buffer->getDataSize(), releaseFontDataProviderBuffer ), ::CGDataProviderRelease );
+		Buffer *buffer = new Buffer( *dataSource->getBuffer() );
+		std::shared_ptr<CGDataProvider> dataProvider( ::CGDataProviderCreateWithData( buffer, buffer->getData(), buffer->getSize(), releaseFontDataProviderBuffer ), ::CGDataProviderRelease );
 		if( ! dataProvider )
 			throw FontInvalidNameExc();
 		mCGFont = ::CGFontCreateWithDataProvider( dataProvider.get() );
@@ -794,8 +794,8 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	WCHAR familyName[1024];
 	Gdiplus::PrivateFontCollection privateFontCollection;
 
-	ci::Buffer buffer = dataSource->getBuffer();
-	privateFontCollection.AddMemoryFont( buffer.getData(), buffer.getDataSize() );
+	ci::BufferRef buffer = dataSource->getBuffer();
+	privateFontCollection.AddMemoryFont( buffer->getData(), buffer->getSize() );
 
 	// How many font families are in the private collection?
 	count = privateFontCollection.GetFamilyCount();
@@ -829,13 +829,13 @@ FontObj::FontObj( DataSourceRef dataSource, float size )
 	// now that we know the name thanks to GDI+, let's load the HFONT
 	// this is only because we can't seem to get the LOGFONT -> HFONT to work down in finishSetup
 	DWORD numFonts = 0;
-	::AddFontMemResourceEx( buffer.getData(), buffer.getDataSize(), 0, &numFonts );
+	::AddFontMemResourceEx( buffer->getData(), buffer->getSize(), 0, &numFonts );
 	if( numFonts < 1 )
 		throw FontInvalidNameExc();
 
 	finishSetup();
 #elif defined( CINDER_WINRT )
-	FT_New_Memory_Face(FontManager::instance()->mLibrary, (FT_Byte*)dataSource->getBuffer().getData(), dataSource->getBuffer().getDataSize(), 0, &mFace);
+	FT_New_Memory_Face(FontManager::instance()->mLibrary, (FT_Byte*)dataSource->getBuffer()->getData(), dataSource->getBuffer()->getSize(), 0, &mFace);
 	FT_Set_Pixel_Sizes(mFace, 0, (int)size);
 #endif
 }
@@ -880,6 +880,13 @@ void FontObj::finishSetup()
 	delete [] buffer;
 #endif
 }
+
+#if defined( CINDER_WINRT )
+FT_Face Font::getFreetypeFace() const
+{
+	return mObj->mFace;
+}
+#endif
 
 #if defined( CINDER_MSW )
 HDC Font::getGlobalDc()

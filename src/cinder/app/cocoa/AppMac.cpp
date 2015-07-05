@@ -35,7 +35,6 @@ AppMac::AppMac()
 	const Settings *settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplMac alloc] init:this settings:*settings];
 
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
@@ -46,9 +45,20 @@ AppMac::~AppMac()
 	[mImpl release];
 }
 
-void AppMac::launch( const char *title, int argc, char * const argv[] )
+void AppMac::launch()
 {
 	[[NSApplication sharedApplication] run];
+	emitCleanup();
+}
+
+void AppMac::enablePowerManagement( bool powerManagement )
+{
+	[mImpl setPowerManagementEnabled:powerManagement ? YES : NO];
+}
+
+bool AppMac::isPowerManagementEnabled() const
+{
+	return 	[mImpl isPowerManagementEnabled];
 }
 
 WindowRef AppMac::createWindow( const Window::Format &format )
@@ -79,11 +89,6 @@ void AppMac::disableFrameRate()
 bool AppMac::isFrameRateEnabled() const
 {
 	return [mImpl isFrameRateEnabled];
-}
-
-fs::path AppMac::getAppPath() const
-{
-	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
 WindowRef AppMac::getWindow() const

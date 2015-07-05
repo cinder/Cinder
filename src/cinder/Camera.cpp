@@ -1,7 +1,7 @@
 /*
- Copyright (c) 2010, The Barbarian Group
- All rights reserved.
- 
+ Copyright (c) 2012, The Cinder Project: http://libcinder.org All rights reserved.
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+
  Portions of this code (C) Paul Houx
  All rights reserved.
 
@@ -25,6 +25,7 @@
 
 #include "cinder/Camera.h"
 #include "cinder/Sphere.h"
+#include "cinder/Frustum.h"
 
 #include "cinder/CinderMath.h"
 #include "cinder/Matrix33.h"
@@ -35,38 +36,40 @@
 #include "glm/gtc/matrix_access.hpp"
 #include "glm/gtc/matrix_transform.hpp"
 
+#include <algorithm>
+
 namespace cinder {
 
-void Camera::setEyePoint( const vec3 &aEyePoint )
+void Camera::setEyePoint( const vec3 &eyePoint )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mModelViewCached = false;
 }
 
-void Camera::setCenterOfInterestPoint( const vec3 &centerOfInterestPoint )
+void Camera::setViewDirection( const vec3 &viewDirection )
 {
-	mCenterOfInterest = distance( mEyePoint, centerOfInterestPoint );
-	lookAt( centerOfInterestPoint );
-}
-
-void Camera::setViewDirection( const vec3 &aViewDirection )
-{
-	mViewDirection = normalize( aViewDirection );
+	mViewDirection = normalize( viewDirection );
 	mOrientation = glm::rotation( mViewDirection, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
-void Camera::setOrientation( const quat &aOrientation )
+void Camera::setOrientation( const quat &orientation )
 {
-	mOrientation = glm::normalize( aOrientation );
+	mOrientation = glm::normalize( orientation );
 	mViewDirection = glm::rotate( mOrientation, glm::vec3( 0, 0, -1 ) );
 	mModelViewCached = false;
 }
 
-void Camera::setWorldUp( const vec3 &aWorldUp )
+// Derived from math presented in http://paulbourke.net/miscellaneous/lens/
+float Camera::getFocalLength() const
 {
-	mWorldUp = normalize( aWorldUp );
-	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	return 1 / ( tan( toRadians( mFov ) * 0.5f ) * 2 );
+}
+
+void Camera::setWorldUp( const vec3 &worldUp )
+{
+	mWorldUp = normalize( worldUp );
+	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, worldUp ) );
 	mModelViewCached = false;
 }
 
@@ -74,23 +77,26 @@ void Camera::lookAt( const vec3 &target )
 {
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
-void Camera::lookAt( const vec3 &aEyePoint, const vec3 &target )
+void Camera::lookAt( const vec3 &eyePoint, const vec3 &target )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = quat( glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
-void Camera::lookAt( const vec3 &aEyePoint, const vec3 &target, const vec3 &aWorldUp )
+void Camera::lookAt( const vec3 &eyePoint, const vec3 &target, const vec3 &aWorldUp )
 {
-	mEyePoint = aEyePoint;
+	mEyePoint = eyePoint;
 	mWorldUp = normalize( aWorldUp );
 	mViewDirection = normalize( target - mEyePoint );
 	mOrientation = glm::toQuat( alignZAxisWithTarget( -mViewDirection, mWorldUp ) );
+	mPivotDistance = distance( target, mEyePoint );
 	mModelViewCached = false;
 }
 
@@ -141,6 +147,11 @@ Ray Camera::generateRay( float uPos, float vPos, float imagePlaneApectRatio ) co
 	return Ray( mEyePoint, normalize( mU * s + mV * t - ( mW * viewDistance ) ) );
 }
 
+Ray Camera::generateRay( const vec2 &posPixels, const vec2 &imageSizePixels ) const
+{
+	return generateRay( posPixels.x / imageSizePixels.x, ( imageSizePixels.y - posPixels.y ) / imageSizePixels.y, imageSizePixels.x / imageSizePixels.y );
+}
+
 void Camera::getBillboardVectors( vec3 *right, vec3 *up ) const
 {
 	*right = glm::vec3( glm::row( getViewMatrix(), 0 ) );
@@ -149,13 +160,23 @@ void Camera::getBillboardVectors( vec3 *right, vec3 *up ) const
 
 vec2 Camera::worldToScreen( const vec3 &worldCoord, float screenWidth, float screenHeight ) const
 {
-	vec3 eyeCoord = vec3( getViewMatrix() * vec4( worldCoord, 1 ) );
-	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	vec4 eyeCoord = getViewMatrix() * vec4( worldCoord, 1 );
+	vec4 ndc = getProjectionMatrix() * eyeCoord;
 	ndc.x /= ndc.w;
 	ndc.y /= ndc.w;
 	ndc.z /= ndc.w;
 
 	return vec2( ( ndc.x + 1.0f ) / 2.0f * screenWidth, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenHeight );
+}
+
+vec2 Camera::eyeToScreen( const vec3 &eyeCoord, const vec2 &screenSizePixels ) const
+{
+	vec4 ndc = getProjectionMatrix() * vec4( eyeCoord, 1 );
+	ndc.x /= ndc.w;
+	ndc.y /= ndc.w;
+	ndc.z /= ndc.w;
+
+	return vec2( ( ndc.x + 1.0f ) / 2.0f * screenSizePixels.x, ( 1.0f - ( ndc.y + 1.0f ) / 2.0f ) * screenSizePixels.y );
 }
 
 float Camera::worldToEyeDepth( const vec3 &worldCoord ) const
@@ -168,29 +189,44 @@ float Camera::worldToEyeDepth( const vec3 &worldCoord ) const
 }
 
 
-vec3 Camera::worldToNdc( const vec3 &worldCoord )
+vec3 Camera::worldToNdc( const vec3 &worldCoord ) const
 {
 	vec4 eye = getViewMatrix() * vec4( worldCoord, 1 );
 	vec4 unproj = getProjectionMatrix() * eye;
 	return vec3( unproj.x / unproj.w, unproj.y / unproj.w, unproj.z / unproj.w );
 }
 
-//* This only mostly works
-float Camera::getScreenRadius( const Sphere &sphere, float screenWidth, float screenHeight ) const
+float Camera::calcScreenArea( const Sphere &sphere, const vec2 &screenSizePixels ) const
 {
-	vec2 screenCenter( worldToScreen( sphere.getCenter(), screenWidth, screenHeight ) );	
-	vec3 orthog = normalize( orthogonal( mViewDirection ) );
-	vec2 screenPerimeter = worldToScreen( sphere.getCenter() + sphere.getRadius() * orthog, screenWidth, screenHeight );
-	return distance( screenPerimeter, screenCenter );
+	Sphere camSpaceSphere( vec3( getViewMatrix()*vec4(sphere.getCenter(), 1.0f) ), sphere.getRadius() );
+	return camSpaceSphere.calcProjectedArea( getFocalLength(), screenSizePixels );
+}
+
+void Camera::calcScreenProjection( const Sphere &sphere, const vec2 &screenSizePixels, vec2 *outCenter, vec2 *outAxisA, vec2 *outAxisB ) const
+{
+	auto toScreenPixels = [=] ( vec2 v, const vec2 &windowSize ) {
+		vec2 result = v;
+		result.x *= 1 / ( windowSize.x / windowSize.y );
+		result += vec2( 0.5f );
+		result *= windowSize;
+		return result;
+	};
+
+	Sphere camSpaceSphere( vec3( getViewMatrix()*vec4(sphere.getCenter(), 1.0f) ), sphere.getRadius() );
+	vec2 center, axisA, axisB;
+	camSpaceSphere.calcProjection( getFocalLength(), &center, &axisA, &axisB );
+	if( outCenter )
+		*outCenter = toScreenPixels( center, screenSizePixels );//( center * vec2( invAspectRatio, 1 ) + vec2( 0.5f ) ) * screenSizePixels;
+	if( outAxisA )
+		*outAxisA = toScreenPixels( center + axisA * 0.5f, screenSizePixels ) - toScreenPixels( center - axisA * 0.5f, screenSizePixels );
+	if( outAxisB )
+		*outAxisB = toScreenPixels( center + axisB * 0.5f, screenSizePixels ) - toScreenPixels( center - axisB * 0.5f, screenSizePixels );
 }
 
 void Camera::calcMatrices() const
 {
 	if( ! mModelViewCached ) calcViewMatrix();
 	if( ! mProjectionCached ) calcProjection();
-
-	// note: calculation of the inverse modelview matrices is postponed until actually requested
-	//if( ! mInverseModelViewCached ) calcInverseModelView();
 }
 
 void Camera::calcViewMatrix() const
@@ -221,6 +257,13 @@ void Camera::calcInverseView() const
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraPersp
+// Creates a default camera resembling Maya Persp
+CameraPersp::CameraPersp()
+	: Camera()
+{
+	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
+	setPerspective( 35, 1.3333f, 0.1f, 1000 );
+}
 
 CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees )
 	: Camera()
@@ -252,15 +295,6 @@ CameraPersp::CameraPersp( int pixelWidth, int pixelHeight, float fovDegrees, flo
 
 	setPerspective( fovDegrees, aspect, nearPlane, farPlane );
 	lookAt( vec3( eyeX, eyeY, dist ), vec3( eyeX, eyeY, 0.0f ) );
-}
-
-// Creates a default camera resembling Maya Persp
-CameraPersp::CameraPersp()
-	: Camera()
-{
-	lookAt( vec3( 28, 21, 28 ), vec3(), vec3( 0, 1, 0 ) );
-	setCenterOfInterest( 44.822f );
-	setPerspective( 35, 1, 0.1f, 1000 );
 }
 
 void CameraPersp::setPerspective( float verticalFovDegrees, float aspectRatio, float nearPlane, float farPlane )
@@ -344,27 +378,13 @@ void CameraPersp::setLensShift(float horizontal, float vertical)
 	mProjectionCached = false;
 }
 
-CameraPersp	CameraPersp::getFrameSphere( const Sphere &worldSpaceSphere, int maxIterations ) const
+CameraPersp	CameraPersp::calcFraming( const Sphere &worldSpaceSphere ) const
 {
 	CameraPersp result = *this;
-	result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * getCenterOfInterest() );
-	
-	float minDistance = 0.01f, maxDistance = 100000.0f;
-	float curDistance = getCenterOfInterest();
-	for( int i = 0; i < maxIterations; ++i ) {
-		float curRadius = result.getScreenRadius( worldSpaceSphere, 2.0f, 2.0f );
-		if( curRadius < 1.0f ) { // we should get closer
-			maxDistance = curDistance;
-			curDistance = ( curDistance + minDistance ) * 0.5f;
-		}
-		else { // we should get farther
-			minDistance = curDistance;
-			curDistance = ( curDistance + maxDistance ) * 0.5f;			
-		}
-		result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * curDistance );
-	}
-	
-	result.setCenterOfInterest( distance( result.getEyePoint(), worldSpaceSphere.getCenter() ) );
+	float xDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFovHorizontal() * 0.5f ) );
+	float yDistance = worldSpaceSphere.getRadius() / sin( toRadians( getFov() * 0.5f ) );
+	result.setEyePoint( worldSpaceSphere.getCenter() - result.mViewDirection * std::max( xDistance, yDistance ) );
+	result.mPivotDistance = distance( result.mEyePoint, worldSpaceSphere.getCenter() );
 	return result;
 }
 
@@ -374,7 +394,6 @@ CameraOrtho::CameraOrtho()
 	: Camera()
 {
 	lookAt( vec3( 0, 0, 0.1f ), vec3(), vec3( 0, 1, 0 ) );
-	setCenterOfInterest( 0.1f );
 	setFov( 35 );
 }
 
@@ -408,53 +427,52 @@ void CameraOrtho::setOrtho( float left, float right, float bottom, float top, fl
 void CameraOrtho::calcProjection() const
 {
 	mat4 &p = mProjectionMatrix;
-	p[0][0] =  2.0f/(mFrustumRight - mFrustumLeft);
-	p[1][0] =  0.0f;
-	p[2][0] =  0.0f;
-	p[3][0] =  -(mFrustumRight + mFrustumLeft)/(mFrustumRight - mFrustumLeft);
+	p[0][0] =  2 / (mFrustumRight - mFrustumLeft);
+	p[1][0] =  0;
+	p[2][0] =  0;
+	p[3][0] =  -(mFrustumRight + mFrustumLeft) / (mFrustumRight - mFrustumLeft);
 
-	p[0][1] =  0.0f;
-	p[1][1] =  2.0f/(mFrustumTop - mFrustumBottom);
-	p[2][1] =  0.0f;
-	p[3][1] =  -(mFrustumTop + mFrustumBottom)/(mFrustumTop - mFrustumBottom);
+	p[0][1] =  0;
+	p[1][1] =  2 / (mFrustumTop - mFrustumBottom);
+	p[2][1] =  0;
+	p[3][1] =  -(mFrustumTop + mFrustumBottom) / (mFrustumTop - mFrustumBottom);
 
-	p[0][2] =  0.0f;
-	p[1][2] =  0.0f;
-	p[2][2] = -2.0f/(mFarClip - mNearClip);
-	p[3][2] = -(mFarClip + mNearClip)/(mFarClip - mNearClip);
+	p[0][2] =  0;
+	p[1][2] =  0;
+	p[2][2] = -2 / (mFarClip - mNearClip);
+	p[3][2] = -(mFarClip + mNearClip) / (mFarClip - mNearClip);
 
-	p[0][3] =  0.0f;
-	p[1][3] =  0.0f;
-	p[2][3] =  0.0f;
-	p[3][3] =  1.0f;
+	p[0][3] =  0;
+	p[1][3] =  0;
+	p[2][3] =  0;
+	p[3][3] =  1;
 
 	mat4 &m = mInverseProjectionMatrix;
 	m[0][0] =  (mFrustumRight - mFrustumLeft) * 0.5f;
-	m[1][0] =  0.0f;
-	m[2][0] =  0.0f;
+	m[1][0] =  0;
+	m[2][0] =  0;
 	m[3][0] =  (mFrustumRight + mFrustumLeft) * 0.5f;
 
-	m[0][1] =  0.0f;
+	m[0][1] =  0;
 	m[1][1] =  (mFrustumTop - mFrustumBottom) * 0.5f;
-	m[2][1] =  0.0f;
+	m[2][1] =  0;
 	m[3][1] =  (mFrustumTop + mFrustumBottom) * 0.5f;
 
-	m[0][2] =  0.0f;
-	m[1][2] =  0.0f;
+	m[0][2] =  0;
+	m[1][2] =  0;
 	m[2][2] =  (mFarClip - mNearClip) * 0.5f;
 	m[3][2] =  (mNearClip + mFarClip) * 0.5f;
 
-	m[0][3] =  0.0f;
-	m[1][3] =  0.0f;
-	m[2][3] =  0.0f;
-	m[3][3] =  1.0f;
+	m[0][3] =  0;
+	m[1][3] =  0;
+	m[2][3] =  0;
+	m[3][3] =  1;
 
 	mProjectionCached = true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////
 // CameraStereo
-
 vec3 CameraStereo::getEyePointShifted() const
 {	
 	if( ! mIsStereo )
@@ -464,6 +482,14 @@ vec3 CameraStereo::getEyePointShifted() const
 		return mEyePoint - glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
 	else 
 		return mEyePoint + glm::rotate( mOrientation, vec3( 1, 0, 0 ) ) * ( 0.5f * mEyeSeparation );
+}
+
+void CameraStereo::setConvergence( float distance, bool adjustEyeSeparation )
+{ 
+	mConvergence = distance; mProjectionCached = false;
+
+	if( adjustEyeSeparation )
+		mEyeSeparation = mConvergence / 30.0f;
 }
 
 void CameraStereo::getNearClipCoordinates( vec3 *topLeft, vec3 *topRight, vec3 *bottomLeft, vec3 *bottomRight ) const

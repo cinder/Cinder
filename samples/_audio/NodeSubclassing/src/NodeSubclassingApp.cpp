@@ -19,9 +19,9 @@ using namespace std;
 
 class NodeSubclassingApp : public App {
   public:
-	void setup();
-	void mouseMove( MouseEvent event );
-	void draw();
+	void setup() override;
+	void mouseMove( MouseEvent event ) override;
+	void draw() override;
 
   private:
 	audio::GenNodeRef		mGenNode;

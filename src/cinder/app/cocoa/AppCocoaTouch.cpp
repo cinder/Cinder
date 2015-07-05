@@ -44,7 +44,6 @@ AppCocoaTouch::AppCocoaTouch()
 	auto settings = dynamic_cast<Settings *>( sSettingsFromMain );
 	CI_ASSERT( settings );
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl = [[AppImplCocoaTouch alloc] init:this settings:*settings];
 
 	enablePowerManagement( settings->isPowerManagementEnabled() );
@@ -56,9 +55,16 @@ AppCocoaTouch::~AppCocoaTouch()
 	mImpl = nil;
 }
 
-void AppCocoaTouch::launch( const char *title, int argc, char * const argv[] )
+void AppCocoaTouch::launch()
 {
-	::UIApplicationMain( argc, const_cast<char**>( argv ), nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
+	const auto &args = getCommandLineArgs();
+	int argc = (int)args.size();
+
+	char* argv[argc];
+	for( int i = 0; i < argc; i++ )
+		argv[i] = const_cast<char *>( args[i].c_str() );
+
+	::UIApplicationMain( argc, argv, nil, ::NSStringFromClass( [AppDelegateImpl class] ) );
 }
 
 WindowRef AppCocoaTouch::createWindow( const Window::Format &format )
@@ -219,11 +225,6 @@ bool AppCocoaTouch::isFullScreen() const
 void AppCocoaTouch::setFullScreen( bool fullScreen, const FullScreenOptions &options )
 {
 	// NO-OP
-}
-
-fs::path AppCocoaTouch::getAppPath() const
-{ 
-	return fs::path( [[[NSBundle mainBundle] bundlePath] UTF8String] );
 }
 
 void AppCocoaTouch::quit()

@@ -23,7 +23,7 @@
 */
 
 #include "cinder/gl/Environment.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 #include "glload/gl_load.h"
 #include "cinder/gl/Shader.h"
 #include "cinder/gl/Context.h"
@@ -38,10 +38,11 @@ class EnvironmentCore : public Environment {
   public:
 	void	initializeFunctionPointers() override;
 
-	bool	isCoreProfile() const override { return true; }
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+
+	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
 	void	allocateTexStorageCubeMap( GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable ) override;
@@ -75,7 +76,7 @@ bool EnvironmentCore::isExtensionAvailable( const std::string &extName )
 		glGetIntegerv( GL_NUM_EXTENSIONS, &numExtensions );
 
 		for( loop = 0; loop < numExtensions; loop++) {
-			std::string s = (const char *)glGetStringi(GL_EXTENSIONS, loop );
+			std::string s = (const char *)glGetStringi( GL_EXTENSIONS, loop );
 			std::transform( s.begin(), s.end(), s.begin(), static_cast<int(*)(int)>( tolower ) );
 			sExtensions.insert( s );
 		}
@@ -101,6 +102,20 @@ void EnvironmentCore::objectLabel( GLenum identifier, GLuint name, GLsizei lengt
 		(*objectLabelFn)( identifier, name, length, label );
 }
 
+void EnvironmentCore::allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType )
+{
+	static auto texStorage1DFn = glTexStorage1D;
+	if( texStorage1DFn && immutable )
+		texStorage1DFn( target, levels, internalFormat, width );
+	else {
+		GLenum dataFormat, dataType;
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
+		if( texImageDataType != -1 )
+			dataType = texImageDataType;
+		glTexImage1D( target, 0, internalFormat, width, 0, dataFormat, dataType, nullptr );
+	}
+}
+
 void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType )
 {
 	static auto texStorage2DFn = glTexStorage2D;
@@ -108,7 +123,7 @@ void EnvironmentCore::allocateTexStorage2d( GLenum target, GLsizei levels, GLenu
 		texStorage2DFn( target, levels, internalFormat, width, height );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		if( texImageDataType != -1 )
 			dataType = texImageDataType;
 		glTexImage2D( target, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
@@ -122,7 +137,7 @@ void EnvironmentCore::allocateTexStorage3d( GLenum target, GLsizei levels, GLenu
 		texStorage3DFn( target, levels, internalFormat, width, height, depth );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		glTexImage3D( target, 0, internalFormat, width, height, depth, 0, dataFormat, dataType, nullptr );
 	}	
 }
@@ -134,7 +149,7 @@ void EnvironmentCore::allocateTexStorageCubeMap( GLsizei levels, GLenum internal
 		texStorage2DFn( GL_TEXTURE_CUBE_MAP, levels, internalFormat, width, height );
 	else {
 		GLenum dataFormat, dataType;
-		TextureBase::getInternalFormatDataFormatAndType( internalFormat, &dataFormat, &dataType );
+		TextureBase::getInternalFormatInfo( internalFormat, &dataFormat, &dataType );
 		for( int face = 0; face < 6; ++face )
 			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + face, 0, internalFormat, width, height, 0, dataFormat, dataType, nullptr );
 	}
@@ -146,26 +161,36 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 	
 	s +=		"#version 150\n"
 				"\n"
-				"uniform mat4	ciModelViewProjection;\n"
-				"\n"
-				"in vec4		ciPosition;\n"
+				"uniform mat4 ciModelViewProjection;\n"
+				;
+
+	if( shader.mLambert )
+		s +=	"uniform mat3 ciNormalMatrix;\n";
+
+	s +=		"\n"
+				"in vec4 ciPosition;\n"
 				;
 
 	if( shader.mUniformBasedPosAndTexCoord ) {
-		s +=	"uniform vec2	uPositionOffset, uPositionScale;\n";
+		s +=	"uniform vec2 uPositionOffset, uPositionScale;\n";
 		if( shader.mTextureMapping ) {
-			s+= "uniform vec2	uTexCoordOffset, uTexCoordScale;\n";
+			s+=	"uniform vec2 uTexCoordOffset, uTexCoordScale;\n";
 		}
 	}
 	
 	if( shader.mTextureMapping ) {
-		s +=	"in vec2		ciTexCoord0;\n"
-				"out highp vec2	TexCoord;\n"
+		s +=	"in vec2 ciTexCoord0;\n"
+				"out highp vec2 TexCoord;\n"
 				;
 	}
 	if( shader.mColor ) {
-		s +=	"in vec4		ciColor;\n"
-				"out lowp vec4	Color;\n"
+		s +=	"in vec4 ciColor;\n"
+				"out lowp vec4 Color;\n"
+				;
+	}
+	if( shader.mLambert ) {
+		s +=	"in vec3 ciNormal;\n"
+				"out highp vec3 Normal;\n"
 				;
 	}
 
@@ -174,21 +199,25 @@ std::string	EnvironmentCore::generateVertexShader( const ShaderDef &shader )
 	if( shader.mUniformBasedPosAndTexCoord )
 		s +=	"	gl_Position = ciModelViewProjection * ( vec4( uPositionOffset, 0, 0 ) + vec4( uPositionScale, 1, 1 ) * ciPosition );\n";
 	else
-		s +=	"	gl_Position	= ciModelViewProjection * ciPosition;\n"
+		s +=	"	gl_Position = ciModelViewProjection * ciPosition;\n"
 				;
+	if( shader.mTextureMapping ) {
+		if( shader.mUniformBasedPosAndTexCoord )
+			s+=	"	TexCoord = uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
+		else
+			s+=	"	TexCoord = ciTexCoord0;\n";
+				;
+	}
 	if( shader.mColor ) {
 		s +=	"	Color = ciColor;\n"
 				;
 	}
-	if( shader.mTextureMapping ) {
-		if( shader.mUniformBasedPosAndTexCoord )
-			s+= "	TexCoord	= uTexCoordOffset + uTexCoordScale * ciTexCoord0;\n";
-		else
-			s+=	"	TexCoord	= ciTexCoord0;\n";
+	if( shader.mLambert ) {
+		s +=	"	Normal = ciNormalMatrix * ciNormal;\n"
 				;
 	}
 	
-	s +=		"}\n";
+	s +=		"}";
 	
 	return s;
 }
@@ -202,10 +231,6 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 				"out vec4 oColor;\n"
 				;
 
-	if( shader.mColor ) {
-		s +=	"in vec4		Color;\n";
-	}
-
 	if( shader.mTextureMapping ) {
 		if( shader.mTextureMappingRectangleArb )
 			s +="uniform sampler2DRect uTex0;\n";
@@ -214,31 +239,42 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 		s	+=	"in vec2	TexCoord;\n";
 				;
 	}
+	if( shader.mColor ) {
+		s +=	"in vec4 Color;\n";
+	}
+
+	if( shader.mLambert ) {
+		s +=	"in vec3 Normal;\n";
+	}
 
 	s +=		"void main( void )\n"
 				"{\n"
 				;
+
+	if( shader.mLambert ) {
+		s +=	"	const vec3 L = vec3( 0, 0, 1 );\n"
+				"	vec3 N = normalize( Normal );\n"
+				"	float lambert = max( 0.0, dot( N, L ) );\n"
+				;
+	}
 	
+	s += "	oColor = vec4( 1 )";
+
 	if( shader.mTextureMapping ) {
-		std::string textureSampleStr = "texture( uTex0, TexCoord.st )";
+		s +=	" * texture( uTex0, TexCoord.st )";
 		if( ! Texture::supportsHardwareSwizzle() && ! shader.isTextureSwizzleDefault() )
-			textureSampleStr += std::string(".") + shader.getTextureSwizzleString();
-		if( shader.mColor ) {
-			s +=	"	oColor = " + textureSampleStr + " * Color;\n"
-					;
-		}
-		else {
-			s +=	"	oColor = " + textureSampleStr + ";\n"
-					;
-		}
+			s += "." + shader.getTextureSwizzleString();
 	}
-	else if( shader.mColor ) {
-		s +=	"	oColor = Color;\n"
-				;
-	}
+
+	if( shader.mColor )
+		s +=	" * Color";
+
+	if( shader.mLambert )
+		s +=	" * vec4( vec3( lambert ), 1.0 )";
+
+	s +=	";\n";
 	
-	s +=		"}\n"
-				;
+	s +=	"}";
 	
 	return s;
 }
@@ -246,9 +282,10 @@ std::string	EnvironmentCore::generateFragmentShader( const ShaderDef &shader )
 
 GlslProgRef	EnvironmentCore::buildShader( const ShaderDef &shader )
 {
-	GlslProg::Format fmt = GlslProg::Format().vertex( generateVertexShader( shader ).c_str() )
-												.fragment( generateFragmentShader( shader ).c_str() )
-												.attribLocation( "ciPosition", 0 );
+	GlslProg::Format fmt = GlslProg::Format().vertex( generateVertexShader( shader ) )
+												.fragment( generateFragmentShader( shader ) )
+												.attribLocation( "ciPosition", 0 )
+												.preprocess( false );
 	if( shader.mTextureMapping )
 		fmt.attribLocation( "ciTexCoord0", 1 );
 	return GlslProg::create( fmt );		

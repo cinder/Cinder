@@ -23,6 +23,7 @@
 
 #include "cinder/Clipboard.h"
 #include "cinder/Unicode.h"
+#include "cinder/Log.h"
 #if defined( CINDER_MAC )
 	#include "cinder/cocoa/CinderCocoa.h"
 	#import <Cocoa/Cocoa.h>
@@ -53,7 +54,8 @@ namespace cinder {
 bool clipboardContainsFormat( const std::set<UINT> &formats )
 {
 	bool result = false;
-	::OpenClipboard( NULL );
+	if( ! ::OpenClipboard( NULL ) )
+		return false;
 	int numFormats = ::CountClipboardFormats();
 	for( int f = 0; f < numFormats; ++f ) {
 		if( formats.find( ::EnumClipboardFormats( f ) ) != formats.end() ) {
@@ -130,7 +132,8 @@ std::string	Clipboard::getString()
 		return std::string();
 #elif defined( CINDER_MSW )
 	std::string result;
-	::OpenClipboard( NULL );
+	if( ! ::OpenClipboard( NULL ) )
+		return result;
 	HANDLE dataH = ::GetClipboardData( CF_UNICODETEXT );
 	if( dataH ) {
 		wchar_t *pstr = reinterpret_cast<wchar_t*>( ::GlobalLock( dataH ) );
@@ -149,7 +152,7 @@ ImageSourceRef Clipboard::getImage()
 {
 #if defined( CINDER_MAC )
 	NSPasteboard *pasteboard = [NSPasteboard generalPasteboard];
-    NSBitmapImageRep *rep = [NSBitmapImageRep imageRepWithPasteboard:pasteboard];
+    NSBitmapImageRep *rep = (NSBitmapImageRep*)[NSBitmapImageRep imageRepWithPasteboard:pasteboard];
 	if( rep )
 		return cocoa::ImageSourceCgImage::createRef( [rep CGImage] );
 	else
@@ -163,7 +166,8 @@ ImageSourceRef Clipboard::getImage()
 		return ImageSourceRef();
 #elif defined( CINDER_MSW )
 	ImageSourceRef result;
-	::OpenClipboard( NULL );
+	if( ! ::OpenClipboard( NULL ) )
+		return ImageSourceRef();
 	HANDLE dataH = ::GetClipboardData( CF_DIBV5 );
 	if( dataH ) {
 		uint8_t *data = reinterpret_cast<uint8_t*>( ::GlobalLock( dataH ) );
@@ -189,7 +193,10 @@ void Clipboard::setString( const std::string &str )
 	UIPasteboard *pasteboard = [UIPasteboard generalPasteboard];
 	pasteboard.string = [NSString stringWithUTF8String:str.c_str()];
 #elif defined( CINDER_MSW )
-	::OpenClipboard( NULL );
+	if( ! ::OpenClipboard( NULL ) ) {
+		CI_LOG_E( "Failed to open clipboard" );
+		return;
+	}
 	::EmptyClipboard();
 	std::u16string wstr = toUtf16( str );
 	HANDLE hglbCopy = ::GlobalAlloc( GMEM_MOVEABLE, sizeof(uint16_t) * (wstr.length()+1) );
@@ -220,7 +227,10 @@ void Clipboard::setImage( ImageSourceRef imageSource, ImageTarget::Options optio
 	cocoa::SafeUiImage uiImage = cocoa::createUiImage( imageSource );
 	pasteboard.image = (UIImage*)uiImage;
 #elif defined( CINDER_MSW )
-	::OpenClipboard( NULL );
+	if( ! ::OpenClipboard( NULL ) ) {
+		CI_LOG_E( "Failed to open clipboard" );
+		return;
+	}
 	::EmptyClipboard();
 	int32_t rowBytes = (( imageSource->getWidth() * 32 + 31 ) / 32 ) * 4;
 	size_t dataSize = sizeof(BITMAPV5HEADER) + imageSource->getHeight() * rowBytes; 

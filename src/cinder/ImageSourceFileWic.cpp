@@ -120,8 +120,8 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Stream." );
 		mStream = msw::makeComShared( pIWICStream );
 		
-		mBuffer = dataSourceRef->getBuffer();
-		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( mBuffer.getData() ), mBuffer.getDataSize() );
+		BufferRef buffer = dataSourceRef->getBuffer();
+		hr = mStream->InitializeFromMemory( reinterpret_cast<BYTE*>( buffer->getData() ), buffer->getSize() );
 		if( ! SUCCEEDED(hr) )
 			throw ImageIoExceptionFailedLoad( "Could not initialize WIC Stream." );
 		
@@ -130,6 +130,14 @@ ImageSourceFileWic::ImageSourceFileWic( DataSourceRef dataSourceRef, ImageSource
 			throw ImageIoExceptionFailedLoad( "Could not create WIC Decoder from stream." );
 	}
 	std::shared_ptr<IWICBitmapDecoder> decoder = msw::makeComShared( decoderP );
+
+	// Parse # of frames
+	UINT frameCount = 1;
+	hr = decoder->GetFrameCount( &frameCount );
+	if( ! SUCCEEDED(hr) )
+		throw ImageIoExceptionFailedLoad( "Could not retrieve frame count from WIC Decoder." );
+	else
+		setFrameCount( frameCount );
 
     // Retrieve the 'index' frame of the image from the decoder
 	IWICBitmapFrameDecode *frameP = NULL;

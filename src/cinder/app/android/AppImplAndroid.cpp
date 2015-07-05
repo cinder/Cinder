@@ -460,36 +460,37 @@ ivec2 AppImplAndroid::getMousePos() const
 	return mMouseTouchPos;
 }
 
-fs::path AppImplAndroid::getAppPath()
-{
-	fs::path result;
+// @REMOVE
+// fs::path AppImplAndroid::getAppPath()
+// {
+// 	fs::path result;
 
-	pid_t pid = getpid();
-	std::stringstream ss;
-	ss << "/proc/" << pid << "/cmdline";
+// 	pid_t pid = getpid();
+// 	std::stringstream ss;
+// 	ss << "/proc/" << pid << "/cmdline";
 
-	std::string procPath = ss.str();
+// 	std::string procPath = ss.str();
 
-	std::ifstream is( procPath.c_str() );
-	if( is.is_open() ) {
-		std::vector<char> buf;
+// 	std::ifstream is( procPath.c_str() );
+// 	if( is.is_open() ) {
+// 		std::vector<char> buf;
 		
-		char c;
-		while( is.get( c ) ) {
-			buf.push_back( c );
+// 		char c;
+// 		while( is.get( c ) ) {
+// 			buf.push_back( c );
 
-			if( 0 == c ) {
-				break;
-			}
-		}
+// 			if( 0 == c ) {
+// 				break;
+// 			}
+// 		}
 
-		if( ! buf.empty() ) {
-			result = std::string( (const char *)(&buf[0]), buf.size() );
-		}
-	}	
+// 		if( ! buf.empty() ) {
+// 			result = std::string( (const char *)(&buf[0]), buf.size() );
+// 		}
+// 	}	
 
-	return result;
-}
+// 	return result;
+// }
 
 fs::path AppImplAndroid::getOpenFilePath( const fs::path &initialPath, std::vector<std::string> extensions )
 {

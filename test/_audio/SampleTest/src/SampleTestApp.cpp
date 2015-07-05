@@ -34,13 +34,12 @@ using namespace std;
 
 class SamplePlayerNodeTestApp : public App {
   public:
-	void prepareSettings( Settings *settings );
-	void setup();
-	void mouseDown( MouseEvent event );
-	void keyDown( KeyEvent event );
-	void fileDrop( FileDropEvent event );
-	void update();
-	void draw();
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void keyDown( KeyEvent event ) override;
+	void fileDrop( FileDropEvent event ) override;
+	void update() override;
+	void draw() override;
 
 	void setupBufferPlayerNode();
 	void setupFilePlayerNode();
@@ -78,11 +77,6 @@ class SamplePlayerNodeTestApp : public App {
 	bool						mSamplePlayerNodeEnabledState;
 	std::future<void>			mAsyncLoadFuture;
 };
-
-void SamplePlayerNodeTestApp::prepareSettings( Settings *settings )
-{
-    settings->setWindowSize( 1000, 500 );
-}
 
 void SamplePlayerNodeTestApp::setup()
 {
@@ -645,4 +639,6 @@ void SamplePlayerNodeTestApp::testWrite()
 	}
 }
 
-CINDER_APP( SamplePlayerNodeTestApp, RendererGl )
+CINDER_APP( SamplePlayerNodeTestApp, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowSize( 1000, 500 );
+} )

@@ -35,7 +35,7 @@
 //
 class BlurrableTransform
 {
-public:
+  public:
 	BlurrableTransform() = default;
 
 	//! Set current and previous transformation matrices to the same values.
@@ -49,7 +49,7 @@ public:
 
 	//! Returns the previous transformation matrix. Matches the penultimate values sent to update.
 	const ci::mat4& getPreviousTransform() const { return mPreviousTransform; }
-private:
+  private:
 	ci::mat4	mTransform;
 	ci::mat4	mPreviousTransform;
 };
@@ -59,7 +59,7 @@ private:
 //
 class BlurrableMesh
 {
-public:
+  public:
 	BlurrableMesh( ci::gl::VboMeshRef mesh, const ci::vec3 &pos );
 
 	//! Move the mesh and update its transforms.
@@ -79,7 +79,7 @@ public:
 	void setOscillation( const ci::vec3 &osc ) { mOscillation = osc; }
 	void setColor( const ci::ColorA &color ) { mColor = color; }
 	void setTheta( float t ) { mTheta = t; }
-private:
+  private:
 	// Transform data.
 	BlurrableTransform	mTransform;
 

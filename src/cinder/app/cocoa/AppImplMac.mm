@@ -25,6 +25,7 @@
 #include "cinder/app/Renderer.h"
 #include "cinder/app/Window.h"
 #include "cinder/app/cocoa/PlatformCocoa.h"
+#include "cinder/Log.h"
 #import "cinder/cocoa/CinderCocoa.h"
 
 #include <memory>
@@ -50,9 +51,18 @@ using namespace cinder::app;
 - (BOOL)canBecomeKeyWindow { return YES; }
 @end
 
+// private properties
+@interface AppImplMac()
+@property(nonatomic) IOPMAssertionID idleSleepAssertionID;
+@property(nonatomic) IOPMAssertionID displaySleepAssertionID;
+@end
+
 @implementation AppImplMac
 
 @synthesize windows = mWindows;
+
+@synthesize idleSleepAssertionID = mIdleSleepAssertionID;
+@synthesize displaySleepAssertionID = mDisplaySleepAssertionID;
 
 - (AppImplMac *)init:(AppMac *)app settings:(const AppMac::Settings &)settings
 {	
@@ -63,6 +73,7 @@ using namespace cinder::app;
 
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	[NSApp setMainMenu:mainMenu];
+	[mainMenu release];
 	
 	self.windows = [NSMutableArray array];
 	
@@ -130,27 +141,19 @@ using namespace cinder::app;
 
 - (void)timerFired:(NSTimer *)t
 {
-	// note: this would not work if the frame rate were set to something absurdly low
-	if( ! mApp->isPowerManagementEnabled() ) {
-		static double lastSystemActivity = 0;
-		double curTime = mApp->getElapsedSeconds();
-		if( curTime - lastSystemActivity >= 30 ) { // every thirty seconds call this to prevent sleep
-			::UpdateSystemActivity( OverallAct );
-			lastSystemActivity = curTime;
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		// issue update() event
+		mApp->privateUpdate__();
+
+		// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
+		for( WindowImplBasicCocoa* winIt in mWindows ) {
+			[winIt->mCinderView setReadyToDraw:YES];
 		}
-	}
-
-	// issue update() event
-	mApp->privateUpdate__();
-
-	// mark all windows as ready to draw; this really only matters the first time, to ensure the first update() fires before draw()
-	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		[winIt->mCinderView setReadyToDraw:YES];
-	}
-	
-	// walk all windows and draw them
-	for( WindowImplBasicCocoa* winIt in mWindows ) {
-		[winIt->mCinderView draw];
+		
+		// walk all windows and draw them
+		for( WindowImplBasicCocoa* winIt in mWindows ) {
+			[winIt->mCinderView draw];
+		}
 	}
 }
 
@@ -295,12 +298,17 @@ using namespace cinder::app;
 		[[mWindows lastObject] close];
 	}
 
-	mApp->emitShutdown();
+	mApp->emitCleanup();
 	delete mApp;
 }
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
+
 	mApp->emitDidBecomeActive();
 }
 
@@ -339,7 +347,40 @@ using namespace cinder::app;
 	if( ! mApp->privateEmitShouldQuit() )
 		return;
 
-	[NSApp terminate:nil];
+	[NSApp stop:nil];
+}
+
+- (void)setPowerManagementEnabled:(BOOL)flag
+{
+	if( flag && ![self isPowerManagementEnabled] ) {
+		CFStringRef reasonForActivity = CFSTR( "Cinder Application Execution" );
+		IOReturn status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleSystemSleep, kIOPMAssertionLevelOn, reasonForActivity, &mIdleSleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to create power management assertion to prevent idle system sleep" );
+		}
+
+		status = IOPMAssertionCreateWithName( kIOPMAssertPreventUserIdleDisplaySleep, kIOPMAssertionLevelOn, reasonForActivity, &mDisplaySleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to create power management assertion to prevent idle display sleep" );
+		}
+	} else if( !flag && [self isPowerManagementEnabled] ) {
+		IOReturn status = IOPMAssertionRelease( self.idleSleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle system sleep" );
+		}
+		self.idleSleepAssertionID = 0;
+
+		status = IOPMAssertionRelease( self.displaySleepAssertionID );
+		if( status != kIOReturnSuccess ) {
+			CI_LOG_E( "failed to release and deactivate power management assertion that prevents idle display sleep" );
+		}
+		self.displaySleepAssertionID = 0;
+	}
+}
+
+- (BOOL)isPowerManagementEnabled
+{
+	return self.idleSleepAssertionID != 0 && self.displaySleepAssertionID != 0;
 }
 
 - (float)getFrameRate
@@ -389,6 +430,9 @@ using namespace cinder::app;
 - (void)dealloc
 {
 	[mCinderView release];
+	if( mTitle )
+		[mTitle release];
+
 	[super dealloc];
 }
 
@@ -464,11 +508,15 @@ using namespace cinder::app;
 
 - (NSString *)getTitle
 {
-	return [mWin title];
+	return mTitle;
 }
 
 - (void)setTitle:(NSString *)title
 {
+	if( mTitle )
+		[mTitle release];
+
+	mTitle = [title copy]; // title is cached because sometimes we need to restore it after changing window border styles
 	[mWin setTitle:title];
 }
 
@@ -479,20 +527,35 @@ using namespace cinder::app;
 
 - (void)setBorderless:(BOOL)borderless
 {
+	if( mBorderless == borderless )
+		return;
+
 	mBorderless = borderless;
 
-	unsigned int styleMask;
+	NSUInteger styleMask;
 	if( mBorderless )
 		styleMask = ( mResizable ) ? ( NSBorderlessWindowMask | NSResizableWindowMask ) : NSBorderlessWindowMask;
 	else if( mResizable )
-		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask| NSResizableWindowMask;
+		styleMask = NSTitledWindowMask | NSClosableWindowMask | NSMiniaturizableWindowMask | NSResizableWindowMask;
 	else
 		styleMask = NSTitledWindowMask;
+
 	[mWin setStyleMask:styleMask];
 	[mWin makeFirstResponder:mCinderView];
 	[mWin makeKeyWindow];
 	[mWin makeMainWindow];
-	[mWin setHasShadow:(! mBorderless)];
+	[mWin setHasShadow:( ! mBorderless )];
+
+	// kludge: the titlebar buttons don't want to re-appear after coming back from borderless mode unless we resize the window.
+	if( ! mBorderless && mResizable ) {
+		ivec2 currentSize = mSize;
+		[self setSize:currentSize + ivec2( 0, 1 )];
+		[self setSize:currentSize];
+
+		// restore title, which also seems to disappear after coming back from borderless
+		if( mTitle )
+			[mWin setTitle:mTitle];
+	}
 }
 
 - (bool)isAlwaysOnTop
@@ -547,13 +610,18 @@ using namespace cinder::app;
 	return mCinderView;
 }
 
+- (void)windowDidBecomeMainNotification:(NSNotification *)notification
+{
+	mWindowRef->getRenderer()->makeCurrentContext( true );
+}
+
 - (void)windowMovedNotification:(NSNotification *)notification
 {
 	NSWindow *window = [notification object];
 
 	NSRect frame = [mWin frame];
 	NSRect content = [mWin contentRectForFrameRect:frame];
-	mPos = ivec2( content.origin.x, [[[NSScreen screens] objectAtIndex:0] frame].size.height - frame.origin.y - content.size.height );
+	mPos = ivec2( content.origin.x, mWin.screen.frame.size.height - frame.origin.y - content.size.height );
 	[mAppImpl setActiveWindow:self];
 
 	// This appears to be NULL in some scenarios
@@ -565,12 +633,16 @@ using namespace cinder::app;
 			auto newDisplay = cinder::app::PlatformCocoa::get()->findFromCgDirectDisplayId( displayID );
 			if( newDisplay ) {
 				mDisplay = newDisplay;
-				mWindowRef->emitDisplayChange();
+				if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+					mWindowRef->emitDisplayChange();
+				}
 			}
 		}
 	}
 	
-	mWindowRef->emitMove();
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		mWindowRef->emitMove();
+	}
 }
 
 - (void)windowWillCloseNotification:(NSNotification *)notification
@@ -594,86 +666,119 @@ using namespace cinder::app;
 {
 	NSSize nsSize = [mCinderView frame].size;
 	mSize = cinder::ivec2( nsSize.width, nsSize.height );
+
+	NSRect frame = [mWin frame];
+	NSRect content = [mWin contentRectForFrameRect:frame];
 	
-	[mAppImpl setActiveWindow:self];
-	
-	mWindowRef->emitResize();
+	ivec2 prevPos = mPos;	
+	mPos = ivec2( content.origin.x, mWin.screen.frame.size.height - frame.origin.y - content.size.height );
+
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		mWindowRef->emitResize();
+		
+		// If the resize happened from top left, also signal that the Window moved.
+		if( prevPos != mPos )
+			mWindowRef->emitMove();
+	}
 }
 
 - (void)draw
 {
-	[mAppImpl setActiveWindow:self];
-	mWindowRef->emitDraw();
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		mWindowRef->emitDraw();
+	}
 }
 
 - (void)mouseDown:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseDown( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseDown( event );
+	}
 }
 
 - (void)mouseDrag:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseDrag( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseDrag( event );
+	}
 }
 
 - (void)mouseUp:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseUp( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseUp( event );
+	}
 }
 
 - (void)mouseMove:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseMove( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseMove( event );
+	}
 }
 
 - (void)mouseWheel:(MouseEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitMouseWheel( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitMouseWheel( event );
+	}
 }
 
 - (void)keyDown:(KeyEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitKeyDown( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitKeyDown( event );
+	}
 }
 
 - (void)keyUp:(KeyEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitKeyUp( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitKeyUp( event );
+	}
 }
 
 - (void)touchesBegan:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesBegan( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesBegan( event );
+	}
 }
 
 - (void)touchesMoved:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesMoved( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesMoved( event );
+	}
 }
 
 - (void)touchesEnded:(TouchEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitTouchesEnded( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitTouchesEnded( event );
+	}
 }
 
 - (const std::vector<TouchEvent::Touch> &)getActiveTouches
@@ -683,9 +788,11 @@ using namespace cinder::app;
 
 - (void)fileDrop:(FileDropEvent *)event
 {
-	[mAppImpl setActiveWindow:self];
-	event->setWindow( mWindowRef );
-	mWindowRef->emitFileDrop( event );
+	if( ! ((PlatformCocoa*)Platform::get())->isInsideModalLoop() ) {
+		[mAppImpl setActiveWindow:self];
+		event->setWindow( mWindowRef );
+		mWindowRef->emitFileDrop( event );
+	}
 }
 
 - (app::WindowRef)getWindowRef
@@ -742,11 +849,11 @@ using namespace cinder::app;
 	[winImpl->mWin setLevel:( winImpl->mAlwaysOnTop ? NSScreenSaverWindowLevel : NSNormalWindowLevel )];
 
 	if( ! winFormat.getTitle().empty() )
-		[winImpl->mWin setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
+		[winImpl setTitle:[NSString stringWithUTF8String:winFormat.getTitle().c_str()]];
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-	
+
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
 
@@ -760,8 +867,10 @@ using namespace cinder::app;
 															highDensityDisplay:appImpl->mApp->isHighDensityDisplayEnabled()
 															enableMultiTouch:appImpl->mApp->isMultiTouchEnabled()];
 
-	[winImpl->mWin setDelegate:self];	
-	[winImpl->mWin setContentView:winImpl->mCinderView];
+	[winImpl->mWin setDelegate:self];
+	// add CinderView as subview of window's content view to avoid NSWindow warning: https://github.com/cinder/Cinder/issues/584
+	[winImpl->mWin.contentView addSubview:winImpl->mCinderView];
+	winImpl->mCinderView.autoresizingMask = NSViewWidthSizable | NSViewHeightSizable;
 
 	[winImpl->mWin makeKeyAndOrderFront:nil];
 	// after showing the window, the size may have changed (see NSWindow::constrainFrameRect) so we need to update our internal variable
@@ -770,6 +879,7 @@ using namespace cinder::app;
 	[winImpl->mWin setInitialFirstResponder:winImpl->mCinderView];
 	[winImpl->mWin setAcceptsMouseMovedEvents:YES];
 	[winImpl->mWin setOpaque:YES];
+	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowDidBecomeMainNotification:) name:NSWindowDidBecomeMainNotification object:winImpl->mWin];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowMovedNotification:) name:NSWindowDidMoveNotification object:winImpl->mWin];
 	[[NSNotificationCenter defaultCenter] addObserver:winImpl selector:@selector(windowWillCloseNotification:) name:NSWindowWillCloseNotification object:winImpl->mWin];
 	[winImpl->mCinderView setNeedsDisplay:YES];

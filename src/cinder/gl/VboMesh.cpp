@@ -23,6 +23,7 @@
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/Context.h"
+#include "cinder/gl/ConstantConversions.h"
 #include "cinder/Log.h"
 
 using namespace std;
@@ -56,7 +57,18 @@ class VboMeshSource : public geom::Source {
 // VboMeshGeomTarget
 class VboMeshGeomTarget : public geom::Target {
   public:
-	typedef std::pair<geom::BufferLayout,std::unique_ptr<uint8_t[]>> BufferData;
+	struct BufferData {
+		BufferData( const geom::BufferLayout &layout, uint8_t *data, size_t dataSize )
+			: mLayout( layout ), mData( data ), mDataSize( dataSize )
+		{}
+		BufferData( BufferData &&rhs )
+			: mLayout( rhs.mLayout ), mData( std::move( rhs.mData ) ), mDataSize( rhs.mDataSize )
+		{}
+	
+		geom::BufferLayout			mLayout;
+		std::unique_ptr<uint8_t[]>	mData;
+		size_t						mDataSize;
+	};
 
 	VboMeshGeomTarget( geom::Primitive prim, VboMesh *vboMesh )
 		: mPrimitive( prim ), mVboMesh( vboMesh )
@@ -65,14 +77,14 @@ class VboMeshGeomTarget : public geom::Target {
 		// create a vector of temporary data that parallels the VboMesh's vertexData
 		for( const auto &vertexArrayBuffer : mVboMesh->getVertexArrayLayoutVbos() ) {
 			size_t requiredBytes = vertexArrayBuffer.first.calcRequiredStorage( mVboMesh->mNumVertices );
-			mBufferData.push_back( BufferData( vertexArrayBuffer.first, std::unique_ptr<uint8_t[]>( new uint8_t[requiredBytes] ) ) );
+			mBufferData.push_back( BufferData( vertexArrayBuffer.first, new uint8_t[requiredBytes], requiredBytes ) );
 		}
 	}
 	
 	virtual geom::Primitive	getPrimitive() const;
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	//! Must be called in order to upload temporary 'mBufferData' to VBOs
 	void	copyBuffers();
@@ -102,20 +114,29 @@ void VboMeshGeomTarget::copyAttrib( geom::Attrib attr, uint8_t dims, size_t stri
 	// we need to find which element of 'mBufferData' containts 'attr'
 	uint8_t *dstData = nullptr;
 	uint8_t dstDims;
-	size_t dstStride;
+	size_t dstStride, dstDataSize;
 	for( const auto &bufferData : mBufferData ) {
-		if( bufferData.first.hasAttrib( attr ) ) {
-			auto attrInfo = bufferData.first.getAttribInfo( attr );
+		if( bufferData.mLayout.hasAttrib( attr ) ) {
+			auto attrInfo = bufferData.mLayout.getAttribInfo( attr );
 			dstDims = attrInfo.getDims();
 			dstStride = attrInfo.getStride();
-			dstData = bufferData.second.get() + attrInfo.getOffset();
+			dstData = bufferData.mData.get() + attrInfo.getOffset();
+			dstDataSize = bufferData.mDataSize;
 			break;
 		}
 	}
 	CI_ASSERT( dstData );
 	
+	// verify we've been called with the number of vertices we were promised earlier
 	if( count != mVboMesh->mNumVertices ) {
 		CI_LOG_E( "copyAttrib() called with " << count << " elements. " << mVboMesh->mNumVertices << " expected." );
+		return;
+	}
+	
+	// verify we have room for this data
+	auto testDstStride = dstStride ? dstStride : ( dstDims * sizeof(float) );
+	if( dstDataSize < count * testDstStride ) {
+		CI_LOG_E( "copyAttrib() called with inadequate attrib data storage allocated" );
 		return;
 	}
 	
@@ -151,8 +172,8 @@ void VboMeshGeomTarget::copyBuffers()
 {
 	// iterate all the buffers in mBufferData and upload them to the corresponding VBO in the VboMesh
 	for( auto bufferDataIt = mBufferData.begin(); bufferDataIt != mBufferData.end(); ++bufferDataIt ) {
-		auto vertexArrayIt = mVboMesh->mVertexArrayVbos.begin() + std::distance( bufferDataIt, mBufferData.begin() );
-		vertexArrayIt->second->copyData( vertexArrayIt->second->getSize(), bufferDataIt->second.get() );
+		auto vertexArrayIt = mVboMesh->mVertexArrayVbos.begin() + std::distance( mBufferData.begin(), bufferDataIt );
+		vertexArrayIt->second->copyData( bufferDataIt->mDataSize, bufferDataIt->mData.get() );
 	}
 }
 
@@ -236,6 +257,15 @@ VboMeshRef VboMesh::create( const geom::Source &source, const geom::AttribSet &r
 		layout.attrib( attrib, 0 ); // 0 dim implies querying the Source for its dimension
 	
 	return VboMeshRef( new VboMesh( source, { { layout, nullptr } }, nullptr ) );
+}
+
+VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<VboMesh::Layout> &vertexArrayLayouts )
+{
+	std::vector<std::pair<VboMesh::Layout,VboRef>> layoutVbos;
+	for( const auto &vertexArrayLayout : vertexArrayLayouts )
+		layoutVbos.push_back( std::make_pair( vertexArrayLayout, (VboRef)nullptr ) );
+
+	return VboMeshRef( new VboMesh( source, layoutVbos, nullptr ) );
 }
 
 VboMeshRef VboMesh::create( const geom::Source &source, const std::vector<std::pair<VboMesh::Layout,VboRef>> &vertexArrayLayouts, const VboRef &indexVbo )
@@ -341,48 +371,127 @@ void VboMesh::allocateIndexVbo()
 
 void VboMesh::buildVao( const GlslProgRef &shader, const AttribGlslMap &attributeMapping )
 {
+	buildVao( shader.get(), attributeMapping );
+}
+
+void VboMesh::buildVao( const GlslProg* shader, const AttribGlslMap &attributeMapping )
+{
 	auto ctx = gl::context();
-	
-	// iterate all the vertex array VBOs; map<geom::BufferLayout,VboRef>
+	std::set<geom::Attrib> enabledAttribs;
+	// iterate all the vertex array VBOs
 	for( const auto &vertArrayVbo : mVertexArrayVbos ) {
 		// bind this VBO (to the current VAO)
 		vertArrayVbo.second->bind();
 		// now iterate the attributes associated with this VBO
-		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
-			int loc = -1;
+		for( const auto &vertAttribInfo : vertArrayVbo.first.getAttribs() ) {
+			const GlslProg::Attribute *shaderAttribInfo = nullptr;
 			// first see if we have a mapping in 'attributeMapping'
-			auto attributeMappingIt = attributeMapping.find( attribInfo.getAttrib() );
-			if( attributeMappingIt != attributeMapping.end() ) {
-				loc = shader->getAttribLocation( attributeMappingIt->second );
-			}
-			// otherwise, try to get the location of the attrib semantic in the shader if it's present
-			else if( shader->hasAttribSemantic( attribInfo.getAttrib() ) ) {
-				loc = shader->getAttribSemanticLocation( attribInfo.getAttrib() );			
-			}
+			auto attributeMappingIt = attributeMapping.find( vertAttribInfo.getAttrib() );
 			
-			// if either the shader's mapping or 'attributeMapping' has this semantic, add it to the VAO
-			if( loc != -1 ) {
-				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
-				if( attribInfo.getInstanceDivisor() > 0 )
-					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
+			if( attributeMappingIt != attributeMapping.end() )
+				shaderAttribInfo = shader->findAttrib( attributeMappingIt->second );
+			// otherwise, try to get the location of the attrib semantic in the shader if it's present
+			else if( shader->hasAttribSemantic( vertAttribInfo.getAttrib() ) )
+				shaderAttribInfo = shader->findAttrib( vertAttribInfo.getAttrib() );
+			
+			if( shaderAttribInfo ) {
+				auto shaderLoc = shaderAttribInfo->getLocation();
+				
+				auto numDims = (int)vertAttribInfo.getDims();
+				
+				// examples of glsl types and the expected layout
+				// in mat4 model	- 16 dims(vertArray), 16 dims(shader), count 1, 4 per, numTimes 4(split) * 1(count)
+				// in vec3 stuff[3] -  9 dims(vertArray),  3 dims(shader), count 3, 3 per, numTimes 1(split) * 3(count)
+				// in mat4 model[3] - 48 dims(vertArray), 16 dims(shader), count 4, 4 per, numTimes 4(split) * 3(count)
+				// in vec4 stuff	-  4 dims(vertArray),  4 dims(shader), count 1, 4 per, numTimes 1(split) * 1(count)
+				// in vec2 stuff[5] - 10 dims(vertArray),  2 dims(shader), count 5, 2 per, numTimes 1(split) * 5(count)
+				// in mat2x3 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 2 per, numTimes 3(split) * 1(count)
+				// in mat3x2 stuff	-  6 dims(vertArray),  6 dims(shader), count 1, 3 per, numTimes 2(split) * 1(count)
+				// in mat2x2 stuff[2]- 8 dims(vertArray),  4 dims(shader), count 2, 2 per, numTimes 2(split) * 2(count)
+				
+				// num array elements or 1 if not an array
+				uint32_t shaderAttribCount = shaderAttribInfo->getCount();
+				uint32_t numDimsPerVertexPointer;
+				uint32_t numLocationsExpected;
+				GlslProg::Attribute::getShaderAttribLayout( shaderAttribInfo->getType(), &numDimsPerVertexPointer, &numLocationsExpected );
+				uint32_t shaderAttribTotalDims = numDimsPerVertexPointer * numLocationsExpected * shaderAttribCount;
+				if( numDims != shaderAttribTotalDims ) {
+					if( numDims <= 4 )
+						numDimsPerVertexPointer = numDims;
+					else {
+						CI_LOG_E( geom::attribToString( vertAttribInfo.getAttrib() ) + "'s BufferLayout defined dimensions(" << numDims << ") does not match shader expected dimensions(" << shaderAttribTotalDims << ") for " << shaderAttribInfo->getName() << ", skipping attribute");
+						continue;
+					}
+				}
+				
+				uint32_t dataTypeBytes = 0;
+				switch ( vertAttribInfo.getDataType() ) {
+					case geom::DataType::FLOAT: dataTypeBytes = 4; break;
+					case geom::DataType::INTEGER: dataTypeBytes = 4; break;
+					case geom::DataType::DOUBLE: dataTypeBytes = 8; break;
+				}
+				
+				uint32_t numTimes = numLocationsExpected * shaderAttribCount;
+				size_t currentInnerOffset = 0;
+				for( int i = 0; i < numTimes; i++ ) {
+					ctx->enableVertexAttribArray( shaderLoc + i );
+					if( vertAttribInfo.getDataType() != geom::DataType::INTEGER )
+						ctx->vertexAttribPointer( shaderLoc + i, numDimsPerVertexPointer, GL_FLOAT, GL_FALSE, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+#if ! defined( CINDER_GL_ES_2 )
+					else
+						ctx->vertexAttribIPointer( shaderLoc + i, numDimsPerVertexPointer, GL_INT, (GLsizei)vertAttribInfo.getStride(), (const void*)(vertAttribInfo.getOffset() + currentInnerOffset) );
+#endif
+					if( vertAttribInfo.getInstanceDivisor() > 0 )
+						ctx->vertexAttribDivisor( shaderLoc + i, vertAttribInfo.getInstanceDivisor() );
+					currentInnerOffset += (numDimsPerVertexPointer * dataTypeBytes);
+				}
+				
+				enabledAttribs.insert( vertAttribInfo.getAttrib() );
 			}
 		}
 	}
 	
-	if( mNumIndices > 0 )
+	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
+	const auto &glslActiveAttribs = shader->getActiveAttributes();
+	for( auto &glslActiveAttrib : glslActiveAttribs ) {
+		bool attribMappingFound = false;
+		auto glslAttribName = glslActiveAttrib.getName();
+		for( auto & attrib : attributeMapping ) {
+			if( glslAttribName == attrib.second ) {
+				attribMappingFound = true;
+			}
+		}
+		auto attribSemantic = glslActiveAttrib.getSemantic();
+		if( (attribSemantic != geom::Attrib::COLOR) &&
+		   (enabledAttribs.count( attribSemantic ) == 0) &&
+		   ! attribMappingFound &&
+		   /* From GL 4.3 core spec, section 11.1.1 (Vertex Attributes):
+			* "For GetActiveAttrib, all active vertex shader input variables
+			* are enumerated, including the special built-in inputs gl_VertexID
+			* and gl_InstanceID."
+			*/
+		   ( glslAttribName != "gl_InstanceID" && glslAttribName != "gl_VertexID") )
+			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( attribSemantic ) << ", with name " << glslAttribName << " but vertex data doesn't provide it." );
+	}
+	
+	if( mIndices )
 		mIndices->bind();
+
 }
 
-void VboMesh::drawImpl()
+void VboMesh::drawImpl( GLint first, GLsizei count )
 {
-	if( mNumIndices )
-		glDrawElements( mGlPrimitive, mNumIndices, mIndexType, (GLvoid*)( 0 ) );
+	if( mNumIndices ) {
+		size_t firstByteOffset = first;
+		if( mIndexType == GL_UNSIGNED_INT ) firstByteOffset *= 4;
+		else if( mIndexType == GL_UNSIGNED_SHORT ) firstByteOffset *= 2;
+		glDrawElements( mGlPrimitive, ( count < 0 ) ? ( mNumIndices - first ) : count, mIndexType, (GLvoid*)( firstByteOffset ) );
+	}
 	else
-		glDrawArrays( mGlPrimitive, 0, mNumVertices );
+		glDrawArrays( mGlPrimitive, first, ( count < 0 ) ? ( mNumVertices - first ) : count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -391,7 +500,7 @@ void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 	else
 		ctx->drawArraysInstanced( mGlPrimitive, 0, mNumVertices, instanceCount );
 }
-#endif
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {

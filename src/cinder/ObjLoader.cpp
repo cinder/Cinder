@@ -28,14 +28,10 @@
 #include <sstream>
 using namespace std;
 
+// For stoi
 #if defined( CINDER_ANDROID )
-#include <cstdlib>
-int stoi( const std::string& str ) 
-{
-	return strtol( str.c_str(), nullptr, 10 );
-}
-#endif 
-
+	#include "cinder/android/CinderAndroid.h"
+#endif
 
 namespace cinder {
 
@@ -44,20 +40,20 @@ geom::SourceRef	loadGeom( const fs::path &path )
 	return geom::SourceRef();
 }
 
-ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords )
-	: mStream( stream ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( shared_ptr<IStreamCinder> stream, bool includeNormals, bool includeTexCoords, bool optimize )
+	: mStream( stream ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeNormals, bool includeTexCoords )
-	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, bool includeNormals, bool includeTexCoords, bool optimize )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parse( includeNormals, includeTexCoords );
 }
 
-ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals, bool includeTexCoords )
-	: mStream( dataSource->createStream() ), mOutputCached( false ), mGroupIndex( numeric_limits<size_t>::max() )
+ObjLoader::ObjLoader( DataSourceRef dataSource, DataSourceRef materialSource, bool includeNormals, bool includeTexCoords, bool optimize )
+	: mStream( dataSource->createStream() ), mOutputCached( false ), mOptimizeVertices( optimize ), mGroupIndex( numeric_limits<size_t>::max() )
 {
 	parseMaterial( materialSource->createStream() );
 	parse( includeNormals, includeTexCoords );
@@ -411,7 +407,7 @@ void ObjLoader::loadGroupNormalsTextures( const Group &group, map<VertexTriple,i
     bool hasColors = mMaterials.size() > 0;
 	for( size_t f = 0; f < group.mFaces.size(); ++f ) {
 		vec3 inferredNormal;
-		bool forceUnique = false;
+		bool forceUnique = ! mOptimizeVertices;
 		Color rgb;
 		if( hasColors ) {
 			const Material *m = group.mFaces[f].mMaterial;
@@ -495,7 +491,7 @@ void ObjLoader::loadGroupNormals( const Group &group, map<VertexPair,int> &uniqu
 			}
         }
 		vec3 inferredNormal;
-		bool forceUnique = false;
+		bool forceUnique = ! mOptimizeVertices;
 		if( group.mFaces[f].mNormalIndices.empty() ) { // we'll have to derive it from two edges
 			vec3 edge1 = mInternalVertices[group.mFaces[f].mVertexIndices[1]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
 			vec3 edge2 = mInternalVertices[group.mFaces[f].mVertexIndices[2]] - mInternalVertices[group.mFaces[f].mVertexIndices[0]];
@@ -556,7 +552,7 @@ void ObjLoader::loadGroupTextures( const Group &group, map<VertexPair,int> &uniq
 				rgb.b = 1;
 			}
 		}
-		bool forceUnique = false;
+		bool forceUnique = ! mOptimizeVertices;
 		if( group.mFaces[f].mTexCoordIndices.empty() )
 			forceUnique = true;
 		
@@ -644,12 +640,12 @@ class ObjWriteTarget : public geom::Target {
 		mHasNormals = mHasTexCoords = false;
 	}
 	
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
   protected:
-	void writeData( const std::string &typeSpecifier, uint8_t dims, size_t strideBytes, const float *srcData, size_t count );
+	void	writeData( const std::string &typeSpecifier, uint8_t dims, size_t strideBytes, const float *srcData, size_t count );
 
 	OStreamRef		mStream;
 	bool			mIncludeTexCoords, mIncludeNormals;
@@ -752,18 +748,21 @@ void ObjWriteTarget::copyIndices( geom::Primitive primitive, const uint32_t *sou
 }
 } // anonymous namespace
 
-void objWrite( DataTargetRef dataTarget, const geom::Source &source, bool includeNormals, bool includeTexCoords )
+void writeObj( const DataTargetRef &dataTarget, const geom::Source &source, bool includeNormals, bool includeTexCoords )
 {
 	OStreamRef stream = dataTarget->getStream();
 	
 	unique_ptr<ObjWriteTarget> target( new ObjWriteTarget( stream, includeNormals, includeTexCoords ) );
+
 	geom::AttribSet requestedAttribs;
+	requestedAttribs.insert( geom::POSITION );
 	if( includeNormals )
 		requestedAttribs.insert( geom::NORMAL );
 	if( includeTexCoords )
 		requestedAttribs.insert( geom::TEX_COORD_0 );
+
 	source.loadInto( target.get(), requestedAttribs );
-	
+
 	if( source.getNumIndices() == 0 )
 		target->generateIndices( geom::Primitive::TRIANGLES, source.getNumVertices() );
 }

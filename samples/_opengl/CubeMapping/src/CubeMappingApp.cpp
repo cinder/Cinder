@@ -2,9 +2,6 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/ImageIo.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Batch.h"
-#include "cinder/gl/GlslProg.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -80,4 +77,4 @@ void CubeMappingApp::draw()
 	gl::popMatrices();		
 }
 
-CINDER_APP( CubeMappingApp, RendererGl )
+CINDER_APP( CubeMappingApp, RendererGl( RendererGl::Options().msaa( 16 ) ) )

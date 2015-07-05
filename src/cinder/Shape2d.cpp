@@ -78,17 +78,17 @@ void Shape2d::scale( const vec2 &amount, vec2 scaleCenter )
 		contIt->scale( amount, scaleCenter );
 }
 
-void Shape2d::transform( const MatrixAffine2f &matrix )
+void Shape2d::transform( const mat3 &matrix )
 {
 	for( vector<Path2d>::iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
 		contIt->transform( matrix );
 }
 
-Shape2d	Shape2d::transformCopy( const MatrixAffine2f &matrix ) const
+Shape2d	Shape2d::transformed( const mat3 &matrix ) const
 {
 	Shape2d result;
 	for( vector<Path2d>::const_iterator contIt = mContours.begin(); contIt != mContours.end(); ++contIt )
-		result.appendContour( contIt->transformCopy( matrix ) );
+		result.appendContour( contIt->transformed( matrix ) );
 	return result;
 }
 

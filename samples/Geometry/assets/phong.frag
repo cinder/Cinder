@@ -36,30 +36,35 @@ void main()
 	vec3 vLightPosition = vec3( 0.0 );
 
 	// lighting calculations
-	vec3 vVertex = vVertexIn.position.xyz;
-	vec3 vNormal = normalize( vVertexIn.normal );
-	vec3 vToLight = normalize( vLightPosition - vVertex );
-	vec3 vToEye = normalize( -vVertex );
-	vec3 vReflect = normalize( -reflect(vToLight, vNormal) );
+	vec3 N = normalize( vVertexIn.normal );
+	vec3 L = normalize( vLightPosition - vVertexIn.position.xyz );
+	vec3 E = normalize( -vVertexIn.position.xyz );
+	vec3 H = normalize( L + E );
+
+	// Calculate coefficients.
+	float phong = max( dot( N, L ), 0.0 );
+
+	const float kMaterialShininess = 20.0;
+	const float kNormalization = ( kMaterialShininess + 8.0 ) / ( 3.14159265 * 8.0 );
+	float blinn = pow( max( dot( N, H ), 0.0 ), kMaterialShininess ) * kNormalization;
+
+	// Make sure we never exceed the max energy level.
+	//phong -= max( 0.0, ( blinn + phong ) - 1.0 );
 
 	// diffuse coefficient
-	vec3 diffuse = max( dot( vNormal, vToLight ), 0.0 ) * cDiffuse;
+	vec3 diffuse = phong * cDiffuse;
 
 	if( uTexturingMode == 1 )
 		diffuse *= 0.5 + 0.5 * checkered( vVertexIn.texCoord, 20 );
 	else if ( uTexturingMode == 2 )
 		diffuse *= 0.5 + 0.5 * texture( uTex0, vVertexIn.texCoord.st ).rgb;
 
-	// specular coefficient with energy conservation
-	const float shininess = 20.0;
-	const float coeff = (2.0 + shininess) / (2.0 * 3.14159265);
-	vec3 specular = pow( max( dot( vReflect, vToEye ), 0.0 ), shininess ) * coeff * cSpecular;
+	// specular coefficient 
+	vec3 specular = blinn * cSpecular;
 
-	// to conserve energy, diffuse and specular colors should not exceed one
-	float maxDiffuse = max( diffuse.r, max( diffuse.g, diffuse.b ) );
-	float maxSpecular = max( specular.r, max( specular.g, specular.b ) );
-	float fConserve = 1.0 / max( 1.0, maxDiffuse + maxSpecular );
+	// alpha 
+	float alpha = ( uTexturingMode == 3 ) ? 0.75 : 1.0;
 
 	// final color
-	oFragColor = vec4( (diffuse + specular) * fConserve, 1.0 );
+	oFragColor = vec4( diffuse + specular, alpha );
 }

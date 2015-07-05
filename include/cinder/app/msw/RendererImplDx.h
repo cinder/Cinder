@@ -86,7 +86,7 @@ class RendererImplDx : public RendererImplMsw {
 #if defined( CINDER_MSW )
 	virtual bool	initialize( HWND wnd, HDC dc,  RendererRef sharedRenderer );
 #elif defined( CINDER_WINRT)
-	virtual bool	initialize( DX_WINDOW_TYPE wnd );
+	virtual bool	initialize( Platform::Agile<Windows::UI::Core::CoreWindow> wnd );
 #endif
 
 	virtual void	prepareToggleFullScreen();
@@ -197,7 +197,7 @@ class RendererImplDx : public RendererImplMsw {
 	bool	createShadersFeatureLevel_11_1();
 
 	void	handleLostDevice();
-	void	getPlatformWindowDimensions(DX_WINDOW_TYPE wnd, float* width, float* height) const;
+	void	getPlatformWindowDimensions( Platform::Agile<Windows::UI::Core::CoreWindow> wnd, float* width, float* height ) const;
 	void	releaseNonDeviceResources();
 	
 	int mStateFlags;

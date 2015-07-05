@@ -36,7 +36,7 @@
 	#include "cinder/UrlImplCocoa.h"
 	typedef cinder::IStreamUrlImplCocoa		IStreamUrlPlatformImpl;
 #elif defined( CINDER_WINRT )
-	#include "cinder/WinRTUtils.h"
+	#include "cinder/winrt/WinRTUtils.h"
 	#include "cinder/msw/CinderMsw.h"
 	#include <wrl/client.h>
 	#include <agile.h>

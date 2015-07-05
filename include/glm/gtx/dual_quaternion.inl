@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -92,6 +92,12 @@ namespace glm
 	{}
 
 	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tdualquat<T, P>::tdualquat(tdualquat<T, P> const & d)
+		: real(d.real)
+		, dual(d.dual)
+	{}
+
+	template <typename T, precision P>
 	template <precision Q>
 	GLM_FUNC_QUALIFIER tdualquat<T, P>::tdualquat(tdualquat<T, Q> const & d)
 		: real(d.real)
@@ -150,18 +156,37 @@ namespace glm
 	// tdualquat operators
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator*=(T const & s)
+	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator=(tdualquat<T, P> const & q)
 	{
-		this->real *= s;
-		this->dual *= s;
+		this->real = q.real;
+		this->dual = q.dual;
 		return *this;
 	}
 
 	template <typename T, precision P>
-	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator/=(T const & s)
+	template <typename U>
+	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator=(tdualquat<U, P> const & q)
 	{
-		this->real /= s;
-		this->dual /= s;
+		this->real = q.real;
+		this->dual = q.dual;
+		return *this;
+	}
+
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator*=(U s)
+	{
+		this->real *= static_cast<T>(s);
+		this->dual *= static_cast<T>(s);
+		return *this;
+	}
+
+	template <typename T, precision P>
+	template <typename U>
+	GLM_FUNC_QUALIFIER tdualquat<T, P> & tdualquat<T, P>::operator/=(U s)
+	{
+		this->real /= static_cast<T>(s);
+		this->dual /= static_cast<T>(s);
 		return *this;
 	}
 

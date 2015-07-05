@@ -26,14 +26,9 @@
 
 #include "cinder/Cinder.h"
 #include "cinder/Exception.h"
-#include "cinder/MatrixStack.h"
 
-#if defined( CINDER_MSW )
-	struct HWND__;
-	typedef HWND__* DX_WINDOW_TYPE;
-#elif defined( CINDER_WINRT )
+#if defined( CINDER_WINRT )
 	#include <agile.h>
-	typedef Platform::Agile<Windows::UI::Core::CoreWindow>	DX_WINDOW_TYPE;
 	#undef min
 	#undef max
 #endif
@@ -78,26 +73,20 @@ class AppBase;
 typedef std::shared_ptr<class Renderer>		RendererRef;
 class Renderer {
  public:
-	enum RendererType {
-		RENDERER_GL,
-		RENDERER_DX
-	};
-
 	virtual ~Renderer() {}
 	
 	virtual RendererRef	clone() const = 0;
-	virtual RendererType getRendererType() const { return RENDERER_GL; }
 	
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
 		virtual void	setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) = 0;
-		virtual CGContextRef			getCgContext() { throw; } // the default behavior is failure
 		virtual CGLContextObj			getCglContext() { throw; } // the default behavior is failure
 		virtual CGLPixelFormatObj		getCglPixelFormat() { throw; } // the default behavior is failure
 	#elif defined( CINDER_COCOA_TOUCH )
 		virtual void		setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) = 0;
 		virtual bool		isEaglLayer() const { return false; }
 	#endif
+	virtual CGContextRef	getCgContext() { throw; } // the default behavior is failure
 
 	virtual void	setFrameSize( int width, int height ) {}		
 
@@ -111,11 +100,7 @@ class Renderer {
 	virtual HWND				getHwnd() = 0;
 	virtual HDC					getDc() { return NULL; }
 #elif defined( CINDER_WINRT)
-	virtual void setup( DX_WINDOW_TYPE wnd) = 0;
-
-	virtual void prepareToggleFullScreen() {}
-	virtual void finishToggleFullScreen() {}
-	virtual void kill() {}
+	virtual void setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) = 0;
 #elif defined( CINDER_ANDROID )
 	virtual void setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer ) = 0;	
 #endif
@@ -124,7 +109,7 @@ class Renderer {
 
 	virtual void startDraw() {}
 	virtual void finishDraw() {}
-	virtual void makeCurrentContext() {}
+	virtual void makeCurrentContext( bool force = false ) {}
 	virtual void swapBuffers() {}
 	virtual void defaultResize() {}
 
@@ -139,22 +124,22 @@ class Renderer2d : public Renderer {
   public:
   	Renderer2d();
 	
-	static Renderer2dRef	create() { return Renderer2dRef( new Renderer2d() ); }
-	virtual RendererRef		clone() const { return Renderer2dRef( new Renderer2d( *this ) ); }
+	static Renderer2dRef	create()				{ return Renderer2dRef( new Renderer2d() ); }
+	RendererRef				clone() const override	{ return Renderer2dRef( new Renderer2d( *this ) ); }
 
 	#if defined( CINDER_COCOA_TOUCH )
-		virtual void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
+	void setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
 	#else
-		~Renderer2d();
-		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
+	~Renderer2d();
+	void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
 	#endif
 
-	virtual CGContextRef			getCgContext();
+	CGContextRef	getCgContext() override;
 
 	void			startDraw() override;
 	void			finishDraw() override;
 	void			defaultResize() override;
-	void			makeCurrentContext() override;
+	void			makeCurrentContext( bool force = false ) override;
 	void			setFrameSize( int width, int height ) override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 	

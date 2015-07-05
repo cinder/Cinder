@@ -226,7 +226,7 @@ void Line::calcExtents()
 #elif defined( CINDER_WINRT )
 	mHeight = mWidth = mAscent = mDescent = mLeading = 0;
 	for( vector<Run>::iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
-		FT_Face face = runIt->mFont.getFace();
+		FT_Face face = runIt->mFont.getFreetypeFace();
 		
 		int width = 0;
 		for(string::iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
@@ -285,7 +285,7 @@ void Line::render(Channel &channel, float currentY, float xBorder, float maxWidt
 	else if( mJustification == RIGHT )
 		currentX = maxWidth - mWidth - xBorder;
 	for( vector<Run>::const_iterator runIt = mRuns.begin(); runIt != mRuns.end(); ++runIt ) {
-		FT_Face face = runIt->mFont.getFace();
+		FT_Face face = runIt->mFont.getFreetypeFace();
 		for(string::const_iterator strIt = runIt->mText.begin(); strIt != runIt->mText.end(); ++strIt)
 		{
 			FT_Load_Char(face, *strIt, FT_LOAD_RENDER);
@@ -574,7 +574,7 @@ Surface renderString( const string &str, const Font &font, const ColorA &color, 
 #elif defined( CINDER_WINRT )
 	Channel channel( pixelWidth, pixelHeight );
 	ip::fill<uint8_t>( &channel, 0 );
-	FT_Face face = font.getFace();
+	FT_Face face = font.getFreetypeFace();
 	int offset = 0;
 	for(string::const_iterator strIt = str.begin(); strIt != str.end(); ++strIt)
 	{
@@ -685,6 +685,9 @@ Surface	TextBox::render( vec2 offset )
 	Surface result( (int)sizeX, (int)sizeY, true );
 	ip::fill( &result, mBackgroundColor );
 	::CGContextRef cgContext = cocoa::createCgBitmapContext( result );
+	if( ! cgContext )
+		return result;
+	
 	::CGContextSetTextMatrix( cgContext, CGAffineTransformIdentity );
 	
 	for( vector<pair<shared_ptr<const __CTLine>,vec2> >::const_iterator lineIt = mLines.begin(); lineIt != mLines.end(); ++lineIt ) {

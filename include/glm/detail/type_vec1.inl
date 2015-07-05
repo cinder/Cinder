@@ -1,7 +1,7 @@
 ///////////////////////////////////////////////////////////////////////////////////
 /// OpenGL Mathematics (glm.g-truc.net)
 ///
-/// Copyright (c) 2005 - 2014 G-Truc Creation (www.g-truc.net)
+/// Copyright (c) 2005 - 2015 G-Truc Creation (www.g-truc.net)
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
 /// in the Software without restriction, including without limitation the rights
@@ -40,6 +40,11 @@ namespace glm
 #		ifndef GLM_FORCE_NO_CTOR_INIT
 			: x(0)
 #		endif
+	{}
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tvec1<T, P>::tvec1(tvec1<T, P> const & v)
+		: x(v.x)
 	{}
 
 	template <typename T, precision P>
@@ -134,6 +139,13 @@ namespace glm
 
 	//////////////////////////////////////
 	// Unary arithmetic operators
+
+	template <typename T, precision P>
+	GLM_FUNC_QUALIFIER tvec1<T, P> & tvec1<T, P>::operator=(tvec1<T, P> const & v)
+	{
+		this->x = v.x;
+		return *this;
+	}
 
 	template <typename T, precision P>
 	template <typename U> 

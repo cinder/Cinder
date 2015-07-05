@@ -25,7 +25,7 @@
 
 #include "cinder/Vector.h"
 #include "cinder/Quaternion.h"
-#include "cinder/app/AppCocoaTouch.h"
+#include "cinder/app/cocoa/AppCocoaTouch.h"
 
 #include "MotionManager.h"
 

@@ -1,5 +1,5 @@
 /*
- Copyright (c) 2010, The Barbarian Group
+ Copyright (c) 2010-15, The Barbarian Group
  All rights reserved.
 
  Redistribution and use in source and binary forms, with or without modification, are permitted provided that
@@ -26,58 +26,60 @@
 
 #define DEFAULT_COMPRESSION_LEVEL 6
 
-namespace cinder { 
+namespace cinder {
+
+typedef std::shared_ptr<class Buffer>		BufferRef;
+typedef std::shared_ptr<class DataSource>	DataSourceRef;
+typedef std::shared_ptr<class DataTarget>	DataTargetRef;
 
 class Buffer {
- private:
-	struct Obj {
-		Obj( void * aBuffer, size_t aSize, bool aOwnsData );
-		~Obj();
-	
-		void	* mData;
-		size_t	mAllocatedSize;
-		size_t	mDataSize;
-		bool	mOwnsData;
-	};
-
- public:
-	Buffer() {}
-	Buffer( void * aBuffer, size_t aSize );
+  public:
+	//! Constructs an empty Buffer
+	Buffer();
+	//! Constructs a Buffer of size \a size.
 	Buffer( size_t size );
+	//! Constructs a Buffer that points at \a buffer, does not assume ownership.
+	Buffer( void *buffer, size_t size );
+	//! copy constructor
+	Buffer( const Buffer &rhs );
+	//! move constructor
+	Buffer( Buffer &&rhs );
+	//! copy assignment operator
+	Buffer&	operator=( const Buffer &rhs );
+	//! move assignment operator
+	Buffer&	operator=( Buffer &&rhs );
+	//! destructor.
+	~Buffer();
+
 	//! Creates a Buffer from a DataSource
-	explicit Buffer( std::shared_ptr<class DataSource> dataSource );
-	
-	size_t getAllocatedSize() const { return mObj->mAllocatedSize; }
-	size_t getDataSize() const { return mObj->mDataSize; }
-	void setDataSize( size_t aSize ) { mObj->mDataSize = aSize; }
-	
-	void * getData() { return mObj->mData; }
-	const void * getData() const { return mObj->mData; }
-	
-	//! Returns a shared_ptr for the data and gives up ownership of the data
-	std::shared_ptr<uint8_t>	convertToSharedPtr();
+	explicit Buffer( const DataSourceRef &dataSource );
+
+	static BufferRef	create( size_t size ) { return std::make_shared<Buffer>( size ); }
+	static BufferRef	create( void *buffer, size_t size ) { return std::make_shared<Buffer>( buffer, size ); }
+
+	void	setSize( size_t size )		{ mDataSize = size; }
+	size_t	getSize() const				{ return mDataSize; }
+	size_t	getAllocatedSize() const	{ return mAllocatedSize; }
+
+	void*		getData()				{ return mData; }
+	const void* getData() const			{ return mData; }
 	
 	void resize( size_t newSize );
 	
-	void copyFrom( const void * aData, size_t length );
+	void copyFrom( const void *data, size_t length );
 	//TODO: copy from region of another buffer
 	
 	//! Writes a Buffer to a DataTarget
-	void	write( std::shared_ptr<class DataTarget> dataTarget );
+	void	write( const DataTargetRef &dataTarget );
 	
   private:
-	std::shared_ptr<Obj>		mObj;
-
-  public:
- 	//@{
-	//! Emulates shared_ptr-like behavior
-	typedef std::shared_ptr<Obj> Buffer::*unspecified_bool_type;
-	operator unspecified_bool_type() const { return ( mObj.get() == 0 ) ? 0 : &Buffer::mObj; }
-	void reset() { mObj.reset(); }
-	//@}
+	void*	mData;
+	size_t	mAllocatedSize;
+	size_t	mDataSize;
+	bool	mOwnsData;
 };
 
-Buffer compressBuffer( const Buffer &aBuffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
-Buffer decompressBuffer( const Buffer &aBuffer, bool resizeResult = true, bool useGZip = false );
+Buffer compressBuffer( const Buffer &buffer, int8_t compressionLevel = DEFAULT_COMPRESSION_LEVEL, bool resizeResult = true );
+Buffer decompressBuffer( const Buffer &buffer, bool resizeResult = true, bool useGZip = false );
 
 } //namespace

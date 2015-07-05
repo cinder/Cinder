@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h" // necessary to give GLee the jump on Cocoa.h // TODO: still necessary?
+#include "cinder/gl/platform.h" // necessary to give glload the jump on Cocoa.h
 
 #import <Cocoa/Cocoa.h>
 
@@ -36,13 +36,15 @@
 
 #include <list>
 
+#import <IOKit/pwr_mgt/IOPMLib.h>
+
 @class CinderWindow; // inherits from NSWindow
 @class WindowImplBasicCocoa;
 
 @interface AppImplMac : NSObject<NSApplicationDelegate, NSWindowDelegate> {
   @public
 	NSTimer*						mAnimationTimer;
-	class cinder::app::AppMac*	mApp;
+	class cinder::app::AppMac*		mApp;
 	
 	BOOL							mNeedsUpdate;
 	BOOL							mQuitOnLastWindowClosed;
@@ -51,6 +53,9 @@
 	
 	NSMutableArray*					mWindows;
 	WindowImplBasicCocoa*			mActiveWindow;
+
+	::IOPMAssertionID				mIdleSleepAssertionID;
+	::IOPMAssertionID				mDisplaySleepAssertionID;
 }
 
 @property(retain, nonatomic) NSMutableArray *windows;
@@ -63,13 +68,15 @@
 - (void)applicationWillResignActive:(NSNotification *)notification;
 - (void)quit;
 
+- (void)setPowerManagementEnabled:(BOOL)flag;
+- (BOOL)isPowerManagementEnabled;
+
 - (cinder::app::WindowRef)createWindow:(const cinder::app::Window::Format &)format;
 
 - (float)getFrameRate;
 - (void)setFrameRate:(float)frameRate;
 - (void)disableFrameRate;
 - (bool)isFrameRateEnabled;
-- (void)quit;
 
 - (cinder::app::RendererRef)findSharedRenderer:(cinder::app::RendererRef)match;
 - (cinder::app::WindowRef)getWindow;
@@ -87,6 +94,7 @@
   @public
 	AppImplMac*					mAppImpl;
 	NSWindow*					mWin;
+	NSString*					mTitle; // title is cached because sometimes we need to restore it after changing window border styles
 	CinderViewMac*				mCinderView;
 	cinder::app::WindowRef		mWindowRef;
 	cinder::DisplayRef			mDisplay;
@@ -104,7 +112,6 @@
 - (cinder::ivec2)getPos;
 - (float)getContentScale;
 - (void)setPos:(cinder::ivec2)pos;
-- (float)getContentScale;
 - (void)close;
 - (NSString *)getTitle;
 - (void)setTitle:(NSString *)title;

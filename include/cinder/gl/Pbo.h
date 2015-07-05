@@ -43,16 +43,6 @@ class Pbo : public BufferObj {
 	Pbo( GLenum target, GLsizeiptr allocationSize, const void *data = nullptr, GLenum usage = GL_STATIC_DRAW );
 };
 
-//! Represents an OpenGL Pixel Buffer Object with ci::Surface mapping capabilities
-template<typename T>
-class PboSurface : public BufferObj {
-	/** Creates a PboSurface which can represent a 2D image of \a width X \a height pixels **/
-	static PboRef	create( GLint width, GLint height, bool alpha );
-};
-
-typedef PboSurface<uint8_t>	PboSurface8u;
-typedef PboSurface<float>	PboSurface32f;
-
 } }
 
 #endif // defined( CINDER_GL_ES )

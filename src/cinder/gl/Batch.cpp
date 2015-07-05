@@ -25,7 +25,8 @@
 #include "cinder/gl/Context.h"
 #include "cinder/gl/GlslProg.h"
 #include "cinder/gl/VboMesh.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/scoped.h"
+
 #include "cinder/Log.h"
 
 namespace cinder { namespace gl {
@@ -58,9 +59,9 @@ Batch::Batch( const geom::Source &source, const gl::GlslProgRef &glsl, const Att
 			attribs.insert( attrib.first );
 	}
 	// and then the attributes references by the GLSL
-	for( const auto &attrib : glsl->getAttribSemantics() ) {
-		if( source.getAttribDims( attrib.second ) )
-			attribs.insert( attrib.second );
+	for( const auto &attrib : glsl->getActiveAttributes() ) {
+		if( source.getAttribDims( attrib.getSemantic() ) )
+			attribs.insert( attrib.getSemantic() );
 	}
 	mVboMesh = gl::VboMesh::create( source, attribs );
 	initVao( attributeMapping );
@@ -74,45 +75,14 @@ void Batch::initVao( const AttributeMapping &attributeMapping )
 	mVao = Vao::create();
 	ctx->pushVao( mVao );
 	
-	std::set<geom::Attrib> enabledAttribs;
-	// iterate all the vertex array VBOs
-	for( const auto &vertArrayVbo : mVboMesh->getVertexArrayLayoutVbos() ) {
-		// bind this VBO (to the current VAO)
-		vertArrayVbo.second->bind();
-		// now iterate the attributes associated with this VBO
-		for( const auto &attribInfo : vertArrayVbo.first.getAttribs() ) {
-			int loc = -1;
-			// first see if we have a mapping in 'attributeMapping'
-			auto attributeMappingIt = attributeMapping.find( attribInfo.getAttrib() );
-			if( attributeMappingIt != attributeMapping.end() )
-				loc = mGlsl->getAttribLocation( attributeMappingIt->second );
-			// otherwise, try to get the location of the attrib semantic in the shader if it's present
-			else if( mGlsl->hasAttribSemantic( attribInfo.getAttrib() ) )
-				loc = mGlsl->getAttribSemanticLocation( attribInfo.getAttrib() );
-
-			if( loc != -1 ) {
-				ctx->enableVertexAttribArray( loc );
-				ctx->vertexAttribPointer( loc, attribInfo.getDims(), GL_FLOAT, GL_FALSE, (GLsizei)attribInfo.getStride(), (const void*)attribInfo.getOffset() );
-				if( attribInfo.getInstanceDivisor() > 0 )
-					ctx->vertexAttribDivisor( loc, attribInfo.getInstanceDivisor() );
-				enabledAttribs.insert( attribInfo.getAttrib() );
-			}
-		}
-	}
+	mVboMesh->buildVao( mGlsl, attributeMapping );
 	
-	// warn the user if the shader expects any attribs which we couldn't supply. We make an exception for ciColor since it often comes from the Context instead
-	const auto &glslActiveAttribs = mGlsl->getAttribSemantics();
-	for( auto &glslActiveAttrib : glslActiveAttribs ) {
-		if( (glslActiveAttrib.second != geom::Attrib::COLOR) && (enabledAttribs.count( glslActiveAttrib.second ) == 0) )
-			CI_LOG_W( "Batch GlslProg expected an Attrib of " << geom::attribToString( glslActiveAttrib.second ) << " but vertex data doesn't provide it." );			
-	}
-	
-	if( mVboMesh->getIndexVbo() )
-		mVboMesh->getIndexVbo()->bind();
-
 	ctx->popVao();
 	ctx->popBufferBinding( GL_ARRAY_BUFFER );
-
+	
+	if( ! mVao->getLayout().isVertexAttribArrayEnabled( 0 ) )
+		CI_LOG_W("VertexAttribArray at location 0 not enabled, this has performance implications.");
+	
 	mAttribMapping = attributeMapping;
 }
 
@@ -128,17 +98,18 @@ void Batch::replaceVboMesh( const VboMeshRef &vboMesh )
 	initVao( mAttribMapping );
 }
 
-void Batch::draw()
+void Batch::draw( GLint first, GLsizei count )
 {
 	auto ctx = gl::context();
 	
 	gl::ScopedGlslProg ScopedGlslProg( mGlsl );
 	gl::ScopedVao ScopedVao( mVao );
 	ctx->setDefaultShaderVars();
-	mVboMesh->drawImpl();
+	mVboMesh->drawImpl( first, count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
+
 void Batch::drawInstanced( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -148,7 +119,8 @@ void Batch::drawInstanced( GLsizei instanceCount )
 	ctx->setDefaultShaderVars();
 	mVboMesh->drawInstancedImpl( instanceCount );
 }
-#endif
+
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 void Batch::bind()
 {
@@ -254,7 +226,7 @@ void VertBatch::clear()
 	mColors.clear();
 	mTexCoords.clear();
 	mVbo.reset();
-	mVao.reset();
+	mVao = nullptr;
 }
 
 void VertBatch::draw()
@@ -273,7 +245,7 @@ void VertBatch::setupBuffers()
 {
 	auto ctx = gl::context();
 	
-	GlslProgRef glslProg = ctx->getGlslProg();
+	auto glslProg = ctx->getGlslProg();
 	if( ! glslProg )
 		return;
 
@@ -293,7 +265,7 @@ void VertBatch::setupBuffers()
 	
 	ScopedBuffer ScopedBuffer( mVbo );
 	// if this VBO was freshly made, or we don't own the buffer because we use the context defaults
-	if( forceUpload || ( ! mOwnsBuffers ) ) {
+	if( ( forceUpload || ( ! mOwnsBuffers ) ) && ( ! mVertices.empty() ) ) {
 		mVbo->ensureMinimumSize( totalSizeBytes );
 		
 		// upload positions
@@ -325,7 +297,8 @@ void VertBatch::setupBuffers()
 	if( ! mOwnsBuffers )
 		mVao->replacementBindBegin();
 	else {
-		mVao = gl::Vao::create();
+		mVaoStorage = gl::Vao::create();
+		mVao = mVaoStorage.get();
 		mVao->bind();
 	}
 

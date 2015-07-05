@@ -1,9 +1,32 @@
+/*
+ Copyright (c) 2015, The Cinder Project, All rights reserved.
+ 
+ This code is intended for use with the Cinder C++ library: http://libcinder.org
+ 
+ Redistribution and use in source and binary forms, with or without modification, are permitted provided that
+ the following conditions are met:
+ 
+ * Redistributions of source code must retain the above copyright notice, this list of conditions and
+ the following disclaimer.
+ * Redistributions in binary form must reproduce the above copyright notice, this list of conditions and
+ the following disclaimer in the documentation and/or other materials provided with the distribution.
+ 
+ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND ANY EXPRESS OR IMPLIED
+ WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
+ PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
+ ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED
+ TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING
+ NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include "cinder/Cinder.h"
 
 // This path is used on iOS or Mac OS X 10.8+
 #if defined( CINDER_COCOA_TOUCH ) || ( defined( CINDER_MAC ) && ( MAC_OS_X_VERSION_MIN_REQUIRED >= 1080 ) )
 
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #include "cinder/qtime/QuickTimeImplAvf.h"
 #include "cinder/qtime/AvfUtils.h"
@@ -306,6 +329,73 @@ ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef 
 	return ImageTargetCvPixelBufferRef( new ImageTargetCvPixelBuffer( imageSource, convertToYpCbCr ) );
 }
 
+ImageTargetCvPixelBufferRef ImageTargetCvPixelBuffer::createRef( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool )
+{
+	return ImageTargetCvPixelBufferRef( new ImageTargetCvPixelBuffer( imageSource, pbPool ) );
+}
+
+ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool )
+	: ImageTarget(), mPixelBufferRef( 0 )
+{
+	setSize( imageSource->getWidth(), imageSource->getHeight() );
+	
+	//http://developer.apple.com/mac/library/qa/qa2006/qa1501.html
+	
+	// if we're converting to YCbCr, we'll load all of the data as RGB in terms of ci::ImageIo
+	// but we run color space conversion over it later in the finalize method
+	OSType formatType;
+	if( ! mConvertToYpCbCr ) {
+		switch( imageSource->getDataType() ) {
+				// for now all we support is 8 bit RGB(A)
+			case ImageIo::UINT16:
+			case ImageIo::FLOAT32:
+			case ImageIo::UINT8:
+				setDataType( ImageIo::UINT8 );
+				if( imageSource->hasAlpha () ) {
+#if defined( CINDER_COCOA_TOUCH )
+					formatType = kCVPixelFormatType_32ARGB;
+#elif defined( CINDER_COCOA )
+					formatType = k32ARGBPixelFormat;
+#endif
+					setChannelOrder( ImageIo::ARGB );
+				}
+				else {
+#if defined( CINDER_COCOA_TOUCH )
+					formatType = kCVPixelFormatType_24RGB;
+#elif defined( CINDER_COCOA )
+					formatType = k24RGBPixelFormat;
+#endif
+					setChannelOrder( ImageIo::RGB );
+				}
+				setColorModel( ImageIo::CM_RGB );
+				break;
+			default:
+				throw ImageIoException();
+		}
+	}
+	else {
+		formatType = 'v408';/*k4444YpCbCrA8PixelFormat;*/
+		setDataType( ImageIo::UINT8 );
+		setChannelOrder( ImageIo::RGBA );
+		setColorModel( ImageIo::CM_RGB );
+	}
+	
+	// TODO: Can we create the buffer from the pool????? Seems like no at first attempt --maybe a pixel buffer attributes mismatch?
+	CFMutableDictionaryRef attributes = CFDictionaryCreateMutable( kCFAllocatorDefault, 6, nil, nil );
+	dictionarySetPixelBufferOpenGLCompatibility( attributes );
+//	CVReturn status = CVPixelBufferPoolCreatePixelBufferWithAuxAttributes(kCFAllocatorDefault, pbPool, attributes, &mPixelBufferRef);
+	CVReturn status = CVPixelBufferPoolCreatePixelBuffer( kCFAllocatorDefault, pbPool, &mPixelBufferRef );
+	if( kCVReturnSuccess != status )
+		throw ImageIoException();
+	
+	if( ::CVPixelBufferLockBaseAddress( mPixelBufferRef, 0 ) != kCVReturnSuccess )
+		throw ImageIoException();
+	mData = reinterpret_cast<uint8_t*>( ::CVPixelBufferGetBaseAddress( mPixelBufferRef ) );
+	mRowBytes = ::CVPixelBufferGetBytesPerRow( mPixelBufferRef );
+std::cout << "Total size: " << ::CVPixelBufferGetDataSize( mPixelBufferRef ) << " Planar: " << (int)::CVPixelBufferIsPlanar( mPixelBufferRef ) << std::endl;	
+}
+
+
 ImageTargetCvPixelBuffer::ImageTargetCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 	: ImageTarget(), mPixelBufferRef( 0 ), mConvertToYpCbCr( convertToYpCbCr )
 {
@@ -430,6 +520,16 @@ void ImageTargetCvPixelBuffer::convertDataToAYpCbCr()
 CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, bool convertToYpCbCr )
 {
 	ImageTargetCvPixelBufferRef target = ImageTargetCvPixelBuffer::createRef( imageSource, convertToYpCbCr );
+	imageSource->load( target );
+	target->finalize();
+	::CVPixelBufferRef result( target->getCvPixelBuffer() );
+	::CVPixelBufferRetain( result );
+	return result;
+}
+
+CVPixelBufferRef createCvPixelBuffer( ImageSourceRef imageSource, CVPixelBufferPoolRef pbPool, bool convertToYpCbCr )
+{
+	ImageTargetCvPixelBufferRef target = ImageTargetCvPixelBuffer::createRef( imageSource, pbPool );
 	imageSource->load( target );
 	target->finalize();
 	::CVPixelBufferRef result( target->getCvPixelBuffer() );

@@ -40,13 +40,12 @@ struct Splash {
 
 class DelayFeedback : public App {
 public:
-	void prepareSettings( Settings *settings );
-	void setup();
+	void setup() override;
 	void mouseDrag( MouseEvent event ) override;
 	void mouseUp( MouseEvent event ) override;
 	void keyDown( KeyEvent event )	override;
-	void update();
-	void draw();
+	void update() override;
+	void draw() override;
 
 	void	setVariableDelayMod();
 	void	addSplash( const vec2 &pos );
@@ -62,12 +61,6 @@ public:
 
 	gl::BatchRef			mBatch;
 };
-
-void DelayFeedback::prepareSettings( Settings *settings )
-{
-	settings->setWindowPos( 200, 200 );
-	settings->setWindowSize( 1000, 800 );
-}
 
 void DelayFeedback::setup()
 {
@@ -235,16 +228,16 @@ void DelayFeedback::loadBatch()
 
 	TriMesh mesh( TriMesh::Format().positions( 2 ).texCoords( 2 ) );
 
-	mesh.appendVertex( boundingBox.getUpperLeft() );
+	mesh.appendPosition( boundingBox.getUpperLeft() );
 	mesh.appendTexCoord( vec2( -1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerLeft() );
+	mesh.appendPosition( boundingBox.getLowerLeft() );
 	mesh.appendTexCoord( vec2( -1, 1 ) );
 
-	mesh.appendVertex( boundingBox.getUpperRight() );
+	mesh.appendPosition( boundingBox.getUpperRight() );
 	mesh.appendTexCoord( vec2( 1, -1 ) );
 
-	mesh.appendVertex( boundingBox.getLowerRight() );
+	mesh.appendPosition( boundingBox.getLowerRight() );
 	mesh.appendTexCoord( vec2( 1, 1 ) );
 
 	mesh.appendTriangle( 0, 1, 2 );
@@ -253,4 +246,7 @@ void DelayFeedback::loadBatch()
 	mBatch = gl::Batch::create( mesh, glsl );
 }
 
-CINDER_APP( DelayFeedback, RendererGl )
+CINDER_APP( DelayFeedback, RendererGl, []( App::Settings *settings ) {
+	settings->setWindowPos( 200, 200 );
+	settings->setWindowSize( 1000, 800 );
+} )

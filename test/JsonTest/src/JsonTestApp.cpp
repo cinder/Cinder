@@ -3,7 +3,7 @@
 
 #include "Resources.h"
 
-#include "jsoncpp/json/json.h"
+#include "jsoncpp/json.h"
 
 using namespace ci;
 using namespace ci::app;

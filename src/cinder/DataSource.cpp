@@ -52,10 +52,11 @@ const fs::path& DataSource::getFilePathHint()
 	return mFilePathHint;
 }
 
-Buffer& DataSource::getBuffer()
+BufferRef DataSource::getBuffer()
 {
 	if( ! mBuffer )
 		createBuffer();
+
 	return mBuffer;
 }
 
@@ -78,6 +79,7 @@ void DataSourcePath::createBuffer()
 	IStreamFileRef stream = loadFileStream( mFilePath );
 	if( ! stream )
 		throw StreamExc();
+
 	mBuffer = loadStreamBuffer( stream );
 }
 
@@ -167,14 +169,14 @@ DataSourceRef loadUrl( const Url &url, const UrlOptions &options )
 
 /////////////////////////////////////////////////////////////////////////////
 // DataSourceBuffer
-DataSourceBufferRef DataSourceBuffer::create( Buffer buffer, const fs::path &filePathHint )
+DataSourceBufferRef DataSourceBuffer::create( const BufferRef &buffer, const fs::path &filePathHint )
 {
 	DataSourceBufferRef result( new DataSourceBuffer( buffer ) );
 	result->setFilePathHint( filePathHint );
 	return result;
 }
 
-DataSourceBuffer::DataSourceBuffer( Buffer buffer )
+DataSourceBuffer::DataSourceBuffer( const BufferRef &buffer )
 	: DataSource( "", Url() )
 {
 	mBuffer = buffer;
@@ -187,7 +189,7 @@ void DataSourceBuffer::createBuffer()
 
 IStreamRef DataSourceBuffer::createStream()
 {
-	return IStreamMem::create( mBuffer.getData(), mBuffer.getDataSize() );
+	return IStreamMem::create( mBuffer->getData(), mBuffer->getSize() );
 }
 
 } // namespace cinder

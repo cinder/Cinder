@@ -24,7 +24,7 @@
 #pragma once
 
 #include "cinder/app/Renderer.h"
-#include "cinder/gl/gl.h"
+#include "cinder/gl/platform.h"
 
 #if defined( CINDER_MAC )
 	#if defined __OBJC__
@@ -68,7 +68,7 @@ class RendererGl : public Renderer {
 			mCoreProfile = false;
 			mVersion = std::pair<int,int>( 2, 0 );
 #else
-			mMsaaSamples = 16;
+			mMsaaSamples = 0;
 			mCoreProfile = true;
 			mVersion = std::pair<int,int>( 3, 2 );	
 #endif
@@ -93,7 +93,7 @@ class RendererGl : public Renderer {
 		void				setVersion( int major, int minor ) { mVersion = std::make_pair( major, minor ); }
 		void				setVersion( std::pair<int,int> version ) { mVersion = version; }
 		
-		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 16 on desktop and \c 0 on iOS.
+		//! Sets the number of samples used for Multisample Anti-Aliasing (MSAA). Valid values are powers of 2 (0, 2, 4, 8, 16). Defaults to \c 0.
 		Options&	msaa( int samples ) { mMsaaSamples = samples; return *this; }
 		//! Returns the number of samples used for Multisample Anti-Aliasing (MSAA).
 		int			getMsaa() const { return mMsaaSamples; }
@@ -155,21 +155,21 @@ class RendererGl : public Renderer {
 	RendererGl( const Options &options = Options() );
 	~RendererGl();
 
-	static RendererGlRef	create( const Options &options = Options() ) { return RendererGlRef( new RendererGl( options ) ); }
-	virtual RendererRef		clone() const { return RendererGlRef( new RendererGl( *this ) ); }
+	static RendererGlRef	create( const Options &options = Options() )	{ return RendererGlRef( new RendererGl( options ) ); }
+	RendererRef				clone() const override							{ return RendererGlRef( new RendererGl( *this ) ); }
  
 #if defined( CINDER_COCOA )
 	#if defined( CINDER_MAC )
-		virtual void setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled );
-		virtual CGLContextObj			getCglContext();
-		virtual CGLPixelFormatObj		getCglPixelFormat();
-		virtual NSOpenGLContext*		getNsOpenGlContext();		
+		void						setup( CGRect frame, NSView *cinderView, RendererRef sharedRenderer, bool retinaEnabled ) override;
+		CGLContextObj				getCglContext() override;
+		CGLPixelFormatObj			getCglPixelFormat() override;
+		virtual NSOpenGLContext*	getNsOpenGlContext();
 	#elif defined( CINDER_COCOA_TOUCH )
-		virtual void 	setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer );
-		virtual bool 	isEaglLayer() const { return true; }
-		EAGLContext*	getEaglContext() const;
+		void						setup( const Area &frame, UIView *cinderView, RendererRef sharedRenderer ) override;
+		bool						isEaglLayer() const override { return true; }
+		EAGLContext*				getEaglContext() const;
 	#endif
-	virtual void	setFrameSize( int width, int height );
+	void	setFrameSize( int width, int height ) override;
 #elif defined( CINDER_MSW )
 	virtual void	setup( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	kill();
@@ -177,6 +177,10 @@ class RendererGl : public Renderer {
 	virtual HDC		getDc() override;
 	virtual void	prepareToggleFullScreen();
 	virtual void	finishToggleFullScreen();
+#elif defined( CINDER_WINRT )
+	void			setup( ::Platform::Agile<Windows::UI::Core::CoreWindow> wnd, RendererRef sharedRenderer ) override;
+	void			prepareToggleFullScreen();
+	void			finishToggleFullScreen();	
 #elif defined( CINDER_ANDROID )
 	virtual void	setup( ANativeWindow *nativeWindow, RendererRef sharedRenderer );
 #endif
@@ -186,7 +190,7 @@ class RendererGl : public Renderer {
 	void			startDraw() override;
 	void			finishDraw() override;
 	void			defaultResize() override;
-	void			makeCurrentContext() override;
+	void			makeCurrentContext( bool force = false ) override;
 	void			swapBuffers()override;
 	Surface8u		copyWindowSurface( const Area &area, int32_t windowHeightPixels ) override;
 
@@ -212,6 +216,10 @@ protected:
 		friend class				RendererImplGlMsw;
 	#endif
 	HWND						mWnd;
+#elif defined( CINDER_WINRT )
+	class RendererImplGlAngle	*mImpl;
+	friend class				RendererImplGlAngle;
+	::Platform::Agile<Windows::UI::Core::CoreWindow>	mWnd;
 #elif defined( CINDER_ANDROID )
     class RendererGlAndroid  	*mImpl;
 	friend class 				WindowImplAndroid;

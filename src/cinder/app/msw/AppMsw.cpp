@@ -47,7 +47,6 @@ AppMsw::AppMsw()
 	mConsoleWindowEnabled = settings->isConsoleWindowEnabled();
 	enablePowerManagement( settings->isPowerManagementEnabled() ); // TODO: consider moving to common method
 
-	Platform::get()->setExecutablePath( getAppPath() );
 	mImpl.reset( new AppImplMswBasic( this, *settings ) );
 }
 
@@ -74,7 +73,7 @@ void AppMsw::initialize( Settings *settings, const RendererRef &defaultRenderer,
 	::LocalFree( szArglist );
 }
 
-void AppMsw::launch( const char *title, int argc, char * const argv[] )
+void AppMsw::launch()
 {
 	// allocate and redirect the console if requested
 	if( mConsoleWindowEnabled ) {
@@ -121,11 +120,6 @@ void AppMsw::disableFrameRate()
 bool AppMsw::isFrameRateEnabled() const
 {
 	return mImpl->isFrameRateEnabled();
-}
-
-fs::path AppMsw::getAppPath() const
-{
-	return AppImplMsw::getAppPath();
 }
 
 WindowRef AppMsw::getWindow() const

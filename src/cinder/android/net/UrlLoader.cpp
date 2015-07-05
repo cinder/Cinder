@@ -104,9 +104,9 @@ void UrlLoader::initialize()
 	}
 }
 
-ci::Buffer UrlLoader::loadUrl( const std::string& url )
+ci::BufferRef UrlLoader::loadUrl( const std::string& url )
 {
-	ci::Buffer result;
+	ci::BufferRef result;
 
 	mUrl = url;
 
@@ -135,8 +135,8 @@ ci::Buffer UrlLoader::loadUrl( const std::string& url )
 		}
 
 		if( dataLength > 0 ) {
-			result = ci::Buffer( dataLength );
-			memcpy( (void *)result.getData(), (const void *)dataPtr, dataLength );
+			result = ci::Buffer::create( dataLength );
+			memcpy( (void *)result->getData(), (const void *)dataPtr, dataLength );
 		}
 
 		JniHelper::Get()->ReleaseByteArrayElements( jBytes, dataPtr, 0 );

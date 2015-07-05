@@ -39,7 +39,7 @@ class PlatformAndroid : public Platform {
 
 	virtual DataSourceRef			loadResource( const fs::path &resourcePath ) override;
 
-	virtual fs::path				getResourcePath() const override;
+	virtual fs::path				getResourceDirectory() const override;
 	virtual fs::path				getResourcePath( const fs::path &rsrcRelativePath ) const override;
 
 	virtual fs::path 				getOpenFilePath( const fs::path &initialPath, const std::vector<std::string> &extensions ) override;
@@ -49,9 +49,13 @@ class PlatformAndroid : public Platform {
 	// Overridden to use android log
 	virtual std::ostream&			console() override;
 
-	virtual fs::path				expandPath( const fs::path &path );
-	virtual fs::path				getHomeDirectory();
-	virtual fs::path				getDocumentsDirectory();
+
+	virtual std::map<std::string,std::string>	getEnvironmentVariables() override;
+
+	virtual fs::path				expandPath( const fs::path &path ) override;
+	virtual fs::path				getHomeDirectory() const override;
+	virtual fs::path				getDocumentsDirectory() const override;
+	virtual fs::path				getDefaultExecutablePath() const override;
 
 	virtual void 					sleep( float milliseconds );
 

@@ -2,12 +2,6 @@
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
 
-#include "cinder/gl/Context.h"
-#include "cinder/gl/GlslProg.h"
-#include "cinder/gl/Texture.h"
-#include "cinder/gl/Vao.h"
-#include "cinder/gl/Vbo.h"
-
 #include "cinder/TriMesh.h"
 #include "cinder/Camera.h"
 #include "cinder/Rand.h"
@@ -154,7 +148,7 @@ void TransformFeedbackSmokeParticlesApp::loadBuffers()
 	
 	for( auto normalIt = normals.begin(); normalIt != normals.end(); ++normalIt ) {
 		// Creating a random velocity for each particle in a unit sphere
-		*normalIt = ci::randVec3f() * mix( 0.0f, 1.5f, mRand.nextFloat() );
+		*normalIt = ci::randVec3() * mix( 0.0f, 1.5f, mRand.nextFloat() );
 	}
 	
 	// Create the Velocity Buffer using the newly buffered velocities

@@ -1,5 +1,6 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
+#include "cinder/gl/gl.h"
 
 #include "cinder/audio/Voice.h"
 
@@ -10,11 +11,12 @@ using namespace ci::app;
 
 class VoiceBasicProcessingApp : public App {
 public:
-	void setup();
-	void mouseDown( MouseEvent );
-	void mouseDrag( MouseEvent );
+	void setup() override;
+	void mouseDown( MouseEvent event ) override;
+	void mouseDrag( MouseEvent event ) override;
+	void draw() override;
+
 	void handleMove( vec2 pos );
-	void draw();
 
 	audio::VoiceRef mVoice;
 

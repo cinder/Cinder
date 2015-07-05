@@ -35,11 +35,10 @@ POSSIBILITY OF SUCH DAMAGE.
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
-#include "cinder/gl/Context.h"
-#include "cinder/gl/Fbo.h"
 #include "cinder/Camera.h"
 #include "cinder/Timer.h"
 #include "cinder/Utilities.h"
+#include "cinder/Log.h"
 
 #include "fxaa/FXAA.h"
 #include "smaa/SMAA.h"
@@ -50,10 +49,10 @@ using namespace ci::app;
 using namespace std;
 
 class PostProcessingAAApp : public App {
-public:
+  public:
 	enum SMAAMode { SMAA_EDGE_DETECTION, SMAA_BLEND_WEIGHTS, SMAA_BLEND_NEIGHBORS };
 	enum DividerMode { MODE_COMPARISON, MODE_ORIGINAL1, MODE_FXAA, MODE_SMAA, MODE_ORIGINAL2, MODE_COUNT };
-public:
+  public:
 	void setup() override;
 	void update() override;
 	void draw() override;
@@ -103,13 +102,9 @@ void PostProcessingAAApp::setup()
 		mInfoOriginal = gl::Texture::create( loadImage( loadAsset( "original.png" ) ) );
 	}
 	catch( const std::exception& e ) {
-		console() << "Failed to load textures: " << e.what() << std::endl;
+		CI_LOG_E( "Failed to load textures: " << e.what() );
 		quit();
 	}
-
-	mPistons.setup();
-	mFXAA.setup();
-	mSMAA.setup();
 
 	mSMAAMode = SMAA_BLEND_NEIGHBORS;
 
@@ -146,8 +141,7 @@ void PostProcessingAAApp::update()
 	float y = 150.0f * math<float>::sin( theta );
 	float z = 150.0f * math<float>::sin( phi ) * math<float>::cos( theta );
 
-	mCamera.setEyePoint( vec3( x, y, z ) );
-	mCamera.setCenterOfInterestPoint( vec3( 1, 50, 0 ) );
+	mCamera.lookAt( vec3( x, y, z ), vec3( 1, 50, 0 ) );
 	mCamera.setFov( 40.0f );
 
 	// Update the pistons.

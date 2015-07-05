@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/Log.h"
 
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/Vbo.h"
@@ -62,9 +63,9 @@ void TransformFeedbackIntroApp::setupShaders()
 									 .feedbackVaryings( varyings )
 									 .feedbackFormat( GL_INTERLEAVED_ATTRIBS ) );
 	}
-	catch( const gl::GlslProgCompileExc &ex ) {
-		console() << ex.what() << endl;
-		shutdown();
+	catch( const gl::GlslProgCompileExc &exc ) {
+		CI_LOG_EXCEPTION( "failed to load glsl", exc );
+		quit();
 	}
 }
 

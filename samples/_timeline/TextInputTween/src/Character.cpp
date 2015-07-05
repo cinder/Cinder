@@ -5,6 +5,7 @@
 
 #include "cinder/Timeline.h"
 #include "cinder/gl/TextureFont.h"
+#include "cinder/gl/gl.h"
 #include "cinder/Easing.h"
 #include "cinder/Rand.h"
 

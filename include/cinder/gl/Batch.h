@@ -23,7 +23,6 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
 #include "cinder/gl/Vbo.h"
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/VboMesh.h"
@@ -47,8 +46,9 @@ class Batch {
 	//! Builds a Batch from a geom::Source and a GlslProg. Attributes defined in \a attributeMapping override the default mapping
 	static BatchRef		create( const geom::Source &source, const gl::GlslProgRef &glsl, const AttributeMapping &attributeMapping = AttributeMapping() );
 	
-	void			draw();
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+	//! Draws the Batch. Optionally specify a \a first vertex/element and a \a count. Otherwise the entire geometry will be drawn.
+	void			draw( GLint first = 0, GLsizei count = -1 );
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 	void			drawInstanced( GLsizei instanceCount );
 #endif
 	void			bind();
@@ -66,7 +66,7 @@ class Batch {
 	//! Replaces the shader associated with the Batch. Issues a warning if not all attributes were able to match.
 	void			replaceGlslProg( const GlslProgRef& glsl );
 	//! Returns the VAO mapping the Batch's geometry to its shader
-	const VaoRef&	getVao() const { return mVao; }
+	const VaoRef	getVao() const { return mVao; }
 	//! Returns the VboMesh associated with the Batch
 	VboMeshRef		getVboMesh() const { return mVboMesh; }
 	//! Replaces the VboMesh associated with the Batch. Issues a warning if not all attributes were able to match.
@@ -141,7 +141,8 @@ class VertBatch {
 	std::vector<vec4>		mTexCoords;
 	
 	bool					mOwnsBuffers;
-	VaoRef					mVao;
+	Vao*					mVao;
+	VaoRef					mVaoStorage;
 	VboRef					mVbo;
 };
 
