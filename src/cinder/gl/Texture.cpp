@@ -1034,9 +1034,11 @@ Texture2d::Texture2d( const ImageSourceRef &imageSource, Format format )
 			defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA : GL_RGB;
 #else
 			switch( imageSource->getDataType() ) {
+#if ! defined( CINDER_GL_ES )
 				case ImageIo::UINT16:
 					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16 : GL_RGB16;
 				break;
+#endif
 				case ImageIo::FLOAT16:
 					defaultInternalFormat = ( imageSource->hasAlpha() ) ? GL_RGBA16F : GL_RGB16F;
 				break;
@@ -1255,7 +1257,11 @@ void Texture2d::initDataImageSourceImpl( const ImageSourceRef &imageSource, cons
 	else if( imageSource->getDataType() == ImageIo::FLOAT16 ) {
 		auto target = ImageTargetGlTexture<half_float>::create( this, channelOrder, isGray, imageSource->hasAlpha() );
 		imageSource->load( target );
+#if defined( CINDER_GL_ES_2 )
+		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT_OES, target->getData() );
+#else
 		glTexImage2D( mTarget, 0, mInternalFormat, mActualSize.x, mActualSize.y, 0, dataFormat, GL_HALF_FLOAT, target->getData() );
+#endif
 		
 	}
 	else {
