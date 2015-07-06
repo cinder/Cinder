@@ -317,8 +317,8 @@ vec2 getClosestPointEllipse( const vec2& center, const vec2& axisA, const vec2& 
 
 union float32_t
 {
-	uint u;
 	float f;
+	uint u;
 	struct {
 		uint Mantissa : 23;
 		uint Exponent : 8;
@@ -360,13 +360,13 @@ static half_float float_to_half( float32_t f )
     return o;
 }
 
-half_float floatToHalf( float f )
+cinder::half_float floatToHalf( float f )
 {
-	return float_to_half( float32_t( { .f = f } ) );
+	return float_to_half( float32_t( { f } ) );
 }
 
 // Algorithm due to Fabian "ryg" Giesen.
-float halfToFloat( half_float h )
+float halfToFloat( cinder::half_float h )
 {
 	static const float32_t magic = { 113 << 23 };
 	static const uint shifted_exp = 0x7c00 << 13; // exponent mask after shift
