@@ -29,6 +29,7 @@
 #include "cinder/ImageSourceFileQuartz.h"
 #include "cinder/ImageTargetFileQuartz.h"
 #include "cinder/ImageSourceFileRadiance.h"
+#include "cinder/ImageFileTinyExr.h"
 
 #if defined( CINDER_MAC )
 	#import <Cocoa/Cocoa.h>
@@ -60,6 +61,8 @@ PlatformCocoa::PlatformCocoa()
 	ImageSourceFileQuartz::registerSelf();
 	ImageTargetFileQuartz::registerSelf();	
 	ImageSourceFileRadiance::registerSelf();
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
 }
 
 void PlatformCocoa::prepareLaunch()

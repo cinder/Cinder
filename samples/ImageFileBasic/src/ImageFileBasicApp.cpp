@@ -5,8 +5,6 @@
 #include "cinder/ImageIo.h"
 #include "cinder/gl/Texture.h"
 
-#include "cinder/ImageFileTinyExr.h"
-
 using namespace ci;
 using namespace ci::app;
 using namespace std;
@@ -23,9 +21,6 @@ class ImageFileBasicApp : public App {
 
 void ImageFileBasicApp::setup()
 {
-	ImageSourceFileTinyExr::registerSelf();
-	ImageTargetFileTinyExr::registerSelf();
-
 	try {
 		fs::path path = getOpenFilePath( "", ImageIo::getLoadExtensions() );
 		if( ! path.empty() ) {
