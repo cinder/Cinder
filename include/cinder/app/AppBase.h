@@ -380,8 +380,8 @@ class AppBase {
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
 
-	//! Return \c true if the calling thread is the Application's primary thread
-	static bool		isPrimaryThread();
+	//! Return \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+	static bool		isMainThread();
 
 	//! Returns a reference to the App's boost::asio::io_service()
 	asio::io_service&	io_service() { return *mIo; }
@@ -585,7 +585,7 @@ inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cas
 template<typename T>
 typename std::result_of<T()>::type AppBase::dispatchSync( T fn )
 {
-	if( isPrimaryThread() )
+	if( isMainThread() )
 		return fn();
 	else {
 		typedef typename std::result_of<T()>::type result_type;
