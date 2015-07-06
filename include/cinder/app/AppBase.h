@@ -468,20 +468,20 @@ inline size_t		getNumWindows() { return AppBase::get()->getNumWindows(); }
 inline WindowRef	getWindowIndex( size_t index ) { return AppBase::get()->getWindowIndex( index ); }
 
 //! Returns the width of the active App's window measured in points, or of the screen when in full-screen mode
-inline int	getWindowWidth() { return AppBase::get()->getWindowWidth(); }
+inline int		getWindowWidth() { return AppBase::get()->getWindowWidth(); }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( const ivec2 &windowPos ) { AppBase::get()->setWindowPos( windowPos );  }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) );  }
 //! Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
-inline int	getWindowHeight() { return AppBase::get()->getWindowHeight(); }
+inline int		getWindowHeight() { return AppBase::get()->getWindowHeight(); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( ivec2 size ) { AppBase::get()->setWindowSize( size ); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( int windowSizeX, int windowSizeY ) { setWindowSize( ivec2( windowSizeX, windowSizeY ) ); }
 //! Returns the center of the active App's window in pixels or of the screen in full-screen mode.
 /** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
-inline vec2	getWindowCenter() { return AppBase::get()->getWindowCenter(); }
+inline vec2		getWindowCenter() { return AppBase::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode measured in points
 inline ivec2	getWindowSize() { return AppBase::get()->getWindowSize(); }
 //! Returns the position of the active App's window measured in points
@@ -505,7 +505,7 @@ inline void		setFullScreen( bool fullScreen = true ) { AppBase::get()->setFullSc
 //! Returns a scalar mapped from points to pixels for the current Window
 inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
 //! Returns a vec2 mapped from points to pixels for the current Window
-inline vec2	toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
+inline vec2		toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
 //! Returns a ivec2 mapped from points to pixels for the current Window
 inline	ivec2	toPixels( ivec2 s ) { return app::getWindow()->toPixels( s ); }
 //! Returns an Area mapped from points to pixels for the current Window
