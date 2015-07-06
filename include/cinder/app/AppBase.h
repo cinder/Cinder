@@ -380,7 +380,7 @@ class AppBase {
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
 
-	//! Return \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+	//! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
 	static bool		isMainThread();
 
 	//! Returns a reference to the App's boost::asio::io_service()
@@ -527,7 +527,7 @@ inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
 inline double	getElapsedSeconds() { return AppBase::get()->getElapsedSeconds(); }
 //! Returns the number of animation frames which have elapsed since the active App launched.
 inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); }
-//! Return \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+//! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
 inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
 #if defined( CINDER_MSW )
