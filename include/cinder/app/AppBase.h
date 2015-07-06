@@ -526,7 +526,9 @@ inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
 //! Returns the number seconds which have elapsed since the active App launched.
 inline double	getElapsedSeconds() { return AppBase::get()->getElapsedSeconds(); }
 //! Returns the number of animation frames which have elapsed since the active App launched.
-inline uint32_t	getElapsedFrames() { return AppBase::get()->getElapsedFrames(); }
+inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); }
+//! Return \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
 #if defined( CINDER_MSW )
 //! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
