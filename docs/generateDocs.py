@@ -1314,8 +1314,11 @@ def process_class_xml_file(in_path, out_path):
 
     # includes ------------------------------------------ #
     include_link = None
+
     if include_file:
-        include_link = LinkData(g_symbolMap.find_file(include_file).githubPath, include_file)
+        path = g_symbolMap.find_file(include_file).githubPath
+        if path:
+            include_link = LinkData(path, include_file)
     file_data.includes = include_link
 
     # typedefs ------------------------------------------ #
@@ -2383,7 +2386,6 @@ if __name__ == "__main__":
     g_tag_xml = Et.ElementTree(Et.parse("doxygen/cinder.tag").getroot())
     # generate symbol map from tag file
     g_symbolMap = get_symbol_to_file_map()
-
 
     # copy files from htmlsrc/ to html/
     copy_files()
