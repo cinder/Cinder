@@ -87,30 +87,18 @@
 
                 <!-- enumerations -->
                 {{#enumerations.length}}
-                <a name="{{enumerations.anchor}}"></a>
+                {{#enumerations}}
+                <a name="{{anchor}}"></a>
                 <section>
-                    <h1>Public Types</h1>
+                    <h1>Enumerations</h1>
                     <ul>
-                        {{#enumerations.list}}
-                        <li class="row expandable">
-                            <a name="{{anchor}}"></a>
-                            <div class="enumDef">
-                                <div class="definitionCol columns large-12">
-                                    <div class="definition"><em>{{name}}</em></div>
-                                    <div class="description content">
-                                        <ul>
-                                            {{#values}}
-                                            <li>{{name}}</li>
-                                            {{/values}}
-                                        </ul>
-                                    </div>
-                                </div>
-                            </div>
-                        </li>
-                        {{/enumerations.list}}
+                        {{#list}}
+                        {{> enum-markup}}
+                        {{/list}}
                     </ul>
                 </section>
                 <hr/>
+                {{/enumerations}}
                 {{/enumerations.length}}
 
                 <!-- public member functions -->

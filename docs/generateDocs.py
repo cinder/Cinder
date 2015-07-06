@@ -625,6 +625,14 @@ def find_file_kind(tree):
     return kind
 
 
+def find_member_anchor(member):
+    """
+    Parses out the anchor tag from a member
+    """
+    anchor_str = member.attrib["id"].split("_1")[-1]
+    return anchor_str
+
+
 def find_file_kind_explicit(tree):
     """
     Find a more specific file kind based on the name of the file.
@@ -764,7 +772,7 @@ def define_link_tag(tag, attrib):
         tag["href"] = href
 
 
-def parse_function(bs4, member, class_name=None):
+def parse_member_definition(bs4, member, member_name=None):
     """
     Parses a function tree and generates an object out of it
     :param bs4: beautifulsoup instance
@@ -772,39 +780,30 @@ def parse_function(bs4, member, class_name=None):
     :param class_name: the name of the class that's being parsed
     :return: the data object
     """
-    member_name = member.find(r"name")
-    member_name = member_name.text if member_name is not None else None
+    if not member_name:
+        member_name = member.find(r"name")
+        member_name = member_name.text if member_name is not None else None
 
-    is_constructor = False
-
-    # determine if it is a constructor
-    if class_name is not None:
-        if member_name is not None and member_name == strip_compound_name(class_name):
-            is_constructor = True
-
-    fn_id = member.attrib["id"].split("_1")[-1]
+    anchor = find_member_anchor(member)
 
     # return type
-    return_str = None
-    if not is_constructor:
-        return_div = gen_tag(bs4, "span")
-        return_str = str(iterate_markup(bs4, member.find(r"type"), return_div))
+    return_div = gen_tag(bs4, "span")
+    return_str = str(iterate_markup(bs4, member.find(r"type"), return_div))
 
     # get args
     argstring = member.find("argsstring")
     if argstring is None:
         argstring = member.find("arglist")
-    argstring_text = argstring.text if argstring.text is not None else ""
+    argstring_text = argstring.text if argstring is not None else ""
 
     # description
     description_div = markup_description(bs4, member)
     description_str = str(description_div) if description_div is not None else None
 
-    function_obj = {
+    member_obj = {
         "name": member_name,
         "return": return_str,
-        "is_constructor": is_constructor,
-        "anchor": fn_id,
+        "anchor": anchor,
         "definition": {
             "name": member_name,
             "args": argstring_text
@@ -812,7 +811,35 @@ def parse_function(bs4, member, class_name=None):
         "description": description_str
     }
 
-    return function_obj
+    return member_obj
+
+def parse_function(bs4, member, class_name=None):
+
+    member_name = member.find(r"name")
+    member_name = member_name.text if member_name is not None else None
+    is_constructor = False
+
+    # determine if it is a constructor
+    if class_name is not None:
+        if member_name is not None and member_name == strip_compound_name(class_name):
+            is_constructor = True
+
+    member_obj = parse_member_definition(bs4, member, member_name)
+    member_obj["is_constructor"] = is_constructor
+    return member_obj
+
+
+def parse_enum(bs4, member):
+
+    member_obj = parse_member_definition(bs4, member)
+    values = []
+    for val in member.findall("enumvalue"):
+        enum_name = val.find("name").text
+        values.append({"name": enum_name})
+
+    member_obj["values"] = values
+    member_obj["return"] = "enum"
+    return member_obj
 
 
 def define_tag(bs4, tag_name, tree):
@@ -1351,7 +1378,7 @@ def process_class_xml_file(in_path, out_path):
         related.append(link_data)
     file_data.related = related
 
-    # ci prefix ----------------------------------------- #
+    # ci prefix / description --------------------------- #
     # if the class has a prefix, add it here
     if hasattr(class_def, 'prefixPath') is True and class_def.prefixPath is not None:
         prefix_html = generate_bs4(class_def.prefixPath).body
@@ -1363,46 +1390,34 @@ def process_class_xml_file(in_path, out_path):
     # enumerations -------------------------------------- #
     enumerations = []
     for e in tree.findall(r"compounddef/sectiondef/memberdef[@kind='enum']"):
-        values = []
-        for val in e.findall("enumvalue"):
-            enum_name = val.find("name").text
-            values.append({"name": enum_name})
-
-        enum = {
-            "name": e.find("name").text,
-            "values": values
-        }
-        enumerations.append(enum)
+        member_obj = parse_enum(bs4, e)
+        enumerations.append(member_obj)
     file_data.enumerations = enumerations
 
+    # TODO: Look into and re-evaluate if this is needed or not since the definitions are all over the map and may be an edge case
     # public types -------------------------------------- #
-    public_types = []
-    for member in tree.findall(r"compounddef/sectiondef/memberdef[@kind='typedef']"):
-
-        # name
-        member_name = member.find(r"name").text
-
-        # return type
-        return_div = gen_tag(bs4, "span")
-        return_markup = iterate_markup(bs4, member.find(r"type"), return_div)
-        return_div.find("div", "type").insert(0, "typedef ")
-        return_str = str(return_markup) if return_markup else None
-
-        # description
-        description_div = markup_description(bs4, member)
-        description_str = str(description_div) if description_div is not None else None
-
-        member_obj = {
-            "name": member_name,
-            "return": return_str,
-            "anchor": extract_anchor(member),
-            "definition": {
-                "name": member_name
-            },
-            "description": description_str
-        }
-        public_types.append(member_obj)
-    file_data.public_types = public_types
+    # public_types = []
+    # # for member in tree.findall(r"compounddef/sectiondef/memberdef[@kind='typedef']"):
+    # for member in tree.findall(r"compounddef/sectiondef[@kind='public-type']/memberdef[@prot='public']"):
+    #
+    #     member_obj = None
+    #     print member.attrib["kind"]
+    #     if member.attrib["kind"] == "enum":
+    #         member_obj = parse_member_definition(bs4, member)
+    #         member_obj["return"] = "enum"
+    #         enum_link = gen_link_tag(bs4, member_obj["name"], "#"+find_member_anchor(member))
+    #         member_obj["definition"]["name"] = str(enum_link)
+    #     else:
+    #         member_obj = parse_function(bs4, member, class_name)
+    #     print member.attrib["kind"]
+    #     print member.find("name").text
+    #
+    #     if member_obj is None:
+    #         continue
+    #
+    #     public_types.append(member_obj)
+    #
+    # file_data.public_types = public_types
 
     # public member Functions --------------------------- #
     public_fns = []
@@ -1430,14 +1445,14 @@ def process_class_xml_file(in_path, out_path):
     # protected attributes ------------------------------ #
     protected_attrs = []
     for v in tree.findall(r'compounddef/sectiondef/memberdef[@kind="variable"][@prot="protected"]'):
-        member_obj = parse_function(bs4, v, class_name)
+        member_obj = parse_member_definition(bs4, v)
         protected_attrs.append(member_obj)
     file_data.protected_attrs = protected_attrs
 
     # friends ------------------------------------------- #
     friends = []
     for member in tree.findall(r'compounddef/sectiondef/memberdef[@kind="friend"]'):
-        member_obj = parse_function(bs4, member, class_name)
+        member_obj = parse_member_definition(bs4, member)
 
         # replace name with link to class
         friend_class = g_symbolMap.find_class(member_obj["name"])
@@ -1556,40 +1571,28 @@ def process_namespace_xml_file(in_path, out_path):
     # add typedefs -------------------------------------- #
     typedefs = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='typedef']/memberdef/[@kind='typedef']"):
-        typedef_obj = parse_function(bs4, member)
+        typedef_obj = parse_member_definition(bs4, member)
         typedefs.append(typedef_obj)
     file_data.typedefs = typedefs
 
     # add enumerations ---------------------------------- #
     enumerations = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='enum']/memberdef/[@kind='enum']"):
-        values = []
-        for val in member.findall("enumvalue"):
-            enum_name = val.find("name").text
-            values.append({"name": enum_name})
-
-        description_div = markup_description(bs4, member)
-        description_str = str(description_div) if description_div is not None else None
-
-        enum = {
-            "name": member.find("name").text,
-            "values": values,
-            "description": description_str
-        }
-        enumerations.append(enum)
+        member_obj = parse_enum(bs4, member)
+        enumerations.append(member_obj)
     file_data.enumerations = enumerations
 
     # functions ----------------------------------------- #
     fns = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='func']/memberdef/[@kind='function']"):
-        function_obj = parse_function(bs4, member)
+        function_obj = parse_member_definition(bs4, member)
         fns.append(function_obj)
     file_data.functions = fns
 
     # variables ----------------------------------------- #
     variables = []
     for member in tree.findall(r"compounddef/sectiondef/[@kind='var']/memberdef/[@kind='variable']"):
-        var_obj = parse_function(bs4, member)
+        var_obj = parse_member_definition(bs4, member)
         initializer = member.find('initializer').text if member.find('initializer') is not None else None
         var_obj["definition"]["args"] = initializer
         variables.append(var_obj)
@@ -2110,7 +2113,7 @@ def get_symbol_to_file_map():
             typedef = SymbolMap.Typedef(td_name, type_name, type_path)
             typedefs.append(typedef)
 
-        # print "FILE PATH: " + name + " | " + filePath
+        # print "FILE PATH: " + name + " | " + file_path
         symbol_map.files[name] = SymbolMap.File(name, file_path, typedefs)
 
         # find typedefs for each file
@@ -2119,6 +2122,8 @@ def get_symbol_to_file_map():
             file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
             fn = SymbolMap.Function(fn_name, "", file_path)
             symbol_map.functions[fn_name] = fn
+    if len(file_tags) == 0:
+        print "\t** Warning: no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting."
 
     return symbol_map
 
