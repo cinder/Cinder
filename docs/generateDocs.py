@@ -1316,9 +1316,9 @@ def process_class_xml_file(in_path, out_path):
     include_link = None
 
     if include_file:
-        path = g_symbolMap.find_file(include_file).githubPath
-        if path:
-            include_link = LinkData(path, include_file)
+        file_obj = g_symbolMap.find_file(include_file)
+        if file_obj:
+            include_link = LinkData(file_obj.path, include_file)
     file_data.includes = include_link
 
     # typedefs ------------------------------------------ #
