@@ -23,6 +23,7 @@
 
 #include "cinder/app/msw/PlatformMsw.h"
 #include "cinder/msw/OutputDebugStringStream.h"
+#include "cinder/Log.h"
 #include "cinder/Unicode.h"
 #include "cinder/msw/StackWalker.h"
 #include "cinder/msw/CinderMsw.h"
@@ -176,6 +177,14 @@ fs::path PlatformMsw::getDefaultExecutablePath() const
 	}
 
 	return fs::path( appPath );
+}
+
+void PlatformMsw::cleanupLaunch()
+{
+	// To avoid false positives when performing leak detection, destroy our singletons.
+	log::LogManager::destroyInstance();
+
+	Platform::set( nullptr );
 }
 
 void PlatformMsw::launchWebBrowser( const Url &url )

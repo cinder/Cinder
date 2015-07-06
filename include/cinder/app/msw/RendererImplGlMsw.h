@@ -36,6 +36,7 @@ namespace cinder { namespace app {
 class RendererImplGlMsw : public RendererImplMsw {
  public:
 	RendererImplGlMsw( class RendererGl *aRenderer );
+	virtual ~RendererImplGlMsw();
 	
 	virtual bool	initialize( HWND wnd, HDC dc, RendererRef sharedRenderer );
 	virtual void	prepareToggleFullScreen();
@@ -55,6 +56,8 @@ class RendererImplGlMsw : public RendererImplMsw {
 	bool		mWasVerticalSynced;
 	HGLRC		mRC;
 	HDC			mDC;
+
+	static std::atomic<long>	mRefCount;
 };
 
 } } // namespace cinder::app

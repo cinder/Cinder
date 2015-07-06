@@ -162,7 +162,7 @@ public:
 	// Returns a pointer to the shared instance. To enable logging during shutdown, this instance is leaked at shutdown.
 	static LogManager* instance()	{ return sInstance; }
 	//! Destroys the shared instance. Useful to remove false positives with leak detectors like valgrind.
-	static void destroyInstance()	{ delete sInstance; }
+	static void destroyInstance()	{ if( sInstance ) delete sInstance; sInstance = nullptr; }
 	//! Restores LogManager to its default state.
 	void restoreToDefault();
 

@@ -41,10 +41,21 @@ int sArbMultisampleFormat;
 typedef HGLRC (__stdcall * PFNWGLCREATECONTEXTATTRIBSARB) (HDC hDC, HGLRC hShareContext, const int *attribList);
 typedef BOOL (__stdcall * PFNWGLCHOOSEPIXELFORMATARBPROC)(HDC hdc, const int * piAttribIList, const FLOAT * pfAttribFList, UINT nMaxFormats, int * piFormats, UINT * nNumFormats);
 
+std::atomic<long> RendererImplGlMsw::mRefCount = 0;
+
 RendererImplGlMsw::RendererImplGlMsw( RendererGl *aRenderer )
 	: mRenderer( aRenderer )
 {
 	mRC = 0;
+
+	if( mRefCount++ == 0L )
+		gl::Environment::setCore();
+}
+
+RendererImplGlMsw::~RendererImplGlMsw()
+{
+	if( --mRefCount == 0L )
+		gl::Environment::destroy();
 }
 
 void RendererImplGlMsw::prepareToggleFullScreen()

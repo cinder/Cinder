@@ -74,6 +74,14 @@ Environment* env()
 	return sEnvironment;
 }
 
+void Environment::destroy()
+{
+	if( sEnvironment )
+		delete sEnvironment;
+
+	sEnvironment = NULL;
+}
+
 namespace {
 void destroyPlatformData( Context::PlatformData *data )
 {

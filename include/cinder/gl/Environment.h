@@ -81,6 +81,8 @@ class Environment {
 #else
 	static void				setEs();
 #endif
+
+	static void				destroy();
 };
 
 

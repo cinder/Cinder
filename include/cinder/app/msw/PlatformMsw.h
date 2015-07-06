@@ -50,6 +50,8 @@ class PlatformMsw : public Platform {
 	fs::path	getDocumentsDirectory() const override;
 	fs::path	getDefaultExecutablePath() const override;
 
+	void		cleanupLaunch() override;
+
 	// Overridden to use OutputDebugString
 	std::ostream&	console() override;
 
