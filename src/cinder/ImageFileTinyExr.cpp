@@ -265,9 +265,8 @@ void ImageTargetFileTinyExr::finalize()
 
 	const char *error;
 	int status = SaveMultiChannelEXRToFile( exrImage.get(), mFilePath.string().c_str(), &error );
-	if( status != 0 ) {
-		throw ImageIoExceptionFailedWriteTinyExr( string( "Failed to write .exr file to path: " ) + mFilePath.string() + ", error message: " + error );
-	}
+	if( status != 0 )
+		throw ImageIoExceptionFailedWriteTinyExr( string( "TinyExr: failed to write. Error: " ) + error );
 }
 
 } // namespace cinder
