@@ -119,4 +119,4 @@ void NodeAdvancedApp::draw()
 	gl::drawSolidCircle( vec2( circleX, getWindowCenter().y ), 50 );
 }
 
-CINDER_APP( NodeAdvancedApp, RendererGl )
+CINDER_APP( NodeAdvancedApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )

@@ -71,4 +71,4 @@ void NodeSubclassingApp::draw()
 	}
 }
 
-CINDER_APP( NodeSubclassingApp, RendererGl )
+CINDER_APP( NodeSubclassingApp, RendererGl( RendererGl::Options().msaa( 8 ) ) )
