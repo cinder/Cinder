@@ -155,18 +155,10 @@ class SymbolMap(object):
     class Function(object):
         def __init__(self, member_tree, base_class=None):
             anchor = member_tree.find("anchor").text
-            args = member_tree.find("arglist").text
-            # make list
-            args = args[1:-1].split(', ')
-            # strip white space
-            args = map(str.strip, args)
-            # filter empty strings
-            args = filter(None, args)
-
             self.name = member_tree.find("name").text
             self.base = base_class
             self.path = member_tree.find("anchorfile").text + "#" + anchor
-            self.args = args
+            self.args = parse_arg_list(member_tree.find("arglist").text)
 
     class File(object):
         def __init__(self, name, path, typedefs):
@@ -311,9 +303,7 @@ class SymbolMap(object):
         fn_name = strip_compound_name(name.split('(')[0])
 
         # find args and amt of args
-        args = str(argstring)[1:-1].split(',')
-        args = map(str.strip, args)
-        args = filter(None, args)
+        args = parse_arg_list(str(argstring))
         arg_len = len(args)
 
         # non-optional arguments for the function
@@ -361,31 +351,22 @@ class SymbolMap(object):
             best_score = 0
 
             for idx, fn in enumerate(fn_list):
-                fn_arg_len = len(fn.args)
+                # fn_arg_len = len(fn.args)
                 score = 0
 
                 # amount of required arguments
-                fn_req_arg_len = 0
+                fn_arg_len = 0
                 for arg in fn.args:
                     if arg.find("=") < 0:
-                        fn_req_arg_len += 1
+                        fn_arg_len += 1
 
                 # if number of args is greater than required, score goes up for less difference
-                if arg_len >= fn_req_arg_len:
-                    # difference between required args and total args
-                    # optional args
-                    optional_arg_len = fn_arg_len - fn_req_arg_len
-                    if optional_arg_len > 0:
-                        arg_diff = fn_arg_len - arg_len
-                        len_score = (optional_arg_len - arg_diff) / optional_arg_len
-                    else:
-                        # exact number of args
-                        len_score = 1.0
+                if arg_len == fn_arg_len:
+                   score += 1.0
 
-                    score += 1 + (len_score * 0.25)
-
-                if len(fn.args) > 0:
-                    for i, arg in enumerate(fn.args):
+                fn_args = fn.args[0:fn_arg_len]
+                if len(fn_args) > 0:
+                    for i, arg in enumerate(fn_args):
                         if i + 1 > len(args):
                             continue
                         score += (SM(None, arg, args[i]).ratio()) * 2.0
@@ -770,6 +751,35 @@ def strip_compound_name(full_string):
     name = "".join(ns_parts[-1])
     return name
 
+
+def parse_arg_list(arg_string):
+
+    # replace any commas in < and > enclosures with a temporary delim *** so that they
+    # don't get in the way when splitting args
+    arg_list = re.sub(r'(<\s\S*)(,)(\s\S* *>)', r'\1***\3', arg_string)
+    # split the args into a list
+    args = arg_list[1:-1].split(', ')
+
+    # strip white space
+    args = map(str.strip, args)
+    stripped_args = []
+
+    for indx, arg in enumerate(args):
+        is_optional = arg.find("=") > -1
+
+        # if there is more than one word, take the last one off
+        if len(arg.split(" ")) > 1:
+            arg = " ".join(arg.split(" ")[:-1])
+
+        # we only want the new list to include required args
+        if not is_optional:
+            # replace the temp delimeter with a comma again
+            arg = arg.replace("***", ",")
+            stripped_args.append(arg)
+    # filter empty strings
+    stripped_args = filter(None, stripped_args)
+
+    return stripped_args
 
 def get_namespace(full_string):
     ns_parts = full_string.split("::")
