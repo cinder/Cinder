@@ -62,6 +62,10 @@
 cmake_minimum_required( VERSION 3.1 FATAL_ERROR )
 set( CMAKE_VERBOSE_MAKEFILE ON )
 
+# Suppress compiler checks. Why? CMake seems to be inconsistent
+# with how it checks compilers on different platforms. 
+set( CMAKE_C_COMPILER_WORKS   1 )
+set( CMAKE_CXX_COMPILER_WORKS 1 )
 
 if(NOT WIN32)
   string(ASCII 27 Esc)
@@ -391,6 +395,7 @@ if( APPLE )
     set( NDK_TOOLCHAIN_HOST "darwin-x86_64" )
 elseif( WINDOWS )
 elseif( UNIX )
+    set( NDK_TOOLCHAIN_HOST "linux-x86_64" )
 endif()
 
 if( NOT NDK_TOOLCHAIN_HOST )
