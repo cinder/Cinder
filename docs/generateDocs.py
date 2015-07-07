@@ -307,10 +307,10 @@ class SymbolMap(object):
 
     def find_function(self, name, argstring=""):
 
-        fn_obj = None
         # find function name without namespace and parenthesis
         fn_name = strip_compound_name(name.split('(')[0])
 
+        # find args and amt of args
         args = str(argstring)[1:-1].split(',')
         args = map(str.strip, args)
         args = filter(None, args)
@@ -322,22 +322,9 @@ class SymbolMap(object):
             if arg.find("=") < 0:
                 req_arg_len += 1
 
-        print "MANDITORY ARGS: " + str(req_arg_len)
-        # args = x.trim() for x in str(argstring)[1:-1].split(',')
-
-        print name
-        print "FIND FUNCTION: " + fn_name
-        # print str(argstring)
-        print args
-
-        ref_obj = None
-
         # find parent class first
-        # class_parts = name.split(fn_name)[0]
         class_parts = name.split("(")[0].split("::")
         class_name = "::".join(class_parts[:-1])
-        # class_name = name.split(fn_name)[0]
-        print "CLASS NAME: " + class_name
         ref_obj = g_symbolMap.find_class(class_name)
 
         # if we can't find a matching function, try a namespace
@@ -346,20 +333,13 @@ class SymbolMap(object):
             if class_name == "":
                 ns_search = "cinder"
             ref_obj = g_symbolMap.find_namespace(ns_search)
-            print "NAMESPACE: " + ns_search
-            print ref_obj
 
-
-        # iterate through class functions
+        # iterate through class/namespace functions
         fn_list = []
         if ref_obj:
-
             for fn in ref_obj.functionList:
-                # print fn.name, fn_name
                 if re.match(fn.name, fn_name):
                     fn_list.append(fn)
-                    # print "\t******  found match!"
-                    # print fn.args
         # else:
         #     for fn_key in self.functions:
         #         # print self.func
@@ -370,26 +350,19 @@ class SymbolMap(object):
         #             print "found match"
         #             print fn.args
 
+        # no functions found in class or namespaces, try search by name
         if len(fn_list) == 0:
-            print "find fn by name"
             fn_obj = self.functions.get(fn_name)
             fn_list.append(fn_obj)
 
-
         fn_index = 0
-
-
+        # if we have a bunch of options, we want to widdle it down to the best one
         if len(fn_list) > 1:
             best_score = 0
-            print "search for best match->"
 
             for idx, fn in enumerate(fn_list):
-
                 fn_arg_len = len(fn.args)
-                # fn_index = 0
                 score = 0
-
-                print "\nARG LEN: " + str(len(fn.args)) + " " + str(len(args))
 
                 # amount of required arguments
                 fn_req_arg_len = 0
@@ -397,63 +370,30 @@ class SymbolMap(object):
                     if arg.find("=") < 0:
                         fn_req_arg_len += 1
 
-                print "REQUIRED ARGS: " + str(fn_req_arg_len)
-
-                # if number of args is the same as required args
-
                 # if number of args is greater than required, score goes up for less difference
                 if arg_len >= fn_req_arg_len:
                     # difference between required args and total args
                     # optional args
                     optional_arg_len = fn_arg_len - fn_req_arg_len
-                    len_score = 0.0
                     if optional_arg_len > 0:
-                        print optional_arg_len
                         arg_diff = fn_arg_len - arg_len
                         len_score = (optional_arg_len - arg_diff) / optional_arg_len
                     else:
-                        print "LEN SCORE UP"
                         # exact number of args
                         len_score = 1.0
 
                     score += 1 + (len_score * 0.25)
-                    print "potential match: " + str(score)
-
-                # if req_arg_len == len(args):
-                #     score += 1
-                #     print "potential match"
-
-                # if len(args) > len(fn.args):
-                #     score +=
 
                 if len(fn.args) > 0:
                     for i, arg in enumerate(fn.args):
                         if i + 1 > len(args):
                             continue
-
-                        print "\nARG: " + arg
-                        print "ARG MATCH: " + args[i]
-                        print SM(None, arg, args[i]).ratio()
                         score += (SM(None, arg, args[i]).ratio()) * 2.0
-                        print "potential match: " + str(score)
-                        # match_pattern = re.compile(arg)
-                        # print re.match(arg, fn.args[i]
-                        # print str(match_pattern.search(args[i]))
-
-                        # if match_pattern.search(args[i]):
-                        #     score += 1
-                        #     print "matched arg: " + args[i]
 
                 if score > best_score:
                     fn_index = idx
                     best_score = score
-                    print "NEW BEST SCORE " + str(score)
 
-                print "\t SCORE: " + str(score)
-                print "---"
-
-        print "MATCHING FUNCTION INDEX: "
-        print str(fn_index)
         found_function = fn_list[fn_index] if len(fn_list) > 0 else None
         return found_function
 
@@ -1906,7 +1846,7 @@ def replace_ci_tag(bs4, link, in_path, out_path):
         # new_link = gen_link_tag(bs4, link.contents[0], ref_location)
         new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
         link.replace_with(new_link)
-        print "\tSuccess: " + str(new_link)
+        # print "\tSuccess: " + str(new_link)
     else:
         print "\t** Warning: Could not find replacement tag for ci tag: " + str(link)
 
@@ -1965,7 +1905,6 @@ def process_ci_prefix_tag(tag, in_path):
 #     link_tag = gen_link_tag(bs4, link_title)
 
 def find_ci_tag_ref(link):
-    print "\n---\nFIND CI TAG REF"
     # get string to search against
     searchstring = ""
     if len(link.contents):
@@ -1980,34 +1919,10 @@ def find_ci_tag_ref(link):
         arg_string = searchstring[searchstring.find("("):]
         if len(arg_string) == 0:
             arg_string = "()"
-        print "ARG STRING: " + arg_string
-
-    print "\t" + searchstring
-    print "\t is function: " + str(is_function)
 
     try:
-        ns_str = "::".join(searchstring.split("::")[:-1])
-        # ns_str = "::".join(searchstring.split("(")[0].split("::")[:-1])
-        stripped_searchstring = strip_compound_name(searchstring.split("(")[0])
-        # stripped_searchstring = strip_compound_name(searchstring)
-        # print "::".join(searchstring.split("(")[0].split("::")[:-1])
-
         # find function link
         if is_function:
-            print "SEARCH STRING: " + searchstring
-            print "STRIPPED SEARCH STRING: " + stripped_searchstring
-            print "NS STRING: " + str(ns_str)
-
-            # find parent class first
-            # existing_class = g_symbolMap.find_class(ns_str) if len(ns_str) > 0 else None
-
-            # if existing_class:
-            #     print "EXISTING CLASS: " + existing_class.name
-            # else:
-            #     print "NO EXISTING CLASS"
-            # if existing_class is not None:
-                # find the function in the given class
-            # fn_obj = g_symbolMap.find_function(stripped_searchstring, arg_string, existing_class)
             fn_obj = g_symbolMap.find_function(searchstring, arg_string)
             if fn_obj is not None:
                 ref_obj = fn_obj
