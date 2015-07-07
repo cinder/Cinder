@@ -4,6 +4,7 @@
 
 #include "cinder/gl/Texture.h"
 #include "cinder/Tween.h"
+#include "cinder/Path2d.h"
 
 class AudioController;
 struct Gear;
