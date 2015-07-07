@@ -1,5 +1,6 @@
 #pragma once
 
+#include "cinder/Cinder.h"
 #include "cinder/audio/Node.h"
 
 typedef std::shared_ptr<class CustomTremoloNode>	CustomTremoloNodeRef;
