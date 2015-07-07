@@ -128,11 +128,21 @@ class SymbolMap(object):
             # add typedef string to search tags
             self.tags.append(strip_compound_name(type_def_obj.name))
 
+        def add_function(self, fn_name, fn_obj):
+            self.functionList.append(fn_obj)
+            self.tags.append(fn_name)
+
     class Namespace(object):
         def __init__(self, name, file_name):
             self.name = name
             self.path = file_name
             self.functionList = []
+            self.tags = []
+            self.tags.append(self.name)
+
+        def add_function(self, fn_name, fn_obj):
+            self.functionList.append(fn_obj)
+            self.tags.append(fn_name)
 
     class Typedef(object):
         def __init__(self, name, type_def, path):
@@ -547,6 +557,10 @@ class NamespaceFileData(FileData):
 
     def __init__(self, tree):
         FileData.__init__(self, tree)
+
+        # stripped name (w/o namespace)
+        self.compoundName = str(find_compound_name(tree))
+        self.name = self.compoundName
 
         self.namespaces = []
         self.classes = []
@@ -1486,7 +1500,8 @@ def process_class_xml_file(in_path, out_path):
     if class_def:
         search_tags = class_def.tags
 
-    add_to_search_index(bs4, out_path, search_tags)
+    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
+    add_to_search_index(bs4, link_path, search_tags)
 
     # # write the file
     write_html(bs4, out_path)
@@ -1537,7 +1552,7 @@ def process_namespace_xml_file(in_path, out_path):
     # get common data for the file
     file_data = NamespaceFileData(tree)
     g_currentFile = file_data
-    # ns_def = g_symbolMap.find_namespace(compound_name)
+    ns_def = g_symbolMap.find_namespace(file_data.name)
 
     # page title ---------------------------------------- #
     file_data.title = file_data.name
@@ -1604,7 +1619,14 @@ def process_namespace_xml_file(in_path, out_path):
     update_links(bs4, TEMPLATE_PATH + "htmlContentTemplate.html", out_path)
 
     # add file to search index
-    add_to_search_index(bs4, out_path, ["namespace"])
+    search_tags = ["namespace"]
+    if ns_def:
+        search_tags = ns_def.tags
+
+    link_path = gen_rel_link_tag(bs4, "", out_path, HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)["href"]
+
+    # add file to search index
+    add_to_search_index(bs4, link_path, search_tags)
 
     # write the file
     write_html(bs4, out_path)
@@ -2000,7 +2022,7 @@ def get_symbol_to_file_map():
             # print "FUNCTION " + name + "::" + fn_name
             function_obj = SymbolMap.Function(fn_name, base_class, file_path)
             symbol_map.functions[name + "::" + fn_name] = function_obj
-            class_obj.functionList.append(function_obj)
+            class_obj.add_function(fn_name, function_obj)
 
         # print "CLASS: " + name
         # if name == "Iter":
@@ -2032,7 +2054,7 @@ def get_symbol_to_file_map():
             file_path = member.find("anchorfile").text + "#" + anchor
             function_obj = SymbolMap.Function(fn_name, base_class, file_path)
             symbol_map.functions[name + "::" + fn_name] = function_obj
-            struct_obj.functionList.append(function_obj)
+            struct_obj.add_function(fn_name, function_obj)
 
     # find namespaces
     ns_tags = g_tag_xml.findall(r'compound/[@kind="namespace"]')
@@ -2096,6 +2118,8 @@ def get_symbol_to_file_map():
             file_path = member.find("anchorfile").text + "#" + anchor
             function_obj = SymbolMap.Function(fn_name, base_class, file_path)
             ns_obj.functionList.append(function_obj)
+            ns_obj.add_function(fn_name, function_obj)
+
 
     # find files
     file_tags = g_tag_xml.findall(r'compound/[@kind="file"]')
@@ -2116,7 +2140,7 @@ def get_symbol_to_file_map():
         # print "FILE PATH: " + name + " | " + file_path
         symbol_map.files[name] = SymbolMap.File(name, file_path, typedefs)
 
-        # find typedefs for each file
+        # find functions for each file
         for f in f.findall(r'member[@kind="function"]'):
             fn_name = f.find("name").text
             file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
