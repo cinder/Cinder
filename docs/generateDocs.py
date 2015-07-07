@@ -9,6 +9,7 @@ import os
 import shutil
 import stat
 import urlparse
+from difflib import SequenceMatcher as SM
 from bs4 import BeautifulSoup, Tag, NavigableString
 from pystache.renderer import Renderer
 
@@ -152,10 +153,20 @@ class SymbolMap(object):
             self.sharedFrom = None
 
     class Function(object):
-        def __init__(self, name, base, path):
-            self.name = name
-            self.base = base
-            self.path = path
+        def __init__(self, member_tree, base_class=None):
+            anchor = member_tree.find("anchor").text
+            args = member_tree.find("arglist").text
+            # make list
+            args = args[1:-1].split(', ')
+            # strip white space
+            args = map(str.strip, args)
+            # filter empty strings
+            args = filter(None, args)
+
+            self.name = member_tree.find("name").text
+            self.base = base_class
+            self.path = member_tree.find("anchorfile").text + "#" + anchor
+            self.args = args
 
     class File(object):
         def __init__(self, name, path, typedefs):
@@ -174,6 +185,11 @@ class SymbolMap(object):
         def __init__(self, name, path):
             self.name = name
             self.path = path
+
+    def add_function(self, ns, fn_name, fn_obj):
+        self.functions[ns + "::" + fn_name] = fn_obj
+        # self.functionList.append(fn_obj)
+
 
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
     def find_class(self, name):
@@ -289,29 +305,157 @@ class SymbolMap(object):
                         return self.typedefs[typedef]
         return None
 
-    def find_function(self, name, class_obj=None):
+    def find_function(self, name, argstring=""):
 
         fn_obj = None
         # find function name without namespace and parenthesis
         fn_name = strip_compound_name(name.split('(')[0])
 
-        if class_obj is None:
-            # find parent class first
-            class_parts = name.split("::")
-            class_name = "::".join(class_parts[:-1])
+        args = str(argstring)[1:-1].split(',')
+        args = map(str.strip, args)
+        args = filter(None, args)
+        arg_len = len(args)
 
-            class_obj = g_symbolMap.find_class(class_name)
+        # non-optional arguments for the function
+        req_arg_len = 0
+        for arg in args:
+            if arg.find("=") < 0:
+                req_arg_len += 1
+
+        print "MANDITORY ARGS: " + str(req_arg_len)
+        # args = x.trim() for x in str(argstring)[1:-1].split(',')
+
+        print name
+        print "FIND FUNCTION: " + fn_name
+        # print str(argstring)
+        print args
+
+        ref_obj = None
+
+        # find parent class first
+        # class_parts = name.split(fn_name)[0]
+        class_parts = name.split("(")[0].split("::")
+        class_name = "::".join(class_parts[:-1])
+        # class_name = name.split(fn_name)[0]
+        print "CLASS NAME: " + class_name
+        ref_obj = g_symbolMap.find_class(class_name)
+
+        # if we can't find a matching function, try a namespace
+        if ref_obj is None:
+            ns_search = class_name
+            if class_name == "":
+                ns_search = "cinder"
+            ref_obj = g_symbolMap.find_namespace(ns_search)
+            print "NAMESPACE: " + ns_search
+            print ref_obj
+
 
         # iterate through class functions
-        if class_obj:
-            for fn in class_obj.functionList:
-                if fn.name == fn_name:
-                    fn_obj = fn
+        fn_list = []
+        if ref_obj:
 
-        if not fn_obj:
+            for fn in ref_obj.functionList:
+                # print fn.name, fn_name
+                if re.match(fn.name, fn_name):
+                    fn_list.append(fn)
+                    # print "\t******  found match!"
+                    # print fn.args
+        # else:
+        #     for fn_key in self.functions:
+        #         # print self.func
+        #         # print self.functions[fn].name
+        #         fn = self.functions[fn_key]
+        #         if fn.name == fn_name:
+        #             fn_list.append(fn)
+        #             print "found match"
+        #             print fn.args
+
+        if len(fn_list) == 0:
+            print "find fn by name"
             fn_obj = self.functions.get(fn_name)
+            fn_list.append(fn_obj)
 
-        return fn_obj
+
+        fn_index = 0
+
+
+        if len(fn_list) > 1:
+            best_score = 0
+            print "search for best match->"
+
+            for idx, fn in enumerate(fn_list):
+
+                fn_arg_len = len(fn.args)
+                # fn_index = 0
+                score = 0
+
+                print "\nARG LEN: " + str(len(fn.args)) + " " + str(len(args))
+
+                # amount of required arguments
+                fn_req_arg_len = 0
+                for arg in fn.args:
+                    if arg.find("=") < 0:
+                        fn_req_arg_len += 1
+
+                print "REQUIRED ARGS: " + str(fn_req_arg_len)
+
+                # if number of args is the same as required args
+
+                # if number of args is greater than required, score goes up for less difference
+                if arg_len >= fn_req_arg_len:
+                    # difference between required args and total args
+                    # optional args
+                    optional_arg_len = fn_arg_len - fn_req_arg_len
+                    len_score = 0.0
+                    if optional_arg_len > 0:
+                        print optional_arg_len
+                        arg_diff = fn_arg_len - arg_len
+                        len_score = (optional_arg_len - arg_diff) / optional_arg_len
+                    else:
+                        print "LEN SCORE UP"
+                        # exact number of args
+                        len_score = 1.0
+
+                    score += 1 + (len_score * 0.25)
+                    print "potential match: " + str(score)
+
+                # if req_arg_len == len(args):
+                #     score += 1
+                #     print "potential match"
+
+                # if len(args) > len(fn.args):
+                #     score +=
+
+                if len(fn.args) > 0:
+                    for i, arg in enumerate(fn.args):
+                        if i + 1 > len(args):
+                            continue
+
+                        print "\nARG: " + arg
+                        print "ARG MATCH: " + args[i]
+                        print SM(None, arg, args[i]).ratio()
+                        score += (SM(None, arg, args[i]).ratio()) * 2.0
+                        print "potential match: " + str(score)
+                        # match_pattern = re.compile(arg)
+                        # print re.match(arg, fn.args[i]
+                        # print str(match_pattern.search(args[i]))
+
+                        # if match_pattern.search(args[i]):
+                        #     score += 1
+                        #     print "matched arg: " + args[i]
+
+                if score > best_score:
+                    fn_index = idx
+                    best_score = score
+                    print "NEW BEST SCORE " + str(score)
+
+                print "\t SCORE: " + str(score)
+                print "---"
+
+        print "MATCHING FUNCTION INDEX: "
+        print str(fn_index)
+        found_function = fn_list[fn_index] if len(fn_list) > 0 else None
+        return found_function
 
     def find_file(self, name):
         return self.files.get(name)
@@ -1762,8 +1906,9 @@ def replace_ci_tag(bs4, link, in_path, out_path):
         # new_link = gen_link_tag(bs4, link.contents[0], ref_location)
         new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
         link.replace_with(new_link)
+        print "\tSuccess: " + str(new_link)
     else:
-        print "   ** Warning: Could not find replacement tag for ci tag: " + str(link)
+        print "\t** Warning: Could not find replacement tag for ci tag: " + str(link)
 
 
 def process_ci_seealso_tag(bs4, tag, out_path):
@@ -1794,7 +1939,7 @@ def process_ci_seealso_tag(bs4, tag, out_path):
         for class_obj in g_symbolMap.find_classes_in_namespace(ref_obj.name):
             class_obj.add_related_link(link_data)
     else:
-        print "  ** WARNING: Could not find seealso reference for " + str(tag)
+        print "\t** WARNING: Could not find seealso reference for " + str(tag)
 
 
 def process_ci_prefix_tag(tag, in_path):
@@ -1820,6 +1965,7 @@ def process_ci_prefix_tag(tag, in_path):
 #     link_tag = gen_link_tag(bs4, link_title)
 
 def find_ci_tag_ref(link):
+    print "\n---\nFIND CI TAG REF"
     # get string to search against
     searchstring = ""
     if len(link.contents):
@@ -1829,21 +1975,42 @@ def find_ci_tag_ref(link):
         searchstring = link.get('dox')
 
     ref_obj = None
+    is_function = searchstring.find("(") > -1 or link.get('kind') == 'function'
+    if is_function:
+        arg_string = searchstring[searchstring.find("("):]
+        if len(arg_string) == 0:
+            arg_string = "()"
+        print "ARG STRING: " + arg_string
+
+    print "\t" + searchstring
+    print "\t is function: " + str(is_function)
 
     try:
         ns_str = "::".join(searchstring.split("::")[:-1])
-        stripped_searchstring = strip_compound_name(searchstring)
+        # ns_str = "::".join(searchstring.split("(")[0].split("::")[:-1])
+        stripped_searchstring = strip_compound_name(searchstring.split("(")[0])
+        # stripped_searchstring = strip_compound_name(searchstring)
+        # print "::".join(searchstring.split("(")[0].split("::")[:-1])
 
         # find function link
-        if link.get('kind') == 'function':
+        if is_function:
+            print "SEARCH STRING: " + searchstring
+            print "STRIPPED SEARCH STRING: " + stripped_searchstring
+            print "NS STRING: " + str(ns_str)
 
             # find parent class first
-            existing_class = g_symbolMap.find_class(ns_str)
-            if existing_class is not None:
+            # existing_class = g_symbolMap.find_class(ns_str) if len(ns_str) > 0 else None
+
+            # if existing_class:
+            #     print "EXISTING CLASS: " + existing_class.name
+            # else:
+            #     print "NO EXISTING CLASS"
+            # if existing_class is not None:
                 # find the function in the given class
-                fn_obj = g_symbolMap.find_function(stripped_searchstring, existing_class)
-                if fn_obj is not None:
-                    ref_obj = fn_obj
+            # fn_obj = g_symbolMap.find_function(stripped_searchstring, arg_string, existing_class)
+            fn_obj = g_symbolMap.find_function(searchstring, arg_string)
+            if fn_obj is not None:
+                ref_obj = fn_obj
 
         elif link.get('kind') == 'enum':
             enum_obj = g_symbolMap.find_enum(searchstring)
@@ -1868,8 +2035,9 @@ def find_ci_tag_ref(link):
                         ref_obj = g_symbolMap.find_enum(searchstring)
                     count += 1
 
-    except:
+    except Exception as e:
         print "\t** WARNING: problem finding ci tag"
+        print "\t" + e.message
         return None
 
     return ref_obj
@@ -2016,13 +2184,12 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = c.findall(r"member[@kind='function']")
         for member in members:
-            fn_name = member.find("name").text
-            anchor = member.find("anchor").text
-            file_path = member.find("anchorfile").text + "#" + anchor
             # print "FUNCTION " + name + "::" + fn_name
-            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
-            symbol_map.functions[name + "::" + fn_name] = function_obj
-            class_obj.add_function(fn_name, function_obj)
+            # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
+            function_obj = SymbolMap.Function(member, base_class)
+            # symbol_map.functions[name + "::" + function_obj.name] = function_obj
+            symbol_map.add_function(name, function_obj.name, function_obj)
+            class_obj.add_function(function_obj.name, function_obj)
 
         # print "CLASS: " + name
         # if name == "Iter":
@@ -2049,12 +2216,15 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = s.findall(r"member[@kind='function']")
         for member in members:
-            fn_name = member.find("name").text
-            anchor = member.find("anchor").text
-            file_path = member.find("anchorfile").text + "#" + anchor
-            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
-            symbol_map.functions[name + "::" + fn_name] = function_obj
-            struct_obj.add_function(fn_name, function_obj)
+            # fn_name = member.find("name").text
+            # anchor = member.find("anchor").text
+            # file_path = member.find("anchorfile").text + "#" + anchor
+            # args = member.find("argsstring").text if member.find("argsstring") else ""
+            # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
+            function_obj = SymbolMap.Function(member, base_class)
+            # symbol_map.functions[name + "::" + function_obj.name] = function_obj
+            symbol_map.add_function(name, function_obj.name, function_obj)
+            struct_obj.add_function(function_obj.name, function_obj)
 
     # find namespaces
     ns_tags = g_tag_xml.findall(r'compound/[@kind="namespace"]')
@@ -2113,12 +2283,14 @@ def get_symbol_to_file_map():
         # find functions and add to symbol map
         members = ns.findall(r"member[@kind='function']")
         for member in members:
-            fn_name = member.find("name").text
-            anchor = member.find("anchor").text
-            file_path = member.find("anchorfile").text + "#" + anchor
-            function_obj = SymbolMap.Function(fn_name, base_class, file_path)
+            # fn_name = member.find("name").text
+            # anchor = member.find("anchor").text
+            # file_path = member.find("anchorfile").text + "#" + anchor
+            # args = member.find("argsstring").text if member.find("argsstring") else ""
+            # function_obj = SymbolMap.Function(fn_name, base_class, args, file_path)
+            function_obj = SymbolMap.Function(member, base_class)
             ns_obj.functionList.append(function_obj)
-            ns_obj.add_function(fn_name, function_obj)
+            ns_obj.add_function(function_obj.name, function_obj)
 
 
     # find files
@@ -2141,11 +2313,14 @@ def get_symbol_to_file_map():
         symbol_map.files[name] = SymbolMap.File(name, file_path, typedefs)
 
         # find functions for each file
-        for f in f.findall(r'member[@kind="function"]'):
-            fn_name = f.find("name").text
-            file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
-            fn = SymbolMap.Function(fn_name, "", file_path)
-            symbol_map.functions[fn_name] = fn
+        for member in f.findall(r'member[@kind="function"]'):
+            # fn_name = f.find("name").text
+            # file_path = f.find('anchorfile').text + "#" + f.find("anchor").text
+            # args = member.find("argsstring").text if member.find("argsstring") else ""
+            # fn = SymbolMap.Function(fn_name, "", args, file_path)
+            function_obj = SymbolMap.Function(member, "")
+            # symbol_map.functions[function_obj.name] = function_obj
+            symbol_map.add_function("", function_obj.name, function_obj)
     if len(file_tags) == 0:
         print "\t** Warning: no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting."
 
