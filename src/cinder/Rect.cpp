@@ -262,8 +262,17 @@ T RectT<T>::distanceSquared( const Vec2T &pt ) const
 	else if( pt.x > x2 ) squaredDistance += ( pt.x - x2 ) * ( pt.x - x2 );
 	if( pt.y < y1 ) squaredDistance += ( y1 - pt.y ) * ( y1 - pt.y );
 	else if( pt.y > y2 ) squaredDistance += ( pt.y - y2 ) * ( pt.y - y2 );
-	
+
 	return squaredDistance;
+}
+
+template<typename T>
+T RectT<T>::distanceSigned( const Vec2T &pt ) const
+{
+	Vec2T halfSize = getSize() * static_cast<T>(0.5);
+	Vec2T center = getUpperLeft() + halfSize;
+	Vec2T d = glm::abs(pt - center) - halfSize;
+	return glm::min<T>(glm::max(d.x, d.y), 0) + length(glm::max<T>(d, 0));
 }
 
 template<typename T>

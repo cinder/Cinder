@@ -86,6 +86,8 @@ class RectT {
 	T		distance( const Vec2T &pt ) const;
 	//! Returns the squared distance between the point \a pt and the rectangle. Points inside the rectangle return \c 0.
 	T		distanceSquared( const Vec2T &pt ) const;
+	//! Returns the signed distance from the rectangle to the point \a pt. Distances inside the rectangle are negative.
+	T		distanceSigned( const Vec2T &pt ) const;
 
 	//! Returns the nearest point on the Rect \a rect. Points inside the rectangle return \a pt.
 	Vec2T		closestPoint( const Vec2T &pt ) const;
