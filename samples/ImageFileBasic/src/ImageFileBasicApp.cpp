@@ -51,9 +51,6 @@ void ImageFileBasicApp::keyDown( KeyEvent event )
 void ImageFileBasicApp::fileDrop( FileDropEvent event )
 {
 	try {
-		BufferRef fileData(new Buffer( loadFile( event.getFile( 0 ) ) ) );
-		DataSourceRef ds = DataSourceBuffer::create( fileData );
-//		Channel16u bonk( loadImage( ds, ImageSource::Options(), "exr" ) );
 		mTexture = gl::Texture::create( loadImage( loadFile( event.getFile( 0 ) ) ) );
 	}
 	catch( Exception &exc ) {
