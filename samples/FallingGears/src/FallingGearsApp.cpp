@@ -226,6 +226,6 @@ void FallingGearsApp::drawInfo()
 	gl::disableAlphaBlending();
 }
 
-CINDER_APP( FallingGearsApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( FallingGearsApp, RendererGl( RendererGl::Options().msaa( 8 ) ), []( App::Settings *settings ) {
 	settings->setWindowSize( 1200, 800 );
 } )
