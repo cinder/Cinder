@@ -1742,7 +1742,7 @@ void Context::setFont( const cinder::Font &font )
 #if defined( CINDER_COCOA )
 	cairo_font_face_t *cairoFont = cairo_quartz_font_face_create_for_cgfont( font.getCgFontRef() );
 #elif defined( CINDER_MSW )
-	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( const_cast<LOGFONTW*>( &font.getLogfont() ) );
+	cairo_font_face_t *cairoFont = cairo_win32_font_face_create_for_logfontw( const_cast<LOGFONTW*>( (const LOGFONTW*)font.getLogfont() ) );
 #endif
 	cairo_set_font_face( mCairo, cairoFont );
 	cairo_set_font_size( mCairo, font.getSize() );

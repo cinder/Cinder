@@ -50,10 +50,6 @@
 		0003F40B1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CF1992D64100647C8B /* TransformFeedbackObj.cpp */; };
 		0003F40C1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CF1992D64100647C8B /* TransformFeedbackObj.cpp */; };
 		0003F40D1992D64100647C8B /* TransformFeedbackObj.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3CF1992D64100647C8B /* TransformFeedbackObj.cpp */; };
-		0003F40E1992D64100647C8B /* TransformFeedbackObjImplHardware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D01992D64100647C8B /* TransformFeedbackObjImplHardware.cpp */; };
-		0003F4111992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D11992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp */; };
-		0003F4121992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D11992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp */; };
-		0003F4131992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D11992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp */; };
 		0003F4141992D64100647C8B /* Vao.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D21992D64100647C8B /* Vao.cpp */; };
 		0003F4151992D64100647C8B /* Vao.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D21992D64100647C8B /* Vao.cpp */; };
 		0003F4161992D64100647C8B /* Vao.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 0003F3D21992D64100647C8B /* Vao.cpp */; };
@@ -1102,8 +1098,6 @@
 		0003F3CD1992D64100647C8B /* TextureFont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFont.cpp; path = gl/TextureFont.cpp; sourceTree = "<group>"; };
 		0003F3CE1992D64100647C8B /* TextureFormatParsers.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TextureFormatParsers.cpp; path = gl/TextureFormatParsers.cpp; sourceTree = "<group>"; };
 		0003F3CF1992D64100647C8B /* TransformFeedbackObj.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformFeedbackObj.cpp; path = gl/TransformFeedbackObj.cpp; sourceTree = "<group>"; };
-		0003F3D01992D64100647C8B /* TransformFeedbackObjImplHardware.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformFeedbackObjImplHardware.cpp; path = gl/TransformFeedbackObjImplHardware.cpp; sourceTree = "<group>"; };
-		0003F3D11992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = TransformFeedbackObjImplSoftware.cpp; path = gl/TransformFeedbackObjImplSoftware.cpp; sourceTree = "<group>"; };
 		0003F3D21992D64100647C8B /* Vao.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Vao.cpp; path = gl/Vao.cpp; sourceTree = "<group>"; };
 		0003F3D31992D64100647C8B /* VaoImplCore.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VaoImplCore.cpp; path = gl/VaoImplCore.cpp; sourceTree = "<group>"; };
 		0003F3D41992D64100647C8B /* VaoImplEs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = VaoImplEs.cpp; path = gl/VaoImplEs.cpp; sourceTree = "<group>"; };
@@ -2225,8 +2219,6 @@
 				0003F3CD1992D64100647C8B /* TextureFont.cpp */,
 				0003F3CE1992D64100647C8B /* TextureFormatParsers.cpp */,
 				0003F3CF1992D64100647C8B /* TransformFeedbackObj.cpp */,
-				0003F3D01992D64100647C8B /* TransformFeedbackObjImplHardware.cpp */,
-				0003F3D11992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp */,
 				00F601C719F6C9DD00C83781 /* Ubo.cpp */,
 				0003F3D21992D64100647C8B /* Vao.cpp */,
 				0003F3D31992D64100647C8B /* VaoImplCore.cpp */,
@@ -3430,7 +3422,6 @@
 				111A5F25191F727A005C3166 /* bitwise.c in Sources */,
 				00A113D6135535C500081873 /* Triangulate.cpp in Sources */,
 				00A114141355369A00081873 /* bucketalloc.c in Sources */,
-				0003F4121992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */,
 				111A5FD8191F72AE005C3166 /* FilterNode.cpp in Sources */,
 				00A114161355369A00081873 /* dict.c in Sources */,
 				00A114181355369A00081873 /* geom.c in Sources */,
@@ -3620,7 +3611,6 @@
 				111A5F27191F727B005C3166 /* bitwise.c in Sources */,
 				00A114251355369A00081873 /* dict.c in Sources */,
 				00A114271355369A00081873 /* geom.c in Sources */,
-				0003F4131992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */,
 				111A5FD9191F72AE005C3166 /* FilterNode.cpp in Sources */,
 				00A114291355369A00081873 /* mesh.c in Sources */,
 				00A1142B1355369A00081873 /* priorityq.c in Sources */,
@@ -3716,7 +3706,6 @@
 				0003F49D1995DEF000647C8B /* LoadOGL.cpp in Sources */,
 				118CA41E1A9427F700841458 /* AppImplMac.mm in Sources */,
 				0003F3EA1992D64100647C8B /* EnvironmentCore.cpp in Sources */,
-				0003F40E1992D64100647C8B /* TransformFeedbackObjImplHardware.cpp in Sources */,
 				111A5EA8191F703D005C3166 /* bitrate.c in Sources */,
 				111A5EE4191F703D005C3166 /* window.c in Sources */,
 				0099871A0F79D0750042F211 /* CinderCocoa.mm in Sources */,
@@ -3730,7 +3719,6 @@
 				009EE56D0F803F5600F17CB1 /* BandedMatrix.cpp in Sources */,
 				009EE56E0F803F5600F17CB1 /* BSplineFit.cpp in Sources */,
 				0003F4081992D64100647C8B /* TextureFormatParsers.cpp in Sources */,
-				0003F4111992D64100647C8B /* TransformFeedbackObjImplSoftware.cpp in Sources */,
 				0003F48A1992EA5900647C8B /* gl_load.c in Sources */,
 				009EE56F0F803F5600F17CB1 /* BSpline.cpp in Sources */,
 				B06DE70319C74935008B9E1B /* Query.cpp in Sources */,

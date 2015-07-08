@@ -75,7 +75,6 @@ void AppImplMswBasic::run()
 		if( mNeedsToRefreshDisplays ) {
 			mNeedsToRefreshDisplays = false;
 			PlatformMsw::get()->refreshDisplays();
-			OutputDebugString( L"Refreshing displays" );
 		}
 
 		// update and draw

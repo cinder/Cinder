@@ -574,7 +574,7 @@ void Rect::setDefaultTexCoords()
 ///////////////////////////////////////////////////////////////////////////////////////
 // RoundedRect
 RoundedRect::RoundedRect()
-	: mSubdivisions( -1 ), mCornerRadius( 1.0f ), mHasColors( false ), mNumVertices( 0 )
+	: mSubdivisions( -1 ), mCornerRadius( 0.1f ), mHasColors( false ), mNumVertices( 0 )
 {
 	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
 	updateVertexCount();
@@ -3384,7 +3384,7 @@ void WireCircle::loadInto( Target *target, const AttribSet &requestedAttribs ) c
 ///////////////////////////////////////////////////////////////////////////////////////
 // WireRoundedRect
 WireRoundedRect::WireRoundedRect()
-	: mCornerSubdivisions( -1 ), mCornerRadius( 1.0f ), mNumVertices( 0 )
+	: mCornerSubdivisions( -1 ), mCornerRadius( 0.1f ), mNumVertices( 0 )
 {
 	rect( Rectf( -0.5f, -0.5f, 0.5f, 0.5f ) );
 	updateVertexCount();

@@ -639,12 +639,6 @@
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp">
-      <Filter>Source Files\gl</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\cinder\gl\Vao.cpp">
       <Filter>Source Files\gl</Filter>
     </ClCompile>
@@ -1647,6 +1641,9 @@
       <Filter>Header Files\ip</Filter>
     </ClInclude>
     <ClInclude Include="..\include\cinder\gl\ConstantConversions.h">
+      <Filter>Header Files\gl</Filter>
+    </ClInclude>
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h">
       <Filter>Header Files\gl</Filter>
     </ClInclude>
   </ItemGroup>

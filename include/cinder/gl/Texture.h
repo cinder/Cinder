@@ -318,11 +318,25 @@ std::ostream& operator<<( std::ostream &os, const TextureBase &rhs );
 
 class TextureData {
   public:
-	struct Level {
+	//! Represents a face of a texture; typically 1 Face per Level; CubeMaps have 6.
+	struct Face {
   		GLsizei						dataSize;
 		size_t						offset;
-		std::shared_ptr<uint8_t>	dataStore;
+//		std::shared_ptr<uint8_t>	dataStore;
+	};
+
+	//! Represents a single mip-level, composed of 1 or more Faces
+	struct Level {
 		GLsizei						width, height, depth;
+
+		size_t						getNumFaces() const { return mFaces.size(); }
+		const Face&					getFace( size_t index ) const { return mFaces.at( index ); }
+		const std::vector<Face>&	getFaces() const { return mFaces; }
+		std::vector<Face>&			getFaces() { return mFaces; }
+		Face&						back() { return mFaces.back(); }
+		void						push_back( const Face &face ) { mFaces.push_back( face ); }
+		
+		std::vector<Face>			mFaces;
 	};
 
 	TextureData();
@@ -339,8 +353,10 @@ class TextureData {
 	void				setHeight( GLint height ) { mHeight = height; }
 	GLint				getDepth() const { return mDepth; }
 	void				setDepth( GLint depth ) { mDepth = depth; }
+	GLint				getNumFaces() const { return mNumFaces; }
+	void				setNumFaces( GLint numFaces ) { mNumFaces = numFaces; }	
 	
-	bool				isCompressed() const { return mDataFormat == 0; }
+	bool				isCompressed() const { return mDataType == 0; }
 	GLint				getInternalFormat() const { return mInternalFormat; }
 	void				setInternalFormat( GLint internalFormat ) { mInternalFormat = internalFormat; }
 	GLenum				getDataFormat() const { return mDataFormat; }
@@ -354,8 +370,8 @@ class TextureData {
 	void						setSwizzleMask( const std::array<GLint,4> &swizzleMask ) { mSwizzleMask = swizzleMask; }
 
 	size_t						getNumLevels() const { return mLevels.size(); }
-	const Level&				getLevel( size_t index ) const { return mLevels.at( index ); }
 	const std::vector<Level>&	getLevels() const { return mLevels; }
+	std::vector<Level>&			getLevels() { return mLevels; }
 	Level&						back() { return mLevels.back(); }
 	void						push_back( const Level &level ) { mLevels.push_back( level ); }
 	void						clear() { mLevels.clear(); }
@@ -369,14 +385,14 @@ class TextureData {
   private:
 	void		init();
 	
-	GLint				mWidth, mHeight, mDepth;
+	GLint				mWidth, mHeight, mDepth, mNumFaces;
 	GLint				mInternalFormat;
 	GLenum				mDataFormat, mDataType;
 	GLint				mUnpackAlignment;
 	std::array<GLint,4>	mSwizzleMask;
-	
-	std::vector<Level>			mLevels;
 
+	std::vector<Level>	mLevels; // mip-levels
+	
   #if ! defined( CINDER_GL_ES )
 	PboRef						mPbo;
 	void*						mPboMappedPtr;
@@ -440,7 +456,7 @@ class Texture1d : public TextureBase {
 	Texture1d( const Surface8u &surface, Format format );
 	Texture1d( const void *data, GLenum dataFormat, int width, Format format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth;
 };
@@ -562,11 +578,11 @@ class Texture2d : public TextureBase {
 	void			replace( const TextureData &textureData );
 
 	//! Returns the width of the texture in pixels.
-	GLint			getWidth() const { return mCleanBounds.getWidth(); }
+	GLint			getWidth() const override { return mCleanBounds.getWidth(); }
 	//! Returns the height of the texture in pixels.
-	GLint			getHeight() const { return mCleanBounds.getHeight(); }
+	GLint			getHeight() const override { return mCleanBounds.getHeight(); }
 	//! Returns the depth of the texture in pixels.
-	GLint			getDepth() const { return 1; }
+	GLint			getDepth() const override { return 1; }
 	//! Returns the true width of the texture in pixels, which may be larger than it's "clean" area
 	GLint			getActualWidth() const { return mActualSize.x; }
 	//! Returns the true height of the texture in pixels, which may be larger than it's "clean" area
@@ -584,7 +600,6 @@ class Texture2d : public TextureBase {
 	ImageSourceRef	createSource();
 	
   protected:
-	virtual void	printDims( std::ostream &os ) const override;
 
 	Texture2d( int width, int height, Format format = Format() );
 	Texture2d( const void *data, GLenum dataFormat, int width, int height, Format format = Format() );
@@ -598,6 +613,7 @@ class Texture2d : public TextureBase {
 	Texture2d( GLenum target, GLuint textureId, int width, int height, bool doNotDispose );
 	Texture2d( const TextureData &data, Format format );
 	
+	void	printDims( std::ostream &os ) const override;
 	void	initParams( Format &format, GLint defaultInternalFormat, GLint defaultDataType );
 	void	initMaxMipmapLevel();
 	template<typename T>
@@ -674,7 +690,7 @@ class Texture3d : public TextureBase {
   	Texture3d( GLint width, GLint height, GLint depth, Format format );
 	Texture3d( const void *data, GLenum dataFormat, int width, int height, int depth, Format format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 
 	GLint		mWidth, mHeight, mDepth;
 };
@@ -720,6 +736,14 @@ class TextureCubeMap : public TextureBase
 	static TextureCubeMapRef	create( const ImageSourceRef &imageSource, const Format &format = Format() );
 	//! Expects images ordered { +X, -X, +Y, -Y, +Z, -Z }
 	static TextureCubeMapRef	create( const ImageSourceRef images[6], const Format &format = Format() );
+	//! Constructs a TextureCubeMap based on an instance of TextureData
+	static TextureCubeMapRef	create( const TextureData &data, const Format &format );
+	//! Constructs a TextureCubeMap from a KTX file. Enables mipmapping if KTX file contains mipmaps and Format has not specified \c false for mipmapping. Uses Format's intermediate PBO if supplied; requires it to be large enough to hold all MIP levels and throws if it is not. (http://www.khronos.org/opengles/sdk/tools/KTX/file_format_spec/)
+	static TextureCubeMapRef	createFromKtx( const DataSourceRef &dataSource, const Format &format = Format() );
+#if ! defined( CINDER_GL_ES ) || defined( CINDER_GL_ANGLE )
+	//! Constructs a TextureCubeMap from a DDS file. Supports DXT1, DTX3, and DTX5. Supports BC7 in the presence of \c GL_ARB_texture_compression_bptc. Enables mipmapping if DDS contains mipmaps and Format has not specified \c false for mipmapping. ANGLE version requires textures to be a multiple of 4 due to DX limitation.
+	static TextureCubeMapRef	createFromDds( const DataSourceRef &dataSource, const Format &format = Format() );
+#endif
 
 	//! Returns the width of the texture in pixels
 	GLint			getWidth() const override { return mWidth; }
@@ -727,16 +751,20 @@ class TextureCubeMap : public TextureBase
 	GLint			getHeight() const override { return mHeight; }
 	//! Returns the depth of the texture in pixels (
 	GLint			getDepth() const override { return 1; }
+
+	//! Replaces the pixels (and data store) of a Texture with contents of \a textureData.
+	void			replace( const TextureData &textureData );
 	
   protected:
 	TextureCubeMap( int32_t width, int32_t height, Format format );
 	template<typename T>
 	TextureCubeMap( const SurfaceT<T> images[6], Format format );
+	TextureCubeMap( const TextureData &data, Format format );
 
 	template<typename T>
 	static TextureCubeMapRef createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format );
 
-	virtual void	printDims( std::ostream &os ) const override;
+	void	printDims( std::ostream &os ) const override;
 	
 	GLint		mWidth, mHeight;
 };

@@ -10,7 +10,7 @@ struct InterleavedPassThruNode : public ci::audio::Node {
 		setNumChannels( 2 );
 	}
 
-	virtual void initialize() override
+	void initialize() override
 	{
 		mBufferInterleaved = ci::audio::BufferInterleaved( getContext()->getFramesPerBlock(), 2 );
 	}

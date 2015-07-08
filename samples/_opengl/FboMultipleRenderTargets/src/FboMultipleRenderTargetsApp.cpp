@@ -13,9 +13,9 @@ using namespace ci::app;
 
 class FboMultipleRenderTargetsApp : public App {
   public:
-	virtual void	setup() override;
-	virtual void	update() override;
-	virtual void	draw() override;
+	void	setup() override;
+	void	update() override;
+	void	draw() override;
 
   private:
 	void			renderSceneToFbo();

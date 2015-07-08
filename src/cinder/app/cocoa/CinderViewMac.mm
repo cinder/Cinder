@@ -131,7 +131,7 @@ using namespace cinder::app;
 	if( ! mFullScreenModeKiosk ) {
 		bool hasFullScreenButton = [[self window] collectionBehavior] & NSWindowCollectionBehaviorFullScreenPrimary;
 		if( ! hasFullScreenButton ) {
-			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
+			[[self window] setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary | NSWindowCollectionBehaviorIgnoresCycle];
 		}
 		if( fullScreen ) { // we need to force the window to be resizable if entering fullscreen
 			[[self window] setStyleMask:([[self window] styleMask] | NSResizableWindowMask)];
@@ -148,6 +148,7 @@ using namespace cinder::app;
 
 		cinder::DisplayMac *displayMac = dynamic_cast<cinder::DisplayMac*>( options->getDisplay().get() );
         NSScreen *screen = ( displayMac ? displayMac->getNsScreen() : [[self window] screen] );
+		[[self window] setCollectionBehavior:NSWindowCollectionBehaviorIgnoresCycle | NSWindowCollectionBehaviorTransient];		
         [self enterFullScreenMode:screen withOptions:dict];
     }
     else {

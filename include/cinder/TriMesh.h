@@ -78,7 +78,7 @@ class TriMesh : public geom::Source {
 	//! Creates a suitable TriMesh::Format for representing a geom::Source \a source
 	static Format		formatFromSource( const geom::Source &source );
 	
-	virtual void	loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
+	void		loadInto( geom::Target *target, const geom::AttribSet &requestedAttribs ) const override;
 	
 	void		clear();
 	
@@ -200,7 +200,7 @@ class TriMesh : public geom::Source {
 	//! Returns the total number of triangles contained by the TriMesh.
 	size_t		getNumTriangles() const { return mIndices.size() / 3; }
 	//! Returns the total number of indices contained by the TriMesh.
-	virtual size_t	getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
+	size_t		getNumVertices() const override { if( mPositionsDims ) return mPositions.size() / mPositionsDims; else return 0; }
 
 	//! Copies the 3 vertices of triangle number \a idx into \a a, \a b and \a c. Assumes vertices are 3D
 	void		getTriangleVertices( size_t idx, vec3 *a, vec3 *b, vec3 *c ) const;

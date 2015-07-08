@@ -236,7 +236,7 @@ std::ostream& AppBase::console()
 	return Platform::get()->console();
 }
 
-bool AppBase::isPrimaryThread()
+bool AppBase::isMainThread()
 {
 	return std::this_thread::get_id() == sPrimaryThreadId;
 }

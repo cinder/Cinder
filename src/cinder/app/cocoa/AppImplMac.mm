@@ -73,6 +73,7 @@ using namespace cinder::app;
 
 	NSMenu *mainMenu = [[NSMenu alloc] init];
 	[NSApp setMainMenu:mainMenu];
+	[mainMenu release];
 	
 	self.windows = [NSMutableArray array];
 	
@@ -303,6 +304,11 @@ using namespace cinder::app;
 
 - (void)applicationDidBecomeActive:(NSNotification *)notification
 {
+	// Due to bug #960: https://github.com/cinder/Cinder/issues/960 We need to force the background window
+	// to be actually in the background when we're fullscreen. Was true of 10.9 and 10.10
+	if( app::AppBase::get() && app::getWindow() && app::getWindow()->isFullScreen() )
+		[[[NSApplication sharedApplication] mainWindow] orderBack:nil];
+
 	mApp->emitDidBecomeActive();
 }
 
@@ -847,7 +853,7 @@ using namespace cinder::app;
 
 	if( winFormat.isFullScreenButtonEnabled() )
 		[winImpl->mWin setCollectionBehavior:NSWindowCollectionBehaviorFullScreenPrimary];
-	
+
 	if( ! winFormat.getRenderer() )
 		winFormat.setRenderer( appImpl->mApp->getDefaultRenderer()->clone() );
 

@@ -60,7 +60,7 @@ public:
 
 	const vector<unique_ptr<Logger> >& getLoggers() const	{ return mLoggers; }
 
-	virtual void write( const Metadata &meta, const std::string &text ) override;
+	void write( const Metadata &meta, const std::string &text ) override;
 
 private:
 	vector<unique_ptr<Logger> >	mLoggers; // TODO: make set? don't want duplicates
@@ -593,9 +593,11 @@ LoggerSystem::~LoggerSystem()
 
 void LoggerSystem::write( const Metadata &meta, const std::string &text )
 {
+#if ! defined( CINDER_WINRT ) // Currently no system logging support on WinRT
 	if( meta.mLevel >= mMinLevel ) {
 		mImpl->write( meta, text );
 	}
+#endif
 }
 	
 // ----------------------------------------------------------------------------------------------------

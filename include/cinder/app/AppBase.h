@@ -380,8 +380,8 @@ class AppBase {
 	//! Returns a reference to the App's Timeline
 	Timeline&		timeline() { return *mTimeline; }
 
-	//! Return \c true if the calling thread is the Application's primary thread
-	static bool		isPrimaryThread();
+	//! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+	static bool		isMainThread();
 
 	//! Returns a reference to the App's boost::asio::io_service()
 	asio::io_service&	io_service() { return *mIo; }
@@ -468,20 +468,20 @@ inline size_t		getNumWindows() { return AppBase::get()->getNumWindows(); }
 inline WindowRef	getWindowIndex( size_t index ) { return AppBase::get()->getWindowIndex( index ); }
 
 //! Returns the width of the active App's window measured in points, or of the screen when in full-screen mode
-inline int	getWindowWidth() { return AppBase::get()->getWindowWidth(); }
+inline int		getWindowWidth() { return AppBase::get()->getWindowWidth(); }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( const ivec2 &windowPos ) { AppBase::get()->setWindowPos( windowPos );  }
 //! Sets the position of the active App's window measured in points. Ignored in full-screen mode
 inline void		setWindowPos( int x, int y ) { setWindowPos( ivec2( x, y ) );  }
 //! Returns the height of the active App's window measured in points, or the screen when in full-screen mode.
-inline int	getWindowHeight() { return AppBase::get()->getWindowHeight(); }
+inline int		getWindowHeight() { return AppBase::get()->getWindowHeight(); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( ivec2 size ) { AppBase::get()->setWindowSize( size ); }
 //! Sets the size of the active App's window in points. Ignored in full-screen mode.
 inline void		setWindowSize( int windowSizeX, int windowSizeY ) { setWindowSize( ivec2( windowSizeX, windowSizeY ) ); }
 //! Returns the center of the active App's window in pixels or of the screen in full-screen mode.
 /** Equivalent to <tt>vec2( getWindowWidth() * 0.5, getWindowHeight() * 0.5 ) </tt> **/
-inline vec2	getWindowCenter() { return AppBase::get()->getWindowCenter(); }
+inline vec2		getWindowCenter() { return AppBase::get()->getWindowCenter(); }
 //! Returns the size of the active App's window or the screen in full-screen mode measured in points
 inline ivec2	getWindowSize() { return AppBase::get()->getWindowSize(); }
 //! Returns the position of the active App's window measured in points
@@ -505,7 +505,7 @@ inline void		setFullScreen( bool fullScreen = true ) { AppBase::get()->setFullSc
 //! Returns a scalar mapped from points to pixels for the current Window
 inline float	toPixels( float s ) { return getWindow()->toPixels( s ); }
 //! Returns a vec2 mapped from points to pixels for the current Window
-inline vec2	toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
+inline vec2		toPixels( vec2 s ) { return getWindow()->toPixels( s ); }
 //! Returns a ivec2 mapped from points to pixels for the current Window
 inline	ivec2	toPixels( ivec2 s ) { return app::getWindow()->toPixels( s ); }
 //! Returns an Area mapped from points to pixels for the current Window
@@ -526,7 +526,9 @@ inline	Rectf	toPoints( const Rectf &a ) { return getWindow()->toPoints( a ); }
 //! Returns the number seconds which have elapsed since the active App launched.
 inline double	getElapsedSeconds() { return AppBase::get()->getElapsedSeconds(); }
 //! Returns the number of animation frames which have elapsed since the active App launched.
-inline uint32_t	getElapsedFrames() { return AppBase::get()->getElapsedFrames(); }
+inline uint32_t	getElapsedFrames()	{ return AppBase::get()->getElapsedFrames(); }
+//! Returns \c true if the calling thread is the Application's main thread (the thread running the main function), false otherwise.
+inline bool		isMainThread()		{ return AppBase::isMainThread(); }
 
 #if defined( CINDER_MSW )
 //! (MSW only) Returns a DataSource to an application resource. \a mswID and \a mswType identify the resource as defined the application's .rc file(s). \sa \ref CinderResources
@@ -585,7 +587,7 @@ inline ::CGContextRef	createWindowCgContext() { return (std::dynamic_pointer_cas
 template<typename T>
 typename std::result_of<T()>::type AppBase::dispatchSync( T fn )
 {
-	if( isPrimaryThread() )
+	if( isMainThread() )
 		return fn();
 	else {
 		typedef typename std::result_of<T()>::type result_type;

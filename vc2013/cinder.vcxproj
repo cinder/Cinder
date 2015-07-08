@@ -509,8 +509,6 @@
     <ClCompile Include="..\src\cinder\gl\TextureFont.cpp" />
     <ClCompile Include="..\src\cinder\gl\TextureFormatParsers.cpp" />
     <ClCompile Include="..\src\cinder\gl\TransformFeedbackObj.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplHardware.cpp" />
-    <ClCompile Include="..\src\cinder\gl\TransformFeedbackObjImplSoftware.cpp" />
     <ClCompile Include="..\src\cinder\gl\Ubo.cpp" />
     <ClCompile Include="..\src\cinder\gl\Vao.cpp" />
     <ClCompile Include="..\src\cinder\gl\VaoImplCore.cpp" />
@@ -743,6 +741,7 @@
     <ClInclude Include="..\include\cinder\gl\scoped.h" />
     <ClInclude Include="..\include\cinder\gl\Shader.h" />
     <ClInclude Include="..\include\cinder\gl\ShaderPreprocessor.h" />
+    <ClInclude Include="..\include\cinder\gl\Ssbo.h" />
     <ClInclude Include="..\include\cinder\gl\StereoAutoFocuser.h" />
     <ClInclude Include="..\include\cinder\gl\Sync.h" />
     <ClInclude Include="..\include\cinder\gl\Texture.h" />

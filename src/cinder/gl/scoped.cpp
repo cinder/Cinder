@@ -22,7 +22,7 @@
  */
 
 #include "cinder/gl/scoped.h"
-#include "Cinder/gl/Context.h"
+#include "cinder/gl/Context.h"
 #include "cinder/gl/BufferObj.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/CinderAssert.h"
@@ -180,7 +180,7 @@ ScopedFramebuffer::ScopedFramebuffer( GLenum target, GLuint framebufferId )
 
 ScopedFramebuffer::~ScopedFramebuffer()
 {	
-#if ! defined( SUPPORTS_FBO_MULTISAMPLING )
+#if ! defined( CINDER_GL_HAS_FBO_MULTISAMPLING )
 	mCtx->popFramebuffer( GL_FRAMEBUFFER );
 #else
 	if( mTarget == GL_FRAMEBUFFER || mTarget == GL_READ_FRAMEBUFFER )

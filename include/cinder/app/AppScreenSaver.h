@@ -131,9 +131,9 @@ class AppScreenSaver : public AppBase {
 	NSBundle*		getBundle() const;
 #endif
 
-	virtual size_t		getNumWindows() const override;
-	virtual WindowRef	getWindow() const override;
-	virtual WindowRef	getWindowIndex( size_t index ) const override;
+	size_t			getNumWindows() const override;
+	WindowRef		getWindow() const override;
+	WindowRef		getWindowIndex( size_t index ) const override;
 
 #if defined( CINDER_MAC )
 	void			privateSetImpl__( void *impl ) { mImpl = reinterpret_cast<AppImplMacScreenSaver*>( impl ); }

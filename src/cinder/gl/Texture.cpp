@@ -1759,6 +1759,14 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef &imageSource, con
 	else
 		return createTextureCubeMapImpl<float>( imageSource, format );
 }
+
+TextureCubeMapRef TextureCubeMap::create( const TextureData &data, const Format &format )
+{
+	if( format.mDeleter )
+		return TextureCubeMapRef( new TextureCubeMap( data, format ), format.mDeleter );
+	else
+		return TextureCubeMapRef( new TextureCubeMap( data, format ) );
+}
 	
 template<typename T>
 TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format )
@@ -1818,6 +1826,32 @@ TextureCubeMapRef TextureCubeMap::create( const ImageSourceRef images[6], const 
 	}
 }
 
+TextureCubeMapRef TextureCubeMap::createFromKtx( const DataSourceRef &dataSource, const Format &format )
+{
+#if ! defined( CINDER_GL_ES )
+	TextureData textureData( format.getIntermediatePbo() );
+#else
+	TextureData textureData;
+#endif
+
+	parseKtx( dataSource, &textureData );
+	return TextureCubeMap::create( textureData, format );
+}
+
+#if ! defined( CINDER_GL_ES )
+TextureCubeMapRef TextureCubeMap::createFromDds( const DataSourceRef &dataSource, const Format &format )
+{
+#if ! defined( CINDER_GL_ES )
+	TextureData textureData( format.getIntermediatePbo() );
+#else
+	TextureData textureData;
+#endif
+
+	parseDds( dataSource, &textureData );
+	return TextureCubeMap::create( textureData, format );
+}
+#endif
+
 TextureCubeMap::TextureCubeMap( int32_t width, int32_t height, Format format )
 	: mWidth( width ), mHeight( height )
 {
@@ -1857,6 +1891,57 @@ TextureCubeMap::TextureCubeMap( const SurfaceT<T> images[6], Format format )
 #endif
 		glGenerateMipmap( mTarget );
 	}
+}
+
+TextureCubeMap::TextureCubeMap( const TextureData &data, Format format )
+{
+	glGenTextures( 1, &mTextureId );
+	mTarget = format.getTarget();
+	ScopedTextureBind texBindScope( mTarget, mTextureId );
+	initParams( format, 0 /* unused */, 0 /* unused */ );
+	
+	replace( data );
+
+	if( mMipmapping && data.getNumLevels() <= 1 ) {
+		glGenerateMipmap( mTarget );
+	}
+}
+
+//! Replaces the pixels (and data store) of a Texture with contents of \a textureData.
+void TextureCubeMap::replace( const TextureData &textureData )
+{
+	mInternalFormat = textureData.getInternalFormat();
+
+	mWidth = textureData.getWidth();
+	mHeight = textureData.getHeight();
+
+	ScopedTextureBind bindScope( mTarget, mTextureId );
+	if( textureData.getUnpackAlignment() != 0 )
+		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
+
+	if( textureData.getNumFaces() != 6 ) {
+		throw TextureDataExc( "TextureCubeMap requires 6 faces" );
+	}
+
+	int curLevel = 0, curFaceIdx;
+	for( const auto &textureDataLevel : textureData.getLevels() ) {
+		curFaceIdx = 0;
+		for( const auto &textureDataFace : textureDataLevel.getFaces() ) {
+			if( ! textureData.isCompressed() )
+				glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + curFaceIdx, curLevel, mInternalFormat, textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
+			else
+				glCompressedTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X + curFaceIdx, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
+			++curFaceIdx;
+		}
+		++curLevel;
+	}
+	if( textureData.getUnpackAlignment() != 0 )
+		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
+
+#if ! defined( CINDER_GL_ES_2 )
+	mMaxMipmapLevel = 0;//(int32_t)textureData.getLevels().size();
+	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );		
+#endif
 }
 
 void TextureCubeMap::printDims( std::ostream &os ) const
@@ -1945,7 +2030,7 @@ TextureData::TextureData( const PboRef &pbo )
 
 void TextureData::init()
 {
-	mWidth = mHeight = mDepth = 0;
+	mWidth = mHeight = mDepth = mNumFaces = 0;
 	mInternalFormat = 0;
 	mDataFormat = mDataType = 0;
 	mUnpackAlignment = 0;
@@ -2051,11 +2136,12 @@ void Texture2d::update( const TextureData &textureData )
 			glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 		int curLevel = 0;
-		for( const auto &textureDataLevel : textureData.getLevels() ) {		
-			if( textureData.getDataType() != 0 )
-				glTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataLevel.offset ) );
+		for( const auto &textureDataLevel : textureData.getLevels() ) {
+			const TextureData::Face& textureDataFace = textureDataLevel.getFaces()[0];
+			if( ! textureData.isCompressed() )
+				glTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
 			else
-				glCompressedTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getInternalFormat(), textureDataLevel.dataSize, textureData.getDataStorePtr( textureDataLevel.offset ) );
+				glCompressedTexSubImage2D( mTarget, curLevel, 0, 0, textureDataLevel.width, textureDataLevel.height, textureData.getInternalFormat(), textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
 			++curLevel;
 		}
 		if( textureData.getUnpackAlignment() != 0 )
@@ -2074,11 +2160,12 @@ void Texture2d::replace( const TextureData &textureData )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 	int curLevel = 0;
-	for( const auto &textureDataLevel : textureData.getLevels() ) {		
-		if( textureData.getDataType() != 0 )
-			glTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataLevel.offset ) );
+	for( const auto &textureDataLevel : textureData.getLevels() ) {
+		const TextureData::Face& textureDataFace = textureDataLevel.getFaces()[0];
+		if( ! textureData.isCompressed() )
+			glTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureData.getDataFormat(), textureData.getDataType(), textureData.getDataStorePtr( textureDataFace.offset ) );
 		else
-			glCompressedTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataLevel.dataSize, textureData.getDataStorePtr( textureDataLevel.offset ) );
+			glCompressedTexImage2D( mTarget, curLevel, textureData.getInternalFormat(), textureDataLevel.width, textureDataLevel.height, 0, textureDataFace.dataSize, textureData.getDataStorePtr( textureDataFace.offset ) );
 		++curLevel;
 	}
 	if( textureData.getUnpackAlignment() != 0 )

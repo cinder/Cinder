@@ -105,7 +105,7 @@ class AppCocoaTouch : public AppBase {
 	WindowRef 		createWindow( const Window::Format &format = Window::Format() ) override;
 
 	WindowRef		getWindow() const override;
-	WindowRef		getForegroundWindow() const	{ return getWindow(); }
+	WindowRef		getForegroundWindow() const override { return getWindow(); }
 	size_t			getNumWindows() const override;
 	app::WindowRef	getWindowIndex( size_t index = 0 ) const override;
 
@@ -222,7 +222,7 @@ class AppCocoaTouch : public AppBase {
 	//! \endcond
 
   protected:
-	virtual void	launch() override;
+	void	launch() override;
 
   private:
 	friend void		setupCocoaTouchWindow( AppCocoaTouch *app );

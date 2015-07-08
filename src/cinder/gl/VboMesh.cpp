@@ -82,9 +82,9 @@ class VboMeshGeomTarget : public geom::Target {
 	}
 	
 	virtual geom::Primitive	getPrimitive() const;
-	virtual uint8_t	getAttribDims( geom::Attrib attr ) const override;
-	virtual void copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
-	virtual void copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
+	uint8_t	getAttribDims( geom::Attrib attr ) const override;
+	void	copyAttrib( geom::Attrib attr, uint8_t dims, size_t strideBytes, const float *srcData, size_t count ) override;
+	void	copyIndices( geom::Primitive primitive, const uint32_t *source, size_t numIndices, uint8_t requiredBytesPerIndex ) override;
 	
 	//! Must be called in order to upload temporary 'mBufferData' to VBOs
 	void	copyBuffers();
@@ -491,7 +491,7 @@ void VboMesh::drawImpl( GLint first, GLsizei count )
 		glDrawArrays( mGlPrimitive, first, ( count < 0 ) ? ( mNumVertices - first ) : count );
 }
 
-#if (! defined( CINDER_GL_ES_2 )) || defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_GL_HAS_DRAW_INSTANCED )
 void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 {
 	auto ctx = gl::context();
@@ -500,7 +500,7 @@ void VboMesh::drawInstancedImpl( GLsizei instanceCount )
 	else
 		ctx->drawArraysInstanced( mGlPrimitive, 0, mNumVertices, instanceCount );
 }
-#endif
+#endif // defined( CINDER_GL_HAS_DRAW_INSTANCED )
 
 std::pair<geom::BufferLayout,VboRef>* VboMesh::findAttrib( geom::Attrib attr )
 {
