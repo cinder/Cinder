@@ -1,7 +1,6 @@
 #! /usr/bin/python
 import sys
 import codecs
-import copy
 import re
 import xml.etree.ElementTree as Et
 import json
@@ -12,6 +11,7 @@ import urlparse
 from difflib import SequenceMatcher as SM
 from bs4 import BeautifulSoup, Tag, NavigableString
 from pystache.renderer import Renderer
+from argparse import ArgumentParser
 
 BASE_PATH = os.path.dirname(os.path.realpath(__file__)) + os.sep
 XML_SOURCE_PATH = BASE_PATH + 'xml' + os.sep
@@ -181,7 +181,6 @@ class SymbolMap(object):
     def add_function(self, ns, fn_name, fn_obj):
         self.functions[ns + "::" + fn_name] = fn_obj
         # self.functionList.append(fn_obj)
-
 
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
     def find_class(self, name):
@@ -1315,10 +1314,10 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         ns_li = gen_tag(bs4, "li")
 
         # create link for each item
-        print ns.path
+        # print ns.path
         # a_tag = gen_rel_link_tag(bs4, name, "../" + ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
         a_tag = gen_link_tag(bs4, name, "../" + ns.path)
-        print a_tag
+        # print a_tag
         # a_tag = gen_tag(bs4, "a")
         # define_link_tag(a_tag, {"href": ns.path})
         # a_tag.append(name)
@@ -1447,6 +1446,7 @@ def process_class_xml_file(in_path, out_path):
 
     if not class_def:
         print "\t** Warning: NO CLASS OBJECT DEFINED FOR: " + class_name
+        # raise
         return
 
     # page title ---------------------------------------- #
@@ -1675,7 +1675,8 @@ def process_namespace_xml_file(in_path, out_path):
     # add namespaces ------------------------------------ #
     namespaces = []
     for member in tree.findall(r"compounddef/innernamespace"):
-        link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        link = "../" + member.attrib["refid"] + ".html"
         link_data = LinkData(link, member.text)
         namespaces.append(link_data)
     file_data.namespaces = namespaces
@@ -1684,7 +1685,8 @@ def process_namespace_xml_file(in_path, out_path):
     classes = []
     for member in tree.findall(r"compounddef/innerclass"):
         link = member.attrib["refid"] + ".html"
-        rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        # rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        rel_link = "../" + link
         link_data = LinkData(rel_link, member.text)
 
         kind = "struct" if link.startswith("struct") else "class"
@@ -2383,6 +2385,7 @@ def process_file(in_path, out_path=None):
             inPath: The file to process
             outPath: The file to save the generated html file to
     """
+
     file_path = in_path
     file_prefix = get_file_prefix(file_path)
     is_html_file = True if get_file_extension(file_path).lower() == ".html" else False
@@ -2392,6 +2395,9 @@ def process_file(in_path, out_path=None):
         save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + file_path
     else:
         save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + get_file_prefix(in_path) + ".html"
+
+    print save_path
+    # raise
 
     if is_html_file:
         # print "process: " + HTML_SOURCE_PATH + file_path
@@ -2403,10 +2409,14 @@ def process_file(in_path, out_path=None):
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
 
         if file_prefix.startswith("class") or file_prefix.startswith("struct") or file_prefix.startswith("interface"):
-            process_class_xml_file(sys.argv[1], os.path.join(DOXYGEN_HTML_PATH, save_path))
+            process_class_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
 
         elif file_prefix.startswith("namespace"):
             process_namespace_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
+
+        else:
+             print "SKIPPING: " + file_path
+             # TODO: base template and just iterate do an html iteration
 
 
 def process_dir(in_path, out_path):
@@ -2420,20 +2430,8 @@ def process_dir(in_path, out_path):
 
     for file_path in os.listdir(in_path):
         if file_path.endswith(".xml"):
-            # name minus file extension
-            file_prefix = get_file_prefix(file_path)
 
-            # process class and struct files
-            if file_path.startswith("class") or file_path.startswith("struct"):
-                process_class_xml_file(os.path.join(in_path, file_path), os.path.join(out_path, file_prefix + ".html"))
-
-            # process namespace files
-            elif file_path.startswith("namespace"):
-                process_namespace_xml_file(os.path.join(in_path, file_path), os.path.join(out_path, file_prefix + ".html"))
-
-            else:
-                print "SKIPPING: " + file_path
-                # TODO: base template and just iterate do an html iteration
+            process_file(os.path.join(in_path, file_path))
 
     # save search index to json file
     # print g_search_index
@@ -2441,6 +2439,7 @@ def process_dir(in_path, out_path):
 
 
 def process_html_dir(in_path, out_path):
+    global PROCESSED_HTML_DIR
     print "PROCESS HTML DIR"
 
     for path, subdirs, files in os.walk(in_path):
@@ -2459,6 +2458,8 @@ def process_html_dir(in_path, out_path):
 
                 src_path = src_path + "/" + name
                 process_file(src_path)
+
+    PROCESSED_HTML_DIR = True
 
 
 # def copyFiles( HTML_SOURCE_PATH, DOXYGEN_HTML_PATH ):
@@ -2540,7 +2541,7 @@ if __name__ == "__main__":
     g_namespaceNav = generate_namespace_nav()
 
     if len(sys.argv) == 1: # no args; run all docs
-        process_html_dir(HTML_SOURCE_PATH, "html/")
+        # process_html_dir(HTML_SOURCE_PATH, "html/")
         process_dir("xml/", "html/")
     elif len(sys.argv) == 2:
         inPath = sys.argv[1]
