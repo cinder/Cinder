@@ -968,7 +968,8 @@ def define_tag(bs4, tag_name, tree):
         define_link_tag(new_tag, tree.attrib)
         # creates a new tag with a relative link using the data from the original tag
         # TODO: refactor define_tag and ren_link_tags. Should be able to create relative link on its own
-        new_tag = gen_rel_link_tag(bs4, "", new_tag["href"], TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        # new_tag = gen_rel_link_tag(bs4, "", new_tag["href"], TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        new_tag = gen_link_tag(bs4, "", "../" + new_tag["href"])
     else:
         new_tag = bs4.new_tag(tag_name)
     return new_tag
@@ -1314,7 +1315,10 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         ns_li = gen_tag(bs4, "li")
 
         # create link for each item
-        a_tag = gen_rel_link_tag(bs4, name, ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        print ns.path
+        # a_tag = gen_rel_link_tag(bs4, name, "../" + ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        a_tag = gen_link_tag(bs4, name, "../" + ns.path)
+        print a_tag
         # a_tag = gen_tag(bs4, "a")
         # define_link_tag(a_tag, {"href": ns.path})
         # a_tag.append(name)
