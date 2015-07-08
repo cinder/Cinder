@@ -31,6 +31,7 @@ class Config(object):
         self.SKIP_HTML_PARSING = False
         # break on errors that would prevent the file from being generated
         self.BREAK_ON_STOP_ERRORS = False
+
         # directory for the class template mustache file
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
         # directory for the namespace template mustache file
@@ -41,8 +42,13 @@ class Config(object):
         self.GUIDE_TEMPLATE = os.path.join(TEMPLATE_PATH, "guide_template.mustache")
         # reference html template mustache file
         self.REFERENCE_TEMPLATE = os.path.join(TEMPLATE_PATH, "reference_template.mustache")
-
+        # home page template mustache file
         self.HOME_TEMPLATE = os.path.join(TEMPLATE_PATH, "home-template.mustache")
+
+        # file prefixes that indicate that the file should be parsed with the class template
+        self.CLASS_FILE_PREFIXES = ["class", "struct", "interface"]
+        # file prefixes that indicate that the file should be parsed with the namespace template
+        self.NAMESPACE_FILE_PREFIXES = ["namespace"]
 
 
 # convert docygen markup to html markup
@@ -1484,12 +1490,13 @@ def process_class_xml_file(in_path, out_path):
     file_data.typedefs = typedefs
 
     # class hierarchy ----------------------------------- #
-    class_hierarchy = gen_class_hierarchy(bs4, class_def)
-    file_data.class_hierarchy = str(class_hierarchy) if class_hierarchy else None
+    if class_def:
+        class_hierarchy = gen_class_hierarchy(bs4, class_def)
+        file_data.class_hierarchy = str(class_hierarchy) if class_hierarchy else None
 
     # class list ---------------------------------------- #
     classes = []
-    for classDef in tree.findall(r"compounddef/innerclass"):
+    for classDef in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
         # link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
@@ -1683,7 +1690,7 @@ def process_namespace_xml_file(in_path, out_path):
 
     # add classes ------------------------------------ #
     classes = []
-    for member in tree.findall(r"compounddef/innerclass"):
+    for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link = member.attrib["refid"] + ".html"
         # rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
         rel_link = "../" + link
@@ -2378,6 +2385,28 @@ def render_template(path, content):
     return bs4
 
 
+def is_class_type(class_str):
+    """
+    Tests whether the filename is a class type
+    :param class_str:
+    :return: Boolean
+    """
+    if any([class_str.startswith(prefix) for prefix in config.CLASS_FILE_PREFIXES]):
+        return True
+    return False
+
+
+def is_namespace_type(ns_str):
+    """
+    Tests whether the filename is a namespace type
+    :param class_str:
+    :return: ns_str
+    """
+    if any([ns_str.startswith(prefix) for prefix in config.NAMESPACE_FILE_PREFIXES]):
+        return True
+    return False
+
+
 def process_file(in_path, out_path=None):
     """ Generate documentation for a single file
 
@@ -2396,9 +2425,6 @@ def process_file(in_path, out_path=None):
     else:
         save_path = out_path if out_path is not None else DOXYGEN_HTML_PATH + get_file_prefix(in_path) + ".html"
 
-    print save_path
-    # raise
-
     if is_html_file:
         # print "process: " + HTML_SOURCE_PATH + file_path
         process_html_file(HTML_SOURCE_PATH + file_path, save_path)
@@ -2408,10 +2434,10 @@ def process_file(in_path, out_path=None):
         if not PROCESSED_HTML_DIR and not config.SKIP_HTML_PARSING:
             process_html_dir(HTML_SOURCE_PATH, DOXYGEN_HTML_PATH)
 
-        if file_prefix.startswith("class") or file_prefix.startswith("struct") or file_prefix.startswith("interface"):
+        if is_class_type(file_prefix):
             process_class_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
 
-        elif file_prefix.startswith("namespace"):
+        elif is_namespace_type(file_prefix):
             process_namespace_xml_file(in_path, os.path.join(DOXYGEN_HTML_PATH, save_path))
 
         else:
