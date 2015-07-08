@@ -3,6 +3,7 @@
 #include "Box2dUtils.h"
 
 #include "cinder/gl/Texture.h"
+#include "cinder/gl/Batch.h"
 #include "cinder/Tween.h"
 #include "cinder/Path2d.h"
 
@@ -39,18 +40,23 @@ struct Island : public SceneObject {
 	Island( AudioController *audio ) : SceneObject( audio ), mVibrationLevel( 0 )	{}
 
 	void makeBumpers();
+	void addBumper( const ci::Path2d& path );
 
 	void handleCollision( const Gear *gear, const ci::vec2 &contactPoint ) override;
 	void draw() override;
 
 	std::vector<ci::vec2> mOuterVerts, mInnerVerts;
 
-	std::vector<ci::Path2d>				mBumpers;
-	std::vector<ci::Rectf>				mBumperBoundingBoxes;
-	std::vector<ci::Anim<float> >		mBumperVibrationLevels;
+	struct Bumper {
+		ci::gl::BatchRef	mBatch;
+		ci::Path2d			mPath;
+		ci::Rectf			mBoundingBox;
+		ci::Anim<float>		mVibrationLevel;
+	};
 
-	ci::Anim<float> mVibrationLevel;
-	float			mFreqMidi;
+	std::vector<Bumper>	mBumpers;
+	ci::Anim<float>		mVibrationLevel;
+	float				mFreqMidi;
 };
 
 struct Wall : public SceneObject {
