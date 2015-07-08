@@ -486,11 +486,18 @@ def convert_rel_path(link, src_dir, dest_dir):
         src_dir = BASE_PATH + src_dir
 
     # get absolute in path, converted from htmlsrc to html
+    # abs_link_path =
     abs_src_path = urlparse.urljoin(src_dir, link).replace("htmlsrc", "html")
-    # destination absolute path
-    abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
 
-    new_link = os.path.relpath(abs_dest_path, os.path.dirname(abs_src_path))
+    # destination absolute path
+    # abs_dest_path = os.path.join(os.path.dirname(dest_dir), link)
+    abs_dest_path = dest_dir
+
+    # print "ABS SRC:  " + abs_src_path
+    # print "ABS DEST: " + abs_dest_path
+
+    new_link = os.path.relpath(abs_src_path, abs_dest_path)
+    # print "new link: " + new_link
     return new_link
 
 
@@ -835,6 +842,10 @@ def gen_rel_link_tag(bs4, text, link, src_dir, dest_dir):
     :param dest_dir: destination source directory
     :return: the link tag
     """
+
+    # make sure they are dirs
+    src_dir = os.path.dirname(src_dir) + os.sep
+    dest_dir = os.path.dirname(dest_dir) + os.sep
     new_link = convert_rel_path(link, src_dir, dest_dir)
     link_tag = gen_link_tag(bs4, text, new_link)
     return link_tag
@@ -1452,8 +1463,9 @@ def process_class_xml_file(in_path, out_path):
 
     if include_file:
         file_obj = g_symbolMap.find_file(include_file)
+        # print file_obj
         if file_obj:
-            include_link = LinkData(file_obj.path, include_file)
+            include_link = LinkData(file_obj.githubPath, include_file)
     file_data.includes = include_link
 
     # typedefs ------------------------------------------ #
@@ -1462,7 +1474,8 @@ def process_class_xml_file(in_path, out_path):
         for t in file_def.typedefs:
             link_data = LinkData()
             link_data.label = t.name
-            link_data.link = convert_rel_path(t.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+            link_path = "../" + t.path
+            link_data.link = link_path
             typedefs.append(link_data)
     file_data.typedefs = typedefs
 
@@ -1475,7 +1488,8 @@ def process_class_xml_file(in_path, out_path):
     for classDef in tree.findall(r"compounddef/innerclass"):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
-        link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        # link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
+        link_data.link = "../" + classDef.attrib["refid"] + ".html"
         classes.append(link_data)
     file_data.classes = classes
 
@@ -1853,7 +1867,6 @@ def replace_ci_tag(bs4, link, in_path, out_path):
 
     if ref_obj:
         ref_location = DOXYGEN_HTML_PATH + ref_obj.path
-        # new_link = gen_link_tag(bs4, link.contents[0], ref_location)
         new_link = gen_rel_link_tag(bs4, link.contents[0], ref_location, in_path, out_path)
         link.replace_with(new_link)
         # print "\tSuccess: " + str(new_link)
