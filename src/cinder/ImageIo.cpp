@@ -44,6 +44,7 @@ using namespace std;
 
 namespace cinder {
 
+
 ///////////////////////////////////////////////////////////////////////////////
 // ImageSource
 ImageIo::ImageIo()
@@ -118,6 +119,7 @@ uint8_t	ImageIo::dataTypeBytes( DataType dataType )
 	switch( dataType ) {
 		case UINT8: return 1;
 		case UINT16: return 2;
+		case FLOAT16: return 2;
 		case FLOAT32: return 4;
 		default:
 			throw ImageIoExceptionIllegalDataType( "Unexpected data type." );
@@ -342,6 +344,9 @@ ImageSource::RowFunc ImageSource::setupRowFuncForSourceType( ImageTargetRef targ
 		case UINT16:
 			return setupRowFuncForTypes<SD,uint16_t>( target );
 		break;
+		case FLOAT16:
+			return setupRowFuncForTypes<SD,half_float>( target );
+		break;
 		case FLOAT32:
 			return setupRowFuncForTypes<SD,float>( target );
 		break;
@@ -359,6 +364,9 @@ ImageSource::RowFunc ImageSource::setupRowFunc( ImageTargetRef target )
 		break;
 		case UINT16:
 			return setupRowFuncForSourceType<uint16_t>( target );
+		break;
+		case FLOAT16:
+			return setupRowFuncForSourceType<half_float>( target );
 		break;
 		case FLOAT32:
 			return setupRowFuncForSourceType<float>( target );

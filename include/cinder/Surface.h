@@ -30,7 +30,6 @@
 #include "cinder/Cinder.h"
 #include "cinder/Area.h"
 #include "cinder/Channel.h"
-#include "cinder/ChanTraits.h"
 #include "cinder/Color.h"
 #include "cinder/Filesystem.h"
 #include "cinder/Exception.h"

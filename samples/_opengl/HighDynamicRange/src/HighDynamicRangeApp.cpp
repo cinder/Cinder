@@ -1,6 +1,7 @@
 #include "cinder/app/App.h"
 #include "cinder/app/RendererGl.h"
 #include "cinder/gl/gl.h"
+#include "cinder/ImageFileTinyExr.h"
 
 using namespace ci;
 using namespace ci::app;
@@ -28,7 +29,7 @@ void HighDynamicRangeApp::loadHdr( const fs::path &path )
 #if defined( CINDER_GL_ES_2 )
 	mHdrTexture = gl::Texture::create( s, gl::Texture::Format().internalFormat( GL_RGB ).dataType( GL_FLOAT ) );
 #else
-	mHdrTexture = gl::Texture::create( s, gl::Texture::Format().internalFormat( GL_RGB32F ) );
+	mHdrTexture = gl::Texture::create( s, gl::Texture::Format() );
 #endif
 
 	mExposure = 1.0f;
@@ -36,6 +37,9 @@ void HighDynamicRangeApp::loadHdr( const fs::path &path )
 
 void HighDynamicRangeApp::setup()
 {
+	ImageSourceFileTinyExr::registerSelf();
+	ImageTargetFileTinyExr::registerSelf();
+
 	loadHdr( getAssetPath( "Desk_oBA2_scaled.hdr" ) );
 
 #if ! defined( CINDER_GL_ES )
