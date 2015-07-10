@@ -496,14 +496,14 @@ elseif( "mips" STREQUAL "${NDK_ARCH}" )
 elseif( "mips64" STREQUAL "${NDK_ARCH}" )
 endif()
 
-set( C_FLAGS "${ARCH_FLAGS} -fvisibility=default" )
+set( C_FLAGS "-DFT2_BUILD_LIBRARY ${ARCH_FLAGS} -fvisibility=default" )
 if( NDK_GLES2 )
     set( C_FLAGS "-DCINDER_GL_ES_2 ${C_FLAGS}")
 endif()
 set( CMAKE_C_FLAGS_DEBUG   "${C_FLAGS} -g" )
 set( CMAKE_C_FLAGS_RELEASE "${C_FLAGS} -Os -ffast-math ${C_FLAGS}" )
 
-set( CXX_FLAGS "${ARCH_FLAGS} -fvisibility=default -std=c++11" )
+set( CXX_FLAGS "-DFT2_BUILD_LIBRARY ${ARCH_FLAGS} -fvisibility=default -std=c++11" )
 if( NDK_GLES2 )
     set( CXX_FLAGS "-DCINDER_GL_ES_2 ${CXX_FLAGS}")
 endif()
@@ -571,9 +571,12 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/gl/Pbo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Query.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Shader.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/ShaderPreprocessor.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Sync.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Texture.cpp
     #${CINDER_SRC_DIR}/cinder/gl/TextureFont.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TextureFormatParsers.cpp
+    ${CINDER_SRC_DIR}/cinder/gl/TransformFeedbackObj.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Ubo.cpp
     ${CINDER_SRC_DIR}/cinder/gl/Vao.cpp
     ${CINDER_SRC_DIR}/cinder/gl/VaoImplCore.cpp
@@ -647,6 +650,52 @@ set( CINDER_CXX_SRC_FILES
     ${CINDER_SRC_DIR}/cinder/Xml.cpp
 
     ${CINDER_SRC_DIR}/jsoncpp/jsoncpp.cpp
+
+    ${CINDER_SRC_DIR}/freetype/bdf/bdf.c
+    ${CINDER_SRC_DIR}/freetype/cff/cff.c
+    ${CINDER_SRC_DIR}/freetype/pcf/pcf.c
+    ${CINDER_SRC_DIR}/freetype/pfr/pfr.c
+    ${CINDER_SRC_DIR}/freetype/sfnt/sfnt.c
+    ${CINDER_SRC_DIR}/freetype/truetype/truetype.c
+    ${CINDER_SRC_DIR}/freetype/type1/type1.c
+    ${CINDER_SRC_DIR}/freetype/type42/type42.c
+    ${CINDER_SRC_DIR}/freetype/winfonts/winfnt.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbase.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbbox.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbdf.c
+    ${CINDER_SRC_DIR}/freetype/base/ftbitmap.c
+    ${CINDER_SRC_DIR}/freetype/base/ftcid.c
+    ${CINDER_SRC_DIR}/freetype/base/ftdebug.c
+    ${CINDER_SRC_DIR}/freetype/base/ftfstype.c
+    ${CINDER_SRC_DIR}/freetype/base/ftgasp.c
+    ${CINDER_SRC_DIR}/freetype/base/ftglyph.c
+    ${CINDER_SRC_DIR}/freetype/base/ftgxval.c
+    ${CINDER_SRC_DIR}/freetype/base/ftinit.c
+    ${CINDER_SRC_DIR}/freetype/base/ftlcdfil.c
+    ${CINDER_SRC_DIR}/freetype/base/ftmm.c
+    ${CINDER_SRC_DIR}/freetype/base/ftotval.c
+    ${CINDER_SRC_DIR}/freetype/base/ftpatent.c
+    ${CINDER_SRC_DIR}/freetype/base/ftpfr.c
+    ${CINDER_SRC_DIR}/freetype/base/ftstroke.c
+    ${CINDER_SRC_DIR}/freetype/base/ftsynth.c
+    ${CINDER_SRC_DIR}/freetype/base/ftsystem.c
+    ${CINDER_SRC_DIR}/freetype/base/fttype1.c
+    ${CINDER_SRC_DIR}/freetype/base/ftwinfnt.c
+    ${CINDER_SRC_DIR}/freetype/base/ftxf86.c
+    ${CINDER_SRC_DIR}/freetype/raster/raster.c
+    ${CINDER_SRC_DIR}/freetype/smooth/smooth.c
+    ${CINDER_SRC_DIR}/freetype/autofit/autofit.c
+    ${CINDER_SRC_DIR}/freetype/bzip2/ftbzip2.c
+    ${CINDER_SRC_DIR}/freetype/cache/ftcache.c
+    ${CINDER_SRC_DIR}/freetype/gzip/ftgzip.c
+    ${CINDER_SRC_DIR}/freetype/lzw/ftlzw.c
+    ${CINDER_SRC_DIR}/freetype/gxvalid/gxvalid.c
+    ${CINDER_SRC_DIR}/freetype/otvalid/otvalid.c
+    ${CINDER_SRC_DIR}/freetype/psaux/psaux.c
+    ${CINDER_SRC_DIR}/freetype/pshinter/pshinter.c
+    ${CINDER_SRC_DIR}/freetype/psnames/psnames.c
+    ${CINDER_SRC_DIR}/freetype/cid/type1cid.c
+    ${CINDER_SRC_DIR}/freetype/bdf/bdflib.c    
 
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionManager.cpp
     ${CINDER_SRC_DIR}/../blocks/MotionManager/src/cinder/MotionImplAndroid.cpp
