@@ -67,7 +67,7 @@ void DynamicCubeMappingApp::setup()
 	}
 	mSatelliteBatch = gl::Batch::create( geom::Sphere(), getStockShader( gl::ShaderDef().color() ) );
 
-	mDrawCubeMap = false;
+	mDrawCubeMap = true;
 
 	gl::enableDepthRead();
 	gl::enableDepthWrite();	
@@ -154,8 +154,8 @@ void DynamicCubeMappingApp::draw()
 	if( mDrawCubeMap ) {
 		gl::setMatricesWindow( getWindowSize() );
 		gl::ScopedDepth d( false );
-		//gl::drawHorizontalCross( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, 0, 400, 200 ) );
-		gl::drawEquirectangular( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, getWindowHeight() - 200, 400, getWindowHeight() ) ); // try this alternative
+		gl::drawHorizontalCross( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, 0, 300, 150 ) );
+		//gl::drawEquirectangular( mDynamicCubeMapFbo->getTextureCubeMap(), Rectf( 0, getWindowHeight() - 200, 400, getWindowHeight() ) ); // try this alternative
 	}
 }
 
