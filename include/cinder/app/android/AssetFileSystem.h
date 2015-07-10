@@ -21,7 +21,7 @@
  POSSIBILITY OF SUCH DAMAGE.
 */
 
-#include "cinder/FileSystem.h"
+#include "cinder/Filesystem.h"
 #include <android/asset_manager.h>
 
 namespace cinder { namespace app { namespace android {

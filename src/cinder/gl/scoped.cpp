@@ -22,7 +22,7 @@
  */
 
 #include "cinder/gl/scoped.h"
-#include "Cinder/gl/Context.h"
+#include "cinder/gl/Context.h"
 #include "cinder/gl/BufferObj.h"
 #include "cinder/gl/Fbo.h"
 #include "cinder/CinderAssert.h"
