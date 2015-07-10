@@ -27,7 +27,7 @@
 
 namespace cinder { namespace ip {
 
-//! Flips the contents of \a surface vertically
+//! Flips the contents of \a surface vertically (bottom becomes top)
 template<typename T>
 void flipVertical( SurfaceT<T> *surface );
 
@@ -38,5 +38,9 @@ void flipVertical( const SurfaceT<T> &srcSurface, SurfaceT<T> *destSurface );
 //! Copies the contents of \a srcChannel into \a destChannel, flipping them vertically
 template<typename T>
 void flipVertical( const ChannelT<T> &srcChannel, ChannelT<T> *destChannel );
+
+//! Flips the contents of \a surface horizontally (left becomes right)
+template<typename T>
+void flipHorizontal( SurfaceT<T> *surface );
 
 } } // namespace cinder::ip
