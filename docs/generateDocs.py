@@ -33,6 +33,7 @@ class Config(object):
         self.BREAK_ON_STOP_ERRORS = False
         # whitelisted namespaces to generate pages for
         self.NAMESPACE_WHITELIST = ["ci"]
+        self.CLASS_LIST_BLACKLIST = ["glm"]
 
         # directory for the class template mustache file
         self.CLASS_TEMPLATE = os.path.join(TEMPLATE_PATH, "class_template.mustache")
@@ -54,20 +55,20 @@ class Config(object):
 
         self.REFERENCE_HTML_KEY = "reference_html"
         self.ADDITIONAL_REF_DATA = [
-            {
-                "id": "namespaces",
-                self.REFERENCE_HTML_KEY: "namespaces.html",
-                "element_id": "namespace-content",
-                "template": "",
-                "searchable": False
-            },
-            {
-                "id": "classes",
-                self.REFERENCE_HTML_KEY: "classes.html",
-                "element_id": "class-content",
-                "template": "",
-                "searchable": False
-            },
+            # {
+            #     "id": "namespaces",
+            #     self.REFERENCE_HTML_KEY: "namespaces.html",
+            #     "element_id": "namespace-content",
+            #     "template": "",
+            #     "searchable": False
+            # },
+            # {
+            #     "id": "classes",
+            #     self.REFERENCE_HTML_KEY: "classes.html",
+            #     "element_id": "class-content",
+            #     "template": "",
+            #     "searchable": False
+            # },
             {
                 "id": "glm",
                 self.REFERENCE_HTML_KEY: "reference/glm.html",
@@ -1823,8 +1824,8 @@ def process_html_file(in_path, out_path):
     orig_html = generate_bs4(in_path)
 
     # print "id" in (data in config.ADDITIONAL_REF_DATA()).iterValues()
-    print local_rel_path
-    print any(data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA)
+    # print local_rel_path
+    # print any(data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA)
 
     # raise
 
@@ -1838,8 +1839,8 @@ def process_html_file(in_path, out_path):
     # if there is a specific page that needs some special dynmic content, this is where we do it
     for data in config.ADDITIONAL_REF_DATA:
         if config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path:
-            print data
-            print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
+            # print data
+            # print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
             is_searchable = data["searchable"]
             # body_content += gen_glm_reference()
 
@@ -2240,10 +2241,13 @@ def get_symbol_to_file_map():
     for c in class_tags:
         class_obj = SymbolMap.Class(c)
         name = class_obj.name
+
+        # skip over blacklisted classes that belong to a blacklisted namespace
+        if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+            print "SKIPPING " + name
+            continue
+
         base_class = class_obj.base
-        # file_path = c.find('filename').text
-        # base_class = c.find('base').text if c.find('base') is not None else ""
-        # class_obj = SymbolMap.Class(name, base_class, file_path)
         symbol_map.classes[name] = class_obj
 
         # find functions and add to symbol map
@@ -2276,6 +2280,11 @@ def get_symbol_to_file_map():
         name = struct_obj.name
         base_class = struct_obj.base
 
+        # skip over blacklisted classes that belong to a blacklisted namespace
+        if any(name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+            print "SKIPPING " + name
+            continue
+
         symbol_map.classes[name] = struct_obj
 
         # find functions and add to symbol map
@@ -2300,6 +2309,11 @@ def get_symbol_to_file_map():
 
         # skip namespaces with '@' in them
         if namespace_name.find('@') > -1:
+            continue
+
+        # skip over blacklisted classes that belong to a blacklisted namespace
+        if any(namespace_name.find(blacklisted) > -1 for blacklisted in config.CLASS_LIST_BLACKLIST):
+            print "SKIPPING " + namespace_name
             continue
 
         ns_obj = SymbolMap.Namespace(namespace_name, file_name)
