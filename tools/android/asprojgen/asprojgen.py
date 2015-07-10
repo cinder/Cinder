@@ -59,11 +59,11 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     templatePath = os.path.realpath(__file__)
     templatePath = os.path.join(os.path.dirname(templatePath), "template", "CinderApp")   
 
-    asTemplatePath = os.path.join( templatePath, "androidstudio")
-    asProjPath = os.path.join(appPath, "androidstudio")
+    asTemplatePath = os.path.join( templatePath, "androidstudio", "CinderApp")
+    asProjPath = os.path.join(appPath, "androidstudio", appName)
 
     cinderRelPath = os.path.relpath(cinderPath, asProjPath)
-    cinderRelPathApp = os.path.relpath(cinderPath, os.path.join(appPath, "androidstudio", "app"))
+    cinderRelPathApp = os.path.relpath(cinderPath, os.path.join(appPath, "androidstudio", appName, "app"))
 
     # Copy the CPP file
     if appGenCpp:
@@ -83,22 +83,22 @@ def projgen( appName, appPath, appDomain, appGenCpp ):
     copy_tree( asTemplatePath, asProjPath )
 
     # Copy build.gradle
-    srcFile = os.path.join( templatePath, "androidstudio", "build.gradle")
+    srcFile = os.path.join( templatePath, "androidstudio", "CinderApp", "build.gradle")
     dstFile = os.path.join( asProjPath, "build.gradle")
     lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
 
     # Copy app/build.gradle
-    srcFile = os.path.join( templatePath, "androidstudio", "app", "build.gradle")
+    srcFile = os.path.join( templatePath, "androidstudio", "CinderApp", "app", "build.gradle")
     dstFile = os.path.join( asProjPath, "app", "build.gradle")
     lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
 
     # Copy app/src/main/AndroidManifest.xml
-    srcFile = os.path.join( templatePath, "androidstudio", "app", "src", "main", "AndroidManifest.xml")
+    srcFile = os.path.join( templatePath, "androidstudio", "CinderApp", "app", "src", "main", "AndroidManifest.xml")
     dstFile = os.path.join( asProjPath, "app", "src", "main", "AndroidManifest.xml")
     lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
 
     # Copy app/src/main/res/values/strings.xml
-    srcFile = os.path.join( templatePath, "androidstudio", "app", "src", "main", "res", "values", "strings.xml")
+    srcFile = os.path.join( templatePath, "androidstudio", "CinderApp", "app", "src", "main", "res", "values", "strings.xml")
     dstFile = os.path.join( asProjPath, "app", "src", "main", "res", "values", "strings.xml")
     lineReplaceCopy(appName, appPackage, cinderRelPath, cinderRelPathApp, srcFile, dstFile)
 
