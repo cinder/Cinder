@@ -1,7 +1,7 @@
 package org.libcinder.sample.basicapp;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class BasicAppActivity extends NativeActivity {
+public class BasicAppActivity extends CinderNativeActivity {
     static final String TAG = "BasicAppActivity";
 }

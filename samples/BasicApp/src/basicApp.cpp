@@ -24,6 +24,13 @@ class BasicApp : public App {
 	std::vector<vec2> mPoints;
 };
 
+void prepareSettings( BasicApp::Settings* settings )
+{
+#if defined( CINDER_ANDROID )
+	settings->setMultiTouchEnabled( false );
+#endif
+}
+
 void BasicApp::mouseDrag( MouseEvent event )
 {
 	// Store the current mouse position in the list.
@@ -72,4 +79,4 @@ void BasicApp::draw()
 }
 
 // This line tells Cinder to actually create and run the application.
-CINDER_APP( BasicApp, RendererGl )
+CINDER_APP( BasicApp, RendererGl, prepareSettings )
