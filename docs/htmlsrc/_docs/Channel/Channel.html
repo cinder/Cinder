@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<ci prefix dox="cinder::ChannelT"></ci>
+</head>
+<body>
+	<p>A Channel can be thought of as a grayscale image, and frequently is simply that. Its name comes from the most common use case, which is to represent a single color channel of an image, such as the red, green, blue or alpha channel of a <ci dox="cinder::SurfaceT">Surface</ci>. To acquire one of these color channels from a Surface, use <ci dox="Surface::getChannelRed()">getChannelRed()</ci>, <ci dox="SurfaceT::getChannelBlue()">getChannelBlue()</ci>, <ci dox="Surface::getChannelGreen()">getChannelGreen()</ci> or <ci dox="SurfaceT::getChannelAlpha()">getChannelAlpha()</ci>.
+
+		<pre class="language-cpp"><code>Channel rChan = surf.getChannelRed(); // references just the red values of surf's pixels</code></pre>
+	</p>
+	<br/>
+	
+	<p>The code below constructs a Channel which is a grayscale image independent of a Surface that is 640x480 pixels:</p>
+	<pre class="language-cpp"><code>Channel chan( 640, 480 );</code></pre>
+	<br/>
+
+	<p>You can also construct a Channel using an ImageSource, such as the result of loadImage(). In the code below, \a myImage will hold a grayscale version of the PNG file stored at the relative path "myImage.png":</p>
+	<pre class="language-cpp"><code>Channel myImage = loadImage( "myImage.png" );</code></pre>
+	<br/>
+	<p>Channels come in two primary configurations, the traditional 8-bits unsigned integer represented by <ci dox="cinder::Channel8u">Channel8u</ci>, and a 32-bit float version suitable for high dynamic range images, represented by  <ci dox="cinder::Channel32f">Channel32f</ci>. <em>Channel</em> is a short-hand synonym for <em>Channel8u</em>. </p>
+</body>
+</html>

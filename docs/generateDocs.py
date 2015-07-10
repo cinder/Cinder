@@ -70,7 +70,7 @@ class Config(object):
             },
             {
                 "id": "glm",
-                self.REFERENCE_HTML_KEY: "reference/math.html",
+                self.REFERENCE_HTML_KEY: "reference/glm.html",
                 "element_id": "glm-reference",
                 "template": os.path.join(TEMPLATE_PATH, "glm-reference.mustache"),
                 "searchable": True
@@ -215,6 +215,7 @@ class SymbolMap(object):
     class Group(object):
         def __init__(self, tree):
             self.name = tree.find('name').text
+            self.title = tree.find("title").text
             self.path = tree.find('filename').text
             self.description = ""
             self.subgroup_names = []
@@ -1843,7 +1844,8 @@ def process_html_file(in_path, out_path):
             # body_content += gen_glm_reference()
 
             markup = generate_dynamic_markup(data)
-            orig_html.body.append(markup)
+            orig_html.body.append(markup.body)
+
 
     # if any(config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA):
     #
@@ -1875,8 +1877,14 @@ def process_html_file(in_path, out_path):
     if orig_html.head and orig_html.head.title:
         file_data.title = orig_html.head.title.text
 
+
+    # add body content to orig_html
+    # print body_content
+    # orig_html.body.append(body_content)
+
     bs4 = render_template(template, file_data.get_content())
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
+
 
     template_content_el = bs4.body.find(id="template-content")
 
@@ -1919,33 +1927,35 @@ def process_html_file(in_path, out_path):
 
 def generate_glm_reference():
 
-    glm_group_prototype = {
-        "title": "",
-        "html": "",
-        "description": "",
-    }
-
-    # glm_group_data = {
-    #     "group_data":
-    #     [
-    #         {
-    #             "title": "",
-    #             "html": "",
-    #             "description": "",
-    #             "subgroups": []
-    #         }
-    #     ]
-    # }
-
     glm_group_data = {
         "groups": []
     }
 
-    return "<em>[INSERT GLM REFERENCE HERE]</em>"
+    # add group data to glm reference data object
+    for group_name in g_symbolMap.groups:
+        group = g_symbolMap.find_group(group_name)
+        group_data = {}
+        group_data["name"] = group.title
+        group_data["path"] = "../" + group.path
+        group_data["description"] = "TODO: FILL IN DESCRIPTION"
+
+        subgroups = []
+        if len(group.subgroups) > 0:
+            for subgroup in group.subgroups:
+                subgroup_data = {}
+                subgroup_data["name"] = subgroup.title
+                subgroup_data["path"] = "../" + subgroup.path
+                subgroup_data["description"] = "TODO: FILL IN DESCRIPTION"
+                subgroups.append(subgroup_data)
+            group_data["subgroups"] = subgroups
+            glm_group_data["groups"].append(group_data)
+
+    return glm_group_data
 
 def generate_dynamic_markup(ref_data):
 
     # find template if it exists
+
     ref_id = ref_data["id"]
     if ref_id == "glm":
         return_markup = generate_glm_reference()
@@ -1958,7 +1968,11 @@ def generate_dynamic_markup(ref_data):
         print "\t*** No rules for generating dynamic content for id'" + ref_id + "' was found"
 
     # plug data into template (if it exists)
-    return return_markup
+    markup = render_template(ref_data["template"], return_markup)
+    # print str(markup)
+    return markup
+    # return return_markup
+    # return ""
 
 
 # -------------------------------------------------- CI TAG FUNCTIONS --------------------------------------------------
@@ -2187,17 +2201,6 @@ def update_link(link, in_path, out_path):
     return rel_link_path
 
 
-def construct_template(templates):
-    """ Constructs a beautiful soup instance by mashing a bunch of html files together
-    """
-    master_template = ""
-    for templatePath in templates:
-        master_template += open(os.path.join(HTML_SOURCE_PATH, TEMPLATE_PATH + templatePath)).read()
-    master_template.decode("UTF-8")
-    bs4 = BeautifulSoup(master_template)
-    return bs4
-
-
 def generate_bs4(file_path):
     output_file = open(os.path.join(file_path)).read()
     output_file.decode("utf-8")
@@ -2213,15 +2216,15 @@ def generate_bs4(file_path):
     return bs4
 
 def generate_bs4_from_string(string):
-    string.decode("UTF-8")
+    output_string = string.decode("UTF-8")
     # print output_file
 
     # wrap in body tag if none exists
     if string.find("<body") < 0:
-        output_file = "<body>" + string + "</body>"
-        print "\t ** WARNING: No body tag found "
+        output_string = "<body>" + string + "</body>"
+        print "\t [generate_bs4_from_string] ** WARNING: No body tag found "
 
-    bs4 = BeautifulSoup(string)
+    bs4 = BeautifulSoup(output_string)
     return bs4
 
 
@@ -2517,7 +2520,7 @@ def add_to_search_index(html, save_path, tags=[]):
 
 def render_template(path, content):
 
-     # Generate the html file from the template and inject content
+    # Generate the html file from the template and inject content
     renderer = Renderer()
     renderer.search_dirs.append(TEMPLATE_PATH)
 
