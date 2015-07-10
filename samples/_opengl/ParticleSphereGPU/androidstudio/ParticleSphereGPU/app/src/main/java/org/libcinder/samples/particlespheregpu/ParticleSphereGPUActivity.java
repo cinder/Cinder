@@ -1,7 +1,7 @@
 package org.libcinder.samples.particlespheregpu;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class ParticleSphereGPUActivity extends NativeActivity {
+public class ParticleSphereGPUActivity extends CinderNativeActivity {
     static final String TAG = "ParticleSphereGPUActivity";
 }

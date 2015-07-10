@@ -1,7 +1,7 @@
 package org.libcinder.samples.particlespherecpu;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class ParticleSphereCPUActivity extends NativeActivity {
+public class ParticleSphereCPUActivity extends CinderNativeActivity {
     static final String TAG = "ParticleSphereCPUActivity";
 }
