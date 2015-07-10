@@ -1949,7 +1949,7 @@ void TextureCubeMap::replace( const TextureData &textureData )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 #if ! defined( CINDER_GL_ES_2 )
-	mMaxMipmapLevel = 0;//(int32_t)textureData.getLevels().size();
+	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
 	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );		
 #endif
 }
