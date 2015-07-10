@@ -13,7 +13,7 @@
 #include "cinder/Timeline.h"
 #include "cinder/Log.h"
 #include "cinder/TriMesh.h"
-#include "cinder/gl/Batch.h"
+#include "cinder/gl/gl.h"
 
 #include "cinder/audio/Context.h"
 #include "cinder/audio/GenNode.h"

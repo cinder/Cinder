@@ -1,4 +1,5 @@
 #include "cinder/app/App.h"
+#include "cinder/gl/gl.h"
 #include "cinder/app/RendererGl.h"
 
 #include "cinder/audio/audio.h"
@@ -100,6 +101,6 @@ void BufferPlayerNodeApp::draw()
 	gl::drawSolidRect( Rectf( readPos - 2, 0, readPos + 2, (float)getWindowHeight() ) );
 }
 
-CINDER_APP( BufferPlayerNodeApp, RendererGl, []( App::Settings *settings ) {
+CINDER_APP( BufferPlayerNodeApp, RendererGl( RendererGl::Options().msaa( 8 ) ), []( App::Settings *settings ) {
 	settings->setMultiTouchEnabled( false );
 } )

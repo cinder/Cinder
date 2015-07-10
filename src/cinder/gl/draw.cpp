@@ -26,6 +26,7 @@
 #include "cinder/gl/Vao.h"
 #include "cinder/gl/VboMesh.h"
 #include "cinder/gl/scoped.h"
+#include "cinder/gl/Environment.h"
 #include "cinder/Log.h"
 #include "cinder/Text.h"
 #include "cinder/Triangulate.h"
@@ -605,6 +606,91 @@ void draw( const geom::Source &source )
 		ctx->drawArrays( primitive, 0, (GLsizei)source.getNumVertices() );
 
 	ctx->popVao();
+}
+
+namespace {
+string equirectangularVertexShader()
+{
+	string s =
+		"	uniform mat4 ciModelViewProjection;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	attribute vec4 ciPosition; attribute vec2 ciTexCoord0;\n"
+		"	varying highp vec2 TexCoord0;\n"
+#else
+		"	in vec4 ciPosition; in vec2 ciTexCoord0;\n"
+		"	out vec2 TexCoord0;\n"
+#endif
+		"	void main() {\n"
+		"		gl_Position = ciModelViewProjection * ciPosition;\n"
+		"		TexCoord0 = ( ciTexCoord0 - vec2( 0.5 ) ) * vec2( 6.2831853, 3.1415926 );\n"
+		"	}\n";
+	return s;
+}
+
+string equirectangularFragmentShader( bool withLod )
+{
+	string s;
+#if defined( CINDER_GL_ES_2 )
+	if( withLod )
+		s+="#extension GL_EXT_shader_texture_lod : require\n";
+#endif
+	if( withLod )
+		s+="uniform highp float uLod;\n";
+	s +="	uniform samplerCube uCubeMapTex;\n"
+#if defined( CINDER_GL_ES_2 )
+		"	varying highp vec2 TexCoord0;\n"
+#else
+		"	in highp vec2 TexCoord0;\n"
+		"	out highp vec4 oColor;\n"
+#endif
+		"	void main() {\n"
+		"		highp vec3 coords = vec3( cos( TexCoord0.x ) * cos( TexCoord0.y ), sin( TexCoord0.y ), sin( TexCoord0.x ) * cos( TexCoord0.y ) );\n";
+#if defined( CINDER_GL_ES_2 )
+		if( withLod )
+			s+="gl_FragColor = textureCubeLodEXT( uCubeMapTex, coords, uLod );\n";
+		else
+			s+="gl_FragColor = textureCube( uCubeMapTex, coords );\n";
+#else
+		if( withLod )
+			s+="oColor = textureLod( uCubeMapTex, coords, uLod );\n";
+		else
+			s+="oColor = texture( uCubeMapTex, coords );\n";
+#endif
+		s+="}\n";
+	return s;
+}
+
+} // anonymous namespace
+
+void drawEquirectangular( const gl::TextureCubeMapRef &texture, const Rectf &rect, float lod )
+{
+	static GlslProgRef glslNoLod = gl::GlslProg::create(
+		GlslProg::Format().vertex( equirectangularVertexShader() )
+			.fragment( equirectangularFragmentShader( false ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	);
+	static GlslProgRef glslWithLod = env()->supportsTextureLod() ? gl::GlslProg::create(
+		GlslProg::Format().vertex( equirectangularVertexShader() )
+			.fragment( equirectangularFragmentShader( true ) )
+#if defined( CINDER_GL_ES_3 )
+			.version( 300 )
+#elif ! defined( CINDER_GL_ES )
+			.version( 150 )
+#endif
+	) : glslNoLod;
+
+	bool useLod = (lod >= 0) && env()->supportsTextureLod();
+
+	const auto& glsl = ( useLod ) ? glslWithLod : glslNoLod;
+	gl::ScopedGlslProg scGlsl( glsl );
+	glsl->uniform( "uCubeMapTex", 0 );
+	if( useLod )
+		glsl->uniform( "uLod", lod );
+	drawSolidRect( rect, vec2( 0, 1 ), vec2( 1, 0 ) );
 }
 
 void drawSolid( const Path2d &path, float approximationScale )
