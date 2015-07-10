@@ -825,6 +825,11 @@ void FboCubeMap::bindFramebufferFace( GLenum faceTarget, GLint level, GLenum tar
 	glFramebufferTexture2D( target, attachment, faceTarget, mTextureCubeMap->getId(), level );
 }
 
+TextureCubeMapRef FboCubeMap::getTextureCubeMap( GLenum attachment )
+{
+	return std::dynamic_pointer_cast<gl::TextureCubeMap>( getTextureBase( attachment ) );
+}
+
 mat4 FboCubeMap::calcViewMatrix( GLenum face, const vec3 &eyePos )
 {
 	static const vec3 viewDirs[6] = { vec3( 1, 0, 0 ), vec3( -1, 0, 0 ), vec3( 0, 1, 0 ), vec3( 0, -1, 0 ), vec3( 0, 0, 1 ), vec3( 0, 0, -1 ) };
