@@ -25,7 +25,7 @@ android {
 
     sourceSets {
         main {
-            jni.srcDirs = ['src/main/jni', '../../../src', '../../../include']
+            jni.srcDirs = ['src/main/jni', '../../src', '../../include']
             jniLibs.srcDirs = ['src/main/jniLibs', '../../../../../lib']
             assets.srcDirs = ['src/main/assets', '../../../assets']
         }
@@ -69,7 +69,7 @@ android {
         cinderDir = "${projectDir}/$<<CINDER_RELPATH_APP>>"
         verbose = false 
         moduleName = "$<<CINDER_APPNAME>>"
-        srcDirs = ["../../../src"]
+        srcDirs = ["../../src"]
         cFlags {
             "all_archs" {
                 debug = "-g"

@@ -27,6 +27,10 @@
 #include "cinder/Utilities.h"
 #include "cinder/Log.h"
 
+#if defined( CINDER_ANDROID )
+	#include "cinder/android/CinderAndroid.h"
+#endif
+
 #include <regex>
 
 using namespace std;
@@ -99,9 +103,9 @@ std::string ShaderPreprocessor::parseDirectives( const std::string &source )
 	// if we don't have a version yet, add the default one
 	if( version.empty() ) {
 #if defined( CINDER_GL_ES_3 )
-		version = "#version " + to_string( mVersion ) + " es\n";
+		version = "#version " + std::to_string( mVersion ) + " es\n";
 #else
-		version = "#version " + to_string( mVersion ) + "\n";
+		version = "#version " + std::to_string( mVersion ) + "\n";
 #endif
 	}
 	else if( ! mDefineDirectives.empty() ) {

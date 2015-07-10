@@ -102,8 +102,13 @@ void AppAndroid::deferredMain( const RendererRef &defaultRenderer, const char *t
 
 ci::android::dbg_app_log( "Allocating AppAndroid" );
 ci::android::dbg_app_log( "Calling AppBase::executeLaunch" );
-	AppBase *app = new AppT;
+	//
+	// Use AppAndroid instead of AppBase like the other platforms so
+	// dereferred main can call the protected method: AppBase::executeLaunch()
+	//
+	AppAndroid *app = new AppT;
 	app->executeLaunch();
+
 	//
 	// NOTE: AppBase::cleanupLaunch is called in EventManagerAndroid::execute.
 	//

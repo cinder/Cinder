@@ -1,7 +1,7 @@
 package org.libcinder.sample.normalmappingbasic;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class NormalMappingBasicActivity extends NativeActivity {
+public class NormalMappingBasicActivity extends CinderNativeActivity {
     static final String TAG = "BasicAppActivity";
 }

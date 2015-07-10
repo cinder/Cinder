@@ -137,18 +137,15 @@ class Platform {
 	//! Called when asset directories are first prepared, subclasses can override to add platform specific directories.
 	virtual void prepareAssetLoading()		{}
 
-  private:
-	void		findAndAddAssetBasePath();
-	fs::path	findAssetPath( const fs::path &relativePath );
-	void		ensureAssetDirsPrepared();
+	void				findAndAddAssetBasePath();
+	virtual fs::path	findAssetPath( const fs::path &relativePath );
+	void				ensureAssetDirsPrepared();
 
 	std::vector<fs::path>		mAssetDirectories;
 	bool						mAssetDirsInitialized;
-	mutable fs::path			mExecutablePath; // lazily defaulted if none exists
 
-#if defined( CINDER_ANDROID )
-	friend class PlatformAndroid;
-#endif	
+  private:	
+	mutable fs::path			mExecutablePath; // lazily defaulted if none exists
 };
 
 

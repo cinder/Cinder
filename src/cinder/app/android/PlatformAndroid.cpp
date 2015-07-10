@@ -181,7 +181,13 @@ bool PlatformAndroid::isAssetPath( const fs::path &path )
 
 void PlatformAndroid::prepareAssetLoading()
 {
-	addAssetDirectory( "" );
+	// NOTE: Add an empty string for the asset file system
+
+	fs::path directory = "";
+	auto it = find( mAssetDirectories.begin(), mAssetDirectories.end(), directory );
+	if( it == mAssetDirectories.end() ) {
+		mAssetDirectories.push_back( directory );	
+	}
 }
 
 fs::path PlatformAndroid::findAssetPath( const fs::path &relativePath )

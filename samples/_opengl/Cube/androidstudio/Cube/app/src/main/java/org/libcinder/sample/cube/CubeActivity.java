@@ -1,7 +1,7 @@
 package org.libcinder.sample.cube;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class CubeActivity extends NativeActivity {
+public class CubeActivity extends CinderNativeActivity {
     static final String TAG = "CubeActivity";
 }

@@ -1,7 +1,7 @@
 package org.libcinder.sample.multitouchbasic;
 
-import android.app.NativeActivity;
+import org.libcinder.app.CinderNativeActivity;
 
-public class MultiTouchBasicActivity extends NativeActivity {
+public class MultiTouchBasicActivity extends CinderNativeActivity {
     static final String TAG = "MultiTouchBasicActivity";
 }

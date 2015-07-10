@@ -69,7 +69,7 @@ android {
         ndkDir = "${projectDir}/../../../../../../../android-ndk-r10d"
         cinderDir = "${projectDir}/../../../../../.."
         verbose = false
-        gles2 = true
+        //gles2 = true
         moduleName = "RotatingCubeApp"
         srcDirs = ["../../../src"]
         cFlags {
@@ -114,6 +114,15 @@ android {
     }
 }
 
+repositories {
+    jcenter()
+    flatDir {
+        dirs "${projectDir}/../../../../../../lib/android"
+    }
+}
+
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    debugCompile 'org.libcinder:libcinder-debug:1.0@aar'
+    releaseCompile 'org.libcinder:libcinder-release:1.0@aar'
 }

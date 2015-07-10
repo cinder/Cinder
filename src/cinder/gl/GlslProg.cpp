@@ -33,10 +33,9 @@
 
 #include "glm/gtc/type_ptr.hpp"
 
-#include <string>
 #include <type_traits>
 
-// For stoi
+// For stoi and std:;to_string
 #if defined( CINDER_ANDROID )
 	#include "cinder/android/CinderAndroid.h"
 #endif

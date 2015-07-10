@@ -204,11 +204,7 @@ console() << "Asset size: " << ci::app::android::AssetFileSystem_flength( asset 
 
 	// load mesh file and create missing data (normals, tangents) if necessary
 	try {
-<<<<<<< HEAD
-		fs::path mshFile = getAssetPath("leprechaun.msh");
-=======
 		fs::path mshFile = getAssetPath( "leprechaun.msh" );
->>>>>>> upstream/master
 		TriMesh mesh = createMesh( mshFile );
 
 		mMesh = gl::VboMesh::create( mesh );
