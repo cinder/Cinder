@@ -1051,6 +1051,10 @@
 		43F78EF71516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		43F78EF81516DAE200EB63B5 /* Json.h in Headers */ = {isa = PBXBuildFile; fileRef = 43F78EF51516DAE200EB63B5 /* Json.h */; };
 		5391FE660E95CB01002A13D5 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 0867D6A5FE840307C02AAC07 /* AppKit.framework */; };
+		94B573DB1B531C050042BB1A /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; };
+		94B573DC1B531C0B0042BB1A /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
+		94B573DD1B531C100042BB1A /* tinyexr.cc in Sources */ = {isa = PBXBuildFile; fileRef = 11316E591B28AC1300BD8783 /* tinyexr.cc */; };
+		94B573DE1B531C120042BB1A /* ImageFileTinyExr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 11316E561B28ABE900BD8783 /* ImageFileTinyExr.cpp */; };
 		B0245F5919BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
 		B0245F5A19BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
 		B0245F5B19BEDF3200BC878D /* Query.h in Headers */ = {isa = PBXBuildFile; fileRef = B0245F5819BEDF3200BC878D /* Query.h */; };
@@ -3316,6 +3320,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94B573DC1B531C0B0042BB1A /* ImageFileTinyExr.cpp in Sources */,
+				94B573DB1B531C050042BB1A /* tinyexr.cc in Sources */,
 				111A5FB1191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */,
 				111A5FBA191F72AE005C3166 /* Context.cpp in Sources */,
 				007050491114F93F003FCAE4 /* Camera.cpp in Sources */,
@@ -3505,6 +3511,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				94B573DE1B531C120042BB1A /* ImageFileTinyExr.cpp in Sources */,
+				94B573DD1B531C100042BB1A /* tinyexr.cc in Sources */,
 				111A5FB2191F72AE005C3166 /* DeviceManagerAudioSession.mm in Sources */,
 				111A5FBB191F72AE005C3166 /* Context.cpp in Sources */,
 				00CFD99D1135C3520091E310 /* Camera.cpp in Sources */,
