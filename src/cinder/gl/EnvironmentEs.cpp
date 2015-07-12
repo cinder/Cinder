@@ -45,7 +45,9 @@ class EnvironmentEs : public Environment {
 
 	bool	isExtensionAvailable( const std::string &extName ) override;
 	bool	supportsHardwareVao() override;
+	bool	supportsTextureLod() const override;
 	void	objectLabel( GLenum identifier, GLuint name, GLsizei length, const char *label ) override;
+	
 	void	allocateTexStorage1d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage2d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, bool immutable, GLint texImageDataType ) override;
 	void	allocateTexStorage3d( GLenum target, GLsizei levels, GLenum internalFormat, GLsizei width, GLsizei height, GLsizei depth, bool immutable ) override;
@@ -94,10 +96,20 @@ bool EnvironmentEs::isExtensionAvailable( const std::string &extName )
 
 bool EnvironmentEs::supportsHardwareVao()
 {
-#if defined( CINDER_COCOA_TOUCH )
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ES_3 )
 	return true;
 #else
 	return false;
+#endif
+}
+
+bool EnvironmentEs::supportsTextureLod() const
+{
+#if defined( CINDER_COCOA_TOUCH ) || defined( CINDER_GL_ES_3 )
+	return true;
+#else
+	static bool result = isExtensionAvailable( "GL_EXT_shader_texture_lod" );
+	return result;
 #endif
 }
 

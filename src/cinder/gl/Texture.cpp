@@ -1675,9 +1675,15 @@ void Texture3d::printDims( std::ostream &os ) const
 /////////////////////////////////////////////////////////////////////////////////
 // TextureCubeMap
 namespace {
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalCrossRegions( const ImageSourceRef &imageSource )
+struct CubeMapFaceRegion {
+	Area		mArea;
+	ivec2		mOffset;
+	bool		mFlip; // horizontal + vertical
+};
+
+std::vector<CubeMapFaceRegion> calcCubeMapHorizontalCrossRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 
 	ivec2 faceSize( imageSource->getWidth() / 4, imageSource->getHeight() / 3 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
@@ -1688,34 +1694,34 @@ std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalCrossRegions( c
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
 	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
 	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	area = faceArea + ivec2( faceSize.x * 3, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 3, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 		
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalCrossRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapVerticalCrossRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	
 	ivec2 faceSize( imageSource->getWidth() / 3, imageSource->getHeight() / 4 );
 	Area faceArea( 0, 0, faceSize.x, faceSize.y );
@@ -1726,54 +1732,54 @@ std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalCrossRegions( con
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_X
 	area = faceArea + ivec2( faceSize.x * 2, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 2, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_X
 	area = faceArea + ivec2( faceSize.x * 0, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 0, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
-	//  GL_TEXTURE_CUBE_MAP_POSITIVE_Y
+	result.push_back( { area, offset, false } );
+	// GL_TEXTURE_CUBE_MAP_POSITIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 0 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 0 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Y
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 2 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 2 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_POSITIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 1 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 1 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, false } );
 	// GL_TEXTURE_CUBE_MAP_NEGATIVE_Z
 	area = faceArea + ivec2( faceSize.x * 1, faceSize.y * 3 );
 	offset = -ivec2( faceSize.x * 1, faceSize.y * 3 );
-	result.push_back( make_pair( area, offset ) );
+	result.push_back( { area, offset, true } );
 	
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapHorizontalRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapHorizontalRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	ivec2 faceSize( imageSource->getHeight(), imageSource->getHeight() );
 
 	for( uint8_t index = 0; index < 6; ++index ) {
 		Area area( index * faceSize.x, 0.0f, (index + 1) * faceSize.x, faceSize.y );
 		ivec2 offset( -index * faceSize.x, 0.0f );
-		result.push_back( make_pair( area, offset ) );
+		result.push_back( { area, offset, false } );
 	}
 
 	return result;
 };
 	
-std::vector<std::pair<ci::Area, ci::ivec2>> calcCubeMapVerticalRegions( const ImageSourceRef &imageSource )
+std::vector<CubeMapFaceRegion> calcCubeMapVerticalRegions( const ImageSourceRef &imageSource )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> result;
+	std::vector<CubeMapFaceRegion> result;
 	ivec2 faceSize( imageSource->getWidth(), imageSource->getWidth() );
 	
 	for( uint8_t index = 0; index < 6; ++index ) {
-		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );;
+		Area area( 0.0f, index * faceSize.x, faceSize.x, (index + 1) * faceSize.y );
 		ivec2 offset( 0.0f, -index * faceSize.y );
-		result.push_back( make_pair( area, offset ) );
+		result.push_back( { area, offset, false } );
 	}
 
 	return result;
@@ -1815,7 +1821,7 @@ TextureCubeMapRef TextureCubeMap::create( const TextureData &data, const Format 
 template<typename T>
 TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef &imageSource, const Format &format )
 {
-	std::vector<std::pair<ci::Area, ci::ivec2>> faceRegions;
+	std::vector<CubeMapFaceRegion> faceRegions;
 
 	// Infer the layout based on image aspect ratio
 	ivec2 imageSize( imageSource->getWidth(), imageSource->getHeight() );
@@ -1829,7 +1835,7 @@ TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef
 		faceRegions = ( imageSize.x > imageSize.y ) ? calcCubeMapHorizontalCrossRegions( imageSource ) : calcCubeMapVerticalCrossRegions( imageSource );
 	}
 
-	Area faceArea = faceRegions.front().first;
+	Area faceArea = faceRegions.front().mArea;
 	ivec2 faceSize = faceArea.getSize();
 	
 	SurfaceT<T> masterSurface( imageSource, SurfaceConstraintsDefault() );
@@ -1837,7 +1843,11 @@ TextureCubeMapRef TextureCubeMap::createTextureCubeMapImpl( const ImageSourceRef
 	
 	for( uint8_t f = 0; f < 6; ++f ) {
 		images[f] = SurfaceT<T>( faceSize.x, faceSize.y, masterSurface.hasAlpha(), SurfaceConstraints() );
-		images[f].copyFrom( masterSurface, faceRegions[f].first, faceRegions[f].second );
+		images[f].copyFrom( masterSurface, faceRegions[f].mArea, faceRegions[f].mOffset );
+		if( faceRegions[f].mFlip ) {
+			ip::flipVertical( &images[f] );
+			ip::flipHorizontal( &images[f] );
+		}
 	}
 	
 	if( format.mDeleter )
@@ -1983,7 +1993,7 @@ void TextureCubeMap::replace( const TextureData &textureData )
 		glPixelStorei( GL_UNPACK_ALIGNMENT, textureData.getUnpackAlignment() );
 
 #if ! defined( CINDER_GL_ES_2 )
-	mMaxMipmapLevel = 0;//(int32_t)textureData.getLevels().size();
+	mMaxMipmapLevel = (int32_t)textureData.getNumLevels() - 1;
 	glTexParameteri( mTarget, GL_TEXTURE_MAX_LEVEL, mMaxMipmapLevel );		
 #endif
 }
