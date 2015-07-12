@@ -1363,9 +1363,10 @@ def inject_html(src_content, dest_el, src_path, dest_path):
 
     try:
         # append body content to dest_el
-        dest_el.append(src_content.body)
+        for content in src_content.contents:
+            dest_el.append(content)
     except AttributeError as e:
-        print "\t *** Error appending html content to element ***"
+        print "\t *** Error appending html content to element *** [ " + e.message + " ]"
 
 
 def iterate_namespace(bs4, namespaces, tree, index, label):
@@ -1869,15 +1870,18 @@ def process_html_file(in_path, out_path):
         body_content += str(content)
 
     # if there is a specific page that needs some special dynmic content, this is where we do it
+    insert_div_id = ""
+    dynamic_div = gen_tag(orig_html, "body")
     for data in config.ADDITIONAL_REF_DATA:
         if config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path:
-            # print data
             # print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
             is_searchable = data["searchable"]
-            # body_content += gen_glm_reference()
 
             markup = generate_dynamic_markup(data)
-            orig_html.body.append(markup.body)
+            for content in markup.body.contents:
+                dynamic_div.append(content)
+            insert_div_id = data["element_id"]
+
 
 
     # if any(config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA):
@@ -1910,7 +1914,6 @@ def process_html_file(in_path, out_path):
     if orig_html.head and orig_html.head.title:
         file_data.title = orig_html.head.title.text
 
-
     # add body content to orig_html
     # print body_content
     # orig_html.body.append(body_content)
@@ -1918,12 +1921,18 @@ def process_html_file(in_path, out_path):
     bs4 = render_template(template, file_data.get_content())
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
-
     template_content_el = bs4.body.find(id="template-content")
+
 
     # print orig_html
     # inject html into a template content div
     inject_html(orig_html, template_content_el, in_path, out_path)
+
+
+     # add dynamic content into specifed div
+    if insert_div_id:
+        insert_el = template_content_el.find(id=insert_div_id)
+        inject_html(dynamic_div, insert_el, in_path, out_path)
 
     if bs4 is None:
         print "\t** ERROR: Error generating file, so skipping: " + in_path
