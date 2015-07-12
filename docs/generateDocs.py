@@ -217,14 +217,35 @@ class SymbolMap(object):
         def __init__(self, tree):
             self.name = tree.find('name').text
             self.title = tree.find("title").text
-            self.path = tree.find('filename').text
-            self.description = ""
+            self.path = HTML_SOURCE_PATH + tree.find('filename').text
+            self.src_path = (XML_SOURCE_PATH + tree.find('filename').text).replace(".html", ".xml")
+            self.description = self.extract_description()
             self.subgroup_names = []
             self.subgroups = []
 
+        def extract_description(self):
+            xml_tree = parse_xml(self.src_path)
+            bs4 = BeautifulSoup()
+
+            # use brief description if it exists
+            description = markup_brief_description(bs4, xml_tree.find(r'compounddef'))
+
+            # if not, use detailed description
+            if not description:
+                description = markup_description(bs4, xml_tree.find(r'compounddef'))
+
+            # extract first sentence of description
+            if description and description.text:
+                first_sentence = description.text.split(". ")[0] + "."
+                new_text = bs4.new_string(first_sentence)
+                description.contents[0].replace_with(new_text)
+            else:
+                description = None
+
+            return str(description) if str(description) else ""
+
     def add_function(self, ns, fn_name, fn_obj):
         self.functions[ns + "::" + fn_name] = fn_obj
-        # self.functionList.append(fn_obj)
 
     # searches the symbolMap for a given symbol, prepending cinder:: if not found as-is
     def find_class(self, name):
@@ -1188,14 +1209,25 @@ def iterate_markup(bs4, tree, parent):
     return current_tag
 
 
-def markup_description(bs4, tree):
-    description_el = gen_tag(bs4, "div", ["description", "content"])
+def markup_brief_description(bs4, tree, description_el=None):
+    if description_el is None:
+        description_el = gen_tag(bs4, "div", ["description", "content"])
+
     brief_desc = tree.find(r'briefdescription/')
     if brief_desc is None:
         return
     else:
         iterate_markup(bs4, tree.find(r'briefdescription/'), description_el)
 
+    return description_el
+
+def markup_description(bs4, tree):
+    description_el = gen_tag(bs4, "div", ["description", "content"])
+
+    # mark up brief description first
+    markup_brief_description(bs4, tree, description_el)
+
+    # mark up detailed description next
     detailed_desc = tree.find(r'detaileddescription/')
     if detailed_desc is not None:
         iterate_markup(bs4, tree.find(r'detaileddescription/'), description_el)
@@ -1364,7 +1396,7 @@ def iterate_namespace(bs4, namespaces, tree, index, label):
         # create link for each item
         # print ns.path
         # a_tag = gen_rel_link_tag(bs4, name, "../" + ns.path, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        a_tag = gen_link_tag(bs4, name, "../" + ns.path)
+        a_tag = gen_link_tag(bs4, name, HTML_SOURCE_PATH + ns.path)
         # print a_tag
         # a_tag = gen_tag(bs4, "a")
         # define_link_tag(a_tag, {"href": ns.path})
@@ -1526,7 +1558,7 @@ def process_class_xml_file(in_path, out_path):
         for t in file_def.typedefs:
             link_data = LinkData()
             link_data.label = t.name
-            link_path = "../" + t.path
+            link_path = DOXYGEN_HTML_PATH + t.path
             link_data.link = link_path
             typedefs.append(link_data)
     file_data.typedefs = typedefs
@@ -1542,7 +1574,7 @@ def process_class_xml_file(in_path, out_path):
         link_data = LinkData()
         link_data.label = strip_compound_name(classDef.text)
         # link_data.link = convert_rel_path(classDef.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        link_data.link = "../" + classDef.attrib["refid"] + ".html"
+        link_data.link = DOXYGEN_HTML_PATH + classDef.attrib["refid"] + ".html"
         classes.append(link_data)
     file_data.classes = classes
 
@@ -1726,7 +1758,7 @@ def process_namespace_xml_file(in_path, out_path):
     namespaces = []
     for member in tree.findall(r"compounddef/innernamespace"):
         # link = convert_rel_path(member.attrib["refid"] + ".html", TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        link = "../" + member.attrib["refid"] + ".html"
+        link = DOXYGEN_HTML_PATH + member.attrib["refid"] + ".html"
         link_data = LinkData(link, member.text)
         namespaces.append(link_data)
     file_data.namespaces = namespaces
@@ -1736,7 +1768,7 @@ def process_namespace_xml_file(in_path, out_path):
     for member in tree.findall(r"compounddef/innerclass[@prot='public']"):
         link = member.attrib["refid"] + ".html"
         # rel_link = convert_rel_path(link, TEMPLATE_PATH, DOXYGEN_HTML_PATH)
-        rel_link = "../" + link
+        rel_link = DOXYGEN_HTML_PATH + link
         link_data = LinkData(rel_link, member.text)
 
         kind = "struct" if link.startswith("struct") else "class"
@@ -1937,16 +1969,16 @@ def generate_glm_reference():
         group = g_symbolMap.find_group(group_name)
         group_data = {}
         group_data["name"] = group.title
-        group_data["path"] = "../" + group.path
-        group_data["description"] = "TODO: FILL IN DESCRIPTION"
+        group_data["path"] = group.path
+        group_data["description"] = group.description
 
         subgroups = []
         if len(group.subgroups) > 0:
             for subgroup in group.subgroups:
                 subgroup_data = {}
                 subgroup_data["name"] = subgroup.title
-                subgroup_data["path"] = "../" + subgroup.path
-                subgroup_data["description"] = "TODO: FILL IN DESCRIPTION"
+                subgroup_data["path"] = subgroup.path
+                subgroup_data["description"] = subgroup.description
                 subgroups.append(subgroup_data)
             group_data["subgroups"] = subgroups
             glm_group_data["groups"].append(group_data)
@@ -2417,32 +2449,10 @@ def get_symbol_to_file_map():
     for group_names in symbol_map.groups:
         group = symbol_map.find_group(group_names)
         if len(group.subgroup_names) > 0:
-            print group.name
+            # print group.name
             for subgroup_name in group.subgroup_names:
                 subgroup = symbol_map.find_group(subgroup_name)
                 group.subgroups.append(subgroup)
-
-# # for all of the groups, add a
-#     for group in g_tag_xml.findall(r'compound/[@kind="group"]'):
-#
-#         subgroups = group.findall('subgroup')
-#         if len(subgroups) > 0:
-#
-#
-#             group_data["title"] = group.find("title")
-#             filename = group.find("filename")
-#             group_data["html"] = group.find("filename")
-#             # pull description from xml description
-#             # load filename with xml and pull the title description
-#             # group_data["description"] = ground.find()
-#             glm_group_data["groups"].append(group_data)
-#
-#
-#
-#             print group.find("title").text
-#             for subgroup in subgroups:
-#                 print "\t" + subgroup.text
-
 
     if len(file_tags) == 0:
         print "\t** Warning: no compound of type 'file' found in tag file. Check doxygen SHOW_FILES setting."
