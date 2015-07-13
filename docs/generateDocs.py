@@ -55,25 +55,25 @@ class Config(object):
 
         self.REFERENCE_HTML_KEY = "reference_html"
         self.ADDITIONAL_REF_DATA = [
-            # {
-            #     "id": "namespaces",
-            #     self.REFERENCE_HTML_KEY: "namespaces.html",
-            #     "element_id": "namespace-content",
-            #     "template": "",
-            #     "searchable": False
-            # },
-            # {
-            #     "id": "classes",
-            #     self.REFERENCE_HTML_KEY: "classes.html",
-            #     "element_id": "class-content",
-            #     "template": "",
-            #     "searchable": False
-            # },
+            {
+                "id": "namespaces",
+                self.REFERENCE_HTML_KEY: "namespaces.html",
+                "element_id": "namespace-content",
+                "template": "namespace-list.mustache",
+                "searchable": False
+            },
+            {
+                "id": "classes",
+                self.REFERENCE_HTML_KEY: "classes.html",
+                "element_id": "classes-content",
+                "template": "class-list.mustache",
+                "searchable": False
+            },
             {
                 "id": "glm",
                 self.REFERENCE_HTML_KEY: "reference/glm.html",
                 "element_id": "glm-reference",
-                "template": os.path.join(TEMPLATE_PATH, "glm-reference.mustache"),
+                "template": "glm-reference.mustache",
                 "searchable": True
             }
         ]
@@ -1359,6 +1359,9 @@ def inject_html(src_content, dest_el, src_path, dest_path):
     :return:
     """
 
+    if not dest_el:
+        log("destination element does not exist", 1)
+
     update_links(src_content, src_path, dest_path)
 
     try:
@@ -1366,7 +1369,7 @@ def inject_html(src_content, dest_el, src_path, dest_path):
         for content in src_content.contents:
             dest_el.append(content)
     except AttributeError as e:
-        print "\t *** Error appending html content to element *** [ " + e.message + " ]"
+        print "\t*** Error appending html content to element *** [ " + e.message + " ]"
 
 
 def iterate_namespace(bs4, namespaces, tree, index, label):
@@ -1709,16 +1712,16 @@ def drop_anchor(anchor_list, anchor_name, link_name):
     g_currentFile.contentsEl.append(anchor)
 
 
-def list_namespaces(bs4):
-    namespaces = g_symbolMap.get_ordered_namespaces()
-
-    ul = gen_tag(bs4, "ul")
-    for ns in namespaces:
-        a = gen_link_tag(bs4, ns.name, ns.path)
-        li = gen_tag(bs4, "li", None, a)
-        ul.append(li)
-
-    return ul
+# def list_namespaces(bs4):
+#     namespaces = g_symbolMap.get_ordered_namespaces()
+#
+#     ul = gen_tag(bs4, "ul")
+#     for ns in namespaces:
+#         a = gen_link_tag(bs4, ns.name, ns.path)
+#         li = gen_tag(bs4, "li", None, a)
+#         ul.append(li)
+#
+#     return ul
 
 
 def list_classes(bs4):
@@ -1878,6 +1881,7 @@ def process_html_file(in_path, out_path):
             is_searchable = data["searchable"]
 
             markup = generate_dynamic_markup(data)
+            print markup
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
@@ -1893,26 +1897,26 @@ def process_html_file(in_path, out_path):
         # orig_html.body.append( "<em>[INSERT GLM REFERENCE HERE]</em>" )
 
     # fill namespace list
-    if in_path.find("htmlsrc/namespaces.html") > -1:
-        # throw in a list of namespaces into the page
-        ns_list = list_namespaces(orig_html)
-        orig_html.body.append(ns_list)
-
-    # fill class list
-    elif in_path.find("htmlsrc/classes.html") > -1:
-        class_list = list_classes(orig_html)
-        orig_html.body.append(class_list)
-
-    else:
-        # add file to search index
-        is_searchable = True
-
-        for content in orig_html.body.contents:
-            body_content += str(content)
-
-    # copy title over
-    if orig_html.head and orig_html.head.title:
-        file_data.title = orig_html.head.title.text
+    # if in_path.find("htmlsrc/namespaces.html") > -1:
+    #     # throw in a list of namespaces into the page
+    #     ns_list = list_namespaces(orig_html)
+    #     orig_html.body.append(ns_list)
+    #
+    # # fill class list
+    # elif in_path.find("htmlsrc/classes.html") > -1:
+    #     class_list = list_classes(orig_html)
+    #     orig_html.body.append(class_list)
+    #
+    # else:
+    #     # add file to search index
+    #     is_searchable = True
+    #
+    #     for content in orig_html.body.contents:
+    #         body_content += str(content)
+    #
+    # # copy title over
+    # if orig_html.head and orig_html.head.title:
+    #     file_data.title = orig_html.head.title.text
 
     # add body content to orig_html
     # print body_content
@@ -1994,6 +1998,40 @@ def generate_glm_reference():
 
     return glm_group_data
 
+
+def generate_namespace_data():
+
+    ns_data = {
+        "namespaces": []
+    }
+
+    namespaces = g_symbolMap.get_ordered_namespaces()
+    for ns in namespaces:
+        ns = {
+            "link": ns.path,
+            "label": ns.name
+        }
+        ns_data["namespaces"].append(ns)
+
+    return ns_data
+
+
+def generate_class_list_data():
+
+    classlist_data = {
+        "classes": []
+    }
+
+    classes = g_symbolMap.get_ordered_class_list()
+    for c in classes:
+        class_data = {
+            "link": c.path,
+            "label": c.name
+        }
+        classlist_data["classes"].append(class_data)
+
+    return classlist_data
+
 def generate_dynamic_markup(ref_data):
 
     # find template if it exists
@@ -2002,15 +2040,16 @@ def generate_dynamic_markup(ref_data):
     if ref_id == "glm":
         return_markup = generate_glm_reference()
     elif ref_id == "namespaces":
-        return_markup = "NAMESPACES"
+        return_markup = generate_namespace_data()
     elif ref_id == "classes":
-        return_markup = "CLASSES"
+        return_markup = generate_class_list_data()
     else:
         return_markup = "NOTHING FOUND"
         print "\t*** No rules for generating dynamic content for id'" + ref_id + "' was found"
 
     # plug data into template (if it exists)
-    markup = render_template(ref_data["template"], return_markup)
+    template_path = os.path.join(TEMPLATE_PATH, ref_data["template"])
+    markup = render_template(template_path, return_markup)
     # print str(markup)
     return markup
     # return return_markup
@@ -2725,6 +2764,15 @@ def copytree(src, dst, symlinks=False, ignore=None):
         else:
             shutil.copy2(s, d)
 
+def log(message, level=0):
+    if level == 0 or not level:
+        message_prefix = "INFO"
+    elif level == 1:
+        message_prefix = "WARNING"
+    elif level == 2:
+        message_prefix = "ERROR"
+
+    print("\t*** " + message_prefix + ": [ " + message + " ]")
 
 if __name__ == "__main__":
     """ Main Function for generating html documentation from doxygen generated xml files
