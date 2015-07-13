@@ -1531,7 +1531,7 @@ def process_class_xml_file(in_path, out_path):
             file_data.template_def_name = ""
 
     if not class_def:
-        print "\t** Warning: NO CLASS OBJECT DEFINED FOR: " + class_name
+        log("NO CLASS OBJECT DEFINED FOR: " + class_name, 1)
         # raise
         # return
 
@@ -1831,6 +1831,10 @@ def process_html_file(in_path, out_path):
 
     # FILL CONTENT
     orig_html = generate_bs4(in_path)
+    if orig_html.head:
+        if orig_html.head.title:
+            file_data.title = orig_html.head.title.text
+
     # print orig_html
     body_content = ""
 
@@ -1864,7 +1868,7 @@ def process_html_file(in_path, out_path):
         inject_html(dynamic_div, insert_el, in_path, out_path)
 
     if bs4 is None:
-        print "\t** ERROR: Error generating file, so skipping: " + in_path
+        print log("Error generating file, so skipping: " + in_path, 2)
         return
 
     # copy all js and css paths that may be in the original html and paste into new file
@@ -1876,10 +1880,10 @@ def process_html_file(in_path, out_path):
         if bs4.body:
             bs4.body.append(script)
 
-    if orig_html.head and bs4.head:
-
-        for d in orig_html.head.find_all("ci"):
-            bs4.head.append(d)
+    if orig_html.head:
+        if bs4.head:
+            for d in orig_html.head.find_all("ci"):
+                bs4.head.append(d)
 
         # add tags from the meta keywords tag
         for meta_tag in orig_html.head.findAll(attrs={"name": "keywords"}):
@@ -2697,7 +2701,7 @@ def log(message, level=0):
     elif level == 2:
         message_prefix = "ERROR"
 
-    print("\t*** " + message_prefix + ": [ " + message + " ]")
+    print("\t*** " + message_prefix + ": [ " + message + " ] ***")
 
 if __name__ == "__main__":
     """ Main Function for generating html documentation from doxygen generated xml files
