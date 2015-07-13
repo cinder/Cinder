@@ -502,8 +502,8 @@ Texture2dRef Fbo::getTexture2d( GLenum attachment )
 
 TextureBaseRef Fbo::getTextureBase( GLenum attachment )
 {
-	if( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) {
-		CI_LOG_W( "Illegal contant for texture attachment: " << attachment );
+	if( ( (attachment < GL_COLOR_ATTACHMENT0) || (attachment > MAX_COLOR_ATTACHMENT) ) && ( (attachment != GL_DEPTH_ATTACHMENT) &&  (attachment != GL_DEPTH_STENCIL_ATTACHMENT) ) ) {
+		CI_LOG_W( "Illegal constant for texture attachment: " << gl::constantToString( attachment ) );
 	}
 	
 	auto attachedTextureIt = mAttachmentsTexture.find( attachment );
