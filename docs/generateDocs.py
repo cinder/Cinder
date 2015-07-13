@@ -2,7 +2,7 @@
 import sys
 import codecs
 import re
-import xml.etree.ElementTree as Et
+import xml.etree.ElementTree as ET
 import json
 import os
 import shutil
@@ -53,25 +53,24 @@ class Config(object):
         # file prefixes that indicate that the file should be parsed with the namespace template
         self.NAMESPACE_FILE_PREFIXES = ["namespace"]
 
-        self.REFERENCE_HTML_KEY = "reference_html"
         self.ADDITIONAL_REF_DATA = [
             {
                 "id": "namespaces",
-                self.REFERENCE_HTML_KEY: "namespaces.html",
+                "reference_html": "namespaces.html",
                 "element_id": "namespace-content",
                 "template": "namespace-list.mustache",
                 "searchable": False
             },
             {
                 "id": "classes",
-                self.REFERENCE_HTML_KEY: "classes.html",
+                "reference_html": "classes.html",
                 "element_id": "classes-content",
                 "template": "class-list.mustache",
                 "searchable": False
             },
             {
                 "id": "glm",
-                self.REFERENCE_HTML_KEY: "reference/glm.html",
+                "reference_html": "reference/glm.html",
                 "element_id": "glm-reference",
                 "template": "glm-reference.mustache",
                 "searchable": True
@@ -1358,18 +1357,21 @@ def inject_html(src_content, dest_el, src_path, dest_path):
     :param src_path: The path of the src file so that we can gix teh relative links
     :return:
     """
-
     if not dest_el:
         log("destination element does not exist", 1)
 
     update_links(src_content, src_path, dest_path)
 
     try:
-        # append body content to dest_el
-        for content in src_content.contents:
-            dest_el.append(content)
+        # copy source content into to bs4 instance so that we can copy over without messing up the source
+        bs4 = BeautifulSoup(str(src_content).decode("UTF-8"))
+        # copy all Tags over to dest element
+        for content in bs4.body.contents:
+            if type(content) is Tag:
+                dest_el.append(content)
     except AttributeError as e:
         print "\t*** Error appending html content to element *** [ " + e.message + " ]"
+
 
 
 def iterate_namespace(bs4, namespaces, tree, index, label):
@@ -1705,37 +1707,6 @@ def process_class_xml_file(in_path, out_path):
     write_html(bs4, out_path)
 
 
-def drop_anchor(anchor_list, anchor_name, link_name):
-    bs4 = g_currentFile.bs4
-    anchor = gen_anchor_tag(bs4, anchor_name)
-    anchor_list.append({"name": link_name, "link": anchor})
-    g_currentFile.contentsEl.append(anchor)
-
-
-# def list_namespaces(bs4):
-#     namespaces = g_symbolMap.get_ordered_namespaces()
-#
-#     ul = gen_tag(bs4, "ul")
-#     for ns in namespaces:
-#         a = gen_link_tag(bs4, ns.name, ns.path)
-#         li = gen_tag(bs4, "li", None, a)
-#         ul.append(li)
-#
-#     return ul
-
-
-def list_classes(bs4):
-    classes = g_symbolMap.get_ordered_class_list()
-
-    ul = gen_tag(bs4, "ul", ["master-class-list"])
-    for c in classes:
-        a = gen_link_tag(bs4, c.name, c.path)
-        li = gen_tag(bs4, "li", None, a)
-        ul.append(li)
-
-    return ul
-
-
 def process_namespace_xml_file(in_path, out_path):
     global g_currentFile
     print "Processing namespace file: " + in_path + " > " + out_path
@@ -1843,7 +1814,8 @@ def process_html_file(in_path, out_path):
     # get common data for the file
     file_data = HtmlFileData()
     g_currentFile = file_data
-    is_searchable = False
+    # searchable by default
+    is_searchable = True
     search_tags = []
     local_rel_path = os.path.relpath(in_path, HTML_SOURCE_PATH)
 
@@ -1851,6 +1823,7 @@ def process_html_file(in_path, out_path):
     template = config.HTML_TEMPLATE
     if in_path.find("htmlsrc/index.html") > -1:
         template = config.HOME_TEMPLATE
+        is_searchable = False
     elif in_path.find("reference/") > -1:
         template = config.REFERENCE_TEMPLATE
     elif in_path.find("guides/") > -1:
@@ -1858,17 +1831,9 @@ def process_html_file(in_path, out_path):
 
     # FILL CONTENT
     orig_html = generate_bs4(in_path)
-
-    # print "id" in (data in config.ADDITIONAL_REF_DATA()).iterValues()
-    # print local_rel_path
-    # print any(data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA)
-
-    # raise
-
+    # print orig_html
     body_content = ""
 
-    # searchable by default
-    is_searchable = True
     for content in orig_html.body.contents:
         body_content += str(content)
 
@@ -1876,64 +1841,24 @@ def process_html_file(in_path, out_path):
     insert_div_id = ""
     dynamic_div = gen_tag(orig_html, "body")
     for data in config.ADDITIONAL_REF_DATA:
-        if config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path:
+        if "reference_html" in data and data["reference_html"] == local_rel_path:
             # print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
-            is_searchable = data["searchable"]
+            is_searchable = bool(data["searchable"])
 
             markup = generate_dynamic_markup(data)
-            print markup
+            # print markup
             for content in markup.body.contents:
                 dynamic_div.append(content)
             insert_div_id = data["element_id"]
-
-
-
-    # if any(config.REFERENCE_HTML_KEY in data and data[config.REFERENCE_HTML_KEY] == local_rel_path for data in config.ADDITIONAL_REF_DATA):
-    #
-    #     print data
-    #     print "\tWE NEED TO DO SOMETHING ABOUT THIS. GREG, IT'S UP TO YOU NOW."
-    #
-    #     body_content += gen_glm_reference()
-        # orig_html.body.append( "<em>[INSERT GLM REFERENCE HERE]</em>" )
-
-    # fill namespace list
-    # if in_path.find("htmlsrc/namespaces.html") > -1:
-    #     # throw in a list of namespaces into the page
-    #     ns_list = list_namespaces(orig_html)
-    #     orig_html.body.append(ns_list)
-    #
-    # # fill class list
-    # elif in_path.find("htmlsrc/classes.html") > -1:
-    #     class_list = list_classes(orig_html)
-    #     orig_html.body.append(class_list)
-    #
-    # else:
-    #     # add file to search index
-    #     is_searchable = True
-    #
-    #     for content in orig_html.body.contents:
-    #         body_content += str(content)
-    #
-    # # copy title over
-    # if orig_html.head and orig_html.head.title:
-    #     file_data.title = orig_html.head.title.text
-
-    # add body content to orig_html
-    # print body_content
-    # orig_html.body.append(body_content)
 
     bs4 = render_template(template, file_data.get_content())
     update_links(bs4, TEMPLATE_PATH + "guidesContentTemplate.html", out_path)
 
     template_content_el = bs4.body.find(id="template-content")
 
-
-    # print orig_html
     # inject html into a template content div
     inject_html(orig_html, template_content_el, in_path, out_path)
-
-
-     # add dynamic content into specifed div
+    # add dynamic content into specifed div
     if insert_div_id:
         insert_el = template_content_el.find(id=insert_div_id)
         inject_html(dynamic_div, insert_el, in_path, out_path)
@@ -2524,7 +2449,7 @@ def parse_xml(in_path):
     tree = None
     try:
         with open(in_path, 'r') as xml_file:
-            tree = Et.parse(xml_file)
+            tree = ET.parse(xml_file)
 
     except:
         exc = sys.exc_info()[0]
@@ -2795,7 +2720,7 @@ if __name__ == "__main__":
 
     # Load tag file
     print "parsing tag file"
-    g_tag_xml = Et.ElementTree(Et.parse("doxygen/cinder.tag").getroot())
+    g_tag_xml = ET.ElementTree(ET.parse("doxygen/cinder.tag").getroot())
     # generate symbol map from tag file
     g_symbolMap = get_symbol_to_file_map()
 
