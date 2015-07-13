@@ -812,13 +812,13 @@ class WireCircle : public WireSource {
   public:
 	WireCircle();
 
-	//!
+	//! Sets the center point of the circle to \a center.
 	WireCircle&	center( const vec2 &center ) { mCenter = vec3( center, 0 ); return *this; }
-	//!
+	//! Sets the center point of the circle to \a center.
 	WireCircle&	center( const vec3 &center ) { mCenter = center; return *this; }
-	//!
+	//! Sets the radius of the circle to \a radius.
 	WireCircle&	radius( float radius ) { mRadius = radius; return *this; }
-	//! Specifies the number of segments that make up each circle. Defaults to \c 72.
+	//! Specifies the number of segments that make up the circle. Defaults to \c 12.
 	WireCircle&	subdivisions( int subdiv ) { mNumSegments = math<int>::max( 3, subdiv ); return *this; }
 
 	size_t		getNumVertices() const override;

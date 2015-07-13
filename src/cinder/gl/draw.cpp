@@ -1020,11 +1020,17 @@ void drawStrokedRoundedRect( const Rectf &r, float cornerRadius, int numSegments
 
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments )
 {
+	if( numSegments <= 0 )
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+
 	gl::draw( geom::WireCircle().center( center ).radius( radius ).subdivisions( numSegments ) );
 }
 
 void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments )
 {
+	if( numSegments <= 0 )
+		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
+
 	gl::draw( geom::Ring().center( center ).radius( radius ).width( lineWidth ).subdivisions( numSegments ) );
 }
 
@@ -1085,9 +1091,8 @@ void drawSolidCircle( const vec2 &center, float radius, int numSegments )
 	ctx->pushVao();
 	ctx->getDefaultVao()->replacementBindBegin();
 
-	if( numSegments <= 0 ) {
+	if( numSegments <= 0 )
 		numSegments = (int)math<double>::floor( radius * M_PI * 2 );
-	}
 	if( numSegments < 3 ) numSegments = 3;
 	size_t numVertices = numSegments + 2;
 

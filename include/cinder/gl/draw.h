@@ -100,9 +100,9 @@ void drawLine( const vec2 &a, const vec2 &b );
 void drawSolidRect( const Rectf &r, const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
 //! Draws a solid rounded rectangle centered around \a rect, with a corner radius of \a cornerRadius
 void drawSolidRoundedRect( const Rectf &r, float cornerRadius, int numSegmentsPerCorner = 0,  const vec2 &upperLeftTexCoord = vec2( 0, 1 ), const vec2 &lowerRightTexCoord = vec2( 1, 0 ) );
-//! Draws a filled circle centered around \a center with a radius of \a radius
+//! Draws a filled circle centered around \a center with a radius of \a radius. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawSolidCircle( const vec2 &center, float radius, int numSegments = -1 );
-//! Draws a filled ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+//! Draws a filled ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawSolidEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a stroked rectangle with dimensions \a rect.
@@ -111,11 +111,11 @@ void drawStrokedRect( const Rectf &rect );
 void drawStrokedRect( const Rectf &rect, float lineWidth );
 //! Draws a stroked rounded rectangle centered around \a rect, with a corner radius of \a cornerRadius
 void drawStrokedRoundedRect( const Rectf &rect, float cornerRadius, int numSegmentsPerCorner = 0 );
-//! Draws a stroked circle centered around \a center with a radius of \a radius
+//! Draws a stroked circle centered around \a center with a radius of \a radius. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedCircle( const vec2 &center, float radius, int numSegments = -1 );
-//! Draws a stroked circle centered around \a center with a radius of \a radius and a line width of \a lineWidth.
+//! Draws a stroked circle centered around \a center with a radius of \a radius and a line width of \a lineWidth. Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedCircle( const vec2 &center, float radius, float lineWidth, int numSegments = -1 );
-//! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY
+//! Draws a stroked ellipse centered around \a center with an X-axis radius of \a radiusX and a Y-axis radius of \a radiusY.  Default \a numSegments requests a conservative (high-quality but slow) number based on radius.
 void drawStrokedEllipse( const vec2 &center, float radiusX, float radiusY, int numSegments = -1 );
 
 //! Draws a string \a str with its lower left corner located at \a pos. Optional \a font and \a color affect the style.
